@@ -1,0 +1,131 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns:execution="https://bpmn.telematique.eu/execution"
+  targetNamespace="https://bpmn.telematique.eu/execution">
+
+  <xsd:element name="status" type="tStatus"/>
+  <xsd:complexType name="tStatus">
+    <xsd:sequence>
+      <xsd:element ref="attribute" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:element name="attribute" type="tAttribute"/>
+  <xsd:complexType name="tAttribute">
+    <xsd:attribute name="id" type="xsd:ID" use="required"/>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:attribute name="type" type="tAttributeType" use="required"/>
+    <xsd:attribute name="value" type="xsd:string" use="optional"/>
+    <xsd:attribute name="objective" type="tObjectiveType" use="optional"/>
+    <xsd:attribute name="weight" type="xsd:decimal" use="optional"/>
+  </xsd:complexType>
+
+	<xsd:simpleType name="tAttributeType">
+		<xsd:restriction base="xsd:string">
+      <xsd:enumeration value="xsd:string"/>
+      <xsd:enumeration value="xsd:integer"/>
+      <xsd:enumeration value="xsd:decimal"/>
+      <xsd:enumeration value="xsd:boolean"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="tObjectiveType">
+		<xsd:restriction base="xsd:string">
+      <xsd:enumeration value="maximize"/>
+      <xsd:enumeration value="minimize"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+  <xsd:element name="restrictions" type="tRestrictions"/>
+  <xsd:complexType name="tRestrictions">
+    <xsd:sequence>
+      <xsd:element ref="restriction" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:element name="restriction" type="tRestriction"/>
+  <xsd:complexType name="tRestriction">
+    <xsd:attribute name="attribute" type="xsd:string" use="required"/>
+    <xsd:sequence>
+      <xsd:element ref="enumeration" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+    <xsd:attribute name="negate" type="xsd:boolean" use="optional"/>
+    <xsd:attribute name="required" type="xsd:boolean" use="optional"/>
+  </xsd:complexType>
+
+  <xsd:element name="enumeration" type="tEnumeration"/>
+  <xsd:complexType name="tEnumeration">
+    <xsd:sequence>
+      <xsd:attribute name="value" type="xsd:string"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:element name="operators" type="tOperators"/>
+  <xsd:complexType name="tOperators">
+    <xsd:sequence>
+      <xsd:element ref="operator" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:element name="operator" type="tOperator"/>
+  <xsd:complexType name="tOperator">
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:attribute name="attribute" type="xsd:string" use="required"/>
+    <xsd:sequence>
+      <xsd:element ref="parameter" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+
+  <xsd:element name="parameter" type="tParameter"/>
+  <xsd:complexType name="tParameter">
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:attribute name="value" type="xsd:string" use="optional"/>
+    <xsd:attribute name="attribute" type="xsd:string" use="optional"/>
+  </xsd:complexType>
+
+  <xsd:element name="message" type="tMessage"/>
+  <xsd:complexType name="tMessage">
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:sequence>
+      <xsd:element ref="parameter" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:element name="content" type="tContent"/>
+  <xsd:complexType name="tContent">
+    <xsd:attribute name="id" type="xsd:ID" use="required"/>
+    <xsd:attribute name="key" type="xsd:string" use="required"/>
+    <xsd:attribute name="attribute" type="xsd:string" use="optional"/>
+    <xsd:attribute name="value" type="xsd:string" use="optional"/>
+  </xsd:complexType>
+
+  <xsd:element name="allocations" type="tAllocations"/>
+  <xsd:complexType name="tAllocations">
+    <xsd:choice>
+      <xsd:sequence>
+        <xsd:element ref="request" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:sequence>
+      <xsd:sequence>
+        <xsd:element ref="release" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:sequence>
+    </xsd:choice>
+  </xsd:complexType>
+
+  <xsd:element name="request" type="tRequest"/>
+  <xsd:complexType name="tRequest">
+    <xsd:attribute name="id" type="xsd:ID" use="required"/>
+    <xsd:sequence>
+      <xsd:element ref="message" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:element name="release" type="tRelease"/>
+  <xsd:complexType name="tRelease">
+    <xsd:attribute name="request" type="xsd:IDREF" use="required"/>
+    <xsd:sequence>
+      <xsd:element ref="message" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+</xsd:schema>
+
