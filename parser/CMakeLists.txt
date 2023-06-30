@@ -49,27 +49,20 @@ endif()
 set(SINGLE_HEADER_PATH "${CMAKE_CURRENT_SOURCE_DIR}/${LIB_DIR}/${PROJECT_NAME}.h")
 message("-- Header location: ${SINGLE_HEADER_PATH}")
 
-# Check if 'bpmn++.h' already exists
 message("-- Create single header file")
 
 # Create output directory for the library
 file(MAKE_DIRECTORY ${LIB_DIR})
 
-# Create lists of all headers
-#set(HEADERS "${XML_DIR}/XMLObject.h")
-set(HEADERS "")
-include("${XML_DIR}/bpmnos/CMakeLists.txt")
-foreach(HEADER ${bpmnos_HEADERS})
-  list(APPEND HEADERS "${XML_DIR}/${HEADER}")
-endforeach()
-list(APPEND HEADERS "${SOURCE_DIR}/SequenceFlow.h")
-list(APPEND HEADERS "${SOURCE_DIR}/Node.h")
-list(APPEND HEADERS "${SOURCE_DIR}/Model.h")
+# Get lists of all headers and sources
+include("${SOURCE_DIR}/CMakeLists.txt")
+list(TRANSFORM bpmnos_HEADERS PREPEND "${SOURCE_DIR}/")
+list(TRANSFORM bpmnos_SOURCES PREPEND "${SOURCE_DIR}/")
 
 # Generate the single header file
 file(WRITE "${SINGLE_HEADER_PATH}" "// Automatically generated single header file\n")
 
-foreach(HEADER ${HEADERS})
+foreach(HEADER ${bpmnos_HEADERS})
   file(READ ${HEADER} HEADER_CONTENTS)
   string(REGEX REPLACE "#include \".*\"\n" "" HEADER_CONTENTS "${HEADER_CONTENTS}")
   file(APPEND "${SINGLE_HEADER_PATH}" "${HEADER_CONTENTS}")
@@ -91,18 +84,7 @@ endif()
 # Set the C++ standard
 set(CMAKE_CXX_STANDARD 20)
 
-# Create list of all sources for the library
-#set(SOURCES "${XML_DIR}/XMLObject.cpp")
-set(SOURCES "")
-include("${XML_DIR}/bpmnos/CMakeLists.txt")
-foreach(SOURCE ${bpmnos_SOURCES})
-  list(APPEND SOURCES "${XML_DIR}/${SOURCE}")
-endforeach()
-list(APPEND SOURCES "${SOURCE_DIR}/SequenceFlow.cpp")
-list(APPEND SOURCES "${SOURCE_DIR}/Node.cpp")
-list(APPEND SOURCES "${SOURCE_DIR}/Model.cpp")
-
-add_library(${PROJECT_NAME} STATIC ${SOURCES})
+add_library(${PROJECT_NAME} STATIC ${bpmnos_SOURCES})
 
 # Set optimization flags for the target based on the compiler
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")

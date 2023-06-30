@@ -5,13 +5,8 @@
 #include <vector>
 #include <string>
 #include <bpmn++.h>
-#include "Node.h"
-#include "SequenceFlow.h"
 
 namespace BPMNOS {
-
-class Node;
-class SequenceFlow;
 
 /**
  * @brief Represents a BPMN model with all its processes.
@@ -23,9 +18,12 @@ public:
   Model(const std::string& filename);
 
 public:
-  std::unique_ptr<BPMN::Node> createRootNode(XML::bpmn::tProcess& process) override;
-  std::unique_ptr<BPMN::Node> createChildNode(XML::bpmn::tFlowNode& flowNode, BPMN::Node* parentNode) override;
+  std::unique_ptr<BPMN::Process> createProcess(XML::bpmn::tProcess* process) override;
+  std::unique_ptr<BPMN::FlowNode> createActivity(XML::bpmn::tActivity* activity, BPMN::Scope* parent) override;
+  std::unique_ptr<BPMN::SequenceFlow> createSequenceFlow(XML::bpmn::tSequenceFlow* sequenceFlow, BPMN::Scope* scope) override;
+/*
   std::unique_ptr<BPMN::SequenceFlow> createSequenceFlow(XML::bpmn::tSequenceFlow& sequenceFlow, BPMN::Node* scope) override;
+*/
 };
 
 } // namespace BPMNOS
