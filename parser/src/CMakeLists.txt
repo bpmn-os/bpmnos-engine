@@ -7,10 +7,10 @@ list(APPEND bpmnos_SOURCES
   Status.cpp
   Gatekeeper.cpp
   Model.cpp
-#  RequestActivity.cpp
-#  ReleaseActivity.cpp
-#  ResourceActivity.cpp
-#  Job.cpp
+  JobShop.cpp
+  ResourceActivity.cpp
+  RequestActivity.cpp
+  ReleaseActivity.cpp
 # Timer.cpp: tParameter trigger
 # Recipient.cpp: tMessage message
 # Sender.cpp: tMessage message
@@ -20,8 +20,8 @@ list(APPEND bpmnos_HEADERS
   Status.h
   Gatekeeper.h
   Model.h
-#  RequestActivity.h
-#  ReleaseActivity.h
-#  ResourceActivity.h
-#  Job.h
+  JobShop.h
+  ResourceActivity.h
+  RequestActivity.h
+  ReleaseActivity.h
 )

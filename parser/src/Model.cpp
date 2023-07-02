@@ -1,6 +1,4 @@
 #include "Model.h"
-#include "Status.h"
-#include "Gatekeeper.h"
 
 using namespace BPMNOS;
 
@@ -10,48 +8,42 @@ Model::Model(const std::string& filename)
 }
 
 std::unique_ptr<BPMN::Process> Model::createProcess(XML::bpmn::tProcess* process) {
+  // bind status, restricitions, and operators to all processes
   return bind<BPMN::Process>(BPMN::Model::createProcess(process),std::make_unique<Status>(process));
 }
 
 std::unique_ptr<BPMN::FlowNode> Model::createActivity(XML::bpmn::tActivity* activity, BPMN::Scope* parent) {
-  return bind<BPMN::FlowNode>(BPMN::Model::createActivity(activity, parent),std::make_unique<Status>(activity));
+  // bind status, restricitions, and operators to all activities
+  auto node = bind<BPMN::FlowNode>(BPMN::Model::createActivity(activity, parent),std::make_unique<Status>(activity));
+  if ( auto jobShop = node->parent->represents<JobShop>(); jobShop ) {
+    // add node to job list of resource activity
+    jobShop->resourceActivity->jobs.push_back(node->as<BPMN::Activity>());
+  }
+  return node;
 }
 
 std::unique_ptr<BPMN::SequenceFlow> Model::createSequenceFlow(XML::bpmn::tSequenceFlow* sequenceFlow, BPMN::Scope* scope) {
+  // bind gatekeeper restricitions to all sequence flows
   return bind<BPMN::SequenceFlow>(BPMN::Model::createSequenceFlow(sequenceFlow, scope),std::make_unique<Gatekeeper>(sequenceFlow));
 }
 
-/*
-std::unique_ptr<BPMN::Node> Model::createChildNode(XML::bpmn::tFlowNode& flowNode, BPMN::Node* parentNode) {
-std::cout << "BPMNOS::Model:createChildNode" << std::endl;
-    if ( auto subProcess = flowNode.is<XML::bpmn::tSubProcess>(); subProcess ) {
-      if ( const auto& type = subProcess->getOptionalAttributeByName("type"); 
-           type.has_value() && type->get().xmlns == "https://bpmn.telematique.eu/resources" 
-      ) {
-        if ( (std::string)type->get() == "Resource" ) {
-          return std::make_unique<ResourceActivity>(*subProcess,parentNode);
+std::unique_ptr<BPMN::FlowNode> Model::createSubProcess(XML::bpmn::tSubProcess* subProcess, BPMN::Scope* parent) {
+  if ( const auto& type = subProcess->getOptionalAttributeByName("type"); 
+       type.has_value() && type->get().xmlns == "https://bpmn.telematique.eu/resources" 
+  ) {
+        if ( (std::string)type->get() == "JobShop" ) {
+          return std::make_unique<JobShop>(subProcess,parent);
+        }
+        else if ( (std::string)type->get() == "Resource" ) {
+          return std::make_unique<ResourceActivity>(subProcess,parent);
         }
         else if ( (std::string)type->get() == "Request" ) {
-          return std::make_unique<RequestActivity>(*subProcess,parentNode);
+          return std::make_unique<RequestActivity>(subProcess,parent);
         }
         else if ( (std::string)type->get() == "Release" ) {
-          return std::make_unique<ReleaseActivity>(*subProcess,parentNode);
+          return std::make_unique<ReleaseActivity>(subProcess,parent);
         }
-      }
-    }
-
-    if ( auto activity = flowNode.is<XML::bpmn::tActivity>(); activity ) {
-      if ( const auto& type = parentNode->element->getOptionalAttributeByName("type"); 
-         type.has_value() 
-         && type->get().xmlns == "https://bpmn.telematique.eu/resources" 
-         && (std::string)type->get() == "JobShop" 
-         && !activity->is<XML::bpmn::tSendTask>()
-         && !activity->is<XML::bpmn::tReceiveTask>()
-      ) {
-        return std::make_unique<Job>(*activity,parentNode);
-      }
-    }
-
-    return std::make_unique<Node>(flowNode,parentNode);
-};
-*/
+  }
+  // return regular subProcess in all other cases
+  return BPMN::Model::createSubProcess(subProcess, parent);
+}

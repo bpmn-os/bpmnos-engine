@@ -11,10 +11,9 @@
 
 namespace BPMNOS {
 
-
 class Status : public BPMN::ExtensionElements {
 public:
-  Status(XML::bpmn::tBaseElement* baseElement);
+  Status(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent=nullptr);
   std::vector< std::reference_wrapper<XML::bpmnos::tAttribute> > status;
   std::vector< std::reference_wrapper<XML::bpmnos::tRestriction> > restrictions;
   std::vector< std::reference_wrapper<XML::bpmnos::tOperator> > operators;

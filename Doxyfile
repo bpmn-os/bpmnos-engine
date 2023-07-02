@@ -1,0 +1,24 @@
+# Doxyfile configuration
+
+# Project information
+PROJECT_NAME      = bpmnos
+OUTPUT_DIRECTORY  = docs
+
+# Input sources
+INPUT             = /usr/local/include/bpmn++.h parser/src/ parser/lib/ parser/src/xml/ parser/src/xml/bpmnos/ README.md
+
+USE_MDFILE_AS_MAINPAGE = README.md
+
+OPTIMIZE_OUTPUT_FOR_C = YES
+MARKDOWN_SUPPORT      = YES
+BUILTIN_STL_SUPPORT   = YES
+SHOW_USED_FILES       = NO
+SHOW_FILES            = NO
+GENERATE_LATEX        = NO
+QUIET                 = YES
+WARN_IF_UNDOCUMENTED  = NO
+UML_LOOK              = YES
+COLLABORATION_GRAPH   = NO
+INCLUDE_GRAPH         = NO
+INCLUDED_BY_GRAPH     = NO
+SHOW_NAMESPACES       = NO

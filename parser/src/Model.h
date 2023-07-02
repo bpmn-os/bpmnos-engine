@@ -5,6 +5,12 @@
 #include <vector>
 #include <string>
 #include <bpmn++.h>
+#include "Status.h"
+#include "Gatekeeper.h"
+#include "JobShop.h"
+#include "ResourceActivity.h"
+#include "RequestActivity.h"
+#include "ReleaseActivity.h"
 
 namespace BPMNOS {
 
@@ -21,9 +27,7 @@ public:
   std::unique_ptr<BPMN::Process> createProcess(XML::bpmn::tProcess* process) override;
   std::unique_ptr<BPMN::FlowNode> createActivity(XML::bpmn::tActivity* activity, BPMN::Scope* parent) override;
   std::unique_ptr<BPMN::SequenceFlow> createSequenceFlow(XML::bpmn::tSequenceFlow* sequenceFlow, BPMN::Scope* scope) override;
-/*
-  std::unique_ptr<BPMN::SequenceFlow> createSequenceFlow(XML::bpmn::tSequenceFlow& sequenceFlow, BPMN::Node* scope) override;
-*/
+  std::unique_ptr<BPMN::FlowNode> createSubProcess(XML::bpmn::tSubProcess* subProcess, BPMN::Scope* parent) override;
 };
 
 } // namespace BPMNOS
