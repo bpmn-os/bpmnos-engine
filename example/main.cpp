@@ -35,35 +35,36 @@ int main(int argc, char **argv) {
       cout << " is executable and"; 
     }
 
-    cout << " has " << processNode->childNodes.size() << " child node(s)";  
+    cout << " has " << processNode->flowNodes.size() << " child node(s)";  
     cout << " and " << processNode->sequenceFlows.size() << " sequence flow(s) and starts with:";
     for ( auto& startNode : processNode->startNodes ) {
       cout << " " << startNode->id;
     }
     cout << "." << endl;
 
-    for ( auto& childNode : processNode->childNodes ) {
-      cout << "  - " << childNode->get<>()->className;
-      if ( childNode->id.size() ) {
-        cout << " with id '" << (string)childNode->id << "'";
+    for ( auto& flowNode : processNode->flowNodes ) {
+      cout << "  - " << flowNode->get<>()->className;
+      if ( flowNode->id.size() ) {
+        cout << " with id '" << (string)flowNode->id << "'";
       }
       else {
         cout << " without id";
       }
-      cout << " has " << childNode->childNodes.size() << " child node(s)";  
-      cout << ", " << childNode->incoming.size() << " incoming and " << childNode->outgoing.size() << " outgoing arc(s)." << endl;
-      for ( auto& incoming : childNode->incoming ) {
+      cout << " has ";
+      if ( auto scope = flowNode->represents<BPMN::Scope>(); scope ) {
+        cout << scope->flowNodes.size() << " child node(s), ";
+      }
+      cout << flowNode->incoming.size() << " incoming and " << flowNode->outgoing.size() << " outgoing arc(s)." << endl;
+      for ( auto& incoming : flowNode->incoming ) {
         cout << "    - from node " << (std::string)incoming->source->id << endl;
       }
-      for ( auto& outgoing : childNode->outgoing ) {
+      for ( auto& outgoing : flowNode->outgoing ) {
         cout << "    - to node " << (std::string)outgoing->target->id << endl;
       }
     }
-
-    for ( XML::bpmnos::tAttribute& attribute : processNode->as<Node>()->status ) {
-        cout << "  - Attribute '" << (std::string)attribute.getRequiredAttributeByName("id") << "' of type '" << (std::string)attribute.getRequiredAttributeByName("type") << "' has name '" << (std::string)attribute.getRequiredAttributeByName("name") << "'" << endl;
+    for ( XML::bpmnos::tAttribute& attribute : processNode->extensionElements->as<Status>()->status ) {
+        cout << "  - Attribute '" << (std::string)attribute.id << "' of type '" << (std::string)attribute.type << "' has name '" << (std::string)attribute.name << "'" << endl;
     }
-
   }
 
   return 0;

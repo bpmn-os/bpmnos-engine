@@ -64,7 +64,7 @@ file(WRITE "${SINGLE_HEADER_PATH}" "// Automatically generated single header fil
 
 foreach(HEADER ${bpmnos_HEADERS})
   file(READ ${HEADER} HEADER_CONTENTS)
-  string(REGEX REPLACE "#include \".*\"\n" "" HEADER_CONTENTS "${HEADER_CONTENTS}")
+  string(REGEX REPLACE "#include \"[^\"]*\"\n" "" HEADER_CONTENTS "${HEADER_CONTENTS}")
   file(APPEND "${SINGLE_HEADER_PATH}" "${HEADER_CONTENTS}")
 endforeach()
 

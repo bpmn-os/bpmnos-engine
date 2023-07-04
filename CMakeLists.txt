@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.26.4)
 
 project(bpmnos)
 
+include_directories("${PROJECT_SOURCE_DIR}/include")
 add_subdirectory(parser)
 
 # Generate the documentation

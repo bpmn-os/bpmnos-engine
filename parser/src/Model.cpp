@@ -1,4 +1,6 @@
 #include "Model.h"
+#include "MessageTaskSubstitution.h"
+#include <iostream>
 
 using namespace BPMNOS;
 
@@ -47,3 +49,15 @@ std::unique_ptr<BPMN::FlowNode> Model::createSubProcess(XML::bpmn::tSubProcess* 
   // return regular subProcess in all other cases
   return BPMN::Model::createSubProcess(subProcess, parent);
 }
+
+// TODO
+std::unique_ptr<BPMN::FlowNode> Model::createTask(XML::bpmn::tTask* task, BPMN::Scope* parent) {
+  if ( /*( parent->represents<RequestActivity>() || parent->represents<ReleaseActivity>() ) 
+       && */( task->is<XML::bpmn::tSendTask>() || task->is<XML::bpmn::tReceiveTask>() ) 
+  ) {
+    return std::make_unique<MessageTaskSubstitution>(MessageTaskSubstitution::substitute(task,parent),parent);
+///std::cout << substitutionString(task,parent) << std::endl;
+  }
+  return BPMN::Model::createTask(task, parent);
+}
+

@@ -11,6 +11,7 @@ list(APPEND bpmnos_SOURCES
   ResourceActivity.cpp
   RequestActivity.cpp
   ReleaseActivity.cpp
+  MessageTaskSubstitution.cpp
 # Timer.cpp: tParameter trigger
 # Recipient.cpp: tMessage message
 # Sender.cpp: tMessage message
@@ -24,4 +25,5 @@ list(APPEND bpmnos_HEADERS
   ResourceActivity.h
   RequestActivity.h
   ReleaseActivity.h
+  MessageTaskSubstitution.h
 )
