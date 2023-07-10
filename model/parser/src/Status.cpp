@@ -2,7 +2,7 @@
 
 using namespace BPMNOS;
 
-Status::Status(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent)
+Status::Status(XML::bpmn::tBaseElement* baseElement, [[maybe_unused]] BPMN::Scope* parent)
   : BPMN::ExtensionElements( baseElement ) 
   , status( get<XML::bpmnos::tStatus,XML::bpmnos::tAttribute>() )
   , restrictions( get<XML::bpmnos::tRestrictions,XML::bpmnos::tRestriction>() )

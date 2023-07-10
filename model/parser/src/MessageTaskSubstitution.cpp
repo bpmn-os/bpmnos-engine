@@ -10,8 +10,8 @@ using namespace BPMNOS;
 
 
 MessageTaskSubstitution::MessageTaskSubstitution(std::unique_ptr<XML::XMLObject> substitutionRoot, BPMN::Scope* parent)
-  : BPMN::SubProcess(getSubProcess(substitutionRoot.get()),parent)
-  , BPMN::Node(getSubProcess(substitutionRoot.get()))
+  : BPMN::Node(getSubProcess(substitutionRoot.get()))
+  , BPMN::SubProcess(getSubProcess(substitutionRoot.get()),parent)
 {
   root = std::move(substitutionRoot);
 }

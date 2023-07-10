@@ -73,14 +73,17 @@ set(CMAKE_CXX_STANDARD 20)
 
 add_library(${PROJECT_NAME} STATIC ${bpmnos_SOURCES})
 
-# Set optimization flags for the target based on the compiler
-if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-  target_compile_options(${PROJECT_NAME} PRIVATE -O3)
-elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-  target_compile_options(${PROJECT_NAME} PRIVATE -O3)
-elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-  target_compile_options(${PROJECT_NAME} PRIVATE /Ox)
-endif()
+target_compile_options(${PROJECT_NAME}
+  PRIVATE
+  -O3
+  -Werror
+  -pedantic-errors
+  -Wpedantic
+  -Wall
+  -Wextra
+  -Wconversion
+  -Wsign-conversion
+)
 
 # Install the header files
 install(FILES ${SINGLE_HEADER_PATH} DESTINATION include)
