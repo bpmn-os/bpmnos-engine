@@ -32,6 +32,13 @@ public:
     return true; 
   }  
 
+  template <typename T>
+  void applyOperators(std::vector<std::optional<T> >& values) const {
+    for ( auto operator_ : operators ) {
+      operator_->apply(values);
+    }
+  }
+
 protected:
   std::size_t parentSize;
   AttributeMap attributeMap; ///< Map allowing to look up attributes by their names.
