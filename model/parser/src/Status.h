@@ -5,18 +5,36 @@
 #include <vector>
 #include <string>
 #include <bpmn++.h>
-#include "xml/bpmnos/tStatus.h"
-#include "xml/bpmnos/tRestrictions.h"
-#include "xml/bpmnos/tOperators.h"
+#include "Attribute.h"
+#include "Restriction.h"
+#include "Operator.h"
 
 namespace BPMNOS {
 
+
 class Status : public BPMN::ExtensionElements {
 public:
-  Status(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent=nullptr);
-  std::vector< std::reference_wrapper<XML::bpmnos::tAttribute> > status;
-  std::vector< std::reference_wrapper<XML::bpmnos::tRestriction> > restrictions;
-  std::vector< std::reference_wrapper<XML::bpmnos::tOperator> > operators;
+  Status(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent = nullptr);
+  const BPMN::Scope* parent;
+  std::vector< std::unique_ptr<Attribute> > attributes;
+  std::vector< std::unique_ptr<Restriction> > restrictions;
+  std::vector< std::unique_ptr<Operator> > operators;
+
+  inline std::size_t size() const { return parentSize + attributes.size(); };
+
+  template <typename T>
+  bool isFeasible(const std::vector<std::optional<T> >& values) const {
+    for ( auto restriction : restrictions ) {
+      if ( !restriction->isSatisfied(values) ) {
+        return false; 
+      }
+    }
+    return true; 
+  }  
+
+protected:
+  std::size_t parentSize;
+  AttributeMap attributeMap; ///< Map allowing to look up attributes by their names.
 };
 
 } // namespace BPMNOS

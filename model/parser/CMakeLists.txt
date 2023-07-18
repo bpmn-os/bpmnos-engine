@@ -1,7 +1,3 @@
-cmake_minimum_required(VERSION 3.26.4)
-
-project(bpmnos-model)
-
 # Check dependencies
 find_library(XERCES_LIB xerces-c)
 if(NOT XERCES_LIB)
@@ -13,24 +9,10 @@ if(NOT SCHEMATICPP)
   message(FATAL_ERROR "schematic++ not found.\nDownload schematic++ from: https://github.com/rajgoel/schematicpp")
 endif()
 
-# Set folder for the library to be created
-set(LIB_DIR "lib" CACHE STRING "Library directory")
-message("-- Library will be created in folder: ${LIB_DIR}")
 
 # Set folder in which sources are located
-set(SOURCE_DIR "${PROJECT_SOURCE_DIR}/src" CACHE STRING "Source directory")
+set(SOURCE_DIR "${CMAKE_CURRENT_LIST_DIR}/src" CACHE STRING "Source directory")
 set(XML_DIR "${SOURCE_DIR}/xml" CACHE STRING "XML classes source directory")
-
-# Set output directories
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/${LIB_DIR})
-#set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR})
-
-find_program(CCACHE_FOUND "ccache")
-set(CCACHE_SUPPORT ON CACHE BOOL "Enable ccache support")
-if (CCACHE_FOUND AND CCACHE_SUPPORT)
-  set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "ccache")
-  set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK "ccache")
-endif()
 
 set(SCHEMATICPP_DIR ${CMAKE_CURRENT_BINARY_DIR}/schematicpp)
 set(SCHEMATICPP_OUTPUT_DIR ${SCHEMATICPP_DIR}/xml)
@@ -41,53 +23,13 @@ if(NOT EXISTS "${XML_DIR}")
   # Generate XML classes and headers
   execute_process(
     COMMAND ${SCHEMATICPP} -n bpmnos -o ${XML_DIR} -i xsd/BPMNOS.xsd
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/parser
   )
 endif()
 
-# Generate the single header file
-set(SINGLE_HEADER_PATH "${CMAKE_CURRENT_SOURCE_DIR}/${LIB_DIR}/${PROJECT_NAME}.h")
-message("-- Header location: ${SINGLE_HEADER_PATH}")
-
-message("-- Create single header file")
-
-# Create output directory for the library
-file(MAKE_DIRECTORY ${LIB_DIR})
-
 # Get lists of all headers and sources
 include("${SOURCE_DIR}/CMakeLists.txt")
-list(TRANSFORM bpmnos_HEADERS PREPEND "${SOURCE_DIR}/")
-list(TRANSFORM bpmnos_SOURCES PREPEND "${SOURCE_DIR}/")
+list(TRANSFORM bpmn_HEADERS PREPEND "${SOURCE_DIR}/")
+list(TRANSFORM bpmn_SOURCES PREPEND "${SOURCE_DIR}/")
 
-# Generate the single header file
-file(WRITE "${SINGLE_HEADER_PATH}" "// Automatically generated single header file\n")
-
-foreach(HEADER ${bpmnos_HEADERS})
-  file(READ ${HEADER} HEADER_CONTENTS)
-  string(REGEX REPLACE "#include \"[^\"]*\"\n" "" HEADER_CONTENTS "${HEADER_CONTENTS}")
-  file(APPEND "${SINGLE_HEADER_PATH}" "${HEADER_CONTENTS}")
-endforeach()
-
-# Set the C++ standard
-set(CMAKE_CXX_STANDARD 20)
-
-add_library(${PROJECT_NAME} STATIC ${bpmnos_SOURCES})
-
-target_compile_options(${PROJECT_NAME}
-  PRIVATE
-  -O3
-  -Werror
-  -pedantic-errors
-  -Wpedantic
-  -Wall
-  -Wextra
-  -Wconversion
-  -Wsign-conversion
-)
-
-# Install the header files
-install(FILES ${SINGLE_HEADER_PATH} DESTINATION include)
-
-# Install the library
-install(TARGETS ${PROJECT_NAME} ARCHIVE DESTINATION lib)
 

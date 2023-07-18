@@ -35,6 +35,19 @@
 		</xsd:restriction>
 	</xsd:simpleType>
 
+  <xsd:element name="decisions" type="tDecisions"/>
+  <xsd:complexType name="tDecisions">
+    <xsd:sequence>
+      <xsd:element ref="decisions" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:element name="decision" type="tDecision"/>
+  <xsd:complexType name="tDecision">
+    <xsd:attribute name="id" type="xsd:ID" use="required"/>
+    <xsd:attribute name="attribute" type="xsd:string" use="required"/>
+  </xsd:complexType>
+
   <xsd:element name="restrictions" type="tRestrictions"/>
   <xsd:complexType name="tRestrictions">
     <xsd:sequence>
@@ -44,10 +57,13 @@
 
   <xsd:element name="restriction" type="tRestriction"/>
   <xsd:complexType name="tRestriction">
+    <xsd:attribute name="id" type="xsd:ID" use="required"/>
     <xsd:attribute name="attribute" type="xsd:string" use="required"/>
     <xsd:sequence>
       <xsd:element ref="enumeration" minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
+    <xsd:attribute name="minInclusive" type="xsd:decimal" use="optional"/>
+    <xsd:attribute name="maxInclusive" type="xsd:decimal" use="optional"/>
     <xsd:attribute name="negate" type="xsd:boolean" use="optional"/>
     <xsd:attribute name="required" type="xsd:boolean" use="optional"/>
   </xsd:complexType>
@@ -55,7 +71,7 @@
   <xsd:element name="enumeration" type="tEnumeration"/>
   <xsd:complexType name="tEnumeration">
     <xsd:sequence>
-      <xsd:attribute name="value" type="xsd:string"/>
+      <xsd:attribute name="value" type="xsd:string" use="required"/>
     </xsd:sequence>
   </xsd:complexType>
 
@@ -68,6 +84,7 @@
 
   <xsd:element name="operator" type="tOperator"/>
   <xsd:complexType name="tOperator">
+    <xsd:attribute name="id" type="xsd:ID" use="required"/>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
     <xsd:attribute name="attribute" type="xsd:string" use="required"/>
     <xsd:sequence>
