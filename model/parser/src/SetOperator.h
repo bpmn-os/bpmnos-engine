@@ -27,7 +27,7 @@ public:
       // set value to given value
       switch ( attribute->type ) {
         case Attribute::Type::STRING :
-          values[attribute->index] = numeric<T>(stringRegistry((std::string)parameter->value));
+          values[attribute->index] = numeric<T>(stringRegistry(parameter->value->get().value));
           break;
         case Attribute::Type::BOOLEAN :
           values[attribute->index] = numeric<T>((bool)parameter->value);

@@ -36,16 +36,16 @@ std::unique_ptr<BPMN::FlowNode> Model::createSubProcess(XML::bpmn::tSubProcess* 
   if ( const auto& type = subProcess->getOptionalAttributeByName("type"); 
        type.has_value() && type->get().xmlns == "https://bpmn.telematique.eu/resources" 
   ) {
-    if ( (std::string)type->get() == "JobShop" ) {
+    if ( type->get().value == "JobShop" ) {
       return std::make_unique<JobShop>(subProcess,parent);
     }
-    else if ( (std::string)type->get() == "Resource" ) {
+    else if ( type->get().value == "Resource" ) {
       return std::make_unique<ResourceActivity>(subProcess,parent);
     }
-    else if ( (std::string)type->get() == "Request" ) {
+    else if ( type->get().value == "Request" ) {
       return std::make_unique<RequestActivity>(subProcess,parent);
     }
-    else if ( (std::string)type->get() == "Release" ) {
+    else if ( type->get().value == "Release" ) {
       return std::make_unique<ReleaseActivity>(subProcess,parent);
     }
     else {
@@ -61,7 +61,7 @@ std::unique_ptr<BPMN::FlowNode> Model::createTask(XML::bpmn::tTask* task, BPMN::
   if ( const auto& type = task->getOptionalAttributeByName("type"); 
        type.has_value() && type->get().xmlns == "https://bpmn.telematique.eu/execution" 
   ) {
-    if ( (std::string)type->get() == "Decision" ) {
+    if ( type->get().value == "Decision" ) {
       return std::make_unique<DecisionTask>(task,parent);
     }
     else {

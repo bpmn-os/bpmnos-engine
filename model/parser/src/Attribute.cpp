@@ -8,24 +8,24 @@ Attribute::Attribute(XML::bpmnos::tAttribute* attribute, const AttributeMap& att
   , id(attribute->id.value)
   , name(attribute->name.value)
 {
-  if ( (std::string)attribute->type == "xs:string" ) {
+  if ( attribute->type.value == "xs:string" ) {
     type = Type::STRING;
   }
-  else if ( (std::string)attribute->type == "xs:boolean" ) {
+  else if ( attribute->type.value == "xs:boolean" ) {
     type = Type::BOOLEAN;
   }
-  else if ( (std::string)attribute->type == "xs:integer" ) {
+  else if ( attribute->type.value == "xs:integer" ) {
     type = Type::INTEGER;
   }
-  else if ( (std::string)attribute->type == "xs:decimal" ) {
+  else if ( attribute->type.value == "xs:decimal" ) {
     type = Type::DECIMAL;
   }
 
   if ( attribute->weight.has_value() ) {
-    if ( (std::string)attribute->objective->get() == "maximize" ) {
+    if ( attribute->objective->get().value == "maximize" ) {
       weight = -(double)attribute->weight->get();
     }
-    else if ( (std::string)attribute->objective->get() == "minimize" ) {
+    else if ( (std::string_view)attribute->objective->get() == "minimize" ) {
       weight = (double)attribute->weight->get();
     }
     else {

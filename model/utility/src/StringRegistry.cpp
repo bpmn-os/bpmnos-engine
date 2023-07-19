@@ -2,7 +2,7 @@
 
 using namespace BPMNOS;
 
-std::string StringRegistry::operator[](long unsigned int i) {
+std::string_view StringRegistry::operator[](long unsigned int i) {
   return registeredStrings[i];
 }
 

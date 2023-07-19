@@ -2,6 +2,7 @@
 #define BPMNOS_StringRegistry_H
 
 #include <string>
+#include <string_view>
 #include <vector>
 #include <unordered_map>
 
@@ -14,8 +15,8 @@ namespace BPMNOS {
    * and retrieval of the index by string.
    */
   struct StringRegistry {
-    /// Operator to access a registered string by index
-    std::string operator[](long unsigned int i);
+    /// Operator providing read-access to a registered string by index
+    std::string_view operator[](long unsigned int i);
     /// Operator to register a string and return its index
     long unsigned int operator()(const std::string& string);
   private:

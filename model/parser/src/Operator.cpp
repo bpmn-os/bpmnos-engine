@@ -9,7 +9,7 @@ Operator::Operator(XML::bpmnos::tOperator* operator_, AttributeMap& attributeMap
   , attributeMap(attributeMap)
 {
   for ( XML::bpmnos::tParameter& parameter : element->getChildren<XML::bpmnos::tParameter>() ) {
-    parameterMap[(std::string)parameter.name] = std::make_unique<Parameter>(&parameter,attributeMap);
+    parameterMap[parameter.name.value] = std::make_unique<Parameter>(&parameter,attributeMap);
   }
 
   // set implementation to the specific operator

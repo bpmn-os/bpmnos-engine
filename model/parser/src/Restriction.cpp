@@ -41,7 +41,7 @@ Restriction::Restriction(XML::bpmnos::tRestriction* restriction, AttributeMap& a
     case Attribute::Type::STRING :
       for ( XML::bpmnos::tEnumeration& allowedValue : restriction->enumeration ) {
         std::get< std::vector< std::string > >(this->enumeration).push_back(
-          (std::string)allowedValue.getRequiredAttributeByName("value")
+          allowedValue.getRequiredAttributeByName("value").value
         );
       }
       break;

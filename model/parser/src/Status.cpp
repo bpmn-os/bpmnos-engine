@@ -19,7 +19,7 @@ Status::Status(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent)
 
   for ( XML::bpmnos::tAttribute& attribute : get<XML::bpmnos::tStatus,XML::bpmnos::tAttribute>() ) {
     attributes.push_back(std::make_unique<Attribute>(&attribute,attributeMap));
-    attributeMap[(std::string)attribute.name] = attributes.rbegin()->get();
+    attributeMap[attribute.name.value] = attributes.rbegin()->get();
   }
 
   for ( XML::bpmnos::tRestriction& restriction : get<XML::bpmnos::tRestrictions,XML::bpmnos::tRestriction>() ) {

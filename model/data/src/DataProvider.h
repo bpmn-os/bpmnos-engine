@@ -102,7 +102,7 @@ protected:
               status->attributes.begin(), 
               status->attributes.end(),
               [&attributeId](const std::reference_wrapper<XML::bpmnos::tAttribute>& attribute) {
-                return (std::string)attribute.get().id == attributeId;
+                return attribute.get().id.value == attributeId;
               }
             );
             return ( attributeIt != status->attributes.end() );
