@@ -33,7 +33,6 @@ public:
    * the function looks for the file in the list of folders provided in the folders parameter. 
    *
    * @param filename The name of the CSV file to read the data from.
-   * @param folders An optional list of folder paths where the CSV file may be located.
    */
   LookupTable(const std::string& filename);
 
