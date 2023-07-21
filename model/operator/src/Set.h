@@ -1,8 +1,8 @@
-#ifndef BPMNOS_SetOperator_H
-#define BPMNOS_SetOperator_H
+#ifndef BPMNOS_Set_H
+#define BPMNOS_Set_H
 
-#include "Attribute.h"
-#include "Parameter.h"
+#include "model/parser/src/Attribute.h"
+#include "model/parser/src/Parameter.h"
 #include "model/utility/src/Numeric.h"
 #include "model/utility/src/StringRegistry.h"
 
@@ -10,9 +10,9 @@ namespace BPMNOS {
 
 class Operator;
 
-class SetOperator {
+class Set {
 public:
-  SetOperator(Operator* base, Attribute* attribute);
+  Set(Operator* base, Attribute* attribute);
   const Operator* base;
   Attribute* attribute;
   Parameter* parameter;
@@ -49,4 +49,4 @@ public:
 
 } // namespace BPMNOS
 
-#endif // BPMNOS_SetOperator_H
+#endif // BPMNOS_Set_H

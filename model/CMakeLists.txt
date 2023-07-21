@@ -34,6 +34,9 @@ include("${PROJECT_SOURCE_DIR}/utility/CMakeLists.txt")
 # Get lists of all headers and sources of BPMN parser
 include("${PROJECT_SOURCE_DIR}/parser/CMakeLists.txt")
 
+# Get lists of all headers and sources of BPMN parser
+include("${PROJECT_SOURCE_DIR}/operator/CMakeLists.txt")
+
 #message(FATAL_ERROR "${bpmn_SOURCES}")
 
 # Get lists of all headers and sources of data reader
@@ -59,7 +62,7 @@ file(MAKE_DIRECTORY "${PROJECT_SOURCE_DIR}/${LIB_DIR}")
 # Generate the single header file
 file(WRITE "${SINGLE_HEADER_PATH}" "// Automatically generated single header file\n")
 
-foreach(HEADER ${utility_HEADERS} ${bpmn_HEADERS} ${data_HEADERS})
+foreach(HEADER ${utility_HEADERS} ${bpmn_HEADERS} ${operator_HEADERS} ${data_HEADERS})
   file(READ ${HEADER} HEADER_CONTENTS)
   string(REGEX REPLACE "#include \"[^\"]*\"\n" "" HEADER_CONTENTS "${HEADER_CONTENTS}")
   file(APPEND "${SINGLE_HEADER_PATH}" "${HEADER_CONTENTS}")
@@ -68,7 +71,7 @@ endforeach()
 # Set the C++ standard
 set(CMAKE_CXX_STANDARD 20)
 
-add_library(${PROJECT_NAME} STATIC ${utility_SOURCES} ${bpmn_SOURCES} ${data_SOURCES})
+add_library(${PROJECT_NAME} STATIC ${utility_SOURCES} ${bpmn_SOURCES} ${operator_SOURCES} ${data_SOURCES})
 
 # Delete xml directory when running `make clean`
 set_property(
@@ -80,10 +83,11 @@ set_property(
 
 target_compile_options(${PROJECT_NAME}
   PRIVATE
-  -O3
+#  -O3
   -Werror
-  -Wno-error=unused-parameter
-  -Wno-error=unused-variable
+  -fmax-errors=1 # Remove
+  -Wno-error=unused-parameter # Remove
+  -Wno-error=unused-variable # Remove
   -pedantic-errors
   -Wpedantic
   -Wall

@@ -10,8 +10,6 @@ list(APPEND bpmn_SOURCES
   Parameter.cpp
   Restriction.cpp
   Operator.cpp
-  UnsetOperator.cpp
-  SetOperator.cpp
   Status.cpp
   Gatekeeper.cpp
   Model.cpp
@@ -31,8 +29,6 @@ list(APPEND bpmn_HEADERS
   Parameter.h
   Restriction.h
   Operator.h
-  UnsetOperator.h
-  SetOperator.h
   Status.h
   Gatekeeper.h
   Model.h

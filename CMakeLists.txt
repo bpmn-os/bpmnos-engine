@@ -37,11 +37,24 @@ include_directories(
   ${csv_SOURCE_DIR}/single_include 
 )
 
-# Define the clean target
-#add_custom_target(clean
-#    COMMAND ${CMAKE_COMMAND} -E echo "Cleaning..."
-#    COMMENT "Cleaning"
-#)
+# ExprTK dependency
+FetchContent_Declare(
+        exprtk
+        GIT_REPOSITORY https://github.com/ArashPartow/exprtk/
+        GIT_TAG 0.0.1
+)
+
+FetchContent_GetProperties(exprtk)
+if (NOT exprtk_POPULATED)
+    FetchContent_Populate(exprtk)
+    add_library(exprtk INTERFACE)
+    # by using the SYSTEM flag the compiler ignores any warnings of the library
+endif ()
+include_directories(
+  SYSTEM INTERFACE 
+  ${exprtk_SOURCE_DIR}
+)
+#target_link_libraries(${PROJECT_NAME} exprtk)
 
 add_subdirectory(model)
 add_subdirectory(engine)

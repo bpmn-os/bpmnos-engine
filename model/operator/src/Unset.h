@@ -1,15 +1,15 @@
-#ifndef BPMNOS_UnsetOperator_H
-#define BPMNOS_UnsetOperator_H
+#ifndef BPMNOS_Unset_H
+#define BPMNOS_Unset_H
 
-#include "Attribute.h"
+#include "model/parser/src/Attribute.h"
 
 namespace BPMNOS {
 
 class Operator;
 
-class UnsetOperator {
+class Unset {
 public:
-  UnsetOperator(Operator* base, Attribute* attribute);
+  Unset(Operator* base, Attribute* attribute);
   const Operator* base;
   Attribute* attribute;
 
@@ -21,4 +21,4 @@ public:
 
 } // namespace BPMNOS
 
-#endif // BPMNOS_UnsetOperator_H
+#endif // BPMNOS_Unset_H

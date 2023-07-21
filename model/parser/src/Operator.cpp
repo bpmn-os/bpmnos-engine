@@ -15,10 +15,10 @@ Operator::Operator(XML::bpmnos::tOperator* operator_, AttributeMap& attributeMap
   // set implementation to the specific operator
   std::string& operatorType = element->getRequiredAttributeByName("type").value;
   if ( operatorType == "set" ) {
-    implementation = std::make_unique<SetOperator>(this,attribute);
+    implementation = std::make_unique<Set>(this,attribute);
   }
   else if ( operatorType == "unset" ) {
-    implementation = std::make_unique<UnsetOperator>(this,attribute);
+    implementation = std::make_unique<Unset>(this,attribute);
   }
 
 }
