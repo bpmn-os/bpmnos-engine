@@ -37,7 +37,14 @@ Expression::Expression(Operator* base, Attribute* attribute)
   symbolTable.get_variable_list(variables);
   // Create bindings of expression variables to attributes. 
   for ( auto variable : variables ) {
-    Attribute* boundAttribute = base->attributeMap.at(variable);
+    Attribute* boundAttribute; 
+    try {
+      boundAttribute = base->attributeMap.at(variable);
+    }
+    catch (...) {
+      throw std::runtime_error("Expression: unknown expression variable of operator '" + base->id + "'");
+    }
+
     if ( boundAttribute->type == Attribute::Type::STRING ) {
       throw std::runtime_error("Expression: non-numeric variable '" + boundAttribute->name + "' of operator '" + base->id + "'");
     }
