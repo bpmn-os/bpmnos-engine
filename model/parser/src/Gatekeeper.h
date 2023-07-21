@@ -5,15 +5,26 @@
 #include <vector>
 #include <string>
 #include <bpmn++.h>
-#include "xml/bpmnos/tRestrictions.h"
+#include "Restriction.h"
 
 namespace BPMNOS {
 
 
 class Gatekeeper : public BPMN::ExtensionElements {
 public:
-  Gatekeeper(XML::bpmn::tBaseElement* baseElement);
-  std::vector< std::reference_wrapper<XML::bpmnos::tRestriction> > restrictions;
+  Gatekeeper(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent);
+  const BPMN::Scope* parent;
+  std::vector< std::unique_ptr<Restriction> > restrictions;
+
+  template <typename T>
+  bool restrictionsSatisfied(const std::vector<std::optional<T> >& values) const {
+    for ( auto restriction : restrictions ) {
+      if ( !restriction->isSatisfied(values) ) {
+        return false; 
+      }
+    }
+    return true; 
+  }  
 };
 
 } // namespace BPMNOS

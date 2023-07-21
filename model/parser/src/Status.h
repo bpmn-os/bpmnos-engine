@@ -16,6 +16,8 @@ class Status : public BPMN::ExtensionElements {
 public:
   Status(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent = nullptr);
   const BPMN::Scope* parent;
+  AttributeMap attributeMap; ///< Map allowing to look up attributes by their names.
+
   std::vector< std::unique_ptr<Attribute> > attributes;
   std::vector< std::unique_ptr<Restriction> > restrictions;
   std::vector< std::unique_ptr<Operator> > operators;
@@ -41,7 +43,6 @@ public:
 
 protected:
   std::size_t parentSize;
-  AttributeMap attributeMap; ///< Map allowing to look up attributes by their names.
 };
 
 } // namespace BPMNOS

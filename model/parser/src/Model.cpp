@@ -29,7 +29,7 @@ std::unique_ptr<BPMN::FlowNode> Model::createActivity(XML::bpmn::tActivity* acti
 
 std::unique_ptr<BPMN::SequenceFlow> Model::createSequenceFlow(XML::bpmn::tSequenceFlow* sequenceFlow, BPMN::Scope* scope) {
   // bind gatekeeper restricitions to all sequence flows
-  return bind<BPMN::SequenceFlow>(BPMN::Model::createSequenceFlow(sequenceFlow, scope),std::make_unique<Gatekeeper>(sequenceFlow));
+  return bind<BPMN::SequenceFlow>(BPMN::Model::createSequenceFlow(sequenceFlow, scope),std::make_unique<Gatekeeper>(sequenceFlow,scope));
 }
 
 std::unique_ptr<BPMN::FlowNode> Model::createSubProcess(XML::bpmn::tSubProcess* subProcess, BPMN::Scope* parent) {
