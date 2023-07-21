@@ -5,7 +5,7 @@
 #include <vector>
 #include <string>
 #include <bpmn++.h>
-#include "xml/bpmnos/tAttribute.h"
+#include "model/parser/src/xml/bpmnos/tAttribute.h"
 
 namespace BPMNOS {
 

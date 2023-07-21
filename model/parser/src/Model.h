@@ -5,8 +5,8 @@
 #include <vector>
 #include <string>
 #include <bpmn++.h>
-#include "Status.h"
-#include "Gatekeeper.h"
+#include "extensionElements/Status.h"
+#include "extensionElements/Gatekeeper.h"
 #include "JobShop.h"
 #include "ResourceActivity.h"
 #include "RequestActivity.h"

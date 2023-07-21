@@ -9,7 +9,7 @@
 #include "model/utility/src/Numeric.h"
 #include "model/utility/src/StringRegistry.h"
 #include "model/parser/src/xml/bpmnos/tAttribute.h"
-#include "model/parser/src/Status.h"
+#include "model/parser/src/extensionElements/Status.h"
 #include <cnl/all.h>
 #include <limits>
 

@@ -1,10 +1,10 @@
 #include "Status.h"
-#include "xml/bpmnos/tStatus.h"
-#include "xml/bpmnos/tAttribute.h"
-#include "xml/bpmnos/tRestrictions.h"
-#include "xml/bpmnos/tRestriction.h"
-#include "xml/bpmnos/tOperators.h"
-#include "xml/bpmnos/tOperator.h"
+#include "model/parser/src/xml/bpmnos/tStatus.h"
+#include "model/parser/src/xml/bpmnos/tAttribute.h"
+#include "model/parser/src/xml/bpmnos/tRestrictions.h"
+#include "model/parser/src/xml/bpmnos/tRestriction.h"
+#include "model/parser/src/xml/bpmnos/tOperators.h"
+#include "model/parser/src/xml/bpmnos/tOperator.h"
 
 using namespace BPMNOS;
 

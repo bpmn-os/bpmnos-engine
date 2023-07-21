@@ -8,7 +8,7 @@
 #include <bpmn++.h>
 #include "model/utility/src/Numeric.h"
 #include "model/utility/src/StringRegistry.h"
-#include "xml/bpmnos/tRestriction.h"
+#include "model/parser/src/xml/bpmnos/tRestriction.h"
 #include "Attribute.h"
 
 namespace BPMNOS {

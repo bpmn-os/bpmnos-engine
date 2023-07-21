@@ -1,8 +1,8 @@
 #ifndef BPMNOS_Lookup_H
 #define BPMNOS_Lookup_H
 
-#include "model/parser/src/Attribute.h"
-#include "model/parser/src/Parameter.h"
+#include "model/parser/src/extensionElements/Attribute.h"
+#include "model/parser/src/extensionElements/Parameter.h"
 #include "model/utility/src/Numeric.h"
 #include "model/utility/src/StringRegistry.h"
 #include "LookupTable.h"

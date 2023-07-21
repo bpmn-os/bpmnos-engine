@@ -1,5 +1,5 @@
 #include "Lookup.h"
-#include "model/parser/src/Operator.h"
+#include "model/parser/src/extensionElements/Operator.h"
 
 using namespace BPMNOS;
 

@@ -1,7 +1,7 @@
 #include "Gatekeeper.h"
 #include "Status.h"
-#include "xml/bpmnos/tRestrictions.h"
-#include "xml/bpmnos/tRestriction.h"
+#include "model/parser/src/xml/bpmnos/tRestrictions.h"
+#include "model/parser/src/xml/bpmnos/tRestriction.h"
 
 using namespace BPMNOS;
 

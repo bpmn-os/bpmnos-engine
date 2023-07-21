@@ -9,13 +9,13 @@
 #include <variant>
 #include "model/utility/src/Numeric.h"
 #include "model/utility/src/StringRegistry.h"
-#include "xml/bpmnos/tOperator.h"
+#include "model/parser/src/xml/bpmnos/tOperator.h"
 #include "Attribute.h"
 #include "Parameter.h"
-#include "model/operator/src/Unset.h"
-#include "model/operator/src/Set.h"
-#include "model/operator/src/Lookup.h"
-#include "model/operator/src/Expression.h"
+#include "operators/Unset.h"
+#include "operators/Set.h"
+#include "operators/Lookup.h"
+#include "operators/Expression.h"
 
 namespace BPMNOS {
 

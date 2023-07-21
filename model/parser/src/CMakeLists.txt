@@ -6,12 +6,20 @@ list(TRANSFORM bpmn_HEADERS PREPEND "xml/")
 list(TRANSFORM bpmn_SOURCES PREPEND "xml/")
 
 list(APPEND bpmn_SOURCES
-  Attribute.cpp
-  Parameter.cpp
-  Restriction.cpp
-  Operator.cpp
-  Status.cpp
-  Gatekeeper.cpp
+  extensionElements/Attribute.cpp
+  extensionElements/Parameter.cpp
+  extensionElements/Restriction.cpp
+  extensionElements/operators/Unset.cpp
+  extensionElements/operators/Set.cpp
+  extensionElements/operators/Lookup.cpp
+  extensionElements/operators/LookupTable.cpp
+  extensionElements/operators/Expression.cpp
+  extensionElements/Operator.cpp
+  extensionElements/Status.cpp
+  extensionElements/Gatekeeper.cpp
+# extensionElements/Timer.cpp: tParameter trigger
+# extensionElements/MessageContent.cpp: tMessage message
+# extensionElements/Decisions.cpp: tDecision decision
   Model.cpp
   DecisionTask.cpp
   JobShop.cpp
@@ -19,18 +27,20 @@ list(APPEND bpmn_SOURCES
   RequestActivity.cpp
   ReleaseActivity.cpp
   MessageTaskSubstitution.cpp
-# Timer.cpp: tParameter trigger
-# Recipient.cpp: tMessage message
-# Sender.cpp: tMessage message
 )
 
 list(APPEND bpmn_HEADERS
-  Attribute.h
-  Parameter.h
-  Restriction.h
-  Operator.h
-  Status.h
-  Gatekeeper.h
+  extensionElements/Attribute.h
+  extensionElements/Parameter.h
+  extensionElements/Restriction.h
+  extensionElements/operators/Unset.h
+  extensionElements/operators/Set.h
+  extensionElements/operators/Lookup.h
+  extensionElements/operators/LookupTable.h
+  extensionElements/operators/Expression.h
+  extensionElements/Operator.h
+  extensionElements/Status.h
+  extensionElements/Gatekeeper.h
   Model.h
   DecisionTask.h
   JobShop.h

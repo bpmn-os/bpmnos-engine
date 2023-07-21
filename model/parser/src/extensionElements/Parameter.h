@@ -7,7 +7,7 @@
 #include <optional>
 #include <variant>
 #include <bpmn++.h>
-#include "xml/bpmnos/tParameter.h"
+#include "model/parser/src/xml/bpmnos/tParameter.h"
 #include "Attribute.h"
 
 namespace BPMNOS {

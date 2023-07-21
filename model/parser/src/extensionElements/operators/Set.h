@@ -1,8 +1,8 @@
 #ifndef BPMNOS_Set_H
 #define BPMNOS_Set_H
 
-#include "model/parser/src/Attribute.h"
-#include "model/parser/src/Parameter.h"
+#include "model/parser/src/extensionElements/Attribute.h"
+#include "model/parser/src/extensionElements/Parameter.h"
 #include "model/utility/src/Numeric.h"
 #include "model/utility/src/StringRegistry.h"
 

@@ -1,7 +1,7 @@
 #ifndef BPMNOS_Unset_H
 #define BPMNOS_Unset_H
 
-#include "model/parser/src/Attribute.h"
+#include "model/parser/src/extensionElements/Attribute.h"
 
 namespace BPMNOS {
 
