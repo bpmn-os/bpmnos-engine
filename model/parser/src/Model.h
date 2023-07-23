@@ -5,12 +5,6 @@
 #include <vector>
 #include <string>
 #include <bpmn++.h>
-#include "extensionElements/Status.h"
-#include "extensionElements/Gatekeeper.h"
-#include "JobShop.h"
-#include "ResourceActivity.h"
-#include "RequestActivity.h"
-#include "ReleaseActivity.h"
 
 namespace BPMNOS {
 
@@ -29,6 +23,15 @@ public:
   std::unique_ptr<BPMN::SequenceFlow> createSequenceFlow(XML::bpmn::tSequenceFlow* sequenceFlow, BPMN::Scope* scope) override;
   std::unique_ptr<BPMN::FlowNode> createSubProcess(XML::bpmn::tSubProcess* subProcess, BPMN::Scope* parent) override;
   std::unique_ptr<BPMN::FlowNode> createTask(XML::bpmn::tTask* task, BPMN::Scope* parent) override;
+
+  std::unique_ptr<BPMN::FlowNode> createTimerBoundaryEvent(XML::bpmn::tBoundaryEvent* boundaryEvent, BPMN::Scope* parent) override;
+  std::unique_ptr<BPMN::FlowNode> createTimerCatchEvent(XML::bpmn::tCatchEvent* catchEvent, BPMN::Scope* parent) override;
+
+  std::unique_ptr<BPMN::FlowNode> createMessageBoundaryEvent(XML::bpmn::tBoundaryEvent* boundaryEvent, BPMN::Scope* parent) override;
+  std::unique_ptr<BPMN::FlowNode> createMessageCatchEvent(XML::bpmn::tCatchEvent* catchEvent, BPMN::Scope* parent) override;
+  std::unique_ptr<BPMN::FlowNode> createMessageThrowEvent(XML::bpmn::tThrowEvent* throwEvent, BPMN::Scope* parent) override;
+
+
 };
 
 } // namespace BPMNOS

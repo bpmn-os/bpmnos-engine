@@ -17,16 +17,18 @@ list(APPEND bpmn_SOURCES
   extensionElements/Operator.cpp
   extensionElements/Status.cpp
   extensionElements/Gatekeeper.cpp
-# extensionElements/Timer.cpp: tParameter trigger
-# extensionElements/MessageContent.cpp: tMessage message
-# extensionElements/Decisions.cpp: tDecision decision
-  Model.cpp
+  extensionElements/Timer.cpp
+  extensionElements/Content.cpp
+  extensionElements/Message.cpp
+  extensionElements/Decision.cpp
+  extensionElements/Decisions.cpp
   DecisionTask.cpp
   JobShop.cpp
   ResourceActivity.cpp
   RequestActivity.cpp
   ReleaseActivity.cpp
   MessageTaskSubstitution.cpp
+  Model.cpp
 )
 
 list(APPEND bpmn_HEADERS
@@ -41,11 +43,16 @@ list(APPEND bpmn_HEADERS
   extensionElements/Operator.h
   extensionElements/Status.h
   extensionElements/Gatekeeper.h
-  Model.h
+  extensionElements/Timer.h
+  extensionElements/Content.h
+  extensionElements/Message.h
+  extensionElements/Decision.h
+  extensionElements/Decisions.h
   DecisionTask.h
   JobShop.h
   ResourceActivity.h
   RequestActivity.h
   ReleaseActivity.h
   MessageTaskSubstitution.h
+  Model.h
 )
