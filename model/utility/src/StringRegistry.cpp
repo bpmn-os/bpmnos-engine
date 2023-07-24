@@ -2,6 +2,11 @@
 
 using namespace BPMNOS;
 
+StringRegistry::StringRegistry() {
+  (*this)("false");
+  (*this)("true");
+}
+
 std::string_view StringRegistry::operator[](long unsigned int i) {
   return registeredStrings[i];
 }

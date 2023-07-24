@@ -13,7 +13,7 @@ Message::Message(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent)
 {
   AttributeMap& attributeMap = parent->extensionElements->as<Status>()->attributeMap;
   for ( XML::bpmnos::tParameter& parameter : element->getChildren<XML::bpmnos::tParameter>() ) {
-    if ( parameter.name.value == "trigger" ) {
+    if ( parameter.name.value == "request" ) {
       request = std::make_unique<Parameter>(&parameter,attributeMap);
     }
   }

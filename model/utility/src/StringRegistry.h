@@ -15,9 +15,12 @@ namespace BPMNOS {
    * and retrieval of the index by string.
    */
   struct StringRegistry {
-    /// Operator providing read-access to a registered string by index
+    /// Constructor adds "false" and "true" at indices 0 and 1.
+    StringRegistry();
+
+    /// Operator providing read-access to a registered string by index.
     std::string_view operator[](long unsigned int i);
-    /// Operator to register a string and return its index
+    /// Operator to register a string and return its index.
     long unsigned int operator()(const std::string& string);
   private:
     std::vector<std::string> registeredStrings;

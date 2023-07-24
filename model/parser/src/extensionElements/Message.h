@@ -16,35 +16,9 @@ public:
   Message(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent);
   const BPMN::Scope* parent;
   std::string& name;
-//  std::optional< std::unique_ptr<Parameter> > recipient;
-//  std::optional< std::unique_ptr<Parameter> > sender;
-  std::optional< std::unique_ptr<Parameter> > request;
+  std::optional< std::unique_ptr<Parameter> > request; ///< Optional reference to request associated to message.
   std::vector< std::unique_ptr<Content> > contents;
   ContentMap contentMap; ///< Map allowing to look up contents by their keys.
-/*
-  template <typename T>
-  T receive(const std::vector<std::optional<T> >& values) const {
-    if ( trigger->attribute.has_value() && values[trigger->attribute->get().index].has_value() ) {
-      return values[trigger->attribute->get().index].value();
-    }
-    else if ( trigger->value.has_value() ) {
-      return numeric<T>( std::stod( trigger->value->get().value ) );
-    }
-    return values[0].value();
-  }  
-
-  template <typename T>
-  T send(const std::vector<std::optional<T> >& values) const {
-    if ( trigger->attribute.has_value() && values[trigger->attribute->get().index].has_value() ) {
-      return values[trigger->attribute->get().index].value();
-    }
-    else if ( trigger->value.has_value() ) {
-      return numeric<T>( std::stod( trigger->value->get().value ) );
-    }
-    return values[0].value();
-  }  
-
-*/
 };
 
 } // namespace BPMNOS
