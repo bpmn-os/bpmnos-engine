@@ -5,6 +5,7 @@
 #include <string_view>
 #include <vector>
 #include <unordered_map>
+#include <mutex>
 
 namespace BPMNOS {
 
@@ -19,12 +20,17 @@ namespace BPMNOS {
     StringRegistry();
 
     /// Operator providing read-access to a registered string by index.
-    std::string_view operator[](long unsigned int i);
+    std::string_view operator[](long unsigned int i) const;
     /// Operator to register a string and return its index.
     long unsigned int operator()(const std::string& string);
   private:
     std::vector<std::string> registeredStrings;
     std::unordered_map<std::string, long unsigned int> index;
+    std::mutex registryMutex;
+  public:
+    // Prevent use of copy constructor and assignment operator as mutex is not copyable
+    StringRegistry(const StringRegistry &) = delete;
+    StringRegistry &operator=(const StringRegistry &) = delete;
   };
 
   extern StringRegistry stringRegistry; // `stringRegistry` is a global variable
