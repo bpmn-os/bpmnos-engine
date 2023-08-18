@@ -15,8 +15,6 @@
 #include "RequestActivity.h"
 #include "ReleaseActivity.h"
 
-#include <iostream>
-
 using namespace BPMNOS;
 
 Model::Model(const std::string& filename)
@@ -25,38 +23,49 @@ Model::Model(const std::string& filename)
 }
 
 std::unique_ptr<BPMN::Process> Model::createProcess(XML::bpmn::tProcess* process) {
-  // bind attributes, restrictions, and operators to all processes
-  return bind<BPMN::Process>(
-    BPMN::Model::createProcess(process),
-    std::make_unique<Status>(process)
-  );
+  if ( process->extensionElements.has_value() ) {
+    // bind attributes, restrictions, and operators to all processes
+    return bind<BPMN::Process>(
+      BPMN::Model::createProcess(process),
+      std::make_unique<Status>(process)
+    );
+  }
+ 
+  return BPMN::Model::createProcess(process);
 }
 
 std::unique_ptr<BPMN::FlowNode> Model::createActivity(XML::bpmn::tActivity* activity, BPMN::Scope* parent) {
   auto node = BPMN::Model::createActivity(activity, parent);
-  if ( node->represents<DecisionTask>() ) {
-    // bind decisions, attributes, restrictions, and operators to all other activities
-    node = bind<BPMN::FlowNode>( node, std::make_unique<Decisions>(activity,parent) );
-  }
-  else {
-    // bind attributes, restrictions, and operators to all other activities
-    node = bind<BPMN::FlowNode>( node, std::make_unique<Status>(activity,parent) );
+
+  if ( activity->extensionElements.has_value() ) {
+    if ( node->represents<DecisionTask>() ) {
+      // bind decisions, attributes, restrictions, and operators to all other activities
+      node = bind<BPMN::FlowNode>( node, std::make_unique<Decisions>(activity,parent) );
+    }
+    else {
+      // bind attributes, restrictions, and operators to all other activities
+      node = bind<BPMN::FlowNode>( node, std::make_unique<Status>(activity,parent) );
+    }
   }
 
   if ( auto jobShop = node->parent->represents<JobShop>(); jobShop ) {
     // add node to job list of resource activity
     jobShop->resourceActivity->jobs.push_back(node->as<BPMN::Activity>());
-  }
+   }
 
   return node;
 }
 
 std::unique_ptr<BPMN::SequenceFlow> Model::createSequenceFlow(XML::bpmn::tSequenceFlow* sequenceFlow, BPMN::Scope* scope) {
-  // bind gatekeeper restrictions to all sequence flows
-  return bind<BPMN::SequenceFlow>(
-    BPMN::Model::createSequenceFlow(sequenceFlow, scope),
-    std::make_unique<Gatekeeper>(sequenceFlow,scope)
-  );
+  if ( sequenceFlow->extensionElements.has_value() ) {
+    // bind gatekeeper restrictions to all sequence flows
+    return bind<BPMN::SequenceFlow>(
+      BPMN::Model::createSequenceFlow(sequenceFlow, scope),
+      std::make_unique<Gatekeeper>(sequenceFlow,scope)
+    );
+  }
+
+  return BPMN::Model::createSequenceFlow(sequenceFlow, scope);
 }
 
 std::unique_ptr<BPMN::FlowNode> Model::createSubProcess(XML::bpmn::tSubProcess* subProcess, BPMN::Scope* parent) {
@@ -107,43 +116,63 @@ std::unique_ptr<BPMN::FlowNode> Model::createTask(XML::bpmn::tTask* task, BPMN::
 
 
 std::unique_ptr<BPMN::FlowNode> Model::createTimerBoundaryEvent(XML::bpmn::tBoundaryEvent* boundaryEvent, BPMN::Scope* parent) {
-  // bind timer
-  return bind<BPMN::FlowNode>(
-    BPMN::Model::createTimerBoundaryEvent(boundaryEvent,parent),
-    std::make_unique<Timer>(boundaryEvent,parent)
-  );
+  if ( boundaryEvent->extensionElements.has_value() ) {
+    // bind timer
+    return bind<BPMN::FlowNode>(
+      BPMN::Model::createTimerBoundaryEvent(boundaryEvent,parent),
+      std::make_unique<Timer>(boundaryEvent,parent)
+    );
+  }
+
+  return BPMN::Model::createTimerBoundaryEvent(boundaryEvent,parent);
 }
 
 std::unique_ptr<BPMN::FlowNode> Model::createTimerCatchEvent(XML::bpmn::tCatchEvent* catchEvent, BPMN::Scope* parent) {
-  // bind timer
-  return bind<BPMN::FlowNode>(
-    BPMN::Model::createTimerCatchEvent(catchEvent,parent),
-    std::make_unique<Timer>(catchEvent,parent)
-  );
+  if ( catchEvent->extensionElements.has_value() ) {
+    // bind timer
+    return bind<BPMN::FlowNode>(
+      BPMN::Model::createTimerCatchEvent(catchEvent,parent),
+      std::make_unique<Timer>(catchEvent,parent)
+    );
+  }
+
+  return BPMN::Model::createTimerCatchEvent(catchEvent,parent);
 }
 
 std::unique_ptr<BPMN::FlowNode> Model::createMessageBoundaryEvent(XML::bpmn::tBoundaryEvent* boundaryEvent, BPMN::Scope* parent) {
-  // bind message content
-  return bind<BPMN::FlowNode>(
-    BPMN::Model::createMessageBoundaryEvent(boundaryEvent,parent),
-    std::make_unique<MessageRecipient>(boundaryEvent,parent)
-  );
+  if ( boundaryEvent->extensionElements.has_value() ) {
+    // bind message content
+    return bind<BPMN::FlowNode>(
+      BPMN::Model::createMessageBoundaryEvent(boundaryEvent,parent),
+      std::make_unique<MessageRecipient>(boundaryEvent,parent)
+    );
+  }
+
+  return BPMN::Model::createMessageBoundaryEvent(boundaryEvent,parent);
 }
 
 std::unique_ptr<BPMN::FlowNode> Model::createMessageCatchEvent(XML::bpmn::tCatchEvent* catchEvent, BPMN::Scope* parent) {
-  // bind message content
-  return bind<BPMN::FlowNode>(
-    BPMN::Model::createMessageCatchEvent(catchEvent,parent),
-    std::make_unique<MessageRecipient>(catchEvent,parent)
-  );
+  if ( catchEvent->extensionElements.has_value() ) {
+    // bind message content
+    return bind<BPMN::FlowNode>(
+      BPMN::Model::createMessageCatchEvent(catchEvent,parent),
+      std::make_unique<MessageRecipient>(catchEvent,parent)
+    );
+  }
+
+  return BPMN::Model::createMessageCatchEvent(catchEvent,parent);
 }
 
 std::unique_ptr<BPMN::FlowNode> Model::createMessageThrowEvent(XML::bpmn::tThrowEvent* throwEvent, BPMN::Scope* parent) {
-  // bind message content
-  return bind<BPMN::FlowNode>(
-    BPMN::Model::createMessageThrowEvent(throwEvent,parent),
-    std::make_unique<MessageSender>(throwEvent,parent)
-  );
+  if ( throwEvent->extensionElements.has_value() ) {
+    // bind message content
+    return bind<BPMN::FlowNode>(
+      BPMN::Model::createMessageThrowEvent(throwEvent,parent),
+      std::make_unique<MessageSender>(throwEvent,parent)
+    );
+  }
+
+  return BPMN::Model::createMessageThrowEvent(throwEvent,parent);
 }
 
 void Model::createMessageFlows() {
