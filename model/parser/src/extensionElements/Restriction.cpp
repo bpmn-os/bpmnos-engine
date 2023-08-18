@@ -7,8 +7,12 @@ using namespace BPMNOS;
 Restriction::Restriction(XML::bpmnos::tRestriction* restriction, AttributeMap& attributeMap)
   : element(restriction)
   , id(restriction->id.value)
-  , attribute(attributeMap.at(restriction->attribute))
 {
+  if ( !attributeMap.contains(restriction->attribute) ) {
+    throw std::runtime_error("Restriction: unknown attribute '" + (std::string)restriction->attribute + "' for restriction '" + (std::string)restriction->id + "'");
+  } 
+  attribute = attributeMap.at(restriction->attribute);
+
   if ( restriction->negate.has_value() ) {
     negated = (bool)restriction->negate->get(); 
   }
@@ -39,33 +43,38 @@ Restriction::Restriction(XML::bpmnos::tRestriction* restriction, AttributeMap& a
 
   switch ( attribute->type ) {
     case Attribute::Type::STRING :
+      enumeration = std::vector< std::string >();
       for ( XML::bpmnos::tEnumeration& allowedValue : restriction->enumeration ) {
-        std::get< std::vector< std::string > >(this->enumeration).push_back(
+        std::get< std::vector< std::string > >(enumeration).push_back(
           allowedValue.getRequiredAttributeByName("value").value
         );
       }
       break;
     case Attribute::Type::BOOLEAN :
+      enumeration = std::vector< bool >();
       for ( XML::bpmnos::tEnumeration& allowedValue : restriction->enumeration ) {
-        std::get< std::vector< bool > >(this->enumeration).push_back(
+        std::get< Attribute::Type::BOOLEAN >(enumeration).push_back( 
           (bool)allowedValue.getRequiredAttributeByName("value")
         );
       }
       break;
     case Attribute::Type::INTEGER :
+      enumeration = std::vector< int >();
       for ( XML::bpmnos::tEnumeration& allowedValue : restriction->enumeration ) {
-        std::get< std::vector< int > >(this->enumeration).push_back(
+        std::get< std::vector< int > >(enumeration).push_back(
           (int)allowedValue.getRequiredAttributeByName("value")
         );
       }
       break;
     case Attribute::Type::DECIMAL :
+      enumeration = std::vector< double >();
       for ( XML::bpmnos::tEnumeration& allowedValue : restriction->enumeration ) {
-        std::get< std::vector< double > >(this->enumeration).push_back(
+        std::get< std::vector< double > >(enumeration).push_back(
           (double)allowedValue.getRequiredAttributeByName("value")
         );
       }
       break;
   }
+
 }
 

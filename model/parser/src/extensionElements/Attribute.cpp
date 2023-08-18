@@ -10,16 +10,30 @@ Attribute::Attribute(XML::bpmnos::tAttribute* attribute, const AttributeMap& att
 {
   if ( attribute->type.value == "xs:string" ) {
     type = Type::STRING;
+    if ( attribute->value.has_value() ) {
+      value = (std::string)attribute->value->get();
+    }
   }
   else if ( attribute->type.value == "xs:boolean" ) {
     type = Type::BOOLEAN;
+    if ( attribute->value.has_value() ) {
+      value = (bool)attribute->value->get();
+    }
   }
   else if ( attribute->type.value == "xs:integer" ) {
     type = Type::INTEGER;
+    if ( attribute->value.has_value() ) {
+      value = (int)attribute->value->get();
+    }
   }
   else if ( attribute->type.value == "xs:decimal" ) {
     type = Type::DECIMAL;
+    if ( attribute->value.has_value() ) {
+      value = (double)attribute->value->get();
+    }
   }
+
+
 
   if ( attribute->weight.has_value() ) {
     if ( attribute->objective->get().value == "maximize" ) {

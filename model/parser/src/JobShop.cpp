@@ -11,13 +11,12 @@ JobShop::JobShop(XML::bpmn::tSubProcess* subProcess, BPMN::Scope* parent)
 }
 
 ResourceActivity* JobShop::getResource() {
-  BPMN::SubProcess* ancestor = parent->as<SubProcess>();
-  while ( ancestor->parent ) {
+  BPMN::ChildNode* ancestor = parent->as<BPMN::ChildNode>();
+  while ( ancestor ) {
     if ( auto resourceActivity = ancestor->represents<ResourceActivity>(); resourceActivity ) {
       return resourceActivity;
     } 
-    ancestor = ancestor->parent->represents<SubProcess>();
+    ancestor = ancestor->parent->represents<ChildNode>();
   }
   throw std::logic_error("JobShop: cannot find resource");
 }
-

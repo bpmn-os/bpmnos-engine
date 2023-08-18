@@ -15,7 +15,7 @@ class Message : public BPMN::ExtensionElements {
 public:
   Message(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent);
   const BPMN::Scope* parent;
-  std::string& name;
+  std::string name;
   std::optional< std::unique_ptr<Parameter> > request; ///< Optional reference to request associated to message.
   std::vector< std::unique_ptr<Content> > contents;
   ContentMap contentMap; ///< Map allowing to look up contents by their keys.
