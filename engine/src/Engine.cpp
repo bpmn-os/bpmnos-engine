@@ -2,5 +2,5 @@
 
 using namespace BPMNOS;
 
-Engine::Engine(const DataProvider<number>* dataProvider) : dataProvider(dataProvider) {
+Engine::Engine(DataProvider* dataProvider) : dataProvider(dataProvider) {
 }

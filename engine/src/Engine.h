@@ -2,6 +2,7 @@
 #define BPMNOS_Engine_H
 
 #include "model/data/src/DataProvider.h"
+#include <cnl/all.h>
 
 namespace BPMNOS {
 
@@ -10,8 +11,8 @@ typedef cnl::scaled_integer< int64_t, cnl::power<-16> > number; // max: 1.4e14, 
 
 class Engine {
 public:
-  Engine(const DataProvider<number>* dataProvider);
-  const DataProvider<number>* dataProvider;
+  Engine(DataProvider* dataProvider);
+  DataProvider* dataProvider;
 };
 
 } // namespace BPMNOS

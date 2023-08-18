@@ -4,10 +4,10 @@ project(bpmnos-engine)
 
 # Set folder for the library to be created
 set(LIB_DIR "lib" CACHE STRING "Library directory")
-message("-- Library will be created in folder: ${PROJECT_SOURCE_DIR}/${LIB_DIR}")
+message("-- Library will be created in folder: ${CMAKE_SOURCE_DIR}/${LIB_DIR}")
 
 # Set output directories
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/${LIB_DIR})
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/${LIB_DIR})
 #set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR})
 
 find_program(CCACHE_FOUND "ccache")
@@ -20,7 +20,10 @@ endif()
 # Set the C++ standard
 set(CMAKE_CXX_STANDARD 20)
 
-add_library(${PROJECT_NAME} STATIC src/Engine.cpp)
+add_library(${PROJECT_NAME} STATIC 
+  src/Engine.cpp
+  src/Token.cpp
+)
 
 target_compile_options(${PROJECT_NAME}
   PRIVATE
