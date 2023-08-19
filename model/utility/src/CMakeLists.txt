@@ -3,6 +3,7 @@ list(APPEND utility_SOURCES
 )
 
 list(APPEND utility_HEADERS
+  Keywords.h
   StringRegistry.h
   Numeric.h
 )

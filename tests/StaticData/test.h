@@ -20,9 +20,9 @@ SCENARIO( "Trivial executable process", "[data][static]" ) {
 
           auto status = instance->process->extensionElements->represents<Status>();
           REQUIRE( status->attributes.size() == 2 );
-          REQUIRE( (std::string)status->attributes[0]->name == "instance" );
+          REQUIRE( (std::string)status->attributes[0]->name == Keyword::Instance );
           REQUIRE( status->attributes[0]->value == std::nullopt );
-          REQUIRE( (std::string)status->attributes[1]->name == "timestamp" );
+          REQUIRE( (std::string)status->attributes[1]->name == Keyword::Timestamp );
           REQUIRE( std::get<int>(status->attributes[1]->value.value()) == 0 );
 
           std::vector<std::optional<int> > values;
@@ -53,9 +53,9 @@ SCENARIO( "Trivial executable process", "[data][static]" ) {
 
           auto status = instance->process->extensionElements->represents<Status>();
           REQUIRE( status->attributes.size() == 2 );
-          REQUIRE( (std::string)status->attributes[0]->name == "instance" );
+          REQUIRE( (std::string)status->attributes[0]->name == Keyword::Instance );
           REQUIRE( status->attributes[0]->value == std::nullopt );
-          REQUIRE( (std::string)status->attributes[1]->name == "timestamp" );
+          REQUIRE( (std::string)status->attributes[1]->name == Keyword::Timestamp );
           REQUIRE( std::get<int>(status->attributes[1]->value.value()) == 0 );
 
           std::vector<std::optional<double> > values;

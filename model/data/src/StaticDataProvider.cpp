@@ -1,4 +1,5 @@
 #include "StaticDataProvider.h"
+#include "model/utility/src/Keywords.h"
 #include <sstream>
 #include <unordered_map>
 #include <algorithm>
@@ -51,7 +52,7 @@ void StaticDataProvider::readInstances(csv::CSVReader& reader) {
     if ( auto attributeIt = std::find_if(
            instanceData->attributes.begin(),
            instanceData->attributes.end(),
-           [&](const auto& e) { return e.second->name == "instance"; }
+           [&](const auto& e) { return e.second->name == Keyword::Instance; }
          ); instanceData->actualValues[ attributeIt->second ] == std::nullopt
     ) {
       // set instance attribute if not yet set
