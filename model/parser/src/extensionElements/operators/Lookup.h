@@ -61,7 +61,7 @@ public:
     std::optional<std::string> value = table->lookup(key, arguments);
 
     if ( value.has_value() ) {
-      // Mimic XML value to have consistent type conversion
+      // Use XML value to have consistent type conversion
       XML::Value givenValue(value.value());
       
       // set value to given value
