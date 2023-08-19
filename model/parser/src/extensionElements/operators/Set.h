@@ -24,27 +24,19 @@ public:
       values[attribute->index] = values[parameter->attribute->get().index];
     }
     else if ( parameter->value.has_value() ) {
-      // Mimic XML attribute to have consistent type conversion
-      XML::Attribute givenValue = {
-        .xmlns=attribute->element->xmlns,
-        .prefix=attribute->element->prefix,
-        .name=attribute->element->name,
-        .value = parameter->value->get().value
-      };
-      
       // set value to given value
       switch ( attribute->type ) {
         case Attribute::Type::STRING :
-          values[attribute->index] = stringRegistry((std::string)givenValue);
+          values[attribute->index] = stringRegistry((std::string)parameter->value->get());
           break;
         case Attribute::Type::BOOLEAN :
-          values[attribute->index] = (bool)givenValue;
+          values[attribute->index] = (bool)parameter->value->get();
           break;
         case Attribute::Type::INTEGER :
-          values[attribute->index] = (int)givenValue;
+          values[attribute->index] = (int)parameter->value->get();
           break;
         case Attribute::Type::DECIMAL :
-          values[attribute->index] = numeric<T>((double)givenValue);
+          values[attribute->index] = numeric<T>((double)parameter->value->get());
           break;
       }
     }

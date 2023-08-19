@@ -61,14 +61,8 @@ public:
     std::optional<std::string> value = table->lookup(key, arguments);
 
     if ( value.has_value() ) {
-      // Mimic XML attribute to have consistent type conversion
-      XML::Attribute givenValue = {
-        .xmlns=attribute->element->xmlns,
-        .prefix=attribute->element->prefix,
-        .name=attribute->element->name,
-        .value = *value
-      };
-
+      // Mimic XML value to have consistent type conversion
+      XML::Value givenValue(value.value());
       
       // set value to given value
       switch ( attribute->type ) {

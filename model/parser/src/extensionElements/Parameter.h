@@ -19,7 +19,7 @@ public:
 
   std::string& name;
   std::optional< std::reference_wrapper<Attribute> > attribute;
-  std::optional< std::reference_wrapper<XML::Attribute> > value;
+  std::optional< std::reference_wrapper<XML::Value> > value;
 
 protected:
   std::optional< std::reference_wrapper<Attribute> > getAttribute(AttributeMap& attributeMap);

@@ -30,7 +30,7 @@ std::unique_ptr<XML::XMLObject> MessageTaskSubstitution::substitute(XML::bpmn::t
   if ( !task->id.has_value() ) {
     throw std::runtime_error("MessageTaskSubstitution: task has no id");
   } 
-  std::string id = task->id->get();
+  std::string id = task->id->get().value;
 
   std::string taskString = task->stringify();
   if ( task->prefix.empty() ) {
@@ -53,11 +53,11 @@ std::unique_ptr<XML::XMLObject> MessageTaskSubstitution::substitute(XML::bpmn::t
   if ( !task->name.has_value() ) {
     throw std::runtime_error("MessageTaskSubstitution: task " + id + " has no name");
   } 
-  std::string taskName = strutil::to_lower(task->name->get());
+  std::string taskName = strutil::to_lower(task->name->get().value);
   taskName = std::regex_replace(taskName, std::regex("\n"), " "); 
 
   auto matchingMessage = [taskName](const auto& item) { 
-    return strutil::contains(taskName,strutil::to_lower(item.get().name)); 
+    return strutil::contains(taskName,strutil::to_lower(item.get().name.value)); 
   };
 
   struct Message { std::string reference; std::string xml; };
@@ -67,7 +67,7 @@ std::unique_ptr<XML::XMLObject> MessageTaskSubstitution::substitute(XML::bpmn::t
   if ( auto requestActivity = parent->represents<RequestActivity>(); requestActivity ) {
     for ( auto request : requestActivity->requests ) {
       if ( auto message = std::find_if(request.get().message.begin(), request.get().message.end(), matchingMessage); message != request.get().message.end() ) {
-        messages.push_back({request.get().id,message->get().stringify()});
+        messages.push_back({request.get().id.value,message->get().stringify()});
       }
       else {
         throw std::runtime_error("MessageTaskSubstitution: cannot find '" + taskName + "' for task " + id );
@@ -77,7 +77,7 @@ std::unique_ptr<XML::XMLObject> MessageTaskSubstitution::substitute(XML::bpmn::t
   else if ( auto releaseActivity = parent->represents<ReleaseActivity>(); releaseActivity ) {
     for ( auto release : releaseActivity->releases ) {
       if ( auto message = std::find_if(release.get().message.begin(), release.get().message.end(), matchingMessage); message != release.get().message.end() ) {
-        messages.push_back({release.get().request,message->get().stringify()});
+        messages.push_back({release.get().request.value,message->get().stringify()});
       }
       else {
         throw std::runtime_error("MessageTaskSubstitution: cannot find '" + taskName + "' for task " + id);

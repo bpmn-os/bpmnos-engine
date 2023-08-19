@@ -19,7 +19,7 @@ Status::Status(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent)
 
   for ( XML::bpmnos::tAttribute& attribute : get<XML::bpmnos::tStatus,XML::bpmnos::tAttribute>() ) {
     attributes.push_back(std::make_unique<Attribute>(&attribute,attributeMap));
-    attributeMap[attribute.name.value] = attributes.rbegin()->get();
+    attributeMap[attribute.name.value.value] = attributes.rbegin()->get();
   }
 
   for ( XML::bpmnos::tRestriction& restriction : get<XML::bpmnos::tRestrictions,XML::bpmnos::tRestriction>() ) {
@@ -27,7 +27,7 @@ Status::Status(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent)
       restrictions.push_back( std::make_unique<Restriction>( &restriction,  attributeMap ) );
     }
     catch ( ... ){
-      throw std::runtime_error("Status: illegal parameters for restriction '" + (std::string)restriction.id + "'");
+      throw std::runtime_error("Status: illegal parameters for restriction '" + (std::string)restriction.id.value + "'");
     }
   }
 
@@ -36,7 +36,7 @@ Status::Status(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent)
       operators.push_back( std::make_unique<Operator>( &operator_,  attributeMap ) );
     }
     catch ( ... ){
-      throw std::runtime_error("Status: illegal parameters for operator '" + (std::string)operator_.id + "'");
+      throw std::runtime_error("Status: illegal parameters for operator '" + (std::string)operator_.id.value + "'");
     }
   }
 }

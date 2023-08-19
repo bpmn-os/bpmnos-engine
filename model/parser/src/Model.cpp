@@ -69,20 +69,20 @@ std::unique_ptr<BPMN::FlowNode> Model::createSubProcess(XML::bpmn::tSubProcess* 
   if ( const auto& type = subProcess->getOptionalAttributeByName("type"); 
        type.has_value() && type->get().xmlns == "https://bpmn.telematique.eu/resources" 
   ) {
-    if ( type->get().value == "JobShop" ) {
+    if ( type->get().value.value == "JobShop" ) {
       return std::make_unique<JobShop>(subProcess,parent);
     }
-    else if ( type->get().value == "Resource" ) {
+    else if ( type->get().value.value == "Resource" ) {
       return std::make_unique<ResourceActivity>(subProcess,parent);
     }
-    else if ( type->get().value == "Request" ) {
+    else if ( type->get().value.value == "Request" ) {
       return std::make_unique<RequestActivity>(subProcess,parent);
     }
-    else if ( type->get().value == "Release" ) {
+    else if ( type->get().value.value == "Release" ) {
       return std::make_unique<ReleaseActivity>(subProcess,parent);
     }
     else {
-      throw std::runtime_error("Model: Illegal type '" + (std::string)type->get() + "'");
+      throw std::runtime_error("Model: Illegal type '" + (std::string)type->get().value + "'");
     }   
   }
   // return regular subProcess in all other cases
@@ -93,12 +93,12 @@ std::unique_ptr<BPMN::FlowNode> Model::createTask(XML::bpmn::tTask* task, BPMN::
   if ( const auto& type = task->getOptionalAttributeByName("type"); 
        type.has_value() && type->get().xmlns == "https://bpmn.telematique.eu/execution" 
   ) {
-    if ( type->get().value == "Decision" ) {
+    if ( type->get().value.value == "Decision" ) {
       // decisions are added with status
       return std::make_unique<DecisionTask>(task,parent);
     }
     else {
-      throw std::runtime_error("Model: Illegal type '" + (std::string)type->get() + "'");
+      throw std::runtime_error("Model: Illegal type '" + (std::string)type->get().value + "'");
     }   
   }
   else if ( ( parent->represents<RequestActivity>() || parent->represents<ReleaseActivity>() ) 

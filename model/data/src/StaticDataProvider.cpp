@@ -71,13 +71,8 @@ void StaticDataProvider::readInstances(csv::CSVReader& reader) {
 
     auto attribute = instanceData->attributes[attributeId];
  
-    // Mimic XML attribute to have consistent type conversion
-    XML::Attribute givenValue = {
-      .xmlns=attribute->element->xmlns,
-      .prefix=attribute->element->prefix,
-      .name=attribute->element->name,
-      .value = row[VALUE].get()
-    };
+    // Use XML value to have consistent type conversion
+    XML::Value givenValue((std::string)row[VALUE].get());
 
     if ( attribute->type == Attribute::Type::STRING ) {
       instanceData->actualValues[ attribute ] = (std::string)givenValue;

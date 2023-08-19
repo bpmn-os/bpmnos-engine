@@ -4,8 +4,8 @@ using namespace BPMNOS;
 
 Operator::Operator(XML::bpmnos::tOperator* operator_, AttributeMap& attributeMap)
   : element(operator_)
-  , id(operator_->id.value)
-  , attribute(attributeMap.at(operator_->attribute))
+  , id(operator_->id.value.value)
+  , attribute(attributeMap.at(operator_->attribute.value))
   , attributeMap(attributeMap)
 {
   for ( XML::bpmnos::tParameter& parameter : element->getChildren<XML::bpmnos::tParameter>() ) {
@@ -13,7 +13,7 @@ Operator::Operator(XML::bpmnos::tOperator* operator_, AttributeMap& attributeMap
   }
 
   // set implementation to the specific operator
-  std::string& operatorType = element->getRequiredAttributeByName("type").value;
+  std::string& operatorType = element->getRequiredAttributeByName("type").value.value;
   if ( operatorType == "set" ) {
     implementation = std::make_unique<Set>(this,attribute);
   }

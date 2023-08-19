@@ -10,7 +10,7 @@ MessageRecipient::MessageRecipient(XML::bpmn::tBaseElement* baseElement, BPMN::S
   if ( !name.empty() ) {
     AttributeMap& attributeMap = parent->extensionElements->as<Status>()->attributeMap;
     for ( XML::bpmnos::tParameter& parameter : element->getChildren<XML::bpmnos::tParameter>() ) {
-      if ( parameter.name.value == "sender" ) {
+      if ( parameter.name.value.value == "sender" ) {
         sender = std::make_unique<Parameter>(&parameter,attributeMap);
       }
     }

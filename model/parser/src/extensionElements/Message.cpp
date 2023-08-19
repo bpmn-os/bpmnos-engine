@@ -12,12 +12,12 @@ Message::Message(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent)
 {
   if ( baseElement->extensionElements.has_value() ) {
     if ( auto message = baseElement->is<XML::bpmn::tMessage>(); message ) {
-      name = message->name->get().value;
+      name = message->name->get().value.value;
     }
 
     AttributeMap& attributeMap = parent->extensionElements->as<Status>()->attributeMap;
     for ( XML::bpmnos::tParameter& parameter : element->getChildren<XML::bpmnos::tParameter>() ) {
-      if ( parameter.name.value == "request" ) {
+      if ( parameter.name.value.value == "request" ) {
         request = std::make_unique<Parameter>(&parameter,attributeMap);
       }
     }

@@ -30,13 +30,8 @@ public:
       }
       
       if ( value.has_value() ) {
-        // Mimic XML attribute to have consistent type conversion
-        XML::Attribute givenValue = {
-          .xmlns=content->attribute->get().element->xmlns,
-          .prefix=content->attribute->get().element->prefix,
-          .name=content->attribute->get().element->name,
-          .value = value.value()
-        };
+        // Use XML value to have consistent type conversion
+        XML::Value givenValue(value.value());
 
         switch ( content->attribute->get().index ) {
           case Attribute::Type::STRING:
