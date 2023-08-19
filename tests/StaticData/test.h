@@ -1,6 +1,6 @@
 SCENARIO( "Trivial executable process", "[data][static]" ) {
   const std::string modelFile = "StaticData/Executable_process.bpmn";
-  BPMNOS::Model model(modelFile);
+  REQUIRE_NOTHROW( BPMNOS::Model(modelFile) );
 
   GIVEN( "A single instance with no input values" ) {
     std::string csv =
