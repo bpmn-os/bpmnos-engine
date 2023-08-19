@@ -97,28 +97,28 @@ public:
   bool find(const T& value) const {
     switch ( attribute->type ) {
       case Attribute::Type::STRING :
-        for ( std::string& allowedValue : std::get< std::vector< std::string > >(this->enumeration) ) {
+        for ( std::string& allowedValue : std::get< std::vector< std::string > >(enumeration) ) {
           if ( value == numeric<T>(stringRegistry(allowedValue)) ) {
             return true;
           }
         }
         break;
       case Attribute::Type::BOOLEAN :
-        for ( bool allowedValue : std::get< std::vector< bool > >(this->enumeration) ) {
-          if ( value == numeric<T>(allowedValue) ) {
+        for ( bool allowedValue : std::get< std::vector< bool > >(enumeration) ) {
+          if ( value == allowedValue ) {
             return true;
           }
         }
         break;
       case Attribute::Type::INTEGER :
-        for ( int allowedValue : std::get< std::vector< int > >(this->enumeration) ) {
-          if ( value == numeric<T>(allowedValue) ) {
+        for ( int allowedValue : std::get< std::vector< int > >(enumeration) ) {
+          if ( value == allowedValue ) {
             return true;
           }
         }
         break;
       case Attribute::Type::DECIMAL :
-        for ( double allowedValue : std::get< std::vector< double > >(this->enumeration) ) {
+        for ( double allowedValue : std::get< std::vector< double > >(enumeration) ) {
           if ( value == numeric<T>(allowedValue) ) {
             return true;
           }

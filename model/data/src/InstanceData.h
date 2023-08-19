@@ -29,41 +29,41 @@ public:
    * @param process The BPMN process associated with the instance data.
    * @param id The unique identifier of the instance.
    */
-  InstanceData(const BPMN::Process& process, const std::string& id);
+  InstanceData(const BPMN::Process* process, const std::string& id);
 
-  const BPMN::Process& process;  ///< Reference to the associated BPMN process.
+  const BPMN::Process* process;  ///< Reference to the associated BPMN process.
   const std::string id;          ///< Unique identifier of the instance.
 
   /**
    * @brief Method returning the known attribute value and std::nullopt if the value is not yet known with certainty or if it is known to be undefined.
    */
-  Value getActualValue(const BPMNOS::Attribute* attribute);
+  Value getActualValue(const Attribute* attribute) const;
 
   /**
    * @brief Virtual method returning a prediction of the attribute value and std::nullopt if no prediction can be made or the value is predicted to be undefined.
    */
-  virtual Value getPredictedValue(const BPMNOS::Attribute* attribute) = 0;
+  virtual Value getPredictedValue(const Attribute* attribute) const = 0;
 
   /**
    * @brief Virtual method returning an assumption on the attribute value and std::nullopt if no assumption can be made or the value is assumed to be undefined.
    */
-  virtual Value getAssumedValue(const BPMNOS::Attribute* attribute) = 0;
+  virtual Value getAssumedValue(const Attribute* attribute) const = 0;
 
 protected:
   /**
    * @brief Map holding all the actual attribute values or std::nullopt if the respective value is not yet known with certainty or if it is known to be undefined.
    */
-  std::unordered_map< const BPMNOS::Attribute*, Value > actualValues;
+  std::unordered_map< const Attribute*, Value > actualValues;
 
   /**
    * @brief Map holding all the default attribute values provided in the model.
    */
-  std::unordered_map< const BPMNOS::Attribute*, Value > defaultValues;
+  std::unordered_map< const Attribute*, Value > defaultValues;
 
   /**
    * @brief Map providing access to all attributes by their id.
    */
-  std::unordered_map< std::string, const BPMNOS::Attribute* > attributes;
+  std::unordered_map< std::string, const Attribute* > attributes;
 };
 
   

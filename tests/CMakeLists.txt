@@ -21,15 +21,16 @@ set(CMAKE_CXX_STANDARD 20)
 add_executable(run_tests EXCLUDE_FROM_ALL main.cpp)
 
 include_directories(
-  SYSTEM  
   ${CMAKE_SOURCE_DIR}/lib
 )
+
 target_link_libraries(run_tests 
   PRIVATE 
-  Catch2::Catch2WithMain
+  pthread
   xerces-c
   bpmn++
   bpmnos-model
+  Catch2::Catch2WithMain
 )
 
 add_custom_target(
@@ -38,6 +39,7 @@ add_custom_target(
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/tests
     VERBATIM
 )
+
 add_dependencies(tests run_tests)
 add_dependencies(run_tests bpmnos-model)
 

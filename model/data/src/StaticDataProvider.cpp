@@ -1,15 +1,28 @@
 #include "StaticDataProvider.h"
-#include <csv.hpp>
+#include <sstream>
+#include <unordered_map>
+#include <algorithm>
 
 using namespace BPMNOS;
 
-StaticDataProvider::StaticDataProvider(const std::string& modelFile, const std::string& instanceDataFile)
-  : DataProvider(modelFile)
+StaticDataProvider::StaticDataProvider(const std::string& modelFile, const std::string& instanceFileOrString)
+  :  DataProvider(modelFile)
 {
   csv::CSVFormat format;
   format.trim({' ', '\t'});
-  csv::CSVReader reader = csv::CSVReader(instanceDataFile, format);
+  if (instanceFileOrString.find(",") == std::string::npos) {
+    csv::CSVReader reader(instanceFileOrString, format);
+    readInstances( reader );
+  }
+  else {
+    std::stringstream is;
+    is << instanceFileOrString;
+    csv::CSVReader reader(is, format);
+    readInstances( reader );
+  }
+}
 
+void StaticDataProvider::readInstances(csv::CSVReader& reader) {
   enum {PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE};
 
   for (auto &row : reader) {
@@ -24,7 +37,7 @@ StaticDataProvider::StaticDataProvider(const std::string& modelFile, const std::
       throw std::runtime_error("DataProvider: model has no process '" + processId + "'");
     }
 
-    auto& process = *processIt->get();
+    auto process = processIt->get();
 
     std::string instanceId = row[INSTANCE_ID].get();
     // find instance with respective identifier
@@ -34,6 +47,16 @@ StaticDataProvider::StaticDataProvider(const std::string& modelFile, const std::
     } 
 
     StaticInstanceData* instanceData = static_cast<StaticInstanceData*>(instances[instanceId].get());
+   
+    if ( auto attributeIt = std::find_if(
+           instanceData->attributes.begin(),
+           instanceData->attributes.end(),
+           [&](const auto& e) { return e.second->name == "instance"; }
+         ); instanceData->actualValues[ attributeIt->second ] == std::nullopt
+    ) {
+      // set instance attribute if not yet set
+      instanceData->actualValues[ attributeIt->second ] = instanceId;
+    }
 
     std::string attributeId = row[ATTRIBUTE_ID].get();
 

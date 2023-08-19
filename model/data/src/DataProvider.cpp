@@ -7,6 +7,8 @@ DataProvider::DataProvider(const std::string& modelFile)
 {
 }
 
+DataProvider::~DataProvider() {}
+
 const Model& DataProvider::getModel() const {
   return *model;
 }

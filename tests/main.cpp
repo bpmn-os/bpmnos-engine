@@ -3,5 +3,7 @@
 #include "bpmnos-model.h"
 
 using namespace BPMNOS;
+
 // Include all tests here
 #include "ParseElements/test.h"
+#include "StaticData/test.h"

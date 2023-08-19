@@ -33,8 +33,10 @@ namespace BPMNOS {
     StringRegistry &operator=(const StringRegistry &) = delete;
   };
 
-  extern StringRegistry stringRegistry; // `stringRegistry` is a global variable
 
 } // namespace BPMNOS
 
 #endif // BPMNOS_StringRegistry_H
+
+// `stringRegistry` is a global variable
+extern BPMNOS::StringRegistry stringRegistry; 

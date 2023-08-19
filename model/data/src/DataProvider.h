@@ -5,6 +5,8 @@
 #include <memory>
 #include <unordered_map>
 #include <bpmn++.h>
+#include "model/utility/src/Numeric.h"
+#include "model/utility/src/StringRegistry.h"
 #include "model/parser/src/Model.h"
 #include "InstanceData.h"
 
@@ -29,11 +31,33 @@ public:
   const std::unordered_map<std::string, std::unique_ptr< InstanceData > >& getInstances() const;
 
   template <typename T>
-  void addActualValues( const InstanceData* instance, const BPMN::Node* node, std::vector<std::optional<T> >& values ) const {}
+  void appendActualValues( const InstanceData* instance, const BPMN::Node* node, std::vector<std::optional<T> >& values ) const {
+    auto status = node->extensionElements->as<Status>();
+    for ( auto& attribute : status->attributes ) {
+      Value value = instance->getActualValue(attribute.get());
+      if ( value ) {
+        if ( attribute->type == Attribute::Type::STRING ) {
+          values.push_back( stringRegistry( std::get<std::string>(value.value()) ) );
+        }
+        else if ( attribute->type == Attribute::Type::BOOLEAN ) {
+          values.push_back( std::get<bool>(value.value()) );
+        }
+        else if ( attribute->type == Attribute::Type::INTEGER ) {
+          values.push_back( std::get<int>(value.value()) );
+        }
+        else if ( attribute->type == Attribute::Type::DECIMAL ) {
+          values.push_back( numeric<T>(std::get<double>(value.value())) );
+        }
+      }
+      else {
+        values.push_back(std::nullopt);
+      }
+    }
+  }
   template <typename T>
-  void addPredictedValues( const InstanceData* instance, const BPMN::Node* node, std::vector<std::optional<T> >& values ) const {}
+  void appendPredictedValues( const InstanceData* instance, const BPMN::Node* node, std::vector<std::optional<T> >& values ) const {}
   template <typename T>
-  void addAssumedValues( const InstanceData* instance, const BPMN::Node* node, std::vector<std::optional<T> >& values ) const {}
+  void appendAssumedValues( const InstanceData* instance, const BPMN::Node* node, std::vector<std::optional<T> >& values ) const {}
 
 protected:
   const std::unique_ptr<Model> model;  ///< Pointer to the BPMN model.

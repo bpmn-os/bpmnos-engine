@@ -3,6 +3,7 @@
 
 #include "DataProvider.h"
 #include "StaticInstanceData.h"
+#include <csv.hpp>
 
 namespace BPMNOS {
 
@@ -16,16 +17,16 @@ namespace BPMNOS {
  * */
 class StaticDataProvider : public DataProvider {
 public:
-/**
+  /**
    * @brief Constructor for StaticDataProvider.
    *
    * @param modelFile The file path to the BPMN model file.
-   * @param instanceDataFile The file path to the instance data file.
+   * @param instanceFileOrString The file path to the instance data file or a string containing the data.
    */
-  StaticDataProvider(const std::string& modelFile, const std::string& instanceDataFile);
-
+  StaticDataProvider(const std::string& modelFile, const std::string& instanceFileOrString);
+  ~StaticDataProvider() override = default;
 protected:
-//  std::unordered_map<std::string, BPMN::Process*> processes; ///< Map of processes defined in the model.
+  void readInstances(csv::CSVReader& reader);
 };
 
 } // namespace BPMNOS

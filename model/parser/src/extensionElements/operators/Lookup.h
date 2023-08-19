@@ -61,19 +61,28 @@ public:
     std::optional<std::string> value = table->lookup(key, arguments);
 
     if ( value.has_value() ) {
+      // Mimic XML attribute to have consistent type conversion
+      XML::Attribute givenValue = {
+        .xmlns=attribute->element->xmlns,
+        .prefix=attribute->element->prefix,
+        .name=attribute->element->name,
+        .value = *value
+      };
+
+      
       // set value to given value
       switch ( attribute->type ) {
         case Attribute::Type::STRING :
-          values[attribute->index] = numeric<T>(stringRegistry(*value));
+          values[attribute->index] = stringRegistry((std::string)givenValue);
           break;
         case Attribute::Type::BOOLEAN :
-          values[attribute->index] = numeric<T>( (*value == "true") );
+          values[attribute->index] = (bool)givenValue;
           break;
         case Attribute::Type::INTEGER :
-          values[attribute->index] = numeric<T>( std::stoi(*value) );
+          values[attribute->index] = (int)givenValue;
           break;
         case Attribute::Type::DECIMAL :
-          values[attribute->index] = numeric<T>( std::stod(*value) );
+          values[attribute->index] = numeric<T>((double)givenValue);
           break;
       }
     }

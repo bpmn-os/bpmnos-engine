@@ -14,7 +14,7 @@ class Attribute;
 
 typedef std::unordered_map<std::string, Attribute*> AttributeMap;
 
-typedef std::optional< std::variant< std::string_view, bool, int, double > > Value;
+typedef std::optional< std::variant< std::string, bool, int, double > > Value;
 
 class Attribute {
 public:

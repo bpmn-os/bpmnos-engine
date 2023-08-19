@@ -30,18 +30,26 @@ public:
       }
       
       if ( value.has_value() ) {
+        // Mimic XML attribute to have consistent type conversion
+        XML::Attribute givenValue = {
+          .xmlns=content->attribute->get().element->xmlns,
+          .prefix=content->attribute->get().element->prefix,
+          .name=content->attribute->get().element->name,
+          .value = value.value()
+        };
+
         switch ( content->attribute->get().index ) {
           case Attribute::Type::STRING:
-            values[content->attribute->get().index] = numeric<T>( stringRegistry(value.value()) );
+            values[content->attribute->get().index] = stringRegistry((std::string)givenValue);
           break;
           case Attribute::Type::BOOLEAN:
-            values[content->attribute->get().index] = numeric<T>( stringRegistry(value.value()) );
+            values[content->attribute->get().index] = stringRegistry((std::string)givenValue);
           break;
           case Attribute::Type::INTEGER:
-            values[content->attribute->get().index] = numeric<T>( std::stoi(value.value()) );
+            values[content->attribute->get().index] = (int)givenValue;
           break;
           case Attribute::Type::DECIMAL:
-            values[content->attribute->get().index] = numeric<T>( std::stod(value.value()) );
+            values[content->attribute->get().index] = numeric<T>((double)givenValue);
           break;
         }
       }

@@ -25,4 +25,4 @@ long unsigned int StringRegistry::operator()(const std::string& string) {
 }
 
 // Create global registry
-StringRegistry stringRegistry;
+StringRegistry stringRegistry = StringRegistry();
