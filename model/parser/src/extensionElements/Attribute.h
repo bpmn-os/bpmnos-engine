@@ -31,7 +31,7 @@ public:
  
   double weight; ///< Weight to be used for objective (assuming minimization). 
 
-  bool isImmutable; ///< Flag indicating whether attribute can be changed. 
+  bool isImmutable; ///< Flag indicating whether attribute value can be changed. 
 };
 
 } // namespace BPMNOS
