@@ -30,6 +30,8 @@ public:
   std::optional<number> value;
  
   double weight; ///< Weight to be used for objective (assuming minimization). 
+
+  bool isImmutable; ///< Flag indicating whether attribute can be changed. 
 };
 
 } // namespace BPMNOS

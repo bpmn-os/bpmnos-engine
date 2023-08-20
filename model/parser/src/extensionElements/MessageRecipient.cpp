@@ -18,6 +18,7 @@ MessageRecipient::MessageRecipient(XML::bpmn::tBaseElement* baseElement, BPMN::S
       if ( !content->attribute.has_value() ) {
         throw std::runtime_error("MessageRecipient: missing attribute for content '" + content->id + "'");
       }
+      content->attribute->get().isImmutable = false;
     }
   }
 }

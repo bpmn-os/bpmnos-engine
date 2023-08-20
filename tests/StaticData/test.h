@@ -21,8 +21,10 @@ SCENARIO( "Trivial executable process", "[data][static]" ) {
           auto status = instance->process->extensionElements->represents<Status>();
           REQUIRE( status->attributes.size() == 2 );
           REQUIRE( (std::string)status->attributes[0]->name == Keyword::Instance );
+          REQUIRE( status->attributes[0]->isImmutable == true );
           REQUIRE( status->attributes[0]->value == std::nullopt );
           REQUIRE( (std::string)status->attributes[1]->name == Keyword::Timestamp );
+          REQUIRE( status->attributes[1]->isImmutable == false );
           REQUIRE( status->attributes[1]->value.value() == 0 );
 
           Values values;
@@ -54,8 +56,10 @@ SCENARIO( "Trivial executable process", "[data][static]" ) {
           auto status = instance->process->extensionElements->represents<Status>();
           REQUIRE( status->attributes.size() == 2 );
           REQUIRE( (std::string)status->attributes[0]->name == Keyword::Instance );
+          REQUIRE( status->attributes[0]->isImmutable == true );
           REQUIRE( status->attributes[0]->value == std::nullopt );
           REQUIRE( (std::string)status->attributes[1]->name == Keyword::Timestamp );
+          REQUIRE( status->attributes[1]->isImmutable == false );
           REQUIRE( status->attributes[1]->value.value() == 0 );
 
           Values values;

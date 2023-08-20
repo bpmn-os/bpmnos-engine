@@ -21,5 +21,6 @@ Operator::Operator(XML::bpmnos::tOperator* operator_, AttributeMap& attributeMap
     implementation = std::make_unique<Unset>(this,attribute);
   }
 
+  attribute->isImmutable = false;
 }
 

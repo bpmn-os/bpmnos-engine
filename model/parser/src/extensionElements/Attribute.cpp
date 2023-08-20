@@ -1,4 +1,5 @@
 #include "Attribute.h"
+#include "model/utility/src/Keywords.h"
 
 using namespace BPMNOS;
 
@@ -39,4 +40,6 @@ Attribute::Attribute(XML::bpmnos::tAttribute* attribute, const AttributeMap& att
   else {
     weight = 0;
   }
+
+  isImmutable = (name != Keyword::Timestamp);
 }
