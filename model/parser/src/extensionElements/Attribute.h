@@ -7,14 +7,14 @@
 #include <variant>
 #include <bpmn++.h>
 #include "model/parser/src/xml/bpmnos/tAttribute.h"
+#include "model/utility/src/Value.h"
+#include "model/utility/src/Number.h"
 
 namespace BPMNOS {
 
 class Attribute;
 
 typedef std::unordered_map<std::string, Attribute*> AttributeMap;
-
-typedef std::optional< std::variant< std::string, bool, int, double > > Value;
 
 class Attribute {
 public:
@@ -26,11 +26,9 @@ public:
   std::string& id;
   std::string& name;
 
-  enum Type { STRING, BOOLEAN, INTEGER, DECIMAL };
-  Type type;
-
-  Value value;
-
+  ValueType type;
+  std::optional<number> value;
+ 
   double weight; ///< Weight to be used for objective (assuming minimization). 
 };
 

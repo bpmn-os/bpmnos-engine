@@ -22,12 +22,12 @@ public:
   /**
    * @brief Virtual method returning a prediction of the attribute value and std::nullopt if no prediction can be made or the value is predicted to be undefined.
    */
-  virtual Value getPredictedValue(const Attribute* attribute) const override;
+  virtual std::optional<number> getPredictedValue(const Attribute* attribute) const override;
 
   /**
    * @brief Virtual method returning an assumption on the attribute value and std::nullopt if no assumption can be made or the value is assumed to be undefined.
    */
-  virtual Value getAssumedValue(const Attribute* attribute) const override;
+  virtual std::optional<number> getAssumedValue(const Attribute* attribute) const override;
 };
 
 } // namespace BPMNOS

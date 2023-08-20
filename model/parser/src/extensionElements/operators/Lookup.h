@@ -3,7 +3,7 @@
 
 #include "model/parser/src/extensionElements/Attribute.h"
 #include "model/parser/src/extensionElements/Parameter.h"
-#include "model/utility/src/Numeric.h"
+#include "model/utility/src/Number.h"
 #include "model/utility/src/StringRegistry.h"
 #include "LookupTable.h"
 
@@ -23,7 +23,6 @@ public:
 
   LookupTable* table;
 
-
   static inline std::unordered_map< std::string, LookupTable > lookupTable = {};
   static inline LookupTable* getLookupTable(const std::string& filename) {
     if ( lookupTable.find(filename) == lookupTable.end() ) {
@@ -32,59 +31,25 @@ public:
     return &lookupTable[filename];
   };
 
-  template <typename T>
-  void execute(std::vector<std::optional<T> >& values) {
-
-    Arguments arguments;
-    for ( auto& [name,lookupAttribute] : lookups) {
-      if ( !values[lookupAttribute->index].has_value() ) {
-        // set attribute to undefined because required lookup value is not given
-        values[attribute->index] = std::nullopt;
-        return;
-      }
-
-      switch ( lookupAttribute->type ) {
-        case Attribute::Type::STRING :
-          arguments.push_back({ name, stringRegistry[ values[lookupAttribute->index] ] } );
-          break;
-        case Attribute::Type::BOOLEAN :
-          arguments.push_back({ name, (bool)values[lookupAttribute->index] } );
-          break;
-        case Attribute::Type::INTEGER :
-          arguments.push_back({ name, (int)values[lookupAttribute->index] } );
-          break;
-        case Attribute::Type::DECIMAL :
-          arguments.push_back({ name, (double)values[lookupAttribute->index] } );
-          break;
-      }   
-    }
-    std::optional<std::string> value = table->lookup(key, arguments);
-
-    if ( value.has_value() ) {
-      // Use XML value to have consistent type conversion
-      XML::Value givenValue(value.value());
-      
-      // set value to given value
-      switch ( attribute->type ) {
-        case Attribute::Type::STRING :
-          values[attribute->index] = stringRegistry((std::string)givenValue);
-          break;
-        case Attribute::Type::BOOLEAN :
-          values[attribute->index] = (bool)givenValue;
-          break;
-        case Attribute::Type::INTEGER :
-          values[attribute->index] = (int)givenValue;
-          break;
-        case Attribute::Type::DECIMAL :
-          values[attribute->index] = numeric<T>((double)givenValue);
-          break;
-      }
-    }
-    else {
-      // set value to undefined if no attribute with value is given and no explicit value is given
-      values[attribute->index] = std::nullopt;
-    }
-  }
+/**
+ * @brief Applies the lookup operator to update a status attribute.
+ *
+ * This function update a status attribute by querying a table with specified
+ * lookup attributes. It then updates a status attribute based on the lookup result.
+ * The function performs the following steps:
+ *
+ * - For each attribute to be looked up, it checks if the corresponding status
+ *   value is available. If not, it sets the target attribute to undefined and
+ *   returns.
+ * - It performs a lookup in a table using the specified lookup attributes.
+ * - If a lookup result is available, it updates the target attribute in the
+ *   status with the lookup value.
+ * - If no lookup result is available, it sets the target attribute in the status
+ *   to undefined (std::nullopt).
+ *
+ * @param status The status values to be updated.
+ */
+  void execute(Values& status) const;
 };
 
 } // namespace BPMNOS

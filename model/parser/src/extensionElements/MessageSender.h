@@ -8,7 +8,7 @@
 #include "Parameter.h"
 #include "Message.h"
 #include "model/utility/src/StringRegistry.h"
-#include "model/utility/src/Numeric.h"
+#include "model/utility/src/Number.h"
 
 namespace BPMNOS {
 
@@ -18,34 +18,23 @@ public:
   std::optional< std::unique_ptr<Parameter> > recipient; ///< Parameter indicating the receiving instance.
   std::vector< BPMN::CatchEvent* > allowedRecipients; ///< List of all potential recipients of the message.
 
-  template <typename T>
-  std::unordered_map< std::string, std::optional<std::string> > send(const std::vector<std::optional<T> >& values) const {
-    std::unordered_map< std::string, std::optional<std::string> > message;
-
-    for ( auto& content : contents ) {
-      if ( content->attribute.has_value() && values[content->attribute->get().index].has_value() ) {
-        switch ( content->attribute->get().index ) {
-          case Attribute::Type::STRING:
-            message[content->key] = stringRegistry[values[content->attribute->get().index].value()];
-            break;
-          case Attribute::Type::BOOLEAN:
-            message[content->key] = stringRegistry[values[content->attribute->get().index].value()];
-            break;
-          case Attribute::Type::INTEGER:
-            message[content->key] = std::to_string(values[content->attribute->get().index].value());
-            break;
-          case Attribute::Type::DECIMAL:
-            message[content->key] = std::to_string(values[content->attribute->get().index].value());
-            break;
-        }
-      }
-      else if ( content->value.has_value() ) {
-        message[content->key] = content->value->get().value;
-      }
-      message[content->key] = std::nullopt;
-    }
-    return message;
-  }
+/**
+ * @brief Generate a message containing values from the status and defaults.
+ *
+ * This function generates a message containing values based on the provided
+ * status values and predefined default values. The function iterates through
+ * the contents and populates the message accordingly:
+ *
+ * - If the content specifies an attribute and the status contains a value for
+ *   that attribute, the value from the status is used in the message.
+ * - If the content doesn't specify an attribute or the status doesn't contain
+ *   a value for that attribute, but a default value is available in the content,
+ *   the default value is used in the message.
+ *
+ * @param status The status values to be included in the message.
+ * @return A map containing key-value pairs representing the generated message.
+ */
+  ValueMap send(const Values& status) const;
 };
 
 } // namespace BPMNOS

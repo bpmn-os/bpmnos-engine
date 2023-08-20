@@ -2,7 +2,6 @@
 #define BPMNOS_StringRegistry_H
 
 #include <string>
-#include <string_view>
 #include <vector>
 #include <unordered_map>
 #include <mutex>
@@ -19,8 +18,8 @@ namespace BPMNOS {
     /// Constructor adds "false" and "true" at indices 0 and 1.
     StringRegistry();
 
-    /// Operator providing read-access to a registered string by index.
-    std::string_view operator[](long unsigned int i) const;
+    /// Operator providing access to a registered string by index.
+    std::string operator[](long unsigned int i) const;
     /// Operator to register a string and return its index.
     long unsigned int operator()(const std::string& string);
   private:

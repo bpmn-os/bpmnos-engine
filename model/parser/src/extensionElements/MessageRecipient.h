@@ -8,7 +8,7 @@
 #include "Parameter.h"
 #include "Message.h"
 #include "model/utility/src/StringRegistry.h"
-#include "model/utility/src/Numeric.h"
+#include "model/utility/src/Number.h"
 
 namespace BPMNOS {
 
@@ -18,41 +18,27 @@ public:
   std::optional< std::unique_ptr<Parameter> > sender; ///< Parameter indicating the sending instance.
   std::vector< BPMN::ThrowEvent* > allowedSenders; ///< List of all potential senders of the message.
 
-  template <typename T>
-  void receive(const std::vector<std::optional<T> >& values, const std::unordered_map< std::string, std::optional<std::string> >& message) const {
-    for ( auto& content : contents ) {
-      std::optional< std::string > value = std::nullopt;
-      if ( message.contains(content->key) && message.at(content->key).has_value() ) {
-        value = message.at(content->key).value();
-      }
-      else if ( content->value.has_value() ) {
-        value = content->value.value();      
-      }
-      
-      if ( value.has_value() ) {
-        // Use XML value to have consistent type conversion
-        XML::Value givenValue(value.value());
-
-        switch ( content->attribute->get().index ) {
-          case Attribute::Type::STRING:
-            values[content->attribute->get().index] = stringRegistry((std::string)givenValue);
-          break;
-          case Attribute::Type::BOOLEAN:
-            values[content->attribute->get().index] = stringRegistry((std::string)givenValue);
-          break;
-          case Attribute::Type::INTEGER:
-            values[content->attribute->get().index] = (int)givenValue;
-          break;
-          case Attribute::Type::DECIMAL:
-            values[content->attribute->get().index] = numeric<T>((double)givenValue);
-          break;
-        }
-      }
-      else {
-        values[content->attribute->get().index] = std::nullopt;
-      }
-    }
-  }
+/**
+ * @brief Receive and process a message's content to update status values.
+ *
+ * This function processes the contents of a message and updates the status
+ * values based on the content of the message and predefined default values.
+ * The function iterates through the contents and updates status values 
+ * accordingly:
+ *
+ * - If the message contains a key and the corresponding value is available,
+ *   the status value for the associated attribute is updated with the value
+ *   from the message.
+ * - If the message doesn't contain a key or the corresponding value is not 
+ *   available, but a default value is available in the content, the status 
+ *   value for the associated attribute is updated with the default value.
+ * - If neither a message value nor a default value is available, the status
+ *   value for the associated attribute is set to undefined (std::nullopt).
+ *
+ * @param status The status values to be updated.
+ * @param message The message content containing key-value pairs.
+ */
+  void receive(Values& status, const ValueMap& message) const;
 };
 
 } // namespace BPMNOS

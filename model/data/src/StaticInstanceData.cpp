@@ -8,10 +8,10 @@ StaticInstanceData::StaticInstanceData(const BPMN::Process* process, const std::
   actualValues = defaultValues; // may be overwritten by StaticDataProvider
 }
 
-Value StaticInstanceData::getPredictedValue(const Attribute* attribute) const {
+std::optional<number> StaticInstanceData::getPredictedValue(const Attribute* attribute) const {
   return getActualValue(attribute);
 }
 
-Value StaticInstanceData::getAssumedValue(const Attribute* attribute) const {
+std::optional<number> StaticInstanceData::getAssumedValue(const Attribute* attribute) const {
   return getActualValue(attribute);
 }

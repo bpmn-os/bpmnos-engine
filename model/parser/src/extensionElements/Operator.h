@@ -7,7 +7,7 @@
 #include <string>
 #include <bpmn++.h>
 #include <variant>
-#include "model/utility/src/Numeric.h"
+#include "model/utility/src/Number.h"
 #include "model/utility/src/StringRegistry.h"
 #include "model/parser/src/xml/bpmnos/tOperator.h"
 #include "Attribute.h"
@@ -32,8 +32,7 @@ public:
   std::variant< std::unique_ptr<Set>, std::unique_ptr<Unset>, std::unique_ptr<Lookup>, std::unique_ptr<Expression> > implementation;
 
   // Use std::variant instead because virtual template method cannot be used 
-  template <typename T>
-  void apply(std::vector<std::optional<T> >& values) const {
+  void apply(Values& values) const {
     if ( auto operatorImplementation = std::get_if< std::unique_ptr<Set> >(&implementation); operatorImplementation ) {
       operatorImplementation->get()->execute(values);
     }

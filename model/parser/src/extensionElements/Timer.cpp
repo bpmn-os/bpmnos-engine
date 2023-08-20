@@ -1,7 +1,6 @@
 #include "Timer.h"
 #include "Status.h"
-#include "model/parser/src/xml/bpmnos/tRestrictions.h"
-#include "model/parser/src/xml/bpmnos/tRestriction.h"
+#include "model/utility/src/Keywords.h"
 
 using namespace BPMNOS;
 
@@ -10,6 +9,8 @@ Timer::Timer(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent)
   , parent(parent)
 {
   AttributeMap& attributeMap = parent->extensionElements->as<Status>()->attributeMap;
+  timestampAttribute = attributeMap[Keyword::Timestamp];
+
   if ( element ) {
     for ( XML::bpmnos::tParameter& parameter : element->getChildren<XML::bpmnos::tParameter>() ) {
       if ( parameter.name.value.value == "trigger" ) {
@@ -18,4 +19,14 @@ Timer::Timer(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent)
     }
   }
 }
+
+number Timer::earliest(const Values& status) const {
+    if ( trigger->attribute.has_value() && status[trigger->attribute->get().index].has_value() ) {
+      return status[trigger->attribute->get().index].value();
+    }
+    else if ( trigger->value.has_value() ) {
+      return to_number( trigger->value->get().value, timestampAttribute->type );
+    }
+    return status[timestampAttribute->index].value();
+}  
 

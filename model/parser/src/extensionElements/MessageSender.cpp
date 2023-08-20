@@ -17,3 +17,18 @@ MessageSender::MessageSender(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* 
   }
 }
 
+ValueMap MessageSender::send(const Values& status) const {
+  ValueMap message;
+  for ( auto& content : contents ) {
+    // if the content refers to an attribute that has a value in the status use that value,
+    // otherwise use the default value of the message event
+    if ( content->attribute.has_value() && status[content->attribute->get().index].has_value() ) {
+      message[content->key] = status[content->attribute->get().index].value();
+    }
+    else if ( content->value.has_value() ) {
+      message[content->key] = content->value.value();
+    }
+  }
+  return message;
+}
+

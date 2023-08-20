@@ -9,31 +9,21 @@ Attribute::Attribute(XML::bpmnos::tAttribute* attribute, const AttributeMap& att
   , name(attribute->name.value.value)
 {
   if ( attribute->type.value.value == "xs:string" ) {
-    type = Type::STRING;
-    if ( attribute->value.has_value() ) {
-      value = (std::string)attribute->value->get().value;
-    }
+    type = ValueType::STRING;
   }
   else if ( attribute->type.value.value == "xs:boolean" ) {
-    type = Type::BOOLEAN;
-    if ( attribute->value.has_value() ) {
-      value = (bool)attribute->value->get().value;
-    }
+    type = ValueType::BOOLEAN;
   }
   else if ( attribute->type.value.value == "xs:integer" ) {
-    type = Type::INTEGER;
-    if ( attribute->value.has_value() ) {
-      value = (int)attribute->value->get().value;
-    }
+    type = ValueType::INTEGER;
   }
   else if ( attribute->type.value.value == "xs:decimal" ) {
-    type = Type::DECIMAL;
-    if ( attribute->value.has_value() ) {
-      value = (double)attribute->value->get().value;
-    }
+    type = ValueType::DECIMAL;
   }
 
-
+  if ( attribute->value.has_value() ) {
+    value = to_number( attribute->value->get().value.value, type ); 
+  }
 
   if ( attribute->weight.has_value() ) {
     if ( attribute->objective.has_value() && attribute->objective->get().value.value == "maximize" ) {

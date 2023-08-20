@@ -2,11 +2,10 @@
 #define BPMNOS_Restriction_H
 
 #include <memory>
-#include <vector>
+#include <unordered_set>
 #include <string>
-#include <variant>
 #include <bpmn++.h>
-#include "model/utility/src/Numeric.h"
+#include "model/utility/src/Number.h"
 #include "model/utility/src/StringRegistry.h"
 #include "model/parser/src/xml/bpmnos/tRestriction.h"
 #include "Attribute.h"
@@ -23,111 +22,50 @@ public:
 
   bool negated;
   bool required;
-  std::optional<double> minInclusive;
-  std::optional<double> maxInclusive;
-  std::variant<std::vector<std::string>, std::vector<bool>, std::vector<int>, std::vector<double>> enumeration;
+  std::optional<number> minInclusive;
+  std::optional<number> maxInclusive;
+  std::unordered_set<number,ValueHash> enumeration;
 
-  template <typename T>
-  bool isSatisfied(const std::vector<std::optional<T> >& values) const {
-    if ( !negated ) {
-      // if restriction is not negated
-      if ( required && !values[attribute->index].has_value() ) {
-        return false;
-      }
-
-      // only applies to number types
-      if ( attribute->type == Attribute::Type::INTEGER || attribute->type == Attribute::Type::DECIMAL ) {
-        if ( minInclusive.has_value() && values[attribute->index].has_value() ) {
-          if ( values[attribute->index].get() < numeric<T>(*minInclusive) ) {
-            return false;
-          }
-        }
-
-        if ( maxInclusive.has_value() && values[attribute->index].has_value() ) {
-          if ( values[attribute->index].get() > numeric<T>(*maxInclusive) ) {
-            return false;
-          }
-        }
-      }
-      else {
-        throw std::runtime_error("Restriction: illegal attribute type '" + (std::string)attribute->element->type + "' for restriction '" + id + "'");
-      }
-      
-      if ( element->enumeration.size() && values[attribute->index].has_value() ) {
-        if ( !find(values[attribute->index].get()) ) {
-          return false;
-        }
-      }
-    }
-    else {
-      // if restriction is negated
-      if ( required && values[attribute->index].has_value() ) {
-        return false;
-      }
-
-      if ( attribute->type == Attribute::Type::INTEGER || attribute->type == Attribute::Type::DECIMAL ) {
-        if ( minInclusive.has_value() && values[attribute->index].has_value() ) {
-          if ( values[attribute->index].get() >= numeric<T>(*minInclusive) ) {
-            return false;
-          }
-        }
-
-        if ( maxInclusive.has_value() && values[attribute->index].has_value() ) {
-          if ( values[attribute->index].get() <= numeric<T>(*maxInclusive) ) {
-            return false;
-          }
-        }
-      }
-      else {
-        throw std::runtime_error("Restriction: illegal attribute type '" + (std::string)attribute->element->type + "' for restriction '" + id + "'");
-      }
-
-      if ( element->enumeration.size() && values[attribute->index].has_value() ) {
-        if ( find(values[attribute->index].get()) ) {
-          return false;
-        }
-      }
-
-    }
- 
-    return true;
-  }  
-
-  template <typename T>
-  bool find(const T& value) const {
-    switch ( attribute->type ) {
-      case Attribute::Type::STRING :
-        for ( std::string& allowedValue : std::get< std::vector< std::string > >(enumeration) ) {
-          if ( value == numeric<T>(stringRegistry(allowedValue)) ) {
-            return true;
-          }
-        }
-        break;
-      case Attribute::Type::BOOLEAN :
-        for ( bool allowedValue : std::get< std::vector< bool > >(enumeration) ) {
-          if ( value == allowedValue ) {
-            return true;
-          }
-        }
-        break;
-      case Attribute::Type::INTEGER :
-        for ( int allowedValue : std::get< std::vector< int > >(enumeration) ) {
-          if ( value == allowedValue ) {
-            return true;
-          }
-        }
-        break;
-      case Attribute::Type::DECIMAL :
-        for ( double allowedValue : std::get< std::vector< double > >(enumeration) ) {
-          if ( value == numeric<T>(allowedValue) ) {
-            return true;
-          }
-        }
-        break;
-    }
-    return false;
-  }
-
+/**
+ * @brief Check if the restriction is satisfied based on status values.
+ *
+ * This function checks whether the given restriction is satisfied based on the
+ * provided status values. The function considers whether the restriction is
+ * negated and applies various checks based on the attribute's type and values.
+ *
+ * The function performs the following checks:
+ * - If the restriction is not negated:
+ *   - If the restriction is marked as required and the corresponding attribute
+ *     is missing from the status values, the restriction is not satisfied.
+ *   - For numeric attributes (integer or decimal):
+ *     - If a minimum inclusive value is defined and the attribute has a value
+ *       in the status that is less than the minimum, the restriction is not satisfied.
+ *     - If a maximum inclusive value is defined and the attribute has a value
+ *       in the status that is greater than the maximum, the restriction is not satisfied.
+ *   - If the restriction defines an enumeration and the attribute has a value
+ *     in the status, the value must be present in the enumeration for the restriction
+ *     to be satisfied.
+ * - If the restriction is negated:
+ *   - If the restriction is marked as required and the corresponding attribute
+ *     has a value in the status, the restriction is not satisfied.
+ *   - For numeric attributes (integer or decimal):
+ *     - If a minimum inclusive value is defined and the attribute has a value
+ *       in the status that is greater than or equal to the minimum, the restriction
+ *       is not satisfied.
+ *     - If a maximum inclusive value is defined and the attribute has a value
+ *       in the status that is less than or equal to the maximum, the restriction
+ *       is not satisfied.
+ *   - If the restriction defines an enumeration and the attribute has a value
+ *     in the status, the value must not be present in the enumeration for the
+ *     restriction to be satisfied.
+ *
+ * The function returns `true` if all the specified checks are passed and the
+ * restriction is considered satisfied.
+ *
+ * @param status The status values to be evaluated against the restriction.
+ * @return `true` if the restriction is satisfied, `false` otherwise.
+ */
+  bool isSatisfied(const Values& status) const;
 };
 
 } // namespace BPMNOS

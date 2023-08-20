@@ -3,7 +3,7 @@
 
 #include "model/parser/src/extensionElements/Attribute.h"
 #include "model/parser/src/extensionElements/Parameter.h"
-#include "model/utility/src/Numeric.h"
+#include "model/utility/src/Number.h"
 #include "model/utility/src/StringRegistry.h"
 
 namespace BPMNOS {
@@ -17,34 +17,24 @@ public:
   Attribute* attribute;
   Parameter* parameter;
 
-  template <typename T>
-  void execute(std::vector<std::optional<T> >& values) const {
-    if ( parameter->attribute.has_value() && values[parameter->attribute->get().index].has_value() ) {
-      // set value to value of given attribute (if not null)
-      values[attribute->index] = values[parameter->attribute->get().index];
-    }
-    else if ( parameter->value.has_value() ) {
-      // set value to given value
-      switch ( attribute->type ) {
-        case Attribute::Type::STRING :
-          values[attribute->index] = stringRegistry((std::string)parameter->value->get());
-          break;
-        case Attribute::Type::BOOLEAN :
-          values[attribute->index] = (bool)parameter->value->get();
-          break;
-        case Attribute::Type::INTEGER :
-          values[attribute->index] = (int)parameter->value->get();
-          break;
-        case Attribute::Type::DECIMAL :
-          values[attribute->index] = numeric<T>((double)parameter->value->get());
-          break;
-      }
-    }
-    else {
-      // set value to undefined if no attribute with value is given and no explicit value is given
-      values[attribute->index] = std::nullopt;
-    }
-  }
+/**
+ * @brief Sets a status attribute by applying the operator.
+ *
+ * This function sets a status attribute based on the provided parameter configuration.
+ * The function performs the following steps:
+ *
+ * - If the parameter specifies an attribute and the status contains a value for
+ *   that attribute, the value from the respective attribute is used to update
+ *   the target attribute in the status.
+ * - If the parameter doesn't specify an attribute or the status doesn't contain
+ *   a value for that attribute, but a parameter value is available, the parameter
+ *   value is used to update the target attribute in the status.
+ * - If neither a parameter attribute with value nor a parameter value is available,
+ *   the target attribute in the status is set to undefined (std::nullopt).
+ *
+ * @param status The status values to be updated.
+ */
+  void execute(Values& status) const;
 };
 
 } // namespace BPMNOS

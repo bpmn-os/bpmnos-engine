@@ -1,12 +1,14 @@
 #ifndef BPMNOS_Keywords_H
 #define BPMNOS_Keywords_H
 
-#include <string_view>
+#include <string>
 
 namespace BPMNOS::Keyword {
 
-constexpr std::string_view Timestamp = "timestamp";
-constexpr std::string_view Instance = "instance";
+const std::string False = "false";
+const std::string True = "true";
+const std::string Timestamp = "timestamp";
+const std::string Instance = "instance";
 
 } // BPMNOS::KEY
 

@@ -67,4 +67,28 @@ Lookup::Lookup(Operator* base, Attribute* attribute)
   table = getLookupTable(filename);
 }
 
+void Lookup::execute(Values& status) const {
+  std::unordered_map< std::string, Value > arguments;
+  for ( auto& [name,lookupAttribute] : lookups) {
+    if ( !status[lookupAttribute->index].has_value() ) {
+      // set attribute to undefined because required lookup value is not given
+      status[attribute->index] = std::nullopt;
+      return;
+    }
+
+    arguments[name] = to_string(status[lookupAttribute->index].value(),lookupAttribute->type);
+  }
+
+  std::optional<std::string> value = table->lookup(key, arguments);
+  if ( value.has_value() ) {
+    // set value to the value looked up
+    status[attribute->index] = to_number( value.value(), attribute->type );
+  }
+  else {
+    // set value to undefined if no attribute with value is given and no explicit value is given
+    status[attribute->index] = std::nullopt;
+  }
+}
+
+
 

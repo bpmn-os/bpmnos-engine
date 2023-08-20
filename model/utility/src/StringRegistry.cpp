@@ -1,14 +1,15 @@
 #include "StringRegistry.h"
+#include "Keywords.h"
 
 using namespace BPMNOS;
 
 StringRegistry::StringRegistry() {
-  // register "false" with index 0 and "true" with index 1
-  (*this)("false");
-  (*this)("true");
+  // register false with index 0 and true with index 1
+  (*this)(Keyword::False);
+  (*this)(Keyword::True);
 }
 
-std::string_view StringRegistry::operator[](long unsigned int i) const {
+std::string StringRegistry::operator[](long unsigned int i) const {
   return registeredStrings[i];
 }
 

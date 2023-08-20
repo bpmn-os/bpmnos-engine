@@ -23,10 +23,10 @@ SCENARIO( "Trivial executable process", "[data][static]" ) {
           REQUIRE( (std::string)status->attributes[0]->name == Keyword::Instance );
           REQUIRE( status->attributes[0]->value == std::nullopt );
           REQUIRE( (std::string)status->attributes[1]->name == Keyword::Timestamp );
-          REQUIRE( std::get<int>(status->attributes[1]->value.value()) == 0 );
+          REQUIRE( status->attributes[1]->value.value() == 0 );
 
-          std::vector<std::optional<int> > values;
-          dataProvider.appendActualValues<int>(instance.get(),instance->process,values);
+          Values values;
+          dataProvider.appendActualValues(instance.get(),instance->process,values);
           REQUIRE( values.size() == 2 );
           REQUIRE( values[0].value() == stringRegistry("Instance_1") );
           REQUIRE( values[1].value() == 0 );
@@ -56,10 +56,10 @@ SCENARIO( "Trivial executable process", "[data][static]" ) {
           REQUIRE( (std::string)status->attributes[0]->name == Keyword::Instance );
           REQUIRE( status->attributes[0]->value == std::nullopt );
           REQUIRE( (std::string)status->attributes[1]->name == Keyword::Timestamp );
-          REQUIRE( std::get<int>(status->attributes[1]->value.value()) == 0 );
+          REQUIRE( status->attributes[1]->value.value() == 0 );
 
-          std::vector<std::optional<double> > values;
-          dataProvider.appendActualValues<double>(instance.get(),instance->process,values);
+          Values values;
+          dataProvider.appendActualValues(instance.get(),instance->process,values);
           REQUIRE( values.size() == 2 );
           REQUIRE( values[0].value() == stringRegistry("Instance_1") );
           REQUIRE( values[1].value() == 42 );

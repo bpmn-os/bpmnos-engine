@@ -28,6 +28,6 @@ InstanceData::InstanceData(const BPMN::Process* process, const std::string& id) 
   }
 }
 
-Value InstanceData::getActualValue(const BPMNOS::Attribute* attribute) const {
+std::optional<number> InstanceData::getActualValue(const BPMNOS::Attribute* attribute) const {
   return actualValues.at(attribute);
 }

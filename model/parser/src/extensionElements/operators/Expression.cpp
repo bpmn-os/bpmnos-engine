@@ -7,7 +7,7 @@ Expression::Expression(Operator* base, Attribute* attribute)
   : base(base)
   , attribute(attribute)
 {
-  if ( attribute->type == Attribute::Type::STRING ) {
+  if ( attribute->type == ValueType::STRING ) {
     throw std::runtime_error("Expression: non-numeric result of operator '" + base->id + "'");
   }
 
@@ -45,10 +45,23 @@ Expression::Expression(Operator* base, Attribute* attribute)
       throw std::runtime_error("Expression: unknown expression variable of operator '" + base->id + "'");
     }
 
-    if ( boundAttribute->type == Attribute::Type::STRING ) {
+    if ( boundAttribute->type == ValueType::STRING ) {
       throw std::runtime_error("Expression: non-numeric variable '" + boundAttribute->name + "' of operator '" + base->id + "'");
     }
     bindings.push_back({ symbolTable.variable_ref(variable), boundAttribute });
   }
-
 }
+
+void Expression::execute(Values& status) const {
+  for ( auto& [variable,boundAttribute] : bindings ) {
+    if ( !status[boundAttribute->index].has_value() ) {
+      // set attribute to undefined because required lookup value is not given
+      status[attribute->index] = std::nullopt;
+      return;
+    }
+    variable = (NumericType)status[boundAttribute->index].value();
+  }
+  throw std::logic_error("Expression: operator not yet implemented");
+  
+}
+

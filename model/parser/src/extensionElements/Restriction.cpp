@@ -28,53 +28,81 @@ Restriction::Restriction(XML::bpmnos::tRestriction* restriction, AttributeMap& a
   }
 
   if ( restriction->minInclusive.has_value() ) {
-    minInclusive = (double)restriction->minInclusive->get().value;
+    if ( attribute->type == ValueType::STRING ) {
+      throw std::runtime_error("Restriction: minInclusive not allowed attribute type 'xs:string' for restriction '" + id + "'");
+    }
+    minInclusive = to_number( restriction->minInclusive->get().value, attribute->type );
   }
   else {
     minInclusive = std::nullopt;
   }
 
   if ( restriction->maxInclusive.has_value() ) {
-    maxInclusive = (double)restriction->maxInclusive->get().value;
+    if ( attribute->type == ValueType::STRING ) {
+      throw std::runtime_error("Restriction: minInclusive not allowed attribute type 'xs:string' for restriction '" + id + "'");
+    }
+    maxInclusive = to_number( restriction->maxInclusive->get().value, attribute->type );
   }
   else {
     maxInclusive = std::nullopt;
   }
 
-  switch ( attribute->type ) {
-    case Attribute::Type::STRING :
-      enumeration = std::vector< std::string >();
-      for ( XML::bpmnos::tEnumeration& allowedValue : restriction->enumeration ) {
-        std::get< std::vector< std::string > >(enumeration).push_back(
-          allowedValue.getRequiredAttributeByName("value").value
-        );
-      }
-      break;
-    case Attribute::Type::BOOLEAN :
-      enumeration = std::vector< bool >();
-      for ( XML::bpmnos::tEnumeration& allowedValue : restriction->enumeration ) {
-        std::get< Attribute::Type::BOOLEAN >(enumeration).push_back( 
-          (bool)allowedValue.getRequiredAttributeByName("value").value
-        );
-      }
-      break;
-    case Attribute::Type::INTEGER :
-      enumeration = std::vector< int >();
-      for ( XML::bpmnos::tEnumeration& allowedValue : restriction->enumeration ) {
-        std::get< std::vector< int > >(enumeration).push_back(
-          (int)allowedValue.getRequiredAttributeByName("value").value
-        );
-      }
-      break;
-    case Attribute::Type::DECIMAL :
-      enumeration = std::vector< double >();
-      for ( XML::bpmnos::tEnumeration& allowedValue : restriction->enumeration ) {
-        std::get< std::vector< double > >(enumeration).push_back(
-          (double)allowedValue.getRequiredAttributeByName("value").value
-        );
-      }
-      break;
+  for ( XML::bpmnos::tEnumeration& allowedValue : restriction->enumeration ) {
+    enumeration.insert( to_number(allowedValue.getRequiredAttributeByName("value").value, attribute->type) );
   }
-
 }
+
+
+bool Restriction::isSatisfied(const Values& status) const {
+  if ( !negated ) {
+    // if restriction is not negated
+    if ( required && !status[attribute->index].has_value() ) {
+      return false;
+    }
+
+    if ( minInclusive.has_value() && status[attribute->index].has_value() ) {
+      if ( status[attribute->index].value() < minInclusive.value() ) {
+        return false;
+      }
+    }
+
+    if ( maxInclusive.has_value() && status[attribute->index].has_value() ) {
+      if ( status[attribute->index].value() > maxInclusive.value() ) {
+        return false;
+      }
+    }
+
+    if ( enumeration.size() && status[attribute->index].has_value() ) {
+      if ( enumeration.find( status[attribute->index].value() ) == enumeration.end() ) {
+        return false;
+      }
+    }
+  }
+  else {
+    // if restriction is negated
+    if ( required && status[attribute->index].has_value() ) {
+      return false;
+    }
+
+    if ( minInclusive.has_value() && status[attribute->index].has_value() ) {
+      if ( status[attribute->index].value() >= minInclusive.value() ) {
+        return false;
+      }
+    }
+
+    if ( maxInclusive.has_value() && status[attribute->index].has_value() ) {
+      if ( status[attribute->index].value() <= maxInclusive.value() ) {
+        return false;
+      }
+    }
+
+    if ( enumeration.size() && status[attribute->index].has_value() ) {
+      if ( enumeration.find( status[attribute->index].value() ) != enumeration.end() ) {
+        return false;
+      }
+    }
+  }
+  return true;
+}  
+
 

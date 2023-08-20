@@ -32,7 +32,7 @@ csv::CSVReader LookupTable::openCsv(const std::string& filename) {
   throw std::runtime_error("CSV file not found.");
 }
 
-std::optional<std::string> LookupTable::lookup(const std::string& key, const Arguments &arguments) const {
+std::optional<std::string> LookupTable::lookup(const std::string& key, const std::unordered_map< std::string, Value > &arguments) const {
   const csv::CSVRow* matchingRow = row(arguments);
   if ( matchingRow ) {
     return (*matchingRow)[key].get<>();
@@ -40,7 +40,7 @@ std::optional<std::string> LookupTable::lookup(const std::string& key, const Arg
   return std::nullopt;
 }
 
-const csv::CSVRow* LookupTable::row(const Arguments &arguments) const {
+const csv::CSVRow* LookupTable::row(const std::unordered_map< std::string, Value > &arguments) const {
   for (const csv::CSVRow& row : data) {
     bool SAME = true;
     for ( auto &[columnName,columnValue] : arguments ) {

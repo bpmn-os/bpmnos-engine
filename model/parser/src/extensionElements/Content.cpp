@@ -7,8 +7,12 @@ Content::Content(XML::bpmnos::tContent* content, AttributeMap& attributeMap)
   , id(content->id.value.value)
   , key(content->key.value.value)
   , attribute(getAttribute(attributeMap))
-  , value(content->value ? std::optional< std::reference_wrapper<XML::Value> >(content->value->get().value) : std::nullopt )
+  , type(attribute ? attribute->get().type : ValueType::STRING )
 {
+  if ( content->value.has_value() ) {
+    value = to_number( content->value->get().value.value, type ); 
+  }
+
 }
 
 std::optional< std::reference_wrapper<Attribute> > Content::getAttribute(AttributeMap& attributeMap) {

@@ -3,17 +3,14 @@
 
 #include <csv.hpp>
 #include <string>
-#include <map> 
-#include <vector>
+#include <unordered_map>
 #include <variant>
 #include <initializer_list>
 #include <filesystem>
 #include "model/parser/src/extensionElements/Attribute.h"
+#include "model/utility/src/Value.h"
 
 namespace BPMNOS {
-
-using Arguments = std::vector< std::pair< std::string, std::variant< std::string, bool, int, double > > >;
-
 
 /**
  * A LookupTable loads a CSV file with header line and
@@ -53,12 +50,12 @@ public:
    * @return An optional string containing the value found in the specified row and column if a matching row is found.
    *         If no matching row is found, std::nullopt is returned.
    */
-  std::optional<std::string> lookup(const std::string& key, const Arguments &arguments) const;
+  std::optional<std::string> lookup(const std::string& key, const std::unordered_map< std::string, Value > &arguments) const;
 
 //  unsigned int size() { return data.size(); }
 protected:
   csv::CSVReader openCsv(const std::string& filename);
-  const csv::CSVRow* row(const Arguments &arguments) const;
+  const csv::CSVRow* row(const std::unordered_map< std::string, Value > &arguments) const;
   std::vector<csv::CSVRow> data;
 };
 

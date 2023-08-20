@@ -9,6 +9,7 @@
 #include <bpmn++.h>
 #include "model/parser/src/xml/bpmnos/tContent.h"
 #include "Attribute.h"
+#include "model/utility/src/Number.h"
 
 namespace BPMNOS {
 
@@ -24,7 +25,8 @@ public:
   std::string& id;
   std::string& key;
   std::optional< std::reference_wrapper<Attribute> > attribute;
-  std::optional< std::reference_wrapper<XML::Value> > value;
+  ValueType type;
+  std::optional< number > value; 
 
 protected:
   std::optional< std::reference_wrapper<Attribute> > getAttribute(AttributeMap& attributeMap);

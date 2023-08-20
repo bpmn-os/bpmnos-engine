@@ -6,7 +6,7 @@
 #include <string>
 #include <bpmn++.h>
 #include "Parameter.h"
-#include "model/utility/src/Numeric.h"
+#include "model/utility/src/Number.h"
 
 namespace BPMNOS {
 
@@ -15,17 +15,9 @@ public:
   Timer(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent);
   const BPMN::Scope* parent;
   std::unique_ptr<Parameter> trigger;
+  Attribute* timestampAttribute;
 
-  template <typename T>
-  T earliest(const std::vector<std::optional<T> >& values) const {
-    if ( trigger->attribute.has_value() && values[trigger->attribute->get().index].has_value() ) {
-      return values[trigger->attribute->get().index].value();
-    }
-    else if ( trigger->value.has_value() ) {
-      return numeric<T>( std::stod( trigger->value->get().value ) );
-    }
-    return values[0].value();
-  }  
+  number earliest(const Values& values) const;
 };
 
 } // namespace BPMNOS

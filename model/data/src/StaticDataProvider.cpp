@@ -1,5 +1,6 @@
 #include "StaticDataProvider.h"
 #include "model/utility/src/Keywords.h"
+#include "model/utility/src/Number.h"
 #include <sstream>
 #include <unordered_map>
 #include <algorithm>
@@ -56,7 +57,7 @@ void StaticDataProvider::readInstances(csv::CSVReader& reader) {
          ); instanceData->actualValues[ attributeIt->second ] == std::nullopt
     ) {
       // set instance attribute if not yet set
-      instanceData->actualValues[ attributeIt->second ] = instanceId;
+      instanceData->actualValues[ attributeIt->second ] = to_number(instanceId,ValueType::STRING);
     }
 
     std::string attributeId = row[ATTRIBUTE_ID].get();
@@ -71,22 +72,7 @@ void StaticDataProvider::readInstances(csv::CSVReader& reader) {
     }
 
     auto attribute = instanceData->attributes[attributeId];
- 
-    // Use XML value to have consistent type conversion
-    XML::Value givenValue((std::string)row[VALUE].get());
-
-    if ( attribute->type == Attribute::Type::STRING ) {
-      instanceData->actualValues[ attribute ] = (std::string)givenValue;
-    }
-    else if ( attribute->type == Attribute::Type::BOOLEAN ) {
-      instanceData->actualValues[ attribute ] = (bool)givenValue;
-    }
-    else if ( attribute->type == Attribute::Type::INTEGER ) {
-      instanceData->actualValues[ attribute ] = (int)givenValue;
-    }
-    else if ( attribute->type == Attribute::Type::DECIMAL ) {
-      instanceData->actualValues[ attribute ] = (double)givenValue;
-    }
+    instanceData->actualValues[ attribute ] = to_number(row[VALUE].get(),attribute->type);
   }
 }
 

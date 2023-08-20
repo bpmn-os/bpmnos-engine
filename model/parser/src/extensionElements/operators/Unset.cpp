@@ -9,3 +9,7 @@ Unset::Unset(Operator* base, Attribute* attribute)
 {
 }
 
+void Unset::execute(Values& status) const {
+  status[attribute->index] = std::nullopt;
+}
+

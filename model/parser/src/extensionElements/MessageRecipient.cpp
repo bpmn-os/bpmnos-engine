@@ -22,3 +22,19 @@ MessageRecipient::MessageRecipient(XML::bpmn::tBaseElement* baseElement, BPMN::S
   }
 }
 
+void MessageRecipient::receive(Values& status, const ValueMap& message) const {
+  for ( auto& content : contents ) {
+    // use the value of the message if available, 
+    // otherwise use the default value of the message event if available, 
+    // otherwise set status value to undefined
+    if ( message.contains(content->key) && message.at(content->key).has_value() ) {
+      status[content->attribute->get().index] = message.at(content->key).value();
+    }
+    else if ( content->value.has_value() ) {
+      status[content->attribute->get().index] = content->value.value();      
+    }
+    else {
+      status[content->attribute->get().index] = std::nullopt;
+    }
+  }
+}

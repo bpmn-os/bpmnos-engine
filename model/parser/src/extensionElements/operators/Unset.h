@@ -2,6 +2,7 @@
 #define BPMNOS_Unset_H
 
 #include "model/parser/src/extensionElements/Attribute.h"
+#include "model/utility/src/Number.h"
 
 namespace BPMNOS {
 
@@ -13,10 +14,12 @@ public:
   const Operator* base;
   Attribute* attribute;
 
-  template <typename T>
-  void execute(std::vector<std::optional<T> >& values) const {
-    values[attribute->index] = std::nullopt;
-  }
+/**
+ * @brief Sets a status attribute as undefined.
+ *
+ * @param status The status values to be updated.
+ */
+  void execute(Values& status) const;
 };
 
 } // namespace BPMNOS

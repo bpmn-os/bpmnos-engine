@@ -5,7 +5,7 @@
 
 #include "model/parser/src/extensionElements/Attribute.h"
 #include "model/parser/src/extensionElements/Parameter.h"
-#include "model/utility/src/Numeric.h"
+#include "model/utility/src/Number.h"
 #include "model/utility/src/StringRegistry.h"
 
 namespace BPMNOS {
@@ -28,19 +28,7 @@ public:
   exprtk::expression<NumericType> expression; 
   std::vector< std::pair<NumericType&, Attribute *> > bindings; ///< Bindings of expression variables. 
 
-  template <typename T>
-  void execute(std::vector<std::optional<T> >& values) {
-
-    for ( auto& [variable,boundAttribute] : bindings ) {
-      if ( !values[boundAttribute->index].has_value() ) {
-        // set attribute to undefined because required lookup value is not given
-        values[attribute->index] = std::nullopt;
-        return;
-      }
-
-      variable = (NumericType)values[boundAttribute->index];
-    }
-  }
+  void execute(Values& status) const;
 };
 
 } // namespace BPMNOS

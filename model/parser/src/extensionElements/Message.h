@@ -7,7 +7,6 @@
 #include <bpmn++.h>
 #include "Parameter.h"
 #include "Content.h"
-#include "model/utility/src/Numeric.h"
 
 namespace BPMNOS {
 
