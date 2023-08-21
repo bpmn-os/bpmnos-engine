@@ -8,10 +8,10 @@ SCENARIO( "Linear expression", "[data][static][expression]" ) {
       "Process_1, Instance_1,X,8\n"
       "Process_1, Instance_1,Y,15\n";
 
-    WHEN( "The instance is loaded" ) {
+    WHEN( "The expression is executed" ) {
       BPMNOS::StaticDataProvider dataProvider(modelFile,csv);
       auto& instances = dataProvider.getInstances();
-      THEN( "The instance data is correct" ) {
+      THEN( "The result is correct" ) {
         for ( auto& [id,instance] : instances ) {
           auto status = instance->process->extensionElements->represents<Status>();
           Values values;
@@ -40,10 +40,10 @@ SCENARIO( "Generic expression", "[data][static][expression]" ) {
       "Process_1, Instance_1,X,8\n"
       "Process_1, Instance_1,Y,15\n";
 
-    WHEN( "The instance is loaded" ) {
+    WHEN( "The expression is executed" ) {
       BPMNOS::StaticDataProvider dataProvider(modelFile,csv);
       auto& instances = dataProvider.getInstances();
-      THEN( "The instance data is correct" ) {
+      THEN( "The result is correct" ) {
         for ( auto& [id,instance] : instances ) {
           auto status = instance->process->extensionElements->represents<Status>();
           Values values;
