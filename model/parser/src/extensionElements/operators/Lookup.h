@@ -5,18 +5,14 @@
 #include "model/parser/src/extensionElements/Parameter.h"
 #include "model/utility/src/Number.h"
 #include "model/utility/src/StringRegistry.h"
+#include "model/parser/src/extensionElements/Operator.h"
 #include "LookupTable.h"
 
 namespace BPMNOS {
 
-class Operator;
-
-class Lookup {
+class Lookup : public Operator {
 public:
-  Lookup(Operator* base, Attribute* attribute);
-  const Operator* base;
-  Attribute* attribute;
-
+  Lookup(XML::bpmnos::tOperator* operator_, AttributeMap& attributeMap);
   std::string filename;
   std::string key;
   std::vector< std::pair< std::string, Attribute*> > lookups;
@@ -49,7 +45,7 @@ public:
  *
  * @param status The status values to be updated.
  */
-  void execute(Values& status) const;
+  void apply(Values& status) const override;
 };
 
 } // namespace BPMNOS

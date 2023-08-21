@@ -3,20 +3,18 @@
 
 using namespace BPMNOS;
 
-Set::Set(Operator* base, Attribute* attribute)
-  : base(base)
-  , attribute(attribute)
+Set::Set(XML::bpmnos::tOperator* operator_, AttributeMap& attributeMap)
+  : Operator(operator_, attributeMap)
 {
   try {
-    parameter = base->parameterMap.at("set").get();
+    parameter = parameterMap.at("set").get();
   }
   catch ( ... ){
-    throw std::runtime_error("Set: required parameter 'set' not provided for operator " + base->id + "'");
+    throw std::runtime_error("Set: required parameter 'set' not provided for operator " + id + "'");
   }
-
 }
 
-void Set::execute(Values& status) const {
+void Set::apply(Values& status) const {
   if ( parameter->attribute.has_value() && status[parameter->attribute->get().index].has_value() ) {
     // set value to value of given attribute (if defined)
     status[attribute->index] = status[parameter->attribute->get().index];

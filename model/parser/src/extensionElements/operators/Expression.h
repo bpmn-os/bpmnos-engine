@@ -7,28 +7,16 @@
 #include "model/parser/src/extensionElements/Parameter.h"
 #include "model/utility/src/Number.h"
 #include "model/utility/src/StringRegistry.h"
+#include "model/parser/src/extensionElements/Operator.h"
 
 namespace BPMNOS {
 
-class Operator;
-
-class Expression {
+class Expression : public Operator {
 public:
-  Expression(Operator* base, Attribute* attribute);
-  const Operator* base;
-  Attribute* attribute;
-  Parameter* parameter;
+  Expression(XML::bpmnos::tOperator* operator_, AttributeMap& attributeMap);
 
-  // From: https://www.partow.net/programming/exprtk/index.html:
-  // Note: NumericType can be any floating point type. This includes but is not limited to:
-  // float, double, long double, MPFR or any custom type conforming to an interface compatible
-  // with the standard floating point type.
-  using NumericType = double;
-
-  exprtk::expression<NumericType> expression; 
-  std::vector< std::pair<NumericType&, Attribute *> > bindings; ///< Bindings of expression variables. 
-
-  void execute(Values& status) const;
+  static std::unique_ptr<Expression> create(XML::bpmnos::tOperator* operator_, AttributeMap& attributeMap);
+  virtual void apply(Values& values) const = 0;
 };
 
 } // namespace BPMNOS

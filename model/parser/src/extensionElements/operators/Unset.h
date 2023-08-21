@@ -3,23 +3,22 @@
 
 #include "model/parser/src/extensionElements/Attribute.h"
 #include "model/utility/src/Number.h"
+#include "model/parser/src/extensionElements/Operator.h"
 
 namespace BPMNOS {
 
 class Operator;
 
-class Unset {
+class Unset : public Operator {
 public:
-  Unset(Operator* base, Attribute* attribute);
-  const Operator* base;
-  Attribute* attribute;
+  Unset(XML::bpmnos::tOperator* operator_, AttributeMap& attributeMap);
 
 /**
  * @brief Sets a status attribute as undefined.
  *
  * @param status The status values to be updated.
  */
-  void execute(Values& status) const;
+  void apply(Values& status) const override;
 };
 
 } // namespace BPMNOS

@@ -9,12 +9,14 @@ list(APPEND bpmn_SOURCES
   extensionElements/Attribute.cpp
   extensionElements/Parameter.cpp
   extensionElements/Restriction.cpp
+  extensionElements/Operator.cpp
   extensionElements/operators/Unset.cpp
   extensionElements/operators/Set.cpp
   extensionElements/operators/LookupTable.cpp
   extensionElements/operators/Lookup.cpp
   extensionElements/operators/Expression.cpp
-  extensionElements/Operator.cpp
+  extensionElements/operators/LinearExpression.cpp
+  extensionElements/operators/GenericExpression.cpp
   extensionElements/Status.cpp
   extensionElements/Gatekeeper.cpp
   extensionElements/Timer.cpp
@@ -37,12 +39,14 @@ list(APPEND bpmn_HEADERS
   extensionElements/Attribute.h
   extensionElements/Parameter.h
   extensionElements/Restriction.h
+  extensionElements/Operator.h
   extensionElements/operators/Unset.h
   extensionElements/operators/Set.h
   extensionElements/operators/LookupTable.h
   extensionElements/operators/Lookup.h
   extensionElements/operators/Expression.h
-  extensionElements/Operator.h
+  extensionElements/operators/LinearExpression.h
+  extensionElements/operators/GenericExpression.h
   extensionElements/Status.h
   extensionElements/Gatekeeper.h
   extensionElements/Timer.h

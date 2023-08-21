@@ -12,10 +12,6 @@
 #include "model/parser/src/xml/bpmnos/tOperator.h"
 #include "Attribute.h"
 #include "Parameter.h"
-#include "operators/Unset.h"
-#include "operators/Set.h"
-#include "operators/Lookup.h"
-#include "operators/Expression.h"
 
 namespace BPMNOS {
 
@@ -29,25 +25,17 @@ public:
   const AttributeMap& attributeMap;
   ParameterMap parameterMap;
 
-  std::variant< std::unique_ptr<Set>, std::unique_ptr<Unset>, std::unique_ptr<Lookup>, std::unique_ptr<Expression> > implementation;
+  static std::unique_ptr<Operator> create(XML::bpmnos::tOperator* operator_, AttributeMap& attributeMap);
+  virtual void apply(Values& values) const = 0;
 
-  // Use std::variant instead because virtual template method cannot be used 
-  void apply(Values& values) const {
-    if ( auto operatorImplementation = std::get_if< std::unique_ptr<Set> >(&implementation); operatorImplementation ) {
-      operatorImplementation->get()->execute(values);
-    }
-    else if ( auto operatorImplementation = std::get_if< std::unique_ptr<Unset> >(&implementation); operatorImplementation ) {
-      operatorImplementation->get()->execute(values);
-    }
-    else if ( auto operatorImplementation = std::get_if< std::unique_ptr<Lookup> >(&implementation); operatorImplementation ) {
-      operatorImplementation->get()->execute(values);
-    }
-    else if ( auto operatorImplementation = std::get_if< std::unique_ptr<Expression> >(&implementation); operatorImplementation ) {
-      operatorImplementation->get()->execute(values);
-    }
-    else {
-      throw std::logic_error("Operator: illegal alternative for operator '" + id + "'");
-    }
+  /// Returns a pointer of type T of the node.
+  template<typename T> T* is() {
+    return dynamic_cast<T*>(this);
+  }
+
+  /// Returns a pointer of type T of the node.
+  template<typename T> const T* is() const {
+    return dynamic_cast<const T*>(this);
   }
 };
 

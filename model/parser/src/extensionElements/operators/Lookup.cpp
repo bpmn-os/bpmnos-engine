@@ -3,38 +3,37 @@
 
 using namespace BPMNOS;
 
-Lookup::Lookup(Operator* base, Attribute* attribute)
-  : base(base)
-  , attribute(attribute)
+Lookup::Lookup(XML::bpmnos::tOperator* operator_, AttributeMap& attributeMap)
+  : Operator(operator_, attributeMap)
 {
   try {
-    base->parameterMap.at("source").get();
+    parameterMap.at("source").get();
   }
   catch ( ... ){
-    throw std::runtime_error("Lookup: required parameter 'source' not provided for operator '" + base->id + "'");
+    throw std::runtime_error("Lookup: required parameter 'source' not provided for operator '" + id + "'");
   }
 
-  for ( auto &[parameterName,parameter] : base->parameterMap ) {
+  for ( auto &[parameterName,parameter] : parameterMap ) {
     if ( parameterName == "source" ) {
       if ( !parameter->value.has_value() || parameter->value.value().get().value != "file" ) {
-        throw std::runtime_error("Lookup: unknown source of operator '" + base->id + "'");
+        throw std::runtime_error("Lookup: unknown source of operator '" + id + "'");
       }
     }
     else if ( parameterName == "filename" ) {
       if ( parameter->attribute.has_value() || !parameter->value.has_value() ) {
-        throw std::runtime_error("Lookup: filename of operator '" + base->id + "' must be given by value");
+        throw std::runtime_error("Lookup: filename of operator '" + id + "' must be given by value");
       }
       filename = parameter->value.value().get().value;
     }
     else if ( parameterName == "key" ) {
       if ( parameter->attribute.has_value() || !parameter->value.has_value() ) {
-        throw std::runtime_error("Lookup: key of operator '" + base->id + "' must be given by value");
+        throw std::runtime_error("Lookup: key of operator '" + id + "' must be given by value");
       }
       key = parameter->value.value().get().value;
     }
     else {
       if ( !parameter->attribute.has_value() || parameter->value.has_value() ) {
-        throw std::runtime_error("Lookup: lookup argument of operator '" + base->id + "' must be given by attribute name");
+        throw std::runtime_error("Lookup: lookup argument of operator '" + id + "' must be given by attribute name");
       }
       lookups.push_back({ parameterName, &parameter->attribute->get() });
     }
@@ -45,14 +44,14 @@ Lookup::Lookup(Operator* base, Attribute* attribute)
 
   if ( !parameter->value.has_value() || parameter->value.value().get().value == "file" ) {
     try {
-      parameter = base->parameterMap.at("filename").get();
+      parameter = parameterMap.at("filename").get();
     }
     catch ( ... ){
-      throw std::runtime_error("LookupOperator: required parameter 'filename' not provided for operator '" + base->id + "'");
+      throw std::runtime_error("LookupOperator: required parameter 'filename' not provided for operator '" + id + "'");
     }
   }
   else {
-    throw std::runtime_error("LookupOperator: unknown source of operator '" + base->id + "'");
+    throw std::runtime_error("LookupOperator: unknown source of operator '" + id + "'");
   }
 
 
@@ -60,14 +59,14 @@ Lookup::Lookup(Operator* base, Attribute* attribute)
     filename = parameter->value.value().get().value;
   }
   else {
-    throw std::runtime_error("LookupOperator: filename missing for operator '" + base->id + "'");
+    throw std::runtime_error("LookupOperator: filename missing for operator '" + id + "'");
   }
 
   // make sure lookup table is read and available;
   table = getLookupTable(filename);
 }
 
-void Lookup::execute(Values& status) const {
+void Lookup::apply(Values& status) const {
   std::unordered_map< std::string, Value > arguments;
   for ( auto& [name,lookupAttribute] : lookups) {
     if ( !status[lookupAttribute->index].has_value() ) {

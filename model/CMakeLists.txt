@@ -89,6 +89,7 @@ target_compile_options(${PROJECT_NAME}
   -Wextra
   -Wconversion
   -Wsign-conversion
+  -Wdeprecated
 )
 
 # Install the header files

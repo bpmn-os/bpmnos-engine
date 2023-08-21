@@ -5,16 +5,14 @@
 #include "model/parser/src/extensionElements/Parameter.h"
 #include "model/utility/src/Number.h"
 #include "model/utility/src/StringRegistry.h"
+#include "model/parser/src/extensionElements/Operator.h"
 
 namespace BPMNOS {
 
-class Operator;
 
-class Set {
+class Set : public Operator {
 public:
-  Set(Operator* base, Attribute* attribute);
-  const Operator* base;
-  Attribute* attribute;
+  Set(XML::bpmnos::tOperator* operator_, AttributeMap& attributeMap);
   Parameter* parameter;
 
 /**
@@ -34,7 +32,7 @@ public:
  *
  * @param status The status values to be updated.
  */
-  void execute(Values& status) const;
+  void apply(Values& status) const override;
 };
 
 } // namespace BPMNOS

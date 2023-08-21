@@ -33,7 +33,7 @@ Status::Status(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent)
 
   for ( XML::bpmnos::tOperator& operator_ : get<XML::bpmnos::tOperators,XML::bpmnos::tOperator>() ) {
     try {
-      operators.push_back( std::make_unique<Operator>( &operator_,  attributeMap ) );
+      operators.push_back( Operator::create( &operator_,  attributeMap ) );
     }
     catch ( ... ){
       throw std::runtime_error("Status: illegal parameters for operator '" + (std::string)operator_.id.value + "'");
