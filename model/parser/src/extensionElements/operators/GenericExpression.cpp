@@ -54,6 +54,7 @@ void GenericExpression::apply(Values& status) const {
     }
     variable = (NumericType)status[boundAttribute->index].value();
   }
-  throw std::logic_error("GenericExpression: operator not yet implemented");
+
+  status[attribute->index] = number(expression.value());
 }
 

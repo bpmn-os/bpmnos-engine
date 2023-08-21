@@ -26,7 +26,6 @@ public:
   exprtk::expression<NumericType> expression; 
   std::vector< std::pair<NumericType&, Attribute *> > bindings; ///< Bindings of expression variables. 
 
-  [[deprecated("Incomplete implementation")]]
   void apply(Values& status) const override;
 };
 

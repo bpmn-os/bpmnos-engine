@@ -28,7 +28,7 @@ LinearExpression::LinearExpression(XML::bpmnos::tOperator* operator_, AttributeM
     if ( part.length() == 0 ) {
       throw std::runtime_error{"LinearExpression::Empty term in expression"};
     }
-    number SIGN = 1.0;
+    NumericType SIGN = 1.0;
     if ( part[0] == '-' ) {
       SIGN = -1.0;
       part.erase(0,1);
@@ -58,7 +58,7 @@ LinearExpression::LinearExpression(XML::bpmnos::tOperator* operator_, AttributeM
 
     size_t pos = part.find("/");
     if ( pos == std::string::npos ) {
-      terms.push_back({ SIGN * number(stod(part)), variable });
+      terms.push_back({ SIGN * NumericType(stod(part)), variable });
     }
     else {
       if ( pos == 0 ) {
@@ -66,13 +66,13 @@ LinearExpression::LinearExpression(XML::bpmnos::tOperator* operator_, AttributeM
         part = std::string("1") + part;
         pos++;
       }
-      terms.push_back({ SIGN * number(stod(part.substr(0,pos)) / stod(part.substr(pos+1))), variable });      
+      terms.push_back({ SIGN * NumericType(stod(part.substr(0,pos)) / stod(part.substr(pos+1))), variable });      
     } 
   }
 }
 
 void LinearExpression::apply(Values& status) const {
-  number result = 0;
+  NumericType result = 0;
   for ( auto& [coefficient,variable] : terms ) {
     if ( variable ) {
       if ( !status[variable->index].has_value() ) {
@@ -86,6 +86,6 @@ void LinearExpression::apply(Values& status) const {
       result += coefficient;
     }
   }
-  status[attribute->index] = result;
+  status[attribute->index] = number(result);
 }
 
