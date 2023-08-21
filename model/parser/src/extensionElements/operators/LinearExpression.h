@@ -14,7 +14,7 @@ public:
   LinearExpression(XML::bpmnos::tOperator* operator_, AttributeMap& attributeMap);
   Parameter* parameter;
  
-  using Term = std::tuple<double,Attribute*>;
+  using Term = std::tuple<number,Attribute*>;
   std::vector<Term> terms;
 
 /**
