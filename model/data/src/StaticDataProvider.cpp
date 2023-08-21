@@ -49,15 +49,12 @@ void StaticDataProvider::readInstances(csv::CSVReader& reader) {
     } 
 
     StaticInstanceData* instanceData = static_cast<StaticInstanceData*>(instances[instanceId].get());
-   
-    if ( auto attributeIt = std::find_if(
-           instanceData->attributes.begin(),
-           instanceData->attributes.end(),
-           [&](const auto& e) { return e.second->name == Keyword::Instance; }
-         ); instanceData->actualValues[ attributeIt->second ] == std::nullopt
+
+    if ( instanceData->instanceAttribute 
+         && !instanceData->actualValues[ instanceData->instanceAttribute ].has_value() 
     ) {
       // set instance attribute if not yet set
-      instanceData->actualValues[ attributeIt->second ] = to_number(instanceId,ValueType::STRING);
+      instanceData->actualValues[ instanceData->instanceAttribute ] = to_number(instanceId,ValueType::STRING);
     }
 
     std::string attributeId = row[ATTRIBUTE_ID].get();

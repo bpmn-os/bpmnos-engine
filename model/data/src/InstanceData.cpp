@@ -1,8 +1,9 @@
 #include "InstanceData.h"
+#include "model/utility/src/Keywords.h"
 
 using namespace BPMNOS;
 
-InstanceData::InstanceData(const BPMN::Process* process, const std::string& id) : process(process), id(id) {
+InstanceData::InstanceData(const BPMN::Process* process, const std::string& id) : process(process), id(id), instanceAttribute(nullptr) {
   // get all nodes with attribute definition
   std::vector< const BPMN::Node* > nodes = process->find_all(
     [](const BPMN::Node* node) {
@@ -18,8 +19,10 @@ InstanceData::InstanceData(const BPMN::Process* process, const std::string& id) 
   for ( auto& node : nodes ) {
     auto status = node->extensionElements->as<const Status>();
     for ( auto& attribute : status->attributes ) {
-      attributes[attribute->id] = attribute.get(); 
-
+      attributes[attribute->id] = attribute.get();
+      if ( attribute->name == Keyword::Instance ) {
+        instanceAttribute = attribute.get();
+      }
       // add std::nullopt to actualValues for all attributes
       actualValues[attribute.get()] = std::nullopt;
       // add std::nullopt or value given in model to defaultValues for all attributes

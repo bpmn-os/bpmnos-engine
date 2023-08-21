@@ -38,6 +38,7 @@ protected:
   const std::unique_ptr<Model> model;  ///< Pointer to the BPMN model.
   std::unordered_map<std::string, const BPMN::Process*> processes; ///< Map of processes defined in the model with key being the process id.
   std::unordered_map<std::string, std::unique_ptr< InstanceData > > instances; ///< Map of instances with key being the instance id.
+
 };
 
 } // namespace BPMNOS

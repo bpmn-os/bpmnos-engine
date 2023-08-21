@@ -2,7 +2,7 @@
 #define BPMNOS_Decisions_H
 
 #include <memory>
-#include <vector>
+#include <unordered_map>
 #include <string>
 #include <bpmn++.h>
 #include "Status.h"
@@ -14,6 +14,8 @@ class Decisions : public Status {
 public:
   Decisions(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent);
   std::vector< std::unique_ptr<Decision> > decisions;
+
+  void makeChoices(const std::unordered_map<Decision*,number>& choices, Values& values) const;
 };
 
 } // namespace BPMNOS

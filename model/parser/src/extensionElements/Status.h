@@ -24,22 +24,8 @@ public:
 
   inline std::size_t size() const { return parentSize + attributes.size(); };
 
-  template <typename T>
-  bool isFeasible(const std::vector<std::optional<T> >& values) const {
-    for ( auto restriction : restrictions ) {
-      if ( !restriction->isSatisfied(values) ) {
-        return false; 
-      }
-    }
-    return true; 
-  }  
-
-  template <typename T>
-  void applyOperators(std::vector<std::optional<T> >& values) const {
-    for ( auto operator_ : operators ) {
-      operator_->apply(values);
-    }
-  }
+  bool isFeasible(const Values& values) const;
+  void applyOperators(Values& values) const;
 
 protected:
   std::size_t parentSize;

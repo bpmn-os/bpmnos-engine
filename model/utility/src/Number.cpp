@@ -13,9 +13,7 @@ number to_number(const std::string& valueString, const ValueType& type) {
     case ValueType::INTEGER:
       return number(std::stoi( valueString ));
     case ValueType::DECIMAL:
-      constexpr double delta = double(std::numeric_limits<number>::epsilon())/2 - std::numeric_limits<number>::epsilon();
-      double d = std::stod( valueString );
-      return d > 0 ? number(d + delta) : number(d - delta);
+      return number(std::stod( valueString ));
   }
   throw std::logic_error("to_number: unknown value type " + type );
 }
@@ -81,9 +79,7 @@ number to_number(const Value& value, const ValueType& type) {
         return number(std::get<int>(value));
       }
       else if (std::holds_alternative<double>(value)) [[likely]] {
-        constexpr double delta = double(std::numeric_limits<number>::epsilon())/2 - std::numeric_limits<number>::epsilon();
-        double d = std::get<double>(value);
-        return number(d > 0 ? d + delta : d - delta);
+        return number(std::get<double>(value));
       }
       else [[unlikely]] {
         throw std::logic_error("to_number: value holds no alternative" );

@@ -5,6 +5,7 @@
 #include "model/parser/src/xml/bpmnos/tRestriction.h"
 #include "model/parser/src/xml/bpmnos/tOperators.h"
 #include "model/parser/src/xml/bpmnos/tOperator.h"
+#include "model/utility/src/Keywords.h"
 
 using namespace BPMNOS;
 
@@ -38,6 +39,21 @@ Status::Status(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent)
     catch ( ... ){
       throw std::runtime_error("Status: illegal parameters for operator '" + (std::string)operator_.id.value + "'");
     }
+  }
+}
+
+bool Status::isFeasible(const Values& values) const {
+  for ( auto& restriction : restrictions ) {
+    if ( !restriction->isSatisfied(values) ) {
+      return false; 
+    }
+  }
+  return true; 
+}  
+
+void Status::applyOperators(Values& values) const {
+  for ( auto& operator_ : operators ) {
+    operator_->apply(values);
   }
 }
 

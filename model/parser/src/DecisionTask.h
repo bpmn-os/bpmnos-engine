@@ -13,12 +13,7 @@ namespace BPMNOS {
 class DecisionTask : public BPMN::Task {
   friend class Model;
 public:
-  DecisionTask(XML::bpmn::tTask* task, BPMN::Scope* parent) [[deprecated("Incomplete implementation")]];
-
-  [[deprecated("Incomplete implementation")]]
-  void apply(const Values& choices, Values& status) const;
-
-protected:
+  DecisionTask(XML::bpmn::tTask* task, BPMN::Scope* parent);
 };
 
 } // namespace BPMNOS

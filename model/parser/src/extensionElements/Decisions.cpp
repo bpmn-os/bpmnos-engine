@@ -13,3 +13,9 @@ Decisions::Decisions(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent)
   }
 }
 
+void Decisions::makeChoices(const std::unordered_map<Decision*,number>& choices, Values& values) const {
+  for ( auto& [decision,value] : choices ) {
+    values[decision->attribute->index] = value;
+  }
+}
+
