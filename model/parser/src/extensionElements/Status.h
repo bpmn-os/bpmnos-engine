@@ -8,6 +8,7 @@
 #include "Attribute.h"
 #include "Restriction.h"
 #include "Operator.h"
+#include "Decision.h"
 
 namespace BPMNOS {
 
@@ -21,11 +22,13 @@ public:
   std::vector< std::unique_ptr<Attribute> > attributes;
   std::vector< std::unique_ptr<Restriction> > restrictions;
   std::vector< std::unique_ptr<Operator> > operators;
+  std::vector< std::unique_ptr<Decision> > decisions;
 
   inline std::size_t size() const { return parentSize + attributes.size(); };
 
   bool isFeasible(const Values& values) const;
   void applyOperators(Values& values) const;
+  void makeChoices(const std::unordered_map<Decision*,number>& choices, Values& values) const;
 
 protected:
   std::size_t parentSize;

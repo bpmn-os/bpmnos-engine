@@ -5,6 +5,16 @@
   <xsd:element name="status" type="tStatus"/>
   <xsd:complexType name="tStatus">
     <xsd:sequence>
+      <xsd:element ref="attributes" minOccurs="0" maxOccurs="1"/>
+      <xsd:element ref="operators" minOccurs="0" maxOccurs="1"/>
+      <xsd:element ref="restrictions" minOccurs="0" maxOccurs="1"/>
+      <xsd:element ref="decisions" minOccurs="0" maxOccurs="1"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:element name="attributes" type="tAttributes"/>
+  <xsd:complexType name="tAttributes">
+    <xsd:sequence>
       <xsd:element ref="attribute" minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
   </xsd:complexType>
@@ -38,7 +48,7 @@
   <xsd:element name="decisions" type="tDecisions"/>
   <xsd:complexType name="tDecisions">
     <xsd:sequence>
-      <xsd:element ref="decisions" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element ref="decision" minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
   </xsd:complexType>
 
@@ -98,6 +108,13 @@
     <xsd:attribute name="name" type="xsd:string" use="required"/>
     <xsd:attribute name="value" type="xsd:string" use="optional"/>
     <xsd:attribute name="attribute" type="xsd:string" use="optional"/>
+  </xsd:complexType>
+
+  <xsd:element name="timer" type="tTimer"/>
+  <xsd:complexType name="tTimer">
+    <xsd:sequence>
+      <xsd:element ref="parameter" minOccurs="1" maxOccurs="1"/>
+    </xsd:sequence>
   </xsd:complexType>
 
   <xsd:element name="message" type="tMessage"/>

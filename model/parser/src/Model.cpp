@@ -6,7 +6,6 @@
 #include "extensionElements/Timer.h"
 #include "extensionElements/MessageSender.h"
 #include "extensionElements/MessageRecipient.h"
-#include "extensionElements/Decisions.h"
 
 #include "DecisionTask.h"
 #include "MessageTaskSubstitution.h"
@@ -40,14 +39,8 @@ std::unique_ptr<BPMN::EventSubProcess> Model::createEventSubProcess(XML::bpmn::t
 
 std::unique_ptr<BPMN::FlowNode> Model::createActivity(XML::bpmn::tActivity* activity, BPMN::Scope* parent) {
   auto node = BPMN::Model::createActivity(activity, parent);
-  if ( node->represents<DecisionTask>() ) {
-    // bind decisions, attributes, restrictions, and operators to all other activities
-    node = bind<BPMN::FlowNode>( node, std::make_unique<Decisions>(activity,parent) );
-  }
-  else {
-    // bind attributes, restrictions, and operators to all other activities
-    node = bind<BPMN::FlowNode>( node, std::make_unique<Status>(activity,parent) );
-  }
+  // bind attributes, restrictions, and operators to all other activities
+  node = bind<BPMN::FlowNode>( node, std::make_unique<Status>(activity,parent) );
 
   if ( auto jobShop = node->parent->represents<JobShop>(); jobShop ) {
     // add node to job list of resource activity

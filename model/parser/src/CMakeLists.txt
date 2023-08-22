@@ -17,6 +17,7 @@ list(APPEND bpmn_SOURCES
   extensionElements/operators/Expression.cpp
   extensionElements/operators/LinearExpression.cpp
   extensionElements/operators/GenericExpression.cpp
+  extensionElements/Decision.cpp
   extensionElements/Status.cpp
   extensionElements/Gatekeeper.cpp
   extensionElements/Timer.cpp
@@ -24,8 +25,6 @@ list(APPEND bpmn_SOURCES
   extensionElements/Message.cpp
   extensionElements/MessageSender.cpp
   extensionElements/MessageRecipient.cpp
-  extensionElements/Decision.cpp
-  extensionElements/Decisions.cpp
   DecisionTask.cpp
   JobShop.cpp
   ResourceActivity.cpp
@@ -47,6 +46,7 @@ list(APPEND bpmn_HEADERS
   extensionElements/operators/Expression.h
   extensionElements/operators/LinearExpression.h
   extensionElements/operators/GenericExpression.h
+  extensionElements/Decision.h
   extensionElements/Status.h
   extensionElements/Gatekeeper.h
   extensionElements/Timer.h
@@ -54,8 +54,6 @@ list(APPEND bpmn_HEADERS
   extensionElements/Message.h
   extensionElements/MessageSender.h
   extensionElements/MessageRecipient.h
-  extensionElements/Decision.h
-  extensionElements/Decisions.h
   DecisionTask.h
   JobShop.h
   ResourceActivity.h
