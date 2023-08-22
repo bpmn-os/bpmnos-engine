@@ -23,9 +23,27 @@ Status::Status(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent)
   if ( auto status = element->getOptionalChild<XML::bpmnos::tStatus>(); status.has_value() ) {
     // add all attributes
     if ( status->get().attributes.has_value() ) {
-      for ( XML::bpmnos::tAttribute& attribute : status->get().attributes.value().get().attribute ) {
-        attributes.push_back(std::make_unique<Attribute>(&attribute,attributeMap));
-        attributeMap[attribute.name.value.value] = attributes.rbegin()->get();
+      for ( XML::bpmnos::tAttribute& attributeElement : status->get().attributes.value().get().attribute ) {
+        auto attribute = std::make_unique<Attribute>(&attributeElement,attributeMap);
+        attributeMap[attribute->name] = attribute.get();
+        if ( attribute->id == Keyword::Instance ) {
+          // always insert instance attribute at first position
+          attributes.insert(attributes.begin(), std::move(attribute));
+        }
+        else if ( attribute->id == Keyword::Timestamp ) {
+          if ( attributes.size() && attributes[0]->id == Keyword::Instance ) {
+            // insert timestamp attribute at the second position
+            attributes.insert(++attributes.begin(), std::move(attribute));
+          }
+          else {
+            // insert timestamp attribute at first position, expecting that 
+            // instance attribute will be insert before
+            attributes.insert(attributes.begin(), std::move(attribute));
+          }
+        }
+        else {
+          attributes.push_back(std::move(attribute));
+        }
       }
     }    
     // add all restrictions

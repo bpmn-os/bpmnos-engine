@@ -41,5 +41,5 @@ Attribute::Attribute(XML::bpmnos::tAttribute* attribute, const AttributeMap& att
     weight = 0;
   }
 
-  isImmutable = (name != Keyword::Timestamp);
+  isImmutable = (id != Keyword::Timestamp);
 }

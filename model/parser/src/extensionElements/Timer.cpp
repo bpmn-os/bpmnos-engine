@@ -11,7 +11,6 @@ Timer::Timer(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent)
   , parent(parent)
 {
   AttributeMap& attributeMap = parent->extensionElements->as<Status>()->attributeMap;
-  timestampAttribute = attributeMap[Keyword::Timestamp];
 
   if ( element ) {
     for ( XML::bpmnos::tParameter& parameter : get<XML::bpmnos::tTimer,XML::bpmnos::tParameter>() ) {
@@ -27,8 +26,8 @@ number Timer::earliest(const Values& status) const {
       return status[trigger->attribute->get().index].value();
     }
     else if ( trigger->value.has_value() ) {
-      return to_number( trigger->value->get().value, timestampAttribute->type );
+      return to_number( trigger->value->get().value, ValueType::DECIMAL );
     }
-    return status[timestampAttribute->index].value();
+    return status[Status::Index::Timestamp].value();
 }  
 

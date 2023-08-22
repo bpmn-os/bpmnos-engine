@@ -15,7 +15,6 @@ public:
   Timer(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent);
   const BPMN::Scope* parent;
   std::unique_ptr<Parameter> trigger;
-  Attribute* timestampAttribute;
 
   number earliest(const Values& values) const;
 };

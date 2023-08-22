@@ -64,8 +64,6 @@ protected:
    * @brief Map providing access to all attributes by their id.
    */
   std::unordered_map< std::string, const Attribute* > attributes;
-
-  const Attribute* instanceAttribute;
 };
 
   

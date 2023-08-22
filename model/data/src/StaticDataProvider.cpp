@@ -50,11 +50,11 @@ void StaticDataProvider::readInstances(csv::CSVReader& reader) {
 
     StaticInstanceData* instanceData = static_cast<StaticInstanceData*>(instances[instanceId].get());
 
-    if ( instanceData->instanceAttribute 
-         && !instanceData->actualValues[ instanceData->instanceAttribute ].has_value() 
-    ) {
+    if ( auto attributeIt = instanceData->attributes.find(Keyword::Instance); attributeIt != instanceData->attributes.end() ) {
       // set instance attribute if not yet set
-      instanceData->actualValues[ instanceData->instanceAttribute ] = to_number(instanceId,ValueType::STRING);
+      if ( !instanceData->actualValues[ attributeIt->second ].has_value() ) {
+        instanceData->actualValues[ attributeIt->second ] = to_number(instanceId,ValueType::STRING);
+      }
     }
 
     std::string attributeId = row[ATTRIBUTE_ID].get();
