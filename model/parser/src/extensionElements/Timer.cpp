@@ -1,6 +1,8 @@
 #include "Timer.h"
 #include "Status.h"
 #include "model/utility/src/Keywords.h"
+#include "model/parser/src/xml/bpmnos/tTimer.h"
+#include "model/parser/src/xml/bpmnos/tParameter.h"
 
 using namespace BPMNOS;
 
@@ -12,7 +14,7 @@ Timer::Timer(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent)
   timestampAttribute = attributeMap[Keyword::Timestamp];
 
   if ( element ) {
-    for ( XML::bpmnos::tParameter& parameter : element->getChildren<XML::bpmnos::tParameter>() ) {
+    for ( XML::bpmnos::tParameter& parameter : get<XML::bpmnos::tTimer,XML::bpmnos::tParameter>() ) {
       if ( parameter.name.value.value == "trigger" ) {
         trigger = std::make_unique<Parameter>(&parameter,attributeMap);
       }
