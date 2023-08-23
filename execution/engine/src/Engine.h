@@ -12,9 +12,14 @@ class Engine {
 public:
   Engine(BPMNOS::Model::DataProvider* dataProvider);
   BPMNOS::Model::DataProvider* dataProvider;
-  void startInstances();
+
+  void start(BPMNOS::number time = 0);
+/**
+ * @brief Returns the current timestamp of execution.
+ */
   BPMNOS::number getTimestamp();
 
+protected:
   struct AnticipatedInstantiation {
     BPMNOS::number anticipatedTime;
     const BPMNOS::Model::InstanceData* instance;
@@ -22,8 +27,16 @@ public:
         return anticipatedTime < other.anticipatedTime;
     }
   };
-protected:
+
   BPMNOS::number timestamp;
+/**
+ * @brief Starts instances whose start time has been reached.
+ *
+ * This function iterates through the set of anticipated instances and
+ * starts all instances for which the actual or assumed start time has
+ * been reached.
+ */
+  void startInstances();
 
   void startInstance(const BPMNOS::Model::InstanceData* instance);
 

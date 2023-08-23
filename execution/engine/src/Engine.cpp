@@ -30,6 +30,11 @@ Engine::Engine(BPMNOS::Model::DataProvider* dataProvider) : dataProvider(dataPro
   }
 }
 
+void Engine::start(BPMNOS::number time) {
+  timestamp = time;
+  startInstances();
+}
+
 void Engine::startInstances() {
   for (auto it = anticipatedInstances.begin(); it != anticipatedInstances.end(); ) {
     auto timestampAttribute = it->instance->getAttributeById(BPMNOS::Keyword::Timestamp);
