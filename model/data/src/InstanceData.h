@@ -49,6 +49,7 @@ public:
    */
   virtual std::optional<BPMNOS::number> getAssumedValue(const Attribute* attribute) const = 0;
 
+  const Attribute* getAttributeById(const std::string& id) const;
 protected:
   /**
    * @brief Map holding all the actual attribute values or std::nullopt if the respective value is not yet known with certainty or if it is known to be undefined.

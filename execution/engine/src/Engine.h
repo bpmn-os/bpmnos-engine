@@ -1,7 +1,7 @@
 #ifndef BPMNOS_Engine_H
 #define BPMNOS_Engine_H
 
-#include <map>
+#include <set>
 #include <vector>
 #include "model/data/src/DataProvider.h"
 #include "StateMachine.h"
@@ -12,13 +12,24 @@ class Engine {
 public:
   Engine(BPMNOS::Model::DataProvider* dataProvider);
   BPMNOS::Model::DataProvider* dataProvider;
-  void start();
+  void startInstances();
   BPMNOS::number getTimestamp();
+
+  struct AnticipatedInstantiation {
+    BPMNOS::number anticipatedTime;
+    const BPMNOS::Model::InstanceData* instance;
+    bool operator<(const AnticipatedInstantiation& other) const {
+        return anticipatedTime < other.anticipatedTime;
+    }
+  };
 protected:
   BPMNOS::number timestamp;
+
+  void startInstance(const BPMNOS::Model::InstanceData* instance);
+
   std::vector< std::unique_ptr<StateMachine> > completedInstances; ///< Vector containing the final states of completed instances (even if failed).
   std::vector< std::unique_ptr<StateMachine> > runningInstances; ///< Vector containing the current state of running instances.
-  std::map<BPMNOS::number,BPMNOS::Model::InstanceData*, std::less<number> > anticipatedInstances; ///< Map of instances that are anticipated but have not yet started, ordered by the anticipated start time.
+  std::set< AnticipatedInstantiation > anticipatedInstances; ///< Set of instances that are anticipated but have not yet started, ordered by the anticipated start time.
 };
 
 } // namespace BPMNOS
