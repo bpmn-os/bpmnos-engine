@@ -5,7 +5,7 @@
 #include <string>
 #include "xml/bpmnos/tMessage.h"
 
-namespace BPMNOS {
+namespace BPMNOS::Model {
 
 class MessageTaskSubstitution : public BPMN::SubProcess {
   friend class Model;
@@ -35,7 +35,7 @@ protected:
 
 };
 
-} // namespace BPMNOS
+} // namespace BPMNOS::Model
 
 #endif // BPMNOS_MessageTaskSubstitution_H
 

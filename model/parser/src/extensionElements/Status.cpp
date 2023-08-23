@@ -7,7 +7,7 @@
 #include "model/parser/src/xml/bpmnos/tOperator.h"
 #include "model/utility/src/Keywords.h"
 
-using namespace BPMNOS;
+using namespace BPMNOS::Model;
 
 Status::Status(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent)
   : BPMN::ExtensionElements( baseElement )

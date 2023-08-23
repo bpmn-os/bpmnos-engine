@@ -2,7 +2,7 @@
 #include "Status.h"
 #include "model/parser/src/xml/bpmnos/tEnumeration.h"
 
-using namespace BPMNOS;
+using namespace BPMNOS::Model;
 
 Restriction::Restriction(XML::bpmnos::tRestriction* restriction, AttributeMap& attributeMap)
   : element(restriction)

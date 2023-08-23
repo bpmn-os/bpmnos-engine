@@ -1,7 +1,7 @@
 #include "Lookup.h"
 #include "model/parser/src/extensionElements/Operator.h"
 
-using namespace BPMNOS;
+using namespace BPMNOS::Model;
 
 Lookup::Lookup(XML::bpmnos::tOperator* operator_, AttributeMap& attributeMap)
   : Operator(operator_, attributeMap)

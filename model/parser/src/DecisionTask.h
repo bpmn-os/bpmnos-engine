@@ -7,7 +7,7 @@
 #include <bpmn++.h>
 #include "model/utility/src/Number.h"
 
-namespace BPMNOS {
+namespace BPMNOS::Model {
 
 
 class DecisionTask : public BPMN::Task {
@@ -16,6 +16,6 @@ public:
   DecisionTask(XML::bpmn::tTask* task, BPMN::Scope* parent);
 };
 
-} // namespace BPMNOS
+} // namespace BPMNOS::Model
 
 #endif // BPMNOS_DecisionTask_H

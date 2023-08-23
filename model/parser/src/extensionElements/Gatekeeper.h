@@ -7,7 +7,7 @@
 #include <bpmn++.h>
 #include "Restriction.h"
 
-namespace BPMNOS {
+namespace BPMNOS::Model {
 
 
 class Gatekeeper : public BPMN::ExtensionElements {
@@ -27,6 +27,6 @@ public:
   }  
 };
 
-} // namespace BPMNOS
+} // namespace BPMNOS::Model
 
 #endif // BPMNOS_Gatekeeper_H

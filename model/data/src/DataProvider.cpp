@@ -1,6 +1,6 @@
 #include "DataProvider.h"
 
-using namespace BPMNOS;
+using namespace BPMNOS::Model;
 
 DataProvider::DataProvider(const std::string& modelFile)
   : model(std::make_unique<Model>(modelFile))
@@ -17,10 +17,10 @@ const std::unordered_map<std::string, std::unique_ptr< InstanceData > >& DataPro
   return instances;
 }
 
-void DataProvider::appendActualValues( const InstanceData* instance, const BPMN::Node* node, Values& values ) const {
+void DataProvider::appendActualValues( const InstanceData* instance, const BPMN::Node* node, BPMNOS::Values& values ) const {
   auto status = node->extensionElements->as<Status>();
   for ( auto& attribute : status->attributes ) {
-    std::optional<number> value = instance->getActualValue(attribute.get());
+    std::optional<BPMNOS::number> value = instance->getActualValue(attribute.get());
     if ( value ) {
       values.push_back( value.value() );
     }
@@ -33,13 +33,13 @@ void DataProvider::appendActualValues( const InstanceData* instance, const BPMN:
 void DataProvider::appendPredictedValues( 
   [[maybe_unused]] const InstanceData* instance,
   [[maybe_unused]] const BPMN::Node* node, 
-  [[maybe_unused]] Values& values )
+  [[maybe_unused]] BPMNOS::Values& values )
   const {}
 
 void DataProvider::appendAssumedValues(
   [[maybe_unused]] const InstanceData* instance,
   [[maybe_unused]] const BPMN::Node* node, 
-  [[maybe_unused]] Values& values )
+  [[maybe_unused]] BPMNOS::Values& values )
   const {}
 
 

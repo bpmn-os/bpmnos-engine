@@ -14,7 +14,7 @@
 #include "RequestActivity.h"
 #include "ReleaseActivity.h"
 
-using namespace BPMNOS;
+using namespace BPMNOS::Model;
 
 Model::Model(const std::string& filename)
 {

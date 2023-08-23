@@ -5,7 +5,7 @@
 #include "StaticInstanceData.h"
 #include <csv.hpp>
 
-namespace BPMNOS {
+namespace BPMNOS::Model {
 
 /**
  * @brief Class representing a data provider for static BPMN instance data.
@@ -29,6 +29,6 @@ protected:
   void readInstances(csv::CSVReader& reader);
 };
 
-} // namespace BPMNOS
+} // namespace BPMNOS::Model
 
 #endif // BPMNOS_StaticDataProvider_H

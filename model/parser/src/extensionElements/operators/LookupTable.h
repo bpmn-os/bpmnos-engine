@@ -10,7 +10,7 @@
 #include "model/parser/src/extensionElements/Attribute.h"
 #include "model/utility/src/Value.h"
 
-namespace BPMNOS {
+namespace BPMNOS::Model {
 
 /**
  * A LookupTable loads a CSV file with header line and

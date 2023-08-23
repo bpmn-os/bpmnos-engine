@@ -4,15 +4,15 @@
 #include "Token.h"
 #include "model/data/src/InstanceData.h"
 
-namespace BPMNOS {
+namespace BPMNOS::Execution {
 
 class StateMachine {
 public:
-  StateMachine(const InstanceData* instance);
-  const InstanceData* instance;
+  StateMachine(const BPMNOS::Model::InstanceData* instance);
+  const BPMNOS::Model::InstanceData* instance;
 private:
 };
 
-} // namespace BPMNOS
+} // namespace BPMNOS::Execution
 
 #endif // BPMNOS_StateMachine_H

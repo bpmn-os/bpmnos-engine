@@ -10,7 +10,7 @@
 #include "model/utility/src/StringRegistry.h"
 #include "model/utility/src/Number.h"
 
-namespace BPMNOS {
+namespace BPMNOS::Model {
 
 class MessageSender : public Message {
 public:
@@ -34,9 +34,9 @@ public:
  * @param status The status values to be included in the message.
  * @return A map containing key-value pairs representing the generated message.
  */
-  ValueMap send(const Values& status) const;
+  BPMNOS::ValueMap send(const BPMNOS::Values& status) const;
 };
 
-} // namespace BPMNOS
+} // namespace BPMNOS::Model
 
 #endif // BPMNOS_MessageSender_H

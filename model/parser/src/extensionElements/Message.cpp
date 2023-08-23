@@ -4,7 +4,7 @@
 #include "model/parser/src/xml/bpmnos/tMessage.h"
 #include "model/parser/src/xml/bpmnos/tContent.h"
 
-using namespace BPMNOS;
+using namespace BPMNOS::Model;
 
 Message::Message(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent)
   : BPMN::ExtensionElements( baseElement ) 

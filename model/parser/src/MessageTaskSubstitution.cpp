@@ -6,7 +6,7 @@
 #include "RequestActivity.h"
 #include "ReleaseActivity.h"
 
-using namespace BPMNOS;
+using namespace BPMNOS::Model;
 
 
 MessageTaskSubstitution::MessageTaskSubstitution(std::unique_ptr<XML::XMLObject> substitutionRoot, BPMN::Scope* parent)

@@ -1,6 +1,6 @@
 #include "Unset.h"
 
-using namespace BPMNOS;
+using namespace BPMNOS::Model;
 
 Unset::Unset(XML::bpmnos::tOperator* operator_, AttributeMap& attributeMap)
   : Operator(operator_, attributeMap)

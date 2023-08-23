@@ -1,6 +1,6 @@
 #include "Parameter.h"
 
-using namespace BPMNOS;
+using namespace BPMNOS::Model;
 
 Parameter::Parameter(XML::bpmnos::tParameter* parameter, AttributeMap& attributeMap)
   : element(parameter)

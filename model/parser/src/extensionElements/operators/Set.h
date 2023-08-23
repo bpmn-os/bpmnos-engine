@@ -7,7 +7,7 @@
 #include "model/utility/src/StringRegistry.h"
 #include "model/parser/src/extensionElements/Operator.h"
 
-namespace BPMNOS {
+namespace BPMNOS::Model {
 
 
 class Set : public Operator {
@@ -35,6 +35,6 @@ public:
   void apply(Values& status) const override;
 };
 
-} // namespace BPMNOS
+} // namespace BPMNOS::Model
 
 #endif // BPMNOS_Set_H

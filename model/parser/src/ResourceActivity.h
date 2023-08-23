@@ -6,7 +6,7 @@
 #include <optional>
 #include <bpmn++.h>
 
-namespace BPMNOS {
+namespace BPMNOS::Model {
 
 class ResourceActivity : public BPMN::SubProcess {
   friend class Model;
@@ -15,6 +15,6 @@ public:
   std::vector<BPMN::Activity*> jobs;
 };
 
-} // namespace BPMNOS
+} // namespace BPMNOS::Model
 
 #endif // BPMNOS_ResourceActivity_H

@@ -1,6 +1,6 @@
 #include "ReleaseActivity.h"
 
-using namespace BPMNOS;
+using namespace BPMNOS::Model;
 
 ReleaseActivity::ReleaseActivity(XML::bpmn::tSubProcess* subProcess, BPMN::Scope* parent)
   : BPMN::Node(subProcess)

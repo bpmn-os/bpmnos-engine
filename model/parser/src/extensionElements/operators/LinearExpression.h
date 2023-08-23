@@ -7,7 +7,7 @@
 #include "model/utility/src/Number.h"
 #include "Expression.h"
 
-namespace BPMNOS {
+namespace BPMNOS::Model {
 
 class LinearExpression : public Expression {
 public:
@@ -39,6 +39,6 @@ public:
   void apply(Values& status) const override;
 };
 
-} // namespace BPMNOS
+} // namespace BPMNOS::Model
 
 #endif // BPMNOS_LinearExpression_H

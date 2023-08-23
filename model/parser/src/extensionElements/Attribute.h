@@ -10,7 +10,7 @@
 #include "model/utility/src/Value.h"
 #include "model/utility/src/Number.h"
 
-namespace BPMNOS {
+namespace BPMNOS::Model {
 
 class Attribute;
 
@@ -34,6 +34,6 @@ public:
   bool isImmutable; ///< Flag indicating whether attribute value may be changed. 
 };
 
-} // namespace BPMNOS
+} // namespace BPMNOS::Model
 
 #endif // BPMNOS_Attribute_H

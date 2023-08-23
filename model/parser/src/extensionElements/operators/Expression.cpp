@@ -2,7 +2,7 @@
 #include "LinearExpression.h"
 #include "GenericExpression.h"
 
-using namespace BPMNOS;
+using namespace BPMNOS::Model;
 
 Expression::Expression(XML::bpmnos::tOperator* operator_, AttributeMap& attributeMap)
   : Operator(operator_, attributeMap)

@@ -10,7 +10,7 @@
 #include "model/parser/src/xml/bpmnos/tRestriction.h"
 #include "Attribute.h"
 
-namespace BPMNOS {
+namespace BPMNOS::Model {
 
 class Restriction {
 public:
@@ -68,6 +68,6 @@ public:
   bool isSatisfied(const Values& status) const;
 };
 
-} // namespace BPMNOS
+} // namespace BPMNOS::Model
 
 #endif // BPMNOS_Restriction_H

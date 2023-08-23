@@ -6,19 +6,19 @@
 #include "model/data/src/DataProvider.h"
 #include "StateMachine.h"
 
-namespace BPMNOS {
+namespace BPMNOS::Execution {
 
 class Engine {
 public:
-  Engine(DataProvider* dataProvider);
-  DataProvider* dataProvider;
+  Engine(BPMNOS::Model::DataProvider* dataProvider);
+  BPMNOS::Model::DataProvider* dataProvider;
   void start();
-  number getTimestamp();
+  BPMNOS::number getTimestamp();
 protected:
-  number timestamp;
+  BPMNOS::number timestamp;
   std::vector< std::unique_ptr<StateMachine> > completedInstances; ///< Vector containing the final states of completed instances (even if failed).
   std::vector< std::unique_ptr<StateMachine> > runningInstances; ///< Vector containing the current state of running instances.
-  std::map<number,InstanceData*, std::less<number> > anticipatedInstances; ///< Map of instances that are anticipated but have not yet started, ordered by the anticipated start time.
+  std::map<BPMNOS::number,BPMNOS::Model::InstanceData*, std::less<number> > anticipatedInstances; ///< Map of instances that are anticipated but have not yet started, ordered by the anticipated start time.
 };
 
 } // namespace BPMNOS

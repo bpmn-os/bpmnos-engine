@@ -11,7 +11,7 @@
 #include "model/parser/src/xml/bpmnos/tAttribute.h"
 #include "model/parser/src/extensionElements/Status.h"
 
-namespace BPMNOS {
+namespace BPMNOS::Model {
 
 /**
  * @brief Abstract base class representing instance data associated with a BPMN process.
@@ -37,28 +37,28 @@ public:
   /**
    * @brief Method returning the known attribute value and std::nullopt if the value is not yet known with certainty or if it is known to be undefined.
    */
-  std::optional<number> getActualValue(const Attribute* attribute) const;
+  std::optional<BPMNOS::number> getActualValue(const Attribute* attribute) const;
 
   /**
    * @brief Virtual method returning a prediction of the attribute value and std::nullopt if no prediction can be made or the value is predicted to be undefined.
    */
-  virtual std::optional<number> getPredictedValue(const Attribute* attribute) const = 0;
+  virtual std::optional<BPMNOS::number> getPredictedValue(const Attribute* attribute) const = 0;
 
   /**
    * @brief Virtual method returning an assumption on the attribute value and std::nullopt if no assumption can be made or the value is assumed to be undefined.
    */
-  virtual std::optional<number> getAssumedValue(const Attribute* attribute) const = 0;
+  virtual std::optional<BPMNOS::number> getAssumedValue(const Attribute* attribute) const = 0;
 
 protected:
   /**
    * @brief Map holding all the actual attribute values or std::nullopt if the respective value is not yet known with certainty or if it is known to be undefined.
    */
-  std::unordered_map< const Attribute*, std::optional<number> > actualValues;
+  std::unordered_map< const Attribute*, std::optional<BPMNOS::number> > actualValues;
 
   /**
    * @brief Map holding all the default attribute values provided in the model.
    */
-  std::unordered_map< const Attribute*, std::optional<number> > defaultValues;
+  std::unordered_map< const Attribute*, std::optional<BPMNOS::number> > defaultValues;
 
   /**
    * @brief Map providing access to all attributes by their id.
@@ -67,6 +67,6 @@ protected:
 };
 
   
-} // namespace BPMNOS
+} // namespace BPMNOS::Model
 
 #endif // BPMNOS_InstanceData_H

@@ -5,7 +5,7 @@
 #include <unordered_map>
 #include <algorithm>
 
-using namespace BPMNOS;
+using namespace BPMNOS::Model;
 
 StaticDataProvider::StaticDataProvider(const std::string& modelFile, const std::string& instanceFileOrString)
   :  DataProvider(modelFile)
@@ -53,7 +53,7 @@ void StaticDataProvider::readInstances(csv::CSVReader& reader) {
     if ( auto attributeIt = instanceData->attributes.find(Keyword::Instance); attributeIt != instanceData->attributes.end() ) {
       // set instance attribute if not yet set
       if ( !instanceData->actualValues[ attributeIt->second ].has_value() ) {
-        instanceData->actualValues[ attributeIt->second ] = to_number(instanceId,ValueType::STRING);
+        instanceData->actualValues[ attributeIt->second ] = BPMNOS::to_number(instanceId,BPMNOS::ValueType::STRING);
       }
     }
 
@@ -69,7 +69,7 @@ void StaticDataProvider::readInstances(csv::CSVReader& reader) {
     }
 
     auto attribute = instanceData->attributes[attributeId];
-    instanceData->actualValues[ attribute ] = to_number(row[VALUE].get(),attribute->type);
+    instanceData->actualValues[ attribute ] = BPMNOS::to_number(row[VALUE].get(),attribute->type);
   }
 }
 

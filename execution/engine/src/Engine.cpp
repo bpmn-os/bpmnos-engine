@@ -1,8 +1,8 @@
 #include "Engine.h"
 
-using namespace BPMNOS;
+using namespace BPMNOS::Execution;
 
-Engine::Engine(DataProvider* dataProvider) : dataProvider(dataProvider) {
+Engine::Engine(BPMNOS::Model::DataProvider* dataProvider) : dataProvider(dataProvider) {
   timestamp = 0;
 }
 
@@ -13,7 +13,7 @@ void Engine::start() {
   }
 }
 
-number Engine::getTimestamp() {
+BPMNOS::number Engine::getTimestamp() {
   return timestamp;
 }
 

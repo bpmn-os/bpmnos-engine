@@ -1,7 +1,7 @@
 #ifndef BPMNOS_Token_H
 #define BPMNOS_Token_H
 
-namespace BPMNOS {
+namespace BPMNOS::Execution {
 
 class Token {
 public:
@@ -21,7 +21,7 @@ private:
   State state;
 };
 
-} // namespace BPMNOS
+} // namespace BPMNOS::Execution
 
 #endif // BPMNOS_Token_H
 

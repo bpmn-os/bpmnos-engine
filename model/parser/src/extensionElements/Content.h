@@ -11,7 +11,7 @@
 #include "Attribute.h"
 #include "model/utility/src/Number.h"
 
-namespace BPMNOS {
+namespace BPMNOS::Model {
 
 class Content;
 
@@ -34,6 +34,6 @@ protected:
 
 typedef std::unordered_map< std::string, std::unique_ptr<Content> > contentMap;
 
-} // namespace BPMNOS
+} // namespace BPMNOS::Model
 
 #endif // BPMNOS_Content_H

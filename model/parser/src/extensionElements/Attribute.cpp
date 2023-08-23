@@ -1,7 +1,7 @@
 #include "Attribute.h"
 #include "model/utility/src/Keywords.h"
 
-using namespace BPMNOS;
+using namespace BPMNOS::Model;
 
 Attribute::Attribute(XML::bpmnos::tAttribute* attribute, const AttributeMap& attributeMap)
   : element(attribute)

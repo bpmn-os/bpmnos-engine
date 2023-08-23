@@ -8,7 +8,7 @@
 #include "Parameter.h"
 #include "model/utility/src/Number.h"
 
-namespace BPMNOS {
+namespace BPMNOS::Model {
 
 class Timer : public BPMN::ExtensionElements {
 public:
@@ -16,9 +16,9 @@ public:
   const BPMN::Scope* parent;
   std::unique_ptr<Parameter> trigger;
 
-  number earliest(const Values& values) const;
+  BPMNOS::number earliest(const BPMNOS::Values& values) const;
 };
 
-} // namespace BPMNOS
+} // namespace BPMNOS::Model
 
 #endif // BPMNOS_Timer_H

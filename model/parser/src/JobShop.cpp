@@ -1,7 +1,7 @@
 #include "JobShop.h"
 #include "ResourceActivity.h"
 
-using namespace BPMNOS;
+using namespace BPMNOS::Model;
 
 JobShop::JobShop(XML::bpmn::tSubProcess* subProcess, BPMN::Scope* parent)
   : BPMN::Node(subProcess)

@@ -1,7 +1,7 @@
 #include "Set.h"
 #include "model/parser/src/extensionElements/Operator.h"
 
-using namespace BPMNOS;
+using namespace BPMNOS::Model;
 
 Set::Set(XML::bpmnos::tOperator* operator_, AttributeMap& attributeMap)
   : Operator(operator_, attributeMap)

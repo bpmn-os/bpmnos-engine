@@ -10,7 +10,7 @@
 #include "model/utility/src/StringRegistry.h"
 #include "model/utility/src/Number.h"
 
-namespace BPMNOS {
+namespace BPMNOS::Model {
 
 class MessageRecipient : public Message {
 public:
@@ -38,9 +38,9 @@ public:
  * @param status The status values to be updated.
  * @param message The message content containing key-value pairs.
  */
-  void receive(Values& status, const ValueMap& message) const;
+  void receive(BPMNOS::Values& status, const BPMNOS::ValueMap& message) const;
 };
 
-} // namespace BPMNOS
+} // namespace BPMNOS::Model
 
 #endif // BPMNOS_MessageRecipient_H

@@ -2,7 +2,7 @@
 #include "Parameter.h"
 #include "Status.h"
 
-using namespace BPMNOS;
+using namespace BPMNOS::Model;
 
 MessageSender::MessageSender(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent)
   : Message( baseElement, parent ) 
@@ -17,8 +17,8 @@ MessageSender::MessageSender(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* 
   }
 }
 
-ValueMap MessageSender::send(const Values& status) const {
-  ValueMap message;
+BPMNOS::ValueMap MessageSender::send(const BPMNOS::Values& status) const {
+  BPMNOS::ValueMap message;
   for ( auto& content : contents ) {
     // if the content refers to an attribute that has a value in the status use that value,
     // otherwise use the default value of the message event

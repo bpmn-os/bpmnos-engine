@@ -2,7 +2,7 @@
 #include "Parameter.h"
 #include "Status.h"
 
-using namespace BPMNOS;
+using namespace BPMNOS::Model;
 
 MessageRecipient::MessageRecipient(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent)
   : Message( baseElement, parent ) 
@@ -23,7 +23,7 @@ MessageRecipient::MessageRecipient(XML::bpmn::tBaseElement* baseElement, BPMN::S
   }
 }
 
-void MessageRecipient::receive(Values& status, const ValueMap& message) const {
+void MessageRecipient::receive(BPMNOS::Values& status, const BPMNOS::ValueMap& message) const {
   for ( auto& content : contents ) {
     // use the value of the message if available, 
     // otherwise use the default value of the message event if available, 

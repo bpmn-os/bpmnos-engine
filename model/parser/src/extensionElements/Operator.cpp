@@ -4,7 +4,7 @@
 #include "operators/Lookup.h"
 #include "operators/Expression.h"
 
-using namespace BPMNOS;
+using namespace BPMNOS::Model;
 
 Operator::Operator(XML::bpmnos::tOperator* operator_, AttributeMap& attributeMap)
   : element(operator_)

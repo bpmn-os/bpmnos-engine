@@ -1,7 +1,6 @@
 #include "StateMachine.h"
 
-using namespace BPMNOS;
-using namespace BPMNOS;
+using namespace BPMNOS::Execution;
 
-StateMachine::StateMachine(const InstanceData* instance) : instance(instance) {
+StateMachine::StateMachine(const BPMNOS::Model::InstanceData* instance) : instance(instance) {
 }

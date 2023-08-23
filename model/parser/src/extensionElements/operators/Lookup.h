@@ -8,7 +8,7 @@
 #include "model/parser/src/extensionElements/Operator.h"
 #include "LookupTable.h"
 
-namespace BPMNOS {
+namespace BPMNOS::Model {
 
 class Lookup : public Operator {
 public:
@@ -48,6 +48,6 @@ public:
   void apply(Values& status) const override;
 };
 
-} // namespace BPMNOS
+} // namespace BPMNOS::Model
 
 #endif // BPMNOS_Lookup_H

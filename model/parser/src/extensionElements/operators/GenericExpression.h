@@ -9,7 +9,7 @@
 #include "model/utility/src/StringRegistry.h"
 #include "Expression.h"
 
-namespace BPMNOS {
+namespace BPMNOS::Model {
 
 
 class GenericExpression : public Expression {
@@ -29,6 +29,6 @@ public:
   void apply(Values& status) const override;
 };
 
-} // namespace BPMNOS
+} // namespace BPMNOS::Model
 
 #endif // BPMNOS_GenericExpression_H

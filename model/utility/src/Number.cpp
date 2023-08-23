@@ -102,4 +102,4 @@ std::string to_string(number numberValue, const ValueType& type) {
   throw std::logic_error("to_string: unknown value type " + type );
 }
 
-} // namespace BPMNOS
+} // namespace BPMNOS::Model

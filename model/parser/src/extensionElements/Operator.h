@@ -13,7 +13,7 @@
 #include "Attribute.h"
 #include "Parameter.h"
 
-namespace BPMNOS {
+namespace BPMNOS::Model {
 
 class Operator {
 public:
@@ -39,6 +39,6 @@ public:
   }
 };
 
-} // namespace BPMNOS
+} // namespace BPMNOS::Model
 
 #endif // BPMNOS_Operator_H

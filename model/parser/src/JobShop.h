@@ -6,7 +6,7 @@
 #include <optional>
 #include <bpmn++.h>
 
-namespace BPMNOS {
+namespace BPMNOS::Model {
 
 class ResourceActivity;
 
@@ -19,6 +19,6 @@ protected:
   ResourceActivity* getResource();
 };
 
-} // namespace BPMNOS
+} // namespace BPMNOS::Model
 
 #endif // BPMNOS_Job_H

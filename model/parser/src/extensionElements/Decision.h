@@ -8,7 +8,7 @@
 #include "model/parser/src/xml/bpmnos/tDecision.h"
 #include "Attribute.h"
 
-namespace BPMNOS {
+namespace BPMNOS::Model {
 
 class Decision {
 public:
@@ -18,6 +18,6 @@ public:
   Attribute* attribute;
 };
 
-} // namespace BPMNOS
+} // namespace BPMNOS::Model
 
 #endif // BPMNOS_Decision_H

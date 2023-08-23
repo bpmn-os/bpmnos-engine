@@ -9,7 +9,7 @@
 #include "model/utility/src/StringRegistry.h"
 #include "model/parser/src/extensionElements/Operator.h"
 
-namespace BPMNOS {
+namespace BPMNOS::Model {
 
 class Expression : public Operator {
 public:
@@ -19,6 +19,6 @@ public:
   virtual void apply(Values& values) const = 0;
 };
 
-} // namespace BPMNOS
+} // namespace BPMNOS::Model
 
 #endif // BPMNOS_Expression_H

@@ -1,6 +1,6 @@
 #include "GenericExpression.h"
 
-using namespace BPMNOS;
+using namespace BPMNOS::Model;
 
 GenericExpression::GenericExpression(XML::bpmnos::tOperator* operator_, AttributeMap& attributeMap)
   : Expression(operator_, attributeMap)

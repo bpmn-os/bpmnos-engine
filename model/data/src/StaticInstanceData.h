@@ -3,7 +3,7 @@
 
 #include "InstanceData.h"
 
-namespace BPMNOS {
+namespace BPMNOS::Model {
 
 class StaticDataProvider;
 
@@ -22,14 +22,14 @@ public:
   /**
    * @brief Virtual method returning a prediction of the attribute value and std::nullopt if no prediction can be made or the value is predicted to be undefined.
    */
-  virtual std::optional<number> getPredictedValue(const Attribute* attribute) const override;
+  virtual std::optional<BPMNOS::number> getPredictedValue(const Attribute* attribute) const override;
 
   /**
    * @brief Virtual method returning an assumption on the attribute value and std::nullopt if no assumption can be made or the value is assumed to be undefined.
    */
-  virtual std::optional<number> getAssumedValue(const Attribute* attribute) const override;
+  virtual std::optional<BPMNOS::number> getAssumedValue(const Attribute* attribute) const override;
 };
 
-} // namespace BPMNOS
+} // namespace BPMNOS::Model
 
 #endif // BPMNOS_StaticInstanceData_H

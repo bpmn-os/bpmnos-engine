@@ -8,7 +8,7 @@
 #include "Parameter.h"
 #include "Content.h"
 
-namespace BPMNOS {
+namespace BPMNOS::Model {
 
 class Message : public BPMN::ExtensionElements {
 public:
@@ -20,6 +20,6 @@ public:
   ContentMap contentMap; ///< Map allowing to look up contents by their keys.
 };
 
-} // namespace BPMNOS
+} // namespace BPMNOS::Model
 
 #endif // BPMNOS_Message_H

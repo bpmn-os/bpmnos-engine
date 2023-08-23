@@ -8,7 +8,7 @@
 #include "xml/bpmnos/tAllocations.h"
 #include "xml/bpmnos/tRequest.h"
 
-namespace BPMNOS {
+namespace BPMNOS::Model {
 
 class RequestActivity : public BPMN::SubProcess {
   friend class Model;
@@ -17,6 +17,6 @@ public:
   std::vector< std::reference_wrapper<XML::bpmnos::tRequest> > requests;
 };
 
-} // namespace BPMNOS
+} // namespace BPMNOS::Model
 
 #endif // BPMNOS_RequestActivity_H

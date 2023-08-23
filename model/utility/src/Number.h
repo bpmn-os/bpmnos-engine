@@ -49,7 +49,7 @@ namespace BPMNOS {
    */
   std::string to_string(number numberValue, const ValueType& type);
 
-} // namespace BPMNOS
+} // namespace BPMNOS::Model
 
 #endif // BPMNOS_Number_H
 

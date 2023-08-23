@@ -1,6 +1,6 @@
 #include "Content.h"
 
-using namespace BPMNOS;
+using namespace BPMNOS::Model;
 
 Content::Content(XML::bpmnos::tContent* content, AttributeMap& attributeMap)
   : element(content)

@@ -10,7 +10,7 @@
 #include "model/parser/src/Model.h"
 #include "InstanceData.h"
 
-namespace BPMNOS {
+namespace BPMNOS::Model {
 
 /**
  * @brief Abstract base class representing a data provider for BPMN instance data.
@@ -30,9 +30,9 @@ public:
   const Model& getModel() const;
   const std::unordered_map<std::string, std::unique_ptr< InstanceData > >& getInstances() const;
 
-  void appendActualValues( const InstanceData* instance, const BPMN::Node* node, Values& values) const;
-  void appendPredictedValues( const InstanceData* instance, const BPMN::Node* node, Values& values ) const;
-  void appendAssumedValues( const InstanceData* instance, const BPMN::Node* node, Values& values ) const;
+  void appendActualValues( const InstanceData* instance, const BPMN::Node* node, BPMNOS::Values& values) const;
+  void appendPredictedValues( const InstanceData* instance, const BPMN::Node* node, BPMNOS::Values& values ) const;
+  void appendAssumedValues( const InstanceData* instance, const BPMN::Node* node, BPMNOS::Values& values ) const;
 
 protected:
   const std::unique_ptr<Model> model;  ///< Pointer to the BPMN model.
@@ -41,6 +41,6 @@ protected:
 
 };
 
-} // namespace BPMNOS
+} // namespace BPMNOS::Model
 
 #endif // BPMNOS_DataProvider_H

@@ -10,7 +10,7 @@
 #include "model/parser/src/xml/bpmnos/tParameter.h"
 #include "Attribute.h"
 
-namespace BPMNOS {
+namespace BPMNOS::Model {
 
 class Parameter {
 public:
@@ -27,6 +27,6 @@ protected:
 
 typedef std::unordered_map< std::string, std::unique_ptr<Parameter> > ParameterMap;
 
-} // namespace BPMNOS
+} // namespace BPMNOS::Model
 
 #endif // BPMNOS_Parameter_H

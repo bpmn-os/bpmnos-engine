@@ -6,7 +6,7 @@
 #include <string>
 #include <bpmn++.h>
 
-namespace BPMNOS {
+namespace BPMNOS::Model {
 
 /**
  * @brief Represents a BPMN model with all its processes.
@@ -37,6 +37,6 @@ public:
 
 };
 
-} // namespace BPMNOS
+} // namespace BPMNOS::Model
 
 #endif // BPMNOS_Model_H

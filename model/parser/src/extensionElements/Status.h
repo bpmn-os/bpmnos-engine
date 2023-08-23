@@ -10,7 +10,7 @@
 #include "Operator.h"
 #include "Decision.h"
 
-namespace BPMNOS {
+namespace BPMNOS::Model {
 
 
 class Status : public BPMN::ExtensionElements {
@@ -36,6 +36,6 @@ protected:
   std::size_t parentSize;
 };
 
-} // namespace BPMNOS
+} // namespace BPMNOS::Model
 
 #endif // BPMNOS_Status_H

@@ -1,6 +1,6 @@
 SCENARIO( "Linear expression", "[data][static][expression]" ) {
   const std::string modelFile = "Expression/linearExpression.bpmn";
-  REQUIRE_NOTHROW( BPMNOS::Model(modelFile) );
+  REQUIRE_NOTHROW( Model::Model(modelFile) );
 
   GIVEN( "An expression z = 3*x + 5*y" ) {
     WHEN( "The expression is executed with x = 8, y = 15" ) {
@@ -9,11 +9,11 @@ SCENARIO( "Linear expression", "[data][static][expression]" ) {
         "Process_1, Instance_1,X,8\n"
         "Process_1, Instance_1,Y,15\n"
       ;
-      BPMNOS::StaticDataProvider dataProvider(modelFile,csv);
+      Model::StaticDataProvider dataProvider(modelFile,csv);
       auto& instances = dataProvider.getInstances();
       THEN( "The result is correct" ) {
         for ( auto& [id,instance] : instances ) {
-          auto status = instance->process->extensionElements->represents<Status>();
+          auto status = instance->process->extensionElements->represents<Model::Status>();
           Values values;
           dataProvider.appendActualValues(instance.get(),instance->process,values);
           REQUIRE( values.size() == 3 );
@@ -32,11 +32,11 @@ SCENARIO( "Linear expression", "[data][static][expression]" ) {
         "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
         "Process_1, Instance_1,Y,15\n"
       ;
-      BPMNOS::StaticDataProvider dataProvider(modelFile,csv);
+      Model::StaticDataProvider dataProvider(modelFile,csv);
       auto& instances = dataProvider.getInstances();
       THEN( "The result is correct" ) {
         for ( auto& [id,instance] : instances ) {
-          auto status = instance->process->extensionElements->represents<Status>();
+          auto status = instance->process->extensionElements->represents<Model::Status>();
           Values values;
           dataProvider.appendActualValues(instance.get(),instance->process,values);
           REQUIRE( values.size() == 3 );
@@ -55,7 +55,7 @@ SCENARIO( "Linear expression", "[data][static][expression]" ) {
 
 SCENARIO( "Another linear expression", "[data][static][expression]" ) {
   const std::string modelFile = "Expression/anotherLinearExpression.bpmn";
-  REQUIRE_NOTHROW( BPMNOS::Model(modelFile) );
+  REQUIRE_NOTHROW( Model::Model(modelFile) );
 
   GIVEN( "An expression z = 3 + y/5" ) {
     WHEN( "The expression is executed with x = undefined, y = 15" ) {
@@ -63,11 +63,11 @@ SCENARIO( "Another linear expression", "[data][static][expression]" ) {
         "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
         "Process_1, Instance_1,Y,15\n"
       ;
-      BPMNOS::StaticDataProvider dataProvider(modelFile,csv);
+      Model::StaticDataProvider dataProvider(modelFile,csv);
       auto& instances = dataProvider.getInstances();
       THEN( "The result is correct" ) {
         for ( auto& [id,instance] : instances ) {
-          auto status = instance->process->extensionElements->represents<Status>();
+          auto status = instance->process->extensionElements->represents<Model::Status>();
           Values values;
           dataProvider.appendActualValues(instance.get(),instance->process,values);
           REQUIRE( values.size() == 3 );
@@ -87,7 +87,7 @@ SCENARIO( "Another linear expression", "[data][static][expression]" ) {
 
 SCENARIO( "Generic expression", "[data][static][expression]" ) {
   const std::string modelFile = "Expression/genericExpression.bpmn";
-  REQUIRE_NOTHROW( BPMNOS::Model(modelFile) );
+  REQUIRE_NOTHROW( Model::Model(modelFile) );
 
   GIVEN( "An expression z = 3*x + 5*y" ) {
     WHEN( "The expression is executed with x = 8, y = 15" ) {
@@ -96,11 +96,11 @@ SCENARIO( "Generic expression", "[data][static][expression]" ) {
         "Process_1, Instance_1,X,8\n"
         "Process_1, Instance_1,Y,15\n"
       ;
-      BPMNOS::StaticDataProvider dataProvider(modelFile,csv);
+      Model::StaticDataProvider dataProvider(modelFile,csv);
       auto& instances = dataProvider.getInstances();
       THEN( "The result is correct" ) {
         for ( auto& [id,instance] : instances ) {
-          auto status = instance->process->extensionElements->represents<Status>();
+          auto status = instance->process->extensionElements->represents<Model::Status>();
           Values values;
           dataProvider.appendActualValues(instance.get(),instance->process,values);
           REQUIRE( values.size() == 3 );
@@ -119,11 +119,11 @@ SCENARIO( "Generic expression", "[data][static][expression]" ) {
         "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
         "Process_1, Instance_1,Y,15\n"
       ;
-      BPMNOS::StaticDataProvider dataProvider(modelFile,csv);
+      Model::StaticDataProvider dataProvider(modelFile,csv);
       auto& instances = dataProvider.getInstances();
       THEN( "The result is correct" ) {
         for ( auto& [id,instance] : instances ) {
-          auto status = instance->process->extensionElements->represents<Status>();
+          auto status = instance->process->extensionElements->represents<Model::Status>();
           Values values;
           dataProvider.appendActualValues(instance.get(),instance->process,values);
           REQUIRE( values.size() == 3 );

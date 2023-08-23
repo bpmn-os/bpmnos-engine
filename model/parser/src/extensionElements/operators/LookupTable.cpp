@@ -1,6 +1,6 @@
 #include "LookupTable.h"
 
-using namespace BPMNOS;
+using namespace BPMNOS::Model;
 
 LookupTable::LookupTable(const std::string& filename) {
   csv::CSVReader reader = openCsv(filename);

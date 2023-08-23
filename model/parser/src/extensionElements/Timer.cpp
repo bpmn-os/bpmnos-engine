@@ -4,7 +4,7 @@
 #include "model/parser/src/xml/bpmnos/tTimer.h"
 #include "model/parser/src/xml/bpmnos/tParameter.h"
 
-using namespace BPMNOS;
+using namespace BPMNOS::Model;
 
 Timer::Timer(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent)
   : BPMN::ExtensionElements( baseElement ) 
@@ -21,12 +21,12 @@ Timer::Timer(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent)
   }
 }
 
-number Timer::earliest(const Values& status) const {
+BPMNOS::number Timer::earliest(const BPMNOS::Values& status) const {
     if ( trigger->attribute.has_value() && status[trigger->attribute->get().index].has_value() ) {
       return status[trigger->attribute->get().index].value();
     }
     else if ( trigger->value.has_value() ) {
-      return to_number( trigger->value->get().value, ValueType::DECIMAL );
+      return to_number( trigger->value->get().value, BPMNOS::ValueType::DECIMAL );
     }
     return status[Status::Index::Timestamp].value();
 }  

@@ -3,7 +3,7 @@
 #include "model/parser/src/xml/bpmnos/tRestrictions.h"
 #include "model/parser/src/xml/bpmnos/tRestriction.h"
 
-using namespace BPMNOS;
+using namespace BPMNOS::Model;
 
 Gatekeeper::Gatekeeper(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent)
   : BPMN::ExtensionElements( baseElement ) 

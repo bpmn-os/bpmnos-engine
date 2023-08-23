@@ -1,6 +1,6 @@
 #include "Decision.h"
 
-using namespace BPMNOS;
+using namespace BPMNOS::Model;
 
 Decision::Decision(XML::bpmnos::tDecision* decision, AttributeMap& attributeMap)
   : element(decision)

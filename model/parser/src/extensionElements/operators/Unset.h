@@ -5,9 +5,7 @@
 #include "model/utility/src/Number.h"
 #include "model/parser/src/extensionElements/Operator.h"
 
-namespace BPMNOS {
-
-class Operator;
+namespace BPMNOS::Model {
 
 class Unset : public Operator {
 public:
@@ -21,6 +19,6 @@ public:
   void apply(Values& status) const override;
 };
 
-} // namespace BPMNOS
+} // namespace BPMNOS::Model
 
 #endif // BPMNOS_Unset_H

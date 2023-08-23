@@ -1,7 +1,7 @@
 #include "InstanceData.h"
 #include "model/utility/src/Keywords.h"
 
-using namespace BPMNOS;
+using namespace BPMNOS::Model;
 
 InstanceData::InstanceData(const BPMN::Process* process, const std::string& id) : process(process), id(id) {
   // get all nodes with attribute definition
@@ -29,6 +29,6 @@ InstanceData::InstanceData(const BPMN::Process* process, const std::string& id) 
   }
 }
 
-std::optional<number> InstanceData::getActualValue(const BPMNOS::Attribute* attribute) const {
+std::optional<BPMNOS::number> InstanceData::getActualValue(const Attribute* attribute) const {
   return actualValues.at(attribute);
 }

@@ -2,7 +2,7 @@
 #include "model/utility/src/Keywords.h"
 #include <regex>
 
-using namespace BPMNOS;
+using namespace BPMNOS::Model;
 
 LinearExpression::LinearExpression(XML::bpmnos::tOperator* operator_, AttributeMap& attributeMap)
   : Expression(operator_, attributeMap)
