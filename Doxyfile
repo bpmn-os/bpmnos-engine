@@ -5,7 +5,7 @@ PROJECT_NAME      = bpmnos
 OUTPUT_DIRECTORY  = docs
 
 # Input sources
-INPUT             = /usr/local/include/bpmn++.h model/parser/src/ lib/ model/parser/src/xml/ model/parser/src/xml/bpmnos/ README.md
+INPUT             = /usr/local/include/bpmn++.h model/parser/src/ lib/ model/parser/src/xml/ model/parser/src/ execution/engine/src/ execution/controller/src/ xml/bpmnos/ README.md
 
 USE_MDFILE_AS_MAINPAGE = README.md
 
