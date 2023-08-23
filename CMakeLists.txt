@@ -57,7 +57,7 @@ include_directories(
 #target_link_libraries(${PROJECT_NAME} exprtk)
 
 add_subdirectory(model)
-add_subdirectory(engine)
+add_subdirectory(execution)
 #add_subdirectory(controller)
 add_subdirectory(tests)
 

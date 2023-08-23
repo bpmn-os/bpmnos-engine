@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.26.4)
 
-project(bpmnos-model)
+project(bpmnos-execution)
 
 # Set folder for the library to be created
 set(LIB_DIR "lib" CACHE STRING "Library directory")
@@ -10,32 +10,8 @@ message("-- Library will be created in folder: ${CMAKE_SOURCE_DIR}/${LIB_DIR}")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/${LIB_DIR})
 #set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR})
 
-include(FetchContent)
-set(FETCHCONTENT_QUIET FALSE)
-
-# String Util
-FetchContent_Declare(
-        strutil
-        GIT_REPOSITORY https://github.com/Shot511/strutil.git
-        GIT_TAG dafb13e8e5e7761dc9a731862a666221e82cd546 # Version 1.0.2 as of Jan 7, 2023
-)
-
-if (NOT strutil_POPULATED)
-    FetchContent_Populate(strutil)
-endif ()
-include_directories(
-  SYSTEM
-  ${strutil_SOURCE_DIR} 
-)
-
-# Get lists of all headers and sources of utilities
-include("${PROJECT_SOURCE_DIR}/utility/CMakeLists.txt")
-
-# Get lists of all headers and sources of BPMN parser
-include("${PROJECT_SOURCE_DIR}/parser/CMakeLists.txt")
-
-# Get lists of all headers and sources of data reader
-include("${PROJECT_SOURCE_DIR}/data/CMakeLists.txt")
+# Get lists of all headers and sources of BPMN engine
+include("${PROJECT_SOURCE_DIR}/engine/CMakeLists.txt")
 
 find_program(CCACHE_FOUND "ccache")
 set(CCACHE_SUPPORT ON CACHE BOOL "Enable ccache support")
@@ -56,7 +32,7 @@ file(MAKE_DIRECTORY "${CMAKE_SOURCE_DIR}/${LIB_DIR}")
 # Generate the single header file
 file(WRITE "${SINGLE_HEADER_PATH}" "// Automatically generated single header file\n")
 
-foreach(HEADER ${utility_HEADERS} ${bpmn_HEADERS} ${data_HEADERS})
+foreach(HEADER ${engine_HEADERS})
   file(READ ${HEADER} HEADER_CONTENTS)
   string(REGEX REPLACE "#include \"[^\"]*\"\n" "" HEADER_CONTENTS "${HEADER_CONTENTS}")
   file(APPEND "${SINGLE_HEADER_PATH}" "${HEADER_CONTENTS}")
@@ -65,19 +41,11 @@ endforeach()
 # Set the C++ standard
 set(CMAKE_CXX_STANDARD 20)
 
-add_library(${PROJECT_NAME} STATIC ${utility_SOURCES} ${bpmn_SOURCES} ${data_SOURCES})
-
-# Delete xml directory when running `make clean`
-set_property(
-  TARGET ${PROJECT_NAME}
-  APPEND
-  PROPERTY ADDITIONAL_CLEAN_FILES "${XML_DIR}"
-)
-
+add_library(${PROJECT_NAME} STATIC ${engine_SOURCES})
 
 target_compile_options(${PROJECT_NAME}
   PRIVATE
-#  -O3
+  -O3
   -Werror
   -fmax-errors=1 # Remove
   -Wno-error=unused-parameter # Remove
@@ -89,10 +57,4 @@ target_compile_options(${PROJECT_NAME}
   -Wconversion
   -Wsign-conversion
 )
-
-# Install the header files
-#install(FILES ${SINGLE_HEADER_PATH} DESTINATION include)
-
-# Install the library
-#install(TARGETS ${PROJECT_NAME} ARCHIVE DESTINATION lib)
 

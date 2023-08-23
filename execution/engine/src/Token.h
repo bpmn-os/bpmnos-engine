@@ -1,9 +1,7 @@
-#pragma once
+#ifndef BPMNOS_Token_H
+#define BPMNOS_Token_H
 
-//#include "Decision.h"
-//#include "Status.h"
-
-namespace BPMNOS::Execution {
+namespace BPMNOS {
 
 class Token {
 public:
@@ -23,5 +21,7 @@ private:
   State state;
 };
 
-} // namespace BPMNOS::Execution
+} // namespace BPMNOS
+
+#endif // BPMNOS_Token_H
 
