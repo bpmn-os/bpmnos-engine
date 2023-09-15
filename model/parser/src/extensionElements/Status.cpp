@@ -5,6 +5,8 @@
 #include "model/parser/src/xml/bpmnos/tRestriction.h"
 #include "model/parser/src/xml/bpmnos/tOperators.h"
 #include "model/parser/src/xml/bpmnos/tOperator.h"
+#include "model/parser/src/xml/bpmnos/tDecisions.h"
+#include "model/parser/src/xml/bpmnos/tDecision.h"
 #include "model/utility/src/Keywords.h"
 
 using namespace BPMNOS::Model;
@@ -79,6 +81,23 @@ Status::Status(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent)
         }
       }
     }    
+  }
+
+  // add all guidances
+  for ( XML::bpmnos::tGuidance& item : element->getChildren<XML::bpmnos::tGuidance>() ) {
+    auto guidance = std::make_unique<Guidance>(&item,attributeMap);
+    if ( guidance->type == Guidance::Type::Message ) {
+      messageGuidance = std::move(guidance);
+    }
+    else if ( guidance->type == Guidance::Type::Entry ) {
+      entryGuidance = std::move(guidance);
+    }
+    else if ( guidance->type == Guidance::Type::Exit ) {
+      exitGuidance = std::move(guidance);
+    }
+    else if ( guidance->type == Guidance::Type::Choice ) {
+      choiceGuidance = std::move(guidance);
+    }
   }
 }
 

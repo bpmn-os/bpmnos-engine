@@ -18,6 +18,7 @@ list(APPEND bpmn_SOURCES
   extensionElements/operators/LinearExpression.cpp
   extensionElements/operators/GenericExpression.cpp
   extensionElements/Decision.cpp
+  extensionElements/Guidance.cpp
   extensionElements/Status.cpp
   extensionElements/Gatekeeper.cpp
   extensionElements/Timer.cpp
@@ -47,6 +48,7 @@ list(APPEND bpmn_HEADERS
   extensionElements/operators/LinearExpression.h
   extensionElements/operators/GenericExpression.h
   extensionElements/Decision.h
+  extensionElements/Guidance.h
   extensionElements/Status.h
   extensionElements/Gatekeeper.h
   extensionElements/Timer.h

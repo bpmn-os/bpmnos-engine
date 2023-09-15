@@ -9,6 +9,7 @@
 #include "Restriction.h"
 #include "Operator.h"
 #include "Decision.h"
+#include "Guidance.h"
 
 namespace BPMNOS::Model {
 
@@ -19,7 +20,7 @@ public:
   const BPMN::Scope* parent;
   AttributeMap attributeMap; ///< Map allowing to look up attributes by their names.
 
-  enum Index { Instance, Timestamp }; ///< Indices for instance and timestamp attribute.
+  enum Index { Timestamp, Instance }; ///< Indices for timestamp and instance attribute.
 
   std::vector< std::unique_ptr<Attribute> > attributes;
   std::vector< std::unique_ptr<Restriction> > restrictions;
@@ -32,6 +33,10 @@ public:
   void applyOperators(Values& values) const;
   void makeChoices(const std::unordered_map<Decision*,number>& choices, Values& values) const;
 
+  std::optional< std::unique_ptr<Guidance> > messageGuidance;
+  std::optional< std::unique_ptr<Guidance> > entryGuidance;
+  std::optional< std::unique_ptr<Guidance> > exitGuidance;
+  std::optional< std::unique_ptr<Guidance> > choiceGuidance;
 protected:
   std::size_t parentSize;
 };
