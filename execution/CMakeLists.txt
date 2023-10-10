@@ -32,7 +32,7 @@ file(MAKE_DIRECTORY "${CMAKE_SOURCE_DIR}/${LIB_DIR}")
 # Generate the single header file
 file(WRITE "${SINGLE_HEADER_PATH}" "// Automatically generated single header file\n")
 
-foreach(HEADER ${engine_HEADERS})
+foreach(HEADER ${execution_utility_HEADERS} ${engine_HEADERS})
   file(READ ${HEADER} HEADER_CONTENTS)
   string(REGEX REPLACE "#include \"[^\"]*\"\n" "" HEADER_CONTENTS "${HEADER_CONTENTS}")
   file(APPEND "${SINGLE_HEADER_PATH}" "${HEADER_CONTENTS}")
@@ -41,20 +41,20 @@ endforeach()
 # Set the C++ standard
 set(CMAKE_CXX_STANDARD 20)
 
-add_library(${PROJECT_NAME} STATIC ${engine_SOURCES})
+add_library(${PROJECT_NAME} STATIC ${execution_utility_SOURCES} ${engine_SOURCES})
 
 target_compile_options(${PROJECT_NAME}
   PRIVATE
   -O3
   -Werror
-  -fmax-errors=1 # Remove
-  -Wno-error=unused-parameter # Remove
-  -Wno-error=unused-variable # Remove
   -pedantic-errors
   -Wpedantic
   -Wall
   -Wextra
   -Wconversion
   -Wsign-conversion
+  -fmax-errors=1 # Remove
+  -Wno-error=unused-parameter # Remove
+  -Wno-error=unused-variable # Remove
 )
 

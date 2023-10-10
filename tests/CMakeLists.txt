@@ -30,6 +30,7 @@ target_link_libraries(run_tests
   xerces-c
   bpmn++
   bpmnos-model
+  nlohmann_json::nlohmann_json
   Catch2::Catch2WithMain
 )
 

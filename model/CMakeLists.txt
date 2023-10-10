@@ -23,6 +23,7 @@ FetchContent_Declare(
 if (NOT strutil_POPULATED)
     FetchContent_Populate(strutil)
 endif ()
+
 include_directories(
   SYSTEM
   ${strutil_SOURCE_DIR} 
@@ -56,7 +57,7 @@ file(MAKE_DIRECTORY "${CMAKE_SOURCE_DIR}/${LIB_DIR}")
 # Generate the single header file
 file(WRITE "${SINGLE_HEADER_PATH}" "// Automatically generated single header file\n")
 
-foreach(HEADER ${utility_HEADERS} ${bpmn_HEADERS} ${data_HEADERS})
+foreach(HEADER ${model_utility_HEADERS} ${bpmn_HEADERS} ${data_HEADERS})
   file(READ ${HEADER} HEADER_CONTENTS)
   string(REGEX REPLACE "#include \"[^\"]*\"\n" "" HEADER_CONTENTS "${HEADER_CONTENTS}")
   file(APPEND "${SINGLE_HEADER_PATH}" "${HEADER_CONTENTS}")
@@ -65,7 +66,7 @@ endforeach()
 # Set the C++ standard
 set(CMAKE_CXX_STANDARD 20)
 
-add_library(${PROJECT_NAME} STATIC ${utility_SOURCES} ${bpmn_SOURCES} ${data_SOURCES})
+add_library(${PROJECT_NAME} STATIC ${model_utility_SOURCES} ${bpmn_SOURCES} ${data_SOURCES})
 
 # Delete xml directory when running `make clean`
 set_property(

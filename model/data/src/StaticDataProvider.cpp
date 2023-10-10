@@ -8,23 +8,27 @@
 using namespace BPMNOS::Model;
 
 StaticDataProvider::StaticDataProvider(const std::string& modelFile, const std::string& instanceFileOrString)
-  :  DataProvider(modelFile)
+  : DataProvider(modelFile)
+  , reader( initReader(instanceFileOrString) )
 {
+  readInstances();
+  createScenario();
+}
+
+csv::CSVReader StaticDataProvider::initReader(const std::string& instanceFileOrString) {
   csv::CSVFormat format;
   format.trim({' ', '\t'});
   if (instanceFileOrString.find(",") == std::string::npos) {
-    csv::CSVReader reader(instanceFileOrString, format);
-    readInstances( reader );
+    return csv::CSVReader(instanceFileOrString, format);
   }
   else {
     std::stringstream is;
     is << instanceFileOrString;
-    csv::CSVReader reader(is, format);
-    readInstances( reader );
+    return csv::CSVReader(is, format);
   }
 }
 
-void StaticDataProvider::readInstances(csv::CSVReader& reader) {
+void StaticDataProvider::readInstances() {
   enum {PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE};
 
   for (auto &row : reader) {
@@ -36,7 +40,7 @@ void StaticDataProvider::readInstances(csv::CSVReader& reader) {
       [&processId](const std::unique_ptr<BPMN::Process>& process) { return process->id == processId;}
     );
     if ( processIt == model->processes.end() ) {
-      throw std::runtime_error("DataProvider: model has no process '" + processId + "'");
+      throw std::runtime_error("StaticDataProvider: model has no process '" + processId + "'");
     }
 
     auto process = processIt->get();
@@ -45,16 +49,15 @@ void StaticDataProvider::readInstances(csv::CSVReader& reader) {
     // find instance with respective identifier
     if ( !instances.contains(instanceId) ) {
       // row has first entry for instance, create new entry in data
-      instances[instanceId] = std::make_unique< StaticInstanceData >(process,instanceId);
+      instances[instanceId] = StaticInstanceData({process,instanceId,{}});
     } 
 
-    StaticInstanceData* instanceData = static_cast<StaticInstanceData*>(instances[instanceId].get());
-
-    if ( auto attributeIt = instanceData->attributes.find(Keyword::Instance); attributeIt != instanceData->attributes.end() ) {
+    auto& instance = instances[instanceId];
+    if ( auto it = instance.data.find( attributes[process][Keyword::Instance] ); 
+         it == instance.data.end() 
+    ) {
       // set instance attribute if not yet set
-      if ( !instanceData->actualValues[ attributeIt->second ].has_value() ) {
-        instanceData->actualValues[ attributeIt->second ] = BPMNOS::to_number(instanceId,BPMNOS::ValueType::STRING);
-      }
+      instance.data[ it->first ] = BPMNOS::to_number(instanceId,BPMNOS::ValueType::STRING);
     }
 
     std::string attributeId = row[ATTRIBUTE_ID].get();
@@ -64,12 +67,22 @@ void StaticDataProvider::readInstances(csv::CSVReader& reader) {
       continue;
     }
 
-    if ( !instanceData->attributes.contains(attributeId) ) {
-      throw std::runtime_error("DataProvider: process '" + processId + "' has no node with attribute '" + attributeId + "'");
+    if ( !attributes[process].contains(attributeId) ) {
+      throw std::runtime_error("StaticDataProvider: process '" + processId + "' has no node with attribute '" + attributeId + "'");
     }
 
-    auto attribute = instanceData->attributes[attributeId];
-    instanceData->actualValues[ attribute ] = BPMNOS::to_number(row[VALUE].get(),attribute->type);
+    auto attribute = attributes[process][attributeId];
+    instance.data[ attribute ] = BPMNOS::to_number(row[VALUE].get(),attribute->type);
   }
 }
 
+void StaticDataProvider::createScenario() {
+  std::unique_ptr<Scenario> scenario = std::make_unique<Scenario>(model.get(), attributes);
+  for ( auto& [id, instance] : instances ) {
+    scenario->addInstance(instance.process, id, { {}, {{0, 0}} }); // all instances are known at time 0
+    for ( auto& [attribute, value] : instance.data ) {
+      scenario->setRealization( scenario->getAttributeData(id, attribute), {0, value} ); // all attribute values are known at time 0
+    }
+  }
+  scenarios.push_back(std::move(scenario));
+}

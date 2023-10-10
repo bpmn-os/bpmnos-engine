@@ -1,11 +1,57 @@
 list(APPEND engine_SOURCES
   Token.cpp
+  Event.cpp
+  events/InstantiationEvent.cpp
+  events/TerminationEvent.cpp
+  events/ClockTickEvent.cpp
+  events/ReadyEvent.cpp
+  events/EntryEvent.cpp
+  events/CompletionEvent.cpp
+  events/TriggerEvent.cpp
+  events/MessageDeliveryEvent.cpp
+  events/ChoiceEvent.cpp
+  events/ExitEvent.cpp
   StateMachine.cpp
+  Message.cpp
+  SystemState.cpp
+  EventHandler.cpp
+  eventhandler/TimeWarp.cpp
+  eventhandler/Metronome.cpp
+  eventhandler/InstantExitHandler.cpp
+  eventhandler/InstantEntryHandler.cpp
+  eventhandler/DeterministicCompletionHandler.cpp
+  eventhandler/TimerHandler.cpp
+  eventhandler/KnownReadyHandler.cpp
+  eventhandler/AssumedReadyHandler.cpp
+  eventhandler/KnownInstantiationHandler.cpp
   Engine.cpp
 )
 
 list(APPEND engine_HEADERS
   Token.h
+  Event.h
+  events/InstantiationEvent.h
+  events/TerminationEvent.h
+  events/ClockTickEvent.h
+  events/ReadyEvent.h
+  events/EntryEvent.h
+  events/CompletionEvent.h
+  events/TriggerEvent.h
+  events/MessageDeliveryEvent.h
+  events/ChoiceEvent.h
+  events/ExitEvent.h
   StateMachine.h
+  Message.h
+  SystemState.h
+  EventHandler.h
+  eventhandler/TimeWarp.h
+  eventhandler/Metronome.h
+  eventhandler/InstantExitHandler.h
+  eventhandler/InstantEntryHandler.h
+  eventhandler/DeterministicCompletionHandler.h
+  eventhandler/TimerHandler.h
+  eventhandler/KnownReadyHandler.h
+  eventhandler/AssumedReadyHandler.h
+  eventhandler/KnownInstantiationHandler.h
   Engine.h
 )

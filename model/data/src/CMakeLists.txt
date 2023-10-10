@@ -1,13 +1,13 @@
 list(APPEND data_SOURCES
-  InstanceData.cpp
+  Scenario.cpp
   DataProvider.cpp
-  StaticInstanceData.cpp
   StaticDataProvider.cpp
+  DynamicDataProvider.cpp
 )
 
 list(APPEND data_HEADERS
-  InstanceData.h
+  Scenario.h
   DataProvider.h
-  StaticInstanceData.h
   StaticDataProvider.h
+  DynamicDataProvider.h
 )

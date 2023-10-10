@@ -56,6 +56,27 @@ include_directories(
 )
 #target_link_libraries(${PROJECT_NAME} exprtk)
 
+# nlohmann/json dependency
+FetchContent_Declare(
+        json
+        GIT_REPOSITORY https://github.com/nlohmann/json.git
+        GIT_TAG v3.11.2
+        GIT_PROGRESS   TRUE
+)
+
+FetchContent_GetProperties(json)
+if (NOT json_POPULATED)
+    set(JSON_BuildTests OFF)
+    FetchContent_Populate(json)
+    add_subdirectory(${json_SOURCE_DIR} ${json_BINARY_DIR})
+    #    set_target_properties(nlohmann_json::nlohmann_json PROPERTIES POSITION_INDEPENDENT_CODE ON)
+endif ()
+include_directories(
+  SYSTEM
+  ${json_SOURCE_DIR}/single_include 
+)
+#target_link_libraries(${PROJECT_NAME} nlohmann_json::nlohmann_json)
+
 add_subdirectory(model)
 add_subdirectory(execution)
 #add_subdirectory(controller)

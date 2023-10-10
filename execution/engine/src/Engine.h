@@ -3,48 +3,39 @@
 
 #include <set>
 #include <vector>
-#include "model/data/src/DataProvider.h"
+#include "Event.h"
+#include "EventHandler.h"
 #include "StateMachine.h"
+#include "SystemState.h"
 
 namespace BPMNOS::Execution {
 
 class Engine {
 public:
-  Engine(BPMNOS::Model::DataProvider* dataProvider);
-  BPMNOS::Model::DataProvider* dataProvider;
+  Engine();
+  std::vector<EventHandler*> eventHandlers;
+  void addEventHandler(EventHandler* eventHandler);
+  void start(BPMNOS::number clockTime = 0);
+  std::unique_ptr<Event> listen( const SystemState& systemState );
 
-  void start(BPMNOS::number time = 0);
+//  void processEvent(Event* event);
+
 /**
- * @brief Returns the current timestamp of execution.
+ * @brief Returns the timestamp the engine is in.
  */
-  BPMNOS::number getTimestamp();
+  BPMNOS::number getCurrentTime();
+
+/**
+ * @brief Returns a reference to the system state
+ */
+  const SystemState& getSystemState();
 
 protected:
-  struct AnticipatedInstantiation {
-    BPMNOS::number anticipatedTime;
-    const BPMNOS::Model::InstanceData* instance;
-    bool operator<(const AnticipatedInstantiation& other) const {
-        return anticipatedTime < other.anticipatedTime;
-    }
-  };
+  BPMNOS::number clockTick; ///< Timestep used to advance the current time by systemState.time += clockTick
+  SystemState systemState;
 
-  BPMNOS::number timestamp;
-/**
- * @brief Starts instances whose start time has been reached.
- *
- * This function iterates through the set of anticipated instances and
- * starts all instances for which the actual or assumed start time has
- * been reached.
- */
-  void startInstances();
-
-  void startInstance(const BPMNOS::Model::InstanceData* instance);
-
-  std::vector< std::unique_ptr<StateMachine> > completedInstances; ///< Vector containing the final states of completed instances (even if failed).
-  std::vector< std::unique_ptr<StateMachine> > runningInstances; ///< Vector containing the current state of running instances.
-  std::set< AnticipatedInstantiation > anticipatedInstances; ///< Set of instances that are anticipated but have not yet started, ordered by the anticipated start time.
 };
 
-} // namespace BPMNOS
+} // namespace BPMNOS::Execution
 
 #endif // BPMNOS_Engine_H
