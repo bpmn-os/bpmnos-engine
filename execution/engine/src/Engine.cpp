@@ -25,6 +25,32 @@ std::unique_ptr<Event> Engine::listen( const SystemState& systemState ) {
   return nullptr;
 }
 
+void Engine::run(const BPMNOS::Model::Scenario* scenario) {
+  // create initial system state
+  // TODO
+//  systemState = SystemState(scenario);
+
+  // scenario->update();
+  
+  // instantiate known instances
+
+  while ( systemState.isRunning() ) {
+    // loop until TerminationEvent is received
+
+    // listen to event
+    std::unique_ptr<Event> event = listen( systemState );
+
+    if ( event ) {
+      event->processBy(this);
+    }
+    else {
+      // wait until next time step
+      // TODO
+    }
+  }
+
+}
+
 
 void Engine::start(BPMNOS::number time) {
   systemState.currentTime = time;

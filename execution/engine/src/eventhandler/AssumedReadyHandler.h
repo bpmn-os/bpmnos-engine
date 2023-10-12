@@ -9,7 +9,7 @@ namespace BPMNOS::Execution {
 /**
  * @brief Class creating a ready event when the required data is available a token at an activity.
  */
-struct AssumedReadyHandler : EventHandler {
+class AssumedReadyHandler : public EventHandler {
   AssumedReadyHandler();
   std::unique_ptr<Event> fetchEvent( const SystemState& systemState ) override;
 };

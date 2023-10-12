@@ -26,6 +26,7 @@ struct SystemState {
   std::vector<Token*> awaitingCompletion; ///< Container holding all tokens awaiting a completion event
   std::vector<Token*> awaitingExit; ///< Container holding all tokens awaiting an exit event
 
+  bool isRunning() const { return false; }; // TODO
 private:
   friend class Engine;
   StateMachine* addStateMachine(const InstantiationEvent* event);

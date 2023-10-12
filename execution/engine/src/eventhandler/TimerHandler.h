@@ -9,7 +9,7 @@ namespace BPMNOS::Execution {
 /**
  * @brief Class creating a timer event for a token awaiting the trigger at a catching timer event.
  */
-struct TimerHandler : EventHandler {
+class TimerHandler : public EventHandler {
   TimerHandler();
   std::unique_ptr<Event> fetchEvent( const SystemState& systemState ) override;
 };

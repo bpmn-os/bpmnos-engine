@@ -25,6 +25,10 @@ public:
   Engine();
   std::vector<EventHandler*> eventHandlers;
   void addEventHandler(EventHandler* eventHandler);
+
+  void run(const BPMNOS::Model::Scenario* scenario);
+
+  [[deprecated]]
   void start(BPMNOS::number clockTime = 0);
   std::unique_ptr<Event> listen( const SystemState& systemState );
 

@@ -11,7 +11,7 @@ namespace BPMNOS::Execution {
 /**
  * @brief Class creating a clock tick event each time fetchEvent() after sleeping in order to synchronize with real time.
  */
-class Metronome : EventHandler {
+class Metronome : public EventHandler {
 public:
   Metronome(unsigned int clockTickDuration = 1000);
   std::unique_ptr<Event> fetchEvent( const SystemState& systemState ) override;
