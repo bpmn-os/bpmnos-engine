@@ -1,4 +1,5 @@
 #include "TerminationEvent.h"
+#include "execution/engine/src/Engine.h"
 
 using namespace BPMNOS::Execution;
 
@@ -7,3 +8,6 @@ TerminationEvent::TerminationEvent()
 {
 }
 
+void TerminationEvent::processBy(Engine* engine) const {
+  engine->process(*this);
+}

@@ -11,6 +11,7 @@ namespace BPMNOS::Execution {
  */
 struct TerminationEvent : Event {
   TerminationEvent();
+  void processBy(Engine* engine) const override;
 };
 
 } // namespace BPMNOS::Execution

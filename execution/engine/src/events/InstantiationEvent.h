@@ -15,6 +15,7 @@ namespace BPMNOS::Execution {
  */
 struct InstantiationEvent : Event {
   InstantiationEvent(const BPMN::Process* process, Values status);
+  void processBy(Engine* engine) const override;
   const BPMN::Process* process;
   Values status; ///< Initial status including instance id and other known attribute values.
 };

@@ -14,6 +14,7 @@ namespace BPMNOS::Execution {
  */
 struct ExitEvent : Event {
   ExitEvent(Token* token, std::optional<Values> exitStatus = std::nullopt);
+  void processBy(Engine* engine) const override;
   std::optional<Values> exitStatus;
 };
 

@@ -1,4 +1,5 @@
 #include "InstantiationEvent.h"
+#include "execution/engine/src/Engine.h"
 
 using namespace BPMNOS::Execution;
 
@@ -9,3 +10,6 @@ InstantiationEvent::InstantiationEvent(const BPMN::Process* process, Values stat
 {
 }
 
+void InstantiationEvent::processBy(Engine* engine) const {
+  engine->process(*this);
+}

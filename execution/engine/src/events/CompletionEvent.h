@@ -13,6 +13,7 @@ namespace BPMNOS::Execution {
  */
 struct CompletionEvent : Event {
   CompletionEvent(Token* token);
+  void processBy(Engine* engine) const override;
 };
 
 } // namespace BPMNOS::Execution

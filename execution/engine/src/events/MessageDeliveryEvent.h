@@ -15,6 +15,7 @@ namespace BPMNOS::Execution {
  */
 struct MessageDeliveryEvent : TriggerEvent {
   MessageDeliveryEvent(Token* token, std::optional<Values> status, std::optional< std::vector< std::unique_ptr<Message> >::const_iterator > message);
+  void processBy(Engine* engine) const override;
   std::optional<Values> status;
   std::optional< std::vector< std::unique_ptr<Message> >::const_iterator > message;
 };

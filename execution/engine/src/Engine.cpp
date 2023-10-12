@@ -47,7 +47,8 @@ void Engine::start(BPMNOS::number time) {
     }
     else if ( event.get()->is<ClockTickEvent>() ) {
       // increase clockTime 
-      systemState.currentTime += clockTick;      
+//      systemState.currentTime += clockTick;
+      event->processBy(this);
     }
     else {
       // delegate event processing to relevant state machine
@@ -62,6 +63,42 @@ void Engine::start(BPMNOS::number time) {
     }
   }
 
+}
+
+void Engine::process(const ChoiceEvent& event) {
+  throw std::runtime_error("ChoiceEvent not yet implemented");
+}
+
+void Engine::process(const ClockTickEvent& event) {
+  systemState.currentTime += clockTick;
+}
+
+void Engine::process(const CompletionEvent& event) {
+  throw std::runtime_error("CompletionEvent not yet implemented");
+}
+
+void Engine::process(const EntryEvent& event) {
+  throw std::runtime_error("EntryEvent not yet implemented");
+}
+
+void Engine::process(const ExitEvent& event) {
+  throw std::runtime_error("ExitEvent not yet implemented");
+}
+
+void Engine::process(const InstantiationEvent& event) {
+  throw std::runtime_error("InstantiationEvent not yet implemented");
+}
+void Engine::process(const MessageDeliveryEvent& event) {
+  throw std::runtime_error("MessageDeliveryEvent not yet implemented");
+}
+void Engine::process(const ReadyEvent& event) {
+  throw std::runtime_error("ReadyEvent not yet implemented");
+}
+void Engine::process(const TerminationEvent& event) {
+  throw std::runtime_error("TerminationEvent not yet implemented");
+}
+void Engine::process(const TriggerEvent& event) {
+  throw std::runtime_error("TriggerEvent not yet implemented");
 }
 
 BPMNOS::number Engine::getCurrentTime() {

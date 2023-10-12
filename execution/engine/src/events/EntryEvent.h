@@ -14,6 +14,7 @@ namespace BPMNOS::Execution {
  */
 struct EntryEvent : Event {
   EntryEvent(Token* token, std::optional<Values> entryStatus = std::nullopt);
+  void processBy(Engine* engine) const override;
   std::optional<Values> entryStatus;
 };
 

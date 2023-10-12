@@ -13,6 +13,7 @@ namespace BPMNOS::Execution {
  */
 struct ReadyEvent : Event {
   ReadyEvent(Token* token, std::optional<Values> readyStatus = std::nullopt);
+  void processBy(Engine* engine) const override;
   std::optional<Values> readyStatus;
 };
 
