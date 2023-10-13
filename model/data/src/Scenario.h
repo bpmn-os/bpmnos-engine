@@ -51,6 +51,11 @@ public:
   unsigned int index;
 
   /**
+   * @brief Virtual method allowing derived scenarios to update their data.
+   */
+  virtual void update() {};
+
+  /**
    * @brief Method returning a vector of all instances that are known until the given time.
    */
   std::vector< const InstanceData* > getKnownInstances(BPMNOS::number time) const;
@@ -58,31 +63,42 @@ public:
   /**
    * @brief Method returning a vector of all instances that are known to be instantiated at the given time.
    */
-  std::vector< const InstanceData* > getKnownInstantiations(BPMNOS::number time) const;
+  std::vector< std::pair<const BPMN::Process*, BPMNOS::Values> > getKnownInstantiations(BPMNOS::number time) const;
+//  std::vector< const InstanceData* > getKnownInstantiations(BPMNOS::number time) const;
+
+  /**
+   * @brief Method returning the initial status of a known instantiation at the given time.
+   */
+  Values getKnownInitialStatus(const InstanceData*, BPMNOS::number time) const;
 
   /**
    * @brief Method adding all known attribute values to the status and returning true if and only if all new attribute values are known until the given time.
    *
    * If at least one attribute value is not yet known, the method doesn't change the status.
    */
-  bool getKnownValues(const BPMN::FlowNode* node, Values& status, BPMNOS::number time) const;
+  bool addKnownValues(const BPMN::FlowNode* node, Values& status, BPMNOS::number time) const;
 
-  Values getKnownStatus(const InstanceData*, BPMNOS::number time) const;
 
   /**
    * @brief Method returning a vector of all instances that have been disclosed until the given time.
    */
-  std::vector< const InstanceData* > getAssumedInstances(BPMNOS::number time) const;
+  std::vector< const InstanceData* > getAssumedInstances(BPMNOS::number currentTime, BPMNOS::number assumedTime) const;
 
   /**
    * @brief Method returning a vector of all instances that are assumed to be instantiated at the given time.
    */
-  std::vector< const InstanceData* > getAssumedInstantiations(BPMNOS::number time) const;
+  std::vector< std::pair<const BPMN::Process*, BPMNOS::Values> > getAssumedInstantiations(BPMNOS::number currentTime, BPMNOS::number assumedTime) const;
+//  std::vector< const InstanceData* > getAssumedInstantiations(BPMNOS::number time) const;
+
+  /**
+   * @brief Method returning the initial status of a assumed instantiation at the given time.
+   */
+  Values getAssumedInitialStatus(const InstanceData*, BPMNOS::number currentTime, BPMNOS::number assumedTime) const;
 
   /**
    * @brief Method adding all disclosed attribute values to the status.
    */
-  void getAssumedValues(const BPMN::FlowNode* node, Values& status, BPMNOS::number time) const;
+  void addAssumedValues(const BPMN::FlowNode* node, Values& status, BPMNOS::number currentTime, BPMNOS::number assumedTime) const;
 
   void addInstance(const BPMN::Process* process, const std::string& identifier, Data instantiation);
   void removeAnticipatedInstance(const std::string& identifier);

@@ -38,6 +38,17 @@ std::vector< const Scenario::InstanceData* > Scenario::getKnownInstances(BPMNOS:
   return knownInstances;
 }
 
+std::vector< std::pair<const BPMN::Process*, BPMNOS::Values> > Scenario::getKnownInstantiations(BPMNOS::number time) const {
+  std::vector< std::pair<const BPMN::Process*, BPMNOS::Values> > knownInstantiatons;
+
+  for ( auto [id, instance] : instances ) {
+    if ( instance.instantiation.realization && instance.instantiation.realization->disclosure == time ) {
+      knownInstantiatons.push_back({instance.process,getKnownInitialStatus(&instance,time)});
+    }  
+  }
+  return knownInstantiatons;
+}
+/*
 std::vector< const Scenario::InstanceData* > Scenario::getKnownInstantiations(BPMNOS::number time) const {
   std::vector< const Scenario::InstanceData* > knownInstantiatons;
 
@@ -48,28 +59,9 @@ std::vector< const Scenario::InstanceData* > Scenario::getKnownInstantiations(BP
   }
   return knownInstantiatons;
 }
+*/
 
-
-bool Scenario::getKnownValues(const BPMN::FlowNode* node, Values& status, BPMNOS::number time) const {
-  // get instance id from status
-  std::string instanceId = stringRegistry[ (long unsigned int)status[Status::Index::Instance].value() ];
-  auto& instance = instances.at(instanceId);
-
-  Values newAttributes;
-  for ( auto& attribute : node->extensionElements->as<const Status>()->attributes ) {
-    auto& data = instance.data.at(attribute.get());
-    
-    if ( data.realization && data.realization->disclosure > time ) {
-      return false;
-    }
-    newAttributes.push_back( data.realization->value );
-  }
-
-  status.insert(status.end(), newAttributes.begin(), newAttributes.end());
-  return true;
-}
-
-BPMNOS::Values Scenario::getKnownStatus(const Scenario::InstanceData* instance, BPMNOS::number time) const {
+BPMNOS::Values Scenario::getKnownInitialStatus(const Scenario::InstanceData* instance, BPMNOS::number time) const {
   BPMNOS::Values initalStatus;
   for ( auto& attribute : instance->process->extensionElements->as<const Status>()->attributes ) {
     auto& data = instance->data.at(attribute.get());
@@ -82,58 +74,99 @@ BPMNOS::Values Scenario::getKnownStatus(const Scenario::InstanceData* instance, 
   return initalStatus;
 }
 
+bool Scenario::addKnownValues(const BPMN::FlowNode* node, Values& status, BPMNOS::number time) const {
+  // get instance id from status
+  std::string instanceId = stringRegistry[ (long unsigned int)status[Status::Index::Instance].value() ];
+  auto& instance = instances.at(instanceId);
 
-std::vector< const Scenario::InstanceData* > Scenario::getAssumedInstances(BPMNOS::number time) const {
+  Values values;
+  for ( auto& attribute : node->extensionElements->as<const Status>()->attributes ) {
+    auto& data = instance.data.at(attribute.get());
+    
+    if ( data.realization && data.realization->disclosure > time ) {
+      return false;
+    }
+    values.push_back( data.realization->value );
+  }
+
+  status.insert(status.end(), values.begin(), values.end());
+  return true;
+}
+
+
+
+std::vector< const Scenario::InstanceData* > Scenario::getAssumedInstances(BPMNOS::number currentTime, BPMNOS::number assumedTime) const {
   std::vector< const Scenario::InstanceData* > assumedInstances;
 
   for ( auto [id, instance] : instances ) {
-    if ( instance.instantiation.realization && instance.instantiation.realization->disclosure <= time ) {
+    if ( instance.instantiation.realization && instance.instantiation.realization->disclosure <= currentTime ) {
       assumedInstances.push_back(&instance);
     }  
-    else if ( instance.instantiation.anticipations.size() && instance.instantiation.anticipations.front().disclosure <= time ) {
+    else if ( instance.instantiation.anticipations.size() && instance.instantiation.anticipations.front().disclosure <= assumedTime ) {
       assumedInstances.push_back(&instance);
     }  
   }
   return assumedInstances;
 }
 
-std::vector< const Scenario::InstanceData* > Scenario::getAssumedInstantiations(BPMNOS::number time) const {
-  std::vector< const Scenario::InstanceData* > assumedInstantiatons;
+std::vector< std::pair<const BPMN::Process*, BPMNOS::Values> > Scenario::getAssumedInstantiations(BPMNOS::number currentTime, BPMNOS::number assumedTime) const {
+  std::vector< std::pair<const BPMN::Process*, BPMNOS::Values> > assumedInstantiatons;
 
   for ( auto [id, instance] : instances ) {
-    if ( instance.instantiation.realization && instance.instantiation.realization->value == time ) {
-      assumedInstantiatons.push_back(&instance);
+    if ( instance.instantiation.realization && instance.instantiation.realization->value == currentTime ) {
+      assumedInstantiatons.push_back({instance.process,getKnownInitialStatus(&instance,currentTime)});
     }  
-    else if ( instance.instantiation.anticipations.size() && getLatestDisclosure(instance.instantiation.anticipations,time).value == time ) {
-      assumedInstantiatons.push_back(&instance);
-    }  
+    else if ( instance.instantiation.anticipations.size() && getLatestDisclosure(instance.instantiation.anticipations,currentTime).value == assumedTime ) {
+      assumedInstantiatons.push_back({instance.process,getAssumedInitialStatus(&instance,currentTime,assumedTime)});
+    }
   }
   return assumedInstantiatons;
 }
 
-void Scenario::getAssumedValues(const BPMN::FlowNode* node, Values& status,  BPMNOS::number time) const {
+BPMNOS::Values Scenario::getAssumedInitialStatus(const Scenario::InstanceData* instance, BPMNOS::number currentTime, BPMNOS::number assumedTime) const {
+  BPMNOS::Values initalStatus;
+  for ( auto& attribute : instance->process->extensionElements->as<const Status>()->attributes ) {
+    auto& data = instance->data.at(attribute.get());
+    
+    if ( data.realization && data.realization->disclosure <= currentTime ) {
+      initalStatus.push_back( data.realization->value );
+    }
+    else if ( data.anticipations.size() && data.anticipations.front().disclosure <= assumedTime ) {
+      // add the currently anticipated value
+      initalStatus.push_back( getLatestDisclosure(data.anticipations,currentTime).value );
+    }
+    else {
+      // add undefined value
+      initalStatus.push_back( std::nullopt );
+    }
+  }
+  return initalStatus;
+}
+
+
+void Scenario::addAssumedValues(const BPMN::FlowNode* node, Values& status, BPMNOS::number currentTime, BPMNOS::number assumedTime) const {
   // get instance id from status
   std::string instanceId = stringRegistry[ (long unsigned int)status[Status::Index::Instance].value() ];
   auto& instance = instances.at(instanceId);
 
-  Values newAttributes;
+  Values values;
   for ( auto& attribute : node->extensionElements->as<const Status>()->attributes ) {
     auto& data = instance.data.at(attribute.get());
-    if ( data.realization && data.realization->disclosure <= time ) {
+    if ( data.realization && data.realization->disclosure <= currentTime ) {
       // add the realized value
-      newAttributes.push_back( data.realization->value );
+      values.push_back( data.realization->value );
     }
-    else if ( data.anticipations.size() && data.anticipations.front().disclosure <= time ) {
+    else if ( data.anticipations.size() && data.anticipations.front().disclosure <= assumedTime ) {
       // add the currently anticipated value
-      newAttributes.push_back( getLatestDisclosure(data.anticipations,time).value );
+      values.push_back( getLatestDisclosure(data.anticipations,currentTime).value );
     }
     else {
       // add undefined value
-      newAttributes.push_back( std::nullopt );
+      values.push_back( std::nullopt );
     }
   }
 
-  status.insert(status.end(), newAttributes.begin(), newAttributes.end());
+  status.insert(status.end(), values.begin(), values.end());
 }
 
 const Scenario::Disclosure& Scenario::getLatestDisclosure(const std::vector<Scenario::Disclosure>& data, BPMNOS::number time) const {

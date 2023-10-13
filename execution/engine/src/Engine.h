@@ -27,10 +27,8 @@ public:
   void addEventHandler(EventHandler* eventHandler);
 
   void run(const BPMNOS::Model::Scenario* scenario);
-
-  [[deprecated]]
-  void start(BPMNOS::number clockTime = 0);
-  std::unique_ptr<Event> listen( const SystemState& systemState );
+  void simulate(const SystemState* systemState);
+  void resume();
 
   void process(const ChoiceEvent& event);
   void process(const ClockTickEvent& event);
@@ -49,13 +47,15 @@ public:
   BPMNOS::number getCurrentTime();
 
 /**
- * @brief Returns a reference to the system state
+ * @brief Returns a pointer to the system state
  */
-  const SystemState& getSystemState();
+  const SystemState* getSystemState();
 
 protected:
   BPMNOS::number clockTick; ///< Timestep used to advance the current time by systemState.time += clockTick
-  SystemState systemState;
+  SystemState* systemState;
+  void advance();
+
 
 };
 

@@ -8,14 +8,50 @@
 
 namespace BPMNOS::Execution {
 
-struct SystemState {
-  BPMNOS::number currentTime; ///< Timestamp holding the point in time that the engine is in (this is usually representing now)
-  std::optional<BPMNOS::number> assumedTime; ///< Timestamp holding the point in time that the simulation is in (this could be a future point in time)
-  const BPMNOS::Model::Scenario* scenario;
-  BPMNOS::number getTime() const; ///< Function returning the assumed time time if available or the current time otherwise
+/**
+ * @brief A class representing the state that the execution or simulation of a given scenario is in.
+ */
+class SystemState {
+public:
+  /**
+   * @brief Timestamp holding the point in time that the engine is in (this is usually representing now).
+   */
+  BPMNOS::number currentTime;
 
-  StateMachines instances; ///< Container holding a state machine for each instance
-  Messages messages; ///< Container holding all messages sent but not yet delivered
+  /**
+   * @brief Timestamp holding the point in time that the simulation is in (this could be a future point in time).
+   */
+  std::optional<BPMNOS::number> assumedTime;
+
+  /**
+   * @brief Pointer to the corresponding scenario. 
+   */
+  const BPMNOS::Model::Scenario* scenario;
+
+  /**
+   * @brief Function returning the assumed time time if available or the current time otherwise.
+   */
+  BPMNOS::number getTime() const;
+
+  /**
+   * @brief Function returning true if the system is still alive and false if everything is completed.
+   */
+  bool isAlive() const { return false; }; // TODO
+
+  /**
+   * @brief Method returning a vector of all instantiations at the given time.
+   */
+  std::vector< std::pair<const BPMN::Process*, BPMNOS::Values> > getInstantiations() const;
+
+  /**
+   * @brief Container holding a state machine for each instance.
+   */
+  StateMachines instances; 
+
+  /**
+   * @brief Container holding all messages sent but not yet delivered.
+   */
+  Messages messages; 
 
   std::vector<Token*> awaitingReady; ///< Container holding all tokens awaiting a ready event
   std::vector<Token*> awaitingRegularEntry; ///< Container holding all tokens at regular activities awaiting an entry event
@@ -26,7 +62,6 @@ struct SystemState {
   std::vector<Token*> awaitingCompletion; ///< Container holding all tokens awaiting a completion event
   std::vector<Token*> awaitingExit; ///< Container holding all tokens awaiting an exit event
 
-  bool isRunning() const { return false; }; // TODO
 private:
   friend class Engine;
   StateMachine* addStateMachine(const InstantiationEvent* event);

@@ -13,6 +13,20 @@ StateMachine::StateMachine(const BPMN::Scope* scope, const Values& status,  Toke
   tokens.push_back( std::make_unique<Token>(this,status) );
 }
 
+
+void StateMachine::advance() {
+  for ( auto& token : tokens ) {
+    advance(token.get());
+  }
+}
+
+void StateMachine::advance(Token* token) {
+  throw std::runtime_error("StateMachine: advance token not yet implemented");
+}
+
+
+////////////
+
 bool StateMachine::run(const Event* event) {
   // obtain non-const token the event is referring to
   Token* token = const_cast<Token*>(event->token);
@@ -71,7 +85,7 @@ bool StateMachine::run(Token* token) {
   return true;
 }
 
-bool StateMachine::isCompleted() {
+bool StateMachine::isCompleted() const {
   for ( auto& token : tokens ) {
     if ( token->state != Token::State::DONE ) {
       return false;

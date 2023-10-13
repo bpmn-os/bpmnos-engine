@@ -23,7 +23,7 @@ list(APPEND engine_SOURCES
   eventhandler/TimerHandler.cpp
   eventhandler/KnownReadyHandler.cpp
   eventhandler/AssumedReadyHandler.cpp
-  eventhandler/KnownInstantiationHandler.cpp
+#  eventhandler/KnownInstantiationHandler.cpp
   Engine.cpp
 )
 
@@ -51,7 +51,7 @@ list(APPEND engine_HEADERS
   eventhandler/DeterministicCompletionHandler.h
   eventhandler/TimerHandler.h
   eventhandler/KnownReadyHandler.h
-  eventhandler/AssumedReadyHandler.h
+#  eventhandler/AssumedReadyHandler.h
   eventhandler/KnownInstantiationHandler.h
   Engine.h
 )
