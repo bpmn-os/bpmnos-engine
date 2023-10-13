@@ -8,9 +8,9 @@ DeterministicCompletionHandler::DeterministicCompletionHandler()
 {
 }
 
-std::unique_ptr<Event> DeterministicCompletionHandler::fetchEvent( const SystemState& systemState ) {
-  for ( auto token : systemState.awaitingCompletion ) {
-    if ( token->status[BPMNOS::Model::Status::Index::Timestamp] <= systemState.getTime() ) {  
+std::unique_ptr<Event> DeterministicCompletionHandler::fetchEvent( const SystemState* systemState ) {
+  for ( auto token : systemState->awaitingCompletion ) {
+    if ( token->status[BPMNOS::Model::Status::Index::Timestamp] <= systemState->getTime() ) {  
       return std::make_unique<CompletionEvent>(token);
     }
   }

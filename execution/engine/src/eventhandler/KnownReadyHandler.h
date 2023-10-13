@@ -11,7 +11,7 @@ namespace BPMNOS::Execution {
  */
 class KnownReadyHandler : public EventHandler {
   KnownReadyHandler();
-  std::unique_ptr<Event> fetchEvent( const SystemState& systemState ) override;
+  std::unique_ptr<Event> fetchEvent( const SystemState* systemState ) override;
 };
 
 } // namespace BPMNOS::Execution

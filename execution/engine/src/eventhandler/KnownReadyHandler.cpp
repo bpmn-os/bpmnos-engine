@@ -7,9 +7,9 @@ KnownReadyHandler::KnownReadyHandler()
 {
 }
 
-std::unique_ptr<Event> KnownReadyHandler::fetchEvent( const SystemState& systemState ) {
-  for ( auto token : systemState.awaitingReady ) {
-    if ( systemState.scenario->addKnownValues(token->node, token->status, systemState.currentTime) ) {
+std::unique_ptr<Event> KnownReadyHandler::fetchEvent( const SystemState* systemState ) {
+  for ( auto token : systemState->awaitingReady ) {
+    if ( systemState->scenario->addKnownValues(token->node, token->status, systemState->currentTime) ) {
       return std::make_unique<ReadyEvent>(token);
     }
   }

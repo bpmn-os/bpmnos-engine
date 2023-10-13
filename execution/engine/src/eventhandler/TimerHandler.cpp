@@ -8,11 +8,11 @@ TimerHandler::TimerHandler()
 {
 }
 
-std::unique_ptr<Event> TimerHandler::fetchEvent( const SystemState& systemState ) {
-  for ( auto token : systemState.awaitingTimer ) {
+std::unique_ptr<Event> TimerHandler::fetchEvent( const SystemState* systemState ) {
+  for ( auto token : systemState->awaitingTimer ) {
     if ( auto timer = token->node->extensionElements->as<BPMNOS::Model::Timer>() ) {
       BPMNOS::number trigger = timer->earliest(token->status);
-      if ( trigger <= systemState.getTime() ) {  
+      if ( trigger <= systemState->getTime() ) {  
         return std::make_unique<TriggerEvent>(token);
       }
     }

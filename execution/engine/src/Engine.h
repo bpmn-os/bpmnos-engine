@@ -9,7 +9,6 @@
 #include "events/CompletionEvent.h"
 #include "events/EntryEvent.h"
 #include "events/ExitEvent.h"
-#include "events/InstantiationEvent.h"
 #include "events/MessageDeliveryEvent.h"
 #include "events/ReadyEvent.h"
 #include "events/TerminationEvent.h"
@@ -26,6 +25,8 @@ public:
   std::vector<EventHandler*> eventHandlers;
   void addEventHandler(EventHandler* eventHandler);
 
+  std::unique_ptr<Event> listen( const SystemState* systemState );
+
   void run(const BPMNOS::Model::Scenario* scenario);
   void simulate(const SystemState* systemState);
   void resume();
@@ -35,7 +36,6 @@ public:
   void process(const CompletionEvent& event);
   void process(const EntryEvent& event);
   void process(const ExitEvent& event);
-  void process(const InstantiationEvent& event);
   void process(const MessageDeliveryEvent& event);
   void process(const ReadyEvent& event);
   void process(const TerminationEvent& event);

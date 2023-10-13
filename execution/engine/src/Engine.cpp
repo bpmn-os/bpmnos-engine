@@ -15,8 +15,7 @@ void Engine::addEventHandler(EventHandler* eventHandler) {
   eventHandlers.push_back(eventHandler);
 }
 
-/*
-std::unique_ptr<Event> Engine::listen( const SystemState& systemState ) {
+std::unique_ptr<Event> Engine::listen( const SystemState* systemState ) {
   for ( auto eventHandler : eventHandlers ) {
     if ( auto event = eventHandler->fetchEvent(systemState) ) {
       return event;
@@ -24,7 +23,6 @@ std::unique_ptr<Event> Engine::listen( const SystemState& systemState ) {
   }
   return nullptr;
 }
-*/
 
 void Engine::run(const BPMNOS::Model::Scenario* scenario) {
   // create initial system state
@@ -57,23 +55,16 @@ void Engine::advance() {
     // make sure new data is added to system state
     const_cast<BPMNOS::Model::Scenario*>(systemState->scenario)->update();
 
+    // add all new instances and advance tokens as much as possible
     for (auto& [process,status] : systemState->getInstantiations() ) {
       systemState->instances.push_back(std::make_unique<StateMachine>(process,status));
       systemState->instances.back()->advance();
     }
-/*
-    // loop until TerminationEvent is received
-    // listen to event
-    std::unique_ptr<Event> event = listen( systemState );
 
-    if ( event ) {
+    // listen to event handler and process all events
+    while ( auto event = listen( systemState ) ) {
       event->processBy(this);
     }
-    else {
-      // wait until next time step
-      // TODO
-    }
-*/
   }
 }
 
@@ -138,9 +129,6 @@ void Engine::process(const ExitEvent& event) {
   throw std::runtime_error("Engine: ExitEvent not yet implemented");
 }
 
-void Engine::process(const InstantiationEvent& event) {
-  throw std::runtime_error("Engine: InstantiationEvent not yet implemented");
-}
 void Engine::process(const MessageDeliveryEvent& event) {
   throw std::runtime_error("Engine: MessageDeliveryEvent not yet implemented");
 }
