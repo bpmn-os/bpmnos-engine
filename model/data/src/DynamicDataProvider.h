@@ -22,11 +22,12 @@ public:
    */
   DynamicDataProvider(const std::string& modelFile, const std::string& instanceFileOrString);
   ~DynamicDataProvider() override = default;
+  std::unique_ptr<Scenario> createScenario(unsigned int scenarioId = 0) override;
 protected:
   csv::CSVReader initReader(const std::string& instanceFileOrString);
   csv::CSVReader reader;
   void readInstances();
-  void createScenario();
+
   struct DynamicInstanceData {
     const BPMN::Process* process;
     std::string instanceId;

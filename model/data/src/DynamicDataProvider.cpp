@@ -14,7 +14,6 @@ DynamicDataProvider::DynamicDataProvider(const std::string& modelFile, const std
   , reader( initReader(instanceFileOrString) )
 {
   readInstances();
-  createScenario();
 }
 
 csv::CSVReader DynamicDataProvider::initReader(const std::string& instanceFileOrString) {
@@ -83,8 +82,8 @@ void DynamicDataProvider::readInstances() {
   }
 }
 
-void DynamicDataProvider::createScenario() {
-  std::unique_ptr<Scenario> scenario = std::make_unique<Scenario>(model.get(), attributes);
+std::unique_ptr<Scenario> DynamicDataProvider::createScenario(unsigned int scenarioId) {
+  std::unique_ptr<Scenario> scenario = std::make_unique<Scenario>(model.get(), attributes, scenarioId);
   for ( auto& [id, instance] : instances ) {
     if ( instance.instantiation.empty() ) { 
       // instances without specified instantiation are known at time 0
@@ -115,5 +114,5 @@ void DynamicDataProvider::createScenario() {
       }
     }
   }
-  scenarios.push_back(std::move(scenario));
+  return scenario;
 }

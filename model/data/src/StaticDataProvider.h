@@ -22,11 +22,11 @@ public:
    */
   StaticDataProvider(const std::string& modelFile, const std::string& instanceFileOrString);
   ~StaticDataProvider() override = default;
+  std::unique_ptr<Scenario> createScenario(unsigned int scenarioId = 0) override;
 protected:
   csv::CSVReader initReader(const std::string& instanceFileOrString);
   csv::CSVReader reader;
   void readInstances();
-  void createScenario();
   struct StaticInstanceData {
     const BPMN::Process* process;
     std::string instanceId;

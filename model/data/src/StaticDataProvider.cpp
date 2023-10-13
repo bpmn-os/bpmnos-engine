@@ -12,7 +12,6 @@ StaticDataProvider::StaticDataProvider(const std::string& modelFile, const std::
   , reader( initReader(instanceFileOrString) )
 {
   readInstances();
-  createScenario();
 }
 
 csv::CSVReader StaticDataProvider::initReader(const std::string& instanceFileOrString) {
@@ -76,13 +75,13 @@ void StaticDataProvider::readInstances() {
   }
 }
 
-void StaticDataProvider::createScenario() {
-  std::unique_ptr<Scenario> scenario = std::make_unique<Scenario>(model.get(), attributes);
+std::unique_ptr<Scenario> StaticDataProvider::createScenario(unsigned int scenarioId) {
+  std::unique_ptr<Scenario> scenario = std::make_unique<Scenario>(model.get(), attributes, scenarioId);
   for ( auto& [id, instance] : instances ) {
     scenario->addInstance(instance.process, id, { {}, {{0, 0}} }); // all instances are known at time 0
     for ( auto& [attribute, value] : instance.data ) {
       scenario->setRealization( scenario->getAttributeData(id, attribute), {0, value} ); // all attribute values are known at time 0
     }
   }
-  scenarios.push_back(std::move(scenario));
+  return scenario;
 }
