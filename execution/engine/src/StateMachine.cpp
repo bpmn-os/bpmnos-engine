@@ -6,27 +6,27 @@
 
 using namespace BPMNOS::Execution;
 
-StateMachine::StateMachine(const BPMN::Scope* scope, const Values& status,  Token* parentToken)
+StateMachine::StateMachine(const BPMN::Scope* scope, const Values& status, Token* parentToken)
   : scope(scope)
   , parentToken(parentToken)
 {
-  tokens.push_back( std::make_unique<Token>(this,status) );
+  tokens.push_back( Token(this,status) );
 }
 
 
 void StateMachine::advance() {
   for ( auto& token : tokens ) {
-    advance(token.get());
+    advance(token);
   }
 }
 
-void StateMachine::advance(Token* token) {
+void StateMachine::advance(Token& token) {
   throw std::runtime_error("StateMachine: advance token not yet implemented");
 }
 
 
 ////////////
-
+/*
 bool StateMachine::run(const Event* event) {
   // obtain non-const token the event is referring to
   Token* token = const_cast<Token*>(event->token);
@@ -41,7 +41,7 @@ bool StateMachine::run(const Event* event) {
     }
     else {
       // create child instance
-      childInstances.push_back( std::make_unique<StateMachine>(token->node->as<BPMN::Scope>(),token->status,token) );
+      childInstances.push_back( StateMachine(token->node->as<BPMN::Scope>(),token->status,token) );
       bool runningChild = run( childInstances.back()->tokens.back().get() );
       if ( !runningChild ) {
         token->state = Token::State::COMPLETED;
@@ -100,7 +100,9 @@ bool StateMachine::isCompleted() const {
 
   return true;
 }
+*/
 
+/*
 void StateMachine::continueWithParentToken() {
   // update parent token status
   for ( size_t i = 0; i < parentToken->status.size(); i++ ) {
@@ -109,12 +111,12 @@ void StateMachine::continueWithParentToken() {
       if ( !parentToken->status[i].has_value() ) {
         // parent value has not yet been set
         // use token value whether defined or undefined 
-        parentToken->status[i] = token->status[i].value();
+        parentToken->status[i] = token.status[i].value();
       }
-      else if ( token->status[i].has_value() ) {
+      else if ( token.status[i].has_value() ) {
         // both parent value and token vale are defined
         // check that both have the same value 
-        if ( parentToken->status[i].value() != token->status[i].value() ) {
+        if ( parentToken->status[i].value() != token.status[i].value() ) {
           // conflicting values, use undefined instead and proceed with next value
           parentToken->status[i] = std::nullopt;
           break;
@@ -123,9 +125,10 @@ void StateMachine::continueWithParentToken() {
     }
   }
   // remove state machine from parent
-  erase<StateMachine>(parentToken->owner->childInstances,this);
+  StateMachines* stateMachines = const_cast<StateMachines*>(&parentToken->owner->childInstances);
+  erase<StateMachine>(*stateMachines,this);
 
   parentToken->run();
 }
-
+*/
 

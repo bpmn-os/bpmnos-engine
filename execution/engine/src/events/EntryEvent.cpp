@@ -3,7 +3,7 @@
 
 using namespace BPMNOS::Execution;
 
-EntryEvent::EntryEvent(Token* token, std::optional<Values> entryStatus)
+EntryEvent::EntryEvent(const Token* token, std::optional<Values> entryStatus)
   : Event(token)
   , entryStatus(entryStatus)
 {

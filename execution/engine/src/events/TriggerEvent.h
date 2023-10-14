@@ -12,7 +12,7 @@ namespace BPMNOS::Execution {
  * Transition from State::BUSY to State::COMPLETED
  */
 struct TriggerEvent : Event {
-  TriggerEvent(Token* token);
+  TriggerEvent(const Token* token);
   void processBy(Engine* engine) const override;
 };
 

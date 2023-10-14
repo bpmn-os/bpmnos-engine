@@ -1,7 +1,6 @@
 list(APPEND engine_SOURCES
   Token.cpp
   Event.cpp
-#  events/InstantiationEvent.cpp
   events/TerminationEvent.cpp
   events/ClockTickEvent.cpp
   events/ReadyEvent.cpp
@@ -21,16 +20,13 @@ list(APPEND engine_SOURCES
   eventhandler/InstantEntryHandler.cpp
   eventhandler/DeterministicCompletionHandler.cpp
   eventhandler/TimerHandler.cpp
-  eventhandler/KnownReadyHandler.cpp
-  eventhandler/AssumedReadyHandler.cpp
-#  eventhandler/KnownInstantiationHandler.cpp
+  eventhandler/ReadyHandler.cpp
   Engine.cpp
 )
 
 list(APPEND engine_HEADERS
   Token.h
   Event.h
-#  events/InstantiationEvent.h
   events/TerminationEvent.h
   events/ClockTickEvent.h
   events/ReadyEvent.h
@@ -50,8 +46,6 @@ list(APPEND engine_HEADERS
   eventhandler/InstantEntryHandler.h
   eventhandler/DeterministicCompletionHandler.h
   eventhandler/TimerHandler.h
-  eventhandler/KnownReadyHandler.h
-  eventhandler/AssumedReadyHandler.h
-#  eventhandler/KnownInstantiationHandler.h
+  eventhandler/ReadyHandler.h
   Engine.h
 )

@@ -3,7 +3,7 @@
 
 using namespace BPMNOS::Execution;
 
-ChoiceEvent::ChoiceEvent(Token* token, std::optional<Values> exitStatus)
+ChoiceEvent::ChoiceEvent(const Token* token, std::optional<Values> exitStatus)
   : Event(token)
   , exitStatus(exitStatus)
 {

@@ -3,7 +3,7 @@
 
 using namespace BPMNOS::Execution;
 
-TriggerEvent::TriggerEvent(Token* token)
+TriggerEvent::TriggerEvent(const Token* token)
   : Event(token)
 {
 }

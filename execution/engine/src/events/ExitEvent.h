@@ -13,7 +13,7 @@ namespace BPMNOS::Execution {
  * Transition from State::COMPLETION to State::DONE or State::DEPARTED
  */
 struct ExitEvent : Event {
-  ExitEvent(Token* token, std::optional<Values> exitStatus = std::nullopt);
+  ExitEvent(const Token* token, std::optional<Values> exitStatus = std::nullopt);
   void processBy(Engine* engine) const override;
   std::optional<Values> exitStatus;
 };

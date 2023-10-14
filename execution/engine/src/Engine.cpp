@@ -1,5 +1,4 @@
 #include "Engine.h"
-#include "execution/engine/src/events/InstantiationEvent.h"
 #include "execution/engine/src/events/TerminationEvent.h"
 #include "execution/engine/src/events/ClockTickEvent.h"
 #include "execution/utility/src/erase.h"
@@ -57,8 +56,8 @@ void Engine::advance() {
 
     // add all new instances and advance tokens as much as possible
     for (auto& [process,status] : systemState->getInstantiations() ) {
-      systemState->instances.push_back(std::make_unique<StateMachine>(process,status));
-      systemState->instances.back()->advance();
+      systemState->instances.push_back(StateMachine(process,status));
+      systemState->instances.back().advance();
     }
 
     // listen to event handler and process all events
@@ -132,9 +131,23 @@ void Engine::process(const ExitEvent& event) {
 void Engine::process(const MessageDeliveryEvent& event) {
   throw std::runtime_error("Engine: MessageDeliveryEvent not yet implemented");
 }
+
 void Engine::process(const ReadyEvent& event) {
-  throw std::runtime_error("Engine: ReadyEvent not yet implemented");
+  Token* token = const_cast<Token*>(event.token);
+
+  // remove token from awaitingReady
+  systemState->awaitingReady.erase( std::find(systemState->awaitingReady.begin(), systemState->awaitingReady.end(), token) );
+
+  // add new values to status
+  token->status.insert(token->status.end(), event.values.begin(), event.values.end());
+
+  // update token state
+  token->state = Token::State::READY;
+
+  // advance token as much as possible
+  advance(token);
 }
+
 void Engine::process(const TerminationEvent& event) {
   throw std::runtime_error("Engine: TerminationEvent not yet implemented");
 }
@@ -148,6 +161,15 @@ BPMNOS::number Engine::getCurrentTime() {
 
 const SystemState* Engine::getSystemState() {
   return systemState;
+}
+
+void Engine::advance(Token* token) {
+  StateMachine* stateMachine = const_cast<StateMachine*>(token->owner);
+  stateMachine->advance(*token);
+}
+
+void Engine::advance(const Token* token) {
+  advance( const_cast<Token*>(token) );
 }
 
 

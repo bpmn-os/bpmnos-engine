@@ -72,11 +72,11 @@ public:
   Values getKnownInitialStatus(const InstanceData*, BPMNOS::number time) const;
 
   /**
-   * @brief Method adding all known attribute values to the status and returning true if and only if all new attribute values are known until the given time.
+   * @brief Method returning all known values of new attributes.
    *
-   * If at least one attribute value is not yet known, the method doesn't change the status.
+   * If at least one attribute value is not yet known, the returns std::nullopt.
    */
-  bool addKnownValues(const BPMN::FlowNode* node, Values& status, BPMNOS::number time) const;
+  std::optional<BPMNOS::Values> getKnownValues(const BPMN::FlowNode* node, Values& status, BPMNOS::number time) const;
 
 
   /**
@@ -88,17 +88,16 @@ public:
    * @brief Method returning a vector of all instances that are assumed to be instantiated at the given time.
    */
   std::vector< std::pair<const BPMN::Process*, BPMNOS::Values> > getAssumedInstantiations(BPMNOS::number currentTime, BPMNOS::number assumedTime) const;
-//  std::vector< const InstanceData* > getAssumedInstantiations(BPMNOS::number time) const;
 
   /**
    * @brief Method returning the initial status of a assumed instantiation at the given time.
    */
-  Values getAssumedInitialStatus(const InstanceData*, BPMNOS::number currentTime, BPMNOS::number assumedTime) const;
+  BPMNOS::Values getAssumedInitialStatus(const InstanceData*, BPMNOS::number currentTime, BPMNOS::number assumedTime) const;
 
   /**
-   * @brief Method adding all disclosed attribute values to the status.
+   * @brief Method returning the disclosed values of new attributes.
    */
-  void addAssumedValues(const BPMN::FlowNode* node, Values& status, BPMNOS::number currentTime, BPMNOS::number assumedTime) const;
+  BPMNOS::Values getAssumedValues(const BPMN::FlowNode* node, Values& status, BPMNOS::number currentTime, BPMNOS::number assumedTime) const;
 
   void addInstance(const BPMN::Process* process, const std::string& identifier, Data instantiation);
   void removeAnticipatedInstance(const std::string& identifier);

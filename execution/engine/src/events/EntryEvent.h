@@ -13,7 +13,7 @@ namespace BPMNOS::Execution {
  * Transition from State::READY to State::ENTERED
  */
 struct EntryEvent : Event {
-  EntryEvent(Token* token, std::optional<Values> entryStatus = std::nullopt);
+  EntryEvent(const Token* token, std::optional<Values> entryStatus = std::nullopt);
   void processBy(Engine* engine) const override;
   std::optional<Values> entryStatus;
 };

@@ -41,6 +41,16 @@ public:
   void process(const TerminationEvent& event);
   void process(const TriggerEvent& event);
 
+  /**
+   * @brief Advance token as much as possible.
+   */
+  void advance(Token* token);
+
+  /**
+   * @brief Advance token as much as possible.
+   */
+  void advance(const Token* token);
+
 /**
  * @brief Returns the timestamp the engine is in.
  */

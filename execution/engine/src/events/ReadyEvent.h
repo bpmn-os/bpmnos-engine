@@ -3,6 +3,7 @@
 
 #include <bpmn++.h>
 #include "execution/engine/src/Event.h"
+#include "model/utility/src/Number.h"
 
 namespace BPMNOS::Execution {
 
@@ -12,9 +13,9 @@ namespace BPMNOS::Execution {
  * Transition from State::CREATED or State::ARRIVED to State::READY
  */
 struct ReadyEvent : Event {
-  ReadyEvent(Token* token, std::optional<Values> readyStatus = std::nullopt);
+  ReadyEvent(const Token* token, BPMNOS::Values values);
   void processBy(Engine* engine) const override;
-  std::optional<Values> readyStatus;
+  BPMNOS::Values values;
 };
 
 } // namespace BPMNOS::Execution

@@ -3,7 +3,6 @@
 
 #include "StateMachine.h"
 #include "Message.h"
-#include "events/InstantiationEvent.h"
 #include "model/data/src/Scenario.h"
 
 namespace BPMNOS::Execution {
@@ -64,7 +63,6 @@ public:
 
 private:
   friend class Engine;
-  StateMachine* addStateMachine(const InstantiationEvent* event);
   void incrementTimeBy(BPMNOS::number duration);
 };
 

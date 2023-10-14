@@ -2,7 +2,7 @@
 
 using namespace BPMNOS::Execution;
 
-Event::Event(Token* token)
+Event::Event(const Token* token)
   : token(token)
 {
 }

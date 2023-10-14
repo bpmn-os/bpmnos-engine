@@ -8,7 +8,7 @@ namespace BPMNOS::Execution {
 
 class StateMachine;
 class Token;
-typedef std::vector< std::unique_ptr<Token> > Tokens;
+typedef std::vector< Token > Tokens;
 
 class Event;
 class EntryEvent;
@@ -21,8 +21,8 @@ class MessageDeliveryEvent;
 
 class Token {
 public:
-  Token(StateMachine* owner, const Values& status);
-  StateMachine* owner;
+  Token(const StateMachine* owner, const Values& status);
+  const StateMachine* owner;
   const BPMN::FlowNode* node; 
   Values status;
   void run();
@@ -38,6 +38,7 @@ public:
   bool failed() const { return state == State::FAILED; };
 private:
   friend class StateMachine;
+  friend class Engine;
   enum class State { CREATED, READY, ENTERED, BUSY, COMPLETED, DEPARTED, ARRIVED, DONE, FAILED, TO_BE_MERGED, TO_BE_COPIED };
   State state;
   bool advanceFromCreated();

@@ -8,9 +8,9 @@ namespace BPMNOS::Execution {
 class Engine;
 
 struct Event {
-  Event(Token* token);
+  Event(const Token* token);
   virtual ~Event() = 0;
-  Token* token;  
+  const Token* token;  
 
   virtual void processBy(Engine* engine) const  = 0;
 

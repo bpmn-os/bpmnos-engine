@@ -12,7 +12,7 @@
 
 using namespace BPMNOS::Execution;
 
-Token::Token(StateMachine* owner, const Values& status)
+Token::Token(const StateMachine* owner, const Values& status)
   : owner(owner)
   , status(status)
   , state(State::CREATED)

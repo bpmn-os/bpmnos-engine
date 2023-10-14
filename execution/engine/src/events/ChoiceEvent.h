@@ -13,7 +13,7 @@ namespace BPMNOS::Execution {
  * Transition from State::BUSY to State::COMPLETED
  */
 struct ChoiceEvent : Event {
-  ChoiceEvent(Token* token, std::optional<Values> exitStatus);
+  ChoiceEvent(const Token* token, std::optional<Values> exitStatus);
   void processBy(Engine* engine) const override;
   std::optional<Values> exitStatus;
 };

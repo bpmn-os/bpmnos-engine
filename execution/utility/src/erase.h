@@ -16,11 +16,11 @@ namespace BPMNOS::Execution {
  * @throws std::logic_error if the specified element is not found in the vector.
  */
 template<typename T>
-void erase(std::vector<std::unique_ptr<T> >& container, const T* elementPtr) {
+void erase(std::vector<T>& container, const T* elementPtr) {
   auto it = std::find_if(container.begin(), container.end(),
-    [elementPtr](const std::unique_ptr<T>& uniquePtr)
+    [elementPtr](const T& element)
     {
-       return uniquePtr.get() == elementPtr;
+       return &element == elementPtr;
     }
   );
 

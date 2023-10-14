@@ -9,7 +9,7 @@ namespace BPMNOS::Execution {
 
 
 class StateMachine;
-typedef std::vector< std::unique_ptr<StateMachine> > StateMachines;
+typedef std::vector< StateMachine > StateMachines;
 
 /**
  * @brief Represents a state machine for BPMN execution of a scope in the model.
@@ -38,17 +38,17 @@ private:
   /**
    * @brief Advance token as much as possible.
    */
-  void advance(Token* token);
+  void advance(Token& token);
 
   /// TODO: still needed?
-  bool run(const Event* event); ///< Process event and advance tokens as much as possible. Returns false if state machine represents a completed instance.
+//  bool run(const Event* event); ///< Process event and advance tokens as much as possible. Returns false if state machine represents a completed instance.
 
   /// TODO: still needed?
-  bool run(Token* token); ///< Advance tokens as much as possible. Returns false if state machine represents a completed instance.
+//  bool run(Token* token); ///< Advance tokens as much as possible. Returns false if state machine represents a completed instance.
 
 
   /// TODO: still needed?
-  void continueWithParentToken();
+//  void continueWithParentToken();
 };
 
 
