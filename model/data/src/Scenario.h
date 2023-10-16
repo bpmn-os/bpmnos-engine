@@ -31,7 +31,7 @@ public:
 
   struct InstanceData {
     const BPMN::Process* process;
-    std::string identifier;
+    std::string id; ///< Instance identifier.
     Data instantiation; ///< Data regarding the time of instantiation.
     std::unordered_map< const Attribute*, Data > data; ///< Data regarding attribute values.
   };

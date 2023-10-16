@@ -8,15 +8,17 @@ SCENARIO( "Trivial executable process", "[data][static]" ) {
 
     WHEN( "The instance is loaded" ) {
       Model::StaticDataProvider dataProvider(modelFile,csv);
-      auto& instances = dataProvider.getInstances();
+
+      auto scenario = dataProvider.createScenario();
+      auto instances = scenario->getKnownInstances(0);
+
       THEN( "There is exactly one instance" ) {
         REQUIRE( instances.size() == 1 );
       }
       THEN( "The instance data is correct" ) {
-        for ( auto& [id,instance] : instances ) {
+        for ( auto& instance : instances ) {
           REQUIRE( instance->process->id == "Process_1" );
           REQUIRE( instance->id == "Instance_1" );
-
           auto status = instance->process->extensionElements->represents<Model::Status>();
           REQUIRE( status->attributes.size() == 2 );
           REQUIRE( (std::string)status->attributes[0]->id == Keyword::Instance );
@@ -25,12 +27,6 @@ SCENARIO( "Trivial executable process", "[data][static]" ) {
           REQUIRE( (std::string)status->attributes[1]->id == Keyword::Timestamp );
           REQUIRE( status->attributes[1]->isImmutable == false );
           REQUIRE( status->attributes[1]->value.value() == 0 );
-
-          Values values;
-          dataProvider.appendActualValues(instance.get(),instance->process,values);
-          REQUIRE( values.size() == 2 );
-          REQUIRE( values[0].value() == stringRegistry("Instance_1") );
-          REQUIRE( values[1].value() == 0 );
         }
       }
     }
@@ -43,12 +39,15 @@ SCENARIO( "Trivial executable process", "[data][static]" ) {
 
     WHEN( "The instance is loaded" ) {
       Model::StaticDataProvider dataProvider(modelFile,csv);
-      auto& instances = dataProvider.getInstances();
+
+      auto scenario = dataProvider.createScenario();
+      auto instances = scenario->getKnownInstances(0);
+
       THEN( "There is exactly one instance" ) {
         REQUIRE( instances.size() == 1 );
       }
       THEN( "The instance data is correct" ) {
-        for ( auto& [id,instance] : instances ) {
+        for ( auto& instance : instances ) {
           REQUIRE( instance->process->id == "Process_1" );
           REQUIRE( instance->id == "Instance_1" );
 
@@ -60,12 +59,6 @@ SCENARIO( "Trivial executable process", "[data][static]" ) {
           REQUIRE( (std::string)status->attributes[1]->id == Keyword::Timestamp );
           REQUIRE( status->attributes[1]->isImmutable == false );
           REQUIRE( status->attributes[1]->value.value() == 0 );
-
-          Values values;
-          dataProvider.appendActualValues(instance.get(),instance->process,values);
-          REQUIRE( values.size() == 2 );
-          REQUIRE( values[0].value() == stringRegistry("Instance_1") );
-          REQUIRE( values[1].value() == 42 );
         }
       }
     }

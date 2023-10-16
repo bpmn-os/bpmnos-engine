@@ -54,11 +54,12 @@ void DynamicDataProvider::readInstances() {
     } 
 
     auto& instance = instances[instanceId];
-    if ( auto it = instance.data.find( attributes[process][Keyword::Instance] ); 
+    auto instanceAtribute = attributes[process][Keyword::Instance];
+    if ( auto it = instance.data.find( instanceAtribute ); 
          it == instance.data.end() 
     ) {
       // set instance attribute if not yet set
-      instance.data[ it->first ].push_back({ 0, BPMNOS::to_number(instanceId,BPMNOS::ValueType::STRING) });
+      instance.data[ instanceAtribute ] = BPMNOS::to_number(instanceId,BPMNOS::ValueType::STRING);
     }
 
     std::string attributeId = row[ATTRIBUTE_ID].get();

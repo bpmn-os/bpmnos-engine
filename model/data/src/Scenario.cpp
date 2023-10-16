@@ -23,14 +23,14 @@ Scenario::Scenario(const Scenario& other, unsigned int index)
     for ( auto& [attribute, attributeData] : instance.data ) {
       data[attribute] = attributeData;
     }
-    instances[identifier] = {instance.process,instance.identifier,instance.instantiation,data};
+    instances[identifier] = {instance.process,instance.id,instance.instantiation,data};
   }
 }
 
 std::vector< const Scenario::InstanceData* > Scenario::getKnownInstances(BPMNOS::number time) const {
   std::vector< const Scenario::InstanceData* > knownInstances;
 
-  for ( auto [id, instance] : instances ) {
+  for ( auto& [id, instance] : instances ) {
     if ( instance.instantiation.realization && instance.instantiation.realization->disclosure <= time ) {
       knownInstances.push_back(&instance);
     }  
@@ -41,7 +41,7 @@ std::vector< const Scenario::InstanceData* > Scenario::getKnownInstances(BPMNOS:
 std::vector< std::pair<const BPMN::Process*, BPMNOS::Values> > Scenario::getKnownInstantiations(BPMNOS::number time) const {
   std::vector< std::pair<const BPMN::Process*, BPMNOS::Values> > knownInstantiatons;
 
-  for ( auto [id, instance] : instances ) {
+  for ( auto& [id, instance] : instances ) {
     if ( instance.instantiation.realization && instance.instantiation.realization->disclosure == time ) {
       knownInstantiatons.push_back({instance.process,getKnownInitialStatus(&instance,time)});
     }  
@@ -55,7 +55,7 @@ BPMNOS::Values Scenario::getKnownInitialStatus(const Scenario::InstanceData* ins
     auto& data = instance->data.at(attribute.get());
     
     if ( data.realization && data.realization->disclosure > time ) {
-      throw std::runtime_error("Scenario: cannot instantiate '" + instance->identifier + "' because attribute '"+ attribute->id +"' is not yet known at time " + BPMNOS::to_string(time,INTEGER) );
+      throw std::runtime_error("Scenario: cannot instantiate '" + instance->id + "' because attribute '"+ attribute->id +"' is not yet known at time " + BPMNOS::to_string(time,INTEGER) );
     }
     initalStatus.push_back( data.realization->value );
   }
@@ -85,7 +85,7 @@ std::optional<BPMNOS::Values> Scenario::getKnownValues(const BPMN::FlowNode* nod
 std::vector< const Scenario::InstanceData* > Scenario::getAssumedInstances(BPMNOS::number currentTime, BPMNOS::number assumedTime) const {
   std::vector< const Scenario::InstanceData* > assumedInstances;
 
-  for ( auto [id, instance] : instances ) {
+  for ( auto& [id, instance] : instances ) {
     if ( instance.instantiation.realization && instance.instantiation.realization->disclosure <= currentTime ) {
       assumedInstances.push_back(&instance);
     }  
@@ -99,7 +99,7 @@ std::vector< const Scenario::InstanceData* > Scenario::getAssumedInstances(BPMNO
 std::vector< std::pair<const BPMN::Process*, BPMNOS::Values> > Scenario::getAssumedInstantiations(BPMNOS::number currentTime, BPMNOS::number assumedTime) const {
   std::vector< std::pair<const BPMN::Process*, BPMNOS::Values> > assumedInstantiatons;
 
-  for ( auto [id, instance] : instances ) {
+  for ( auto& [id, instance] : instances ) {
     if ( instance.instantiation.realization && instance.instantiation.realization->value == currentTime ) {
       assumedInstantiatons.push_back({instance.process,getKnownInitialStatus(&instance,currentTime)});
     }  
@@ -172,7 +172,6 @@ return data.front();
 void Scenario::addInstance(const BPMN::Process* process, const std::string& identifier, Scenario::Data instantiation ) {
   // add instance
   instances[identifier] = {process,identifier,instantiation,{}};
-
   auto& instance = instances[identifier];
   // initialize all attribute data
   for ( auto& [id,attribute] : attributes.at(process) ) {
