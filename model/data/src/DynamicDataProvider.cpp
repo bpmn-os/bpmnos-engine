@@ -58,8 +58,8 @@ void DynamicDataProvider::readInstances() {
     if ( auto it = instance.data.find( instanceAtribute ); 
          it == instance.data.end() 
     ) {
-      // set instance attribute if not yet set
-      instance.data[ instanceAtribute ] = BPMNOS::to_number(instanceId,BPMNOS::ValueType::STRING);
+      // instance attribute is known at time zero, even if instantiation is disclosed later
+      instance.data[ instanceAtribute ] = {{0,BPMNOS::to_number(instanceId,BPMNOS::ValueType::STRING)}};
     }
 
     std::string attributeId = row[ATTRIBUTE_ID].get();

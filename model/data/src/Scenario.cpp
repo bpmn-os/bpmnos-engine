@@ -80,8 +80,6 @@ std::optional<BPMNOS::Values> Scenario::getKnownValues(const BPMN::FlowNode* nod
   return values;
 }
 
-
-
 std::vector< const Scenario::InstanceData* > Scenario::getAssumedInstances(BPMNOS::number currentTime, BPMNOS::number assumedTime) const {
   std::vector< const Scenario::InstanceData* > assumedInstances;
 
@@ -169,10 +167,10 @@ return data.front();
   return *it;
 }
 
-void Scenario::addInstance(const BPMN::Process* process, const std::string& identifier, Scenario::Data instantiation ) {
+void Scenario::addInstance(const BPMN::Process* process, const std::string& instanceId, Scenario::Data instantiation ) {
   // add instance
-  instances[identifier] = {process,identifier,instantiation,{}};
-  auto& instance = instances[identifier];
+  instances[instanceId] = {process,instanceId,instantiation,{}};
+  auto& instance = instances[instanceId];
   // initialize all attribute data
   for ( auto& [id,attribute] : attributes.at(process) ) {
     // anticipation is set to the default attribute value
@@ -181,12 +179,12 @@ void Scenario::addInstance(const BPMN::Process* process, const std::string& iden
 
 }
 
-void Scenario::removeAnticipatedInstance(const std::string& identifier) {
-  auto& instance = instances[identifier];
+void Scenario::removeAnticipatedInstance(const std::string& instanceId) {
+  auto& instance = instances[instanceId];
   if ( instance.instantiation.realization ) {
-    throw std::runtime_error("Scenario: illegal removal of instance '" + identifier + "'with known realization");
+    throw std::runtime_error("Scenario: illegal removal of instance '" + instanceId + "'with known realization");
   }
-  instances.erase(identifier);
+  instances.erase(instanceId);
 }
 
 Scenario::Data& Scenario::getInstantiationData(std::string instanceId) {

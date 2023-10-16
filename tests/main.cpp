@@ -8,7 +8,7 @@ using namespace BPMNOS;
 // Include all tests here
 #include "ParseElements/test.h"
 #include "StaticData/test.h"
-//#include "Expression/test.h"
+#include "Expression/test.h"
 
 // Playground
 #include <iostream>

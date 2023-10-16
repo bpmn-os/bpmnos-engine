@@ -10,13 +10,13 @@ SCENARIO( "Linear expression", "[data][static][expression]" ) {
         "Process_1, Instance_1,Y,15\n"
       ;
       Model::StaticDataProvider dataProvider(modelFile,csv);
-      auto& instances = dataProvider.getInstances();
+      auto scenario = dataProvider.createScenario();
+
+      auto instantiations = scenario->getKnownInstantiations(0);
       THEN( "The result is correct" ) {
-        for ( auto& [id,instance] : instances ) {
-          auto status = instance->process->extensionElements->represents<Model::Status>();
-          Values values;
-          dataProvider.appendActualValues(instance.get(),instance->process,values);
-          REQUIRE( values.size() == 3 );
+        for ( auto& [process,values] : instantiations ) {
+          auto status = process->extensionElements->represents<Model::Status>();
+          REQUIRE( values.size() == 3 + 2 ); // don't forget timestamp and instance id
           REQUIRE( values[status->attributeMap["x"]->index].value() == 8 );
           REQUIRE( values[status->attributeMap["y"]->index].value() == 15 );
           REQUIRE( values[status->attributeMap["z"]->index].has_value() == false );
@@ -33,13 +33,15 @@ SCENARIO( "Linear expression", "[data][static][expression]" ) {
         "Process_1, Instance_1,Y,15\n"
       ;
       Model::StaticDataProvider dataProvider(modelFile,csv);
-      auto& instances = dataProvider.getInstances();
+
+      auto scenario = dataProvider.createScenario();
+      auto instantiations = scenario->getKnownInstantiations(0);
+
       THEN( "The result is correct" ) {
-        for ( auto& [id,instance] : instances ) {
-          auto status = instance->process->extensionElements->represents<Model::Status>();
-          Values values;
-          dataProvider.appendActualValues(instance.get(),instance->process,values);
-          REQUIRE( values.size() == 3 );
+        for ( auto& [process,values] : instantiations ) {
+          auto status = process->extensionElements->represents<Model::Status>();
+
+          REQUIRE( values.size() == 3 + 2); // don't forget timestamp and instance id
           REQUIRE( values[status->attributeMap["x"]->index].has_value() == false );
           REQUIRE( values[status->attributeMap["y"]->index].value() == 15 );
           REQUIRE( values[status->attributeMap["z"]->index].has_value() == false );
@@ -64,13 +66,15 @@ SCENARIO( "Another linear expression", "[data][static][expression]" ) {
         "Process_1, Instance_1,Y,15\n"
       ;
       Model::StaticDataProvider dataProvider(modelFile,csv);
-      auto& instances = dataProvider.getInstances();
+
+      auto scenario = dataProvider.createScenario();
+      auto instantiations = scenario->getKnownInstantiations(0);
+
       THEN( "The result is correct" ) {
-        for ( auto& [id,instance] : instances ) {
-          auto status = instance->process->extensionElements->represents<Model::Status>();
-          Values values;
-          dataProvider.appendActualValues(instance.get(),instance->process,values);
-          REQUIRE( values.size() == 3 );
+        for ( auto& [process,values] : instantiations ) {
+          auto status = process->extensionElements->represents<Model::Status>();
+
+          REQUIRE( values.size() == 3 + 2); // don't forget timestamp and instance id
           REQUIRE( values[status->attributeMap["x"]->index].has_value() == false );
           REQUIRE( values[status->attributeMap["y"]->index].value() == 15 );
           REQUIRE( values[status->attributeMap["z"]->index].has_value() == false );
@@ -84,7 +88,6 @@ SCENARIO( "Another linear expression", "[data][static][expression]" ) {
   }
 }
 
-
 SCENARIO( "Generic expression", "[data][static][expression]" ) {
   const std::string modelFile = "Expression/genericExpression.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
@@ -97,13 +100,15 @@ SCENARIO( "Generic expression", "[data][static][expression]" ) {
         "Process_1, Instance_1,Y,15\n"
       ;
       Model::StaticDataProvider dataProvider(modelFile,csv);
-      auto& instances = dataProvider.getInstances();
+
+      auto scenario = dataProvider.createScenario();
+      auto instantiations = scenario->getKnownInstantiations(0);
+
       THEN( "The result is correct" ) {
-        for ( auto& [id,instance] : instances ) {
-          auto status = instance->process->extensionElements->represents<Model::Status>();
-          Values values;
-          dataProvider.appendActualValues(instance.get(),instance->process,values);
-          REQUIRE( values.size() == 3 );
+        for ( auto& [process,values] : instantiations ) {
+          auto status = process->extensionElements->represents<Model::Status>();
+
+          REQUIRE( values.size() == 3 + 2); // don't forget timestamp and instance id
           REQUIRE( values[status->attributeMap["x"]->index].value() == 8 );
           REQUIRE( values[status->attributeMap["y"]->index].value() == 15 );
           REQUIRE( values[status->attributeMap["z"]->index].has_value() == false );
@@ -120,13 +125,15 @@ SCENARIO( "Generic expression", "[data][static][expression]" ) {
         "Process_1, Instance_1,Y,15\n"
       ;
       Model::StaticDataProvider dataProvider(modelFile,csv);
-      auto& instances = dataProvider.getInstances();
+
+      auto scenario = dataProvider.createScenario();
+      auto instantiations = scenario->getKnownInstantiations(0);
+
       THEN( "The result is correct" ) {
-        for ( auto& [id,instance] : instances ) {
-          auto status = instance->process->extensionElements->represents<Model::Status>();
-          Values values;
-          dataProvider.appendActualValues(instance.get(),instance->process,values);
-          REQUIRE( values.size() == 3 );
+        for ( auto& [process,values] : instantiations ) {
+          auto status = process->extensionElements->represents<Model::Status>();
+
+          REQUIRE( values.size() == 3 + 2); // don't forget timestamp and instance id
           REQUIRE( values[status->attributeMap["x"]->index].has_value() == false );
           REQUIRE( values[status->attributeMap["y"]->index].value() == 15 );
           REQUIRE( values[status->attributeMap["z"]->index].has_value() == false );
@@ -139,4 +146,3 @@ SCENARIO( "Generic expression", "[data][static][expression]" ) {
     }
   }
 }
-

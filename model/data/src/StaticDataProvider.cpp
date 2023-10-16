@@ -1,6 +1,7 @@
 #include "StaticDataProvider.h"
 #include "model/utility/src/Keywords.h"
 #include "model/utility/src/Number.h"
+#include "model/utility/src/Value.h"
 #include <sstream>
 #include <unordered_map>
 #include <algorithm>
@@ -52,13 +53,6 @@ void StaticDataProvider::readInstances() {
     } 
 
     auto& instance = instances[instanceId];
-    auto instanceAtribute = attributes[process][Keyword::Instance];
-    if ( auto it = instance.data.find( instanceAtribute );
-         it == instance.data.end() 
-    ) {
-      // set instance attribute if not yet set
-      instance.data[ instanceAtribute ] = BPMNOS::to_number(instanceId,BPMNOS::ValueType::STRING);
-    }
 
     std::string attributeId = row[ATTRIBUTE_ID].get();
 
@@ -73,6 +67,22 @@ void StaticDataProvider::readInstances() {
 
     auto attribute = attributes[process][attributeId];
     instance.data[ attribute ] = BPMNOS::to_number(row[VALUE].get(),attribute->type);
+  }
+
+  // ensure that default attributes are available
+  for (auto& [id, instance] : instances) {
+    ensureDefaultValue(instance,Keyword::Instance,BPMNOS::to_number(id,BPMNOS::ValueType::STRING));
+    ensureDefaultValue(instance,Keyword::Timestamp,0);
+  }
+}
+
+void StaticDataProvider::ensureDefaultValue(StaticInstanceData& instance, const std::string attributeId, BPMNOS::number value) {
+  auto& attribute = attributes[instance.process][attributeId];
+  if ( auto it = instance.data.find( attribute );
+    it == instance.data.end()
+  ) {
+    // set instance attribute if not yet set
+    instance.data[ attribute ] = value;
   }
 }
 

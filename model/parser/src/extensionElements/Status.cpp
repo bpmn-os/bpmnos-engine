@@ -31,16 +31,28 @@ Status::Status(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent)
         if ( attribute->id == Keyword::Instance ) {
           // always insert instance attribute at first position
           attributes.insert(attributes.begin(), std::move(attribute));
+          // fix indices
+          for (size_t index = 0; index < attributes.size(); index ++) {
+            attributes[index]->index = index;
+          }
         }
         else if ( attribute->id == Keyword::Timestamp ) {
           if ( attributes.size() && attributes[0]->id == Keyword::Instance ) {
             // insert timestamp attribute at the second position
             attributes.insert(++attributes.begin(), std::move(attribute));
+            // fix indices
+            for (size_t index = 0; index < attributes.size(); index ++) {
+              attributes[index]->index = index;
+            }
           }
           else {
             // insert timestamp attribute at first position, expecting that 
             // instance attribute will be insert before
             attributes.insert(attributes.begin(), std::move(attribute));
+            // fix indices
+            for (size_t index = 0; index < attributes.size(); index ++) {
+              attributes[index]->index = index;
+            }
           }
         }
         else {

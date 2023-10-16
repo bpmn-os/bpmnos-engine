@@ -29,10 +29,11 @@ protected:
   void readInstances();
   struct StaticInstanceData {
     const BPMN::Process* process;
-    std::string instanceId;
+    std::string id;
     std::unordered_map< const Attribute*, BPMNOS::number > data;
   };
   std::unordered_map< std::string, StaticInstanceData > instances;
+  void ensureDefaultValue(StaticInstanceData& instance, const std::string attributeId, BPMNOS::number value);
 };
 
 } // namespace BPMNOS::Model
