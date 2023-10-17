@@ -47,7 +47,7 @@ Status::Status(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent)
           }
           else {
             // insert timestamp attribute at first position, expecting that 
-            // instance attribute will be insert before
+            // instance attribute will be inserted before
             attributes.insert(attributes.begin(), std::move(attribute));
             // fix indices
             for (size_t index = 0; index < attributes.size(); index ++) {

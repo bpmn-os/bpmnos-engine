@@ -15,19 +15,29 @@ SCENARIO( "Trivial executable process", "[data][static]" ) {
       THEN( "There is exactly one instance" ) {
         REQUIRE( instances.size() == 1 );
       }
-      THEN( "The instance data is correct" ) {
+      THEN( "The model data is correct" ) {
         for ( auto& instance : instances ) {
           REQUIRE( instance->process->id == "Process_1" );
           REQUIRE( instance->id == "Instance_1" );
           auto status = instance->process->extensionElements->represents<Model::Status>();
           REQUIRE( status->attributes.size() == 2 );
-          REQUIRE( (std::string)status->attributes[0]->id == Keyword::Instance );
-          REQUIRE( status->attributes[0]->isImmutable == true );
-          REQUIRE( status->attributes[0]->value == std::nullopt );
-          REQUIRE( (std::string)status->attributes[1]->id == Keyword::Timestamp );
-          REQUIRE( status->attributes[1]->isImmutable == false );
-          REQUIRE( status->attributes[1]->value.value() == 0 );
+          REQUIRE( (std::string)status->attributes[Model::Status::Index::Instance]->id == Keyword::Instance );
+          REQUIRE( status->attributes[Model::Status::Index::Instance]->isImmutable == true );
+          REQUIRE( status->attributes[Model::Status::Index::Instance]->value == std::nullopt );
+          REQUIRE( (std::string)status->attributes[Model::Status::Index::Timestamp]->id == Keyword::Timestamp );
+          REQUIRE( status->attributes[Model::Status::Index::Timestamp]->isImmutable == false );
+          REQUIRE( status->attributes[Model::Status::Index::Timestamp]->value.value() == 0 );
         }
+      }
+      THEN( "The instantiation data is correct" ) {
+        std::string instanceId = "Instance_1";
+        BPMNOS::number timestamp = 0;
+        auto instantiations = scenario->getKnownInstantiations(0);
+        REQUIRE( instantiations.size() == 1 );
+        auto& [process,values] = instantiations.front();
+        REQUIRE( values.size() == 2 );
+        REQUIRE( values[Model::Status::Index::Instance].value() == BPMNOS::to_number(instanceId,STRING) );
+        REQUIRE( values[Model::Status::Index::Timestamp].value() == timestamp );
       }
     }
   }
@@ -46,20 +56,30 @@ SCENARIO( "Trivial executable process", "[data][static]" ) {
       THEN( "There is exactly one instance" ) {
         REQUIRE( instances.size() == 1 );
       }
-      THEN( "The instance data is correct" ) {
+      THEN( "The model data is correct" ) {
         for ( auto& instance : instances ) {
           REQUIRE( instance->process->id == "Process_1" );
           REQUIRE( instance->id == "Instance_1" );
 
           auto status = instance->process->extensionElements->represents<Model::Status>();
           REQUIRE( status->attributes.size() == 2 );
-          REQUIRE( (std::string)status->attributes[0]->id == Keyword::Instance );
-          REQUIRE( status->attributes[0]->isImmutable == true );
-          REQUIRE( status->attributes[0]->value == std::nullopt );
-          REQUIRE( (std::string)status->attributes[1]->id == Keyword::Timestamp );
-          REQUIRE( status->attributes[1]->isImmutable == false );
-          REQUIRE( status->attributes[1]->value.value() == 0 );
+          REQUIRE( (std::string)status->attributes[Model::Status::Index::Instance]->id == Keyword::Instance );
+          REQUIRE( status->attributes[Model::Status::Index::Instance]->isImmutable == true );
+          REQUIRE( status->attributes[Model::Status::Index::Instance]->value == std::nullopt );
+          REQUIRE( (std::string)status->attributes[Model::Status::Index::Timestamp]->id == Keyword::Timestamp );
+          REQUIRE( status->attributes[Model::Status::Index::Timestamp]->isImmutable == false );
+          REQUIRE( status->attributes[Model::Status::Index::Timestamp]->value.value() == 0 );
         }
+      }
+      THEN( "The instantiation data is correct" ) {
+        std::string instanceId = "Instance_1";
+        BPMNOS::number timestamp = 42;
+        auto instantiations = scenario->getKnownInstantiations(0);
+        REQUIRE( instantiations.size() == 1 );
+        auto& [process,values] = instantiations.front();
+        REQUIRE( values.size() == 2 );
+        REQUIRE( values[Model::Status::Index::Instance].value() == BPMNOS::to_number(instanceId,STRING) );
+        REQUIRE( values[Model::Status::Index::Timestamp].value() == timestamp );
       }
     }
   }

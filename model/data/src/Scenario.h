@@ -64,12 +64,7 @@ public:
    * @brief Method returning a vector of all instances that are known to be instantiated at the given time.
    */
   std::vector< std::pair<const BPMN::Process*, BPMNOS::Values> > getKnownInstantiations(BPMNOS::number time) const;
-//  std::vector< const InstanceData* > getKnownInstantiations(BPMNOS::number time) const;
 
-  /**
-   * @brief Method returning the initial status of a known instantiation at the given time.
-   */
-  Values getKnownInitialStatus(const InstanceData*, BPMNOS::number time) const;
 
   /**
    * @brief Method returning all known values of new attributes.
@@ -90,11 +85,6 @@ public:
   std::vector< std::pair<const BPMN::Process*, BPMNOS::Values> > getAssumedInstantiations(BPMNOS::number currentTime, BPMNOS::number assumedTime) const;
 
   /**
-   * @brief Method returning the initial status of a assumed instantiation at the given time.
-   */
-  BPMNOS::Values getAssumedInitialStatus(const InstanceData*, BPMNOS::number currentTime, BPMNOS::number assumedTime) const;
-
-  /**
    * @brief Method returning the disclosed values of new attributes.
    */
   BPMNOS::Values getAssumedValues(const BPMN::FlowNode* node, Values& status, BPMNOS::number currentTime, BPMNOS::number assumedTime) const;
@@ -111,6 +101,14 @@ protected:
   const DataInput& attributes; ///< Map holding all attributes in the model with keys being the process and attribute id
   std::unordered_map<std::string, InstanceData > instances; ///< Map of instances with key being the instance id.
   const Scenario::Disclosure& getLatestDisclosure(const std::vector<Scenario::Disclosure>& data, BPMNOS::number time) const;
+  /**
+   * @brief Method returning the initial status of a known instantiation at the given time.
+   */
+  Values getKnownInitialStatus(const InstanceData*, BPMNOS::number time) const;
+  /**
+   * @brief Method returning the initial status of a assumed instantiation at the given time.
+   */
+  BPMNOS::Values getAssumedInitialStatus(const InstanceData*, BPMNOS::number currentTime, BPMNOS::number assumedTime) const;
 
 };
 

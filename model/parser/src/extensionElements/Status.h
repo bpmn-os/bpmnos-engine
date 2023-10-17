@@ -20,7 +20,7 @@ public:
   const BPMN::Scope* parent;
   AttributeMap attributeMap; ///< Map allowing to look up attributes by their names.
 
-  enum Index { Timestamp, Instance }; ///< Indices for timestamp and instance attribute.
+  enum Index { Instance, Timestamp }; ///< Indices for instance and timestamp attribute.
 
   std::vector< std::unique_ptr<Attribute> > attributes;
   std::vector< std::unique_ptr<Restriction> > restrictions;
