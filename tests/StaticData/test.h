@@ -10,7 +10,7 @@ SCENARIO( "Trivial executable process", "[data][static]" ) {
       Model::StaticDataProvider dataProvider(modelFile,csv);
 
       auto scenario = dataProvider.createScenario();
-      auto instances = scenario->getKnownInstances(0);
+      auto instances = scenario->getCreatedInstances(0);
 
       THEN( "There is exactly one instance" ) {
         REQUIRE( instances.size() == 1 );
@@ -32,7 +32,7 @@ SCENARIO( "Trivial executable process", "[data][static]" ) {
       THEN( "The instantiation data is correct" ) {
         std::string instanceId = "Instance_1";
         BPMNOS::number timestamp = 0;
-        auto instantiations = scenario->getKnownInstantiations(0);
+        auto instantiations = scenario->getInstantiations(0);
         REQUIRE( instantiations.size() == 1 );
         auto& [process,values] = instantiations.front();
         REQUIRE( values.size() == 2 );
@@ -51,12 +51,21 @@ SCENARIO( "Trivial executable process", "[data][static]" ) {
       Model::StaticDataProvider dataProvider(modelFile,csv);
 
       auto scenario = dataProvider.createScenario();
-      auto instances = scenario->getKnownInstances(0);
 
-      THEN( "There is exactly one instance" ) {
-        REQUIRE( instances.size() == 1 );
+      THEN( "There is no instance created by time 0" ) {
+        auto anticipatedInstances = scenario->getCreatedInstances(0);
+        REQUIRE( anticipatedInstances.size() == 0 );
+      }
+      THEN( "There is exactly one instance created by time 42" ) {
+        auto anticipatedInstances = scenario->getCreatedInstances(43);
+        REQUIRE( anticipatedInstances.size() == 1 );
+      }
+      THEN( "There is exactly one instance known at time 0" ) {
+        auto anticipatedInstances = scenario->getKnownInstances(0);
+        REQUIRE( anticipatedInstances.size() == 1 );
       }
       THEN( "The model data is correct" ) {
+        auto instances = scenario->getKnownInstances(0);
         for ( auto& instance : instances ) {
           REQUIRE( instance->process->id == "Process_1" );
           REQUIRE( instance->id == "Instance_1" );
@@ -72,29 +81,17 @@ SCENARIO( "Trivial executable process", "[data][static]" ) {
         }
       }
       THEN( "Exactly one instantiation is known to occur at time 42" ) {
-        auto instantiations = scenario->getKnownInstantiations(42);
+        auto instantiations = scenario->getInstantiations(42);
         REQUIRE( instantiations.size() == 1 );
       }
       THEN( "No instantiation is known to occur at time 0" ) {
-        auto instantiations = scenario->getKnownInstantiations(0);
-        REQUIRE( instantiations.size() == 0 );
-      }
-      THEN( "Exactly one instantiation is assumed to occur at time 42" ) {
-        auto instantiations = scenario->getAssumedInstantiations(0,42);
-        REQUIRE( instantiations.size() == 1 );
-      }
-      THEN( "No instantiation is assumed to occur at time 0" ) {
-        auto instantiations = scenario->getAssumedInstantiations(0,0);
-        REQUIRE( instantiations.size() == 0 );
-      }
-      THEN( "No instantiation is assumed to occur after time 42" ) {
-        auto instantiations = scenario->getAssumedInstantiations(0,43);
+        auto instantiations = scenario->getInstantiations(0);
         REQUIRE( instantiations.size() == 0 );
       }
       THEN( "The instantiation data is correct" ) {
         std::string instanceId = "Instance_1";
         BPMNOS::number timestamp = 42;
-        auto instantiations = scenario->getKnownInstantiations(timestamp);
+        auto instantiations = scenario->getInstantiations(timestamp);
         auto& [process,values] = instantiations.front();
         REQUIRE( values.size() == 2 );
         REQUIRE( values[Model::Status::Index::Instance].value() == BPMNOS::to_number(instanceId,STRING) );

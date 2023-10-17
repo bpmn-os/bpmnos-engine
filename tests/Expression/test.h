@@ -12,7 +12,7 @@ SCENARIO( "Linear expression", "[data][static][expression]" ) {
       Model::StaticDataProvider dataProvider(modelFile,csv);
       auto scenario = dataProvider.createScenario();
 
-      auto instantiations = scenario->getKnownInstantiations(0);
+      auto instantiations = scenario->getInstantiations(0);
       THEN( "The result is correct" ) {
         for ( auto& [process,values] : instantiations ) {
           auto status = process->extensionElements->represents<Model::Status>();
@@ -35,7 +35,7 @@ SCENARIO( "Linear expression", "[data][static][expression]" ) {
       Model::StaticDataProvider dataProvider(modelFile,csv);
 
       auto scenario = dataProvider.createScenario();
-      auto instantiations = scenario->getKnownInstantiations(0);
+      auto instantiations = scenario->getInstantiations(0);
 
       THEN( "The result is correct" ) {
         for ( auto& [process,values] : instantiations ) {
@@ -68,7 +68,7 @@ SCENARIO( "Another linear expression", "[data][static][expression]" ) {
       Model::StaticDataProvider dataProvider(modelFile,csv);
 
       auto scenario = dataProvider.createScenario();
-      auto instantiations = scenario->getKnownInstantiations(0);
+      auto instantiations = scenario->getInstantiations(0);
 
       THEN( "The result is correct" ) {
         for ( auto& [process,values] : instantiations ) {
@@ -102,7 +102,7 @@ SCENARIO( "Generic expression", "[data][static][expression]" ) {
       Model::StaticDataProvider dataProvider(modelFile,csv);
 
       auto scenario = dataProvider.createScenario();
-      auto instantiations = scenario->getKnownInstantiations(0);
+      auto instantiations = scenario->getInstantiations(0);
 
       THEN( "The result is correct" ) {
         for ( auto& [process,values] : instantiations ) {
@@ -127,7 +127,7 @@ SCENARIO( "Generic expression", "[data][static][expression]" ) {
       Model::StaticDataProvider dataProvider(modelFile,csv);
 
       auto scenario = dataProvider.createScenario();
-      auto instantiations = scenario->getKnownInstantiations(0);
+      auto instantiations = scenario->getInstantiations(0);
 
       THEN( "The result is correct" ) {
         for ( auto& [process,values] : instantiations ) {

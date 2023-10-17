@@ -27,42 +27,75 @@ Scenario::Scenario(const Scenario& other, unsigned int index)
   }
 }
 
-std::vector< const Scenario::InstanceData* > Scenario::getKnownInstances(BPMNOS::number time) const {
+std::vector< const Scenario::InstanceData* > Scenario::getCreatedInstances(BPMNOS::number currentTime) const {
   std::vector< const Scenario::InstanceData* > knownInstances;
 
   for ( auto& [id, instance] : instances ) {
-    if ( instance.instantiation.realization && instance.instantiation.realization->disclosure <= time ) {
+    if ( instance.instantiation.realization
+         && instance.instantiation.realization->disclosure <= currentTime
+         && instance.instantiation.realization->value.value() <= currentTime
+    ) {
       knownInstances.push_back(&instance);
     }
   }
   return knownInstances;
 }
 
-std::vector< std::pair<const BPMN::Process*, BPMNOS::Values> > Scenario::getKnownInstantiations(BPMNOS::number time) const {
+std::vector< const Scenario::InstanceData* > Scenario::getKnownInstances(BPMNOS::number currentTime) const {
+  std::vector< const Scenario::InstanceData* > knownInstances;
+
+  for ( auto& [id, instance] : instances ) {
+    if ( instance.instantiation.realization && instance.instantiation.realization->disclosure <= currentTime ) {
+      knownInstances.push_back(&instance);
+    }
+  }
+  return knownInstances;
+}
+
+std::vector< const Scenario::InstanceData* > Scenario::getAnticipatedInstances(BPMNOS::number currentTime) const {
+  std::vector< const Scenario::InstanceData* > anticipatedInstances;
+
+  for ( auto& [id, instance] : instances ) {
+    if ( instance.instantiation.realization
+         && instance.instantiation.realization->disclosure <= currentTime
+    ) {
+      // instance is already known
+      continue;
+    }
+    else if ( instance.instantiation.anticipations.size()
+              && instance.instantiation.anticipations.front().disclosure <= currentTime
+    ) {
+      anticipatedInstances.push_back(&instance);
+    }
+  }
+  return anticipatedInstances;
+}
+
+std::vector< std::pair<const BPMN::Process*, BPMNOS::Values> > Scenario::getInstantiations(BPMNOS::number currentTime) const {
   std::vector< std::pair<const BPMN::Process*, BPMNOS::Values> > knownInstantiatons;
 
   for ( auto& [id, instance] : instances ) {
-    if ( instance.instantiation.realization && instance.instantiation.realization->value.value() == time ) {
-      knownInstantiatons.push_back({instance.process,getKnownInitialStatus(&instance,time)});
+    if ( instance.instantiation.realization && instance.instantiation.realization->value.value() == currentTime ) {
+      knownInstantiatons.push_back({instance.process,getKnownInitialStatus(&instance,currentTime)});
     }
   }
   return knownInstantiatons;
 }
 
-BPMNOS::Values Scenario::getKnownInitialStatus(const Scenario::InstanceData* instance, BPMNOS::number time) const {
+BPMNOS::Values Scenario::getKnownInitialStatus(const Scenario::InstanceData* instance, BPMNOS::number currentTime) const {
   BPMNOS::Values initalStatus;
   for ( auto& attribute : instance->process->extensionElements->as<const Status>()->attributes ) {
     auto& data = instance->data.at(attribute.get());
 
-    if ( data.realization && data.realization->disclosure > time ) {
-      throw std::runtime_error("Scenario: cannot instantiate '" + instance->id + "' because attribute '"+ attribute->id +"' is not yet known at time " + BPMNOS::to_string(time,INTEGER) );
+    if ( data.realization && data.realization->disclosure > currentTime ) {
+      throw std::runtime_error("Scenario: cannot instantiate '" + instance->id + "' because attribute '"+ attribute->id +"' is not yet known at time " + BPMNOS::to_string(currentTime,INTEGER) );
     }
     initalStatus.push_back( data.realization->value );
   }
   return initalStatus;
 }
 
-std::optional<BPMNOS::Values> Scenario::getKnownValues(const BPMN::FlowNode* node, Values& status, BPMNOS::number time) const {
+std::optional<BPMNOS::Values> Scenario::getKnownValues(const BPMN::FlowNode* node, Values& status, BPMNOS::number currentTime) const {
   // get instance id from status
   std::string instanceId = stringRegistry[ (long unsigned int)status[Status::Index::Instance].value() ];
   auto& instance = instances.at(instanceId);
@@ -71,7 +104,7 @@ std::optional<BPMNOS::Values> Scenario::getKnownValues(const BPMN::FlowNode* nod
   for ( auto& attribute : node->extensionElements->as<const Status>()->attributes ) {
     auto& data = instance.data.at(attribute.get());
 
-    if ( data.realization && data.realization->disclosure > time ) {
+    if ( data.realization && data.realization->disclosure > currentTime ) {
       return std::nullopt;
     }
     values.push_back( data.realization->value );
@@ -80,44 +113,27 @@ std::optional<BPMNOS::Values> Scenario::getKnownValues(const BPMN::FlowNode* nod
   return values;
 }
 
-std::vector< const Scenario::InstanceData* > Scenario::getAssumedInstances(BPMNOS::number currentTime, BPMNOS::number assumedTime) const {
-  std::vector< const Scenario::InstanceData* > assumedInstances;
-
-  for ( auto& [id, instance] : instances ) {
-    if ( instance.instantiation.realization
-         && instance.instantiation.realization->disclosure <= currentTime
-    ) {
-      assumedInstances.push_back(&instance);
-    }
-    else if ( instance.instantiation.anticipations.size()
-              && instance.instantiation.anticipations.front().disclosure <= assumedTime
-    ) {
-      assumedInstances.push_back(&instance);
-    }
-  }
-  return assumedInstances;
-}
-
-std::vector< std::pair<const BPMN::Process*, BPMNOS::Values> > Scenario::getAssumedInstantiations(BPMNOS::number currentTime, BPMNOS::number assumedTime) const {
-  std::vector< std::pair<const BPMN::Process*, BPMNOS::Values> > assumedInstantiatons;
+/*
+std::vector< std::pair<const BPMN::Process*, BPMNOS::Values> > Scenario::getAnticipatedInstantiations(BPMNOS::number currentTime) const {
+  std::vector< std::pair<const BPMN::Process*, BPMNOS::Values> > anticipatedInstantiatons;
 
   for ( auto& [id, instance] : instances ) {
     auto& instantiation = instance.instantiation;
     if ( instantiation.realization
-         && instantiation.realization->value.value() == assumedTime
+         && instantiation.realization->value.value() == currentTime
     ) {
-      assumedInstantiatons.push_back({ instance.process, getAnticipatedInitialStatus(&instance, currentTime) });
+      anticipatedInstantiatons.push_back({ instance.process, getAnticipatedInitialStatus(&instance, currentTime) });
     }
     else if ( instantiation.anticipations.size()
               && instantiation.anticipations.front().disclosure <= currentTime
-              && getLatestDisclosure(instantiation.anticipations,currentTime).value.value() == assumedTime
+              && getLatestDisclosure(instantiation.anticipations,currentTime).value.value() == currentTime
     ) {
-       assumedInstantiatons.push_back({ instance.process, getAnticipatedInitialStatus(&instance, currentTime) });
+       anticipatedInstantiatons.push_back({ instance.process, getAnticipatedInitialStatus(&instance, currentTime) });
     }
   }
-  return assumedInstantiatons;
+  return anticipatedInstantiatons;
 }
-
+*/
 BPMNOS::Values Scenario::getAnticipatedInitialStatus(const Scenario::InstanceData* instance, BPMNOS::number currentTime) const {
   BPMNOS::Values initalStatus;
   for ( auto& attribute : instance->process->extensionElements->as<const Status>()->attributes ) {
@@ -171,9 +187,9 @@ BPMNOS::Values Scenario::getAnticipatedValues(const BPMN::FlowNode* node, Values
   return values;
 }
 
-const Scenario::Disclosure& Scenario::getLatestDisclosure(const std::vector<Scenario::Disclosure>& data, BPMNOS::number time) const {
+const Scenario::Disclosure& Scenario::getLatestDisclosure(const std::vector<Scenario::Disclosure>& data, BPMNOS::number currentTime) const {
   // find the first element with a disclosure time larger than the given time
-  auto it = std::upper_bound(data.begin(), data.end(), time,
+  auto it = std::upper_bound(data.begin(), data.end(), currentTime,
     [](BPMNOS::number t, const Disclosure& element) -> bool { return (element.disclosure > t); }
   );
   if (it == data.begin()) {

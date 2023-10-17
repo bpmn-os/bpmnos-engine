@@ -8,7 +8,7 @@ BPMNOS::number SystemState::getTime() const {
 
 std::vector< std::pair<const BPMN::Process*, BPMNOS::Values> > SystemState::getInstantiations() const {
   if ( assumedTime ) {
-    return scenario->getAssumedInstantiations(currentTime, assumedTime.value());
+    return scenario->getAnticipatedInstantiations(currentTime);
   }
   else {
     return scenario->getKnownInstantiations(currentTime);

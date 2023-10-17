@@ -12,43 +12,50 @@ SCENARIO( "Trivial executable process", "[data][dynamic]" ) {
       Model::DynamicDataProvider dataProvider(modelFile,csv);
       auto scenario = dataProvider.createScenario();
 
-      THEN( "There is exactly one instance known by time 35" ) {
-        auto instances = scenario->getKnownInstances(35);
+      THEN( "There is no instance created by time 0" ) {
+        auto instances = scenario->getCreatedInstances(0);
+        REQUIRE( instances.size() == 0 );
+      }
+      THEN( "There is no instance created by time 35" ) {
+        auto instances = scenario->getCreatedInstances(35);
+        REQUIRE( instances.size() == 0 );
+      }
+      THEN( "Exactly one instantiation is created by time 42" ) {
+        auto instances = scenario->getCreatedInstances(42);
         REQUIRE( instances.size() == 1 );
+      }
+      THEN( "No instantiation is known to occur at time 35" ) {
+        auto instantiations = scenario->getInstantiations(35);
+        REQUIRE( instantiations.size() == 0 );
+      }
+      THEN( "Exactly one instantiation is known to occur at time 42" ) {
+        auto instantiations = scenario->getInstantiations(42);
+        REQUIRE( instantiations.size() == 1 );
       }
       THEN( "There is no instance known by time 0" ) {
         auto instances = scenario->getKnownInstances(0);
         REQUIRE( instances.size() == 0 );
       }
-      THEN( "Exactly one instantiation is known to occur at time 42" ) {
-        auto instantiations = scenario->getKnownInstantiations(42);
-        REQUIRE( instantiations.size() == 1 );
+      THEN( "There is exactly one instance known by time 35" ) {
+        auto instances = scenario->getKnownInstances(35);
+        REQUIRE( instances.size() == 1 );
       }
-      THEN( "No instantiation is known to occur at time 35" ) {
-        auto instantiations = scenario->getKnownInstantiations(35);
-        REQUIRE( instantiations.size() == 0 );
+      THEN( "There is no instance anticipated at time 0" ) {
+        auto instances = scenario->getAnticipatedInstances(0);
+        REQUIRE( instances.size() == 0 );
       }
-      THEN( "At time 0 no instantiation is assumed to occur at time 35" ) {
-        auto instantiations = scenario->getAssumedInstantiations(0,35);
-        REQUIRE( instantiations.size() == 0 );
+      THEN( "There is exactly one instance anticipated at time 15" ) {
+        auto instances = scenario->getAnticipatedInstances(15);
+        REQUIRE( instances.size() == 1 );
       }
-      THEN( "At time 15 exactly one instantiation is assumed to occur at time 35" ) {
-        auto instantiations = scenario->getAssumedInstantiations(15,35);
-        REQUIRE( instantiations.size() == 1 );
-      }
-      THEN( "At time 35 no instantiation is assumed to occur at time 35" ) {
-        auto instantiations = scenario->getAssumedInstantiations(35,35);
-
-        REQUIRE( instantiations.size() == 0 );
-      }
-      THEN( "At time 35 exactly one instantiation is assumed to occur at time 42" ) {
-        auto instantiations = scenario->getAssumedInstantiations(35,42);
-        REQUIRE( instantiations.size() == 1 );
+      THEN( "There is no unknown instance anticipated at time 35" ) {
+        auto instances = scenario->getAnticipatedInstances(35);
+        REQUIRE( instances.size() == 0 );
       }
       THEN( "At time 42 the instantiation data is known" ) {
         std::string instanceId = "Instance_1";
         BPMNOS::number timestamp = 42;
-        auto instantiations = scenario->getKnownInstantiations(timestamp);
+        auto instantiations = scenario->getInstantiations(timestamp);
         auto& [process,values] = instantiations.front();
         REQUIRE( values.size() == 2 );
         REQUIRE( values[Model::Status::Index::Instance].value() == BPMNOS::to_number(instanceId,STRING) );

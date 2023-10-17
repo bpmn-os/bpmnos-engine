@@ -11,7 +11,7 @@ std::unique_ptr<Event> ReadyHandler::fetchEvent( const SystemState* systemState 
   if ( systemState->awaitingReady.size() ) {
     auto& token = systemState->awaitingReady.front(); 
     if ( systemState->assumedTime ) {
-      auto values = systemState->scenario->getAssumedValues(token->node, token->status, systemState->currentTime, systemState->assumedTime.value() );
+      auto values = systemState->scenario->getAnticipatedValues(token->node, token->status, systemState->currentTime );
       return std::make_unique<ReadyEvent>(token,values);
     }
     else {
