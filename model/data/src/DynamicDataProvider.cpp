@@ -35,8 +35,8 @@ void DynamicDataProvider::readInstances() {
   for (auto &row : reader) {
     std::string processId = row[PROCESS_ID].get();
     // find process with respective identifier
-    auto processIt = std::find_if( 
-      model->processes.begin(), 
+    auto processIt = std::find_if(
+      model->processes.begin(),
       model->processes.end(),
       [&processId](const std::unique_ptr<BPMN::Process>& process) { return process->id == processId;}
     );
@@ -51,12 +51,12 @@ void DynamicDataProvider::readInstances() {
     if ( !instances.contains(instanceId) ) {
       // row has first entry for instance, create new entry in data
       instances[instanceId] = DynamicInstanceData({process,instanceId,{},{}});
-    } 
+    }
 
     auto& instance = instances[instanceId];
     auto instanceAtribute = attributes[process][Keyword::Instance];
-    if ( auto it = instance.data.find( instanceAtribute ); 
-         it == instance.data.end() 
+    if ( auto it = instance.data.find( instanceAtribute );
+         it == instance.data.end()
     ) {
       // instance attribute is known at time zero, even if instantiation is disclosed later
       instance.data[ instanceAtribute ] = {{0,BPMNOS::to_number(instanceId,BPMNOS::ValueType::STRING)}};
@@ -86,24 +86,21 @@ void DynamicDataProvider::readInstances() {
 std::unique_ptr<Scenario> DynamicDataProvider::createScenario(unsigned int scenarioId) {
   std::unique_ptr<Scenario> scenario = std::make_unique<Scenario>(model.get(), attributes, scenarioId);
   for ( auto& [id, instance] : instances ) {
-    if ( instance.instantiation.empty() ) { 
-      // instances without specified instantiation are known at time 0
-      scenario->addInstance(instance.process, id, { {}, {{0, 0}} }); 
-    }
-    else {
+    if ( instance.instantiation.size() ) {
       // instances become known at last disclosure of the instantiation
-      auto& [disclosure, value] = instance.instantiation.back();
-      scenario->addInstance(instance.process, id, { {}, {{disclosure, value}} }); 
+      auto& [instantiationDisclosure, instantiationTime] = instance.instantiation.back();
+      scenario->addInstance(instance.process, id, { {}, {{instantiationDisclosure, instantiationTime}} });
       for ( auto& [disclosure, value] : instance.instantiation ) {
-        // add anticipation of instantiation
         scenario->addAnticipation( scenario->getInstantiationData(id), {disclosure, value} );
       }
     }
+
     for ( auto& [attribute, data] : instance.data ) {
       for ( auto& [disclosure, value] : data ) {
         // add anticipation of attribute value
         scenario->addAnticipation( scenario->getAttributeData(id, attribute), {disclosure, value} );
       }
+
       if ( data.size() ) {
         // use last given attribute data as realization
         auto& [disclosure, value] = data.back();
@@ -113,6 +110,7 @@ std::unique_ptr<Scenario> DynamicDataProvider::createScenario(unsigned int scena
         // no attribute data given, use default value as realization at time 0
         scenario->setRealization( scenario->getAttributeData(id, attribute), {0, attribute->value} );
       }
+
     }
   }
   return scenario;

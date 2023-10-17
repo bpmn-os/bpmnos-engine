@@ -34,8 +34,8 @@ void StaticDataProvider::readInstances() {
   for (auto &row : reader) {
     std::string processId = row[PROCESS_ID].get();
     // find process with respective identifier
-    auto processIt = std::find_if( 
-      model->processes.begin(), 
+    auto processIt = std::find_if(
+      model->processes.begin(),
       model->processes.end(),
       [&processId](const std::unique_ptr<BPMN::Process>& process) { return process->id == processId;}
     );
@@ -50,7 +50,7 @@ void StaticDataProvider::readInstances() {
     if ( !instances.contains(instanceId) ) {
       // row has first entry for instance, create new entry in data
       instances[instanceId] = StaticInstanceData({process,instanceId,{}});
-    } 
+    }
 
     auto& instance = instances[instanceId];
 
