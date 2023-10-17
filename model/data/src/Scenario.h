@@ -87,7 +87,7 @@ public:
   /**
    * @brief Method returning the disclosed values of new attributes.
    */
-  BPMNOS::Values getAssumedValues(const BPMN::FlowNode* node, Values& status, BPMNOS::number currentTime) const;
+  BPMNOS::Values getAnticipatedValues(const BPMN::FlowNode* node, Values& status, BPMNOS::number currentTime) const;
 
   void addInstance(const BPMN::Process* process, const std::string& identifier, Data instantiation);
   void removeAnticipatedInstance(const std::string& identifier);
@@ -108,7 +108,7 @@ protected:
   /**
    * @brief Method returning the initial status of a assumed instantiation at the given time.
    */
-  BPMNOS::Values getAssumedInitialStatus(const InstanceData*, BPMNOS::number currentTime) const;
+  BPMNOS::Values getAnticipatedInitialStatus(const InstanceData*, BPMNOS::number currentTime) const;
 
 };
 
