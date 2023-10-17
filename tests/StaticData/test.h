@@ -71,11 +71,30 @@ SCENARIO( "Trivial executable process", "[data][static]" ) {
           REQUIRE( status->attributes[Model::Status::Index::Timestamp]->value.value() == 0 );
         }
       }
+      THEN( "Exactly one instantiation is known to occur at time 42" ) {
+        auto instantiations = scenario->getKnownInstantiations(42);
+        REQUIRE( instantiations.size() == 1 );
+      }
+      THEN( "No instantiation is known to occur at time 0" ) {
+        auto instantiations = scenario->getKnownInstantiations(0);
+        REQUIRE( instantiations.size() == 0 );
+      }
+      THEN( "Exactly one instantiation is assumed to occur at time 42" ) {
+        auto instantiations = scenario->getAssumedInstantiations(0,42);
+        REQUIRE( instantiations.size() == 1 );
+      }
+      THEN( "No instantiation is assumed to occur at time 0" ) {
+        auto instantiations = scenario->getAssumedInstantiations(0,0);
+        REQUIRE( instantiations.size() == 0 );
+      }
+      THEN( "No instantiation is assumed to occur after time 42" ) {
+        auto instantiations = scenario->getAssumedInstantiations(0,43);
+        REQUIRE( instantiations.size() == 0 );
+      }
       THEN( "The instantiation data is correct" ) {
         std::string instanceId = "Instance_1";
         BPMNOS::number timestamp = 42;
-        auto instantiations = scenario->getKnownInstantiations(0);
-        REQUIRE( instantiations.size() == 1 );
+        auto instantiations = scenario->getKnownInstantiations(timestamp);
         auto& [process,values] = instantiations.front();
         REQUIRE( values.size() == 2 );
         REQUIRE( values[Model::Status::Index::Instance].value() == BPMNOS::to_number(instanceId,STRING) );

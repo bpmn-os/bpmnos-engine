@@ -89,7 +89,9 @@ void StaticDataProvider::ensureDefaultValue(StaticInstanceData& instance, const 
 std::unique_ptr<Scenario> StaticDataProvider::createScenario(unsigned int scenarioId) {
   std::unique_ptr<Scenario> scenario = std::make_unique<Scenario>(model.get(), attributes, scenarioId);
   for ( auto& [id, instance] : instances ) {
-    scenario->addInstance(instance.process, id, { {}, {{0, 0}} }); // all instances are known at time 0
+    auto& timestampAttribute = attributes[instance.process][Keyword::Timestamp];
+    auto& instantiation = instance.data[timestampAttribute];
+    scenario->addInstance(instance.process, id, { {}, {{0, instantiation}} }); // all instances are known at time 0, but instantiations may occur later
     for ( auto& [attribute, value] : instance.data ) {
       scenario->setRealization( scenario->getAttributeData(id, attribute), {0, value} ); // all attribute values are known at time 0
     }

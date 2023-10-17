@@ -42,7 +42,7 @@ std::vector< std::pair<const BPMN::Process*, BPMNOS::Values> > Scenario::getKnow
   std::vector< std::pair<const BPMN::Process*, BPMNOS::Values> > knownInstantiatons;
 
   for ( auto& [id, instance] : instances ) {
-    if ( instance.instantiation.realization && instance.instantiation.realization->disclosure == time ) {
+    if ( instance.instantiation.realization && instance.instantiation.realization->value.value() == time ) {
       knownInstantiatons.push_back({instance.process,getKnownInitialStatus(&instance,time)});
     }  
   }
@@ -98,10 +98,10 @@ std::vector< std::pair<const BPMN::Process*, BPMNOS::Values> > Scenario::getAssu
   std::vector< std::pair<const BPMN::Process*, BPMNOS::Values> > assumedInstantiatons;
 
   for ( auto& [id, instance] : instances ) {
-    if ( instance.instantiation.realization && instance.instantiation.realization->value == currentTime ) {
-      assumedInstantiatons.push_back({instance.process,getKnownInitialStatus(&instance,currentTime)});
+    if ( instance.instantiation.realization && instance.instantiation.realization->value.value() == assumedTime ) {
+      assumedInstantiatons.push_back({instance.process,getAssumedInitialStatus(&instance,currentTime,assumedTime)});
     }  
-    else if ( instance.instantiation.anticipations.size() && getLatestDisclosure(instance.instantiation.anticipations,currentTime).value == assumedTime ) {
+    else if ( instance.instantiation.anticipations.size() && getLatestDisclosure(instance.instantiation.anticipations,currentTime).value.value() == assumedTime ) {
       assumedInstantiatons.push_back({instance.process,getAssumedInitialStatus(&instance,currentTime,assumedTime)});
     }
   }
