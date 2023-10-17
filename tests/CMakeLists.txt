@@ -34,6 +34,20 @@ target_link_libraries(run_tests
   Catch2::Catch2WithMain
 )
 
+# Copy all test data to build
+file(GLOB test_files RELATIVE "${PROJECT_SOURCE_DIR}/tests" "${PROJECT_SOURCE_DIR}/tests/*")
+foreach(file ${test_files})
+  if(IS_DIRECTORY "${PROJECT_SOURCE_DIR}/tests/${file}")
+#    if(NOT (file MATCHES ".*\\.cpp$" OR file MATCHES ".*\\.h$" OR file MATCHES ".*\\CMakeLists.txt"))
+        # Copy the file to the destination directory, preserving the relative path
+        file(COPY "${file}" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/")
+  endif()
+endforeach()
+# Create a script that can be used from build directory
+file(WRITE "${CMAKE_BINARY_DIR}/run_tests" "#!/bin/bash\n(cd ${CMAKE_BINARY_DIR}/tests/; ./run_tests $@)")
+execute_process(COMMAND chmod +x "${CMAKE_BINARY_DIR}/run_tests")
+message("-- Run tests: ./run_test [tags]")
+
 add_custom_target(
     tests
     COMMAND ${CMAKE_CURRENT_BINARY_DIR}/run_tests || exit 0
