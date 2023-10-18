@@ -74,10 +74,22 @@ void DynamicDataProvider::readInstances() {
     }
 
     auto attribute = attributes[process][attributeId];
-    instance.data[ attribute ].push_back({ BPMNOS::to_number(row[DISCLOSURE].get(),INTEGER), BPMNOS::to_number(row[VALUE].get(),attribute->type) });
+    BPMNOS::number disclosure = BPMNOS::to_number(row[DISCLOSURE].get(),INTEGER);
+    BPMNOS::number value = BPMNOS::to_number(row[VALUE].get(),attribute->type);
+    auto &attributeData = instance.data[ attribute ];
+    if ( attributeData.size() && attributeData.back().first >= disclosure ) {
+      throw std::runtime_error("DynamicDataProvider: disclosures of attribute values must be provided in strictly increasing order");
+    }
+    instance.data[ attribute ].push_back({ disclosure, value });
 
     if ( attribute->index == Status::Index::Timestamp ) {
-      instance.instantiation.push_back({ BPMNOS::to_number(row[DISCLOSURE].get(),INTEGER), BPMNOS::to_number(row[VALUE].get(),attribute->type) });
+      if ( instance.instantiation.size() && instance.instantiation.back().first >= disclosure ) {
+        throw std::runtime_error("DynamicDataProvider: disclosures of timestamp values must be provided in strictly increasing order");
+      }
+      if ( instance.instantiation.size() && instance.instantiation.back().first >= instance.instantiation.back().second ) {
+        throw std::runtime_error("DynamicDataProvider: disclosures of anticipated timestamps must be strictly smaller than the timestamp value");
+      }
+      instance.instantiation.push_back({ disclosure, value });
     }
 
   }
