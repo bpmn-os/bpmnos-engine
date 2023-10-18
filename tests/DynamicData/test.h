@@ -25,11 +25,27 @@ SCENARIO( "Trivial executable process", "[data][dynamic]" ) {
         REQUIRE( instances.size() == 1 );
       }
       THEN( "No instantiation is known to occur at time 35" ) {
-        auto instantiations = scenario->getInstantiations(35);
+        auto instantiations = scenario->getCurrentInstantiations(35);
         REQUIRE( instantiations.size() == 0 );
       }
       THEN( "Exactly one instantiation is known to occur at time 42" ) {
-        auto instantiations = scenario->getInstantiations(42);
+        auto instantiations = scenario->getCurrentInstantiations(42);
+        REQUIRE( instantiations.size() == 1 );
+      }
+      THEN( "At time 0 no instantiation is anticipated to occur at time 35" ) {
+        auto instantiations = scenario->getAnticipatedInstantiations(0,35);
+        REQUIRE( instantiations.size() == 0 );
+      }
+      THEN( "At time 15 one instantiation is anticipated to occur at time 35" ) {
+        auto instantiations = scenario->getAnticipatedInstantiations(15,35);
+        REQUIRE( instantiations.size() == 1 );
+      }
+      THEN( "At time 35 no instantiation is anticipated to occur at time 35" ) {
+        auto instantiations = scenario->getAnticipatedInstantiations(35,35);
+        REQUIRE( instantiations.size() == 0 );
+      }
+      THEN( "At time 35 one instantiation is anticipated to occur at time 42" ) {
+        auto instantiations = scenario->getAnticipatedInstantiations(35,42);
         REQUIRE( instantiations.size() == 1 );
       }
       THEN( "There is no instance known by time 0" ) {
@@ -55,7 +71,7 @@ SCENARIO( "Trivial executable process", "[data][dynamic]" ) {
       THEN( "At time 42 the instantiation data is known" ) {
         std::string instanceId = "Instance_1";
         BPMNOS::number timestamp = 42;
-        auto instantiations = scenario->getInstantiations(timestamp);
+        auto instantiations = scenario->getCurrentInstantiations(timestamp);
         auto& [process,values] = instantiations.front();
         REQUIRE( values.size() == 2 );
         REQUIRE( values[Model::Status::Index::Instance].value() == BPMNOS::to_number(instanceId,STRING) );

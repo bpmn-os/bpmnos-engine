@@ -32,7 +32,7 @@ SCENARIO( "Trivial executable process", "[data][static]" ) {
       THEN( "The instantiation data is correct" ) {
         std::string instanceId = "Instance_1";
         BPMNOS::number timestamp = 0;
-        auto instantiations = scenario->getInstantiations(0);
+        auto instantiations = scenario->getCurrentInstantiations(0);
         REQUIRE( instantiations.size() == 1 );
         auto& [process,values] = instantiations.front();
         REQUIRE( values.size() == 2 );
@@ -81,17 +81,17 @@ SCENARIO( "Trivial executable process", "[data][static]" ) {
         }
       }
       THEN( "Exactly one instantiation is known to occur at time 42" ) {
-        auto instantiations = scenario->getInstantiations(42);
+        auto instantiations = scenario->getCurrentInstantiations(42);
         REQUIRE( instantiations.size() == 1 );
       }
       THEN( "No instantiation is known to occur at time 0" ) {
-        auto instantiations = scenario->getInstantiations(0);
+        auto instantiations = scenario->getCurrentInstantiations(0);
         REQUIRE( instantiations.size() == 0 );
       }
       THEN( "The instantiation data is correct" ) {
         std::string instanceId = "Instance_1";
         BPMNOS::number timestamp = 42;
-        auto instantiations = scenario->getInstantiations(timestamp);
+        auto instantiations = scenario->getCurrentInstantiations(timestamp);
         auto& [process,values] = instantiations.front();
         REQUIRE( values.size() == 2 );
         REQUIRE( values[Model::Status::Index::Instance].value() == BPMNOS::to_number(instanceId,STRING) );
