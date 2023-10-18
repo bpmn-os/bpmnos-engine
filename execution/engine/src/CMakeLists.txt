@@ -1,4 +1,5 @@
 list(APPEND engine_SOURCES
+  Message.cpp
   Token.cpp
   Event.cpp
   events/TerminationEvent.cpp
@@ -11,7 +12,6 @@ list(APPEND engine_SOURCES
   events/ChoiceEvent.cpp
   events/ExitEvent.cpp
   StateMachine.cpp
-  Message.cpp
   SystemState.cpp
   EventHandler.cpp
   eventhandler/TimeWarp.cpp
@@ -25,6 +25,7 @@ list(APPEND engine_SOURCES
 )
 
 list(APPEND engine_HEADERS
+  Message.h
   Token.h
   Event.h
   events/TerminationEvent.h
@@ -37,7 +38,6 @@ list(APPEND engine_HEADERS
   events/ChoiceEvent.h
   events/ExitEvent.h
   StateMachine.h
-  Message.h
   SystemState.h
   EventHandler.h
   eventhandler/TimeWarp.h

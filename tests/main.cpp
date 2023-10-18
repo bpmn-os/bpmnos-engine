@@ -2,6 +2,7 @@
 #define CATCH_CONFIG_NO_THROW
 #include <bpmn++.h>
 #include "bpmnos-model.h"
+#include "bpmnos-execution.h"
 
 using namespace BPMNOS;
 
@@ -10,6 +11,7 @@ using namespace BPMNOS;
 #include "StaticData/test.h"
 #include "DynamicData/test.h"
 #include "Expression/test.h"
+#include "Execution/test.h"
 
 // Playground
 #include <iostream>

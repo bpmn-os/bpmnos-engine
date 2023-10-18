@@ -27,10 +27,11 @@ include_directories(
 target_link_libraries(run_tests 
   PRIVATE 
   pthread
+  nlohmann_json::nlohmann_json
   xerces-c
   bpmn++
   bpmnos-model
-  nlohmann_json::nlohmann_json
+  bpmnos-execution
   Catch2::Catch2WithMain
 )
 
@@ -56,5 +57,5 @@ add_custom_target(
 )
 
 add_dependencies(tests run_tests)
-add_dependencies(run_tests bpmnos-model)
+add_dependencies(run_tests bpmnos-model bpmnos-execution)
 

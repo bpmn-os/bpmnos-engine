@@ -2,7 +2,7 @@
 #define BPMNOS_SystemState_H
 
 #include "StateMachine.h"
-#include "Message.h"
+#include "execution/engine/src/Message.h"
 #include "model/data/src/Scenario.h"
 
 namespace BPMNOS::Execution {
