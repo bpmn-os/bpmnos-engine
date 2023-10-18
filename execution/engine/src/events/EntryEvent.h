@@ -1,5 +1,5 @@
-#ifndef BPMNOS_EntryEvent_H
-#define BPMNOS_EntryEvent_H
+#ifndef BPMNOS_Execution_EntryEvent_H
+#define BPMNOS_Execution_EntryEvent_H
 
 #include <bpmn++.h>
 #include "model/utility/src/Number.h"
@@ -20,5 +20,5 @@ struct EntryEvent : Event {
 
 } // namespace BPMNOS::Execution
 
-#endif // BPMNOS_EntryEvent_H
+#endif // BPMNOS_Execution_EntryEvent_H
 

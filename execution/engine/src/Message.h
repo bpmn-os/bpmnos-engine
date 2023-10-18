@@ -1,5 +1,5 @@
-#ifndef BPMNOS_Message_H
-#define BPMNOS_Message_H
+#ifndef BPMNOS_Execution_Message_H
+#define BPMNOS_Execution_Message_H
 
 #include <vector>
 #include <string>
@@ -16,5 +16,5 @@ struct Message {
 
 } // namespace BPMNOS::Execution
 
-#endif // BPMNOS_Message_H
+#endif // BPMNOS_Execution_Message_H
 

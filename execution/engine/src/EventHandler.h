@@ -1,5 +1,5 @@
-#ifndef BPMNOS_EventHandler_H
-#define BPMNOS_EventHandler_H
+#ifndef BPMNOS_Execution_EventHandler_H
+#define BPMNOS_Execution_EventHandler_H
 
 #include "Event.h"
 #include "SystemState.h"
@@ -15,4 +15,4 @@ public:
 
 } // namespace BPMNOS::Execution
 
-#endif // BPMNOS_EventHandler_H
+#endif // BPMNOS_Execution_EventHandler_H

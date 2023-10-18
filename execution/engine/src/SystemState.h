@@ -1,5 +1,5 @@
-#ifndef BPMNOS_SystemState_H
-#define BPMNOS_SystemState_H
+#ifndef BPMNOS_Execution_SystemState_H
+#define BPMNOS_Execution_SystemState_H
 
 #include "StateMachine.h"
 #include "execution/engine/src/Message.h"
@@ -68,4 +68,4 @@ private:
 
 } // namespace BPMNOS::Execution
 
-#endif // BPMNOS_SystemState_H
+#endif // BPMNOS_Execution_SystemState_H

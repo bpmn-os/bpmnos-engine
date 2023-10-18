@@ -1,5 +1,5 @@
-#ifndef BPMNOS_ClockTickEvent_H
-#define BPMNOS_ClockTickEvent_H
+#ifndef BPMNOS_Execution_ClockTickEvent_H
+#define BPMNOS_Execution_ClockTickEvent_H
 
 #include <bpmn++.h>
 #include "execution/engine/src/Event.h"
@@ -18,5 +18,5 @@ struct ClockTickEvent : Event {
 
 } // namespace BPMNOS::Execution
 
-#endif // BPMNOS_ClockTickEvent_H
+#endif // BPMNOS_Execution_ClockTickEvent_H
 

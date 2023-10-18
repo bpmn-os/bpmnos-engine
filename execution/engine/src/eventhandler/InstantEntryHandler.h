@@ -1,5 +1,5 @@
-#ifndef BPMNOS_InstantEntryHandler_H
-#define BPMNOS_InstantEntryHandler_H
+#ifndef BPMNOS_Execution_InstantEntryHandler_H
+#define BPMNOS_Execution_InstantEntryHandler_H
 
 #include <bpmn++.h>
 #include "execution/engine/src/EventHandler.h"
@@ -16,5 +16,5 @@ class InstantEntryHandler : public EventHandler {
 
 } // namespace BPMNOS::Execution
 
-#endif // BPMNOS_InstantEntryHandler_H
+#endif // BPMNOS_Execution_InstantEntryHandler_H
 

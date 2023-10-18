@@ -1,5 +1,5 @@
-#ifndef BPMNOS_DeterministicCompletionHandler_H
-#define BPMNOS_DeterministicCompletionHandler_H
+#ifndef BPMNOS_Execution_DeterministicCompletionHandler_H
+#define BPMNOS_Execution_DeterministicCompletionHandler_H
 
 #include <bpmn++.h>
 #include "execution/engine/src/EventHandler.h"
@@ -16,5 +16,5 @@ class DeterministicCompletionHandler : public EventHandler {
 
 } // namespace BPMNOS::Execution
 
-#endif // BPMNOS_DeterministicCompletionHandler_H
+#endif // BPMNOS_Execution_DeterministicCompletionHandler_H
 

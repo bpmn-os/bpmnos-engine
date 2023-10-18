@@ -1,5 +1,5 @@
-#ifndef BPMNOS_ReadyEvent_H
-#define BPMNOS_ReadyEvent_H
+#ifndef BPMNOS_Execution_ReadyEvent_H
+#define BPMNOS_Execution_ReadyEvent_H
 
 #include <bpmn++.h>
 #include "execution/engine/src/Event.h"
@@ -20,5 +20,5 @@ struct ReadyEvent : Event {
 
 } // namespace BPMNOS::Execution
 
-#endif // BPMNOS_ReadyEvent_H
+#endif // BPMNOS_Execution_ReadyEvent_H
 

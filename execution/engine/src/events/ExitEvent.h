@@ -1,5 +1,5 @@
-#ifndef BPMNOS_ExitEvent_H
-#define BPMNOS_ExitEvent_H
+#ifndef BPMNOS_Execution_ExitEvent_H
+#define BPMNOS_Execution_ExitEvent_H
 
 #include <bpmn++.h>
 #include "model/utility/src/Number.h"
@@ -20,5 +20,5 @@ struct ExitEvent : Event {
 
 } // namespace BPMNOS::Execution
 
-#endif // BPMNOS_ExitEvent_H
+#endif // BPMNOS_Execution_ExitEvent_H
 

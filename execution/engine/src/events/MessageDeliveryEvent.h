@@ -1,5 +1,5 @@
-#ifndef BPMNOS_MessageDeliveryEvent_H
-#define BPMNOS_MessageDeliveryEvent_H
+#ifndef BPMNOS_Execution_MessageDeliveryEvent_H
+#define BPMNOS_Execution_MessageDeliveryEvent_H
 
 #include <bpmn++.h>
 #include "model/utility/src/Number.h"
@@ -22,5 +22,5 @@ struct MessageDeliveryEvent : TriggerEvent {
 
 } // namespace BPMNOS::Execution
 
-#endif // BPMNOS_MessageDeliveryEvent_H
+#endif // BPMNOS_Execution_MessageDeliveryEvent_H
 

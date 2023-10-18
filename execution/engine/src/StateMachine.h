@@ -1,5 +1,5 @@
-#ifndef BPMNOS_StateMachine_H
-#define BPMNOS_StateMachine_H
+#ifndef BPMNOS_Execution_StateMachine_H
+#define BPMNOS_Execution_StateMachine_H
 
 #include <bpmn++.h>
 #include "Token.h"
@@ -54,4 +54,4 @@ private:
 
 } // namespace BPMNOS::Execution
 
-#endif // BPMNOS_StateMachine_H
+#endif // BPMNOS_Execution_StateMachine_H

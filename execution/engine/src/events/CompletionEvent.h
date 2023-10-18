@@ -1,5 +1,5 @@
-#ifndef BPMNOS_CompletionEvent_H
-#define BPMNOS_CompletionEvent_H
+#ifndef BPMNOS_Execution_CompletionEvent_H
+#define BPMNOS_Execution_CompletionEvent_H
 
 #include <bpmn++.h>
 #include "execution/engine/src/Event.h"
@@ -18,5 +18,5 @@ struct CompletionEvent : Event {
 
 } // namespace BPMNOS::Execution
 
-#endif // BPMNOS_CompletionEvent_H
+#endif // BPMNOS_Execution_CompletionEvent_H
 

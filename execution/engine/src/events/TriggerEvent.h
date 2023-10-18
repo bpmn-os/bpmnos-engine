@@ -1,5 +1,5 @@
-#ifndef BPMNOS_TriggerEvent_H
-#define BPMNOS_TriggerEvent_H
+#ifndef BPMNOS_Execution_TriggerEvent_H
+#define BPMNOS_Execution_TriggerEvent_H
 
 #include <bpmn++.h>
 #include "execution/engine/src/Event.h"
@@ -18,5 +18,5 @@ struct TriggerEvent : Event {
 
 } // namespace BPMNOS::Execution
 
-#endif // BPMNOS_TriggerEvent_H
+#endif // BPMNOS_Execution_TriggerEvent_H
 

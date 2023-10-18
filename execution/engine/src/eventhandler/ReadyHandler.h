@@ -1,5 +1,5 @@
-#ifndef BPMNOS_ReadyHandler_H
-#define BPMNOS_ReadyHandler_H
+#ifndef BPMNOS_Execution_ReadyHandler_H
+#define BPMNOS_Execution_ReadyHandler_H
 
 #include <bpmn++.h>
 #include "execution/engine/src/EventHandler.h"
@@ -16,5 +16,5 @@ class ReadyHandler : public EventHandler {
 
 } // namespace BPMNOS::Execution
 
-#endif // BPMNOS_ReadyHandler_H
+#endif // BPMNOS_Execution_ReadyHandler_H
 

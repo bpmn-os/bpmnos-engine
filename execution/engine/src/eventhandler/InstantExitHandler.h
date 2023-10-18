@@ -1,5 +1,5 @@
-#ifndef BPMNOS_InstantExitHandler_H
-#define BPMNOS_InstantExitHandler_H
+#ifndef BPMNOS_Execution_InstantExitHandler_H
+#define BPMNOS_Execution_InstantExitHandler_H
 
 #include <bpmn++.h>
 #include "execution/engine/src/EventHandler.h"
@@ -16,5 +16,5 @@ class InstantExitHandler : public EventHandler {
 
 } // namespace BPMNOS::Execution
 
-#endif // BPMNOS_InstantExitHandler_H
+#endif // BPMNOS_Execution_InstantExitHandler_H
 

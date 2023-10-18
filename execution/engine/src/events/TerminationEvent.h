@@ -1,5 +1,5 @@
-#ifndef BPMNOS_TerminationEvent_H
-#define BPMNOS_TerminationEvent_H
+#ifndef BPMNOS_Execution_TerminationEvent_H
+#define BPMNOS_Execution_TerminationEvent_H
 
 #include <bpmn++.h>
 #include "execution/engine/src/Event.h"
@@ -16,5 +16,5 @@ struct TerminationEvent : Event {
 
 } // namespace BPMNOS::Execution
 
-#endif // BPMNOS_TerminationEvent_H
+#endif // BPMNOS_Execution_TerminationEvent_H
 

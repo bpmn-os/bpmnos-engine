@@ -1,5 +1,5 @@
-#ifndef BPMNOS_ChoiceEvent_H
-#define BPMNOS_ChoiceEvent_H
+#ifndef BPMNOS_Execution_ChoiceEvent_H
+#define BPMNOS_Execution_ChoiceEvent_H
 
 #include <bpmn++.h>
 #include "model/utility/src/Number.h"
@@ -20,5 +20,5 @@ struct ChoiceEvent : Event {
 
 } // namespace BPMNOS::Execution
 
-#endif // BPMNOS_ChoiceEvent_H
+#endif // BPMNOS_Execution_ChoiceEvent_H
 

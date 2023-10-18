@@ -1,5 +1,5 @@
-#ifndef BPMNOS_erase_H
-#define BPMNOS_erase_H
+#ifndef BPMNOS_Execution_erase_H
+#define BPMNOS_Execution_erase_H
 
 namespace BPMNOS::Execution {
 
@@ -32,5 +32,5 @@ void erase(std::vector<T>& container, const T* elementPtr) {
 
 } // namespace BPMNOS::Execution
 
-#endif // BPMNOS_erase_H
+#endif // BPMNOS_Execution_erase_H
 

@@ -1,5 +1,5 @@
-#ifndef BPMNOS_Token_H
-#define BPMNOS_Token_H
+#ifndef BPMNOS_Execution_Token_H
+#define BPMNOS_Execution_Token_H
 
 #include <bpmn++.h>
 #include "model/utility/src/Number.h"
@@ -60,5 +60,5 @@ private:
 
 } // namespace BPMNOS::Execution
 
-#endif // BPMNOS_Token_H
+#endif // BPMNOS_Execution_Token_H
 

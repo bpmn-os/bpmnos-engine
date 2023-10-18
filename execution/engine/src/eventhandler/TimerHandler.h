@@ -1,5 +1,5 @@
-#ifndef BPMNOS_TimerHandler_H
-#define BPMNOS_TimerHandler_H
+#ifndef BPMNOS_Execution_TimerHandler_H
+#define BPMNOS_Execution_TimerHandler_H
 
 #include <bpmn++.h>
 #include "execution/engine/src/EventHandler.h"
@@ -16,5 +16,5 @@ class TimerHandler : public EventHandler {
 
 } // namespace BPMNOS::Execution
 
-#endif // BPMNOS_TimerHandler_H
+#endif // BPMNOS_Execution_TimerHandler_H
 

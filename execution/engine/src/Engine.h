@@ -1,5 +1,5 @@
-#ifndef BPMNOS_Engine_H
-#define BPMNOS_Engine_H
+#ifndef BPMNOS_Execution_Engine_H
+#define BPMNOS_Execution_Engine_H
 
 #include <set>
 #include <vector>
@@ -71,4 +71,4 @@ protected:
 
 } // namespace BPMNOS::Execution
 
-#endif // BPMNOS_Engine_H
+#endif // BPMNOS_Execution_Engine_H

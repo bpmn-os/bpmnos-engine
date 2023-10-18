@@ -1,5 +1,5 @@
-#ifndef BPMNOS_TimeWarpHandler_H
-#define BPMNOS_TimeWarpHandler_H
+#ifndef BPMNOS_Execution_TimeWarpHandler_H
+#define BPMNOS_Execution_TimeWarpHandler_H
 
 #include <bpmn++.h>
 #include "execution/engine/src/EventHandler.h"
@@ -16,5 +16,5 @@ class TimeWarp : public EventHandler {
 
 } // namespace BPMNOS::Execution
 
-#endif // BPMNOS_TimeWarpHandler_H
+#endif // BPMNOS_Execution_TimeWarpHandler_H
 

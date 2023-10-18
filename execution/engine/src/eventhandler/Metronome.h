@@ -1,5 +1,5 @@
-#ifndef BPMNOS_MetronomeHandler_H
-#define BPMNOS_MetronomeHandler_H
+#ifndef BPMNOS_Execution_MetronomeHandler_H
+#define BPMNOS_Execution_MetronomeHandler_H
 
 #include <chrono>
 
@@ -23,5 +23,5 @@ private:
 
 } // namespace BPMNOS::Execution
 
-#endif // BPMNOS_MetronomeHandler_H
+#endif // BPMNOS_Execution_MetronomeHandler_H
 

@@ -1,5 +1,5 @@
-#ifndef BPMNOS_Event_H
-#define BPMNOS_Event_H
+#ifndef BPMNOS_Execution_Event_H
+#define BPMNOS_Execution_Event_H
 
 #include "Token.h"
 
@@ -23,5 +23,5 @@ struct Event {
 
 } // namespace BPMNOS::Execution
 
-#endif // BPMNOS_Event_H
+#endif // BPMNOS_Execution_Event_H
 
