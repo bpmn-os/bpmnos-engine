@@ -56,6 +56,7 @@ private:
   void processTriggerEvent(const TriggerEvent* triggerEvent);
   void processMessageDeliveryEvent(const MessageDeliveryEvent* messageDeliveryEvent);
 
+  void notify() const;
 };
 
 } // namespace BPMNOS::Execution

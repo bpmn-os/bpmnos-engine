@@ -1,5 +1,6 @@
 #include "Token.h"
 #include "StateMachine.h"
+#include "Engine.h"
 #include "model/parser/src/extensionElements/Status.h"
 #include "model/parser/src/DecisionTask.h"
 #include "Event.h"
@@ -187,5 +188,9 @@ void Token::processTriggerEvent(const TriggerEvent* triggerEvent) {
 void Token::processMessageDeliveryEvent(const MessageDeliveryEvent* messageDeliveryEvent) {
 }
 
-
+void Token::notify() const {
+  for ( auto listener : owner->engine->listeners ) {
+    listener->update(this);
+  }
+}
 

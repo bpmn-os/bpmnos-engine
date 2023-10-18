@@ -9,7 +9,6 @@ class Engine;
 
 struct Event {
   Event(const Token* token);
-  virtual ~Event() = 0;
   const Token* token;  
 
   virtual void processBy(Engine* engine) const  = 0;

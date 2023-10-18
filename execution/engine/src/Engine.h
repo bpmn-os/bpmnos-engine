@@ -14,6 +14,7 @@
 #include "events/TerminationEvent.h"
 #include "events/TriggerEvent.h"
 #include "EventHandler.h"
+#include "Listener.h"
 #include "StateMachine.h"
 #include "SystemState.h"
 
@@ -22,14 +23,12 @@ namespace BPMNOS::Execution {
 class Engine {
 public:
   Engine();
-  std::vector<EventHandler*> eventHandlers;
   void addEventHandler(EventHandler* eventHandler);
+  void addListener(Listener* listener);
 
-  std::unique_ptr<Event> listen( const SystemState* systemState );
+  std::unique_ptr<Event> fetchEvent();
 
   void run(const BPMNOS::Model::Scenario* scenario);
-  void simulate(const SystemState* systemState);
-  void resume();
 
   void process(const ChoiceEvent& event);
   void process(const ClockTickEvent& event);
@@ -62,10 +61,13 @@ public:
   const SystemState* getSystemState();
 
 protected:
-  BPMNOS::number clockTick; ///< Timestep used to advance the current time by systemState.time += clockTick
-  SystemState* systemState;
-  void advance();
 
+  BPMNOS::number clockTick; ///< Timestep used to advance the current time by systemState.time += clockTick
+  std::unique_ptr<SystemState> systemState;
+  void advance();
+  friend void Token::notify() const;
+  std::vector<EventHandler*> eventHandlers;
+  std::vector<Listener*> listeners;
 
 };
 

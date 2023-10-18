@@ -7,6 +7,8 @@
 
 namespace BPMNOS::Execution {
 
+class Engine;
+
 /**
  * @brief A class representing the state that the execution or simulation of a given scenario is in.
  */
@@ -63,6 +65,9 @@ public:
 
 private:
   friend class Engine;
+  SystemState() = delete;
+  SystemState(const Engine* engine);
+  const Engine* engine;
   void incrementTimeBy(BPMNOS::number duration);
 };
 

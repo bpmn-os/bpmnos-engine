@@ -14,13 +14,17 @@ void Engine::addEventHandler(EventHandler* eventHandler) {
   eventHandlers.push_back(eventHandler);
 }
 
-std::unique_ptr<Event> Engine::listen( const SystemState* systemState ) {
+std::unique_ptr<Event> Engine::fetchEvent() {
   for ( auto eventHandler : eventHandlers ) {
-    if ( auto event = eventHandler->fetchEvent(systemState) ) {
+    if ( auto event = eventHandler->fetchEvent(systemState.get()) ) {
       return event;
     }
   }
   return nullptr;
+}
+
+void Engine::addListener(Listener* listener) {
+  listeners.push_back(listener);
 }
 
 void Engine::run(const BPMNOS::Model::Scenario* scenario) {
@@ -35,19 +39,8 @@ void Engine::run(const BPMNOS::Model::Scenario* scenario) {
   // instantiate known instances
 
   advance();
-
-
 }
 
-void Engine::simulate(const SystemState* systemState) {
-  // copy system state and set assumed time of
-  throw std::runtime_error("Engine: simulate not yet implemented");
-  advance();
-}
-
-void Engine::resume() {
-  advance();
-}
 
 void Engine::advance() {
   while ( systemState->isAlive() ) {
@@ -56,16 +49,17 @@ void Engine::advance() {
 
     // add all new instances and advance tokens as much as possible
     for (auto& [process,status] : systemState->getInstantiations() ) {
-      systemState->instances.push_back(StateMachine(process,status));
+      systemState->instances.push_back(StateMachine(this,process,status));
       systemState->instances.back().advance();
     }
 
-    // listen to event handler and process all events
-    while ( auto event = listen( systemState ) ) {
+    // fetch and process all events
+    while ( auto event = fetchEvent() ) {
       event->processBy(this);
     }
   }
 }
+
 
 /*
 void Engine::start(BPMNOS::number time) {
@@ -76,7 +70,7 @@ void Engine::start(BPMNOS::number time) {
     // loop until TerminationEvent is received
 
     // listen to event
-    std::unique_ptr<Event> event = listen( systemState );
+    std::unique_ptr<Event> event = fetchEvent( systemState );
 
     if ( auto instantiationEvent = event.get()->is<InstantiationEvent>(); instantiationEvent ) {
       // create a StateMachine for the instantiated process
@@ -160,7 +154,7 @@ BPMNOS::number Engine::getCurrentTime() {
 }
 
 const SystemState* Engine::getSystemState() {
-  return systemState;
+  return systemState.get();
 }
 
 void Engine::advance(Token* token) {

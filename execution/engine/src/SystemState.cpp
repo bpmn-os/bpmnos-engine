@@ -1,6 +1,12 @@
 #include "SystemState.h"
+#include "Engine.h"
 
 using namespace BPMNOS::Execution;
+
+SystemState::SystemState(const Engine* engine)
+  : engine(engine) 
+{
+}
 
 BPMNOS::number SystemState::getTime() const {
   return assumedTime ? assumedTime.value() : currentTime;

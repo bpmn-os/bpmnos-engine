@@ -21,6 +21,7 @@ list(APPEND engine_SOURCES
   eventhandler/DeterministicCompletionHandler.cpp
   eventhandler/TimerHandler.cpp
   eventhandler/ReadyHandler.cpp
+  Listener.cpp
   Engine.cpp
 )
 
@@ -47,5 +48,6 @@ list(APPEND engine_HEADERS
   eventhandler/DeterministicCompletionHandler.h
   eventhandler/TimerHandler.h
   eventhandler/ReadyHandler.h
+  Listener.h
   Engine.h
 )
