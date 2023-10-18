@@ -78,17 +78,17 @@ set_property(
 
 target_compile_options(${PROJECT_NAME}
   PRIVATE
-#  -O3
+  -O3
   -Werror
-  -fmax-errors=1 # Remove
-  -Wno-error=unused-parameter # Remove
-  -Wno-error=unused-variable # Remove
   -pedantic-errors
   -Wpedantic
   -Wall
   -Wextra
   -Wconversion
   -Wsign-conversion
+  -fmax-errors=1 # Remove
+  -Wno-error=unused-parameter # Remove
+  -Wno-error=unused-variable # Remove
 )
 
 # Install the header files

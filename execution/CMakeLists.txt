@@ -10,8 +10,12 @@ message("-- Library will be created in folder: ${CMAKE_SOURCE_DIR}/${LIB_DIR}")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/${LIB_DIR})
 #set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR})
 
+# Get lists of all headers and sources of utilities
+include("${PROJECT_SOURCE_DIR}/utility/CMakeLists.txt")
+
 # Get lists of all headers and sources of BPMN engine
 include("${PROJECT_SOURCE_DIR}/engine/CMakeLists.txt")
+
 
 find_program(CCACHE_FOUND "ccache")
 set(CCACHE_SUPPORT ON CACHE BOOL "Enable ccache support")
@@ -57,4 +61,10 @@ target_compile_options(${PROJECT_NAME}
   -Wno-error=unused-parameter # Remove
   -Wno-error=unused-variable # Remove
 )
+
+# Install the header files
+#install(FILES ${SINGLE_HEADER_PATH} DESTINATION include)
+
+# Install the library
+#install(TARGETS ${PROJECT_NAME} ARCHIVE DESTINATION lib)
 
