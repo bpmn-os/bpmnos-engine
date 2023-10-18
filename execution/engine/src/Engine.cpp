@@ -49,7 +49,7 @@ void Engine::advance() {
 
     // add all new instances and advance tokens as much as possible
     for (auto& [process,status] : systemState->getInstantiations() ) {
-      systemState->instances.push_back(StateMachine(this,process,status));
+      systemState->instances.push_back(StateMachine(systemState.get(),process,status));
       systemState->instances.back().advance();
     }
 

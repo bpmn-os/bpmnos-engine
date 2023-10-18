@@ -68,6 +68,7 @@ private:
   SystemState() = delete;
   SystemState(const Engine* engine);
   const Engine* engine;
+  friend void Token::notify() const;
   void incrementTimeBy(BPMNOS::number duration);
 };
 

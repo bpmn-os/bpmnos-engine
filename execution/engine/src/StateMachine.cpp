@@ -1,5 +1,5 @@
 #include "StateMachine.h"
-#include "Engine.h"
+#include "SystemState.h"
 #include "Event.h"
 #include "events/EntryEvent.h"
 #include "execution/utility/src/erase.h"
@@ -7,8 +7,8 @@
 
 using namespace BPMNOS::Execution;
 
-StateMachine::StateMachine(const Engine* engine, const BPMN::Scope* scope, const Values& status, Token* parentToken)
-  : engine(engine)
+StateMachine::StateMachine(const SystemState* systemState, const BPMN::Scope* scope, const Values& status, Token* parentToken)
+  : systemState(systemState)
   , scope(scope)
   , parentToken(parentToken)
 {

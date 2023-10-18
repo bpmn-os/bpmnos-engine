@@ -189,7 +189,7 @@ void Token::processMessageDeliveryEvent(const MessageDeliveryEvent* messageDeliv
 }
 
 void Token::notify() const {
-  for ( auto listener : owner->engine->listeners ) {
+  for ( auto listener : owner->systemState->engine->listeners ) {
     listener->update(this);
   }
 }

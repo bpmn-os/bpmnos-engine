@@ -37,6 +37,7 @@ public:
   bool done() const { return state == State::DONE; };
   bool failed() const { return state == State::FAILED; };
 private:
+  friend class SystemState;
   friend class StateMachine;
   friend class Engine;
   enum class State { CREATED, READY, ENTERED, BUSY, COMPLETED, DEPARTED, ARRIVED, DONE, FAILED, TO_BE_MERGED, TO_BE_COPIED };

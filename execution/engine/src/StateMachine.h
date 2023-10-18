@@ -11,7 +11,7 @@ namespace BPMNOS::Execution {
 class StateMachine;
 typedef std::vector< StateMachine > StateMachines;
 
-class Engine;
+class SystemState;
 
 /**
  * @brief Represents a state machine for BPMN execution of a scope in the model.
@@ -21,8 +21,8 @@ class Engine;
  */
 class StateMachine {
 public:
-  StateMachine(const Engine* engine, const BPMN::Scope* scope, const Values& status, Token* parentToken = nullptr);
-  const Engine* engine;
+  StateMachine(const SystemState* systemState, const BPMN::Scope* scope, const Values& status, Token* parentToken = nullptr);
+  const SystemState* systemState;
   const BPMN::Scope* scope;
   Token* parentToken;
 
