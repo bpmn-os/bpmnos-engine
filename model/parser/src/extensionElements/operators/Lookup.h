@@ -1,5 +1,5 @@
-#ifndef BPMNOS_Lookup_H
-#define BPMNOS_Lookup_H
+#ifndef BPMNOS_Model_Lookup_H
+#define BPMNOS_Model_Lookup_H
 
 #include "model/parser/src/extensionElements/Attribute.h"
 #include "model/parser/src/extensionElements/Parameter.h"
@@ -50,4 +50,4 @@ public:
 
 } // namespace BPMNOS::Model
 
-#endif // BPMNOS_Lookup_H
+#endif // BPMNOS_Model_Lookup_H

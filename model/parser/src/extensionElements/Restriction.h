@@ -1,5 +1,5 @@
-#ifndef BPMNOS_Restriction_H
-#define BPMNOS_Restriction_H
+#ifndef BPMNOS_Model_Restriction_H
+#define BPMNOS_Model_Restriction_H
 
 #include <memory>
 #include <unordered_set>
@@ -70,4 +70,4 @@ public:
 
 } // namespace BPMNOS::Model
 
-#endif // BPMNOS_Restriction_H
+#endif // BPMNOS_Model_Restriction_H

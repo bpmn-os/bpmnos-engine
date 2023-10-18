@@ -1,5 +1,5 @@
-#ifndef BPMNOS_DynamicDataProvider_H
-#define BPMNOS_DynamicDataProvider_H
+#ifndef BPMNOS_Model_DynamicDataProvider_H
+#define BPMNOS_Model_DynamicDataProvider_H
 
 #include "DataProvider.h"
 #include <csv.hpp>
@@ -39,4 +39,4 @@ protected:
 
 } // namespace BPMNOS::Model
 
-#endif // BPMNOS_DynamicDataProvider_H
+#endif // BPMNOS_Model_DynamicDataProvider_H

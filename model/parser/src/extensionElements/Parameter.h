@@ -1,5 +1,5 @@
-#ifndef BPMNOS_Parameter_H
-#define BPMNOS_Parameter_H
+#ifndef BPMNOS_Model_Parameter_H
+#define BPMNOS_Model_Parameter_H
 
 #include <memory>
 #include <vector>
@@ -29,4 +29,4 @@ typedef std::unordered_map< std::string, std::unique_ptr<Parameter> > ParameterM
 
 } // namespace BPMNOS::Model
 
-#endif // BPMNOS_Parameter_H
+#endif // BPMNOS_Model_Parameter_H

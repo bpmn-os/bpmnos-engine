@@ -1,5 +1,5 @@
-#ifndef BPMNOS_Gatekeeper_H
-#define BPMNOS_Gatekeeper_H
+#ifndef BPMNOS_Model_Gatekeeper_H
+#define BPMNOS_Model_Gatekeeper_H
 
 #include <memory>
 #include <vector>
@@ -29,4 +29,4 @@ public:
 
 } // namespace BPMNOS::Model
 
-#endif // BPMNOS_Gatekeeper_H
+#endif // BPMNOS_Model_Gatekeeper_H

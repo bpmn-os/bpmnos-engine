@@ -1,5 +1,5 @@
-#ifndef BPMNOS_LinearExpression_H
-#define BPMNOS_LinearExpression_H
+#ifndef BPMNOS_Model_LinearExpression_H
+#define BPMNOS_Model_LinearExpression_H
 
 #include <vector>
 #include "model/parser/src/extensionElements/Attribute.h"
@@ -41,4 +41,4 @@ public:
 
 } // namespace BPMNOS::Model
 
-#endif // BPMNOS_LinearExpression_H
+#endif // BPMNOS_Model_LinearExpression_H

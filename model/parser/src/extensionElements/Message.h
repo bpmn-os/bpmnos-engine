@@ -1,5 +1,5 @@
-#ifndef BPMNOS_Message_H
-#define BPMNOS_Message_H
+#ifndef BPMNOS_Model_Message_H
+#define BPMNOS_Model_Message_H
 
 #include <memory>
 #include <vector>
@@ -22,4 +22,4 @@ public:
 
 } // namespace BPMNOS::Model
 
-#endif // BPMNOS_Message_H
+#endif // BPMNOS_Model_Message_H

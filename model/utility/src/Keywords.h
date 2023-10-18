@@ -1,5 +1,5 @@
-#ifndef BPMNOS_Keywords_H
-#define BPMNOS_Keywords_H
+#ifndef BPMNOS_Model_Keywords_H
+#define BPMNOS_Model_Keywords_H
 
 #include <string>
 
@@ -10,6 +10,6 @@ const std::string True = "true";
 const std::string Timestamp = "Timestamp";
 const std::string Instance = "Instance";
 
-} // BPMNOS::KEY
+} // BPMNOS::Keyword
 
-#endif // BPMNOS_Keywords_H
+#endif // BPMNOS_Model_Keywords_H

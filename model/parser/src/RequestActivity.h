@@ -1,5 +1,5 @@
-#ifndef BPMNOS_RequestActivity_H
-#define BPMNOS_RequestActivity_H
+#ifndef BPMNOS_Model_RequestActivity_H
+#define BPMNOS_Model_RequestActivity_H
 
 #include <memory>
 #include <vector>
@@ -19,4 +19,4 @@ public:
 
 } // namespace BPMNOS::Model
 
-#endif // BPMNOS_RequestActivity_H
+#endif // BPMNOS_Model_RequestActivity_H

@@ -1,5 +1,5 @@
-#ifndef BPMNOS_StringRegistry_H
-#define BPMNOS_StringRegistry_H
+#ifndef BPMNOS_Model_StringRegistry_H
+#define BPMNOS_Model_StringRegistry_H
 
 #include <string>
 #include <vector>
@@ -35,7 +35,7 @@ namespace BPMNOS {
 
 } // namespace BPMNOS::Model
 
-#endif // BPMNOS_StringRegistry_H
+#endif // BPMNOS_Model_StringRegistry_H
 
 // `stringRegistry` is a global variable
 extern BPMNOS::StringRegistry stringRegistry; 

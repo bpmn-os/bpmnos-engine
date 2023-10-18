@@ -1,5 +1,5 @@
-#ifndef BPMNOS_DataProvider_H
-#define BPMNOS_DataProvider_H
+#ifndef BPMNOS_Model_DataProvider_H
+#define BPMNOS_Model_DataProvider_H
 
 #include <string>
 #include <memory>
@@ -41,4 +41,4 @@ protected:
 
 } // namespace BPMNOS::Model
 
-#endif // BPMNOS_DataProvider_H
+#endif // BPMNOS_Model_DataProvider_H

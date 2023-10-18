@@ -1,5 +1,5 @@
-#ifndef BPMNOS_Model_H
-#define BPMNOS_Model_H
+#ifndef BPMNOS_Model_Model_H
+#define BPMNOS_Model_Model_H
 
 #include <memory>
 #include <vector>
@@ -39,4 +39,4 @@ public:
 
 } // namespace BPMNOS::Model
 
-#endif // BPMNOS_Model_H
+#endif // BPMNOS_Model_Model_H

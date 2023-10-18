@@ -1,5 +1,5 @@
-#ifndef BPMNOS_Scenario_H
-#define BPMNOS_Scenario_H
+#ifndef BPMNOS_Model_Scenario_H
+#define BPMNOS_Model_Scenario_H
 
 #include <string>
 #include <memory>
@@ -118,4 +118,4 @@ protected:
 
 } // namespace BPMNOS::Model
 
-#endif // BPMNOS_Scenario_H
+#endif // BPMNOS_Model_Scenario_H

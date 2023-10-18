@@ -1,5 +1,5 @@
-#ifndef BPMNOS_Timer_H
-#define BPMNOS_Timer_H
+#ifndef BPMNOS_Model_Timer_H
+#define BPMNOS_Model_Timer_H
 
 #include <memory>
 #include <vector>
@@ -21,4 +21,4 @@ public:
 
 } // namespace BPMNOS::Model
 
-#endif // BPMNOS_Timer_H
+#endif // BPMNOS_Model_Timer_H

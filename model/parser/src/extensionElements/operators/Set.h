@@ -1,5 +1,5 @@
-#ifndef BPMNOS_Set_H
-#define BPMNOS_Set_H
+#ifndef BPMNOS_Model_Set_H
+#define BPMNOS_Model_Set_H
 
 #include "model/parser/src/extensionElements/Attribute.h"
 #include "model/parser/src/extensionElements/Parameter.h"
@@ -37,4 +37,4 @@ public:
 
 } // namespace BPMNOS::Model
 
-#endif // BPMNOS_Set_H
+#endif // BPMNOS_Model_Set_H

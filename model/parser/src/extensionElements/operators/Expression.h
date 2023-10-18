@@ -1,5 +1,5 @@
-#ifndef BPMNOS_Expression_H
-#define BPMNOS_Expression_H
+#ifndef BPMNOS_Model_Expression_H
+#define BPMNOS_Model_Expression_H
 
 #include <exprtk.hpp>
 
@@ -21,4 +21,4 @@ public:
 
 } // namespace BPMNOS::Model
 
-#endif // BPMNOS_Expression_H
+#endif // BPMNOS_Model_Expression_H

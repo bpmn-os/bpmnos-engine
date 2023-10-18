@@ -1,5 +1,5 @@
-#ifndef BPMNOS_Value_H
-#define BPMNOS_Value_H
+#ifndef BPMNOS_Model_Value_H
+#define BPMNOS_Model_Value_H
 
 #include <string>
 #include <variant>
@@ -11,4 +11,4 @@ typedef std::variant< std::string, bool, int, double > Value;
 
 } // BPMNOS
 
-#endif // BPMNOS_Value_H
+#endif // BPMNOS_Model_Value_H

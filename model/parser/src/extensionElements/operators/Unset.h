@@ -1,5 +1,5 @@
-#ifndef BPMNOS_Unset_H
-#define BPMNOS_Unset_H
+#ifndef BPMNOS_Model_Unset_H
+#define BPMNOS_Model_Unset_H
 
 #include "model/parser/src/extensionElements/Attribute.h"
 #include "model/utility/src/Number.h"
@@ -21,4 +21,4 @@ public:
 
 } // namespace BPMNOS::Model
 
-#endif // BPMNOS_Unset_H
+#endif // BPMNOS_Model_Unset_H

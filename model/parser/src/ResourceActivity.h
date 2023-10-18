@@ -1,5 +1,5 @@
-#ifndef BPMNOS_ResourceActivity_H
-#define BPMNOS_ResourceActivity_H
+#ifndef BPMNOS_Model_ResourceActivity_H
+#define BPMNOS_Model_ResourceActivity_H
 
 #include <memory>
 #include <vector>
@@ -17,4 +17,4 @@ public:
 
 } // namespace BPMNOS::Model
 
-#endif // BPMNOS_ResourceActivity_H
+#endif // BPMNOS_Model_ResourceActivity_H

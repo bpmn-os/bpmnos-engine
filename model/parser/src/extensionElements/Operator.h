@@ -1,5 +1,5 @@
-#ifndef BPMNOS_Operator_H
-#define BPMNOS_Operator_H
+#ifndef BPMNOS_Model_Operator_H
+#define BPMNOS_Model_Operator_H
 
 #include <memory>
 #include <optional>
@@ -41,4 +41,4 @@ public:
 
 } // namespace BPMNOS::Model
 
-#endif // BPMNOS_Operator_H
+#endif // BPMNOS_Model_Operator_H

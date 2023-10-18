@@ -1,5 +1,5 @@
-#ifndef BPMNOS_Attribute_H
-#define BPMNOS_Attribute_H
+#ifndef BPMNOS_Model_Attribute_H
+#define BPMNOS_Model_Attribute_H
 
 #include <memory>
 #include <vector>
@@ -36,4 +36,4 @@ public:
 
 } // namespace BPMNOS::Model
 
-#endif // BPMNOS_Attribute_H
+#endif // BPMNOS_Model_Attribute_H

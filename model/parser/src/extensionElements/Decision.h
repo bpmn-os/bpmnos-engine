@@ -1,5 +1,5 @@
-#ifndef BPMNOS_Decision_H
-#define BPMNOS_Decision_H
+#ifndef BPMNOS_Model_Decision_H
+#define BPMNOS_Model_Decision_H
 
 #include <memory>
 #include <vector>
@@ -20,4 +20,4 @@ public:
 
 } // namespace BPMNOS::Model
 
-#endif // BPMNOS_Decision_H
+#endif // BPMNOS_Model_Decision_H

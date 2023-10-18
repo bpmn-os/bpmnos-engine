@@ -1,5 +1,5 @@
-#ifndef BPMNOS_GenericExpression_H
-#define BPMNOS_GenericExpression_H
+#ifndef BPMNOS_Model_GenericExpression_H
+#define BPMNOS_Model_GenericExpression_H
 
 #include <exprtk.hpp>
 
@@ -31,4 +31,4 @@ public:
 
 } // namespace BPMNOS::Model
 
-#endif // BPMNOS_GenericExpression_H
+#endif // BPMNOS_Model_GenericExpression_H

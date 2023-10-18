@@ -1,5 +1,5 @@
-#ifndef BPMNOS_Content_H
-#define BPMNOS_Content_H
+#ifndef BPMNOS_Model_Content_H
+#define BPMNOS_Model_Content_H
 
 #include <memory>
 #include <vector>
@@ -36,4 +36,4 @@ typedef std::unordered_map< std::string, std::unique_ptr<Content> > contentMap;
 
 } // namespace BPMNOS::Model
 
-#endif // BPMNOS_Content_H
+#endif // BPMNOS_Model_Content_H

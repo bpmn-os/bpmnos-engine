@@ -1,5 +1,5 @@
-#ifndef BPMNOS_MessageRecipient_H
-#define BPMNOS_MessageRecipient_H
+#ifndef BPMNOS_Model_MessageRecipient_H
+#define BPMNOS_Model_MessageRecipient_H
 
 #include <memory>
 #include <vector>
@@ -43,4 +43,4 @@ public:
 
 } // namespace BPMNOS::Model
 
-#endif // BPMNOS_MessageRecipient_H
+#endif // BPMNOS_Model_MessageRecipient_H

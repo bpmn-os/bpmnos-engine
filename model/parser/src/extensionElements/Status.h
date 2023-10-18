@@ -1,5 +1,5 @@
-#ifndef BPMNOS_Status_H
-#define BPMNOS_Status_H
+#ifndef BPMNOS_Model_Status_H
+#define BPMNOS_Model_Status_H
 
 #include <memory>
 #include <vector>
@@ -43,4 +43,4 @@ protected:
 
 } // namespace BPMNOS::Model
 
-#endif // BPMNOS_Status_H
+#endif // BPMNOS_Model_Status_H

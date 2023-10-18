@@ -1,5 +1,5 @@
-#ifndef BPMNOS_RandomDistributionFactory_H
-#define BPMNOS_RandomDistributionFactory_H
+#ifndef BPMNOS_Model_RandomDistributionFactory_H
+#define BPMNOS_Model_RandomDistributionFactory_H
 
 #include <string>
 #include <random>
@@ -22,4 +22,4 @@ RandomDistribution make_distribution(const nlohmann::json& input);
 
 } // namespace BPMNOS
 
-#endif // BPMNOS_RandomDistributionFactory_H
+#endif // BPMNOS_Model_RandomDistributionFactory_H

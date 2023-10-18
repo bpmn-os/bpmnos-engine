@@ -1,5 +1,5 @@
-#ifndef BPMNOS_MessageTaskSubstitution_H
-#define BPMNOS_MessageTaskSubstitution_H
+#ifndef BPMNOS_Model_MessageTaskSubstitution_H
+#define BPMNOS_Model_MessageTaskSubstitution_H
 
 #include <bpmn++.h>
 #include <string>
@@ -37,5 +37,5 @@ protected:
 
 } // namespace BPMNOS::Model
 
-#endif // BPMNOS_MessageTaskSubstitution_H
+#endif // BPMNOS_Model_MessageTaskSubstitution_H
 

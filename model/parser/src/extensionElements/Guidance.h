@@ -1,5 +1,5 @@
-#ifndef BPMNOS_Guidance_H
-#define BPMNOS_Guidance_H
+#ifndef BPMNOS_Model_Guidance_H
+#define BPMNOS_Model_Guidance_H
 
 #include <memory>
 #include <vector>
@@ -28,4 +28,4 @@ public:
 
 } // namespace BPMNOS::Model
 
-#endif // BPMNOS_Guidance_H
+#endif // BPMNOS_Model_Guidance_H

@@ -1,5 +1,5 @@
-#ifndef BPMNOS_StaticDataProvider_H
-#define BPMNOS_StaticDataProvider_H
+#ifndef BPMNOS_Model_StaticDataProvider_H
+#define BPMNOS_Model_StaticDataProvider_H
 
 #include "DataProvider.h"
 #include <csv.hpp>
@@ -38,4 +38,4 @@ protected:
 
 } // namespace BPMNOS::Model
 
-#endif // BPMNOS_StaticDataProvider_H
+#endif // BPMNOS_Model_StaticDataProvider_H

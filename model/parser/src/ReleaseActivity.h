@@ -1,5 +1,5 @@
-#ifndef BPMNOS_ReleaseActivity_H
-#define BPMNOS_ReleaseActivity_H
+#ifndef BPMNOS_Model_ReleaseActivity_H
+#define BPMNOS_Model_ReleaseActivity_H
 
 #include <memory>
 #include <vector>
@@ -19,4 +19,4 @@ public:
 
 } // namespace BPMNOS::Model
 
-#endif // BPMNOS_ReleaseActivity_H
+#endif // BPMNOS_Model_ReleaseActivity_H
