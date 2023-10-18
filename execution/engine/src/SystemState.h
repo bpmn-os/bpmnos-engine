@@ -13,7 +13,16 @@ class Engine;
  * @brief A class representing the state that the execution or simulation of a given scenario is in.
  */
 class SystemState {
+private:
+  const Engine* engine;
 public:
+  SystemState(const Engine* engine, const BPMNOS::Model::Scenario* scenario, BPMNOS::number currentTime = 0);
+
+  /**
+   * @brief Pointer to the corresponding scenario. 
+   */
+  const BPMNOS::Model::Scenario* scenario;
+
   /**
    * @brief Timestamp holding the point in time that the engine is in (this is usually representing now).
    */
@@ -24,10 +33,6 @@ public:
    */
   std::optional<BPMNOS::number> assumedTime;
 
-  /**
-   * @brief Pointer to the corresponding scenario. 
-   */
-  const BPMNOS::Model::Scenario* scenario;
 
   /**
    * @brief Function returning the assumed time time if available or the current time otherwise.
@@ -66,8 +71,6 @@ public:
 private:
   friend class Engine;
   SystemState() = delete;
-  SystemState(const Engine* engine);
-  const Engine* engine;
   friend void Token::notify() const;
   void incrementTimeBy(BPMNOS::number duration);
 };

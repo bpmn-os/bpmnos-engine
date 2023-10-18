@@ -3,8 +3,10 @@
 
 using namespace BPMNOS::Execution;
 
-SystemState::SystemState(const Engine* engine)
-  : engine(engine) 
+SystemState::SystemState(const Engine* engine, const BPMNOS::Model::Scenario* scenario, BPMNOS::number currentTime)
+  : engine(engine)
+  , scenario(scenario)
+  , currentTime(currentTime)
 {
 }
 

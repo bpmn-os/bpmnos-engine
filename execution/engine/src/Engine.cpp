@@ -29,18 +29,10 @@ void Engine::addListener(Listener* listener) {
 
 void Engine::run(const BPMNOS::Model::Scenario* scenario) {
   // create initial system state
-  // TODO
-  throw std::runtime_error("Engine: run not yet implemented");
-
-//  systemState = SystemState(scenario);
-
-  // scenario->update();
-  
-  // instantiate known instances
-
+  systemState = std::make_unique<SystemState>(this, scenario);
+  // advance all tokens in system state
   advance();
 }
-
 
 void Engine::advance() {
   while ( systemState->isAlive() ) {
