@@ -7,8 +7,6 @@ namespace BPMNOS::Execution {
 
 class Listener {
 public:
-  Listener();
-
   virtual void update( const Token* token ) = 0;
 };
 

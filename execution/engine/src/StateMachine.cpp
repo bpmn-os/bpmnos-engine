@@ -7,15 +7,26 @@
 
 using namespace BPMNOS::Execution;
 
-StateMachine::StateMachine(const SystemState* systemState, const BPMN::Process* process, const BPMN::Scope* scope, const Values& status, Token* parentToken)
+StateMachine::StateMachine(const SystemState* systemState, const BPMN::Process* process, const Values& status)
   : systemState(systemState)
   , process(process)
+  , scope(process)
+  , parentToken(nullptr)
+{
+  tokens.push_back( Token(this,nullptr,status) );
+}
+
+StateMachine::StateMachine(const SystemState* systemState, const BPMN::Scope* scope, const Values& status, Token* parentToken)
+  : systemState(systemState)
+  , process(parentToken->owner->process)
   , scope(scope)
   , parentToken(parentToken)
 {
-  tokens.push_back( Token(this,status) );
+  if ( scope->startNodes.size() != 1 ) {
+    throw std::runtime_error("StateMachine: no unique start node within scope of '" + scope->id + "'");
+  }
+  tokens.push_back( Token(this,scope->startNodes[0],status) );
 }
-
 
 void StateMachine::advance() {
   for ( auto& token : tokens ) {
@@ -24,7 +35,7 @@ void StateMachine::advance() {
 }
 
 void StateMachine::advance(Token& token) {
-  throw std::runtime_error("StateMachine: advance token not yet implemented");
+//  throw std::runtime_error("StateMachine: advance token not yet implemented");
 }
 
 

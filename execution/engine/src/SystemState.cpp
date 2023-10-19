@@ -14,6 +14,13 @@ BPMNOS::number SystemState::getTime() const {
   return assumedTime ? assumedTime.value() : currentTime;
 }
 
+void SystemState::addInstances() {
+  for (auto& [process,status] : getInstantiations() ) {
+    instances.push_back(StateMachine(this,process,status));
+    instances.back().advance();
+  }
+}
+
 std::vector< std::pair<const BPMN::Process*, BPMNOS::Values> > SystemState::getInstantiations() const {
   if ( assumedTime ) {
     return scenario->getAnticipatedInstantiations(currentTime,assumedTime.value());

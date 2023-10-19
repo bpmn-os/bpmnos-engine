@@ -13,16 +13,13 @@
 
 using namespace BPMNOS::Execution;
 
-Token::Token(const StateMachine* owner, const Values& status)
+Token::Token(const StateMachine* owner, const BPMN::FlowNode* node, const Values& status)
   : owner(owner)
-  , status(status)
+  , node(node)
   , state(State::CREATED)
+  , status(status)
 {
-  if ( owner->scope->startNodes.size() != 1 ) {
-    throw std::runtime_error("Token: no unique start node within scope of '" + owner->scope->id + "'");
-  }
-  node = owner->scope->startNodes[0];
-
+  notify();
   // advance token as far as possible
   run();
 }
@@ -30,41 +27,51 @@ Token::Token(const StateMachine* owner, const Values& status)
 Token::Token(const Token* other) 
   : owner(other->owner)
   , node(other->node)
-  , status(other->status)
   , state(other->state)
+  , status(other->status)
 {
 }
 
 
 nlohmann::json Token::jsonify() const {
-  nlohmann::json jsonObject = nlohmann::ordered_json({
-    { "processId", owner->process->id },
-    { "instanceId", BPMNOS::to_string(status[Model::Status::Index::Instance].value(),STRING) },
-    { "nodeId", node->id },
-    { "state", stateName[(int)state] },
-    { "status", nlohmann::json::array() }
-  });
-  for (auto& [attributeName,attribute] : node->extensionElements->as<const Model::Status>()->attributeMap ) {
+  nlohmann::json jsonObject;
+  jsonObject["processId"] = owner->process->id;
+  jsonObject["instanceId"] = BPMNOS::to_string(status[Model::Status::Index::Instance].value(),STRING);
+  if ( node ) {
+    jsonObject["nodeId"] = node->id;
+  }
+  jsonObject["state"] = stateName[(int)state];
+  jsonObject["status"] = nlohmann::json::object();
+
+  auto& attributeMap = ( node ? node->extensionElements->as<const Model::Status>()->attributeMap : owner->process->extensionElements->as<const Model::Status>()->attributeMap ); 
+
+  for (auto& [attributeName,attribute] : attributeMap ) {
     if ( !status[attribute->index].has_value() ) {
-      jsonObject["status"].push_back({attributeName,nullptr});
+//      jsonObject["status"].push_back(nlohmann::json({{attributeName,nullptr}}));
+      jsonObject["status"][attributeName] = nullptr ;
     }
     else if ( attribute->type == STRING) {
-      std::string value = BPMNOS::to_string(status[Model::Status::Index::Instance].value(),STRING);
-      jsonObject["status"].push_back({attributeName,value});
+      std::string value = BPMNOS::to_string(status[attribute->index].value(),STRING);
+//      jsonObject["status"].push_back(nlohmann::json({{attributeName,value}}));
+      jsonObject["status"][attributeName] = value ;
     }
     else if ( attribute->type == BOOLEAN) {
-      bool value = (bool)status[Model::Status::Index::Instance].value();
-      jsonObject["status"].push_back({attributeName,value});
+      bool value = (bool)status[attribute->index].value();
+//      jsonObject["status"].push_back(nlohmann::json({{attributeName,value}}));
+      jsonObject["status"][attributeName] = value ;
     }
     else if ( attribute->type == INTEGER) {
-      int value = (int)status[Model::Status::Index::Instance].value();
-      jsonObject["status"].push_back({attributeName,value});
+      int value = (int)status[attribute->index].value();
+//      jsonObject["status"].push_back(nlohmann::json({{attributeName,value}}));
+      jsonObject["status"][attributeName] = value ;
     }
-    else if ( attribute->type == BOOLEAN) {
-      double value = (double)status[Model::Status::Index::Instance].value();
-      jsonObject["status"].push_back({attributeName,value});
+    else if ( attribute->type == DECIMAL) {
+      double value = (double)status[attribute->index].value();
+//      jsonObject["status"].push_back(nlohmann::json({{attributeName,value}}));
+      jsonObject["status"][attributeName] = value ;
     }
   }
+
   return jsonObject;
 }
 

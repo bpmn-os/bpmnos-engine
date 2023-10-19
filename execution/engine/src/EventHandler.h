@@ -8,8 +8,6 @@ namespace BPMNOS::Execution {
 
 class EventHandler {
 public:
-  EventHandler();
-
   virtual std::unique_ptr<Event> fetchEvent( const SystemState* systemState ) = 0;
 };
 

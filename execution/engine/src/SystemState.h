@@ -45,11 +45,6 @@ public:
   bool isAlive() const { return false; }; // TODO
 
   /**
-   * @brief Method returning a vector of all instantiations at the given time.
-   */
-  std::vector< std::pair<const BPMN::Process*, BPMNOS::Values> > getInstantiations() const;
-
-  /**
    * @brief Container holding a state machine for each instance.
    */
   StateMachines instances; 
@@ -57,7 +52,7 @@ public:
   /**
    * @brief Container holding all messages sent but not yet delivered.
    */
-  Messages messages; 
+  Messages messages;
 
   std::vector<Token*> awaitingReady; ///< Container holding all tokens awaiting a ready event
   std::vector<Token*> awaitingRegularEntry; ///< Container holding all tokens at regular activities awaiting an entry event
@@ -72,7 +67,16 @@ private:
   friend class Engine;
   SystemState() = delete;
   friend void Token::notify() const;
+
+  void addInstances(); ///< Method adding all new instances and advancing tokens as much as possible
+  /**
+   * @brief Method returning a vector of all instantiations at the given time.
+   */
+  std::vector< std::pair<const BPMN::Process*, BPMNOS::Values> > getInstantiations() const;
+
   void incrementTimeBy(BPMNOS::number duration);
+
+
 };
 
 } // namespace BPMNOS::Execution

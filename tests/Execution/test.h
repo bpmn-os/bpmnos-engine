@@ -17,5 +17,20 @@ SCENARIO( "Trivial executable process", "[execution]" ) {
         REQUIRE_NOTHROW( engine.run(scenario.get()) );
       }
     }
+    WHEN( "The engine is started with a recorder" ) {
+      Execution::Recorder recorder;
+      engine.addListener(&recorder);
+      engine.run(scenario.get());
+      THEN( "The recorder log has at least one entry" ) {
+        REQUIRE( recorder.log.size() >= 1 );
+      }
+      THEN( "The first entry of the recorder log has the correct data" ) {
+        REQUIRE( recorder.log.front()["instanceId"] == "Instance_1");
+        REQUIRE( recorder.log.front()["processId"] == "Process_1");
+        REQUIRE( recorder.log.front()["state"] == "CREATED");
+        REQUIRE( recorder.log.front()["status"]["instance"] == "Instance_1");
+        REQUIRE( recorder.log.front()["status"]["timestamp"] == 0.0);
+      }
+    }
   }
 }

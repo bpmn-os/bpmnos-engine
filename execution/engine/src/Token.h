@@ -22,11 +22,20 @@ class MessageDeliveryEvent;
 
 class Token {
 private:
-  const StateMachine* owner;
+  friend class SystemState;
+  friend class StateMachine;
+  friend class Engine;
+
 public:
-  Token(const StateMachine* owner, const Values& status);
-  Token(const Token* other);
+  const StateMachine* owner;
   const BPMN::FlowNode* node; 
+private:
+  enum class State { CREATED, READY, ENTERED, BUSY, COMPLETED, DEPARTED, ARRIVED, DONE, FAILED, TO_BE_MERGED, TO_BE_COPIED };
+  static inline std::string stateName[] = { "CREATED", "READY", "ENTERED", "BUSY", "COMPLETED", "DEPARTED", "ARRIVED", "DONE", "FAILED", "TO_BE_MERGED", "TO_BE_COPIED" };
+  State state;
+public:
+  Token(const StateMachine* owner, const BPMN::FlowNode* node, const Values& status);
+  Token(const Token* other);
   Values status;
 
   bool ready() const { return state == State::READY; };
@@ -40,12 +49,6 @@ public:
 
   nlohmann::json jsonify() const;
 private:
-  friend class SystemState;
-  friend class StateMachine;
-  friend class Engine;
-  enum class State { CREATED, READY, ENTERED, BUSY, COMPLETED, DEPARTED, ARRIVED, DONE, FAILED, TO_BE_MERGED, TO_BE_COPIED };
-  State state;
-  static inline std::string stateName[] = { "CREATED", "READY", "ENTERED", "BUSY", "COMPLETED", "DEPARTED", "ARRIVED", "DONE", "FAILED", "TO_BE_MERGED", "TO_BE_COPIED" };
 
   void run();
   void processEvent(const Event* event);

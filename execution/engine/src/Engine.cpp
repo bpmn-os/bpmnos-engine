@@ -31,24 +31,22 @@ void Engine::run(const BPMNOS::Model::Scenario* scenario) {
   // create initial system state
   systemState = std::make_unique<SystemState>(this, scenario);
   // advance all tokens in system state
-  advance();
+
+  do {
+    advance();
+  } while ( systemState->isAlive() );
 }
 
 void Engine::advance() {
-  while ( systemState->isAlive() ) {
-    // make sure new data is added to system state
-    const_cast<BPMNOS::Model::Scenario*>(systemState->scenario)->update();
+  // make sure new data is added to system state
+  const_cast<BPMNOS::Model::Scenario*>(systemState->scenario)->update();
 
-    // add all new instances and advance tokens as much as possible
-    for (auto& [process,status] : systemState->getInstantiations() ) {
-      systemState->instances.push_back(StateMachine(systemState.get(),process,process,status));
-      systemState->instances.back().advance();
-    }
+  // add all new instances and advance tokens as much as possible
+  systemState->addInstances();
 
-    // fetch and process all events
-    while ( auto event = fetchEvent() ) {
-      event->processBy(this);
-    }
+  // fetch and process all events
+  while ( auto event = fetchEvent() ) {
+    event->processBy(this);
   }
 }
 
