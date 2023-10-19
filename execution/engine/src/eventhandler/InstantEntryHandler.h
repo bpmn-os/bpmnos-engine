@@ -10,6 +10,7 @@ namespace BPMNOS::Execution {
  * @brief Class creating an entry event for a token awaiting the entry at a regular activity (i.e. not a job).
  */
 class InstantEntryHandler : public EventHandler {
+public:
   InstantEntryHandler();
   std::unique_ptr<Event> fetchEvent( const SystemState* systemState ) override;
 };

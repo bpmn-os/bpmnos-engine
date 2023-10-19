@@ -10,6 +10,7 @@ namespace BPMNOS::Execution {
  * @brief Class creating a clock tick event each time fetchEvent() is called.
  */
 class TimeWarp : public EventHandler {
+public:
   TimeWarp();
   std::unique_ptr<Event> fetchEvent( const SystemState* systemState ) override;
 };

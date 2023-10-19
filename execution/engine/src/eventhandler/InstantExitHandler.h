@@ -10,6 +10,7 @@ namespace BPMNOS::Execution {
  * @brief Class creating an exit event for a token awaiting the exit at an activity.
  */
 class InstantExitHandler : public EventHandler {
+public:
   InstantExitHandler();
   std::unique_ptr<Event> fetchEvent( const SystemState* systemState ) override;
 };

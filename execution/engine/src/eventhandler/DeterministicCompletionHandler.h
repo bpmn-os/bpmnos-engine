@@ -10,6 +10,7 @@ namespace BPMNOS::Execution {
  * @brief Class creating a completion event for a token awaiting the completion at an activity.
  */
 class DeterministicCompletionHandler : public EventHandler {
+public:
   DeterministicCompletionHandler();
   std::unique_ptr<Event> fetchEvent( const SystemState* systemState ) override;
 };
