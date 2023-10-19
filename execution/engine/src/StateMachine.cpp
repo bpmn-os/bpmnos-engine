@@ -7,8 +7,9 @@
 
 using namespace BPMNOS::Execution;
 
-StateMachine::StateMachine(const SystemState* systemState, const BPMN::Scope* scope, const Values& status, Token* parentToken)
+StateMachine::StateMachine(const SystemState* systemState, const BPMN::Process* process, const BPMN::Scope* scope, const Values& status, Token* parentToken)
   : systemState(systemState)
+  , process(process)
   , scope(scope)
   , parentToken(parentToken)
 {

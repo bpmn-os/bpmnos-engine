@@ -21,9 +21,10 @@ class SystemState;
  */
 class StateMachine {
 public:
-  StateMachine(const SystemState* systemState, const BPMN::Scope* scope, const Values& status, Token* parentToken = nullptr);
+  StateMachine(const SystemState* systemState, const BPMN::Process* process, const BPMN::Scope* scope, const Values& status, Token* parentToken = nullptr);
   const SystemState* systemState;
-  const BPMN::Scope* scope;
+  const BPMN::Process* process; ///< Pointer to the top-level process.
+  const BPMN::Scope* scope; ///< Pointer to the current scope.
   Token* parentToken;
 
   Tokens tokens; ///< Container with all tokens within the scope of the state machine.

@@ -18,12 +18,12 @@ class Status : public BPMN::ExtensionElements {
 public:
   Status(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent = nullptr);
   const BPMN::Scope* parent;
-  AttributeMap attributeMap; ///< Map allowing to look up attributes by their names.
+  AttributeMap attributeMap; ///< Map allowing to look up all attributes by their names.
 
   enum Index { Instance, Timestamp }; ///< Indices for instance and timestamp attribute.
 
-  std::vector< std::unique_ptr<Attribute> > attributes;
-  std::vector< std::unique_ptr<Restriction> > restrictions;
+  std::vector< std::unique_ptr<Attribute> > attributes; ///< Vector containing new attributes declared for the node.
+  std::vector< std::unique_ptr<Restriction> > restrictions; ///< Vector containing new restrictions provided for the node.
   std::vector< std::unique_ptr<Operator> > operators;
   std::vector< std::unique_ptr<Decision> > decisions;
 

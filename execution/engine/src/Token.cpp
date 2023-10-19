@@ -27,6 +27,48 @@ Token::Token(const StateMachine* owner, const Values& status)
   run();
 }
 
+Token::Token(const Token* other) 
+  : owner(other->owner)
+  , node(other->node)
+  , status(other->status)
+  , state(other->state)
+{
+}
+
+
+nlohmann::json Token::jsonify() const {
+  nlohmann::json jsonObject = nlohmann::ordered_json({
+    { "processId", owner->process->id },
+    { "instanceId", BPMNOS::to_string(status[Model::Status::Index::Instance].value(),STRING) },
+    { "nodeId", node->id },
+    { "state", stateName[(int)state] },
+    { "status", nlohmann::json::array() }
+  });
+  for (auto& [attributeName,attribute] : node->extensionElements->as<const Model::Status>()->attributeMap ) {
+    if ( !status[attribute->index].has_value() ) {
+      jsonObject["status"].push_back({attributeName,nullptr});
+    }
+    else if ( attribute->type == STRING) {
+      std::string value = BPMNOS::to_string(status[Model::Status::Index::Instance].value(),STRING);
+      jsonObject["status"].push_back({attributeName,value});
+    }
+    else if ( attribute->type == BOOLEAN) {
+      bool value = (bool)status[Model::Status::Index::Instance].value();
+      jsonObject["status"].push_back({attributeName,value});
+    }
+    else if ( attribute->type == INTEGER) {
+      int value = (int)status[Model::Status::Index::Instance].value();
+      jsonObject["status"].push_back({attributeName,value});
+    }
+    else if ( attribute->type == BOOLEAN) {
+      double value = (double)status[Model::Status::Index::Instance].value();
+      jsonObject["status"].push_back({attributeName,value});
+    }
+  }
+  return jsonObject;
+}
+
+
 void Token::run() {
   // TODO: Event-subprocesses, boundary-events, error handling
   bool advance = false;

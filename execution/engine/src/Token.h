@@ -3,6 +3,7 @@
 
 #include <bpmn++.h>
 #include "model/utility/src/Number.h"
+#include <nlohmann/json.hpp>
 
 namespace BPMNOS::Execution {
 
@@ -20,13 +21,13 @@ class MessageDeliveryEvent;
 
 
 class Token {
+private:
+  const StateMachine* owner;
 public:
   Token(const StateMachine* owner, const Values& status);
-  const StateMachine* owner;
+  Token(const Token* other);
   const BPMN::FlowNode* node; 
   Values status;
-  void run();
-  void processEvent(const Event* event);
 
   bool ready() const { return state == State::READY; };
   bool entered() const { return state == State::ENTERED; };
@@ -36,12 +37,19 @@ public:
   bool arrived() const { return state == State::ARRIVED; };
   bool done() const { return state == State::DONE; };
   bool failed() const { return state == State::FAILED; };
+
+  nlohmann::json jsonify() const;
 private:
   friend class SystemState;
   friend class StateMachine;
   friend class Engine;
   enum class State { CREATED, READY, ENTERED, BUSY, COMPLETED, DEPARTED, ARRIVED, DONE, FAILED, TO_BE_MERGED, TO_BE_COPIED };
   State state;
+  static inline std::string stateName[] = { "CREATED", "READY", "ENTERED", "BUSY", "COMPLETED", "DEPARTED", "ARRIVED", "DONE", "FAILED", "TO_BE_MERGED", "TO_BE_COPIED" };
+
+  void run();
+  void processEvent(const Event* event);
+
   bool advanceFromCreated();
   bool advanceToReady();
   bool advanceFromReady();
