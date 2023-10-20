@@ -40,12 +40,12 @@ public:
   BPMNOS::number getTime() const;
 
   /**
-   * @brief Function returning true if the system is still alive and false if everything is completed.
+   * @brief Function returning true if there are tokens in the system or if there may be new instantiations of tokens.
    */
-  bool isAlive() const { return false; }; // TODO
+  bool isAlive() const;
 
   /**
-   * @brief Container holding a state machine for each instance.
+   * @brief Container holding a state machine for each running instance.
    */
   StateMachines instances; 
 
@@ -56,7 +56,8 @@ public:
 
   std::vector<Token*> awaitingReady; ///< Container holding all tokens awaiting a ready event
   std::vector<Token*> awaitingRegularEntry; ///< Container holding all tokens at regular activities awaiting an entry event
-  std::vector<Token*> awaitingJobEntry; ///< Container holding all tokens at jobs awaiting an entry event
+  std::vector< size_t > idleResources; ///< Container holding indices of resources not executig a job and awaiting a job entry
+  std::vector< std::pair< Token*, std::vector<Token*> > > awaitingJobEntry; ///< Container holding pairs of tokens at resource activities and all tokens at jobs of the resource awaiting an entry event
   std::vector<Token*> awaitingChoice; ///< Container holding all tokens awaiting a choice event
   std::vector<Token*> awaitingTimer; ///< Container holding all tokens at a catching timer event awaiting a trigger event
   std::vector<Token*> awaitingMessageDelivery; ///< Container holding all tokens awaiting a message delivery event
@@ -66,6 +67,7 @@ public:
 private:
   friend class Engine;
   SystemState() = delete;
+  friend void Token::update(State newState);
   friend void Token::notify() const;
 
   void addInstances(); ///< Method adding all new instances and advancing tokens as much as possible
@@ -75,7 +77,7 @@ private:
   std::vector< std::pair<const BPMN::Process*, BPMNOS::Values> > getInstantiations() const;
 
   void incrementTimeBy(BPMNOS::number duration);
-
+  size_t instantiationCounter;
 
 };
 

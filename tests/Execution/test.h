@@ -11,13 +11,19 @@ SCENARIO( "Trivial executable process", "[execution]" ) {
     Model::StaticDataProvider dataProvider(modelFile,csv);
     auto scenario = dataProvider.createScenario();
 
-    Execution::Engine engine;
+
     WHEN( "The engine is started" ) {
+      Execution::Engine engine;
+      Execution::TimeWarp timeHandler;
+      engine.addEventHandler(&timeHandler);
       THEN( "The engine completes without error" ) {
         REQUIRE_NOTHROW( engine.run(scenario.get()) );
       }
     }
     WHEN( "The engine is started with a recorder" ) {
+      Execution::Engine engine;
+      Execution::TimeWarp timeHandler;
+      engine.addEventHandler(&timeHandler);
       Execution::Recorder recorder;
       engine.addListener(&recorder);
       engine.run(scenario.get());

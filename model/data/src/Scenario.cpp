@@ -2,13 +2,16 @@
 #include "model/utility/src/Keywords.h"
 #include "model/utility/src/StringRegistry.h"
 #include "model/parser/src/extensionElements/Status.h"
+#include <limits>
 
 using namespace BPMNOS::Model;
 
-Scenario::Scenario(const Model* model, const DataInput& attributes, unsigned int index)
+Scenario::Scenario(const Model* model, BPMNOS::number inception, BPMNOS::number completion, const DataInput& attributes, unsigned int index)
   : index(index)
   , model(model)
   , attributes(attributes)
+  , inception(inception)
+  , completion(completion)
 {
 }
 
@@ -16,6 +19,8 @@ Scenario::Scenario(const Scenario& other, unsigned int index)
     : index(index)
     , model(other.model)
     , attributes(other.attributes)
+  , inception(other.inception)
+  , completion(other.completion)
 {
   // Implement deep copy logic for the 'instances' map and its elements
   for (auto& [identifier, instance] : other.instances) {
@@ -26,6 +31,45 @@ Scenario::Scenario(const Scenario& other, unsigned int index)
     instances[identifier] = {instance.process,instance.id,instance.instantiation,data};
   }
 }
+
+void Scenario::addInstance(const BPMN::Process* process, const std::string& instanceId, Scenario::Data instantiation ) {
+  // add instance
+  instances[instanceId] = {process,instanceId,instantiation,{}};
+  auto& instance = instances[instanceId];
+  // initialize all attribute data
+  for ( auto& [id,attribute] : attributes.at(process) ) {
+    instance.data[attribute] = { {}, std::nullopt };
+  }
+
+}
+
+void Scenario::removeAnticipatedInstance(const std::string& instanceId) {
+  auto& instance = instances[instanceId];
+  if ( instance.instantiation.realization ) {
+    throw std::runtime_error("Scenario: illegal removal of instance '" + instanceId + "'with known realization");
+  }
+  instances.erase(instanceId);
+}
+
+void Scenario::addAnticipation( Scenario::Data& data, Scenario::Disclosure anticipation ) {
+  if ( data.anticipations.size() && data.anticipations.back().disclosure >= anticipation.disclosure ) {
+    throw std::runtime_error("Scenario: disclosures must be provided in strictly increasing order");
+  }
+  data.anticipations.push_back(anticipation);
+}
+
+void Scenario::setRealization( Scenario::Data& data, Scenario::Disclosure realization ) {
+  data.realization = realization;
+}
+
+BPMNOS::number Scenario::getInception() const {
+  return inception;
+}
+
+bool Scenario::isCompleted(BPMNOS::number currentTime) const {
+  return currentTime > completion;
+}
+
 
 std::vector< const Scenario::InstanceData* > Scenario::getCreatedInstances(BPMNOS::number currentTime) const {
   std::vector< const Scenario::InstanceData* > knownInstances;
@@ -207,24 +251,6 @@ const Scenario::Disclosure& Scenario::getLatestDisclosure(const std::vector<Scen
   return *it;
 }
 
-void Scenario::addInstance(const BPMN::Process* process, const std::string& instanceId, Scenario::Data instantiation ) {
-  // add instance
-  instances[instanceId] = {process,instanceId,instantiation,{}};
-  auto& instance = instances[instanceId];
-  // initialize all attribute data
-  for ( auto& [id,attribute] : attributes.at(process) ) {
-    instance.data[attribute] = { {}, std::nullopt };
-  }
-
-}
-
-void Scenario::removeAnticipatedInstance(const std::string& instanceId) {
-  auto& instance = instances[instanceId];
-  if ( instance.instantiation.realization ) {
-    throw std::runtime_error("Scenario: illegal removal of instance '" + instanceId + "'with known realization");
-  }
-  instances.erase(instanceId);
-}
 
 Scenario::Data& Scenario::getInstantiationData(std::string instanceId) {
   auto& instance = instances[instanceId];
@@ -236,13 +262,3 @@ Scenario::Data& Scenario::getAttributeData(std::string instanceId, const Attribu
   return instance.data[attribute];
 }
 
-void Scenario::addAnticipation( Scenario::Data& data, Scenario::Disclosure anticipation ) {
-  if ( data.anticipations.size() && data.anticipations.back().disclosure >= anticipation.disclosure ) {
-    throw std::runtime_error("Scenario: disclosures must be provided in strictly increasing order");
-  }
-  data.anticipations.push_back(anticipation);
-}
-
-void Scenario::setRealization( Scenario::Data& data, Scenario::Disclosure realization ) {
-  data.realization = realization;
-}

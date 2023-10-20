@@ -12,6 +12,8 @@ StaticDataProvider::StaticDataProvider(const std::string& modelFile, const std::
   : DataProvider(modelFile)
   , reader( initReader(instanceFileOrString) )
 {
+  earliestInstantiation = std::numeric_limits<BPMNOS::number>::max();
+  latestInstantiation = std::numeric_limits<BPMNOS::number>::min();
   readInstances();
 }
 
@@ -49,7 +51,7 @@ void StaticDataProvider::readInstances() {
     // find instance with respective identifier
     if ( !instances.contains(instanceId) ) {
       // row has first entry for instance, create new entry in data
-      instances[instanceId] = StaticInstanceData({process,instanceId,{}});
+      instances[instanceId] = StaticInstanceData({process,instanceId,std::numeric_limits<BPMNOS::number>::max(),{}});
     }
 
     auto& instance = instances[instanceId];
@@ -69,31 +71,48 @@ void StaticDataProvider::readInstances() {
     instance.data[ attribute ] = BPMNOS::to_number(row[VALUE].get(),attribute->type);
   }
 
-  // ensure that default attributes are available
   for (auto& [id, instance] : instances) {
+    // ensure that default attributes are available
     ensureDefaultValue(instance,Keyword::Instance,BPMNOS::to_number(id,BPMNOS::ValueType::STRING));
-    ensureDefaultValue(instance,Keyword::Timestamp,0);
+    ensureDefaultValue(instance,Keyword::Timestamp);
+    // set time of instantiation
+    instance.instantiation = instance.data.at( attributes[instance.process][Keyword::Timestamp] );
+
+    if ( earliestInstantiation > instance.instantiation ) {
+      earliestInstantiation = instance.instantiation;
+    }
+    if ( latestInstantiation < instance.instantiation ) {
+      latestInstantiation = instance.instantiation;
+    }
   }
 }
 
-void StaticDataProvider::ensureDefaultValue(StaticInstanceData& instance, const std::string attributeId, BPMNOS::number value) {
+void StaticDataProvider::ensureDefaultValue(StaticInstanceData& instance, const std::string attributeId, std::optional<BPMNOS::number> value) {
   auto& attribute = attributes[instance.process][attributeId];
   if ( auto it = instance.data.find( attribute );
     it == instance.data.end()
   ) {
     // set instance attribute if not yet set
-    instance.data[ attribute ] = value;
+    if ( value.has_value() ) {
+      instance.data[ attribute ] = value.value();
+    }
+    else if ( attribute->value.has_value() ) {
+      instance.data[ attribute ] = attribute->value.value();
+    }
+    else {
+      throw std::runtime_error("StaticDataProvider: attribute '" + attribute->id + "' has no default value");
+    }
   }
 }
 
 std::unique_ptr<Scenario> StaticDataProvider::createScenario(unsigned int scenarioId) {
-  std::unique_ptr<Scenario> scenario = std::make_unique<Scenario>(model.get(), attributes, scenarioId);
+  std::unique_ptr<Scenario> scenario = std::make_unique<Scenario>(model.get(), earliestInstantiation, latestInstantiation, attributes, scenarioId);
   for ( auto& [id, instance] : instances ) {
     auto& timestampAttribute = attributes[instance.process][Keyword::Timestamp];
     auto& instantiation = instance.data[timestampAttribute];
-    scenario->addInstance(instance.process, id, { {}, {{0, instantiation}} }); // all instances are known at time 0, but instantiations may occur later
+    scenario->addInstance(instance.process, id, { {}, {{earliestInstantiation, instantiation}} }); // all instances are known at time of the earliest instantiation, but instantiations may occur later
     for ( auto& [attribute, value] : instance.data ) {
-      scenario->setRealization( scenario->getAttributeData(id, attribute), {0, value} ); // all attribute values are known at time 0
+      scenario->setRealization( scenario->getAttributeData(id, attribute), {earliestInstantiation, value} ); // all attribute values are known at time of the earliest instantiation
     }
   }
   return scenario;

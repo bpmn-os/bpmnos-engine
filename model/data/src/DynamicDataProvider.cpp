@@ -13,6 +13,8 @@ DynamicDataProvider::DynamicDataProvider(const std::string& modelFile, const std
   : DataProvider(modelFile)
   , reader( initReader(instanceFileOrString) )
 {
+  earliestInstantiation = std::numeric_limits<BPMNOS::number>::max();
+  latestInstantiation = std::numeric_limits<BPMNOS::number>::min();
   readInstances();
 }
 
@@ -58,8 +60,8 @@ void DynamicDataProvider::readInstances() {
     if ( auto it = instance.data.find( instanceAtribute );
          it == instance.data.end()
     ) {
-      // instance attribute is known at time zero, even if instantiation is disclosed later
-      instance.data[ instanceAtribute ] = {{0,BPMNOS::to_number(instanceId,BPMNOS::ValueType::STRING)}};
+      // instance attribute is assumed to be known, even if instantiation is disclosed later
+      instance.data[ instanceAtribute ] = { { std::numeric_limits<BPMNOS::number>::min(), BPMNOS::to_number(instanceId,BPMNOS::ValueType::STRING) } };
     }
 
     std::string attributeId = row[ATTRIBUTE_ID].get();
@@ -93,10 +95,20 @@ void DynamicDataProvider::readInstances() {
     }
 
   }
+  for (auto& [id, instance] : instances) {
+    auto& instantiation = instance.instantiation.back().second;
+
+    if ( earliestInstantiation > instantiation ) {
+      earliestInstantiation = instantiation;
+    }
+    if ( latestInstantiation < instantiation ) {
+      latestInstantiation = instantiation;
+    }
+  }
 }
 
 std::unique_ptr<Scenario> DynamicDataProvider::createScenario(unsigned int scenarioId) {
-  std::unique_ptr<Scenario> scenario = std::make_unique<Scenario>(model.get(), attributes, scenarioId);
+  std::unique_ptr<Scenario> scenario = std::make_unique<Scenario>(model.get(), earliestInstantiation, latestInstantiation, attributes, scenarioId);
   for ( auto& [id, instance] : instances ) {
     if ( instance.instantiation.size() ) {
       // instances become known at last disclosure of the instantiation
@@ -119,8 +131,8 @@ std::unique_ptr<Scenario> DynamicDataProvider::createScenario(unsigned int scena
         scenario->setRealization( scenario->getAttributeData(id, attribute), {disclosure, value} );
       }
       else {
-        // no attribute data given, use default value as realization at time 0
-        scenario->setRealization( scenario->getAttributeData(id, attribute), {0, attribute->value} );
+        // no attribute data given, use default value as realization at time
+        scenario->setRealization( scenario->getAttributeData(id, attribute), {earliestInstantiation, attribute->value} );
       }
 
     }

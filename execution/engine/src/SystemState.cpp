@@ -14,10 +14,18 @@ BPMNOS::number SystemState::getTime() const {
   return assumedTime ? assumedTime.value() : currentTime;
 }
 
+bool SystemState::isAlive() const {
+  if ( scenario->isCompleted(getTime()) ) {
+    return false;
+  }
+  return !instances.empty();
+};
+
 void SystemState::addInstances() {
   for (auto& [process,status] : getInstantiations() ) {
     instances.push_back(StateMachine(this,process,status));
     instances.back().advance();
+    instantiationCounter++;
   }
 }
 

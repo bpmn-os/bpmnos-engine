@@ -40,7 +40,7 @@ public:
   /**
    * @brief Constructor for Scenario.
    */
-  Scenario(const Model* model, const DataInput& attributes, unsigned int index = 0);
+  Scenario(const Model* model, BPMNOS::number inception, BPMNOS::number completion, const DataInput& attributes, unsigned int index = 0);
   /**
    * @brief Copy constructor for Scenario.
    */
@@ -54,6 +54,21 @@ public:
    * @brief Virtual method allowing derived scenarios to update their data.
    */
   virtual void update() {};
+
+  /**
+   * @brief Method returning the time of the earliest instantiation.
+   */
+  BPMNOS::number getInception() const;
+
+  /**
+   * @brief Method updating the completion time.
+   */
+  void updateCompletion(BPMNOS::number time);
+
+  /**
+   * @brief Method returning true if the currentTime exceeds the completion time.
+   */
+  bool isCompleted(BPMNOS::number currentTime) const;
 
   /**
    * @brief Method returning a vector of all instances that are known to be instantiated at the given time.
@@ -113,7 +128,8 @@ protected:
   const DataInput& attributes; ///< Map holding all attributes in the model with keys being the process and attribute id
   std::unordered_map<std::string, InstanceData > instances; ///< Map of instances with key being the instance id.
   const Scenario::Disclosure& getLatestDisclosure(const std::vector<Scenario::Disclosure>& data, BPMNOS::number currentTime) const;
-
+  BPMNOS::number inception; ///< Time earliest time in execution.
+  BPMNOS::number completion; ///< The latest time in execution at which an instantiation can happen.
 };
 
 } // namespace BPMNOS::Model

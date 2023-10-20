@@ -64,7 +64,7 @@ protected:
 
   BPMNOS::number clockTick; ///< Timestep used to advance the current time by systemState.time += clockTick
   std::unique_ptr<SystemState> systemState;
-  void advance();
+  bool advance();
   friend void Token::notify() const;
   std::vector<EventHandler*> eventHandlers;
   std::vector<Listener*> listeners;

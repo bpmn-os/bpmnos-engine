@@ -35,6 +35,8 @@ protected:
     std::unordered_map< const Attribute*, std::vector< std::pair<BPMNOS::number,BPMNOS::number> > > data; ///< Map of attribute data consisting of disclosure-value pairs
   };
   std::unordered_map< std::string, DynamicInstanceData > instances;
+  BPMNOS::number earliestInstantiation;
+  BPMNOS::number latestInstantiation;
 };
 
 } // namespace BPMNOS::Model

@@ -237,6 +237,12 @@ void Token::processTriggerEvent(const TriggerEvent* triggerEvent) {
 void Token::processMessageDeliveryEvent(const MessageDeliveryEvent* messageDeliveryEvent) {
 }
 
+
+void Token::update(State newState) {
+  state = newState;
+  notify();
+}
+
 void Token::notify() const {
   for ( auto listener : owner->systemState->engine->listeners ) {
     listener->update(this);

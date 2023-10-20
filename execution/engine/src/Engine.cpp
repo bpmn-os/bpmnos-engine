@@ -30,74 +30,47 @@ void Engine::addListener(Listener* listener) {
 void Engine::run(const BPMNOS::Model::Scenario* scenario) {
   // create initial system state
   systemState = std::make_unique<SystemState>(this, scenario);
-  // advance all tokens in system state
 
-  do {
-    advance();
-  } while ( systemState->isAlive() );
+  // advance all tokens in system state
+  while ( advance() ) {
+    if ( !systemState->isAlive() ) {
+      break;
+    }
+  }
 }
 
-void Engine::advance() {
+bool Engine::advance() {
   // make sure new data is added to system state
   const_cast<BPMNOS::Model::Scenario*>(systemState->scenario)->update();
 
   // add all new instances and advance tokens as much as possible
   systemState->addInstances();
+  // it is assumed that at least one clock tick or termination event is processed to ensure that 
+  // each instance is only added once 
 
   // fetch and process all events
   while ( auto event = fetchEvent() ) {
     event->processBy(this);
-  }
-}
 
-
-/*
-void Engine::start(BPMNOS::number time) {
-  systemState.currentTime = time;
-//  systemState.simulationTime = systemState.currentTime;
-
-  while ( true ) {
-    // loop until TerminationEvent is received
-
-    // listen to event
-    std::unique_ptr<Event> event = fetchEvent( systemState );
-
-    if ( auto instantiationEvent = event.get()->is<InstantiationEvent>(); instantiationEvent ) {
-      // create a StateMachine for the instantiated process
-      auto instance = systemState.addStateMachine(instantiationEvent);
-      instance->run(instance->tokens.back().get());
+    if ( event->is<ClockTickEvent>() ) {
+      // exit loop to resume 
+      return true;
     }
-    else if ( event.get()->is<TerminationEvent>() ) {
-      // terminate execution run
-      break;
-    }
-    else if ( event.get()->is<ClockTickEvent>() ) {
-      // increase clockTime 
-//      systemState.currentTime += clockTick;
-      event->processBy(this);
-    }
-    else {
-      // delegate event processing to relevant state machine
 
-      // obtain non-const stateMachine the event is referring to
-      StateMachine* stateMachine = const_cast<StateMachine*>(event.get()->token->owner);
-      bool isRunning = stateMachine->run(event.get());
-      if ( !isRunning ) {
-        // remove state machine from system state
-        erase<StateMachine>(systemState.instances,stateMachine);
-      }
+    if ( event->is<TerminationEvent>() ) {
+      // exit loop to terminate
+      return false;
     }
   }
-
+  throw std::runtime_error("Engine: unexpected absence of event");
 }
-*/
 
 void Engine::process(const ChoiceEvent& event) {
   throw std::runtime_error("Engine: ChoiceEvent not yet implemented");
 }
 
 void Engine::process(const ClockTickEvent& event) {
-  systemState->currentTime += clockTick;
+  systemState->incrementTimeBy(clockTick);
 }
 
 void Engine::process(const CompletionEvent& event) {

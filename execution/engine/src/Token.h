@@ -68,6 +68,7 @@ private:
   void processTriggerEvent(const TriggerEvent* triggerEvent);
   void processMessageDeliveryEvent(const MessageDeliveryEvent* messageDeliveryEvent);
 
+  void update(State newState);
   void notify() const;
 };
 
