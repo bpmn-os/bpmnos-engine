@@ -27,13 +27,16 @@ void Engine::addListener(Listener* listener) {
   listeners.push_back(listener);
 }
 
-void Engine::run(const BPMNOS::Model::Scenario* scenario) {
+void Engine::run(const BPMNOS::Model::Scenario* scenario, BPMNOS::number timeout) {
   // create initial system state
   systemState = std::make_unique<SystemState>(this, scenario);
 
   // advance all tokens in system state
   while ( advance() ) {
     if ( !systemState->isAlive() ) {
+      break;
+    }
+    if ( systemState->getTime() > timeout ) {
       break;
     }
   }
@@ -99,7 +102,7 @@ void Engine::process(const ReadyEvent& event) {
   token->status.insert(token->status.end(), event.values.begin(), event.values.end());
 
   // update token state
-  token->state = Token::State::READY;
+  token->update(Token::State::READY);
 
   // advance token as much as possible
   advance(token);

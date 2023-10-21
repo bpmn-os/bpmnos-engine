@@ -28,7 +28,10 @@ public:
 
   std::unique_ptr<Event> fetchEvent();
 
-  void run(const BPMNOS::Model::Scenario* scenario);
+  /**
+   * @brief Runs a scenario as long as there is a token or new instantiations. Terminates when the time if the system exceeds the timeout.
+   */
+  void run(const BPMNOS::Model::Scenario* scenario, BPMNOS::number timeout = std::numeric_limits<BPMNOS::number>::max());
 
   void process(const ChoiceEvent& event);
   void process(const ClockTickEvent& event);
