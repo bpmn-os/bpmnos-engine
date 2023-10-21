@@ -69,6 +69,17 @@ private:
   void processMessageDeliveryEvent(const MessageDeliveryEvent* messageDeliveryEvent);
 
   void update(State newState);
+
+  template <typename F, typename... Args>
+    void update(State newState, F&& updateStatus, Args... args) {
+    updateStatus(this, std::forward<Args>(args)...);
+    update(newState);
+  }
+
+  static void appendToStatus(Token* token, const Values& values);
+  static void replaceStatus(Token* token, const Values& newStatus);
+  static void resizeStatus(Token* token);
+
   void notify() const;
 };
 

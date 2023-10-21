@@ -243,6 +243,22 @@ void Token::update(State newState) {
   notify();
 }
 
+void Token::appendToStatus(Token* token, const Values& values) {
+  token->status.insert(token->status.end(), values.begin(), values.end());
+}
+
+void Token::replaceStatus(Token* token, const Values& newStatus) {
+  token->status = newStatus;
+}
+
+void Token::resizeStatus(Token* token) {
+  auto& attributeMap = ( token->node ? token->node->extensionElements->as<const Model::Status>()->attributeMap : token->owner->process->extensionElements->as<const Model::Status>()->attributeMap ); 
+
+  token->status.resize(attributeMap.size());
+}
+
+
+
 void Token::notify() const {
   for ( auto listener : owner->systemState->engine->listeners ) {
     listener->update(this);
