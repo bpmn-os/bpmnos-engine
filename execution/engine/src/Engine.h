@@ -4,7 +4,6 @@
 #include <set>
 #include <vector>
 #include "Event.h"
-#include "events/ChoiceEvent.h"
 #include "events/ClockTickEvent.h"
 #include "events/CompletionEvent.h"
 #include "events/EntryEvent.h"
@@ -33,7 +32,6 @@ public:
    */
   void run(const BPMNOS::Model::Scenario* scenario, BPMNOS::number timeout = std::numeric_limits<BPMNOS::number>::max());
 
-  void process(const ChoiceEvent& event);
   void process(const ClockTickEvent& event);
   void process(const CompletionEvent& event);
   void process(const EntryEvent& event);

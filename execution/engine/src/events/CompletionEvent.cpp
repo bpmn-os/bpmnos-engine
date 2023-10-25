@@ -3,8 +3,9 @@
 
 using namespace BPMNOS::Execution;
 
-CompletionEvent::CompletionEvent(const Token* token)
+CompletionEvent::CompletionEvent(const Token* token,  const std::vector< std::pair< size_t, std::optional<BPMNOS::number> > >& updatedValues)
   : Event(token)
+  , updatedValues(updatedValues)
 {
 }
 

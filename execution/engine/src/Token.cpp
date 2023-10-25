@@ -3,13 +3,6 @@
 #include "Engine.h"
 #include "model/parser/src/extensionElements/Status.h"
 #include "model/parser/src/DecisionTask.h"
-#include "Event.h"
-#include "events/EntryEvent.h"
-#include "events/ExitEvent.h"
-#include "events/ChoiceEvent.h"
-#include "events/CompletionEvent.h"
-#include "events/TriggerEvent.h"
-#include "events/MessageDeliveryEvent.h"
 
 using namespace BPMNOS::Execution;
 
@@ -21,7 +14,7 @@ Token::Token(const StateMachine* owner, const BPMN::FlowNode* node, const Values
 {
   notify();
   // advance token as far as possible
-  run();
+  advanceFromCreated();
 }
 
 Token::Token(const Token* other) 
@@ -31,7 +24,6 @@ Token::Token(const Token* other)
   , status(other->status)
 {
 }
-
 
 nlohmann::json Token::jsonify() const {
   nlohmann::json jsonObject;
@@ -47,27 +39,22 @@ nlohmann::json Token::jsonify() const {
 
   for (auto& [attributeName,attribute] : attributeMap ) {
     if ( !status[attribute->index].has_value() ) {
-//      jsonObject["status"].push_back(nlohmann::json({{attributeName,nullptr}}));
       jsonObject["status"][attributeName] = nullptr ;
     }
     else if ( attribute->type == STRING) {
       std::string value = BPMNOS::to_string(status[attribute->index].value(),STRING);
-//      jsonObject["status"].push_back(nlohmann::json({{attributeName,value}}));
       jsonObject["status"][attributeName] = value ;
     }
     else if ( attribute->type == BOOLEAN) {
       bool value = (bool)status[attribute->index].value();
-//      jsonObject["status"].push_back(nlohmann::json({{attributeName,value}}));
       jsonObject["status"][attributeName] = value ;
     }
     else if ( attribute->type == INTEGER) {
       int value = (int)status[attribute->index].value();
-//      jsonObject["status"].push_back(nlohmann::json({{attributeName,value}}));
       jsonObject["status"][attributeName] = value ;
     }
     else if ( attribute->type == DECIMAL) {
       double value = (double)status[attribute->index].value();
-//      jsonObject["status"].push_back(nlohmann::json({{attributeName,value}}));
       jsonObject["status"][attributeName] = value ;
     }
   }
@@ -75,119 +62,281 @@ nlohmann::json Token::jsonify() const {
   return jsonObject;
 }
 
+bool Token::isFeasible() {
+  // TODO check restrictions within current scope and ancestor scopes
 
-void Token::run() {
-  // TODO: Event-subprocesses, boundary-events, error handling
-  bool advance = false;
-  while ( advance ) {
-    if ( state == State::CREATED ) {
-      advance = advanceFromCreated();
-    }
-    else if ( state == State::READY ) {
-      advance = advanceFromReady();
-    }
-    else if ( state == State::ENTERED ) {
-      advance = advanceFromEntered();
-    }
-    else if ( state == State::COMPLETED ) {
-      advance = advanceFromCompleted();
-    }
-    else if ( state == State::DEPARTED ) {
-      advance = advanceFromDeparted();
-    }
-    else if ( state == State::ARRIVED ) {
-      advance = advanceFromArrived();
-    }
-    else {  // REMOVE when all cases are considered
-      advance = false; // break out of loop
-    }
-  }
+  return true;
 }
 
-bool Token::advanceFromCreated() {
-  return advanceToReady();
-}
-
-bool Token::advanceToReady() {
-  if ( node->is<BPMN::ExclusiveGateway>() || node->incoming.size() <= 1 ) {
-    if ( auto statusExtension = node->extensionElements->as<BPMNOS::Model::Status>(); 
-         statusExtension && statusExtension->attributes.size()
-    ) {
-      // wait for ready event
-      return false;
-    }
-    else {
-      state = State::READY;
-    }
+void Token::advanceFromCreated() {
+  if ( node->is<BPMN::Activity>() ) {
+    awaitReadyEvent();
   }
   else {
-    state = State::TO_BE_MERGED;
-    // delegate merge back to state machine
-    return false;
+//TODO    advanceToEntered();
   }
-  return true;
 }
 
-bool Token::advanceFromReady() {
-  if ( node->is<BPMN::Activity>() ) {
-    // Need to wait for entry event
-    return false;
+void Token::advanceToReady(std::optional< std::reference_wrapper<const Values> > values) {
+  if ( values.has_value() ) {
+    status.insert(status.end(), values.value().get().begin(), values.value().get().end());
   }
 
-  state = State::ENTERED;
+  if ( status[BPMNOS::Model::Status::Index::Timestamp] > owner->systemState->getTime() ) {
+    throw std::runtime_error("Token: ready timestamp at node '" + node->id + "' is larger than current time");
+  }
 
-  return true;
+  update(State::READY);
+
+  awaitEntryEvent();
 }
 
+void Token::advanceToEntered(std::optional< std::reference_wrapper<const Values> > statusUpdate) {
+  if ( statusUpdate.has_value() ) {
+    status = statusUpdate.value().get();
+  }
 
-bool Token::advanceFromEntered() {
-  // ENTERED state
+  if ( status[BPMNOS::Model::Status::Index::Timestamp] > owner->systemState->getTime() ) {
+    throw std::runtime_error("Token: entry timestamp at node '" + node->id + "' is larger than current time");
+  }
+
+  update(State::ENTERED);
+
+  // only check feasibility for activities
+  // feasibility of all other tokens must have been validated before 
+  // (also for newly created or merged tokens)
   if ( node->is<BPMN::Activity>() ) {
-    if ( node->is<BPMN::SubProcess>() ) {
-      // Delegate creation of children back to state machine
-      return false;
+    // check restrictions
+    if ( !isFeasible() ) {
+      advanceToFailed();
+      return;
     }
-    else if ( node->is<BPMN::Task>() ) {
-      if ( node->is<BPMNOS::Model::DecisionTask>() ) {
-        // Need to wait for choice event
-        return false;
-      }
-      else if ( node->is<BPMN::ReceiveTask>() ) {
-        throw std::runtime_error("Token: receive tasks are not supported");
-      }
-      else {
-        // All other task types are ignored
+    
+    // tokens entering an activity automatically
+    // advance to busy state
+    advanceToBusy();
+  }
+  else if ( node->is<BPMN::CatchEvent>() 
+  ) {
+    // tokens entering a catching event automatically
+    // advance to busy state
+    advanceToBusy();
+  }
+  else if ( node->is<BPMN::EventBasedGateway>() ) {
+    // tokens entering an event-based gateway automatically
+    // advance to busy state
+    advanceToBusy();
+  }
+  else {
+    // tokens entering any other node automatically advance to done or
+    // departed state
+    if ( node->outgoing.empty() ) {
+      advanceToDone();
+      return;
+    }
+    advanceToDeparting();
+  }
+}
 
-        // TODO: apply operators
-        // If operators increase time wait for trigger event,
-        // otherwise wait for exit event 
-        return false;
-      }
-        }
+void Token::advanceToBusy() {
+  update(State::BUSY);
+  if ( node->is<BPMN::EventBasedGateway>() ) {
+    awaitActivatingEvent();
+  }
+  else if ( node->is<BPMN::MessageCatchEvent>() ) {
+    awaitMessageDeliveryEvent();
+  }
+  else if ( node->is<BPMN::CatchEvent>() ) {
+    awaitTriggerEvent();
+  }
+  else if ( node->is<BPMN::Task>() ) {
+    if ( node->is<BPMNOS::Model::DecisionTask>() ) {
+      awaitChoices();
+    }
+    else if ( node->is<BPMN::ReceiveTask>() ) {
+      throw std::runtime_error("Token: receive tasks are not supported");
+    }
     else {
-      // CallActivity
-      throw std::runtime_error("Token: call activities are not supported");
+      awaitCompletionEvent();
     }
   }
-  else if ( node->is<BPMN::Event>() ) {
-    // Need to wait for trigger event
-    return false;
+  else if ( node->is<BPMN::SubProcess>() ) {
+    // TODO: Delegate creation of children back to state machine
+
+    awaitSubProcessCompletion();
   }
-  return true;
 }
 
-bool Token::advanceFromCompleted() {
-  return true;
+void Token::advanceToCompleted(const std::vector< std::pair< size_t, std::optional<BPMNOS::number> > >& updatedValues) {
+  for ( auto & [index, value] : updatedValues ) {
+    status[index] = value;
+  }
+
+  if ( status[BPMNOS::Model::Status::Index::Timestamp] > owner->systemState->getTime() ) {
+    throw std::runtime_error("Token: completion timestamp at node '" + node->id + "' is larger than current time");
+  }
+
+  update(State::COMPLETED);
+
+  if ( node->is<BPMN::Activity>() ) {
+    awaitExitEvent();
+  }
+  else {
+    // check restrictions
+    if ( !isFeasible() ) {
+      advanceToFailed();
+      return;
+    }
+
+    if ( node->outgoing.empty() ) {
+      advanceToDone();
+      return;
+    }
+    advanceToDeparting();
+  }
 }
 
-bool Token::advanceFromDeparted() {
-  return true;
+void Token::advanceToExiting(std::optional< std::reference_wrapper<const Values> > statusUpdate) {
+  if ( statusUpdate.has_value() ) {
+    status = statusUpdate.value().get();
+  }
+
+  if ( status[BPMNOS::Model::Status::Index::Timestamp] > owner->systemState->getTime() ) {
+    throw std::runtime_error("Token: exit timestamp at node '" + node->id + "' is larger than current time");
+  }
+
+  update(State::EXITING);
+
+  // check restrictions
+  if ( !isFeasible() ) {
+    advanceToFailed();
+    return;
+  }
+
+  if ( node->outgoing.empty() ) {
+    advanceToDone();
+    return;
+  }
+  advanceToDeparting();
 }
 
-bool Token::advanceFromArrived() {
-  return advanceToReady();
+void Token::advanceToDone() {
+  update(State::DONE);
+  awaitDisposal();
 }
 
+void Token::advanceToDeparting() {
+  // TODO: determine sequence flows that receive a token
+  
+  if ( false ) {
+    // no sequence flow satisfies conditions
+    advanceToFailed();
+    return;
+  }
+
+  if ( false ) {
+    // let state machine copy token and advance each copy
+//    owner->copy(this);
+    return;
+  }
+
+  const BPMN::FlowNode* destination = nullptr; //TODO
+  advanceToArrived(destination);
+}
+
+
+void Token::advanceToArrived(const BPMN::FlowNode* destination) {
+  node = destination;
+  update(State::ARRIVED);
+
+  // TODO: check whether gateway activation is required
+  if ( node->incoming.size() > 1 
+       && node->is<BPMN::Gateway>()
+       && !node->is<BPMN::ExclusiveGateway>()
+  ) {
+    awaitGatewayActivation();    
+  }
+
+  if ( node->is<BPMN::Activity>() ) {
+    awaitReadyEvent();
+  }
+  else {
+    advanceToEntered();
+  }
+}
+
+void Token::advanceToFailed() {
+  update(State::FAILED);
+  // TODO
+}
+
+
+void Token::awaitReadyEvent() {
+  // TODO
+}
+
+void Token::awaitEntryEvent() {
+  // TODO
+}
+
+void Token::awaitActivatingEvent() {
+  // TODO
+}
+
+void Token::awaitMessageDeliveryEvent() {
+  // TODO
+}
+
+void Token::awaitTriggerEvent() {
+  // TODO
+}
+
+void Token::awaitChoices() {
+  // TODO
+}
+
+void Token::awaitCompletionEvent() {
+  // TODO
+}
+
+void Token::awaitSubProcessCompletion() {
+  // TODO
+}
+
+void Token::awaitExitEvent() {
+  // TODO
+}
+
+void Token::awaitDisposal() {
+  // TODO
+}
+
+void Token::awaitGatewayActivation() {
+  // TODO
+}
+
+
+void Token::update(State newState) {
+  state = newState;
+  auto now = owner->systemState->getTime();
+  if ( status[BPMNOS::Model::Status::Index::Timestamp] < now ) {
+    // increase timestamp if necessary
+    status[BPMNOS::Model::Status::Index::Timestamp] = now;
+  }
+  else if ( status[BPMNOS::Model::Status::Index::Timestamp] > now ) {
+    throw std::runtime_error("Token: timestamp at node '" + node->id + "' is larger than current time");
+  }
+  notify();
+}
+
+
+void Token::notify() const {
+  for ( auto listener : owner->systemState->engine->listeners ) {
+    listener->update(this);
+  }
+}
+
+/*
 void Token::processEvent(const Event* event) {
   Token* token = const_cast<Token*>(event->token);
 
@@ -222,46 +371,5 @@ void Token::processEvent(const Event* event) {
   }
 }
 
-void Token::processExitEvent(const ExitEvent* exitEvent) {
-}
-
-void Token::processChoiceEvent(const ChoiceEvent* choiceEvent) {
-}
-
-void Token::processCompletionEvent(const CompletionEvent* completionEvent) {
-}
-
-void Token::processTriggerEvent(const TriggerEvent* triggerEvent) {
-}
-
-void Token::processMessageDeliveryEvent(const MessageDeliveryEvent* messageDeliveryEvent) {
-}
-
-
-void Token::update(State newState) {
-  state = newState;
-  notify();
-}
-
-void Token::appendToStatus(Token* token, const Values& values) {
-  token->status.insert(token->status.end(), values.begin(), values.end());
-}
-
-void Token::replaceStatus(Token* token, const Values& newStatus) {
-  token->status = newStatus;
-}
-
-void Token::resizeStatus(Token* token) {
-  auto& attributeMap = ( token->node ? token->node->extensionElements->as<const Model::Status>()->attributeMap : token->owner->process->extensionElements->as<const Model::Status>()->attributeMap ); 
-
-  token->status.resize(attributeMap.size());
-}
-
-
-
-void Token::notify() const {
-  for ( auto listener : owner->systemState->engine->listeners ) {
-    listener->update(this);
-  }
-}
+*/
 

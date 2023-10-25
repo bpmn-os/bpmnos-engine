@@ -9,7 +9,6 @@ list(APPEND engine_SOURCES
   events/CompletionEvent.cpp
   events/TriggerEvent.cpp
   events/MessageDeliveryEvent.cpp
-  events/ChoiceEvent.cpp
   events/ExitEvent.cpp
   StateMachine.cpp
   SystemState.cpp
@@ -36,7 +35,6 @@ list(APPEND engine_HEADERS
   events/CompletionEvent.h
   events/TriggerEvent.h
   events/MessageDeliveryEvent.h
-  events/ChoiceEvent.h
   events/ExitEvent.h
   StateMachine.h
   SystemState.h

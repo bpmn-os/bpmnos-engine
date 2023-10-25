@@ -68,44 +68,23 @@ bool Engine::advance() {
   throw std::runtime_error("Engine: unexpected absence of event");
 }
 
-void Engine::process(const ChoiceEvent& event) {
-  throw std::runtime_error("Engine: ChoiceEvent not yet implemented");
-}
-
 void Engine::process(const ClockTickEvent& event) {
   systemState->incrementTimeBy(clockTick);
 }
 
 void Engine::process(const CompletionEvent& event) {
-  throw std::runtime_error("Engine: CompletionEvent not yet implemented");
+  Token* token = const_cast<Token*>(event.token);
+  token->advanceToCompleted(event.updatedValues);
 }
 
 void Engine::process(const EntryEvent& event) {
   Token* token = const_cast<Token*>(event.token);
-  if ( event.entryStatus.has_value() ) {
-    token->update(Token::State::ENTERED, Token::replaceStatus, event.entryStatus.value() );
-  }
-  else {
-    token->update(Token::State::ENTERED);
-  }
-  // TODO: check restrictions
-
-  // advance token as much as possible
-  advance(token);
+  token->advanceToEntered(event.entryStatus);
 }
 
 void Engine::process(const ExitEvent& event) {
   Token* token = const_cast<Token*>(event.token);
-  if ( event.exitStatus.has_value() ) {
-    token->update(Token::State::DEPARTED, Token::replaceStatus, event.exitStatus.value() );
-  }
-  else {
-    token->update(Token::State::DEPARTED);
-  }
-  // TODO: check restrictions
-
-  // advance token as much as possible
-  advance(token);
+  token->advanceToExiting(event.exitStatus);
 }
 
 void Engine::process(const MessageDeliveryEvent& event) {
@@ -114,14 +93,7 @@ void Engine::process(const MessageDeliveryEvent& event) {
 
 void Engine::process(const ReadyEvent& event) {
   Token* token = const_cast<Token*>(event.token);
-
-  // remove token from awaitingReady
-//  systemState->awaitingReady.erase( std::find(systemState->awaitingReady.begin(), systemState->awaitingReady.end(), token) );
-
-  token->update(Token::State::READY, Token::appendToStatus, event.values);
-
-  // advance token as much as possible
-  advance(token);
+  token->advanceToReady(event.values);
 }
 
 void Engine::process(const TerminationEvent& event) {

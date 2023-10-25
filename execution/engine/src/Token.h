@@ -11,15 +11,6 @@ class StateMachine;
 class Token;
 typedef std::vector< Token > Tokens;
 
-class Event;
-class EntryEvent;
-class ExitEvent;
-class ChoiceEvent;
-class CompletionEvent;
-class TriggerEvent;
-class MessageDeliveryEvent;
-
-
 class Token {
 private:
   friend class SystemState;
@@ -30,8 +21,8 @@ public:
   const StateMachine* owner;
   const BPMN::FlowNode* node; 
 private:
-  enum class State { CREATED, READY, ENTERED, BUSY, COMPLETED, DEPARTED, ARRIVED, DONE, FAILED, TO_BE_MERGED, TO_BE_COPIED };
-  static inline std::string stateName[] = { "CREATED", "READY", "ENTERED", "BUSY", "COMPLETED", "DEPARTED", "ARRIVED", "DONE", "FAILED", "TO_BE_MERGED", "TO_BE_COPIED" };
+  enum class State { CREATED, READY, ENTERED, BUSY, COMPLETED, EXITING, ARRIVED, DONE, FAILED };
+  static inline std::string stateName[] = { "CREATED", "READY", "ENTERED", "BUSY", "COMPLETED", "EXITING", "ARRIVED", "DONE", "FAILED" };
   State state;
 public:
   Token(const StateMachine* owner, const BPMN::FlowNode* node, const Values& status);
@@ -42,7 +33,7 @@ public:
   bool entered() const { return state == State::ENTERED; };
   bool busy() const { return state == State::BUSY; };
   bool completed() const { return state == State::COMPLETED; };
-  bool departed() const { return state == State::DEPARTED; };
+  bool exiting() const { return state == State::EXITING; };
   bool arrived() const { return state == State::ARRIVED; };
   bool done() const { return state == State::DONE; };
   bool failed() const { return state == State::FAILED; };
@@ -50,37 +41,44 @@ public:
   nlohmann::json jsonify() const;
 private:
 
-  void run();
-  void processEvent(const Event* event);
+  bool isFeasible(); ///< Check restrictions within current and ancestor scopes
 
-  bool advanceFromCreated();
-  bool advanceToReady();
-  bool advanceFromReady();
-  bool advanceFromEntered();
-  bool advanceFromCompleted();
-  bool advanceFromDeparted();
-  bool advanceFromArrived();
+  void advanceFromCreated();
+  void advanceToReady(std::optional< std::reference_wrapper<const Values> > values = std::nullopt );
+  void advanceToEntered(std::optional< std::reference_wrapper<const Values> > statusUpdate = std::nullopt );
+  void advanceToBusy();
+  void advanceToCompleted(const std::vector< std::pair< size_t, std::optional<BPMNOS::number> > >& updatedValues);
+  void advanceToExiting(std::optional< std::reference_wrapper<const Values> > statusUpdate = std::nullopt );
+  void advanceToDone();
+  void advanceToDeparting();
+  void advanceToArrived(const BPMN::FlowNode* destination);
 
-  void processEntryEvent(const EntryEvent* entryEvent);
-  void processExitEvent(const ExitEvent* exitEvent);
-  void processChoiceEvent(const ChoiceEvent* choiceEvent);
-  void processCompletionEvent(const CompletionEvent* completionEvent);
-  void processTriggerEvent(const TriggerEvent* triggerEvent);
-  void processMessageDeliveryEvent(const MessageDeliveryEvent* messageDeliveryEvent);
+  void advanceToFailed();
 
-  void update(State newState);
+  void awaitReadyEvent(); ///< Wait for ready event for activities
+  void awaitEntryEvent(); ///< Wait for entry event for activities
+  void awaitActivatingEvent(); ///< Wait for catching  event at event-based gateways 
+  void awaitMessageDeliveryEvent(); ///< Wait for message delivery event
+  void awaitTriggerEvent(); ///< Wait for message trigger at catching events (except for catching message events)
+  void awaitChoices(); ///< Wait for choices to be made for decision tasks
+  void awaitCompletionEvent(); ///< Wait for completion event for tasks (except for decision tasks)
+  void awaitSubProcessCompletion(); ///< Wait for completion of all tokens within a subprocess
+  void awaitExitEvent(); ///< Wait for exit event for activities
+  void awaitDisposal(); ///< Wait for disposal of token to occur when all tokens are done or token flow of parent failed or is interrupted
 
+  void awaitGatewayActivation(); ///< Wait for activiation of merging gateway 
+
+  void update(State newState); ///< Updates token state and timestamp before calling notify()
+
+  void notify() const; ///< Inform all listeners about token update
+
+/*
   template <typename F, typename... Args>
     void update(State newState, F&& updateStatus, Args... args) {
     updateStatus(this, std::forward<Args>(args)...);
     update(newState);
   }
-
-  static void appendToStatus(Token* token, const Values& values);
-  static void replaceStatus(Token* token, const Values& newStatus);
-  static void resizeStatus(Token* token);
-
-  void notify() const;
+*/
 };
 
 } // namespace BPMNOS::Execution
