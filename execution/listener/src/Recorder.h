@@ -2,7 +2,7 @@
 #define BPMNOS_Execution_Recorder_H
 
 #include <bpmn++.h>
-#include "execution/engine/src/Listener.h"
+#include "Listener.h"
 
 namespace BPMNOS::Execution {
 

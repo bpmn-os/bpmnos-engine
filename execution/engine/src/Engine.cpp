@@ -1,7 +1,6 @@
 #include "Engine.h"
-#include "execution/engine/src/events/TerminationEvent.h"
-#include "execution/engine/src/events/ClockTickEvent.h"
 #include "execution/utility/src/erase.h"
+#include "execution/listener/src/Listener.h"
 
 using namespace BPMNOS::Execution;
 
@@ -72,7 +71,7 @@ void Engine::process(const ClockTickEvent& event) {
   systemState->incrementTimeBy(clockTick);
 }
 
-void Engine::process(const CompletionEvent& event) {
+void Engine::process(const TaskCompletionEvent& event) {
   Token* token = const_cast<Token*>(event.token);
   token->advanceToCompleted(event.updatedValues);
 }
@@ -87,9 +86,11 @@ void Engine::process(const ExitEvent& event) {
   token->advanceToExiting(event.exitStatus);
 }
 
+/*
 void Engine::process(const MessageDeliveryEvent& event) {
   throw std::runtime_error("Engine: MessageDeliveryEvent not yet implemented");
 }
+*/
 
 void Engine::process(const ReadyEvent& event) {
   Token* token = const_cast<Token*>(event.token);
@@ -99,9 +100,12 @@ void Engine::process(const ReadyEvent& event) {
 void Engine::process(const TerminationEvent& event) {
   throw std::runtime_error("Engine: TerminationEvent not yet implemented");
 }
-void Engine::process(const TriggerEvent& event) {
-  throw std::runtime_error("Engine: TriggerEvent not yet implemented");
+
+/*
+void Engine::process(const TimerEvent& event) {
+  throw std::runtime_error("Engine: TimerEvent not yet implemented");
 }
+*/
 
 BPMNOS::number Engine::getCurrentTime() {
   return systemState->currentTime;

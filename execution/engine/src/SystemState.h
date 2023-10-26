@@ -4,6 +4,8 @@
 #include "StateMachine.h"
 #include "execution/engine/src/Message.h"
 #include "model/data/src/Scenario.h"
+#include <set>
+#include <queue>
 
 namespace BPMNOS::Execution {
 
@@ -15,6 +17,12 @@ class Engine;
 class SystemState {
 private:
   const Engine* engine;
+  struct ScheduledTokenComparator {
+    bool operator()(const std::pair<BPMNOS::number, Token*>& lhs, const std::pair<BPMNOS::number, Token*>& rhs) const {
+      // Compare based on the 'time' component
+      return lhs.first < rhs.first;
+    }
+  };
 public:
   SystemState(const Engine* engine, const BPMNOS::Model::Scenario* scenario, BPMNOS::number currentTime = 0);
 
@@ -54,15 +62,31 @@ public:
    */
   Messages messages;
 
-  std::vector<Token*> awaitingReady; ///< Container holding all tokens awaiting a ready event
-  std::vector<Token*> awaitingRegularEntry; ///< Container holding all tokens at regular activities awaiting an entry event
-  std::vector< size_t > idleResources; ///< Container holding indices of resources not executig a job and awaiting a job entry
-  std::vector< std::pair< Token*, std::vector<Token*> > > awaitingJobEntry; ///< Container holding pairs of tokens at resource activities and all tokens at jobs of the resource awaiting an entry event
-  std::vector<Token*> awaitingChoice; ///< Container holding all tokens awaiting a choice event
-  std::vector<Token*> awaitingTimer; ///< Container holding all tokens at a catching timer event awaiting a trigger event
-  std::vector<Token*> awaitingMessageDelivery; ///< Container holding all tokens awaiting a message delivery event
-  std::vector<Token*> awaitingCompletion; ///< Container holding all tokens awaiting a completion event
-  std::vector<Token*> awaitingExit; ///< Container holding all tokens awaiting an exit event
+  std::vector<Token*> tokensAwaitingReadyEvent; ///< Container holding all tokens awaiting a ready event
+
+  std::vector<Token*> tokensAwaitingRegularEntryEvent; ///< Container holding all tokens at regular activities awaiting an entry event
+
+  std::unordered_map< Token*, std::vector<Token*> > tokensAwaitingJobEntryEvent; ///< Map holding a container of all tokens awaiting entry at jobs for each token at an active resource
+  std::vector< Token* > tokensAtIdleResources; ///< Container holding indices of resources not executing a job and awaiting a job entry
+//  std::vector< Token* > tokensAtActiveResources; ///< Container holding indices of tokens at busy resources
+
+  std::set<std::pair<BPMNOS::number, Token*>, ScheduledTokenComparator> tokensAwaitingTaskCompletionEvent; ///< Sorted container holding all tokens awaiting a task completion event
+  std::vector<Token*> tokensAwaitingChoiceEvent; ///< Container holding all tokens awaiting a choice event
+
+  std::vector<Token*> tokensAwaitingResourceShutdownEvent; ///< Container holding all tokens awaiting a choice event
+
+  std::vector<Token*> tokensAwaitingExitEvent; ///< Container holding all tokens awaiting an exit event
+
+
+  std::priority_queue<std::pair<BPMNOS::number, Token*>, std::vector<std::pair<BPMNOS::number, Token*>>, ScheduledTokenComparator> tokensAwaitingTimer; ///< Priority queue holding all tokens awaiting a timer event
+  std::vector<Token*> tokensAwaitingMessageDelivery; ///< Container holding all tokens awaiting a message delivery event
+
+  std::vector<Token*> tokensAwaitingEventBasedGateway; ///< Container holding all tokens awaiting activation event for an event-based gateway
+
+  std::unordered_map< const StateMachine*, std::vector<Token*> > tokensAwaitingSubProcessCompletion; ///< Map holding all tokens awaiting the completion of a subprocess
+  std::unordered_map< const BPMN::FlowNode*, std::vector<Token*> > tokensAwaitingGatewayActivation; ///< Map holding tokens awaiting activation of a converging gateway 
+
+  std::unordered_map< const StateMachine*, std::vector<Token*> > tokensAwaitingDisposal; ///< Map holding all tokens awaiting a disposal for each (sub)process
 
 private:
   friend class Engine;
@@ -78,7 +102,6 @@ private:
 
   void incrementTimeBy(BPMNOS::number duration);
   size_t instantiationCounter;
-
 };
 
 } // namespace BPMNOS::Execution

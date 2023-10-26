@@ -7,14 +7,13 @@
 namespace BPMNOS::Execution {
 
 /**
- * @brief Represents the event of a token having completed an activity.
+ * @brief Abstract base class representing the event of a token having completed an activity.
  *
  * Transition from State::BUSY to State::COMPLETED
  */
 struct CompletionEvent : Event {
-  CompletionEvent(const Token* token, const std::vector< std::pair< size_t, std::optional<BPMNOS::number> > >& updatedValues);
-  void processBy(Engine* engine) const override;
-  std::vector< std::pair< size_t, std::optional<BPMNOS::number> > > updatedValues;
+  CompletionEvent(const Token* token);
+  virtual void processBy(Engine* engine) const = 0;
 };
 
 } // namespace BPMNOS::Execution

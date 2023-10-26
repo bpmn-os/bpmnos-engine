@@ -15,6 +15,7 @@ namespace BPMNOS::Execution {
  *
  * @throws std::logic_error if the specified element is not found in the vector.
  */
+/*
 template<typename T>
 void erase(std::vector<T>& container, const T* elementPtr) {
   auto it = std::find_if(container.begin(), container.end(),
@@ -29,6 +30,7 @@ void erase(std::vector<T>& container, const T* elementPtr) {
   }
   container.erase(it);
 }
+*/
 
 } // namespace BPMNOS::Execution
 

@@ -2,7 +2,11 @@
 #include "StateMachine.h"
 #include "Engine.h"
 #include "model/parser/src/extensionElements/Status.h"
+#include "model/parser/src/extensionElements/Timer.h"
+#include "model/parser/src/JobShop.h"
+#include "model/parser/src/ResourceActivity.h"
 #include "model/parser/src/DecisionTask.h"
+#include "execution/listener/src/Listener.h"
 
 using namespace BPMNOS::Execution;
 
@@ -13,8 +17,9 @@ Token::Token(const StateMachine* owner, const BPMN::FlowNode* node, const Values
   , status(status)
 {
   notify();
+
   // advance token as far as possible
-  advanceFromCreated();
+  // TODO: advanceFromCreated();
 }
 
 Token::Token(const Token* other) 
@@ -141,33 +146,51 @@ void Token::advanceToEntered(std::optional< std::reference_wrapper<const Values>
 void Token::advanceToBusy() {
   update(State::BUSY);
   if ( node->is<BPMN::EventBasedGateway>() ) {
-    awaitActivatingEvent();
+    awaitEventBasedGateway();
+  }
+  else if ( node->is<BPMN::TimerCatchEvent>() ) {
+    // TODO: determine time
+    auto trigger = node->extensionElements->as<BPMNOS::Model::Timer>()->trigger.get();
+    BPMNOS::number time;
+
+    if ( trigger->attribute && status[trigger->attribute.value().get().index].has_value() ) {
+      time = status[trigger->attribute.value().get().index].value();
+    }
+    else if ( trigger->value && trigger->value.has_value() ) {
+      time = (int)trigger->value.value().get();
+    }
+    else {
+      throw std::runtime_error("Token: no trigger given for node '" + node->id + "'");
+    }
+
+    if ( time > owner->systemState->getTime() ) {
+      awaitTimer(time);
+    }
+    else {
+      advanceToCompleted();
+    }
   }
   else if ( node->is<BPMN::MessageCatchEvent>() ) {
-    awaitMessageDeliveryEvent();
-  }
-  else if ( node->is<BPMN::CatchEvent>() ) {
-    awaitTriggerEvent();
+    awaitMessageDelivery();
   }
   else if ( node->is<BPMN::Task>() ) {
     if ( node->is<BPMNOS::Model::DecisionTask>() ) {
-      awaitChoices();
+      awaitChoiceEvent();
     }
     else if ( node->is<BPMN::ReceiveTask>() ) {
       throw std::runtime_error("Token: receive tasks are not supported");
     }
     else {
-      awaitCompletionEvent();
+      awaitTaskCompletionEvent();
     }
   }
   else if ( node->is<BPMN::SubProcess>() ) {
     // TODO: Delegate creation of children back to state machine
-
     awaitSubProcessCompletion();
   }
 }
 
-void Token::advanceToCompleted(const std::vector< std::pair< size_t, std::optional<BPMNOS::number> > >& updatedValues) {
+void Token::advanceToCompleted(const std::vector< std::pair< size_t, std::optional<BPMNOS::number> > > updatedValues) {
   for ( auto & [index, value] : updatedValues ) {
     status[index] = value;
   }
@@ -272,49 +295,89 @@ void Token::advanceToFailed() {
 
 
 void Token::awaitReadyEvent() {
-  // TODO
+  auto systemState = const_cast<SystemState*>(owner->systemState);
+  systemState->tokensAwaitingReadyEvent.push_back(this);
 }
 
 void Token::awaitEntryEvent() {
-  // TODO
+  auto systemState = const_cast<SystemState*>(owner->systemState);
+
+  if ( auto tokenAtResource = getResourceToken(); tokenAtResource ) {
+    systemState->tokensAwaitingJobEntryEvent[tokenAtResource].push_back(this);    
+  }
+  else {
+    systemState->tokensAwaitingRegularEntryEvent.push_back(this);
+  }
 }
 
-void Token::awaitActivatingEvent() {
-  // TODO
+void Token::awaitChoiceEvent() {
+  auto systemState = const_cast<SystemState*>(owner->systemState);
+  systemState->tokensAwaitingChoiceEvent.push_back(this);
 }
 
-void Token::awaitMessageDeliveryEvent() {
-  // TODO
+void Token::awaitTaskCompletionEvent() {
+// TODO: apply operators, but do not change status yet
+  auto systemState = const_cast<SystemState*>(owner->systemState);
+  auto time = status[BPMNOS::Model::Status::Index::Timestamp].value(); 
+  systemState->tokensAwaitingTaskCompletionEvent.insert({time,this});
 }
 
-void Token::awaitTriggerEvent() {
-  // TODO
-}
-
-void Token::awaitChoices() {
-  // TODO
-}
-
-void Token::awaitCompletionEvent() {
-  // TODO
-}
-
-void Token::awaitSubProcessCompletion() {
-  // TODO
+void Token::awaitResourceShutdownEvent() {
+  auto systemState = const_cast<SystemState*>(owner->systemState);
+  systemState->tokensAwaitingResourceShutdownEvent.push_back(this);
 }
 
 void Token::awaitExitEvent() {
-  // TODO
+  auto systemState = const_cast<SystemState*>(owner->systemState);
+  systemState->tokensAwaitingExitEvent.push_back(this);
+}
+
+void Token::awaitTimer(BPMNOS::number time) {
+  auto systemState = const_cast<SystemState*>(owner->systemState);
+  systemState->tokensAwaitingTimer.push({time,this});
+}
+
+
+void Token::awaitMessageDelivery() {
+  auto systemState = const_cast<SystemState*>(owner->systemState);
+  systemState->tokensAwaitingMessageDelivery.push_back(this);
+}
+
+void Token::awaitEventBasedGateway() {
+  auto systemState = const_cast<SystemState*>(owner->systemState);
+  systemState->tokensAwaitingEventBasedGateway.push_back(this);
+}
+
+
+void Token::awaitSubProcessCompletion() {
+  auto systemState = const_cast<SystemState*>(owner->systemState);
+  systemState->tokensAwaitingSubProcessCompletion[owner].push_back(this);
+}
+
+
+void Token::awaitGatewayActivation() {
+  auto systemState = const_cast<SystemState*>(owner->systemState);
+  systemState->tokensAwaitingGatewayActivation[node].push_back(this);
 }
 
 void Token::awaitDisposal() {
-  // TODO
+  auto systemState = const_cast<SystemState*>(owner->systemState);
+  systemState->tokensAwaitingDisposal[owner].push_back(this);
 }
 
-void Token::awaitGatewayActivation() {
-  // TODO
-}
 
+Token* Token::getResourceToken() {
+  if ( auto jobShop = node->parent->represents<BPMNOS::Model::JobShop>(); jobShop ) {
+    const BPMN::FlowNode* resourceActivity = jobShop->resourceActivity->as<BPMN::FlowNode>();
+    Token * token = token->owner->parentToken;
+    while (token->node != resourceActivity) {
+      token = token->owner->parentToken;
+    }
+    return token;
+  }
+
+  return nullptr;
+}
 
 void Token::update(State newState) {
   state = newState;
@@ -359,7 +422,6 @@ void Token::processEvent(const Event* event) {
         }
 
         // check restrictions
-        // TODO
         if ( false ) {
           token->state = Token::State::FAILED;
         }

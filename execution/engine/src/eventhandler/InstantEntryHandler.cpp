@@ -8,8 +8,8 @@ InstantEntryHandler::InstantEntryHandler()
 }
 
 std::unique_ptr<Event> InstantEntryHandler::fetchEvent( const SystemState* systemState ) {
-  if ( systemState->awaitingRegularEntry.size() ) {
-    return std::make_unique<ExitEvent>(systemState->awaitingRegularEntry[0]);
+  if ( systemState->tokensAwaitingRegularEntryEvent.size() ) {
+    return std::make_unique<ExitEvent>(systemState->tokensAwaitingRegularEntryEvent.front());
   }
   return nullptr;
 }

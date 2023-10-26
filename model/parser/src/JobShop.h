@@ -1,5 +1,5 @@
-#ifndef BPMNOS_Model_Job_H
-#define BPMNOS_Model_Job_H
+#ifndef BPMNOS_Model_JobShop_H
+#define BPMNOS_Model_JobShop_H
 
 #include <memory>
 #include <vector>
@@ -21,4 +21,4 @@ protected:
 
 } // namespace BPMNOS::Model
 
-#endif // BPMNOS_Model_Job_H
+#endif // BPMNOS_Model_JobShop_H

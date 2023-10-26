@@ -5,19 +5,20 @@
 #include <vector>
 #include "Event.h"
 #include "events/ClockTickEvent.h"
-#include "events/CompletionEvent.h"
+#include "events/TaskCompletionEvent.h"
 #include "events/EntryEvent.h"
 #include "events/ExitEvent.h"
-#include "events/MessageDeliveryEvent.h"
+//#include "events/MessageDeliveryEvent.h"
 #include "events/ReadyEvent.h"
 #include "events/TerminationEvent.h"
-#include "events/TriggerEvent.h"
+//#include "events/TimerEvent.h"
 #include "EventHandler.h"
-#include "Listener.h"
 #include "StateMachine.h"
 #include "SystemState.h"
 
 namespace BPMNOS::Execution {
+
+class Listener;
 
 class Engine {
 public:
@@ -33,13 +34,13 @@ public:
   void run(const BPMNOS::Model::Scenario* scenario, BPMNOS::number timeout = std::numeric_limits<BPMNOS::number>::max());
 
   void process(const ClockTickEvent& event);
-  void process(const CompletionEvent& event);
+  void process(const TaskCompletionEvent& event);
   void process(const EntryEvent& event);
   void process(const ExitEvent& event);
-  void process(const MessageDeliveryEvent& event);
+//  void process(const MessageDeliveryEvent& event);
   void process(const ReadyEvent& event);
   void process(const TerminationEvent& event);
-  void process(const TriggerEvent& event);
+//  void process(const TimerEvent& event);
 
   /**
    * @brief Advance token as much as possible.
