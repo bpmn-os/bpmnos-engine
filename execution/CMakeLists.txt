@@ -19,6 +19,9 @@ include("${PROJECT_SOURCE_DIR}/engine/CMakeLists.txt")
 # Get lists of all headers and sources of listeners
 include("${PROJECT_SOURCE_DIR}/listener/CMakeLists.txt")
 
+# Get lists of all headers and sources of controllers
+include("${PROJECT_SOURCE_DIR}/controller/CMakeLists.txt")
+
 find_program(CCACHE_FOUND "ccache")
 set(CCACHE_SUPPORT ON CACHE BOOL "Enable ccache support")
 if (CCACHE_FOUND AND CCACHE_SUPPORT)
@@ -38,7 +41,7 @@ file(MAKE_DIRECTORY "${CMAKE_SOURCE_DIR}/${LIB_DIR}")
 # Generate the single header file
 file(WRITE "${SINGLE_HEADER_PATH}" "// Automatically generated single header file\n")
 
-foreach(HEADER ${execution_utility_HEADERS} ${engine_HEADERS} ${listener_HEADERS})
+foreach(HEADER ${execution_utility_HEADERS} ${engine_HEADERS} ${listener_HEADERS} ${controller_HEADERS})
   file(READ ${HEADER} HEADER_CONTENTS)
   string(REGEX REPLACE "#include \"[^\"]*\"\n" "" HEADER_CONTENTS "${HEADER_CONTENTS}")
   file(APPEND "${SINGLE_HEADER_PATH}" "${HEADER_CONTENTS}")
@@ -47,7 +50,7 @@ endforeach()
 # Set the C++ standard
 set(CMAKE_CXX_STANDARD 20)
 
-add_library(${PROJECT_NAME} STATIC ${execution_utility_SOURCES} ${engine_SOURCES} ${listener_SOURCES})
+add_library(${PROJECT_NAME} STATIC ${execution_utility_SOURCES} ${engine_SOURCES} ${listener_SOURCES} ${controller_SOURCES})
 
 target_compile_options(${PROJECT_NAME}
   PRIVATE
