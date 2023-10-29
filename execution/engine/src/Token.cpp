@@ -19,7 +19,7 @@ Token::Token(const StateMachine* owner, const BPMN::FlowNode* node, const Values
   notify();
 
   // advance token as far as possible
-  // TODO: advanceFromCreated();
+  advanceFromCreated();
 }
 
 Token::Token(const Token* other) 
@@ -74,7 +74,7 @@ bool Token::isFeasible() {
 }
 
 void Token::advanceFromCreated() {
-  if ( node->is<BPMN::Activity>() ) {
+  if ( node && node->is<BPMN::Activity>() ) {
     awaitReadyEvent();
   }
   else {
@@ -105,12 +105,26 @@ void Token::advanceToEntered(std::optional< std::reference_wrapper<const Values>
     throw std::runtime_error("Token: entry timestamp at node '" + node->id + "' is larger than current time");
   }
 
+  if ( node->is<BPMN::SubProcess>() ) {
+    // (sub)process operators are applied upon entry
+    if ( auto statusExtension = node->extensionElements->as<BPMNOS::Model::Status>(); 
+         statusExtension
+    ) {
+      for ( auto& operator_ : statusExtension->operators ) {
+        if ( operator_->attribute->index == BPMNOS::Model::Status::Index::Timestamp ) {
+          throw std::runtime_error("StateMachine: Operator '" + operator_->id + "' for subprocess '" + node->id + "' attempts to modify timestamp");
+        }
+        operator_->apply(status);
+      }
+    }
+  }
+
   update(State::ENTERED);
 
-  // only check feasibility for activities
+  // only check feasibility for processes and activities
   // feasibility of all other tokens must have been validated before 
   // (also for newly created or merged tokens)
-  if ( node->is<BPMN::Activity>() ) {
+  if ( !node || node->is<BPMN::Activity>() ) {
     // check restrictions
     if ( !isFeasible() ) {
       advanceToFailed();
@@ -145,7 +159,12 @@ void Token::advanceToEntered(std::optional< std::reference_wrapper<const Values>
 
 void Token::advanceToBusy() {
   update(State::BUSY);
-  if ( node->is<BPMN::EventBasedGateway>() ) {
+
+  if ( !node || node->is<BPMN::SubProcess>() ) {
+    // TODO: Delegate creation of children back to state machine
+    awaitSubProcessCompletion();
+  }
+  else if ( node->is<BPMN::EventBasedGateway>() ) {
     awaitEventBasedGateway();
   }
   else if ( node->is<BPMN::TimerCatchEvent>() ) {
@@ -181,12 +200,17 @@ void Token::advanceToBusy() {
       throw std::runtime_error("Token: receive tasks are not supported");
     }
     else {
+      // TODO: apply operators for completion status
+      if ( auto statusExtension = node->extensionElements->as<BPMNOS::Model::Status>(); 
+           statusExtension
+      ) {
+        for ( auto& operator_ : statusExtension->operators ) {
+          operator_->apply(status);
+        }
+      }
+
       awaitTaskCompletionEvent();
     }
-  }
-  else if ( node->is<BPMN::SubProcess>() ) {
-    // TODO: Delegate creation of children back to state machine
-    awaitSubProcessCompletion();
   }
 }
 
@@ -201,7 +225,7 @@ void Token::advanceToCompleted(const std::vector< std::pair< size_t, std::option
 
   update(State::COMPLETED);
 
-  if ( node->is<BPMN::Activity>() ) {
+  if ( node && node->is<BPMN::Activity>() ) {
     awaitExitEvent();
   }
   else {
@@ -211,7 +235,7 @@ void Token::advanceToCompleted(const std::vector< std::pair< size_t, std::option
       return;
     }
 
-    if ( node->outgoing.empty() ) {
+    if ( !node || node->outgoing.empty() ) {
       advanceToDone();
       return;
     }
@@ -398,40 +422,4 @@ void Token::notify() const {
     listener->update(this);
   }
 }
-
-/*
-void Token::processEvent(const Event* event) {
-  Token* token = const_cast<Token*>(event->token);
-
-  if ( auto entryEvent = event->is<EntryEvent>(); entryEvent ) {
-      if ( token->node->is<BPMN::SubProcess>() ) {
-        // update token state
-        token->state = Token::State::BUSY;
-
-        // apply operators
-        if ( auto statusExtension = token->node->extensionElements->as<BPMNOS::Model::Status>(); 
-             statusExtension
-        ) {
-          for ( auto& operator_ : statusExtension->operators ) {
-            if ( operator_->attribute->index == BPMNOS::Model::Status::Index::Timestamp ) {
-              throw std::runtime_error("StateMachine: Operator '" + operator_->id + "' for subprocess '" + token->node->id + "' attempts to modify timestamp");
-            }
-
-            operator_->apply(token->status);
-          }
-        }
-
-        // check restrictions
-        if ( false ) {
-          token->state = Token::State::FAILED;
-        }
-      }
-      else if ( token->node->is<BPMN::Task>() ) {
-      }
-      else {
-      }
-  }
-}
-
-*/
 
