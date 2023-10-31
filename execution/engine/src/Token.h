@@ -38,7 +38,7 @@ public:
   bool done() const { return state == State::DONE; };
   bool failed() const { return state == State::FAILED; };
 
-  nlohmann::json jsonify() const;
+  nlohmann::ordered_json jsonify() const;
 private:
 
   bool isFeasible(); ///< Check restrictions within current and ancestor scopes

@@ -28,8 +28,8 @@ SCENARIO( "Empty executable process", "[execution] [process]" ) {
       Execution::Recorder recorder;
       engine.addListener(&recorder);
       engine.run(scenario.get());
-      THEN( "The recorder log has at least one entry" ) {
-        REQUIRE( recorder.log.size() >= 1 );
+      THEN( "The recorder log has exactly 4 entries" ) {
+        REQUIRE( recorder.log.size() == 4 );
       }
       THEN( "The first entry of the recorder log has the correct data" ) {
         REQUIRE( recorder.log.front()["instanceId"] == "Instance_1");
@@ -39,17 +39,17 @@ SCENARIO( "Empty executable process", "[execution] [process]" ) {
         REQUIRE( recorder.log.front()["status"]["timestamp"] == 0.0);
       }
       THEN( "The dump of each entry of the recorder log is correct" ) {
-        REQUIRE( recorder.log[0].dump() == "{\"instanceId\":\"Instance_1\",\"processId\":\"Process_1\",\"state\":\"ENTERED\",\"status\":{\"instance\":\"Instance_1\",\"timestamp\":0.0}}" );
-        REQUIRE( recorder.log[1].dump() == "{\"instanceId\":\"Instance_1\",\"processId\":\"Process_1\",\"state\":\"BUSY\",\"status\":{\"instance\":\"Instance_1\",\"timestamp\":0.0}}" );
-        REQUIRE( recorder.log[2].dump() == "{\"instanceId\":\"Instance_1\",\"processId\":\"Process_1\",\"state\":\"COMPLETED\",\"status\":{\"instance\":\"Instance_1\",\"timestamp\":0.0}}" );
-        REQUIRE( recorder.log[3].dump() == "{\"instanceId\":\"Instance_1\",\"processId\":\"Process_1\",\"state\":\"DONE\",\"status\":{\"instance\":\"Instance_1\",\"timestamp\":0.0}}" );
+        REQUIRE( recorder.log[0].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"state\":\"ENTERED\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
+        REQUIRE( recorder.log[1].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"state\":\"BUSY\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
+        REQUIRE( recorder.log[2].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"state\":\"COMPLETED\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
+        REQUIRE( recorder.log[3].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"state\":\"DONE\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
       }
       THEN( "The dump of the entire recorder log is correct" ) {
         std::string expected = "["
-          "{\"instanceId\":\"Instance_1\",\"processId\":\"Process_1\",\"state\":\"ENTERED\",\"status\":{\"instance\":\"Instance_1\",\"timestamp\":0.0}},"
-          "{\"instanceId\":\"Instance_1\",\"processId\":\"Process_1\",\"state\":\"BUSY\",\"status\":{\"instance\":\"Instance_1\",\"timestamp\":0.0}},"
-          "{\"instanceId\":\"Instance_1\",\"processId\":\"Process_1\",\"state\":\"COMPLETED\",\"status\":{\"instance\":\"Instance_1\",\"timestamp\":0.0}},"
-          "{\"instanceId\":\"Instance_1\",\"processId\":\"Process_1\",\"state\":\"DONE\",\"status\":{\"instance\":\"Instance_1\",\"timestamp\":0.0}}"
+          "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"state\":\"ENTERED\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}},"
+          "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"state\":\"BUSY\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}},"
+          "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"state\":\"COMPLETED\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}},"
+          "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"state\":\"DONE\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}"
           "]";
         REQUIRE( recorder.log.dump() == expected );
       }
@@ -87,15 +87,14 @@ SCENARIO( "Trivial executable process", "[execution] [process]" ) {
       Execution::Recorder recorder;
       engine.addListener(&recorder);
       engine.run(scenario.get());
-      THEN( "The recorder log has at least one entry" ) {
-        REQUIRE( recorder.log.size() >= 1 );
+      THEN( "The recorder log has exactly 8 entries" ) {
+        REQUIRE( recorder.log.size() == 8 );
       }
-      THEN( "The first entry of the recorder log has the correct data" ) {
-        REQUIRE( recorder.log.front()["instanceId"] == "Instance_1");
-        REQUIRE( recorder.log.front()["processId"] == "Process_1");
-        REQUIRE( recorder.log.front()["state"] == "ENTERED");
-        REQUIRE( recorder.log.front()["status"]["instance"] == "Instance_1");
-        REQUIRE( recorder.log.front()["status"]["timestamp"] == 0.0);
+      THEN( "The dump of each entry of the recorder log is correct" ) {
+        REQUIRE( recorder.log[0].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"state\":\"ENTERED\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
+        REQUIRE( recorder.log[1].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"state\":\"BUSY\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
+
+        REQUIRE( recorder.log[2].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"nodeId\":\"StartEvent_1\",\"state\":\"ENTERED\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
       }
     }
   }

@@ -28,8 +28,8 @@ Token::Token(const Token* other)
 {
 }
 
-nlohmann::json Token::jsonify() const {
-  nlohmann::json jsonObject;
+nlohmann::ordered_json Token::jsonify() const {
+  nlohmann::ordered_json jsonObject;
   jsonObject["processId"] = owner->process->id;
   jsonObject["instanceId"] = BPMNOS::to_string(status[Model::Status::Index::Instance].value(),STRING);
   if ( node ) {

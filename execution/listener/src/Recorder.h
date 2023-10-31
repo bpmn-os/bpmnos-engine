@@ -17,7 +17,7 @@ public:
   ~Recorder();
 
   void update( const Token* token ) override;
-  nlohmann::json log; ///< A json object of the entire log.
+  nlohmann::ordered_json log; ///< A json object of the entire log.
 private:
   std::optional< std::reference_wrapper<std::ostream> > os;
   bool isFirst; 

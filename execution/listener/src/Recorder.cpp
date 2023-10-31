@@ -7,12 +7,12 @@ using namespace BPMNOS::Execution;
 
 Recorder::Recorder(size_t maxSize) : Listener(), os(std::nullopt), maxSize(maxSize)
 {
-  log = nlohmann::json::array();
+  log = nlohmann::ordered_json::array();
 }
 
 Recorder::Recorder(std::ostream &os, size_t maxSize) : Listener(), os(os), maxSize(maxSize)
 {
-  log = nlohmann::json::array();
+  log = nlohmann::ordered_json::array();
   this->os.value().get() << "[";
   isFirst = true;
 }
