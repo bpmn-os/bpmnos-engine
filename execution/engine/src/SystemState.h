@@ -90,10 +90,10 @@ public:
 
 private:
   friend class Engine;
+  friend class StateMachine;
+  friend class Token;
+
   SystemState() = delete;
-  friend void Token::update(State newState);
-  friend void Token::notify() const;
-  friend void StateMachine::disposeToken(Token* token);
 
   void addInstances(); ///< Method adding all new instances and advancing tokens as much as possible
 

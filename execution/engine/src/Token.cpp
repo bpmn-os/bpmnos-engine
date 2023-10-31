@@ -16,8 +16,6 @@ Token::Token(const StateMachine* owner, const BPMN::FlowNode* node, const Values
   , state(State::CREATED)
   , status(status)
 {
-  // advance token as far as possible
-  advanceFromCreated();
 }
 
 Token::Token(const Token* other) 
@@ -26,6 +24,22 @@ Token::Token(const Token* other)
   , state(other->state)
   , status(other->status)
 {
+}
+
+const BPMNOS::Model::AttributeMap& Token::getAttributeMap() const {
+  if ( !node ) {
+    return owner->process->extensionElements->as<const Model::Status>()->attributeMap;
+  }
+
+  if ( auto status = node->extensionElements->represents<const Model::Status>(); status ) {
+    return status->attributeMap;
+  }
+
+  if ( !owner->parentToken ) {
+    throw std::runtime_error("Token: cannot determine attribute map");    
+  }
+
+  return owner->parentToken->getAttributeMap();
 }
 
 nlohmann::ordered_json Token::jsonify() const {
@@ -38,8 +52,7 @@ nlohmann::ordered_json Token::jsonify() const {
   jsonObject["state"] = stateName[(int)state];
   jsonObject["status"] = nlohmann::json::object();
 
-  auto& attributeMap = ( node ? node->extensionElements->as<const Model::Status>()->attributeMap : owner->process->extensionElements->as<const Model::Status>()->attributeMap ); 
-
+  auto& attributeMap = getAttributeMap();
   for (auto& [attributeName,attribute] : attributeMap ) {
     if ( !status[attribute->index].has_value() ) {
       jsonObject["status"][attributeName] = nullptr ;
@@ -176,13 +189,27 @@ void Token::advanceToEntered(std::optional< std::reference_wrapper<const Values>
 void Token::advanceToBusy() {
   update(State::BUSY);
 
-  if ( !node || node->is<BPMN::SubProcess>() ) {
-    if ( true ) {
-      // TODO: if node has no children
+  if ( !node ) {
+    auto scope = owner->process->as<BPMN::Scope>();
+    if ( scope->startNodes.empty() ) {
       advanceToCompleted();
     }
     else {
-      // TODO: Delegate creation of children back to state machine
+      // Delegate creation of children back to state machine
+      const_cast<StateMachine*>(owner)->createChild(this,scope);
+
+      // Wait for all tokens within the scope to complete
+      awaitStateMachineCompletion();
+    }
+  }
+  else if ( node->is<BPMN::SubProcess>() ) {
+    auto scope = node->as<BPMN::Scope>();
+    if ( scope->startNodes.empty() ) {
+      advanceToCompleted();
+    }
+    else {
+      // Delegate creation of children back to state machine
+      const_cast<StateMachine*>(owner)->createChild(this,scope);
 
       // Wait for all tokens within the scope to complete
       awaitStateMachineCompletion();
@@ -242,7 +269,15 @@ void Token::advanceToCompleted(const std::vector< std::pair< size_t, std::option
   for ( auto & [index, value] : updatedValues ) {
     status[index] = value;
   }
+  advanceToCompleted();
+}
 
+void Token::advanceToCompleted(const Values& statusUpdate) {
+  status = statusUpdate;
+  advanceToCompleted();
+}
+
+void Token::advanceToCompleted() {
   if ( status[BPMNOS::Model::Status::Index::Timestamp] > owner->systemState->getTime() ) {
     if ( node ) {
       throw std::runtime_error("Token: completion timestamp at node '" + node->id + "' is larger than current time");
@@ -298,12 +333,8 @@ void Token::advanceToExiting(std::optional< std::reference_wrapper<const Values>
 
 void Token::advanceToDone() {
   update(State::DONE);
-  if ( node ) {
-    awaitDisposal();
-  }
-  else {
-    // delegate disposal to state machine
-  }
+  // delegate disposal to state machine
+  const_cast<StateMachine*>(owner)->awaitTokenDisposal(this);
 }
 
 void Token::advanceToDeparting() {
@@ -418,10 +449,12 @@ void Token::awaitGatewayActivation() {
   systemState->tokensAwaitingGatewayActivation[node].push_back(this);
 }
 
+/*
 void Token::awaitDisposal() {
   auto systemState = const_cast<SystemState*>(owner->systemState);
   systemState->tokensAwaitingDisposal[owner].push_back(this);
 }
+*/
 
 
 Token* Token::getResourceToken() {

@@ -2,6 +2,7 @@
 #define BPMNOS_Execution_Token_H
 
 #include <bpmn++.h>
+#include "model/parser/src/extensionElements/Status.h"
 #include "model/utility/src/Number.h"
 #include <nlohmann/json.hpp>
 
@@ -40,6 +41,7 @@ public:
 
   nlohmann::ordered_json jsonify() const;
 private:
+  const BPMNOS::Model::AttributeMap& getAttributeMap() const;
 
   bool isFeasible(); ///< Check restrictions within current and ancestor scopes
 
@@ -47,7 +49,10 @@ private:
   void advanceToReady(std::optional< std::reference_wrapper<const Values> > values = std::nullopt );
   void advanceToEntered(std::optional< std::reference_wrapper<const Values> > statusUpdate = std::nullopt );
   void advanceToBusy();
-  void advanceToCompleted(const std::vector< std::pair< size_t, std::optional<BPMNOS::number> > > updatedValues = std::vector< std::pair< size_t, std::optional<BPMNOS::number> > >() );
+  void advanceToCompleted(const std::vector< std::pair< size_t, std::optional<BPMNOS::number> > > updatedValues );
+  void advanceToCompleted(const Values& statusUpdate);
+  void advanceToCompleted();
+
   void advanceToExiting(std::optional< std::reference_wrapper<const Values> > statusUpdate = std::nullopt );
   void advanceToDone();
   void advanceToDeparting();
@@ -70,7 +75,9 @@ private:
   void awaitEventBasedGateway(); ///< Wait for catching event at event-based gateways 
 
   void awaitStateMachineCompletion(); ///< Wait for completion of all tokens within a scope
+/*
   void awaitDisposal(); ///< Wait for disposal of token to occur when all tokens are done or token flow of parent failed or is interrupted
+*/
 
   void awaitGatewayActivation(); ///< Wait for activiation of merging gateway
 

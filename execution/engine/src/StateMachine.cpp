@@ -7,25 +7,35 @@
 
 using namespace BPMNOS::Execution;
 
-StateMachine::StateMachine(const SystemState* systemState, const BPMN::Process* process, const Values& status)
+StateMachine::StateMachine(const SystemState* systemState, const BPMN::Process* process)
   : systemState(systemState)
   , process(process)
   , scope(process)
   , parentToken(nullptr)
 {
-  tokens.push_back( Token(this,nullptr,status) );
 }
 
-StateMachine::StateMachine(const SystemState* systemState, const BPMN::Scope* scope, const Values& status, Token* parentToken)
+StateMachine::StateMachine(const SystemState* systemState, const BPMN::Scope* scope, Token* parentToken)
   : systemState(systemState)
   , process(parentToken->owner->process)
   , scope(scope)
   , parentToken(parentToken)
 {
-  if ( scope->startNodes.size() != 1 ) {
-    throw std::runtime_error("StateMachine: no unique start node within scope of '" + scope->id + "'");
+}
+
+void StateMachine::run(const Values& status) {
+  if ( !parentToken ) {
+    // token without process represents a token at a process
+    tokens.push_back( Token(this,nullptr,status) );
   }
-  tokens.push_back( Token(this,scope->startNodes[0],status) );
+  else {
+    if ( scope->startNodes.size() != 1 ) {
+      throw std::runtime_error("StateMachine: no unique start node within scope of '" + scope->id + "'");
+    }
+    tokens.push_back( Token(this,scope->startNodes.front(),status) );
+  }
+  // advance token as far as possible
+  tokens.back().advanceFromCreated();
 }
 
 /*
@@ -40,33 +50,42 @@ void StateMachine::advance(Token& token) {
 }
 */
 
-void StateMachine::disposeToken(Token* token) {
-  const Token* parentToken = token->owner->parentToken;
-
-  // Find the iterator pointing to the token
-  auto it = std::find_if(tokens.begin(), tokens.end(), [token](const Token& element) { return &element == token; });
-
-  if (it != tokens.end()) {
-
-    if ( tokens.empty() ) {
-
-      if ( parentToken ) {
-        // TODO
-      }
-      else {
-        // remove state machine from system state
-        const_cast<SystemState*>(systemState)->deleteInstance(this);
-      }
-
-    }
-
-    // Element found, remove it
-    tokens.erase(it);
-  }
-  else {
-    throw std::runtime_error("StateMachine: cannot find token to be deleted");
+void StateMachine::createChild(Token* parentToken, const BPMN::Scope* scope) {
+  if ( scope->startNodes.size() > 1 ) {
+    throw std::runtime_error("Token: scope '" + scope->id + "' has multiple start nodes");
   }
 
+  childInstances.push_back(StateMachine(systemState, scope, parentToken));
+  childInstances.back().run(parentToken->status);
+}
+
+void StateMachine::awaitTokenDisposal(Token* token) {
+
+  auto& tokensAwaitingDisposal = const_cast<SystemState*>(systemState)->tokensAwaitingDisposal[this];
+
+  tokensAwaitingDisposal.push_back(token);
+
+  if ( tokensAwaitingDisposal.size() < tokens.size() ) {
+    return;
+  }
+
+  // all tokens in scope are done (thus, no child instance is running)
+
+  // TODO: check for running event subprocesses
+
+  // TODO: merge tokens 
+  Values status = token->status; // TODO: resize if necessary!
+  const_cast<SystemState*>(systemState)->tokensAwaitingDisposal.erase(this);
+
+  if ( parentToken ) {
+    // (sub)process is completed, resume with paren token
+    parentToken->advanceToCompleted(status);
+  }
+  //const Token* parentToken = token->owner->parentToken;
+
+  if ( !parentToken ) {
+//    const_cast<SystemState*>(systemState)->deleteInstance(this);
+  }
 }
 
 

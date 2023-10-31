@@ -52,6 +52,7 @@ bool Engine::advance() {
 
   // fetch and process all events
   while ( auto event = fetchEvent() ) {
+//std::cerr << "." << std::endl; 
     event->processBy(this);
 
     if ( event->is<ClockTickEvent>() ) {

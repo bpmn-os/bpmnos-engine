@@ -40,4 +40,5 @@ void Recorder::update( const Token* token ) {
   if ( log.size() > maxSize) {
     log.erase(log.begin());
   }
+
 }

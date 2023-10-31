@@ -24,7 +24,9 @@ bool SystemState::isAlive() const {
 void SystemState::addInstances() {
   for (auto& [process,status] : getInstantiations() ) {
     instantiationCounter++;
-    instances.push_back(StateMachine(this,process,status));
+    instances.push_back(StateMachine(this,process));
+    // advance token as far as possible
+    instances.back().run(status);
   }
 }
 
@@ -37,7 +39,7 @@ void SystemState::deleteInstance(StateMachine* instance) {
     instances.erase(it);
   }
   else {
-    throw std::runtime_error("SystemState: cannot find instance to be deleted");
+    throw std::runtime_error("SystemState: cannot find instance '" + instance->scope->id + "' to be deleted");
   }
 }
 
