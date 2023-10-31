@@ -46,6 +46,8 @@ private:
    */
   void advance(Token& token);
 
+  void disposeToken(Token* token); ///< Method disposing a token
+
   /// TODO: still needed?
 //  bool run(const Event* event); ///< Process event and advance tokens as much as possible. Returns false if state machine represents a completed instance.
 

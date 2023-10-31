@@ -28,6 +28,7 @@ StateMachine::StateMachine(const SystemState* systemState, const BPMN::Scope* sc
   tokens.push_back( Token(this,scope->startNodes[0],status) );
 }
 
+/*
 void StateMachine::advance() {
   for ( auto& token : tokens ) {
     advance(token);
@@ -36,6 +37,36 @@ void StateMachine::advance() {
 
 void StateMachine::advance(Token& token) {
 //  throw std::runtime_error("StateMachine: advance token not yet implemented");
+}
+*/
+
+void StateMachine::disposeToken(Token* token) {
+  const Token* parentToken = token->owner->parentToken;
+
+  // Find the iterator pointing to the token
+  auto it = std::find_if(tokens.begin(), tokens.end(), [token](const Token& element) { return &element == token; });
+
+  if (it != tokens.end()) {
+
+    if ( tokens.empty() ) {
+
+      if ( parentToken ) {
+        // TODO
+      }
+      else {
+        // remove state machine from system state
+        const_cast<SystemState*>(systemState)->deleteInstance(this);
+      }
+
+    }
+
+    // Element found, remove it
+    tokens.erase(it);
+  }
+  else {
+    throw std::runtime_error("StateMachine: cannot find token to be deleted");
+  }
+
 }
 
 

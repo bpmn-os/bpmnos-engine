@@ -5,12 +5,39 @@
 
 using namespace BPMNOS::Execution;
 
-Recorder::Recorder() : Listener()
+Recorder::Recorder(size_t maxSize) : Listener(), os(std::nullopt), maxSize(maxSize)
 {
   log = nlohmann::json::array();
 }
 
+Recorder::Recorder(std::ostream &os, size_t maxSize) : Listener(), os(os), maxSize(maxSize)
+{
+  log = nlohmann::json::array();
+  this->os.value().get() << "[";
+  isFirst = true;
+}
+
+Recorder::~Recorder()
+{
+  if (os.has_value()) {
+    os.value().get() << "]";
+  }
+}
+
 void Recorder::update( const Token* token ) {
-  std::string instanceId = BPMNOS::to_string(token->status[Model::Status::Index::Instance].value(),STRING);
-  log.push_back( token->jsonify() );
+  auto json = token->jsonify();
+
+  if (os.has_value()) {
+    if ( !isFirst ) {
+      os.value().get() << ",";
+    }
+    os.value().get() << json.dump();
+    isFirst = false;
+  }
+
+  log.push_back( json );
+
+  if ( log.size() > maxSize) {
+    log.erase(log.begin());
+  }
 }

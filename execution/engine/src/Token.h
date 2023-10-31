@@ -69,7 +69,7 @@ private:
 
   void awaitEventBasedGateway(); ///< Wait for catching event at event-based gateways 
 
-  void awaitSubProcessCompletion(); ///< Wait for completion of all tokens within a subprocess
+  void awaitStateMachineCompletion(); ///< Wait for completion of all tokens within a scope
   void awaitDisposal(); ///< Wait for disposal of token to occur when all tokens are done or token flow of parent failed or is interrupted
 
   void awaitGatewayActivation(); ///< Wait for activiation of merging gateway

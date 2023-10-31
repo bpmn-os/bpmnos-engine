@@ -83,7 +83,7 @@ public:
 
   std::vector<Token*> tokensAwaitingEventBasedGateway; ///< Container holding all tokens awaiting activation event for an event-based gateway
 
-  std::unordered_map< const StateMachine*, std::vector<Token*> > tokensAwaitingSubProcessCompletion; ///< Map holding all tokens awaiting the completion of a subprocess
+  std::unordered_map< const StateMachine*, std::vector<Token*> > tokensAwaitingStateMachineCompletion; ///< Map holding all tokens awaiting the completion of a state machine
   std::unordered_map< const BPMN::FlowNode*, std::vector<Token*> > tokensAwaitingGatewayActivation; ///< Map holding tokens awaiting activation of a converging gateway 
 
   std::unordered_map< const StateMachine*, std::vector<Token*> > tokensAwaitingDisposal; ///< Map holding all tokens awaiting a disposal for each (sub)process
@@ -93,8 +93,12 @@ private:
   SystemState() = delete;
   friend void Token::update(State newState);
   friend void Token::notify() const;
+  friend void StateMachine::disposeToken(Token* token);
 
   void addInstances(); ///< Method adding all new instances and advancing tokens as much as possible
+
+  void deleteInstance(StateMachine* instance); ///< Method removing completed instance
+
   /**
    * @brief Method returning a vector of all instantiations at the given time.
    */

@@ -23,9 +23,21 @@ bool SystemState::isAlive() const {
 
 void SystemState::addInstances() {
   for (auto& [process,status] : getInstantiations() ) {
-    instances.push_back(StateMachine(this,process,status));
-    instances.back().advance();
     instantiationCounter++;
+    instances.push_back(StateMachine(this,process,status));
+  }
+}
+
+void SystemState::deleteInstance(StateMachine* instance) {
+  // Find the iterator pointing to the instance
+  auto it = std::find_if(instances.begin(), instances.end(), [instance](const StateMachine& element) { return &element == instance; });
+
+  if (it != instances.end()) {
+    // Element found, remove it
+    instances.erase(it);
+  }
+  else {
+    throw std::runtime_error("SystemState: cannot find instance to be deleted");
   }
 }
 

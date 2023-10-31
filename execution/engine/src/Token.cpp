@@ -16,8 +16,6 @@ Token::Token(const StateMachine* owner, const BPMN::FlowNode* node, const Values
   , state(State::CREATED)
   , status(status)
 {
-  notify();
-
   // advance token as far as possible
   advanceFromCreated();
 }
@@ -78,7 +76,7 @@ void Token::advanceFromCreated() {
     awaitReadyEvent();
   }
   else {
-//TODO    advanceToEntered();
+    advanceToEntered();
   }
 }
 
@@ -102,11 +100,29 @@ void Token::advanceToEntered(std::optional< std::reference_wrapper<const Values>
   }
 
   if ( status[BPMNOS::Model::Status::Index::Timestamp] > owner->systemState->getTime() ) {
-    throw std::runtime_error("Token: entry timestamp at node '" + node->id + "' is larger than current time");
+    if ( node ) {
+      throw std::runtime_error("Token: entry timestamp at node '" + node->id + "' is larger than current time");
+    }
+    else {
+      throw std::runtime_error("Token: entry timestamp for process '" + owner->process->id + "' is larger than current time");
+    }
   }
 
-  if ( node->is<BPMN::SubProcess>() ) {
-    // (sub)process operators are applied upon entry
+  if ( !node ) {
+    // process operators are applied upon entry
+    if ( auto statusExtension = owner->process->extensionElements->as<BPMNOS::Model::Status>(); 
+         statusExtension
+    ) {
+      for ( auto& operator_ : statusExtension->operators ) {
+        if ( operator_->attribute->index == BPMNOS::Model::Status::Index::Timestamp ) {
+          throw std::runtime_error("StateMachine: Operator '" + operator_->id + "' for process '" + owner->process->id + "' attempts to modify timestamp");
+        }
+        operator_->apply(status);
+      }
+    }
+  }
+  else if ( node->is<BPMN::SubProcess>() ) {
+    // subprocess operators are applied upon entry
     if ( auto statusExtension = node->extensionElements->as<BPMNOS::Model::Status>(); 
          statusExtension
     ) {
@@ -161,8 +177,16 @@ void Token::advanceToBusy() {
   update(State::BUSY);
 
   if ( !node || node->is<BPMN::SubProcess>() ) {
-    // TODO: Delegate creation of children back to state machine
-    awaitSubProcessCompletion();
+    if ( true ) {
+      // TODO: if node has no children
+      advanceToCompleted();
+    }
+    else {
+      // TODO: Delegate creation of children back to state machine
+
+      // Wait for all tokens within the scope to complete
+      awaitStateMachineCompletion();
+    }
   }
   else if ( node->is<BPMN::EventBasedGateway>() ) {
     awaitEventBasedGateway();
@@ -220,7 +244,12 @@ void Token::advanceToCompleted(const std::vector< std::pair< size_t, std::option
   }
 
   if ( status[BPMNOS::Model::Status::Index::Timestamp] > owner->systemState->getTime() ) {
-    throw std::runtime_error("Token: completion timestamp at node '" + node->id + "' is larger than current time");
+    if ( node ) {
+      throw std::runtime_error("Token: completion timestamp at node '" + node->id + "' is larger than current time");
+    }
+    else {
+      throw std::runtime_error("Token: completion timestamp for process '" + owner->process->id + "' is larger than current time");
+    }
   }
 
   update(State::COMPLETED);
@@ -269,7 +298,12 @@ void Token::advanceToExiting(std::optional< std::reference_wrapper<const Values>
 
 void Token::advanceToDone() {
   update(State::DONE);
-  awaitDisposal();
+  if ( node ) {
+    awaitDisposal();
+  }
+  else {
+    // delegate disposal to state machine
+  }
 }
 
 void Token::advanceToDeparting() {
@@ -373,9 +407,9 @@ void Token::awaitEventBasedGateway() {
 }
 
 
-void Token::awaitSubProcessCompletion() {
+void Token::awaitStateMachineCompletion() {
   auto systemState = const_cast<SystemState*>(owner->systemState);
-  systemState->tokensAwaitingSubProcessCompletion[owner].push_back(this);
+  systemState->tokensAwaitingStateMachineCompletion[owner].push_back(this);
 }
 
 

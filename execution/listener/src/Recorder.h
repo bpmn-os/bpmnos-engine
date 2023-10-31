@@ -1,6 +1,7 @@
 #ifndef BPMNOS_Execution_Recorder_H
 #define BPMNOS_Execution_Recorder_H
 
+#include <ostream>
 #include <bpmn++.h>
 #include "Listener.h"
 
@@ -11,9 +12,16 @@ namespace BPMNOS::Execution {
  */
 class Recorder : public Listener {
 public:
-  Recorder();
+  Recorder(size_t maxSize = std::numeric_limits<size_t>::max());
+  Recorder(std::ostream &os, size_t maxSize = std::numeric_limits<size_t>::max());
+  ~Recorder();
+
   void update( const Token* token ) override;
   nlohmann::json log; ///< A json object of the entire log.
+private:
+  std::optional< std::reference_wrapper<std::ostream> > os;
+  bool isFirst; 
+  size_t maxSize;
 };
 
 } // namespace BPMNOS::Execution
