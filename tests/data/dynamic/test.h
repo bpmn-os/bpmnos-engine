@@ -1,5 +1,5 @@
 SCENARIO( "Trivial executable process", "[data][dynamic]" ) {
-  const std::string modelFile = "DynamicData/Executable_process.bpmn";
+  const std::string modelFile = "data/dynamic/Executable_process.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
   GIVEN( "A single instance with dynamically disclosed timestamp" ) {
     std::string csv =

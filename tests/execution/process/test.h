@@ -1,6 +1,5 @@
-/*
-SCENARIO( "Empty executable process", "[execution] [process]" ) {
-  const std::string modelFile = "Execution/Empty_executable_process.bpmn";
+SCENARIO( "Empty executable process", "[execution][process]" ) {
+  const std::string modelFile = "execution/process//Empty_executable_process.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
 
   GIVEN( "A single instance with no input values" ) {
@@ -55,12 +54,10 @@ SCENARIO( "Empty executable process", "[execution] [process]" ) {
       }
     }
   }
-
 };
-*/
 
-SCENARIO( "Trivial executable process", "[execution] [process]" ) {
-  const std::string modelFile = "Execution/Trivial_executable_process.bpmn";
+SCENARIO( "Trivial executable process", "[execution][process]" ) {
+  const std::string modelFile = "execution/process/Trivial_executable_process.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
   GIVEN( "A single instance with no input values" ) {
 

@@ -7,11 +7,11 @@
 using namespace BPMNOS;
 
 // Include all tests here
-#include "ParseElements/test.h"
-#include "StaticData/test.h"
-#include "DynamicData/test.h"
-#include "Expression/test.h"
-#include "Execution/test.h"
+#include "model/parser/test.h"
+#include "model/expression/test.h"
+#include "data/static/test.h"
+#include "data/dynamic/test.h"
+#include "execution/process/test.h"
 
 // Playground
 #include <iostream>

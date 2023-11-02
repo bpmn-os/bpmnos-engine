@@ -1,5 +1,5 @@
 SCENARIO( "Trivial executable process", "[data][static]" ) {
-  const std::string modelFile = "StaticData/Executable_process.bpmn";
+  const std::string modelFile = "data/static/Executable_process.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
   GIVEN( "A single instance with no input values" ) {
     std::string csv =
