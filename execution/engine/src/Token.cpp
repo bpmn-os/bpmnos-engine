@@ -85,7 +85,14 @@ bool Token::isFeasible() {
 }
 
 void Token::advanceFromCreated() {
-  if ( node && node->is<BPMN::Activity>() ) {
+  if ( !node ) {
+    // tokens at process advance to entered
+    advanceToEntered();
+    return;
+  }
+  
+  // token is at a node
+  if ( node->represents<BPMN::Activity>() ) {
     awaitReadyEvent();
   }
   else {
@@ -94,6 +101,7 @@ void Token::advanceFromCreated() {
 }
 
 void Token::advanceToReady(std::optional< std::reference_wrapper<const Values> > values) {
+std::cerr << "advanceToReady" << std::endl;
   if ( values.has_value() ) {
     status.insert(status.end(), values.value().get().begin(), values.value().get().end());
   }
@@ -108,6 +116,7 @@ void Token::advanceToReady(std::optional< std::reference_wrapper<const Values> >
 }
 
 void Token::advanceToEntered(std::optional< std::reference_wrapper<const Values> > statusUpdate) {
+std::cerr << "advanceToEntered" << std::endl;
   if ( statusUpdate.has_value() ) {
     status = statusUpdate.value().get();
   }
@@ -134,7 +143,7 @@ void Token::advanceToEntered(std::optional< std::reference_wrapper<const Values>
       }
     }
   }
-  else if ( node->is<BPMN::SubProcess>() ) {
+  else if ( node->represents<BPMN::SubProcess>() ) {
     // subprocess operators are applied upon entry
     if ( auto statusExtension = node->extensionElements->as<BPMNOS::Model::Status>(); 
          statusExtension
@@ -153,7 +162,7 @@ void Token::advanceToEntered(std::optional< std::reference_wrapper<const Values>
   // only check feasibility for processes and activities
   // feasibility of all other tokens must have been validated before 
   // (also for newly created or merged tokens)
-  if ( !node || node->is<BPMN::Activity>() ) {
+  if ( !node || node->represents<BPMN::Activity>() ) {
     // check restrictions
     if ( !isFeasible() ) {
       advanceToFailed();
@@ -164,13 +173,13 @@ void Token::advanceToEntered(std::optional< std::reference_wrapper<const Values>
     // advance to busy state
     advanceToBusy();
   }
-  else if ( node->is<BPMN::CatchEvent>() 
+  else if ( node->represents<BPMN::CatchEvent>() && !node->represents<BPMN::UntypedStartEvent>()
   ) {
     // tokens entering a catching event automatically
     // advance to busy state
     advanceToBusy();
   }
-  else if ( node->is<BPMN::EventBasedGateway>() ) {
+  else if ( node->represents<BPMN::EventBasedGateway>() ) {
     // tokens entering an event-based gateway automatically
     // advance to busy state
     advanceToBusy();
@@ -187,6 +196,7 @@ void Token::advanceToEntered(std::optional< std::reference_wrapper<const Values>
 }
 
 void Token::advanceToBusy() {
+std::cerr << "advanceToBusy" << std::endl;
   update(State::BUSY);
 
   if ( !node ) {
@@ -202,7 +212,7 @@ void Token::advanceToBusy() {
       awaitStateMachineCompletion();
     }
   }
-  else if ( node->is<BPMN::SubProcess>() ) {
+  else if ( node->represents<BPMN::SubProcess>() ) {
     auto scope = node->as<BPMN::Scope>();
     if ( scope->startNodes.empty() ) {
       advanceToCompleted();
@@ -215,10 +225,10 @@ void Token::advanceToBusy() {
       awaitStateMachineCompletion();
     }
   }
-  else if ( node->is<BPMN::EventBasedGateway>() ) {
+  else if ( node->represents<BPMN::EventBasedGateway>() ) {
     awaitEventBasedGateway();
   }
-  else if ( node->is<BPMN::TimerCatchEvent>() ) {
+  else if ( node->represents<BPMN::TimerCatchEvent>() ) {
     // TODO: determine time
     auto trigger = node->extensionElements->as<BPMNOS::Model::Timer>()->trigger.get();
     BPMNOS::number time;
@@ -240,14 +250,14 @@ void Token::advanceToBusy() {
       advanceToCompleted();
     }
   }
-  else if ( node->is<BPMN::MessageCatchEvent>() ) {
+  else if ( node->represents<BPMN::MessageCatchEvent>() ) {
     awaitMessageDelivery();
   }
-  else if ( node->is<BPMN::Task>() ) {
-    if ( node->is<BPMNOS::Model::DecisionTask>() ) {
+  else if ( node->represents<BPMN::Task>() ) {
+    if ( node->represents<BPMNOS::Model::DecisionTask>() ) {
       awaitChoiceEvent();
     }
-    else if ( node->is<BPMN::ReceiveTask>() ) {
+    else if ( node->represents<BPMN::ReceiveTask>() ) {
       throw std::runtime_error("Token: receive tasks are not supported");
     }
     else {
@@ -278,6 +288,7 @@ void Token::advanceToCompleted(const Values& statusUpdate) {
 }
 
 void Token::advanceToCompleted() {
+std::cerr << "advanceToCompleted" << std::endl;
   if ( status[BPMNOS::Model::Status::Index::Timestamp] > owner->systemState->getTime() ) {
     if ( node ) {
       throw std::runtime_error("Token: completion timestamp at node '" + node->id + "' is larger than current time");
@@ -289,7 +300,7 @@ void Token::advanceToCompleted() {
 
   update(State::COMPLETED);
 
-  if ( node && node->is<BPMN::Activity>() ) {
+  if ( node && node->represents<BPMN::Activity>() ) {
     awaitExitEvent();
   }
   else {
@@ -308,6 +319,7 @@ void Token::advanceToCompleted() {
 }
 
 void Token::advanceToExiting(std::optional< std::reference_wrapper<const Values> > statusUpdate) {
+std::cerr << "advanceToExiting" << std::endl;
   if ( statusUpdate.has_value() ) {
     status = statusUpdate.value().get();
   }
@@ -338,8 +350,15 @@ void Token::advanceToDone() {
 }
 
 void Token::advanceToDeparting() {
-  // TODO: determine sequence flows that receive a token
+
+  if ( node->outgoing.size() == 1 ) {
+    advanceToArrived(node->outgoing.front()->target);
+    return;
+  }
   
+  // TODO: determine sequence flows that receive a token
+  throw std::runtime_error("Token: diverging gateways not yet supported");
+/*
   if ( false ) {
     // no sequence flow satisfies conditions
     advanceToFailed();
@@ -349,30 +368,37 @@ void Token::advanceToDeparting() {
   if ( false ) {
     // let state machine copy token and advance each copy
 //    owner->copy(this);
+//  advanceToArrived(destination);
     return;
   }
+*/
 
-  const BPMN::FlowNode* destination = nullptr; //TODO
-  advanceToArrived(destination);
 }
 
 
 void Token::advanceToArrived(const BPMN::FlowNode* destination) {
+std::cerr << "advanceToArrived" << std::endl;
   node = destination;
   update(State::ARRIVED);
 
   // TODO: check whether gateway activation is required
   if ( node->incoming.size() > 1 
-       && node->is<BPMN::Gateway>()
-       && !node->is<BPMN::ExclusiveGateway>()
+       && node->represents<BPMN::Gateway>()
+       && !node->represents<BPMN::ExclusiveGateway>()
   ) {
     awaitGatewayActivation();    
   }
 
-  if ( node->is<BPMN::Activity>() ) {
+  if ( destination->is<BPMN::Activity>() ) {
+std::cerr << destination->id << "->is activity" << std::endl;
+  }
+
+  if ( node->represents<BPMN::Activity>() ) {
+std::cerr << node->element->className << "->awaitReadyEvent" << std::endl;
     awaitReadyEvent();
   }
   else {
+std::cerr << node->represents<BPMN::FlowNode>() << "/" << node->element->className << "->advanceToEntered" << std::endl;
     advanceToEntered();
   }
 }
