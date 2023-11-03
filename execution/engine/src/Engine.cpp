@@ -72,17 +72,48 @@ void Engine::process(const ClockTickEvent& event) {
   systemState->incrementTimeBy(clockTick);
 }
 
-void Engine::process(const TaskCompletionEvent& event) {
+void Engine::process(const ReadyEvent& event) {
+  erase<Token*>(systemState->tokensAwaitingReadyEvent, event.token);
+
   Token* token = const_cast<Token*>(event.token);
-  token->advanceToCompleted(event.updatedValues);
+  token->advanceToReady(event.values);
 }
 
 void Engine::process(const EntryEvent& event) {
+  if ( auto tokenAtResource = event.token->getResourceToken(); tokenAtResource ) {
+    erase<Token*>(systemState->tokensAwaitingJobEntryEvent[tokenAtResource], event.token);
+    // resource is no longer idle
+    erase<Token*>(systemState->tokensAtIdleResources, tokenAtResource);
+  }
+  else {
+    erase<Token*>(systemState->tokensAwaitingRegularEntryEvent, event.token);
+  }
+
   Token* token = const_cast<Token*>(event.token);
   token->advanceToEntered(event.entryStatus);
 }
 
+void Engine::process(const TaskCompletionEvent& event) {
+  auto it = systemState->tokensAwaitingTaskCompletionEvent.begin();
+  while (it != systemState->tokensAwaitingTaskCompletionEvent.end()) {
+    if (it->second == event.token) {
+        systemState->tokensAwaitingTaskCompletionEvent.erase(it);
+        break; // Remove the first occurrence and exit the loop
+    }
+    ++it;
+  }
+
+  Token* token = const_cast<Token*>(event.token);
+  token->advanceToCompleted(event.updatedValues);
+}
+
 void Engine::process(const ExitEvent& event) {
+  erase<Token*>(systemState->tokensAwaitingExitEvent, event.token);
+  if ( auto tokenAtResource = event.token->getResourceToken(); tokenAtResource ) {
+    // resource becomes idle
+    systemState->tokensAtIdleResources.push_back(tokenAtResource);
+  }
+
   Token* token = const_cast<Token*>(event.token);
   token->advanceToExiting(event.exitStatus);
 }
@@ -93,10 +124,6 @@ void Engine::process(const MessageDeliveryEvent& event) {
 }
 */
 
-void Engine::process(const ReadyEvent& event) {
-  Token* token = const_cast<Token*>(event.token);
-  token->advanceToReady(event.values);
-}
 
 void Engine::process(const TerminationEvent& event) {
   throw std::runtime_error("Engine: TerminationEvent not yet implemented");

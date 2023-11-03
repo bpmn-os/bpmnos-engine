@@ -6,11 +6,11 @@ using namespace BPMNOS::Model;
 JobShop::JobShop(XML::bpmn::tSubProcess* subProcess, BPMN::Scope* parent)
   : BPMN::Node(subProcess)
   , BPMN::SubProcess(subProcess,parent)
-  , resourceActivity(getResource())
+  , resourceActivity(initializeResource())
 {
 }
 
-ResourceActivity* JobShop::getResource() {
+ResourceActivity* JobShop::initializeResource() {
   BPMN::ChildNode* ancestor = parent->as<BPMN::ChildNode>();
   while ( ancestor ) {
     if ( auto resourceActivity = ancestor->represents<ResourceActivity>(); resourceActivity ) {

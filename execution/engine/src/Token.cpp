@@ -101,7 +101,7 @@ void Token::advanceFromCreated() {
 }
 
 void Token::advanceToReady(std::optional< std::reference_wrapper<const Values> > values) {
-std::cerr << "advanceToReady" << std::endl;
+//std::cerr << "advanceToReady" << std::endl;
   if ( values.has_value() ) {
     status.insert(status.end(), values.value().get().begin(), values.value().get().end());
   }
@@ -112,11 +112,12 @@ std::cerr << "advanceToReady" << std::endl;
 
   update(State::READY);
 
+//std::cerr << "->awaitEntryEvent" << std::endl;
   awaitEntryEvent();
 }
 
 void Token::advanceToEntered(std::optional< std::reference_wrapper<const Values> > statusUpdate) {
-std::cerr << "advanceToEntered" << std::endl;
+//std::cerr << "advanceToEntered" << std::endl;
   if ( statusUpdate.has_value() ) {
     status = statusUpdate.value().get();
   }
@@ -196,10 +197,11 @@ std::cerr << "advanceToEntered" << std::endl;
 }
 
 void Token::advanceToBusy() {
-std::cerr << "advanceToBusy" << std::endl;
+//std::cerr << "advanceToBusy" << std::endl;
   update(State::BUSY);
 
   if ( !node ) {
+    // token is at process
     auto scope = owner->process->as<BPMN::Scope>();
     if ( scope->startNodes.empty() ) {
       advanceToCompleted();
@@ -270,6 +272,7 @@ std::cerr << "advanceToBusy" << std::endl;
         }
       }
 
+//std::cerr << "->awaitTaskCompletionEvent" << std::endl;
       awaitTaskCompletionEvent();
     }
   }
@@ -288,7 +291,7 @@ void Token::advanceToCompleted(const Values& statusUpdate) {
 }
 
 void Token::advanceToCompleted() {
-std::cerr << "advanceToCompleted" << std::endl;
+//std::cerr << "advanceToCompleted" << std::endl;
   if ( status[BPMNOS::Model::Status::Index::Timestamp] > owner->systemState->getTime() ) {
     if ( node ) {
       throw std::runtime_error("Token: completion timestamp at node '" + node->id + "' is larger than current time");
@@ -319,7 +322,7 @@ std::cerr << "advanceToCompleted" << std::endl;
 }
 
 void Token::advanceToExiting(std::optional< std::reference_wrapper<const Values> > statusUpdate) {
-std::cerr << "advanceToExiting" << std::endl;
+//std::cerr << "advanceToExiting" << std::endl;
   if ( statusUpdate.has_value() ) {
     status = statusUpdate.value().get();
   }
@@ -377,7 +380,7 @@ void Token::advanceToDeparting() {
 
 
 void Token::advanceToArrived(const BPMN::FlowNode* destination) {
-std::cerr << "advanceToArrived" << std::endl;
+//std::cerr << "advanceToArrived" << std::endl;
   node = destination;
   update(State::ARRIVED);
 
@@ -389,16 +392,10 @@ std::cerr << "advanceToArrived" << std::endl;
     awaitGatewayActivation();    
   }
 
-  if ( destination->is<BPMN::Activity>() ) {
-std::cerr << destination->id << "->is activity" << std::endl;
-  }
-
   if ( node->represents<BPMN::Activity>() ) {
-std::cerr << node->element->className << "->awaitReadyEvent" << std::endl;
     awaitReadyEvent();
   }
   else {
-std::cerr << node->represents<BPMN::FlowNode>() << "/" << node->element->className << "->advanceToEntered" << std::endl;
     advanceToEntered();
   }
 }
@@ -483,7 +480,7 @@ void Token::awaitDisposal() {
 */
 
 
-Token* Token::getResourceToken() {
+Token* Token::getResourceToken() const {
   if ( auto jobShop = node->parent->represents<BPMNOS::Model::JobShop>(); jobShop ) {
     const BPMN::FlowNode* resourceActivity = jobShop->resourceActivity->as<BPMN::FlowNode>();
     Token * token = token->owner->parentToken;

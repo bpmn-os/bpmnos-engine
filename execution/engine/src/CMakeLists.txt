@@ -7,6 +7,7 @@ list(APPEND engine_SOURCES
   events/ReadyEvent.cpp
   events/EntryEvent.cpp
   events/CompletionEvent.cpp
+  events/TaskCompletionEvent.cpp
 #  events/TriggerEvent.cpp
 #  events/TimerEvent.cpp
 #  events/MessageDeliveryEvent.cpp

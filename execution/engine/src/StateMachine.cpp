@@ -2,7 +2,7 @@
 #include "SystemState.h"
 #include "Event.h"
 #include "events/EntryEvent.h"
-#include "execution/utility/src/erase.h"
+//#include "execution/utility/src/erase.h"
 #include "model/parser/src/extensionElements/Status.h"
 
 using namespace BPMNOS::Execution;

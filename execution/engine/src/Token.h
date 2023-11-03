@@ -81,7 +81,7 @@ private:
 
   void awaitGatewayActivation(); ///< Wait for activiation of merging gateway
 
-  Token* getResourceToken(); ///< Returns token at resource activity for tokens at jobs and nullptr for all other tokens
+  Token* getResourceToken() const; ///< Returns token at resource activity for tokens at jobs and nullptr for all other tokens
 
   void update(State newState); ///< Updates token state and timestamp before calling notify()
 

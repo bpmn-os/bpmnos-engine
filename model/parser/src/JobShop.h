@@ -16,7 +16,7 @@ public:
   JobShop(XML::bpmn::tSubProcess* subProcess, BPMN::Scope* parent);
   ResourceActivity* resourceActivity;
 protected:
-  ResourceActivity* getResource();
+  ResourceActivity* initializeResource();
 };
 
 } // namespace BPMNOS::Model

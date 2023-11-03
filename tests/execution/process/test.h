@@ -117,9 +117,18 @@ SCENARIO( "Simple executable process", "[execution][process]" ) {
 
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine;
+      Execution::ReadyHandler readyHandler;
+      Execution::InstantEntryHandler entryHandler;
+      Execution::DeterministicTaskCompletionHandler completionHandler;
+      Execution::InstantExitHandler exitHandler;
       Execution::TimeWarp timeHandler;
+      engine.addEventHandler(&readyHandler);
+      engine.addEventHandler(&entryHandler);
+      engine.addEventHandler(&completionHandler);
+      engine.addEventHandler(&exitHandler);
       engine.addEventHandler(&timeHandler);
-      Execution::Recorder recorder(std::cerr);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
       engine.addListener(&recorder);
       engine.run(scenario.get());
       THEN( "The recorder log has exactly 14 entries" ) {
@@ -134,7 +143,7 @@ SCENARIO( "Simple executable process", "[execution][process]" ) {
         REQUIRE( recorder.log[++i].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"nodeId\":\"StartEvent_1\",\"state\":\"ENTERED\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
         // task
         REQUIRE( recorder.log[++i].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"nodeId\":\"Activity_1\",\"state\":\"ARRIVED\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
-//        REQUIRE( recorder.log[++i].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"nodeId\":\"Activity_1\",\"state\":\"READY\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
+        REQUIRE( recorder.log[++i].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"nodeId\":\"Activity_1\",\"state\":\"READY\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
         REQUIRE( recorder.log[++i].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"nodeId\":\"Activity_1\",\"state\":\"ENTERED\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
         REQUIRE( recorder.log[++i].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"nodeId\":\"Activity_1\",\"state\":\"BUSY\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
         REQUIRE( recorder.log[++i].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"nodeId\":\"Activity_1\",\"state\":\"COMPLETED\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
