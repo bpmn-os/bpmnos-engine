@@ -28,6 +28,8 @@ private:
 public:
   Token(const StateMachine* owner, const BPMN::FlowNode* node, const Values& status);
   Token(const Token* other);
+  Token(const std::vector<const Token*>& others);
+
   Values status;
 
   bool ready() const { return state == State::READY; };
@@ -87,7 +89,7 @@ private:
 
   void notify() const; ///< Inform all listeners about token update
 
- 
+  void mergeStatus(const Token* other); ///< Merges the status of the other token into the status
 
 /*
   template <typename F, typename... Args>

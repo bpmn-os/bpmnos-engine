@@ -26,6 +26,17 @@ Token::Token(const Token* other)
 {
 }
 
+Token::Token(const std::vector<const Token*>& others)
+  : owner(others.front()->owner)
+  , node(others.front()->node)
+  , state(others.front()->state)
+  , status(others.front()->status)
+{
+  for ( auto other : others | std::views::drop(1) ) {
+    mergeStatus(other);
+  }
+}
+
 const BPMNOS::Model::AttributeMap& Token::getAttributeMap() const {
   if ( !node ) {
     return owner->process->extensionElements->as<const Model::Status>()->attributeMap;
@@ -348,8 +359,7 @@ void Token::advanceToExiting(std::optional< std::reference_wrapper<const Values>
 
 void Token::advanceToDone() {
   update(State::DONE);
-  // delegate disposal to state machine
-  const_cast<StateMachine*>(owner)->awaitTokenDisposal(this);
+  awaitStateMachineCompletion();
 }
 
 void Token::advanceToDeparting() {
@@ -385,11 +395,15 @@ void Token::advanceToArrived(const BPMN::FlowNode* destination) {
   update(State::ARRIVED);
 
   // TODO: check whether gateway activation is required
-  if ( node->incoming.size() > 1 
-       && node->represents<BPMN::Gateway>()
-       && !node->represents<BPMN::ExclusiveGateway>()
-  ) {
-    awaitGatewayActivation();    
+  if ( node->incoming.size() > 1 ) {
+    if ( node->represents<BPMN::Gateway>()
+         && !node->represents<BPMN::ExclusiveGateway>()
+    ) {
+      awaitGatewayActivation();    
+    }
+    else {
+      throw std::runtime_error("Token: implicit merge at node '" + node->id + "'");
+    }
   }
 
   if ( node->represents<BPMN::Activity>() ) {
@@ -463,13 +477,31 @@ void Token::awaitEventBasedGateway() {
 
 void Token::awaitStateMachineCompletion() {
   auto systemState = const_cast<SystemState*>(owner->systemState);
-  systemState->tokensAwaitingStateMachineCompletion[owner].push_back(this);
+  auto ownerIt = systemState->tokensAwaitingStateMachineCompletion.find(owner);
+  if (ownerIt == systemState->tokensAwaitingStateMachineCompletion.end()) {
+    // The key is not found, so insert a new entry and get an iterator to it.
+    ownerIt = systemState->tokensAwaitingStateMachineCompletion.insert({owner,{}}).first;
+  }
+
+  auto& [key,tokens] = *ownerIt;
+  tokens.push_back(this);
+
+  const_cast<StateMachine*>(owner)->attemptStateMachineCompletion(ownerIt);
 }
 
 
 void Token::awaitGatewayActivation() {
   auto systemState = const_cast<SystemState*>(owner->systemState);
-  systemState->tokensAwaitingGatewayActivation[node].push_back(this);
+  auto gatewayIt = systemState->tokensAwaitingGatewayActivation.find({owner, node});
+  if (gatewayIt == systemState->tokensAwaitingGatewayActivation.end()) {
+    // The key is not found, so insert a new entry and get an iterator to it.
+    gatewayIt = systemState->tokensAwaitingGatewayActivation.insert({{owner, node},{}}).first;
+  }
+
+  auto& [key,tokens] = *gatewayIt;
+  tokens.push_back(this);
+
+  const_cast<StateMachine*>(owner)->attemptGatewayActivation(gatewayIt);
 }
 
 /*
@@ -510,6 +542,17 @@ void Token::update(State newState) {
 void Token::notify() const {
   for ( auto listener : owner->systemState->engine->listeners ) {
     listener->update(this);
+  }
+}
+
+void Token::mergeStatus(const Token* other) {
+  for ( size_t i = 0; i < status.size(); i++ ) {
+    if ( !status[i].has_value() ) {
+      status[i] = other->status[i];
+    }
+    else if ( other->status[i].has_value() && other->status[i].value() != status[i].value() ) {
+      status[i] = std::nullopt;
+    }
   }
 }
 

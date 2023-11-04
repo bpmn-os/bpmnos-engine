@@ -11,6 +11,7 @@ namespace BPMNOS::Execution {
 
 class Engine;
 
+
 /**
  * @brief A class representing the state that the execution or simulation of a given scenario is in.
  */
@@ -84,7 +85,16 @@ public:
   std::vector<Token*> tokensAwaitingEventBasedGateway; ///< Container holding all tokens awaiting activation event for an event-based gateway
 
   std::unordered_map< const StateMachine*, std::vector<Token*> > tokensAwaitingStateMachineCompletion; ///< Map holding all tokens awaiting the completion of a state machine
-  std::unordered_map< const BPMN::FlowNode*, std::vector<Token*> > tokensAwaitingGatewayActivation; ///< Map holding tokens awaiting activation of a converging gateway 
+
+  struct PairHash {
+    template <typename T1, typename T2>
+    std::size_t operator () (const std::pair<T1, T2>& p) const {
+        auto h1 = std::hash<T1>{}(p.first);
+        auto h2 = std::hash<T2>{}(p.second);
+        return h1 ^ h2;
+    }
+  };
+  std::unordered_map< std::pair< const StateMachine*, const BPMN::FlowNode*>, std::vector<Token*>, PairHash > tokensAwaitingGatewayActivation; ///< Map holding tokens awaiting activation of a converging gateway 
 
   std::unordered_map< const StateMachine*, std::vector<Token*> > tokensAwaitingDisposal; ///< Map holding all tokens awaiting a disposal for each (sub)process
 

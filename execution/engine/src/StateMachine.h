@@ -50,7 +50,11 @@ private:
 
   void createChild(Token* parentToken, const BPMN::Scope* scope); ///< Method creating the state machine for a (sub)process
 
-  void awaitTokenDisposal(Token* token); ///< Method disposing token when possible  
+
+  void attemptGatewayActivation(std::unordered_map< std::pair< const StateMachine*, const BPMN::FlowNode*>, std::vector<Token*> >::iterator gatewayIt); ///< Method checking whether the gateway can be activated
+
+  void attemptStateMachineCompletion(std::unordered_map< const StateMachine*, std::vector<Token*> >::iterator it); ///< Method checking whether the state machine is completed
+//  void awaitTokenDisposal(Token* token); ///< Method disposing token when possible  
 
   /// TODO: still needed?
 //  bool run(const Event* event); ///< Process event and advance tokens as much as possible. Returns false if state machine represents a completed instance.

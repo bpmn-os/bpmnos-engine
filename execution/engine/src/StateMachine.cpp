@@ -2,7 +2,7 @@
 #include "SystemState.h"
 #include "Event.h"
 #include "events/EntryEvent.h"
-//#include "execution/utility/src/erase.h"
+#include "execution/utility/src/erase.h"
 #include "model/parser/src/extensionElements/Status.h"
 
 using namespace BPMNOS::Execution;
@@ -59,6 +59,63 @@ void StateMachine::createChild(Token* parentToken, const BPMN::Scope* scope) {
   childInstances.back().run(parentToken->status);
 }
 
+void StateMachine::attemptGatewayActivation(std::unordered_map< std::pair< const StateMachine*, const BPMN::FlowNode*>, std::vector<Token*> >::iterator gatewayIt) {
+std::cerr << "attemptGatewayActivation" << std::endl;
+  auto& [key,arrivedTokens] = *gatewayIt;
+  auto& [owner,node] = key;
+
+  if ( node->represents<BPMN::ParallelGateway>() ) {
+    if ( arrivedTokens.size() < node->incoming.size() ) {
+      return;
+    }
+  }
+  else {
+    throw std::runtime_error("Token: unsupported converging behaviour at node '" + node->id + "'");
+  } 
+
+  tokens.push_back( Token( arrivedTokens.front() ) );
+  auto& token = tokens.back();
+
+  for ( auto arrivedToken : arrivedTokens ) {
+    erase_ptr<Token>(tokens,arrivedToken);
+  }
+  const_cast<SystemState*>(systemState)->tokensAwaitingGatewayActivation.erase(gatewayIt);
+
+  token.advanceToEntered();
+}
+
+void StateMachine::attemptStateMachineCompletion(std::unordered_map< const StateMachine*, std::vector<Token*> >::iterator it) {
+std::cerr << "attemptStateMachineCompletion" << std::endl;
+  auto& [key,completedTokens] = *it;
+
+  if ( eventSubprocessInstances.size() ) {
+    throw std::runtime_error("StateMachine: event subprocesses are not yet supported");
+  }
+
+  if ( completedTokens.size() < tokens.size() ) {
+    return;
+  }
+
+  if ( !parentToken ) {
+    throw std::logic_error("StateMachine: attemptStateMachineCompletion without parent");
+  }
+
+  for ( auto& value : parentToken->status ) {
+    value = std::nullopt;
+  }
+
+  for ( auto completedToken : completedTokens ) {
+    parentToken->mergeStatus(completedToken);
+    erase_ptr<Token>(tokens,completedToken);
+  }
+
+  const_cast<SystemState*>(systemState)->tokensAwaitingStateMachineCompletion.erase(it);
+
+  parentToken->advanceToCompleted();
+
+}
+
+/*
 void StateMachine::awaitTokenDisposal(Token* token) {
 
   auto& tokensAwaitingDisposal = const_cast<SystemState*>(systemState)->tokensAwaitingDisposal[this];
@@ -87,7 +144,7 @@ void StateMachine::awaitTokenDisposal(Token* token) {
 //    const_cast<SystemState*>(systemState)->deleteInstance(this);
   }
 }
-
+*/
 
 ////////////
 /*
