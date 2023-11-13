@@ -20,11 +20,13 @@ SCENARIO( "Empty executable process", "[execution][process]" ) {
         REQUIRE_NOTHROW( engine.run(scenario.get()) );
       }
     }
+
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine;
       Execution::TimeWarp timeHandler;
       engine.addEventHandler(&timeHandler);
       Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
       engine.addListener(&recorder);
       engine.run(scenario.get());
       THEN( "The recorder log has exactly 4 entries" ) {
@@ -77,11 +79,13 @@ SCENARIO( "Trivial executable process", "[execution][process]" ) {
         REQUIRE_NOTHROW( engine.run(scenario.get()) );
       }
     }
+
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine;
       Execution::TimeWarp timeHandler;
       engine.addEventHandler(&timeHandler);
       Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
       engine.addListener(&recorder);
       engine.run(scenario.get());
       THEN( "The recorder log has exactly 6 entries" ) {

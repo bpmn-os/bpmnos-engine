@@ -26,7 +26,7 @@ Token::Token(const Token* other)
 {
 }
 
-Token::Token(const std::vector<const Token*>& others)
+Token::Token(const std::vector<Token*>& others)
   : owner(others.front()->owner)
   , node(others.front()->node)
   , state(others.front()->state)
@@ -95,6 +95,7 @@ bool Token::isFeasible() {
   return true;
 }
 
+/*
 void Token::advanceFromCreated() {
   if ( !node ) {
     // tokens at process advance to entered
@@ -110,12 +111,10 @@ void Token::advanceFromCreated() {
     advanceToEntered();
   }
 }
+*/
 
-void Token::advanceToReady(std::optional< std::reference_wrapper<const Values> > values) {
+void Token::advanceToReady() {
 //std::cerr << "advanceToReady" << std::endl;
-  if ( values.has_value() ) {
-    status.insert(status.end(), values.value().get().begin(), values.value().get().end());
-  }
 
   if ( status[BPMNOS::Model::Status::Index::Timestamp] > owner->systemState->getTime() ) {
     throw std::runtime_error("Token: ready timestamp at node '" + node->id + "' is larger than current time");
@@ -127,12 +126,8 @@ void Token::advanceToReady(std::optional< std::reference_wrapper<const Values> >
   awaitEntryEvent();
 }
 
-void Token::advanceToEntered(std::optional< std::reference_wrapper<const Values> > statusUpdate) {
+void Token::advanceToEntered() {
 //std::cerr << "advanceToEntered" << std::endl;
-  if ( statusUpdate.has_value() ) {
-    status = statusUpdate.value().get();
-  }
-
   if ( status[BPMNOS::Model::Status::Index::Timestamp] > owner->systemState->getTime() ) {
     if ( node ) {
       throw std::runtime_error("Token: entry timestamp at node '" + node->id + "' is larger than current time");
@@ -289,17 +284,12 @@ void Token::advanceToBusy() {
   }
 }
 
-void Token::advanceToCompleted(const std::vector< std::pair< size_t, std::optional<BPMNOS::number> > > updatedValues) {
-  for ( auto & [index, value] : updatedValues ) {
-    status[index] = value;
-  }
-  advanceToCompleted();
-}
-
+/*
 void Token::advanceToCompleted(const Values& statusUpdate) {
   status = statusUpdate;
   advanceToCompleted();
 }
+*/
 
 void Token::advanceToCompleted() {
 //std::cerr << "advanceToCompleted" << std::endl;
@@ -332,12 +322,8 @@ void Token::advanceToCompleted() {
   }
 }
 
-void Token::advanceToExiting(std::optional< std::reference_wrapper<const Values> > statusUpdate) {
+void Token::advanceToExiting() {
 //std::cerr << "advanceToExiting" << std::endl;
-  if ( statusUpdate.has_value() ) {
-    status = statusUpdate.value().get();
-  }
-
   if ( status[BPMNOS::Model::Status::Index::Timestamp] > owner->systemState->getTime() ) {
     throw std::runtime_error("Token: exit timestamp at node '" + node->id + "' is larger than current time");
   }
@@ -368,20 +354,31 @@ void Token::advanceToDeparting() {
     advanceToArrived(node->outgoing.front()->target);
     return;
   }
+
+  if ( !node->represents<BPMN::Gateway>() ) {
+    throw std::runtime_error("Token: implicit split at node '" + node->id + "'");
+  }
+
+  update(State::TO_BE_COPIED);
   
-  // TODO: determine sequence flows that receive a token
-  throw std::runtime_error("Token: diverging gateways not yet supported");
+/*
+  if ( node->represents<BPMN::Gateway>() ) {
+    if ( node->represents<BPMN::ParallelGateway>() ) {
+      // Delegate creation of token copies to state machine
+      const_cast<StateMachine*>(owner)->createTokenCopies(this, node->outgoing);
+      return;
+    }
+    // TODO: determine sequence flows that receive a token
+    throw std::runtime_error("Token: diverging gateway type not yet supported");
+  }
+  else {
+    throw std::runtime_error("Token: implicit split at node '" + node->id + "'");
+  }
+*/
 /*
   if ( false ) {
     // no sequence flow satisfies conditions
     advanceToFailed();
-    return;
-  }
-
-  if ( false ) {
-    // let state machine copy token and advance each copy
-//    owner->copy(this);
-//  advanceToArrived(destination);
     return;
   }
 */
@@ -394,16 +391,26 @@ void Token::advanceToArrived(const BPMN::FlowNode* destination) {
   node = destination;
   update(State::ARRIVED);
 
-  // TODO: check whether gateway activation is required
-  if ( node->incoming.size() > 1 ) {
+  if ( node->incoming.size() > 1 && !node->represents<BPMN::ExclusiveGateway>() ) {
+    if ( !node->represents<BPMN::Gateway>() ) {
+      throw std::runtime_error("Token: implicit join at node '" + node->id + "'");
+    }
+    update(State::TO_BE_MERGED);
+
+    awaitGatewayActivation();
+    // delegate gateway activation and merging of tokens to state machine
+    return;
+/*
     if ( node->represents<BPMN::Gateway>()
          && !node->represents<BPMN::ExclusiveGateway>()
     ) {
-      awaitGatewayActivation();    
+      awaitGatewayActivation();
+      return;   
     }
     else {
       throw std::runtime_error("Token: implicit merge at node '" + node->id + "'");
     }
+*/
   }
 
   if ( node->represents<BPMN::Activity>() ) {
@@ -418,7 +425,6 @@ void Token::advanceToFailed() {
   update(State::FAILED);
   // TODO
 }
-
 
 void Token::awaitReadyEvent() {
   auto systemState = const_cast<SystemState*>(owner->systemState);
@@ -445,6 +451,7 @@ void Token::awaitTaskCompletionEvent() {
 // TODO: apply operators, but do not change status yet
   auto systemState = const_cast<SystemState*>(owner->systemState);
   auto time = status[BPMNOS::Model::Status::Index::Timestamp].value(); 
+
   systemState->tokensAwaitingTaskCompletionEvent.insert({time,this});
 }
 
@@ -486,11 +493,13 @@ void Token::awaitStateMachineCompletion() {
   auto& [key,tokens] = *ownerIt;
   tokens.push_back(this);
 
-  const_cast<StateMachine*>(owner)->attemptStateMachineCompletion(ownerIt);
+//  const_cast<StateMachine*>(owner)->attemptStateMachineCompletion(ownerIt);
 }
 
 
 void Token::awaitGatewayActivation() {
+//std::cerr << "awaitGatewayActivation" << std::endl;
+
   auto systemState = const_cast<SystemState*>(owner->systemState);
   auto gatewayIt = systemState->tokensAwaitingGatewayActivation.find({owner, node});
   if (gatewayIt == systemState->tokensAwaitingGatewayActivation.end()) {
@@ -501,7 +510,7 @@ void Token::awaitGatewayActivation() {
   auto& [key,tokens] = *gatewayIt;
   tokens.push_back(this);
 
-  const_cast<StateMachine*>(owner)->attemptGatewayActivation(gatewayIt);
+//  const_cast<StateMachine*>(owner)->attemptGatewayActivation(gatewayIt);
 }
 
 /*
@@ -529,6 +538,7 @@ void Token::update(State newState) {
   state = newState;
   auto now = owner->systemState->getTime();
   if ( status[BPMNOS::Model::Status::Index::Timestamp] < now ) {
+//std::cerr << "Set timestamp to " << now << std::endl;
     // increase timestamp if necessary
     status[BPMNOS::Model::Status::Index::Timestamp] = now;
   }

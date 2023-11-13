@@ -21,7 +21,7 @@ private:
   struct ScheduledTokenComparator {
     bool operator()(const std::pair<BPMNOS::number, Token*>& lhs, const std::pair<BPMNOS::number, Token*>& rhs) const {
       // Compare based on the 'time' component
-      return lhs.first < rhs.first;
+      return lhs.first < rhs.first || (lhs.first == rhs.first && lhs.second < rhs.second);
     }
   };
 public:
@@ -85,6 +85,9 @@ public:
   std::vector<Token*> tokensAwaitingEventBasedGateway; ///< Container holding all tokens awaiting activation event for an event-based gateway
 
   std::unordered_map< const StateMachine*, std::vector<Token*> > tokensAwaitingStateMachineCompletion; ///< Map holding all tokens awaiting the completion of a state machine
+
+  std::vector< const StateMachine* > completedInstances; ///< Vector holding all completed process instances
+  std::vector< const StateMachine* > completedChildInstances; ///< Vector holding all completed child instances
 
   struct PairHash {
     template <typename T1, typename T2>

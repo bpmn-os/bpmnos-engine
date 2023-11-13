@@ -9,7 +9,7 @@ namespace BPMNOS::Execution {
 
 
 class StateMachine;
-typedef std::vector< StateMachine > StateMachines;
+typedef std::vector< std::unique_ptr<StateMachine> > StateMachines;
 
 class SystemState;
 
@@ -40,18 +40,15 @@ private:
   friend class SystemState;
   friend class Token;
   /**
-   * @brief Advance all tokens as much as possible.
+   * @brief Set token state and advance token as much as possible.
    */
-//  void advance();
-  /**
-   * @brief Advance token as much as possible.
-   */
-//  void advance(Token& token);
+  void advanceToken(Token* token, Token::State state);
 
   void createChild(Token* parentToken, const BPMN::Scope* scope); ///< Method creating the state machine for a (sub)process
 
+  void createTokenCopies(Token* token, const std::vector<BPMN::SequenceFlow*>& sequenceFlows);
 
-  void attemptGatewayActivation(std::unordered_map< std::pair< const StateMachine*, const BPMN::FlowNode*>, std::vector<Token*> >::iterator gatewayIt); ///< Method checking whether the gateway can be activated
+//  void attemptGatewayActivation(std::unordered_map< std::pair< const StateMachine*, const BPMN::FlowNode*>, std::vector<Token*> >::iterator gatewayIt); ///< Method checking whether the gateway can be activated
 
   void attemptStateMachineCompletion(std::unordered_map< const StateMachine*, std::vector<Token*> >::iterator it); ///< Method checking whether the state machine is completed
 //  void awaitTokenDisposal(Token* token); ///< Method disposing token when possible  

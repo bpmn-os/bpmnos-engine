@@ -10,7 +10,7 @@ namespace BPMNOS::Execution {
 
 class StateMachine;
 class Token;
-typedef std::vector< Token > Tokens;
+typedef std::vector< std::unique_ptr<Token> > Tokens;
 
 class Token {
 private:
@@ -22,13 +22,13 @@ public:
   const StateMachine* owner;
   const BPMN::FlowNode* node; 
 private:
-  enum class State { CREATED, READY, ENTERED, BUSY, COMPLETED, EXITING, ARRIVED, DONE, FAILED };
-  static inline std::string stateName[] = { "CREATED", "READY", "ENTERED", "BUSY", "COMPLETED", "EXITING", "ARRIVED", "DONE", "FAILED" };
+  enum class State { CREATED, READY, ENTERED, BUSY, COMPLETED, EXITING, ARRIVED, DONE, FAILED, TO_BE_COPIED, TO_BE_MERGED };
+  static inline std::string stateName[] = { "CREATED", "READY", "ENTERED", "BUSY", "COMPLETED", "EXITING", "ARRIVED", "DONE", "FAILED", "TO_BE_COPIED", "TO_BE_MERGED" };
   State state;
 public:
   Token(const StateMachine* owner, const BPMN::FlowNode* node, const Values& status);
   Token(const Token* other);
-  Token(const std::vector<const Token*>& others);
+  Token(const std::vector<Token*>& others);
 
   Values status;
 
@@ -48,14 +48,14 @@ private:
   bool isFeasible(); ///< Check restrictions within current and ancestor scopes
 
   void advanceFromCreated();
-  void advanceToReady(std::optional< std::reference_wrapper<const Values> > values = std::nullopt );
-  void advanceToEntered(std::optional< std::reference_wrapper<const Values> > statusUpdate = std::nullopt );
+  void advanceToReady();
+  void advanceToEntered();
   void advanceToBusy();
-  void advanceToCompleted(const std::vector< std::pair< size_t, std::optional<BPMNOS::number> > > updatedValues );
-  void advanceToCompleted(const Values& statusUpdate);
+
+//  void advanceToCompleted(const Values& statusUpdate);
   void advanceToCompleted();
 
-  void advanceToExiting(std::optional< std::reference_wrapper<const Values> > statusUpdate = std::nullopt );
+  void advanceToExiting();
   void advanceToDone();
   void advanceToDeparting();
   void advanceToArrived(const BPMN::FlowNode* destination);

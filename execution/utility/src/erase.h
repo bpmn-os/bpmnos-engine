@@ -4,9 +4,9 @@
 namespace BPMNOS::Execution {
 
 /**
- * @brief Erase a specific element from a vector of elements.
+ * @brief Erase a specific element from a vector of unique pointers.
  *
- * This function searches for a specified element pointer in a vector of elements
+ * This function searches for a specified element pointer in a vector of unique pointers
  * and removes the corresponding element from the vector.
  *
  * @tparam T The type of elements stored in the vector.
@@ -17,31 +17,18 @@ namespace BPMNOS::Execution {
  */
 
 template<typename T>
-void erase_ptr(std::vector<T>& container, const T* elementPtr) {
+void erase_ptr(std::vector<std::unique_ptr<T>>& container, const T* elementPtr) {
   auto it = std::find_if(container.begin(), container.end(),
-    [elementPtr](const T& element)
+    [elementPtr](const std::unique_ptr<T>& uniquePtr)
     {
-       return &element == elementPtr;
+       return uniquePtr.get() == elementPtr;
     }
   );
 
   if (it == container.end()) {
-    throw std::logic_error("cannot find element to be removed");
+    throw std::logic_error("erase_ptr: cannot find element to be removed");
   }
   container.erase(it);
-}
-
-/**
- * @brief Erase a specific element from a vector by replacing it with the last element.
- * 
- **/
-template<typename T>
-void erase(std::vector<T>& container, const T& element) {
-  auto it = std::find(container.begin(), container.end(), element);
-  if (it != container.end()) {
-    std::iter_swap(it, container.end() - 1);
-    container.erase(container.end() - 1);
-  }
 }
 
 } // namespace BPMNOS::Execution

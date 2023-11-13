@@ -1,5 +1,6 @@
 #include "SystemState.h"
 #include "Engine.h"
+#include "execution/utility/src/erase.h"
 
 using namespace BPMNOS::Execution;
 
@@ -15,8 +16,8 @@ BPMNOS::number SystemState::getTime() const {
 }
 
 bool SystemState::isAlive() const {
-  if ( scenario->isCompleted(getTime()) ) {
-    return false;
+  if ( !scenario->isCompleted(getTime()) ) {
+    return true;
   }
   return !instances.empty();
 };
@@ -24,13 +25,15 @@ bool SystemState::isAlive() const {
 void SystemState::addInstances() {
   for (auto& [process,status] : getInstantiations() ) {
     instantiationCounter++;
-    instances.push_back(StateMachine(this,process));
+    instances.push_back(std::make_unique<StateMachine>(this,process));
     // advance token as far as possible
-    instances.back().run(status);
+    instances.back()->run(status);
   }
 }
 
 void SystemState::deleteInstance(StateMachine* instance) {
+  erase_ptr<StateMachine>(instances,instance);
+/*
   // Find the iterator pointing to the instance
   auto it = std::find_if(instances.begin(), instances.end(), [instance](const StateMachine& element) { return &element == instance; });
 
@@ -41,6 +44,7 @@ void SystemState::deleteInstance(StateMachine* instance) {
   else {
     throw std::runtime_error("SystemState: cannot find instance '" + instance->scope->id + "' to be deleted");
   }
+*/
 }
 
 std::vector< std::pair<const BPMN::Process*, BPMNOS::Values> > SystemState::getInstantiations() const {

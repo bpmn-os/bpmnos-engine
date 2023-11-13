@@ -24,48 +24,169 @@ StateMachine::StateMachine(const SystemState* systemState, const BPMN::Scope* sc
 }
 
 void StateMachine::run(const Values& status) {
+//std::cerr << "Run " << this << std::endl;
   if ( !parentToken ) {
     // token without process represents a token at a process
-    tokens.push_back( Token(this,nullptr,status) );
+    tokens.push_back( std::make_unique<Token>(this,nullptr,status) );
   }
   else {
     if ( scope->startNodes.size() != 1 ) {
       throw std::runtime_error("StateMachine: no unique start node within scope of '" + scope->id + "'");
     }
-    tokens.push_back( Token(this,scope->startNodes.front(),status) );
+    tokens.push_back( std::make_unique<Token>(this,scope->startNodes.front(),status) );
   }
   // advance token as far as possible
-  tokens.back().advanceFromCreated();
+//  tokens.back()->advanceFromCreated();
+  advanceToken(tokens.back().get(),Token::State::ENTERED);
 }
 
-/*
-void StateMachine::advance() {
-  for ( auto& token : tokens ) {
-    advance(token);
+void StateMachine::advanceToken(Token* token, Token::State state) {
+//std::cerr << "advanceToken" << std::endl;
+
+  if ( state == Token::State::ARRIVED) {
+    token->advanceToArrived(token->node);
   }
-}
+  else if ( state == Token::State::READY) {
+    token->advanceToReady();
+  }
+  else if ( state == Token::State::ENTERED) {
+    token->advanceToEntered();
+  }
+  else if ( state == Token::State::COMPLETED) {
+    token->advanceToCompleted();
+  }
+  else if ( state == Token::State::EXITING) {
+    token->advanceToExiting();
+  }
+  else {
+    throw std::runtime_error("Token: advance token to illegal state");
+  }
 
-void StateMachine::advance(Token& token) {
-//  throw std::runtime_error("StateMachine: advance token not yet implemented");
+  // token needs to be copied, needs to be merged, is waiting for event, is failed, or is done 
+  if ( token->state == Token::State::TO_BE_COPIED) {
+    if ( token->node->represents<BPMN::ParallelGateway>() ) {
+      // create token copies and advance them
+      createTokenCopies(token, token->node->outgoing);
+    }
+    else {
+      // TODO: determine sequence flows that receive a token
+      throw std::runtime_error("Token: diverging gateway type not yet supported");
+    }
+  }
+  else if ( token->state == Token::State::TO_BE_MERGED) {
+    if ( token->node->represents<BPMN::ParallelGateway>() ) {
+
+//      systemState* systemState = const_cast<SystemState*>(systemState);
+      auto gatewayIt = const_cast<SystemState*>(systemState)->tokensAwaitingGatewayActivation.find({this, token->node});
+
+      auto& [key,arrivedTokens] = *gatewayIt;
+      if ( arrivedTokens.size() == token->node->incoming.size() ) {
+        // create merged token
+        std::unique_ptr<Token> mergedToken = std::make_unique<Token>(arrivedTokens);
+
+        // remove tokens
+        for ( auto arrivedToken : arrivedTokens ) {
+          erase_ptr<Token>(tokens,arrivedToken);
+        }
+        const_cast<SystemState*>(systemState)->tokensAwaitingGatewayActivation.erase(gatewayIt);
+
+        // add merged token
+        tokens.push_back(std::move(mergedToken));
+
+        // advance merged token
+        advanceToken(tokens.back().get(), Token::State::ENTERED);
+      }
+    }
+    else {
+      // TODO: determine sequence flows that have a token
+      throw std::runtime_error("Token: converging gateway type not yet supported");
+    }
+  }
+  else if ( token->state == Token::State::FAILED) {
+    throw std::runtime_error("Token: failed token not implemented");
+  }
+  else if ( token->state == Token::State::DONE) {
+    // TODO
+    auto it = const_cast<SystemState*>(systemState)->tokensAwaitingStateMachineCompletion.find(this);
+    if ( it == const_cast<SystemState*>(systemState)->tokensAwaitingStateMachineCompletion.end() ) {
+      throw std::logic_error("StateMachine: cannot find tokens awaiting state machine completion");
+    }
+
+    auto& [key,completedTokens] = *it;
+
+    if ( eventSubprocessInstances.size() ) {
+      throw std::runtime_error("StateMachine: event subprocesses are not yet supported");
+    }
+
+    if ( completedTokens.size() < tokens.size() ) {
+      return;
+    }
+
+    if ( !parentToken ) {
+      // remove instance from system state
+      const_cast<SystemState*>(systemState)->tokensAwaitingStateMachineCompletion.erase(it);
+      const_cast<SystemState*>(systemState)->completedInstances.push_back(this);
+
+      return;
+    }
+
+    // merge tokens
+    for ( auto& value : parentToken->status ) {
+      value = std::nullopt;
+    }
+
+    for ( auto completedToken : completedTokens ) {
+      parentToken->mergeStatus(completedToken);
+      erase_ptr<Token>(tokens,completedToken);
+    }
+
+    const_cast<SystemState*>(systemState)->tokensAwaitingStateMachineCompletion.erase(it);
+
+    const_cast<SystemState*>(systemState)->completedChildInstances.push_back(this);
+//    throw std::runtime_error("Token: done token not implemented");
+  }
+  else {
+    // nothing to be done here because token waits for event
+  }
+
 }
-*/
 
 void StateMachine::createChild(Token* parentToken, const BPMN::Scope* scope) {
   if ( scope->startNodes.size() > 1 ) {
     throw std::runtime_error("Token: scope '" + scope->id + "' has multiple start nodes");
   }
 
-  childInstances.push_back(StateMachine(systemState, scope, parentToken));
-  childInstances.back().run(parentToken->status);
+  childInstances.push_back(std::make_unique<StateMachine>(systemState, scope, parentToken));
+  childInstances.back()->run(parentToken->status);
 }
 
+void StateMachine::createTokenCopies(Token* token, const std::vector<BPMN::SequenceFlow*>& sequenceFlows) {
+  std::vector<Token*> tokenCopies;
+  // create a token copy for each new destination
+  for ( [[maybe_unused]] auto _ : sequenceFlows ) {
+    tokens.push_back( std::make_unique<Token>( token ) );
+    tokenCopies.push_back(tokens.back().get());
+  }
+
+  // remove original token
+  erase_ptr<Token>(tokens,token);
+
+  // advance all token copies
+  for (size_t i = 0; i < sequenceFlows.size(); i++ ) {
+    tokenCopies[i]->node = sequenceFlows[i]->target;
+    advanceToken(tokenCopies[i], Token::State::ARRIVED);
+  }
+}
+
+/*
 void StateMachine::attemptGatewayActivation(std::unordered_map< std::pair< const StateMachine*, const BPMN::FlowNode*>, std::vector<Token*> >::iterator gatewayIt) {
-std::cerr << "attemptGatewayActivation" << std::endl;
+//std::cerr << "attemptGatewayActivation" << std::endl;
   auto& [key,arrivedTokens] = *gatewayIt;
   auto& [owner,node] = key;
 
   if ( node->represents<BPMN::ParallelGateway>() ) {
     if ( arrivedTokens.size() < node->incoming.size() ) {
+//std::cerr << "wait" << std::endl;
       return;
     }
   }
@@ -73,19 +194,22 @@ std::cerr << "attemptGatewayActivation" << std::endl;
     throw std::runtime_error("Token: unsupported converging behaviour at node '" + node->id + "'");
   } 
 
-  tokens.push_back( Token( arrivedTokens.front() ) );
-  auto& token = tokens.back();
+  tokens.push_back( std::make_unique<Token>( arrivedTokens.front() ) );
+  auto token = tokens.back().get();
 
   for ( auto arrivedToken : arrivedTokens ) {
     erase_ptr<Token>(tokens,arrivedToken);
   }
   const_cast<SystemState*>(systemState)->tokensAwaitingGatewayActivation.erase(gatewayIt);
 
-  token.advanceToEntered();
+//std::cerr << "token->advanceToEntered()" << std::endl;
+  advanceToken(token, Token::State::ENTERED);
+//  token->advanceToEntered();
 }
+*/
 
+/*
 void StateMachine::attemptStateMachineCompletion(std::unordered_map< const StateMachine*, std::vector<Token*> >::iterator it) {
-std::cerr << "attemptStateMachineCompletion" << std::endl;
   auto& [key,completedTokens] = *it;
 
   if ( eventSubprocessInstances.size() ) {
@@ -96,8 +220,17 @@ std::cerr << "attemptStateMachineCompletion" << std::endl;
     return;
   }
 
+
   if ( !parentToken ) {
-    throw std::logic_error("StateMachine: attemptStateMachineCompletion without parent");
+    // remove instance from system state
+    const_cast<SystemState*>(systemState)->tokensAwaitingStateMachineCompletion.erase(it);
+std::cerr << "deleteInstance" << std::endl;
+for ( auto& token : tokens ) {
+std::cerr << token.get()->jsonify().dump() << std::endl;
+}
+//    const_cast<SystemState*>(systemState)->deleteInstance(this); //TODO
+std::cerr << "deletedInstance" << std::endl;
+    return;
   }
 
   for ( auto& value : parentToken->status ) {
@@ -111,10 +244,11 @@ std::cerr << "attemptStateMachineCompletion" << std::endl;
 
   const_cast<SystemState*>(systemState)->tokensAwaitingStateMachineCompletion.erase(it);
 
-  parentToken->advanceToCompleted();
+  parentToken->owner->advanceToken(parentToken, Token::State::COMPLETED);
+//  parentToken->advanceToCompleted();
 
 }
-
+*/
 /*
 void StateMachine::awaitTokenDisposal(Token* token) {
 
@@ -136,7 +270,9 @@ void StateMachine::awaitTokenDisposal(Token* token) {
 
   if ( parentToken ) {
     // (sub)process is completed, resume with paren token
-    parentToken->advanceToCompleted(status);
+    token->status = status;
+    advanceToken(parentToken, Token::State::COMPLETED);
+//    parentToken->advanceToCompleted(status);
   }
   //const Token* parentToken = token->owner->parentToken;
 

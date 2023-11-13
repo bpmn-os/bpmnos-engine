@@ -32,16 +32,19 @@ void Engine::run(const BPMNOS::Model::Scenario* scenario, BPMNOS::number timeout
 
   // advance all tokens in system state
   while ( advance() ) {
+//std::cerr << ".";
     if ( !systemState->isAlive() ) {
+//std::cerr << "dead" << std::endl;
       break;
     }
     if ( systemState->getTime() > timeout ) {
+//std::cerr << "timeout" << std::endl;
       break;
     }
   }
 }
 
-bool Engine::advance() {
+bool Engine::advance() { 
   // make sure new data is added to system state
   const_cast<BPMNOS::Model::Scenario*>(systemState->scenario)->update();
 
@@ -50,12 +53,17 @@ bool Engine::advance() {
   // it is assumed that at least one clock tick or termination event is processed to ensure that 
   // each instance is only added once 
 
+  clearCompletedStateMachines();
+
   // fetch and process all events
   while ( auto event = fetchEvent() ) {
-//std::cerr << "." << std::endl; 
+//std::cerr << "." << std::endl;
     event->processBy(this);
 
+    clearCompletedStateMachines();
+
     if ( event->is<ClockTickEvent>() ) {
+//std::cerr << "ClockTick" << std::endl;
       // exit loop to resume 
       return true;
     }
@@ -68,7 +76,27 @@ bool Engine::advance() {
   throw std::runtime_error("Engine: unexpected absence of event");
 }
 
+void Engine::clearCompletedStateMachines() { 
+  // delete all completed child instances and advance parent token
+  while ( systemState->completedChildInstances.size() ) {
+    auto child = systemState->completedChildInstances.back(); 
+    systemState->completedChildInstances.pop_back();
+
+    auto token = child->parentToken;
+    auto stateMachine = const_cast<StateMachine*>(token->owner);
+    erase_ptr<StateMachine>(stateMachine->childInstances, child);
+    stateMachine->advanceToken(token, Token::State::COMPLETED);
+  }
+
+  // delete completed instances
+  for ( auto instance : systemState->completedInstances ) {
+    systemState->deleteInstance(const_cast<StateMachine*>(instance));
+  }
+  systemState->completedInstances.clear();
+}
+
 void Engine::process(const ClockTickEvent& event) {
+//std::cerr << "ClockTickEvent " << std::endl;
   systemState->incrementTimeBy(clockTick);
 }
 
@@ -76,7 +104,11 @@ void Engine::process(const ReadyEvent& event) {
   erase<Token*>(systemState->tokensAwaitingReadyEvent, event.token);
 
   Token* token = const_cast<Token*>(event.token);
-  token->advanceToReady(event.values);
+//  token->advanceToReady(event.values); // TODO: update token status
+  token->status.insert(token->status.end(), event.values.begin(), event.values.end());
+
+  StateMachine* stateMachine = const_cast<StateMachine*>(event.token->owner);
+  stateMachine->advanceToken(token, Token::State::READY);
 }
 
 void Engine::process(const EntryEvent& event) {
@@ -90,10 +122,17 @@ void Engine::process(const EntryEvent& event) {
   }
 
   Token* token = const_cast<Token*>(event.token);
-  token->advanceToEntered(event.entryStatus);
+//  token->advanceToEntered(event.entryStatus); // TODO: update token status
+  if ( event.entryStatus.has_value() ) {
+    token->status = event.entryStatus.value();
+  }
+
+  StateMachine* stateMachine = const_cast<StateMachine*>(event.token->owner);
+  stateMachine->advanceToken(token, Token::State::ENTERED);
 }
 
 void Engine::process(const TaskCompletionEvent& event) {
+//std::cerr << "TaskCompletionEvent " << event.token->node->id << "/" << systemState->tokensAwaitingTaskCompletionEvent.size() << std::endl;
   auto it = systemState->tokensAwaitingTaskCompletionEvent.begin();
   while (it != systemState->tokensAwaitingTaskCompletionEvent.end()) {
     if (it->second == event.token) {
@@ -104,7 +143,13 @@ void Engine::process(const TaskCompletionEvent& event) {
   }
 
   Token* token = const_cast<Token*>(event.token);
-  token->advanceToCompleted(event.updatedValues);
+//  token->advanceToCompleted(event.updatedValues); // TODO: update token status
+  for ( auto & [index, value] : event.updatedValues ) {
+    token->status[index] = value;
+  }
+
+  StateMachine* stateMachine = const_cast<StateMachine*>(event.token->owner);
+  stateMachine->advanceToken(token, Token::State::COMPLETED);
 }
 
 void Engine::process(const ExitEvent& event) {
@@ -115,7 +160,13 @@ void Engine::process(const ExitEvent& event) {
   }
 
   Token* token = const_cast<Token*>(event.token);
-  token->advanceToExiting(event.exitStatus);
+//  token->advanceToExiting(event.exitStatus); // TODO: update token status
+  if ( event.exitStatus.has_value() ) {
+    token->status = event.exitStatus.value();
+  }
+
+  StateMachine* stateMachine = const_cast<StateMachine*>(event.token->owner);
+  stateMachine->advanceToken(token, Token::State::EXITING);
 }
 
 /*

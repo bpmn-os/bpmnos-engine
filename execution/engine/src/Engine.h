@@ -45,12 +45,12 @@ public:
   /**
    * @brief Advance token as much as possible.
    */
-  void advance(Token* token);
+//  void advance(Token* token);
 
   /**
    * @brief Advance token as much as possible.
    */
-  void advance(const Token* token);
+//  void advance(const Token* token);
 
 /**
  * @brief Returns the timestamp the engine is in.
@@ -63,6 +63,7 @@ public:
   const SystemState* getSystemState();
 
 protected:
+  void clearCompletedStateMachines(); ///< Clears all completed state machines and advances parent tokens as much as possible
 
   BPMNOS::number clockTick; ///< Timestep used to advance the current time by systemState.time += clockTick
   std::unique_ptr<SystemState> systemState;
