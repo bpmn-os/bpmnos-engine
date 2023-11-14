@@ -65,6 +65,10 @@ public:
 protected:
   void clearCompletedStateMachines(); ///< Clears all completed state machines and advances parent tokens as much as possible
 
+  void addInstances(); ///< Method adding all new instances and advancing tokens as much as possible
+
+  void deleteInstance(StateMachine* instance); ///< Method removing completed instance
+
   BPMNOS::number clockTick; ///< Timestep used to advance the current time by systemState.time += clockTick
   std::unique_ptr<SystemState> systemState;
   bool advance();

@@ -49,7 +49,7 @@ bool Engine::advance() {
   const_cast<BPMNOS::Model::Scenario*>(systemState->scenario)->update();
 
   // add all new instances and advance tokens as much as possible
-  systemState->addInstances();
+  addInstances();
   // it is assumed that at least one clock tick or termination event is processed to ensure that 
   // each instance is only added once 
 
@@ -90,9 +90,22 @@ void Engine::clearCompletedStateMachines() {
 
   // delete completed instances
   for ( auto instance : systemState->completedInstances ) {
-    systemState->deleteInstance(const_cast<StateMachine*>(instance));
+    deleteInstance(const_cast<StateMachine*>(instance));
   }
   systemState->completedInstances.clear();
+}
+
+void Engine::addInstances() {
+  for (auto& [process,status] : systemState->getInstantiations() ) {
+    systemState->instantiationCounter++;
+    systemState->instances.push_back(std::make_unique<StateMachine>(systemState.get(),process));
+    // advance token as far as possible
+    systemState->instances.back()->run(status);
+  }
+}
+
+void Engine::deleteInstance(StateMachine* instance) {
+  erase_ptr<StateMachine>(systemState->instances,instance);
 }
 
 void Engine::process(const ClockTickEvent& event) {

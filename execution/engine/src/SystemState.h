@@ -108,10 +108,6 @@ private:
 
   SystemState() = delete;
 
-  void addInstances(); ///< Method adding all new instances and advancing tokens as much as possible
-
-  void deleteInstance(StateMachine* instance); ///< Method removing completed instance
-
   /**
    * @brief Method returning a vector of all instantiations at the given time.
    */
