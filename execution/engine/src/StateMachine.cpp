@@ -43,8 +43,8 @@ void StateMachine::run(const Values& status) {
 void StateMachine::advanceToken(Token* token, Token::State state) {
 //std::cerr << "advanceToken" << std::endl;
 
-  if ( state == Token::State::ARRIVED) {
-    token->advanceToArrived(token->node);
+  if ( state == Token::State::DEPARTED) {
+    token->advanceToDeparted(token->sequenceFlow);
   }
   else if ( state == Token::State::READY) {
     token->advanceToReady();
@@ -73,7 +73,7 @@ void StateMachine::advanceToken(Token* token, Token::State state) {
       throw std::runtime_error("Token: diverging gateway type not yet supported");
     }
   }
-  else if ( token->state == Token::State::TO_BE_MERGED) {
+  else if ( token->state == Token::State::HALTED) {
     if ( token->node->represents<BPMN::ParallelGateway>() ) {
 
 //      systemState* systemState = const_cast<SystemState*>(systemState);
@@ -173,8 +173,8 @@ void StateMachine::createTokenCopies(Token* token, const std::vector<BPMN::Seque
 
   // advance all token copies
   for (size_t i = 0; i < sequenceFlows.size(); i++ ) {
-    tokenCopies[i]->node = sequenceFlows[i]->target;
-    advanceToken(tokenCopies[i], Token::State::ARRIVED);
+    tokenCopies[i]->sequenceFlow = sequenceFlows[i];
+    advanceToken(tokenCopies[i], Token::State::DEPARTED);
   }
 }
 

@@ -21,9 +21,10 @@ private:
 public:
   const StateMachine* owner;
   const BPMN::FlowNode* node; 
+  const BPMN::SequenceFlow* sequenceFlow; 
 private:
-  enum class State { CREATED, READY, ENTERED, BUSY, COMPLETED, EXITING, ARRIVED, DONE, FAILED, TO_BE_COPIED, TO_BE_MERGED };
-  static inline std::string stateName[] = { "CREATED", "READY", "ENTERED", "BUSY", "COMPLETED", "EXITING", "ARRIVED", "DONE", "FAILED", "TO_BE_COPIED", "TO_BE_MERGED" };
+  enum class State { CREATED, READY, ENTERED, BUSY, COMPLETED, EXITING, DEPARTED, ARRIVED, DONE, FAILED, TO_BE_COPIED, HALTED };
+  static inline std::string stateName[] = { "CREATED", "READY", "ENTERED", "BUSY", "COMPLETED", "EXITING", "DEPARTED", "ARRIVED", "DONE", "FAILED", "TO_BE_COPIED", "HALTED" };
   State state;
 public:
   Token(const StateMachine* owner, const BPMN::FlowNode* node, const Values& status);
@@ -52,13 +53,13 @@ private:
   void advanceToEntered();
   void advanceToBusy();
 
-//  void advanceToCompleted(const Values& statusUpdate);
   void advanceToCompleted();
 
   void advanceToExiting();
   void advanceToDone();
   void advanceToDeparting();
-  void advanceToArrived(const BPMN::FlowNode* destination);
+  void advanceToDeparted(const BPMN::SequenceFlow* sequenceFlow);
+  void advanceToArrived();
 
   void advanceToFailed();
 

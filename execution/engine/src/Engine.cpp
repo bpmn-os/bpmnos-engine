@@ -105,6 +105,7 @@ void Engine::process(const ReadyEvent& event) {
 
   Token* token = const_cast<Token*>(event.token);
 //  token->advanceToReady(event.values); // TODO: update token status
+  token->sequenceFlow = nullptr;
   token->status.insert(token->status.end(), event.values.begin(), event.values.end());
 
   StateMachine* stateMachine = const_cast<StateMachine*>(event.token->owner);

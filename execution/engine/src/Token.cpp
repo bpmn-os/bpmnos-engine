@@ -13,6 +13,7 @@ using namespace BPMNOS::Execution;
 Token::Token(const StateMachine* owner, const BPMN::FlowNode* node, const Values& status)
   : owner(owner)
   , node(node)
+  , sequenceFlow(nullptr)
   , state(State::CREATED)
   , status(status)
 {
@@ -21,6 +22,7 @@ Token::Token(const StateMachine* owner, const BPMN::FlowNode* node, const Values
 Token::Token(const Token* other) 
   : owner(other->owner)
   , node(other->node)
+  , sequenceFlow(nullptr)
   , state(other->state)
   , status(other->status)
 {
@@ -29,6 +31,7 @@ Token::Token(const Token* other)
 Token::Token(const std::vector<Token*>& others)
   : owner(others.front()->owner)
   , node(others.front()->node)
+  , sequenceFlow(nullptr)
   , state(others.front()->state)
   , status(others.front()->status)
 {
@@ -59,6 +62,9 @@ nlohmann::ordered_json Token::jsonify() const {
   jsonObject["instanceId"] = BPMNOS::to_string(status[Model::Status::Index::Instance].value(),STRING);
   if ( node ) {
     jsonObject["nodeId"] = node->id;
+  }
+  if ( sequenceFlow ) {
+    jsonObject["sequenceFlowId"] = sequenceFlow->id;
   }
   jsonObject["state"] = stateName[(int)state];
   jsonObject["status"] = nlohmann::json::object();
@@ -351,7 +357,7 @@ void Token::advanceToDone() {
 void Token::advanceToDeparting() {
 
   if ( node->outgoing.size() == 1 ) {
-    advanceToArrived(node->outgoing.front()->target);
+    advanceToDeparted(node->outgoing.front());
     return;
   }
 
@@ -385,17 +391,22 @@ void Token::advanceToDeparting() {
 
 }
 
+void Token::advanceToDeparted(const BPMN::SequenceFlow* sequenceFlow) {
+  this->sequenceFlow = sequenceFlow;
+  update(State::DEPARTED);
+  advanceToArrived();
+}
 
-void Token::advanceToArrived(const BPMN::FlowNode* destination) {
+void Token::advanceToArrived() {
 //std::cerr << "advanceToArrived" << std::endl;
-  node = destination;
+  node = sequenceFlow->target;
   update(State::ARRIVED);
 
   if ( node->incoming.size() > 1 && !node->represents<BPMN::ExclusiveGateway>() ) {
     if ( !node->represents<BPMN::Gateway>() ) {
       throw std::runtime_error("Token: implicit join at node '" + node->id + "'");
     }
-    update(State::TO_BE_MERGED);
+    update(State::HALTED);
 
     awaitGatewayActivation();
     // delegate gateway activation and merging of tokens to state machine
@@ -417,6 +428,7 @@ void Token::advanceToArrived(const BPMN::FlowNode* destination) {
     awaitReadyEvent();
   }
   else {
+    sequenceFlow = nullptr;
     advanceToEntered();
   }
 }
