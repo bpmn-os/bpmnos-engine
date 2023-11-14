@@ -219,11 +219,8 @@ void Token::advanceToBusy() {
       advanceToCompleted();
     }
     else {
-      // Delegate creation of children back to state machine
-      const_cast<StateMachine*>(owner)->createChild(this,scope);
-
-      // Wait for all tokens within the scope to complete
-      awaitStateMachineCompletion();
+      // delegate creation of children back to state machine
+      return;
     }
   }
   else if ( node->represents<BPMN::SubProcess>() ) {
@@ -232,11 +229,8 @@ void Token::advanceToBusy() {
       advanceToCompleted();
     }
     else {
-      // Delegate creation of children back to state machine
-      const_cast<StateMachine*>(owner)->createChild(this,scope);
-
-      // Wait for all tokens within the scope to complete
-      awaitStateMachineCompletion();
+      // delegate creation of children back to state machine
+      return;
     }
   }
   else if ( node->represents<BPMN::EventBasedGateway>() ) {
@@ -367,28 +361,6 @@ void Token::advanceToDeparting() {
 
   update(State::TO_BE_COPIED);
   
-/*
-  if ( node->represents<BPMN::Gateway>() ) {
-    if ( node->represents<BPMN::ParallelGateway>() ) {
-      // Delegate creation of token copies to state machine
-      const_cast<StateMachine*>(owner)->createTokenCopies(this, node->outgoing);
-      return;
-    }
-    // TODO: determine sequence flows that receive a token
-    throw std::runtime_error("Token: diverging gateway type not yet supported");
-  }
-  else {
-    throw std::runtime_error("Token: implicit split at node '" + node->id + "'");
-  }
-*/
-/*
-  if ( false ) {
-    // no sequence flow satisfies conditions
-    advanceToFailed();
-    return;
-  }
-*/
-
 }
 
 void Token::advanceToDeparted(const BPMN::SequenceFlow* sequenceFlow) {
@@ -411,17 +383,6 @@ void Token::advanceToArrived() {
     awaitGatewayActivation();
     // delegate gateway activation and merging of tokens to state machine
     return;
-/*
-    if ( node->represents<BPMN::Gateway>()
-         && !node->represents<BPMN::ExclusiveGateway>()
-    ) {
-      awaitGatewayActivation();
-      return;   
-    }
-    else {
-      throw std::runtime_error("Token: implicit merge at node '" + node->id + "'");
-    }
-*/
   }
 
   if ( node->represents<BPMN::Activity>() ) {

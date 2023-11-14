@@ -66,9 +66,18 @@ void StateMachine::advanceToken(Token* token, Token::State state) {
     throw std::runtime_error("Token: advance token to illegal state");
   }
 
-  // token needs to be copied, needs to be merged, is waiting for event, is failed, or is done
- 
-  if ( token->state == Token::State::TO_BE_COPIED) {
+  // token has advanced as much as possible, need to decide how to continue
+
+  if ( token->state == Token::State::BUSY) {
+    if ( !token->node || token->node->represents<BPMN::SubProcess>() ) {
+      auto scope = token->node ? token->node->as<BPMN::Scope>() : process->as<BPMN::Scope>();
+      if ( scope->startNodes.size() == 1 ) {
+        // create child statemachine and advance token
+        createChild(token,scope);
+      }
+    }
+  }
+  else if ( token->state == Token::State::TO_BE_COPIED) {
     if ( token->node->represents<BPMN::ParallelGateway>() ) {
       // create token copies and advance them
       createTokenCopies(token, token->node->outgoing);
@@ -111,7 +120,10 @@ void StateMachine::advanceToken(Token* token, Token::State state) {
 
     if ( completedTokens.size() > tokens.size() ) {
 std::cerr << completedTokens.size() << " > " << tokens.size() << " for " << scope->id << std::endl;
-      throw std::runtime_error("StateMachine: too many tokens");
+for (auto completedToken : completedTokens) {
+std::cerr << completedToken << " / " << completedToken->jsonify().dump() << std::endl;
+}
+      throw std::logic_error("StateMachine: too many tokens");
     }
 
     if ( completedTokens.size() == tokens.size() ) {
