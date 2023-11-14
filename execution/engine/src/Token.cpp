@@ -504,8 +504,6 @@ void Token::awaitStateMachineCompletion() {
 
   auto& [key,tokens] = *ownerIt;
   tokens.push_back(this);
-
-//  const_cast<StateMachine*>(owner)->attemptStateMachineCompletion(ownerIt);
 }
 
 
@@ -521,8 +519,6 @@ void Token::awaitGatewayActivation() {
 
   auto& [key,tokens] = *gatewayIt;
   tokens.push_back(this);
-
-//  const_cast<StateMachine*>(owner)->attemptGatewayActivation(gatewayIt);
 }
 
 /*

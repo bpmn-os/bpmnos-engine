@@ -208,14 +208,3 @@ const SystemState* Engine::getSystemState() {
   return systemState.get();
 }
 
-/*
-void Engine::advance(Token* token) {
-  StateMachine* stateMachine = const_cast<StateMachine*>(token->owner);
-  stateMachine->advance(*token);
-}
-
-void Engine::advance(const Token* token) {
-  advance( const_cast<Token*>(token) );
-}
-*/
-
