@@ -29,8 +29,11 @@ public:
   Token* parentToken;
 
   Tokens tokens; ///< Container with all tokens within the scope of the state machine.
-  StateMachines childInstances; ///< Container with state machines of all child scopes.
-  StateMachines eventSubprocessInstances; ///< Container with state machines representing instances of event subprocess.
+  StateMachines subProcesses; ///< Container with state machines of all active (sub)processes.
+  std::unique_ptr<StateMachine> interruptingEventSubProcess; ///< State machines representing an active event subprocess that is interrupting.
+  StateMachines nonInterruptingEventSubProcesses; ///< Container with state machines of all active event subprocesses that are not interrupting.
+  StateMachines pendingEventSubProcesses; ///< Container with state machines of all inactive event subprocesses that may be triggered.
+
 
   void run(const Values& status); ///< Create initial token and advance it.
   bool isCompleted() const;

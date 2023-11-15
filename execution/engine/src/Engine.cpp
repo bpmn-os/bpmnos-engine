@@ -78,13 +78,13 @@ bool Engine::advance() {
 
 void Engine::clearCompletedStateMachines() { 
   // delete all completed child instances and advance parent token
-  while ( systemState->completedChildInstances.size() ) {
-    auto child = systemState->completedChildInstances.back(); 
-    systemState->completedChildInstances.pop_back();
+  while ( systemState->completedSubProcesses.size() ) {
+    auto child = systemState->completedSubProcesses.back(); 
+    systemState->completedSubProcesses.pop_back();
 
     auto token = child->parentToken;
     auto stateMachine = const_cast<StateMachine*>(token->owner);
-    erase_ptr<StateMachine>(stateMachine->childInstances, child);
+    erase_ptr<StateMachine>(stateMachine->subProcesses, child);
     stateMachine->advanceToken(token, Token::State::COMPLETED);
   }
 

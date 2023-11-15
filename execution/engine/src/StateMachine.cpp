@@ -114,21 +114,43 @@ void StateMachine::advanceToken(Token* token, Token::State state) {
 
     auto& [key,completedTokens] = *it;
 
-    if ( eventSubprocessInstances.size() ) {
-      throw std::runtime_error("StateMachine: event subprocesses are not yet supported");
+    if ( completedTokens.size() < tokens.size() ) {
+      return;
     }
+    else if ( completedTokens.size() == tokens.size() ) {
+      // all tokens are in DONE state
+      for ( auto& eventSubProcess: pendingEventSubProcesses ) {
+        // remove tokens at start events from respective containers
+        auto token = eventSubProcess->tokens.front().get();
+        if ( token->node->represents<BPMN::MessageCatchEvent>() ) {
+          erase<Token*>(const_cast<SystemState*>(systemState)->tokensAwaitingMessageDelivery, token);
+        }
+        else if ( token->node->represents<BPMN::TimerCatchEvent>() ) {
+          // TODO
+          throw std::runtime_error("StateMachine: timer start events not yet implemented");
+        }
+        else {
+          throw std::runtime_error("StateMachine: illegal start event for event subprocess");
+        }
 
-    if ( completedTokens.size() > tokens.size() ) {
-std::cerr << completedTokens.size() << " > " << tokens.size() << " for " << scope->id << std::endl;
-for (auto completedToken : completedTokens) {
-std::cerr << completedToken << " / " << completedToken->jsonify().dump() << std::endl;
-}
+      }
+      // no new event subprocesses can be triggered
+      pendingEventSubProcesses.clear();
+    }
+    else {
       throw std::logic_error("StateMachine: too many tokens");
     }
 
-    if ( completedTokens.size() == tokens.size() ) {
-      shutdown(it);
+    if ( nonInterruptingEventSubProcesses.size() ) {
+      // wait until last event subprocess is completed
+      return;
     }
+
+    if ( interruptingEventSubProcess ) {
+      throw std::logic_error("StateMachine: interrupting event subprocesses hasn't removed tokens");
+    }
+
+    shutdown(it);
   }
   else {
     // nothing to be done here because token waits for event
@@ -141,8 +163,8 @@ void StateMachine::createChild(Token* parentToken, const BPMN::Scope* scope) {
     throw std::runtime_error("Token: scope '" + scope->id + "' has multiple start nodes");
   }
 
-  childInstances.push_back(std::make_unique<StateMachine>(systemState, scope, parentToken));
-  childInstances.back()->run(parentToken->status);
+  subProcesses.push_back(std::make_unique<StateMachine>(systemState, scope, parentToken));
+  subProcesses.back()->run(parentToken->status);
 }
 
 void StateMachine::createTokenCopies(Token* token, const std::vector<BPMN::SequenceFlow*>& sequenceFlows) {
@@ -205,6 +227,6 @@ void StateMachine::shutdown(std::unordered_map<const StateMachine*, std::vector<
 
   const_cast<SystemState*>(systemState)->tokensAwaitingStateMachineCompletion.erase(it);
 
-  const_cast<SystemState*>(systemState)->completedChildInstances.push_back(this);
+  const_cast<SystemState*>(systemState)->completedSubProcesses.push_back(this);
 }
 

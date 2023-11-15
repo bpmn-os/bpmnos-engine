@@ -87,7 +87,7 @@ public:
   std::unordered_map< const StateMachine*, std::vector<Token*> > tokensAwaitingStateMachineCompletion; ///< Map holding all tokens awaiting the completion of a state machine
 
   std::vector< const StateMachine* > completedInstances; ///< Vector holding all completed process instances
-  std::vector< const StateMachine* > completedChildInstances; ///< Vector holding all completed child instances
+  std::vector< const StateMachine* > completedSubProcesses; ///< Vector holding all completed subprocess instances
 
   struct PairHash {
     template <typename T1, typename T2>
