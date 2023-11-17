@@ -82,8 +82,12 @@
     <xsd:sequence>
       <xsd:element ref="enumeration" minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
-    <xsd:attribute name="minInclusive" type="xsd:decimal" use="optional"/>
-    <xsd:attribute name="maxInclusive" type="xsd:decimal" use="optional"/>
+    <xsd:sequence>
+      <xsd:element ref="minInclusive" minOccurs="0" maxOccurs="1"/>
+    </xsd:sequence>
+    <xsd:sequence>
+      <xsd:element ref="maxInclusive" minOccurs="0" maxOccurs="1"/>
+    </xsd:sequence>
     <xsd:attribute name="negate" type="xsd:boolean" use="optional"/>
     <xsd:attribute name="required" type="xsd:boolean" use="optional"/>
   </xsd:complexType>
@@ -92,6 +96,20 @@
   <xsd:complexType name="tEnumeration">
     <xsd:sequence>
       <xsd:attribute name="value" type="xsd:string" use="required"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:element name="minInclusive" type="tMinInclusive"/>
+  <xsd:complexType name="tMinInclusive">
+    <xsd:sequence>
+      <xsd:attribute name="value" type="xsd:decimal" use="required"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:element name="maxInclusive" type="tMaxInclusive"/>
+  <xsd:complexType name="tMaxInclusive">
+    <xsd:sequence>
+      <xsd:attribute name="value" type="xsd:decimal" use="required"/>
     </xsd:sequence>
   </xsd:complexType>
 

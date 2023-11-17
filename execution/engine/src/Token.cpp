@@ -2,6 +2,7 @@
 #include "StateMachine.h"
 #include "Engine.h"
 #include "model/parser/src/extensionElements/Status.h"
+#include "model/parser/src/extensionElements/Gatekeeper.h"
 #include "model/parser/src/extensionElements/Timer.h"
 #include "model/parser/src/JobShop.h"
 #include "model/parser/src/ResourceActivity.h"
@@ -359,8 +360,21 @@ void Token::advanceToDeparting() {
     throw std::runtime_error("Token: implicit split at node '" + node->id + "'");
   }
 
-  update(State::TO_BE_COPIED);
-  
+  if ( node->represents<BPMN::ExclusiveGateway>() ) {
+    for ( auto sequenceFlow : node->outgoing ) {
+      if ( auto gatekeeper = sequenceFlow->extensionElements->as<BPMNOS::Model::Gatekeeper>(); gatekeeper ) {
+        if ( gatekeeper->restrictionsSatisfied(status) ) {
+          advanceToDeparted(sequenceFlow);
+          return;
+        }
+      }
+    }
+    // TODO
+    throw std::runtime_error("Token: error handling for exclusive gateway not yet implemented");
+  }
+  else {
+    update(State::TO_BE_COPIED);
+  }
 }
 
 void Token::advanceToDeparted(const BPMN::SequenceFlow* sequenceFlow) {

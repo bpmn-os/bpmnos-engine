@@ -18,7 +18,7 @@ public:
 
   template <typename T>
   bool restrictionsSatisfied(const std::vector<std::optional<T> >& values) const {
-    for ( auto restriction : restrictions ) {
+    for ( auto& restriction : restrictions ) {
       if ( !restriction->isSatisfied(values) ) {
         return false; 
       }
