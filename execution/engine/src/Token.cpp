@@ -360,17 +360,25 @@ void Token::advanceToDeparting() {
     throw std::runtime_error("Token: implicit split at node '" + node->id + "'");
   }
 
-  if ( node->represents<BPMN::ExclusiveGateway>() ) {
+  if ( auto exclusiveGateway = node->represents<BPMN::ExclusiveGateway>(); exclusiveGateway ) {
     for ( auto sequenceFlow : node->outgoing ) {
-      if ( auto gatekeeper = sequenceFlow->extensionElements->as<BPMNOS::Model::Gatekeeper>(); gatekeeper ) {
-        if ( gatekeeper->restrictionsSatisfied(status) ) {
-          advanceToDeparted(sequenceFlow);
-          return;
+      if ( sequenceFlow != exclusiveGateway->defaultFlow ) {
+        if ( auto gatekeeper = sequenceFlow->extensionElements->as<BPMNOS::Model::Gatekeeper>(); gatekeeper ) {
+          if ( gatekeeper->restrictionsSatisfied(status) ) {
+            advanceToDeparted(sequenceFlow);
+            return;
+          }
         }
       }
     }
-    // TODO
-    throw std::runtime_error("Token: error handling for exclusive gateway not yet implemented");
+
+    // gatekeeper conditions are violated for sequence flows (except default flow)
+    if ( exclusiveGateway->defaultFlow ) {
+      advanceToDeparted(exclusiveGateway->defaultFlow);
+    }
+    else {
+      update(State::FAILED);
+    }
   }
   else {
     update(State::TO_BE_COPIED);
