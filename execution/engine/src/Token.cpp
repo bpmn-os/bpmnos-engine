@@ -363,16 +363,20 @@ void Token::advanceToDeparting() {
   if ( auto exclusiveGateway = node->represents<BPMN::ExclusiveGateway>(); exclusiveGateway ) {
     for ( auto sequenceFlow : node->outgoing ) {
       if ( sequenceFlow != exclusiveGateway->defaultFlow ) {
+        // check gatekeeper conditions
         if ( auto gatekeeper = sequenceFlow->extensionElements->as<BPMNOS::Model::Gatekeeper>(); gatekeeper ) {
           if ( gatekeeper->restrictionsSatisfied(status) ) {
             advanceToDeparted(sequenceFlow);
             return;
           }
         }
+        else {
+          throw std::logic_error("Token: no gatekeeper provided for sequence flow '" + sequenceFlow->id + "'");
+        }
       }
     }
 
-    // gatekeeper conditions are violated for sequence flows (except default flow)
+    // gatekeeper conditions are violated for all sequence flows (except default flow)
     if ( exclusiveGateway->defaultFlow ) {
       advanceToDeparted(exclusiveGateway->defaultFlow);
     }
