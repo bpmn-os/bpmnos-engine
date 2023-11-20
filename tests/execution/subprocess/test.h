@@ -23,8 +23,8 @@ SCENARIO( "Empty executable subprocess", "[execution][subprocess]" ) {
 //      engine.addEventHandler(&completionHandler);
       engine.addEventHandler(&exitHandler);
       engine.addEventHandler(&timeHandler);
-//      Execution::Recorder recorder;
-      Execution::Recorder recorder(std::cerr);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
       engine.addListener(&recorder);
       engine.run(scenario.get());
       THEN( "The recorder log has exactly 16 entries" ) {
@@ -58,69 +58,8 @@ SCENARIO( "Empty executable subprocess", "[execution][subprocess]" ) {
   }
 }
 
-/*
-SCENARIO( "Empty executable process", "[execution][process]" ) {
-  const std::string modelFile = "execution/process//Empty_executable_process.bpmn";
-  REQUIRE_NOTHROW( Model::Model(modelFile) );
-
-  GIVEN( "A single instance with no input values" ) {
-
-    std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-      "Process_1, Instance_1,,\n"
-    ;
-
-    Model::StaticDataProvider dataProvider(modelFile,csv);
-    auto scenario = dataProvider.createScenario();
-
-    WHEN( "The engine is started" ) {
-      Execution::Engine engine;
-      Execution::TimeWarp timeHandler;
-      engine.addEventHandler(&timeHandler);
-      THEN( "The engine completes without error" ) {
-        REQUIRE_NOTHROW( engine.run(scenario.get()) );
-      }
-    }
-
-    WHEN( "The engine is started with a recorder" ) {
-      Execution::Engine engine;
-      Execution::TimeWarp timeHandler;
-      engine.addEventHandler(&timeHandler);
-      Execution::Recorder recorder;
-//      Execution::Recorder recorder(std::cerr);
-      engine.addListener(&recorder);
-      engine.run(scenario.get());
-      THEN( "The recorder log has exactly 4 entries" ) {
-        REQUIRE( recorder.log.size() == 4 );
-      }
-      THEN( "The first entry of the recorder log has the correct data" ) {
-        REQUIRE( recorder.log.front()["instanceId"] == "Instance_1");
-        REQUIRE( recorder.log.front()["processId"] == "Process_1");
-        REQUIRE( recorder.log.front()["state"] == "ENTERED");
-        REQUIRE( recorder.log.front()["status"]["instance"] == "Instance_1");
-        REQUIRE( recorder.log.front()["status"]["timestamp"] == 0.0);
-      }
-      THEN( "The dump of each entry of the recorder log is correct" ) {
-        REQUIRE( recorder.log[0].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"state\":\"ENTERED\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
-        REQUIRE( recorder.log[1].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"state\":\"BUSY\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
-        REQUIRE( recorder.log[2].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"state\":\"COMPLETED\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
-        REQUIRE( recorder.log[3].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"state\":\"DONE\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
-      }
-      THEN( "The dump of the entire recorder log is correct" ) {
-        std::string expected = "["
-          "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"state\":\"ENTERED\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}},"
-          "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"state\":\"BUSY\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}},"
-          "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"state\":\"COMPLETED\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}},"
-          "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"state\":\"DONE\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}"
-          "]";
-        REQUIRE( recorder.log.dump() == expected );
-      }
-    }
-  }
-};
-
-SCENARIO( "Trivial executable process", "[execution][process]" ) {
-  const std::string modelFile = "execution/process/Trivial_executable_process.bpmn";
+SCENARIO( "Trivial executable subprocess", "[execution][subprocess]" ) {
+  const std::string modelFile = "execution/subprocess/Trivial_executable_subprocess.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
   GIVEN( "A single instance with no input values" ) {
 
@@ -132,39 +71,54 @@ SCENARIO( "Trivial executable process", "[execution][process]" ) {
     Model::StaticDataProvider dataProvider(modelFile,csv);
     auto scenario = dataProvider.createScenario();
 
-    WHEN( "The engine is started" ) {
-      Execution::Engine engine;
-      Execution::TimeWarp timeHandler;
-      engine.addEventHandler(&timeHandler);
-      THEN( "The engine completes without error" ) {
-        REQUIRE_NOTHROW( engine.run(scenario.get()) );
-      }
-    }
-
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine;
+      Execution::ReadyHandler readyHandler;
+      Execution::InstantEntryHandler entryHandler;
+//      Execution::DeterministicTaskCompletionHandler completionHandler;
+      Execution::InstantExitHandler exitHandler;
       Execution::TimeWarp timeHandler;
+      engine.addEventHandler(&readyHandler);
+      engine.addEventHandler(&entryHandler);
+//      engine.addEventHandler(&completionHandler);
+      engine.addEventHandler(&exitHandler);
       engine.addEventHandler(&timeHandler);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       engine.addListener(&recorder);
       engine.run(scenario.get());
-      THEN( "The recorder log has exactly 6 entries" ) {
-        REQUIRE( recorder.log.size() == 6 );
+      THEN( "The recorder log has exactly 18 entries" ) {
+        REQUIRE( recorder.log.size() == 18 );
       }
       THEN( "The dump of each entry of the recorder log is correct" ) {
-        REQUIRE( recorder.log[0].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"state\":\"ENTERED\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
-        REQUIRE( recorder.log[1].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"state\":\"BUSY\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
-
-        REQUIRE( recorder.log[2].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"nodeId\":\"StartEvent_1\",\"state\":\"ENTERED\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
-        REQUIRE( recorder.log[3].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"nodeId\":\"StartEvent_1\",\"state\":\"DONE\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
-
-        REQUIRE( recorder.log[4].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"state\":\"COMPLETED\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
-        REQUIRE( recorder.log[5].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"state\":\"DONE\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
-
+        size_t i=0;
+        // process
+        REQUIRE( recorder.log[i].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"state\":\"ENTERED\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
+        REQUIRE( recorder.log[++i].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"state\":\"BUSY\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
+        // start event
+        REQUIRE( recorder.log[++i].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"nodeId\":\"StartEvent_1\",\"state\":\"ENTERED\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
+        REQUIRE( recorder.log[++i].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"nodeId\":\"StartEvent_1\",\"sequenceFlowId\":\"Flow_01tjf2m\",\"state\":\"DEPARTED\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
+        // subprocess
+        REQUIRE( recorder.log[++i].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"nodeId\":\"Activity_1\",\"sequenceFlowId\":\"Flow_01tjf2m\",\"state\":\"ARRIVED\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
+        REQUIRE( recorder.log[++i].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"nodeId\":\"Activity_1\",\"state\":\"READY\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
+        REQUIRE( recorder.log[++i].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"nodeId\":\"Activity_1\",\"state\":\"ENTERED\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
+        REQUIRE( recorder.log[++i].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"nodeId\":\"Activity_1\",\"state\":\"BUSY\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
+        // start event of subprocess
+        REQUIRE( recorder.log[++i].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"nodeId\":\"StartEvent_2\",\"state\":\"ENTERED\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
+        REQUIRE( recorder.log[++i].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"nodeId\":\"StartEvent_2\",\"state\":\"DONE\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
+        // return to subprocess
+        REQUIRE( recorder.log[++i].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"nodeId\":\"Activity_1\",\"state\":\"COMPLETED\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
+        REQUIRE( recorder.log[++i].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"nodeId\":\"Activity_1\",\"state\":\"EXITING\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
+        REQUIRE( recorder.log[++i].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"nodeId\":\"Activity_1\",\"sequenceFlowId\":\"Flow_10i5l1l\",\"state\":\"DEPARTED\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
+        // end event
+        REQUIRE( recorder.log[++i].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"nodeId\":\"EndEvent_1\",\"sequenceFlowId\":\"Flow_10i5l1l\",\"state\":\"ARRIVED\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
+        REQUIRE( recorder.log[++i].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"nodeId\":\"EndEvent_1\",\"state\":\"ENTERED\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
+        REQUIRE( recorder.log[++i].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"nodeId\":\"EndEvent_1\",\"state\":\"DONE\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
+        // process
+        REQUIRE( recorder.log[++i].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"state\":\"COMPLETED\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
+        REQUIRE( recorder.log[++i].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"state\":\"DONE\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
       }
     }
   }
 }
 
-*/
