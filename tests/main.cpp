@@ -12,8 +12,9 @@ using namespace BPMNOS;
 #include "data/static/test.h"
 #include "data/dynamic/test.h"
 #include "execution/process/test.h"
+#include "execution/subprocess/test.h"
 #include "execution/parallelgateway/test.h"
-#include "execution/exclusivegateway/test.h"
+//#include "execution/exclusivegateway/test.h"
 
 // Playground
 #include <iostream>
