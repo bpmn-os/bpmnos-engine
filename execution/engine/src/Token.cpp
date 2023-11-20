@@ -198,6 +198,10 @@ void Token::advanceToEntered() {
     // advance to busy state
     advanceToBusy();
   }
+  else if ( node->represents<BPMN::EscalationThrowEvent>() ) {
+    // update status and delegate control to parent token
+    return;
+  }
   else {
     // tokens entering any other node automatically advance to done or
     // departed state

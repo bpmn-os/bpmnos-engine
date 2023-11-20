@@ -24,7 +24,6 @@ StateMachine::StateMachine(const SystemState* systemState, const BPMN::Scope* sc
 {
 }
 
-#include <iostream>
 void StateMachine::initiateEventSubproceses(Token* token) {
   for ( auto& eventSubProcess : scope->eventSubProcesses ) {
     pendingEventSubProcesses.push_back(std::make_unique<StateMachine>(systemState, eventSubProcess, token));
@@ -115,7 +114,7 @@ void StateMachine::advanceToken(Token* token, Token::State state) {
     token->advanceToDeparted(token->sequenceFlow);
   }
   else {
-    throw std::runtime_error("Token: advance token to illegal state");
+    throw std::runtime_error("StateMachine: advance token to illegal state");
   }
 
   // token has advanced as much as possible, need to decide how to continue
@@ -136,7 +135,7 @@ void StateMachine::advanceToken(Token* token, Token::State state) {
     }
     else {
       // TODO: determine sequence flows that receive a token
-      throw std::runtime_error("Token: diverging gateway type not yet supported");
+      throw std::runtime_error("StateMachine: diverging gateway type not yet supported");
     }
   }
   else if ( token->state == Token::State::HALTED) {
@@ -151,11 +150,34 @@ void StateMachine::advanceToken(Token* token, Token::State state) {
     }
     else {
       // TODO: determine sequence flows that have a token
-      throw std::runtime_error("Token: converging gateway type not yet supported");
+      throw std::runtime_error("StateMachine: converging gateway type not yet supported");
+    }
+  }
+  else if ( token->state == Token::State::ENTERED) {
+    if ( token->node->represents<BPMN::EscalationThrowEvent>() ) {
+      // update status
+      parentToken->status = token->status;
+      parentToken->update(parentToken->state);
+      // TODO: trigger boundary events or event-subprocess
+
+      if ( token->node->outgoing.empty() ) {
+        advanceToken(token, Token::State::DONE);
+      }
+      else if ( token->node->outgoing.size() == 1) {
+        token->sequenceFlow = token->node->outgoing.front();
+        advanceToken(token, Token::State::DEPARTED);
+      } 
+      else {
+        throw std::logic_error("StateMachine: implicit split for EscalationThrowEvent");
+      }
+    }
+    else {
+      // TODO: determine sequence flows that have a token
+      throw std::logic_error("StateMachine: token state can only be ENTERED for EscalationThrowEvent");
     }
   }
   else if ( token->state == Token::State::FAILED) {
-    throw std::runtime_error("Token: failed token not implemented");
+    throw std::runtime_error("StateMachine: failed token not implemented");
   }
   else if ( token->state == Token::State::DONE) {
     // TODO
@@ -214,7 +236,7 @@ void StateMachine::advanceToken(Token* token, Token::State state) {
 
 void StateMachine::createChild(Token* parentToken, const BPMN::Scope* scope) {
   if ( scope->startNodes.size() > 1 ) {
-    throw std::runtime_error("Token: scope '" + scope->id + "' has multiple start nodes");
+    throw std::runtime_error("StateMachine: scope '" + scope->id + "' has multiple start nodes");
   }
 
   subProcesses.push_back(std::make_unique<StateMachine>(systemState, scope, parentToken));

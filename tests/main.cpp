@@ -14,6 +14,7 @@ using namespace BPMNOS;
 #include "execution/process/test.h"
 #include "execution/subprocess/test.h"
 #include "execution/task/test.h"
+#include "execution/escalation/test.h"
 //#include "execution/eventsubprocess/test.h"
 #include "execution/parallelgateway/test.h"
 //#include "execution/exclusivegateway/test.h"
