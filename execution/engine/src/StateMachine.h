@@ -49,6 +49,8 @@ private:
 
   void createChild(Token* parentToken, const BPMN::Scope* scope); ///< Method creating the state machine for a (sub)process
 
+  void initiateEventSubproceses(Token* token); ///< Method initiating pending event subprocesses
+
   void createTokenCopies(Token* token, const std::vector<BPMN::SequenceFlow*>& sequenceFlows);
   void createMergedToken(std::unordered_map< std::pair<const StateMachine*, const BPMN::FlowNode*>, std::vector<Token*> >::iterator gatewayIt);
   void shutdown(std::unordered_map< const StateMachine*, std::vector<Token*> >::iterator it);

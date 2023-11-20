@@ -242,10 +242,10 @@ void Token::advanceToBusy() {
     auto trigger = node->extensionElements->as<BPMNOS::Model::Timer>()->trigger.get();
     BPMNOS::number time;
 
-    if ( trigger->attribute && status[trigger->attribute.value().get().index].has_value() ) {
+    if ( trigger && trigger->attribute && status[trigger->attribute.value().get().index].has_value() ) {
       time = status[trigger->attribute.value().get().index].value();
     }
-    else if ( trigger->value && trigger->value.has_value() ) {
+    else if ( trigger && trigger->value && trigger->value.has_value() ) {
       time = (int)trigger->value.value().get();
     }
     else {

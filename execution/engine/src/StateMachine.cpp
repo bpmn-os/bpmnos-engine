@@ -4,6 +4,7 @@
 #include "events/EntryEvent.h"
 #include "execution/utility/src/erase.h"
 #include "model/parser/src/extensionElements/Status.h"
+#include "model/parser/src/extensionElements/Timer.h"
 
 using namespace BPMNOS::Execution;
 
@@ -23,10 +24,56 @@ StateMachine::StateMachine(const SystemState* systemState, const BPMN::Scope* sc
 {
 }
 
+#include <iostream>
+void StateMachine::initiateEventSubproceses(Token* token) {
+  for ( auto& eventSubProcess : scope->eventSubProcesses ) {
+    pendingEventSubProcesses.push_back(std::make_unique<StateMachine>(systemState, eventSubProcess, token));
+    auto pendingEventSubProcess = pendingEventSubProcesses.back().get();
+
+    if ( pendingEventSubProcess->scope->startNodes.size() != 1 ) {
+      throw std::runtime_error("StateMachine: no unique start node for event subprocess '" + pendingEventSubProcess->scope->id + "'");
+    }
+
+    pendingEventSubProcess->tokens.push_back( std::make_unique<Token>(pendingEventSubProcess,nullptr,token->status) );
+
+    auto pendingToken = pendingEventSubProcess->tokens.back().get();
+
+    auto startNode = pendingEventSubProcess->scope->startNodes.front();
+    if ( startNode->represents<BPMN::TimerCatchEvent>() ) {
+      auto trigger = startNode->extensionElements->as<BPMNOS::Model::Timer>()->trigger.get();
+      BPMNOS::number time;
+      if ( trigger && trigger->attribute && token->status[trigger->attribute.value().get().index].has_value() ) {
+        time = token->status[trigger->attribute.value().get().index].value();
+      }
+      else if ( trigger && trigger->value && trigger->value.has_value() ) {
+        time = (int)trigger->value.value().get();
+      }
+      else {
+        throw std::runtime_error("StateMachine: no trigger given for node '" + pendingEventSubProcess->scope->id + "'");
+      }
+     
+      if ( time > systemState->getTime() ) {
+        // wait for scheduled time
+        pendingToken->awaitTimer(time);
+      }
+      else {
+        // remove event subprocess because scheduled time has been in the past
+        pendingEventSubProcesses.pop_back();
+      }
+    }
+    else if ( startNode->represents<BPMN::MessageCatchEvent>() ) {
+      pendingToken->awaitMessageDelivery();
+    }
+    else {
+      throw std::runtime_error("StateMachine: unsupported type of event subprocess '" + pendingEventSubProcess->scope->id + "'");
+    }
+  }
+}
+
 void StateMachine::run(const Values& status) {
 //std::cerr << "Run " << this << std::endl;
   if ( !parentToken ) {
-    // token without process represents a token at a process
+    // state machine without parent token represents a token at a process
     tokens.push_back( std::make_unique<Token>(this,nullptr,status) );
   }
   else {
@@ -40,15 +87,17 @@ void StateMachine::run(const Values& status) {
   if ( token->node && token->node->represents<BPMN::Activity>() ) {
     throw std::runtime_error("StateMachine: start node within scope of '" + scope->id + "' is an activity");
   }
+
   // advance token as far as possible
-  advanceToken(token,Token::State::ENTERED);
+  advanceToken(token,Token::State::CREATED);
 }
 
 void StateMachine::advanceToken(Token* token, Token::State state) {
 //std::cerr << "advanceToken" << std::endl;
 
-  if ( state == Token::State::DEPARTED) {
-    token->advanceToDeparted(token->sequenceFlow);
+  if ( state == Token::State::CREATED) {
+    initiateEventSubproceses(token);
+    token->advanceToEntered();
   }
   else if ( state == Token::State::READY) {
     token->advanceToReady();
@@ -61,6 +110,9 @@ void StateMachine::advanceToken(Token* token, Token::State state) {
   }
   else if ( state == Token::State::EXITING) {
     token->advanceToExiting();
+  }
+  else if ( state == Token::State::DEPARTED) {
+    token->advanceToDeparted(token->sequenceFlow);
   }
   else {
     throw std::runtime_error("Token: advance token to illegal state");
@@ -121,6 +173,8 @@ void StateMachine::advanceToken(Token* token, Token::State state) {
       // all tokens are in DONE state
       for ( auto& eventSubProcess: pendingEventSubProcesses ) {
         // remove tokens at start events from respective containers
+// TODO!
+/*
         auto token = eventSubProcess->tokens.front().get();
         if ( token->node->represents<BPMN::MessageCatchEvent>() ) {
           erase<Token*>(const_cast<SystemState*>(systemState)->tokensAwaitingMessageDelivery, token);
@@ -132,7 +186,7 @@ void StateMachine::advanceToken(Token* token, Token::State state) {
         else {
           throw std::runtime_error("StateMachine: illegal start event for event subprocess");
         }
-
+*/
       }
       // no new event subprocesses can be triggered
       pendingEventSubProcesses.clear();
