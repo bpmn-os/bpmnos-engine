@@ -8,6 +8,7 @@
 #include "model/parser/src/ResourceActivity.h"
 #include "model/parser/src/DecisionTask.h"
 #include "execution/listener/src/Listener.h"
+#include "execution/utility/src/erase.h"
 
 using namespace BPMNOS::Execution;
 
@@ -199,7 +200,12 @@ void Token::advanceToEntered() {
     advanceToBusy();
   }
   else if ( node->represents<BPMN::EscalationThrowEvent>() ) {
-    // update status and delegate control to parent token
+    // update status and delegate control to state machine
+    // if applicable, control will be delgated back to token 
+    return;
+  }
+  else if ( node->represents<BPMN::ErrorEndEvent>() ) {
+    update(State::FAILED);
     return;
   }
   else {
@@ -470,7 +476,7 @@ void Token::awaitExitEvent() {
 
 void Token::awaitTimer(BPMNOS::number time) {
   auto systemState = const_cast<SystemState*>(owner->systemState);
-  systemState->tokensAwaitingTimer.push({time,this});
+  systemState->tokensAwaitingTimer.insert({time,this});
 }
 
 
@@ -512,13 +518,85 @@ void Token::awaitGatewayActivation() {
   tokens.push_back(this);
 }
 
-/*
-void Token::awaitDisposal() {
+void Token::destroy() {
   auto systemState = const_cast<SystemState*>(owner->systemState);
-  systemState->tokensAwaitingDisposal[owner].push_back(this);
-}
-*/
+  if ( state == State::ARRIVED ) {
+    if ( node->represents<BPMN::ParallelGateway>() || node->represents<BPMN::InclusiveGateway>() ) {
+      auto it = systemState->tokensAwaitingGatewayActivation.find({owner, node});
+      if (it != systemState->tokensAwaitingGatewayActivation.end()) {
+        erase_ptr<Token>(it->second,this);
+        if ( it->second.empty() ) {
+          systemState->tokensAwaitingGatewayActivation.erase(it);
+        }
+      }
+      else {
+        throw std::logic_error("Token: cannot find gateway that token was waiting for");
+      }
+    }
+    else if ( node->represents<BPMN::Activity>() ) {
+      erase_ptr<Token>(systemState->tokensAwaitingReadyEvent,this);
+    }
+  }
+  else if ( state == State::READY ) {
+    if ( auto tokenAtResource = getResourceToken(); tokenAtResource ) {
+      auto it = systemState->tokensAwaitingJobEntryEvent.find(tokenAtResource);
+      if (it != systemState->tokensAwaitingJobEntryEvent.end()) {
+        erase_ptr<Token>(it->second,this);
+      }
+      // TODO: erase systemState->tokensAwaitingJobEntryEvent[tokenAtResource] when empty?
+    }
+    else {
+      erase_ptr<Token>(systemState->tokensAwaitingRegularEntryEvent,this);
+    }
+  }
+  else if ( state == State::BUSY ) {
+    if ( !node || node->represents<BPMN::SubProcess>() ) {
+      // TODO: event-subprocesses and boundary events
+      if ( node->represents<BPMNOS::Model::ResourceActivity>() ) {
+        // TODO
+//        erase_ptr<Token>(systemState->tokensAtIdleResources,this);
+//        erase_ptr<Token>(systemState->tokensAtActiveResources,this);
+        systemState->tokensAwaitingJobEntryEvent.erase(this);
+        erase_ptr<Token>(systemState->tokensAwaitingResourceShutdownEvent,this);
+      }
+    }
+    else if ( node->represents<BPMN::Task>() ) {
+      if ( node->represents<BPMNOS::Model::DecisionTask>() ) {
+        erase_ptr<Token>(systemState->tokensAwaitingChoiceEvent,this);
+      }
+      else {
+        erase_pair<BPMNOS::number,Token,SystemState::ScheduledTokenComparator>(systemState->tokensAwaitingTaskCompletionEvent,this);
+      }
+    }
+    else if ( node->represents<BPMN::TimerCatchEvent>() ) {
+        erase_pair<BPMNOS::number,Token,SystemState::ScheduledTokenComparator>(systemState->tokensAwaitingTimer,this);
+    }
+    else if ( node->represents<BPMN::MessageCatchEvent>() ) {
+      erase_ptr<Token>(systemState->tokensAwaitingMessageDelivery,this);
+    }
+    else if ( node->represents<BPMN::EventBasedGateway>() ) {
+      erase_ptr<Token>(systemState->tokensAwaitingEventBasedGateway,this);
+    }
+  }
+  else if ( state == State::COMPLETED ) {
+    if ( node && node->represents<BPMN::Activity>() ) {
+      erase_ptr<Token>(systemState->tokensAwaitingExitEvent,this);
+    }
+  }
+  else if ( state == State::DONE ) {
+    auto it = systemState->tokensAwaitingStateMachineCompletion.find(owner);
+    if (it != systemState->tokensAwaitingStateMachineCompletion.end()) {
+      erase_ptr<Token>(it->second,this);
+    }
+    else {
+      throw std::logic_error("Token: cannot find state machine that token is belonging to");
+    }
 
+        // TODO
+//    erase_ptr<Token>(systemState->tokensAwaitingStateMachineCompletion,this);
+//  std::unordered_map< const StateMachine*, std::vector<Token*> > tokensAwaitingStateMachineCompletion; ///< Map holding all tokens awaiting the completion of a state machine
+  }
+}
 
 Token* Token::getResourceToken() const {
   if ( auto jobShop = node->parent->represents<BPMNOS::Model::JobShop>(); jobShop ) {

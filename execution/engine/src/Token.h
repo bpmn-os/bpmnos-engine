@@ -78,11 +78,10 @@ private:
   void awaitEventBasedGateway(); ///< Wait for catching event at event-based gateways 
 
   void awaitStateMachineCompletion(); ///< Wait for completion of all tokens within a scope
-/*
-  void awaitDisposal(); ///< Wait for disposal of token to occur when all tokens are done or token flow of parent failed or is interrupted
-*/
 
   void awaitGatewayActivation(); ///< Wait for activiation of merging gateway
+
+  void destroy(); ///< Remove token from all data
 
   Token* getResourceToken() const; ///< Returns token at resource activity for tokens at jobs and nullptr for all other tokens
 

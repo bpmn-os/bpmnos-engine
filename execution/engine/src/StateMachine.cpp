@@ -1,4 +1,5 @@
 #include "StateMachine.h"
+#include "Token.h"
 #include "SystemState.h"
 #include "Event.h"
 #include "events/EntryEvent.h"
@@ -38,7 +39,11 @@ void StateMachine::initiateEventSubproceses(Token* token) {
     auto pendingToken = pendingEventSubProcess->tokens.back().get();
 
     auto startNode = pendingEventSubProcess->scope->startNodes.front();
-    if ( startNode->represents<BPMN::TimerCatchEvent>() ) {
+
+    if ( startNode->represents<BPMN::EscalationStartEvent>() ) {
+      // nothing to do here
+    }
+    else if ( startNode->represents<BPMN::TimerCatchEvent>() ) {
       auto trigger = startNode->extensionElements->as<BPMNOS::Model::Timer>()->trigger.get();
       BPMNOS::number time;
       if ( trigger && trigger->attribute && token->status[trigger->attribute.value().get().index].has_value() ) {
@@ -154,11 +159,36 @@ void StateMachine::advanceToken(Token* token, Token::State state) {
     }
   }
   else if ( token->state == Token::State::ENTERED) {
-    if ( token->node->represents<BPMN::EscalationThrowEvent>() ) {
+    if ( token->node && token->node->represents<BPMN::EscalationThrowEvent>() ) { 
       // update status
       parentToken->status = token->status;
       parentToken->update(parentToken->state);
-      // TODO: trigger boundary events or event-subprocess
+
+      // TODO: find event-subprocess triggered by escalation
+      auto eventSubprocess = pendingEventSubProcesses.front().get();
+
+      auto it = std::find_if(pendingEventSubProcesses.begin(), pendingEventSubProcesses.end(), [](std::unique_ptr<StateMachine>& eventSubProcess) {
+        auto startNode = eventSubProcess->scope->startNodes.front();
+        return startNode->represents<BPMN::EscalationStartEvent>();
+      });
+      if ( it != pendingEventSubProcesses.end() ) {
+        auto pendingEventSubProcess = it->get();
+        if ( pendingEventSubProcess->scope->as<BPMN::EventSubProcess>()->isInterrupting ) {
+          // TODO
+          // kill child instances
+          // destroy running tokens
+          // start interrupting event subprocess
+        }
+        else {
+          // TODO
+          // create new instantiation of event subprocess
+          // start non-interrupting event subprocess
+        }
+      }
+      
+      // TODO: find boundary event triggered by escalation
+      if ( auto activity = scope->represents<BPMN::Activity>(); activity ) {
+      }
 
       if ( token->node->outgoing.empty() ) {
         advanceToken(token, Token::State::DONE);
@@ -177,9 +207,41 @@ void StateMachine::advanceToken(Token* token, Token::State state) {
     }
   }
   else if ( token->state == Token::State::FAILED) {
-    throw std::runtime_error("StateMachine: failed token not implemented");
+    // update status of parent token with that of current token
+    parentToken->status = token->status;
+
+    // TODO: find event-subprocess triggered by error event
+    auto eventSubprocess = pendingEventSubProcesses.front().get();
+
+    auto it = std::find_if(pendingEventSubProcesses.begin(), pendingEventSubProcesses.end(), [](std::unique_ptr<StateMachine>& eventSubProcess) {
+      auto startNode = eventSubProcess->scope->startNodes.front();
+      return startNode->represents<BPMN::ErrorStartEvent>();
+    });
+
+    if ( it == pendingEventSubProcesses.end() ) {
+      // bubbble up error if not caught by event subprocess
+      terminate();
+      parentToken->update(Token::State::FAILED);
+    }
+    else {
+      // start error event subprocess
+      throw std::runtime_error("StateMachine: start error event subprocess not implemented");
+      // TODO
+      auto pendingEventSubProcess = it->get();
+      terminate();
+      parentToken->update(parentToken->state);
+    }
+
+
   }
   else if ( token->state == Token::State::DONE) {
+    if ( token->node && token->node->represents<BPMN::TerminateEvent>() ) {
+      // TODO: copy status to parent token
+      terminate();
+    }
+    else {
+    }
+
     // TODO
     auto it = const_cast<SystemState*>(systemState)->tokensAwaitingStateMachineCompletion.find(this);
     if ( it == const_cast<SystemState*>(systemState)->tokensAwaitingStateMachineCompletion.end() ) {
@@ -304,5 +366,30 @@ void StateMachine::shutdown(std::unordered_map<const StateMachine*, std::vector<
   const_cast<SystemState*>(systemState)->tokensAwaitingStateMachineCompletion.erase(it);
 
   const_cast<SystemState*>(systemState)->completedSubProcesses.push_back(this);
+}
+
+void StateMachine::terminate() {
+// TODO: resource activity must send error message
+// TODO: request, release must send revoke message
+
+  for ( auto& token : tokens ) {
+    token->destroy();
+  }
+  tokens.clear();
+
+  const_cast<SystemState*>(systemState)->tokensAwaitingStateMachineCompletion.erase(this);
+
+  for ( auto& subProcess : subProcesses ) {
+    subProcess->terminate();
+  }
+  subProcesses.clear();
+
+  for ( auto& eventSubProcess : nonInterruptingEventSubProcesses ) {
+    eventSubProcess->terminate();
+  }
+  nonInterruptingEventSubProcesses.clear();
+
+  pendingEventSubProcesses.clear();
+
 }
 

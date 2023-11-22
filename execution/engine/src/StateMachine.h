@@ -54,6 +54,10 @@ private:
   void createTokenCopies(Token* token, const std::vector<BPMN::SequenceFlow*>& sequenceFlows);
   void createMergedToken(std::unordered_map< std::pair<const StateMachine*, const BPMN::FlowNode*>, std::vector<Token*> >::iterator gatewayIt);
   void shutdown(std::unordered_map< const StateMachine*, std::vector<Token*> >::iterator it);
+  /**
+   * @brief Method destryoing all running tokens incl. subprocesses and non-interrupting event-subprocesses.
+   */
+  void terminate();
 };
 
 

@@ -18,12 +18,23 @@ class Engine;
 class SystemState {
 private:
   const Engine* engine;
+
   struct ScheduledTokenComparator {
     bool operator()(const std::pair<BPMNOS::number, Token*>& lhs, const std::pair<BPMNOS::number, Token*>& rhs) const {
       // Compare based on the 'time' component
       return lhs.first < rhs.first || (lhs.first == rhs.first && lhs.second < rhs.second);
     }
   };
+
+  struct PairHash {
+    template <typename T1, typename T2>
+    std::size_t operator () (const std::pair<T1, T2>& p) const {
+        auto h1 = std::hash<T1>{}(p.first);
+        auto h2 = std::hash<T2>{}(p.second);
+        return h1 ^ h2;
+    }
+  };
+
 public:
   SystemState(const Engine* engine, const BPMNOS::Model::Scenario* scenario, BPMNOS::number currentTime = 0);
 
@@ -78,28 +89,20 @@ public:
 
   std::vector<Token*> tokensAwaitingExitEvent; ///< Container holding all tokens awaiting an exit event
 
+//  std::priority_queue<std::pair<BPMNOS::number, Token*>, std::vector<std::pair<BPMNOS::number, Token*>>, ScheduledTokenComparator> tokensAwaitingTimer; ///< Priority queue holding all tokens awaiting a timer event
+  std::set<std::pair<BPMNOS::number, Token*>, ScheduledTokenComparator> tokensAwaitingTimer; ///< Sorted container holding holding all tokens awaiting a timer event
 
-  std::priority_queue<std::pair<BPMNOS::number, Token*>, std::vector<std::pair<BPMNOS::number, Token*>>, ScheduledTokenComparator> tokensAwaitingTimer; ///< Priority queue holding all tokens awaiting a timer event
+
   std::vector<Token*> tokensAwaitingMessageDelivery; ///< Container holding all tokens awaiting a message delivery event
 
   std::vector<Token*> tokensAwaitingEventBasedGateway; ///< Container holding all tokens awaiting activation event for an event-based gateway
 
   std::unordered_map< const StateMachine*, std::vector<Token*> > tokensAwaitingStateMachineCompletion; ///< Map holding all tokens awaiting the completion of a state machine
 
-  std::vector< const StateMachine* > completedInstances; ///< Vector holding all completed process instances
-  std::vector< const StateMachine* > completedSubProcesses; ///< Vector holding all completed subprocess instances
-
-  struct PairHash {
-    template <typename T1, typename T2>
-    std::size_t operator () (const std::pair<T1, T2>& p) const {
-        auto h1 = std::hash<T1>{}(p.first);
-        auto h2 = std::hash<T2>{}(p.second);
-        return h1 ^ h2;
-    }
-  };
   std::unordered_map< std::pair< const StateMachine*, const BPMN::FlowNode*>, std::vector<Token*>, PairHash > tokensAwaitingGatewayActivation; ///< Map holding tokens awaiting activation of a converging gateway 
 
-  std::unordered_map< const StateMachine*, std::vector<Token*> > tokensAwaitingDisposal; ///< Map holding all tokens awaiting a disposal for each (sub)process
+  std::vector< const StateMachine* > completedInstances; ///< Vector holding all completed process instances
+  std::vector< const StateMachine* > completedSubProcesses; ///< Vector holding all completed subprocess instances
 
 private:
   friend class Engine;
