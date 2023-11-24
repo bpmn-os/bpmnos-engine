@@ -9,6 +9,10 @@ Engine::Engine()
   clockTick = 1;
 }
 
+Engine::~Engine()
+{
+}
+
 void Engine::addEventHandler(EventHandler* eventHandler) {
   eventHandlers.push_back(eventHandler);
 }
@@ -57,8 +61,13 @@ bool Engine::advance() {
 
   // fetch and process all events
   while ( auto event = fetchEvent() ) {
-//std::cerr << "." << std::endl;
+//std::cerr << "*";
     event->processBy(this);
+
+    while ( commands.size() ) {
+      commands.front().execute();
+      commands.pop_front();
+    }
 
     clearCompletedStateMachines();
 
@@ -77,22 +86,34 @@ bool Engine::advance() {
 }
 
 void Engine::clearCompletedStateMachines() { 
+//std::cerr << "clearCompletedStateMachines " << systemState->completedStateMachines.size() << std::endl;
   // delete all completed child instances and advance parent token
-  while ( systemState->completedSubProcesses.size() ) {
-    auto child = systemState->completedSubProcesses.back(); 
-    systemState->completedSubProcesses.pop_back();
+  while ( systemState->completedStateMachines.size() ) {
+    auto stateMachine = const_cast<StateMachine*>(systemState->completedStateMachines.back());
+    systemState->completedStateMachines.pop_back();
 
-    auto token = child->parentToken;
-    auto stateMachine = const_cast<StateMachine*>(token->owner);
-    erase_ptr<StateMachine>(stateMachine->subProcesses, child);
-    stateMachine->advanceToken(token, Token::State::COMPLETED);
-  }
+    if ( !stateMachine->parentToken ) {
+      deleteInstance(stateMachine);
+    }
+    else {
+      if ( auto eventSubProcess = stateMachine->scope->represents<BPMN::EventSubProcess>(); eventSubProcess ) {
+        if ( eventSubProcess->isInterrupting ) {
+          auto parent = const_cast<StateMachine*>(stateMachine->parentToken->owner);
+          parent->advanceToken(stateMachine->parentToken, Token::State::COMPLETED);
+        }
+        else {
+          throw std::runtime_error("Engine: Non-interrupting event subprocesses not yet implemented");
+        }
+      }
+      else {
+        // state machine represents a completed (sub)process
+        auto parent = const_cast<StateMachine*>(stateMachine->parentToken->owner);
+        erase_ptr<StateMachine>(parent->subProcesses, stateMachine);
+        parent->advanceToken(stateMachine->parentToken, Token::State::COMPLETED);
+      }
+    }
 
-  // delete completed instances
-  for ( auto instance : systemState->completedInstances ) {
-    deleteInstance(const_cast<StateMachine*>(instance));
   }
-  systemState->completedInstances.clear();
 }
 
 void Engine::addInstances() {

@@ -171,8 +171,12 @@ void Token::advanceToEntered() {
       }
     }
   }
+//std::cerr << "advancedToEntered!" << std::endl;
 
   update(State::ENTERED);
+//std::cerr << "updatedToEntered" << std::endl;
+
+//std::cerr << jsonify().dump() << std::endl;
 
   // only check feasibility for processes and activities
   // feasibility of all other tokens must have been validated before 
@@ -180,6 +184,7 @@ void Token::advanceToEntered() {
   if ( !node || node->represents<BPMN::Activity>() ) {
     // check restrictions
     if ( !isFeasible() ) {
+//      queueCommand(&Token::advanceToFailed);
       advanceToFailed();
       return;
     }
@@ -188,7 +193,7 @@ void Token::advanceToEntered() {
     // advance to busy state
     advanceToBusy();
   }
-  else if ( node->represents<BPMN::CatchEvent>() && !node->represents<BPMN::UntypedStartEvent>()
+  else if ( node->represents<BPMN::CatchEvent>() && node->incoming.size()
   ) {
     // tokens entering a catching event automatically
     // advance to busy state
@@ -402,6 +407,7 @@ void Token::advanceToDeparting() {
 void Token::advanceToDeparted(const BPMN::SequenceFlow* sequenceFlow) {
   this->sequenceFlow = sequenceFlow;
   update(State::DEPARTED);
+//  queueCommand(&Token::advanceToArrived);
   advanceToArrived();
 }
 
@@ -625,6 +631,15 @@ void Token::update(State newState) {
   notify();
 }
 
+
+template <typename Function, typename... Args>
+void Token::queueCommand(Function&& f, Args&&... args) {
+  const_cast<Engine*>(owner->systemState->engine)->commands.emplace_back(
+    const_cast<StateMachine*>(owner),
+    this,
+    std::bind(std::forward<Function>(f), this, std::forward<Args>(args)...)
+  );
+}
 
 void Token::notify() const {
   for ( auto listener : owner->systemState->engine->listeners ) {

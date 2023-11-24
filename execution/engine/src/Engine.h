@@ -3,6 +3,7 @@
 
 #include <set>
 #include <vector>
+#include <list> 
 #include "Event.h"
 #include "events/ClockTickEvent.h"
 #include "events/TaskCompletionEvent.h"
@@ -14,6 +15,7 @@
 //#include "events/TimerEvent.h"
 #include "EventHandler.h"
 #include "StateMachine.h"
+#include "Token.h"
 #include "SystemState.h"
 
 namespace BPMNOS::Execution {
@@ -21,8 +23,11 @@ namespace BPMNOS::Execution {
 class Listener;
 
 class Engine {
+  friend class Token;
+  friend class StateMachine;
 public:
   Engine();
+  ~Engine();
   void addEventHandler(EventHandler* eventHandler);
   void addListener(Listener* listener);
 
@@ -53,6 +58,26 @@ public:
   const SystemState* getSystemState();
 
 protected:
+  class Command {
+  public:
+    template <typename Function, typename... Args>
+    Command(StateMachine* stateMachine, Token* token, Function&& f, Args&&... args)
+      : stateMachine(stateMachine)
+      , token(token)
+      , function(std::bind(std::forward<Function>(f), std::forward<Args>(args)...)) {}
+    void execute() { function(); }
+    // Make the class movable
+    Command(Command&& other) noexcept : function(std::move(other.function)) {}
+    // Make the class non-copyable
+    Command(const Command&) = delete;
+    Command& operator=(const Command&) = delete;
+  private:
+    const StateMachine* stateMachine;
+    const Token* token;
+    std::function<void()> function;
+  };
+
+  std::list<Command> commands; ///< List of commands to be executed
   void clearCompletedStateMachines(); ///< Clears all completed state machines and advances parent tokens as much as possible
 
   void addInstances(); ///< Method adding all new instances and advancing tokens as much as possible
@@ -62,7 +87,7 @@ protected:
   BPMNOS::number clockTick; ///< Timestep used to advance the current time by systemState.time += clockTick
   std::unique_ptr<SystemState> systemState;
   bool advance();
-  friend void Token::notify() const;
+//  friend void Token::notify() const;
   std::vector<EventHandler*> eventHandlers;
   std::vector<Listener*> listeners;
 

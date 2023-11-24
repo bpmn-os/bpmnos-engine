@@ -25,7 +25,7 @@ void erase_ptr(std::vector<std::unique_ptr<T>>& container, const T* elementPtr) 
   );
 
   if (it == container.end()) {
-    throw std::logic_error("erase_ptr: cannot find element to be removed");
+    throw std::logic_error("erase_ptr: cannot find unique pointer to be removed");
   }
   container.erase(it);
 }
@@ -52,7 +52,7 @@ void erase_ptr(std::vector<T*>& container, const T* elementPtr) {
   );
 
   if (it == container.end()) {
-    throw std::logic_error("erase: cannot find element to be removed");
+    throw std::logic_error("erase_ptr: cannot find pointer to be removed");
   }
   container.erase(it);
 }
@@ -79,7 +79,7 @@ void erase_pair(std::set< std::pair<K,T*>, Comparator >& container, const T* ele
   );
 
   if (it == container.end()) {
-    throw std::logic_error("erase: cannot find element to be removed");
+    throw std::logic_error("erase_pair: cannot find element to be removed");
   }
   container.erase(it);
 }

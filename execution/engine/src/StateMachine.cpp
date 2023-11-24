@@ -1,3 +1,4 @@
+#include "Engine.h"
 #include "StateMachine.h"
 #include "Token.h"
 #include "SystemState.h"
@@ -14,6 +15,7 @@ StateMachine::StateMachine(const SystemState* systemState, const BPMN::Process* 
   , process(process)
   , scope(process)
   , parentToken(nullptr)
+  , isCompleting(false)
 {
 }
 
@@ -22,18 +24,30 @@ StateMachine::StateMachine(const SystemState* systemState, const BPMN::Scope* sc
   , process(parentToken->owner->process)
   , scope(scope)
   , parentToken(parentToken)
+  , isCompleting(false)
 {
 }
 
-void StateMachine::initiateEventSubproceses(Token* token) {
+StateMachine::StateMachine(const StateMachine* other)
+  : systemState(other->systemState)
+  , process(other->process)
+  , scope(other->scope)
+  , parentToken(other->parentToken)
+  , isCompleting(false)
+{
+}
+
+void StateMachine::initiateEventSubprocesses(Token* token) {
   for ( auto& eventSubProcess : scope->eventSubProcesses ) {
     pendingEventSubProcesses.push_back(std::make_unique<StateMachine>(systemState, eventSubProcess, token));
     auto pendingEventSubProcess = pendingEventSubProcesses.back().get();
+//std::cerr << "Pending event subprocess has parent: " << pendingEventSubProcess->parentToken->jsonify().dump() << std::endl;
 
     if ( pendingEventSubProcess->scope->startNodes.size() != 1 ) {
       throw std::runtime_error("StateMachine: no unique start node for event subprocess '" + pendingEventSubProcess->scope->id + "'");
     }
 
+/*
     pendingEventSubProcess->tokens.push_back( std::make_unique<Token>(pendingEventSubProcess,nullptr,token->status) );
 
     auto pendingToken = pendingEventSubProcess->tokens.back().get();
@@ -71,23 +85,30 @@ void StateMachine::initiateEventSubproceses(Token* token) {
     else {
       throw std::runtime_error("StateMachine: unsupported type of event subprocess '" + pendingEventSubProcess->scope->id + "'");
     }
+*/
   }
 }
 
 void StateMachine::run(const Values& status) {
-//std::cerr << "Run " << this << std::endl;
+//std::cerr << "Run " << scope->id << std::endl;
   if ( !parentToken ) {
     // state machine without parent token represents a token at a process
+//std::cerr << "Start process " << process->id << std::endl;
     tokens.push_back( std::make_unique<Token>(this,nullptr,status) );
   }
   else {
     if ( scope->startNodes.size() != 1 ) {
       throw std::runtime_error("StateMachine: no unique start node within scope of '" + scope->id + "'");
     }
+//std::cerr << "Start at " << scope->startNodes.front()->id << std::endl;
+//std::cerr << "Parent: " << parentToken->jsonify().dump() << "<" << std::endl;
     tokens.push_back( std::make_unique<Token>(this,scope->startNodes.front(),status) );
+//    Token t = Token(this,scope->startNodes.front(),status);
+//std::cerr << scope->id << " =>" << t.jsonify().dump() << "<" << std::endl;
   }
 
   auto token = tokens.back().get();
+//std::cerr << ">" << token->jsonify().dump() << "<" << std::endl;
   if ( token->node && token->node->represents<BPMN::Activity>() ) {
     throw std::runtime_error("StateMachine: start node within scope of '" + scope->id + "' is an activity");
   }
@@ -96,11 +117,24 @@ void StateMachine::run(const Values& status) {
   advanceToken(token,Token::State::CREATED);
 }
 
+template <typename Function, typename... Args>
+void StateMachine::queueCommand(Function&& f, Args&&... args) {
+  const_cast<Engine*>(systemState->engine)->commands.emplace_back(
+    this,
+    nullptr,
+    std::bind(std::forward<Function>(f), this, std::forward<Args>(args)...)
+  );
+}
+
 void StateMachine::advanceToken(Token* token, Token::State state) {
-//std::cerr << "advanceToken" << std::endl;
+//std::cerr << "advanceToken " << scope->id << std::endl;
 
   if ( state == Token::State::CREATED) {
-    initiateEventSubproceses(token);
+//std::cerr << "initiateEventSubproceses " << scope->id << std::endl;
+    if ( !parentToken ) {
+      // state machine is top level-process
+      initiateEventSubprocesses(token);
+    }
     token->advanceToEntered();
   }
   else if ( state == Token::State::READY) {
@@ -123,6 +157,7 @@ void StateMachine::advanceToken(Token* token, Token::State state) {
   }
 
   // token has advanced as much as possible, need to decide how to continue
+//std::cerr << std::endl << "Continue with: " << token->jsonify().dump() << std::endl;
 
   if ( token->state == Token::State::BUSY) {
     if ( !token->node || token->node->represents<BPMN::SubProcess>() ) {
@@ -164,9 +199,8 @@ void StateMachine::advanceToken(Token* token, Token::State state) {
       parentToken->status = token->status;
       parentToken->update(parentToken->state);
 
+/*
       // TODO: find event-subprocess triggered by escalation
-      auto eventSubprocess = pendingEventSubProcesses.front().get();
-
       auto it = std::find_if(pendingEventSubProcesses.begin(), pendingEventSubProcesses.end(), [](std::unique_ptr<StateMachine>& eventSubProcess) {
         auto startNode = eventSubProcess->scope->startNodes.front();
         return startNode->represents<BPMN::EscalationStartEvent>();
@@ -189,6 +223,7 @@ void StateMachine::advanceToken(Token* token, Token::State state) {
       // TODO: find boundary event triggered by escalation
       if ( auto activity = scope->represents<BPMN::Activity>(); activity ) {
       }
+*/
 
       if ( token->node->outgoing.empty() ) {
         advanceToken(token, Token::State::DONE);
@@ -209,37 +244,44 @@ void StateMachine::advanceToken(Token* token, Token::State state) {
   else if ( token->state == Token::State::FAILED) {
     // update status of parent token with that of current token
     parentToken->status = token->status;
-
-    // TODO: find event-subprocess triggered by error event
-    auto eventSubprocess = pendingEventSubProcesses.front().get();
-
+    // find event-subprocess catching error
     auto it = std::find_if(pendingEventSubProcesses.begin(), pendingEventSubProcesses.end(), [](std::unique_ptr<StateMachine>& eventSubProcess) {
       auto startNode = eventSubProcess->scope->startNodes.front();
       return startNode->represents<BPMN::ErrorStartEvent>();
     });
 
     if ( it == pendingEventSubProcesses.end() ) {
+std::cerr << "bubbble up error" << std::endl;
       // bubbble up error if not caught by event subprocess
+      // TODO
+/*
       terminate();
+*/
       parentToken->update(Token::State::FAILED);
     }
     else {
+std::cerr << "trigger error event subprocess" << std::endl;
       // start error event subprocess
-      throw std::runtime_error("StateMachine: start error event subprocess not implemented");
+//      throw std::runtime_error("StateMachine: start error event subprocess not implemented");
       // TODO
-      auto pendingEventSubProcess = it->get();
-      terminate();
-      parentToken->update(parentToken->state);
+/*
+       terminate();
+*/
+       createInterruptingEventSubprocess(it->get(),parentToken->status);
     }
-
-
   }
   else if ( token->state == Token::State::DONE) {
+/*
     if ( token->node && token->node->represents<BPMN::TerminateEvent>() ) {
       // TODO: copy status to parent token
       terminate();
     }
     else {
+    }
+*/
+    if ( token->owner->nonInterruptingEventSubProcesses.size() ) {
+      // wait for completion of all non-interrupting event subürocesses
+      return;
     }
 
     // TODO
@@ -255,10 +297,12 @@ void StateMachine::advanceToken(Token* token, Token::State state) {
     }
     else if ( completedTokens.size() == tokens.size() ) {
       // all tokens are in DONE state
+      // no new event subprocesses can be triggered
+      pendingEventSubProcesses.clear();
+/*
       for ( auto& eventSubProcess: pendingEventSubProcesses ) {
         // remove tokens at start events from respective containers
 // TODO!
-/*
         auto token = eventSubProcess->tokens.front().get();
         if ( token->node->represents<BPMN::MessageCatchEvent>() ) {
           erase<Token*>(const_cast<SystemState*>(systemState)->tokensAwaitingMessageDelivery, token);
@@ -270,10 +314,8 @@ void StateMachine::advanceToken(Token* token, Token::State state) {
         else {
           throw std::runtime_error("StateMachine: illegal start event for event subprocess");
         }
-*/
       }
-      // no new event subprocesses can be triggered
-      pendingEventSubProcesses.clear();
+*/
     }
     else {
       throw std::logic_error("StateMachine: too many tokens");
@@ -296,13 +338,49 @@ void StateMachine::advanceToken(Token* token, Token::State state) {
 
 }
 
-void StateMachine::createChild(Token* parentToken, const BPMN::Scope* scope) {
+void StateMachine::createChild(Token* parent, const BPMN::Scope* scope) {
   if ( scope->startNodes.size() > 1 ) {
     throw std::runtime_error("StateMachine: scope '" + scope->id + "' has multiple start nodes");
   }
 
-  subProcesses.push_back(std::make_unique<StateMachine>(systemState, scope, parentToken));
-  subProcesses.back()->run(parentToken->status);
+  subProcesses.push_back(std::make_unique<StateMachine>(systemState, scope, parent));
+  auto subProcess = subProcesses.back().get();
+  subProcess->initiateEventSubprocesses(parent);
+  subProcess->run(parent->status);
+}
+
+void StateMachine::createInterruptingEventSubprocess(const StateMachine* pendingEventSubProcess, const BPMNOS::Values& status) {
+  interruptingEventSubProcess = std::make_unique<StateMachine>(pendingEventSubProcess);
+  // delete pending event subprocess to ensure that they will not be triggered again
+  pendingEventSubProcesses.clear();
+//std::cerr << "triggered interrupting event subprocess with scope " <<  interruptingEventSubProcess->scope->id << std::endl;
+
+  interruptingEventSubProcess->run(status);
+}
+
+/*
+      interruptingEventSubProcess = std::make_unique<StateMachine>(it->get());
+      auto startNode = interruptingEventSubProcess->scope->startNodes.front();
+      interruptingEventSubProcess->tokens.push_back( std::make_unique<Token>( interruptingEventSubProcess.get(), startNode,token->status) );
+
+std::cerr << "terminate " << token << "/" << interruptingEventSubProcess->tokens.back().get() <<std::endl;
+std::cerr << "token: " << token->jsonify().dump() <<  std::endl;
+
+      terminate();
+
+std::cerr << "advance " << interruptingEventSubProcess->tokens.size() <<std::endl;
+      auto pendingToken = interruptingEventSubProcess->tokens.back().get();
+std::cerr << pendingToken << "/" << pendingToken->jsonify().dump() <<  std::endl;
+//      interruptingEventSubProcess->advanceToken(interruptingEventSubProcess->tokens.back().get(), Token::State::CREATED);
+std::cerr << "shutdown (" << interruptingEventSubProcess->scope->id << "): " << scope->id << std::endl;
+
+      return;
+//      parentToken->update(parentToken->state);
+*/
+
+void StateMachine::createNonInterruptingEventSubprocess(const StateMachine* pendingEventSubProcess, const BPMNOS::Values& status) {
+  nonInterruptingEventSubProcesses.push_back( std::make_unique<StateMachine>(pendingEventSubProcess) );
+  nonInterruptingEventSubProcesses.back()->run(status);
 }
 
 void StateMachine::createTokenCopies(Token* token, const std::vector<BPMN::SequenceFlow*>& sequenceFlows) {
@@ -343,41 +421,42 @@ void StateMachine::createMergedToken(std::unordered_map< std::pair<const StateMa
 }
 
 void StateMachine::shutdown(std::unordered_map<const StateMachine*, std::vector<Token*> >::iterator it) {
+//std::cerr << "start shutdown: " << scope->id << std::endl;
   auto& [key,completedTokens] = *it;
 
+/*
   if ( !parentToken ) {
     // remove instance from system state
     const_cast<SystemState*>(systemState)->tokensAwaitingStateMachineCompletion.erase(it);
-    const_cast<SystemState*>(systemState)->completedInstances.push_back(this);
+    const_cast<SystemState*>(systemState)->completedStateMachines.push_back(this);
 
+std::cerr << "shutdown (no parent): " << scope->id << std::endl;
     return;
   }
+*/
 
-  // merge tokens
-  for ( auto& value : parentToken->status ) {
-    value = std::nullopt;
-  }
+  if ( parentToken ) {
+    // merge tokens
+    for ( auto& value : parentToken->status ) {
+      value = std::nullopt;
+    }
 
-  for ( auto completedToken : completedTokens ) {
-    parentToken->mergeStatus(completedToken);
-    erase_ptr<Token>(tokens,completedToken);
+    for ( auto completedToken : completedTokens ) {
+      parentToken->mergeStatus(completedToken);
+      erase_ptr<Token>(tokens,completedToken);
+    }
   }
 
   const_cast<SystemState*>(systemState)->tokensAwaitingStateMachineCompletion.erase(it);
 
-  const_cast<SystemState*>(systemState)->completedSubProcesses.push_back(this);
+  const_cast<SystemState*>(systemState)->completedStateMachines.push_back(this);
+
+//std::cerr << "shutdown (done): " << scope->id << "/" << systemState->completedStateMachines.size() <<std::endl;
 }
 
 void StateMachine::terminate() {
 // TODO: resource activity must send error message
 // TODO: request, release must send revoke message
-
-  for ( auto& token : tokens ) {
-    token->destroy();
-  }
-  tokens.clear();
-
-  const_cast<SystemState*>(systemState)->tokensAwaitingStateMachineCompletion.erase(this);
 
   for ( auto& subProcess : subProcesses ) {
     subProcess->terminate();
@@ -389,7 +468,11 @@ void StateMachine::terminate() {
   }
   nonInterruptingEventSubProcesses.clear();
 
-  pendingEventSubProcesses.clear();
+  for ( auto& childToken : tokens ) {
+    childToken->destroy();
+  }
+  tokens.clear();
 
+  const_cast<SystemState*>(systemState)->tokensAwaitingStateMachineCompletion.erase(this);
 }
 

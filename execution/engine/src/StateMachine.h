@@ -23,10 +23,12 @@ class StateMachine {
 public:
   StateMachine(const SystemState* systemState, const BPMN::Process* process);
   StateMachine(const SystemState* systemState, const BPMN::Scope* scope, Token* parentToken);
+  StateMachine(const StateMachine* other);
   const SystemState* systemState;
   const BPMN::Process* process; ///< Pointer to the top-level process.
   const BPMN::Scope* scope; ///< Pointer to the current scope.
   Token* parentToken;
+  bool isCompleting; ///< Boolean value if tokens have reached DONE state.
 
   Tokens tokens; ///< Container with all tokens within the scope of the state machine.
   StateMachines subProcesses; ///< Container with state machines of all active (sub)processes.
@@ -36,20 +38,30 @@ public:
 
 
   void run(const Values& status); ///< Create initial token and advance it.
-  bool isCompleted() const;
 
 private:
   friend class Engine;
   friend class SystemState;
   friend class Token;
+
+  /**
+   * @brief Add a method to the command queue of the engine
+   */
+  template <typename Function, typename... Args>
+  void queueCommand(Function&& f, Args&&... args);
+
   /**
    * @brief Set token state and advance token as much as possible.
    */
   void advanceToken(Token* token, Token::State state);
 
-  void createChild(Token* parentToken, const BPMN::Scope* scope); ///< Method creating the state machine for a (sub)process
+  void createChild(Token* parent, const BPMN::Scope* scope); ///< Method creating the state machine for a (sub)process
 
-  void initiateEventSubproceses(Token* token); ///< Method initiating pending event subprocesses
+  void createInterruptingEventSubprocess(const StateMachine* pendingEventSubProcess, const BPMNOS::Values& status); ///< Method creating the state machine for an interrupting event sprocess
+
+  void createNonInterruptingEventSubprocess(const StateMachine* pendingEventSubProcess, const BPMNOS::Values& status); ///< Method creating the state machine for an non-interrupting event sprocess
+
+  void initiateEventSubprocesses(Token* token); ///< Method initiating pending event subprocesses
 
   void createTokenCopies(Token* token, const std::vector<BPMN::SequenceFlow*>& sequenceFlows);
   void createMergedToken(std::unordered_map< std::pair<const StateMachine*, const BPMN::FlowNode*>, std::vector<Token*> >::iterator gatewayIt);

@@ -5,9 +5,11 @@
 #include "model/parser/src/extensionElements/Status.h"
 #include "model/utility/src/Number.h"
 #include <nlohmann/json.hpp>
+#include <iostream>
 
 namespace BPMNOS::Execution {
 
+class Engine;
 class StateMachine;
 class Token;
 typedef std::vector< std::unique_ptr<Token> > Tokens;
@@ -47,6 +49,12 @@ private:
   const BPMNOS::Model::AttributeMap& getAttributeMap() const;
 
   bool isFeasible(); ///< Check restrictions within current and ancestor scopes
+
+  /**
+   * @brief Add a method to the command queue of the engine
+   */
+  template <typename Function, typename... Args>
+  void queueCommand(Function&& f, Args&&... args);
 
   void advanceFromCreated();
   void advanceToReady();
