@@ -184,25 +184,32 @@ void Token::advanceToEntered() {
   if ( !node || node->represents<BPMN::Activity>() ) {
     // check restrictions
     if ( !isFeasible() ) {
-//      queueCommand(&Token::advanceToFailed);
-      advanceToFailed();
+      auto engine = const_cast<Engine*>(owner->systemState->engine);
+      engine->commands.emplace_back(std::bind(&Token::advanceToFailed,this), owner, this);
+//      advanceToFailed();
       return;
     }
     
     // tokens entering an activity automatically
     // advance to busy state
-    advanceToBusy();
+    auto engine = const_cast<Engine*>(owner->systemState->engine);
+    engine->commands.emplace_back(std::bind(&Token::advanceToBusy,this), owner, this);
+//    advanceToBusy();
   }
   else if ( node->represents<BPMN::CatchEvent>() && node->incoming.size()
   ) {
     // tokens entering a catching event automatically
     // advance to busy state
-    advanceToBusy();
+    auto engine = const_cast<Engine*>(owner->systemState->engine);
+    engine->commands.emplace_back(std::bind(&Token::advanceToBusy,this), owner, this);
+//    advanceToBusy();
   }
   else if ( node->represents<BPMN::EventBasedGateway>() ) {
     // tokens entering an event-based gateway automatically
     // advance to busy state
-    advanceToBusy();
+    auto engine = const_cast<Engine*>(owner->systemState->engine);
+    engine->commands.emplace_back(std::bind(&Token::advanceToBusy,this), owner, this);
+//    advanceToBusy();
   }
   else if ( node->represents<BPMN::EscalationThrowEvent>() ) {
     // update status and delegate control to state machine
@@ -210,14 +217,17 @@ void Token::advanceToEntered() {
     return;
   }
   else if ( node->represents<BPMN::ErrorEndEvent>() ) {
-    update(State::FAILED);
+    auto engine = const_cast<Engine*>(owner->systemState->engine);
+    engine->commands.emplace_back(std::bind(&Token::advanceToFailed,this), owner, this);
     return;
   }
   else {
     // tokens entering any other node automatically advance to done or
     // departed state
     if ( node->outgoing.empty() ) {
-      advanceToDone();
+      auto engine = const_cast<Engine*>(owner->systemState->engine);
+      engine->commands.emplace_back(std::bind(&Token::advanceToDone,this), owner, this);
+//      advanceToDone();
       return;
     }
     advanceToDeparting();
@@ -232,20 +242,32 @@ void Token::advanceToBusy() {
     // token is at process
     auto scope = owner->process->as<BPMN::Scope>();
     if ( scope->startNodes.empty() ) {
-      advanceToCompleted();
+      auto engine = const_cast<Engine*>(owner->systemState->engine);
+      engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,this), owner, this);
+//      advanceToCompleted();
     }
     else {
-      // delegate creation of children back to state machine
+      if ( scope->startNodes.size() == 1 ) {
+        // create child statemachine
+        auto engine = const_cast<Engine*>(owner->systemState->engine);
+        engine->commands.emplace_back(std::bind(&StateMachine::createChild,const_cast<StateMachine*>(owner),this,scope), owner,this);
+      }
       return;
     }
   }
   else if ( node->represents<BPMN::SubProcess>() ) {
     auto scope = node->as<BPMN::Scope>();
     if ( scope->startNodes.empty() ) {
-      advanceToCompleted();
+      auto engine = const_cast<Engine*>(owner->systemState->engine);
+      engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,this), owner, this);
+//      advanceToCompleted();
     }
     else {
-      // delegate creation of children back to state machine
+      if ( scope->startNodes.size() == 1 ) {
+        // create child statemachine
+        auto engine = const_cast<Engine*>(owner->systemState->engine);
+        engine->commands.emplace_back(std::bind(&StateMachine::createChild,const_cast<StateMachine*>(owner),this,scope), owner,this);
+      }
       return;
     }
   }
@@ -271,7 +293,9 @@ void Token::advanceToBusy() {
       awaitTimer(time);
     }
     else {
-      advanceToCompleted();
+      auto engine = const_cast<Engine*>(owner->systemState->engine);
+      engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,this), owner, this);
+//      advanceToCompleted();
     }
   }
   else if ( node->represents<BPMN::MessageCatchEvent>() ) {
@@ -326,12 +350,16 @@ void Token::advanceToCompleted() {
   else {
     // check restrictions
     if ( !isFeasible() ) {
-      advanceToFailed();
+      auto engine = const_cast<Engine*>(owner->systemState->engine);
+      engine->commands.emplace_back(std::bind(&Token::advanceToFailed,this), owner, this);
+//      advanceToFailed();
       return;
     }
 
     if ( !node || node->outgoing.empty() ) {
-      advanceToDone();
+      auto engine = const_cast<Engine*>(owner->systemState->engine);
+      engine->commands.emplace_back(std::bind(&Token::advanceToDone,this), owner, this);
+//      advanceToDone();
       return;
     }
     advanceToDeparting();
@@ -348,12 +376,16 @@ void Token::advanceToExiting() {
 
   // check restrictions
   if ( !isFeasible() ) {
-    advanceToFailed();
+    auto engine = const_cast<Engine*>(owner->systemState->engine);
+    engine->commands.emplace_back(std::bind(&Token::advanceToFailed,this), owner, this);
+//    advanceToFailed();
     return;
   }
 
   if ( node->outgoing.empty() ) {
-    advanceToDone();
+    auto engine = const_cast<Engine*>(owner->systemState->engine);
+    engine->commands.emplace_back(std::bind(&Token::advanceToDone,this), owner, this);
+//    advanceToDone();
     return;
   }
   advanceToDeparting();
@@ -362,12 +394,17 @@ void Token::advanceToExiting() {
 void Token::advanceToDone() {
   update(State::DONE);
   awaitStateMachineCompletion();
+
+  auto engine = const_cast<Engine*>(owner->systemState->engine);
+  engine->commands.emplace_back(std::bind(&StateMachine::attemptShutdown,const_cast<StateMachine*>(owner)), owner);
 }
 
 void Token::advanceToDeparting() {
 
   if ( node->outgoing.size() == 1 ) {
-    advanceToDeparted(node->outgoing.front());
+    auto engine = const_cast<Engine*>(owner->systemState->engine);
+    engine->commands.emplace_back(std::bind(&Token::advanceToDeparted,this,node->outgoing.front()), owner, this);
+//    advanceToDeparted(node->outgoing.front());
     return;
   }
 
@@ -381,7 +418,9 @@ void Token::advanceToDeparting() {
         // check gatekeeper conditions
         if ( auto gatekeeper = sequenceFlow->extensionElements->as<BPMNOS::Model::Gatekeeper>(); gatekeeper ) {
           if ( gatekeeper->restrictionsSatisfied(status) ) {
-            advanceToDeparted(sequenceFlow);
+            auto engine = const_cast<Engine*>(owner->systemState->engine);
+            engine->commands.emplace_back(std::bind(&Token::advanceToDeparted,this,sequenceFlow), owner, this);
+//            advanceToDeparted(sequenceFlow);
             return;
           }
         }
@@ -393,14 +432,19 @@ void Token::advanceToDeparting() {
 
     // gatekeeper conditions are violated for all sequence flows (except default flow)
     if ( exclusiveGateway->defaultFlow ) {
-      advanceToDeparted(exclusiveGateway->defaultFlow);
+      auto engine = const_cast<Engine*>(owner->systemState->engine);
+      engine->commands.emplace_back(std::bind(&Token::advanceToDeparted,this,exclusiveGateway->defaultFlow), owner, this);
+//      advanceToDeparted(exclusiveGateway->defaultFlow);
     }
     else {
-      update(State::FAILED);
+      auto engine = const_cast<Engine*>(owner->systemState->engine);
+      engine->commands.emplace_back(std::bind(&Token::advanceToFailed,this), owner, this);
+//      update(State::FAILED);
     }
   }
   else {
-    update(State::TO_BE_COPIED);
+    auto engine = const_cast<Engine*>(owner->systemState->engine);
+    engine->commands.emplace_back(std::bind(&StateMachine::copyToken,const_cast<StateMachine*>(owner),this), owner, this);
   }
 }
 
@@ -408,7 +452,9 @@ void Token::advanceToDeparted(const BPMN::SequenceFlow* sequenceFlow) {
   this->sequenceFlow = sequenceFlow;
   update(State::DEPARTED);
 //  queueCommand(&Token::advanceToArrived);
-  advanceToArrived();
+  auto engine = const_cast<Engine*>(owner->systemState->engine);
+  engine->commands.emplace_back(std::bind(&Token::advanceToArrived,this), owner, this);
+//  advanceToArrived();
 }
 
 void Token::advanceToArrived() {
@@ -423,7 +469,10 @@ void Token::advanceToArrived() {
     update(State::HALTED);
 
     awaitGatewayActivation();
-    // delegate gateway activation and merging of tokens to state machine
+
+    auto engine = const_cast<Engine*>(owner->systemState->engine);
+    engine->commands.emplace_back(std::bind(&StateMachine::attemptGatewayActivation,const_cast<StateMachine*>(owner),this), owner);
+
     return;
   }
 
@@ -432,13 +481,16 @@ void Token::advanceToArrived() {
   }
   else {
     sequenceFlow = nullptr;
-    advanceToEntered();
+    auto engine = const_cast<Engine*>(owner->systemState->engine);
+    engine->commands.emplace_back(std::bind(&Token::advanceToEntered,this), owner, this);
+//    advanceToEntered();
   }
 }
 
 void Token::advanceToFailed() {
   update(State::FAILED);
-  // TODO
+  auto engine = const_cast<Engine*>(owner->systemState->engine);
+  engine->commands.emplace_back(std::bind(&StateMachine::handleFailure,const_cast<StateMachine*>(owner),this), owner, this);
 }
 
 void Token::awaitReadyEvent() {
@@ -629,16 +681,6 @@ void Token::update(State newState) {
     throw std::runtime_error("Token: timestamp at node '" + node->id + "' is larger than current time");
   }
   notify();
-}
-
-
-template <typename Function, typename... Args>
-void Token::queueCommand(Function&& f, Args&&... args) {
-  const_cast<Engine*>(owner->systemState->engine)->commands.emplace_back(
-    const_cast<StateMachine*>(owner),
-    this,
-    std::bind(std::forward<Function>(f), this, std::forward<Args>(args)...)
-  );
 }
 
 void Token::notify() const {

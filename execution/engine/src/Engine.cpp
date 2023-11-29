@@ -1,4 +1,6 @@
 #include "Engine.h"
+#include "Token.h"
+#include "StateMachine.h"
 #include "execution/utility/src/erase.h"
 #include "execution/listener/src/Listener.h"
 
@@ -57,6 +59,11 @@ bool Engine::advance() {
   // it is assumed that at least one clock tick or termination event is processed to ensure that 
   // each instance is only added once 
 
+  while ( commands.size() ) {
+    commands.front().execute();
+    commands.pop_front();
+  }
+
   clearCompletedStateMachines();
 
   // fetch and process all events
@@ -99,7 +106,9 @@ void Engine::clearCompletedStateMachines() {
       if ( auto eventSubProcess = stateMachine->scope->represents<BPMN::EventSubProcess>(); eventSubProcess ) {
         if ( eventSubProcess->isInterrupting ) {
           auto parent = const_cast<StateMachine*>(stateMachine->parentToken->owner);
-          parent->advanceToken(stateMachine->parentToken, Token::State::COMPLETED);
+//          parent->advanceToken(stateMachine->parentToken, Token::State::COMPLETED);
+          auto token = stateMachine->parentToken;
+          commands.emplace_back(std::bind(&Token::advanceToCompleted,token), parent, token);
         }
         else {
           throw std::runtime_error("Engine: Non-interrupting event subprocesses not yet implemented");
@@ -109,7 +118,9 @@ void Engine::clearCompletedStateMachines() {
         // state machine represents a completed (sub)process
         auto parent = const_cast<StateMachine*>(stateMachine->parentToken->owner);
         erase_ptr<StateMachine>(parent->subProcesses, stateMachine);
-        parent->advanceToken(stateMachine->parentToken, Token::State::COMPLETED);
+//        parent->advanceToken(stateMachine->parentToken, Token::State::COMPLETED);
+        auto token = stateMachine->parentToken;
+        commands.emplace_back(std::bind(&Token::advanceToCompleted,token), parent, token);
       }
     }
 
@@ -143,7 +154,8 @@ void Engine::process(const ReadyEvent& event) {
   token->status.insert(token->status.end(), event.values.begin(), event.values.end());
 
   StateMachine* stateMachine = const_cast<StateMachine*>(event.token->owner);
-  stateMachine->advanceToken(token, Token::State::READY);
+//  stateMachine->advanceToken(token, Token::State::READY);
+  commands.emplace_back(std::bind(&Token::advanceToReady,token), stateMachine, token);
 }
 
 void Engine::process(const EntryEvent& event) {
@@ -163,7 +175,8 @@ void Engine::process(const EntryEvent& event) {
   }
 
   StateMachine* stateMachine = const_cast<StateMachine*>(event.token->owner);
-  stateMachine->advanceToken(token, Token::State::ENTERED);
+//  stateMachine->advanceToken(token, Token::State::ENTERED);
+  commands.emplace_back(std::bind(&Token::advanceToEntered,token), stateMachine, token);
 }
 
 void Engine::process(const TaskCompletionEvent& event) {
@@ -184,7 +197,8 @@ void Engine::process(const TaskCompletionEvent& event) {
   }
 
   StateMachine* stateMachine = const_cast<StateMachine*>(event.token->owner);
-  stateMachine->advanceToken(token, Token::State::COMPLETED);
+//  stateMachine->advanceToken(token, Token::State::COMPLETED);
+  commands.emplace_back(std::bind(&Token::advanceToCompleted,token), stateMachine, token);
 }
 
 void Engine::process(const ExitEvent& event) {
@@ -201,7 +215,8 @@ void Engine::process(const ExitEvent& event) {
   }
 
   StateMachine* stateMachine = const_cast<StateMachine*>(event.token->owner);
-  stateMachine->advanceToken(token, Token::State::EXITING);
+//  stateMachine->advanceToken(token, Token::State::EXITING);
+  commands.emplace_back(std::bind(&Token::advanceToExiting,token), stateMachine, token);
 }
 
 /*

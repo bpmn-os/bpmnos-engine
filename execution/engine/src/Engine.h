@@ -14,12 +14,14 @@
 #include "events/TerminationEvent.h"
 //#include "events/TimerEvent.h"
 #include "EventHandler.h"
-#include "StateMachine.h"
-#include "Token.h"
+//#include "StateMachine.h"
+//#include "Token.h"
 #include "SystemState.h"
 
 namespace BPMNOS::Execution {
 
+class Token;
+class StateMachine;
 class Listener;
 
 class Engine {
@@ -58,23 +60,21 @@ public:
   const SystemState* getSystemState();
 
 protected:
+
+  /**
+   * @brief Class storing a command to be executed by the engine
+   */
   class Command {
   public:
-    template <typename Function, typename... Args>
-    Command(StateMachine* stateMachine, Token* token, Function&& f, Args&&... args)
-      : stateMachine(stateMachine)
-      , token(token)
-      , function(std::bind(std::forward<Function>(f), std::forward<Args>(args)...)) {}
-    void execute() { function(); }
-    // Make the class movable
-    Command(Command&& other) noexcept : function(std::move(other.function)) {}
-    // Make the class non-copyable
-    Command(const Command&) = delete;
-    Command& operator=(const Command&) = delete;
+    Command(std::function<void()>&& f, const StateMachine* stateMachine=nullptr, const Token* token=nullptr )
+      : function(f)
+      , stateMachine(stateMachine)
+      , token(token) {};
+    void execute() { function(); };
   private:
-    const StateMachine* stateMachine;
-    const Token* token;
     std::function<void()> function;
+    const StateMachine* stateMachine; ///< Pointer to the state machine that the command refers to
+    const Token* token; ///< Pointer to the token that the command refers to
   };
 
   std::list<Command> commands; ///< List of commands to be executed

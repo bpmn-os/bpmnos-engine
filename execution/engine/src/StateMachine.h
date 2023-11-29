@@ -45,15 +45,9 @@ private:
   friend class Token;
 
   /**
-   * @brief Add a method to the command queue of the engine
-   */
-  template <typename Function, typename... Args>
-  void queueCommand(Function&& f, Args&&... args);
-
-  /**
    * @brief Set token state and advance token as much as possible.
    */
-  void advanceToken(Token* token, Token::State state);
+//  void advanceToken(Token* token, Token::State state);
 
   void createChild(Token* parent, const BPMN::Scope* scope); ///< Method creating the state machine for a (sub)process
 
@@ -65,11 +59,17 @@ private:
 
   void createTokenCopies(Token* token, const std::vector<BPMN::SequenceFlow*>& sequenceFlows);
   void createMergedToken(std::unordered_map< std::pair<const StateMachine*, const BPMN::FlowNode*>, std::vector<Token*> >::iterator gatewayIt);
+
   void shutdown(std::unordered_map< const StateMachine*, std::vector<Token*> >::iterator it);
   /**
-   * @brief Method destryoing all running tokens incl. subprocesses and non-interrupting event-subprocesses.
+   * @brief Method destroying all running tokens incl. subprocesses and non-interrupting event-subprocesses.
    */
   void terminate();
+
+  void copyToken(Token* token);
+  void handleFailure(Token* token);
+  void attemptGatewayActivation(Token* token);
+  void attemptShutdown();
 };
 
 

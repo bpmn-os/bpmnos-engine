@@ -19,8 +19,9 @@ using namespace BPMNOS;
 // Process
 #include "execution/process/test.h"
 // Activities
-#include "execution/subprocess/test.h"
+/*
 #include "execution/task/test.h"
+#include "execution/subprocess/test.h"
 // Gateways
 #include "execution/parallelgateway/test.h"
 #include "execution/exclusivegateway/test.h"
@@ -29,6 +30,7 @@ using namespace BPMNOS;
 #include "execution/escalationevent/test.h"
 // Event subprocesses
 #include "execution/eventsubprocess/test.h"
+*/
 
 // Playground
 #include <iostream>

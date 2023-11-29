@@ -50,12 +50,6 @@ private:
 
   bool isFeasible(); ///< Check restrictions within current and ancestor scopes
 
-  /**
-   * @brief Add a method to the command queue of the engine
-   */
-  template <typename Function, typename... Args>
-  void queueCommand(Function&& f, Args&&... args);
-
   void advanceFromCreated();
   void advanceToReady();
   void advanceToEntered();

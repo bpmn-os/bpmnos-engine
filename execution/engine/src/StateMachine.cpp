@@ -114,18 +114,16 @@ void StateMachine::run(const Values& status) {
   }
 
   // advance token as far as possible
-  advanceToken(token,Token::State::CREATED);
+//  advanceToken(token,Token::State::CREATED);
+  if ( !parentToken ) {
+    // state machine is top level-process
+    initiateEventSubprocesses(token);
+  }
+  token->advanceToEntered();
 }
 
-template <typename Function, typename... Args>
-void StateMachine::queueCommand(Function&& f, Args&&... args) {
-  const_cast<Engine*>(systemState->engine)->commands.emplace_back(
-    this,
-    nullptr,
-    std::bind(std::forward<Function>(f), this, std::forward<Args>(args)...)
-  );
-}
-
+#ifdef DO_NOT_REMOVE
+// TODO: remove
 void StateMachine::advanceToken(Token* token, Token::State state) {
 //std::cerr << "advanceToken " << scope->id << std::endl;
 
@@ -155,6 +153,9 @@ void StateMachine::advanceToken(Token* token, Token::State state) {
   else {
     throw std::runtime_error("StateMachine: advance token to illegal state");
   }
+
+  return;
+  // TODO: remove rest
 
   // token has advanced as much as possible, need to decide how to continue
 //std::cerr << std::endl << "Continue with: " << token->jsonify().dump() << std::endl;
@@ -337,6 +338,7 @@ std::cerr << "trigger error event subprocess" << std::endl;
   }
 
 }
+#endif
 
 void StateMachine::createChild(Token* parent, const BPMN::Scope* scope) {
   if ( scope->startNodes.size() > 1 ) {
@@ -396,8 +398,9 @@ void StateMachine::createTokenCopies(Token* token, const std::vector<BPMN::Seque
 
   // advance all token copies
   for (size_t i = 0; i < sequenceFlows.size(); i++ ) {
-    tokenCopies[i]->sequenceFlow = sequenceFlows[i];
-    advanceToken(tokenCopies[i], Token::State::DEPARTED);
+    auto token = tokenCopies[i];
+    auto engine = const_cast<Engine*>(systemState->engine);
+    engine->commands.emplace_back(std::bind(&Token::advanceToDeparted,token,sequenceFlows[i]), this, token);
   }
 }
 
@@ -417,7 +420,10 @@ void StateMachine::createMergedToken(std::unordered_map< std::pair<const StateMa
   tokens.push_back(std::move(mergedToken));
 
   // advance merged token
-  advanceToken(tokens.back().get(), Token::State::ENTERED);
+//  advanceToken(tokens.back().get(), Token::State::ENTERED);
+  auto token = tokens.back().get();
+  auto engine = const_cast<Engine*>(systemState->engine);
+  engine->commands.emplace_back(std::bind(&Token::advanceToEntered,token), this, token);
 }
 
 void StateMachine::shutdown(std::unordered_map<const StateMachine*, std::vector<Token*> >::iterator it) {
@@ -449,9 +455,100 @@ std::cerr << "shutdown (no parent): " << scope->id << std::endl;
 
   const_cast<SystemState*>(systemState)->tokensAwaitingStateMachineCompletion.erase(it);
 
-  const_cast<SystemState*>(systemState)->completedStateMachines.push_back(this);
-
+  if ( !parentToken ) {
+    auto engine = const_cast<Engine*>(systemState->engine);
+    engine->commands.emplace_back(std::bind(&Engine::deleteInstance,engine,this), this);
+//    engine->commands.emplace_back(std::bind(&StateMachine::terminate,this), this);
+  }
+  else {
+    const_cast<SystemState*>(systemState)->completedStateMachines.push_back(this);
+  }
 //std::cerr << "shutdown (done): " << scope->id << "/" << systemState->completedStateMachines.size() <<std::endl;
+}
+
+void StateMachine::copyToken(Token* token) {
+// TODO: check
+  if ( token->node->represents<BPMN::ParallelGateway>() ) {
+    // create token copies and advance them
+    createTokenCopies(token, token->node->outgoing);
+  }
+  else {
+    // TODO: determine sequence flows that receive a token
+    throw std::runtime_error("StateMachine: diverging gateway type not yet supported");
+  }
+}
+
+void StateMachine::handleFailure(Token* token) {
+// TODO
+}
+
+void StateMachine::attemptGatewayActivation(Token* token) {
+// TODO: check
+  if ( token->node->represents<BPMN::ParallelGateway>() ) {
+
+    auto gatewayIt = const_cast<SystemState*>(systemState)->tokensAwaitingGatewayActivation.find({this, token->node});
+    auto& [key,arrivedTokens] = *gatewayIt;
+    if ( arrivedTokens.size() == token->node->incoming.size() ) {
+      // create merged token and advance it
+      createMergedToken(gatewayIt);
+    }
+  }
+  else {
+    // TODO: determine sequence flows that have a token
+    throw std::runtime_error("StateMachine: converging gateway type not yet supported");
+  }
+}
+
+void StateMachine::attemptShutdown() {
+// TODO: check
+  if ( interruptingEventSubProcess ) {
+    // wait for completion of interrupting event subprocess
+    return;
+  }
+
+  // TODO
+  auto it = const_cast<SystemState*>(systemState)->tokensAwaitingStateMachineCompletion.find(this);
+  if ( it == const_cast<SystemState*>(systemState)->tokensAwaitingStateMachineCompletion.end() ) {
+    throw std::logic_error("StateMachine: cannot find tokens awaiting state machine completion");
+  }
+
+  auto& [key,completedTokens] = *it;
+
+  if ( completedTokens.size() < tokens.size() ) {
+    return;
+  }
+  else if ( completedTokens.size() == tokens.size() ) {
+    // all tokens are in DONE state
+    // no new event subprocesses can be triggered
+    pendingEventSubProcesses.clear();
+/*
+      for ( auto& eventSubProcess: pendingEventSubProcesses ) {
+        // remove tokens at start events from respective containers
+// TODO!
+        auto token = eventSubProcess->tokens.front().get();
+        if ( token->node->represents<BPMN::MessageCatchEvent>() ) {
+          erase<Token*>(const_cast<SystemState*>(systemState)->tokensAwaitingMessageDelivery, token);
+        }
+        else if ( token->node->represents<BPMN::TimerCatchEvent>() ) {
+          // TODO
+          throw std::runtime_error("StateMachine: timer start events not yet implemented");
+        }
+        else {
+          throw std::runtime_error("StateMachine: illegal start event for event subprocess");
+        }
+      }
+*/
+  }
+  else {
+    throw std::logic_error("StateMachine: too many tokens");
+  }
+
+  if ( nonInterruptingEventSubProcesses.size() ) {
+    // wait until last event subprocess is completed
+    return;
+  }
+
+  shutdown(it);
 }
 
 void StateMachine::terminate() {
