@@ -113,8 +113,7 @@ void StateMachine::run(const Values& status) {
     throw std::runtime_error("StateMachine: start node within scope of '" + scope->id + "' is an activity");
   }
 
-  // advance token as far as possible
-//  advanceToken(token,Token::State::CREATED);
+  // advance token
   if ( !parentToken ) {
     // state machine is top level-process
     initiateEventSubprocesses(token);
@@ -420,7 +419,6 @@ void StateMachine::createMergedToken(std::unordered_map< std::pair<const StateMa
   tokens.push_back(std::move(mergedToken));
 
   // advance merged token
-//  advanceToken(tokens.back().get(), Token::State::ENTERED);
   auto token = tokens.back().get();
   auto engine = const_cast<Engine*>(systemState->engine);
   engine->commands.emplace_back(std::bind(&Token::advanceToEntered,token), this, token);
@@ -429,17 +427,6 @@ void StateMachine::createMergedToken(std::unordered_map< std::pair<const StateMa
 void StateMachine::shutdown(std::unordered_map<const StateMachine*, std::vector<Token*> >::iterator it) {
 //std::cerr << "start shutdown: " << scope->id << std::endl;
   auto& [key,completedTokens] = *it;
-
-/*
-  if ( !parentToken ) {
-    // remove instance from system state
-    const_cast<SystemState*>(systemState)->tokensAwaitingStateMachineCompletion.erase(it);
-    const_cast<SystemState*>(systemState)->completedStateMachines.push_back(this);
-
-std::cerr << "shutdown (no parent): " << scope->id << std::endl;
-    return;
-  }
-*/
 
   if ( parentToken ) {
     // merge tokens
@@ -458,7 +445,6 @@ std::cerr << "shutdown (no parent): " << scope->id << std::endl;
   if ( !parentToken ) {
     auto engine = const_cast<Engine*>(systemState->engine);
     engine->commands.emplace_back(std::bind(&Engine::deleteInstance,engine,this), this);
-//    engine->commands.emplace_back(std::bind(&StateMachine::terminate,this), this);
   }
   else {
     auto engine = const_cast<Engine*>(systemState->engine);

@@ -44,14 +44,7 @@ private:
   friend class SystemState;
   friend class Token;
 
-  /**
-   * @brief Set token state and advance token as much as possible.
-   */
-//  void advanceToken(Token* token, Token::State state);
-
   void createChild(Token* parent, const BPMN::Scope* scope); ///< Method creating the state machine for a (sub)process
-
-  void deleteChild(StateMachine* child); ///< Method removing completed state machine from parent
 
   void createInterruptingEventSubprocess(const StateMachine* pendingEventSubProcess, const BPMNOS::Values& status); ///< Method creating the state machine for an interrupting event sprocess
 
@@ -72,6 +65,7 @@ private:
   void handleFailure(Token* token);
   void attemptGatewayActivation(Token* token);
   void attemptShutdown();
+  void deleteChild(StateMachine* child); ///< Method removing completed state machine from parent
 };
 
 

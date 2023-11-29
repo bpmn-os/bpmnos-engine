@@ -25,8 +25,8 @@ public:
   const BPMN::FlowNode* node; 
   const BPMN::SequenceFlow* sequenceFlow; 
 private:
-  enum class State { CREATED, READY, ENTERED, BUSY, COMPLETED, EXITING, DEPARTED, ARRIVED, DONE, FAILED, TO_BE_COPIED, HALTED };
-  static inline std::string stateName[] = { "CREATED", "READY", "ENTERED", "BUSY", "COMPLETED", "EXITING", "DEPARTED", "ARRIVED", "DONE", "FAILED", "TO_BE_COPIED", "HALTED" };
+  enum class State { CREATED, READY, ENTERED, BUSY, COMPLETED, EXITING, DEPARTED, ARRIVED, WAITING, DONE, FAILED };
+  static inline std::string stateName[] = { "CREATED", "READY", "ENTERED", "BUSY", "COMPLETED", "EXITING", "DEPARTED", "ARRIVED", "WAITING", "DONE", "FAILED" };
   State state;
 public:
   Token(const StateMachine* owner, const BPMN::FlowNode* node, const Values& status);
@@ -41,6 +41,7 @@ public:
   bool completed() const { return state == State::COMPLETED; };
   bool exiting() const { return state == State::EXITING; };
   bool arrived() const { return state == State::ARRIVED; };
+  bool waiting() const { return state == State::WAITING; };
   bool done() const { return state == State::DONE; };
   bool failed() const { return state == State::FAILED; };
 
@@ -93,13 +94,6 @@ private:
 
   void mergeStatus(const Token* other); ///< Merges the status of the other token into the status
 
-/*
-  template <typename F, typename... Args>
-    void update(State newState, F&& updateStatus, Args... args) {
-    updateStatus(this, std::forward<Args>(args)...);
-    update(newState);
-  }
-*/
 };
 
 } // namespace BPMNOS::Execution

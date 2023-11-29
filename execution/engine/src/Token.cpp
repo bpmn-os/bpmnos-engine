@@ -466,7 +466,7 @@ void Token::advanceToArrived() {
     if ( !node->represents<BPMN::Gateway>() ) {
       throw std::runtime_error("Token: implicit join at node '" + node->id + "'");
     }
-    update(State::HALTED);
+    update(State::WAITING);
 
     awaitGatewayActivation();
 

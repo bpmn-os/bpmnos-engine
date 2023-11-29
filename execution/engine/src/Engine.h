@@ -78,7 +78,6 @@ protected:
   };
 
   std::list<Command> commands; ///< List of commands to be executed
-//  void clearCompletedStateMachines(); ///< Clears all completed state machines and advances parent tokens as much as possible
 
   void addInstances(); ///< Method adding all new instances and advancing tokens as much as possible
 
