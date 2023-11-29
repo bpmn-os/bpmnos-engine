@@ -62,7 +62,6 @@ SCENARIO( "Trivial executable process", "[execution][process]" ) {
     Model::StaticDataProvider dataProvider(modelFile,csv);
     auto scenario = dataProvider.createScenario();
 
-
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine;
       Execution::TimeWarp timeHandler;
@@ -89,7 +88,7 @@ SCENARIO( "Trivial executable process", "[execution][process]" ) {
   }
 }
 
-/*
+
 SCENARIO( "Simple executable process", "[execution][process]" ) {
   const std::string modelFile = "execution/process/Simple_executable_process.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
@@ -149,4 +148,3 @@ SCENARIO( "Simple executable process", "[execution][process]" ) {
     }
   }
 }
-*/

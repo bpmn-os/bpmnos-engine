@@ -19,11 +19,11 @@ using namespace BPMNOS;
 // Process
 #include "execution/process/test.h"
 // Activities
-/*
 #include "execution/task/test.h"
 #include "execution/subprocess/test.h"
 // Gateways
 #include "execution/parallelgateway/test.h"
+/*
 #include "execution/exclusivegateway/test.h"
 // Events
 #include "execution/errorevent/test.h"

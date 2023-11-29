@@ -461,7 +461,9 @@ std::cerr << "shutdown (no parent): " << scope->id << std::endl;
 //    engine->commands.emplace_back(std::bind(&StateMachine::terminate,this), this);
   }
   else {
-    const_cast<SystemState*>(systemState)->completedStateMachines.push_back(this);
+    auto engine = const_cast<Engine*>(systemState->engine);
+    auto parent = const_cast<StateMachine*>(parentToken->owner);
+    engine->commands.emplace_back(std::bind(&StateMachine::deleteChild,parent,this), this);
   }
 //std::cerr << "shutdown (done): " << scope->id << "/" << systemState->completedStateMachines.size() <<std::endl;
 }
@@ -573,3 +575,22 @@ void StateMachine::terminate() {
   const_cast<SystemState*>(systemState)->tokensAwaitingStateMachineCompletion.erase(this);
 }
 
+void StateMachine::deleteChild(StateMachine* child) {
+  if ( auto eventSubProcess = child->scope->represents<BPMN::EventSubProcess>(); eventSubProcess ) {
+    if ( eventSubProcess->isInterrupting ) {
+      auto token = child->parentToken;
+      auto engine = const_cast<Engine*>(systemState->engine);
+      engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,token), this, token);
+    }
+    else {
+      throw std::runtime_error("Engine: Non-interrupting event subprocesses not yet implemented");
+    }
+  }
+  else {
+    // state machine represents a completed (sub)process
+    erase_ptr<StateMachine>(subProcesses, child);
+    auto token = child->parentToken;
+    auto engine = const_cast<Engine*>(systemState->engine);
+    engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,token), this, token);
+  }
+}

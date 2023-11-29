@@ -106,10 +106,8 @@ public:
   std::unordered_map< const StateMachine*, StateMachine* > completedInterruptingEventSubProcesses; ///< Map holding all child state machines awaiting disposal
   std::unordered_map< const StateMachine*, std::vector<StateMachine*> > completedNonInterruptingEventSubProcesses; ///< Map holding all child state machines awaiting disposal
 */
-  std::vector< const StateMachine* > completingStateMachines; ///< Vector holding all state machines that are completing, but not yet completed
-  std::vector< const StateMachine* > completedStateMachines; ///< Vector holding all completed state machines
-//  std::vector< const StateMachine* > completedInstances; ///< Vector holding all completed process instances
-//  std::vector< const StateMachine* > completedSubProcesses; ///< Vector holding all completed subprocess instances
+//  std::vector< const StateMachine* > completingStateMachines; ///< Vector holding all state machines that are completing, but not yet completed
+//  std::vector< const StateMachine* > completedStateMachines; ///< Vector holding all completed state machines
 
 private:
   friend class Engine;

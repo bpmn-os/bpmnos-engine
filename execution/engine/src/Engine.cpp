@@ -64,10 +64,14 @@ bool Engine::advance() {
     commands.pop_front();
   }
 
-  clearCompletedStateMachines();
+std::cerr << commands.size() << " commands" << std::endl;
+//  clearCompletedStateMachines();
+//std::cerr << commands.size() << " commands." << std::endl;
 
+std::cerr << "fetch and process all events" << std::endl;
   // fetch and process all events
   while ( auto event = fetchEvent() ) {
+std::cerr << commands.size() << " commands" << std::endl;
 //std::cerr << "*";
     event->processBy(this);
 
@@ -76,10 +80,9 @@ bool Engine::advance() {
       commands.pop_front();
     }
 
-    clearCompletedStateMachines();
-
+//    clearCompletedStateMachines();
     if ( event->is<ClockTickEvent>() ) {
-//std::cerr << "ClockTick" << std::endl;
+std::cerr << "ClockTick" << std::endl;
       // exit loop to resume 
       return true;
     }
@@ -89,8 +92,11 @@ bool Engine::advance() {
       return false;
     }
   }
+
   throw std::runtime_error("Engine: unexpected absence of event");
 }
+
+#ifdef DO_NOT_REMOVE
 
 void Engine::clearCompletedStateMachines() { 
 //std::cerr << "clearCompletedStateMachines " << systemState->completedStateMachines.size() << std::endl;
@@ -126,6 +132,7 @@ void Engine::clearCompletedStateMachines() {
 
   }
 }
+#endif
 
 void Engine::addInstances() {
   for (auto& [process,status] : systemState->getInstantiations() ) {
@@ -141,11 +148,12 @@ void Engine::deleteInstance(StateMachine* instance) {
 }
 
 void Engine::process(const ClockTickEvent& event) {
-//std::cerr << "ClockTickEvent " << std::endl;
+std::cerr << "ClockTickEvent " << std::endl;
   systemState->incrementTimeBy(clockTick);
 }
 
 void Engine::process(const ReadyEvent& event) {
+std::cerr << "ReadyEvent " << event.token->node->id << std::endl;
   erase<Token*>(systemState->tokensAwaitingReadyEvent, event.token);
 
   Token* token = const_cast<Token*>(event.token);
@@ -159,6 +167,7 @@ void Engine::process(const ReadyEvent& event) {
 }
 
 void Engine::process(const EntryEvent& event) {
+std::cerr << "EntryEvent " << event.token->node->id << std::endl;
   if ( auto tokenAtResource = event.token->getResourceToken(); tokenAtResource ) {
     erase<Token*>(systemState->tokensAwaitingJobEntryEvent[tokenAtResource], event.token);
     // resource is no longer idle
@@ -180,7 +189,7 @@ void Engine::process(const EntryEvent& event) {
 }
 
 void Engine::process(const TaskCompletionEvent& event) {
-//std::cerr << "TaskCompletionEvent " << event.token->node->id << "/" << systemState->tokensAwaitingTaskCompletionEvent.size() << std::endl;
+std::cerr << "TaskCompletionEvent " << event.token->node->id << std::endl;
   auto it = systemState->tokensAwaitingTaskCompletionEvent.begin();
   while (it != systemState->tokensAwaitingTaskCompletionEvent.end()) {
     if (it->second == event.token) {
@@ -202,6 +211,7 @@ void Engine::process(const TaskCompletionEvent& event) {
 }
 
 void Engine::process(const ExitEvent& event) {
+std::cerr << "ExitEvent " << event.token->node->id << std::endl;
   erase<Token*>(systemState->tokensAwaitingExitEvent, event.token);
   if ( auto tokenAtResource = event.token->getResourceToken(); tokenAtResource ) {
     // resource becomes idle
