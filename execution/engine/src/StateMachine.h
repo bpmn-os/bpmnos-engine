@@ -62,6 +62,7 @@ private:
   void terminate();
 
   void copyToken(Token* token);
+  void handleEscalation(Token* token);
   void handleFailure(Token* token);
   void attemptGatewayActivation(const BPMN::FlowNode* node);
   void attemptShutdown();

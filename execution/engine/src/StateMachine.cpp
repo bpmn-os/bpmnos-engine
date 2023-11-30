@@ -124,41 +124,7 @@ void StateMachine::run(const Values& status) {
 /*
 // TODO: remove
 void StateMachine::advanceToken(Token* token, Token::State state) {
-  if ( token->state == Token::State::BUSY) {
-    if ( !token->node || token->node->represents<BPMN::SubProcess>() ) {
-      auto scope = token->node ? token->node->as<BPMN::Scope>() : process->as<BPMN::Scope>();
-      if ( scope->startNodes.size() == 1 ) {
-        // create child statemachine and advance token
-        createChild(token,scope);
-      }
-    }
-  }
-  else if ( token->state == Token::State::TO_BE_COPIED) {
-    if ( token->node->represents<BPMN::ParallelGateway>() ) {
-      // create token copies and advance them
-      createTokenCopies(token, token->node->outgoing);
-    }
-    else {
-      // TODO: determine sequence flows that receive a token
-      throw std::runtime_error("StateMachine: diverging gateway type not yet supported");
-    }
-  }
-  else if ( token->state == Token::State::HALTED) {
-    if ( token->node->represents<BPMN::ParallelGateway>() ) {
-
-      auto gatewayIt = const_cast<SystemState*>(systemState)->tokensAwaitingGatewayActivation.find({this, token->node});
-      auto& [key,arrivedTokens] = *gatewayIt;
-      if ( arrivedTokens.size() == token->node->incoming.size() ) {
-        // create merged token and advance it
-        createMergedToken(gatewayIt);
-      }
-    }
-    else {
-      // TODO: determine sequence flows that have a token
-      throw std::runtime_error("StateMachine: converging gateway type not yet supported");
-    }
-  }
-  else if ( token->state == Token::State::ENTERED) {
+  if ( token->state == Token::State::ENTERED) {
     if ( token->node && token->node->represents<BPMN::EscalationThrowEvent>() ) { 
       // update status
       parentToken->status = token->status;
@@ -202,31 +168,6 @@ void StateMachine::advanceToken(Token* token, Token::State state) {
     else {
       // TODO: determine sequence flows that have a token
       throw std::logic_error("StateMachine: token state can only be ENTERED for EscalationThrowEvent");
-    }
-  }
-  else if ( token->state == Token::State::FAILED) {
-    // update status of parent token with that of current token
-    parentToken->status = token->status;
-    // find event-subprocess catching error
-    auto it = std::find_if(pendingEventSubProcesses.begin(), pendingEventSubProcesses.end(), [](std::unique_ptr<StateMachine>& eventSubProcess) {
-      auto startNode = eventSubProcess->scope->startNodes.front();
-      return startNode->represents<BPMN::ErrorStartEvent>();
-    });
-
-    if ( it == pendingEventSubProcesses.end() ) {
-std::cerr << "bubbble up error" << std::endl;
-      // bubbble up error if not caught by event subprocess
-      // TODO
-      terminate();
-      parentToken->update(Token::State::FAILED);
-    }
-    else {
-std::cerr << "trigger error event subprocess" << std::endl;
-      // start error event subprocess
-//      throw std::runtime_error("StateMachine: start error event subprocess not implemented");
-      // TODO
-       terminate();
-       createInterruptingEventSubprocess(it->get(),parentToken->status);
     }
   }
   else if ( token->state == Token::State::DONE) {
@@ -418,6 +359,23 @@ void StateMachine::copyToken(Token* token) {
   else {
     // TODO: determine sequence flows that receive a token
     throw std::runtime_error("StateMachine: diverging gateway type not yet supported");
+  }
+}
+
+void StateMachine::handleEscalation(Token* token) {
+// TODO
+  // update status of parent token with that of current token
+  parentToken->status = token->status;
+  parentToken->update(parentToken->state);
+
+  // find event-subprocess catching escalation
+  auto it = std::find_if(pendingEventSubProcesses.begin(), pendingEventSubProcesses.end(), [](std::unique_ptr<StateMachine>& eventSubProcess) {
+    auto startNode = eventSubProcess->scope->startNodes.front();
+    return startNode->represents<BPMN::EscalationStartEvent>();
+  });
+
+  if ( it != pendingEventSubProcesses.end() ) {
+    throw std::runtime_error("StateMachine: escalation event subprocess not yet supported");
   }
 }
 

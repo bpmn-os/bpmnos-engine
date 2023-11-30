@@ -211,17 +211,19 @@ void Token::advanceToEntered() {
     engine->commands.emplace_back(std::bind(&Token::advanceToBusy,this), owner, this);
 //    advanceToBusy();
   }
-  else if ( node->represents<BPMN::EscalationThrowEvent>() ) {
-    // update status and delegate control to state machine
-    // if applicable, control will be delgated back to token 
-    return;
-  }
   else if ( node->represents<BPMN::ErrorEndEvent>() ) {
     auto engine = const_cast<Engine*>(owner->systemState->engine);
     engine->commands.emplace_back(std::bind(&Token::advanceToFailed,this), owner, this);
     return;
   }
   else {
+    if ( node->represents<BPMN::EscalationThrowEvent>() ) {
+      // update status and delegate control to state machine
+      // if applicable, control will be delgated back to token 
+      auto engine = const_cast<Engine*>(owner->systemState->engine);
+      engine->commands.emplace_back(std::bind(&StateMachine::handleEscalation,const_cast<StateMachine*>(owner),this), owner, this);
+    }
+
     // tokens entering any other node automatically advance to done or
     // departed state
     if ( node->outgoing.empty() ) {
