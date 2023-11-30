@@ -63,7 +63,7 @@ private:
 
   void copyToken(Token* token);
   void handleFailure(Token* token);
-  void attemptGatewayActivation(Token* token);
+  void attemptGatewayActivation(const BPMN::FlowNode* node);
   void attemptShutdown();
   void deleteChild(StateMachine* child); ///< Method removing completed state machine from parent
 };

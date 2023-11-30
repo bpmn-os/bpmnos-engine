@@ -395,8 +395,7 @@ void Token::advanceToDone() {
   update(State::DONE);
   awaitStateMachineCompletion();
 
-  auto engine = const_cast<Engine*>(owner->systemState->engine);
-  engine->commands.emplace_back(std::bind(&StateMachine::attemptShutdown,const_cast<StateMachine*>(owner)), owner);
+  const_cast<StateMachine*>(owner)->attemptShutdown();
 }
 
 void Token::advanceToDeparting() {
@@ -470,8 +469,7 @@ void Token::advanceToArrived() {
 
     awaitGatewayActivation();
 
-    auto engine = const_cast<Engine*>(owner->systemState->engine);
-    engine->commands.emplace_back(std::bind(&StateMachine::attemptGatewayActivation,const_cast<StateMachine*>(owner),this), owner);
+    const_cast<StateMachine*>(owner)->attemptGatewayActivation(node);
 
     return;
   }
@@ -550,9 +548,11 @@ void Token::awaitEventBasedGateway() {
 
 
 void Token::awaitStateMachineCompletion() {
+std::cerr << "awaitStateMachineCompletion: " << (node ? node->id : std::string("N/A") ) << std::endl;
   auto systemState = const_cast<SystemState*>(owner->systemState);
   auto ownerIt = systemState->tokensAwaitingStateMachineCompletion.find(owner);
   if (ownerIt == systemState->tokensAwaitingStateMachineCompletion.end()) {
+std::cerr << "insert " << owner->scope->id << std::endl;
     // The key is not found, so insert a new entry and get an iterator to it.
     ownerIt = systemState->tokensAwaitingStateMachineCompletion.insert({owner,{}}).first;
   }
