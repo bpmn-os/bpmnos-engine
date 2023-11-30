@@ -23,10 +23,10 @@ using namespace BPMNOS;
 #include "execution/subprocess/test.h"
 // Gateways
 #include "execution/parallelgateway/test.h"
-/*
 #include "execution/exclusivegateway/test.h"
 // Events
 #include "execution/errorevent/test.h"
+/*
 #include "execution/escalationevent/test.h"
 // Event subprocesses
 #include "execution/eventsubprocess/test.h"

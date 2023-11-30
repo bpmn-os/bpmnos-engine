@@ -19,8 +19,8 @@ SCENARIO( "Parallel fork", "[execution][parallelgateway]" ) {
       Execution::InstantExitHandler exitHandler;
       Execution::TimeWarp timeHandler;
       engine.addEventHandler(&timeHandler);
-//      Execution::Recorder recorder;
-      Execution::Recorder recorder(std::cerr);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
       engine.addListener(&recorder);
       engine.run(scenario.get(),0);
       THEN( "The dump of each entry of the recorder log has 16 entries" ) {        
@@ -82,8 +82,8 @@ SCENARIO( "Symmetric parallel gateways", "[execution][parallelgateway]" ) {
       engine.addEventHandler(&completionHandler);
       engine.addEventHandler(&exitHandler);
       engine.addEventHandler(&timeHandler);
-//      Execution::Recorder recorder;
-      Execution::Recorder recorder(std::cerr);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
       engine.addListener(&recorder);
       engine.run(scenario.get(),0);
       THEN( "The dump of each entry of the recorder log has 33 entries" ) {        

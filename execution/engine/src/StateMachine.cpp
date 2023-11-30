@@ -423,6 +423,35 @@ void StateMachine::copyToken(Token* token) {
 
 void StateMachine::handleFailure(Token* token) {
 // TODO
+  // update status of parent token with that of current token
+  parentToken->status = token->status;
+
+  // find event-subprocess catching error
+  auto it = std::find_if(pendingEventSubProcesses.begin(), pendingEventSubProcesses.end(), [](std::unique_ptr<StateMachine>& eventSubProcess) {
+    auto startNode = eventSubProcess->scope->startNodes.front();
+    return startNode->represents<BPMN::ErrorStartEvent>();
+  });
+
+  if ( it == pendingEventSubProcesses.end() ) {
+std::cerr << "bubbble up error" << std::endl;
+    // bubbble up error if not caught by event subprocess
+    // TODO
+//    auto engine = const_cast<Engine*>(systemState->engine);
+//    engine->commands.emplace_back(std::bind(&StateMachine::terminate,this), this);
+    terminate();
+//    engine->commands.emplace_back(std::bind(&Token::advanceToFailed,parentToken), parentToken->owner, parentToken);
+    parentToken->update(Token::State::FAILED);
+  }
+  else {
+std::cerr << "trigger error event subprocess" << std::endl;
+    // start error event subprocess
+//      throw std::runtime_error("StateMachine: start error event subprocess not implemented");
+    // TODO
+//    auto engine = const_cast<Engine*>(systemState->engine);
+//    engine->commands.emplace_back(std::bind(&StateMachine::terminate,this), this);
+    terminate();
+    createInterruptingEventSubprocess(it->get(),parentToken->status);
+  }
 }
 
 void StateMachine::attemptGatewayActivation(const BPMN::FlowNode* node) {
