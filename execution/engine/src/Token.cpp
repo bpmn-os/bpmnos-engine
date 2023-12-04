@@ -61,7 +61,9 @@ const BPMNOS::Model::AttributeMap& Token::getAttributeMap() const {
 nlohmann::ordered_json Token::jsonify() const {
   nlohmann::ordered_json jsonObject;
   jsonObject["processId"] = owner->process->id;
+std::cerr <<"?";
   jsonObject["instanceId"] = BPMNOS::to_string(status[Model::Status::Index::Instance].value(),STRING);
+std::cerr <<"!";
   if ( node ) {
     jsonObject["nodeId"] = node->id;
   }
@@ -334,7 +336,7 @@ void Token::advanceToCompleted(const Values& statusUpdate) {
 */
 
 void Token::advanceToCompleted() {
-//std::cerr << "advanceToCompleted" << std::endl;
+std::cerr << "advanceToCompleted" << std::endl;
   if ( status[BPMNOS::Model::Status::Index::Timestamp] > owner->systemState->getTime() ) {
     if ( node ) {
       throw std::runtime_error("Token: completion timestamp at node '" + node->id + "' is larger than current time");
@@ -344,12 +346,15 @@ void Token::advanceToCompleted() {
     }
   }
 
+std::cerr << "update" << std::endl;
   update(State::COMPLETED);
+std::cerr << "updated" << std::endl;
 
   if ( node && node->represents<BPMN::Activity>() ) {
     awaitExitEvent();
   }
   else {
+std::cerr << "else" << std::endl;
     // check restrictions
     if ( !isFeasible() ) {
       auto engine = const_cast<Engine*>(owner->systemState->engine);
@@ -394,6 +399,7 @@ void Token::advanceToExiting() {
 }
 
 void Token::advanceToDone() {
+std::cerr << "advanceToDone" << std::endl;
   update(State::DONE);
   awaitStateMachineCompletion();
 
@@ -401,6 +407,7 @@ void Token::advanceToDone() {
 }
 
 void Token::advanceToDeparting() {
+std::cerr << "advanceToDeparting" << std::endl;
 
   if ( node->outgoing.size() == 1 ) {
     auto engine = const_cast<Engine*>(owner->systemState->engine);
@@ -495,23 +502,24 @@ void Token::advanceToFailed() {
 
 void Token::awaitReadyEvent() {
   auto systemState = const_cast<SystemState*>(owner->systemState);
-  systemState->tokensAwaitingReadyEvent.push_back(this);
+//  systemState->tokensAwaitingReadyEvent.push_back(this);
+  systemState->tokensAwaitingReadyEvent.push_back(weak_from_this());
 }
 
 void Token::awaitEntryEvent() {
   auto systemState = const_cast<SystemState*>(owner->systemState);
 
   if ( auto tokenAtResource = getResourceToken(); tokenAtResource ) {
-    systemState->tokensAwaitingJobEntryEvent[tokenAtResource].push_back(this);    
+    systemState->tokensAwaitingJobEntryEvent[tokenAtResource].push_back(weak_from_this());    
   }
   else {
-    systemState->tokensAwaitingRegularEntryEvent.push_back(this);
+    systemState->tokensAwaitingRegularEntryEvent.push_back(weak_from_this());
   }
 }
 
 void Token::awaitChoiceEvent() {
   auto systemState = const_cast<SystemState*>(owner->systemState);
-  systemState->tokensAwaitingChoiceEvent.push_back(this);
+  systemState->tokensAwaitingChoiceEvent.push_back(weak_from_this());
 }
 
 void Token::awaitTaskCompletionEvent() {
@@ -524,12 +532,12 @@ void Token::awaitTaskCompletionEvent() {
 
 void Token::awaitResourceShutdownEvent() {
   auto systemState = const_cast<SystemState*>(owner->systemState);
-  systemState->tokensAwaitingResourceShutdownEvent.push_back(this);
+  systemState->tokensAwaitingResourceShutdownEvent.push_back(weak_from_this());
 }
 
 void Token::awaitExitEvent() {
   auto systemState = const_cast<SystemState*>(owner->systemState);
-  systemState->tokensAwaitingExitEvent.push_back(this);
+  systemState->tokensAwaitingExitEvent.push_back(weak_from_this());
 }
 
 void Token::awaitTimer(BPMNOS::number time) {
@@ -540,12 +548,12 @@ void Token::awaitTimer(BPMNOS::number time) {
 
 void Token::awaitMessageDelivery() {
   auto systemState = const_cast<SystemState*>(owner->systemState);
-  systemState->tokensAwaitingMessageDelivery.push_back(this);
+  systemState->tokensAwaitingMessageDelivery.push_back(weak_from_this());
 }
 
 void Token::awaitEventBasedGateway() {
   auto systemState = const_cast<SystemState*>(owner->systemState);
-  systemState->tokensAwaitingEventBasedGateway.push_back(this);
+  systemState->tokensAwaitingEventBasedGateway.push_back(weak_from_this());
 }
 
 
@@ -579,6 +587,7 @@ void Token::awaitGatewayActivation() {
 }
 
 void Token::destroy() {
+/*
   auto systemState = const_cast<SystemState*>(owner->systemState);
   if ( state == State::ARRIVED ) {
     if ( node->represents<BPMN::ParallelGateway>() || node->represents<BPMN::InclusiveGateway>() ) {
@@ -594,7 +603,7 @@ void Token::destroy() {
       }
     }
     else if ( node->represents<BPMN::Activity>() ) {
-      erase_ptr<Token>(systemState->tokensAwaitingReadyEvent,this);
+//      erase_ptr<Token>(systemState->tokensAwaitingReadyEvent,this);
     }
   }
   else if ( state == State::READY ) {
@@ -656,6 +665,7 @@ void Token::destroy() {
 //    erase_ptr<Token>(systemState->tokensAwaitingStateMachineCompletion,this);
 //  std::unordered_map< const StateMachine*, std::vector<Token*> > tokensAwaitingStateMachineCompletion; ///< Map holding all tokens awaiting the completion of a state machine
   }
+*/
 }
 
 Token* Token::getResourceToken() const {
@@ -686,9 +696,11 @@ void Token::update(State newState) {
 }
 
 void Token::notify() const {
+std::cerr << "notify: " << jsonify().dump() << std::endl;
   for ( auto listener : owner->systemState->engine->listeners ) {
     listener->update(this);
   }
+std::cerr << "notified" << std::endl;
 }
 
 void Token::mergeStatus(const Token* other) {

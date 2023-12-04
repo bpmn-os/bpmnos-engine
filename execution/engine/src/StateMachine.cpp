@@ -303,7 +303,7 @@ void StateMachine::createMergedToken(std::unordered_map< std::pair<const StateMa
   auto& [key,arrivedTokens] = *gatewayIt;
 
   // create merged token
-  std::unique_ptr<Token> mergedToken = std::make_unique<Token>(arrivedTokens);
+  std::shared_ptr<Token> mergedToken = std::make_shared<Token>(arrivedTokens);
 
   // remove tokens
   for ( auto arrivedToken : arrivedTokens ) {
@@ -322,6 +322,7 @@ void StateMachine::createMergedToken(std::unordered_map< std::pair<const StateMa
 
 void StateMachine::shutdown(std::unordered_map<const StateMachine*, std::vector<Token*> >::iterator it) {
 std::cerr << "start shutdown: " << scope->id << std::endl;
+
   auto& [key,completedTokens] = *it;
 
   if ( parentToken ) {
@@ -347,7 +348,8 @@ std::cerr << "start shutdown: " << scope->id << std::endl;
     auto parent = const_cast<StateMachine*>(parentToken->owner);
     engine->commands.emplace_back(std::bind(&StateMachine::deleteChild,parent,this), this);
   }
-//std::cerr << "shutdown (done): " << scope->id << "/" << systemState->completedStateMachines.size() <<std::endl;
+
+//std::cerr << "shutdown (done): " << scope->id <<std::endl;
 }
 
 void StateMachine::copyToken(Token* token) {
@@ -510,6 +512,7 @@ void StateMachine::terminate() {
 }
 
 void StateMachine::deleteChild(StateMachine* child) {
+std::cerr << "deleteChild" << std::endl;
   if ( auto eventSubProcess = child->scope->represents<BPMN::EventSubProcess>(); eventSubProcess ) {
     if ( eventSubProcess->isInterrupting ) {
       auto token = child->parentToken;
@@ -522,8 +525,9 @@ void StateMachine::deleteChild(StateMachine* child) {
   }
   else {
     // state machine represents a completed (sub)process
-    erase_ptr<StateMachine>(subProcesses, child);
     auto token = child->parentToken;
+std::cerr << "deleteChild:" << (token ? token->jsonify().dump() : "N/A") << std::endl;
+    erase_ptr<StateMachine>(subProcesses, child);
     auto engine = const_cast<Engine*>(systemState->engine);
     engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,token), this, token);
   }

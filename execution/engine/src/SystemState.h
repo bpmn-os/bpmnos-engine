@@ -3,6 +3,7 @@
 
 #include "StateMachine.h"
 #include "execution/engine/src/Message.h"
+#include "execution/utility/src/auto_list.h"
 #include "model/data/src/Scenario.h"
 #include <set>
 #include <queue>
@@ -74,28 +75,38 @@ public:
    */
   Messages messages;
 
-  std::vector<Token*> tokensAwaitingReadyEvent; ///< Container holding all tokens awaiting a ready event
+//  std::vector<Token*> tokensAwaitingReadyEvent; ///< Container holding all tokens awaiting a ready event
+  auto_list<Token> tokensAwaitingReadyEvent; ///< Container holding all tokens awaiting a ready event
 
-  std::vector<Token*> tokensAwaitingRegularEntryEvent; ///< Container holding all tokens at regular activities awaiting an entry event
+//  std::vector<Token*> tokensAwaitingRegularEntryEvent; ///< Container holding all tokens at regular activities awaiting an entry event
+  auto_list<Token> tokensAwaitingRegularEntryEvent; ///< Container holding all tokens at regular activities awaiting an entry event
 
-  std::unordered_map< Token*, std::vector<Token*> > tokensAwaitingJobEntryEvent; ///< Map holding a container of all tokens awaiting entry at jobs for each token at an active resource
-  std::vector< Token* > tokensAtIdleResources; ///< Container holding indices of resources not executing a job and awaiting a job entry
+//  std::unordered_map< Token*, std::vector<Token*> > tokensAwaitingJobEntryEvent; ///< Map holding a container of all tokens awaiting entry at jobs for each token at an active resource
+  std::unordered_map< Token*, auto_list<Token> > tokensAwaitingJobEntryEvent; ///< Map holding a container of all tokens awaiting entry at jobs for each token at an active resource
+
+//  std::vector< Token* > tokensAtIdleResources; ///< Container holding indices of resources not executing a job and awaiting a job entry
+  auto_list<Token> tokensAtIdleResources; ///< Container holding indices of resources not executing a job and awaiting a job entry
 //  std::vector< Token* > tokensAtActiveResources; ///< Container holding indices of tokens at busy resources
 
   std::set<std::pair<BPMNOS::number, Token*>, ScheduledTokenComparator> tokensAwaitingTaskCompletionEvent; ///< Sorted container holding all tokens awaiting a task completion event
-  std::vector<Token*> tokensAwaitingChoiceEvent; ///< Container holding all tokens awaiting a choice event
+//  std::vector<Token*> tokensAwaitingChoiceEvent; ///< Container holding all tokens awaiting a choice event
+  auto_list<Token> tokensAwaitingChoiceEvent; ///< Container holding all tokens awaiting a choice event
 
-  std::vector<Token*> tokensAwaitingResourceShutdownEvent; ///< Container holding all tokens awaiting a choice event
+//  std::vector<Token*> tokensAwaitingResourceShutdownEvent; ///< Container holding all tokens awaiting a choice event
+  auto_list<Token> tokensAwaitingResourceShutdownEvent; ///< Container holding all tokens awaiting a choice event
 
-  std::vector<Token*> tokensAwaitingExitEvent; ///< Container holding all tokens awaiting an exit event
+//  std::vector<Token*> tokensAwaitingExitEvent; ///< Container holding all tokens awaiting an exit event
+  auto_list<Token> tokensAwaitingExitEvent; ///< Container holding all tokens awaiting an exit event
 
 //  std::priority_queue<std::pair<BPMNOS::number, Token*>, std::vector<std::pair<BPMNOS::number, Token*>>, ScheduledTokenComparator> tokensAwaitingTimer; ///< Priority queue holding all tokens awaiting a timer event
   std::set<std::pair<BPMNOS::number, Token*>, ScheduledTokenComparator> tokensAwaitingTimer; ///< Sorted container holding holding all tokens awaiting a timer event
 
 
-  std::vector<Token*> tokensAwaitingMessageDelivery; ///< Container holding all tokens awaiting a message delivery event
+//  std::vector<Token*> tokensAwaitingMessageDelivery; ///< Container holding all tokens awaiting a message delivery event
+  auto_list<Token> tokensAwaitingMessageDelivery; ///< Container holding all tokens awaiting a message delivery event
 
-  std::vector<Token*> tokensAwaitingEventBasedGateway; ///< Container holding all tokens awaiting activation event for an event-based gateway
+//  std::vector<Token*> tokensAwaitingEventBasedGateway; ///< Container holding all tokens awaiting activation event for an event-based gateway
+  auto_list<Token> tokensAwaitingEventBasedGateway; ///< Container holding all tokens awaiting activation event for an event-based gateway
 
   std::unordered_map< const StateMachine*, std::vector<Token*> > tokensAwaitingStateMachineCompletion; ///< Map holding all tokens awaiting the completion of a state machine
 

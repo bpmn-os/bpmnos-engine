@@ -12,9 +12,9 @@ namespace BPMNOS::Execution {
 class Engine;
 class StateMachine;
 class Token;
-typedef std::vector< std::unique_ptr<Token> > Tokens;
+typedef std::vector< std::shared_ptr<Token> > Tokens;
 
-class Token {
+class Token : public std::enable_shared_from_this<Token> {
 private:
   friend class SystemState;
   friend class StateMachine;

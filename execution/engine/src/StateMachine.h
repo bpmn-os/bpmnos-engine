@@ -4,6 +4,7 @@
 #include <bpmn++.h>
 #include "Token.h"
 #include "model/utility/src/Number.h"
+#include "execution/utility/src/auto_list.h"
 
 namespace BPMNOS::Execution {
 
