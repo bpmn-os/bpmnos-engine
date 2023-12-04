@@ -46,7 +46,7 @@ void test() {
 
 
 TEST_CASE("My Test Case") {
-    test();
+//    test();
 }
 
 

@@ -9,10 +9,12 @@ DeterministicTaskCompletionHandler::DeterministicTaskCompletionHandler()
 }
 
 std::unique_ptr<Event> DeterministicTaskCompletionHandler::fetchEvent( const SystemState* systemState ) {
-  for ( auto& [time,token] : systemState->tokensAwaitingTaskCompletionEvent ) {
-    if ( time <= systemState->getTime() ) {
-      std::vector< std::pair< size_t, std::optional<BPMNOS::number> > > updatedValues; // TODO
-      return std::make_unique<TaskCompletionEvent>(token,updatedValues);
+  for ( auto [time,token_ptr] : const_cast<SystemState*>(systemState)->tokensAwaitingTaskCompletionEvent ) {
+    if ( auto token = token_ptr.lock() )  {
+      if ( time <= systemState->getTime() ) {
+        std::vector< std::pair< size_t, std::optional<BPMNOS::number> > > updatedValues; // TODO
+        return std::make_unique<TaskCompletionEvent>(token.get(),updatedValues);
+      }
     }
   }
   return nullptr;

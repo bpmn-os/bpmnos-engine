@@ -99,17 +99,17 @@ void Engine::addInstances() {
 }
 
 void Engine::deleteInstance(StateMachine* instance) {
-std::cerr << "deleteInstance" << std::endl;
+//std::cerr << "deleteInstance" << std::endl;
   erase_ptr<StateMachine>(systemState->instances,instance);
 }
 
 void Engine::process(const ClockTickEvent& event) {
-std::cerr << "ClockTickEvent " << std::endl;
+//std::cerr << "ClockTickEvent " << std::endl;
   systemState->incrementTimeBy(clockTick);
 }
 
 void Engine::process(const ReadyEvent& event) {
-std::cerr << "ReadyEvent " << event.token->node->id << std::endl;
+//std::cerr << "ReadyEvent " << event.token->node->id << std::endl;
   Token* token = const_cast<Token*>(event.token);
 //  erase<Token*>(systemState->tokensAwaitingReadyEvent, event.token);
   systemState->tokensAwaitingReadyEvent.remove(token);
@@ -147,6 +147,9 @@ std::cerr << "EntryEvent " << event.token->node->id << std::endl;
 
 void Engine::process(const TaskCompletionEvent& event) {
 std::cerr << "TaskCompletionEvent " << event.token->node->id << std::endl;
+  Token* token = const_cast<Token*>(event.token);
+  systemState->tokensAwaitingTaskCompletionEvent.remove(token);
+/*
   auto it = systemState->tokensAwaitingTaskCompletionEvent.begin();
   while (it != systemState->tokensAwaitingTaskCompletionEvent.end()) {
     if (it->second == event.token) {
@@ -155,8 +158,8 @@ std::cerr << "TaskCompletionEvent " << event.token->node->id << std::endl;
     }
     ++it;
   }
+*/
 
-  Token* token = const_cast<Token*>(event.token);
   // update token status
   for ( auto & [index, value] : event.updatedValues ) {
     token->status[index] = value;

@@ -4,6 +4,7 @@
 #include "StateMachine.h"
 #include "execution/engine/src/Message.h"
 #include "execution/utility/src/auto_list.h"
+#include "execution/utility/src/auto_schedule.h"
 #include "model/data/src/Scenario.h"
 #include <set>
 #include <queue>
@@ -20,12 +21,14 @@ class SystemState {
 private:
   const Engine* engine;
 
+/*
   struct ScheduledTokenComparator {
     bool operator()(const std::pair<BPMNOS::number, Token*>& lhs, const std::pair<BPMNOS::number, Token*>& rhs) const {
       // Compare based on the 'time' component
       return lhs.first < rhs.first || (lhs.first == rhs.first && lhs.second < rhs.second);
     }
   };
+*/
 
   struct PairHash {
     template <typename T1, typename T2>
@@ -88,7 +91,8 @@ public:
   auto_list<Token> tokensAtIdleResources; ///< Container holding indices of resources not executing a job and awaiting a job entry
 //  std::vector< Token* > tokensAtActiveResources; ///< Container holding indices of tokens at busy resources
 
-  std::set<std::pair<BPMNOS::number, Token*>, ScheduledTokenComparator> tokensAwaitingTaskCompletionEvent; ///< Sorted container holding all tokens awaiting a task completion event
+//  std::set<std::pair<BPMNOS::number, Token*>, ScheduledTokenComparator> tokensAwaitingTaskCompletionEvent; ///< Sorted container holding all tokens awaiting a task completion event
+  auto_schedule<Token> tokensAwaitingTaskCompletionEvent; ///< Sorted container holding all tokens awaiting a task completion event
 //  std::vector<Token*> tokensAwaitingChoiceEvent; ///< Container holding all tokens awaiting a choice event
   auto_list<Token> tokensAwaitingChoiceEvent; ///< Container holding all tokens awaiting a choice event
 
@@ -99,8 +103,8 @@ public:
   auto_list<Token> tokensAwaitingExitEvent; ///< Container holding all tokens awaiting an exit event
 
 //  std::priority_queue<std::pair<BPMNOS::number, Token*>, std::vector<std::pair<BPMNOS::number, Token*>>, ScheduledTokenComparator> tokensAwaitingTimer; ///< Priority queue holding all tokens awaiting a timer event
-  std::set<std::pair<BPMNOS::number, Token*>, ScheduledTokenComparator> tokensAwaitingTimer; ///< Sorted container holding holding all tokens awaiting a timer event
-
+//  std::set<std::pair<BPMNOS::number, Token*>, ScheduledTokenComparator> tokensAwaitingTimer; ///< Sorted container holding holding all tokens awaiting a timer event
+  auto_schedule<Token> tokensAwaitingTimer; ///< Sorted container holding holding all tokens awaiting a timer event
 
 //  std::vector<Token*> tokensAwaitingMessageDelivery; ///< Container holding all tokens awaiting a message delivery event
   auto_list<Token> tokensAwaitingMessageDelivery; ///< Container holding all tokens awaiting a message delivery event

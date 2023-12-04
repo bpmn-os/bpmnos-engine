@@ -527,7 +527,7 @@ void Token::awaitTaskCompletionEvent() {
   auto systemState = const_cast<SystemState*>(owner->systemState);
   auto time = status[BPMNOS::Model::Status::Index::Timestamp].value(); 
 
-  systemState->tokensAwaitingTaskCompletionEvent.insert({time,this});
+  systemState->tokensAwaitingTaskCompletionEvent.emplace(time,weak_from_this());
 }
 
 void Token::awaitResourceShutdownEvent() {
@@ -542,7 +542,7 @@ void Token::awaitExitEvent() {
 
 void Token::awaitTimer(BPMNOS::number time) {
   auto systemState = const_cast<SystemState*>(owner->systemState);
-  systemState->tokensAwaitingTimer.insert({time,this});
+  systemState->tokensAwaitingTimer.emplace(time,weak_from_this());
 }
 
 
