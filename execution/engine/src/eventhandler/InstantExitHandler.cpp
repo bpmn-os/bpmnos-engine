@@ -13,11 +13,6 @@ std::unique_ptr<Event> InstantExitHandler::fetchEvent( const SystemState* system
       return std::make_unique<ExitEvent>(token.get());
     }
   }
-/*
-  if ( systemState->tokensAwaitingExitEvent.size() ) {
-    return std::make_unique<ExitEvent>(systemState->tokensAwaitingExitEvent.front());
-  }
-*/
   return nullptr;
 }
 

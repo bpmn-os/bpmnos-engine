@@ -38,13 +38,13 @@ void Engine::run(const BPMNOS::Model::Scenario* scenario, BPMNOS::number timeout
 
   // advance all tokens in system state
   while ( advance() ) {
-std::cerr << ".";
+//std::cerr << ".";
     if ( !systemState->isAlive() ) {
-std::cerr << "dead" << std::endl;
+//std::cerr << "dead" << std::endl;
       break;
     }
     if ( systemState->getTime() > timeout ) {
-std::cerr << "timeout" << std::endl;
+//std::cerr << "timeout" << std::endl;
       break;
     }
   }
@@ -66,7 +66,7 @@ bool Engine::advance() {
 
   // fetch and process all events
   while ( auto event = fetchEvent() ) {
-std::cerr << "*";
+//std::cerr << "*";
     event->processBy(this);
 
     while ( commands.size() ) {
@@ -75,7 +75,7 @@ std::cerr << "*";
     }
 
     if ( event->is<ClockTickEvent>() ) {
-std::cerr << "ClockTick" << std::endl;
+//std::cerr << "ClockTick" << std::endl;
       // exit loop to resume 
       return true;
     }
@@ -111,7 +111,6 @@ void Engine::process(const ClockTickEvent& event) {
 void Engine::process(const ReadyEvent& event) {
 //std::cerr << "ReadyEvent " << event.token->node->id << std::endl;
   Token* token = const_cast<Token*>(event.token);
-//  erase<Token*>(systemState->tokensAwaitingReadyEvent, event.token);
   systemState->tokensAwaitingReadyEvent.remove(token);
 
   token->sequenceFlow = nullptr;
@@ -122,17 +121,14 @@ void Engine::process(const ReadyEvent& event) {
 }
 
 void Engine::process(const EntryEvent& event) {
-std::cerr << "EntryEvent " << event.token->node->id << std::endl;
+//std::cerr << "EntryEvent " << event.token->node->id << std::endl;
   Token* token = const_cast<Token*>(event.token);
   if ( auto tokenAtResource = event.token->getResourceToken(); tokenAtResource ) {
-//    erase<Token*>(systemState->tokensAwaitingJobEntryEvent[tokenAtResource], event.token);
     systemState->tokensAwaitingJobEntryEvent[tokenAtResource].remove(token);
     // resource is no longer idle
-//    erase<Token*>(systemState->tokensAtIdleResources, tokenAtResource);
     systemState->tokensAtIdleResources.remove(tokenAtResource);
   }
   else {
-//    erase<Token*>(systemState->tokensAwaitingRegularEntryEvent, event.token);
     systemState->tokensAwaitingRegularEntryEvent.remove(token);
   }
 
@@ -146,19 +142,9 @@ std::cerr << "EntryEvent " << event.token->node->id << std::endl;
 }
 
 void Engine::process(const TaskCompletionEvent& event) {
-std::cerr << "TaskCompletionEvent " << event.token->node->id << std::endl;
+//std::cerr << "TaskCompletionEvent " << event.token->node->id << std::endl;
   Token* token = const_cast<Token*>(event.token);
   systemState->tokensAwaitingTaskCompletionEvent.remove(token);
-/*
-  auto it = systemState->tokensAwaitingTaskCompletionEvent.begin();
-  while (it != systemState->tokensAwaitingTaskCompletionEvent.end()) {
-    if (it->second == event.token) {
-        systemState->tokensAwaitingTaskCompletionEvent.erase(it);
-        break; // Remove the first occurrence and exit the loop
-    }
-    ++it;
-  }
-*/
 
   // update token status
   for ( auto & [index, value] : event.updatedValues ) {
@@ -170,9 +156,8 @@ std::cerr << "TaskCompletionEvent " << event.token->node->id << std::endl;
 }
 
 void Engine::process(const ExitEvent& event) {
-std::cerr << "ExitEvent " << event.token->node->id << std::endl;
+//std::cerr << "ExitEvent " << event.token->node->id << std::endl;
   Token* token = const_cast<Token*>(event.token);
-//  erase<Token*>(systemState->tokensAwaitingExitEvent, event.token);
   systemState->tokensAwaitingExitEvent.remove(token);
 
   if ( auto tokenAtResource = token->getResourceToken(); tokenAtResource ) {

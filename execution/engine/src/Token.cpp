@@ -61,9 +61,7 @@ const BPMNOS::Model::AttributeMap& Token::getAttributeMap() const {
 nlohmann::ordered_json Token::jsonify() const {
   nlohmann::ordered_json jsonObject;
   jsonObject["processId"] = owner->process->id;
-std::cerr <<"?";
   jsonObject["instanceId"] = BPMNOS::to_string(status[Model::Status::Index::Instance].value(),STRING);
-std::cerr <<"!";
   if ( node ) {
     jsonObject["nodeId"] = node->id;
   }
@@ -336,7 +334,7 @@ void Token::advanceToCompleted(const Values& statusUpdate) {
 */
 
 void Token::advanceToCompleted() {
-std::cerr << "advanceToCompleted" << std::endl;
+//std::cerr << "advanceToCompleted" << std::endl;
   if ( status[BPMNOS::Model::Status::Index::Timestamp] > owner->systemState->getTime() ) {
     if ( node ) {
       throw std::runtime_error("Token: completion timestamp at node '" + node->id + "' is larger than current time");
@@ -346,15 +344,12 @@ std::cerr << "advanceToCompleted" << std::endl;
     }
   }
 
-std::cerr << "update" << std::endl;
   update(State::COMPLETED);
-std::cerr << "updated" << std::endl;
 
   if ( node && node->represents<BPMN::Activity>() ) {
     awaitExitEvent();
   }
   else {
-std::cerr << "else" << std::endl;
     // check restrictions
     if ( !isFeasible() ) {
       auto engine = const_cast<Engine*>(owner->systemState->engine);
@@ -399,7 +394,7 @@ void Token::advanceToExiting() {
 }
 
 void Token::advanceToDone() {
-std::cerr << "advanceToDone" << std::endl;
+//std::cerr << "advanceToDone" << std::endl;
   update(State::DONE);
   awaitStateMachineCompletion();
 
@@ -407,7 +402,7 @@ std::cerr << "advanceToDone" << std::endl;
 }
 
 void Token::advanceToDeparting() {
-std::cerr << "advanceToDeparting" << std::endl;
+//std::cerr << "advanceToDeparting" << std::endl;
 
   if ( node->outgoing.size() == 1 ) {
     auto engine = const_cast<Engine*>(owner->systemState->engine);
@@ -558,11 +553,10 @@ void Token::awaitEventBasedGateway() {
 
 
 void Token::awaitStateMachineCompletion() {
-std::cerr << "awaitStateMachineCompletion: " << (node ? node->id : std::string("N/A") ) << std::endl;
+//std::cerr << "awaitStateMachineCompletion: " << (node ? node->id : std::string("N/A") ) << std::endl;
   auto systemState = const_cast<SystemState*>(owner->systemState);
   auto ownerIt = systemState->tokensAwaitingStateMachineCompletion.find(owner);
   if (ownerIt == systemState->tokensAwaitingStateMachineCompletion.end()) {
-std::cerr << "insert " << owner->scope->id << std::endl;
     // The key is not found, so insert a new entry and get an iterator to it.
     ownerIt = systemState->tokensAwaitingStateMachineCompletion.insert({owner,{}}).first;
   }
@@ -587,6 +581,9 @@ void Token::awaitGatewayActivation() {
 }
 
 void Token::destroy() {
+  if ( !node && node->represents<BPMNOS::Model::ResourceActivity>() ) {
+    const_cast<SystemState*>(owner->systemState)->tokensAwaitingJobEntryEvent.erase(this);
+  }
 /*
   auto systemState = const_cast<SystemState*>(owner->systemState);
   if ( state == State::ARRIVED ) {
@@ -696,11 +693,9 @@ void Token::update(State newState) {
 }
 
 void Token::notify() const {
-std::cerr << "notify: " << jsonify().dump() << std::endl;
   for ( auto listener : owner->systemState->engine->listeners ) {
     listener->update(this);
   }
-std::cerr << "notified" << std::endl;
 }
 
 void Token::mergeStatus(const Token* other) {

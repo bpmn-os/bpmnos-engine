@@ -321,7 +321,7 @@ void StateMachine::createMergedToken(std::unordered_map< std::pair<const StateMa
 }
 
 void StateMachine::shutdown(std::unordered_map<const StateMachine*, std::vector<Token*> >::iterator it) {
-std::cerr << "start shutdown: " << scope->id << std::endl;
+//std::cerr << "start shutdown: " << scope->id << std::endl;
 
   auto& [key,completedTokens] = *it;
 
@@ -439,14 +439,14 @@ void StateMachine::attemptShutdown() {
     return;
   }
 
-std::cerr << "attemptShutdown:" << scope->id << std::endl; 
+//std::cerr << "attemptShutdown:" << scope->id << std::endl; 
   // TODO
   auto it = const_cast<SystemState*>(systemState)->tokensAwaitingStateMachineCompletion.find(this);
   if ( it == const_cast<SystemState*>(systemState)->tokensAwaitingStateMachineCompletion.end() ) {
-std::cerr << const_cast<SystemState*>(systemState)->tokensAwaitingStateMachineCompletion.size() << std::endl;
+//std::cerr << const_cast<SystemState*>(systemState)->tokensAwaitingStateMachineCompletion.size() << std::endl;
     throw std::logic_error("StateMachine: cannot find tokens awaiting state machine completion");
   }
-std::cerr << const_cast<SystemState*>(systemState)->tokensAwaitingStateMachineCompletion.size() << std::endl;
+//std::cerr << const_cast<SystemState*>(systemState)->tokensAwaitingStateMachineCompletion.size() << std::endl;
 
   auto& [key,completedTokens] = *it;
 
@@ -512,7 +512,7 @@ void StateMachine::terminate() {
 }
 
 void StateMachine::deleteChild(StateMachine* child) {
-std::cerr << "deleteChild" << std::endl;
+//std::cerr << "deleteChild" << std::endl;
   if ( auto eventSubProcess = child->scope->represents<BPMN::EventSubProcess>(); eventSubProcess ) {
     if ( eventSubProcess->isInterrupting ) {
       auto token = child->parentToken;
@@ -526,7 +526,6 @@ std::cerr << "deleteChild" << std::endl;
   else {
     // state machine represents a completed (sub)process
     auto token = child->parentToken;
-std::cerr << "deleteChild:" << (token ? token->jsonify().dump() : "N/A") << std::endl;
     erase_ptr<StateMachine>(subProcesses, child);
     auto engine = const_cast<Engine*>(systemState->engine);
     engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,token), this, token);

@@ -13,11 +13,6 @@ std::unique_ptr<Event> InstantEntryHandler::fetchEvent( const SystemState* syste
       return std::make_unique<EntryEvent>(token.get());
     }
   }
-/*
-  if ( systemState->tokensAwaitingRegularEntryEvent.size() ) {
-    return std::make_unique<EntryEvent>(systemState->tokensAwaitingRegularEntryEvent.front());
-  }
-*/
   return nullptr;
 }
 
