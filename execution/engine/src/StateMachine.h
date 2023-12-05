@@ -8,7 +8,6 @@
 
 namespace BPMNOS::Execution {
 
-
 class StateMachine;
 typedef std::vector< std::unique_ptr<StateMachine> > StateMachines;
 
@@ -36,7 +35,6 @@ public:
   std::unique_ptr<StateMachine> interruptingEventSubProcess; ///< State machines representing an active event subprocess that is interrupting.
   StateMachines nonInterruptingEventSubProcesses; ///< Container with state machines of all active event subprocesses that are not interrupting.
   StateMachines pendingEventSubProcesses; ///< Container with state machines of all inactive event subprocesses that may be triggered.
-
 
   void run(const Values& status); ///< Create initial token and advance it.
 

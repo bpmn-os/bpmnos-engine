@@ -295,7 +295,7 @@ void StateMachine::createTokenCopies(Token* token, const std::vector<BPMN::Seque
   for (size_t i = 0; i < sequenceFlows.size(); i++ ) {
     auto token = tokenCopies[i];
     auto engine = const_cast<Engine*>(systemState->engine);
-    engine->commands.emplace_back(std::bind(&Token::advanceToDeparted,token,sequenceFlows[i]), this, token);
+    engine->commands.emplace_back(std::bind(&Token::advanceToDeparted,token,sequenceFlows[i]), this, token->weak_from_this());
   }
 }
 
@@ -317,7 +317,7 @@ void StateMachine::createMergedToken(std::unordered_map< std::pair<const StateMa
   // advance merged token
   auto token = tokens.back().get();
   auto engine = const_cast<Engine*>(systemState->engine);
-  engine->commands.emplace_back(std::bind(&Token::advanceToEntered,token), this, token);
+  engine->commands.emplace_back(std::bind(&Token::advanceToEntered,token), this, token->weak_from_this());
 }
 
 void StateMachine::shutdown(std::unordered_map<const StateMachine*, std::vector<Token*> >::iterator it) {
@@ -399,7 +399,7 @@ std::cerr << "bubbble up error" << std::endl;
 //    auto engine = const_cast<Engine*>(systemState->engine);
 //    engine->commands.emplace_back(std::bind(&StateMachine::terminate,this), this);
     terminate();
-//    engine->commands.emplace_back(std::bind(&Token::advanceToFailed,parentToken), parentToken->owner, parentToken);
+//    engine->commands.emplace_back(std::bind(&Token::advanceToFailed,parentToken), parentToken->owner, parentToken->weak_from_this());
     parentToken->update(Token::State::FAILED);
   }
   else {
@@ -517,7 +517,7 @@ void StateMachine::deleteChild(StateMachine* child) {
     if ( eventSubProcess->isInterrupting ) {
       auto token = child->parentToken;
       auto engine = const_cast<Engine*>(systemState->engine);
-      engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,token), this, token);
+      engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,token), this, token->weak_from_this());
     }
     else {
       throw std::runtime_error("Engine: Non-interrupting event subprocesses not yet implemented");
@@ -528,6 +528,6 @@ void StateMachine::deleteChild(StateMachine* child) {
     auto token = child->parentToken;
     erase_ptr<StateMachine>(subProcesses, child);
     auto engine = const_cast<Engine*>(systemState->engine);
-    engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,token), this, token);
+    engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,token), this, token->weak_from_this());
   }
 }

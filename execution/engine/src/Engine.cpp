@@ -15,6 +15,18 @@ Engine::~Engine()
 {
 }
 
+void Engine::Command::execute() {
+  if ( token_ptr.has_value() ) {
+    auto shared_token_ptr = token_ptr->lock();
+    if ( !shared_token_ptr ) {
+      // relevant token has expired, skip command
+      return;
+    }
+  }
+
+  function();
+}
+
 void Engine::addEventHandler(EventHandler* eventHandler) {
   eventHandlers.push_back(eventHandler);
 }
@@ -117,7 +129,7 @@ void Engine::process(const ReadyEvent& event) {
   token->status.insert(token->status.end(), event.values.begin(), event.values.end());
 
   StateMachine* stateMachine = const_cast<StateMachine*>(event.token->owner);
-  commands.emplace_back(std::bind(&Token::advanceToReady,token), stateMachine, token);
+  commands.emplace_back(std::bind(&Token::advanceToReady,token), stateMachine, token->weak_from_this());
 }
 
 void Engine::process(const EntryEvent& event) {
@@ -138,7 +150,7 @@ void Engine::process(const EntryEvent& event) {
   }
 
   StateMachine* stateMachine = const_cast<StateMachine*>(event.token->owner);
-  commands.emplace_back(std::bind(&Token::advanceToEntered,token), stateMachine, token);
+  commands.emplace_back(std::bind(&Token::advanceToEntered,token), stateMachine, token->weak_from_this());
 }
 
 void Engine::process(const TaskCompletionEvent& event) {
@@ -152,7 +164,7 @@ void Engine::process(const TaskCompletionEvent& event) {
   }
 
   StateMachine* stateMachine = const_cast<StateMachine*>(event.token->owner);
-  commands.emplace_back(std::bind(&Token::advanceToCompleted,token), stateMachine, token);
+  commands.emplace_back(std::bind(&Token::advanceToCompleted,token), stateMachine, token->weak_from_this());
 }
 
 void Engine::process(const ExitEvent& event) {
@@ -171,7 +183,7 @@ void Engine::process(const ExitEvent& event) {
   }
 
   StateMachine* stateMachine = const_cast<StateMachine*>(token->owner);
-  commands.emplace_back(std::bind(&Token::advanceToExiting,token), stateMachine, token);
+  commands.emplace_back(std::bind(&Token::advanceToExiting,token), stateMachine, token->weak_from_this());
 }
 
 /*
