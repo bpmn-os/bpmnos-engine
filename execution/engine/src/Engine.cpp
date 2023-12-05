@@ -16,12 +16,9 @@ Engine::~Engine()
 }
 
 void Engine::Command::execute() {
-  if ( token_ptr.has_value() ) {
-    auto shared_token_ptr = token_ptr->lock();
-    if ( !shared_token_ptr ) {
-      // relevant token has expired, skip command
-      return;
-    }
+  if ( token_ptr.has_value() && token_ptr->expired() ) {
+    // relevant token has expired, skip command
+    return;
   }
 
   function();
