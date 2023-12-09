@@ -32,6 +32,7 @@ public:
   Token(const StateMachine* owner, const BPMN::FlowNode* node, const Values& status);
   Token(const Token* other);
   Token(const std::vector<Token*>& others);
+  ~Token();
 
   Values status;
 

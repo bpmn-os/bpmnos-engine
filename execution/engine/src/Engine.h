@@ -66,14 +66,14 @@ protected:
    */
   class Command {
   public:
-    Command(std::function<void()>&& f, const StateMachine* stateMachine=nullptr, std::optional< std::weak_ptr<Token> > token_ptr = std::nullopt )
-      : function(f)
-      , stateMachine(stateMachine)
+    Command(std::function<void()>&& f, std::optional< std::weak_ptr<StateMachine> > stateMachine_ptr  = std::nullopt, std::optional< std::weak_ptr<Token> > token_ptr = std::nullopt )
+      : function(std::move(f))
+      , stateMachine_ptr(stateMachine_ptr)
       , token_ptr(token_ptr) {};
     void execute();
   private:
     std::function<void()> function;
-    const StateMachine* stateMachine; ///< Pointer to the state machine that the command refers to
+    std::optional< std::weak_ptr<StateMachine> > stateMachine_ptr; ///< Pointer to the state machine that the command refers to
     std::optional< std::weak_ptr<Token> > token_ptr; ///< Pointer to the token that the command refers to
   };
 

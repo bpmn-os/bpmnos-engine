@@ -21,15 +21,6 @@ class SystemState {
 private:
   const Engine* engine;
 
-  struct PairHash {
-    template <typename T1, typename T2>
-    std::size_t operator () (const std::pair<T1, T2>& p) const {
-        auto h1 = std::hash<T1>{}(p.first);
-        auto h2 = std::hash<T2>{}(p.second);
-        return h1 ^ h2;
-    }
-  };
-
 public:
   SystemState(const Engine* engine, const BPMNOS::Model::Scenario* scenario, BPMNOS::number currentTime = 0);
 
@@ -97,7 +88,7 @@ public:
   std::unordered_map< const StateMachine*, std::vector<Token*> > tokensAwaitingStateMachineCompletion; ///< Map holding all tokens awaiting the completion of a state machine
 
   //TODO: make sure that elements are deleted when no longer required
-  std::unordered_map< std::pair< const StateMachine*, const BPMN::FlowNode*>, std::vector<Token*>, PairHash > tokensAwaitingGatewayActivation; ///< Map holding tokens awaiting activation of a converging gateway 
+  std::unordered_map< const StateMachine*, std::map<const BPMN::FlowNode*, std::vector<Token*> > > tokensAwaitingGatewayActivation; ///< Map holding tokens awaiting activation of a converging gateway 
 
 private:
   friend class Engine;

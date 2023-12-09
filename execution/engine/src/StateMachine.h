@@ -9,7 +9,7 @@
 namespace BPMNOS::Execution {
 
 class StateMachine;
-typedef std::vector< std::unique_ptr<StateMachine> > StateMachines;
+typedef std::vector< std::shared_ptr<StateMachine> > StateMachines;
 
 class SystemState;
 
@@ -19,11 +19,13 @@ class SystemState;
  * This class manages all tokens for BPMN execution of a given scope. It also holds
  * a state machine for each child scope instantiated.
  */
-class StateMachine {
+class StateMachine : public std::enable_shared_from_this<StateMachine> {
 public:
   StateMachine(const SystemState* systemState, const BPMN::Process* process);
   StateMachine(const SystemState* systemState, const BPMN::Scope* scope, Token* parentToken);
   StateMachine(const StateMachine* other);
+  ~StateMachine();
+
   const SystemState* systemState;
   const BPMN::Process* process; ///< Pointer to the top-level process.
   const BPMN::Scope* scope; ///< Pointer to the current scope.
@@ -32,7 +34,7 @@ public:
 
   Tokens tokens; ///< Container with all tokens within the scope of the state machine.
   StateMachines subProcesses; ///< Container with state machines of all active (sub)processes.
-  std::unique_ptr<StateMachine> interruptingEventSubProcess; ///< State machines representing an active event subprocess that is interrupting.
+  std::shared_ptr<StateMachine> interruptingEventSubProcess; ///< State machines representing an active event subprocess that is interrupting.
   StateMachines nonInterruptingEventSubProcesses; ///< Container with state machines of all active event subprocesses that are not interrupting.
   StateMachines pendingEventSubProcesses; ///< Container with state machines of all inactive event subprocesses that may be triggered.
 
@@ -49,10 +51,11 @@ private:
 
   void createNonInterruptingEventSubprocess(const StateMachine* pendingEventSubProcess, const BPMNOS::Values& status); ///< Method creating the state machine for an non-interrupting event sprocess
 
+  void initiateBoundaryEvents(Token* token); ///< Method placing tokens on all boundary events
   void initiateEventSubprocesses(Token* token); ///< Method initiating pending event subprocesses
 
   void createTokenCopies(Token* token, const std::vector<BPMN::SequenceFlow*>& sequenceFlows);
-  void createMergedToken(std::unordered_map< std::pair<const StateMachine*, const BPMN::FlowNode*>, std::vector<Token*> >::iterator gatewayIt);
+  void createMergedToken(std::map< const BPMN::FlowNode*, std::vector<Token*> >::iterator gatewayIt);
 
   void shutdown(std::unordered_map< const StateMachine*, std::vector<Token*> >::iterator it);
   /**

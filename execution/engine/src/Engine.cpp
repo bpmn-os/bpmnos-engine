@@ -21,6 +21,11 @@ void Engine::Command::execute() {
     return;
   }
 
+  if ( stateMachine_ptr.has_value() && stateMachine_ptr->expired() ) {
+    // relevant state machine has expired, skip command
+    return;
+  }
+
   function();
 }
 
@@ -126,7 +131,7 @@ void Engine::process(const ReadyEvent& event) {
   token->status.insert(token->status.end(), event.values.begin(), event.values.end());
 
   StateMachine* stateMachine = const_cast<StateMachine*>(event.token->owner);
-  commands.emplace_back(std::bind(&Token::advanceToReady,token), stateMachine, token->weak_from_this());
+  commands.emplace_back(std::bind(&Token::advanceToReady,token), stateMachine->weak_from_this(), token->weak_from_this());
 }
 
 void Engine::process(const EntryEvent& event) {
@@ -147,7 +152,7 @@ void Engine::process(const EntryEvent& event) {
   }
 
   StateMachine* stateMachine = const_cast<StateMachine*>(event.token->owner);
-  commands.emplace_back(std::bind(&Token::advanceToEntered,token), stateMachine, token->weak_from_this());
+  commands.emplace_back(std::bind(&Token::advanceToEntered,token), stateMachine->weak_from_this(), token->weak_from_this());
 }
 
 void Engine::process(const TaskCompletionEvent& event) {
@@ -161,7 +166,7 @@ void Engine::process(const TaskCompletionEvent& event) {
   }
 
   StateMachine* stateMachine = const_cast<StateMachine*>(event.token->owner);
-  commands.emplace_back(std::bind(&Token::advanceToCompleted,token), stateMachine, token->weak_from_this());
+  commands.emplace_back(std::bind(&Token::advanceToCompleted,token), stateMachine->weak_from_this(), token->weak_from_this());
 }
 
 void Engine::process(const ExitEvent& event) {
@@ -180,7 +185,7 @@ void Engine::process(const ExitEvent& event) {
   }
 
   StateMachine* stateMachine = const_cast<StateMachine*>(token->owner);
-  commands.emplace_back(std::bind(&Token::advanceToExiting,token), stateMachine, token->weak_from_this());
+  commands.emplace_back(std::bind(&Token::advanceToExiting,token), stateMachine->weak_from_this(), token->weak_from_this());
 }
 
 /*
