@@ -69,6 +69,7 @@ private:
   void attemptGatewayActivation(const BPMN::FlowNode* node);
   void attemptShutdown();
   void deleteChild(StateMachine* child); ///< Method removing completed state machine from parent
+  void deleteNonInterruptingEventSubProcess(StateMachine* eventSubProcess); ///< Method removing completed event subprocess from context
 };
 
 

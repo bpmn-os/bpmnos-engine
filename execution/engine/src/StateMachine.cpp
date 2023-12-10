@@ -34,7 +34,7 @@ StateMachine::StateMachine(const StateMachine* other)
   , scope(other->scope)
   , parentToken(other->parentToken)
 {
-//std::cerr << "oStateMachine(" << scope->id << ")" << this << std::endl;
+//std::cerr << "oStateMachine(" << scope->id << ")" << this << ", parentToken: " << parentToken << " owned by :" << parentToken->owner << std::endl;
 }
 
 StateMachine::~StateMachine() {
@@ -73,7 +73,7 @@ void StateMachine::run(const Values& status) {
     if ( scope->startNodes.size() != 1 ) {
       throw std::runtime_error("StateMachine: no unique start node within scope of '" + scope->id + "'");
     }
-//std::cerr << "Start at " << scope->startNodes.front()->id << std::endl;
+
     tokens.push_back( std::make_shared<Token>(this,scope->startNodes.front(),status) );
   }
 
@@ -187,7 +187,7 @@ void StateMachine::handleEscalation(Token* token) {
     return;
   }
 
-std::cerr << "bubbble up escalation" << std::endl;
+//std::cerr << "bubbble up escalation" << std::endl;
   auto parent = const_cast<StateMachine*>(parentToken->owner);
   engine->commands.emplace_back(std::bind(&StateMachine::handleEscalation,parent,parentToken), parent->weak_from_this(), parentToken->weak_from_this());
 
@@ -231,7 +231,7 @@ void StateMachine::handleFailure(Token* token) {
     return;
   }
 
-std::cerr << "bubbble up error" << std::endl;
+//std::cerr << "bubbble up error" << std::endl;
   engine->commands.emplace_back(std::bind(&Token::advanceToFailed,parentToken), const_cast<StateMachine*>(parentToken->owner)->weak_from_this(), parentToken->weak_from_this());
 
 }
@@ -256,6 +256,16 @@ void StateMachine::attemptGatewayActivation(const BPMN::FlowNode* node) {
 
 void StateMachine::shutdown(std::unordered_map<const StateMachine*, std::vector<Token*> >::iterator it) {
 //std::cerr << "start shutdown: " << scope->id << "/" << const_cast<SystemState*>(systemState)->tokensAwaitingStateMachineCompletion.size() << std::endl;
+ 
+  auto engine = const_cast<Engine*>(systemState->engine);
+
+  if ( auto eventSubProcess = scope->represents<BPMN::EventSubProcess>(); 
+    eventSubProcess && eventSubProcess->isNonInterrupting()
+  ) {
+    auto context = const_cast<StateMachine*>(parentToken->owned);
+    engine->commands.emplace_back(std::bind(&StateMachine::deleteNonInterruptingEventSubProcess,context,this), weak_from_this());
+    return;
+  }
 
 
   auto& [key,completedTokens] = *it;
@@ -272,13 +282,13 @@ void StateMachine::shutdown(std::unordered_map<const StateMachine*, std::vector<
   }
 
   if ( !parentToken ) {
-    auto engine = const_cast<Engine*>(systemState->engine);
     engine->commands.emplace_back(std::bind(&Engine::deleteInstance,engine,this), weak_from_this());
   }
   else {
-    auto engine = const_cast<Engine*>(systemState->engine);
     auto parent = const_cast<StateMachine*>(parentToken->owner);
-    engine->commands.emplace_back(std::bind(&StateMachine::deleteChild,parent,this), weak_from_this());
+    auto context = const_cast<StateMachine*>(parentToken->owned);
+    engine->commands.emplace_back(std::bind(&StateMachine::deleteChild,parent,context), context->weak_from_this());
+//    engine->commands.emplace_back(std::bind(&StateMachine::deleteChild,parent,this), weak_from_this());
   }
 
 //std::cerr << "shutdown (done): " << scope->id <<std::endl;
@@ -286,7 +296,7 @@ void StateMachine::shutdown(std::unordered_map<const StateMachine*, std::vector<
 
 void StateMachine::attemptShutdown() {
 // TODO: check
-//std::cerr << "attemptShutdown: " << scope->id << std::endl;
+//std::cerr << "attemptShutdown: " << scope->id << "/" << this << std::endl;
   if ( interruptingEventSubProcess ) {
 //std::cerr << "wait for completion of interrupting event subprocess" << interruptingEventSubProcess->scope->id << std::endl;
     // wait for completion of interrupting event subprocess
@@ -297,7 +307,8 @@ void StateMachine::attemptShutdown() {
   auto it = const_cast<SystemState*>(systemState)->tokensAwaitingStateMachineCompletion.find(this);
   if ( it == const_cast<SystemState*>(systemState)->tokensAwaitingStateMachineCompletion.end() ) {
 //std::cerr << const_cast<SystemState*>(systemState)->tokensAwaitingStateMachineCompletion.size() << std::endl;
-    throw std::logic_error("StateMachine: cannot find tokens awaiting state machine completion");
+//    throw std::logic_error("StateMachine: cannot find tokens awaiting state machine completion");
+    return;
   }
 //std::cerr << const_cast<SystemState*>(systemState)->tokensAwaitingStateMachineCompletion.size() << std::endl;
 
@@ -327,21 +338,15 @@ void StateMachine::attemptShutdown() {
 
 void StateMachine::deleteChild(StateMachine* child) {
 //std::cerr << "deleteChild" << std::endl;
-  if ( auto eventSubProcess = child->scope->represents<BPMN::EventSubProcess>(); eventSubProcess ) {
-    if ( eventSubProcess->isInterrupting ) {
-      auto token = child->parentToken;
-      auto engine = const_cast<Engine*>(systemState->engine);
-      engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,token), weak_from_this(), token->weak_from_this());
-    }
-    else {
-      throw std::runtime_error("Engine: Non-interrupting event subprocesses not yet implemented");
-    }
-  }
-  else {
-    // state machine represents a completed (sub)process
-    auto token = child->parentToken;
-    erase_ptr<StateMachine>(subProcesses, child);
-    auto engine = const_cast<Engine*>(systemState->engine);
-    engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,token), weak_from_this(), token->weak_from_this());
-  }
+  // state machine represents a completed (sub)process
+  auto token = child->parentToken;
+  erase_ptr<StateMachine>(subProcesses, child);
+  auto engine = const_cast<Engine*>(systemState->engine);
+  engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,token), weak_from_this(), token->weak_from_this());
+}
+
+void StateMachine::deleteNonInterruptingEventSubProcess(StateMachine* eventSubProcess) {
+//std::cerr << "deleteNonInterruptingEventSubProcess" << std::endl;
+  erase_ptr<StateMachine>(nonInterruptingEventSubProcesses, eventSubProcess);
+  attemptShutdown();
 }

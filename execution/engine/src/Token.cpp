@@ -244,6 +244,7 @@ void Token::advanceToEntered() {
   }
   else if ( node->represents<BPMN::CatchEvent>() && !node->represents<BPMN::UntypedStartEvent>()
   ) {
+//std::cerr << "advance to busy state" << std::endl;
     // tokens entering a catching event automatically
     // advance to busy state
     engine->commands.emplace_back(std::bind(&Token::advanceToBusy,this), const_cast<StateMachine*>(owner)->weak_from_this(), weak_from_this());
@@ -442,15 +443,23 @@ std::cerr << "Context: " << context << " at " << context->scope->id << " has " <
 
       }
       else {
-        // ensure that event subprocesses can be triggered again
-        context->pendingEventSubProcesses.push_back(std::make_shared<StateMachine>(it->get()));
-        auto eventSubProcess = context->pendingEventSubProcesses.back().get();
-        eventSubProcess->run(owner->parentToken->status);
+//std::cerr << "Before pendingEventSubProcesses: " << context->pendingEventSubProcesses.size() << std::endl;
+        // respawn pending event subprocesses
+        std::shared_ptr pendingEventSubProcess = std::make_shared<StateMachine>(it->get());
 
         // move the triggered event subprocess to nonInterruptingEventSubProcesses
         context->nonInterruptingEventSubProcesses.push_back(std::move(*it));
-        // erase the iterator from pendingEventSubProcesses
-        context->pendingEventSubProcesses.erase(it);
+
+        // replace iterator with pending event subprocess
+        *it = pendingEventSubProcess;
+
+//std::cerr << "After pendingEventSubProcesses: " << context->pendingEventSubProcesses.size() << std::endl;
+
+        // prepare the new instance of the pending subprocess
+        auto eventSubProcess = context->pendingEventSubProcesses.back().get();
+//std::cerr << "***" << owner->parentToken << std::endl;
+        eventSubProcess->run(owner->parentToken->status);
+//std::cerr << "***" << std::endl;
       }
     }
   }
@@ -547,6 +556,7 @@ void Token::advanceToDeparting() {
 }
 
 void Token::advanceToDeparted(const BPMN::SequenceFlow* sequenceFlow) {
+//std::cerr << "advanceToDeparted " << sequenceFlow->id << std::endl;
   this->sequenceFlow = sequenceFlow;
   auto engine = const_cast<Engine*>(owner->systemState->engine);
   update(State::DEPARTED);
