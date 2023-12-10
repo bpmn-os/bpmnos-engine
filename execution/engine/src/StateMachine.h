@@ -30,7 +30,7 @@ public:
   const BPMN::Process* process; ///< Pointer to the top-level process.
   const BPMN::Scope* scope; ///< Pointer to the current scope.
   Token* parentToken;
-  bool isCompleting; ///< Boolean value if tokens have reached DONE state.
+//  bool isCompleting; ///< Boolean value if tokens have reached DONE state.
 
   Tokens tokens; ///< Container with all tokens within the scope of the state machine.
   StateMachines subProcesses; ///< Container with state machines of all active (sub)processes.
@@ -61,7 +61,7 @@ private:
   /**
    * @brief Method destroying all running tokens incl. subprocesses and non-interrupting event-subprocesses.
    */
-  void terminate();
+//  void terminate();
 
   void copyToken(Token* token);
   void handleEscalation(Token* token);

@@ -21,7 +21,8 @@ private:
   friend class Engine;
 
 public:
-  const StateMachine* owner;
+  const StateMachine* owner; ///< State machine owning the token
+  StateMachine* owned; ///< State machine owned by the token
   const BPMN::FlowNode* node; 
   const BPMN::SequenceFlow* sequenceFlow; 
 private:

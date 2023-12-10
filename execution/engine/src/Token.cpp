@@ -16,6 +16,7 @@ using namespace BPMNOS::Execution;
 
 Token::Token(const StateMachine* owner, const BPMN::FlowNode* node, const Values& status)
   : owner(owner)
+  , owned(nullptr)
   , node(node)
   , sequenceFlow(nullptr)
   , state(State::CREATED)
@@ -23,8 +24,9 @@ Token::Token(const StateMachine* owner, const BPMN::FlowNode* node, const Values
 {
 }
 
-Token::Token(const Token* other) 
+Token::Token(const Token* other)
   : owner(other->owner)
+  , owned(nullptr)
   , node(other->node)
   , sequenceFlow(nullptr)
   , state(other->state)
@@ -34,6 +36,7 @@ Token::Token(const Token* other)
 
 Token::Token(const std::vector<Token*>& others)
   : owner(others.front()->owner)
+  , owned(nullptr)
   , node(others.front()->node)
   , sequenceFlow(nullptr)
   , state(others.front()->state)
@@ -59,7 +62,7 @@ Token::~Token() {
       // TODO: send revoke message to all allocated resources
     }
   }
-} 
+}
 
 const BPMNOS::Model::AttributeMap& Token::getAttributeMap() const {
   if ( !node ) {
@@ -71,7 +74,7 @@ const BPMNOS::Model::AttributeMap& Token::getAttributeMap() const {
   }
 
   if ( !owner->parentToken ) {
-    throw std::runtime_error("Token: cannot determine attribute map");    
+    throw std::runtime_error("Token: cannot determine attribute map");
   }
 
   return owner->parentToken->getAttributeMap();
@@ -129,7 +132,7 @@ void Token::advanceFromCreated() {
     advanceToEntered();
     return;
   }
-  
+
   // token is at a node
   if ( node->represents<BPMN::Activity>() ) {
     awaitReadyEvent();
@@ -154,7 +157,7 @@ void Token::advanceToReady() {
 }
 
 void Token::advanceToEntered() {
-std::cerr << "advanceToEntered" << std::endl;
+//std::cerr << "advanceToEntered" << std::endl;
   if ( status[BPMNOS::Model::Status::Index::Timestamp] > owner->systemState->getTime() ) {
     if ( node ) {
       throw std::runtime_error("Token: entry timestamp at node '" + node->id + "' is larger than current time");
@@ -167,7 +170,7 @@ std::cerr << "advanceToEntered" << std::endl;
   if ( !node ) {
 //std::cerr << "!node" << std::endl;
     // process operators are applied upon entry
-    if ( auto statusExtension = owner->process->extensionElements->as<BPMNOS::Model::Status>(); 
+    if ( auto statusExtension = owner->process->extensionElements->as<BPMNOS::Model::Status>();
          statusExtension
     ) {
       for ( auto& operator_ : statusExtension->operators ) {
@@ -181,7 +184,7 @@ std::cerr << "advanceToEntered" << std::endl;
   else if ( node->represents<BPMN::SubProcess>() ) {
 //std::cerr << "node->represents<BPMN::SubProcess>()" << std::endl;
     // subprocess operators are applied upon entry
-    if ( auto statusExtension = node->extensionElements->as<BPMNOS::Model::Status>(); 
+    if ( auto statusExtension = node->extensionElements->as<BPMNOS::Model::Status>();
          statusExtension
     ) {
       for ( auto& operator_ : statusExtension->operators ) {
@@ -198,38 +201,49 @@ std::cerr << "advanceToEntered" << std::endl;
 
 //std::cerr << jsonify().dump() << std::endl;
 
+  auto engine = const_cast<Engine*>(owner->systemState->engine);
+
+
+  if ( node && node->represents<BPMN::UntypedStartEvent>() ) {
+    // initiate event subprocesses after entering untyped start event
+    auto stateMachine = const_cast<StateMachine*>(owner);
+    engine->commands.emplace_back(std::bind(&StateMachine::initiateEventSubprocesses,stateMachine,this), stateMachine->weak_from_this(), weak_from_this());
+  }
+
+
   // only check feasibility for processes and activities
-  // feasibility of all other tokens must have been validated before 
+  // feasibility of all other tokens must have been validated before
   // (also for newly created or merged tokens)
   if ( !node ) {
-    auto engine = const_cast<Engine*>(owner->systemState->engine);
     // check restrictions
     if ( !isFeasible() ) {
       engine->commands.emplace_back(std::bind(&Token::advanceToFailed,this), const_cast<StateMachine*>(owner)->weak_from_this(), weak_from_this());
       return;
     }
-    
+
+/*
     // initiate event subprocesses
     engine->commands.emplace_back(std::bind(&StateMachine::initiateEventSubprocesses,const_cast<StateMachine*>(owner),this), const_cast<StateMachine*>(owner)->weak_from_this(), weak_from_this());
-
+*/
     // tokens entering a process advance to busy state
     engine->commands.emplace_back(std::bind(&Token::advanceToBusy,this), const_cast<StateMachine*>(owner)->weak_from_this(), weak_from_this());
   }
   else if ( node->represents<BPMN::Activity>() ) {
-    auto engine = const_cast<Engine*>(owner->systemState->engine);
     // check restrictions
     if ( !isFeasible() ) {
       engine->commands.emplace_back(std::bind(&Token::advanceToFailed,this), const_cast<StateMachine*>(owner)->weak_from_this(), weak_from_this());
       return;
     }
-    
-    // initiate boundary events 
+
+    // initiate boundary events
     engine->commands.emplace_back(std::bind(&StateMachine::initiateBoundaryEvents,const_cast<StateMachine*>(owner),this), const_cast<StateMachine*>(owner)->weak_from_this(), weak_from_this());
 
+/*
     if ( node->represents<BPMN::SubProcess>() ) {
       // initiate event subprocesses
       engine->commands.emplace_back(std::bind(&StateMachine::initiateEventSubprocesses,const_cast<StateMachine*>(owner),this), const_cast<StateMachine*>(owner)->weak_from_this(), weak_from_this());
     }
+*/
 
     // tokens entering an activity automatically
     // advance to busy state
@@ -239,32 +253,27 @@ std::cerr << "advanceToEntered" << std::endl;
   ) {
     // tokens entering a catching event automatically
     // advance to busy state
-    auto engine = const_cast<Engine*>(owner->systemState->engine);
     engine->commands.emplace_back(std::bind(&Token::advanceToBusy,this), const_cast<StateMachine*>(owner)->weak_from_this(), weak_from_this());
   }
   else if ( node->represents<BPMN::EventBasedGateway>() ) {
     // tokens entering an event-based gateway automatically
     // advance to busy state
-    auto engine = const_cast<Engine*>(owner->systemState->engine);
     engine->commands.emplace_back(std::bind(&Token::advanceToBusy,this), const_cast<StateMachine*>(owner)->weak_from_this(), weak_from_this());
   }
   else if ( node->represents<BPMN::ErrorEndEvent>() ) {
-    auto engine = const_cast<Engine*>(owner->systemState->engine);
     engine->commands.emplace_back(std::bind(&Token::advanceToFailed,this), const_cast<StateMachine*>(owner)->weak_from_this(), weak_from_this());
     return;
   }
   else {
     if ( node->represents<BPMN::EscalationThrowEvent>() ) {
       // update status and delegate control to state machine
-      // if applicable, control will be delgated back to token 
-      auto engine = const_cast<Engine*>(owner->systemState->engine);
+      // if applicable, control will be delgated back to token
       engine->commands.emplace_back(std::bind(&StateMachine::handleEscalation,const_cast<StateMachine*>(owner),this), const_cast<StateMachine*>(owner)->weak_from_this(), weak_from_this());
     }
 
     // tokens entering any other node automatically advance to done or
     // departed state
     if ( node->outgoing.empty() ) {
-      auto engine = const_cast<Engine*>(owner->systemState->engine);
       engine->commands.emplace_back(std::bind(&Token::advanceToDone,this), const_cast<StateMachine*>(owner)->weak_from_this(), weak_from_this());
       return;
     }
@@ -345,7 +354,7 @@ void Token::advanceToBusy() {
     }
     else {
       // TODO: apply operators for completion status
-      if ( auto statusExtension = node->extensionElements->as<BPMNOS::Model::Status>(); 
+      if ( auto statusExtension = node->extensionElements->as<BPMNOS::Model::Status>();
            statusExtension
       ) {
         for ( auto& operator_ : statusExtension->operators ) {
@@ -379,7 +388,13 @@ void Token::advanceToCompleted() {
 
   update(State::COMPLETED);
 
+  auto engine = const_cast<Engine*>(owner->systemState->engine);
+
   if ( node ) {
+
+    if ( node->represents<BPMN::CatchEvent>() && node->incoming.empty() ) {
+    }
+
     if ( node->represents<BPMN::Activity>() ) {
       awaitExitEvent();
       return;
@@ -395,58 +410,65 @@ void Token::advanceToCompleted() {
       if ( !eventSubProcess ) {
         throw std::runtime_error("Token: start event must belong to event subprocess");
       }
-      auto parent = const_cast<StateMachine*>(owner->parentToken->owner);
+      auto context = const_cast<StateMachine*>(owner->parentToken->owned);
 
+/*
+std::cerr << "Node: " << this << " at " << node->id << " is owned by " << owner << std::endl;
+std::cerr << "Owner: " << owner << " at " << owner->scope->id << " has " << owner->pendingEventSubProcesses.size() << " pendingEventSubProcess" << std::endl;
+std::cerr << "Context: " << context << " at " << context->scope->id << " has " << context->pendingEventSubProcesses.size() << " pendingEventSubProcess" << std::endl;
+*/
       // find pending subprocess
-      auto it = std::find_if(parent->pendingEventSubProcesses.begin(), parent->pendingEventSubProcesses.end(), [this](std::shared_ptr<StateMachine>& eventSubProcess) {
+      auto it = std::find_if(context->pendingEventSubProcesses.begin(), context->pendingEventSubProcesses.end(), [this](std::shared_ptr<StateMachine>& eventSubProcess) {
         auto token = eventSubProcess->tokens.front();
         return token.get() == this;
       });
 
-      if ( it == parent->pendingEventSubProcesses.end() ) {
+      if ( it == context->pendingEventSubProcesses.end() ) {
         throw std::logic_error("Token: cannot find pending event subprocess");
       }
+
+      // initiate nested event subprocesses when event subprocess is triggered
+      engine->commands.emplace_back(std::bind(&StateMachine::initiateEventSubprocesses,it->get(),this), it->get()->weak_from_this(), weak_from_this());
+
 
       bool isInterrupting = node->get<XML::bpmn::tStartEvent>()->isInterrupting->get().value;
       if ( isInterrupting ) {
         // TODO: interrupt activity or process
-        
+    
         // move triggered event subprocess to interruptingEventSubProcess
-        parent->interruptingEventSubProcess = std::move(*it);
+        context->interruptingEventSubProcess = std::move(*it);
 
         // ensure that no other event subprocesses can be triggered
-        parent->pendingEventSubProcesses.clear();
-  
-        // terminate all running non-interrupting event subprocesses
-        parent->nonInterruptingEventSubProcesses.clear();
+        context->pendingEventSubProcesses.clear();
 
-        // interrupt all running tokens in parent
-        parent->tokens.clear();
+        // terminate all running non-interrupting event subprocesses
+        context->nonInterruptingEventSubProcesses.clear();
+
+        // interrupt all running tokens in state machine
+        context->tokens.clear();
 
       }
       else {
         // ensure that event subprocesses can be triggered again
-        parent->pendingEventSubProcesses.push_back(std::make_shared<StateMachine>(it->get()));
-        auto eventSubProcess = parent->pendingEventSubProcesses.back().get();
+        context->pendingEventSubProcesses.push_back(std::make_shared<StateMachine>(it->get()));
+        auto eventSubProcess = context->pendingEventSubProcesses.back().get();
         eventSubProcess->run(owner->parentToken->status);
 
         // move the triggered event subprocess to nonInterruptingEventSubProcesses
-        parent->nonInterruptingEventSubProcesses.push_back(std::move(*it));
+        context->nonInterruptingEventSubProcesses.push_back(std::move(*it));
         // erase the iterator from pendingEventSubProcesses
-        parent->pendingEventSubProcesses.erase(it);
+        context->pendingEventSubProcesses.erase(it);
       }
     }
   }
 
   // check restrictions
   if ( !isFeasible() ) {
-    auto engine = const_cast<Engine*>(owner->systemState->engine);
     engine->commands.emplace_back(std::bind(&Token::advanceToFailed,this), const_cast<StateMachine*>(owner)->weak_from_this(), weak_from_this());
     return;
   }
 
   if ( !node || node->outgoing.empty() ) {
-    auto engine = const_cast<Engine*>(owner->systemState->engine);
     engine->commands.emplace_back(std::bind(&Token::advanceToDone,this), const_cast<StateMachine*>(owner)->weak_from_this(), weak_from_this());
     return;
   }
@@ -477,11 +499,12 @@ void Token::advanceToExiting() {
 }
 
 void Token::advanceToDone() {
-//std::cerr << "advanceToDone" << std::endl;
+//std::cerr << "advanceToDone: " << this << std::endl;
   update(State::DONE);
   awaitStateMachineCompletion();
 
   const_cast<StateMachine*>(owner)->attemptShutdown();
+//std::cerr << "advancedToDone" << std::endl;
 }
 
 void Token::advanceToDeparting() {
@@ -532,8 +555,8 @@ void Token::advanceToDeparting() {
 
 void Token::advanceToDeparted(const BPMN::SequenceFlow* sequenceFlow) {
   this->sequenceFlow = sequenceFlow;
-  update(State::DEPARTED);
   auto engine = const_cast<Engine*>(owner->systemState->engine);
+  update(State::DEPARTED);
   engine->commands.emplace_back(std::bind(&Token::advanceToArrived,this), const_cast<StateMachine*>(owner)->weak_from_this(), weak_from_this());
 }
 
@@ -581,7 +604,7 @@ void Token::awaitEntryEvent() {
   auto systemState = const_cast<SystemState*>(owner->systemState);
 
   if ( auto tokenAtResource = getResourceToken(); tokenAtResource ) {
-    systemState->tokensAwaitingJobEntryEvent[tokenAtResource].push_back(weak_from_this());    
+    systemState->tokensAwaitingJobEntryEvent[tokenAtResource].push_back(weak_from_this());
   }
   else {
     systemState->tokensAwaitingRegularEntryEvent.push_back(weak_from_this());
@@ -596,7 +619,7 @@ void Token::awaitChoiceEvent() {
 void Token::awaitTaskCompletionEvent() {
 // TODO: apply operators, but do not change status yet
   auto systemState = const_cast<SystemState*>(owner->systemState);
-  auto time = status[BPMNOS::Model::Status::Index::Timestamp].value(); 
+  auto time = status[BPMNOS::Model::Status::Index::Timestamp].value();
 
   systemState->tokensAwaitingTaskCompletionEvent.emplace(time,weak_from_this());
 }

@@ -17,12 +17,12 @@ Engine::~Engine()
 
 void Engine::Command::execute() {
   if ( token_ptr.has_value() && token_ptr->expired() ) {
-    // relevant token has expired, skip command
+    // relevant token no longer exists, skip command
     return;
   }
 
   if ( stateMachine_ptr.has_value() && stateMachine_ptr->expired() ) {
-    // relevant state machine has expired, skip command
+    // relevant state machine no longer exists, skip command
     return;
   }
 
@@ -64,16 +64,17 @@ void Engine::run(const BPMNOS::Model::Scenario* scenario, BPMNOS::number timeout
   }
 }
 
-bool Engine::advance() { 
+bool Engine::advance() {
   // make sure new data is added to system state
   const_cast<BPMNOS::Model::Scenario*>(systemState->scenario)->update();
 
   // add all new instances and advance tokens
   addInstances();
-  // it is assumed that at least one clock tick or termination event is processed to ensure that 
-  // each instance is only added once 
+  // it is assumed that at least one clock tick or termination event is processed to ensure that
+  // each instance is only added once
 
   while ( commands.size() ) {
+//std::cerr << "execute" << std::endl;
     commands.front().execute();
     commands.pop_front();
   }
@@ -90,7 +91,7 @@ bool Engine::advance() {
 
     if ( event->is<ClockTickEvent>() ) {
 //std::cerr << "ClockTick" << std::endl;
-      // exit loop to resume 
+      // exit loop to resume
       return true;
     }
 

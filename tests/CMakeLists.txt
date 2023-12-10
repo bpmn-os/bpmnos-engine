@@ -18,6 +18,12 @@ endif ()
 # Set the C++ standard
 set(CMAKE_CXX_STANDARD 20)
 
+# Add the -ggdb3 flag for debugging information
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ggdb3")
+
+# Add the -O0 flag to disable optimizations for better debugging with Valgrind
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0")
+
 add_executable(run_tests EXCLUDE_FROM_ALL main.cpp)
 
 include_directories(
