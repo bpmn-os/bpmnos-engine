@@ -238,13 +238,6 @@ void Token::advanceToEntered() {
     // initiate boundary events
     engine->commands.emplace_back(std::bind(&StateMachine::initiateBoundaryEvents,const_cast<StateMachine*>(owner),this), const_cast<StateMachine*>(owner)->weak_from_this(), weak_from_this());
 
-/*
-    if ( node->represents<BPMN::SubProcess>() ) {
-      // initiate event subprocesses
-      engine->commands.emplace_back(std::bind(&StateMachine::initiateEventSubprocesses,const_cast<StateMachine*>(owner),this), const_cast<StateMachine*>(owner)->weak_from_this(), weak_from_this());
-    }
-*/
-
     // tokens entering an activity automatically
     // advance to busy state
     engine->commands.emplace_back(std::bind(&Token::advanceToBusy,this), const_cast<StateMachine*>(owner)->weak_from_this(), weak_from_this());
@@ -434,7 +427,7 @@ std::cerr << "Context: " << context << " at " << context->scope->id << " has " <
       bool isInterrupting = node->get<XML::bpmn::tStartEvent>()->isInterrupting->get().value;
       if ( isInterrupting ) {
         // TODO: interrupt activity or process
-    
+
         // move triggered event subprocess to interruptingEventSubProcess
         context->interruptingEventSubProcess = std::move(*it);
 
