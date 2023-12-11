@@ -83,6 +83,19 @@ void StateMachine::run(const Values& status) {
     throw std::runtime_error("StateMachine: start node within scope of '" + scope->id + "' is an activity");
   }
 
+  if ( token->node && token->node->represents<BPMN::CatchEvent>() && !token->node->represents<BPMN::UntypedStartEvent>() ) {
+    bool isInterrupting = token->node->get<XML::bpmn::tStartEvent>()->isInterrupting->get().value;
+    if ( !isInterrupting ) {
+      // token instantiates non-interrupting event subprocess
+      // get instantiation counter from context
+      auto context = const_cast<StateMachine*>(parentToken->owned);
+      auto counter = ++context->instantiations[token->node];
+      // append instantiation counter for disambiguation
+      std::string id = BPMNOS::to_string(token->status[Model::Status::Index::Instance].value(),STRING) + "^" +  std::to_string(counter);
+      token->status[Model::Status::Index::Instance] = BPMNOS::to_number(id,BPMNOS::ValueType::STRING);
+    }
+  }
+
   // advance token
   token->advanceToEntered();
 }

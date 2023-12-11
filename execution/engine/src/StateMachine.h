@@ -45,6 +45,8 @@ private:
   friend class SystemState;
   friend class Token;
 
+  std::map< const BPMN::FlowNode*, unsigned int > instantiations; ///< Instantiation counter for start events of non-interrupting event subprocesses
+
   void createChild(Token* parent, const BPMN::Scope* scope); ///< Method creating the state machine for a (sub)process
 
   void createInterruptingEventSubprocess(const StateMachine* pendingEventSubProcess, const BPMNOS::Values& status); ///< Method creating the state machine for an interrupting event sprocess
