@@ -45,6 +45,7 @@ private:
   friend class SystemState;
   friend class Token;
 
+  static constexpr char delimiter = '^'; ///< Delimiter used for dismbiguation of identifiers of non-interrupting event subprocesses 
   std::map< const BPMN::FlowNode*, unsigned int > instantiations; ///< Instantiation counter for start events of non-interrupting event subprocesses
 
   void createChild(Token* parent, const BPMN::Scope* scope); ///< Method creating the state machine for a (sub)process

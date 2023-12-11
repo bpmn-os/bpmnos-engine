@@ -91,7 +91,7 @@ void StateMachine::run(const Values& status) {
       auto context = const_cast<StateMachine*>(parentToken->owned);
       auto counter = ++context->instantiations[token->node];
       // append instantiation counter for disambiguation
-      std::string id = BPMNOS::to_string(token->status[Model::Status::Index::Instance].value(),STRING) + "^" +  std::to_string(counter);
+      std::string id = BPMNOS::to_string(token->status[Model::Status::Index::Instance].value(),STRING) + delimiter +  std::to_string(counter);
       token->status[Model::Status::Index::Instance] = BPMNOS::to_number(id,BPMNOS::ValueType::STRING);
     }
   }
