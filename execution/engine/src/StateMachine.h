@@ -30,7 +30,6 @@ public:
   const BPMN::Process* process; ///< Pointer to the top-level process.
   const BPMN::Scope* scope; ///< Pointer to the current scope.
   Token* parentToken;
-//  bool isCompleting; ///< Boolean value if tokens have reached DONE state.
 
   Tokens tokens; ///< Container with all tokens within the scope of the state machine.
   StateMachines subProcesses; ///< Container with state machines of all active (sub)processes.
@@ -45,7 +44,7 @@ private:
   friend class SystemState;
   friend class Token;
 
-  static constexpr char delimiter = '^'; ///< Delimiter used for dismbiguation of identifiers of non-interrupting event subprocesses 
+  static constexpr char delimiter = '^'; ///< Delimiter used for disambiguation of identifiers of non-interrupting event subprocesses
   std::map< const BPMN::FlowNode*, unsigned int > instantiations; ///< Instantiation counter for start events of non-interrupting event subprocesses
 
   void createChild(Token* parent, const BPMN::Scope* scope); ///< Method creating the state machine for a (sub)process
@@ -55,16 +54,14 @@ private:
   void createNonInterruptingEventSubprocess(const StateMachine* pendingEventSubProcess, const BPMNOS::Values& status); ///< Method creating the state machine for an non-interrupting event sprocess
 
   void initiateBoundaryEvents(Token* token); ///< Method placing tokens on all boundary events
+  void initiateBoundaryEvent(Token* token, const BPMN::FlowNode*); ///< Method placing tokens on a boundary event
   void initiateEventSubprocesses(Token* token); ///< Method initiating pending event subprocesses
 
   void createTokenCopies(Token* token, const std::vector<BPMN::SequenceFlow*>& sequenceFlows);
   void createMergedToken(std::map< const BPMN::FlowNode*, std::vector<Token*> >::iterator gatewayIt);
 
   void shutdown(std::unordered_map< const StateMachine*, std::vector<Token*> >::iterator it);
-  /**
-   * @brief Method destroying all running tokens incl. subprocesses and non-interrupting event-subprocesses.
-   */
-//  void terminate();
+  void interruptActivity(Token* token);
 
   void copyToken(Token* token);
   void handleEscalation(Token* token);
@@ -73,6 +70,7 @@ private:
   void attemptShutdown();
   void deleteChild(StateMachine* child); ///< Method removing completed state machine from parent
   void deleteNonInterruptingEventSubProcess(StateMachine* eventSubProcess); ///< Method removing completed event subprocess from context
+  void deleteTokensAwaitingBoundaryEvent(Token* token); ///< Method removing all waiting tokens attached to activity of token
 };
 
 

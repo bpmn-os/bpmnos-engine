@@ -46,9 +46,18 @@ StateMachine::~StateMachine() {
 void StateMachine::initiateBoundaryEvents(Token* token) {
 //std::cerr << "initiateBoundaryEvents" << std::endl;
   auto activity = token->node->as<BPMN::Activity>();
-  for ( auto boundaryEvent : activity->boundaryEvents ) {
-    throw std::runtime_error("StateMachine: boundary events not yet implemented!");
+  for ( auto node : activity->boundaryEvents ) {
+    initiateBoundaryEvent(token,node);
   }
+}
+
+void StateMachine::initiateBoundaryEvent(Token* token, const BPMN::FlowNode* node) {
+//  throw std::runtime_error("StateMachine: boundary events not yet implemented!");
+  tokens.push_back( std::make_shared<Token>(this,node,token->status) );
+  auto createdToken = tokens.back().get();
+  const_cast<SystemState*>(systemState)->tokenAtAssociatedActivity[createdToken] = token;
+  const_cast<SystemState*>(systemState)->tokensAwaitingBoundaryEvent[token].push_back(createdToken);
+  createdToken->advanceToEntered();
 }
 
 void StateMachine::initiateEventSubprocesses(Token* token) {
@@ -70,11 +79,11 @@ void StateMachine::run(const Values& status) {
     tokens.push_back( std::make_shared<Token>(this,nullptr,status) );
   }
   else {
-    if ( scope->startNodes.size() != 1 ) {
+    if ( scope->startEvents.size() != 1 ) {
       throw std::runtime_error("StateMachine: no unique start node within scope of '" + scope->id + "'");
     }
 
-    tokens.push_back( std::make_shared<Token>(this,scope->startNodes.front(),status) );
+    tokens.push_back( std::make_shared<Token>(this,scope->startEvents.front(),status) );
   }
 
   auto token = tokens.back().get();
@@ -83,9 +92,10 @@ void StateMachine::run(const Values& status) {
     throw std::runtime_error("StateMachine: start node within scope of '" + scope->id + "' is an activity");
   }
 
-  if ( token->node && token->node->represents<BPMN::CatchEvent>() && !token->node->represents<BPMN::UntypedStartEvent>() ) {
-    bool isInterrupting = token->node->get<XML::bpmn::tStartEvent>()->isInterrupting->get().value;
-    if ( !isInterrupting ) {
+  if ( token->node ) {
+    if ( auto startEvent = token->node->represents<BPMN::TypedStartEvent>(); 
+      startEvent && !startEvent->isInterrupting
+    ) {
       // token instantiates non-interrupting event subprocess
       // get instantiation counter from context
       auto context = const_cast<StateMachine*>(parentToken->owned);
@@ -101,7 +111,7 @@ void StateMachine::run(const Values& status) {
 }
 
 void StateMachine::createChild(Token* parent, const BPMN::Scope* scope) {
-  if ( scope->startNodes.size() > 1 ) {
+  if ( scope->startEvents.size() > 1 ) {
     throw std::runtime_error("StateMachine: scope '" + scope->id + "' has multiple start nodes");
   }
 
@@ -185,8 +195,8 @@ void StateMachine::handleEscalation(Token* token) {
   parentToken->update(parentToken->state);
 
   auto it = std::find_if(pendingEventSubProcesses.begin(), pendingEventSubProcesses.end(), [](std::shared_ptr<StateMachine>& eventSubProcess) {
-    auto startNode = eventSubProcess->scope->startNodes.front();
-    return startNode->represents<BPMN::EscalationStartEvent>();
+    auto startEvent = eventSubProcess->scope->startEvents.front();
+    return startEvent->represents<BPMN::EscalationStartEvent>();
   });
 
   auto engine = const_cast<Engine*>(systemState->engine);
@@ -198,6 +208,17 @@ void StateMachine::handleEscalation(Token* token) {
     engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,eventToken), const_cast<StateMachine*>(eventToken->owner)->weak_from_this(), eventToken->weak_from_this());
 
     return;
+  }
+
+  // find escalation boundary event
+  if ( parentToken->node ) {
+    std::vector<Token*>& tokensAwaitingBoundaryEvent = const_cast<SystemState*>(systemState)->tokensAwaitingBoundaryEvent[parentToken];
+    for ( auto eventToken : tokensAwaitingBoundaryEvent) {
+      if ( eventToken->node->represents<BPMN::EscalationBoundaryEvent>() ) {
+        engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,eventToken), const_cast<StateMachine*>(eventToken->owner)->weak_from_this(), eventToken->weak_from_this());
+        return;
+      }
+    }
   }
 
 //std::cerr << "bubbble up escalation" << std::endl;
@@ -225,12 +246,11 @@ void StateMachine::handleFailure(Token* token) {
   // update status of parent token with that of current token
   parentToken->status = token->status;
 
-//std::cerr << "find event-subprocess catching error " << scope->id << "/" << parentToken << ": " << pendingEventSubProcesses.size() << std::endl;
   // find event-subprocess catching error
   auto it = std::find_if(pendingEventSubProcesses.begin(), pendingEventSubProcesses.end(), [](std::shared_ptr<StateMachine>& eventSubProcess) {
-    auto startNode = eventSubProcess->scope->startNodes.front();
+    auto startEvent = eventSubProcess->scope->startEvents.front();
 //std::cerr << "start node " << startNode->id << std::endl;
-    return startNode->represents<BPMN::ErrorStartEvent>();
+    return startEvent->represents<BPMN::ErrorStartEvent>();
   });
 
   auto engine = const_cast<Engine*>(systemState->engine);
@@ -242,6 +262,17 @@ void StateMachine::handleFailure(Token* token) {
     engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,eventToken), const_cast<StateMachine*>(eventToken->owner)->weak_from_this(), eventToken->weak_from_this());
 
     return;
+  }
+
+  // find error boundary event
+  if ( token->node ) {
+    std::vector<Token*>& tokensAwaitingBoundaryEvent = const_cast<SystemState*>(systemState)->tokensAwaitingBoundaryEvent[token];
+    for ( auto eventToken : tokensAwaitingBoundaryEvent) {
+      if ( eventToken->node->represents<BPMN::ErrorBoundaryEvent>() ) {
+        engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,eventToken), const_cast<StateMachine*>(eventToken->owner)->weak_from_this(), eventToken->weak_from_this());
+        return;
+      }
+    }
   }
 
 //std::cerr << "bubbble up error" << std::endl;
@@ -273,7 +304,7 @@ void StateMachine::shutdown(std::unordered_map<const StateMachine*, std::vector<
   auto engine = const_cast<Engine*>(systemState->engine);
 
   if ( auto eventSubProcess = scope->represents<BPMN::EventSubProcess>(); 
-    eventSubProcess && eventSubProcess->isNonInterrupting()
+    eventSubProcess && !eventSubProcess->startEvents.front()->represents<BPMN::TypedStartEvent>()->isInterrupting
   ) {
     auto context = const_cast<StateMachine*>(parentToken->owned);
     engine->commands.emplace_back(std::bind(&StateMachine::deleteNonInterruptingEventSubProcess,context,this), weak_from_this());
@@ -363,3 +394,22 @@ void StateMachine::deleteNonInterruptingEventSubProcess(StateMachine* eventSubPr
   erase_ptr<StateMachine>(nonInterruptingEventSubProcesses, eventSubProcess);
   attemptShutdown();
 }
+
+void StateMachine::interruptActivity(Token* token) {
+//std::cerr << "interrupt activity " << token->node->id << std::endl;
+  deleteTokensAwaitingBoundaryEvent(token);
+  erase_ptr<Token>(tokens, token);
+}
+
+void StateMachine::deleteTokensAwaitingBoundaryEvent(Token* token) {
+  // delete all tokens awaiting boundary event
+  auto& tokensAwaitingBoundaryEvent = const_cast<SystemState*>(systemState)->tokensAwaitingBoundaryEvent;
+  auto it = tokensAwaitingBoundaryEvent.find(token);
+  if ( it != tokensAwaitingBoundaryEvent.end() ) {
+    for ( auto waitingToken : it->second ) {
+      erase_ptr<Token>(tokens, waitingToken);
+    } 
+    tokensAwaitingBoundaryEvent.erase(it);
+  }
+}
+

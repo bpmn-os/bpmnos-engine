@@ -65,6 +65,10 @@ public:
   auto_list<Token> tokensAwaitingRegularEntryEvent; ///< Container holding all tokens at regular activities awaiting an entry event
 
   //TODO: make sure that elements are deleted when no longer required
+  std::map< Token*, std::vector<Token*> > tokensAwaitingBoundaryEvent; ///< Map holding a container of all tokens at a boundary event awaiting to be triggered for each token at an activity
+  std::unordered_map< Token*, Token* > tokenAtAssociatedActivity; ///< Map holding a the token residing at the associated activity for each token at a boundary event
+
+  //TODO: make sure that elements are deleted when no longer required
   std::unordered_map< Token*, auto_list<Token> > tokensAwaitingJobEntryEvent; ///< Map holding a container of all tokens awaiting entry at jobs for each token at an active resource
 
   auto_list<Token> tokensAtIdleResources; ///< Container holding indices of resources not executing a job and awaiting a job entry

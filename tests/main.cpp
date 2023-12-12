@@ -29,6 +29,8 @@ using namespace BPMNOS;
 #include "execution/escalationevent/test.h"
 // Event subprocesses
 #include "execution/eventsubprocess/test.h"
+// Boundary events
+#include "execution/boundaryevent/test.h"
 
 // Playground
 #include <iostream>
