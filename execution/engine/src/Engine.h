@@ -9,13 +9,11 @@
 #include "events/TaskCompletionEvent.h"
 #include "events/EntryEvent.h"
 #include "events/ExitEvent.h"
-//#include "events/MessageDeliveryEvent.h"
+#include "events/MessageDeliveryEvent.h"
 #include "events/ReadyEvent.h"
 #include "events/TerminationEvent.h"
-//#include "events/TimerEvent.h"
+#include "events/TimerEvent.h"
 #include "EventHandler.h"
-//#include "StateMachine.h"
-//#include "Token.h"
 #include "SystemState.h"
 
 namespace BPMNOS::Execution {
@@ -44,10 +42,10 @@ public:
   void process(const TaskCompletionEvent& event);
   void process(const EntryEvent& event);
   void process(const ExitEvent& event);
-//  void process(const MessageDeliveryEvent& event);
+  void process(const MessageDeliveryEvent& event);
   void process(const ReadyEvent& event);
   void process(const TerminationEvent& event);
-//  void process(const TimerEvent& event);
+  void process(const TimerEvent& event);
 
 /**
  * @brief Returns the timestamp the engine is in.

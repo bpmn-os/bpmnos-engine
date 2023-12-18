@@ -16,11 +16,21 @@ Message::Message(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent)
     }
 
     AttributeMap& attributeMap = parent->extensionElements->as<Status>()->attributeMap;
+
+    header = {"sender","recipient"};    
+
+    for ( XML::bpmnos::tParameter& parameter : element->getChildren<XML::bpmnos::tParameter>() ) {
+      parameters.push_back(std::make_unique<Parameter>(&parameter,attributeMap));
+      header.insert(parameter.name.value);
+    }
+
+/*
     for ( XML::bpmnos::tParameter& parameter : element->getChildren<XML::bpmnos::tParameter>() ) {
       if ( parameter.name.value.value == "request" ) {
         request = std::make_unique<Parameter>(&parameter,attributeMap);
       }
     }
+*/
 
     for ( XML::bpmnos::tContent& content : get<XML::bpmnos::tMessage,XML::bpmnos::tContent>() ) {
       contents.push_back(std::make_unique<Content>(&content,attributeMap));

@@ -25,16 +25,18 @@ public:
   std::unique_ptr<BPMN::FlowNode> createSubProcess(XML::bpmn::tSubProcess* subProcess, BPMN::Scope* parent) override;
   std::unique_ptr<BPMN::FlowNode> createTask(XML::bpmn::tTask* task, BPMN::Scope* parent) override;
 
+  std::unique_ptr<BPMN::FlowNode> createTimerStartEvent(XML::bpmn::tStartEvent* startEvent, BPMN::Scope* parent) override;
   std::unique_ptr<BPMN::FlowNode> createTimerBoundaryEvent(XML::bpmn::tBoundaryEvent* boundaryEvent, BPMN::Scope* parent) override;
   std::unique_ptr<BPMN::FlowNode> createTimerCatchEvent(XML::bpmn::tCatchEvent* catchEvent, BPMN::Scope* parent) override;
 
+  std::unique_ptr<BPMN::FlowNode> createMessageStartEvent(XML::bpmn::tStartEvent* startEvent, BPMN::Scope* parent) override;
   std::unique_ptr<BPMN::FlowNode> createMessageBoundaryEvent(XML::bpmn::tBoundaryEvent* boundaryEvent, BPMN::Scope* parent) override;
   std::unique_ptr<BPMN::FlowNode> createMessageCatchEvent(XML::bpmn::tCatchEvent* catchEvent, BPMN::Scope* parent) override;
   std::unique_ptr<BPMN::FlowNode> createMessageThrowEvent(XML::bpmn::tThrowEvent* throwEvent, BPMN::Scope* parent) override;
 
   void createMessageFlows() override;
-
-
+  void createMessageCandidates( BPMN::Process* sendingProcess, BPMN::FlowNode* throwingMessageEvent, BPMN::Process* receivingProcess, BPMN::FlowNode* catchingMessageEvent );
+  std::vector<BPMN::MessageFlow*>& determineMessageFlows(BPMN::FlowNode* messageEvent, auto getMessageFlows);
 };
 
 } // namespace BPMNOS::Model

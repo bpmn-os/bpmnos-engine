@@ -189,22 +189,18 @@ void Engine::process(const ExitEvent& event) {
   commands.emplace_back(std::bind(&Token::advanceToExiting,token), stateMachine->weak_from_this(), token->weak_from_this());
 }
 
-/*
 void Engine::process(const MessageDeliveryEvent& event) {
   throw std::runtime_error("Engine: MessageDeliveryEvent not yet implemented");
 }
-*/
 
 
 void Engine::process(const TerminationEvent& event) {
   throw std::runtime_error("Engine: TerminationEvent not yet implemented");
 }
 
-/*
 void Engine::process(const TimerEvent& event) {
   throw std::runtime_error("Engine: TimerEvent not yet implemented");
 }
-*/
 
 BPMNOS::number Engine::getCurrentTime() {
   return systemState->currentTime;

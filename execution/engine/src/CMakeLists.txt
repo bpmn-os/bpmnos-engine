@@ -8,9 +8,8 @@ list(APPEND engine_SOURCES
   events/EntryEvent.cpp
   events/CompletionEvent.cpp
   events/TaskCompletionEvent.cpp
-#  events/TriggerEvent.cpp
-#  events/TimerEvent.cpp
-#  events/MessageDeliveryEvent.cpp
+  events/TimerEvent.cpp
+  events/MessageDeliveryEvent.cpp
   events/ExitEvent.cpp
   StateMachine.cpp
   SystemState.cpp
@@ -22,6 +21,7 @@ list(APPEND engine_SOURCES
   eventhandler/DeterministicTaskCompletionHandler.cpp
 #  eventhandler/TimerHandler.cpp
   eventhandler/ReadyHandler.cpp
+  eventhandler/FirstMatchingMessageHandler.cpp
   Engine.cpp
 )
 
@@ -37,9 +37,8 @@ list(APPEND engine_HEADERS
   events/TaskCompletionEvent.h
   events/ChoiceEvent.h
   events/ResourceShutdownEvent.h
-#  events/TriggerEvent.h
-#  events/TimerEvent.h
-#  events/MessageDeliveryEvent.h
+  events/TimerEvent.h
+  events/MessageDeliveryEvent.h
   events/ExitEvent.h
   StateMachine.h
   SystemState.h
@@ -51,5 +50,6 @@ list(APPEND engine_HEADERS
   eventhandler/DeterministicTaskCompletionHandler.h
 #  eventhandler/TimerHandler.h
   eventhandler/ReadyHandler.h
+  eventhandler/FirstMatchingMessageHandler.h
   Engine.h
 )

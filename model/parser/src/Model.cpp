@@ -4,9 +4,7 @@
 #include "extensionElements/Status.h"
 #include "extensionElements/Gatekeeper.h"
 #include "extensionElements/Timer.h"
-#include "extensionElements/MessageSender.h"
-#include "extensionElements/MessageRecipient.h"
-
+#include "extensionElements/Message.h"
 #include "DecisionTask.h"
 #include "MessageTaskSubstitution.h"
 #include "JobShop.h"
@@ -105,6 +103,14 @@ std::unique_ptr<BPMN::FlowNode> Model::createTask(XML::bpmn::tTask* task, BPMN::
 }
 
 
+std::unique_ptr<BPMN::FlowNode> Model::createTimerStartEvent(XML::bpmn::tStartEvent* startEvent, BPMN::Scope* parent) {
+  // bind timer
+  return bind<BPMN::FlowNode>(
+    BPMN::Model::createTimerStartEvent(startEvent,parent),
+    std::make_unique<Timer>(startEvent,parent)
+  );
+}
+
 std::unique_ptr<BPMN::FlowNode> Model::createTimerBoundaryEvent(XML::bpmn::tBoundaryEvent* boundaryEvent, BPMN::Scope* parent) {
   // bind timer
   return bind<BPMN::FlowNode>(
@@ -121,11 +127,19 @@ std::unique_ptr<BPMN::FlowNode> Model::createTimerCatchEvent(XML::bpmn::tCatchEv
   );
 }
 
+std::unique_ptr<BPMN::FlowNode> Model::createMessageStartEvent(XML::bpmn::tStartEvent* startEvent, BPMN::Scope* parent) {
+  // bind message content
+  return bind<BPMN::FlowNode>(
+    BPMN::Model::createMessageStartEvent(startEvent,parent),
+    std::make_unique<Message>(startEvent,parent)
+  );
+}
+
 std::unique_ptr<BPMN::FlowNode> Model::createMessageBoundaryEvent(XML::bpmn::tBoundaryEvent* boundaryEvent, BPMN::Scope* parent) {
   // bind message content
   return bind<BPMN::FlowNode>(
     BPMN::Model::createMessageBoundaryEvent(boundaryEvent,parent),
-    std::make_unique<MessageRecipient>(boundaryEvent,parent)
+    std::make_unique<Message>(boundaryEvent,parent)
   );
 }
 
@@ -133,7 +147,7 @@ std::unique_ptr<BPMN::FlowNode> Model::createMessageCatchEvent(XML::bpmn::tCatch
   // bind message content
   return bind<BPMN::FlowNode>(
     BPMN::Model::createMessageCatchEvent(catchEvent,parent),
-    std::make_unique<MessageRecipient>(catchEvent,parent)
+    std::make_unique<Message>(catchEvent,parent)
   );
 }
 
@@ -141,96 +155,166 @@ std::unique_ptr<BPMN::FlowNode> Model::createMessageThrowEvent(XML::bpmn::tThrow
   // bind message content
   return bind<BPMN::FlowNode>(
     BPMN::Model::createMessageThrowEvent(throwEvent,parent),
-    std::make_unique<MessageSender>(throwEvent,parent)
+    std::make_unique<Message>(throwEvent,parent)
   );
 }
 
 void Model::createMessageFlows() {
   BPMN::Model::createMessageFlows();
 
-  // Messages can only flow between message extensions with the same name.
-  // If message flows are given in the model, these act as a restriction.
-
+  // Messages can only flow between message extensions with the same name and header.
+  // If message flows are given in the model, the message flow closest to the meesage
+  // event restricts the candidate catching or throwing message events.
   for ( auto& sendingProcess : processes ) {
     // find all throwing message events of the sending process
     auto throwingMessageEvents = sendingProcess->find_all(
-      [](const BPMN::Node* n) { return n->extensionElements->represents<MessageSender>();}
+      [](const BPMN::Node* node) { return node->represents<BPMN::MessageThrowEvent>();}
     );
 
-    for ( auto throwingMessageEvent : throwingMessageEvents ) {
-      // determine all allowed recipient for the throwing message event
-      MessageSender* messageSender = throwingMessageEvent->extensionElements->as<MessageSender>();
+    for ( auto& receivingProcess : processes ) {
+      // only consider node pairs belonging to different processes
+      if ( sendingProcess.get() != receivingProcess.get() ) {
+        // find all catching message events of receiving process
+        auto catchingMessageEvents = receivingProcess->find_all(
+         [](const BPMN::Node* node) { return node->represents<BPMN::MessageCatchEvent>();}
+        );
 
-      // determine all message flows in the model that leave the node or an ancestor
-      std::unordered_set<BPMN::MessageFlow*> outflows;
-      BPMN::Node* node = throwingMessageEvent;
-      while ( auto flowNode = node->represents<BPMN::FlowNode>() ) {
-        for ( auto& messageFlow : messageFlows ) {
-          if ( messageFlow->source.second == flowNode ) {
-            outflows.insert(messageFlow.get());
+        for ( auto throwingMessageEvent : throwingMessageEvents ) {
+          for ( auto catchingMessageEvent : catchingMessageEvents ) {
+            createMessageCandidates(sendingProcess.get(), throwingMessageEvent->as<BPMN::FlowNode>(), receivingProcess.get(), catchingMessageEvent->as<BPMN::FlowNode>());
           }
         }
-        node = flowNode->parent;
       }
-      for ( auto& messageFlow : messageFlows ) {
-        if ( auto process = node->represents<BPMN::Process>(); process && messageFlow->source.first == process ) {
-          outflows.insert(messageFlow.get());
+
+    }
+  }
+
+}
+
+void Model::createMessageCandidates( BPMN::Process* sendingProcess, BPMN::FlowNode* throwingMessageEvent, BPMN::Process* receivingProcess, BPMN::FlowNode* catchingMessageEvent ) {
+
+  auto sentMessage = throwingMessageEvent->extensionElements->represents<Message>();
+  auto receivedMessage = catchingMessageEvent->extensionElements->represents<Message>();
+
+  if ( !sentMessage ) {
+    throw std::logic_error("Model: Message '" + throwingMessageEvent->id + "' has no extension");
+  }
+  if ( !receivedMessage ) {
+    throw std::logic_error("Model: Message '" + catchingMessageEvent->id + "' has no extension");
+  }
+
+  if ( sentMessage->name != receivedMessage->name ) {
+    return;
+  }
+  if ( sentMessage->header != receivedMessage->header ) {
+    return;
+  }
+
+  // determine relevant message flows for throwing events
+  auto& outgoingMessageFlows = determineMessageFlows(
+    throwingMessageEvent, 
+    [](BPMN::Node* node) -> std::vector<BPMN::MessageFlow*>& {
+         return node->sending;
+    }
+  );
+
+  if ( outgoingMessageFlows.size() ) {
+    // determine whether catching message event is in message flow target
+    bool found = false;
+    for ( auto messageFlow : outgoingMessageFlows ) {
+      auto& [process,flowNode] = messageFlow->target;
+      if ( process == receivingProcess ) {
+        if ( flowNode == catchingMessageEvent ) {
+          found = true;
+          break;
         }
-      }
+        else {
+          if ( flowNode ) {
+            found = flowNode->find_all(
+              [catchingMessageEvent](const BPMN::Node* node) { return node == catchingMessageEvent;}
+            ).size();
+          }
+          else {
+            found = process->find_all(
+              [catchingMessageEvent](const BPMN::Node* node) { return node == catchingMessageEvent;}
+            ).size();
+          }
 
-      for ( auto& receivingProcess : processes ) {
-        // only consider node pairs belonging to different processes
-        if ( sendingProcess.get() != receivingProcess.get() ) {
-          // find all catching message events of receiving process which have the same message name
-          auto catchingMessageEvents = receivingProcess->find_all(
-            [&messageSender](const BPMN::Node* n) {
-              if ( auto messageRecipient = n->extensionElements->represents<MessageRecipient>();
-                   messageRecipient 
-                   && messageSender->name == messageRecipient->name 
-              ) {
-                return true;
-              }
-              return false;
-            }
-          );
-
-          for ( auto catchingMessageEvent : catchingMessageEvents ) {
-            MessageRecipient* messageRecipient = catchingMessageEvent->extensionElements->as<MessageRecipient>();
-
-            // determine all message flows in the model entering the node or an ancestor
-            std::unordered_set<BPMN::MessageFlow*> inflows;
-            BPMN::Node* node = catchingMessageEvent;
-            while ( auto flowNode = node->represents<BPMN::FlowNode>() ) {
-              for ( auto& messageFlow : messageFlows ) {
-                if ( messageFlow->target.second == flowNode ) {
-                  inflows.insert(messageFlow.get());
-                }
-              }
-              node = flowNode->parent;
-            }
-            for ( auto& messageFlow : messageFlows ) {
-              if ( auto process = node->represents<BPMN::Process>(); process && messageFlow->target.first == process ) {
-                inflows.insert(messageFlow.get());
-              }
-            }
-
-            // a message is only allowed if outflows and inflows are either empty or intersect 
-            if ( 
-              ( outflows.empty() && inflows.empty() ) || 
-              std::any_of(outflows.begin(), outflows.end(), [&](BPMN::MessageFlow* messageFlow) { return inflows.count(messageFlow) > 0; })
-            ) {
-              // set allowedRecipients for each throwing message event
-              messageSender->allowedRecipients.push_back(catchingMessageEvent->as<BPMN::CatchEvent>());
-
-              // set allowedSenders for each catching message event
-              messageRecipient->allowedSenders.push_back(throwingMessageEvent->as<BPMN::ThrowEvent>());
-            }
-
+          if ( found ) {
+            break;
           }
         }
       }
     }
+    if ( !found ) {
+      return;
+    }
   }
+
+  // determine relevant message flows for catching event
+  auto incomingMessageFlows = determineMessageFlows(
+    catchingMessageEvent, 
+    [](BPMN::Node* node) -> std::vector<BPMN::MessageFlow*>& {
+        return node->receiving;
+    }
+  );
+
+  if ( incomingMessageFlows.size() ) {
+    // determine whether throwing message event is in message flow source
+    bool found = false;
+    for ( auto messageFlow : incomingMessageFlows ) {
+      auto& [process,flowNode] = messageFlow->source;
+      if ( process == sendingProcess ) {
+        if ( flowNode == throwingMessageEvent ) {
+          found = true;
+          break;
+        }
+        else {
+          if ( flowNode ) {
+            found = flowNode->find_all(
+              [throwingMessageEvent](const BPMN::Node* node) { return node == throwingMessageEvent;}
+            ).size();
+          }
+          else {
+            found = process->find_all(
+              [throwingMessageEvent](const BPMN::Node* node) { return node == throwingMessageEvent;}
+            ).size();
+          }
+
+          if ( found ) {
+            break;
+          }
+        }
+      }
+    }
+    if ( !found ) {
+      return;
+    }
+  }
+  
+  // add message events to collection of candidates of each other
+  sentMessage->candidates.push_back(catchingMessageEvent->as<BPMN::FlowNode>());
+  receivedMessage->candidates.push_back(throwingMessageEvent->as<BPMN::FlowNode>());
 }
 
+std::vector<BPMN::MessageFlow*>& Model::determineMessageFlows(BPMN::FlowNode* messageEvent, auto getMessageFlows) {
+  auto& relevantFlows = getMessageFlows(messageEvent);
+  if ( relevantFlows.empty() ) {
+    BPMN::ChildNode* node = messageEvent;
+    BPMN::Scope* scope = nullptr;
+    do {
+      // get next scope that may have message flows
+      scope = node->parent;
+      while ( auto eventSubProcess = scope->represents<BPMN::EventSubProcess>() ) {
+        // skip event-subprocesses
+        node = eventSubProcess;
+        scope = eventSubProcess->parent;
+      }
 
+      relevantFlows = getMessageFlows(scope);
+      node = scope->represents<BPMN::SubProcess>();
+
+    } while ( relevantFlows.empty() && node);
+  }
+  return relevantFlows;
+}
