@@ -17,26 +17,41 @@ Message::Message(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent)
 
     AttributeMap& attributeMap = parent->extensionElements->as<Status>()->attributeMap;
 
-    header = {"sender","recipient"};    
+    header = {"sender","recipient"};
 
     for ( XML::bpmnos::tParameter& parameter : element->getChildren<XML::bpmnos::tParameter>() ) {
-      parameters.push_back(std::make_unique<Parameter>(&parameter,attributeMap));
+      parameterMap.emplace(parameter.name.value,std::make_unique<Parameter>(&parameter,attributeMap));
       header.insert(parameter.name.value);
     }
 
-/*
-    for ( XML::bpmnos::tParameter& parameter : element->getChildren<XML::bpmnos::tParameter>() ) {
-      if ( parameter.name.value.value == "request" ) {
-        request = std::make_unique<Parameter>(&parameter,attributeMap);
-      }
-    }
-*/
-
     for ( XML::bpmnos::tContent& content : get<XML::bpmnos::tMessage,XML::bpmnos::tContent>() ) {
-      contents.push_back(std::make_unique<Content>(&content,attributeMap));
-      contentMap[content.key.value] = contents.rbegin()->get();
+      contentMap.emplace(content.key.value,std::make_unique<Content>(&content,attributeMap));
     }
   }
 
+}
+
+BPMNOS::Values Message::getHeaderValues(BPMNOS::Values& status) const {
+  BPMNOS::Values headerValues;
+  for ( auto& key : header ) {
+    auto it = parameterMap.find(key);
+    if ( it != parameterMap.end() ) {
+      auto& parameter = it->second;
+      if ( parameter->attribute.has_value() && status[parameter->attribute->get().index].has_value() ) {
+        headerValues.push_back( status[parameter->attribute->get().index].value() );
+      }
+      else if ( parameter->value.has_value() ) {
+        headerValues.push_back( to_number( parameter->value->get().value, BPMNOS::ValueType::STRING ) );
+      }
+      else {
+        headerValues.push_back( std::nullopt );
+      }
+    }
+    else {
+      // key is either 'sender' or 'recipient' and must refer to the respective instance identifier
+      headerValues.push_back( status[BPMNOS::Model::Status::Index::Instance] );
+    }
+  }
+  return headerValues;
 }
 

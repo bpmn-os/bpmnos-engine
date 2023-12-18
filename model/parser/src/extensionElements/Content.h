@@ -4,6 +4,7 @@
 #include <memory>
 #include <vector>
 #include <string>
+#include <unordered_map>
 #include <optional>
 #include <variant>
 #include <bpmn++.h>
@@ -12,10 +13,6 @@
 #include "model/utility/src/Number.h"
 
 namespace BPMNOS::Model {
-
-class Content;
-
-typedef std::unordered_map<std::string, Content*> ContentMap;
 
 class Content {
 public:
@@ -32,7 +29,7 @@ protected:
   std::optional< std::reference_wrapper<Attribute> > getAttribute(AttributeMap& attributeMap);
 };
 
-typedef std::unordered_map< std::string, std::unique_ptr<Content> > contentMap;
+typedef std::unordered_map< std::string, std::unique_ptr<Content> > ContentMap;
 
 } // namespace BPMNOS::Model
 

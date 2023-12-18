@@ -3,6 +3,7 @@
 #include "Engine.h"
 #include "model/parser/src/extensionElements/Status.h"
 #include "model/parser/src/extensionElements/Gatekeeper.h"
+#include "model/parser/src/extensionElements/Message.h"
 #include "model/parser/src/extensionElements/Timer.h"
 #include "model/parser/src/JobShop.h"
 #include "model/parser/src/ResourceActivity.h"
@@ -692,7 +693,9 @@ void Token::awaitTimer(BPMNOS::number time) {
 
 void Token::awaitMessageDelivery() {
   auto systemState = const_cast<SystemState*>(owner->systemState);
-  systemState->tokensAwaitingMessageDelivery.push_back(weak_from_this());
+  auto messageHeader = node->extensionElements->as<BPMNOS::Model::Message>()->getHeaderValues(status);
+  systemState->tokensAwaitingMessageDelivery.emplace_back(weak_from_this(),messageHeader);
+//  systemState->tokensAwaitingMessageDelivery.push_back(weak_from_this());
 }
 
 void Token::awaitEventBasedGateway() {

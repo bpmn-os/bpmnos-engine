@@ -16,13 +16,11 @@ public:
   Message(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent);
   const BPMN::Scope* parent;
   std::string name; ///< Message name
-  std::vector< std::unique_ptr<Parameter> > parameters;
+  ParameterMap parameterMap; ///< Map allowing to look up parameters by their names.
   std::set< std::string > header; ///< Set of parameter names
-//  std::optional< std::unique_ptr<Parameter> > request; ///< Optional reference to request associated to message.
-  std::vector< std::unique_ptr<Content> > contents;
   ContentMap contentMap; ///< Map allowing to look up contents by their keys.
   std::vector< BPMN::FlowNode* > candidates; ///< List of all potential senders or receivers of the message.
-
+  Values getHeaderValues(Values& status) const;
 };
 
 } // namespace BPMNOS::Model
