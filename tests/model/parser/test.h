@@ -44,7 +44,7 @@ TEST_CASE( "Parse message flows", "[model][parser]" ) {
     }
   }
 
-  REQUIRE( candidates["CatchEvent_A1"] == std::set< std::string >({"ThrowEvent_B2"}) );
+  REQUIRE( candidates["CatchEvent_A1"] == std::set< std::string >({"ThrowEvent_B2","ThrowEvent_C2"}) );
   REQUIRE( candidates["CatchEvent_A2"] == std::set< std::string >({"ThrowEvent_B1","ThrowEvent_B2"}) );
   REQUIRE( candidates["CatchEvent_B1"] == std::set< std::string >({"ThrowEvent_A1"}) );
   REQUIRE( candidates["CatchEvent_B2"] == std::set< std::string >({"ThrowEvent_C1"}) );
@@ -56,5 +56,5 @@ TEST_CASE( "Parse message flows", "[model][parser]" ) {
   REQUIRE( candidates["ThrowEvent_B1"] == std::set< std::string >({"CatchEvent_A2"}) );
   REQUIRE( candidates["ThrowEvent_B2"] == std::set< std::string >({"CatchEvent_A1","CatchEvent_A2"}) );
   REQUIRE( candidates["ThrowEvent_C1"] == std::set< std::string >({"CatchEvent_B2"}) );
-  REQUIRE( candidates["ThrowEvent_C2"] == std::set< std::string >() );
+  REQUIRE( candidates["ThrowEvent_C2"] == std::set< std::string >({"CatchEvent_A1"}) );
 }
