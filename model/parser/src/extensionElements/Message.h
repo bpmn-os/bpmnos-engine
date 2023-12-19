@@ -19,8 +19,12 @@ public:
   ParameterMap parameterMap; ///< Map allowing to look up parameters by their names.
   std::set< std::string > header; ///< Set of parameter names
   ContentMap contentMap; ///< Map allowing to look up contents by their keys.
-  std::vector< BPMN::FlowNode* > candidates; ///< List of all potential senders or receivers of the message.
-  Values getHeaderValues(Values& status) const;
+  std::vector< const BPMN::FlowNode* > candidates; ///< List of all potential senders or receivers of the message.
+  BPMNOS::Values getSenderHeader(const BPMNOS::Values& status) const;
+  BPMNOS::Values getRecipientHeader(const BPMNOS::Values& status) const;
+private:
+  std::optional<BPMNOS::number> getHeaderValue(const BPMNOS::Values& status, const std::string& key) const;
+
 };
 
 } // namespace BPMNOS::Model

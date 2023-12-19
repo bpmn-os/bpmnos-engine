@@ -83,7 +83,7 @@ public:
   }
 
 private:
-  std::list< std::pair< std::weak_ptr<T>, U > > weak_pointer_associations;
+  mutable std::list< std::pair< std::weak_ptr<T>, U > > weak_pointer_associations;
 };
 
 } // namespace BPMNOS::Execution

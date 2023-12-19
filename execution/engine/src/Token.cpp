@@ -295,6 +295,10 @@ void Token::advanceToEntered() {
       // if applicable, control will be delgated back to token
       engine->commands.emplace_back(std::bind(&StateMachine::handleEscalation,const_cast<StateMachine*>(owner),this), const_cast<StateMachine*>(owner)->weak_from_this(), weak_from_this());
     }
+    else if ( node->represents<BPMN::MessageThrowEvent>() ) {
+      // add message to message pool
+      const_cast<SystemState*>(owner->systemState)->messages[node].push_back(std::make_unique<Message>(this));
+    }
 
     // tokens entering any other node automatically advance to done or
     // departed state
@@ -693,9 +697,8 @@ void Token::awaitTimer(BPMNOS::number time) {
 
 void Token::awaitMessageDelivery() {
   auto systemState = const_cast<SystemState*>(owner->systemState);
-  auto messageHeader = node->extensionElements->as<BPMNOS::Model::Message>()->getHeaderValues(status);
-  systemState->tokensAwaitingMessageDelivery.emplace_back(weak_from_this(),messageHeader);
-//  systemState->tokensAwaitingMessageDelivery.push_back(weak_from_this());
+  auto recipientHeader = node->extensionElements->as<BPMNOS::Model::Message>()->getRecipientHeader(status);
+  systemState->tokensAwaitingMessageDelivery.emplace_back(weak_from_this(),recipientHeader);
 }
 
 void Token::awaitEventBasedGateway() {

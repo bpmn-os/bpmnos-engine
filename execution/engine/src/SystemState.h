@@ -57,9 +57,9 @@ public:
   StateMachines instances; 
 
   /**
-   * @brief Container holding all messages sent but not yet delivered.
+   * @brief Map holding all messages created for each throwing message event.
    */
-  Messages messages;
+  std::unordered_map<const BPMN::FlowNode*, Messages> messages;
 
   auto_list<Token> tokensAwaitingReadyEvent; ///< Container holding all tokens awaiting a ready event
 

@@ -131,7 +131,7 @@ void Engine::process(const ReadyEvent& event) {
   token->sequenceFlow = nullptr;
   token->status.insert(token->status.end(), event.values.begin(), event.values.end());
 
-  StateMachine* stateMachine = const_cast<StateMachine*>(event.token->owner);
+  StateMachine* stateMachine = const_cast<StateMachine*>(token->owner);
   commands.emplace_back(std::bind(&Token::advanceToReady,token), stateMachine->weak_from_this(), token->weak_from_this());
 }
 
@@ -152,7 +152,7 @@ void Engine::process(const EntryEvent& event) {
     token->status = event.entryStatus.value();
   }
 
-  StateMachine* stateMachine = const_cast<StateMachine*>(event.token->owner);
+  StateMachine* stateMachine = const_cast<StateMachine*>(token->owner);
   commands.emplace_back(std::bind(&Token::advanceToEntered,token), stateMachine->weak_from_this(), token->weak_from_this());
 }
 
@@ -166,7 +166,7 @@ void Engine::process(const TaskCompletionEvent& event) {
     token->status[index] = value;
   }
 
-  StateMachine* stateMachine = const_cast<StateMachine*>(event.token->owner);
+  StateMachine* stateMachine = const_cast<StateMachine*>(token->owner);
   commands.emplace_back(std::bind(&Token::advanceToCompleted,token), stateMachine->weak_from_this(), token->weak_from_this());
 }
 
@@ -190,7 +190,15 @@ void Engine::process(const ExitEvent& event) {
 }
 
 void Engine::process(const MessageDeliveryEvent& event) {
-  throw std::runtime_error("Engine: MessageDeliveryEvent not yet implemented");
+  Token* token = const_cast<Token*>(event.token);
+  Message* message = const_cast<Message*>(event.message);
+
+  message->update(token);
+  erase_ptr<Message>(systemState->messages[message->origin],message);
+  systemState->tokensAwaitingMessageDelivery.remove(token);
+
+  StateMachine* stateMachine = const_cast<StateMachine*>(token->owner);
+  commands.emplace_back(std::bind(&Token::advanceToCompleted,token), stateMachine->weak_from_this(), token->weak_from_this());
 }
 
 

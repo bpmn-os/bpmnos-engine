@@ -31,27 +31,42 @@ Message::Message(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent)
 
 }
 
-BPMNOS::Values Message::getHeaderValues(BPMNOS::Values& status) const {
+BPMNOS::Values Message::getSenderHeader(const BPMNOS::Values& status) const {
   BPMNOS::Values headerValues;
   for ( auto& key : header ) {
-    auto it = parameterMap.find(key);
-    if ( it != parameterMap.end() ) {
-      auto& parameter = it->second;
-      if ( parameter->attribute.has_value() && status[parameter->attribute->get().index].has_value() ) {
-        headerValues.push_back( status[parameter->attribute->get().index].value() );
-      }
-      else if ( parameter->value.has_value() ) {
-        headerValues.push_back( to_number( parameter->value->get().value, BPMNOS::ValueType::STRING ) );
-      }
-      else {
-        headerValues.push_back( std::nullopt );
-      }
+    if ( key == "sender" ) {
+      headerValues.push_back( status[BPMNOS::Model::Status::Index::Instance] );
     }
     else {
-      // key is either 'sender' or 'recipient' and must refer to the respective instance identifier
-      headerValues.push_back( status[BPMNOS::Model::Status::Index::Instance] );
+      headerValues.push_back( getHeaderValue(status, key) );
     }
   }
   return headerValues;
 }
 
+BPMNOS::Values Message::getRecipientHeader(const BPMNOS::Values& status) const {
+  BPMNOS::Values headerValues;
+  for ( auto& key : header ) {
+    if ( key == "recipient" ) {
+      headerValues.push_back( status[BPMNOS::Model::Status::Index::Instance] );
+    }
+    else {
+      headerValues.push_back( getHeaderValue(status, key) );
+    }
+  }
+  return headerValues;
+}
+
+std::optional<BPMNOS::number> Message::getHeaderValue(const BPMNOS::Values& status, const std::string& key) const {
+  auto it = parameterMap.find(key);
+  if ( it != parameterMap.end() ) {
+    auto& parameter = it->second;
+    if ( parameter->attribute.has_value() && status[parameter->attribute->get().index].has_value() ) {
+      return status[parameter->attribute->get().index];
+    }
+    else if ( parameter->value.has_value() ) {
+      return to_number( parameter->value->get().value, BPMNOS::ValueType::STRING );
+    }
+  }
+  return std::nullopt;
+}

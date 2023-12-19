@@ -22,8 +22,7 @@ public:
   std::string& id;
   std::string& key;
   std::optional< std::reference_wrapper<Attribute> > attribute;
-  ValueType type;
-  std::optional< number > value; 
+  std::optional< std::string > value; 
 
 protected:
   std::optional< std::reference_wrapper<Attribute> > getAttribute(AttributeMap& attributeMap);

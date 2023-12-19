@@ -3,9 +3,9 @@
 
 using namespace BPMNOS::Execution;
 
-MessageDeliveryEvent::MessageDeliveryEvent(const Token* token, Messages::const_iterator message_it)
+MessageDeliveryEvent::MessageDeliveryEvent(const Token* token, const Message* message)
   : Event(token)
-  , message_it(message_it)
+  , message(message)
 {
 }
 

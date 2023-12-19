@@ -83,7 +83,7 @@ public:
   }
 
 private:
-  std::list<std::weak_ptr<T>> weak_pointers;
+  mutable std::list<std::weak_ptr<T>> weak_pointers;
 };
 
 } // namespace BPMNOS::Execution

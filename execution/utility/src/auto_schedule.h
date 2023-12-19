@@ -104,7 +104,7 @@ private:
       return (leftShared.get() < rightShared.get());
     }
   };
-  std::set< std::pair< BPMNOS::number, std::weak_ptr<T> >, comparator > weak_pointers;
+  mutable std::set< std::pair< BPMNOS::number, std::weak_ptr<T> >, comparator > weak_pointers;
 };
 
 } // namespace BPMNOS::Execution
