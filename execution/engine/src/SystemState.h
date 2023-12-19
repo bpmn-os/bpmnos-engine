@@ -6,6 +6,7 @@
 #include "execution/utility/src/auto_list.h"
 #include "execution/utility/src/auto_associative_list.h"
 #include "execution/utility/src/auto_schedule.h"
+#include "execution/utility/src/auto_associative_schedule.h"
 #include "model/data/src/Scenario.h"
 #include <set>
 #include <queue>
@@ -75,7 +76,8 @@ public:
   auto_list<Token> tokensAtIdleResources; ///< Container holding indices of resources not executing a job and awaiting a job entry
 //  std::vector< Token* > tokensAtActiveResources; ///< Container holding indices of tokens at busy resources
 
-  auto_schedule<Token> tokensAwaitingTaskCompletionEvent; ///< Sorted container holding all tokens awaiting a task completion event
+//  auto_schedule<Token> tokensAwaitingTaskCompletionEvent; ///< Sorted container holding all tokens awaiting a task completion event
+  auto_associative_schedule<Token, Values> tokensAwaitingTaskCompletionEvent; ///< Sorted container holding all tokens awaiting a task completion event
 
   auto_list<Token> tokensAwaitingChoiceEvent; ///< Container holding all tokens awaiting a choice event
 

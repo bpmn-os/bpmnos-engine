@@ -111,9 +111,9 @@ SCENARIO( "Symmetric parallel gateways", "[execution][parallelgateway]" ) {
         REQUIRE( recorder.log[++i]["state"] == "READY" );
         REQUIRE( recorder.log[++i]["state"] == "ENTERED" );
         REQUIRE( recorder.log[++i]["state"] == "BUSY" );
+        REQUIRE( recorder.log[++i]["state"] == "COMPLETED" );
         REQUIRE( recorder.log[++i]["state"] == "ENTERED" );
         REQUIRE( recorder.log[++i]["state"] == "BUSY" );
-        REQUIRE( recorder.log[++i]["state"] == "COMPLETED" );
         REQUIRE( recorder.log[++i]["state"] == "COMPLETED" );
         // exit tasks
         REQUIRE( recorder.log[++i]["state"] == "EXITING" );

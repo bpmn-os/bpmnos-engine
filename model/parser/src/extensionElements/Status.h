@@ -30,6 +30,7 @@ public:
   inline std::size_t size() const { return parentSize + attributes.size(); };
 
   bool isFeasible(const Values& values) const;
+  bool isInstantaneous; ///< Boolean indicating whether operators may modify timestamp.
   void applyOperators(Values& values) const;
   void makeChoices(const std::unordered_map<Decision*,number>& choices, Values& values) const;
 

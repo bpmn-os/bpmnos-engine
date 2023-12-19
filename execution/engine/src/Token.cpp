@@ -211,11 +211,8 @@ void Token::advanceToEntered() {
     if ( auto statusExtension = node->extensionElements->represents<BPMNOS::Model::Status>();
          statusExtension
     ) {
-      for ( auto& operator_ : statusExtension->operators ) {
-        if ( operator_->attribute->index == BPMNOS::Model::Status::Index::Timestamp ) {
-          throw std::runtime_error("StateMachine: Operator '" + operator_->id + "' for subprocess '" + node->id + "' attempts to modify timestamp");
-        }
-        operator_->apply(status);
+      if ( !statusExtension->isInstantaneous ) {
+        throw std::runtime_error("StateMachine: Operators for subprocess '" + node->id + "' attempt to modify timestamp");
       }
     }
   }
@@ -385,17 +382,25 @@ void Token::advanceToBusy() {
       throw std::runtime_error("Token: receive tasks are not supported");
     }
     else {
-      // TODO: apply operators for completion status
+      // apply operators for completion status
+      bool isInstantaneous = true;
       if ( auto statusExtension = node->extensionElements->represents<BPMNOS::Model::Status>();
-           statusExtension
+           statusExtension 
       ) {
-        for ( auto& operator_ : statusExtension->operators ) {
-          operator_->apply(status);
+        if ( statusExtension->isInstantaneous ) {
+          // update status directly
+          statusExtension->applyOperators(status);
+        }
+        else {
+          // defer status update status until task completion
+          awaitTaskCompletionEvent();
+          return;
         }
       }
 
-//std::cerr << "->awaitTaskCompletionEvent" << std::endl;
-      awaitTaskCompletionEvent();
+      auto engine = const_cast<Engine*>(owner->systemState->engine);
+      engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,this), const_cast<StateMachine*>(owner)->weak_from_this(), weak_from_this());
+      
     }
   }
 }
@@ -672,11 +677,16 @@ void Token::awaitChoiceEvent() {
 }
 
 void Token::awaitTaskCompletionEvent() {
-// TODO: apply operators, but do not change status yet
   auto systemState = const_cast<SystemState*>(owner->systemState);
-  auto time = status[BPMNOS::Model::Status::Index::Timestamp].value();
+  Values updatedStatus = status;
+  if ( auto statusExtension = node->extensionElements->represents<BPMNOS::Model::Status>();
+       statusExtension && statusExtension->operators.size()
+  ) {
+    statusExtension->applyOperators(updatedStatus);
+  }
+  auto time = updatedStatus[BPMNOS::Model::Status::Index::Timestamp].value();
 
-  systemState->tokensAwaitingTaskCompletionEvent.emplace(time,weak_from_this());
+  systemState->tokensAwaitingTaskCompletionEvent.emplace(time,weak_from_this(),updatedStatus);
 }
 
 void Token::awaitResourceShutdownEvent() {

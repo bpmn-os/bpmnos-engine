@@ -14,6 +14,7 @@ using namespace BPMNOS::Model;
 Status::Status(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent)
   : BPMN::ExtensionElements( baseElement )
   , parent(parent)
+  , isInstantaneous(true)
 {
   parentSize = parent ? parent->extensionElements->as<Status>()->size() : 0;
   if ( parent ) {
@@ -76,6 +77,9 @@ Status::Status(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent)
       for ( XML::bpmnos::tOperator& operator_ : status->get().operators.value().get().operator_ ) {
         try {
           operators.push_back(Operator::create(&operator_,attributeMap));
+          if ( operators.back()->attribute->index == BPMNOS::Model::Status::Index::Timestamp ) {
+            isInstantaneous = false;
+          }
         }
         catch ( ... ){
           throw std::runtime_error("Status: illegal parameters for operator '" + (std::string)operator_.id.value + "'");

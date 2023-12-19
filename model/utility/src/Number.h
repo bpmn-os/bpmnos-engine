@@ -26,8 +26,8 @@ namespace BPMNOS {
 
   typedef BPMNOS_NUMBER_TYPE number;
   typedef std::unordered_map< std::string, std::optional<number> > ValueMap;
-  typedef std::unordered_map< std::string, std::variant< std::optional<number>, std::string > > VariedValueMap;
   typedef std::vector< std::optional<number> > Values;
+  typedef std::unordered_map< std::string, std::variant< std::optional<number>, std::string > > VariedValueMap;
 
   struct ValueHash {
     size_t operator()(const number& value) const {

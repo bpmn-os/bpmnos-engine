@@ -12,9 +12,9 @@ namespace BPMNOS::Execution {
  * Transition from State::BUSY to State::COMPLETED
  */
 struct TaskCompletionEvent : CompletionEvent  {
-  TaskCompletionEvent(const Token* token, const std::vector< std::pair< size_t, std::optional<BPMNOS::number> > >& updatedValues);
+  TaskCompletionEvent(const Token* token, const Values& updatedStatus);
   void processBy(Engine* engine) const override;
-  std::vector< std::pair< size_t, std::optional<BPMNOS::number> > > updatedValues;
+  Values updatedStatus;
 };
 
 } // namespace BPMNOS::Execution

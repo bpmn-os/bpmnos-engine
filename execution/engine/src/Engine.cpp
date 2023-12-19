@@ -162,9 +162,7 @@ void Engine::process(const TaskCompletionEvent& event) {
   systemState->tokensAwaitingTaskCompletionEvent.remove(token);
 
   // update token status
-  for ( auto & [index, value] : event.updatedValues ) {
-    token->status[index] = value;
-  }
+  token->status = event.updatedStatus;
 
   StateMachine* stateMachine = const_cast<StateMachine*>(token->owner);
   commands.emplace_back(std::bind(&Token::advanceToCompleted,token), stateMachine->weak_from_this(), token->weak_from_this());
