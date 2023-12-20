@@ -13,6 +13,7 @@ Engine::Engine()
 
 Engine::~Engine()
 {
+//std::cerr << "~Engine()" << std::endl;
 }
 
 void Engine::Command::execute() {
@@ -107,7 +108,7 @@ bool Engine::advance() {
 void Engine::addInstances() {
   for (auto& [process,status] : systemState->getInstantiations() ) {
     systemState->instantiationCounter++;
-    systemState->instances.push_back(std::make_unique<StateMachine>(systemState.get(),process));
+    systemState->instances.push_back(std::make_shared<StateMachine>(systemState.get(),process));
     // run instance and advance token
     systemState->instances.back()->run(status);
   }

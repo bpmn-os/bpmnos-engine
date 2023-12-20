@@ -23,7 +23,7 @@ public:
   BPMNOS::Values getSenderHeader(const BPMNOS::Values& status) const;
   BPMNOS::Values getRecipientHeader(const BPMNOS::Values& status) const;
 private:
-  std::optional<BPMNOS::number> getHeaderValue(const BPMNOS::Values& status, const std::string& key) const;
+  std::optional<BPMNOS::number> getHeaderValue(const BPMNOS::Values& status, const std::string& key) const; ///< Returns the header value string with the given key represented as number.
 
 };
 

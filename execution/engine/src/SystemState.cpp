@@ -11,6 +11,17 @@ SystemState::SystemState(const Engine* engine, const BPMNOS::Model::Scenario* sc
 {
 }
 
+SystemState::~SystemState() {
+//std::cerr << "~SystemState()" << std::endl;
+/*
+  tokensAwaitingBoundaryEvent.clear();
+  tokenAtAssociatedActivity.clear();
+  tokensAwaitingStateMachineCompletion.clear();
+  tokensAwaitingGatewayActivation.clear();
+  tokensAwaitingJobEntryEvent.clear();
+*/
+}
+
 BPMNOS::number SystemState::getTime() const {
   return assumedTime ? assumedTime.value() : currentTime;
 }

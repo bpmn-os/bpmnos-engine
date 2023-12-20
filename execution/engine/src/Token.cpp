@@ -49,7 +49,7 @@ Token::Token(const std::vector<Token*>& others)
 }
 
 Token::~Token() {
-//std::cerr << "~Token(" << (node ? node->id : owner->process->id)  << ")" << std::endl;
+//std::cerr << "~Token(" << (node ? node->id : owner->process->id ) << "/" << this << ")" << std::endl;
   auto systemState = const_cast<SystemState*>(owner->systemState);
   if ( systemState && node) {
     if ( auto activity = node->represents<BPMN::Activity>(); activity && !activity->boundaryEvents.empty() ) {
@@ -383,7 +383,6 @@ void Token::advanceToBusy() {
     }
     else {
       // apply operators for completion status
-      bool isInstantaneous = true;
       if ( auto statusExtension = node->extensionElements->represents<BPMNOS::Model::Status>();
            statusExtension 
       ) {
@@ -451,7 +450,7 @@ void Token::advanceToCompleted() {
       // event subprocess is triggered
       auto eventSubProcess = owner->scope->represents<BPMN::EventSubProcess>();
       if ( !eventSubProcess ) {
-        throw std::runtime_error("Token: start event must belong to event subprocess");
+        throw std::runtime_error("Token: typed start event must belong to event subprocess");
       }
       auto context = const_cast<StateMachine*>(owner->parentToken->owned);
 

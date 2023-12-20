@@ -18,6 +18,7 @@ public:
 
   void update( const Token* token ) override;
   nlohmann::ordered_json log; ///< A json object of the entire log.
+  nlohmann::ordered_json find(nlohmann::json jsonObject) const;
 private:
   std::optional< std::reference_wrapper<std::ostream> > os;
   bool isFirst; 

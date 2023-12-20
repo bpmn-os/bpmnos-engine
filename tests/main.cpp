@@ -16,6 +16,7 @@ using namespace BPMNOS;
 #include "data/dynamic/test.h"
 
 /* Execution engine */
+
 // Process
 #include "execution/process/test.h"
 // Activities
@@ -31,6 +32,8 @@ using namespace BPMNOS;
 #include "execution/eventsubprocess/test.h"
 // Boundary events
 #include "execution/boundaryevent/test.h"
+// Messages
+#include "execution/message/test.h"
 
 // Playground
 #include <iostream>

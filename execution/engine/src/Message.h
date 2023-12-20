@@ -6,6 +6,7 @@
 #include <memory>
 #include <bpmn++.h>
 #include "model/utility/src/Number.h"
+#include <nlohmann/json.hpp>
 
 namespace BPMNOS::Execution {
 
@@ -24,6 +25,8 @@ public:
   bool matches(const BPMNOS::Values& otherHeader); ///< Returns true if headers have the same size and all values that are defined are the same.
 
   void update(Token* token) const; ///< Updates the token status based on the message content.
+
+  nlohmann::ordered_json jsonify() const;
 };
 
 } // namespace BPMNOS::Execution

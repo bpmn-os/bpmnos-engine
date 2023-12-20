@@ -13,7 +13,9 @@ Recorder::Recorder(size_t maxSize) : Listener(), os(std::nullopt), maxSize(maxSi
 Recorder::Recorder(std::ostream &os, size_t maxSize) : Listener(), os(os), maxSize(maxSize)
 {
   log = nlohmann::ordered_json::array();
-  this->os.value().get() << "[";
+  if (this->os.has_value()) {
+    this->os.value().get() << "[";
+  }
   isFirst = true;
 }
 
@@ -40,5 +42,25 @@ void Recorder::update( const Token* token ) {
   if ( log.size() > maxSize) {
     log.erase(log.begin());
   }
-
 }
+
+nlohmann::ordered_json Recorder::find(nlohmann::json jsonObject) const {
+  nlohmann::ordered_json result = nlohmann::ordered_json::array();
+  std::copy_if(
+    log.begin(),
+    log.end(),
+    std::back_inserter(result), [&jsonObject](const nlohmann::json& item) {
+      for ( auto& [key,value] : jsonObject.items() ) {
+        if ( !item.contains(key) ) {
+          return false;
+        } 
+        if ( item[key] != value ) {
+          return false;
+        } 
+      }
+      return true;
+    }
+  );
+  return result;
+}
+

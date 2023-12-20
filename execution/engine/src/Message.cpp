@@ -38,6 +38,41 @@ bool Message::matches(const BPMNOS::Values& otherHeader) {
   return true;
 }
 
+nlohmann::ordered_json Message::jsonify() const {
+  nlohmann::ordered_json jsonObject;
+  auto messageDefinition = origin->extensionElements->as<BPMNOS::Model::Message>();
+  size_t i = 0;
+  for ( auto headerName : messageDefinition->header ) {
+    if ( !header[i].has_value() ) {
+      jsonObject["header"][headerName] = nullptr ;
+    }
+    else {
+      jsonObject["header"][headerName] = BPMNOS::to_string(header[i].value(),STRING);
+    }
+    ++i;
+  }
+
+  for ( auto& [key,contentValue] : contentValueMap ) {
+    if ( std::get< std::optional<number> >(contentValue).has_value() ) {
+      auto type = BPMNOS::ValueType::STRING;
+      if ( auto it = messageDefinition->contentMap.find(key); it != messageDefinition->contentMap.end() ) {
+        type = it->second->attribute->get().type;
+      }
+      number value = std::get< std::optional<number> >(contentValue).value();
+      jsonObject["content"][key] = BPMNOS::to_string(value,type);
+    }
+    else if (std::holds_alternative<std::string>(contentValue)) {
+      jsonObject["content"][key] = std::get< std::string >(contentValue);
+    }
+    else {
+      jsonObject["content"][key] = nullptr;
+    }
+  }
+
+  return jsonObject;
+}
+
+
 void Message::update(Token* token) const {
   auto& targetContentDefinition = token->node->extensionElements->as<BPMNOS::Model::Message>()->contentMap;
   size_t counter = 0;

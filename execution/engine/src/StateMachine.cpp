@@ -16,7 +16,7 @@ StateMachine::StateMachine(const SystemState* systemState, const BPMN::Process* 
   , scope(process)
   , parentToken(nullptr)
 {
-//std::cerr << "StateMachine(" << scope->id << ")" << this << std::endl;
+//std::cerr << "StateMachine(" << scope->id  << "/" << this << " @ " << parentToken << ")" << std::endl;
 }
 
 StateMachine::StateMachine(const SystemState* systemState, const BPMN::Scope* scope, Token* parentToken)
@@ -25,7 +25,7 @@ StateMachine::StateMachine(const SystemState* systemState, const BPMN::Scope* sc
   , scope(scope)
   , parentToken(parentToken)
 {
-//std::cerr << "cStateMachine(" << scope->id << ")" << this << ", parentToken: " << parentToken << " owned by :" << parentToken->owner << std::endl;
+//std::cerr << "cStateMachine(" << scope->id << "/" << this << " @ " << parentToken << ")" << " owned by :" << parentToken->owner << std::endl;
 }
 
 StateMachine::StateMachine(const StateMachine* other)
@@ -34,13 +34,15 @@ StateMachine::StateMachine(const StateMachine* other)
   , scope(other->scope)
   , parentToken(other->parentToken)
 {
-//std::cerr << "oStateMachine(" << scope->id << ")" << this << ", parentToken: " << parentToken << " owned by :" << parentToken->owner << std::endl;
+//std::cerr << "oStateMachine(" << scope->id << "/" << this << " @ " << parentToken << ")"  << " owned by :" << parentToken->owner << std::endl;
 }
 
 StateMachine::~StateMachine() {
-//std::cerr << "~StateMachine(" << scope->id << ")" << std::endl;
-  const_cast<SystemState*>(systemState)->tokensAwaitingStateMachineCompletion.erase(this);
-  const_cast<SystemState*>(systemState)->tokensAwaitingGatewayActivation.erase(this);
+//std::cerr << "~StateMachine(" << scope->id << "/" << this << " @ " << parentToken << ")" << std::endl;
+  if ( systemState ) {
+    const_cast<SystemState*>(systemState)->tokensAwaitingStateMachineCompletion.erase(this);
+    const_cast<SystemState*>(systemState)->tokensAwaitingGatewayActivation.erase(this);
+  }
 }
 
 void StateMachine::initiateBoundaryEvents(Token* token) {
@@ -144,9 +146,9 @@ void StateMachine::createTokenCopies(Token* token, const std::vector<BPMN::Seque
 
   // advance all token copies
   for (size_t i = 0; i < sequenceFlows.size(); i++ ) {
-    auto token = tokenCopies[i];
+    auto tokenCopy = tokenCopies[i];
     auto engine = const_cast<Engine*>(systemState->engine);
-    engine->commands.emplace_back(std::bind(&Token::advanceToDeparted,token,sequenceFlows[i]), weak_from_this(), token->weak_from_this());
+    engine->commands.emplace_back(std::bind(&Token::advanceToDeparted,tokenCopy,sequenceFlows[i]), weak_from_this(), tokenCopy->weak_from_this());
   }
 }
 

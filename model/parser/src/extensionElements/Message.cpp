@@ -19,7 +19,7 @@ Message::Message(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent)
 
     header = {"sender","recipient"};
 
-    for ( XML::bpmnos::tParameter& parameter : element->getChildren<XML::bpmnos::tParameter>() ) {
+    for ( XML::bpmnos::tParameter& parameter : get<XML::bpmnos::tMessage,XML::bpmnos::tParameter>() ) {
       parameterMap.emplace(parameter.name.value,std::make_unique<Parameter>(&parameter,attributeMap));
       header.insert(parameter.name.value);
     }
@@ -62,7 +62,22 @@ std::optional<BPMNOS::number> Message::getHeaderValue(const BPMNOS::Values& stat
   if ( it != parameterMap.end() ) {
     auto& parameter = it->second;
     if ( parameter->attribute.has_value() && status[parameter->attribute->get().index].has_value() ) {
-      return status[parameter->attribute->get().index];
+      if ( parameter->attribute->get().type == BPMNOS::ValueType::BOOLEAN ) {
+        // use string representation of boolean values
+        bool value = (bool)status[parameter->attribute->get().index].value();
+        return to_number( value, BPMNOS::ValueType::STRING );
+      }
+      else if ( parameter->attribute->get().type == BPMNOS::ValueType::INTEGER ) {
+        // use string representation of  integer values
+        int value = (int)status[parameter->attribute->get().index].value();
+        return to_number( std::to_string(value), BPMNOS::ValueType::STRING );
+      }
+      else if ( parameter->attribute->get().type == BPMNOS::ValueType::DECIMAL ) {
+        // use string representation of  decimal values
+        double value = (double)status[parameter->attribute->get().index].value();
+        return to_number( std::to_string(value), BPMNOS::ValueType::STRING );
+      }
+      return status[parameter->attribute->get().index].value();
     }
     else if ( parameter->value.has_value() ) {
       return to_number( parameter->value->get().value, BPMNOS::ValueType::STRING );
