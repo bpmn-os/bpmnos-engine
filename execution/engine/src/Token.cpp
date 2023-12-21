@@ -832,11 +832,11 @@ void Token::destroy() {
 Token* Token::getResourceToken() const {
   if ( auto jobShop = node->parent->represents<BPMNOS::Model::JobShop>(); jobShop ) {
     const BPMN::FlowNode* resourceActivity = jobShop->resourceActivity->as<BPMN::FlowNode>();
-    Token * token = token->owner->parentToken;
-    while (token->node != resourceActivity) {
-      token = token->owner->parentToken;
+    Token* resourceToken = owner->parentToken;
+    while (resourceToken->node != resourceActivity) {
+      resourceToken = resourceToken->owner->parentToken;
     }
-    return token;
+    return resourceToken;
   }
 
   return nullptr;

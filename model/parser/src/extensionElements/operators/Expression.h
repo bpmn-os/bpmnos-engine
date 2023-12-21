@@ -14,6 +14,7 @@ namespace BPMNOS::Model {
 class Expression : public Operator {
 public:
   Expression(XML::bpmnos::tOperator* operator_, AttributeMap& attributeMap);
+  virtual ~Expression() = default;  // Virtual destructor
 
   static std::unique_ptr<Expression> create(XML::bpmnos::tOperator* operator_, AttributeMap& attributeMap);
   virtual void apply(Values& values) const = 0;

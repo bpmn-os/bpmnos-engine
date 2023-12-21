@@ -52,20 +52,48 @@ set(CMAKE_CXX_STANDARD 20)
 
 add_library(${PROJECT_NAME} STATIC ${execution_utility_SOURCES} ${engine_SOURCES} ${listener_SOURCES} ${controller_SOURCES})
 
-target_compile_options(${PROJECT_NAME}
-  PRIVATE
-  -O3
-  -Werror
-  -pedantic-errors
-  -Wpedantic
-  -Wall
-  -Wextra
-  -Wconversion
-  -Wsign-conversion
-  -fmax-errors=1 # Remove
-  -Wno-error=unused-parameter # Remove
-  -Wno-error=unused-variable # Remove
-)
+if (DEBUG)
+  target_compile_options(${PROJECT_NAME}
+    PRIVATE
+    -O0
+    -Werror
+    -pedantic-errors
+    -Wpedantic
+    -Wall
+    -Wextra
+    -Wconversion
+    -Wsign-conversion
+    -fsanitize=address
+    -fno-omit-frame-pointer
+    -g
+    -ggdb3
+    -fmax-errors=1 # Remove
+    -Wno-error=unused-parameter # Remove
+    -Wno-error=unused-variable # Remove
+  )
+
+  add_link_options(-fsanitize=address)
+
+  target_link_options(${PROJECT_NAME}
+    PRIVATE
+    -fsanitize=address
+  )
+else()
+  target_compile_options(${PROJECT_NAME}
+    PRIVATE
+    -O3
+    -Werror
+    -pedantic-errors
+    -Wpedantic
+    -Wall
+    -Wextra
+    -Wconversion
+    -Wsign-conversion
+    -fmax-errors=1 # Remove
+    -Wno-error=unused-parameter # Remove
+    -Wno-error=unused-variable # Remove
+  )
+endif()
 
 # Install the header files
 #install(FILES ${SINGLE_HEADER_PATH} DESTINATION include)

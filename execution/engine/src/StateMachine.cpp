@@ -40,9 +40,11 @@ StateMachine::StateMachine(const StateMachine* other)
 StateMachine::~StateMachine() {
 //std::cerr << "~StateMachine(" << scope->id << "/" << this << " @ " << parentToken << ")" << std::endl;
   if ( systemState ) {
-    const_cast<SystemState*>(systemState)->tokensAwaitingStateMachineCompletion.erase(this);
-    const_cast<SystemState*>(systemState)->tokensAwaitingGatewayActivation.erase(this);
+//    const_cast<SystemState*>(systemState)->tokensAwaitingStateMachineCompletion.erase(this);
+//    const_cast<SystemState*>(systemState)->tokensAwaitingGatewayActivation.erase(this);
   }
+  subProcesses.clear();
+  tokens.clear();
 }
 
 void StateMachine::initiateBoundaryEvents(Token* token) {

@@ -2,6 +2,13 @@ cmake_minimum_required(VERSION 3.26.4)
 
 project(bpmnos)
 
+option(DEBUG "Whether compilation uses address sanitizer without optimization" ON)
+if (DEBUG)
+  message("-- Compiler optimizations turned off and address sanitizer used")
+else()
+  message("-- Compiler optimizations turned on")
+endif()
+
 include_directories("${PROJECT_SOURCE_DIR}/")
 
 include(FetchContent)

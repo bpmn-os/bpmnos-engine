@@ -9,6 +9,7 @@ class Engine;
 
 struct Event {
   Event(const Token* token);
+  virtual ~Event() = default;  // Virtual destructor
   const Token* token;  
 
   virtual void processBy(Engine* engine) const  = 0;

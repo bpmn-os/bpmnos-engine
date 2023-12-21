@@ -63,8 +63,8 @@ SCENARIO( "Simple messaging", "[execution][message]" ) {
       engine.addEventHandler(&completionHandler);
       engine.addEventHandler(&exitHandler);
       engine.addEventHandler(&timeHandler);
-//      Execution::Recorder recorder;
-      Execution::Recorder recorder(std::cerr);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
       engine.addListener(&recorder);
       engine.run(scenario.get(),0);
       THEN( "Then the message is not delivered" ) {
@@ -124,9 +124,7 @@ SCENARIO( "Simple messaging", "[execution][message]" ) {
     Model::StaticDataProvider dataProvider(modelFile,csv);
     auto scenario = dataProvider.createScenario();
 
-//      Execution::Recorder recorder(std::cerr);
     WHEN( "The engine is started with a recorder" ) {
-std::cerr << "Start" << std::endl;
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
       Execution::InstantEntryHandler entryHandler;
@@ -135,6 +133,7 @@ std::cerr << "Start" << std::endl;
       Execution::InstantExitHandler exitHandler;
       Execution::TimeWarp timeHandler;
       Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
       engine.addEventHandler(&messageHandler);
       engine.addEventHandler(&readyHandler);
       engine.addEventHandler(&entryHandler);
@@ -149,10 +148,6 @@ std::cerr << "Start" << std::endl;
         REQUIRE( recorder.find(nlohmann::json{{"processId", "Process_2"},{"instanceId", "Instance_X"},{"nodeId", "MessageCatchEvent_2"},{"state", "COMPLETED"}}).size() == 0 );
         REQUIRE( recorder.find(nlohmann::json{{"processId", "Process_2"},{"instanceId", "Instance_2"},{"nodeId", "MessageCatchEvent_2"},{"state", "COMPLETED"}}).size() == 1 );
       }
-//std::cerr << "Clean up" << std::endl;
     }
-/// SIGSEV
-//std::cerr << "G" << std::endl;
   }
-//std::cerr << "H" << std::endl;
 }

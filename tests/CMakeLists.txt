@@ -19,7 +19,7 @@ endif ()
 set(CMAKE_CXX_STANDARD 20)
 
 # Add the -ggdb3 flag for debugging information
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ggdb3")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ggdb3")
 
 # Add the -O0 flag to disable optimizations for better debugging with Valgrind
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0")
@@ -29,6 +29,50 @@ add_executable(run_tests EXCLUDE_FROM_ALL main.cpp)
 include_directories(
   ${CMAKE_SOURCE_DIR}/lib
 )
+
+if (DEBUG)
+  target_compile_options(run_tests
+    PRIVATE
+    -O0
+    -Werror
+    -pedantic-errors
+    -Wpedantic
+    -Wall
+    -Wextra
+    -Wconversion
+    -Wsign-conversion
+    -fsanitize=address
+    -fno-omit-frame-pointer
+    -g
+    -ggdb3
+    -fmax-errors=1 # Remove
+    -Wno-error=unused-parameter # Remove
+    -Wno-error=unused-variable # Remove
+  )
+
+  add_link_options(-fsanitize=address)
+
+  target_link_options(run_tests
+    PRIVATE
+    -fsanitize=address
+  )
+else()
+  target_compile_options(run_tests
+    PRIVATE
+    -O3
+    -Werror
+    -pedantic-errors
+    -Wpedantic
+    -Wall
+    -Wextra
+    -Wconversion
+    -Wsign-conversion
+    -fmax-errors=1 # Remove
+    -Wno-error=unused-parameter # Remove
+    -Wno-error=unused-variable # Remove
+  )
+endif()
+
 
 target_link_libraries(run_tests 
   PRIVATE 
@@ -51,14 +95,14 @@ foreach(file ${test_files})
   endif()
 endforeach()
 # Create a script that can be used from build directory
-file(WRITE "${CMAKE_BINARY_DIR}/run_tests" "#!/bin/bash\n(cd ${CMAKE_BINARY_DIR}/tests/; ./run_tests $@)")
+file(WRITE "${CMAKE_BINARY_DIR}/run_tests" "#!/bin/bash\nexport LSAN_OPTIONS=\"suppressions=${PROJECT_SOURCE_DIR}/leak.supp\"\n(cd ${CMAKE_BINARY_DIR}/tests/;./run_tests $@)")
 execute_process(COMMAND chmod +x "${CMAKE_BINARY_DIR}/run_tests")
 message("-- Run tests: ./run_test [tags]")
 
 add_custom_target(
     tests
-    COMMAND ${CMAKE_CURRENT_BINARY_DIR}/run_tests || exit 0
-    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/tests
+    COMMAND ${CMAKE_BINARY_DIR}/run_tests || exit 0
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/
     VERBATIM
 )
 
