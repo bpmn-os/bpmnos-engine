@@ -18,7 +18,10 @@ public:
 
   void update( const Token* token ) override;
   nlohmann::ordered_json log; ///< A json object of the entire log.
-  nlohmann::ordered_json find(nlohmann::json jsonObject) const;
+  /**
+   * @brief Returns a json array containing all log entries matching the include object and not matching the exclude object.
+   */
+  nlohmann::ordered_json find(nlohmann::json include, nlohmann::json exclude = nlohmann::json()) const;
 private:
   std::optional< std::reference_wrapper<std::ostream> > os;
   bool isFirst; 
