@@ -19,13 +19,20 @@ Message::Message(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent)
 
     header = {"sender","recipient"};
 
+    std::set< std::string > additionalHeader;
     for ( XML::bpmnos::tParameter& parameter : get<XML::bpmnos::tMessage,XML::bpmnos::tParameter>() ) {
-      parameterMap.emplace(parameter.name.value,std::make_unique<Parameter>(&parameter,attributeMap));
-      header.insert(parameter.name.value);
+      auto& name = parameter.name.value.value;
+      parameterMap.emplace(name,std::make_unique<Parameter>(&parameter,attributeMap));
+      if ( name != "sender" && name != "recipient" ) {
+        additionalHeader.insert(name);
+      }
+    }
+    for ( auto& name : additionalHeader ) {
+      header.push_back(name);
     }
 
     for ( XML::bpmnos::tContent& content : get<XML::bpmnos::tMessage,XML::bpmnos::tContent>() ) {
-      contentMap.emplace(content.key.value,std::make_unique<Content>(&content,attributeMap));
+      contentMap.emplace(content.key.value.value,std::make_unique<Content>(&content,attributeMap));
     }
   }
 

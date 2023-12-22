@@ -17,7 +17,8 @@ public:
   const BPMN::Scope* parent;
   std::string name; ///< Message name
   ParameterMap parameterMap; ///< Map allowing to look up parameters by their names.
-  std::set< std::string > header; ///< Set of parameter names
+  std::vector< std::string > header; ///< Set of parameter names always beginning with "sender" and "recipient"
+  enum Index { Sender, Recipient };
   ContentMap contentMap; ///< Map allowing to look up contents by their keys.
   std::vector< const BPMN::FlowNode* > candidates; ///< List of all potential senders or receivers of the message.
   BPMNOS::Values getSenderHeader(const BPMNOS::Values& status) const;
