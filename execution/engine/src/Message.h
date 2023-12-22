@@ -13,7 +13,7 @@ namespace BPMNOS::Execution {
 class Token;
 
 class Message;
-typedef std::vector< std::unique_ptr<Message> > Messages;
+typedef std::vector< std::shared_ptr<Message> > Messages;
 
 class Message {
 public:

@@ -294,7 +294,7 @@ void Token::advanceToEntered() {
     }
     else if ( node->represents<BPMN::MessageThrowEvent>() ) {
       // add message to message pool
-      const_cast<SystemState*>(owner->systemState)->messages[node].push_back(std::make_unique<Message>(this));
+      const_cast<SystemState*>(owner->systemState)->messages[node].push_back(std::make_shared<Message>(this));
     }
 
     // tokens entering any other node automatically advance to done or
