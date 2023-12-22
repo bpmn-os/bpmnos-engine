@@ -4,7 +4,6 @@
 #include "StateMachine.h"
 #include "execution/engine/src/Message.h"
 #include "execution/utility/src/auto_list.h"
-#include "execution/utility/src/auto_associative_list.h"
 #include "execution/utility/src/auto_schedule.h"
 #include "execution/utility/src/auto_associative_schedule.h"
 #include "model/data/src/Scenario.h"
@@ -88,7 +87,7 @@ public:
 
   auto_schedule<Token> tokensAwaitingTimer; ///< Sorted container holding holding all tokens awaiting a timer event
 
-  auto_associative_list<Token,Values> tokensAwaitingMessageDelivery; ///< Container holding all tokens awaiting a message delivery event with associated header values
+  auto_list<Token,Values> tokensAwaitingMessageDelivery; ///< Container holding all tokens awaiting a message delivery event with associated header values
 
   auto_list<Token> tokensAwaitingEventBasedGateway; ///< Container holding all tokens awaiting activation event for an event-based gateway
 

@@ -176,7 +176,7 @@ void Engine::process(const ExitEvent& event) {
 
   if ( auto tokenAtResource = token->getResourceToken(); tokenAtResource ) {
     // resource becomes idle
-    systemState->tokensAtIdleResources.push_back( tokenAtResource->weak_from_this() );
+    systemState->tokensAtIdleResources.emplace_back( tokenAtResource->weak_from_this() );
   }
 
   // update token status

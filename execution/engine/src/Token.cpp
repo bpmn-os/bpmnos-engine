@@ -655,24 +655,23 @@ void Token::advanceToFailed() {
 
 void Token::awaitReadyEvent() {
   auto systemState = const_cast<SystemState*>(owner->systemState);
-//  systemState->tokensAwaitingReadyEvent.push_back(this);
-  systemState->tokensAwaitingReadyEvent.push_back(weak_from_this());
+  systemState->tokensAwaitingReadyEvent.emplace_back(weak_from_this());
 }
 
 void Token::awaitEntryEvent() {
   auto systemState = const_cast<SystemState*>(owner->systemState);
 
   if ( auto tokenAtResource = getResourceToken(); tokenAtResource ) {
-    systemState->tokensAwaitingJobEntryEvent[tokenAtResource].push_back(weak_from_this());
+    systemState->tokensAwaitingJobEntryEvent[tokenAtResource].emplace_back(weak_from_this());
   }
   else {
-    systemState->tokensAwaitingRegularEntryEvent.push_back(weak_from_this());
+    systemState->tokensAwaitingRegularEntryEvent.emplace_back(weak_from_this());
   }
 }
 
 void Token::awaitChoiceEvent() {
   auto systemState = const_cast<SystemState*>(owner->systemState);
-  systemState->tokensAwaitingChoiceEvent.push_back(weak_from_this());
+  systemState->tokensAwaitingChoiceEvent.emplace_back(weak_from_this());
 }
 
 void Token::awaitTaskCompletionEvent() {
@@ -690,12 +689,12 @@ void Token::awaitTaskCompletionEvent() {
 
 void Token::awaitResourceShutdownEvent() {
   auto systemState = const_cast<SystemState*>(owner->systemState);
-  systemState->tokensAwaitingResourceShutdownEvent.push_back(weak_from_this());
+  systemState->tokensAwaitingResourceShutdownEvent.emplace_back(weak_from_this());
 }
 
 void Token::awaitExitEvent() {
   auto systemState = const_cast<SystemState*>(owner->systemState);
-  systemState->tokensAwaitingExitEvent.push_back(weak_from_this());
+  systemState->tokensAwaitingExitEvent.emplace_back(weak_from_this());
 }
 
 void Token::awaitTimer(BPMNOS::number time) {
@@ -712,7 +711,7 @@ void Token::awaitMessageDelivery() {
 
 void Token::awaitEventBasedGateway() {
   auto systemState = const_cast<SystemState*>(owner->systemState);
-  systemState->tokensAwaitingEventBasedGateway.push_back(weak_from_this());
+  systemState->tokensAwaitingEventBasedGateway.emplace_back(weak_from_this());
 }
 
 
