@@ -2,22 +2,23 @@
 #define BPMNOS_Execution_auto_schedule_H
 
 #include <set>
+#include <tuple>
 #include <memory>
 #include "model/utility/src/Number.h"
 
 namespace BPMNOS::Execution {
 
 /**
- * @brief Custom container for managing an ordered set of std::weak_ptr<T> with automatic removal of expired elements.
+ * @brief Custom container for managing a number ordered set of std::weak_ptr<T> with associated data of type U... and automatic removal of expired elements
  */
-template <typename T>
+template <typename T, typename... U>
 class auto_schedule {
 public:
   struct iterator {
-    typename std::set< std::pair< BPMNOS::number, std::weak_ptr<T> > >::iterator current;
-    auto_schedule<T>* container;
+    typename std::set< std::tuple< BPMNOS::number, std::weak_ptr<T>, U... > >::iterator current;
+    auto_schedule<T,U...>* container;
 
-    iterator(typename std::set<std::pair<BPMNOS::number, std::weak_ptr<T>>>::iterator iter, auto_schedule<T>* cont)
+    iterator(typename std::set< std::tuple< BPMNOS::number, std::weak_ptr<T>, U... > >::iterator iter, auto_schedule<T,U...>* cont)
       : current(iter), container(cont) {
         skipExpired();
       }
@@ -28,7 +29,7 @@ public:
       return *this;
     }
 
-    std::pair< BPMNOS::number, std::weak_ptr<T> > operator*() const {
+    std::tuple< BPMNOS::number, std::weak_ptr<T>, U... > operator*() const {
       return *current;
     }
 
@@ -38,46 +39,46 @@ public:
 
   private:
     void skipExpired() {
-      while (current != container->weak_pointers.end() && current->second.expired()) {
-        current = container->weak_pointers.erase(current);
+      while (current != container->weak_pointer_associations.end() && std::get<1>(*current).expired()) {
+        current = container->weak_pointer_associations.erase(current);
       }
     }
   };
 
   iterator begin() {
-    return iterator(weak_pointers.begin(), this);
+    return iterator(weak_pointer_associations.begin(), this);
   }
 
   iterator end() {
-    return iterator(weak_pointers.end(), this);
+    return iterator(weak_pointer_associations.end(), this);
   }
 
   iterator cbegin() const {
-    return iterator(weak_pointers.begin(), const_cast<auto_schedule<T>*>(this));
+    return iterator(weak_pointer_associations.begin(), const_cast<auto_schedule<T,U...>*>(this));
   }
 
   iterator cend() const {
-    return iterator(weak_pointers.end(), const_cast<auto_schedule<T>*>(this));
+    return iterator(weak_pointer_associations.end(), const_cast<auto_schedule<T,U...>*>(this));
   }
 
   iterator begin() const {
-    return iterator(weak_pointers.begin(), const_cast<auto_schedule<T>*>(this));
+    return iterator(weak_pointer_associations.begin(), const_cast<auto_schedule<T,U...>*>(this));
   }
 
   iterator end() const {
-    return iterator(weak_pointers.end(), const_cast<auto_schedule<T>*>(this));
+    return iterator(weak_pointer_associations.end(), const_cast<auto_schedule<T,U...>*>(this));
   }
 
-  void emplace(BPMNOS::number key, const std::weak_ptr<T>& item) {
-    weak_pointers.emplace(key, item);
+  void emplace(BPMNOS::number key, const std::weak_ptr<T>& item, U... data) {
+    weak_pointer_associations.emplace(key, item, data...);
   }
 
   void remove(T* item) {
     auto it = begin();
     while (it != end()) {
-      auto shared = it.current->second.lock();
+      auto shared = std::get<1>(*it.current).lock();
       if (shared && shared.get() == item) {
-        weak_pointers.erase(it.current);
+        weak_pointer_associations.erase(it.current);
         return;
       }
       ++it;
@@ -85,26 +86,29 @@ public:
   }
 
   bool empty() const {
-    return weak_pointers.empty();
+    for ( auto& _ : *this ) {
+      return false;
+    }
+    return true;
   }
 
 private:
   struct comparator {
-    bool operator()(const std::pair<BPMNOS::number, std::weak_ptr<T>>& lhs, const std::pair<BPMNOS::number, std::weak_ptr<T>>& rhs) const {
+    bool operator()(const std::tuple<BPMNOS::number, std::weak_ptr<T>, U... >& lhs, const std::tuple<BPMNOS::number, std::weak_ptr<T>, U... >& rhs) const {
       // Compare based on the number component
-      if (lhs.first != rhs.first) {
-        return lhs.first < rhs.first;
+      if ( std::get<0>(lhs) != std::get<0>(rhs) ) {
+        return std::get<0>(lhs) < std::get<0>(rhs);
       }
       // If times are equal, compare the underlying shared_ptr objects
-      auto leftShared = lhs.second.lock();
+      auto leftShared = std::get<1>(lhs).lock();
       if ( !leftShared ) return false;
-      auto rightShared = rhs.second.lock();
+      auto rightShared = std::get<1>(rhs).lock();
       if ( !rightShared ) return true;
       // Compare shared_ptr objects, if both are valid
       return (leftShared.get() < rightShared.get());
     }
   };
-  mutable std::set< std::pair< BPMNOS::number, std::weak_ptr<T> >, comparator > weak_pointers;
+  mutable std::set< std::tuple< BPMNOS::number, std::weak_ptr<T>, U... >, comparator > weak_pointer_associations;
 };
 
 } // namespace BPMNOS::Execution
