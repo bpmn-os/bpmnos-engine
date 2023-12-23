@@ -39,9 +39,8 @@ StateMachine::StateMachine(const StateMachine* other)
 
 StateMachine::~StateMachine() {
 //std::cerr << "~StateMachine(" << scope->id << "/" << this << " @ " << parentToken << ")" << std::endl;
-  if ( systemState ) {
-    const_cast<SystemState*>(systemState)->tokensAwaitingGatewayActivation.erase(this);
-  }
+  const_cast<SystemState*>(systemState)->tokensAwaitingGatewayActivation.erase(this);
+  unregisterRecipient();
 }
 
 void StateMachine::initiateBoundaryEvents(Token* token) {
@@ -72,14 +71,49 @@ void StateMachine::initiateEventSubprocesses(Token* token) {
   }
 }
 
+void StateMachine::registerRecipient() {
+  if ( auto it = const_cast<SystemState*>(systemState)->unsent.find(instanceId);
+    it != const_cast<SystemState*>(systemState)->unsent.end()
+  ) {
+    for ( auto& [message_ptr] : it->second ) {
+      if ( auto message = message_ptr.lock(); message ) {
+        const_cast<SystemState*>(systemState)->correspondence[this].emplace_back(message->weak_from_this());
+        const_cast<SystemState*>(systemState)->outbox[message->origin].emplace_back(message->weak_from_this());
+      }
+    }
+    const_cast<SystemState*>(systemState)->unsent.erase(it);
+  }
+}
+
+void StateMachine::unregisterRecipient() {
+  if ( !parentToken ||
+       ( scope->represents<BPMN::EventSubProcess>() &&
+         !scope->startEvents.front()->as<BPMN::TypedStartEvent>()->isInterrupting
+       )
+  ) {
+    // delete all messages directed to state machine
+    if ( auto it = const_cast<SystemState*>(systemState)->correspondence.find(this);
+      it != const_cast<SystemState*>(systemState)->correspondence.end()
+    ) {
+      for ( auto& [message_ptr] : it->second ) {
+        if ( auto message = message_ptr.lock(); message ) {
+          erase_ptr(const_cast<SystemState*>(systemState)->messages, message.get());
+        }
+      }
+      const_cast<SystemState*>(systemState)->correspondence.erase(it);
+    }
+  }
+}
+
 void StateMachine::run(const Values& status) {
 //std::cerr << "Run " << scope->id << std::endl;
   if ( !parentToken ) {
     // state machine without parent token represents a token at a process
 //std::cerr << "Start process " << process->id << std::endl;
     tokens.push_back( std::make_shared<Token>(this,nullptr,status) );
-    std::string id = BPMNOS::to_string(status[Model::Status::Index::Instance].value(),STRING);
-    const_cast<SystemState*>(systemState)->archive[ id ] = weak_from_this();
+    const_cast<std::string&>(instanceId) = BPMNOS::to_string(status[Model::Status::Index::Instance].value(),STRING);
+    const_cast<SystemState*>(systemState)->archive[ instanceId ] = weak_from_this();
+    registerRecipient();
   }
   else {
     if ( scope->startEvents.size() != 1 ) {
@@ -96,7 +130,7 @@ void StateMachine::run(const Values& status) {
   }
 
   if ( token->node ) {
-    if ( auto startEvent = token->node->represents<BPMN::TypedStartEvent>(); 
+    if ( auto startEvent = token->node->represents<BPMN::TypedStartEvent>();
       startEvent && !startEvent->isInterrupting
     ) {
       // token instantiates non-interrupting event subprocess
@@ -104,9 +138,10 @@ void StateMachine::run(const Values& status) {
       auto context = const_cast<StateMachine*>(parentToken->owned);
       auto counter = ++context->instantiations[token->node];
       // append instantiation counter for disambiguation
-      std::string id = BPMNOS::to_string(token->status[Model::Status::Index::Instance].value(),STRING) + delimiter +  std::to_string(counter);
-      token->status[Model::Status::Index::Instance] = BPMNOS::to_number(id,BPMNOS::ValueType::STRING);
-      const_cast<SystemState*>(systemState)->archive[ id ] = weak_from_this();
+      const_cast<std::string&>(instanceId) = BPMNOS::to_string(token->status[Model::Status::Index::Instance].value(),STRING) + delimiter +  std::to_string(counter);
+      token->status[Model::Status::Index::Instance] = BPMNOS::to_number(instanceId,BPMNOS::ValueType::STRING);
+      const_cast<SystemState*>(systemState)->archive[ instanceId ] = weak_from_this();
+      registerRecipient();
     }
   }
 
@@ -307,7 +342,7 @@ void StateMachine::shutdown() {
 //std::cerr << "start shutdown: " << scope->id << "/" << const_cast<SystemState*>(systemState)->tokensAwaitingStateMachineCompletion.size() << std::endl;
   auto engine = const_cast<Engine*>(systemState->engine);
 
-  if ( auto eventSubProcess = scope->represents<BPMN::EventSubProcess>(); 
+  if ( auto eventSubProcess = scope->represents<BPMN::EventSubProcess>();
     eventSubProcess && !eventSubProcess->startEvents.front()->represents<BPMN::TypedStartEvent>()->isInterrupting
   ) {
     auto context = const_cast<StateMachine*>(parentToken->owned);
@@ -399,7 +434,7 @@ void StateMachine::deleteTokensAwaitingBoundaryEvent(Token* token) {
   if ( it != tokensAwaitingBoundaryEvent.end() ) {
     for ( auto waitingToken : it->second ) {
       erase_ptr<Token>(tokens, waitingToken);
-    } 
+    }
     tokensAwaitingBoundaryEvent.erase(it);
   }
 }

@@ -193,7 +193,7 @@ void Engine::process(const MessageDeliveryEvent& event) {
   Message* message = const_cast<Message*>(event.message);
 
   message->update(token);
-  erase_ptr<Message>(systemState->messages[message->origin],message);
+  erase_ptr<Message>(systemState->messages,message);
   systemState->tokensAwaitingMessageDelivery.remove(token);
 
   StateMachine* stateMachine = const_cast<StateMachine*>(token->owner);

@@ -15,10 +15,11 @@ class Token;
 class Message;
 typedef std::vector< std::shared_ptr<Message> > Messages;
 
-class Message {
+class Message : public std::enable_shared_from_this<Message> {
 public:
   Message(Token* token);
   const BPMN::FlowNode* origin;
+  std::optional< std::string > recipient;
   BPMNOS::Values header;
   VariedValueMap contentValueMap;
 

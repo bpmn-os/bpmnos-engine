@@ -26,7 +26,7 @@ public:
   ~SystemState();
 
   /**
-   * @brief Pointer to the corresponding scenario. 
+   * @brief Pointer to the corresponding scenario.
    */
   const BPMNOS::Model::Scenario* scenario;
 
@@ -50,20 +50,26 @@ public:
    */
   bool isAlive() const;
 
-  /**
-   * @brief Container holding a state machine for each running instance.
-   */
-  StateMachines instances; 
 
   /**
    * @brief Container holding instance identifier and corresponding state machine pointer for each instantiation.
    */
-  std::unordered_map< std::string, std::weak_ptr<StateMachine> > archive; 
+  std::unordered_map< std::string, std::weak_ptr<StateMachine> > archive;
 
   /**
-   * @brief Map holding all messages created for each throwing message event.
+   * @brief Map holding unsent messages with recipient that isn't instantiated yet.
    */
-  std::unordered_map<const BPMN::FlowNode*, Messages> messages;
+  std::unordered_map<std::string, auto_list<Message> > unsent;
+
+  /**
+   * @brief Map holding the undelivered correspondence associated with a state machine which will be withdrawn when the state machine goes out of scope.
+   */
+  std::unordered_map<StateMachine*, auto_list<Message> > correspondence;
+
+  /**
+   * @brief Map holding messages sent from given node.
+   */
+  std::unordered_map<const BPMN::FlowNode*, auto_list<Message> > outbox;
 
   auto_list<Token> tokensAwaitingReadyEvent; ///< Container holding all tokens awaiting a ready event
 
@@ -94,7 +100,17 @@ public:
 //  auto_list<Token> tokensAwaitingEventBasedGateway; ///< Container holding all tokens awaiting activation event for an event-based gateway
 
   //TODO: make sure that elements are deleted when no longer required
-  std::unordered_map< StateMachine*, std::map<const BPMN::FlowNode*, std::vector<Token*> > > tokensAwaitingGatewayActivation; ///< Map holding tokens awaiting activation of a converging gateway 
+  std::unordered_map< StateMachine*, std::map<const BPMN::FlowNode*, std::vector<Token*> > > tokensAwaitingGatewayActivation; ///< Map holding tokens awaiting activation of a converging gateway
+
+  /**
+   * @brief Container holding a state machine for each running instance.
+   */
+  StateMachines instances;
+
+  /**
+   * @brief Container holding all messages created by a throwing message event.
+   */
+  Messages messages;
 
 private:
   friend class Engine;

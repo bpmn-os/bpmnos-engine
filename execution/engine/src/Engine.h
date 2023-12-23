@@ -3,7 +3,7 @@
 
 #include <set>
 #include <vector>
-#include <list> 
+#include <list>
 #include "Event.h"
 #include "events/ClockTickEvent.h"
 #include "events/TaskCompletionEvent.h"

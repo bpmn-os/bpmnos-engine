@@ -14,9 +14,10 @@ std::unique_ptr<Event> FirstMatchingMessageHandler::fetchEvent( const SystemStat
     if( auto token = token_ptr.lock() )  {
       auto messageDefinition = token->node->extensionElements->as<BPMNOS::Model::Message>();
       for ( auto candidate : messageDefinition->candidates ) {
-        if ( auto it = systemState->messages.find(candidate); it != systemState->messages.end() ) {
-          for ( auto& message : it->second ) {
-            if ( message->matches(messageHeader) ) {
+        if ( auto it = systemState->outbox.find(candidate); it != systemState->outbox.end() ) {
+          for ( auto& [message_ptr] : it->second ) {
+            auto message = message_ptr.lock();
+            if ( message && message->matches(messageHeader) ) {
               return std::make_unique<MessageDeliveryEvent>(token.get(), message.get());
             }
           }

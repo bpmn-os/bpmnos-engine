@@ -51,7 +51,7 @@ Token::Token(const std::vector<Token*>& others)
 Token::~Token() {
 //std::cerr << "~Token(" << (node ? node->id : owner->process->id ) << "/" << this << ")" << std::endl;
   auto systemState = const_cast<SystemState*>(owner->systemState);
-  if ( systemState && node) {
+  if ( node) {
     if ( auto activity = node->represents<BPMN::Activity>(); activity && !activity->boundaryEvents.empty() ) {
       auto engine = const_cast<Engine*>(owner->systemState->engine);
       auto stateMachine = const_cast<StateMachine*>(owner);
@@ -68,6 +68,7 @@ Token::~Token() {
     }
     else if ( node->represents<BPMNOS::Model::RequestActivity>() ) {
       // TODO: send abort message to all allocated resources
+      // TODO: withdraw undelivered request messages
     }
     else if ( node->represents<BPMNOS::Model::ReleaseActivity>() ) {
       // TODO: send revoke message to all allocated resources
@@ -294,7 +295,24 @@ void Token::advanceToEntered() {
     }
     else if ( node->represents<BPMN::MessageThrowEvent>() ) {
       // add message to message pool
-      const_cast<SystemState*>(owner->systemState)->messages[node].push_back(std::make_shared<Message>(this));
+      auto systemState = const_cast<SystemState*>(owner->systemState);
+      systemState->messages.emplace_back(std::make_shared<Message>(this));
+      auto& message = systemState->messages.back();
+      if ( message->recipient.has_value() ) {
+        // TODO: add to unsent or outbox
+        auto it = systemState->archive.find(message->recipient.value());
+        if ( it == systemState->archive.end() ) {
+          // defer sending of message to when recipient is instantiated
+          systemState->unsent[message->recipient.value()].emplace_back(message->weak_from_this());
+        }
+        else if ( auto stateMachine = it->second.lock(); stateMachine ) {
+          systemState->correspondence[stateMachine.get()].emplace_back(message->weak_from_this());
+          systemState->outbox[node].emplace_back(message->weak_from_this());
+        }
+      }
+      else {
+        systemState->outbox[node].emplace_back(message->weak_from_this());
+      }
     }
 
     // tokens entering any other node automatically advance to done or
@@ -385,7 +403,7 @@ void Token::advanceToBusy() {
     else {
       // apply operators for completion status
       if ( auto statusExtension = node->extensionElements->represents<BPMNOS::Model::Status>();
-           statusExtension 
+           statusExtension
       ) {
         if ( statusExtension->isInstantaneous ) {
           // update status directly
@@ -400,7 +418,7 @@ void Token::advanceToBusy() {
 
       auto engine = const_cast<Engine*>(owner->systemState->engine);
       engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,this), const_cast<StateMachine*>(owner)->weak_from_this(), weak_from_this());
-      
+
     }
   }
 }

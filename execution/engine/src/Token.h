@@ -23,8 +23,8 @@ private:
 public:
   const StateMachine* owner; ///< State machine owning the token
   StateMachine* owned; ///< State machine owned by the token
-  const BPMN::FlowNode* node; 
-  const BPMN::SequenceFlow* sequenceFlow; 
+  const BPMN::FlowNode* node;
+  const BPMN::SequenceFlow* sequenceFlow;
 private:
   enum class State { CREATED, READY, ENTERED, BUSY, COMPLETED, EXITING, DEPARTED, ARRIVED, WAITING, DONE, FAILED };
   static inline std::string stateName[] = { "CREATED", "READY", "ENTERED", "BUSY", "COMPLETED", "EXITING", "DEPARTED", "ARRIVED", "WAITING", "DONE", "FAILED" };
@@ -80,7 +80,7 @@ private:
   void awaitTimer(BPMNOS::number time); ///< Wait for message trigger at catching events (except for catching message events)
   void awaitMessageDelivery(); ///< Wait for message delivery event
 
-  void awaitEventBasedGateway(); ///< Wait for catching event at event-based gateways 
+  void awaitEventBasedGateway(); ///< Wait for catching event at event-based gateways
 
   void awaitGatewayActivation(); ///< Wait for activiation of merging gateway
 

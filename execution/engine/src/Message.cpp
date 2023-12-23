@@ -10,6 +10,9 @@ Message::Message(Token* token)
   auto messageDefinition = token->node->extensionElements->as<BPMNOS::Model::Message>();
 
   header = messageDefinition->getSenderHeader(token->status);
+  if ( header[ BPMNOS::Model::Message::Index::Recipient ].has_value() ) {
+    recipient = BPMNOS::to_string(header[ BPMNOS::Model::Message::Index::Recipient ].value(),STRING);
+  }
 
   for (auto& [key,contentDefinition] : messageDefinition->contentMap) {
     if ( contentDefinition->attribute.has_value() && token->status[contentDefinition->attribute->get().index].has_value() ) {

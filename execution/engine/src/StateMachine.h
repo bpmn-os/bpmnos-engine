@@ -29,6 +29,7 @@ public:
   const SystemState* systemState;
   const BPMN::Process* process; ///< Pointer to the top-level process.
   const BPMN::Scope* scope; ///< Pointer to the current scope.
+  const std::string instanceId;
   Token* parentToken;
 
   Tokens tokens; ///< Container with all tokens within the scope of the state machine.
@@ -46,6 +47,9 @@ private:
 
   static constexpr char delimiter = '^'; ///< Delimiter used for disambiguation of identifiers of non-interrupting event subprocesses
   std::map< const BPMN::FlowNode*, unsigned int > instantiations; ///< Instantiation counter for start events of non-interrupting event subprocesses
+
+  void registerRecipient(); ///< Register new state machine to allow directed message delivery
+  void unregisterRecipient(); ///< Register new state machine id to withdraw directed messages
 
   void createChild(Token* parent, const BPMN::Scope* scope); ///< Method creating the state machine for a (sub)process
 
