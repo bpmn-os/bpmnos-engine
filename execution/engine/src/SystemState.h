@@ -56,6 +56,11 @@ public:
   StateMachines instances; 
 
   /**
+   * @brief Container holding instance identifier and corresponding state machine pointer for each instantiation.
+   */
+  std::unordered_map< std::string, std::weak_ptr<StateMachine> > archive; 
+
+  /**
    * @brief Map holding all messages created for each throwing message event.
    */
   std::unordered_map<const BPMN::FlowNode*, Messages> messages;

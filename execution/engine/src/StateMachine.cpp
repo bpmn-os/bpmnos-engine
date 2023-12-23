@@ -78,6 +78,8 @@ void StateMachine::run(const Values& status) {
     // state machine without parent token represents a token at a process
 //std::cerr << "Start process " << process->id << std::endl;
     tokens.push_back( std::make_shared<Token>(this,nullptr,status) );
+    std::string id = BPMNOS::to_string(status[Model::Status::Index::Instance].value(),STRING);
+    const_cast<SystemState*>(systemState)->archive[ id ] = weak_from_this();
   }
   else {
     if ( scope->startEvents.size() != 1 ) {
@@ -104,6 +106,7 @@ void StateMachine::run(const Values& status) {
       // append instantiation counter for disambiguation
       std::string id = BPMNOS::to_string(token->status[Model::Status::Index::Instance].value(),STRING) + delimiter +  std::to_string(counter);
       token->status[Model::Status::Index::Instance] = BPMNOS::to_number(id,BPMNOS::ValueType::STRING);
+      const_cast<SystemState*>(systemState)->archive[ id ] = weak_from_this();
     }
   }
 
