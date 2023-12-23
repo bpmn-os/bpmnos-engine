@@ -40,11 +40,8 @@ StateMachine::StateMachine(const StateMachine* other)
 StateMachine::~StateMachine() {
 //std::cerr << "~StateMachine(" << scope->id << "/" << this << " @ " << parentToken << ")" << std::endl;
   if ( systemState ) {
-//    const_cast<SystemState*>(systemState)->tokensAwaitingStateMachineCompletion.erase(this);
-//    const_cast<SystemState*>(systemState)->tokensAwaitingGatewayActivation.erase(this);
+    const_cast<SystemState*>(systemState)->tokensAwaitingGatewayActivation.erase(this);
   }
-  subProcesses.clear();
-  tokens.clear();
 }
 
 void StateMachine::initiateBoundaryEvents(Token* token) {
@@ -154,7 +151,8 @@ void StateMachine::createTokenCopies(Token* token, const std::vector<BPMN::Seque
   }
 }
 
-void StateMachine::createMergedToken(std::map< const BPMN::FlowNode*, std::vector<Token*> >::iterator gatewayIt) {
+void StateMachine::createMergedToken(const BPMN::FlowNode* gateway) {
+  auto gatewayIt = const_cast<SystemState*>(systemState)->tokensAwaitingGatewayActivation[this].find(gateway);
   auto& [key,arrivedTokens] = *gatewayIt;
 
   // create merged token
@@ -216,7 +214,7 @@ void StateMachine::handleEscalation(Token* token) {
 
   // find escalation boundary event
   if ( parentToken->node ) {
-    std::vector<Token*>& tokensAwaitingBoundaryEvent = const_cast<SystemState*>(systemState)->tokensAwaitingBoundaryEvent[parentToken];
+    auto& tokensAwaitingBoundaryEvent = const_cast<SystemState*>(systemState)->tokensAwaitingBoundaryEvent[parentToken];
     for ( auto eventToken : tokensAwaitingBoundaryEvent) {
       if ( eventToken->node->represents<BPMN::EscalationBoundaryEvent>() ) {
         engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,eventToken), const_cast<StateMachine*>(eventToken->owner)->weak_from_this(), eventToken->weak_from_this());
@@ -270,7 +268,7 @@ void StateMachine::handleFailure(Token* token) {
 
   // find error boundary event
   if ( token->node ) {
-    std::vector<Token*>& tokensAwaitingBoundaryEvent = const_cast<SystemState*>(systemState)->tokensAwaitingBoundaryEvent[token];
+    auto& tokensAwaitingBoundaryEvent = const_cast<SystemState*>(systemState)->tokensAwaitingBoundaryEvent[token];
     for ( auto eventToken : tokensAwaitingBoundaryEvent) {
       if ( eventToken->node->represents<BPMN::ErrorBoundaryEvent>() ) {
         engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,eventToken), const_cast<StateMachine*>(eventToken->owner)->weak_from_this(), eventToken->weak_from_this());
@@ -293,7 +291,7 @@ void StateMachine::attemptGatewayActivation(const BPMN::FlowNode* node) {
     if ( arrivedTokens.size() == node->incoming.size() ) {
       // create merged token and advance it
       auto engine = const_cast<Engine*>(systemState->engine);
-      engine->commands.emplace_back(std::bind(&StateMachine::createMergedToken,this,gatewayIt), weak_from_this());
+      engine->commands.emplace_back(std::bind(&StateMachine::createMergedToken,this,node), weak_from_this());
     }
   }
   else {
@@ -302,9 +300,8 @@ void StateMachine::attemptGatewayActivation(const BPMN::FlowNode* node) {
   }
 }
 
-void StateMachine::shutdown(std::unordered_map<const StateMachine*, std::vector<Token*> >::iterator it) {
+void StateMachine::shutdown() {
 //std::cerr << "start shutdown: " << scope->id << "/" << const_cast<SystemState*>(systemState)->tokensAwaitingStateMachineCompletion.size() << std::endl;
- 
   auto engine = const_cast<Engine*>(systemState->engine);
 
   if ( auto eventSubProcess = scope->represents<BPMN::EventSubProcess>(); 
@@ -316,7 +313,7 @@ void StateMachine::shutdown(std::unordered_map<const StateMachine*, std::vector<
   }
 
 
-  auto& [key,completedTokens] = *it;
+//  auto& completedTokens = const_cast<SystemState*>(systemState)->tokensAwaitingStateMachineCompletion[this];
 
   if ( parentToken ) {
     // merge tokens
@@ -324,8 +321,8 @@ void StateMachine::shutdown(std::unordered_map<const StateMachine*, std::vector<
       value = std::nullopt;
     }
 
-    for ( auto completedToken : completedTokens ) {
-      parentToken->mergeStatus(completedToken);
+    for ( auto token : tokens ) {
+      parentToken->mergeStatus(token.get());
     }
   }
 
@@ -351,37 +348,24 @@ void StateMachine::attemptShutdown() {
     return;
   }
 
-  // TODO
-  auto it = const_cast<SystemState*>(systemState)->tokensAwaitingStateMachineCompletion.find(this);
-  if ( it == const_cast<SystemState*>(systemState)->tokensAwaitingStateMachineCompletion.end() ) {
-//std::cerr << const_cast<SystemState*>(systemState)->tokensAwaitingStateMachineCompletion.size() << std::endl;
-//    throw std::logic_error("StateMachine: cannot find tokens awaiting state machine completion");
-    return;
-  }
-//std::cerr << const_cast<SystemState*>(systemState)->tokensAwaitingStateMachineCompletion.size() << std::endl;
-
-  auto& [key,completedTokens] = *it;
-
-  if ( completedTokens.size() < tokens.size() ) {
-    return;
-  }
-  else if ( completedTokens.size() == tokens.size() ) {
-    // all tokens are in DONE state
-    // no new event subprocesses can be triggered
-    pendingEventSubProcesses.clear();
-  }
-  else {
-    throw std::logic_error("StateMachine: too many tokens");
-  }
-
   if ( nonInterruptingEventSubProcesses.size() ) {
     // wait until last event subprocess is completed
     return;
   }
 
+  for ( auto& token : tokens ) {
+    if ( token->state != Token::State::DONE ) {
+      return;
+    }
+  }
+
+  // all tokens are in DONE state
+  // no new event subprocesses can be triggered
+  pendingEventSubProcesses.clear();
+
   auto engine = const_cast<Engine*>(systemState->engine);
 //std::cerr << "Shutdown with " << engine->commands.size()-1 << " prior commands" << std::endl;
-  engine->commands.emplace_back(std::bind(&StateMachine::shutdown,this,it), weak_from_this());
+  engine->commands.emplace_back(std::bind(&StateMachine::shutdown,this), weak_from_this());
 }
 
 void StateMachine::deleteChild(StateMachine* child) {

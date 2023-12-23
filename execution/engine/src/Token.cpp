@@ -346,7 +346,8 @@ void Token::advanceToBusy() {
     }
   }
   else if ( node->represents<BPMN::EventBasedGateway>() ) {
-    awaitEventBasedGateway(); // TODO: tokens should be passed forward to catch events
+      throw std::runtime_error("Token: event-based gateway not yet supported");
+//    awaitEventBasedGateway(); // TODO: tokens should be passed forward to catch events
   }
   else if ( node->represents<BPMN::TimerCatchEvent>() ) {
     // TODO: determine time
@@ -559,7 +560,6 @@ void Token::advanceToExiting() {
 void Token::advanceToDone() {
 //std::cerr << "advanceToDone: " << this << std::endl;
   update(State::DONE);
-  awaitStateMachineCompletion();
 
   const_cast<StateMachine*>(owner)->attemptShutdown();
 //std::cerr << "advancedToDone" << std::endl;
@@ -709,38 +709,26 @@ void Token::awaitMessageDelivery() {
   systemState->tokensAwaitingMessageDelivery.emplace_back(weak_from_this(),recipientHeader);
 }
 
+/*
 void Token::awaitEventBasedGateway() {
   auto systemState = const_cast<SystemState*>(owner->systemState);
   systemState->tokensAwaitingEventBasedGateway.emplace_back(weak_from_this());
 }
-
-
-void Token::awaitStateMachineCompletion() {
-//std::cerr << "awaitStateMachineCompletion: " << (node ? node->id : std::string("N/A") ) << std::endl;
-  auto systemState = const_cast<SystemState*>(owner->systemState);
-  auto ownerIt = systemState->tokensAwaitingStateMachineCompletion.find(owner);
-  if (ownerIt == systemState->tokensAwaitingStateMachineCompletion.end()) {
-    // The key is not found, so insert a new entry and get an iterator to it.
-    ownerIt = systemState->tokensAwaitingStateMachineCompletion.insert({owner,{}}).first;
-  }
-
-  auto& [key,tokens] = *ownerIt;
-  tokens.push_back(this);
-}
-
+*/
 
 void Token::awaitGatewayActivation() {
 //std::cerr << "awaitGatewayActivation" << std::endl;
 
   auto systemState = const_cast<SystemState*>(owner->systemState);
-  auto gatewayIt = systemState->tokensAwaitingGatewayActivation[owner].find(node);
-  if (gatewayIt == systemState->tokensAwaitingGatewayActivation[owner].end()) {
+  auto stateMachine = const_cast<StateMachine*>(owner);
+  auto gatewayIt = systemState->tokensAwaitingGatewayActivation[stateMachine].find(node);
+  if (gatewayIt == systemState->tokensAwaitingGatewayActivation[stateMachine].end()) {
     // The key is not found, so insert a new entry and get an iterator to it.
-    gatewayIt = systemState->tokensAwaitingGatewayActivation[owner].insert({node,{}}).first;
+    gatewayIt = systemState->tokensAwaitingGatewayActivation[stateMachine].insert({node,{}}).first;
   }
 
   auto& [key,tokens] = *gatewayIt;
-  tokens.push_back(this);
+  tokens.emplace_back(this);
 }
 
 void Token::destroy() {

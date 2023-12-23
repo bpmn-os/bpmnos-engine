@@ -82,8 +82,6 @@ private:
 
   void awaitEventBasedGateway(); ///< Wait for catching event at event-based gateways 
 
-  void awaitStateMachineCompletion(); ///< Wait for completion of all tokens within a scope
-
   void awaitGatewayActivation(); ///< Wait for activiation of merging gateway
 
   void destroy(); ///< Remove token from all data

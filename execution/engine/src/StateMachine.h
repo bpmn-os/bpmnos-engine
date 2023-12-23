@@ -58,9 +58,9 @@ private:
   void initiateEventSubprocesses(Token* token); ///< Method initiating pending event subprocesses
 
   void createTokenCopies(Token* token, const std::vector<BPMN::SequenceFlow*>& sequenceFlows);
-  void createMergedToken(std::map< const BPMN::FlowNode*, std::vector<Token*> >::iterator gatewayIt);
+  void createMergedToken(const BPMN::FlowNode* gateway);
 
-  void shutdown(std::unordered_map< const StateMachine*, std::vector<Token*> >::iterator it);
+  void shutdown();
   void interruptActivity(Token* token);
 
   void copyToken(Token* token);
