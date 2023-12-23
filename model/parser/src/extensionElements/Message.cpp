@@ -17,7 +17,9 @@ Message::Message(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent)
 
     AttributeMap& attributeMap = parent->extensionElements->as<Status>()->attributeMap;
 
-    header = {"sender","recipient"};
+    header.resize(2);
+    header[ Index::Sender ] = "sender";
+    header[ Index::Recipient ] = "recipient";
 
     std::set< std::string > additionalHeader;
     for ( XML::bpmnos::tParameter& parameter : get<XML::bpmnos::tMessage,XML::bpmnos::tParameter>() ) {
