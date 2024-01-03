@@ -1,19 +1,28 @@
 # Doxyfile configuration
 
 # Project information
-PROJECT_NAME      = bpmnos
+PROJECT_NAME      = BPMN-OS
+PROJECT_LOGO      = BPMNOS.svg
+PROJECT_BRIEF     = "BPMN for optimization and simulation"
+
 OUTPUT_DIRECTORY  = docs
 
 # Input sources
-INPUT             = /usr/local/include/bpmn++.h model/parser/src/ lib/ model/parser/src/xml/ model/parser/src/ execution/engine/src/ execution/controller/src/ xml/bpmnos/ README.md
+INPUT             = /usr/local/include/bpmn++.h model/parser/src/ lib/ model/parser/src/xml/ model/parser/src/xml/bpmnos/ model/parser/src/ execution/engine/src/ execution/controller/src/ README.md
 
 USE_MDFILE_AS_MAINPAGE = README.md
 
-OPTIMIZE_OUTPUT_FOR_C = YES
 MARKDOWN_SUPPORT      = YES
 BUILTIN_STL_SUPPORT   = YES
-SHOW_USED_FILES       = NO
-SHOW_FILES            = NO
+EXTRACT_ALL           = YES
+EXTRACT_LOCAL_CLASSES = NO
+EXTRACT_LOCAL_METHODS = NO
+SHOW_USED_FILES       = YES
+SHOW_FILES            = YES
+SHOW_NAMESPACES       = YES
+SOURCE_BROWSER        = YES
+STRIP_CODE_COMMENTS   = NO
+GENERATE_HTML         = YES
 GENERATE_LATEX        = NO
 QUIET                 = YES
 WARN_IF_UNDOCUMENTED  = NO
@@ -21,4 +30,30 @@ UML_LOOK              = YES
 COLLABORATION_GRAPH   = NO
 INCLUDE_GRAPH         = NO
 INCLUDED_BY_GRAPH     = NO
-SHOW_NAMESPACES       = NO
+REPEAT_BRIEF          = NO
+
+HAVE_DOT              = YES
+DOT_IMAGE_FORMAT      = svg
+DOT_TRANSPARENT       = YES
+
+
+GENERATE_TREEVIEW     = YES
+DISABLE_INDEX         = NO
+FULL_SIDEBAR          = NO
+
+HTML_HEADER           = $(DOXYGEN_AWESOME_DIR)/doxygen-custom/header.html
+HTML_FOOTER           = $(DOXYGEN_AWESOME_DIR)/doxygen-custom/footer.html
+HTML_STYLESHEET       =
+
+HTML_EXTRA_STYLESHEET = $(DOXYGEN_AWESOME_DIR)/doxygen-awesome.css \
+                        $(DOXYGEN_AWESOME_DIR)/doxygen-custom/custom.css \
+                        $(DOXYGEN_AWESOME_DIR)/doxygen-awesome-sidebar-only.css \
+                        $(DOXYGEN_AWESOME_DIR)/doxygen-awesome-sidebar-only-darkmode-toggle.css \
+                        $(DOXYGEN_AWESOME_DIR)/doxygen-custom/custom-alternative.css
+
+HTML_EXTRA_FILES      = $(DOXYGEN_AWESOME_DIR)/doxygen-awesome-darkmode-toggle.js \
+                        $(DOXYGEN_AWESOME_DIR)/doxygen-awesome-fragment-copy-button.js \
+                        $(DOXYGEN_AWESOME_DIR)/doxygen-awesome-paragraph-link.js \
+                        $(DOXYGEN_AWESOME_DIR)/doxygen-custom/toggle-alternative-theme.js \
+                        $(DOXYGEN_AWESOME_DIR)/doxygen-awesome-interactive-toc.js \
+                        $(DOXYGEN_AWESOME_DIR)/doxygen-awesome-tabs.js

@@ -90,18 +90,37 @@ add_subdirectory(execution)
 add_subdirectory(tests)
 
 # Generate the documentation
-find_program(DOXYGEN_FOUND "doxygen")
 set(DOCUMENTATION ON CACHE BOOL "Create documentation")
-if (DOXYGEN_FOUND AND DOCUMENTATION)
+if (DOCUMENTATION)
+  find_program(DOXYGEN_FOUND "doxygen")
+  if (NOT DOXYGEN_FOUND)
+    message(FATAL_ERROR "doxygen not found.\nTo install run: sudo apt install doxygen")
+  endif()
+  find_program(DOT_FOUND "dot")
+  if (NOT DOT_FOUND)
+    message(FATAL_ERROR "dot not found.\nTo install run: sudo apt install graphviz")
+  endif()
+  include(ExternalProject)
+
+  ExternalProject_Add(doxygen-awesome
+        GIT_REPOSITORY https://github.com/jothepro/doxygen-awesome-css.git
+        GIT_TAG v2.3.1
+        SOURCE_DIR ${CMAKE_BINARY_DIR}/doxygen-awesome
+        BUILD_COMMAND ""
+        INSTALL_COMMAND ""
+        CONFIGURE_COMMAND ""
+  )
+
   # Configure Doxyfile
   find_path(BPMNPP_INCLUDE_PATH bpmn++.h)
   # Add Doxygen target
   add_custom_target(docs
-    COMMAND doxygen ${PROJECT_SOURCE_DIR}/Doxyfile
+    COMMAND bash -c "sed -i 's|https://github.com/jothepro/doxygen-awesome-css|https://github.com/bpmn-os/bpmnos-engine|g' ${CMAKE_BINARY_DIR}/doxygen-awesome/doxygen-custom/header.html"
+    COMMAND bash -c "echo '</body></html>' > ${CMAKE_BINARY_DIR}/doxygen-awesome/doxygen-custom/footer.html"
+    COMMAND ${CMAKE_COMMAND} -E env "DOXYGEN_AWESOME_DIR=${CMAKE_BINARY_DIR}/doxygen-awesome" doxygen ${PROJECT_SOURCE_DIR}/Doxyfile
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
     COMMENT "Generating Doxygen documentation (this may take a while)"
     VERBATIM
+    DEPENDS doxygen-awesome
   )
 endif()
-
-
