@@ -1,14 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- created with bpmn-js / http://bpmn.io -->
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="120" height="96" viewBox="0 0 120 96" version="1.1">
-<g transform="scale(1.2 1.2)">
-<text x="49.6" y="34.5" stroke-width="2" stroke="black" fill="black" font-size="42px" text-anchor="middle" font-family="monospace">BPMN</text>
-<text x="75" y="73.2" stroke-width="2" stroke="dimgray" fill="dimgray" font-size="42px" text-anchor="middle" font-family="monospace">OS</text>
-<rect x="1.5" y="41" width="47.4" height="34" fill="dimgray"/> 
-</g>
-<!--
-<rect x="1.5" y="3" width="97" height="72" stroke="red" stroke-width=".1" fill="none"/> 
-<rect x="1.5" y="41" width="97" height="34" stroke="yellow" stroke-width=".1" fill="none"/> 
-<rect x="1.5" y="3" width="47.4" height="72" stroke="orange" stroke-width=".1" fill="none"/> 
--->
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="112" height="92" viewBox="434 194 112 92" version="1.1"><defs><marker id="sequenceflow-end-white-hsl_225_10_15_-1grwlouzcwq4xit3attmy1m49" viewBox="0 0 20 20" refX="11" refY="10" markerWidth="10" markerHeight="10" orient="auto"><path d="M 1 5 L 11 10 L 1 15 Z" style="stroke-linecap: round; stroke-linejoin: round; stroke: rgb(34, 36, 42); stroke-width: 1px; fill: rgb(34, 36, 42);"/></marker></defs><g class="djs-group"><g class="djs-element djs-shape" data-element-id="Activity_0xwmc9i" transform="matrix(1, 0, 0, 1, 440, 200)" style="display: block;"><g class="djs-visual"><rect x="0" y="0" width="100" height="80" rx="10" ry="10" style="stroke-linecap: round; stroke-linejoin: round; stroke: rgb(34, 36, 42); stroke-width: 2px; fill: white; fill-opacity: 0.95;"/><text style="font-family: Arial, sans-serif; font-size: 20px; font-weight: bold; fill: rgb(34, 36, 42);" lineHeight="1.2" class="djs-label"><tspan x="8" y="46">bpmn-os</tspan></text><rect x="11.5" y="3.5" width="9" height="6" style="stroke: black; stroke-width: 1px; fill: white;"/><rect x="9" y="11" width="14" height="9" style="stroke: black; stroke-width: 0px; fill: white;"/><path d="M9,11  a1,1 0 0,0 0,9" style="stroke: black; stroke-width: 1px; fill: white;"/><path d="M23,11  a1,1 0 0,1 0,9" style="stroke: black; stroke-width: 1px; fill: white;"/><line x1="9" y1="11" x2="23" y2="11" style="stroke: black; stroke-width: 1px; fill: white;"/><line x1="9" y1="20" x2="23" y2="20" style="stroke: black; stroke-width: 1px; fill: white;"/><circle cx="9.5" cy="15.5" r="2" style="stroke: black; stroke-width: 2px; fill: white;"/><circle cx="16" cy="15.5" r="2" style="stroke: black; stroke-width: 2px; fill: white;"/><circle cx="22.5" cy="15.5" r="2" style="stroke: black; stroke-width: 2px; fill: white;"/></g><rect style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;" class="djs-hit djs-hit-all" x="0" y="0" width="100" height="80"/><rect x="-6" y="-6" rx="4" width="112" height="92" style="fill: none;" class="djs-outline"/></g></g></svg>
