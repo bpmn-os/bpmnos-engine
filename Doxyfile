@@ -8,7 +8,9 @@ PROJECT_BRIEF     = "BPMN for optimization and simulation"
 OUTPUT_DIRECTORY  = docs
 
 # Input sources
-INPUT             = /usr/local/include/bpmn++.h model/parser/src/ lib/ model/parser/src/xml/ model/parser/src/xml/bpmnos/ model/parser/src/ execution/engine/src/ execution/controller/src/ README.md
+INPUT             = /usr/local/include/bpmn++.h model/ execution/ README.md
+RECURSIVE         = YES
+FILE_PATTERNS     = *.h *.cpp *.xsd *.md
 
 USE_MDFILE_AS_MAINPAGE = README.md
 
