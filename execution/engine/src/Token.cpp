@@ -562,6 +562,14 @@ void Token::advanceToExiting() {
     return;
   }
 
+  if ( auto statusExtension = node->extensionElements->represents<BPMNOS::Model::Status>();
+       statusExtension && statusExtension->attributes.size()
+  ) {
+    // remove attributes that are no longer needed
+    status.resize( statusExtension->attributeMap.size() - statusExtension->attributes.size() );
+  }
+
+
   // remove tokens at boundary events
   if ( auto activity = node->represents<BPMN::Activity>(); activity && !activity->boundaryEvents.empty() ) {
     auto stateMachine = const_cast<StateMachine*>(owner);
