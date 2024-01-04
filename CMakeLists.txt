@@ -117,7 +117,7 @@ if (DOCUMENTATION)
   add_custom_target(docs
     COMMAND bash -c "sed -i 's|https://github.com/jothepro/doxygen-awesome-css|https://github.com/bpmn-os/bpmnos-engine|g' ${CMAKE_BINARY_DIR}/doxygen-awesome/doxygen-custom/header.html"
     COMMAND bash -c "echo '</body></html>' > ${CMAKE_BINARY_DIR}/doxygen-awesome/doxygen-custom/footer.html"
-    COMMAND ${CMAKE_COMMAND} -E env "DOXYGEN_AWESOME_DIR=${CMAKE_BINARY_DIR}/doxygen-awesome" doxygen ${PROJECT_SOURCE_DIR}/Doxyfile
+    COMMAND ${CMAKE_COMMAND} -E env "DOXYGEN_AWESOME_DIR=${CMAKE_BINARY_DIR}/doxygen-awesome" "BPMNPP_INCLUDE_PATH=${BPMNPP_INCLUDE_PATH}" doxygen ${PROJECT_SOURCE_DIR}/Doxyfile
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
     COMMENT "Generating Doxygen documentation (this may take a while)"
     VERBATIM
