@@ -170,33 +170,28 @@ void StateMachine::createNonInterruptingEventSubprocess(const StateMachine* pend
   nonInterruptingEventSubProcesses.back()->run(status);
 }
 
-void StateMachine::createCompensations(const BPMN::Activity* activity, Token* parentToken, const BPMNOS::Values& status) {
-  if ( auto compensationActivity = activity->compensatedBy->represents<BPMN::Task>();
-    compensationActivity
-  ) {
+void StateMachine::createCompensationActivity(const BPMN::Activity* compensationActivity, const BPMNOS::Values& status) {
+  if ( compensationActivity->represents<BPMN::Task>() ) {
     // create token at compensation activity
     std::shared_ptr<Token> compensationToken = std::make_shared<Token>(this,compensationActivity,status);
     compensationTokens.push_back(std::move(compensationToken));
   }
-  else if ( auto compensationActivity = activity->compensatedBy->represents<BPMN::SubProcess>();
-    compensationActivity
-  ) {
+  else if ( auto compensationSubProcess = compensationActivity->represents<BPMN::SubProcess>(); compensationSubProcess ) {
     // create token that will own the compensation activity
-    std::shared_ptr<Token> compensationToken = std::make_shared<Token>(this,compensationActivity,status);
+    std::shared_ptr<Token> compensationToken = std::make_shared<Token>(this,compensationSubProcess,status);
     // create state machine for compensation activity
-    compensations.push_back(std::make_shared<StateMachine>(systemState, compensationActivity, compensationToken.get()));
+    compensations.push_back(std::make_shared<StateMachine>(systemState, compensationSubProcess, compensationToken.get()));
     compensationToken->owned = compensations.back().get();
     compensationTokens.push_back(std::move(compensationToken));
   }
-  else if ( auto compensationEventSubProcess = activity->compensatedBy->represents<BPMN::EventSubProcess>();
-    compensationEventSubProcess
-  ) {
-    // create state machine for compensation event subprocess
-    compensations.push_back(std::make_shared<StateMachine>(systemState, compensationEventSubProcess, parentToken));
-    // create token at start event of compensation event subprocess
-    std::shared_ptr<Token> compensationToken = std::make_shared<Token>(compensations.back().get(), compensationEventSubProcess->startEvents.front(), status );
-    compensationTokens.push_back(std::move(compensationToken));
-  }
+}
+
+void StateMachine::createCompensationEventSubProcess(const BPMN::EventSubProcess* compensationEventSubProcess, const BPMNOS::Values& status) {
+  // create state machine for compensation event subprocess
+  compensations.push_back(std::make_shared<StateMachine>(systemState, compensationEventSubProcess, parentToken));
+  // create token at start event of compensation event subprocess
+  std::shared_ptr<Token> compensationToken = std::make_shared<Token>(compensations.back().get(), compensationEventSubProcess->startEvents.front(), status );
+  compensationTokens.push_back(std::move(compensationToken));
 }
 
 void StateMachine::createTokenCopies(Token* token, const std::vector<BPMN::SequenceFlow*>& sequenceFlows) {
@@ -391,6 +386,25 @@ void StateMachine::shutdown() {
     }
   }
 
+  if ( auto activity = scope->represents<BPMN::Activity>(); activity && activity->compensatedBy ) {
+    if ( auto compensationEventSubProcess = activity->compensatedBy->represents<BPMN::EventSubProcess>();
+      compensationEventSubProcess ) {
+      // determine merged status
+      BPMNOS::Values mergedStatus;
+      for ( auto& value : tokens.front()->status ) {
+        value = std::nullopt;
+      }
+      for ( auto token : tokens ) {
+        BPMNOS::mergeValues(mergedStatus,token->status);
+      }
+      // set owner of compensations
+      auto owner = const_cast<StateMachine*>(parentToken->owner);
+
+      // create compensation event subprocess
+        engine->commands.emplace_back( std::bind(&StateMachine::createCompensationEventSubProcess,owner,compensationEventSubProcess, std::move(mergedStatus)), owner->weak_from_this() );
+    }
+  }
+
   // delete state machine
   if ( !parentToken ) {
     engine->commands.emplace_back(std::bind(&Engine::deleteInstance,engine,this), weak_from_this());
@@ -437,7 +451,44 @@ void StateMachine::deleteChild(StateMachine* child) {
 //std::cerr << "deleteChild" << std::endl;
   // state machine represents a completed (sub)process
   auto token = child->parentToken;
-  erase_ptr<StateMachine>(subProcesses, child);
+  bool canBeDeleted = true;
+  for ( auto& compensation : compensations ) {
+    if ( auto compensationEventSubprocess = compensation->scope->represents<BPMN::EventSubProcess>();
+      compensationEventSubprocess
+    ) {
+      for ( auto flowNode : compensationEventSubprocess->flowNodes ) {
+        if ( auto compensateThrowEvent = flowNode->represents<BPMN::CompensateThrowEvent>();
+          compensateThrowEvent
+        ) {
+          // determine whether the child has pending compensation tokens that may be triggered
+          // by the compensation throw event
+          BPMN::Node* compensationNode = compensateThrowEvent->activity->compensatedBy->represents<BPMN::EventSubProcess>();
+          if (!compensationNode) {
+            compensationNode = compensateThrowEvent->activity;
+          }
+          auto it = std::find_if(
+            child->compensationTokens.begin(),
+            child->compensationTokens.end(),
+            [&compensationNode](const auto& token) {
+              return ( token->node == compensationNode || token->owner->scope == compensationNode );
+            }
+          );
+          if ( it != child->compensationTokens.end() ) {
+            // activity to be compensated is owned by child, so child must survive
+            canBeDeleted = false;
+            break;
+          }
+        }
+      }
+      if ( !canBeDeleted ) {
+        break;
+      }
+    }
+  }
+
+  if ( canBeDeleted ) {
+    erase_ptr<StateMachine>(subProcesses, child);
+  }
   auto engine = const_cast<Engine*>(systemState->engine);
   engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,token), weak_from_this(), token->weak_from_this());
 }

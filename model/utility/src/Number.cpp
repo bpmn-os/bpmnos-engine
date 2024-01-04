@@ -102,4 +102,15 @@ std::string to_string(number numberValue, const ValueType& type) {
   throw std::logic_error("to_string: unknown value type " + type );
 }
 
+void mergeValues(Values& values, const Values& other) {
+  for ( size_t i = 0; i < values.size() && i < other.size() ; i++ ) {
+    if ( !values[i].has_value() ) {
+      values[i] = other[i];
+    }
+    else if ( other[i].has_value() && other[i].value() != values[i].value() ) {
+      values[i] = std::nullopt;
+    }
+  }
+}
+
 } // namespace BPMNOS::Model

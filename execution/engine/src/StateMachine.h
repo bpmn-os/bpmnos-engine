@@ -56,7 +56,8 @@ private:
 
   void createChild(Token* parent, const BPMN::Scope* scope); ///< Method creating the state machine for a (sub)process
 
-  void createCompensations(const BPMN::Activity* activity, Token* parentToken, const BPMNOS::Values& status); ///< Method creating compensations for an activity
+  void createCompensationActivity(const BPMN::Activity* compensationActivity, const BPMNOS::Values& status); ///< Method creating the compensation activity of an activity
+  void createCompensationEventSubProcess(const BPMN::EventSubProcess* compensationEventSubProcess, const BPMNOS::Values& status); ///< Method creating the compensation event subproces of an activity
 
   void createInterruptingEventSubprocess(const StateMachine* pendingEventSubProcess, const BPMNOS::Values& status); ///< Method creating the state machine for an interrupting event sprocess
 

@@ -576,9 +576,11 @@ void Token::advanceToExiting() {
       engine->commands.emplace_back( std::bind(&StateMachine::deleteTokensAwaitingBoundaryEvent,stateMachine,this), stateMachine->weak_from_this() );
     }
 
-    if ( activity->compensatedBy != nullptr ) {
-      // create compensations for activity
-      engine->commands.emplace_back( std::bind(&StateMachine::createCompensations,stateMachine,activity, stateMachine->parentToken, status), stateMachine->weak_from_this() );
+    if ( activity->compensatedBy ) {
+      if ( auto compensationActivity = activity->compensatedBy->represents<BPMN::Activity>(); compensationActivity ) {
+        // create compensation activity
+        engine->commands.emplace_back( std::bind(&StateMachine::createCompensationActivity,stateMachine,compensationActivity, status), stateMachine->weak_from_this() );
+      }
     }
   }
 
@@ -882,13 +884,6 @@ void Token::notify() const {
 }
 
 void Token::mergeStatus(const Token* other) {
-  for ( size_t i = 0; i < status.size(); i++ ) {
-    if ( !status[i].has_value() ) {
-      status[i] = other->status[i];
-    }
-    else if ( other->status[i].has_value() && other->status[i].value() != status[i].value() ) {
-      status[i] = std::nullopt;
-    }
-  }
+  BPMNOS::mergeValues(status,other->status);
 }
 
