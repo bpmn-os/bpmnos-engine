@@ -350,9 +350,7 @@ void StateMachine::shutdown() {
     return;
   }
 
-
-//  auto& completedTokens = const_cast<SystemState*>(systemState)->tokensAwaitingStateMachineCompletion[this];
-
+  // update status of parent token
   if ( parentToken ) {
     // merge tokens
     for ( auto& value : parentToken->status ) {
@@ -364,6 +362,40 @@ void StateMachine::shutdown() {
     }
   }
 
+  if ( auto activity = scope->represents<BPMN::Activity>();
+    activity && activity->compensatedBy != nullptr
+  ) {
+    // state machine represents a subprocess that may be compensated
+    if ( auto compensationActivity = activity->compensatedBy->represents<BPMN::Task>();
+      compensationActivity
+    ) {
+      // create token at compensation activity
+      std::shared_ptr<Token> compensationToken = std::make_shared<Token>(parentToken->owner,compensationActivity,parentToken->status);
+      compensationTokens.push_back(std::move(compensationToken));
+    }
+    else if ( auto compensationActivity = activity->compensatedBy->represents<BPMN::SubProcess>();
+      compensationActivity
+    ) {
+      // create token that will own the compensation activity
+      std::shared_ptr<Token> compensationToken = std::make_shared<Token>(parentToken->owner,compensationActivity,parentToken->status);
+      // create state machine for compensation activity
+      compensations.push_back(std::make_shared<StateMachine>(systemState, compensationActivity, compensationToken.get()));
+      compensationToken->owned = compensations.back().get();
+      compensationTokens.push_back(std::move(compensationToken));
+    }
+    else if ( auto compensationEventSubProcess = activity->compensatedBy->represents<BPMN::EventSubProcess>();
+      compensationEventSubProcess
+    ) {
+      // create state machine for compensation event subprocess
+      compensations.push_back(std::make_shared<StateMachine>(systemState, compensationEventSubProcess, parentToken));
+      // create token at start event of compensation event subprocess
+      std::shared_ptr<Token> compensationToken = std::make_shared<Token>(compensations.back().get(), compensationEventSubProcess->startEvents.front(), parentToken->status );
+      compensationTokens.push_back(std::move(compensationToken));
+    }
+    return;
+  }
+
+  // delete state machine
   if ( !parentToken ) {
     engine->commands.emplace_back(std::bind(&Engine::deleteInstance,engine,this), weak_from_this());
   }
@@ -371,7 +403,6 @@ void StateMachine::shutdown() {
     auto parent = const_cast<StateMachine*>(parentToken->owner);
     auto context = const_cast<StateMachine*>(parentToken->owned);
     engine->commands.emplace_back(std::bind(&StateMachine::deleteChild,parent,context), context->weak_from_this());
-//    engine->commands.emplace_back(std::bind(&StateMachine::deleteChild,parent,this), weak_from_this());
   }
 
 //std::cerr << "shutdown (done): " << scope->id <<std::endl;

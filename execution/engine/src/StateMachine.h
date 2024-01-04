@@ -38,6 +38,9 @@ public:
   StateMachines nonInterruptingEventSubProcesses; ///< Container with state machines of all active event subprocesses that are not interrupting.
   StateMachines pendingEventSubProcesses; ///< Container with state machines of all inactive event subprocesses that may be triggered.
 
+  Tokens compensationTokens; ///< Container with all tokens created for a compensation activity.
+  StateMachines compensations; ///< Container with state machines for all compensations within scope.
+
   void run(const Values& status); ///< Create initial token and advance it.
 
 private:
