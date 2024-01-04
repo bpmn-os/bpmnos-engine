@@ -41,6 +41,7 @@ public:
   Tokens compensationTokens; ///< Container with all tokens created for a compensation activity.
   StateMachines compensations; ///< Container with state machines for all compensations within scope.
 
+  Token* findCompensationToken(BPMN::Node* compensationNode); ///< Returns the token for a compensation activity or compenmsation event subprocess, if no such token exists a `nullptr` is returned.
   void run(const Values& status); ///< Create initial token and advance it.
 
 private:

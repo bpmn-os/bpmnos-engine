@@ -294,7 +294,6 @@ void StateMachine::handleEscalation(Token* token) {
 
 
 void StateMachine::handleFailure(Token* token) {
-// TODO
 //std::cerr << "handleFailure at " << (token->node ? token->node->id : process->id ) <<std::endl;
 
   if ( !parentToken ) {
@@ -304,7 +303,6 @@ void StateMachine::handleFailure(Token* token) {
     interruptingEventSubProcess.reset();
     nonInterruptingEventSubProcesses.clear();
     tokens.clear();
-
     return;
   }
 
@@ -328,6 +326,18 @@ void StateMachine::handleFailure(Token* token) {
 
     return;
   }
+
+  // failure is not caught by event subprocess
+  // TODO: kill state machine?
+/*
+  // delete state machine
+  auto parent = const_cast<StateMachine*>(parentToken->owner);
+  auto context = const_cast<StateMachine*>(parentToken->owned);
+
+  context->compensations.clear();
+
+  engine->commands.emplace_back(std::bind(&StateMachine::deleteChild,parent,context), context->weak_from_this());
+*/
 
   // find error boundary event
   if ( token->node ) {
@@ -448,6 +458,43 @@ void StateMachine::attemptShutdown() {
   engine->commands.emplace_back(std::bind(&StateMachine::shutdown,this), weak_from_this());
 }
 
+Token* StateMachine::findCompensationToken(BPMN::Node* compensationNode) {
+  Tokens::iterator it;
+  if ( auto compensationActivity = compensationNode->represents<BPMN::Activity>();
+    compensationActivity
+  ) {
+     it = std::find_if(
+       compensationTokens.begin(),
+       compensationTokens.end(),
+       [&compensationActivity](const auto& token) {
+         // check if compensation token is at compensation activity
+         return ( token->node == compensationActivity );
+       }
+    );
+  }
+  else if ( auto compensationEventSubProcess = compensationNode->represents<BPMN::EventSubProcess>();
+    compensationEventSubProcess
+  ) {
+    it = std::find_if(
+      compensationTokens.begin(),
+      compensationTokens.end(),
+      [&compensationEventSubProcess](const auto& token) {
+         // check if compensation token is at node (i.e. start event) of compensation event subprocess
+         return ( token->owner->scope == compensationEventSubProcess );
+      }
+    );
+  }
+  else {
+    throw std::logic_error("StateMachine: illegal compensation");
+  }
+
+  if ( it != compensationTokens.end() ) {
+    return it->get();
+  }
+
+  return nullptr;
+}
+
 void StateMachine::deleteChild(StateMachine* child) {
 //std::cerr << "deleteChild" << std::endl;
   // state machine represents a completed (sub)process
@@ -465,37 +512,8 @@ void StateMachine::deleteChild(StateMachine* child) {
         ) {
           // determine whether the child has pending compensation tokens that may be triggered
           // by the compensation throw event
-          Tokens::iterator it;
-          if ( auto childCompensationActivity = compensateThrowEvent->activity->compensatedBy->represents<BPMN::Activity>();
-            childCompensationActivity
-          ) {
-            it = std::find_if(
-              child->compensationTokens.begin(),
-              child->compensationTokens.end(),
-              [&childCompensationActivity](const auto& token) {
-                // check if compensation token is at compensation activity
-                return ( token->node == childCompensationActivity );
-              }
-            );
-          }
-          else if ( auto childCompensationEventSubProcess = compensateThrowEvent->activity->compensatedBy->represents<BPMN::EventSubProcess>();
-            childCompensationEventSubProcess
-          ) {
-            it = std::find_if(
-              child->compensationTokens.begin(),
-              child->compensationTokens.end(),
-              [&childCompensationEventSubProcess](const auto& token) {
-                // check if compensation token is at node (i.e. start event) of compensation event subprocess
-                return ( token->owner->scope == childCompensationEventSubProcess );
-              }
-            );
-          }
-          else {
-            throw std::logic_error("StateMachine: illegal child compensation");
-          }
-
-          if ( it != child->compensationTokens.end() ) {
-            // activity to be compensated is owned by child, so child must survive
+          if ( child->findCompensationToken(compensateThrowEvent->activity->compensatedBy) ) {
+            // activity can be compensated by child, so child must survive
             canBeDeleted = false;
             break;
           }
