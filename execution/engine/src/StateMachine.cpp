@@ -7,6 +7,7 @@
 #include "execution/utility/src/erase.h"
 #include "model/parser/src/extensionElements/Status.h"
 #include "model/parser/src/extensionElements/Timer.h"
+#include "bpmn++.h"
 
 using namespace BPMNOS::Execution;
 
@@ -453,26 +454,46 @@ void StateMachine::deleteChild(StateMachine* child) {
   auto token = child->parentToken;
   bool canBeDeleted = true;
   for ( auto& compensation : compensations ) {
-    if ( auto compensationEventSubprocess = compensation->scope->represents<BPMN::EventSubProcess>();
-      compensationEventSubprocess
+    // check whether there is a compensation event subprocess that triggers compensation within child
+    if ( auto compensationEventSubProcess = compensation->scope->represents<BPMN::EventSubProcess>();
+      compensationEventSubProcess
     ) {
-      for ( auto flowNode : compensationEventSubprocess->flowNodes ) {
+      // check all compensation throw events in compensation event subprocess
+      for ( auto flowNode : compensationEventSubProcess->flowNodes ) {
         if ( auto compensateThrowEvent = flowNode->represents<BPMN::CompensateThrowEvent>();
           compensateThrowEvent
         ) {
           // determine whether the child has pending compensation tokens that may be triggered
           // by the compensation throw event
-          BPMN::Node* compensationNode = compensateThrowEvent->activity->compensatedBy->represents<BPMN::EventSubProcess>();
-          if (!compensationNode) {
-            compensationNode = compensateThrowEvent->activity;
+          Tokens::iterator it;
+          if ( auto childCompensationActivity = compensateThrowEvent->activity->compensatedBy->represents<BPMN::Activity>();
+            childCompensationActivity
+          ) {
+            it = std::find_if(
+              child->compensationTokens.begin(),
+              child->compensationTokens.end(),
+              [&childCompensationActivity](const auto& token) {
+                // check if compensation token is at compensation activity
+                return ( token->node == childCompensationActivity );
+              }
+            );
           }
-          auto it = std::find_if(
-            child->compensationTokens.begin(),
-            child->compensationTokens.end(),
-            [&compensationNode](const auto& token) {
-              return ( token->node == compensationNode || token->owner->scope == compensationNode );
-            }
-          );
+          else if ( auto childCompensationEventSubProcess = compensateThrowEvent->activity->compensatedBy->represents<BPMN::EventSubProcess>();
+            childCompensationEventSubProcess
+          ) {
+            it = std::find_if(
+              child->compensationTokens.begin(),
+              child->compensationTokens.end(),
+              [&childCompensationEventSubProcess](const auto& token) {
+                // check if compensation token is at node (i.e. start event) of compensation event subprocess
+                return ( token->owner->scope == childCompensationEventSubProcess );
+              }
+            );
+          }
+          else {
+            throw std::logic_error("StateMachine: illegal child compensation");
+          }
+
           if ( it != child->compensationTokens.end() ) {
             // activity to be compensated is owned by child, so child must survive
             canBeDeleted = false;
