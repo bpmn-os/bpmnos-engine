@@ -569,11 +569,17 @@ void Token::advanceToExiting() {
     status.resize( statusExtension->attributeMap.size() - statusExtension->attributes.size() );
   }
 
-
-  // remove tokens at boundary events
-  if ( auto activity = node->represents<BPMN::Activity>(); activity && !activity->boundaryEvents.empty() ) {
+  if ( auto activity = node->represents<BPMN::Activity>(); activity ) {
     auto stateMachine = const_cast<StateMachine*>(owner);
-    engine->commands.emplace_back(std::bind(&StateMachine::deleteTokensAwaitingBoundaryEvent,stateMachine,this), stateMachine->weak_from_this());
+    if ( !activity->boundaryEvents.empty() ) {
+      // remove tokens at boundary events
+      engine->commands.emplace_back( std::bind(&StateMachine::deleteTokensAwaitingBoundaryEvent,stateMachine,this), stateMachine->weak_from_this() );
+    }
+
+    if ( activity->compensatedBy != nullptr ) {
+      // create compensations for activity
+      engine->commands.emplace_back( std::bind(&StateMachine::createCompensations,stateMachine,activity, stateMachine->parentToken, status), stateMachine->weak_from_this() );
+    }
   }
 
   if ( node->outgoing.empty() ) {

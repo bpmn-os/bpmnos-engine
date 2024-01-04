@@ -170,6 +170,35 @@ void StateMachine::createNonInterruptingEventSubprocess(const StateMachine* pend
   nonInterruptingEventSubProcesses.back()->run(status);
 }
 
+void StateMachine::createCompensations(const BPMN::Activity* activity, Token* parentToken, const BPMNOS::Values& status) {
+  if ( auto compensationActivity = activity->compensatedBy->represents<BPMN::Task>();
+    compensationActivity
+  ) {
+    // create token at compensation activity
+    std::shared_ptr<Token> compensationToken = std::make_shared<Token>(this,compensationActivity,status);
+    compensationTokens.push_back(std::move(compensationToken));
+  }
+  else if ( auto compensationActivity = activity->compensatedBy->represents<BPMN::SubProcess>();
+    compensationActivity
+  ) {
+    // create token that will own the compensation activity
+    std::shared_ptr<Token> compensationToken = std::make_shared<Token>(this,compensationActivity,status);
+    // create state machine for compensation activity
+    compensations.push_back(std::make_shared<StateMachine>(systemState, compensationActivity, compensationToken.get()));
+    compensationToken->owned = compensations.back().get();
+    compensationTokens.push_back(std::move(compensationToken));
+  }
+  else if ( auto compensationEventSubProcess = activity->compensatedBy->represents<BPMN::EventSubProcess>();
+    compensationEventSubProcess
+  ) {
+    // create state machine for compensation event subprocess
+    compensations.push_back(std::make_shared<StateMachine>(systemState, compensationEventSubProcess, parentToken));
+    // create token at start event of compensation event subprocess
+    std::shared_ptr<Token> compensationToken = std::make_shared<Token>(compensations.back().get(), compensationEventSubProcess->startEvents.front(), status );
+    compensationTokens.push_back(std::move(compensationToken));
+  }
+}
+
 void StateMachine::createTokenCopies(Token* token, const std::vector<BPMN::SequenceFlow*>& sequenceFlows) {
   std::vector<Token*> tokenCopies;
   // create a token copy for each new destination
@@ -360,39 +389,6 @@ void StateMachine::shutdown() {
     for ( auto token : tokens ) {
       parentToken->mergeStatus(token.get());
     }
-  }
-
-  if ( auto activity = scope->represents<BPMN::Activity>();
-    activity && activity->compensatedBy != nullptr
-  ) {
-    // state machine represents a subprocess that may be compensated
-    if ( auto compensationActivity = activity->compensatedBy->represents<BPMN::Task>();
-      compensationActivity
-    ) {
-      // create token at compensation activity
-      std::shared_ptr<Token> compensationToken = std::make_shared<Token>(parentToken->owner,compensationActivity,parentToken->status);
-      compensationTokens.push_back(std::move(compensationToken));
-    }
-    else if ( auto compensationActivity = activity->compensatedBy->represents<BPMN::SubProcess>();
-      compensationActivity
-    ) {
-      // create token that will own the compensation activity
-      std::shared_ptr<Token> compensationToken = std::make_shared<Token>(parentToken->owner,compensationActivity,parentToken->status);
-      // create state machine for compensation activity
-      compensations.push_back(std::make_shared<StateMachine>(systemState, compensationActivity, compensationToken.get()));
-      compensationToken->owned = compensations.back().get();
-      compensationTokens.push_back(std::move(compensationToken));
-    }
-    else if ( auto compensationEventSubProcess = activity->compensatedBy->represents<BPMN::EventSubProcess>();
-      compensationEventSubProcess
-    ) {
-      // create state machine for compensation event subprocess
-      compensations.push_back(std::make_shared<StateMachine>(systemState, compensationEventSubProcess, parentToken));
-      // create token at start event of compensation event subprocess
-      std::shared_ptr<Token> compensationToken = std::make_shared<Token>(compensations.back().get(), compensationEventSubProcess->startEvents.front(), parentToken->status );
-      compensationTokens.push_back(std::move(compensationToken));
-    }
-    return;
   }
 
   // delete state machine
