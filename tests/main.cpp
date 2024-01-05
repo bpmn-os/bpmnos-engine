@@ -3,6 +3,7 @@
 #include <bpmn++.h>
 #include "bpmnos-model.h"
 #include "bpmnos-execution.h"
+#include <iostream>
 
 using namespace BPMNOS;
 
@@ -35,8 +36,10 @@ using namespace BPMNOS;
 // Messages
 #include "execution/message/test.h"
 
+// Status
+#include "execution/status/test.h"
+
 // Playground
-#include <iostream>
 void test() {
   // add code to test here
   std::string jsonString = "{\"distribution\": \"uniform_int_distribution\", \"min\": 0, \"max\": 10}";

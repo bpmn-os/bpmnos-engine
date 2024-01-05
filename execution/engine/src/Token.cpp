@@ -103,7 +103,7 @@ nlohmann::ordered_json Token::jsonify() const {
     jsonObject["sequenceFlowId"] = sequenceFlow->id;
   }
   jsonObject["state"] = stateName[(int)state];
-  jsonObject["status"] = nlohmann::json::object();
+  jsonObject["status"] = nlohmann::ordered_json::object();
 
   auto& attributeMap = getAttributeMap();
   for (auto& [attributeName,attribute] : attributeMap ) {
@@ -169,7 +169,7 @@ void Token::advanceFromCreated() {
 */
 
 void Token::advanceToReady() {
-//std::cerr << "advanceToReady" << std::endl;
+std::cerr << "advanceToReady: " << jsonify().dump() << std::endl;
 
   if ( status[BPMNOS::Model::Status::Index::Timestamp] > owner->systemState->getTime() ) {
     throw std::runtime_error("Token: ready timestamp at node '" + node->id + "' is larger than current time");
@@ -182,7 +182,7 @@ void Token::advanceToReady() {
 }
 
 void Token::advanceToEntered() {
-//std::cerr << "advanceToEntered" << std::endl;
+std::cerr << "advanceToEntered: " << jsonify().dump() << std::endl;
   if ( status[BPMNOS::Model::Status::Index::Timestamp] > owner->systemState->getTime() ) {
     if ( node ) {
       throw std::runtime_error("Token: entry timestamp at node '" + node->id + "' is larger than current time");
@@ -326,7 +326,7 @@ void Token::advanceToEntered() {
 }
 
 void Token::advanceToBusy() {
-//std::cerr << "advanceToBusy" << std::endl;
+std::cerr << "advanceToBusy: " << jsonify().dump() << std::endl;
   update(State::BUSY);
 
   if ( !node ) {
@@ -431,7 +431,7 @@ void Token::advanceToCompleted(const Values& statusUpdate) {
 */
 
 void Token::advanceToCompleted() {
-//std::cerr << "advanceToCompleted" << std::endl;
+std::cerr << "advanceToCompleted: " << jsonify().dump() << std::endl;
   if ( status[BPMNOS::Model::Status::Index::Timestamp] > owner->systemState->getTime() ) {
     if ( node ) {
       throw std::runtime_error("Token: completion timestamp at node '" + node->id + "' is larger than current time");
@@ -547,7 +547,7 @@ std::cerr << "Context: " << context << " at " << context->scope->id << " has " <
 }
 
 void Token::advanceToExiting() {
-//std::cerr << "advanceToExiting" << std::endl;
+std::cerr << "advanceToExiting: " << jsonify().dump() << std::endl;
   if ( status[BPMNOS::Model::Status::Index::Timestamp] > owner->systemState->getTime() ) {
     throw std::runtime_error("Token: exit timestamp at node '" + node->id + "' is larger than current time");
   }
@@ -592,7 +592,7 @@ void Token::advanceToExiting() {
 }
 
 void Token::advanceToDone() {
-//std::cerr << "advanceToDone: " << this << std::endl;
+std::cerr << "advanceToDone: " << jsonify().dump() << std::endl;
   update(State::DONE);
 
   const_cast<StateMachine*>(owner)->attemptShutdown();
@@ -600,7 +600,7 @@ void Token::advanceToDone() {
 }
 
 void Token::advanceToDeparting() {
-//std::cerr << "advanceToDeparting" << std::endl;
+std::cerr << "advanceToDeparting: " << jsonify().dump() << std::endl;
 
   if ( node->outgoing.size() == 1 ) {
     auto engine = const_cast<Engine*>(owner->systemState->engine);
@@ -646,7 +646,7 @@ void Token::advanceToDeparting() {
 }
 
 void Token::advanceToDeparted(const BPMN::SequenceFlow* sequenceFlow) {
-//std::cerr << "advanceToDeparted " << sequenceFlow->id << std::endl;
+std::cerr << "advanceToDeparted: " << jsonify().dump() << std::endl;
   this->sequenceFlow = sequenceFlow;
   auto engine = const_cast<Engine*>(owner->systemState->engine);
   update(State::DEPARTED);
@@ -654,8 +654,9 @@ void Token::advanceToDeparted(const BPMN::SequenceFlow* sequenceFlow) {
 }
 
 void Token::advanceToArrived() {
-//std::cerr << "advanceToArrived" << std::endl;
+std::cerr << "advanceToArrived: " << jsonify().dump() << std::endl;
   node = sequenceFlow->target;
+std::cerr << "arrived: " << jsonify().dump() << std::endl;
   update(State::ARRIVED);
 
   if ( node->incoming.size() > 1 && !node->represents<BPMN::ExclusiveGateway>() ) {
@@ -682,12 +683,14 @@ void Token::advanceToArrived() {
 }
 
 void Token::advanceToFailed() {
+//std::cerr << "advanceToFailed: " << jsonify().dump() << std::endl;
   update(State::FAILED);
   auto engine = const_cast<Engine*>(owner->systemState->engine);
   engine->commands.emplace_back(std::bind(&StateMachine::handleFailure,const_cast<StateMachine*>(owner),this), const_cast<StateMachine*>(owner)->weak_from_this(), weak_from_this());
 }
 
 void Token::awaitReadyEvent() {
+//std::cerr << "awaitReadyEvent" << std::endl;
   auto systemState = const_cast<SystemState*>(owner->systemState);
   systemState->tokensAwaitingReadyEvent.emplace_back(weak_from_this());
 }
@@ -715,10 +718,13 @@ void Token::awaitTaskCompletionEvent() {
        statusExtension && statusExtension->operators.size()
   ) {
     statusExtension->applyOperators(updatedStatus);
+    if ( !updatedStatus[BPMNOS::Model::Status::Index::Timestamp].has_value() ) {
+      throw std::runtime_error("Token: timestamp at node '" + node->id + "' is deleted");
+    }
   }
   auto time = updatedStatus[BPMNOS::Model::Status::Index::Timestamp].value();
 
-  systemState->tokensAwaitingTaskCompletionEvent.emplace(time,weak_from_this(),updatedStatus);
+  systemState->tokensAwaitingTaskCompletionEvent.emplace(time,weak_from_this(),std::move(updatedStatus));
 }
 
 void Token::awaitResourceShutdownEvent() {
@@ -751,7 +757,7 @@ void Token::awaitEventBasedGateway() {
 */
 
 void Token::awaitGatewayActivation() {
-//std::cerr << "awaitGatewayActivation" << std::endl;
+std::cerr << "awaitGatewayActivation" << std::endl;
 
   auto systemState = const_cast<SystemState*>(owner->systemState);
   auto stateMachine = const_cast<StateMachine*>(owner);
@@ -866,7 +872,8 @@ Token* Token::getResourceToken() const {
 void Token::update(State newState) {
   state = newState;
   auto now = owner->systemState->getTime();
-  if ( status[BPMNOS::Model::Status::Index::Timestamp] < now ) {
+//std::cerr << "update at time " << now << ": " << jsonify().dump() << std::endl;
+  if ( status[BPMNOS::Model::Status::Index::Timestamp].value() < now ) {
 //std::cerr << "Set timestamp to " << now << std::endl;
     // increase timestamp if necessary
     status[BPMNOS::Model::Status::Index::Timestamp] = now;

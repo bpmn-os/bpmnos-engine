@@ -3,6 +3,7 @@
 #include "model/utility/src/StringRegistry.h"
 #include "model/parser/src/extensionElements/Status.h"
 #include <limits>
+#include <iostream>
 
 using namespace BPMNOS::Model;
 
@@ -176,10 +177,19 @@ std::optional<BPMNOS::Values> Scenario::getKnownValues(const BPMN::FlowNode* nod
   for ( auto& attribute : node->extensionElements->as<const Status>()->attributes ) {
     auto& data = instance.data.at(attribute.get());
 
-    if ( data.realization && data.realization->disclosure > currentTime ) {
-      return std::nullopt;
+    if ( data.realization ) {
+      if ( data.realization->disclosure > currentTime ) {
+        // not all values are disclosed
+        return std::nullopt;
+      }
+      else {
+        values.push_back( data.realization->value );
+      }
     }
-    values.push_back( data.realization->value );
+    else {
+      // value will never be set, use default value
+      values.push_back( attribute->value );
+    }
   }
 
   return values;

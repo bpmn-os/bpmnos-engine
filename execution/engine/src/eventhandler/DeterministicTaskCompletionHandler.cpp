@@ -12,7 +12,6 @@ std::unique_ptr<Event> DeterministicTaskCompletionHandler::fetchEvent( const Sys
   for ( auto [time,token_ptr,updatedStatus] : systemState->tokensAwaitingTaskCompletionEvent ) {
     if ( auto token = token_ptr.lock() )  {
       if ( time <= systemState->getTime() ) {
-//        ValueUpdates updatedValues; // TODO
         return std::make_unique<TaskCompletionEvent>(token.get(),updatedStatus);
       }
     }
