@@ -60,9 +60,9 @@ private:
   void createCompensationActivity(const BPMN::Activity* compensationActivity, const BPMNOS::Values& status); ///< Method creating the compensation activity of an activity
   void createCompensationEventSubProcess(const BPMN::EventSubProcess* compensationEventSubProcess, const BPMNOS::Values& status); ///< Method creating the compensation event subproces of an activity
 
-  void createInterruptingEventSubprocess(const StateMachine* pendingEventSubProcess, const BPMNOS::Values& status); ///< Method creating the state machine for an interrupting event sprocess
+  void createInterruptingEventSubprocess(const StateMachine* pendingEventSubProcess, const BPMNOS::Values& status); ///< Method creating the state machine for an interrupting event subprocess
 
-  void createNonInterruptingEventSubprocess(const StateMachine* pendingEventSubProcess, const BPMNOS::Values& status); ///< Method creating the state machine for an non-interrupting event sprocess
+  void createNonInterruptingEventSubprocess(const StateMachine* pendingEventSubProcess, const BPMNOS::Values& status); ///< Method creating the state machine for an non-interrupting event subprocess
 
   void initiateBoundaryEvents(Token* token); ///< Method placing tokens on all boundary events
   void initiateBoundaryEvent(Token* token, const BPMN::FlowNode*); ///< Method placing tokens on a boundary event

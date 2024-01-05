@@ -155,4 +155,3 @@ SCENARIO( "Failed subprocess", "[execution][boundaryevent]" ) {
   }
 }
 
-

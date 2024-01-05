@@ -30,6 +30,7 @@ using namespace BPMNOS;
 #include "execution/errorevent/test.h"
 #include "execution/escalationevent/test.h"
 // Event subprocesses
+// TODO: add tests with failures in event subprocesses
 #include "execution/eventsubprocess/test.h"
 // Boundary events
 #include "execution/boundaryevent/test.h"

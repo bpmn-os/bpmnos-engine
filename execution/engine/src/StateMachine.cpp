@@ -294,7 +294,7 @@ void StateMachine::handleEscalation(Token* token) {
 
 
 void StateMachine::handleFailure(Token* token) {
-//std::cerr << "handleFailure at " << (token->node ? token->node->id : process->id ) <<std::endl;
+//std::cerr << scope->id << " handles failure at " << (token->node ? token->node->id : process->id ) <<std::endl;
 
   if ( !parentToken ) {
 //std::cerr << "process has failed" << std::endl;
@@ -303,56 +303,66 @@ void StateMachine::handleFailure(Token* token) {
     interruptingEventSubProcess.reset();
     nonInterruptingEventSubProcesses.clear();
     tokens.clear();
+    compensations.clear();
     return;
   }
 
-  // update status of parent token with that of current token
-  parentToken->status = token->status;
+  auto engine = const_cast<Engine*>(systemState->engine);
+
+  // lambda finding error boundary event
+  auto tokenAwaitingErrorBoundaryEvent = [this](Token* token) -> Token*
+  {
+    auto& tokensAwaitingBoundaryEvent = const_cast<SystemState*>(this->systemState)->tokensAwaitingBoundaryEvent[token];
+    for ( auto eventToken : tokensAwaitingBoundaryEvent) {
+      if ( eventToken->node->represents<BPMN::ErrorBoundaryEvent>() ) {
+        return eventToken;
+      }
+    }
+    return nullptr;
+  };
+
+  if ( token->node && token->node->represents<BPMN::Task>() ) {
+    // find error boundary event
+    if ( auto eventToken = tokenAwaitingErrorBoundaryEvent(token); eventToken ) {
+      engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,eventToken), const_cast<StateMachine*>(eventToken->owner)->weak_from_this(), eventToken->weak_from_this());
+      return;
+    }
+    // failure is not caught by boundary event of task
+  }
 
   // find event-subprocess catching error
   auto it = std::find_if(pendingEventSubProcesses.begin(), pendingEventSubProcesses.end(), [](std::shared_ptr<StateMachine>& eventSubProcess) {
     auto startEvent = eventSubProcess->scope->startEvents.front();
-//std::cerr << "start node " << startNode->id << std::endl;
     return startEvent->represents<BPMN::ErrorStartEvent>();
   });
-
-  auto engine = const_cast<Engine*>(systemState->engine);
-
   if ( it != pendingEventSubProcesses.end() ) {
     // trigger event subprocess
     auto eventToken = it->get()->tokens.front().get();
-//std::cerr << "found event-subprocess catching error:" << eventToken << "/" << eventToken->owner << std::endl;
+    // update status of event token with that of current token
+    eventToken->status = token->status;
     engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,eventToken), const_cast<StateMachine*>(eventToken->owner)->weak_from_this(), eventToken->weak_from_this());
 
     return;
   }
-
   // failure is not caught by event subprocess
-  // TODO: kill state machine?
-/*
-  // delete state machine
+
+  parentToken->status = token->status; /// TODO: resize
+  engine->commands.emplace_back(std::bind(&Token::update,parentToken,token->state), const_cast<StateMachine*>(parentToken->owner)->weak_from_this(), parentToken->weak_from_this());
+
   auto parent = const_cast<StateMachine*>(parentToken->owner);
-  auto context = const_cast<StateMachine*>(parentToken->owned);
-
-  context->compensations.clear();
-
-  engine->commands.emplace_back(std::bind(&StateMachine::deleteChild,parent,context), context->weak_from_this());
-*/
+  engine->commands.emplace_back(std::bind(&StateMachine::deleteChild,parent,this), weak_from_this());
 
   // find error boundary event
-  if ( token->node ) {
-    auto& tokensAwaitingBoundaryEvent = const_cast<SystemState*>(systemState)->tokensAwaitingBoundaryEvent[token];
-    for ( auto eventToken : tokensAwaitingBoundaryEvent) {
-      if ( eventToken->node->represents<BPMN::ErrorBoundaryEvent>() ) {
-        engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,eventToken), const_cast<StateMachine*>(eventToken->owner)->weak_from_this(), eventToken->weak_from_this());
-        return;
-      }
-    }
+  if ( auto eventToken = tokenAwaitingErrorBoundaryEvent(parentToken); eventToken ) {
+    engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,eventToken), const_cast<StateMachine*>(eventToken->owner)->weak_from_this(), eventToken->weak_from_this());
+    return;
   }
 
+  // failure is not caught by boundary event, bubble up error
 //std::cerr << "bubbble up error" << std::endl;
+  // update status of parent token with that of current token
+//  parentToken->status = token->status; // TODO resize status
   engine->commands.emplace_back(std::bind(&Token::advanceToFailed,parentToken), const_cast<StateMachine*>(parentToken->owner)->weak_from_this(), parentToken->weak_from_this());
-
 }
 
 void StateMachine::attemptGatewayActivation(const BPMN::FlowNode* node) {
@@ -400,6 +410,7 @@ void StateMachine::shutdown() {
   if ( auto activity = scope->represents<BPMN::Activity>(); activity && activity->compensatedBy ) {
     if ( auto compensationEventSubProcess = activity->compensatedBy->represents<BPMN::EventSubProcess>();
       compensationEventSubProcess ) {
+/*
       // determine merged status
       BPMNOS::Values mergedStatus;
       for ( auto& value : tokens.front()->status ) {
@@ -408,22 +419,25 @@ void StateMachine::shutdown() {
       for ( auto token : tokens ) {
         BPMNOS::mergeValues(mergedStatus,token->status);
       }
+*/
       // set owner of compensations
       auto owner = const_cast<StateMachine*>(parentToken->owner);
 
       // create compensation event subprocess
-        engine->commands.emplace_back( std::bind(&StateMachine::createCompensationEventSubProcess,owner,compensationEventSubProcess, std::move(mergedStatus)), owner->weak_from_this() );
+        engine->commands.emplace_back( std::bind(&StateMachine::createCompensationEventSubProcess,owner,compensationEventSubProcess, parentToken->status), owner->weak_from_this() );
+//        engine->commands.emplace_back( std::bind(&StateMachine::createCompensationEventSubProcess,owner,compensationEventSubProcess, std::move(mergedStatus)), owner->weak_from_this() );
     }
   }
 
-  // delete state machine
   if ( !parentToken ) {
+    // delete root state machine (and all descendants)
     engine->commands.emplace_back(std::bind(&Engine::deleteInstance,engine,this), weak_from_this());
   }
   else {
-    auto parent = const_cast<StateMachine*>(parentToken->owner);
+    // advance parent token to completed
     auto context = const_cast<StateMachine*>(parentToken->owned);
-    engine->commands.emplace_back(std::bind(&StateMachine::deleteChild,parent,context), context->weak_from_this());
+    auto token = context->parentToken;
+    engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,token), weak_from_this(), token->weak_from_this());
   }
 
 //std::cerr << "shutdown (done): " << scope->id <<std::endl;
@@ -495,41 +509,10 @@ Token* StateMachine::findCompensationToken(BPMN::Node* compensationNode) {
   return nullptr;
 }
 
-void StateMachine::deleteChild(StateMachine* child) {
-//std::cerr << "deleteChild" << std::endl;
-  // state machine represents a completed (sub)process
-  auto token = child->parentToken;
-  bool canBeDeleted = true;
-  for ( auto& compensation : compensations ) {
-    // check whether there is a compensation event subprocess that triggers compensation within child
-    if ( auto compensationEventSubProcess = compensation->scope->represents<BPMN::EventSubProcess>();
-      compensationEventSubProcess
-    ) {
-      // check all compensation throw events in compensation event subprocess
-      for ( auto flowNode : compensationEventSubProcess->flowNodes ) {
-        if ( auto compensateThrowEvent = flowNode->represents<BPMN::CompensateThrowEvent>();
-          compensateThrowEvent
-        ) {
-          // determine whether the child has pending compensation tokens that may be triggered
-          // by the compensation throw event
-          if ( child->findCompensationToken(compensateThrowEvent->activity->compensatedBy) ) {
-            // activity can be compensated by child, so child must survive
-            canBeDeleted = false;
-            break;
-          }
-        }
-      }
-      if ( !canBeDeleted ) {
-        break;
-      }
-    }
-  }
 
-  if ( canBeDeleted ) {
-    erase_ptr<StateMachine>(subProcesses, child);
-  }
-  auto engine = const_cast<Engine*>(systemState->engine);
-  engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,token), weak_from_this(), token->weak_from_this());
+void StateMachine::deleteChild(StateMachine* child) {
+//std::cerr << "delete child '" << child->scope->id << "' of '" << scope->id << "'" <<  std::endl;
+  erase_ptr<StateMachine>(subProcesses, child);
 }
 
 void StateMachine::deleteNonInterruptingEventSubProcess(StateMachine* eventSubProcess) {
