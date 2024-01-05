@@ -34,15 +34,19 @@ SCENARIO( "Task with expression operator", "[status][nestedactivities]" ) {
         REQUIRE( subProcessLog[1]["status"].size() == subProcessLog[0]["status"].size()+1 );
         REQUIRE( subProcessLog[subProcessLog.size()-2]["state"] == "EXITING" );
         REQUIRE( subProcessLog[subProcessLog.size()-1]["state"] == "DEPARTED" );
+        REQUIRE( subProcessLog[1]["status"].size() == subProcessLog[subProcessLog.size()-2]["status"].size() );
         REQUIRE( subProcessLog[subProcessLog.size()-1]["status"].size() == subProcessLog[subProcessLog.size()-2]["status"].size()-1 );
 
         auto taskLog = recorder.find(nlohmann::json{{"nodeId", "Task_1"}});
         REQUIRE( taskLog[0]["state"] == "ARRIVED" );
         REQUIRE( taskLog[1]["state"] == "READY" );
+        REQUIRE( taskLog[0]["status"].size() == subProcessLog[1]["status"].size() );
         REQUIRE( taskLog[1]["status"].size() == taskLog[0]["status"].size()+1 );
         REQUIRE( taskLog[taskLog.size()-2]["state"] == "EXITING" );
         REQUIRE( taskLog[taskLog.size()-1]["state"] == "DEPARTED" );
+        REQUIRE( taskLog[1]["status"].size() == taskLog[taskLog.size()-2]["status"].size() );
         REQUIRE( taskLog[taskLog.size()-1]["status"].size() == taskLog[taskLog.size()-2]["status"].size()-1 );
+        REQUIRE( taskLog[taskLog.size()-1]["status"].size() == subProcessLog[subProcessLog.size()-2]["status"].size() );
       }
     }
   }
