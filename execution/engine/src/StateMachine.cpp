@@ -345,23 +345,22 @@ void StateMachine::handleFailure(Token* token) {
     return;
   }
   // failure is not caught by event subprocess
-
-  parentToken->status = token->status; /// TODO: resize
-  engine->commands.emplace_back(std::bind(&Token::update,parentToken,token->state), const_cast<StateMachine*>(parentToken->owner)->weak_from_this(), parentToken->weak_from_this());
+  // update status of parent token with that of current token
+  parentToken->status = token->status; // TODO resize status
 
   auto parent = const_cast<StateMachine*>(parentToken->owner);
   engine->commands.emplace_back(std::bind(&StateMachine::deleteChild,parent,this), weak_from_this());
 
   // find error boundary event
   if ( auto eventToken = tokenAwaitingErrorBoundaryEvent(parentToken); eventToken ) {
+    engine->commands.emplace_back(std::bind(&Token::update,parentToken,token->state), const_cast<StateMachine*>(parentToken->owner)->weak_from_this(), parentToken->weak_from_this());
+
     engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,eventToken), const_cast<StateMachine*>(eventToken->owner)->weak_from_this(), eventToken->weak_from_this());
     return;
   }
 
   // failure is not caught by boundary event, bubble up error
 //std::cerr << "bubbble up error" << std::endl;
-  // update status of parent token with that of current token
-//  parentToken->status = token->status; // TODO resize status
   engine->commands.emplace_back(std::bind(&Token::advanceToFailed,parentToken), const_cast<StateMachine*>(parentToken->owner)->weak_from_this(), parentToken->weak_from_this());
 }
 
