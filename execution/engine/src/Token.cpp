@@ -107,6 +107,11 @@ nlohmann::ordered_json Token::jsonify() const {
 
   auto& attributeMap = getAttributeMap();
   for (auto& [attributeName,attribute] : attributeMap ) {
+    if ( attribute->index >= status.size() ) {
+      // skip attribute that is not in status
+      continue;
+    }
+
     if ( !status[attribute->index].has_value() ) {
       jsonObject["status"][attributeName] = nullptr ;
     }
@@ -169,7 +174,7 @@ void Token::advanceFromCreated() {
 */
 
 void Token::advanceToReady() {
-std::cerr << "advanceToReady: " << jsonify().dump() << std::endl;
+//std::cerr << "advanceToReady: " << jsonify().dump() << std::endl;
 
   if ( status[BPMNOS::Model::Status::Index::Timestamp] > owner->systemState->getTime() ) {
     throw std::runtime_error("Token: ready timestamp at node '" + node->id + "' is larger than current time");
@@ -182,7 +187,7 @@ std::cerr << "advanceToReady: " << jsonify().dump() << std::endl;
 }
 
 void Token::advanceToEntered() {
-std::cerr << "advanceToEntered: " << jsonify().dump() << std::endl;
+//std::cerr << "advanceToEntered: " << jsonify().dump() << std::endl;
   if ( status[BPMNOS::Model::Status::Index::Timestamp] > owner->systemState->getTime() ) {
     if ( node ) {
       throw std::runtime_error("Token: entry timestamp at node '" + node->id + "' is larger than current time");
@@ -326,7 +331,7 @@ std::cerr << "advanceToEntered: " << jsonify().dump() << std::endl;
 }
 
 void Token::advanceToBusy() {
-std::cerr << "advanceToBusy: " << jsonify().dump() << std::endl;
+//std::cerr << "advanceToBusy: " << jsonify().dump() << std::endl;
   update(State::BUSY);
 
   if ( !node ) {
@@ -431,7 +436,7 @@ void Token::advanceToCompleted(const Values& statusUpdate) {
 */
 
 void Token::advanceToCompleted() {
-std::cerr << "advanceToCompleted: " << jsonify().dump() << std::endl;
+//std::cerr << "advanceToCompleted: " << jsonify().dump() << std::endl;
   if ( status[BPMNOS::Model::Status::Index::Timestamp] > owner->systemState->getTime() ) {
     if ( node ) {
       throw std::runtime_error("Token: completion timestamp at node '" + node->id + "' is larger than current time");
@@ -547,7 +552,7 @@ std::cerr << "Context: " << context << " at " << context->scope->id << " has " <
 }
 
 void Token::advanceToExiting() {
-std::cerr << "advanceToExiting: " << jsonify().dump() << std::endl;
+//std::cerr << "advanceToExiting: " << jsonify().dump() << std::endl;
   if ( status[BPMNOS::Model::Status::Index::Timestamp] > owner->systemState->getTime() ) {
     throw std::runtime_error("Token: exit timestamp at node '" + node->id + "' is larger than current time");
   }
@@ -592,7 +597,7 @@ std::cerr << "advanceToExiting: " << jsonify().dump() << std::endl;
 }
 
 void Token::advanceToDone() {
-std::cerr << "advanceToDone: " << jsonify().dump() << std::endl;
+//std::cerr << "advanceToDone: " << jsonify().dump() << std::endl;
   update(State::DONE);
 
   const_cast<StateMachine*>(owner)->attemptShutdown();
@@ -600,7 +605,7 @@ std::cerr << "advanceToDone: " << jsonify().dump() << std::endl;
 }
 
 void Token::advanceToDeparting() {
-std::cerr << "advanceToDeparting: " << jsonify().dump() << std::endl;
+//std::cerr << "advanceToDeparting: " << jsonify().dump() << std::endl;
 
   if ( node->outgoing.size() == 1 ) {
     auto engine = const_cast<Engine*>(owner->systemState->engine);
@@ -646,7 +651,7 @@ std::cerr << "advanceToDeparting: " << jsonify().dump() << std::endl;
 }
 
 void Token::advanceToDeparted(const BPMN::SequenceFlow* sequenceFlow) {
-std::cerr << "advanceToDeparted: " << jsonify().dump() << std::endl;
+//std::cerr << "advanceToDeparted: " << jsonify().dump() << std::endl;
   this->sequenceFlow = sequenceFlow;
   auto engine = const_cast<Engine*>(owner->systemState->engine);
   update(State::DEPARTED);
@@ -654,9 +659,8 @@ std::cerr << "advanceToDeparted: " << jsonify().dump() << std::endl;
 }
 
 void Token::advanceToArrived() {
-std::cerr << "advanceToArrived: " << jsonify().dump() << std::endl;
+//std::cerr << "advanceToArrived: " << jsonify().dump() << std::endl;
   node = sequenceFlow->target;
-std::cerr << "arrived: " << jsonify().dump() << std::endl;
   update(State::ARRIVED);
 
   if ( node->incoming.size() > 1 && !node->represents<BPMN::ExclusiveGateway>() ) {
@@ -757,7 +761,7 @@ void Token::awaitEventBasedGateway() {
 */
 
 void Token::awaitGatewayActivation() {
-std::cerr << "awaitGatewayActivation" << std::endl;
+//std::cerr << "awaitGatewayActivation" << std::endl;
 
   auto systemState = const_cast<SystemState*>(owner->systemState);
   auto stateMachine = const_cast<StateMachine*>(owner);
