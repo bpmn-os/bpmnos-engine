@@ -23,35 +23,26 @@ SCENARIO( "Task with expression operator", "[status][nestedactivities]" ) {
       engine.addEventHandler(&completionHandler);
       engine.addEventHandler(&exitHandler);
       engine.addEventHandler(&timeHandler);
-//      Execution::Recorder recorder;
-      Execution::Recorder recorder(std::cerr);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
       engine.addListener(&recorder);
       engine.run(scenario.get());
       THEN( "The status updates are correct" ) {
-/*
-        size_t i=0;
-        // process
-        REQUIRE( recorder.log[i].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"state\":\"ENTERED\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
-        REQUIRE( recorder.log[++i].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"state\":\"BUSY\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
-        // start event
-        REQUIRE( recorder.log[++i].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"nodeId\":\"StartEvent_1\",\"state\":\"ENTERED\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
-        REQUIRE( recorder.log[++i].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"nodeId\":\"StartEvent_1\",\"sequenceFlowId\":\"Flow_0nwwk78\",\"state\":\"DEPARTED\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
-        // task
-        REQUIRE( recorder.log[++i].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"nodeId\":\"Activity_1\",\"sequenceFlowId\":\"Flow_0nwwk78\",\"state\":\"ARRIVED\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
-        REQUIRE( recorder.log[++i].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"nodeId\":\"Activity_1\",\"state\":\"READY\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
-        REQUIRE( recorder.log[++i].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"nodeId\":\"Activity_1\",\"state\":\"ENTERED\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
-        REQUIRE( recorder.log[++i].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"nodeId\":\"Activity_1\",\"state\":\"BUSY\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
-        REQUIRE( recorder.log[++i].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"nodeId\":\"Activity_1\",\"state\":\"COMPLETED\",\"status\":{\"timestamp\":1.0,\"instance\":\"Instance_1\"}}" );
-        REQUIRE( recorder.log[++i].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"nodeId\":\"Activity_1\",\"state\":\"EXITING\",\"status\":{\"timestamp\":1.0,\"instance\":\"Instance_1\"}}" );
-        REQUIRE( recorder.log[++i].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"nodeId\":\"Activity_1\",\"sequenceFlowId\":\"Flow_18gfgxb\",\"state\":\"DEPARTED\",\"status\":{\"timestamp\":1.0,\"instance\":\"Instance_1\"}}" );
-        // end event
-        REQUIRE( recorder.log[++i].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"nodeId\":\"EndEvent_1\",\"sequenceFlowId\":\"Flow_18gfgxb\",\"state\":\"ARRIVED\",\"status\":{\"timestamp\":1.0,\"instance\":\"Instance_1\"}}" );
-        REQUIRE( recorder.log[++i].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"nodeId\":\"EndEvent_1\",\"state\":\"ENTERED\",\"status\":{\"timestamp\":1.0,\"instance\":\"Instance_1\"}}" );
-        REQUIRE( recorder.log[++i].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"nodeId\":\"EndEvent_1\",\"state\":\"DONE\",\"status\":{\"timestamp\":1.0,\"instance\":\"Instance_1\"}}" );
-        // process
-        REQUIRE( recorder.log[++i].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"state\":\"COMPLETED\",\"status\":{\"timestamp\":1.0,\"instance\":\"Instance_1\"}}" );
-        REQUIRE( recorder.log[++i].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"state\":\"DONE\",\"status\":{\"timestamp\":1.0,\"instance\":\"Instance_1\"}}" );
-*/
+        auto subProcessLog = recorder.find(nlohmann::json{{"nodeId", "SubProcess_1"}});
+        REQUIRE( subProcessLog[0]["state"] == "ARRIVED" );
+        REQUIRE( subProcessLog[1]["state"] == "READY" );
+        REQUIRE( subProcessLog[1]["status"].size() == subProcessLog[0]["status"].size()+1 );
+        REQUIRE( subProcessLog[subProcessLog.size()-2]["state"] == "EXITING" );
+        REQUIRE( subProcessLog[subProcessLog.size()-1]["state"] == "DEPARTED" );
+        REQUIRE( subProcessLog[subProcessLog.size()-1]["status"].size() == subProcessLog[subProcessLog.size()-2]["status"].size()-1 );
+
+        auto taskLog = recorder.find(nlohmann::json{{"nodeId", "Task_1"}});
+        REQUIRE( taskLog[0]["state"] == "ARRIVED" );
+        REQUIRE( taskLog[1]["state"] == "READY" );
+        REQUIRE( taskLog[1]["status"].size() == taskLog[0]["status"].size()+1 );
+        REQUIRE( taskLog[taskLog.size()-2]["state"] == "EXITING" );
+        REQUIRE( taskLog[taskLog.size()-1]["state"] == "DEPARTED" );
+        REQUIRE( taskLog[taskLog.size()-1]["status"].size() == taskLog[taskLog.size()-2]["status"].size()-1 );
       }
     }
   }
