@@ -39,7 +39,7 @@ StateMachine::StateMachine(const StateMachine* other)
 }
 
 StateMachine::~StateMachine() {
-std::cerr << "~StateMachine(" << scope->id << "/" << this << " @ " << parentToken << ")" << std::endl;
+//std::cerr << "~StateMachine(" << scope->id << "/" << this << " @ " << parentToken << ")" << std::endl;
   const_cast<SystemState*>(systemState)->tokensAwaitingGatewayActivation.erase(this);
   unregisterRecipient();
 }
@@ -383,7 +383,7 @@ void StateMachine::attemptGatewayActivation(const BPMN::FlowNode* node) {
 }
 
 void StateMachine::shutdown() {
-std::cerr << "start shutdown: " << scope->id << std::endl;
+//std::cerr << "start shutdown: " << scope->id << std::endl;
   auto engine = const_cast<Engine*>(systemState->engine);
 
   if ( auto eventSubProcess = scope->represents<BPMN::EventSubProcess>();
@@ -518,7 +518,7 @@ Token* StateMachine::findCompensationToken(BPMN::Node* compensationNode) {
 
 
 void StateMachine::deleteChild(StateMachine* child) {
-std::cerr << "delete child '" << child->scope->id << "' of '" << scope->id << "'" <<  std::endl;
+//std::cerr << "delete child '" << child->scope->id << "' of '" << scope->id << "'" <<  std::endl;
   erase_ptr<StateMachine>(subProcesses, child);
 }
 

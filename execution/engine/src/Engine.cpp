@@ -115,7 +115,7 @@ void Engine::addInstances() {
 }
 
 void Engine::deleteInstance(StateMachine* instance) {
-std::cerr << "deleteInstance" << std::endl;
+//std::cerr << "deleteInstance" << std::endl;
   erase_ptr<StateMachine>(systemState->instances,instance);
 }
 
