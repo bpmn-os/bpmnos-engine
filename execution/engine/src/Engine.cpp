@@ -115,7 +115,7 @@ void Engine::addInstances() {
 }
 
 void Engine::deleteInstance(StateMachine* instance) {
-//std::cerr << "deleteInstance" << std::endl;
+std::cerr << "deleteInstance" << std::endl;
   erase_ptr<StateMachine>(systemState->instances,instance);
 }
 
@@ -133,7 +133,7 @@ void Engine::process(const ReadyEvent& event) {
   token->status.insert(token->status.end(), event.values.begin(), event.values.end());
 
   StateMachine* stateMachine = const_cast<StateMachine*>(token->owner);
-  commands.emplace_back(std::bind(&Token::advanceToReady,token), stateMachine->weak_from_this(), token->weak_from_this());
+  commands.emplace_back(std::bind(&Token::advanceToReady,token), token);
 }
 
 void Engine::process(const EntryEvent& event) {
@@ -154,7 +154,7 @@ void Engine::process(const EntryEvent& event) {
   }
 
   StateMachine* stateMachine = const_cast<StateMachine*>(token->owner);
-  commands.emplace_back(std::bind(&Token::advanceToEntered,token), stateMachine->weak_from_this(), token->weak_from_this());
+  commands.emplace_back(std::bind(&Token::advanceToEntered,token), token);
 }
 
 void Engine::process(const TaskCompletionEvent& event) {
@@ -166,7 +166,7 @@ void Engine::process(const TaskCompletionEvent& event) {
   token->status = event.updatedStatus;
 
   StateMachine* stateMachine = const_cast<StateMachine*>(token->owner);
-  commands.emplace_back(std::bind(&Token::advanceToCompleted,token), stateMachine->weak_from_this(), token->weak_from_this());
+  commands.emplace_back(std::bind(&Token::advanceToCompleted,token), token);
 }
 
 void Engine::process(const ExitEvent& event) {
@@ -185,7 +185,7 @@ void Engine::process(const ExitEvent& event) {
   }
 
   StateMachine* stateMachine = const_cast<StateMachine*>(token->owner);
-  commands.emplace_back(std::bind(&Token::advanceToExiting,token), stateMachine->weak_from_this(), token->weak_from_this());
+  commands.emplace_back(std::bind(&Token::advanceToExiting,token), token);
 }
 
 void Engine::process(const MessageDeliveryEvent& event) {
@@ -197,7 +197,7 @@ void Engine::process(const MessageDeliveryEvent& event) {
   systemState->tokensAwaitingMessageDelivery.remove(token);
 
   StateMachine* stateMachine = const_cast<StateMachine*>(token->owner);
-  commands.emplace_back(std::bind(&Token::advanceToCompleted,token), stateMachine->weak_from_this(), token->weak_from_this());
+  commands.emplace_back(std::bind(&Token::advanceToCompleted,token), token);
 }
 
 

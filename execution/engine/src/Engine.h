@@ -64,10 +64,18 @@ protected:
    */
   class Command {
   public:
-    Command(std::function<void()>&& f, std::optional< std::weak_ptr<StateMachine> > stateMachine_ptr  = std::nullopt, std::optional< std::weak_ptr<Token> > token_ptr = std::nullopt )
+    Command(std::function<void()>&& f )
+      : function(std::move(f)) {};
+
+    Command(std::function<void()>&& f, StateMachine* stateMachine )
       : function(std::move(f))
-      , stateMachine_ptr(stateMachine_ptr)
-      , token_ptr(token_ptr) {};
+      , stateMachine_ptr(stateMachine->weak_from_this()) {};
+
+    Command(std::function<void()>&& f, Token* token )
+      : function(std::move(f))
+      , stateMachine_ptr(const_cast<StateMachine*>(token->owner)->weak_from_this())
+      , token_ptr(token->weak_from_this()) {};
+
     void execute();
   private:
     std::function<void()> function;

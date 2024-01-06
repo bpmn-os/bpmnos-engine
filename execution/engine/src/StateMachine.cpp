@@ -39,7 +39,7 @@ StateMachine::StateMachine(const StateMachine* other)
 }
 
 StateMachine::~StateMachine() {
-//std::cerr << "~StateMachine(" << scope->id << "/" << this << " @ " << parentToken << ")" << std::endl;
+std::cerr << "~StateMachine(" << scope->id << "/" << this << " @ " << parentToken << ")" << std::endl;
   const_cast<SystemState*>(systemState)->tokensAwaitingGatewayActivation.erase(this);
   unregisterRecipient();
 }
@@ -210,7 +210,7 @@ void StateMachine::createTokenCopies(Token* token, const std::vector<BPMN::Seque
   for (size_t i = 0; i < sequenceFlows.size(); i++ ) {
     auto tokenCopy = tokenCopies[i];
     auto engine = const_cast<Engine*>(systemState->engine);
-    engine->commands.emplace_back(std::bind(&Token::advanceToDeparted,tokenCopy,sequenceFlows[i]), weak_from_this(), tokenCopy->weak_from_this());
+    engine->commands.emplace_back(std::bind(&Token::advanceToDeparted,tokenCopy,sequenceFlows[i]), tokenCopy);
   }
 }
 
@@ -233,7 +233,7 @@ void StateMachine::createMergedToken(const BPMN::FlowNode* gateway) {
   // advance merged token
   auto token = tokens.back().get();
   auto engine = const_cast<Engine*>(systemState->engine);
-  engine->commands.emplace_back(std::bind(&Token::advanceToEntered,token), weak_from_this(), token->weak_from_this());
+  engine->commands.emplace_back(std::bind(&Token::advanceToEntered,token), token);
 }
 
 
@@ -270,7 +270,7 @@ void StateMachine::handleEscalation(Token* token) {
     // trigger event subprocess
     auto eventToken = it->get()->tokens.front().get();
 //std::cerr << "found event-subprocess catching escalation:" << eventToken << "/" << eventToken->owner << std::endl;
-    engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,eventToken), const_cast<StateMachine*>(eventToken->owner)->weak_from_this(), eventToken->weak_from_this());
+    engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,eventToken), eventToken);
 
     return;
   }
@@ -280,7 +280,7 @@ void StateMachine::handleEscalation(Token* token) {
     auto& tokensAwaitingBoundaryEvent = const_cast<SystemState*>(systemState)->tokensAwaitingBoundaryEvent[parentToken];
     for ( auto eventToken : tokensAwaitingBoundaryEvent) {
       if ( eventToken->node->represents<BPMN::EscalationBoundaryEvent>() ) {
-        engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,eventToken), const_cast<StateMachine*>(eventToken->owner)->weak_from_this(), eventToken->weak_from_this());
+        engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,eventToken), eventToken);
         return;
       }
     }
@@ -288,7 +288,7 @@ void StateMachine::handleEscalation(Token* token) {
 
 //std::cerr << "bubbble up escalation" << std::endl;
   auto parent = const_cast<StateMachine*>(parentToken->owner);
-  engine->commands.emplace_back(std::bind(&StateMachine::handleEscalation,parent,parentToken), parent->weak_from_this(), parentToken->weak_from_this());
+  engine->commands.emplace_back(std::bind(&StateMachine::handleEscalation,parent,parentToken), parentToken);
 
 }
 
@@ -324,7 +324,7 @@ void StateMachine::handleFailure(Token* token) {
   if ( token->node && token->node->represents<BPMN::Task>() ) {
     // find error boundary event
     if ( auto eventToken = tokenAwaitingErrorBoundaryEvent(token); eventToken ) {
-      engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,eventToken), const_cast<StateMachine*>(eventToken->owner)->weak_from_this(), eventToken->weak_from_this());
+      engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,eventToken), eventToken);
       return;
     }
     // failure is not caught by boundary event of task
@@ -340,7 +340,7 @@ void StateMachine::handleFailure(Token* token) {
     auto eventToken = it->get()->tokens.front().get();
     // update status of event token with that of current token
     eventToken->status = token->status;
-    engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,eventToken), const_cast<StateMachine*>(eventToken->owner)->weak_from_this(), eventToken->weak_from_this());
+    engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,eventToken), eventToken);
 
     return;
   }
@@ -349,19 +349,19 @@ void StateMachine::handleFailure(Token* token) {
   parentToken->status = token->status; // TODO resize status
 
   auto parent = const_cast<StateMachine*>(parentToken->owner);
-  engine->commands.emplace_back(std::bind(&StateMachine::deleteChild,parent,this), weak_from_this());
+  engine->commands.emplace_back(std::bind(&StateMachine::deleteChild,parent,this), this);
 
   // find error boundary event
   if ( auto eventToken = tokenAwaitingErrorBoundaryEvent(parentToken); eventToken ) {
-    engine->commands.emplace_back(std::bind(&Token::update,parentToken,token->state), const_cast<StateMachine*>(parentToken->owner)->weak_from_this(), parentToken->weak_from_this());
+    engine->commands.emplace_back(std::bind(&Token::update,parentToken,token->state), parentToken);
 
-    engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,eventToken), const_cast<StateMachine*>(eventToken->owner)->weak_from_this(), eventToken->weak_from_this());
+    engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,eventToken), eventToken);
     return;
   }
 
   // failure is not caught by boundary event, bubble up error
 //std::cerr << "bubbble up error" << std::endl;
-  engine->commands.emplace_back(std::bind(&Token::advanceToFailed,parentToken), const_cast<StateMachine*>(parentToken->owner)->weak_from_this(), parentToken->weak_from_this());
+  engine->commands.emplace_back(std::bind(&Token::advanceToFailed,parentToken), parentToken);
 }
 
 void StateMachine::attemptGatewayActivation(const BPMN::FlowNode* node) {
@@ -373,7 +373,7 @@ void StateMachine::attemptGatewayActivation(const BPMN::FlowNode* node) {
     if ( arrivedTokens.size() == node->incoming.size() ) {
       // create merged token and advance it
       auto engine = const_cast<Engine*>(systemState->engine);
-      engine->commands.emplace_back(std::bind(&StateMachine::createMergedToken,this,node), weak_from_this());
+      engine->commands.emplace_back(std::bind(&StateMachine::createMergedToken,this,node), this);
     }
   }
   else {
@@ -383,14 +383,14 @@ void StateMachine::attemptGatewayActivation(const BPMN::FlowNode* node) {
 }
 
 void StateMachine::shutdown() {
-//std::cerr << "start shutdown: " << scope->id << "/" << const_cast<SystemState*>(systemState)->tokensAwaitingStateMachineCompletion.size() << std::endl;
+std::cerr << "start shutdown: " << scope->id << std::endl;
   auto engine = const_cast<Engine*>(systemState->engine);
 
   if ( auto eventSubProcess = scope->represents<BPMN::EventSubProcess>();
     eventSubProcess && !eventSubProcess->startEvents.front()->represents<BPMN::TypedStartEvent>()->isInterrupting
   ) {
     auto context = const_cast<StateMachine*>(parentToken->owned);
-    engine->commands.emplace_back(std::bind(&StateMachine::deleteNonInterruptingEventSubProcess,context,this), weak_from_this());
+    engine->commands.emplace_back(std::bind(&StateMachine::deleteNonInterruptingEventSubProcess,context,this), this);
     return;
   }
 
@@ -405,6 +405,9 @@ void StateMachine::shutdown() {
       parentToken->mergeStatus(token.get());
     }
   }
+
+  // ensure that messages to state machine are removed  
+  unregisterRecipient();
 
   if ( auto activity = scope->represents<BPMN::Activity>(); activity && activity->compensatedBy ) {
     if ( auto compensationEventSubProcess = activity->compensatedBy->represents<BPMN::EventSubProcess>();
@@ -423,20 +426,25 @@ void StateMachine::shutdown() {
       auto owner = const_cast<StateMachine*>(parentToken->owner);
 
       // create compensation event subprocess
-        engine->commands.emplace_back( std::bind(&StateMachine::createCompensationEventSubProcess,owner,compensationEventSubProcess, parentToken->status), owner->weak_from_this() );
+        engine->commands.emplace_back( std::bind(&StateMachine::createCompensationEventSubProcess,owner,compensationEventSubProcess, parentToken->status), owner );
 //        engine->commands.emplace_back( std::bind(&StateMachine::createCompensationEventSubProcess,owner,compensationEventSubProcess, std::move(mergedStatus)), owner->weak_from_this() );
     }
   }
 
   if ( !parentToken ) {
     // delete root state machine (and all descendants)
-    engine->commands.emplace_back(std::bind(&Engine::deleteInstance,engine,this), weak_from_this());
+    engine->commands.emplace_back(std::bind(&Engine::deleteInstance,engine,this), this);
   }
   else {
+    if ( scope->represents<BPMN::SubProcess>() && compensations.empty() ) {
+      auto parent = const_cast<StateMachine*>(parentToken->owner);
+      engine->commands.emplace_back(std::bind(&StateMachine::deleteChild,parent,this), this);
+    }
+
     // advance parent token to completed
     auto context = const_cast<StateMachine*>(parentToken->owned);
     auto token = context->parentToken;
-    engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,token), weak_from_this(), token->weak_from_this());
+    engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,token), token);
   }
 
 //std::cerr << "shutdown (done): " << scope->id <<std::endl;
@@ -468,7 +476,7 @@ void StateMachine::attemptShutdown() {
 
   auto engine = const_cast<Engine*>(systemState->engine);
 //std::cerr << "Shutdown with " << engine->commands.size()-1 << " prior commands" << std::endl;
-  engine->commands.emplace_back(std::bind(&StateMachine::shutdown,this), weak_from_this());
+  engine->commands.emplace_back(std::bind(&StateMachine::shutdown,this), this);
 }
 
 Token* StateMachine::findCompensationToken(BPMN::Node* compensationNode) {
@@ -510,7 +518,7 @@ Token* StateMachine::findCompensationToken(BPMN::Node* compensationNode) {
 
 
 void StateMachine::deleteChild(StateMachine* child) {
-//std::cerr << "delete child '" << child->scope->id << "' of '" << scope->id << "'" <<  std::endl;
+std::cerr << "delete child '" << child->scope->id << "' of '" << scope->id << "'" <<  std::endl;
   erase_ptr<StateMachine>(subProcesses, child);
 }
 

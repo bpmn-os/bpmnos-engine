@@ -55,7 +55,7 @@ Token::~Token() {
     if ( auto activity = node->represents<BPMN::Activity>(); activity && !activity->boundaryEvents.empty() ) {
       auto engine = const_cast<Engine*>(owner->systemState->engine);
       auto stateMachine = const_cast<StateMachine*>(owner);
-      engine->commands.emplace_back(std::bind(&StateMachine::deleteTokensAwaitingBoundaryEvent,stateMachine,this), stateMachine->weak_from_this(), weak_from_this());
+      engine->commands.emplace_back(std::bind(&StateMachine::deleteTokensAwaitingBoundaryEvent,stateMachine,this), this);
     }
 
     if ( node->represents<BPMN::BoundaryEvent>() ) {
@@ -234,7 +234,7 @@ void Token::advanceToEntered() {
   if ( node && node->represents<BPMN::UntypedStartEvent>() ) {
     // initiate event subprocesses after entering untyped start event
     auto stateMachine = const_cast<StateMachine*>(owner);
-    engine->commands.emplace_back(std::bind(&StateMachine::initiateEventSubprocesses,stateMachine,this), stateMachine->weak_from_this(), weak_from_this());
+    engine->commands.emplace_back(std::bind(&StateMachine::initiateEventSubprocesses,stateMachine,this), this);
   }
 
 
@@ -244,16 +244,16 @@ void Token::advanceToEntered() {
   if ( !node ) {
     // check restrictions
     if ( !isFeasible() ) {
-      engine->commands.emplace_back(std::bind(&Token::advanceToFailed,this), const_cast<StateMachine*>(owner)->weak_from_this(), weak_from_this());
+      engine->commands.emplace_back(std::bind(&Token::advanceToFailed,this), this);
       return;
     }
 
 /*
     // initiate event subprocesses
-    engine->commands.emplace_back(std::bind(&StateMachine::initiateEventSubprocesses,const_cast<StateMachine*>(owner),this), const_cast<StateMachine*>(owner)->weak_from_this(), weak_from_this());
+    engine->commands.emplace_back(std::bind(&StateMachine::initiateEventSubprocesses,const_cast<StateMachine*>(owner),this), this);
 */
     // tokens entering a process advance to busy state
-    engine->commands.emplace_back(std::bind(&Token::advanceToBusy,this), const_cast<StateMachine*>(owner)->weak_from_this(), weak_from_this());
+    engine->commands.emplace_back(std::bind(&Token::advanceToBusy,this), this);
   }
   else if ( auto activity = node->represents<BPMN::Activity>(); activity ) {
 //std::cerr << "activity" << std::endl;
@@ -262,41 +262,41 @@ void Token::advanceToEntered() {
 
     // create tokens at boundary events
     if ( activity->boundaryEvents.size() ) {
-      engine->commands.emplace_back(std::bind(&StateMachine::initiateBoundaryEvents,stateMachine,this), stateMachine->weak_from_this(), weak_from_this());
+      engine->commands.emplace_back(std::bind(&StateMachine::initiateBoundaryEvents,stateMachine,this), this);
     }
 
 //std::cerr << "check restrictions: " << isFeasible() << std::endl;
     // check restrictions
     if ( !isFeasible() ) {
-      engine->commands.emplace_back(std::bind(&Token::advanceToFailed,this), stateMachine->weak_from_this(), weak_from_this());
+      engine->commands.emplace_back(std::bind(&Token::advanceToFailed,this), this);
       return;
     }
 
     // tokens entering an activity automatically
     // advance to busy state
-    engine->commands.emplace_back(std::bind(&Token::advanceToBusy,this), const_cast<StateMachine*>(owner)->weak_from_this(), weak_from_this());
+    engine->commands.emplace_back(std::bind(&Token::advanceToBusy,this), this);
   }
   else if ( node->represents<BPMN::CatchEvent>() && !node->represents<BPMN::UntypedStartEvent>()
   ) {
 //std::cerr << "advance to busy state" << std::endl;
     // tokens entering a catching event automatically
     // advance to busy state
-    engine->commands.emplace_back(std::bind(&Token::advanceToBusy,this), const_cast<StateMachine*>(owner)->weak_from_this(), weak_from_this());
+    engine->commands.emplace_back(std::bind(&Token::advanceToBusy,this), this);
   }
   else if ( node->represents<BPMN::EventBasedGateway>() ) {
     // tokens entering an event-based gateway automatically
     // advance to busy state
-    engine->commands.emplace_back(std::bind(&Token::advanceToBusy,this), const_cast<StateMachine*>(owner)->weak_from_this(), weak_from_this());
+    engine->commands.emplace_back(std::bind(&Token::advanceToBusy,this), this);
   }
   else if ( node->represents<BPMN::ErrorEndEvent>() ) {
-    engine->commands.emplace_back(std::bind(&Token::advanceToFailed,this), const_cast<StateMachine*>(owner)->weak_from_this(), weak_from_this());
+    engine->commands.emplace_back(std::bind(&Token::advanceToFailed,this), this);
     return;
   }
   else {
     if ( node->represents<BPMN::EscalationThrowEvent>() ) {
       // update status and delegate control to state machine
       // if applicable, control will be delgated back to token
-      engine->commands.emplace_back(std::bind(&StateMachine::handleEscalation,const_cast<StateMachine*>(owner),this), const_cast<StateMachine*>(owner)->weak_from_this(), weak_from_this());
+      engine->commands.emplace_back(std::bind(&StateMachine::handleEscalation,const_cast<StateMachine*>(owner),this), this);
     }
     else if ( node->represents<BPMN::MessageThrowEvent>() ) {
       // add message to message pool
@@ -323,7 +323,7 @@ void Token::advanceToEntered() {
     // tokens entering any other node automatically advance to done or
     // departed state
     if ( node->outgoing.empty() ) {
-      engine->commands.emplace_back(std::bind(&Token::advanceToDone,this), const_cast<StateMachine*>(owner)->weak_from_this(), weak_from_this());
+      engine->commands.emplace_back(std::bind(&Token::advanceToDone,this), this);
       return;
     }
     advanceToDeparting();
@@ -340,14 +340,14 @@ void Token::advanceToBusy() {
 //std::cerr << "!node" << scope->startEvents.size() << std::endl;
     if ( scope->startEvents.empty() ) {
       auto engine = const_cast<Engine*>(owner->systemState->engine);
-      engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,this), const_cast<StateMachine*>(owner)->weak_from_this(), weak_from_this());
+      engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,this), this);
     }
     else {
       if ( scope->startEvents.size() == 1 ) {
 //std::cerr << "create child statemachine" << std::endl;
         // create child statemachine
         auto engine = const_cast<Engine*>(owner->systemState->engine);
-        engine->commands.emplace_back(std::bind(&StateMachine::createChild,const_cast<StateMachine*>(owner),this,scope), const_cast<StateMachine*>(owner)->weak_from_this(), weak_from_this());
+        engine->commands.emplace_back(std::bind(&StateMachine::createChild,const_cast<StateMachine*>(owner),this,scope), this);
       }
       return;
     }
@@ -357,13 +357,13 @@ void Token::advanceToBusy() {
     auto scope = node->as<BPMN::Scope>();
     if ( scope->startEvents.empty() ) {
       auto engine = const_cast<Engine*>(owner->systemState->engine);
-      engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,this), const_cast<StateMachine*>(owner)->weak_from_this(), weak_from_this());
+      engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,this), this);
     }
     else {
       if ( scope->startEvents.size() == 1 ) {
         // create child statemachine
         auto engine = const_cast<Engine*>(owner->systemState->engine);
-        engine->commands.emplace_back(std::bind(&StateMachine::createChild,const_cast<StateMachine*>(owner),this,scope), const_cast<StateMachine*>(owner)->weak_from_this(), weak_from_this());
+        engine->commands.emplace_back(std::bind(&StateMachine::createChild,const_cast<StateMachine*>(owner),this,scope), this);
       }
       return;
     }
@@ -392,7 +392,7 @@ void Token::advanceToBusy() {
     }
     else {
       auto engine = const_cast<Engine*>(owner->systemState->engine);
-      engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,this), const_cast<StateMachine*>(owner)->weak_from_this(), weak_from_this());
+      engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,this), this);
     }
   }
   else if ( node->represents<BPMN::MessageCatchEvent>() ) {
@@ -422,7 +422,7 @@ void Token::advanceToBusy() {
       }
 
       auto engine = const_cast<Engine*>(owner->systemState->engine);
-      engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,this), const_cast<StateMachine*>(owner)->weak_from_this(), weak_from_this());
+      engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,this), this);
 
     }
   }
@@ -463,11 +463,11 @@ void Token::advanceToCompleted() {
 
       if ( boundaryEvent->isInterrupting ) {
         // interrupt activity
-        engine->commands.emplace_back(std::bind(&StateMachine::interruptActivity,stateMachine,tokenAtActivity), stateMachine->weak_from_this(), tokenAtActivity->weak_from_this());
+        engine->commands.emplace_back(std::bind(&StateMachine::interruptActivity,stateMachine,tokenAtActivity), tokenAtActivity);
       }
       else {
         // create new token at boundary event
-        engine->commands.emplace_back(std::bind(&StateMachine::initiateBoundaryEvent,stateMachine,tokenAtActivity,node), stateMachine->weak_from_this(), tokenAtActivity->weak_from_this());
+        engine->commands.emplace_back(std::bind(&StateMachine::initiateBoundaryEvent,stateMachine,tokenAtActivity,node), tokenAtActivity);
       }
     }
     else if ( auto startEvent = node->represents<BPMN::TypedStartEvent>(); startEvent ) {
@@ -494,7 +494,7 @@ std::cerr << "Context: " << context << " at " << context->scope->id << " has " <
       }
 
       // initiate nested event subprocesses when event subprocess is triggered
-      engine->commands.emplace_back(std::bind(&StateMachine::initiateEventSubprocesses,it->get(),this), it->get()->weak_from_this(), weak_from_this());
+      engine->commands.emplace_back(std::bind(&StateMachine::initiateEventSubprocesses,it->get(),this), this);
 
       if ( startEvent->isInterrupting ) {
         // TODO: interrupt activity or process
@@ -538,13 +538,13 @@ std::cerr << "Context: " << context << " at " << context->scope->id << " has " <
   // check restrictions
   if ( !isFeasible() ) {
 //std::cerr << "infeasible: " << jsonify().dump() <<  std::endl;
-    engine->commands.emplace_back(std::bind(&Token::advanceToFailed,this), const_cast<StateMachine*>(owner)->weak_from_this(), weak_from_this());
+    engine->commands.emplace_back(std::bind(&Token::advanceToFailed,this), this);
     return;
   }
 
   if ( !node || node->outgoing.empty() ) {
 //std::cerr << "done: " << jsonify().dump() <<  std::endl;
-    engine->commands.emplace_back(std::bind(&Token::advanceToDone,this), const_cast<StateMachine*>(owner)->weak_from_this(), weak_from_this());
+    engine->commands.emplace_back(std::bind(&Token::advanceToDone,this), this);
     return;
   }
 //std::cerr << "advanceToDeparting" << std::endl;
@@ -563,7 +563,7 @@ void Token::advanceToExiting() {
 
   // check restrictions
   if ( !isFeasible() ) {
-    engine->commands.emplace_back(std::bind(&Token::advanceToFailed,this), const_cast<StateMachine*>(owner)->weak_from_this(), weak_from_this());
+    engine->commands.emplace_back(std::bind(&Token::advanceToFailed,this), this);
     return;
   }
 
@@ -578,19 +578,19 @@ void Token::advanceToExiting() {
     auto stateMachine = const_cast<StateMachine*>(owner);
     if ( !activity->boundaryEvents.empty() ) {
       // remove tokens at boundary events
-      engine->commands.emplace_back( std::bind(&StateMachine::deleteTokensAwaitingBoundaryEvent,stateMachine,this), stateMachine->weak_from_this() );
+      engine->commands.emplace_back( std::bind(&StateMachine::deleteTokensAwaitingBoundaryEvent,stateMachine,this), stateMachine );
     }
 
     if ( activity->compensatedBy ) {
       if ( auto compensationActivity = activity->compensatedBy->represents<BPMN::Activity>(); compensationActivity ) {
         // create compensation activity
-        engine->commands.emplace_back( std::bind(&StateMachine::createCompensationActivity,stateMachine,compensationActivity, status), stateMachine->weak_from_this() );
+        engine->commands.emplace_back( std::bind(&StateMachine::createCompensationActivity,stateMachine,compensationActivity, status), stateMachine );
       }
     }
   }
 
   if ( node->outgoing.empty() ) {
-    engine->commands.emplace_back(std::bind(&Token::advanceToDone,this), const_cast<StateMachine*>(owner)->weak_from_this(), weak_from_this());
+    engine->commands.emplace_back(std::bind(&Token::advanceToDone,this), this);
     return;
   }
   advanceToDeparting();
@@ -609,7 +609,7 @@ void Token::advanceToDeparting() {
 
   if ( node->outgoing.size() == 1 ) {
     auto engine = const_cast<Engine*>(owner->systemState->engine);
-    engine->commands.emplace_back(std::bind(&Token::advanceToDeparted,this,node->outgoing.front()), const_cast<StateMachine*>(owner)->weak_from_this(), weak_from_this());
+    engine->commands.emplace_back(std::bind(&Token::advanceToDeparted,this,node->outgoing.front()), this);
     return;
   }
 
@@ -624,7 +624,7 @@ void Token::advanceToDeparting() {
         if ( auto gatekeeper = sequenceFlow->extensionElements->as<BPMNOS::Model::Gatekeeper>(); gatekeeper ) {
           if ( gatekeeper->restrictionsSatisfied(status) ) {
             auto engine = const_cast<Engine*>(owner->systemState->engine);
-            engine->commands.emplace_back(std::bind(&Token::advanceToDeparted,this,sequenceFlow), const_cast<StateMachine*>(owner)->weak_from_this(), weak_from_this());
+            engine->commands.emplace_back(std::bind(&Token::advanceToDeparted,this,sequenceFlow), this);
             return;
           }
         }
@@ -637,16 +637,16 @@ void Token::advanceToDeparting() {
     // gatekeeper conditions are violated for all sequence flows (except default flow)
     if ( exclusiveGateway->defaultFlow ) {
       auto engine = const_cast<Engine*>(owner->systemState->engine);
-      engine->commands.emplace_back(std::bind(&Token::advanceToDeparted,this,exclusiveGateway->defaultFlow), const_cast<StateMachine*>(owner)->weak_from_this(), weak_from_this());
+      engine->commands.emplace_back(std::bind(&Token::advanceToDeparted,this,exclusiveGateway->defaultFlow), this);
     }
     else {
       auto engine = const_cast<Engine*>(owner->systemState->engine);
-      engine->commands.emplace_back(std::bind(&Token::advanceToFailed,this), const_cast<StateMachine*>(owner)->weak_from_this(), weak_from_this());
+      engine->commands.emplace_back(std::bind(&Token::advanceToFailed,this), this);
     }
   }
   else {
     auto engine = const_cast<Engine*>(owner->systemState->engine);
-    engine->commands.emplace_back(std::bind(&StateMachine::copyToken,const_cast<StateMachine*>(owner),this), const_cast<StateMachine*>(owner)->weak_from_this(), weak_from_this());
+    engine->commands.emplace_back(std::bind(&StateMachine::copyToken,const_cast<StateMachine*>(owner),this), this);
   }
 }
 
@@ -655,7 +655,7 @@ void Token::advanceToDeparted(const BPMN::SequenceFlow* sequenceFlow) {
   this->sequenceFlow = sequenceFlow;
   auto engine = const_cast<Engine*>(owner->systemState->engine);
   update(State::DEPARTED);
-  engine->commands.emplace_back(std::bind(&Token::advanceToArrived,this), const_cast<StateMachine*>(owner)->weak_from_this(), weak_from_this());
+  engine->commands.emplace_back(std::bind(&Token::advanceToArrived,this), this);
 }
 
 void Token::advanceToArrived() {
@@ -682,7 +682,7 @@ void Token::advanceToArrived() {
   else {
     sequenceFlow = nullptr;
     auto engine = const_cast<Engine*>(owner->systemState->engine);
-    engine->commands.emplace_back(std::bind(&Token::advanceToEntered,this), const_cast<StateMachine*>(owner)->weak_from_this(), weak_from_this());
+    engine->commands.emplace_back(std::bind(&Token::advanceToEntered,this), this);
   }
 }
 
@@ -690,7 +690,7 @@ void Token::advanceToFailed() {
 //std::cerr << "advanceToFailed: " << jsonify().dump() << std::endl;
   update(State::FAILED);
   auto engine = const_cast<Engine*>(owner->systemState->engine);
-  engine->commands.emplace_back(std::bind(&StateMachine::handleFailure,const_cast<StateMachine*>(owner),this), const_cast<StateMachine*>(owner)->weak_from_this(), weak_from_this());
+  engine->commands.emplace_back(std::bind(&StateMachine::handleFailure,const_cast<StateMachine*>(owner),this), this);
 }
 
 void Token::awaitReadyEvent() {
