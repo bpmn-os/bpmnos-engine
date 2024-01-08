@@ -319,6 +319,17 @@ void Token::advanceToEntered() {
         systemState->outbox[node].emplace_back(message->weak_from_this());
       }
     }
+    else if ( auto compensateThrowEvent = node->represents<BPMN::CompensateThrowEvent>(); compensateThrowEvent ) {
+      if ( compensateThrowEvent->activity ) {
+        // find compensation activity within context
+        auto context = const_cast<StateMachine*>(owner->parentToken->owned);
+        for ( auto& compensation : context->compensations ) {
+        }
+      }
+      else {
+        // compensate all in reverse order
+      }      
+    }
 
     // tokens entering any other node automatically advance to done or
     // departed state
