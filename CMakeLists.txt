@@ -119,11 +119,11 @@ if (DOCUMENTATION)
   find_path(BPMNPP_INCLUDE_PATH bpmn++.h)
   # Add Doxygen target
   add_custom_target(docs
-    COMMAND bash -c "drawio -xt --crop ${PROJECT_SOURCE_DIR}/execution/engine/Token_life-cycle.drawio -o ${PROJECT_SOURCE_DIR}/docs/images/Token_life-cycle.pdf"
-    COMMAND bash -c "drawio -xt ${PROJECT_SOURCE_DIR}/execution/engine/Token_life-cycle.drawio -o ${PROJECT_SOURCE_DIR}/docs/images/Token_life-cycle.png"
+    COMMAND bash -c "drawio -xt --crop execution/engine/Token_life-cycle.drawio -o docs/images/Token_life-cycle.pdf"
+    COMMAND bash -c "drawio -xt execution/engine/Token_life-cycle.drawio -o docs/images/Token_life-cycle.png"
     COMMAND bash -c "sed -i 's|https://github.com/jothepro/doxygen-awesome-css|https://github.com/bpmn-os/bpmnos-engine|g' ${CMAKE_BINARY_DIR}/doxygen-awesome/doxygen-custom/header.html"
     COMMAND bash -c "echo '</body></html>' > ${CMAKE_BINARY_DIR}/doxygen-awesome/doxygen-custom/footer.html"
-    COMMAND ${CMAKE_COMMAND} -E env "DOXYGEN_AWESOME_DIR=${CMAKE_BINARY_DIR}/doxygen-awesome" "BPMNPP_INCLUDE_PATH=${BPMNPP_INCLUDE_PATH}" doxygen ${PROJECT_SOURCE_DIR}/Doxyfile
+    COMMAND ${CMAKE_COMMAND} -E env "DOXYGEN_AWESOME_DIR=${CMAKE_BINARY_DIR}/doxygen-awesome" "BPMNPP_INCLUDE_PATH=${BPMNPP_INCLUDE_PATH}" doxygen Doxyfile
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
     COMMENT "Generating Doxygen documentation (this may take a while)"
     VERBATIM
