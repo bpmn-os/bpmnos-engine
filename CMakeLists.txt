@@ -100,6 +100,10 @@ if (DOCUMENTATION)
   if (NOT DOT_FOUND)
     message(FATAL_ERROR "dot not found.\nTo install run: sudo apt install graphviz")
   endif()
+  find_program(DRAWIO_FOUND "drawio")
+  if (NOT DRAWIO_FOUND)
+    message(FATAL_ERROR "drawio not found.\nTo install run: sudo snap install drawio")
+  endif()
   include(ExternalProject)
 
   ExternalProject_Add(doxygen-awesome
@@ -115,6 +119,8 @@ if (DOCUMENTATION)
   find_path(BPMNPP_INCLUDE_PATH bpmn++.h)
   # Add Doxygen target
   add_custom_target(docs
+    COMMAND bash -c "drawio -xt --crop ${PROJECT_SOURCE_DIR}/execution/engine/Token_life-cycle.drawio -o ${PROJECT_SOURCE_DIR}/docs/images/Token_life-cycle.pdf"
+    COMMAND bash -c "drawio -xt ${PROJECT_SOURCE_DIR}/execution/engine/Token_life-cycle.drawio -o ${PROJECT_SOURCE_DIR}/docs/images/Token_life-cycle.png"
     COMMAND bash -c "sed -i 's|https://github.com/jothepro/doxygen-awesome-css|https://github.com/bpmn-os/bpmnos-engine|g' ${CMAKE_BINARY_DIR}/doxygen-awesome/doxygen-custom/header.html"
     COMMAND bash -c "echo '</body></html>' > ${CMAKE_BINARY_DIR}/doxygen-awesome/doxygen-custom/footer.html"
     COMMAND ${CMAKE_COMMAND} -E env "DOXYGEN_AWESOME_DIR=${CMAKE_BINARY_DIR}/doxygen-awesome" "BPMNPP_INCLUDE_PATH=${BPMNPP_INCLUDE_PATH}" doxygen ${PROJECT_SOURCE_DIR}/Doxyfile

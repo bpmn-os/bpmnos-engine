@@ -14,6 +14,9 @@ class StateMachine;
 class Token;
 typedef std::vector< std::shared_ptr<Token> > Tokens;
 
+/**
+ * @image html Token_life-cycle.png
+ */
 class Token : public std::enable_shared_from_this<Token> {
 private:
   friend class SystemState;

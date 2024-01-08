@@ -12,6 +12,7 @@ INPUT             = $(BPMNPP_INCLUDE_PATH)/bpmn++.h model/ execution/ README.md
 RECURSIVE         = YES
 FILE_PATTERNS     = *.h *.cpp *.xsd *.md
 STRIP_FROM_PATH   = $(BPMNPP_INCLUDE_PATH) ./
+IMAGE_PATH        = docs/images
 
 USE_MDFILE_AS_MAINPAGE = README.md
 
