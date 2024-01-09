@@ -321,13 +321,24 @@ void Token::advanceToEntered() {
     }
     else if ( auto compensateThrowEvent = node->represents<BPMN::CompensateThrowEvent>(); compensateThrowEvent ) {
       if ( compensateThrowEvent->activity ) {
-        // find compensation activity within context
+        // find compensation within context
         auto context = const_cast<StateMachine*>(owner->parentToken->owned);
-        for ( auto& compensation : context->compensations ) {
+        auto compensationNode = compensateThrowEvent->activity->compensatedBy;
+        auto compensationToken = context->findCompensationToken(compensationNode);
+        if ( compensationToken ) {
+          // TODO: advance compensationToken and wait for completion
+        }
+        else {
+          // nothing to compensate
         }
       }
       else {
         // compensate all in reverse order
+        // TODO
+/*
+        for ( auto compensationToken : context->compensationTokens | std::views::reverse ) {
+        }
+*/
       }      
     }
 
@@ -462,9 +473,15 @@ void Token::advanceToCompleted() {
   auto engine = const_cast<Engine*>(owner->systemState->engine);
 
   if ( node ) {
-
-    if ( node->represents<BPMN::Activity>() ) {
-      awaitExitEvent();
+    if ( auto activity = node->represents<BPMN::Activity>() ) {
+      if ( activity->isForCompensation ) {
+        // final state for compensation activity reached
+        auto stateMachine = const_cast<StateMachine*>(owner);
+        engine->commands.emplace_back(std::bind(&StateMachine::completeCompensationActivity,stateMachine,this), this);
+      }
+      else {
+        awaitExitEvent();
+      }
       return;
     }
     else if ( auto boundaryEvent = node->represents<BPMN::BoundaryEvent>(); boundaryEvent ) {

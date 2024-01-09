@@ -41,7 +41,7 @@ public:
   Tokens compensationTokens; ///< Container with all tokens created for a compensation activity.
   StateMachines compensations; ///< Container with state machines for all compensations within scope.
 
-  Token* findCompensationToken(BPMN::Node* compensationNode); ///< Returns the token for a compensation activity or compenmsation event subprocess, if no such token exists a `nullptr` is returned.
+  Token* findCompensationToken(BPMN::Node* compensationNode) const; ///< Returns the token for a compensation activity or compenmsation event subprocess, if no such token exists a `nullptr` is returned.
   void run(const Values& status); ///< Create initial token and advance it.
 
 private:
@@ -82,6 +82,8 @@ private:
   void deleteChild(StateMachine* child); ///< Method removing completed state machine from parent
   void deleteNonInterruptingEventSubProcess(StateMachine* eventSubProcess); ///< Method removing completed event subprocess from context
   void deleteTokensAwaitingBoundaryEvent(Token* token); ///< Method removing all waiting tokens attached to activity of token
+  void advanceTokenWaitingForCompensation(const BPMN::Node* compensationNode); ///< Method advancing a token that was waiting for a compensation activity or compensation event subprocess
+  void completeCompensationActivity(Token* token); ///< Method handling the completion of a compensation activity
 };
 
 

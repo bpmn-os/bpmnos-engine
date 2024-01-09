@@ -41,6 +41,7 @@ StateMachine::StateMachine(const StateMachine* other)
 StateMachine::~StateMachine() {
 //std::cerr << "~StateMachine(" << scope->id << "/" << this << " @ " << parentToken << ")" << std::endl;
   const_cast<SystemState*>(systemState)->tokensAwaitingGatewayActivation.erase(this);
+  const_cast<SystemState*>(systemState)->tokensAwaitingCompensation.erase(this);
   unregisterRecipient();
 }
 
@@ -355,7 +356,7 @@ void StateMachine::handleFailure(Token* token) {
   // DO I NEED A STATE FAILING OR COMPENSATING???
 
   // conduct all compensations in reversed order
-  for ( auto& compensationToken : compensationTokens | std::views::reverse ) {
+  for ( auto compensationToken : compensationTokens | std::views::reverse ) {
     // TODO: wait for all compensations to be completed before continuing with below
     return;
   }
@@ -440,6 +441,12 @@ void StateMachine::shutdown() {
       auto parent = const_cast<StateMachine*>(parentToken->owner);
       engine->commands.emplace_back(std::bind(&StateMachine::deleteChild,parent,this), this);
     }
+    else if ( auto eventSubProcess = scope->represents<BPMN::EventSubProcess>();
+      eventSubProcess && eventSubProcess->startEvent->represents<BPMN::CompensateStartEvent>()
+    ) {
+      advanceTokenWaitingForCompensation(eventSubProcess);
+      return;
+    }
 
     // advance parent token to completed
     auto context = const_cast<StateMachine*>(parentToken->owned);
@@ -479,8 +486,8 @@ void StateMachine::attemptShutdown() {
   engine->commands.emplace_back(std::bind(&StateMachine::shutdown,this), this);
 }
 
-Token* StateMachine::findCompensationToken(BPMN::Node* compensationNode) {
-  Tokens::iterator it;
+Token* StateMachine::findCompensationToken(BPMN::Node* compensationNode) const {
+  auto it = compensationTokens.end();
   if ( auto compensationActivity = compensationNode->represents<BPMN::Activity>();
     compensationActivity
   ) {
@@ -544,5 +551,34 @@ void StateMachine::deleteTokensAwaitingBoundaryEvent(Token* token) {
     }
     tokensAwaitingBoundaryEvent.erase(it);
   }
+}
+
+void StateMachine::advanceTokenWaitingForCompensation(const BPMN::Node* compensationNode) {
+  // find waiting token (such a token must always exist)
+  auto& tokensAwaitingCompensation = const_cast<SystemState*>(systemState)->tokensAwaitingCompensation.at(this);
+  auto it = tokensAwaitingCompensation.find(compensationNode);
+  if ( it != tokensAwaitingCompensation.end() ) {
+    auto waitingToken = it->second;
+    // advance waiting token
+    auto engine = const_cast<Engine*>(systemState->engine);
+    if ( waitingToken->node->represents<BPMN::Activity>() ) {
+      // advance to entered
+      engine->commands.emplace_back(std::bind(&Token::advanceToEntered,waitingToken), waitingToken);
+    }
+    else {
+      // advance to completed
+      engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,waitingToken), waitingToken);
+    }
+    tokensAwaitingCompensation.erase(it);
+  }
+  else {
+    throw std::logic_error("StateMachine: no token waiting for compensation");
+  }
+}
+
+void StateMachine::completeCompensationActivity(Token* token) {
+  advanceTokenWaitingForCompensation(token->node);
+  // remove token of compensation activity
+  erase_ptr<Token>(tokens,token);
 }
 
