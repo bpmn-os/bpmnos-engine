@@ -173,12 +173,14 @@ void StateMachine::createNonInterruptingEventSubprocess(const StateMachine* pend
 }
 
 void StateMachine::createCompensationTokenForBoundaryEvent(const BPMN::BoundaryEvent* compensateBoundaryEvent, Token* token) {
+//std::cerr << "createCompensationTokenForBoundaryEvent" <<std::endl;
   std::shared_ptr<Token> compensationToken = std::make_shared<Token>(this,compensateBoundaryEvent,token->status);
   compensationToken->update(Token::State::BUSY);
   compensationTokens.push_back(std::move(compensationToken));
 }
 
 void StateMachine::compensateActivity(Token* token) {
+//std::cerr << "compensateActivity" <<std::endl;
   auto compensationNode = token->node->as<BPMN::BoundaryEvent>()->attachedTo->compensatedBy;
   if ( auto compensationActivity = compensationNode->represents<BPMN::Activity>() ) {
     // move token to compensation activity
@@ -285,22 +287,30 @@ void StateMachine::handleEscalation(Token* token) {
 
 }
 
-void StateMachine::terminate() {
+void StateMachine::terminate(Token* token) {
+//std::cerr << "terminate" <<std::endl;
   auto engine = const_cast<Engine*>(systemState->engine);
 
+//  auto parent = const_cast<StateMachine*>(parentToken->owner);
+//  engine->commands.emplace_back(std::bind(&StateMachine::deleteChild,parent,this), this);
+
+
   // find error boundary event
-  if ( auto eventToken = findTokenAwaitingErrorBoundaryEvent(parentToken); eventToken ) {
+  if ( auto eventToken = findTokenAwaitingErrorBoundaryEvent(token); eventToken ) {
+    engine->commands.emplace_back(std::bind(&Token::update,token,Token::State::FAILED), token);
     engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,eventToken), eventToken);
     return;
   }
 
   // failure is not caught by boundary event, bubble up error
-  engine->commands.emplace_back(std::bind(&Token::advanceToFailed,parentToken), parentToken);
+  engine->commands.emplace_back(std::bind(&Token::advanceToFailed,token), token);
 }
 
-void StateMachine::handleFailure(Token* token) {
-//std::cerr << scope->id << " handles failure at " << (token->node ? token->node->id : process->id ) <<std::endl;
 
+void StateMachine::handleFailure(Token* token) {
+  auto engine = const_cast<Engine*>(systemState->engine);
+
+//std::cerr << scope->id << " handles failure at " << (token->node ? token->node->id : process->id ) <<std::endl;
   if ( !parentToken ) {
 //std::cerr << "process has failed" << std::endl;
     // process has failed
@@ -309,10 +319,12 @@ void StateMachine::handleFailure(Token* token) {
     nonInterruptingEventSubProcesses.clear();
     tokens.clear();
     compensationTokens.clear();
+    // delete root state machine (and all descendants)
+    engine->commands.emplace_back(std::bind(&Engine::deleteInstance,engine,this), this);
     return;
   }
 
-  auto engine = const_cast<Engine*>(systemState->engine);
+//std::cerr << "check whether failure is caught" << std::endl;
 
   if ( token->node && token->node->represents<BPMN::Task>() ) {
     // find error boundary event
@@ -338,24 +350,24 @@ void StateMachine::handleFailure(Token* token) {
     return;
   }
 
-  auto parent = const_cast<StateMachine*>(parentToken->owner);
-  engine->commands.emplace_back(std::bind(&StateMachine::deleteChild,parent,this), this);
 
   // failure is not caught by event subprocess
+//std::cerr << "failure is not caught by event subprocess" << std::endl;
 
   // update status of parent token with that of current token
   parentToken->status = token->status; // TODO resize status 
-  engine->commands.emplace_back(std::bind(&Token::update,parentToken,Token::State::FAILED), parentToken);
-  // TODO: DO I NEED A STATE FAILING OR COMPENSATING???
+  engine->commands.emplace_back(std::bind(&Token::update,parentToken,Token::State::FAILING), parentToken);
 
-  if ( compensationTokens.size() ) {
+  if ( auto compensations = getCompensationTokens(); compensations.size() ) {
     // wait for all compensations to be completed before continuing with below
-    auto compensations = getCompensationTokens();
+//std::cerr << "Start compensation ... " << compensations.size() << std::endl;
     compensate(compensations, parentToken);
     return;
   }
 
-  terminate();
+  auto parent = const_cast<StateMachine*>(parentToken->owner);
+  engine->commands.emplace_back(std::bind(&StateMachine::deleteChild,parent,this), this);
+  terminate(parentToken);
 }
 
 Token* StateMachine::findTokenAwaitingErrorBoundaryEvent(Token* activityToken) {
@@ -518,13 +530,24 @@ void StateMachine::deleteTokensAwaitingBoundaryEvent(Token* token) {
 }
 
 void StateMachine::completeCompensationActivity(Token* token) {
+//std::cerr << "Compensation completed: " << token->node->id << std::endl;
   // token is still the compensation token
   auto engine = const_cast<Engine*>(systemState->engine);
 
   // advance waiting token
   auto& tokenAwaitingCompletedCompensation = const_cast<SystemState*>(systemState)->tokenAwaitingCompletedCompensation;
   auto waitingToken = tokenAwaitingCompletedCompensation[token];
-  engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,waitingToken), waitingToken);
+  if ( waitingToken->state == Token::State::BUSY ) {
+//std::cerr << "Continue with advanceToCompleted: " << waitingToken->node->id << std::endl;
+    engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,waitingToken), waitingToken);
+  }
+  else if ( waitingToken->state == Token::State::FAILING ) {
+//std::cerr << "Continue with terminate: " << waitingToken->owner->scope->id << std::endl;
+    engine->commands.emplace_back(std::bind(&StateMachine::terminate,const_cast<StateMachine*>(waitingToken->owner),waitingToken), waitingToken);
+  }
+  else {
+//std::cerr << waitingToken->node->id << " has state: " << Token::stateName[(int)waitingToken->state]  << std::endl;
+  }
   tokenAwaitingCompletedCompensation.erase(token);
 
   // remove compensation token
@@ -538,6 +561,7 @@ void StateMachine::compensate(std::vector<Token*> compensations, Token* waitingT
   auto it = compensations.rbegin();
   // advance last compensation token
   auto compensationToken = *it;
+//std::cerr << engine->commands.size() << " > Compensate " << compensationToken->node->id << std::endl;
   engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,compensationToken), compensationToken);
   // got to prior compensation token
   it++;

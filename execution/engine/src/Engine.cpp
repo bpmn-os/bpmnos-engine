@@ -76,8 +76,9 @@ bool Engine::advance() {
 
   while ( commands.size() ) {
 //std::cerr << "execute" << std::endl;
-    commands.front().execute();
+    auto command = std::move(commands.front());
     commands.pop_front();
+    command.execute();
   }
 
   // fetch and process all events

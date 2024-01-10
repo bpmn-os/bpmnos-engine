@@ -83,7 +83,8 @@ SCENARIO( "Symmetric exclusive gateways", "[execution][exclusivegateway]" ) {
         REQUIRE( recorder.log[5].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"nodeId\":\"Gateway_1\",\"state\":\"ENTERED\",\"status\":{\"timestamp\":1.0,\"instance\":\"Instance_1\"}}" );
         REQUIRE( recorder.log[6].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"nodeId\":\"Gateway_1\",\"state\":\"FAILED\",\"status\":{\"timestamp\":1.0,\"instance\":\"Instance_1\"}}" );
         // process
-        REQUIRE( recorder.log[7].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"state\":\"FAILED\",\"status\":{\"timestamp\":1.0,\"instance\":\"Instance_1\"}}" );
+        REQUIRE( recorder.log[7].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"state\":\"FAILING\",\"status\":{\"timestamp\":1.0,\"instance\":\"Instance_1\"}}" );
+        REQUIRE( recorder.log[8].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"state\":\"FAILED\",\"status\":{\"timestamp\":1.0,\"instance\":\"Instance_1\"}}" );
       }
     }
   }

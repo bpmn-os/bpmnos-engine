@@ -78,7 +78,7 @@ private:
   void createMergedToken(const BPMN::FlowNode* gateway);
 
   void shutdown(); ///< Shutdown state machine after successfull execution
-  void terminate(); ///< Terminates state machine after failure
+  void terminate(Token* token); ///< Terminates state machine after failure
   void interruptActivity(Token* token);
 
   void copyToken(Token* token);
@@ -89,7 +89,7 @@ private:
   void deleteChild(StateMachine* child); ///< Method removing completed state machine from parent
   void deleteNonInterruptingEventSubProcess(StateMachine* eventSubProcess); ///< Method removing completed event subprocess from context
   void deleteTokensAwaitingBoundaryEvent(Token* token); ///< Method removing all waiting tokens attached to activity of token
-  void advanceTokenWaitingForCompensation(const BPMN::Node* compensationNode); ///< Method advancing a token that was waiting for a compensation activity or compensation event subprocess
+//  void advanceTokenWaitingForCompensation(const BPMN::Node* compensationNode); ///< Method advancing a token that was waiting for a compensation activity or compensation event subprocess
   void completeCompensationActivity(Token* token); ///< Method handling the completion of a compensation activity
   void compensate(std::vector<Token*> compensations, Token* waitingToken); ///< Method compensating all activities in reverse order before the waiting token may advance
 
