@@ -62,6 +62,14 @@ Token::~Token() {
       systemState->tokenAtAssociatedActivity.erase(this);
     }
 
+    if ( node->represents<BPMN::CompensateThrowEvent>() ||
+         node->represents<BPMN::CompensateBoundaryEvent>() ||
+         node->represents<BPMN::CompensateStartEvent>() ||
+         node->represents<BPMN::Activity>() 
+    ) {
+      systemState->tokenAwaitingCompletedCompensation.erase(this);
+    }
+
     if ( node->represents<BPMNOS::Model::ResourceActivity>() ) {
       systemState->tokensAwaitingJobEntryEvent.erase(this);
       // TODO: send error message to all clients
@@ -320,26 +328,18 @@ void Token::advanceToEntered() {
       }
     }
     else if ( auto compensateThrowEvent = node->represents<BPMN::CompensateThrowEvent>(); compensateThrowEvent ) {
-      if ( compensateThrowEvent->activity ) {
-        // find compensation within context
-        auto context = const_cast<StateMachine*>(owner->parentToken->owned);
-        auto compensationNode = compensateThrowEvent->activity->compensatedBy;
-        auto compensationToken = context->findCompensationToken(compensationNode);
-        if ( compensationToken ) {
-          // TODO: advance compensationToken and wait for completion
-        }
-        else {
-          // nothing to compensate
-        }
+      auto context = const_cast<StateMachine*>(owner->parentToken->owned);
+      if ( auto compensations = context->getCompensationTokens(compensateThrowEvent->activity);
+        compensations.size()
+      ) {
+        // advance to busy and await compensations
+        engine->commands.emplace_back(std::bind(&Token::update,this,State::BUSY), this);
+        context->compensate( std::move(compensations), this );
+        return;
       }
       else {
-        // compensate all in reverse order
-        // TODO
-/*
-        for ( auto compensationToken : context->compensationTokens | std::views::reverse ) {
-        }
-*/
-      }      
+        // nothing to compensate
+      }
     }
 
     // tokens entering any other node automatically advance to done or
@@ -474,6 +474,7 @@ void Token::advanceToCompleted() {
 
   if ( node ) {
     if ( auto activity = node->represents<BPMN::Activity>() ) {
+//std::cerr << activity->id << " is for compensation: " << activity->isForCompensation << std::endl;
       if ( activity->isForCompensation ) {
         // final state for compensation activity reached
         auto stateMachine = const_cast<StateMachine*>(owner);
@@ -482,6 +483,10 @@ void Token::advanceToCompleted() {
       else {
         awaitExitEvent();
       }
+      return;
+    }
+    else if ( auto compensateBoundaryEvent = node->represents<BPMN::CompensateBoundaryEvent>(); compensateBoundaryEvent ) {
+      engine->commands.emplace_back(std::bind(&StateMachine::compensateActivity,const_cast<StateMachine*>(owner),this), this);
       return;
     }
     else if ( auto boundaryEvent = node->represents<BPMN::BoundaryEvent>(); boundaryEvent ) {
@@ -498,7 +503,10 @@ void Token::advanceToCompleted() {
         engine->commands.emplace_back(std::bind(&StateMachine::initiateBoundaryEvent,stateMachine,tokenAtActivity,node), tokenAtActivity);
       }
     }
-    else if ( auto startEvent = node->represents<BPMN::TypedStartEvent>(); startEvent ) {
+    else if ( node->represents<BPMN::CompensateStartEvent>() ) {
+      throw std::runtime_error("Token: compensation start events are not supported");
+    } 
+    else if ( auto startEvent = node->represents<BPMN::TypedStartEvent>() ) {
       // event subprocess is triggered
       auto eventSubProcess = owner->scope->represents<BPMN::EventSubProcess>();
       if ( !eventSubProcess ) {
@@ -522,7 +530,7 @@ std::cerr << "Context: " << context << " at " << context->scope->id << " has " <
       }
 
       // initiate nested event subprocesses when event subprocess is triggered
-      engine->commands.emplace_back(std::bind(&StateMachine::initiateEventSubprocesses,it->get(),this), this);
+//      engine->commands.emplace_back(std::bind(&StateMachine::initiateEventSubprocesses,it->get(),this), this);
 
       if ( startEvent->isInterrupting ) {
         // TODO: interrupt activity or process
@@ -602,18 +610,26 @@ void Token::advanceToExiting() {
     status.resize( statusExtension->attributeMap.size() - statusExtension->attributes.size() );
   }
 
-  if ( auto activity = node->represents<BPMN::Activity>(); activity ) {
+  if ( auto activity = node->represents<BPMN::Activity>() ) {
     auto stateMachine = const_cast<StateMachine*>(owner);
     if ( !activity->boundaryEvents.empty() ) {
       // remove tokens at boundary events
       engine->commands.emplace_back( std::bind(&StateMachine::deleteTokensAwaitingBoundaryEvent,stateMachine,this), stateMachine );
+      
+      // find compensate boundary event
+      auto it = std::find_if(activity->boundaryEvents.begin(), activity->boundaryEvents.end(), [](BPMN::FlowNode* boundaryEvent) {
+        return ( boundaryEvent->represents<BPMN::CompensateBoundaryEvent>() );
+      });
+      if ( it != activity->boundaryEvents.end() ) {
+        // create compensation token
+        engine->commands.emplace_back( std::bind(&StateMachine::createCompensationTokenForBoundaryEvent,stateMachine,*it, this), this );
+      }
     }
 
-    if ( activity->compensatedBy ) {
-      if ( auto compensationActivity = activity->compensatedBy->represents<BPMN::Activity>(); compensationActivity ) {
-        // create compensation activity
-        engine->commands.emplace_back( std::bind(&StateMachine::createCompensationActivity,stateMachine,compensationActivity, status), stateMachine );
-      }
+    if ( auto subProcess = node->represents<BPMN::SubProcess>();
+      subProcess && subProcess->compensationEventSubProcess
+    ) {
+      throw std::runtime_error("Token: compensation event subprocess for '" + subProcess->id + "' not supported");
     }
   }
 

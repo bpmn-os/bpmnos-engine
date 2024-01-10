@@ -141,7 +141,6 @@ void Engine::process(const ReadyEvent& event) {
   token->sequenceFlow = nullptr;
   token->status.insert(token->status.end(), event.values.begin(), event.values.end());
 
-  StateMachine* stateMachine = const_cast<StateMachine*>(token->owner);
   commands.emplace_back(std::bind(&Token::advanceToReady,token), token);
 }
 
@@ -162,7 +161,6 @@ void Engine::process(const EntryEvent& event) {
     token->status = event.entryStatus.value();
   }
 
-  StateMachine* stateMachine = const_cast<StateMachine*>(token->owner);
   commands.emplace_back(std::bind(&Token::advanceToEntered,token), token);
 }
 
@@ -174,7 +172,6 @@ void Engine::process(const TaskCompletionEvent& event) {
   // update token status
   token->status = event.updatedStatus;
 
-  StateMachine* stateMachine = const_cast<StateMachine*>(token->owner);
   commands.emplace_back(std::bind(&Token::advanceToCompleted,token), token);
 }
 
@@ -193,7 +190,6 @@ void Engine::process(const ExitEvent& event) {
     token->status = event.exitStatus.value();
   }
 
-  StateMachine* stateMachine = const_cast<StateMachine*>(token->owner);
   commands.emplace_back(std::bind(&Token::advanceToExiting,token), token);
 }
 
@@ -205,7 +201,6 @@ void Engine::process(const MessageDeliveryEvent& event) {
   erase_ptr<Message>(systemState->messages,message);
   systemState->tokensAwaitingMessageDelivery.remove(token);
 
-  StateMachine* stateMachine = const_cast<StateMachine*>(token->owner);
   commands.emplace_back(std::bind(&Token::advanceToCompleted,token), token);
 }
 

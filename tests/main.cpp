@@ -37,6 +37,10 @@ using namespace BPMNOS;
 // Messages
 #include "execution/message/test.h"
 
+// Compensations
+#include "execution/compensation/test.h"
+
+
 // Status
 #include "execution/status/test.h"
 

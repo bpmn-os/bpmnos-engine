@@ -115,7 +115,7 @@ private:
 
   bool isFeasible(); ///< Check restrictions within current and ancestor scopes
 
-  void advanceFromCreated();
+//  void advanceFromCreated();
   void advanceToReady();
   void advanceToEntered();
   void advanceToBusy();

@@ -18,6 +18,10 @@ class SystemState;
  *
  * This class manages all tokens for BPMN execution of a given scope. It also holds
  * a state machine for each child scope instantiated.
+ *
+ * @note A state machine without @ref parentToken represents a @ref BPMN::Process.
+ * @par
+ * @attention Event subprocesses within event subprocesses are not yet supported.
  */
 class StateMachine : public std::enable_shared_from_this<StateMachine> {
 public:
@@ -39,9 +43,8 @@ public:
   StateMachines pendingEventSubProcesses; ///< Container with state machines of all inactive event subprocesses that may be triggered.
 
   Tokens compensationTokens; ///< Container with all tokens created for a compensation activity.
-  StateMachines compensations; ///< Container with state machines for all compensations within scope.
 
-  Token* findCompensationToken(BPMN::Node* compensationNode) const; ///< Returns the token for a compensation activity or compenmsation event subprocess, if no such token exists a `nullptr` is returned.
+  std::vector<Token*> getCompensationTokens(const BPMN::Activity* activity = nullptr) const; ///< Returns the compensation tokens for a given activity or for all activities
   void run(const Values& status); ///< Create initial token and advance it.
 
 private:
@@ -57,8 +60,11 @@ private:
 
   void createChild(Token* parent, const BPMN::Scope* scope); ///< Method creating the state machine for a (sub)process
 
-  void createCompensationActivity(const BPMN::Activity* compensationActivity, const BPMNOS::Values& status); ///< Method creating the compensation activity of an activity
-  void createCompensationEventSubProcess(const BPMN::EventSubProcess* compensationEventSubProcess, const BPMNOS::Values& status); ///< Method creating the compensation event subproces of an activity
+  void createCompensationTokenForBoundaryEvent(const BPMN::BoundaryEvent* compensateBoundaryEvent, Token* token); ///< Method creating a compensation token at a compensate boundary event of an activity
+//  void createCompensationTokenForEventSubProcess(const BPMN::EventSubProcess* compensationEventSubProcess, Token* token); ///< Method creating a compensation token at a compensation event subproces of an activity
+
+  void compensateActivity(Token* token); ///< Method creating the compensation activity of an activity
+  void createCompensationEventSubProcess(const BPMN::EventSubProcess* eventSubProcess, Token* token); ///< Method creating the compensation event subproces of an activity
 
   void createInterruptingEventSubprocess(const StateMachine* pendingEventSubProcess, const BPMNOS::Values& status); ///< Method creating the state machine for an interrupting event subprocess
 
@@ -71,7 +77,8 @@ private:
   void createTokenCopies(Token* token, const std::vector<BPMN::SequenceFlow*>& sequenceFlows);
   void createMergedToken(const BPMN::FlowNode* gateway);
 
-  void shutdown();
+  void shutdown(); ///< Shutdown state machine after successfull execution
+  void terminate(); ///< Terminates state machine after failure
   void interruptActivity(Token* token);
 
   void copyToken(Token* token);
@@ -84,6 +91,9 @@ private:
   void deleteTokensAwaitingBoundaryEvent(Token* token); ///< Method removing all waiting tokens attached to activity of token
   void advanceTokenWaitingForCompensation(const BPMN::Node* compensationNode); ///< Method advancing a token that was waiting for a compensation activity or compensation event subprocess
   void completeCompensationActivity(Token* token); ///< Method handling the completion of a compensation activity
+  void compensate(std::vector<Token*> compensations, Token* waitingToken); ///< Method compensating all activities in reverse order before the waiting token may advance
+
+  Token* findTokenAwaitingErrorBoundaryEvent(Token* activityToken); ///< Method finding the token at a boundary event catching an error thrown in activity 
 };
 
 

@@ -102,7 +102,9 @@ public:
   //TODO: make sure that elements are deleted when no longer required
   std::unordered_map< StateMachine*, std::map<const BPMN::FlowNode*, std::vector<Token*> > > tokensAwaitingGatewayActivation; ///< Map holding tokens awaiting activation of a converging gateway
 
-  std::unordered_map< StateMachine*, std::map<const BPMN::Node*, Token* > > tokensAwaitingCompensation; ///< Map holding tokens awaiting completion of a compensation
+//  std::unordered_map< StateMachine*, std::map<const BPMN::Node*, Token* > > tokensAwaitingCompensation; ///< Map holding tokens awaiting completion of a compensation
+
+  std::unordered_map< Token*, Token* > tokenAwaitingCompletedCompensation; ///< Map holding a token that waits for completion of another 
 
   /**
    * @brief Container holding a state machine for each running instance.
