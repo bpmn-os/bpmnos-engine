@@ -99,7 +99,7 @@ public:
 
 //  auto_list<Token> tokensAwaitingEventBasedGateway; ///< Container holding all tokens awaiting activation event for an event-based gateway
 
-  //TODO: make sure that elements are deleted when no longer required
+  //TODO: move below to StateMachine or Token?
   std::unordered_map< StateMachine*, std::map<const BPMN::FlowNode*, std::vector<Token*> > > tokensAwaitingGatewayActivation; ///< Map holding tokens awaiting activation of a converging gateway
 
 //  std::unordered_map< StateMachine*, std::map<const BPMN::Node*, Token* > > tokensAwaitingCompensation; ///< Map holding tokens awaiting completion of a compensation

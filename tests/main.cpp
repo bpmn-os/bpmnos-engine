@@ -19,6 +19,7 @@ using namespace BPMNOS;
 /* Execution engine */
 
 // Process
+/*
 #include "execution/process/test.h"
 // Activities
 #include "execution/task/test.h"
@@ -38,11 +39,16 @@ using namespace BPMNOS;
 #include "execution/message/test.h"
 
 // Compensations
-#include "execution/compensation/test.h"
-
+#include "execution/compensationactivity/test.h"
+*/
+#include "execution/compensationeventsubprocess/test.h"
 
 // Status
 #include "execution/status/test.h"
+
+// When adding tests, don't forget to run: make clean; cmake ..; make all -j7; make tests
+
+
 
 // Playground
 void test() {

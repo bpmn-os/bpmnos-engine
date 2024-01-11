@@ -1,5 +1,5 @@
-SCENARIO( "Compensate throw event without compensations", "[compensation][throwevent]" ) {
-  const std::string modelFile = "execution/compensation/No_compensation.bpmn";
+SCENARIO( "Compensate throw event without compensations", "[compensationactivity][throwevent]" ) {
+  const std::string modelFile = "execution/compensationactivity/No_compensation.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
   GIVEN( "A single instance with no input values" ) {
 
@@ -42,8 +42,8 @@ SCENARIO( "Compensate throw event without compensations", "[compensation][throwe
   }
 }
 
-SCENARIO( "Task with unused compensation task", "[compensation][task]" ) {
-  const std::string modelFile = "execution/compensation/Unused_compensation_task.bpmn";
+SCENARIO( "Task with unused compensation task", "[compensationactivity][task]" ) {
+  const std::string modelFile = "execution/compensationactivity/Unused_compensation_task.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
   GIVEN( "A single instance with no input values" ) {
 
@@ -91,8 +91,8 @@ SCENARIO( "Task with unused compensation task", "[compensation][task]" ) {
   }
 }
 
-SCENARIO( "Task with compensation task", "[compensation][task]" ) {
-  const std::string modelFile = "execution/compensation/Compensation_task.bpmn";
+SCENARIO( "Task with compensation task", "[compensationactivity][task]" ) {
+  const std::string modelFile = "execution/compensationactivity/Compensation_task.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
   GIVEN( "A single instance with no input values" ) {
 
@@ -139,8 +139,8 @@ SCENARIO( "Task with compensation task", "[compensation][task]" ) {
   }
 }
 
-SCENARIO( "Task with compensation triggered by error", "[compensation][err]" ) {
-  const std::string modelFile = "execution/compensation/Compensation_triggered_by_error.bpmn";
+SCENARIO( "Task with compensation triggered by error", "[compensationactivity][error]" ) {
+  const std::string modelFile = "execution/compensationactivity/Compensation_triggered_by_error.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
   GIVEN( "A single instance with no input values" ) {
 
@@ -189,8 +189,8 @@ SCENARIO( "Task with compensation triggered by error", "[compensation][err]" ) {
   }
 }
 
-SCENARIO( "Task with compensation task", "[compensation][subprocess]" ) {
-  const std::string modelFile = "execution/compensation/Compensation_subprocess.bpmn";
+SCENARIO( "Task with compensation task", "[compensationactivity][subprocess]" ) {
+  const std::string modelFile = "execution/compensationactivity/Compensation_subprocess.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
   GIVEN( "A single instance with no input values" ) {
 
@@ -237,44 +237,8 @@ SCENARIO( "Task with compensation task", "[compensation][subprocess]" ) {
   }
 }
 
-SCENARIO( "Task with compensation task", "[compensation][eventsubprocess]" ) {
-  const std::string modelFile = "execution/compensation/Compensation_event_subprocess.bpmn";
-  REQUIRE_NOTHROW( Model::Model(modelFile) );
-  GIVEN( "A single instance with no input values" ) {
-
-    std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-      "Process_1, Instance_1,,\n"
-    ;
-
-    Model::StaticDataProvider dataProvider(modelFile,csv);
-    auto scenario = dataProvider.createScenario();
-
-    WHEN( "The engine is started with a recorder" ) {
-      Execution::Engine engine;
-      Execution::ReadyHandler readyHandler;
-      Execution::InstantEntryHandler entryHandler;
-      Execution::DeterministicTaskCompletionHandler completionHandler;
-      Execution::InstantExitHandler exitHandler;
-      Execution::TimeWarp timeHandler;
-      engine.addEventHandler(&readyHandler);
-      engine.addEventHandler(&entryHandler);
-      engine.addEventHandler(&completionHandler);
-      engine.addEventHandler(&exitHandler);
-      engine.addEventHandler(&timeHandler);
-      Execution::Recorder recorder;
-//      Execution::Recorder recorder(std::cerr);
-      engine.addListener(&recorder);
-      THEN( "Then an exception is thrown" ) {
-        REQUIRE_THROWS( engine.run(scenario.get()) );
-     }
-    }
-  }
-}
-
-
-SCENARIO( "Named task with compensation task", "[compensation][named]" ) {
-  const std::string modelFile = "execution/compensation/Named_compensation.bpmn";
+SCENARIO( "Named task with compensation task", "[compensationactivity][named]" ) {
+  const std::string modelFile = "execution/compensationactivity/Named_compensation.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
   GIVEN( "A single instance with no input values" ) {
 

@@ -329,17 +329,36 @@ void Token::advanceToEntered() {
     }
     else if ( auto compensateThrowEvent = node->represents<BPMN::CompensateThrowEvent>(); compensateThrowEvent ) {
       auto context = const_cast<StateMachine*>(owner->parentToken->owned);
-      if ( auto compensations = context->getCompensationTokens(compensateThrowEvent->activity);
-        compensations.size()
+//std::cerr << compensateThrowEvent->id << " has context " << context->scope->id << std::endl;
+
+      if ( auto eventSubProcess = owner->scope->represents<BPMN::EventSubProcess>(); 
+        eventSubProcess && eventSubProcess->startEvent->represents<BPMN::CompensateStartEvent>()
       ) {
-        // advance to busy and await compensations
-        engine->commands.emplace_back(std::bind(&Token::update,this,State::BUSY), this);
-        context->compensate( std::move(compensations), this );
-        return;
+//std::cerr << "try to update context " << context->compensableSubProcesses.size() << std::endl;
+        // compensation is triggered from within a compensation event subprocess
+        // find the compensable subprocess and update context
+        auto it = std::find_if(
+          context->compensableSubProcesses.begin(),
+          context->compensableSubProcesses.end(),
+          [&eventSubProcess](const std::shared_ptr<StateMachine>& stateMachine) -> bool {
+            // check if compensation event subprocess belongs to compensable subprocess
+            return ( stateMachine->scope->compensationEventSubProcess == eventSubProcess );
+          }
+        );
+        context = ( it != context->compensableSubProcesses.end() ? it->get() : nullptr );
       }
-      else {
-        // nothing to compensate
+
+      if ( context ) {
+        if ( auto compensations = context->getCompensationTokens(compensateThrowEvent->activity);
+          compensations.size()
+        ) {
+          // advance to busy and await compensations
+          engine->commands.emplace_back(std::bind(&Token::update,this,State::BUSY), this);
+          context->compensate( std::move(compensations), this );
+          return;
+        }
       }
+      // nothing to compensate, continue with token flow
     }
 
     // tokens entering any other node automatically advance to done or
@@ -504,7 +523,7 @@ void Token::advanceToCompleted() {
       }
     }
     else if ( node->represents<BPMN::CompensateStartEvent>() ) {
-      throw std::runtime_error("Token: compensation start events are not supported");
+      // nothing do
     } 
     else if ( auto startEvent = node->represents<BPMN::TypedStartEvent>() ) {
       // event subprocess is triggered
@@ -622,14 +641,16 @@ void Token::advanceToExiting() {
       });
       if ( it != activity->boundaryEvents.end() ) {
         // create compensation token
-        engine->commands.emplace_back( std::bind(&StateMachine::createCompensationTokenForBoundaryEvent,stateMachine,*it, this), this );
+        engine->commands.emplace_back( std::bind(&StateMachine::createCompensationTokenForBoundaryEvent,stateMachine,*it, status), stateMachine );
       }
     }
 
     if ( auto subProcess = node->represents<BPMN::SubProcess>();
       subProcess && subProcess->compensationEventSubProcess
     ) {
-      throw std::runtime_error("Token: compensation event subprocess for '" + subProcess->id + "' not supported");
+      auto stateMachine = const_cast<StateMachine*>(owner);
+      // create compensation event subprocess
+      engine->commands.emplace_back( std::bind(&StateMachine::createCompensationEventSubProcess,stateMachine,subProcess->compensationEventSubProcess, status), stateMachine );
     }
   }
 
