@@ -104,7 +104,8 @@ public:
 
 //  std::unordered_map< StateMachine*, std::map<const BPMN::Node*, Token* > > tokensAwaitingCompensation; ///< Map holding tokens awaiting completion of a compensation
 
-  std::unordered_map< Token*, Token* > tokenAwaitingCompletedCompensation; ///< Map holding a token that waits for completion of another 
+  std::unordered_map< Token*, Token* > tokenAwaitingCompensationActivity; ///< Map holding a token that waits for completion of another 
+  std::unordered_map< StateMachine*, Token* > tokenAwaitingCompensationEventSubProcess; ///< Map holding a token that waits for completion of an event subprocess
 
   /**
    * @brief Container holding a state machine for each running instance.

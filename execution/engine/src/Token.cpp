@@ -67,7 +67,7 @@ Token::~Token() {
          node->represents<BPMN::CompensateStartEvent>() ||
          node->represents<BPMN::Activity>() 
     ) {
-      systemState->tokenAwaitingCompletedCompensation.erase(this);
+      systemState->tokenAwaitingCompensationActivity.erase(this);
     }
 
     if ( node->represents<BPMNOS::Model::ResourceActivity>() ) {

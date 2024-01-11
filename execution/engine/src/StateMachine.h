@@ -21,7 +21,9 @@ class SystemState;
  *
  * @note A state machine without @ref parentToken represents a @ref BPMN::Process.
  * @par
- * @attention Event subprocesses within event subprocesses are not yet supported.
+ * @note Inclusive gateways are not yet supported.
+ * 
+ * @attention Event subprocesses within event subprocesses are not yet tested (and may not be supported).
  */
 class StateMachine : public std::enable_shared_from_this<StateMachine> {
 public:
@@ -43,8 +45,8 @@ public:
   StateMachines pendingEventSubProcesses; ///< Container with state machines of all inactive event subprocesses that may be triggered.
 
   Tokens compensationTokens; ///< Container with all tokens created for a compensation activity.
-
-  std::vector<Token*> getCompensationTokens(const BPMN::Activity* activity = nullptr) const; ///< Returns the compensation tokens for a given activity or for all activities
+  StateMachines compensationEventSubProcesses; ///< Container with state machines created for a compensation event subprocesses of a child subprocess
+  Tokens getCompensationTokens(const BPMN::Activity* activity = nullptr) const; ///< Returns the compensation tokens for a given activity or for all activities
   void run(const Values& status); ///< Create initial token and advance it.
 
 private:
@@ -88,10 +90,12 @@ private:
   void attemptShutdown();
   void deleteChild(StateMachine* child); ///< Method removing completed state machine from parent
   void deleteNonInterruptingEventSubProcess(StateMachine* eventSubProcess); ///< Method removing completed event subprocess from context
+  void deleteCompensationEventSubProcess(StateMachine* eventSubProcess); ///< Method removing completed compensation event subprocess from context
   void deleteTokensAwaitingBoundaryEvent(Token* token); ///< Method removing all waiting tokens attached to activity of token
-//  void advanceTokenWaitingForCompensation(const BPMN::Node* compensationNode); ///< Method advancing a token that was waiting for a compensation activity or compensation event subprocess
   void completeCompensationActivity(Token* token); ///< Method handling the completion of a compensation activity
-  void compensate(std::vector<Token*> compensations, Token* waitingToken); ///< Method compensating all activities in reverse order before the waiting token may advance
+  void completeCompensationEventSubProcess(); ///< Method handling the completion of a compensation event subprocess
+  void advanceTokenWaitingForCompensation(Token* waitingToken); ///< Method advancing a token that was waiting for a compensation to be completed
+  void compensate(Tokens compensations, Token* waitingToken); ///< Method compensating all activities in reverse order before the waiting token may advance
 
   Token* findTokenAwaitingErrorBoundaryEvent(Token* activityToken); ///< Method finding the token at a boundary event catching an error thrown in activity 
 };
