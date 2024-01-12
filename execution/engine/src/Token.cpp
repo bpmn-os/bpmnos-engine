@@ -51,6 +51,7 @@ Token::Token(const std::vector<Token*>& others)
 
 Token::~Token() {
 //std::cerr << "~Token(" << (node ? node->id : owner->process->id ) << "/" << this << ")" << std::endl;
+
   auto systemState = const_cast<SystemState*>(owner->systemState);
   if ( node) {
     if ( auto activity = node->represents<BPMN::Activity>(); activity && !activity->boundaryEvents.empty() ) {
