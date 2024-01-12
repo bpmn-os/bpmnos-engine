@@ -8,7 +8,7 @@ list(APPEND engine_SOURCES
   events/EntryEvent.cpp
   events/CompletionEvent.cpp
   events/TaskCompletionEvent.cpp
-  events/TimerEvent.cpp
+  events/ErrorEvent.cpp
   events/MessageDeliveryEvent.cpp
   events/ExitEvent.cpp
   StateMachine.cpp
@@ -37,7 +37,7 @@ list(APPEND engine_HEADERS
   events/TaskCompletionEvent.h
   events/ChoiceEvent.h
   events/ResourceShutdownEvent.h
-  events/TimerEvent.h
+  events/ErrorEvent.h
   events/MessageDeliveryEvent.h
   events/ExitEvent.h
   StateMachine.h

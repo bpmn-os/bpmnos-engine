@@ -210,8 +210,9 @@ void Engine::process(const TerminationEvent& event) {
   throw std::runtime_error("Engine: TerminationEvent not yet implemented");
 }
 
-void Engine::process(const TimerEvent& event) {
-  throw std::runtime_error("Engine: TimerEvent not yet implemented");
+void Engine::process(const ErrorEvent& event) {
+  Token* token = const_cast<Token*>(event.token);
+  commands.emplace_back(std::bind(&Token::advanceToFailed,token), token);
 }
 
 BPMNOS::number Engine::getCurrentTime() {

@@ -12,7 +12,7 @@
 #include "events/MessageDeliveryEvent.h"
 #include "events/ReadyEvent.h"
 #include "events/TerminationEvent.h"
-#include "events/TimerEvent.h"
+#include "events/ErrorEvent.h"
 #include "EventHandler.h"
 #include "SystemState.h"
 
@@ -45,7 +45,7 @@ public:
   void process(const MessageDeliveryEvent& event);
   void process(const ReadyEvent& event);
   void process(const TerminationEvent& event);
-  void process(const TimerEvent& event);
+  void process(const ErrorEvent& event);
 
 /**
  * @brief Returns the timestamp the engine is in.
