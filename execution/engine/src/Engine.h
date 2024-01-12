@@ -44,8 +44,8 @@ public:
   void process(const ExitEvent& event);
   void process(const MessageDeliveryEvent& event);
   void process(const ReadyEvent& event);
-  void process(const TerminationEvent& event);
   void process(const ErrorEvent& event);
+  void process(const TerminationEvent& event);
 
 /**
  * @brief Returns the timestamp the engine is in.

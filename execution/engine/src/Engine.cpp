@@ -3,6 +3,7 @@
 #include "StateMachine.h"
 #include "execution/utility/src/erase.h"
 #include "execution/listener/src/Listener.h"
+#include <cassert>
 
 using namespace BPMNOS::Execution;
 
@@ -129,9 +130,21 @@ void Engine::deleteInstance(StateMachine* instance) {
   erase_ptr<StateMachine>(systemState->instances,instance);
 }
 
-void Engine::process(const ClockTickEvent& event) {
+void Engine::process([[maybe_unused]] const ClockTickEvent& event) {
 //std::cerr << "ClockTickEvent " << std::endl;
   systemState->incrementTimeBy(clockTick);
+  // trigger tokens awaiting timer
+  while ( !systemState->tokensAwaitingTimer.empty() ) {
+    auto it = systemState->tokensAwaitingTimer.begin();
+    auto [time, token_ptr] = *it;
+    if ( time > systemState->getTime() ) {
+      break;
+    }
+    auto token = token_ptr.lock();
+    assert( token );
+    commands.emplace_back(std::bind(&Token::advanceToCompleted,token.get()), token.get());
+    systemState->tokensAwaitingTimer.remove(token.get());
+  }
 }
 
 void Engine::process(const ReadyEvent& event) {
@@ -206,14 +219,15 @@ void Engine::process(const MessageDeliveryEvent& event) {
 }
 
 
-void Engine::process(const TerminationEvent& event) {
-  throw std::runtime_error("Engine: TerminationEvent not yet implemented");
-}
-
 void Engine::process(const ErrorEvent& event) {
   Token* token = const_cast<Token*>(event.token);
   commands.emplace_back(std::bind(&Token::advanceToFailed,token), token);
 }
+
+void Engine::process([[maybe_unused]] const TerminationEvent& event) {
+  throw std::runtime_error("Engine: TerminationEvent not yet implemented");
+}
+
 
 BPMNOS::number Engine::getCurrentTime() {
   return systemState->currentTime;

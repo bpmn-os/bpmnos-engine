@@ -86,7 +86,7 @@ public:
   }
 
   bool empty() const {
-    for ( auto& _ : *this ) {
+    for ( auto _ : *this ) {
       return false;
     }
     return true;

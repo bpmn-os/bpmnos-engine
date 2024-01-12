@@ -1,5 +1,6 @@
 #include "ReadyHandler.h"
 #include "execution/engine/src/events/ReadyEvent.h"
+#include <cassert>
 
 using namespace BPMNOS::Execution;
 
@@ -10,6 +11,7 @@ ReadyHandler::ReadyHandler()
 std::unique_ptr<Event> ReadyHandler::fetchEvent( const SystemState* systemState ) {
   for ( auto& [token_ptr] : systemState->tokensAwaitingReadyEvent ) {
     if ( auto token = token_ptr.lock() )  {
+      assert( token );
       if ( systemState->assumedTime ) {
         auto values = systemState->scenario->getAnticipatedValues(token->node, token->status, systemState->currentTime );
         return std::make_unique<ReadyEvent>(token.get(),values);
