@@ -121,7 +121,7 @@ void StateMachine::registerRecipient() {
     it != const_cast<SystemState*>(systemState)->unsent.end()
   ) {
     for ( auto& [message_ptr] : it->second ) {
-      if ( auto message = message_ptr.lock(); message ) {
+      if ( auto message = message_ptr.lock() ) {
         const_cast<SystemState*>(systemState)->correspondence[this].emplace_back(message->weak_from_this());
         const_cast<SystemState*>(systemState)->outbox[message->origin].emplace_back(message->weak_from_this());
       }
@@ -140,7 +140,7 @@ void StateMachine::unregisterRecipient() {
       it != const_cast<SystemState*>(systemState)->correspondence.end()
     ) {
       for ( auto& [message_ptr] : it->second ) {
-        if ( auto message = message_ptr.lock(); message ) {
+        if ( auto message = message_ptr.lock() ) {
           erase_ptr(const_cast<SystemState*>(systemState)->messages, message.get());
         }
       }
@@ -347,7 +347,7 @@ void StateMachine::terminate(Token* token) {
   auto engine = const_cast<Engine*>(systemState->engine);
 
   // find error boundary event
-  if ( auto eventToken = findTokenAwaitingErrorBoundaryEvent(token); eventToken ) {
+  if ( auto eventToken = findTokenAwaitingErrorBoundaryEvent(token) ) {
     engine->commands.emplace_back(std::bind(&Token::update,token,Token::State::FAILED), token);
     engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,eventToken), eventToken);
     return;
@@ -379,7 +379,7 @@ void StateMachine::handleFailure(Token* token) {
 
   if ( token->node && token->node->represents<BPMN::Task>() ) {
     // find error boundary event
-    if ( auto eventToken = findTokenAwaitingErrorBoundaryEvent(token); eventToken ) {
+    if ( auto eventToken = findTokenAwaitingErrorBoundaryEvent(token) ) {
       engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,eventToken), eventToken);
       return;
     }
@@ -651,7 +651,7 @@ void StateMachine::compensate(Tokens compensations, Token* waitingToken) {
       tokenAwaitingCompensationActivity[compensationToken] = it->get();
     }
     compensationToken = it->get();
-    it++; 
+    it++;
   }
   // create awaiter for waiting token
     if ( compensationToken->node->represents<BPMN::CompensateStartEvent>() ) {

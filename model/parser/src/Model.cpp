@@ -40,7 +40,7 @@ std::unique_ptr<BPMN::FlowNode> Model::createActivity(XML::bpmn::tActivity* acti
   // bind attributes, restrictions, and operators to all other activities
   node = bind<BPMN::FlowNode>( node, std::make_unique<Status>(activity,parent) );
 
-  if ( auto jobShop = node->parent->represents<JobShop>(); jobShop ) {
+  if ( auto jobShop = node->parent->represents<JobShop>() ) {
     // add node to job list of resource activity
     jobShop->resourceActivity->jobs.push_back(node->as<BPMN::Activity>());
    }

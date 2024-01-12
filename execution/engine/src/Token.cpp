@@ -90,7 +90,7 @@ const BPMNOS::Model::AttributeMap& Token::getAttributeMap() const {
     return owner->process->extensionElements->as<const Model::Status>()->attributeMap;
   }
 
-  if ( auto status = node->extensionElements->represents<const Model::Status>(); status ) {
+  if ( auto status = node->extensionElements->represents<const Model::Status>() ) {
     return status->attributeMap;
   }
 
@@ -270,7 +270,7 @@ void Token::advanceToEntered() {
     // tokens entering a process advance to busy state
     engine->commands.emplace_back(std::bind(&Token::advanceToBusy,this), this);
   }
-  else if ( auto activity = node->represents<BPMN::Activity>(); activity ) {
+  else if ( auto activity = node->represents<BPMN::Activity>() ) {
 //std::cerr << "activity" << std::endl;
 
     auto stateMachine = const_cast<StateMachine*>(owner);
@@ -325,7 +325,7 @@ void Token::advanceToEntered() {
           // defer sending of message to when recipient is instantiated
           systemState->unsent[message->recipient.value()].emplace_back(message->weak_from_this());
         }
-        else if ( auto stateMachine = it->second.lock(); stateMachine ) {
+        else if ( auto stateMachine = it->second.lock() ) {
           systemState->correspondence[stateMachine.get()].emplace_back(message->weak_from_this());
           systemState->outbox[node].emplace_back(message->weak_from_this());
         }
@@ -334,11 +334,11 @@ void Token::advanceToEntered() {
         systemState->outbox[node].emplace_back(message->weak_from_this());
       }
     }
-    else if ( auto compensateThrowEvent = node->represents<BPMN::CompensateThrowEvent>(); compensateThrowEvent ) {
+    else if ( auto compensateThrowEvent = node->represents<BPMN::CompensateThrowEvent>() ) {
       auto context = const_cast<StateMachine*>(owner->parentToken->owned);
 //std::cerr << compensateThrowEvent->id << " has context " << context->scope->id << std::endl;
 
-      if ( auto eventSubProcess = owner->scope->represents<BPMN::EventSubProcess>(); 
+      if ( auto eventSubProcess = owner->scope->represents<BPMN::EventSubProcess>();
         eventSubProcess && eventSubProcess->startEvent->represents<BPMN::CompensateStartEvent>()
       ) {
 //std::cerr << "try to update context " << context->compensableSubProcesses.size() << std::endl;
@@ -515,7 +515,7 @@ void Token::advanceToCompleted() {
       engine->commands.emplace_back(std::bind(&StateMachine::compensateActivity,const_cast<StateMachine*>(owner),this), this);
       return;
     }
-    else if ( auto boundaryEvent = node->represents<BPMN::BoundaryEvent>(); boundaryEvent ) {
+    else if ( auto boundaryEvent = node->represents<BPMN::BoundaryEvent>() ) {
       auto stateMachine = const_cast<StateMachine*>(owner);
       auto tokenAtActivity = const_cast<SystemState*>(owner->systemState)->tokenAtAssociatedActivity[this];
       erase_ptr<Token>(const_cast<SystemState*>(owner->systemState)->tokensAwaitingBoundaryEvent[tokenAtActivity],this);
@@ -687,11 +687,11 @@ void Token::advanceToDeparting() {
     throw std::runtime_error("Token: implicit split at node '" + node->id + "'");
   }
 
-  if ( auto exclusiveGateway = node->represents<BPMN::ExclusiveGateway>(); exclusiveGateway ) {
+  if ( auto exclusiveGateway = node->represents<BPMN::ExclusiveGateway>() ) {
     for ( auto sequenceFlow : node->outgoing ) {
       if ( sequenceFlow != exclusiveGateway->defaultFlow ) {
         // check gatekeeper conditions
-        if ( auto gatekeeper = sequenceFlow->extensionElements->as<BPMNOS::Model::Gatekeeper>(); gatekeeper ) {
+        if ( auto gatekeeper = sequenceFlow->extensionElements->as<BPMNOS::Model::Gatekeeper>() ) {
           if ( gatekeeper->restrictionsSatisfied(status) ) {
             auto engine = const_cast<Engine*>(owner->systemState->engine);
             engine->commands.emplace_back(std::bind(&Token::advanceToDeparted,this,sequenceFlow), this);
@@ -772,7 +772,7 @@ void Token::awaitReadyEvent() {
 void Token::awaitEntryEvent() {
   auto systemState = const_cast<SystemState*>(owner->systemState);
 
-  if ( auto tokenAtResource = getResourceToken(); tokenAtResource ) {
+  if ( auto tokenAtResource = getResourceToken() ) {
     systemState->tokensAwaitingJobEntryEvent[tokenAtResource].emplace_back(weak_from_this());
   }
   else {
@@ -931,7 +931,7 @@ void Token::destroy() {
 }
 
 Token* Token::getResourceToken() const {
-  if ( auto jobShop = node->parent->represents<BPMNOS::Model::JobShop>(); jobShop ) {
+  if ( auto jobShop = node->parent->represents<BPMNOS::Model::JobShop>() ) {
     const BPMN::FlowNode* resourceActivity = jobShop->resourceActivity->as<BPMN::FlowNode>();
     Token* resourceToken = owner->parentToken;
     while (resourceToken->node != resourceActivity) {

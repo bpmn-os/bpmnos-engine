@@ -148,7 +148,7 @@ void Engine::process(const ReadyEvent& event) {
 void Engine::process(const EntryEvent& event) {
 //std::cerr << "EntryEvent " << event.token->node->id << std::endl;
   Token* token = const_cast<Token*>(event.token);
-  if ( auto tokenAtResource = event.token->getResourceToken(); tokenAtResource ) {
+  if ( auto tokenAtResource = event.token->getResourceToken() ) {
     systemState->tokensAwaitingJobEntryEvent[tokenAtResource].remove(token);
     // resource is no longer idle
     systemState->tokensAtIdleResources.remove(tokenAtResource);
@@ -181,7 +181,7 @@ void Engine::process(const ExitEvent& event) {
   Token* token = const_cast<Token*>(event.token);
   systemState->tokensAwaitingExitEvent.remove(token);
 
-  if ( auto tokenAtResource = token->getResourceToken(); tokenAtResource ) {
+  if ( auto tokenAtResource = token->getResourceToken() ) {
     // resource becomes idle
     systemState->tokensAtIdleResources.emplace_back( tokenAtResource->weak_from_this() );
   }
