@@ -26,17 +26,18 @@ using namespace BPMNOS;
 // Gateways
 #include "execution/parallelgateway/test.h"
 #include "execution/exclusivegateway/test.h"
+// Event-based gateways
+#include "execution/eventbasedgateway/test.h"
 // Events
 #include "execution/timer/test.h"
 #include "execution/errorevent/test.h"
 #include "execution/escalationevent/test.h"
-// Event subprocesses
-#include "execution/eventsubprocess/test.h"
-// Boundary events
-#include "execution/boundaryevent/test.h"
 // Messages
 #include "execution/message/test.h"
-
+// Boundary events
+#include "execution/boundaryevent/test.h"
+// Event subprocesses
+#include "execution/eventsubprocess/test.h"
 // Compensations
 #include "execution/compensationactivity/test.h"
 
@@ -45,7 +46,7 @@ using namespace BPMNOS;
 // Status
 #include "execution/status/test.h"
 
-// When adding tests, don't forget to run: make clean; cmake ..; make all -j7; make tests
+// When adding/modifying tests, don't forget to run: make clean; cmake ..; make all -j7; make tests
 
 
 

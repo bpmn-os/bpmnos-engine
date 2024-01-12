@@ -243,7 +243,7 @@ void StateMachine::compensateActivity(Token* token) {
   }
 }
 
-void StateMachine::createTokenCopies(Token* token, const std::vector<BPMN::SequenceFlow*>& sequenceFlows) {
+std::vector<Token*> StateMachine::createTokenCopies(Token* token, const std::vector<BPMN::SequenceFlow*>& sequenceFlows) {
   std::vector<Token*> tokenCopies;
   // create a token copy for each new destination
   for ( [[maybe_unused]] auto _ : sequenceFlows ) {
@@ -251,15 +251,13 @@ void StateMachine::createTokenCopies(Token* token, const std::vector<BPMN::Seque
     tokenCopies.push_back(tokens.back().get());
   }
 
-  // remove original token
-  erase_ptr<Token>(tokens,token);
-
   // advance all token copies
   for (size_t i = 0; i < sequenceFlows.size(); i++ ) {
     auto tokenCopy = tokenCopies[i];
     auto engine = const_cast<Engine*>(systemState->engine);
     engine->commands.emplace_back(std::bind(&Token::advanceToDeparted,tokenCopy,sequenceFlows[i]), tokenCopy);
   }
+  return tokenCopies;
 }
 
 void StateMachine::createMergedToken(const BPMN::FlowNode* gateway) {
@@ -285,14 +283,41 @@ void StateMachine::createMergedToken(const BPMN::FlowNode* gateway) {
 }
 
 
-void StateMachine::copyToken(Token* token) {
+void StateMachine::handleDivergingGateway(Token* token) {
   if ( token->node->represents<BPMN::ParallelGateway>() ) {
     // create token copies and advance them
     createTokenCopies(token, token->node->outgoing);
+    // remove original token
+    erase_ptr<Token>(tokens,token);
+  }
+  else if ( token->node->represents<BPMN::EventBasedGateway>() ) {
+    // create token copies and advance them
+    auto tokenCopies = createTokenCopies(token, token->node->outgoing);
+    auto& tokenAtEventBasedGateway = const_cast<SystemState*>(systemState)->tokenAtEventBasedGateway;
+    auto& tokensAwaitingEvent = const_cast<SystemState*>(systemState)->tokensAwaitingEvent;
+
+    for ( auto tokenCopy : tokenCopies ) {
+      tokenAtEventBasedGateway[tokenCopy] = token;
+      tokensAwaitingEvent[token].push_back(tokenCopy);
+    }
   }
   else {
     throw std::runtime_error("StateMachine: diverging gateway type not yet supported");
   }
+}
+
+void StateMachine::handleEventBasedGatewayActivation(Token* token) {
+  auto tokenAtEventBasedGateway = const_cast<SystemState*>(systemState)->tokenAtEventBasedGateway.at(token);
+  auto waitingTokens = const_cast<SystemState*>(systemState)->tokensAwaitingEvent.at(tokenAtEventBasedGateway);
+  // remove all other waiting tokens
+  for ( auto waitingToken : waitingTokens ) {
+    if ( waitingToken != token ) {
+      erase_ptr<Token>(tokens,waitingToken);
+    }
+  }
+  // remove token at event-based gateway
+  tokenAtEventBasedGateway->update(Token::State::COMPLETED);
+  erase_ptr<Token>(tokens,tokenAtEventBasedGateway);
 }
 
 void StateMachine::handleEscalation(Token* token) {
@@ -419,7 +444,7 @@ void StateMachine::handleFailure(Token* token) {
 }
 
 Token* StateMachine::findTokenAwaitingErrorBoundaryEvent(Token* activityToken) {
-  auto& tokensAwaitingBoundaryEvent = const_cast<SystemState*>(this->systemState)->tokensAwaitingBoundaryEvent[activityToken];
+  auto& tokensAwaitingBoundaryEvent = const_cast<SystemState*>(systemState)->tokensAwaitingBoundaryEvent[activityToken];
   for ( auto eventToken : tokensAwaitingBoundaryEvent) {
     if ( eventToken->node->represents<BPMN::ErrorBoundaryEvent>() ) {
       return eventToken;

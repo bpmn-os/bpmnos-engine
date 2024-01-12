@@ -71,6 +71,13 @@ Token::~Token() {
       systemState->tokenAwaitingCompensationActivity.erase(this);
     }
 
+    if ( node->represents<BPMN::EventBasedGateway>() ) {
+      systemState->tokensAwaitingEvent.erase(this);
+    }
+    if ( node->represents<BPMN::CatchEvent>() ) {
+      systemState->tokenAtEventBasedGateway.erase(this);
+    }
+
     if ( node->represents<BPMNOS::Model::ResourceActivity>() ) {
       systemState->tokensAwaitingJobEntryEvent.erase(this);
       // TODO: send error message to all clients
@@ -417,8 +424,9 @@ void Token::advanceToBusy() {
     }
   }
   else if ( node->represents<BPMN::EventBasedGateway>() ) {
-      throw std::runtime_error("Token: event-based gateway not yet supported");
-//    awaitEventBasedGateway(); // TODO: tokens should be passed forward to catch events
+    // token will automatically be copied and forwarded along each sequence flow
+    auto engine = const_cast<Engine*>(owner->systemState->engine);
+    engine->commands.emplace_back(std::bind(&Token::advanceToDeparting,this), this);
   }
   else if ( node->represents<BPMN::TimerCatchEvent>() ) {
     // TODO: determine time
@@ -592,6 +600,14 @@ std::cerr << "Context: " << context << " at " << context->scope->id << " has " <
 //std::cerr << "***" << std::endl;
       }
     }
+    else if ( auto catchEvent = node->represents<BPMN::CatchEvent>();
+      catchEvent &&
+      node->incoming.size() == 1 &&
+      node->incoming.front()->source->represents<BPMN::EventBasedGateway>()
+    ) {
+      auto engine = const_cast<Engine*>(owner->systemState->engine);
+      engine->commands.emplace_back(std::bind(&StateMachine::handleEventBasedGatewayActivation,const_cast<StateMachine*>(owner),this), this);
+    }
   }
 
 //std::cerr << "check restrictions" << std::endl;
@@ -714,9 +730,10 @@ void Token::advanceToDeparting() {
       engine->commands.emplace_back(std::bind(&Token::advanceToFailed,this), this);
     }
   }
-  else {
+  else if ( node->outgoing.size() > 1 ) {
+    // non-exclusive diverging gateway
     auto engine = const_cast<Engine*>(owner->systemState->engine);
-    engine->commands.emplace_back(std::bind(&StateMachine::copyToken,const_cast<StateMachine*>(owner),this), this);
+    engine->commands.emplace_back(std::bind(&StateMachine::handleDivergingGateway,const_cast<StateMachine*>(owner),this), this);
   }
 }
 
@@ -822,13 +839,6 @@ void Token::awaitMessageDelivery() {
   auto recipientHeader = node->extensionElements->as<BPMNOS::Model::Message>()->getRecipientHeader(status);
   systemState->tokensAwaitingMessageDelivery.emplace_back(weak_from_this(),recipientHeader);
 }
-
-/*
-void Token::awaitEventBasedGateway() {
-  auto systemState = const_cast<SystemState*>(owner->systemState);
-  systemState->tokensAwaitingEventBasedGateway.emplace_back(weak_from_this());
-}
-*/
 
 void Token::awaitGatewayActivation() {
 //std::cerr << "awaitGatewayActivation" << std::endl;

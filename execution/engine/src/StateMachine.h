@@ -79,14 +79,15 @@ private:
 
   void compensateActivity(Token* token); ///< Method creating the compensation activity of an activity
 
-  void createTokenCopies(Token* token, const std::vector<BPMN::SequenceFlow*>& sequenceFlows);
+  std::vector<Token*> createTokenCopies(Token* token, const std::vector<BPMN::SequenceFlow*>& sequenceFlows);
   void createMergedToken(const BPMN::FlowNode* gateway);
 
   void shutdown(); ///< Shutdown state machine after successfull execution
   void terminate(Token* token); ///< Terminates state machine after failure
   void interruptActivity(Token* token);
 
-  void copyToken(Token* token);
+  void handleDivergingGateway(Token* token);
+  void handleEventBasedGatewayActivation(Token* token);
   void handleEscalation(Token* token);
   void handleFailure(Token* token);
   void attemptGatewayActivation(const BPMN::FlowNode* node);

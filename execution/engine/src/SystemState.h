@@ -97,7 +97,8 @@ public:
 
   auto_list<Token,Values> tokensAwaitingMessageDelivery; ///< Container holding all tokens awaiting a message delivery event with associated header values
 
-//  auto_list<Token> tokensAwaitingEventBasedGateway; ///< Container holding all tokens awaiting activation event for an event-based gateway
+  std::unordered_map< Token*, Token* > tokenAtEventBasedGateway; ///< Map holding the token at the relevant event-based gateway
+  std::unordered_map< Token*, std::vector<Token*> > tokensAwaitingEvent; ///< Map holding all tokens at catching events subsequent to an event-based gateway
 
   //TODO: move below to StateMachine or Token?
   std::unordered_map< StateMachine*, std::map<const BPMN::FlowNode*, std::vector<Token*> > > tokensAwaitingGatewayActivation; ///< Map holding tokens awaiting activation of a converging gateway
