@@ -100,6 +100,7 @@ void StateMachine::deleteCompensationEventSubProcess(StateMachine* eventSubProce
 void StateMachine::interruptActivity(Token* token) {
 //std::cerr << "interrupt activity " << token->node->id << std::endl;
   deleteTokensAwaitingBoundaryEvent(token);
+  token->update(Token::State::WITHDRAWN);
   erase_ptr<Token>(tokens, token);
 }
 
@@ -110,6 +111,7 @@ void StateMachine::deleteTokensAwaitingBoundaryEvent(Token* token) {
   auto it = tokensAwaitingBoundaryEvent.find(token);
   if ( it != tokensAwaitingBoundaryEvent.end() ) {
     for ( auto waitingToken : it->second ) {
+      waitingToken->update(Token::State::WITHDRAWN);
       erase_ptr<Token>(tokens, waitingToken);
     }
     tokensAwaitingBoundaryEvent.erase(it);
@@ -312,6 +314,7 @@ void StateMachine::handleEventBasedGatewayActivation(Token* token) {
   // remove all other waiting tokens
   for ( auto waitingToken : waitingTokens ) {
     if ( waitingToken != token ) {
+      waitingToken->update(Token::State::WITHDRAWN);
       erase_ptr<Token>(tokens,waitingToken);
     }
   }
@@ -552,6 +555,9 @@ void StateMachine::attemptShutdown() {
   // all tokens are in DONE state
 
   // no new event subprocesses can be triggered
+  for ( auto eventSubProcess : pendingEventSubProcesses ) {
+    eventSubProcess->tokens.front()->update(Token::State::WITHDRAWN);
+  }
   pendingEventSubProcesses.clear();
 
   auto engine = const_cast<Engine*>(systemState->engine);

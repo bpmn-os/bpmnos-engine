@@ -570,14 +570,24 @@ std::cerr << "Context: " << context << " at " << context->scope->id << " has " <
 
         // move triggered event subprocess to interruptingEventSubProcess
         context->interruptingEventSubProcess = std::move(*it);
+        context->pendingEventSubProcesses.erase(it);
 
-        // ensure that no other event subprocesses can be triggered
+        // ensure that no other event subprocess can be triggered
+        for ( auto eventSubProcess : context->pendingEventSubProcesses ) {
+          eventSubProcess->tokens.front()->update(Token::State::WITHDRAWN);
+        }
         context->pendingEventSubProcesses.clear();
 
         // terminate all running non-interrupting event subprocesses
+        for ( auto eventSubProcess : context->nonInterruptingEventSubProcesses ) {
+          eventSubProcess->tokens.front()->update(Token::State::WITHDRAWN);
+        }
         context->nonInterruptingEventSubProcesses.clear();
 
         // interrupt all running tokens in state machine
+        for ( auto token : context->tokens ) {
+          token->update(Token::State::WITHDRAWN);
+        }
         context->tokens.clear();
 
       }

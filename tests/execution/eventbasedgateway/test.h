@@ -33,6 +33,9 @@ SCENARIO( "Event-based gateway with two timer events", "[execution][eventbasedga
         REQUIRE( completionLog[0]["nodeId"] == "TimerEvent_1" );
         REQUIRE( completionLog[1]["nodeId"] == "Gateway_1" );
         REQUIRE( completionLog[2]["nodeId"] == nullptr );
+
+        auto withdrawnLog =recorder.find(nlohmann::json{{"state", "WITHDRAWN"}});
+        REQUIRE( withdrawnLog[0]["nodeId"] == "TimerEvent_2" );
       }
     }
 
@@ -66,6 +69,9 @@ SCENARIO( "Event-based gateway with two timer events", "[execution][eventbasedga
         REQUIRE( completionLog[0]["nodeId"] == "TimerEvent_2" );
         REQUIRE( completionLog[1]["nodeId"] == "Gateway_1" );
         REQUIRE( completionLog[2]["nodeId"] == nullptr );
+
+        auto withdrawnLog =recorder.find(nlohmann::json{{"state", "WITHDRAWN"}});
+        REQUIRE( withdrawnLog[0]["nodeId"] == "TimerEvent_1" );
       }
     }
   }
