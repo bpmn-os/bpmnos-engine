@@ -38,14 +38,14 @@ public:
    */
   void run(const BPMNOS::Model::Scenario* scenario, BPMNOS::number timeout = std::numeric_limits<BPMNOS::number>::max());
 
-  void process(const ClockTickEvent& event);
   void process(const TaskCompletionEvent& event);
   void process(const EntryEvent& event);
   void process(const ExitEvent& event);
   void process(const MessageDeliveryEvent& event);
   void process(const ReadyEvent& event);
   void process(const ErrorEvent& event);
-  void process(const TerminationEvent& event);
+  void process([[maybe_unused]] const ClockTickEvent& event);
+  void process([[maybe_unused]] const TerminationEvent& event);
 
 /**
  * @brief Returns the timestamp the engine is in.
