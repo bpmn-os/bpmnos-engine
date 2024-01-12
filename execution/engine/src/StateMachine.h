@@ -85,6 +85,7 @@ private:
   void shutdown(); ///< Shutdown state machine after successfull execution
   void terminate(Token* token); ///< Terminates state machine after failure
   void interruptActivity(Token* token);
+  void clearObsoleteTokens();
 
   void handleDivergingGateway(Token* token);
   void handleEventBasedGatewayActivation(Token* token);

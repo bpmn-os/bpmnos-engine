@@ -98,8 +98,8 @@ const BPMNOS::Model::AttributeMap& Token::getAttributeMap() const {
     return owner->process->extensionElements->as<const Model::Status>()->attributeMap;
   }
 
-  if ( auto status = node->extensionElements->represents<const Model::Status>() ) {
-    return status->attributeMap;
+  if ( auto statusExtension = node->extensionElements->represents<const Model::Status>() ) {
+    return statusExtension->attributeMap;
   }
 
   if ( !owner->parentToken ) {
@@ -271,10 +271,6 @@ void Token::advanceToEntered() {
       return;
     }
 
-/*
-    // initiate event subprocesses
-    engine->commands.emplace_back(std::bind(&StateMachine::initiateEventSubprocesses,const_cast<StateMachine*>(owner),this), this);
-*/
     // tokens entering a process advance to busy state
     engine->commands.emplace_back(std::bind(&Token::advanceToBusy,this), this);
   }
@@ -574,21 +570,18 @@ std::cerr << "Context: " << context << " at " << context->scope->id << " has " <
 
         // ensure that no other event subprocess can be triggered
         for ( auto eventSubProcess : context->pendingEventSubProcesses ) {
-          eventSubProcess->tokens.front()->update(Token::State::WITHDRAWN);
+          eventSubProcess->clearObsoleteTokens();
         }
         context->pendingEventSubProcesses.clear();
 
         // terminate all running non-interrupting event subprocesses
         for ( auto eventSubProcess : context->nonInterruptingEventSubProcesses ) {
-          eventSubProcess->tokens.front()->update(Token::State::WITHDRAWN);
+          eventSubProcess->clearObsoleteTokens();
         }
         context->nonInterruptingEventSubProcesses.clear();
 
         // interrupt all running tokens in state machine
-        for ( auto token : context->tokens ) {
-          token->update(Token::State::WITHDRAWN);
-        }
-        context->tokens.clear();
+        context->clearObsoleteTokens();
 
       }
       else {
@@ -698,7 +691,6 @@ void Token::advanceToDone() {
   update(State::DONE);
 
   const_cast<StateMachine*>(owner)->attemptShutdown();
-//std::cerr << "advancedToDone" << std::endl;
 }
 
 void Token::advanceToDeparting() {
@@ -866,89 +858,11 @@ void Token::awaitGatewayActivation() {
   tokens.emplace_back(this);
 }
 
-void Token::destroy() {
-  if ( !node && node->represents<BPMNOS::Model::ResourceActivity>() ) {
-    const_cast<SystemState*>(owner->systemState)->tokensAwaitingJobEntryEvent.erase(this);
+void Token::withdraw() {
+  if ( state != State::DONE && state != State::FAILED 
+  ) {
+    update(State::WITHDRAWN);
   }
-/*
-  auto systemState = const_cast<SystemState*>(owner->systemState);
-  if ( state == State::ARRIVED ) {
-    if ( node->represents<BPMN::ParallelGateway>() || node->represents<BPMN::InclusiveGateway>() ) {
-      auto it = systemState->tokensAwaitingGatewayActivation.find({owner, node});
-      if (it != systemState->tokensAwaitingGatewayActivation.end()) {
-        erase_ptr<Token>(it->second,this);
-        if ( it->second.empty() ) {
-          systemState->tokensAwaitingGatewayActivation.erase(it);
-        }
-      }
-      else {
-        throw std::logic_error("Token: cannot find gateway that token was waiting for");
-      }
-    }
-    else if ( node->represents<BPMN::Activity>() ) {
-//      erase_ptr<Token>(systemState->tokensAwaitingReadyEvent,this);
-    }
-  }
-  else if ( state == State::READY ) {
-    if ( auto tokenAtResource = getResourceToken(); tokenAtResource ) {
-      auto it = systemState->tokensAwaitingJobEntryEvent.find(tokenAtResource);
-      if (it != systemState->tokensAwaitingJobEntryEvent.end()) {
-        erase_ptr<Token>(it->second,this);
-      }
-      // TODO: erase systemState->tokensAwaitingJobEntryEvent[tokenAtResource] when empty?
-    }
-    else {
-      erase_ptr<Token>(systemState->tokensAwaitingRegularEntryEvent,this);
-    }
-  }
-  else if ( state == State::BUSY ) {
-    if ( !node || node->represents<BPMN::SubProcess>() ) {
-      // TODO: event-subprocesses and boundary events
-      if ( node->represents<BPMNOS::Model::ResourceActivity>() ) {
-        // TODO
-//        erase_ptr<Token>(systemState->tokensAtIdleResources,this);
-//        erase_ptr<Token>(systemState->tokensAtActiveResources,this);
-        systemState->tokensAwaitingJobEntryEvent.erase(this);
-        erase_ptr<Token>(systemState->tokensAwaitingResourceShutdownEvent,this);
-      }
-    }
-    else if ( node->represents<BPMN::Task>() ) {
-      if ( node->represents<BPMNOS::Model::DecisionTask>() ) {
-        erase_ptr<Token>(systemState->tokensAwaitingChoiceEvent,this);
-      }
-      else {
-        erase_pair<BPMNOS::number,Token,SystemState::ScheduledTokenComparator>(systemState->tokensAwaitingTaskCompletionEvent,this);
-      }
-    }
-    else if ( node->represents<BPMN::TimerCatchEvent>() ) {
-        erase_pair<BPMNOS::number,Token,SystemState::ScheduledTokenComparator>(systemState->tokensAwaitingTimer,this);
-    }
-    else if ( node->represents<BPMN::MessageCatchEvent>() ) {
-      erase_ptr<Token>(systemState->tokensAwaitingMessageDelivery,this);
-    }
-    else if ( node->represents<BPMN::EventBasedGateway>() ) {
-      erase_ptr<Token>(systemState->tokensAwaitingEventBasedGateway,this);
-    }
-  }
-  else if ( state == State::COMPLETED ) {
-    if ( node && node->represents<BPMN::Activity>() ) {
-      erase_ptr<Token>(systemState->tokensAwaitingExitEvent,this);
-    }
-  }
-  else if ( state == State::DONE ) {
-    auto it = systemState->tokensAwaitingStateMachineCompletion.find(owner);
-    if (it != systemState->tokensAwaitingStateMachineCompletion.end()) {
-      erase_ptr<Token>(it->second,this);
-    }
-    else {
-      throw std::logic_error("Token: cannot find state machine that token is belonging to");
-    }
-
-        // TODO
-//    erase_ptr<Token>(systemState->tokensAwaitingStateMachineCompletion,this);
-//  std::unordered_map< const StateMachine*, std::vector<Token*> > tokensAwaitingStateMachineCompletion; ///< Map holding all tokens awaiting the completion of a state machine
-  }
-*/
 }
 
 Token* Token::getResourceToken() const {
@@ -965,8 +879,13 @@ Token* Token::getResourceToken() const {
 }
 
 void Token::update(State newState) {
+  assert( status.size() >= 2 );
+  assert( status[BPMNOS::Model::Status::Index::Instance].has_value() );
+  assert( status[BPMNOS::Model::Status::Index::Timestamp].has_value() );
+
   state = newState;
   auto now = owner->systemState->getTime();
+
 //std::cerr << "update at time " << now << ": " << jsonify().dump() << std::endl;
   if ( status[BPMNOS::Model::Status::Index::Timestamp].value() < now ) {
 //std::cerr << "Set timestamp to " << now << std::endl;

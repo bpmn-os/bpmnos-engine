@@ -88,6 +88,7 @@ public:
   const BPMN::FlowNode* node;
   const BPMN::SequenceFlow* sequenceFlow;
   enum class State { CREATED, READY, ENTERED, BUSY, COMPLETED, EXITING, DEPARTED, ARRIVED, WAITING, DONE, FAILED, FAILING, WITHDRAWN }; ///< The states that a token can be in
+  const BPMNOS::Model::AttributeMap& getAttributeMap() const;
 private:
   static inline std::string stateName[] = { "CREATED", "READY", "ENTERED", "BUSY", "COMPLETED", "EXITING", "DEPARTED", "ARRIVED", "WAITING", "DONE", "FAILED", "FAILING", "WITHDRAWN" };
   State state;
@@ -111,7 +112,6 @@ public:
 
   nlohmann::ordered_json jsonify() const;
 private:
-  const BPMNOS::Model::AttributeMap& getAttributeMap() const;
 
   bool isFeasible(); ///< Check restrictions within current and ancestor scopes
 
@@ -146,7 +146,7 @@ private:
 
   void awaitGatewayActivation(); ///< Wait for activiation of merging gateway
 
-  void destroy(); ///< Remove token from all data
+  void withdraw(); ///< Remove token from all data
 
   Token* getResourceToken() const; ///< Returns token at resource activity for tokens at jobs and nullptr for all other tokens
 

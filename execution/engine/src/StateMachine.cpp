@@ -97,10 +97,17 @@ void StateMachine::deleteCompensationEventSubProcess(StateMachine* eventSubProce
   erase_ptr<StateMachine>(compensationEventSubProcesses, eventSubProcess);
 }
 
+void StateMachine::clearObsoleteTokens() {
+  for ( auto token : tokens ) {
+    token->withdraw();
+  }
+  tokens.clear();
+}
+
 void StateMachine::interruptActivity(Token* token) {
 //std::cerr << "interrupt activity " << token->node->id << std::endl;
   deleteTokensAwaitingBoundaryEvent(token);
-  token->update(Token::State::WITHDRAWN);
+  token->withdraw();
   erase_ptr<Token>(tokens, token);
 }
 
@@ -111,7 +118,7 @@ void StateMachine::deleteTokensAwaitingBoundaryEvent(Token* token) {
   auto it = tokensAwaitingBoundaryEvent.find(token);
   if ( it != tokensAwaitingBoundaryEvent.end() ) {
     for ( auto waitingToken : it->second ) {
-      waitingToken->update(Token::State::WITHDRAWN);
+      waitingToken->withdraw();
       erase_ptr<Token>(tokens, waitingToken);
     }
     tokensAwaitingBoundaryEvent.erase(it);
@@ -152,6 +159,10 @@ void StateMachine::unregisterRecipient() {
 }
 
 void StateMachine::run(const Values& status) {
+  assert( status.size() >= 2 );
+  assert( status[BPMNOS::Model::Status::Index::Instance].has_value() );
+  assert( status[BPMNOS::Model::Status::Index::Timestamp].has_value() );
+
 //std::cerr << "Run " << scope->id << std::endl;
   if ( !parentToken ) {
     // state machine without parent token represents a process
@@ -314,7 +325,7 @@ void StateMachine::handleEventBasedGatewayActivation(Token* token) {
   // remove all other waiting tokens
   for ( auto waitingToken : waitingTokens ) {
     if ( waitingToken != token ) {
-      waitingToken->update(Token::State::WITHDRAWN);
+      waitingToken->withdraw();
       erase_ptr<Token>(tokens,waitingToken);
     }
   }
@@ -342,7 +353,6 @@ void StateMachine::handleEscalation(Token* token) {
 //std::cerr << "found event-subprocess catching escalation:" << eventToken << "/" << eventToken->owner << std::endl;
     eventToken->setStatus(token->status);
     eventToken->advanceToCompleted();
-//    engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,eventToken), eventToken);
 
     return;
   }
@@ -358,7 +368,6 @@ void StateMachine::handleEscalation(Token* token) {
       if ( eventToken->node->represents<BPMN::EscalationBoundaryEvent>() ) {
         eventToken->setStatus(token->status);
         eventToken->advanceToCompleted();
-//        engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,eventToken), eventToken);
         return;
       }
     }
@@ -424,6 +433,8 @@ void StateMachine::handleFailure(Token* token) {
     auto eventToken = it->get()->tokens.front().get();
     // update status of event token with that of current token
     eventToken->setStatus(token->status);
+    // remove all tokens
+    clearObsoleteTokens();
     engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,eventToken), eventToken);
 
     return;
@@ -433,6 +444,10 @@ void StateMachine::handleFailure(Token* token) {
 
   // update status of parent token with that of current token
   parentToken->setStatus(token->status);
+
+  // remove all tokens
+  clearObsoleteTokens();
+
   engine->commands.emplace_back(std::bind(&Token::update,parentToken,Token::State::FAILING), parentToken);
 
   if ( compensationTokens.size() ) {
@@ -474,6 +489,7 @@ void StateMachine::attemptGatewayActivation(const BPMN::FlowNode* node) {
 
 void StateMachine::shutdown() {
   auto engine = const_cast<Engine*>(systemState->engine);
+//std::cerr << "shutdown: " << scope->id << std::endl;
 
   if ( auto eventSubProcess = scope->represents<BPMN::EventSubProcess>() ) {
     if (!eventSubProcess->startEvent->isInterrupting ) {
@@ -501,6 +517,7 @@ void StateMachine::shutdown() {
       parentToken->mergeStatus(token.get());
     }
   }
+  tokens.clear();
 
   // ensure that messages to state machine are removed  
   unregisterRecipient();
@@ -556,7 +573,7 @@ void StateMachine::attemptShutdown() {
 
   // no new event subprocesses can be triggered
   for ( auto eventSubProcess : pendingEventSubProcesses ) {
-    eventSubProcess->tokens.front()->update(Token::State::WITHDRAWN);
+    eventSubProcess->clearObsoleteTokens();
   }
   pendingEventSubProcesses.clear();
 
@@ -619,8 +636,8 @@ void StateMachine::advanceTokenWaitingForCompensation(Token* waitingToken) {
     engine->commands.emplace_back(std::bind(&StateMachine::terminate,const_cast<StateMachine*>(waitingToken->owner),waitingToken), waitingToken);
   }
   else {
-//std::cerr << waitingToken->node->id << " has state: " << Token::stateName[(int)waitingToken->state]  << std::endl;
-    throw std::logic_error("StateMachine: unexpected state of waiting token");
+//  std::cerr << waitingToken->node->id << " has state: " << Token::stateName[(int)waitingToken->state]  << std::endl;
+    assert(!"unexpected state of waiting token");
   }
 }
 

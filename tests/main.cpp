@@ -20,6 +20,7 @@ using namespace BPMNOS;
 
 // Process
 #include "execution/process/test.h"
+
 // Activities
 #include "execution/task/test.h"
 #include "execution/subprocess/test.h"
@@ -35,8 +36,9 @@ using namespace BPMNOS;
 // Messages
 #include "execution/message/test.h"
 // Boundary events
-#include "execution/boundaryevent/test.h"
+//#include "execution/boundaryevent/test.h"
 // Event subprocesses
+
 #include "execution/eventsubprocess/test.h"
 // Compensations
 #include "execution/compensationactivity/test.h"
