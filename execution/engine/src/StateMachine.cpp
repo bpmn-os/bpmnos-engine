@@ -76,6 +76,46 @@ void StateMachine::initiateEventSubprocesses(Token* token) {
   }
 }
 
+void StateMachine::deleteChild(StateMachine* child) {
+//std::cerr << "delete child '" << child->scope->id << "' of '" << scope->id << "'" <<  std::endl;
+  if ( child->scope->represents<BPMN::SubProcess>() ) {
+    erase_ptr<StateMachine>(subProcesses, child);
+  }
+  else {
+    interruptingEventSubProcess.reset();
+  }
+}
+
+void StateMachine::deleteNonInterruptingEventSubProcess(StateMachine* eventSubProcess) {
+//std::cerr << "deleteNonInterruptingEventSubProcess" << std::endl;
+  erase_ptr<StateMachine>(nonInterruptingEventSubProcesses, eventSubProcess);
+  attemptShutdown();
+}
+
+void StateMachine::deleteCompensationEventSubProcess(StateMachine* eventSubProcess) {
+//std::cerr << compensationEventSubProcesses.size() << "deleteCompensationEventSubProcess: " << scope->id << "/" << eventSubProcess->scope->id << "/" << this <<  std::endl;
+  erase_ptr<StateMachine>(compensationEventSubProcesses, eventSubProcess);
+}
+
+void StateMachine::interruptActivity(Token* token) {
+//std::cerr << "interrupt activity " << token->node->id << std::endl;
+  deleteTokensAwaitingBoundaryEvent(token);
+  erase_ptr<Token>(tokens, token);
+}
+
+void StateMachine::deleteTokensAwaitingBoundaryEvent(Token* token) {
+//std::cerr << "deleteTokensAwaitingBoundaryEvent " << token->node->id << std::endl;
+  // delete all tokens awaiting boundary event
+  auto& tokensAwaitingBoundaryEvent = const_cast<SystemState*>(systemState)->tokensAwaitingBoundaryEvent;
+  auto it = tokensAwaitingBoundaryEvent.find(token);
+  if ( it != tokensAwaitingBoundaryEvent.end() ) {
+    for ( auto waitingToken : it->second ) {
+      erase_ptr<Token>(tokens, waitingToken);
+    }
+    tokensAwaitingBoundaryEvent.erase(it);
+  }
+}
+
 void StateMachine::registerRecipient() {
   if ( auto it = const_cast<SystemState*>(systemState)->unsent.find(instanceId);
     it != const_cast<SystemState*>(systemState)->unsent.end()
@@ -256,13 +296,10 @@ void StateMachine::copyToken(Token* token) {
 }
 
 void StateMachine::handleEscalation(Token* token) {
+//std::cerr << "handleEscalation " << (token->node ? token->node->id : process->id ) << std::endl;
   if ( !parentToken ) {
     return;
   }
-
-  // update status of parent token with that of current token
-  parentToken->status = token->status;
-  parentToken->update(parentToken->state);
 
   auto it = std::find_if(pendingEventSubProcesses.begin(), pendingEventSubProcesses.end(), [](std::shared_ptr<StateMachine>& stateMachine) {
     auto eventSubProcess = stateMachine->scope->as<BPMN::EventSubProcess>();
@@ -275,17 +312,25 @@ void StateMachine::handleEscalation(Token* token) {
     // trigger event subprocess
     auto eventToken = it->get()->tokens.front().get();
 //std::cerr << "found event-subprocess catching escalation:" << eventToken << "/" << eventToken->owner << std::endl;
-    engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,eventToken), eventToken);
+    eventToken->setStatus(token->status);
+    eventToken->advanceToCompleted();
+//    engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,eventToken), eventToken);
 
     return;
   }
+
+  // update status of parent token with that of current token
+  parentToken->setStatus(token->status); // TODO: keep instance id unchanged for tokens from non-interrupting event subprocesses
+  parentToken->update(parentToken->state);
 
   // find escalation boundary event
   if ( parentToken->node ) {
     auto& tokensAwaitingBoundaryEvent = const_cast<SystemState*>(systemState)->tokensAwaitingBoundaryEvent[parentToken];
     for ( auto eventToken : tokensAwaitingBoundaryEvent) {
       if ( eventToken->node->represents<BPMN::EscalationBoundaryEvent>() ) {
-        engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,eventToken), eventToken);
+        eventToken->setStatus(token->status);
+        eventToken->advanceToCompleted();
+//        engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,eventToken), eventToken);
         return;
       }
     }
@@ -298,7 +343,7 @@ void StateMachine::handleEscalation(Token* token) {
 }
 
 void StateMachine::terminate(Token* token) {
-//std::cerr << "terminate" <<std::endl;
+//std::cerr << "terminate " << (token->node ? token->node->id : process->id ) << std::endl;
   auto engine = const_cast<Engine*>(systemState->engine);
 
   // find error boundary event
@@ -314,9 +359,9 @@ void StateMachine::terminate(Token* token) {
 
 
 void StateMachine::handleFailure(Token* token) {
+//std::cerr << scope->id << " handles failure at " << (token->node ? token->node->id : process->id ) <<std::endl;
   auto engine = const_cast<Engine*>(systemState->engine);
 
-//std::cerr << scope->id << " handles failure at " << (token->node ? token->node->id : process->id ) <<std::endl;
   if ( !parentToken ) {
 //std::cerr << "process has failed" << std::endl;
     // process has failed
@@ -350,27 +395,24 @@ void StateMachine::handleFailure(Token* token) {
     // trigger event subprocess
     auto eventToken = it->get()->tokens.front().get();
     // update status of event token with that of current token
-    eventToken->status = token->status;
+    eventToken->setStatus(token->status);
     engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,eventToken), eventToken);
 
     return;
   }
 
   // failure is not caught by event subprocess
-//std::cerr << "failure is not caught by event subprocess" << std::endl;
 
   // update status of parent token with that of current token
-  parentToken->status = token->status; // TODO resize status 
+  parentToken->setStatus(token->status);
   engine->commands.emplace_back(std::bind(&Token::update,parentToken,Token::State::FAILING), parentToken);
 
   if ( compensationTokens.size() ) {
     // don't delete state machine and wait for all compensations to be completed
     // before continuing with termination
-//std::cerr << "Start compensation ... " << compensations.size() << std::endl;
     compensate(compensationTokens, parentToken);
     return;
   }
-
   auto parent = const_cast<StateMachine*>(parentToken->owner);
   engine->commands.emplace_back(std::bind(&StateMachine::deleteChild,parent,this), this);
   terminate(parentToken);
@@ -403,7 +445,6 @@ void StateMachine::attemptGatewayActivation(const BPMN::FlowNode* node) {
 }
 
 void StateMachine::shutdown() {
-//std::cerr << "start shutdown: " << scope->id << std::endl;
   auto engine = const_cast<Engine*>(systemState->engine);
 
   if ( auto eventSubProcess = scope->represents<BPMN::EventSubProcess>() ) {
@@ -418,6 +459,8 @@ void StateMachine::shutdown() {
       return;
     }
   }
+
+//std::cerr << "start shutdown: " << scope->id << std::endl;
 
   // update status of parent token
   if ( parentToken ) {
@@ -442,10 +485,6 @@ void StateMachine::shutdown() {
       // move state machine pointer to ensure it is not deleted
       parent->compensableSubProcesses.push_back(shared_from_this());
 //std::cerr << parent->scope->id << " add to compensableSubProcesses: " << parent->compensableSubProcesses.size() << std::endl;
-/*
-      // create compensation event subprocess
-      engine->commands.emplace_back( std::bind(&StateMachine::createCompensationEventSubProcess,parent,eventSubProcess, parentToken->status), parent );
-*/
     }
   }
 
@@ -454,10 +493,9 @@ void StateMachine::shutdown() {
     engine->commands.emplace_back(std::bind(&Engine::deleteInstance,engine,this), this);
   }
   else {
-    if ( compensationTokens.empty() && scope->represents<BPMN::SubProcess>() ) {
-      auto parent = const_cast<StateMachine*>(parentToken->owner);
-      engine->commands.emplace_back(std::bind(&StateMachine::deleteChild,parent,this), this);
-    }
+    auto parent = const_cast<StateMachine*>(parentToken->owner);
+    engine->commands.emplace_back(std::bind(&StateMachine::deleteChild,parent,this), this);
+
     // advance parent token to completed
     auto context = const_cast<StateMachine*>(parentToken->owned);
     auto token = context->parentToken;
@@ -487,11 +525,12 @@ void StateMachine::attemptShutdown() {
   }
 
   // all tokens are in DONE state
+
   // no new event subprocesses can be triggered
   pendingEventSubProcesses.clear();
 
   auto engine = const_cast<Engine*>(systemState->engine);
-//std::cerr << "Shutdown with " << engine->commands.size()-1 << " prior commands" << std::endl;
+//std::cerr << "Shutdown with " << engine->commands.size() << " prior commands" << std::endl;
   engine->commands.emplace_back(std::bind(&StateMachine::shutdown,this), this);
 }
 
@@ -525,40 +564,6 @@ Tokens StateMachine::getCompensationTokens(const BPMN::Activity* activity) const
   return result;
 }
 
-void StateMachine::deleteChild(StateMachine* child) {
-//std::cerr << "delete child '" << child->scope->id << "' of '" << scope->id << "'" <<  std::endl;
-  erase_ptr<StateMachine>(subProcesses, child);
-}
-
-void StateMachine::deleteNonInterruptingEventSubProcess(StateMachine* eventSubProcess) {
-//std::cerr << "deleteNonInterruptingEventSubProcess" << std::endl;
-  erase_ptr<StateMachine>(nonInterruptingEventSubProcesses, eventSubProcess);
-  attemptShutdown();
-}
-
-void StateMachine::deleteCompensationEventSubProcess(StateMachine* eventSubProcess) {
-//std::cerr << compensationEventSubProcesses.size() << "deleteCompensationEventSubProcess: " << scope->id << "/" << eventSubProcess->scope->id << "/" << this <<  std::endl;
-  erase_ptr<StateMachine>(compensationEventSubProcesses, eventSubProcess);
-}
-
-void StateMachine::interruptActivity(Token* token) {
-//std::cerr << "interrupt activity " << token->node->id << std::endl;
-  deleteTokensAwaitingBoundaryEvent(token);
-  erase_ptr<Token>(tokens, token);
-}
-
-void StateMachine::deleteTokensAwaitingBoundaryEvent(Token* token) {
-//std::cerr << "deleteTokensAwaitingBoundaryEvent " << token->node->id << std::endl;
-  // delete all tokens awaiting boundary event
-  auto& tokensAwaitingBoundaryEvent = const_cast<SystemState*>(systemState)->tokensAwaitingBoundaryEvent;
-  auto it = tokensAwaitingBoundaryEvent.find(token);
-  if ( it != tokensAwaitingBoundaryEvent.end() ) {
-    for ( auto waitingToken : it->second ) {
-      erase_ptr<Token>(tokens, waitingToken);
-    }
-    tokensAwaitingBoundaryEvent.erase(it);
-  }
-}
 
 void StateMachine::advanceTokenWaitingForCompensation(Token* waitingToken) {
 //std::cerr << scope->id << " -> advanceTokenWaitingForCompensation: " << waitingToken->node->id << "/" << Token::stateName[(int)waitingToken->state]<< "/" << waitingToken << std::endl;

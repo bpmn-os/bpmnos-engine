@@ -1,4 +1,4 @@
-SCENARIO( "Simple compensation event subprocess", "[compensationeventsubprocess][events]" ) {
+SCENARIO( "Simple compensation event subprocess", "[execution][compensation]" ) {
   const std::string modelFile = "execution/compensationeventsubprocess/Simple_compensation_event_subprocess.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
   GIVEN( "A single instance with no input values" ) {
@@ -47,7 +47,7 @@ SCENARIO( "Simple compensation event subprocess", "[compensationeventsubprocess]
   }
 }
 
-SCENARIO( "Recursive compensations", "[compensationeventsubprocess][recursive]" ) {
+SCENARIO( "Recursive compensations", "[execution][compensation]" ) {
   const std::string modelFile = "execution/compensationeventsubprocess/Recursive_compensations.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
   GIVEN( "A single instance with no input values" ) {
@@ -107,7 +107,7 @@ SCENARIO( "Recursive compensations", "[compensationeventsubprocess][recursive]" 
   }
 }
 
-SCENARIO( "Recursive named compensations", "[compensationeventsubprocess][recursive]" ) {
+SCENARIO( "Recursive named compensations", "[execution][compensation]" ) {
   const std::string modelFile = "execution/compensationeventsubprocess/Recursive_named_compensations.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
   GIVEN( "A single instance with no input values" ) {

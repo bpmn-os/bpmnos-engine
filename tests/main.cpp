@@ -19,7 +19,6 @@ using namespace BPMNOS;
 /* Execution engine */
 
 // Process
-/*
 #include "execution/process/test.h"
 // Activities
 #include "execution/task/test.h"
@@ -31,7 +30,6 @@ using namespace BPMNOS;
 #include "execution/errorevent/test.h"
 #include "execution/escalationevent/test.h"
 // Event subprocesses
-// TODO: add tests with failures in event subprocesses
 #include "execution/eventsubprocess/test.h"
 // Boundary events
 #include "execution/boundaryevent/test.h"
@@ -40,7 +38,7 @@ using namespace BPMNOS;
 
 // Compensations
 #include "execution/compensationactivity/test.h"
-*/
+
 #include "execution/compensationeventsubprocess/test.h"
 
 // Status

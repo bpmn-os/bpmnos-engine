@@ -12,6 +12,7 @@
 #include "model/parser/src/DecisionTask.h"
 #include "execution/listener/src/Listener.h"
 #include "execution/utility/src/erase.h"
+#include <cassert>
 
 using namespace BPMNOS::Execution;
 
@@ -98,6 +99,12 @@ const BPMNOS::Model::AttributeMap& Token::getAttributeMap() const {
   }
 
   return owner->parentToken->getAttributeMap();
+}
+
+void Token::setStatus(const BPMNOS::Values& other) {
+  assert( (int)Model::Status::Index::Instance == 0 );
+  assert( other.size() >= status.size() );
+  std::copy(other.begin() + 1, other.begin() + (std::ptrdiff_t)status.size() , status.begin()+1);
 }
 
 nlohmann::ordered_json Token::jsonify() const {
@@ -544,9 +551,7 @@ std::cerr << "Context: " << context << " at " << context->scope->id << " has " <
         return token.get() == this;
       });
 
-      if ( it == context->pendingEventSubProcesses.end() ) {
-        throw std::logic_error("Token: cannot find pending event subprocess");
-      }
+      assert( it != context->pendingEventSubProcesses.end() );
 
       // initiate nested event subprocesses when event subprocess is triggered
 //      engine->commands.emplace_back(std::bind(&StateMachine::initiateEventSubprocesses,it->get(),this), this);

@@ -87,8 +87,8 @@ public:
   StateMachine* owned; ///< State machine owned by the token
   const BPMN::FlowNode* node;
   const BPMN::SequenceFlow* sequenceFlow;
+  enum class State { CREATED, READY, ENTERED, BUSY, COMPLETED, EXITING, DEPARTED, ARRIVED, WAITING, DONE, FAILED, FAILING }; ///< The states that a token can be in
 private:
-  enum class State { CREATED, READY, ENTERED, BUSY, COMPLETED, EXITING, DEPARTED, ARRIVED, WAITING, DONE, FAILED, FAILING };
   static inline std::string stateName[] = { "CREATED", "READY", "ENTERED", "BUSY", "COMPLETED", "EXITING", "DEPARTED", "ARRIVED", "WAITING", "DONE", "FAILED", "FAILING" };
   State state;
 public:
@@ -98,12 +98,12 @@ public:
   ~Token();
 
   Values status;
+  void setStatus(const BPMNOS::Values& other); ///< Copies all elements except the instance id from `other` to `status`
 
   bool ready() const { return state == State::READY; };
   bool entered() const { return state == State::ENTERED; };
   bool busy() const { return state == State::BUSY; };
   bool completed() const { return state == State::COMPLETED; };
-  bool exiting() const { return state == State::EXITING; };
   bool arrived() const { return state == State::ARRIVED; };
   bool waiting() const { return state == State::WAITING; };
   bool done() const { return state == State::DONE; };
