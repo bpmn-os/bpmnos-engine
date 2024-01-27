@@ -76,7 +76,8 @@ private:
   void initiateBoundaryEvents(Token* token); ///< Method placing tokens on all boundary events
   void initiateBoundaryEvent(Token* token, const BPMN::FlowNode*); ///< Method placing tokens on a boundary event
   void initiateEventSubprocesses(Token* token); ///< Method initiating pending event subprocesses
-
+  void createMultiInstanceActivityTokens(Token* token); ///< Method creating tokens for multi-instance activities
+  void deleteMultiInstanceActivityToken(Token* token); ///< Method creating tokens for multi-instance activities
   void compensateActivity(Token* token); ///< Method creating the compensation activity of an activity
 
   std::vector<Token*> createTokenCopies(Token* token, const std::vector<BPMN::SequenceFlow*>& sequenceFlows);

@@ -24,6 +24,7 @@ list(APPEND bpmn_SOURCES
   extensionElements/Timer.cpp
   extensionElements/Content.cpp
   extensionElements/Message.cpp
+  extensionElements/MessageStatus.cpp
   DecisionTask.cpp
   JobShop.cpp
   ResourceActivity.cpp
@@ -52,6 +53,7 @@ list(APPEND bpmn_HEADERS
   extensionElements/Timer.h
   extensionElements/Content.h
   extensionElements/Message.h
+  extensionElements/MessageStatus.h
   DecisionTask.h
   JobShop.h
   ResourceActivity.h

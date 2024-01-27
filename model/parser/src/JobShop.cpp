@@ -5,6 +5,7 @@ using namespace BPMNOS::Model;
 
 JobShop::JobShop(XML::bpmn::tSubProcess* subProcess, BPMN::Scope* parent)
   : BPMN::Node(subProcess)
+  , BPMN::FlowNode(subProcess,parent)
   , BPMN::SubProcess(subProcess,parent)
   , resourceActivity(initializeResource())
 {

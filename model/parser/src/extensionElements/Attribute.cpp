@@ -1,9 +1,10 @@
 #include "Attribute.h"
 #include "model/utility/src/Keywords.h"
+#include "Parameter.h"
 
 using namespace BPMNOS::Model;
 
-Attribute::Attribute(XML::bpmnos::tAttribute* attribute, const AttributeMap& attributeMap)
+Attribute::Attribute(XML::bpmnos::tAttribute* attribute, AttributeMap& attributeMap)
   : element(attribute)
   , index(attributeMap.size())
   , id(attribute->id.value.value)
@@ -20,6 +21,16 @@ Attribute::Attribute(XML::bpmnos::tAttribute* attribute, const AttributeMap& att
   }
   else if ( attribute->type.value.value == "xs:decimal" ) {
     type = ValueType::DECIMAL;
+  }
+
+  if ( attribute->parameter.has_value() ) {
+    auto& parameter = attribute->parameter.value().get();
+    if ( parameter.name.value.value == "collection" ) {
+      collection = std::make_unique<Parameter>(&parameter,attributeMap);
+    }
+    else {
+      throw std::runtime_error("Attribute: illegal parameter provided for attribute '" + id + "'");
+    }
   }
 
   if ( attribute->value.has_value() ) {

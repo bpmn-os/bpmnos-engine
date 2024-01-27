@@ -13,12 +13,13 @@
 namespace BPMNOS::Model {
 
 class Attribute;
+class Parameter;
 
 typedef std::unordered_map<std::string, Attribute*> AttributeMap;
 
 class Attribute {
 public:
-  Attribute(XML::bpmnos::tAttribute* attribute, const AttributeMap& attributeMap);
+  Attribute(XML::bpmnos::tAttribute* attribute, AttributeMap& attributeMap);
   XML::bpmnos::tAttribute* element;
 
   std::size_t index; ///< Index of attribute in status.
@@ -27,6 +28,7 @@ public:
   std::string& name;
 
   ValueType type;
+  std::unique_ptr<Parameter> collection; ///< Parameter for value initialization for multi-instance activities.
   std::optional<number> value;
  
   double weight; ///< Weight to be used for objective (assuming minimization). 

@@ -8,7 +8,8 @@
 #include "model/parser/src/extensionElements/Status.h"
 #include "model/parser/src/extensionElements/Timer.h"
 #include "bpmn++.h"
-#include<cassert>
+#include <cassert>
+#include <ranges>
 
 using namespace BPMNOS::Execution;
 
@@ -75,6 +76,157 @@ void StateMachine::initiateEventSubprocesses(Token* token) {
     pendingEventSubProcess->run(token->status);
   }
 }
+
+void StateMachine::createMultiInstanceActivityTokens(Token* token) {
+  auto statusExtension = token->node->extensionElements->represents<const Model::Status>();
+  assert( statusExtension != nullptr );
+
+  auto attributes = statusExtension->attributes | std::views::filter([](auto& attribute) {
+    return (attribute->collection != nullptr);
+  });
+  assert( !attributes.empty() );
+
+  std::vector< std::map< const Model::Attribute*, std::optional<BPMNOS::number> > > valueMaps;
+  for ( auto& attribute : attributes ) {
+    std::string collection;
+    if ( attribute->collection->attribute.has_value() &&
+      token->status[ attribute->collection->attribute->get().index ].has_value()
+    ) {
+      collection = BPMNOS::to_string( token->status[ attribute->collection->attribute->get().index ].value(), STRING );
+    }
+    else if ( attribute->collection->value.has_value() ) {
+      collection = attribute->collection->value.value().get().value;
+    }
+    else {
+      throw std::runtime_error("Token: cannot determine values for multi-instance activity '" + token->node->id +"'");
+    }
+    // parse value collection
+    nlohmann::json jsonArray = nlohmann::json::parse(collection);
+
+    if ( valueMaps.empty() ) {
+      valueMaps.resize(jsonArray.size());
+    }
+    else if ( valueMaps.size() != jsonArray.size() ) {
+      throw std::runtime_error("Token: inconsistent number of values provided for multi-instance activity '" + token->node->id +"'" );
+    }
+
+    // add value for each token copy
+    for ( size_t i = 0; i < jsonArray.size(); i++ ) {
+      if ( attribute->type == STRING ) {
+        valueMaps[i][attribute.get()] = BPMNOS::to_number( (std::string)jsonArray[i], STRING );
+      }
+      else if ( attribute->type == BOOLEAN  ) {
+        valueMaps[i][attribute.get()] = (int)jsonArray[i];
+      }
+      else if ( attribute->type == INTEGER  ) {
+        valueMaps[i][attribute.get()] = (int)jsonArray[i];
+      }
+      else {
+        valueMaps[i][attribute.get()] = (float)jsonArray[i];
+      }
+    }
+  }
+  
+  if ( valueMaps.empty() ) {
+    throw std::runtime_error("Token: no values provided for multi-instance activity '" + token->node->id +"'" );
+  }
+
+  auto activity = token->node->represents<BPMN::Activity>();
+  assert( activity );
+  assert( activity->loopCharacteristics.has_value() );
+
+  // create token copies
+  assert ( systemState->tokensAtActivityInstance.find(token) == systemState->tokensAtActivityInstance.end() );
+
+  Token* tokenCopy = nullptr;
+  for ( auto valueMap : valueMaps ) {
+    tokens.push_back( std::make_shared<Token>( token ) );
+    // update status of token copy
+    for ( auto [attribute,value] : valueMap ) {
+      tokens.back().get()->status[attribute->index] = value;
+    }
+
+    if ( activity->loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::MultiInstanceSequential ) {
+      if ( !tokenCopy ) {
+        // for sequential multi-instance activities only the first token awaits entry event
+        tokens.back().get()->awaitEntryEvent();
+      }
+      else {
+        // newly created tokens have to wait for previous token copy
+        const_cast<SystemState*>(systemState)->tokenAwaitingExit[tokenCopy] = tokens.back().get();
+      }
+    }
+    else if ( activity->loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::MultiInstanceParallel ) {
+      // for parallel multi-instance activities all new tokens await entry event
+      tokens.back().get()->awaitEntryEvent();
+    }
+
+    tokenCopy = tokens.back().get();
+    const_cast<SystemState*>(systemState)->tokensAtActivityInstance[token].push_back(tokenCopy);
+    const_cast<SystemState*>(systemState)->tokenAtMultiInstanceActivity[tokenCopy] = token;
+  }
+
+  assert( tokenCopy );
+
+  // change state of original token
+  token->state = Token::State::WAITING;
+  for ( auto value : token->status ) {
+    value = std::nullopt;
+  }
+}
+
+void StateMachine::deleteMultiInstanceActivityToken(Token* token) {
+  auto engine = const_cast<Engine*>(systemState->engine);
+  auto mainToken = const_cast<SystemState*>(systemState)->tokenAtMultiInstanceActivity.at(token);
+  // merge final status into main token
+  mainToken->mergeStatus(token);
+
+  auto activity = token->node->represents<BPMN::Activity>();
+  assert( activity );
+
+  if ( activity->loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::MultiInstanceSequential ) {
+    // advance next token for sequential multi-instance activity
+    auto& tokenAwaitingExit = const_cast<SystemState*>(systemState)->tokenAwaitingExit;
+    auto it = tokenAwaitingExit.find(token);
+  
+    if ( it != tokenAwaitingExit.end() ) {
+      auto waitingToken = it->second;
+      waitingToken->awaitEntryEvent();
+      tokenAwaitingExit.erase(it);
+    }
+  }
+
+  // remove token 
+  erase_ptr<Token>(const_cast<SystemState*>(systemState)->tokensAtActivityInstance[mainToken],token);
+  erase_ptr<Token>(tokens,token);
+  
+  // advance main token when last multi-instance token exited
+  auto& tokensAtActivityInstance = const_cast<SystemState*>(systemState)->tokensAtActivityInstance;
+  if ( auto it = tokensAtActivityInstance.find(mainToken);
+    it != tokensAtActivityInstance.end()
+  ) {
+    if ( it->second.empty() ) {
+      tokensAtActivityInstance.erase(it);
+
+      // advance main token
+      if ( mainToken->node->outgoing.empty() ) {
+        engine->commands.emplace_back(std::bind(&Token::advanceToDone,mainToken), mainToken);
+      }
+      else {
+        engine->commands.emplace_back(std::bind(&Token::advanceToDeparting,mainToken), mainToken);
+      }
+    }
+  }
+  else {
+    assert(!"cannot find tokens created for multi instance activity");
+  }
+}
+// TODO: handle failures events
+// TODO: handle compensations
+// TODO: disallow boundary events
+// TODO: set value from csv input
+// TODO: type vector (must be immutable)
+// TODO: check conditions for immutable  
 
 void StateMachine::deleteChild(StateMachine* child) {
 //std::cerr << "delete child '" << child->scope->id << "' of '" << scope->id << "'" <<  std::endl;

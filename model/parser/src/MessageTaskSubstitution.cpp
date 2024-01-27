@@ -11,6 +11,7 @@ using namespace BPMNOS::Model;
 
 MessageTaskSubstitution::MessageTaskSubstitution(std::unique_ptr<XML::XMLObject> substitutionRoot, BPMN::Scope* parent)
   : BPMN::Node(getSubProcess(substitutionRoot.get()))
+  , BPMN::FlowNode(getSubProcess(substitutionRoot.get()),parent)
   , BPMN::SubProcess(getSubProcess(substitutionRoot.get()),parent)
 {
   root = std::move(substitutionRoot);

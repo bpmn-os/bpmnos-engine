@@ -34,6 +34,9 @@
     <xsd:attribute name="id" type="xsd:ID" use="required"/>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
     <xsd:attribute name="type" type="tAttributeType" use="required"/>
+    <xsd:sequence>
+      <xsd:element ref="parameter" minOccurs="0" maxOccurs="1"/>
+    </xsd:sequence>
     <xsd:attribute name="value" type="xsd:string" use="optional"/>
     <xsd:attribute name="objective" type="tObjectiveType" use="optional"/>
     <xsd:attribute name="weight" type="xsd:decimal" use="optional"/>

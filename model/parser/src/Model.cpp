@@ -1,7 +1,9 @@
 #include <unordered_set>
+#include <cassert>
 
 #include "Model.h"
 #include "extensionElements/Status.h"
+#include "extensionElements/MessageStatus.h"
 #include "extensionElements/Gatekeeper.h"
 #include "extensionElements/Timer.h"
 #include "extensionElements/Message.h"
@@ -37,8 +39,13 @@ std::unique_ptr<BPMN::EventSubProcess> Model::createEventSubProcess(XML::bpmn::t
 
 std::unique_ptr<BPMN::FlowNode> Model::createActivity(XML::bpmn::tActivity* activity, BPMN::Scope* parent) {
   auto node = BPMN::Model::createActivity(activity, parent);
-  // bind attributes, restrictions, and operators to all other activities
-  node = bind<BPMN::FlowNode>( node, std::make_unique<Status>(activity,parent) );
+  // bind attributes, restrictions, and operators to all activities
+  if ( activity->is<XML::bpmn::tSendTask>() || activity->is<XML::bpmn::tReceiveTask>() ) {
+    node = bind<BPMN::FlowNode>( node, std::make_unique<MessageStatus>(activity,parent) );
+  }
+  else {
+    node = bind<BPMN::FlowNode>( node, std::make_unique<Status>(activity,parent) );
+  }
 
   if ( auto jobShop = node->parent->represents<JobShop>() ) {
     // add node to job list of resource activity
@@ -196,12 +203,15 @@ void Model::createMessageCandidates( BPMN::Process* sendingProcess, BPMN::FlowNo
   auto sentMessage = throwingMessageEvent->extensionElements->represents<Message>();
   auto receivedMessage = catchingMessageEvent->extensionElements->represents<Message>();
 
-  if ( !sentMessage ) {
-    throw std::logic_error("Model: Message '" + throwingMessageEvent->id + "' has no extension");
+  if (  throwingMessageEvent->represents<BPMN::SendTask>() ) {
+    sentMessage = &throwingMessageEvent->extensionElements->represents<MessageStatus>()->message;
   }
-  if ( !receivedMessage ) {
-    throw std::logic_error("Model: Message '" + catchingMessageEvent->id + "' has no extension");
+  if (  catchingMessageEvent->represents<BPMN::ReceiveTask>() ) {
+    receivedMessage = &throwingMessageEvent->extensionElements->represents<MessageStatus>()->message;
   }
+ 
+  assert( sentMessage );
+  assert( receivedMessage );
 
   if ( sentMessage->name != receivedMessage->name ) {
     return;

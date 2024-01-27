@@ -79,6 +79,24 @@ Token::~Token() {
       systemState->tokenAtEventBasedGateway.erase(this);
     }
 
+    if ( auto activity = node->represents<BPMN::Activity>();
+      activity &&
+      activity->loopCharacteristics.has_value() &&
+      !activity->isForCompensation
+    ) {
+      if ( activity->loopCharacteristics.value() != BPMN::Activity::LoopCharacteristics::Standard ) {
+        if ( state == State::WAITING ) {
+          systemState->tokensAtActivityInstance.erase(this);
+        }
+        else {
+          systemState->tokenAtMultiInstanceActivity.erase(this);
+          if ( activity->loopCharacteristics.value() != BPMN::Activity::LoopCharacteristics::MultiInstanceSequential ) {
+            systemState->tokenAwaitingExit.erase(this);
+          }
+        }
+      }
+    }
+
     if ( node->represents<BPMNOS::Model::ResourceActivity>() ) {
       systemState->tokensAwaitingJobEntryEvent.erase(this);
       // TODO: send error message to all clients
@@ -204,6 +222,23 @@ void Token::advanceToReady() {
   }
 
   update(State::READY);
+  
+  if ( auto activity = node->represents<BPMN::Activity>();
+    activity && 
+    activity->loopCharacteristics.has_value() &&
+    activity->loopCharacteristics.value() != BPMN::Activity::LoopCharacteristics::Standard
+  ) {
+    if ( activity->loopCharacteristics.value() != BPMN::Activity::LoopCharacteristics::Standard ) {
+      throw std::runtime_error("Token: standard loop marker at activity '" + node->id + "' is not yet supported");
+    }
+    else {
+      // delegate creation of token copies for multi-instance activity to owner
+      auto stateMachine = const_cast<StateMachine*>(owner);
+      auto engine = const_cast<Engine*>(owner->systemState->engine);
+      engine->commands.emplace_back(std::bind(&StateMachine::createMultiInstanceActivityTokens,stateMachine,this), this);
+      return;
+    }
+  }
 
 //std::cerr << "->awaitEntryEvent" << std::endl;
   awaitEntryEvent();
@@ -223,9 +258,7 @@ void Token::advanceToEntered() {
   if ( !node ) {
 //std::cerr << "!node" << std::endl;
     // process operators are applied upon entry
-    if ( auto statusExtension = owner->process->extensionElements->represents<BPMNOS::Model::Status>();
-         statusExtension
-    ) {
+    if ( auto statusExtension = owner->process->extensionElements->represents<BPMNOS::Model::Status>() ) {
       for ( auto& operator_ : statusExtension->operators ) {
         if ( operator_->attribute->index == BPMNOS::Model::Status::Index::Timestamp ) {
           throw std::runtime_error("StateMachine: Operator '" + operator_->id + "' for process '" + owner->process->id + "' attempts to modify timestamp");
@@ -237,9 +270,7 @@ void Token::advanceToEntered() {
   else if ( node->represents<BPMN::SubProcess>() ) {
 //std::cerr << "node->represents<BPMN::SubProcess>()" << std::endl;
     // subprocess operators are applied upon entry
-    if ( auto statusExtension = node->extensionElements->represents<BPMNOS::Model::Status>();
-         statusExtension
-    ) {
+    if ( auto statusExtension = node->extensionElements->represents<BPMNOS::Model::Status>() ) {
       if ( !statusExtension->isInstantaneous ) {
         throw std::runtime_error("StateMachine: Operators for subprocess '" + node->id + "' attempt to modify timestamp");
       }
@@ -646,6 +677,24 @@ void Token::advanceToExiting() {
     engine->commands.emplace_back(std::bind(&Token::advanceToFailed,this), this);
     return;
   }
+
+  if ( auto activity = node->represents<BPMN::Activity>();
+    activity && 
+    activity->loopCharacteristics.has_value() &&
+    activity->loopCharacteristics.value() != BPMN::Activity::LoopCharacteristics::Standard
+  ) {
+    if ( activity->loopCharacteristics.value() != BPMN::Activity::LoopCharacteristics::Standard ) {
+      throw std::runtime_error("Token: standard loop marker at activity '" + node->id + "' is not yet supported");
+    }
+    else {
+      // delegate removal of token copies for multi-instance activity to owner
+      auto stateMachine = const_cast<StateMachine*>(owner);
+      auto engine = const_cast<Engine*>(owner->systemState->engine);
+      engine->commands.emplace_back(std::bind(&StateMachine::deleteMultiInstanceActivityToken,stateMachine,this), this);
+      return;
+    }
+  }
+
 
   if ( auto statusExtension = node->extensionElements->represents<BPMNOS::Model::Status>();
        statusExtension && statusExtension->attributes.size()
