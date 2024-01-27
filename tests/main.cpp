@@ -42,8 +42,9 @@ using namespace BPMNOS;
 #include "execution/eventsubprocess/test.h"
 // Compensations
 #include "execution/compensationactivity/test.h"
-
 #include "execution/compensationeventsubprocess/test.h"
+// Multi-instance activities
+#include "execution/multiinstanceactivity/test.h"
 
 // Status
 #include "execution/status/test.h"

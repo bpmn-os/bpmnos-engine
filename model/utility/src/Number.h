@@ -50,14 +50,6 @@ namespace BPMNOS {
    */
   std::string to_string(number numberValue, const ValueType& type);
 
-
-  /**
-   * @brief Merges a set of values into another.
-   *
-   * The resulting values hold a value if and only if the value is defined and equal in both sets.
-   */
-  void mergeValues(Values& values, const Values& other);
-
 } // namespace BPMNOS::Model
 
 #endif // BPMNOS_Model_Number_H

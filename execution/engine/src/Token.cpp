@@ -42,11 +42,8 @@ Token::Token(const std::vector<Token*>& others)
   , node(others.front()->node)
   , sequenceFlow(nullptr)
   , state(others.front()->state)
-  , status(others.front()->status)
+  , status(mergeStatus(others))
 {
-  for ( auto other : others | std::views::drop(1) ) {
-    mergeStatus(other);
-  }
 }
 
 Token::~Token() {
@@ -86,7 +83,8 @@ Token::~Token() {
     ) {
       if ( activity->loopCharacteristics.value() != BPMN::Activity::LoopCharacteristics::Standard ) {
         if ( state == State::WAITING ) {
-          systemState->tokensAtActivityInstance.erase(this);
+          systemState->activeTokensAtActivityInstance.erase(this);
+          systemState->exitTokensAtActivityInstance.erase(this);
         }
         else {
           systemState->tokenAtMultiInstanceActivity.erase(this);
@@ -225,10 +223,9 @@ void Token::advanceToReady() {
   
   if ( auto activity = node->represents<BPMN::Activity>();
     activity && 
-    activity->loopCharacteristics.has_value() &&
-    activity->loopCharacteristics.value() != BPMN::Activity::LoopCharacteristics::Standard
+    activity->loopCharacteristics.has_value()
   ) {
-    if ( activity->loopCharacteristics.value() != BPMN::Activity::LoopCharacteristics::Standard ) {
+    if ( activity->loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::Standard ) {
       throw std::runtime_error("Token: standard loop marker at activity '" + node->id + "' is not yet supported");
     }
     else {
@@ -680,10 +677,9 @@ void Token::advanceToExiting() {
 
   if ( auto activity = node->represents<BPMN::Activity>();
     activity && 
-    activity->loopCharacteristics.has_value() &&
-    activity->loopCharacteristics.value() != BPMN::Activity::LoopCharacteristics::Standard
+    activity->loopCharacteristics.has_value()
   ) {
-    if ( activity->loopCharacteristics.value() != BPMN::Activity::LoopCharacteristics::Standard ) {
+    if ( activity->loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::Standard ) {
       throw std::runtime_error("Token: standard loop marker at activity '" + node->id + "' is not yet supported");
     }
     else {
@@ -952,8 +948,3 @@ void Token::notify() const {
     listener->update(this);
   }
 }
-
-void Token::mergeStatus(const Token* other) {
-  BPMNOS::mergeValues(status,other->status);
-}
-

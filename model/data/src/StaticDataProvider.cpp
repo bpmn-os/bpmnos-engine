@@ -92,7 +92,7 @@ void StaticDataProvider::ensureDefaultValue(StaticInstanceData& instance, const 
   if ( auto it = instance.data.find( attribute );
     it == instance.data.end()
   ) {
-    // set instance attribute if not yet set
+    // set attribute if not yet set
     if ( value.has_value() ) {
       instance.data[ attribute ] = value.value();
     }

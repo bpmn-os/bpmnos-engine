@@ -6,6 +6,7 @@
 #include "model/utility/src/Number.h"
 #include <nlohmann/json.hpp>
 #include <iostream>
+#include <cassert>
 
 namespace BPMNOS::Execution {
 
@@ -154,7 +155,35 @@ private:
 
   void notify() const; ///< Inform all listeners about token update
 
-  void mergeStatus(const Token* other); ///< Merges the status of the other token into the status
+  /**
+   * Returns a merged status from the status of each token
+   **/
+  template <typename TokenPtr>
+  static BPMNOS::Values mergeStatus(const std::vector<TokenPtr>& tokens) {
+    assert( !tokens.empty() );
+    size_t n = tokens.front()->status.size();
+    BPMNOS::Values result;
+    result.resize(n);
+    result[(int)BPMNOS::Model::Status::Index::Timestamp] = tokens.front()->status[(int)BPMNOS::Model::Status::Index::Timestamp];
+
+    for ( size_t i = 0; i < n; i++ ) {
+      for ( auto& token : tokens ) {
+        if ( i == (int)BPMNOS::Model::Status::Index::Timestamp ) {
+          if ( result[i].value() < token->status[i].value() ) {
+            result[i] = token->status[i];
+          }
+        }
+        else if ( !result[i].has_value() ) {
+          result[i] = token->status[i];
+        }
+        else if ( token->status[i].has_value() && token->status[i].value() != result[i].value() ) {
+          result[i] = std::nullopt;
+          break;
+        }
+      }
+    }
+    return result;
+  }
 
 };
 

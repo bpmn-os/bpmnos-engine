@@ -136,7 +136,8 @@ void StateMachine::createMultiInstanceActivityTokens(Token* token) {
   assert( activity->loopCharacteristics.has_value() );
 
   // create token copies
-  assert ( systemState->tokensAtActivityInstance.find(token) == systemState->tokensAtActivityInstance.end() );
+  assert ( systemState->activeTokensAtActivityInstance.find(token) == systemState->activeTokensAtActivityInstance.end() );
+  assert ( systemState->exitTokensAtActivityInstance.find(token) == systemState->exitTokensAtActivityInstance.end() );
 
   Token* tokenCopy = nullptr;
   for ( auto valueMap : valueMaps ) {
@@ -162,7 +163,8 @@ void StateMachine::createMultiInstanceActivityTokens(Token* token) {
     }
 
     tokenCopy = tokens.back().get();
-    const_cast<SystemState*>(systemState)->tokensAtActivityInstance[token].push_back(tokenCopy);
+    const_cast<SystemState*>(systemState)->activeTokensAtActivityInstance[token].push_back(tokenCopy);
+    const_cast<SystemState*>(systemState)->exitTokensAtActivityInstance[token] = {};
     const_cast<SystemState*>(systemState)->tokenAtMultiInstanceActivity[tokenCopy] = token;
   }
 
@@ -178,8 +180,6 @@ void StateMachine::createMultiInstanceActivityTokens(Token* token) {
 void StateMachine::deleteMultiInstanceActivityToken(Token* token) {
   auto engine = const_cast<Engine*>(systemState->engine);
   auto mainToken = const_cast<SystemState*>(systemState)->tokenAtMultiInstanceActivity.at(token);
-  // merge final status into main token
-  mainToken->mergeStatus(token);
 
   auto activity = token->node->represents<BPMN::Activity>();
   assert( activity );
@@ -196,17 +196,29 @@ void StateMachine::deleteMultiInstanceActivityToken(Token* token) {
     }
   }
 
-  // remove token 
-  erase_ptr<Token>(const_cast<SystemState*>(systemState)->tokensAtActivityInstance[mainToken],token);
-  erase_ptr<Token>(tokens,token);
-  
+  // move token to exit tokens
+  erase_ptr<Token>(const_cast<SystemState*>(systemState)->activeTokensAtActivityInstance[mainToken],token);
+  const_cast<SystemState*>(systemState)->exitTokensAtActivityInstance[mainToken].push_back(token);
+
   // advance main token when last multi-instance token exited
-  auto& tokensAtActivityInstance = const_cast<SystemState*>(systemState)->tokensAtActivityInstance;
-  if ( auto it = tokensAtActivityInstance.find(mainToken);
-    it != tokensAtActivityInstance.end()
+  auto& activeTokensAtActivityInstance = const_cast<SystemState*>(systemState)->activeTokensAtActivityInstance;
+  if ( auto it = activeTokensAtActivityInstance.find(mainToken);
+    it != activeTokensAtActivityInstance.end()
   ) {
     if ( it->second.empty() ) {
-      tokensAtActivityInstance.erase(it);
+      activeTokensAtActivityInstance.erase(it);
+      auto& exitTokensAtActivityInstance = const_cast<SystemState*>(systemState)->exitTokensAtActivityInstance;
+      if ( auto it = exitTokensAtActivityInstance.find(mainToken);
+         it != exitTokensAtActivityInstance.end()
+      ) {
+        // merge status 
+        mainToken->status = Token::mergeStatus(it->second);
+        // remove tokens
+        for ( auto exitToken : it->second ) {
+          erase_ptr<Token>(tokens,exitToken);
+        }
+        exitTokensAtActivityInstance.erase(it);
+      }
 
       // advance main token
       if ( mainToken->node->outgoing.empty() ) {
@@ -222,7 +234,8 @@ void StateMachine::deleteMultiInstanceActivityToken(Token* token) {
   }
 }
 // TODO: handle failures events
-// TODO: handle compensations
+// TODO: handle single-instance compensations
+// TODO: handle parallel compensations
 // TODO: disallow boundary events
 // TODO: set value from csv input
 // TODO: type vector (must be immutable)
@@ -665,9 +678,12 @@ void StateMachine::shutdown() {
       value = std::nullopt;
     }
 
+    parentToken->status = Token::mergeStatus(tokens);
+/*
     for ( auto token : tokens ) {
       parentToken->mergeStatus(token.get());
     }
+*/
   }
   tokens.clear();
 
