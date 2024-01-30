@@ -675,6 +675,13 @@ void Token::advanceToExiting() {
     return;
   }
 
+  if ( auto statusExtension = node->extensionElements->represents<BPMNOS::Model::Status>();
+       statusExtension && statusExtension->attributes.size()
+  ) {
+    // remove attributes that are no longer needed
+    status.resize( statusExtension->attributeMap.size() - statusExtension->attributes.size() );
+  }
+
   if ( auto activity = node->represents<BPMN::Activity>();
     activity && 
     activity->loopCharacteristics.has_value()
@@ -689,14 +696,6 @@ void Token::advanceToExiting() {
       engine->commands.emplace_back(std::bind(&StateMachine::deleteMultiInstanceActivityToken,stateMachine,this), this);
       return;
     }
-  }
-
-
-  if ( auto statusExtension = node->extensionElements->represents<BPMNOS::Model::Status>();
-       statusExtension && statusExtension->attributes.size()
-  ) {
-    // remove attributes that are no longer needed
-    status.resize( statusExtension->attributeMap.size() - statusExtension->attributes.size() );
   }
 
   if ( auto activity = node->represents<BPMN::Activity>() ) {
