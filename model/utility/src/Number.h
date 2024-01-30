@@ -50,6 +50,11 @@ namespace BPMNOS {
    */
   std::string to_string(number numberValue, const ValueType& type);
 
+  /**
+   * Returns merged values from a set of values
+   **/
+  BPMNOS::Values mergeValues(const std::vector<BPMNOS::Values>& valueSets);
+
 } // namespace BPMNOS::Model
 
 #endif // BPMNOS_Model_Number_H

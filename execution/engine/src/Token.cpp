@@ -83,8 +83,8 @@ Token::~Token() {
     ) {
       if ( activity->loopCharacteristics.value() != BPMN::Activity::LoopCharacteristics::Standard ) {
         if ( state == State::WAITING ) {
-          systemState->activeTokensAtActivityInstance.erase(this);
-          systemState->exitTokensAtActivityInstance.erase(this);
+          systemState->tokensAtActivityInstance.erase(this);
+          systemState->exitStatusAtActivityInstance.erase(this);
         }
         else {
           systemState->tokenAtMultiInstanceActivity.erase(this);
@@ -690,6 +690,8 @@ void Token::advanceToExiting() {
       throw std::runtime_error("Token: standard loop marker at activity '" + node->id + "' is not yet supported");
     }
     else {
+      awaitCompensation();
+
       // delegate removal of token copies for multi-instance activity to owner
       auto stateMachine = const_cast<StateMachine*>(owner);
       auto engine = const_cast<Engine*>(owner->systemState->engine);
@@ -703,15 +705,27 @@ void Token::advanceToExiting() {
     if ( !activity->boundaryEvents.empty() ) {
       // remove tokens at boundary events
       engine->commands.emplace_back( std::bind(&StateMachine::deleteTokensAwaitingBoundaryEvent,stateMachine,this), stateMachine );
-      
-      // find compensate boundary event
-      auto it = std::find_if(activity->boundaryEvents.begin(), activity->boundaryEvents.end(), [](BPMN::FlowNode* boundaryEvent) {
-        return ( boundaryEvent->represents<BPMN::CompensateBoundaryEvent>() );
-      });
-      if ( it != activity->boundaryEvents.end() ) {
-        // create compensation token
-        engine->commands.emplace_back( std::bind(&StateMachine::createCompensationTokenForBoundaryEvent,stateMachine,*it, status), stateMachine );
+
+      awaitCompensation();
+/*
+      if ( activity->compensatedBy ) {
+        if ( auto compensationActivity = activity->compensatedBy->represents<BPMN::Activity>();
+          compensationActivity &&
+          activity->loopCharacteristics != compensationActivity->loopCharacteristics
+        ) {
+          throw std::runtime_error("Token: compensation activities with different loop characteristics as the compensated activity '" + node->id + "' are not yet supported");
+        }
+
+        // find compensate boundary event
+        auto it = std::find_if(activity->boundaryEvents.begin(), activity->boundaryEvents.end(), [](BPMN::FlowNode* boundaryEvent) {
+          return ( boundaryEvent->represents<BPMN::CompensateBoundaryEvent>() );
+        });
+        if ( it != activity->boundaryEvents.end() ) {
+          // create compensation token allowing
+          engine->commands.emplace_back( std::bind(&StateMachine::createCompensationTokenForBoundaryEvent,stateMachine,*it, status), stateMachine );
+        }
       }
+*/
     }
 
     if ( auto subProcess = node->represents<BPMN::SubProcess>();
@@ -825,6 +839,30 @@ void Token::advanceToFailed() {
   update(State::FAILED);
   auto engine = const_cast<Engine*>(owner->systemState->engine);
   engine->commands.emplace_back(std::bind(&StateMachine::handleFailure,const_cast<StateMachine*>(owner),this), this);
+}
+
+void Token::awaitCompensation() {
+  auto activity = node->as<BPMN::Activity>();
+  if ( activity->compensatedBy ) {
+    if ( auto compensationActivity = activity->compensatedBy->represents<BPMN::Activity>();
+      compensationActivity &&
+      activity->loopCharacteristics != compensationActivity->loopCharacteristics
+    ) {
+      throw std::runtime_error("Token: compensation activities with different loop characteristics as the compensated activity '" + node->id + "' are not yet supported");
+    }
+
+    auto stateMachine = const_cast<StateMachine*>(owner);
+    auto engine = const_cast<Engine*>(owner->systemState->engine);
+
+    // find compensate boundary event
+    auto it = std::find_if(activity->boundaryEvents.begin(), activity->boundaryEvents.end(), [](BPMN::FlowNode* boundaryEvent) {
+      return ( boundaryEvent->represents<BPMN::CompensateBoundaryEvent>() );
+    });
+    if ( it != activity->boundaryEvents.end() ) {
+      // create compensation token allowing
+      engine->commands.emplace_back( std::bind(&StateMachine::createCompensationTokenForBoundaryEvent,stateMachine,*it, status), stateMachine );
+    }
+  }
 }
 
 void Token::awaitReadyEvent() {

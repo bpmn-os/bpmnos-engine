@@ -1,6 +1,7 @@
 #include "Number.h"
 #include "Keywords.h"
 #include "StringRegistry.h"
+#include "model/parser/src/extensionElements/Status.h"
 #include <cassert>
 
 namespace BPMNOS { 
@@ -101,6 +102,32 @@ std::string to_string(number numberValue, const ValueType& type) {
       return std::to_string((double)numberValue);
   }
   throw std::logic_error("to_string: unknown value type " + type );
+}
+
+BPMNOS::Values mergeValues(const std::vector<BPMNOS::Values>& valueSets) {
+  assert( !valueSets.empty() );
+  size_t n = valueSets.front().size();
+  BPMNOS::Values result;
+  result.resize(n);
+  result[(int)BPMNOS::Model::Status::Index::Timestamp] = valueSets.front()[(int)BPMNOS::Model::Status::Index::Timestamp];
+
+  for ( size_t i = 0; i < n; i++ ) {
+    for ( auto& values : valueSets ) {
+      if ( i == (int)BPMNOS::Model::Status::Index::Timestamp ) {
+        if ( result[i].value() < values[i].value() ) {
+          result[i] = values[i];
+        }
+      }
+      else if ( !result[i].has_value() ) {
+        result[i] = values[i];
+      }
+      else if ( values[i].has_value() && values[i].value() != result[i].value() ) {
+        result[i] = std::nullopt;
+        break;
+      }
+    }
+  }
+  return result;
 }
 
 } // namespace BPMNOS::Model

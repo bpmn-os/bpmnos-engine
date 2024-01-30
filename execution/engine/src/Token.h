@@ -131,6 +131,8 @@ private:
 
   void advanceToFailed();
 
+  void awaitCompensation();
+
   void awaitReadyEvent(); ///< Wait for ready event for activities
 
   void awaitEntryEvent(); ///< Wait for entry event for activities
@@ -184,7 +186,6 @@ private:
     }
     return result;
   }
-
 };
 
 } // namespace BPMNOS::Execution

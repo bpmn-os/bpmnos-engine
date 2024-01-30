@@ -48,8 +48,26 @@ StateMachine::~StateMachine() {
 }
 
 void StateMachine::initiateBoundaryEvents(Token* token) {
-//std::cerr << "initiateBoundaryEvents" << std::endl;
+//std::cerr << "initiateBoundaryEvents: " << token->node->id << std::endl;
   auto activity = token->node->as<BPMN::Activity>();
+  assert( activity);
+
+  if ( activity->loopCharacteristics.has_value() &&
+    activity->loopCharacteristics.value() != BPMN::Activity::LoopCharacteristics::Standard
+  ) {
+    // determine main token waiting for all instances
+    auto mainToken = const_cast<SystemState*>(systemState)->tokenAtMultiInstanceActivity.at(token);
+
+    if ( const_cast<SystemState*>(systemState)->tokensAwaitingBoundaryEvent[mainToken].empty() ) {
+      // create boundary event tokens for the main token
+      token = mainToken; 
+    }
+    else {
+      // tokens at boundary events have already been created 
+      return;
+    }
+  }
+
   for ( auto node : activity->boundaryEvents ) {
     if ( !node->represents<BPMN::CompensateBoundaryEvent>() ) {
       initiateBoundaryEvent(token,node);
@@ -136,8 +154,8 @@ void StateMachine::createMultiInstanceActivityTokens(Token* token) {
   assert( activity->loopCharacteristics.has_value() );
 
   // create token copies
-  assert ( systemState->activeTokensAtActivityInstance.find(token) == systemState->activeTokensAtActivityInstance.end() );
-  assert ( systemState->exitTokensAtActivityInstance.find(token) == systemState->exitTokensAtActivityInstance.end() );
+  assert ( systemState->tokensAtActivityInstance.find(token) == systemState->tokensAtActivityInstance.end() );
+  assert ( systemState->exitStatusAtActivityInstance.find(token) == systemState->exitStatusAtActivityInstance.end() );
 
   Token* tokenCopy = nullptr;
   for ( auto valueMap : valueMaps ) {
@@ -163,18 +181,15 @@ void StateMachine::createMultiInstanceActivityTokens(Token* token) {
     }
 
     tokenCopy = tokens.back().get();
-    const_cast<SystemState*>(systemState)->activeTokensAtActivityInstance[token].push_back(tokenCopy);
-    const_cast<SystemState*>(systemState)->exitTokensAtActivityInstance[token] = {};
+    const_cast<SystemState*>(systemState)->tokensAtActivityInstance[token].push_back(tokenCopy);
+    const_cast<SystemState*>(systemState)->exitStatusAtActivityInstance[token] = {};
     const_cast<SystemState*>(systemState)->tokenAtMultiInstanceActivity[tokenCopy] = token;
   }
 
   assert( tokenCopy );
 
   // change state of original token
-  token->state = Token::State::WAITING;
-  for ( auto value : token->status ) {
-    value = std::nullopt;
-  }
+  token->update(Token::State::WAITING);
 }
 
 void StateMachine::deleteMultiInstanceActivityToken(Token* token) {
@@ -196,28 +211,34 @@ void StateMachine::deleteMultiInstanceActivityToken(Token* token) {
     }
   }
 
-  // move token to exit tokens
-  erase_ptr<Token>(const_cast<SystemState*>(systemState)->activeTokensAtActivityInstance[mainToken],token);
-  const_cast<SystemState*>(systemState)->exitTokensAtActivityInstance[mainToken].push_back(token);
+  // record exit status
+  const_cast<SystemState*>(systemState)->exitStatusAtActivityInstance[mainToken].push_back(token->status);
+  // remove token
+  const_cast<SystemState*>(systemState)->tokenAtMultiInstanceActivity.erase(token);
+  erase_ptr<Token>(const_cast<SystemState*>(systemState)->tokensAtActivityInstance[mainToken],token);
+  erase_ptr<Token>(tokens,token);
 
   // advance main token when last multi-instance token exited
-  auto& activeTokensAtActivityInstance = const_cast<SystemState*>(systemState)->activeTokensAtActivityInstance;
-  if ( auto it = activeTokensAtActivityInstance.find(mainToken);
-    it != activeTokensAtActivityInstance.end()
+  auto& tokensAtActivityInstance = const_cast<SystemState*>(systemState)->tokensAtActivityInstance;
+  if ( auto it = tokensAtActivityInstance.find(mainToken);
+    it != tokensAtActivityInstance.end()
   ) {
     if ( it->second.empty() ) {
-      activeTokensAtActivityInstance.erase(it);
-      auto& exitTokensAtActivityInstance = const_cast<SystemState*>(systemState)->exitTokensAtActivityInstance;
-      if ( auto it = exitTokensAtActivityInstance.find(mainToken);
-         it != exitTokensAtActivityInstance.end()
+      // last multi-instance token exited
+      tokensAtActivityInstance.erase(it);
+
+      if ( !activity->boundaryEvents.empty() ) {
+        // remove tokens at boundary events
+        deleteTokensAwaitingBoundaryEvent( mainToken );
+      }
+
+      auto& exitStatusAtActivityInstance = const_cast<SystemState*>(systemState)->exitStatusAtActivityInstance;
+      if ( auto it = exitStatusAtActivityInstance.find(mainToken);
+         it != exitStatusAtActivityInstance.end()
       ) {
         // merge status 
-        mainToken->status = Token::mergeStatus(it->second);
-        // remove tokens
-        for ( auto exitToken : it->second ) {
-          erase_ptr<Token>(tokens,exitToken);
-        }
-        exitTokensAtActivityInstance.erase(it);
+        mainToken->status = BPMNOS::mergeValues(it->second);
+        exitStatusAtActivityInstance.erase(it);
       }
 
       // advance main token
@@ -236,7 +257,6 @@ void StateMachine::deleteMultiInstanceActivityToken(Token* token) {
 // TODO: handle failures events
 // TODO: handle single-instance compensations
 // TODO: handle parallel compensations
-// TODO: disallow boundary events
 // TODO: set value from csv input
 // TODO: type vector (must be immutable)
 // TODO: check conditions for immutable  
@@ -271,6 +291,30 @@ void StateMachine::clearObsoleteTokens() {
 
 void StateMachine::interruptActivity(Token* token) {
 //std::cerr << "interrupt activity " << token->node->id << std::endl;
+  auto activity = token->node->represents<BPMN::Activity>();
+  assert( activity );
+
+  if ( activity->loopCharacteristics.has_value() &&
+    activity->loopCharacteristics.value() != BPMN::Activity::LoopCharacteristics::Standard
+  ) {
+    // withdraw all active tokens for multi-instance activity
+    auto it = const_cast<SystemState*>(systemState)->tokensAtActivityInstance.find(token);
+    assert ( it != const_cast<SystemState*>(systemState)->tokensAtActivityInstance.end() );
+    for ( auto activeToken : it->second ) {
+//std::cerr << "withdraw token at " << activeToken->node->id << "/" << activeToken << std::endl;
+      if ( activity->loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::MultiInstanceSequential ) {
+        const_cast<SystemState*>(systemState)->tokenAwaitingExit.erase(activeToken);
+      }
+
+      const_cast<SystemState*>(systemState)->tokenAtMultiInstanceActivity.erase(activeToken);
+      activeToken->withdraw();
+      erase_ptr<Token>(tokens, activeToken);
+    }
+    const_cast<SystemState*>(systemState)->tokensAtActivityInstance.erase(it);
+
+    // remove all exit status for multi-instance activity
+    const_cast<SystemState*>(systemState)->exitStatusAtActivityInstance.erase(token);
+  }
   deleteTokensAwaitingBoundaryEvent(token);
   token->withdraw();
   erase_ptr<Token>(tokens, token);
@@ -522,8 +566,21 @@ void StateMachine::handleEscalation(Token* token) {
     return;
   }
 
+  if ( auto activity = token->node->represents<BPMN::Activity>();
+    activity &&
+    token->state != Token::State::WAITING &&
+    activity->loopCharacteristics.has_value() &&
+    activity->loopCharacteristics.value() != BPMN::Activity::LoopCharacteristics::Standard
+  ) {
+    // handle failure at main token waiting for all instances
+    auto mainToken = const_cast<SystemState*>(systemState)->tokenAtMultiInstanceActivity.at(token);
+    mainToken->setStatus(token->status);
+    handleEscalation(mainToken);
+    return;
+  }
+
   // update status of parent token with that of current token
-  parentToken->setStatus(token->status); // TODO: keep instance id unchanged for tokens from non-interrupting event subprocesses
+  parentToken->setStatus(token->status);
   parentToken->update(parentToken->state);
 
   // find escalation boundary event
@@ -579,11 +636,24 @@ void StateMachine::handleFailure(Token* token) {
 
 //std::cerr << "check whether failure is caught" << std::endl;
 
-  if ( token->node && token->node->represents<BPMN::Task>() ) {
-    // find error boundary event
-    if ( auto eventToken = findTokenAwaitingErrorBoundaryEvent(token) ) {
-      engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,eventToken), eventToken);
-      return;
+  if ( token->node ) {
+    if ( auto task = token->node->represents<BPMN::Task>() ) {
+      if (token->state != Token::State::WAITING &&
+        task->loopCharacteristics.has_value() &&
+        task->loopCharacteristics.value() != BPMN::Activity::LoopCharacteristics::Standard
+      ) {
+        // handle failure at main token waiting for all instances
+        auto mainToken = const_cast<SystemState*>(systemState)->tokenAtMultiInstanceActivity.at(token);
+        mainToken->setStatus(token->status);
+        handleFailure(mainToken);
+        return;
+      }
+
+      // find error boundary event
+      if ( auto eventToken = findTokenAwaitingErrorBoundaryEvent(token) ) {
+        engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,eventToken), eventToken);
+        return;
+      }
     }
     // failure is not caught by boundary event of task
   }
@@ -606,6 +676,21 @@ void StateMachine::handleFailure(Token* token) {
   }
 
   // failure is not caught by event subprocess
+
+  if ( token->node ) {
+    if ( auto subProcess = token->node->represents<BPMN::SubProcess>();
+      subProcess &&
+      token->state != Token::State::WAITING &&
+      subProcess->loopCharacteristics.has_value() &&
+      subProcess->loopCharacteristics.value() != BPMN::Activity::LoopCharacteristics::Standard
+    ) {
+      // handle failure at main token waiting for all instances
+      auto mainToken = const_cast<SystemState*>(systemState)->tokenAtMultiInstanceActivity.at(token);
+      mainToken->setStatus(token->status);
+      handleFailure(mainToken);
+      return;
+    }
+  }
 
   // update status of parent token with that of current token
   parentToken->setStatus(token->status);
@@ -679,11 +764,6 @@ void StateMachine::shutdown() {
     }
 
     parentToken->status = Token::mergeStatus(tokens);
-/*
-    for ( auto token : tokens ) {
-      parentToken->mergeStatus(token.get());
-    }
-*/
   }
   tokens.clear();
 
