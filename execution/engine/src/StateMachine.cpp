@@ -168,6 +168,7 @@ void StateMachine::createMultiInstanceActivityTokens(Token* token) {
     if ( activity->loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::MultiInstanceSequential ) {
       if ( !tokenCopy ) {
         // for sequential multi-instance activities only the first token awaits entry event
+        tokens.back().get()->update(Token::State::READY);
         tokens.back().get()->awaitEntryEvent();
       }
       else {
@@ -177,6 +178,7 @@ void StateMachine::createMultiInstanceActivityTokens(Token* token) {
     }
     else if ( activity->loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::MultiInstanceParallel ) {
       // for parallel multi-instance activities all new tokens await entry event
+      tokens.back().get()->update(Token::State::READY);
       tokens.back().get()->awaitEntryEvent();
     }
 
@@ -297,7 +299,7 @@ void StateMachine::interruptActivity(Token* token) {
   if ( activity->loopCharacteristics.has_value() &&
     activity->loopCharacteristics.value() != BPMN::Activity::LoopCharacteristics::Standard
   ) {
-    // withdraw all active tokens for multi-instance activity
+    // withdraw all tokens for multi-instance activity
     auto it = const_cast<SystemState*>(systemState)->tokensAtActivityInstance.find(token);
     assert ( it != const_cast<SystemState*>(systemState)->tokensAtActivityInstance.end() );
     for ( auto activeToken : it->second ) {
@@ -307,7 +309,11 @@ void StateMachine::interruptActivity(Token* token) {
       }
 
       const_cast<SystemState*>(systemState)->tokenAtMultiInstanceActivity.erase(activeToken);
-      activeToken->withdraw();
+      if ( activity->loopCharacteristics.value() != BPMN::Activity::LoopCharacteristics::MultiInstanceParallel
+        || activeToken->state != Token::State::READY
+      ) {
+        activeToken->withdraw();
+      }
       erase_ptr<Token>(tokens, activeToken);
     }
     const_cast<SystemState*>(systemState)->tokensAtActivityInstance.erase(it);
