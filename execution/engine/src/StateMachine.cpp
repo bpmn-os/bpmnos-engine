@@ -585,13 +585,9 @@ void StateMachine::handleEscalation(Token* token) {
     return;
   }
 
-  // update status of parent token with that of current token
-  parentToken->setStatus(token->status);
-  parentToken->update(parentToken->state);
-
   // find escalation boundary event
-  if ( parentToken->node ) {
-    auto& tokensAwaitingBoundaryEvent = const_cast<SystemState*>(systemState)->tokensAwaitingBoundaryEvent[parentToken];
+  if ( token->node ) {
+    auto& tokensAwaitingBoundaryEvent = const_cast<SystemState*>(systemState)->tokensAwaitingBoundaryEvent[token];
     for ( auto eventToken : tokensAwaitingBoundaryEvent) {
       if ( eventToken->node->represents<BPMN::EscalationBoundaryEvent>() ) {
         eventToken->setStatus(token->status);
@@ -600,6 +596,10 @@ void StateMachine::handleEscalation(Token* token) {
       }
     }
   }
+
+  // update status of parent token with that of current token
+  parentToken->setStatus(token->status);
+  parentToken->update(parentToken->state);
 
 //std::cerr << "bubbble up escalation" << std::endl;
   auto parent = const_cast<StateMachine*>(parentToken->owner);
@@ -682,7 +682,6 @@ void StateMachine::handleFailure(Token* token) {
   }
 
   // failure is not caught by event subprocess
-
   if ( token->node ) {
     if ( auto subProcess = token->node->represents<BPMN::SubProcess>();
       subProcess &&
@@ -695,6 +694,18 @@ void StateMachine::handleFailure(Token* token) {
       mainToken->setStatus(token->status);
       handleFailure(mainToken);
       return;
+    }
+  }
+
+  // find error boundary event
+  if ( token->node ) {
+    auto& tokensAwaitingBoundaryEvent = const_cast<SystemState*>(systemState)->tokensAwaitingBoundaryEvent[token];
+    for ( auto eventToken : tokensAwaitingBoundaryEvent) {
+      if ( eventToken->node->represents<BPMN::ErrorBoundaryEvent>() ) {
+        eventToken->setStatus(token->status);
+        eventToken->advanceToCompleted();
+        return;
+      }
     }
   }
 
