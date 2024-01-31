@@ -26,7 +26,7 @@ list(APPEND bpmn_SOURCES
   extensionElements/Message.cpp
   extensionElements/MessageStatus.cpp
   DecisionTask.cpp
-  JobShop.cpp
+  Sequencer.cpp
   ResourceActivity.cpp
   RequestActivity.cpp
   ReleaseActivity.cpp
@@ -55,7 +55,7 @@ list(APPEND bpmn_HEADERS
   extensionElements/Message.h
   extensionElements/MessageStatus.h
   DecisionTask.h
-  JobShop.h
+  Sequencer.h
   ResourceActivity.h
   RequestActivity.h
   ReleaseActivity.h

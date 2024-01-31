@@ -9,7 +9,7 @@
 #include "extensionElements/Message.h"
 #include "DecisionTask.h"
 #include "MessageTaskSubstitution.h"
-#include "JobShop.h"
+#include "Sequencer.h"
 #include "ResourceActivity.h"
 #include "RequestActivity.h"
 #include "ReleaseActivity.h"
@@ -47,9 +47,9 @@ std::unique_ptr<BPMN::FlowNode> Model::createActivity(XML::bpmn::tActivity* acti
     node = bind<BPMN::FlowNode>( node, std::make_unique<Status>(activity,parent) );
   }
 
-  if ( auto jobShop = node->parent->represents<JobShop>() ) {
+  if ( auto sequencer = node->parent->represents<Sequencer>() ) {
     // add node to job list of resource activity
-    jobShop->resourceActivity->jobs.push_back(node->as<BPMN::Activity>());
+    sequencer->resourceActivity->jobs.push_back(node->as<BPMN::Activity>());
    }
 
   return node;
@@ -67,8 +67,8 @@ std::unique_ptr<BPMN::FlowNode> Model::createSubProcess(XML::bpmn::tSubProcess* 
   if ( const auto& type = subProcess->getOptionalAttributeByName("type"); 
        type.has_value() && type->get().xmlns == "https://bpmn.telematique.eu/resources" 
   ) {
-    if ( type->get().value.value == "JobShop" ) {
-      return std::make_unique<JobShop>(subProcess,parent);
+    if ( type->get().value.value == "Sequencer" ) {
+      return std::make_unique<Sequencer>(subProcess,parent);
     }
     else if ( type->get().value.value == "Resource" ) {
       return std::make_unique<ResourceActivity>(subProcess,parent);

@@ -1,5 +1,5 @@
-#ifndef BPMNOS_Model_JobShop_H
-#define BPMNOS_Model_JobShop_H
+#ifndef BPMNOS_Model_Sequencer_H
+#define BPMNOS_Model_Sequencer_H
 
 #include <memory>
 #include <vector>
@@ -10,10 +10,10 @@ namespace BPMNOS::Model {
 
 class ResourceActivity;
 
-class JobShop : public BPMN::SubProcess {
+class Sequencer : public BPMN::SubProcess {
   friend class Model;
 public:
-  JobShop(XML::bpmn::tSubProcess* subProcess, BPMN::Scope* parent);
+  Sequencer(XML::bpmn::tSubProcess* subProcess, BPMN::Scope* parent);
   ResourceActivity* resourceActivity;
 protected:
   ResourceActivity* initializeResource();
@@ -21,4 +21,4 @@ protected:
 
 } // namespace BPMNOS::Model
 
-#endif // BPMNOS_Model_JobShop_H
+#endif // BPMNOS_Model_Sequencer_H

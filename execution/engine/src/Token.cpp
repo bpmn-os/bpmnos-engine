@@ -5,7 +5,7 @@
 #include "model/parser/src/extensionElements/Gatekeeper.h"
 #include "model/parser/src/extensionElements/Message.h"
 #include "model/parser/src/extensionElements/Timer.h"
-#include "model/parser/src/JobShop.h"
+#include "model/parser/src/Sequencer.h"
 #include "model/parser/src/ResourceActivity.h"
 #include "model/parser/src/RequestActivity.h"
 #include "model/parser/src/ReleaseActivity.h"
@@ -948,8 +948,8 @@ void Token::withdraw() {
 }
 
 Token* Token::getResourceToken() const {
-  if ( auto jobShop = node->parent->represents<BPMNOS::Model::JobShop>() ) {
-    const BPMN::FlowNode* resourceActivity = jobShop->resourceActivity->as<BPMN::FlowNode>();
+  if ( auto sequencer = node->parent->represents<BPMNOS::Model::Sequencer>() ) {
+    const BPMN::FlowNode* resourceActivity = sequencer->resourceActivity->as<BPMN::FlowNode>();
     Token* resourceToken = owner->parentToken;
     while (resourceToken->node != resourceActivity) {
       resourceToken = resourceToken->owner->parentToken;

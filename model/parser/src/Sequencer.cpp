@@ -1,9 +1,9 @@
-#include "JobShop.h"
+#include "Sequencer.h"
 #include "ResourceActivity.h"
 
 using namespace BPMNOS::Model;
 
-JobShop::JobShop(XML::bpmn::tSubProcess* subProcess, BPMN::Scope* parent)
+Sequencer::Sequencer(XML::bpmn::tSubProcess* subProcess, BPMN::Scope* parent)
   : BPMN::Node(subProcess)
   , BPMN::FlowNode(subProcess,parent)
   , BPMN::SubProcess(subProcess,parent)
@@ -11,7 +11,7 @@ JobShop::JobShop(XML::bpmn::tSubProcess* subProcess, BPMN::Scope* parent)
 {
 }
 
-ResourceActivity* JobShop::initializeResource() {
+ResourceActivity* Sequencer::initializeResource() {
   BPMN::ChildNode* ancestor = parent->as<BPMN::ChildNode>();
   while ( ancestor ) {
     if ( auto resourceActivity = ancestor->represents<ResourceActivity>(); resourceActivity ) {
@@ -19,5 +19,5 @@ ResourceActivity* JobShop::initializeResource() {
     } 
     ancestor = ancestor->parent->represents<ChildNode>();
   }
-  throw std::logic_error("JobShop: cannot find resource");
+  throw std::logic_error("Sequencer: cannot find resource");
 }
