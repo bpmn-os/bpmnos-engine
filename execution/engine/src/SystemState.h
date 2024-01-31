@@ -80,9 +80,9 @@ public:
   std::unordered_map< Token*, Token* > tokenAtAssociatedActivity; ///< Map holding the token residing at the associated activity for each token at a boundary event
 
   //TODO: make sure that elements are deleted when no longer required
-  std::unordered_map< Token*, auto_list<Token> > tokensAwaitingJobEntryEvent; ///< Map holding a container of all tokens awaiting entry at jobs for each token at an active resource
+  std::unordered_map< Token*, auto_list<Token> > tokensAwaitingJobEntryEvent; ///< Map holding a container of all tokens awaiting entry at jobs for each token at a sequencer
 
-  auto_list<Token> tokensAtIdleResources; ///< Container holding indices of resources not executing a job and awaiting a job entry
+  auto_list<Token> tokensAtIdleSequencers; ///< Container holding tokens of sequencers currently not executing a job
 //  std::vector< Token* > tokensAtActiveResources; ///< Container holding indices of tokens at busy resources
 
   auto_schedule<Token, Values> tokensAwaitingTaskCompletionEvent; ///< Sorted container holding all tokens awaiting a task completion event

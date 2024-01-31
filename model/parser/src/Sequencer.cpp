@@ -7,17 +7,26 @@ Sequencer::Sequencer(XML::bpmn::tSubProcess* subProcess, BPMN::Scope* parent)
   : BPMN::Node(subProcess)
   , BPMN::FlowNode(subProcess,parent)
   , BPMN::SubProcess(subProcess,parent)
-  , resourceActivity(initializeResource())
+  , reference(this)
 {
-}
-
-ResourceActivity* Sequencer::initializeResource() {
-  BPMN::ChildNode* ancestor = parent->as<BPMN::ChildNode>();
+  // determine whether sequencer reference should be set to resource activity 
+  BPMN::ChildNode* ancestor = parent->represents<BPMN::ChildNode>();
   while ( ancestor ) {
-    if ( auto resourceActivity = ancestor->represents<ResourceActivity>(); resourceActivity ) {
-      return resourceActivity;
-    } 
+    if ( ancestor->represents<Sequencer>() ) {
+      if ( auto resourceActivity = ancestor->represents<ResourceActivity>(); resourceActivity ) {
+        reference = resourceActivity;
+      }
+      break;
+    }
     ancestor = ancestor->parent->represents<ChildNode>();
   }
-  throw std::logic_error("Sequencer: cannot find resource");
 }
+
+const std::vector<BPMN::Activity*>& Sequencer::getJobs() {
+  return reference->jobs;
+}
+
+void Sequencer::addJob(BPMN::Activity* job) {
+  reference->jobs.push_back(job);
+}
+

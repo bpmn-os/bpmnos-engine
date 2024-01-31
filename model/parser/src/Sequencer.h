@@ -8,15 +8,15 @@
 
 namespace BPMNOS::Model {
 
-class ResourceActivity;
-
 class Sequencer : public BPMN::SubProcess {
   friend class Model;
 public:
   Sequencer(XML::bpmn::tSubProcess* subProcess, BPMN::Scope* parent);
-  ResourceActivity* resourceActivity;
+  Sequencer* reference;
+  void addJob(BPMN::Activity* job);
+  const std::vector<BPMN::Activity*>& getJobs();
 protected:
-  ResourceActivity* initializeResource();
+  std::vector<BPMN::Activity*> jobs;
 };
 
 } // namespace BPMNOS::Model

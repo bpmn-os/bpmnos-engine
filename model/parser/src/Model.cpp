@@ -48,8 +48,8 @@ std::unique_ptr<BPMN::FlowNode> Model::createActivity(XML::bpmn::tActivity* acti
   }
 
   if ( auto sequencer = node->parent->represents<Sequencer>() ) {
-    // add node to job list of resource activity
-    sequencer->resourceActivity->jobs.push_back(node->as<BPMN::Activity>());
+    // add node to job list of sequencer
+    sequencer->addJob(node->as<BPMN::Activity>());
    }
 
   return node;

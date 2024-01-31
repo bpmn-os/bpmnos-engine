@@ -151,7 +151,7 @@ private:
 
   void withdraw(); ///< Remove token
 
-  Token* getResourceToken() const; ///< Returns token at resource activity for tokens at jobs and nullptr for all other tokens
+  Token* getSequencerToken() const; ///< Returns token at sequencer for tokens at jobs and nullptr for all other tokens
 
   void update(State newState); ///< Updates token state and timestamp before calling notify()
 

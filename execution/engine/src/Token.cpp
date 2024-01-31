@@ -874,8 +874,8 @@ void Token::awaitReadyEvent() {
 void Token::awaitEntryEvent() {
   auto systemState = const_cast<SystemState*>(owner->systemState);
 
-  if ( auto tokenAtResource = getResourceToken() ) {
-    systemState->tokensAwaitingJobEntryEvent[tokenAtResource].emplace_back(weak_from_this());
+  if ( auto tokenAtSequencer = getSequencerToken() ) {
+    systemState->tokensAwaitingJobEntryEvent[tokenAtSequencer].emplace_back(weak_from_this());
   }
   else {
     systemState->tokensAwaitingRegularEntryEvent.emplace_back(weak_from_this());
@@ -947,14 +947,14 @@ void Token::withdraw() {
   }
 }
 
-Token* Token::getResourceToken() const {
+Token* Token::getSequencerToken() const {
   if ( auto sequencer = node->parent->represents<BPMNOS::Model::Sequencer>() ) {
-    const BPMN::FlowNode* resourceActivity = sequencer->resourceActivity->as<BPMN::FlowNode>();
-    Token* resourceToken = owner->parentToken;
-    while (resourceToken->node != resourceActivity) {
-      resourceToken = resourceToken->owner->parentToken;
+//    const BPMN::FlowNode* reference = sequencer->reference->as<BPMN::FlowNode>();
+    Token* sequencerToken = owner->parentToken;
+    while (sequencerToken->node != sequencer->reference) {
+      sequencerToken = sequencerToken->owner->parentToken;
     }
-    return resourceToken;
+    return sequencerToken;
   }
 
   return nullptr;

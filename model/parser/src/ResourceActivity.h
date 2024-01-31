@@ -5,14 +5,14 @@
 #include <vector>
 #include <optional>
 #include <bpmn++.h>
+#include "Sequencer.h"
 
 namespace BPMNOS::Model {
 
-class ResourceActivity : public BPMN::SubProcess {
+class ResourceActivity : public Sequencer {
   friend class Model;
 public:
   ResourceActivity(XML::bpmn::tSubProcess* subProcess, BPMN::Scope* parent);
-  std::vector<BPMN::Activity*> jobs;
 };
 
 } // namespace BPMNOS::Model
