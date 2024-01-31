@@ -285,3 +285,95 @@ SCENARIO( "Named task with compensation task", "[execution][compensation]" ) {
   }
 }
 
+SCENARIO( "Multi instance compensation", "[execution][compensation][multiinstanceactivity]" ) {
+  const std::string modelFile = "execution/compensationactivity/Multi-instance_compensation.bpmn";
+  REQUIRE_NOTHROW( Model::Model(modelFile) );
+  GIVEN( "A single instance with no input values" ) {
+
+    std::string csv =
+      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
+      "Process_1, Instance_1,,\n"
+    ;
+
+    Model::StaticDataProvider dataProvider(modelFile,csv);
+    auto scenario = dataProvider.createScenario();
+
+    WHEN( "The engine is started with a recorder" ) {
+      Execution::Engine engine;
+      Execution::ReadyHandler readyHandler;
+      Execution::InstantEntryHandler entryHandler;
+      Execution::DeterministicTaskCompletionHandler completionHandler;
+      Execution::InstantExitHandler exitHandler;
+      Execution::TimeWarp timeHandler;
+      engine.addEventHandler(&readyHandler);
+      engine.addEventHandler(&entryHandler);
+      engine.addEventHandler(&completionHandler);
+      engine.addEventHandler(&exitHandler);
+      engine.addEventHandler(&timeHandler);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
+      engine.addListener(&recorder);
+      engine.run(scenario.get());
+      THEN( "The dump of each entry of the recorder log is correct" ) {
+        auto waitingLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "WAITING"}});
+        REQUIRE( waitingLog.size() == 1 );
+
+        auto entryLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "ENTERED"}});
+        REQUIRE( entryLog.size() == 3 );
+
+        auto withdrawnLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "WITHDRAWN"}});
+        REQUIRE( withdrawnLog.size() == 1 );
+
+        auto exitLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "EXITING"}});
+        REQUIRE( exitLog.size() == 3 );
+
+        auto compensationLog = recorder.find(nlohmann::json{{"nodeId","CompensateBoundaryEvent_1"},{"state", "COMPLETED"}});
+        REQUIRE( compensationLog.size() == 2 );
+
+        auto compensationActivityLog = recorder.find(nlohmann::json{{"nodeId","CompensationActivity_1"},{"state", "COMPLETED"}});
+        REQUIRE( compensationActivityLog.size() == 2 );
+
+        auto departureLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "DEPARTED"}});
+        REQUIRE( departureLog.size() == 0 );
+      }
+    }
+  }
+}
+
+
+SCENARIO( "Compensation of  multi instance activity", "[execution][compensation][multiinstanceactivity]" ) {
+  const std::string modelFile = "execution/compensationactivity/Compensation_multi-instance_activity.bpmn";
+  REQUIRE_NOTHROW( Model::Model(modelFile) );
+  GIVEN( "A single instance with no input values" ) {
+
+    std::string csv =
+      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
+      "Process_1, Instance_1,,\n"
+    ;
+
+    Model::StaticDataProvider dataProvider(modelFile,csv);
+    auto scenario = dataProvider.createScenario();
+
+    WHEN( "The engine is started with a recorder" ) {
+      Execution::Engine engine;
+      Execution::ReadyHandler readyHandler;
+      Execution::InstantEntryHandler entryHandler;
+      Execution::DeterministicTaskCompletionHandler completionHandler;
+      Execution::InstantExitHandler exitHandler;
+      Execution::TimeWarp timeHandler;
+      engine.addEventHandler(&readyHandler);
+      engine.addEventHandler(&entryHandler);
+      engine.addEventHandler(&completionHandler);
+      engine.addEventHandler(&exitHandler);
+      engine.addEventHandler(&timeHandler);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
+      engine.addListener(&recorder);
+//      engine.run(scenario.get());
+      THEN( "The dump of each entry of the recorder log is correct" ) {
+        REQUIRE_THROWS( engine.run(scenario.get()) );
+      }
+    }
+  }
+}
+
