@@ -417,13 +417,13 @@ void Token::advanceToBusy() {
   if ( !node ) {
     // token is at process
     auto scope = owner->process->as<BPMN::Scope>();
-//std::cerr << "!node" << scope->startEvents.size() << std::endl;
-    if ( scope->startEvents.empty() ) {
+//std::cerr << "!node" << scope->startNodes.size() << std::endl;
+    if ( scope->startNodes.empty() ) {
       auto engine = const_cast<Engine*>(owner->systemState->engine);
       engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,this), this);
     }
     else {
-      if ( scope->startEvents.size() == 1 ) {
+      if ( scope->startNodes.size() == 1 ) {
 //std::cerr << "create child statemachine" << std::endl;
         // create child statemachine
         auto engine = const_cast<Engine*>(owner->systemState->engine);
@@ -435,12 +435,12 @@ void Token::advanceToBusy() {
   else if ( node->represents<BPMN::SubProcess>() ) {
 //std::cerr << "node->represents<BPMN::SubProcess>()" << std::endl;
     auto scope = node->as<BPMN::Scope>();
-    if ( scope->startEvents.empty() ) {
+    if ( scope->startNodes.empty() ) {
       auto engine = const_cast<Engine*>(owner->systemState->engine);
       engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,this), this);
     }
     else {
-      if ( scope->startEvents.size() == 1 ) {
+      if ( scope->startNodes.size() == 1 ) {
         // create child statemachine
         auto engine = const_cast<Engine*>(owner->systemState->engine);
         engine->commands.emplace_back(std::bind(&StateMachine::createChild,const_cast<StateMachine*>(owner),this,scope), this);

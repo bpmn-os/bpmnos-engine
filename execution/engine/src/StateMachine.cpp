@@ -388,11 +388,11 @@ void StateMachine::run(const Values& status) {
     registerRecipient();
   }
   else {
-    if ( scope->startEvents.size() != 1 ) {
+    if ( scope->startNodes.size() != 1 ) {
       throw std::runtime_error("StateMachine: no unique start node within scope of '" + scope->id + "'");
     }
 
-    tokens.push_back( std::make_shared<Token>(this,scope->startEvents.front(),status) );
+    tokens.push_back( std::make_shared<Token>(this,scope->startNodes.front(),status) );
   }
 
   auto token = tokens.back().get();
@@ -422,7 +422,7 @@ void StateMachine::run(const Values& status) {
 }
 
 void StateMachine::createChild(Token* parent, const BPMN::Scope* scope) {
-  if ( scope->startEvents.size() > 1 ) {
+  if ( scope->startNodes.size() > 1 ) {
     throw std::runtime_error("StateMachine: scope '" + scope->id + "' has multiple start nodes");
   }
 
