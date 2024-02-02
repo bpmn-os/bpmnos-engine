@@ -17,7 +17,7 @@ using namespace BPMNOS;
 #include "data/dynamic/test.h"
 
 /* Execution engine */
-
+/*
 // Process
 #include "execution/process/test.h"
 
@@ -44,9 +44,13 @@ using namespace BPMNOS;
 #include "execution/compensationeventsubprocess/test.h"
 // Multi-instance activities
 #include "execution/multiinstanceactivity/test.h"
+// Ad-hoc subprocesses
+#include "execution/adhocsubprocess/test.h"
 
 // Status
 #include "execution/status/test.h"
+*/
+#include "execution/adhocsubprocess/test.h"
 
 // When adding/modifying tests, don't forget to run: make clean; cmake ..; make all -j7; make tests
 

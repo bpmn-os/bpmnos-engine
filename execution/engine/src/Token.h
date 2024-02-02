@@ -88,10 +88,10 @@ public:
   StateMachine* owned; ///< State machine owned by the token
   const BPMN::FlowNode* node;
   const BPMN::SequenceFlow* sequenceFlow;
-  enum class State { CREATED, READY, ENTERED, BUSY, COMPLETED, EXITING, DEPARTED, ARRIVED, WAITING, DONE, FAILED, FAILING, WITHDRAWN }; ///< The states that a token can be in
+  enum class State { CREATED, READY, ENTERED, IDLE, BUSY, COMPLETED, EXITING, DEPARTED, ARRIVED, WAITING, DONE, FAILED, FAILING, WITHDRAWN }; ///< The states that a token can be in
   const BPMNOS::Model::AttributeMap& getAttributeMap() const;
 private:
-  static inline std::string stateName[] = { "CREATED", "READY", "ENTERED", "BUSY", "COMPLETED", "EXITING", "DEPARTED", "ARRIVED", "WAITING", "DONE", "FAILED", "FAILING", "WITHDRAWN" };
+  static inline std::string stateName[] = { "CREATED", "READY", "ENTERED", "IDLE", "BUSY", "COMPLETED", "EXITING", "DEPARTED", "ARRIVED", "WAITING", "DONE", "FAILED", "FAILING", "WITHDRAWN" };
   State state;
 public:
   Token(const StateMachine* owner, const BPMN::FlowNode* node, const Values& status);
@@ -104,6 +104,7 @@ public:
 
   bool ready() const { return state == State::READY; };
   bool entered() const { return state == State::ENTERED; };
+  bool idle() const { return state == State::IDLE; };
   bool busy() const { return state == State::BUSY; };
   bool completed() const { return state == State::COMPLETED; };
   bool arrived() const { return state == State::ARRIVED; };
@@ -116,9 +117,10 @@ private:
 
   bool isFeasible(); ///< Check restrictions within current and ancestor scopes
 
-//  void advanceFromCreated();
+  void advanceFromCreated();
   void advanceToReady();
   void advanceToEntered();
+  void advanceToIdle();
   void advanceToBusy();
 
   void advanceToCompleted();
@@ -151,7 +153,7 @@ private:
 
   void withdraw(); ///< Remove token
 
-  Token* getSequencerToken() const; ///< Returns token at sequencer for tokens at jobs and nullptr for all other tokens
+  Token* getSequencerToken() const; ///< Returns token at sequencer for tokens at activities within sequential adhoc subprocesses
 
   void update(State newState); ///< Updates token state and timestamp before calling notify()
 

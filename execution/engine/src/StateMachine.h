@@ -78,6 +78,7 @@ private:
   void initiateEventSubprocesses(Token* token); ///< Method initiating pending event subprocesses
   void createMultiInstanceActivityTokens(Token* token); ///< Method creating tokens for multi-instance activities
   void deleteMultiInstanceActivityToken(Token* token); ///< Method creating tokens for multi-instance activities
+  void deleteAdHocSubProcessToken(Token* token);
   void compensateActivity(Token* token); ///< Method creating the compensation activity of an activity
 
   std::vector<Token*> createTokenCopies(Token* token, const std::vector<BPMN::SequenceFlow*>& sequenceFlows);

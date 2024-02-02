@@ -9,12 +9,13 @@ InstantEntryHandler::InstantEntryHandler()
 }
 
 std::unique_ptr<Event> InstantEntryHandler::fetchEvent( const SystemState* systemState ) {
-  for ( auto& [token_ptr] : systemState->tokensAwaitingRegularEntryEvent ) {
+  for ( auto& [token_ptr] : systemState->tokensAwaitingParallelEntry ) {
     if( auto token = token_ptr.lock() )  {
       assert( token );
       return std::make_unique<EntryEvent>(token.get());
     }
   }
+
   return nullptr;
 }
 

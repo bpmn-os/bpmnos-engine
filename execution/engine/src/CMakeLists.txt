@@ -16,11 +16,11 @@ list(APPEND engine_SOURCES
   EventHandler.cpp
   eventhandler/TimeWarp.cpp
   eventhandler/Metronome.cpp
-  eventhandler/InstantExitHandler.cpp
-  eventhandler/InstantEntryHandler.cpp
-  eventhandler/DeterministicTaskCompletionHandler.cpp
-#  eventhandler/TimerHandler.cpp
   eventhandler/ReadyHandler.cpp
+  eventhandler/InstantEntryHandler.cpp
+  eventhandler/NaiveSequentialEntryHandler.cpp
+  eventhandler/DeterministicTaskCompletionHandler.cpp
+  eventhandler/InstantExitHandler.cpp
   eventhandler/FirstMatchingMessageHandler.cpp
   Engine.cpp
 )
@@ -45,11 +45,11 @@ list(APPEND engine_HEADERS
   EventHandler.h
   eventhandler/TimeWarp.h
   eventhandler/Metronome.h
-  eventhandler/InstantExitHandler.h
-  eventhandler/InstantEntryHandler.h
-  eventhandler/DeterministicTaskCompletionHandler.h
-#  eventhandler/TimerHandler.h
   eventhandler/ReadyHandler.h
+  eventhandler/InstantEntryHandler.h
+  eventhandler/NaiveSequentialEntryHandler.h
+  eventhandler/DeterministicTaskCompletionHandler.h
+  eventhandler/InstantExitHandler.h
   eventhandler/FirstMatchingMessageHandler.h
   Engine.h
 )

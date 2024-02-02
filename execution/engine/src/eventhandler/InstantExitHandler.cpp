@@ -9,7 +9,7 @@ InstantExitHandler::InstantExitHandler()
 }
 
 std::unique_ptr<Event> InstantExitHandler::fetchEvent( const SystemState* systemState ) {
-  for ( auto& [token_ptr] : systemState->tokensAwaitingExitEvent ) {
+  for ( auto& [token_ptr] : systemState->tokensAwaitingExit ) {
     if ( auto token = token_ptr.lock() )  {
       assert( token );
       return std::make_unique<ExitEvent>(token.get());

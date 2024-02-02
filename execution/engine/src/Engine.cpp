@@ -1,6 +1,7 @@
 #include "Engine.h"
 #include "Token.h"
 #include "StateMachine.h"
+#include "model/parser/src/SequentialAdHocSubProcess.h"
 #include "execution/utility/src/erase.h"
 #include "execution/listener/src/Listener.h"
 #include <cassert>
@@ -142,15 +143,18 @@ void Engine::process(const ReadyEvent& event) {
 }
 
 void Engine::process(const EntryEvent& event) {
-//std::cerr << "EntryEvent " << event.token->node->id << std::endl;
+std::cerr << "EntryEvent " << event.token->node->id << std::endl;
   Token* token = const_cast<Token*>(event.token);
-  if ( auto tokenAtSequencer = event.token->getSequencerToken() ) {
-    systemState->tokensAwaitingJobEntryEvent[tokenAtSequencer].remove(token);
+  if ( token->node->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() ) {
+    auto tokenAtSequencer = systemState->tokenAtSequencer.at(token);
+    systemState->tokensAwaitingSequentialEntry.remove(token);
     // sequencer is no longer idle
-    systemState->tokensAtIdleSequencers.remove(tokenAtSequencer);
+    tokenAtSequencer->update(Token::State::BUSY);
+    // use sequencer status
+    token->setStatus(tokenAtSequencer->status);
   }
   else {
-    systemState->tokensAwaitingRegularEntryEvent.remove(token);
+    systemState->tokensAwaitingParallelEntry.remove(token);
   }
 
   // update token status
@@ -164,7 +168,7 @@ void Engine::process(const EntryEvent& event) {
 void Engine::process(const TaskCompletionEvent& event) {
 //std::cerr << "TaskCompletionEvent " << event.token->node->id << std::endl;
   Token* token = const_cast<Token*>(event.token);
-  systemState->tokensAwaitingTaskCompletionEvent.remove(token);
+  systemState->tokensAwaitingTaskCompletion.remove(token);
 
   // update token status
   token->status = event.updatedStatus;
@@ -173,13 +177,17 @@ void Engine::process(const TaskCompletionEvent& event) {
 }
 
 void Engine::process(const ExitEvent& event) {
-//std::cerr << "ExitEvent " << event.token->node->id << std::endl;
+std::cerr << "ExitEvent " << event.token->node->id << std::endl;
   Token* token = const_cast<Token*>(event.token);
-  systemState->tokensAwaitingExitEvent.remove(token);
+  systemState->tokensAwaitingExit.remove(token);
 
-  if ( auto tokenAtSequencer = token->getSequencerToken() ) {
+  if ( token->node->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() ) {
+    auto tokenAtSequencer = systemState->tokenAtSequencer.at(token);
+    // update sequencer status
+    tokenAtSequencer->setStatus(token->status);
     // sequencer becomes idle
-    systemState->tokensAtIdleSequencers.emplace_back( tokenAtSequencer->weak_from_this() );
+    tokenAtSequencer->update(Token::State::IDLE);
+    systemState->tokenAtSequencer.erase(token);
   }
 
   // update token status

@@ -263,6 +263,15 @@ void StateMachine::deleteMultiInstanceActivityToken(Token* token) {
 // TODO: type vector (must be immutable)
 // TODO: check conditions for immutable  
 
+void StateMachine::deleteAdHocSubProcessToken(Token* token) {
+  if ( tokens.size() > 1 ) {
+    erase_ptr<Token>(tokens,token);
+  }
+  else {
+    attemptShutdown();
+  }
+}
+
 void StateMachine::deleteChild(StateMachine* child) {
 //std::cerr << "delete child '" << child->scope->id << "' of '" << scope->id << "'" <<  std::endl;
   if ( child->scope->represents<BPMN::SubProcess>() ) {
@@ -388,44 +397,34 @@ void StateMachine::run(const Values& status) {
     registerRecipient();
   }
   else {
-    if ( scope->startNodes.size() != 1 ) {
-      throw std::runtime_error("StateMachine: no unique start node within scope of '" + scope->id + "'");
-    }
-
-    tokens.push_back( std::make_shared<Token>(this,scope->startNodes.front(),status) );
-  }
-
-  auto token = tokens.back().get();
-  if ( token->node && token->node->represents<BPMN::Activity>() ) {
-    throw std::runtime_error("StateMachine: start node within scope of '" + scope->id + "' is an activity");
-  }
-
-  if ( token->node ) {
-    if ( auto startEvent = token->node->represents<BPMN::TypedStartEvent>();
-      startEvent && !startEvent->isInterrupting
-    ) {
-      // token instantiates non-interrupting event subprocess
-      // get instantiation counter from context
-      auto context = const_cast<StateMachine*>(parentToken->owned);
-      auto counter = ++context->instantiations[token->node];
-      // append instantiation counter for disambiguation
-      const_cast<std::string&>(instanceId) = BPMNOS::to_string(token->status[Model::Status::Index::Instance].value(),STRING) + delimiter +  std::to_string(counter);
-      token->status[Model::Status::Index::Instance] = BPMNOS::to_number(instanceId,BPMNOS::ValueType::STRING);
-      const_cast<SystemState*>(systemState)->archive[ instanceId ] = weak_from_this();
-      registerRecipient();
+    for ( auto startNode : scope->startNodes ) {
+      tokens.push_back( std::make_shared<Token>(this,startNode,status) );
     }
   }
 
+  for ( auto token : tokens ) {
+    if ( token->node ) {
+      if ( auto startEvent = token->node->represents<BPMN::TypedStartEvent>();
+        startEvent && !startEvent->isInterrupting
+      ) {
+        // token instantiates non-interrupting event subprocess
+        // get instantiation counter from context
+        auto context = const_cast<StateMachine*>(parentToken->owned);
+        auto counter = ++context->instantiations[token->node];
+        // append instantiation counter for disambiguation
+        const_cast<std::string&>(instanceId) = BPMNOS::to_string(token->status[Model::Status::Index::Instance].value(),STRING) + delimiter +  std::to_string(counter);
+        token->status[Model::Status::Index::Instance] = BPMNOS::to_number(instanceId,BPMNOS::ValueType::STRING);
+        const_cast<SystemState*>(systemState)->archive[ instanceId ] = weak_from_this();
+        registerRecipient();
+      }
 //std::cerr << "Initial token: >" << token->jsonify().dump() << "<" << std::endl;
-  // advance token
-  token->advanceToEntered();
+    }
+    // advance token
+    token->advanceFromCreated();
+  }
 }
 
 void StateMachine::createChild(Token* parent, const BPMN::Scope* scope) {
-  if ( scope->startNodes.size() > 1 ) {
-    throw std::runtime_error("StateMachine: scope '" + scope->id + "' has multiple start nodes");
-  }
-
   subProcesses.push_back(std::make_shared<StateMachine>(systemState, scope, parent));
   auto subProcess = subProcesses.back().get();
   parent->owned = subProcess;

@@ -5,7 +5,7 @@
 #include "model/parser/src/extensionElements/Gatekeeper.h"
 #include "model/parser/src/extensionElements/Message.h"
 #include "model/parser/src/extensionElements/Timer.h"
-#include "model/parser/src/Sequencer.h"
+#include "model/parser/src/SequentialAdHocSubProcess.h"
 #include "model/parser/src/ResourceActivity.h"
 #include "model/parser/src/RequestActivity.h"
 #include "model/parser/src/ReleaseActivity.h"
@@ -76,27 +76,30 @@ Token::~Token() {
       systemState->tokenAtEventBasedGateway.erase(this);
     }
 
-    if ( auto activity = node->represents<BPMN::Activity>();
-      activity &&
-      activity->loopCharacteristics.has_value() &&
-      !activity->isForCompensation
-    ) {
-      if ( activity->loopCharacteristics.value() != BPMN::Activity::LoopCharacteristics::Standard ) {
-        if ( state == State::WAITING ) {
-          systemState->tokensAtActivityInstance.erase(this);
-          systemState->exitStatusAtActivityInstance.erase(this);
-        }
-        else {
-          systemState->tokenAtMultiInstanceActivity.erase(this);
-          if ( activity->loopCharacteristics.value() != BPMN::Activity::LoopCharacteristics::MultiInstanceSequential ) {
-            systemState->tokenAwaitingExit.erase(this);
+    if ( auto activity = node->represents<BPMN::Activity>() ) {
+      if ( state == State::READY && activity->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() ) {
+        systemState->tokenAtSequencer.erase(this);
+      }
+
+      if ( activity->loopCharacteristics.has_value() &&
+        !activity->isForCompensation
+      ) {
+        if ( activity->loopCharacteristics.value() != BPMN::Activity::LoopCharacteristics::Standard ) {
+          if ( state == State::WAITING ) {
+            systemState->tokensAtActivityInstance.erase(this);
+            systemState->exitStatusAtActivityInstance.erase(this);
+          }
+          else {
+            systemState->tokenAtMultiInstanceActivity.erase(this);
+            if ( activity->loopCharacteristics.value() != BPMN::Activity::LoopCharacteristics::MultiInstanceSequential ) {
+              systemState->tokenAwaitingExit.erase(this);
+            }
           }
         }
       }
     }
 
     if ( node->represents<BPMNOS::Model::ResourceActivity>() ) {
-      systemState->tokensAwaitingJobEntryEvent.erase(this);
       // TODO: send error message to all clients
     }
     else if ( node->represents<BPMNOS::Model::RequestActivity>() ) {
@@ -127,8 +130,8 @@ const BPMNOS::Model::AttributeMap& Token::getAttributeMap() const {
 
 void Token::setStatus(const BPMNOS::Values& other) {
   assert( (int)Model::Status::Index::Instance == 0 );
-  assert( other.size() >= status.size() );
-  std::copy(other.begin() + 1, other.begin() + (std::ptrdiff_t)status.size() , status.begin()+1);
+  size_t size = ( other.size() >= status.size() ? status.size() : other.size() );
+  std::copy(other.begin() + 1, other.begin() + (std::ptrdiff_t)size , status.begin()+1);
 }
 
 nlohmann::ordered_json Token::jsonify() const {
@@ -194,7 +197,6 @@ bool Token::isFeasible() {
   return true;
 }
 
-/*
 void Token::advanceFromCreated() {
   if ( !node ) {
     // tokens at process advance to entered
@@ -210,7 +212,6 @@ void Token::advanceFromCreated() {
     advanceToEntered();
   }
 }
-*/
 
 void Token::advanceToReady() {
 //std::cerr << "advanceToReady: " << jsonify().dump() << std::endl;
@@ -264,7 +265,9 @@ void Token::advanceToEntered() {
       }
     }
   }
-  else if ( node->represents<BPMN::SubProcess>() ) {
+  else if ( node->represents<BPMN::SubProcess>() || 
+    node->represents<BPMNOS::Model::SequentialAdHocSubProcess>()
+  ) {
 //std::cerr << "node->represents<BPMN::SubProcess>()" << std::endl;
     // subprocess operators are applied upon entry
     if ( auto statusExtension = node->extensionElements->represents<BPMNOS::Model::Status>() ) {
@@ -319,9 +322,15 @@ void Token::advanceToEntered() {
       return;
     }
 
-    // tokens entering an activity automatically
-    // advance to busy state
-    engine->commands.emplace_back(std::bind(&Token::advanceToBusy,this), this);
+    if ( node->represents<BPMNOS::Model::SequentialAdHocSubProcess>() ) {
+      // advance to idle state
+      engine->commands.emplace_back(std::bind(&Token::advanceToIdle,this), this);
+    }
+    else {
+      // tokens entering any other activity automatically
+      // advance to busy state
+      engine->commands.emplace_back(std::bind(&Token::advanceToBusy,this), this);
+    }
   }
   else if ( node->represents<BPMN::CatchEvent>() && !node->represents<BPMN::UntypedStartEvent>()
   ) {
@@ -410,6 +419,20 @@ void Token::advanceToEntered() {
   }
 }
 
+void Token::advanceToIdle() {
+  update(State::IDLE);
+  auto scope = node->as<BPMN::Scope>();
+  if ( scope->startNodes.empty() ) {
+    auto engine = const_cast<Engine*>(owner->systemState->engine);
+    engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,this), this);
+  }
+  else {
+    // create child statemachine
+    auto engine = const_cast<Engine*>(owner->systemState->engine);
+    engine->commands.emplace_back(std::bind(&StateMachine::createChild,const_cast<StateMachine*>(owner),this,scope), this);
+  }
+}
+
 void Token::advanceToBusy() {
 //std::cerr << "advanceToBusy: " << jsonify().dump() << std::endl;
   update(State::BUSY);
@@ -417,7 +440,6 @@ void Token::advanceToBusy() {
   if ( !node ) {
     // token is at process
     auto scope = owner->process->as<BPMN::Scope>();
-//std::cerr << "!node" << scope->startNodes.size() << std::endl;
     if ( scope->startNodes.empty() ) {
       auto engine = const_cast<Engine*>(owner->systemState->engine);
       engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,this), this);
@@ -428,6 +450,9 @@ void Token::advanceToBusy() {
         // create child statemachine
         auto engine = const_cast<Engine*>(owner->systemState->engine);
         engine->commands.emplace_back(std::bind(&StateMachine::createChild,const_cast<StateMachine*>(owner),this,scope), this);
+      }
+      else {
+        throw std::runtime_error("Token: process '" + scope->id + "' has multiple start nodes");
       }
       return;
     }
@@ -444,6 +469,9 @@ void Token::advanceToBusy() {
         // create child statemachine
         auto engine = const_cast<Engine*>(owner->systemState->engine);
         engine->commands.emplace_back(std::bind(&StateMachine::createChild,const_cast<StateMachine*>(owner),this,scope), this);
+      }
+      else {
+        throw std::runtime_error("Token: subprocess '" + scope->id + "' has multiple start nodes");
       }
       return;
     }
@@ -748,6 +776,12 @@ void Token::advanceToDone() {
 //std::cerr << "advanceToDone: " << jsonify().dump() << std::endl;
   update(State::DONE);
 
+  if ( node && node->parent && node->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() ) {
+    auto engine = const_cast<Engine*>(owner->systemState->engine);
+    auto stateMachine = const_cast<StateMachine*>(owner);
+    engine->commands.emplace_back(std::bind(&StateMachine::deleteAdHocSubProcessToken,stateMachine,this), this);
+    return;
+  }
   const_cast<StateMachine*>(owner)->attemptShutdown();
 }
 
@@ -874,17 +908,19 @@ void Token::awaitReadyEvent() {
 void Token::awaitEntryEvent() {
   auto systemState = const_cast<SystemState*>(owner->systemState);
 
-  if ( auto tokenAtSequencer = getSequencerToken() ) {
-    systemState->tokensAwaitingJobEntryEvent[tokenAtSequencer].emplace_back(weak_from_this());
+  if ( node->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() ) {
+    auto tokenAtSequencer = getSequencerToken();
+    systemState->tokenAtSequencer[this] = tokenAtSequencer;
+    systemState->tokensAwaitingSequentialEntry.emplace_back(weak_from_this());
   }
   else {
-    systemState->tokensAwaitingRegularEntryEvent.emplace_back(weak_from_this());
+    systemState->tokensAwaitingParallelEntry.emplace_back(weak_from_this());
   }
 }
 
 void Token::awaitChoiceEvent() {
   auto systemState = const_cast<SystemState*>(owner->systemState);
-  systemState->tokensAwaitingChoiceEvent.emplace_back(weak_from_this());
+  systemState->tokensAwaitingChoice.emplace_back(weak_from_this());
 }
 
 void Token::awaitTaskCompletionEvent() {
@@ -900,17 +936,17 @@ void Token::awaitTaskCompletionEvent() {
   }
   auto time = updatedStatus[BPMNOS::Model::Status::Index::Timestamp].value();
 
-  systemState->tokensAwaitingTaskCompletionEvent.emplace(time,weak_from_this(),std::move(updatedStatus));
+  systemState->tokensAwaitingTaskCompletion.emplace(time,weak_from_this(),std::move(updatedStatus));
 }
 
 void Token::awaitResourceShutdownEvent() {
   auto systemState = const_cast<SystemState*>(owner->systemState);
-  systemState->tokensAwaitingResourceShutdownEvent.emplace_back(weak_from_this());
+  systemState->tokensAwaitingResourceShutdown.emplace_back(weak_from_this());
 }
 
 void Token::awaitExitEvent() {
   auto systemState = const_cast<SystemState*>(owner->systemState);
-  systemState->tokensAwaitingExitEvent.emplace_back(weak_from_this());
+  systemState->tokensAwaitingExit.emplace_back(weak_from_this());
 }
 
 void Token::awaitTimer(BPMNOS::number time) {
@@ -948,16 +984,14 @@ void Token::withdraw() {
 }
 
 Token* Token::getSequencerToken() const {
-  if ( auto sequencer = node->parent->represents<BPMNOS::Model::Sequencer>() ) {
-//    const BPMN::FlowNode* reference = sequencer->reference->as<BPMN::FlowNode>();
-    Token* sequencerToken = owner->parentToken;
-    while (sequencerToken->node != sequencer->reference) {
-      sequencerToken = sequencerToken->owner->parentToken;
-    }
-    return sequencerToken;
-  }
+  auto activity = node->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>();
+  assert( activity );
 
-  return nullptr;
+  Token* sequencerToken = owner->parentToken;
+  while (sequencerToken->node != activity->sequencer) {
+    sequencerToken = sequencerToken->owner->parentToken;
+  }
+  return sequencerToken;
 }
 
 void Token::update(State newState) {
