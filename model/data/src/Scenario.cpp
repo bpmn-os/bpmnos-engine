@@ -159,11 +159,17 @@ BPMNOS::Values Scenario::getKnownInitialStatus(const Scenario::InstanceData* ins
   BPMNOS::Values initalStatus;
   for ( auto& attribute : instance->process->extensionElements->as<const Status>()->attributes ) {
     auto& data = instance->data.at(attribute.get());
-
-    if ( data.realization && data.realization->disclosure > currentTime ) {
-      throw std::runtime_error("Scenario: cannot instantiate '" + instance->id + "' because attribute '"+ attribute->id +"' is not yet known at time " + BPMNOS::to_string(currentTime,INTEGER) );
+    if ( data.realization.has_value() ) {
+      auto realization = data.realization.value();
+      if ( realization.disclosure > currentTime ) {
+        throw std::runtime_error("Scenario: cannot instantiate '" + instance->id + "' because attribute '"+ attribute->id +"' is not yet known at time " + BPMNOS::to_string(currentTime,INTEGER) );
+      }
+      initalStatus.push_back( data.realization->value );
     }
-    initalStatus.push_back( data.realization->value );
+    else {
+      // value will never be set, use default value
+      initalStatus.push_back( attribute->value );
+    }
   }
   return initalStatus;
 }
@@ -177,13 +183,14 @@ std::optional<BPMNOS::Values> Scenario::getKnownValues(const BPMN::FlowNode* nod
   for ( auto& attribute : node->extensionElements->as<const Status>()->attributes ) {
     auto& data = instance.data.at(attribute.get());
 
-    if ( data.realization ) {
-      if ( data.realization->disclosure > currentTime ) {
+    if ( data.realization.has_value() ) {
+      auto realization = data.realization.value();
+      if ( realization.disclosure > currentTime ) {
         // not all values are disclosed
         return std::nullopt;
       }
       else {
-        values.push_back( data.realization->value );
+        values.push_back( realization.value );
       }
     }
     else {
