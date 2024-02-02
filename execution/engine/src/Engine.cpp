@@ -143,10 +143,13 @@ void Engine::process(const ReadyEvent& event) {
 }
 
 void Engine::process(const EntryEvent& event) {
-std::cerr << "EntryEvent " << event.token->node->id << std::endl;
+//std::cerr << "EntryEvent " << event.token->node->id << std::endl;
   Token* token = const_cast<Token*>(event.token);
   if ( token->node->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() ) {
     auto tokenAtSequencer = systemState->tokenAtSequencer.at(token);
+    if ( !tokenAtSequencer->idle() ) {
+      throw std::runtime_error("Engine: illegal start of sequential activity '" + token->node->id + "'");
+    }
     systemState->tokensAwaitingSequentialEntry.remove(token);
     // sequencer is no longer idle
     tokenAtSequencer->update(Token::State::BUSY);
@@ -177,7 +180,7 @@ void Engine::process(const TaskCompletionEvent& event) {
 }
 
 void Engine::process(const ExitEvent& event) {
-std::cerr << "ExitEvent " << event.token->node->id << std::endl;
+//std::cerr << "ExitEvent " << event.token->node->id << std::endl;
   Token* token = const_cast<Token*>(event.token);
   systemState->tokensAwaitingExit.remove(token);
 
