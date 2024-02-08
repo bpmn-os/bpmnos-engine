@@ -12,8 +12,8 @@ Message::Message(Token* token, size_t index)
     waitingToken = token;
   }
 
-  if ( index > token->node->extensionElements->as<BPMNOS::Model::Status>()->messageDefinitions.size() - 1 ) {
-    throw std::runtime_error("Model: no message with index " + std::to_string(index) + " provided for '" +  token->node->id + "'" );
+  if ( index >= token->node->extensionElements->as<BPMNOS::Model::Status>()->messageDefinitions.size() ) {
+    throw std::runtime_error("Message: no message with index " + std::to_string(index) + " provided for '" +  token->node->id + "'" );
   }
   auto& messageDefinition = token->node->extensionElements->as<BPMNOS::Model::Status>()->messageDefinitions[index];
 
@@ -86,9 +86,32 @@ nlohmann::ordered_json Message::jsonify() const {
 
 
 void Message::update(Token* token) const {
-// TODO!
-  auto& targetContentDefinition = token->node->extensionElements->as<BPMNOS::Model::Status>()->messageDefinitions.front()->contentMap;
-//  auto& targetContentDefinition = token->node->extensionElements->as<BPMNOS::Model::MessageDefinition>()->contentMap;
+  size_t index = 0;
+
+  if ( auto receiveTask = token->node->represents<BPMN::ReceiveTask>();
+    receiveTask &&
+    receiveTask->loopCharacteristics.has_value()
+  ) {
+    auto statusExtension = receiveTask->extensionElements->represents<BPMNOS::Model::Status>();
+    assert(statusExtension);
+
+    // multi-instance receive task
+    if ( !statusExtension->loopIndex.has_value() || !statusExtension->loopIndex->get()->attribute.has_value() ) {
+      throw std::runtime_error("Message: receive tasks with loop characteristics requires attribute holding loop index");
+    }
+    size_t attributeIndex = statusExtension->loopIndex->get()->attribute.value().get().index;
+    if ( !token->status[attributeIndex].has_value() ) { 
+      throw std::runtime_error("Message: cannot find loop index for receive tasks with loop characteristics");
+    }
+    index = (size_t)(int)token->status[index].value();
+  }
+  
+  if ( index >= token->node->extensionElements->as<BPMNOS::Model::Status>()->messageDefinitions.size() ) {
+    throw std::runtime_error("Message: no message with index " + std::to_string(index) + " provided for '" +  token->node->id + "'" );
+  }
+
+  auto& targetContentDefinition = token->node->extensionElements->as<BPMNOS::Model::Status>()->messageDefinitions[index]->contentMap;
+
   size_t counter = 0;
   for (auto& [key,contentValue] : contentValueMap) {
     if ( auto it = targetContentDefinition.find(key); it != targetContentDefinition.end() ) {

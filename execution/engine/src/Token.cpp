@@ -523,14 +523,21 @@ void Token::advanceToBusy() {
 
           if ( auto sendTask = node->represents<BPMN::SendTask>() ) {
             if ( sendTask->loopCharacteristics.has_value() ) {
-              // TODO: check multi-instance send task
-              throw std::runtime_error("Token: send tasks with loop characteristics are not yet supported");
+              // multi-instance send task
+              if ( !statusExtension->loopIndex.has_value() || !statusExtension->loopIndex->get()->attribute.has_value() ) {
+                throw std::runtime_error("Token: send tasks with loop characteristics requires attribute holding loop index");
+              }
+              size_t attributeIndex = statusExtension->loopIndex->get()->attribute.value().get().index;
+              if ( !status[attributeIndex].has_value() ) { 
+                throw std::runtime_error("Token: cannot find loop index for send tasks with loop characteristics");
+              }
+              sendMessage( (size_t)(int)status[attributeIndex].value() );
             }
             else {
               sendMessage();
-              // wait for delivery
-              return;
             }
+            // wait for delivery
+            return;
           }
         }
         else {
