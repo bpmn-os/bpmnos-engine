@@ -77,6 +77,18 @@ Token::~Token() {
     }
 
     if ( auto activity = node->represents<BPMN::Activity>() ) {
+      if ( activity->represents<BPMN::SendTask>() ) {
+        auto it = systemState->messageAwaitingDelivery.find(this);
+        if ( it != systemState->messageAwaitingDelivery.end() ) {
+          auto message_ptr = it->second.lock();
+          if ( message_ptr ) {
+            // withdraw message
+            erase_ptr<Message>(systemState->messages, message_ptr.get());
+          }
+          systemState->messageAwaitingDelivery.erase(it);
+        }
+      }
+
       if ( state == State::READY && activity->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() ) {
         systemState->tokenAtSequencer.erase(this);
       }
@@ -355,31 +367,8 @@ void Token::advanceToEntered() {
       engine->commands.emplace_back(std::bind(&StateMachine::handleEscalation,const_cast<StateMachine*>(owner),this), this);
     }
     else if ( node->represents<BPMN::MessageThrowEvent>() ) {
+      assert( !node->represents<BPMN::SendTask>() );
       sendMessage();
-/*
-      auto systemState = const_cast<SystemState*>(owner->systemState);
-      systemState->messages.emplace_back(std::make_shared<Message>(this));
-
-      auto& message = systemState->messages.back();
-      if ( message->recipient.has_value() ) {
-        // TODO: add to unsent or outbox
-        auto it = systemState->archive.find(message->recipient.value());
-        if ( it == systemState->archive.end() ) {
-//std::cerr << "Message unsent" << std::endl;
-          // defer sending of message to when recipient is instantiated
-          systemState->unsent[message->recipient.value()].emplace_back(message->weak_from_this());
-        }
-        else if ( auto stateMachine = it->second.lock() ) {
-//std::cerr << "Message sent from " << node->id << std::endl;
-          systemState->correspondence[stateMachine.get()].emplace_back(message->weak_from_this());
-          systemState->outbox[node].emplace_back(message->weak_from_this());
-        }
-      }
-      else {
-std::cerr << "Message sent from " << node->id << std::endl;
-        systemState->outbox[node].emplace_back(message->weak_from_this());
-      }
-*/
     }
     else if ( auto compensateThrowEvent = node->represents<BPMN::CompensateThrowEvent>() ) {
       auto context = const_cast<StateMachine*>(owner->parentToken->owned);
@@ -539,7 +528,8 @@ void Token::advanceToBusy() {
             }
             else {
               sendMessage();
-              // TODO: wait for delivery
+              // wait for delivery
+              return;
             }
           }
         }
@@ -1029,6 +1019,10 @@ void Token::sendMessage(size_t index) {
   else {
 //std::cerr << "Message sent from " << node->id << std::endl;
     systemState->outbox[node].emplace_back(message->weak_from_this());
+  }
+
+  if ( node->represents<BPMN::SendTask>() ) {
+    systemState->messageAwaitingDelivery[this] = message->weak_from_this();
   }
 } 
 

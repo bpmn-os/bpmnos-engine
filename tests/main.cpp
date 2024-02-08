@@ -138,7 +138,7 @@ parser.compile(user_expression, expression);
 
 
 TEST_CASE("My Test Case") {
-    test();
+    //test();
 }
 
 

@@ -6,7 +6,12 @@ using namespace BPMNOS::Execution;
 
 Message::Message(Token* token, size_t index)
   : origin(token->node)
+  , waitingToken(nullptr)
 {
+  if ( token->node->represents<BPMN::SendTask>() ) {
+    waitingToken = token;
+  }
+
   if ( index > token->node->extensionElements->as<BPMNOS::Model::Status>()->messageDefinitions.size() - 1 ) {
     throw std::runtime_error("Model: no message with index " + std::to_string(index) + " provided for '" +  token->node->id + "'" );
   }

@@ -93,6 +93,7 @@ public:
 
   auto_schedule<Token> tokensAwaitingTimer; ///< Sorted container holding holding all tokens awaiting a timer event
 
+  std::unordered_map< Token*, std::weak_ptr<Message> > messageAwaitingDelivery; ///< Container holding message awaiting delivery for tokens at send tasks
   auto_list<Token,Values> tokensAwaitingMessageDelivery; ///< Container holding all tokens awaiting a message delivery event with associated header values
 
   std::unordered_map< Token*, Token* > tokenAtMultiInstanceActivity; ///< Map holding the main token waiting at a multi-instance (or loop) activity.

@@ -208,7 +208,10 @@ void Engine::process(const MessageDeliveryEvent& event) {
   message->update(token);
   erase_ptr<Message>(systemState->messages,message);
   systemState->tokensAwaitingMessageDelivery.remove(token);
-
+  if ( message->waitingToken ) {
+    systemState->messageAwaitingDelivery.erase( message->waitingToken );
+    commands.emplace_back(std::bind(&Token::advanceToCompleted,message->waitingToken), message->waitingToken);
+  }
   commands.emplace_back(std::bind(&Token::advanceToCompleted,token), token);
 }
 

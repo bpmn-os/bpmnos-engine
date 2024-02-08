@@ -192,4 +192,111 @@ SCENARIO( "Message tasks", "[execution][message]" ) {
       }
     }
   }
+
+  GIVEN( "Throwing instance without recipient" ) {
+
+    std::string csv =
+      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
+      "Process_1, Instance_1,,\n"
+    ;
+
+    Model::StaticDataProvider dataProvider(modelFile,csv);
+    auto scenario = dataProvider.createScenario();
+
+    WHEN( "The engine is started with a recorder" ) {
+      Execution::Engine engine;
+      Execution::ReadyHandler readyHandler;
+      Execution::InstantEntryHandler entryHandler;
+      Execution::DeterministicTaskCompletionHandler completionHandler;
+      Execution::FirstMatchingMessageHandler messageHandler;
+      Execution::InstantExitHandler exitHandler;
+      Execution::TimeWarp timeHandler;
+      engine.addEventHandler(&messageHandler);
+      engine.addEventHandler(&readyHandler);
+      engine.addEventHandler(&entryHandler);
+      engine.addEventHandler(&completionHandler);
+      engine.addEventHandler(&exitHandler);
+      engine.addEventHandler(&timeHandler);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
+      engine.addListener(&recorder);
+      engine.run(scenario.get());
+      THEN( "Then the message is withdrawn" ) {
+        REQUIRE( recorder.find(nlohmann::json{{"processId", "Process_1"},{"instanceId", "Instance_1"},{"nodeId", "SendTask_1"},{"state", "WITHDRAWN"}}).size() == 1 );
+      }
+    }
+  }
+
+  GIVEN( "Catching instance without sender" ) {
+
+    std::string csv =
+      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
+      "Process_2, Instance_2,,\n"
+    ;
+
+    Model::StaticDataProvider dataProvider(modelFile,csv);
+    auto scenario = dataProvider.createScenario();
+
+    WHEN( "The engine is started with a recorder" ) {
+      Execution::Engine engine;
+      Execution::ReadyHandler readyHandler;
+      Execution::InstantEntryHandler entryHandler;
+      Execution::DeterministicTaskCompletionHandler completionHandler;
+      Execution::FirstMatchingMessageHandler messageHandler;
+      Execution::InstantExitHandler exitHandler;
+      Execution::TimeWarp timeHandler;
+      engine.addEventHandler(&messageHandler);
+      engine.addEventHandler(&readyHandler);
+      engine.addEventHandler(&entryHandler);
+      engine.addEventHandler(&completionHandler);
+      engine.addEventHandler(&exitHandler);
+      engine.addEventHandler(&timeHandler);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
+      engine.addListener(&recorder);
+      engine.run(scenario.get());
+      THEN( "Then the message is withdrawn" ) {
+        REQUIRE( recorder.find(nlohmann::json{{"processId", "Process_2"},{"instanceId", "Instance_2"},{"nodeId", "ReceiveTask_2"},{"state", "WITHDRAWN"}}).size() == 1 );
+      }
+    }
+  }
+
+  GIVEN( "Throwing instance waiting for recipient" ) {
+
+    std::string csv =
+      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
+      "Process_1, Instance_1,Timestamp,0\n"
+      "Process_2, Instance_2,Timestamp,1\n"
+    ;
+
+    Model::StaticDataProvider dataProvider(modelFile,csv);
+    auto scenario = dataProvider.createScenario();
+
+    WHEN( "The engine is started with a recorder" ) {
+      Execution::Engine engine;
+      Execution::ReadyHandler readyHandler;
+      Execution::InstantEntryHandler entryHandler;
+      Execution::DeterministicTaskCompletionHandler completionHandler;
+      Execution::FirstMatchingMessageHandler messageHandler;
+      Execution::InstantExitHandler exitHandler;
+      Execution::TimeWarp timeHandler;
+      engine.addEventHandler(&messageHandler);
+      engine.addEventHandler(&readyHandler);
+      engine.addEventHandler(&entryHandler);
+      engine.addEventHandler(&completionHandler);
+      engine.addEventHandler(&exitHandler);
+      engine.addEventHandler(&timeHandler);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
+      engine.addListener(&recorder);
+      engine.run(scenario.get());
+      THEN( "Then the message is delivered" ) {
+        auto completionLog1 = recorder.find(nlohmann::json{{"processId", "Process_1"},{"state", "COMPLETED"}});
+        REQUIRE( completionLog1.back()["status"]["timestamp"] == 1.0 );
+        auto completionLog2 = recorder.find(nlohmann::json{{"processId", "Process_2"},{"state", "COMPLETED"}});
+        REQUIRE( completionLog2.back()["status"]["timestamp"] == 1.0 );
+      }
+    }
+  }
+
 }

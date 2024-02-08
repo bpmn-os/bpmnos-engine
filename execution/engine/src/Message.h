@@ -19,6 +19,7 @@ class Message : public std::enable_shared_from_this<Message> {
 public:
   Message(Token* token, size_t index);
   const BPMN::FlowNode* origin;
+  Token* waitingToken;
   std::optional< std::string > recipient;
   BPMNOS::Values header;
   VariedValueMap contentValueMap;
