@@ -312,8 +312,23 @@ void Model::createMessageCandidates( BPMN::Process* sendingProcess, BPMN::FlowNo
         messageMayBeThrown(sendingProcess, throwingMessageEvent, receivingProcess, catchingMessageEvent)
       ) {
         // add message events to collection of candidates of each other
-        senderStatus->messageCandidates.push_back(catchingMessageEvent->as<BPMN::FlowNode>());
-        recipientStatus->messageCandidates.push_back(throwingMessageEvent->as<BPMN::FlowNode>());
+        if( find(
+            senderStatus->messageCandidates.begin(),
+            senderStatus->messageCandidates.end(),
+            catchingMessageEvent->as<BPMN::FlowNode>()
+          ) == senderStatus->messageCandidates.end()
+        ) {
+          senderStatus->messageCandidates.push_back(catchingMessageEvent->as<BPMN::FlowNode>());
+        }
+
+        if( find(
+            recipientStatus->messageCandidates.begin(),
+            recipientStatus->messageCandidates.end(),
+            throwingMessageEvent->as<BPMN::FlowNode>()
+          ) == recipientStatus->messageCandidates.end()
+        ) {
+          recipientStatus->messageCandidates.push_back(throwingMessageEvent->as<BPMN::FlowNode>());
+        }
       }
     }
   }
