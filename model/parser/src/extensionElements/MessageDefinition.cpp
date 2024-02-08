@@ -32,6 +32,7 @@ MessageDefinition::MessageDefinition(XML::bpmnos::tMessage* message, AttributeMa
 
 BPMNOS::Values MessageDefinition::getSenderHeader(const BPMNOS::Values& status) const {
   BPMNOS::Values headerValues;
+
   for ( auto& key : header ) {
     if ( key == "sender" ) {
       headerValues.push_back( status[BPMNOS::Model::Status::Index::Instance] );
@@ -40,11 +41,14 @@ BPMNOS::Values MessageDefinition::getSenderHeader(const BPMNOS::Values& status) 
       headerValues.push_back( getHeaderValue(status, key) );
     }
   }
+
+  headerValues.push_back( BPMNOS::to_number(name,STRING) );
   return headerValues;
 }
 
 BPMNOS::Values MessageDefinition::getRecipientHeader(const BPMNOS::Values& status) const {
   BPMNOS::Values headerValues;
+
   for ( auto& key : header ) {
     if ( key == "recipient" ) {
       headerValues.push_back( status[BPMNOS::Model::Status::Index::Instance] );
@@ -53,6 +57,8 @@ BPMNOS::Values MessageDefinition::getRecipientHeader(const BPMNOS::Values& statu
       headerValues.push_back( getHeaderValue(status, key) );
     }
   }
+
+  headerValues.push_back( BPMNOS::to_number(name,STRING) );
   return headerValues;
 }
 
