@@ -9,20 +9,21 @@ MessageDefinition::MessageDefinition(XML::bpmnos::tMessage* message, AttributeMa
   : element(message)
   , name(message->name.value.value)
 {
-    header.resize(2);
+    header.resize(3);
+    header[ Index::Name ] = name;
     header[ Index::Sender ] = "sender";
     header[ Index::Recipient ] = "recipient";
 
     std::set< std::string > additionalHeader;
     for ( XML::bpmnos::tParameter& parameter : element->getChildren<XML::bpmnos::tParameter>() ) {
-      auto& name = parameter.name.value.value;
-      parameterMap.emplace(name,std::make_unique<Parameter>(&parameter,attributeMap));
-      if ( name != "sender" && name != "recipient" ) {
-        additionalHeader.insert(name);
+      auto& key = parameter.name.value.value;
+      parameterMap.emplace(key,std::make_unique<Parameter>(&parameter,attributeMap));
+      if ( key != "sender" && key != "recipient" ) {
+        additionalHeader.insert(key);
       }
     }
-    for ( auto& name : additionalHeader ) {
-      header.push_back(name);
+    for ( auto& key : additionalHeader ) {
+      header.push_back(key);
     }
 
     for ( XML::bpmnos::tContent& content : element->getChildren<XML::bpmnos::tContent>() ) {
@@ -42,7 +43,6 @@ BPMNOS::Values MessageDefinition::getSenderHeader(const BPMNOS::Values& status) 
     }
   }
 
-  headerValues.push_back( BPMNOS::to_number(name,STRING) );
   return headerValues;
 }
 
@@ -58,7 +58,6 @@ BPMNOS::Values MessageDefinition::getRecipientHeader(const BPMNOS::Values& statu
     }
   }
 
-  headerValues.push_back( BPMNOS::to_number(name,STRING) );
   return headerValues;
 }
 

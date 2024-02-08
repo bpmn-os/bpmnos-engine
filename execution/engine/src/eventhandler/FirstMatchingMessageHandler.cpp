@@ -14,9 +14,7 @@ std::unique_ptr<Event> FirstMatchingMessageHandler::fetchEvent( const SystemStat
   for ( auto& [token_ptr,messageHeader] : systemState->tokensAwaitingMessageDelivery ) {
     if( auto token = token_ptr.lock() )  {
       assert( token );
-// TODO!
-      auto& messageDefinition = token->node->extensionElements->as<BPMNOS::Model::Status>()->messageDefinitions.front();
-      for ( auto candidate : messageDefinition->candidates ) {
+      for ( auto candidate : token->node->extensionElements->as<BPMNOS::Model::Status>()->messageCandidates ) {
         if ( auto it = systemState->outbox.find(candidate); it != systemState->outbox.end() ) {
           for ( auto& [message_ptr] : it->second ) {
             auto message = message_ptr.lock();

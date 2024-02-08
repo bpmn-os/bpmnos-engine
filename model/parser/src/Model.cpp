@@ -293,8 +293,10 @@ bool Model::messageMayBeThrown( BPMN::Process* sendingProcess, BPMN::FlowNode* t
 }
 
 void Model::createMessageCandidates( BPMN::Process* sendingProcess, BPMN::FlowNode* throwingMessageEvent, BPMN::Process* receivingProcess, BPMN::FlowNode* catchingMessageEvent ) {
-  for ( auto& outgoingMessageDefinition : throwingMessageEvent->extensionElements->represents<Status>()->messageDefinitions ) {
-    for ( auto& incomingMessageDefinition : catchingMessageEvent->extensionElements->represents<Status>()->messageDefinitions) {
+  auto senderStatus = throwingMessageEvent->extensionElements->represents<Status>();
+  for ( auto& outgoingMessageDefinition : senderStatus->messageDefinitions ) {
+    auto recipientStatus = catchingMessageEvent->extensionElements->represents<Status>();
+    for ( auto& incomingMessageDefinition : recipientStatus->messageDefinitions) {
 
       assert( outgoingMessageDefinition.get() );
       assert( incomingMessageDefinition.get() );
@@ -310,8 +312,8 @@ void Model::createMessageCandidates( BPMN::Process* sendingProcess, BPMN::FlowNo
         messageMayBeThrown(sendingProcess, throwingMessageEvent, receivingProcess, catchingMessageEvent)
       ) {
         // add message events to collection of candidates of each other
-        outgoingMessageDefinition->candidates.push_back(catchingMessageEvent->as<BPMN::FlowNode>());
-        incomingMessageDefinition->candidates.push_back(throwingMessageEvent->as<BPMN::FlowNode>());
+        senderStatus->messageCandidates.push_back(catchingMessageEvent->as<BPMN::FlowNode>());
+        recipientStatus->messageCandidates.push_back(throwingMessageEvent->as<BPMN::FlowNode>());
       }
     }
   }

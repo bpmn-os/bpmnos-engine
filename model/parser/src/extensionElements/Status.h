@@ -29,6 +29,7 @@ public:
   std::vector< std::unique_ptr<Decision> > decisions;
 
   std::vector< std::unique_ptr<MessageDefinition> > messageDefinitions; ///< Vector containing message definition(s) provided for the node.
+  std::vector< const BPMN::FlowNode* > messageCandidates; ///< Vector containing all potential sending or receiving nodes of a message.
 
   std::optional< std::unique_ptr<Parameter> > loopCardinality;
   std::optional< std::unique_ptr<Parameter> > loopIndex;

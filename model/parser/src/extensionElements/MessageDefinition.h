@@ -19,11 +19,10 @@ public:
   std::string& name; ///< Message name
   ParameterMap parameterMap; ///< Map allowing to look up parameters by their names.
   std::vector< std::string > header; ///< Set of parameter names always beginning with "sender" and "recipient"
-  enum Index { Sender, Recipient };
+  enum Index { Name, Sender, Recipient };
   ContentMap contentMap; ///< Map allowing to look up contents by their keys.
-  std::vector< const BPMN::FlowNode* > candidates; ///< List of all potential senders or receivers of the message.
-  BPMNOS::Values getSenderHeader(const BPMNOS::Values& status) const;
-  BPMNOS::Values getRecipientHeader(const BPMNOS::Values& status) const;
+  BPMNOS::Values getSenderHeader(const BPMNOS::Values& status) const; /// Returns a vector of values including message name, recipient, sender, and all other header parameters
+  BPMNOS::Values getRecipientHeader(const BPMNOS::Values& status) const; /// Returns a vector of values including message name, recipient, sender, and all other header parameters
 private:
   std::optional<BPMNOS::number> getHeaderValue(const BPMNOS::Values& status, const std::string& key) const; ///< Returns the header value string with the given key represented as number.
 

@@ -27,20 +27,16 @@ TEST_CASE( "Parse message flows", "[model][parser]" ) {
       [](const BPMN::Node* node) { return node->represents<BPMN::MessageThrowEvent>();}
     );
     for ( auto throwingMessageEvent : throwingMessageEvents ) {
-      for ( auto& message : throwingMessageEvent->extensionElements->as<BPMNOS::Model::Status>()->messageDefinitions) {
-        for ( auto candidate : message->candidates) {
-          candidates[throwingMessageEvent->id].insert(candidate->id);
-        }
+      for ( auto& candidate : throwingMessageEvent->extensionElements->as<BPMNOS::Model::Status>()->messageCandidates) {
+        candidates[throwingMessageEvent->id].insert(candidate->id);
       }
     }
     auto catchingMessageEvents = process->find_all(
       [](const BPMN::Node* node) { return node->represents<BPMN::MessageCatchEvent>();}
     );
     for ( auto catchingMessageEvent : catchingMessageEvents ) {
-      for ( auto& message : catchingMessageEvent->extensionElements->as<BPMNOS::Model::Status>()->messageDefinitions) {
-        for ( auto candidate : message->candidates) {
-          candidates[catchingMessageEvent->id].insert(candidate->id);
-        }
+      for ( auto& candidate : catchingMessageEvent->extensionElements->as<BPMNOS::Model::Status>()->messageCandidates) {
+        candidates[catchingMessageEvent->id].insert(candidate->id);
       }
     }
   }
