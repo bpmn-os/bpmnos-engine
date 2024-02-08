@@ -21,21 +21,26 @@ TEST_CASE( "Parse resource activity", "[model][parser]" ) {
 TEST_CASE( "Parse message flows", "[model][parser]" ) {
   Model::Model model(std::string("model/parser/Messaging.bpmn"));
   std::unordered_map< std::string, std::set< std::string > > candidates;
+
   for ( auto& process : model.processes ) {
     auto throwingMessageEvents = process->find_all(
       [](const BPMN::Node* node) { return node->represents<BPMN::MessageThrowEvent>();}
     );
     for ( auto throwingMessageEvent : throwingMessageEvents ) {
-      for ( auto candidate : throwingMessageEvent->extensionElements->as<BPMNOS::Model::Message>()->candidates) {
-        candidates[throwingMessageEvent->id].insert(candidate->id);
+      for ( auto& message : throwingMessageEvent->extensionElements->as<BPMNOS::Model::Status>()->messageDefinitions) {
+        for ( auto candidate : message->candidates) {
+          candidates[throwingMessageEvent->id].insert(candidate->id);
+        }
       }
     }
     auto catchingMessageEvents = process->find_all(
       [](const BPMN::Node* node) { return node->represents<BPMN::MessageCatchEvent>();}
     );
     for ( auto catchingMessageEvent : catchingMessageEvents ) {
-      for ( auto candidate : catchingMessageEvent->extensionElements->as<BPMNOS::Model::Message>()->candidates) {
-        candidates[catchingMessageEvent->id].insert(candidate->id);
+      for ( auto& message : catchingMessageEvent->extensionElements->as<BPMNOS::Model::Status>()->messageDefinitions) {
+        for ( auto candidate : message->candidates) {
+          candidates[catchingMessageEvent->id].insert(candidate->id);
+        }
       }
     }
   }
@@ -53,4 +58,5 @@ TEST_CASE( "Parse message flows", "[model][parser]" ) {
   REQUIRE( candidates["ThrowEvent_B2"] == std::set< std::string >({"CatchEvent_A1","CatchEvent_A2"}) );
   REQUIRE( candidates["ThrowEvent_C1"] == std::set< std::string >({"CatchEvent_B2"}) );
   REQUIRE( candidates["ThrowEvent_C2"] == std::set< std::string >({"CatchEvent_A1"}) );
+
 }

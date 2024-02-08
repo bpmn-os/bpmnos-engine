@@ -1,5 +1,5 @@
-#ifndef BPMNOS_Model_Message_H
-#define BPMNOS_Model_Message_H
+#ifndef BPMNOS_Model_MessageDefinition_H
+#define BPMNOS_Model_MessageDefinition_H
 
 #include <memory>
 #include <vector>
@@ -8,14 +8,15 @@
 #include <bpmn++.h>
 #include "Parameter.h"
 #include "Content.h"
+#include "model/parser/src/xml/bpmnos/tMessage.h"
 
 namespace BPMNOS::Model {
 
-class Message : public BPMN::ExtensionElements {
+class MessageDefinition {
 public:
-  Message(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent);
-  const BPMN::Scope* parent;
-  std::string name; ///< Message name
+  MessageDefinition(XML::bpmnos::tMessage* message, AttributeMap& attributeMap);
+  XML::bpmnos::tMessage* element;
+  std::string& name; ///< Message name
   ParameterMap parameterMap; ///< Map allowing to look up parameters by their names.
   std::vector< std::string > header; ///< Set of parameter names always beginning with "sender" and "recipient"
   enum Index { Sender, Recipient };
@@ -30,4 +31,4 @@ private:
 
 } // namespace BPMNOS::Model
 
-#endif // BPMNOS_Model_Message_H
+#endif // BPMNOS_Model_MessageDefinition_H

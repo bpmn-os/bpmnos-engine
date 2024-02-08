@@ -7,6 +7,10 @@
 #include "model/parser/src/xml/bpmnos/tOperator.h"
 #include "model/parser/src/xml/bpmnos/tDecisions.h"
 #include "model/parser/src/xml/bpmnos/tDecision.h"
+#include "model/parser/src/xml/bpmnos/tMessages.h"
+#include "model/parser/src/xml/bpmnos/tMessage.h"
+#include "model/parser/src/xml/bpmnos/tLoopCharacteristics.h"
+#include "model/parser/src/xml/bpmnos/tGuidance.h"
 #include "model/utility/src/Keywords.h"
 
 using namespace BPMNOS::Model;
@@ -16,9 +20,13 @@ Status::Status(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent)
   , parent(parent)
   , isInstantaneous(true)
 {
-  parentSize = parent ? parent->extensionElements->as<Status>()->size() : 0;
+
   if ( parent ) {
+    parentSize = parent->extensionElements->as<Status>()->size();
     attributeMap = parent->extensionElements->as<Status>()->attributeMap;
+  }
+  else {
+    parentSize = 0;
   }
 
   if ( !element ) return; 
@@ -100,6 +108,28 @@ Status::Status(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent)
         }
       }
     }    
+  }
+
+  // add all message definitions
+  if ( element->getOptionalChild<XML::bpmnos::tMessages>().has_value() ) {
+    for ( XML::bpmnos::tMessage& message : element->getOptionalChild<XML::bpmnos::tMessages>()->get().message ) {
+      messageDefinitions.push_back(std::make_unique<MessageDefinition>(&message,attributeMap));
+    }
+  }
+  else if ( auto message = element->getOptionalChild<XML::bpmnos::tMessage>(); message.has_value() ) {
+    messageDefinitions.push_back(std::make_unique<MessageDefinition>(&message->get(),attributeMap));
+  }
+
+  // add loop characteristics
+  if ( element->getOptionalChild<XML::bpmnos::tLoopCharacteristics>().has_value() ) {
+    for ( XML::bpmnos::tParameter& parameter : element->getOptionalChild<XML::bpmnos::tLoopCharacteristics>()->get().parameter ) {
+      if ( parameter.name.value.value == "cardinality" ) {
+        loopCardinality = std::make_unique<Parameter>(&parameter,attributeMap);
+      }
+      else if ( parameter.name.value.value == "index" ) {
+        loopIndex = std::make_unique<Parameter>(&parameter,attributeMap);
+      }
+    }
   }
 
   // add all guidances

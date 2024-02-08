@@ -148,6 +148,13 @@
     </xsd:sequence>
   </xsd:complexType>
 
+  <xsd:element name="messages" type="tMessages"/>
+  <xsd:complexType name="tMessages">
+    <xsd:sequence>
+      <xsd:element ref="message" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
   <xsd:element name="message" type="tMessage"/>
   <xsd:complexType name="tMessage">
     <xsd:attribute name="name" type="xsd:string" use="required"/>
@@ -162,6 +169,13 @@
     <xsd:attribute name="key" type="xsd:string" use="required"/>
     <xsd:attribute name="attribute" type="xsd:string" use="optional"/>
     <xsd:attribute name="value" type="xsd:string" use="optional"/>
+  </xsd:complexType>
+
+  <xsd:element name="loopCharacteristics" type="tLoopCharacteristics"/>
+  <xsd:complexType name="tLoopCharacteristics">
+    <xsd:sequence>
+      <xsd:element ref="parameter" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
   </xsd:complexType>
 
   <xsd:element name="allocations" type="tAllocations"/>

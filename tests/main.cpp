@@ -9,6 +9,7 @@ using namespace BPMNOS;
 
 // Include all tests here
 
+//#ifdef TESTS
 /* Model */
 #include "model/parser/test.h"
 #include "model/expression/test.h"
@@ -17,7 +18,6 @@ using namespace BPMNOS;
 #include "data/dynamic/test.h"
 
 /* Execution engine */
-/*
 // Process
 #include "execution/process/test.h"
 
@@ -49,13 +49,12 @@ using namespace BPMNOS;
 
 // Status
 #include "execution/status/test.h"
-*/
-#include "execution/adhocsubprocess/test.h"
+//#endif
 
 // When adding/modifying tests, don't forget to run: make clean; cmake ..; make all -j7; make tests
 
 
-
+#include <regex>
 // Playground
 void test() {
   // add code to test here
@@ -66,11 +65,80 @@ void test() {
 	for(int i = 0; i < 10; ++i) {
 		std::cout << distribution(gen) << '\n';
   }
+    // exprtk
+
+  exprtk::symbol_table<double> symbolTable;
+  exprtk::expression<double> expression;
+  exprtk::parser<double> parser;
+
+  expression.register_symbol_table(symbolTable);
+
+  parser.enable_unknown_symbol_resolver();
+
+  std::string user_expression = "2 * x[i] + y";
+/*
+  if (auto result = parser.compile(user_expression, expression); !result) {
+    throw std::runtime_error("GenericExpression: compilation of expression failed with: " + parser.error());
+  }
+
+  // get variable names used in expression
+  std::list<std::string> variables;
+  symbolTable.get_variable_list(variables);
+
+    // Print out the variables
+    std::cout << "Variables used in the expression:\n";
+    for (const auto& variable : variables) {
+        std::cout << variable << "\n";
+    }
+
+  std::set<std::string> indices;
+  std::set<std::string> vectors;
+
+// Regular expression to match symbols followed by indices
+    std::regex vector_regex(R"((\w+)\[(\w+)\])");
+
+// Iterate over matches in the expression string
+    auto words_begin = std::sregex_iterator(user_expression.begin(), user_expression.end(), vector_regex);
+    auto words_end = std::sregex_iterator();
+    for (std::sregex_iterator i = words_begin; i != words_end; ++i) {
+        std::smatch match = *i;
+        // Extract the symbol and index from the match
+        std::string symbol = match[1];
+        std::string index = match[2];
+        vectors.insert(symbol); // Add the symbol to the set of vectors
+        indices.insert(index); // Add the index to the set of variables
+    }
+
+    // Print out the vectors
+    std::cout << "Vectors used in the expression:\n";
+    for (const auto& vector : vectors) {
+        std::cout << vector << "\n";
+    }
+
+    // Print out the indices
+    std::cout << "Indices used in the expression:\n";
+    for (const auto& index : indices) {
+        std::cout << index << "\n";
+    }
+*/
+    // Populate the data
+    std::vector<double> x = {1.0, 2.0, 3.0};
+    double y = .5;
+    double i = 1;
+
+    symbolTable.add_vector("x", x.data(), x.size());
+    symbolTable.add_variable("y", y);
+    symbolTable.add_variable("i", i);
+
+    expression.register_symbol_table(symbolTable);
+parser.compile(user_expression, expression);
+    std::cout << "Result for i = " << i << ": " << expression.value() << std::endl;
+
 }
 
 
 TEST_CASE("My Test Case") {
-//    test();
+    test();
 }
 
 

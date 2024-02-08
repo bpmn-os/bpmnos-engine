@@ -1,28 +1,20 @@
-#include "Message.h"
+#include "MessageDefinition.h"
 #include "Content.h"
 #include "Status.h"
-#include "model/parser/src/xml/bpmnos/tMessage.h"
 #include "model/parser/src/xml/bpmnos/tContent.h"
 
 using namespace BPMNOS::Model;
 
-Message::Message(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent)
-  : BPMN::ExtensionElements( baseElement ) 
-  , parent(parent)
+MessageDefinition::MessageDefinition(XML::bpmnos::tMessage* message, AttributeMap& attributeMap)
+  : element(message)
+  , name(message->name.value.value)
 {
-  if ( baseElement->extensionElements.has_value() ) {
-    if ( auto message = baseElement->is<XML::bpmn::tMessage>(); message ) {
-      name = message->name->get().value.value;
-    }
-
-    AttributeMap& attributeMap = parent->extensionElements->as<Status>()->attributeMap;
-
     header.resize(2);
     header[ Index::Sender ] = "sender";
     header[ Index::Recipient ] = "recipient";
 
     std::set< std::string > additionalHeader;
-    for ( XML::bpmnos::tParameter& parameter : get<XML::bpmnos::tMessage,XML::bpmnos::tParameter>() ) {
+    for ( XML::bpmnos::tParameter& parameter : element->getChildren<XML::bpmnos::tParameter>() ) {
       auto& name = parameter.name.value.value;
       parameterMap.emplace(name,std::make_unique<Parameter>(&parameter,attributeMap));
       if ( name != "sender" && name != "recipient" ) {
@@ -33,14 +25,12 @@ Message::Message(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent)
       header.push_back(name);
     }
 
-    for ( XML::bpmnos::tContent& content : get<XML::bpmnos::tMessage,XML::bpmnos::tContent>() ) {
+    for ( XML::bpmnos::tContent& content : element->getChildren<XML::bpmnos::tContent>() ) {
       contentMap.emplace(content.key.value.value,std::make_unique<Content>(&content,attributeMap));
     }
-  }
-
 }
 
-BPMNOS::Values Message::getSenderHeader(const BPMNOS::Values& status) const {
+BPMNOS::Values MessageDefinition::getSenderHeader(const BPMNOS::Values& status) const {
   BPMNOS::Values headerValues;
   for ( auto& key : header ) {
     if ( key == "sender" ) {
@@ -53,7 +43,7 @@ BPMNOS::Values Message::getSenderHeader(const BPMNOS::Values& status) const {
   return headerValues;
 }
 
-BPMNOS::Values Message::getRecipientHeader(const BPMNOS::Values& status) const {
+BPMNOS::Values MessageDefinition::getRecipientHeader(const BPMNOS::Values& status) const {
   BPMNOS::Values headerValues;
   for ( auto& key : header ) {
     if ( key == "recipient" ) {
@@ -66,7 +56,7 @@ BPMNOS::Values Message::getRecipientHeader(const BPMNOS::Values& status) const {
   return headerValues;
 }
 
-std::optional<BPMNOS::number> Message::getHeaderValue(const BPMNOS::Values& status, const std::string& key) const {
+std::optional<BPMNOS::number> MessageDefinition::getHeaderValue(const BPMNOS::Values& status, const std::string& key) const {
   auto it = parameterMap.find(key);
   if ( it != parameterMap.end() ) {
     auto& parameter = it->second;

@@ -19,12 +19,11 @@ list(APPEND bpmn_SOURCES
   extensionElements/operators/GenericExpression.cpp
   extensionElements/Decision.cpp
   extensionElements/Guidance.cpp
+  extensionElements/Content.cpp
+  extensionElements/MessageDefinition.cpp
   extensionElements/Status.cpp
   extensionElements/Gatekeeper.cpp
   extensionElements/Timer.cpp
-  extensionElements/Content.cpp
-  extensionElements/Message.cpp
-  extensionElements/MessageStatus.cpp
   DecisionTask.cpp
   SequentialAdHocSubProcess.cpp
   ResourceActivity.cpp
@@ -48,12 +47,11 @@ list(APPEND bpmn_HEADERS
   extensionElements/operators/GenericExpression.h
   extensionElements/Decision.h
   extensionElements/Guidance.h
+  extensionElements/Content.h
+  extensionElements/MessageDefinition.h
   extensionElements/Status.h
   extensionElements/Gatekeeper.h
   extensionElements/Timer.h
-  extensionElements/Content.h
-  extensionElements/Message.h
-  extensionElements/MessageStatus.h
   DecisionTask.h
   SequentialAdHocSubProcess.h
   ResourceActivity.h

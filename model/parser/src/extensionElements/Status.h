@@ -9,6 +9,7 @@
 #include "Restriction.h"
 #include "Operator.h"
 #include "Decision.h"
+#include "MessageDefinition.h"
 #include "Guidance.h"
 
 namespace BPMNOS::Model {
@@ -26,6 +27,11 @@ public:
   std::vector< std::unique_ptr<Restriction> > restrictions; ///< Vector containing new restrictions provided for the node.
   std::vector< std::unique_ptr<Operator> > operators;
   std::vector< std::unique_ptr<Decision> > decisions;
+
+  std::vector< std::unique_ptr<MessageDefinition> > messageDefinitions; ///< Vector containing message definition(s) provided for the node.
+
+  std::optional< std::unique_ptr<Parameter> > loopCardinality;
+  std::optional< std::unique_ptr<Parameter> > loopIndex;
 
   inline std::size_t size() const { return parentSize + attributes.size(); };
 

@@ -99,12 +99,36 @@ void StateMachine::createMultiInstanceActivityTokens(Token* token) {
   auto statusExtension = token->node->extensionElements->represents<const Model::Status>();
   assert( statusExtension != nullptr );
 
+  std::vector< std::map< const Model::Attribute*, std::optional<BPMNOS::number> > > valueMaps;
+
+  if ( statusExtension->loopCardinality.has_value() ) {
+    // use provided cardinality to determine number of tokens 
+    if ( statusExtension->loopCardinality.value()->attribute.has_value() &&
+      token->status[ statusExtension->loopCardinality.value()->attribute->get().index ].has_value()
+    ) {
+      valueMaps.resize( (size_t)token->status[ statusExtension->loopCardinality.value()->attribute->get().index ].value() );
+    }
+    else if ( statusExtension->loopCardinality.value()->value.has_value() ) {
+      valueMaps.resize( (size_t)(int)statusExtension->loopCardinality.value()->value.value().get() );
+    }
+    else {
+      throw std::runtime_error("Token: cannot determine cardinality for multi-instance activity '" + token->node->id +"'" );
+    }
+  }
+  
+  if ( statusExtension->messageDefinitions.size() ) {
+    if ( valueMaps.empty() ) {
+      valueMaps.resize(statusExtension->messageDefinitions.size());
+    }
+    else if ( valueMaps.size() != statusExtension->messageDefinitions.size() ) {
+      throw std::runtime_error("Token: cardinality and number of messages inconsistent for multi-instance activity '" + token->node->id +"'" );
+    }
+  }
+
   auto attributes = statusExtension->attributes | std::views::filter([](auto& attribute) {
     return (attribute->collection != nullptr);
   });
-  assert( !attributes.empty() );
 
-  std::vector< std::map< const Model::Attribute*, std::optional<BPMNOS::number> > > valueMaps;
   for ( auto& attribute : attributes ) {
     std::string collection;
     if ( attribute->collection->attribute.has_value() &&
@@ -146,7 +170,20 @@ void StateMachine::createMultiInstanceActivityTokens(Token* token) {
   }
   
   if ( valueMaps.empty() ) {
-    throw std::runtime_error("Token: no values provided for multi-instance activity '" + token->node->id +"'" );
+    throw std::runtime_error("Token: no instances created for multi-instance activity '" + token->node->id +"'" );
+  }
+
+  if ( statusExtension->loopIndex.has_value() ) {
+    // set value of loop index attribute for each instance
+    if ( statusExtension->loopIndex.value()->attribute.has_value() ) {
+      auto& attribute = statusExtension->loopIndex.value()->attribute.value();
+      for ( size_t i = 0; i < valueMaps.size(); i++ ) {
+        valueMaps[i][&attribute.get()] = i + 1;
+      }
+    }
+    else {
+      throw std::runtime_error("Token: no attribute provided for loop index parameter of multi-instance activity '" + token->node->id +"'" );
+    }
   }
 
   auto activity = token->node->represents<BPMN::Activity>();

@@ -1,6 +1,6 @@
 #include "FirstMatchingMessageHandler.h"
 #include "execution/engine/src/events/MessageDeliveryEvent.h"
-#include "model/parser/src/extensionElements/Message.h"
+#include "model/parser/src/extensionElements/MessageDefinition.h"
 #include <iostream>
 #include <cassert>
 
@@ -14,7 +14,8 @@ std::unique_ptr<Event> FirstMatchingMessageHandler::fetchEvent( const SystemStat
   for ( auto& [token_ptr,messageHeader] : systemState->tokensAwaitingMessageDelivery ) {
     if( auto token = token_ptr.lock() )  {
       assert( token );
-      auto messageDefinition = token->node->extensionElements->as<BPMNOS::Model::Message>();
+// TODO!
+      auto& messageDefinition = token->node->extensionElements->as<BPMNOS::Model::Status>()->messageDefinitions.front();
       for ( auto candidate : messageDefinition->candidates ) {
         if ( auto it = systemState->outbox.find(candidate); it != systemState->outbox.end() ) {
           for ( auto& [message_ptr] : it->second ) {

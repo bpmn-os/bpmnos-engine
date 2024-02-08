@@ -1,17 +1,18 @@
 #include "Message.h"
 #include "Token.h"
-#include "model/parser/src/extensionElements/Message.h"
+#include "model/parser/src/extensionElements/MessageDefinition.h"
 
 using namespace BPMNOS::Execution;
 
 Message::Message(Token* token)
   : origin(token->node)
 {
-  auto messageDefinition = token->node->extensionElements->as<BPMNOS::Model::Message>();
+// TODO!
+  auto& messageDefinition = token->node->extensionElements->as<BPMNOS::Model::Status>()->messageDefinitions.front();
 
   header = messageDefinition->getSenderHeader(token->status);
-  if ( header[ BPMNOS::Model::Message::Index::Recipient ].has_value() ) {
-    recipient = BPMNOS::to_string(header[ BPMNOS::Model::Message::Index::Recipient ].value(),STRING);
+  if ( header[ BPMNOS::Model::MessageDefinition::Index::Recipient ].has_value() ) {
+    recipient = BPMNOS::to_string(header[ BPMNOS::Model::MessageDefinition::Index::Recipient ].value(),STRING);
   }
 
   for (auto& [key,contentDefinition] : messageDefinition->contentMap) {
@@ -43,7 +44,8 @@ bool Message::matches(const BPMNOS::Values& otherHeader) {
 
 nlohmann::ordered_json Message::jsonify() const {
   nlohmann::ordered_json jsonObject;
-  auto messageDefinition = origin->extensionElements->as<BPMNOS::Model::Message>();
+// TODO!
+  auto& messageDefinition = origin->extensionElements->as<BPMNOS::Model::Status>()->messageDefinitions.front();
   size_t i = 0;
   for ( auto headerName : messageDefinition->header ) {
     if ( !header[i].has_value() ) {
@@ -77,7 +79,9 @@ nlohmann::ordered_json Message::jsonify() const {
 
 
 void Message::update(Token* token) const {
-  auto& targetContentDefinition = token->node->extensionElements->as<BPMNOS::Model::Message>()->contentMap;
+// TODO!
+  auto& targetContentDefinition = token->node->extensionElements->as<BPMNOS::Model::Status>()->messageDefinitions.front()->contentMap;
+//  auto& targetContentDefinition = token->node->extensionElements->as<BPMNOS::Model::MessageDefinition>()->contentMap;
   size_t counter = 0;
   for (auto& [key,contentValue] : contentValueMap) {
     if ( auto it = targetContentDefinition.find(key); it != targetContentDefinition.end() ) {
