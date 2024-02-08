@@ -4,11 +4,13 @@
 
 using namespace BPMNOS::Execution;
 
-Message::Message(Token* token)
+Message::Message(Token* token, size_t index)
   : origin(token->node)
 {
-// TODO!
-  auto& messageDefinition = token->node->extensionElements->as<BPMNOS::Model::Status>()->messageDefinitions.front();
+  if ( index > token->node->extensionElements->as<BPMNOS::Model::Status>()->messageDefinitions.size() - 1 ) {
+    throw std::runtime_error("Model: no message with index " + std::to_string(index) + " provided for '" +  token->node->id + "'" );
+  }
+  auto& messageDefinition = token->node->extensionElements->as<BPMNOS::Model::Status>()->messageDefinitions[index];
 
   header = messageDefinition->getSenderHeader(token->status);
   if ( header[ BPMNOS::Model::MessageDefinition::Index::Recipient ].has_value() ) {

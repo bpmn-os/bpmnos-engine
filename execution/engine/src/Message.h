@@ -17,7 +17,7 @@ typedef std::vector< std::shared_ptr<Message> > Messages;
 
 class Message : public std::enable_shared_from_this<Message> {
 public:
-  Message(Token* token);
+  Message(Token* token, size_t index);
   const BPMN::FlowNode* origin;
   std::optional< std::string > recipient;
   BPMNOS::Values header;

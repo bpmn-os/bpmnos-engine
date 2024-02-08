@@ -1,5 +1,6 @@
 #include <unordered_set>
 #include <cassert>
+#include <iostream>
 
 #include "Model.h"
 #include "extensionElements/Status.h"
@@ -318,6 +319,7 @@ void Model::createMessageCandidates( BPMN::Process* sendingProcess, BPMN::FlowNo
             catchingMessageEvent->as<BPMN::FlowNode>()
           ) == senderStatus->messageCandidates.end()
         ) {
+//std::cerr << throwingMessageEvent->id << " -> " << catchingMessageEvent->id << std::endl;
           senderStatus->messageCandidates.push_back(catchingMessageEvent->as<BPMN::FlowNode>());
         }
 
@@ -327,6 +329,7 @@ void Model::createMessageCandidates( BPMN::Process* sendingProcess, BPMN::FlowNo
             throwingMessageEvent->as<BPMN::FlowNode>()
           ) == recipientStatus->messageCandidates.end()
         ) {
+//std::cerr << throwingMessageEvent->id << " -> " << catchingMessageEvent->id << std::endl;
           recipientStatus->messageCandidates.push_back(throwingMessageEvent->as<BPMN::FlowNode>());
         }
       }

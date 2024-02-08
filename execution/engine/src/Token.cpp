@@ -355,25 +355,31 @@ void Token::advanceToEntered() {
       engine->commands.emplace_back(std::bind(&StateMachine::handleEscalation,const_cast<StateMachine*>(owner),this), this);
     }
     else if ( node->represents<BPMN::MessageThrowEvent>() ) {
-      // add message to message pool
+      sendMessage();
+/*
       auto systemState = const_cast<SystemState*>(owner->systemState);
       systemState->messages.emplace_back(std::make_shared<Message>(this));
+
       auto& message = systemState->messages.back();
       if ( message->recipient.has_value() ) {
         // TODO: add to unsent or outbox
         auto it = systemState->archive.find(message->recipient.value());
         if ( it == systemState->archive.end() ) {
+//std::cerr << "Message unsent" << std::endl;
           // defer sending of message to when recipient is instantiated
           systemState->unsent[message->recipient.value()].emplace_back(message->weak_from_this());
         }
         else if ( auto stateMachine = it->second.lock() ) {
+//std::cerr << "Message sent from " << node->id << std::endl;
           systemState->correspondence[stateMachine.get()].emplace_back(message->weak_from_this());
           systemState->outbox[node].emplace_back(message->weak_from_this());
         }
       }
       else {
+std::cerr << "Message sent from " << node->id << std::endl;
         systemState->outbox[node].emplace_back(message->weak_from_this());
       }
+*/
     }
     else if ( auto compensateThrowEvent = node->represents<BPMN::CompensateThrowEvent>() ) {
       auto context = const_cast<StateMachine*>(owner->parentToken->owned);
@@ -505,25 +511,42 @@ void Token::advanceToBusy() {
     }
   }
   else if ( node->represents<BPMN::MessageCatchEvent>() ) {
-    awaitMessageDelivery();
+    if ( auto receiveTask = node->represents<BPMN::ReceiveTask>();
+      receiveTask && 
+      receiveTask->loopCharacteristics.has_value()
+    ) {
+      throw std::runtime_error("Token: receive tasks with loop characteristics are not yet supported");
+    }
+    else {
+      awaitMessageDelivery();
+    }
   }
   else if ( node->represents<BPMN::Task>() ) {
     if ( node->represents<BPMNOS::Model::DecisionTask>() ) {
       awaitChoiceEvent();
     }
-    else if ( node->represents<BPMN::ReceiveTask>() ) {
-      throw std::runtime_error("Token: receive tasks are not supported");
-    }
     else {
       // apply operators for completion status
-      if ( auto statusExtension = node->extensionElements->represents<BPMNOS::Model::Status>();
-           statusExtension
-      ) {
+      if ( auto statusExtension = node->extensionElements->represents<BPMNOS::Model::Status>() ) {
         if ( statusExtension->isInstantaneous ) {
           // update status directly
           statusExtension->applyOperators(status);
+
+          if ( auto sendTask = node->represents<BPMN::SendTask>() ) {
+            if ( sendTask->loopCharacteristics.has_value() ) {
+              // TODO: check multi-instance send task
+              throw std::runtime_error("Token: send tasks with loop characteristics are not yet supported");
+            }
+            else {
+              sendMessage();
+              // TODO: wait for delivery
+            }
+          }
         }
         else {
+          if ( node->represents<BPMN::SendTask>() ) {
+            throw std::runtime_error("Token: send tasks must not have operators modifying timestamp ");
+          }
           // defer status update status until task completion
           awaitTaskCompletionEvent();
           return;
@@ -983,6 +1006,31 @@ void Token::withdraw() {
     update(State::WITHDRAWN);
   }
 }
+
+void Token::sendMessage(size_t index) {
+  auto systemState = const_cast<SystemState*>(owner->systemState);
+  systemState->messages.emplace_back(std::make_shared<Message>(this,index));
+  auto& message = systemState->messages.back();
+
+  if ( message->recipient.has_value() ) {
+    // TODO: add to unsent or outbox
+    auto it = systemState->archive.find(message->recipient.value());
+    if ( it == systemState->archive.end() ) {
+//std::cerr << "Message unsent" << std::endl;
+      // defer sending of message to when recipient is instantiated
+      systemState->unsent[message->recipient.value()].emplace_back(message->weak_from_this());
+    }
+    else if ( auto stateMachine = it->second.lock() ) {
+//std::cerr << "Message sent from " << node->id << std::endl;
+      systemState->correspondence[stateMachine.get()].emplace_back(message->weak_from_this());
+      systemState->outbox[node].emplace_back(message->weak_from_this());
+    }
+  }
+  else {
+//std::cerr << "Message sent from " << node->id << std::endl;
+    systemState->outbox[node].emplace_back(message->weak_from_this());
+  }
+} 
 
 Token* Token::getSequencerToken() const {
   auto activity = node->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>();
