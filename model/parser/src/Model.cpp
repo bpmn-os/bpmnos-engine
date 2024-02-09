@@ -8,7 +8,6 @@
 #include "extensionElements/Timer.h"
 #include "extensionElements/MessageDefinition.h"
 #include "DecisionTask.h"
-#include "MessageTaskSubstitution.h"
 #include "SequentialAdHocSubProcess.h"
 #include "ResourceActivity.h"
 #include "RequestActivity.h"
@@ -88,13 +87,6 @@ std::unique_ptr<BPMN::FlowNode> Model::createTask(XML::bpmn::tTask* task, BPMN::
     else {
       throw std::runtime_error("Model: Illegal type '" + (std::string)type->get().value + "'");
     }   
-  }
-  else if ( ( parent->represents<RequestActivity>() || parent->represents<ReleaseActivity>() ) 
-       && ( task->is<XML::bpmn::tSendTask>() || task->is<XML::bpmn::tReceiveTask>() ) 
-  ) {
-    // replace SendTask and ReceiveTask belonging to RequestActivity or ReleaseActivity by subprocess 
-    // with parallel message events for each request or release
-    return std::make_unique<MessageTaskSubstitution>(MessageTaskSubstitution::substitute(task,parent),parent);
   }
   return BPMN::Model::createTask(task, parent);
 }

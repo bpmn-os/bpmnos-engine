@@ -29,7 +29,6 @@ list(APPEND bpmn_SOURCES
   ResourceActivity.cpp
   RequestActivity.cpp
   ReleaseActivity.cpp
-  MessageTaskSubstitution.cpp
   Model.cpp
 )
 
@@ -57,6 +56,5 @@ list(APPEND bpmn_HEADERS
   ResourceActivity.h
   RequestActivity.h
   ReleaseActivity.h
-  MessageTaskSubstitution.h
   Model.h
 )

@@ -6,7 +6,7 @@
 #include <optional>
 #include <bpmn++.h>
 #include "xml/bpmnos/tAllocations.h"
-#include "xml/bpmnos/tRelease.h"
+#include "xml/bpmnos/tAllocation.h"
 
 namespace BPMNOS::Model {
 
@@ -14,7 +14,6 @@ class ReleaseActivity : public BPMN::SubProcess {
   friend class Model;
 public:
   ReleaseActivity(XML::bpmn::tSubProcess* subProcess, BPMN::Scope* parent);
-  std::vector< std::reference_wrapper<XML::bpmnos::tRelease> > releases;
 };
 
 } // namespace BPMNOS::Model
