@@ -39,7 +39,7 @@ Restriction::Restriction(XML::bpmnos::tRestriction* restriction, AttributeMap& a
 
   if ( restriction->maxInclusive.has_value() ) {
     if ( attribute->type == ValueType::STRING ) {
-      throw std::runtime_error("Restriction: minInclusive not allowed attribute type 'xs:string' for restriction '" + id + "'");
+      throw std::runtime_error("Restriction: minInclusive not allowed attribute type 'string' for restriction '" + id + "'");
     }
     maxInclusive = to_number( restriction->maxInclusive->get().getRequiredAttributeByName("value").value, attribute->type );
   }

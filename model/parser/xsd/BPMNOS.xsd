@@ -1,6 +1,6 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-  xmlns:execution="https://bpmn.telematique.eu/execution"
-  targetNamespace="https://bpmn.telematique.eu/execution">
+  xmlns:bpmnos="https://bpmnos.telematique.eu"
+  targetNamespace="https://bpmnos.telematique.eu">
 
   <xsd:element name="status" type="tStatus"/>
   <xsd:complexType name="tStatus">

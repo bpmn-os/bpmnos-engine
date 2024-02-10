@@ -78,7 +78,7 @@ std::unique_ptr<BPMN::FlowNode> Model::createSubProcess(XML::bpmn::tSubProcess* 
 
 std::unique_ptr<BPMN::FlowNode> Model::createTask(XML::bpmn::tTask* task, BPMN::Scope* parent) {
   if ( const auto& type = task->getOptionalAttributeByName("type"); 
-       type.has_value() && type->get().xmlns == "https://bpmn.telematique.eu/execution" 
+       type.has_value() && type->get().xmlns == "https://bpmnos.telematique.eu" 
   ) {
     if ( type->get().value.value == "Decision" ) {
       // decisions are added with status
