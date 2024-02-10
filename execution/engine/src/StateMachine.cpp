@@ -7,6 +7,7 @@
 #include "execution/utility/src/erase.h"
 #include "model/parser/src/extensionElements/Status.h"
 #include "model/parser/src/extensionElements/Timer.h"
+#include "execution/utility/src/VectorRegistry.h"
 #include "bpmn++.h"
 #include <cassert>
 #include <ranges>
@@ -112,7 +113,7 @@ void StateMachine::createMultiInstanceActivityTokens(Token* token) {
       valueMaps.resize( (size_t)(int)statusExtension->loopCardinality.value()->value.value().get() );
     }
     else {
-      throw std::runtime_error("Token: cannot determine cardinality for multi-instance activity '" + token->node->id +"'" );
+      throw std::runtime_error("StateMachine: cannot determine cardinality for multi-instance activity '" + token->node->id +"'" );
     }
   }
   
@@ -121,7 +122,7 @@ void StateMachine::createMultiInstanceActivityTokens(Token* token) {
       valueMaps.resize(statusExtension->messageDefinitions.size());
     }
     else if ( valueMaps.size() != statusExtension->messageDefinitions.size() ) {
-      throw std::runtime_error("Token: cardinality and number of messages inconsistent for multi-instance activity '" + token->node->id +"'" );
+      throw std::runtime_error("StateMachine: cardinality and number of messages inconsistent for multi-instance activity '" + token->node->id +"'" );
     }
   }
 
@@ -130,42 +131,31 @@ void StateMachine::createMultiInstanceActivityTokens(Token* token) {
   });
 
   for ( auto& attribute : attributes ) {
-    std::string collection;
+    BPMNOS::number collectionIndex;
+    
     if ( attribute->collection->attribute.has_value() &&
       token->status[ attribute->collection->attribute->get().index ].has_value()
     ) {
-      collection = BPMNOS::to_string( token->status[ attribute->collection->attribute->get().index ].value(), STRING );
+      collectionIndex = token->status[ attribute->collection->attribute->get().index ].value();
     }
     else if ( attribute->collection->value.has_value() ) {
-      collection = attribute->collection->value.value().get().value;
+      collectionIndex = BPMNOS::to_number( attribute->collection->value.value().get().value, STRING );
     }
     else {
-      throw std::runtime_error("Token: cannot determine values for multi-instance activity '" + token->node->id +"'");
+      throw std::runtime_error("StateMachine: cannot determine values for multi-instance activity '" + token->node->id +"'");
     }
-    // parse value collection
-    nlohmann::json jsonArray = nlohmann::json::parse(collection);
 
+    auto& collection = vectorRegistry[(long unsigned int)collectionIndex];
     if ( valueMaps.empty() ) {
-      valueMaps.resize(jsonArray.size());
+      valueMaps.resize(collection.size());
     }
-    else if ( valueMaps.size() != jsonArray.size() ) {
-      throw std::runtime_error("Token: inconsistent number of values provided for multi-instance activity '" + token->node->id +"'" );
+    else if ( valueMaps.size() != collection.size() ) {
+      throw std::runtime_error("StateMachine: inconsistent number of values provided for multi-instance activity '" + token->node->id +"'" );
     }
 
     // add value for each token copy
-    for ( size_t i = 0; i < jsonArray.size(); i++ ) {
-      if ( attribute->type == STRING ) {
-        valueMaps[i][attribute.get()] = BPMNOS::to_number( (std::string)jsonArray[i], STRING );
-      }
-      else if ( attribute->type == BOOLEAN  ) {
-        valueMaps[i][attribute.get()] = (int)jsonArray[i];
-      }
-      else if ( attribute->type == INTEGER  ) {
-        valueMaps[i][attribute.get()] = (int)jsonArray[i];
-      }
-      else {
-        valueMaps[i][attribute.get()] = (float)jsonArray[i];
-      }
+    for ( size_t i = 0; i < collection.size(); i++ ) {
+      valueMaps[i][attribute.get()] = collection[i];
     }
   }
   
@@ -182,7 +172,7 @@ void StateMachine::createMultiInstanceActivityTokens(Token* token) {
       }
     }
     else {
-      throw std::runtime_error("Token: no attribute provided for loop index parameter of multi-instance activity '" + token->node->id +"'" );
+      throw std::runtime_error("StateMachine: no attribute provided for loop index parameter of multi-instance activity '" + token->node->id +"'" );
     }
   }
 

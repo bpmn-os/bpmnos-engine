@@ -106,6 +106,6 @@ add_custom_target(
     VERBATIM
 )
 
-add_dependencies(tests run_tests)
 add_dependencies(run_tests bpmnos-model bpmnos-execution)
+add_dependencies(tests run_tests)
 

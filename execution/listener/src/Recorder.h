@@ -4,6 +4,7 @@
 #include <ostream>
 #include <bpmn++.h>
 #include "Listener.h"
+#include <nlohmann/json.hpp>
 
 namespace BPMNOS::Execution {
 
