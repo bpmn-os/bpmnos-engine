@@ -31,7 +31,7 @@ public:
   std::unique_ptr<Parameter> collection; ///< Parameter for value initialization for multi-instance activities.
   std::optional<number> value;
  
-  double weight; ///< Weight to be used for objective (assuming minimization). 
+  double weight; ///< Weight to be used for objective (assuming maximization). 
 
   bool isImmutable; ///< Flag indicating whether attribute value may be changed. 
 };

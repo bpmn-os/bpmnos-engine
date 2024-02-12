@@ -4,6 +4,7 @@
 #include <ostream>
 #include <bpmn++.h>
 #include "Listener.h"
+#include "model/utility/src/Number.h"
 #include <nlohmann/json.hpp>
 
 namespace BPMNOS::Execution {
@@ -18,6 +19,7 @@ public:
   ~Recorder();
 
   void update( const Token* token ) override;
+  BPMNOS::number objective; ///< The global objective.
   nlohmann::ordered_json log; ///< A json object of the entire log.
   /**
    * @brief Returns a json array containing all log entries matching the include object and not matching the exclude object.

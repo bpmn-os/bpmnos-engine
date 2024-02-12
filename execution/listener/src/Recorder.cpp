@@ -1,16 +1,16 @@
 #include "Recorder.h"
-#include "model/utility/src/Number.h"
 #include "model/parser/src/extensionElements/Status.h"
 #include "execution/engine/src/StateMachine.h"
+#include "execution/engine/src/SystemState.h"
 
 using namespace BPMNOS::Execution;
 
-Recorder::Recorder(size_t maxSize) : Listener(), os(std::nullopt), maxSize(maxSize)
+Recorder::Recorder(size_t maxSize) : Listener(), objective(0), os(std::nullopt), maxSize(maxSize)
 {
   log = nlohmann::ordered_json::array();
 }
 
-Recorder::Recorder(std::ostream &os, size_t maxSize) : Listener(), os(os), maxSize(maxSize)
+Recorder::Recorder(std::ostream &os, size_t maxSize) : Listener(), objective(0), os(os), maxSize(maxSize)
 {
   log = nlohmann::ordered_json::array();
   if (this->os.has_value()) {
@@ -22,11 +22,14 @@ Recorder::Recorder(std::ostream &os, size_t maxSize) : Listener(), os(os), maxSi
 Recorder::~Recorder()
 {
   if (os.has_value()) {
-    os.value().get() << "]";
+    os.value().get() << "]" << std::endl;
+    os.value().get()  << "Objective (maximization): " << (float)objective << std::endl;
+    os.value().get()  << "Objective (minimization): " << -(float)objective << std::endl;
   }
 }
 
 void Recorder::update( const Token* token ) {
+  objective = token->owner->systemState->objective;
   auto json = token->jsonify();
 
   if (os.has_value()) {

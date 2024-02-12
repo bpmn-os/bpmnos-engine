@@ -8,6 +8,7 @@ SystemState::SystemState(const Engine* engine, const BPMNOS::Model::Scenario* sc
   : engine(engine)
   , scenario(scenario)
   , currentTime(currentTime)
+  , objective(0)
 {
 }
 

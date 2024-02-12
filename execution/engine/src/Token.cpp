@@ -579,13 +579,21 @@ void Token::advanceToCompleted() {
 
   auto engine = const_cast<Engine*>(owner->systemState->engine);
 
-  if ( node ) {
+  if ( !node ) {
+    // update global objective
+    assert( owner->scope->extensionElements->as<BPMNOS::Model::Status>() );
+    const_cast<SystemState*>(owner->systemState)->objective += owner->scope->extensionElements->as<BPMNOS::Model::Status>()->getContributionToObjective(status);
+  }
+  else {
     if ( auto activity = node->represents<BPMN::Activity>() ) {
 //std::cerr << activity->id << " is for compensation: " << activity->isForCompensation << std::endl;
       if ( activity->isForCompensation ) {
         // final state for compensation activity reached
         auto stateMachine = const_cast<StateMachine*>(owner);
         engine->commands.emplace_back(std::bind(&StateMachine::completeCompensationActivity,stateMachine,this), this);
+        // update global objective
+        assert( node->extensionElements->as<BPMNOS::Model::Status>() );
+        const_cast<SystemState*>(owner->systemState)->objective += node->extensionElements->as<BPMNOS::Model::Status>()->getContributionToObjective(status);
       }
       else {
         awaitExitEvent();
@@ -658,7 +666,6 @@ std::cerr << "Context: " << context << " at " << context->scope->id << " has " <
 
         // interrupt all running tokens in state machine
         context->clearObsoleteTokens();
-
       }
       else {
 //std::cerr << "Before pendingEventSubProcesses: " << context->pendingEventSubProcesses.size() << std::endl;
@@ -726,6 +733,9 @@ void Token::advanceToExiting() {
   if ( auto statusExtension = node->extensionElements->represents<BPMNOS::Model::Status>();
        statusExtension && statusExtension->attributes.size()
   ) {
+    // update global objective
+    const_cast<SystemState*>(owner->systemState)->objective += statusExtension->getContributionToObjective(status);
+
     // remove attributes that are no longer needed
     status.resize( statusExtension->attributeMap.size() - statusExtension->attributes.size() );
   }
@@ -755,25 +765,6 @@ void Token::advanceToExiting() {
       engine->commands.emplace_back( std::bind(&StateMachine::deleteTokensAwaitingBoundaryEvent,stateMachine,this), stateMachine );
 
       awaitCompensation();
-/*
-      if ( activity->compensatedBy ) {
-        if ( auto compensationActivity = activity->compensatedBy->represents<BPMN::Activity>();
-          compensationActivity &&
-          activity->loopCharacteristics != compensationActivity->loopCharacteristics
-        ) {
-          throw std::runtime_error("Token: compensation activities with different loop characteristics as the compensated activity '" + node->id + "' are not yet supported");
-        }
-
-        // find compensate boundary event
-        auto it = std::find_if(activity->boundaryEvents.begin(), activity->boundaryEvents.end(), [](BPMN::FlowNode* boundaryEvent) {
-          return ( boundaryEvent->represents<BPMN::CompensateBoundaryEvent>() );
-        });
-        if ( it != activity->boundaryEvents.end() ) {
-          // create compensation token allowing
-          engine->commands.emplace_back( std::bind(&StateMachine::createCompensationTokenForBoundaryEvent,stateMachine,*it, status), stateMachine );
-        }
-      }
-*/
     }
 
     if ( auto subProcess = node->represents<BPMN::SubProcess>();

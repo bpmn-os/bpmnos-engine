@@ -41,6 +41,8 @@ public:
   void applyOperators(Values& values) const;
   void makeChoices(const std::unordered_map<Decision*,number>& choices, Values& values) const;
 
+  BPMNOS::number getContributionToObjective(const Values& values) const; ///< Returns the contribution to the objective by the attributes declared for the node.
+  
   std::optional< std::unique_ptr<Guidance> > messageGuidance;
   std::optional< std::unique_ptr<Guidance> > entryGuidance;
   std::optional< std::unique_ptr<Guidance> > exitGuidance;

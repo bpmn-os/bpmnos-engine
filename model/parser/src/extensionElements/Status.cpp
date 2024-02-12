@@ -171,3 +171,12 @@ void Status::makeChoices(const std::unordered_map<Decision*,number>& choices, Va
   }
 }
 
+BPMNOS::number Status::getContributionToObjective(const Values& values) const {
+  BPMNOS::number contribution = 0;
+  for ( auto& attribute : attributes ) {
+    if ( values[attribute->index].has_value() ) {
+      contribution += attribute->weight * values[attribute->index].value();
+    }
+  }
+  return contribution;
+}

@@ -84,7 +84,7 @@ private:
   std::vector<Token*> createTokenCopies(Token* token, const std::vector<BPMN::SequenceFlow*>& sequenceFlows);
   void createMergedToken(const BPMN::FlowNode* gateway);
 
-  void shutdown(); ///< Shutdown state machine after successfull execution
+  void shutdown(); ///< Shutdown state machine after successful execution
   void terminate(Token* token); ///< Terminates state machine after failure
   void interruptActivity(Token* token);
   void clearObsoleteTokens();

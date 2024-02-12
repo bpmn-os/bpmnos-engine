@@ -50,6 +50,18 @@ public:
    */
   bool isAlive() const;
 
+  /**
+   * @brief The total objective value (assuming maximization) accumulated during execution.
+   *
+   * Attributes declared for activities, event-subprocesses, and processes contribute to the objective when
+   * - the activity is exited,
+   * - a compensation activity is completed,
+   * - the event-subprocess shuts down without failure, or
+   * - the process shuts down without failure.
+   *
+   * In all other cases values of attributes declared to contribute to the objective will be ignored.
+   */
+  BPMNOS::number objective;
 
   /**
    * @brief Container holding instance identifier and corresponding state machine pointer for each instantiation.

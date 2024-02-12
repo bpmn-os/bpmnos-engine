@@ -39,10 +39,10 @@ Attribute::Attribute(XML::bpmnos::tAttribute* attribute, AttributeMap& attribute
 
   if ( attribute->weight.has_value() ) {
     if ( attribute->objective.has_value() && attribute->objective->get().value.value == "maximize" ) {
-      weight = -(double)attribute->weight->get().value;
+      weight = (double)attribute->weight->get().value;
     }
     else if ( attribute->objective.has_value() &&  attribute->objective->get().value.value == "minimize" ) {
-      weight = (double)attribute->weight->get().value;
+      weight = -(double)attribute->weight->get().value;
     }
     else {
       throw std::runtime_error("Attribute: illegal objective of attribute '" + id + "'");

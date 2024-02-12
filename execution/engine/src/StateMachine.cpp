@@ -784,7 +784,13 @@ void StateMachine::shutdown() {
   auto engine = const_cast<Engine*>(systemState->engine);
 //std::cerr << "shutdown: " << scope->id << std::endl;
 
+  BPMNOS::Values mergedStatus = Token::mergeStatus(tokens);
+
   if ( auto eventSubProcess = scope->represents<BPMN::EventSubProcess>() ) {
+    // update global objective
+    assert( scope->extensionElements->as<BPMNOS::Model::Status>() );
+    const_cast<SystemState*>(systemState)->objective += scope->extensionElements->as<BPMNOS::Model::Status>()->getContributionToObjective(mergedStatus);
+
     if (!eventSubProcess->startEvent->isInterrupting ) {
       // delete non-interrupting event subprocess
       auto context = const_cast<StateMachine*>(parentToken->owned);
@@ -801,12 +807,7 @@ void StateMachine::shutdown() {
 
   // update status of parent token
   if ( parentToken ) {
-    // merge tokens
-    for ( auto& value : parentToken->status ) {
-      value = std::nullopt;
-    }
-
-    parentToken->status = Token::mergeStatus(tokens);
+    parentToken->setStatus(mergedStatus);
   }
   tokens.clear();
 
