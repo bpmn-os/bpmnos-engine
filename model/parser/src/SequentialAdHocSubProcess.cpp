@@ -1,5 +1,4 @@
 #include "SequentialAdHocSubProcess.h"
-#include <iostream>
 
 using namespace BPMNOS::Model;
 
