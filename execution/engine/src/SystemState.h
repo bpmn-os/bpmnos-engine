@@ -88,7 +88,7 @@ public:
   auto_list<Token> tokensAwaitingParallelEntry; ///< Container holding all tokens at activities (not within a sequential adhoc subprocess) awaiting an entry event
   auto_list<Token> tokensAwaitingSequentialEntry; ///< Container holding all tokens awaiting an entry event at an activity for each sequential adhoc subprocess
 
-  std::unordered_map< Token*, Token* > tokenAtSequencer; ///< Map holding a token at a sequencer for each token awaiting sequential entry
+  std::unordered_map< Token*, Token* > tokenAtSequentialPerformer; ///< Map holding a token at a sequential performer for each token awaiting sequential entry
 
   //TODO: make sure that elements are deleted when no longer required
   std::unordered_map< Token*, std::vector<Token*> > tokensAwaitingBoundaryEvent; ///< Map holding a container of all tokens at a boundary event awaiting to be triggered for each token at an activity

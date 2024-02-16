@@ -155,7 +155,7 @@ private:
 
   void sendMessage( size_t index = 0 ); 
 
-  Token* getSequencerToken() const; ///< Returns token at sequencer for tokens at activities within sequential adhoc subprocesses
+  Token* getSequentialPerfomerToken() const; ///< Returns token at sequential performer for tokens at activities within sequential adhoc subprocesses
 
   void update(State newState); ///< Updates token state and timestamp before calling notify()
 

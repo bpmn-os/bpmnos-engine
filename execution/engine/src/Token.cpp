@@ -90,7 +90,7 @@ Token::~Token() {
       }
 
       if ( state == State::READY && activity->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() ) {
-        systemState->tokenAtSequencer.erase(this);
+        systemState->tokenAtSequentialPerformer.erase(this);
       }
 
       if ( activity->loopCharacteristics.has_value() &&
@@ -920,8 +920,8 @@ void Token::awaitEntryEvent() {
   auto systemState = const_cast<SystemState*>(owner->systemState);
 
   if ( node->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() ) {
-    auto tokenAtSequencer = getSequencerToken();
-    systemState->tokenAtSequencer[this] = tokenAtSequencer;
+    auto tokenAtSequentialPerformer = getSequentialPerfomerToken();
+    systemState->tokenAtSequentialPerformer[this] = tokenAtSequentialPerformer;
     systemState->tokensAwaitingSequentialEntry.emplace_back(weak_from_this());
   }
   else {
@@ -1024,15 +1024,15 @@ void Token::sendMessage(size_t index) {
   }
 } 
 
-Token* Token::getSequencerToken() const {
+Token* Token::getSequentialPerfomerToken() const {
   auto activity = node->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>();
   assert( activity );
 
-  Token* sequencerToken = owner->parentToken;
-  while (sequencerToken->node != activity->sequencer) {
-    sequencerToken = sequencerToken->owner->parentToken;
+  Token* sequentialPerfomerToken = owner->parentToken;
+  while (sequentialPerfomerToken->node && sequentialPerfomerToken->node != activity->performer) {
+    sequentialPerfomerToken = sequentialPerfomerToken->owner->parentToken;
   }
-  return sequencerToken;
+  return sequentialPerfomerToken;
 }
 
 void Token::update(State newState) {

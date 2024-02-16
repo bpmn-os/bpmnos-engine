@@ -1,5 +1,5 @@
 #include "SequentialAdHocSubProcess.h"
-#include "ResourceActivity.h"
+#include <iostream>
 
 using namespace BPMNOS::Model;
 
@@ -7,33 +7,39 @@ SequentialAdHocSubProcess::SequentialAdHocSubProcess(XML::bpmn::tAdHocSubProcess
   : BPMN::Node(adHocSubProcess)
   , BPMN::FlowNode(adHocSubProcess,parent)
   , BPMN::AdHocSubProcess(adHocSubProcess,parent)
-  , sequencer(this)
+  , performer(this)
 {
   if ( !isSequential ) {
     throw std::runtime_error("SequentialAdHocSubProcess: ordering not set to 'Sequential'");
   }
 
-  // determine whether sequencer is resource activity 
-  BPMN::ChildNode* ancestor = parent->represents<BPMN::ChildNode>();
-  while ( ancestor ) {
-    if ( ancestor->represents<SequentialAdHocSubProcess>() ) {
-      break;
+  auto hasSequentialPerformer = [](const std::vector< std::reference_wrapper<XML::bpmn::tResourceRole> >& resources) {
+    for ( auto& resource : resources ) {
+      if ( auto performer = resource.get().get<XML::bpmn::tPerformer>();
+        performer && performer->name.has_value() && performer->name.value().get().value.value == "Sequential"
+      ) {
+        return true;
+      } 
     }
-    else if ( auto resourceActivity = ancestor->represents<ResourceActivity>() ) {
-      sequencer = resourceActivity;
-      break;
+    return false;
+  };
+
+  // determine sequential performer 
+  BPMN::Node* node = this;
+  while ( node->represents<BPMN::ChildNode>() ) {
+    if ( auto activity = node->represents<BPMN::Activity>() ) {
+      if ( hasSequentialPerformer( activity->element->resourceRole ) ) {
+        performer = activity;
+        break;
+      }
     }
-    ancestor = ancestor->parent->represents<ChildNode>();
+    node = node->as<BPMN::ChildNode>()->parent;
+  }
+
+  if ( auto process = node->represents<BPMN::Process>() ) {
+    if ( hasSequentialPerformer( process->element->resourceRole ) ) {
+      performer = process;
+    }
   }
 }
-
-/*
-const std::vector<BPMN::Activity*>& SequentialAdHocSubProcess::getJobs() {
-  return sequencer->jobs;
-}
-
-void SequentialAdHocSubProcess::addJob(BPMN::Activity* job) {
-  sequencer->jobs.push_back(job);
-}
-*/
 

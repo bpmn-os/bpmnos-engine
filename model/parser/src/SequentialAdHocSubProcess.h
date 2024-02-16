@@ -12,7 +12,7 @@ class SequentialAdHocSubProcess : public BPMN::AdHocSubProcess {
   friend class Model;
 public:
   SequentialAdHocSubProcess(XML::bpmn::tAdHocSubProcess* adHocsubProcess, BPMN::Scope* parent);
-  BPMN::FlowNode* sequencer;
+  BPMN::Node* performer;
 };
 
 } // namespace BPMNOS::Model
