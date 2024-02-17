@@ -10,8 +10,8 @@ list(APPEND bpmn_SOURCES
   extensionElements/Parameter.cpp
   extensionElements/Restriction.cpp
   extensionElements/Operator.cpp
-  extensionElements/operators/Unset.cpp
-  extensionElements/operators/Set.cpp
+  extensionElements/operators/Unassign.cpp
+  extensionElements/operators/Assign.cpp
   extensionElements/operators/LookupTable.cpp
   extensionElements/operators/Lookup.cpp
   extensionElements/operators/Expression.cpp
@@ -37,8 +37,8 @@ list(APPEND bpmn_HEADERS
   extensionElements/Parameter.h
   extensionElements/Restriction.h
   extensionElements/Operator.h
-  extensionElements/operators/Unset.h
-  extensionElements/operators/Set.h
+  extensionElements/operators/Unassign.h
+  extensionElements/operators/Assign.h
   extensionElements/operators/LookupTable.h
   extensionElements/operators/Lookup.h
   extensionElements/operators/Expression.h

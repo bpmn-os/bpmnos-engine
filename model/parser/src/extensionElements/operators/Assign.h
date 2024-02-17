@@ -1,5 +1,5 @@
-#ifndef BPMNOS_Model_Set_H
-#define BPMNOS_Model_Set_H
+#ifndef BPMNOS_Model_Assign_H
+#define BPMNOS_Model_Assign_H
 
 #include "model/parser/src/extensionElements/Attribute.h"
 #include "model/parser/src/extensionElements/Parameter.h"
@@ -10,15 +10,15 @@
 namespace BPMNOS::Model {
 
 
-class Set : public Operator {
+class Assign : public Operator {
 public:
-  Set(XML::bpmnos::tOperator* operator_, AttributeMap& attributeMap);
+  Assign(XML::bpmnos::tOperator* operator_, AttributeMap& attributeMap);
   Parameter* parameter;
 
 /**
- * @brief Sets a status attribute by applying the operator.
+ * @brief Assigns a a value to a status attribute.
  *
- * This function sets a status attribute based on the provided parameter configuration.
+ * This function Assigns a status attribute based on the provided parameter configuration.
  * The function performs the following steps:
  *
  * - If the parameter specifies an attribute and the status contains a value for
@@ -28,7 +28,7 @@ public:
  *   a value for that attribute, but a parameter value is available, the parameter
  *   value is used to update the target attribute in the status.
  * - If neither a parameter attribute with value nor a parameter value is available,
- *   the target attribute in the status is set to undefined (std::nullopt).
+ *   the target attribute in the status is Assign to undefined (std::nullopt).
  *
  * @param status The status values to be updated.
  */
@@ -37,4 +37,4 @@ public:
 
 } // namespace BPMNOS::Model
 
-#endif // BPMNOS_Model_Set_H
+#endif // BPMNOS_Model_Assign_H

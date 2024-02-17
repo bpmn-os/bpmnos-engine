@@ -1,6 +1,6 @@
 #include "Operator.h"
-#include "operators/Unset.h"
-#include "operators/Set.h"
+#include "operators/Unassign.h"
+#include "operators/Assign.h"
 #include "operators/Lookup.h"
 #include "operators/Expression.h"
 
@@ -21,11 +21,11 @@ Operator::Operator(XML::bpmnos::tOperator* operator_, AttributeMap& attributeMap
 
 std::unique_ptr<Operator> Operator::create(XML::bpmnos::tOperator* operator_, AttributeMap& attributeMap) {
   std::string& operatorType = operator_->getRequiredAttributeByName("type").value.value;
-  if ( operatorType == "unset" ) {
-    return std::make_unique<Unset>(operator_, attributeMap);
+  if ( operatorType == "unassign" ) {
+    return std::make_unique<Unassign>(operator_, attributeMap);
   }
-  else if ( operatorType == "set" ) {
-    return std::make_unique<Set>(operator_, attributeMap);
+  else if ( operatorType == "assign" ) {
+    return std::make_unique<Assign>(operator_, attributeMap);
   }
   else if ( operatorType == "lookup" ) {
     return std::make_unique<Lookup>(operator_, attributeMap);
