@@ -7,6 +7,9 @@
 
 namespace BPMNOS::Model {
 
+/**
+ * @brief Class representing an operator that unassigns the value from a status attribute.
+ **/
 class Unassign : public Operator {
 public:
   Unassign(XML::bpmnos::tOperator* operator_, AttributeMap& attributeMap);

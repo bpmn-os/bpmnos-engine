@@ -11,6 +11,10 @@
 
 namespace BPMNOS::Model {
 
+/**
+ * @brief Abstract base class representing an operator that uses an expression to determine that value
+ * of a status attribute.
+ **/
 class Expression : public Operator {
 public:
   Expression(XML::bpmnos::tOperator* operator_, AttributeMap& attributeMap);

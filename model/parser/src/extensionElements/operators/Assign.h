@@ -10,6 +10,9 @@
 namespace BPMNOS::Model {
 
 
+/**
+ * @brief Class representing an operator that assigns a value to a status attribute.
+ **/
 class Assign : public Operator {
 public:
   Assign(XML::bpmnos::tOperator* operator_, AttributeMap& attributeMap);

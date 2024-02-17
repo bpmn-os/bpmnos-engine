@@ -10,6 +10,10 @@
 
 namespace BPMNOS::Model {
 
+/**
+ * @brief Class representing an operator that uses a lookup table to determine that value
+ * of a status attribute.
+ **/
 class Lookup : public Operator {
 public:
   Lookup(XML::bpmnos::tOperator* operator_, AttributeMap& attributeMap);

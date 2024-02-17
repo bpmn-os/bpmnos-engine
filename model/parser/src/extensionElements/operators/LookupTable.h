@@ -13,6 +13,8 @@
 namespace BPMNOS::Model {
 
 /**
+ * @brief Class generating a lookup table from a CSV file.
+ *
  * A LookupTable loads a CSV file with header line and
  * allows to retrieve entries using a list of key-value pairs.
  * Should multiple entries match the given key-value pairs,

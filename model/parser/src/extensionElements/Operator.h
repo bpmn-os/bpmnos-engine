@@ -15,6 +15,9 @@
 
 namespace BPMNOS::Model {
 
+/**
+ * @brief Abstract base class for all operators allowing to manipulate attribute values.
+ **/
 class Operator {
 public:
   Operator(XML::bpmnos::tOperator* operator_, AttributeMap& attributeMap);

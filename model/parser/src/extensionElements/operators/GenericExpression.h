@@ -12,6 +12,10 @@
 namespace BPMNOS::Model {
 
 
+/**
+ * @brief Class representing an operator that uses a generic expression to determine that value
+ * of a status attribute.
+ **/
 class GenericExpression : public Expression {
 public:
   GenericExpression(XML::bpmnos::tOperator* operator_, AttributeMap& attributeMap);
