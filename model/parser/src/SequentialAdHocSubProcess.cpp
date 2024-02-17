@@ -33,6 +33,10 @@ SequentialAdHocSubProcess::SequentialAdHocSubProcess(XML::bpmn::tAdHocSubProcess
       }
     }
     node = node->as<BPMN::ChildNode>()->parent;
+    if ( node->represents<SequentialAdHocSubProcess>() ) {
+      // sequential performer of adhoc subprocess must be found before other adhoc subprocess
+      break;
+    }
   }
 
   if ( auto process = node->represents<BPMN::Process>() ) {
