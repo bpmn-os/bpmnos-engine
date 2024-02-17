@@ -1,6 +1,7 @@
 #include "Engine.h"
 #include "Token.h"
 #include "StateMachine.h"
+#include "model/parser/src/extensionElements/ExtensionElements.h"
 #include "model/parser/src/SequentialAdHocSubProcess.h"
 #include "execution/utility/src/erase.h"
 #include "execution/listener/src/Listener.h"
@@ -113,10 +114,10 @@ void Engine::addInstances() {
     if ( !process->isExecutable ) {
       throw std::runtime_error("Engine: process is not executable");
     }
-    if ( !status[Model::Status::Index::Instance].has_value() ) {
+    if ( !status[Model::ExtensionElements::Index::Instance].has_value() ) {
       throw std::runtime_error("Engine: instance of process '" + process->id + "' has no id");
     }
-    if ( !status[Model::Status::Index::Timestamp].has_value() ) {
+    if ( !status[Model::ExtensionElements::Index::Timestamp].has_value() ) {
       throw std::runtime_error("Engine: instance of process '" + process->id + "' has no timestamp");
     }
     systemState->instantiationCounter++;

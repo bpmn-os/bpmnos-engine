@@ -1,7 +1,7 @@
 #include "Number.h"
 #include "Keywords.h"
 #include "StringRegistry.h"
-#include "model/parser/src/extensionElements/Status.h"
+#include "model/parser/src/extensionElements/ExtensionElements.h"
 #include <cassert>
 
 namespace BPMNOS { 
@@ -109,11 +109,11 @@ BPMNOS::Values mergeValues(const std::vector<BPMNOS::Values>& valueSets) {
   size_t n = valueSets.front().size();
   BPMNOS::Values result;
   result.resize(n);
-  result[(int)BPMNOS::Model::Status::Index::Timestamp] = valueSets.front()[(int)BPMNOS::Model::Status::Index::Timestamp];
+  result[(int)BPMNOS::Model::ExtensionElements::Index::Timestamp] = valueSets.front()[(int)BPMNOS::Model::ExtensionElements::Index::Timestamp];
 
   for ( size_t i = 0; i < n; i++ ) {
     for ( auto& values : valueSets ) {
-      if ( i == (int)BPMNOS::Model::Status::Index::Timestamp ) {
+      if ( i == (int)BPMNOS::Model::ExtensionElements::Index::Timestamp ) {
         if ( result[i].value() < values[i].value() ) {
           result[i] = values[i];
         }

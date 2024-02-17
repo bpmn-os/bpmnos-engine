@@ -74,8 +74,8 @@ SCENARIO( "Trivial executable process", "[data][dynamic]" ) {
         auto instantiations = scenario->getCurrentInstantiations(timestamp);
         auto& [process,values] = instantiations.front();
         REQUIRE( values.size() == 2 );
-        REQUIRE( values[Model::Status::Index::Instance].value() == BPMNOS::to_number(instanceId,STRING) );
-        REQUIRE( values[Model::Status::Index::Timestamp].value() == timestamp );
+        REQUIRE( values[Model::ExtensionElements::Index::Instance].value() == BPMNOS::to_number(instanceId,STRING) );
+        REQUIRE( values[Model::ExtensionElements::Index::Timestamp].value() == timestamp );
       }
     }
   }

@@ -3,7 +3,7 @@
 #include <iostream>
 
 #include "Model.h"
-#include "extensionElements/Status.h"
+#include "extensionElements/ExtensionElements.h"
 #include "extensionElements/Gatekeeper.h"
 #include "extensionElements/Timer.h"
 #include "extensionElements/MessageDefinition.h"
@@ -24,7 +24,7 @@ std::unique_ptr<BPMN::Process> Model::createProcess(XML::bpmn::tProcess* process
   // bind attributes, restrictions, and operators to all processes
   return bind<BPMN::Process>(
     BPMN::Model::createProcess(process),
-    std::make_unique<Status>(process)
+    std::make_unique<BPMNOS::Model::ExtensionElements>(process)
   );
 }
 
@@ -32,14 +32,14 @@ std::unique_ptr<BPMN::EventSubProcess> Model::createEventSubProcess(XML::bpmn::t
   // bind attributes, restrictions, and operators to all processes
   return bind<BPMN::EventSubProcess>(
     BPMN::Model::createEventSubProcess(subProcess,parent),
-    std::make_unique<Status>(subProcess)
+    std::make_unique<BPMNOS::Model::ExtensionElements>(subProcess)
   );
 }
 
 std::unique_ptr<BPMN::FlowNode> Model::createActivity(XML::bpmn::tActivity* activity, BPMN::Scope* parent) {
   return bind<BPMN::FlowNode>(
     BPMN::Model::createActivity(activity,parent),
-    std::make_unique<Status>(activity,parent)
+    std::make_unique<BPMNOS::Model::ExtensionElements>(activity,parent)
   );
 }
 
@@ -120,7 +120,7 @@ std::unique_ptr<BPMN::FlowNode> Model::createMessageStartEvent(XML::bpmn::tStart
   // bind message content
   return bind<BPMN::FlowNode>(
     BPMN::Model::createMessageStartEvent(startEvent,parent),
-    std::make_unique<Status>(startEvent,parent)
+    std::make_unique<BPMNOS::Model::ExtensionElements>(startEvent,parent)
   );
 }
 
@@ -128,7 +128,7 @@ std::unique_ptr<BPMN::FlowNode> Model::createMessageBoundaryEvent(XML::bpmn::tBo
   // bind message content
   return bind<BPMN::FlowNode>(
     BPMN::Model::createMessageBoundaryEvent(boundaryEvent,parent),
-    std::make_unique<Status>(boundaryEvent,parent)
+    std::make_unique<BPMNOS::Model::ExtensionElements>(boundaryEvent,parent)
   );
 }
 
@@ -136,7 +136,7 @@ std::unique_ptr<BPMN::FlowNode> Model::createMessageCatchEvent(XML::bpmn::tCatch
   // bind message content
   return bind<BPMN::FlowNode>(
     BPMN::Model::createMessageCatchEvent(catchEvent,parent),
-    std::make_unique<Status>(catchEvent,parent)
+    std::make_unique<BPMNOS::Model::ExtensionElements>(catchEvent,parent)
   );
 }
 
@@ -144,7 +144,7 @@ std::unique_ptr<BPMN::FlowNode> Model::createMessageThrowEvent(XML::bpmn::tThrow
   // bind message content
   return bind<BPMN::FlowNode>(
     BPMN::Model::createMessageThrowEvent(throwEvent,parent),
-    std::make_unique<Status>(throwEvent,parent)
+    std::make_unique<BPMNOS::Model::ExtensionElements>(throwEvent,parent)
   );
 }
 
@@ -286,10 +286,10 @@ bool Model::messageMayBeThrown( BPMN::Process* sendingProcess, BPMN::FlowNode* t
 }
 
 void Model::createMessageCandidates( BPMN::Process* sendingProcess, BPMN::FlowNode* throwingMessageEvent, BPMN::Process* receivingProcess, BPMN::FlowNode* catchingMessageEvent ) {
-  auto senderStatus = throwingMessageEvent->extensionElements->represents<Status>();
-  for ( auto& outgoingMessageDefinition : senderStatus->messageDefinitions ) {
-    auto recipientStatus = catchingMessageEvent->extensionElements->represents<Status>();
-    for ( auto& incomingMessageDefinition : recipientStatus->messageDefinitions) {
+  auto senderExtension = throwingMessageEvent->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
+  for ( auto& outgoingMessageDefinition : senderExtension->messageDefinitions ) {
+    auto recipientExtension = catchingMessageEvent->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
+    for ( auto& incomingMessageDefinition : recipientExtension->messageDefinitions) {
 
       assert( outgoingMessageDefinition.get() );
       assert( incomingMessageDefinition.get() );
@@ -306,23 +306,23 @@ void Model::createMessageCandidates( BPMN::Process* sendingProcess, BPMN::FlowNo
       ) {
         // add message events to collection of candidates of each other
         if( find(
-            senderStatus->messageCandidates.begin(),
-            senderStatus->messageCandidates.end(),
+            senderExtension->messageCandidates.begin(),
+            senderExtension->messageCandidates.end(),
             catchingMessageEvent->as<BPMN::FlowNode>()
-          ) == senderStatus->messageCandidates.end()
+          ) == senderExtension->messageCandidates.end()
         ) {
 //std::cerr << throwingMessageEvent->id << " -> " << catchingMessageEvent->id << std::endl;
-          senderStatus->messageCandidates.push_back(catchingMessageEvent->as<BPMN::FlowNode>());
+          senderExtension->messageCandidates.push_back(catchingMessageEvent->as<BPMN::FlowNode>());
         }
 
         if( find(
-            recipientStatus->messageCandidates.begin(),
-            recipientStatus->messageCandidates.end(),
+            recipientExtension->messageCandidates.begin(),
+            recipientExtension->messageCandidates.end(),
             throwingMessageEvent->as<BPMN::FlowNode>()
-          ) == recipientStatus->messageCandidates.end()
+          ) == recipientExtension->messageCandidates.end()
         ) {
 //std::cerr << throwingMessageEvent->id << " -> " << catchingMessageEvent->id << std::endl;
-          recipientStatus->messageCandidates.push_back(throwingMessageEvent->as<BPMN::FlowNode>());
+          recipientExtension->messageCandidates.push_back(throwingMessageEvent->as<BPMN::FlowNode>());
         }
       }
     }

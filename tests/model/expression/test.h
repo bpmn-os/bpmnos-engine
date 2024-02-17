@@ -15,15 +15,15 @@ SCENARIO( "Linear expression", "[model][expression]" ) {
       auto instantiations = scenario->getCurrentInstantiations(0);
       THEN( "The result is correct" ) {
         for ( auto& [process,values] : instantiations ) {
-          auto status = process->extensionElements->represents<Model::Status>();
+          auto extensionElements = process->extensionElements->represents<Model::ExtensionElements>();
           REQUIRE( values.size() == 3 + 2 ); // don't forget timestamp and instance id
-          REQUIRE( values[status->attributeMap["x"]->index].value() == 8 );
-          REQUIRE( values[status->attributeMap["y"]->index].value() == 15 );
-          REQUIRE( values[status->attributeMap["z"]->index].has_value() == false );
-          status->applyOperators(values);
-          REQUIRE( values[status->attributeMap["x"]->index].value() == 8 );
-          REQUIRE( values[status->attributeMap["y"]->index].value() == 15 );
-          REQUIRE( values[status->attributeMap["z"]->index].value() == 3*8 + 5*15 );
+          REQUIRE( values[extensionElements->attributeMap["x"]->index].value() == 8 );
+          REQUIRE( values[extensionElements->attributeMap["y"]->index].value() == 15 );
+          REQUIRE( values[extensionElements->attributeMap["z"]->index].has_value() == false );
+          extensionElements->applyOperators(values);
+          REQUIRE( values[extensionElements->attributeMap["x"]->index].value() == 8 );
+          REQUIRE( values[extensionElements->attributeMap["y"]->index].value() == 15 );
+          REQUIRE( values[extensionElements->attributeMap["z"]->index].value() == 3*8 + 5*15 );
         }
       }
     }
@@ -39,16 +39,16 @@ SCENARIO( "Linear expression", "[model][expression]" ) {
 
       THEN( "The result is correct" ) {
         for ( auto& [process,values] : instantiations ) {
-          auto status = process->extensionElements->represents<Model::Status>();
+          auto extensionElements = process->extensionElements->represents<Model::ExtensionElements>();
 
           REQUIRE( values.size() == 3 + 2); // don't forget timestamp and instance id
-          REQUIRE( values[status->attributeMap["x"]->index].has_value() == false );
-          REQUIRE( values[status->attributeMap["y"]->index].value() == 15 );
-          REQUIRE( values[status->attributeMap["z"]->index].has_value() == false );
-          status->applyOperators(values);
-          REQUIRE( values[status->attributeMap["x"]->index].has_value() == false );
-          REQUIRE( values[status->attributeMap["y"]->index].value() == 15 );
-          REQUIRE( values[status->attributeMap["z"]->index].has_value() == false );
+          REQUIRE( values[extensionElements->attributeMap["x"]->index].has_value() == false );
+          REQUIRE( values[extensionElements->attributeMap["y"]->index].value() == 15 );
+          REQUIRE( values[extensionElements->attributeMap["z"]->index].has_value() == false );
+          extensionElements->applyOperators(values);
+          REQUIRE( values[extensionElements->attributeMap["x"]->index].has_value() == false );
+          REQUIRE( values[extensionElements->attributeMap["y"]->index].value() == 15 );
+          REQUIRE( values[extensionElements->attributeMap["z"]->index].has_value() == false );
         }
       }
     }
@@ -72,16 +72,16 @@ SCENARIO( "Another linear expression", "[model][expression]" ) {
 
       THEN( "The result is correct" ) {
         for ( auto& [process,values] : instantiations ) {
-          auto status = process->extensionElements->represents<Model::Status>();
+          auto extensionElements = process->extensionElements->represents<Model::ExtensionElements>();
 
           REQUIRE( values.size() == 3 + 2); // don't forget timestamp and instance id
-          REQUIRE( values[status->attributeMap["x"]->index].has_value() == false );
-          REQUIRE( values[status->attributeMap["y"]->index].value() == 15 );
-          REQUIRE( values[status->attributeMap["z"]->index].has_value() == false );
-          status->applyOperators(values);
-          REQUIRE( values[status->attributeMap["x"]->index].has_value() == false );
-          REQUIRE( values[status->attributeMap["y"]->index].value() == 15 );
-          REQUIRE( values[status->attributeMap["z"]->index].value() == 3 + 15/5 );
+          REQUIRE( values[extensionElements->attributeMap["x"]->index].has_value() == false );
+          REQUIRE( values[extensionElements->attributeMap["y"]->index].value() == 15 );
+          REQUIRE( values[extensionElements->attributeMap["z"]->index].has_value() == false );
+          extensionElements->applyOperators(values);
+          REQUIRE( values[extensionElements->attributeMap["x"]->index].has_value() == false );
+          REQUIRE( values[extensionElements->attributeMap["y"]->index].value() == 15 );
+          REQUIRE( values[extensionElements->attributeMap["z"]->index].value() == 3 + 15/5 );
         }
       }
     }
@@ -106,16 +106,16 @@ SCENARIO( "Generic expression", "[model][expression]" ) {
 
       THEN( "The result is correct" ) {
         for ( auto& [process,values] : instantiations ) {
-          auto status = process->extensionElements->represents<Model::Status>();
+          auto extensionElements = process->extensionElements->represents<Model::ExtensionElements>();
 
           REQUIRE( values.size() == 3 + 2); // don't forget timestamp and instance id
-          REQUIRE( values[status->attributeMap["x"]->index].value() == 8 );
-          REQUIRE( values[status->attributeMap["y"]->index].value() == 15 );
-          REQUIRE( values[status->attributeMap["z"]->index].has_value() == false );
-          status->applyOperators(values);
-          REQUIRE( values[status->attributeMap["x"]->index].value() == 8 );
-          REQUIRE( values[status->attributeMap["y"]->index].value() == 15 );
-          REQUIRE( values[status->attributeMap["z"]->index].value() == 3*8 + 5*15 );
+          REQUIRE( values[extensionElements->attributeMap["x"]->index].value() == 8 );
+          REQUIRE( values[extensionElements->attributeMap["y"]->index].value() == 15 );
+          REQUIRE( values[extensionElements->attributeMap["z"]->index].has_value() == false );
+          extensionElements->applyOperators(values);
+          REQUIRE( values[extensionElements->attributeMap["x"]->index].value() == 8 );
+          REQUIRE( values[extensionElements->attributeMap["y"]->index].value() == 15 );
+          REQUIRE( values[extensionElements->attributeMap["z"]->index].value() == 3*8 + 5*15 );
         }
       }
     }
@@ -131,16 +131,16 @@ SCENARIO( "Generic expression", "[model][expression]" ) {
 
       THEN( "The result is correct" ) {
         for ( auto& [process,values] : instantiations ) {
-          auto status = process->extensionElements->represents<Model::Status>();
+          auto extensionElements = process->extensionElements->represents<Model::ExtensionElements>();
 
           REQUIRE( values.size() == 3 + 2); // don't forget timestamp and instance id
-          REQUIRE( values[status->attributeMap["x"]->index].has_value() == false );
-          REQUIRE( values[status->attributeMap["y"]->index].value() == 15 );
-          REQUIRE( values[status->attributeMap["z"]->index].has_value() == false );
-          status->applyOperators(values);
-          REQUIRE( values[status->attributeMap["x"]->index].has_value() == false );
-          REQUIRE( values[status->attributeMap["y"]->index].value() == 15 );
-          REQUIRE( values[status->attributeMap["z"]->index].has_value() == false );
+          REQUIRE( values[extensionElements->attributeMap["x"]->index].has_value() == false );
+          REQUIRE( values[extensionElements->attributeMap["y"]->index].value() == 15 );
+          REQUIRE( values[extensionElements->attributeMap["z"]->index].has_value() == false );
+          extensionElements->applyOperators(values);
+          REQUIRE( values[extensionElements->attributeMap["x"]->index].has_value() == false );
+          REQUIRE( values[extensionElements->attributeMap["y"]->index].value() == 15 );
+          REQUIRE( values[extensionElements->attributeMap["z"]->index].has_value() == false );
         }
       }
     }

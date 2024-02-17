@@ -27,7 +27,7 @@ TEST_CASE( "Parse message flows", "[model][parser]" ) {
       [](const BPMN::Node* node) { return node->represents<BPMN::MessageThrowEvent>();}
     );
     for ( auto throwingMessageEvent : throwingMessageEvents ) {
-      for ( auto& candidate : throwingMessageEvent->extensionElements->as<BPMNOS::Model::Status>()->messageCandidates) {
+      for ( auto& candidate : throwingMessageEvent->extensionElements->as<BPMNOS::Model::ExtensionElements>()->messageCandidates) {
         candidates[throwingMessageEvent->id].insert(candidate->id);
       }
     }
@@ -35,7 +35,7 @@ TEST_CASE( "Parse message flows", "[model][parser]" ) {
       [](const BPMN::Node* node) { return node->represents<BPMN::MessageCatchEvent>();}
     );
     for ( auto catchingMessageEvent : catchingMessageEvents ) {
-      for ( auto& candidate : catchingMessageEvent->extensionElements->as<BPMNOS::Model::Status>()->messageCandidates) {
+      for ( auto& candidate : catchingMessageEvent->extensionElements->as<BPMNOS::Model::ExtensionElements>()->messageCandidates) {
         candidates[catchingMessageEvent->id].insert(candidate->id);
       }
     }

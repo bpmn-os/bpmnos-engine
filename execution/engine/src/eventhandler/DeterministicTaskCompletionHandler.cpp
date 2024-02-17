@@ -1,6 +1,5 @@
 #include "DeterministicTaskCompletionHandler.h"
 #include "execution/engine/src/events/TaskCompletionEvent.h"
-#include "model/parser/src/extensionElements/Status.h"
 #include <cassert>
 
 using namespace BPMNOS::Execution;

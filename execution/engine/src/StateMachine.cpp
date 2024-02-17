@@ -5,7 +5,7 @@
 #include "Event.h"
 #include "events/EntryEvent.h"
 #include "execution/utility/src/erase.h"
-#include "model/parser/src/extensionElements/Status.h"
+#include "model/parser/src/extensionElements/ExtensionElements.h"
 #include "model/parser/src/extensionElements/Timer.h"
 #include "execution/utility/src/VectorRegistry.h"
 #include "bpmn++.h"
@@ -97,36 +97,36 @@ void StateMachine::initiateEventSubprocesses(Token* token) {
 }
 
 void StateMachine::createMultiInstanceActivityTokens(Token* token) {
-  auto statusExtension = token->node->extensionElements->represents<const Model::Status>();
-  assert( statusExtension != nullptr );
+  auto extensionElements = token->node->extensionElements->represents<const BPMNOS::Model::ExtensionElements>();
+  assert( extensionElements != nullptr );
 
   std::vector< std::map< const Model::Attribute*, std::optional<BPMNOS::number> > > valueMaps;
 
-  if ( statusExtension->loopCardinality.has_value() ) {
+  if ( extensionElements->loopCardinality.has_value() ) {
     // use provided cardinality to determine number of tokens 
-    if ( statusExtension->loopCardinality.value()->attribute.has_value() &&
-      token->status[ statusExtension->loopCardinality.value()->attribute->get().index ].has_value()
+    if ( extensionElements->loopCardinality.value()->attribute.has_value() &&
+      token->status[ extensionElements->loopCardinality.value()->attribute->get().index ].has_value()
     ) {
-      valueMaps.resize( (size_t)token->status[ statusExtension->loopCardinality.value()->attribute->get().index ].value() );
+      valueMaps.resize( (size_t)token->status[ extensionElements->loopCardinality.value()->attribute->get().index ].value() );
     }
-    else if ( statusExtension->loopCardinality.value()->value.has_value() ) {
-      valueMaps.resize( (size_t)(int)statusExtension->loopCardinality.value()->value.value().get() );
+    else if ( extensionElements->loopCardinality.value()->value.has_value() ) {
+      valueMaps.resize( (size_t)(int)extensionElements->loopCardinality.value()->value.value().get() );
     }
     else {
       throw std::runtime_error("StateMachine: cannot determine cardinality for multi-instance activity '" + token->node->id +"'" );
     }
   }
   
-  if ( statusExtension->messageDefinitions.size() ) {
+  if ( extensionElements->messageDefinitions.size() ) {
     if ( valueMaps.empty() ) {
-      valueMaps.resize(statusExtension->messageDefinitions.size());
+      valueMaps.resize(extensionElements->messageDefinitions.size());
     }
-    else if ( valueMaps.size() != statusExtension->messageDefinitions.size() ) {
+    else if ( valueMaps.size() != extensionElements->messageDefinitions.size() ) {
       throw std::runtime_error("StateMachine: cardinality and number of messages inconsistent for multi-instance activity '" + token->node->id +"'" );
     }
   }
 
-  auto attributes = statusExtension->attributes | std::views::filter([](auto& attribute) {
+  auto attributes = extensionElements->attributes | std::views::filter([](auto& attribute) {
     return (attribute->collection != nullptr);
   });
 
@@ -163,10 +163,10 @@ void StateMachine::createMultiInstanceActivityTokens(Token* token) {
     throw std::runtime_error("Token: no instances created for multi-instance activity '" + token->node->id +"'" );
   }
 
-  if ( statusExtension->loopIndex.has_value() ) {
+  if ( extensionElements->loopIndex.has_value() ) {
     // set value of loop index attribute for each instance
-    if ( statusExtension->loopIndex.value()->attribute.has_value() ) {
-      auto& attribute = statusExtension->loopIndex.value()->attribute.value();
+    if ( extensionElements->loopIndex.value()->attribute.has_value() ) {
+      auto& attribute = extensionElements->loopIndex.value()->attribute.value();
       for ( size_t i = 0; i < valueMaps.size(); i++ ) {
         valueMaps[i][&attribute.get()] = i + 1;
       }
@@ -411,15 +411,15 @@ void StateMachine::unregisterRecipient() {
 
 void StateMachine::run(const Values& status) {
   assert( status.size() >= 2 );
-  assert( status[BPMNOS::Model::Status::Index::Instance].has_value() );
-  assert( status[BPMNOS::Model::Status::Index::Timestamp].has_value() );
+  assert( status[BPMNOS::Model::ExtensionElements::Index::Instance].has_value() );
+  assert( status[BPMNOS::Model::ExtensionElements::Index::Timestamp].has_value() );
 
 //std::cerr << "Run " << scope->id << std::endl;
   if ( !parentToken ) {
     // state machine without parent token represents a process
 //std::cerr << "Start process " << process->id << std::endl;
     tokens.push_back( std::make_shared<Token>(this,nullptr,status) );
-    const_cast<std::string&>(instanceId) = BPMNOS::to_string(status[Model::Status::Index::Instance].value(),STRING);
+    const_cast<std::string&>(instanceId) = BPMNOS::to_string(status[BPMNOS::Model::ExtensionElements::Index::Instance].value(),STRING);
     const_cast<SystemState*>(systemState)->archive[ instanceId ] = weak_from_this();
     registerRecipient();
   }
@@ -439,8 +439,8 @@ void StateMachine::run(const Values& status) {
         auto context = const_cast<StateMachine*>(parentToken->owned);
         auto counter = ++context->instantiations[token->node];
         // append instantiation counter for disambiguation
-        const_cast<std::string&>(instanceId) = BPMNOS::to_string(token->status[Model::Status::Index::Instance].value(),STRING) + delimiter +  std::to_string(counter);
-        token->status[Model::Status::Index::Instance] = BPMNOS::to_number(instanceId,BPMNOS::ValueType::STRING);
+        const_cast<std::string&>(instanceId) = BPMNOS::to_string(token->status[BPMNOS::Model::ExtensionElements::Index::Instance].value(),STRING) + delimiter +  std::to_string(counter);
+        token->status[BPMNOS::Model::ExtensionElements::Index::Instance] = BPMNOS::to_number(instanceId,BPMNOS::ValueType::STRING);
         const_cast<SystemState*>(systemState)->archive[ instanceId ] = weak_from_this();
         registerRecipient();
       }
@@ -788,8 +788,8 @@ void StateMachine::shutdown() {
 
   if ( auto eventSubProcess = scope->represents<BPMN::EventSubProcess>() ) {
     // update global objective
-    assert( scope->extensionElements->as<BPMNOS::Model::Status>() );
-    const_cast<SystemState*>(systemState)->objective += scope->extensionElements->as<BPMNOS::Model::Status>()->getContributionToObjective(mergedStatus);
+    assert( scope->extensionElements->as<BPMNOS::Model::ExtensionElements>() );
+    const_cast<SystemState*>(systemState)->objective += scope->extensionElements->as<BPMNOS::Model::ExtensionElements>()->getContributionToObjective(mergedStatus);
 
     if (!eventSubProcess->startEvent->isInterrupting ) {
       // delete non-interrupting event subprocess

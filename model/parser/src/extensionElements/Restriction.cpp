@@ -1,5 +1,4 @@
 #include "Restriction.h"
-#include "Status.h"
 #include "model/parser/src/xml/bpmnos/tEnumeration.h"
 
 using namespace BPMNOS::Model;

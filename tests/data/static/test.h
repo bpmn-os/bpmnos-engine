@@ -19,14 +19,14 @@ SCENARIO( "Trivial executable process", "[data][static]" ) {
         for ( auto& instance : instances ) {
           REQUIRE( instance->process->id == "Process_1" );
           REQUIRE( instance->id == "Instance_1" );
-          auto status = instance->process->extensionElements->represents<Model::Status>();
-          REQUIRE( status->attributes.size() == 2 );
-          REQUIRE( (std::string)status->attributes[Model::Status::Index::Instance]->id == Keyword::Instance );
-          REQUIRE( status->attributes[Model::Status::Index::Instance]->isImmutable == true );
-          REQUIRE( status->attributes[Model::Status::Index::Instance]->value == std::nullopt );
-          REQUIRE( (std::string)status->attributes[Model::Status::Index::Timestamp]->id == Keyword::Timestamp );
-          REQUIRE( status->attributes[Model::Status::Index::Timestamp]->isImmutable == false );
-          REQUIRE( status->attributes[Model::Status::Index::Timestamp]->value.value() == 0 );
+          auto extensionElements = instance->process->extensionElements->represents<Model::ExtensionElements>();
+          REQUIRE( extensionElements->attributes.size() == 2 );
+          REQUIRE( (std::string)extensionElements->attributes[Model::ExtensionElements::Index::Instance]->id == Keyword::Instance );
+          REQUIRE( extensionElements->attributes[Model::ExtensionElements::Index::Instance]->isImmutable == true );
+          REQUIRE( extensionElements->attributes[Model::ExtensionElements::Index::Instance]->value == std::nullopt );
+          REQUIRE( (std::string)extensionElements->attributes[Model::ExtensionElements::Index::Timestamp]->id == Keyword::Timestamp );
+          REQUIRE( extensionElements->attributes[Model::ExtensionElements::Index::Timestamp]->isImmutable == false );
+          REQUIRE( extensionElements->attributes[Model::ExtensionElements::Index::Timestamp]->value.value() == 0 );
         }
       }
       THEN( "The instantiation data is correct" ) {
@@ -36,8 +36,8 @@ SCENARIO( "Trivial executable process", "[data][static]" ) {
         REQUIRE( instantiations.size() == 1 );
         auto& [process,values] = instantiations.front();
         REQUIRE( values.size() == 2 );
-        REQUIRE( values[Model::Status::Index::Instance].value() == BPMNOS::to_number(instanceId,STRING) );
-        REQUIRE( values[Model::Status::Index::Timestamp].value() == timestamp );
+        REQUIRE( values[Model::ExtensionElements::Index::Instance].value() == BPMNOS::to_number(instanceId,STRING) );
+        REQUIRE( values[Model::ExtensionElements::Index::Timestamp].value() == timestamp );
       }
     }
   }
@@ -84,14 +84,14 @@ SCENARIO( "Trivial executable process", "[data][static]" ) {
       THEN( "The model data is correct" ) {
         auto instances = scenario->getKnownInstances(0);
         for ( auto& instance : instances ) {
-          auto status = instance->process->extensionElements->represents<Model::Status>();
-          REQUIRE( status->attributes.size() == 2 );
-          REQUIRE( (std::string)status->attributes[Model::Status::Index::Instance]->id == Keyword::Instance );
-          REQUIRE( status->attributes[Model::Status::Index::Instance]->isImmutable == true );
-          REQUIRE( status->attributes[Model::Status::Index::Instance]->value == std::nullopt );
-          REQUIRE( (std::string)status->attributes[Model::Status::Index::Timestamp]->id == Keyword::Timestamp );
-          REQUIRE( status->attributes[Model::Status::Index::Timestamp]->isImmutable == false );
-          REQUIRE( status->attributes[Model::Status::Index::Timestamp]->value.value() == 0 );
+          auto extensionElements = instance->process->extensionElements->represents<Model::ExtensionElements>();
+          REQUIRE( extensionElements->attributes.size() == 2 );
+          REQUIRE( (std::string)extensionElements->attributes[Model::ExtensionElements::Index::Instance]->id == Keyword::Instance );
+          REQUIRE( extensionElements->attributes[Model::ExtensionElements::Index::Instance]->isImmutable == true );
+          REQUIRE( extensionElements->attributes[Model::ExtensionElements::Index::Instance]->value == std::nullopt );
+          REQUIRE( (std::string)extensionElements->attributes[Model::ExtensionElements::Index::Timestamp]->id == Keyword::Timestamp );
+          REQUIRE( extensionElements->attributes[Model::ExtensionElements::Index::Timestamp]->isImmutable == false );
+          REQUIRE( extensionElements->attributes[Model::ExtensionElements::Index::Timestamp]->value.value() == 0 );
         }
       }
       THEN( "The instantiation data of the first instance is correct" ) {
@@ -100,8 +100,8 @@ SCENARIO( "Trivial executable process", "[data][static]" ) {
         auto instantiations = scenario->getCurrentInstantiations(timestamp);
         auto& [process,values] = instantiations.front();
         REQUIRE( values.size() == 2 );
-        REQUIRE( values[Model::Status::Index::Instance].value() == BPMNOS::to_number(instanceId,STRING) );
-        REQUIRE( values[Model::Status::Index::Timestamp].value() == timestamp );
+        REQUIRE( values[Model::ExtensionElements::Index::Instance].value() == BPMNOS::to_number(instanceId,STRING) );
+        REQUIRE( values[Model::ExtensionElements::Index::Timestamp].value() == timestamp );
       }
     }
   }
@@ -159,8 +159,8 @@ SCENARIO( "Trivial executable process", "[data][static]" ) {
         auto instantiations = scenario->getCurrentInstantiations(timestamp);
         auto& [process,values] = instantiations.front();
         REQUIRE( values.size() == 2 );
-        REQUIRE( values[Model::Status::Index::Instance].value() == BPMNOS::to_number(instanceId,STRING) );
-        REQUIRE( values[Model::Status::Index::Timestamp].value() == timestamp );
+        REQUIRE( values[Model::ExtensionElements::Index::Instance].value() == BPMNOS::to_number(instanceId,STRING) );
+        REQUIRE( values[Model::ExtensionElements::Index::Timestamp].value() == timestamp );
       }
     }
   }

@@ -1,5 +1,5 @@
 #include "Gatekeeper.h"
-#include "Status.h"
+#include "ExtensionElements.h"
 #include "model/parser/src/xml/bpmnos/tRestrictions.h"
 #include "model/parser/src/xml/bpmnos/tRestriction.h"
 
@@ -9,7 +9,7 @@ Gatekeeper::Gatekeeper(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent
   : BPMN::ExtensionElements( baseElement ) 
   , parent(parent)
 {
-  AttributeMap& attributeMap = parent->extensionElements->as<Status>()->attributeMap;
+  AttributeMap& attributeMap = parent->extensionElements->as<BPMNOS::Model::ExtensionElements>()->attributeMap;
   for ( XML::bpmnos::tRestriction& restriction : get<XML::bpmnos::tRestrictions,XML::bpmnos::tRestriction>() ) {
     restrictions.push_back( std::make_unique<Restriction>( &restriction,  attributeMap ) );
   }

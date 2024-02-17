@@ -1,4 +1,4 @@
-#include "Status.h"
+#include "ExtensionElements.h"
 #include "model/parser/src/xml/bpmnos/tStatus.h"
 #include "model/parser/src/xml/bpmnos/tAttribute.h"
 #include "model/parser/src/xml/bpmnos/tRestrictions.h"
@@ -15,15 +15,15 @@
 
 using namespace BPMNOS::Model;
 
-Status::Status(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent)
+ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent)
   : BPMN::ExtensionElements( baseElement )
   , parent(parent)
   , isInstantaneous(true)
 {
 
   if ( parent ) {
-    parentSize = parent->extensionElements->as<Status>()->size();
-    attributeMap = parent->extensionElements->as<Status>()->attributeMap;
+    parentSize = parent->extensionElements->as<ExtensionElements>()->size();
+    attributeMap = parent->extensionElements->as<ExtensionElements>()->attributeMap;
   }
   else {
     parentSize = 0;
@@ -76,7 +76,7 @@ Status::Status(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent)
           restrictions.push_back(std::make_unique<Restriction>(&restriction,attributeMap));
         }
         catch ( ... ){
-          throw std::runtime_error("Status: illegal parameters for restriction '" + (std::string)restriction.id.value + "'");
+          throw std::runtime_error("ExtensionElements: illegal parameters for restriction '" + (std::string)restriction.id.value + "'");
         }
       }
     }    
@@ -85,15 +85,15 @@ Status::Status(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent)
       for ( XML::bpmnos::tOperator& operator_ : status->get().operators.value().get().operator_ ) {
         try {
           operators.push_back(Operator::create(&operator_,attributeMap));
-          if ( operators.back()->attribute->index == BPMNOS::Model::Status::Index::Instance ) {
+          if ( operators.back()->attribute->index == BPMNOS::Model::ExtensionElements::Index::Instance ) {
             throw;
           }
-          if ( operators.back()->attribute->index == BPMNOS::Model::Status::Index::Timestamp ) {
+          if ( operators.back()->attribute->index == BPMNOS::Model::ExtensionElements::Index::Timestamp ) {
             isInstantaneous = false;
           }
         }
         catch ( ... ){
-          throw std::runtime_error("Status: illegal parameters for operator '" + (std::string)operator_.id.value + "'");
+          throw std::runtime_error("ExtensionElements: illegal parameters for operator '" + (std::string)operator_.id.value + "'");
         }
       }
     }    
@@ -104,7 +104,7 @@ Status::Status(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent)
           decisions.push_back(std::make_unique<Decision>(&decision,attributeMap));
         }
         catch ( ... ){
-          throw std::runtime_error("Status: illegal attributes for decision '" + (std::string)decision.id.value + "'");
+          throw std::runtime_error("ExtensionElements: illegal attributes for decision '" + (std::string)decision.id.value + "'");
         }
       }
     }    
@@ -150,7 +150,7 @@ Status::Status(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent)
   }
 }
 
-bool Status::isFeasible(const Values& values) const {
+bool ExtensionElements::isFeasible(const Values& values) const {
   for ( auto& restriction : restrictions ) {
     if ( !restriction->isSatisfied(values) ) {
       return false; 
@@ -159,19 +159,19 @@ bool Status::isFeasible(const Values& values) const {
   return true; 
 }  
 
-void Status::applyOperators(Values& values) const {
+void ExtensionElements::applyOperators(Values& values) const {
   for ( auto& operator_ : operators ) {
     operator_->apply(values);
   }
 }
 
-void Status::makeChoices(const std::unordered_map<Decision*,number>& choices, Values& values) const {
+void ExtensionElements::makeChoices(const std::unordered_map<Decision*,number>& choices, Values& values) const {
   for ( auto& [decision,value] : choices ) {
     values[decision->attribute->index] = value;
   }
 }
 
-BPMNOS::number Status::getContributionToObjective(const Values& values) const {
+BPMNOS::number ExtensionElements::getContributionToObjective(const Values& values) const {
   BPMNOS::number contribution = 0;
   for ( auto& attribute : attributes ) {
     if ( values[attribute->index].has_value() ) {

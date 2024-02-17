@@ -1,7 +1,7 @@
 #include "Scenario.h"
 #include "model/utility/src/Keywords.h"
 #include "model/utility/src/StringRegistry.h"
-#include "model/parser/src/extensionElements/Status.h"
+#include "model/parser/src/extensionElements/ExtensionElements.h"
 #include <limits>
 #include <iostream>
 
@@ -157,7 +157,7 @@ std::vector< std::pair<const BPMN::Process*, BPMNOS::Values> > Scenario::getAnti
 
 BPMNOS::Values Scenario::getKnownInitialStatus(const Scenario::InstanceData* instance, BPMNOS::number currentTime) const {
   BPMNOS::Values initalStatus;
-  for ( auto& attribute : instance->process->extensionElements->as<const Status>()->attributes ) {
+  for ( auto& attribute : instance->process->extensionElements->as<const BPMNOS::Model::ExtensionElements>()->attributes ) {
     auto& data = instance->data.at(attribute.get());
     if ( data.realization.has_value() ) {
       auto realization = data.realization.value();
@@ -176,11 +176,11 @@ BPMNOS::Values Scenario::getKnownInitialStatus(const Scenario::InstanceData* ins
 
 std::optional<BPMNOS::Values> Scenario::getKnownValues(const BPMN::FlowNode* node, Values& status, BPMNOS::number currentTime) const {
   // get instance id from status
-  std::string instanceId = stringRegistry[ (long unsigned int)status[Status::Index::Instance].value() ];
+  std::string instanceId = stringRegistry[ (long unsigned int)status[BPMNOS::Model::ExtensionElements::Index::Instance].value() ];
   auto& instance = instances.at(instanceId);
 
   Values values;
-  for ( auto& attribute : node->extensionElements->as<const Status>()->attributes ) {
+  for ( auto& attribute : node->extensionElements->as<const BPMNOS::Model::ExtensionElements>()->attributes ) {
     auto& data = instance.data.at(attribute.get());
 
     if ( data.realization.has_value() ) {
@@ -204,7 +204,7 @@ std::optional<BPMNOS::Values> Scenario::getKnownValues(const BPMN::FlowNode* nod
 
 BPMNOS::Values Scenario::getAnticipatedInitialStatus(const Scenario::InstanceData* instance, BPMNOS::number currentTime) const {
   BPMNOS::Values initalStatus;
-  for ( auto& attribute : instance->process->extensionElements->as<const Status>()->attributes ) {
+  for ( auto& attribute : instance->process->extensionElements->as<const BPMNOS::Model::ExtensionElements>()->attributes ) {
     auto& data = instance->data.at(attribute.get());
 
     if ( data.realization
@@ -229,11 +229,11 @@ BPMNOS::Values Scenario::getAnticipatedInitialStatus(const Scenario::InstanceDat
 
 BPMNOS::Values Scenario::getAnticipatedValues(const BPMN::FlowNode* node, Values& status, BPMNOS::number currentTime) const {
   // get instance id from status
-  std::string instanceId = stringRegistry[ (long unsigned int)status[Status::Index::Instance].value() ];
+  std::string instanceId = stringRegistry[ (long unsigned int)status[BPMNOS::Model::ExtensionElements::Index::Instance].value() ];
   auto& instance = instances.at(instanceId);
 
   Values values;
-  for ( auto& attribute : node->extensionElements->as<const Status>()->attributes ) {
+  for ( auto& attribute : node->extensionElements->as<const BPMNOS::Model::ExtensionElements>()->attributes ) {
     auto& data = instance.data.at(attribute.get());
     if ( data.realization
          && data.realization->disclosure <= currentTime

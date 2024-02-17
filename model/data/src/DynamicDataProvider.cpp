@@ -1,7 +1,7 @@
 #include "DynamicDataProvider.h"
 #include "model/utility/src/Keywords.h"
 #include "model/utility/src/Number.h"
-#include "model/parser/src/extensionElements/Status.h"
+#include "model/parser/src/extensionElements/ExtensionElements.h"
 #include <sstream>
 #include <unordered_map>
 #include <algorithm>
@@ -84,7 +84,7 @@ void DynamicDataProvider::readInstances() {
     }
     instance.data[ attribute ].push_back({ disclosure, value });
 
-    if ( attribute->index == Status::Index::Timestamp ) {
+    if ( attribute->index == BPMNOS::Model::ExtensionElements::Index::Timestamp ) {
       if ( instance.instantiation.size() && instance.instantiation.back().first >= disclosure ) {
         throw std::runtime_error("DynamicDataProvider: disclosures of timestamp values must be provided in strictly increasing order");
       }

@@ -2,7 +2,7 @@
 #define BPMNOS_Execution_Token_H
 
 #include <bpmn++.h>
-#include "model/parser/src/extensionElements/Status.h"
+#include "model/parser/src/extensionElements/ExtensionElements.h"
 #include "model/utility/src/Number.h"
 #include <nlohmann/json.hpp>
 #include <iostream>
@@ -37,16 +37,16 @@ typedef std::vector< std::shared_ptr<Token> > Tokens;
  * @ref Engine::process(const EntryEvent& event).
  *
  * Upon entry to a @ref BPMN::SubProcess, the @ref status  is updated by applying all
- * @ref BPMNOS::Model::Operator in the @ref BPMNOS::Model::Status extension of the subprocess.
+ * @ref BPMNOS::Model::Operator in the @ref BPMNOS::Model::ExtensionElements of the subprocess.
  * Furthermore, feasibility of the @ref status with respect to all relevant 
- * @ref BPMNOS::Model::Restriction in the @ref BPMNOS::Model::Status extension is checked.
+ * @ref BPMNOS::Model::Restriction in @ref BPMNOS::Model::ExtensionElements is checked.
  * If the status is infeasible, token transitions to the `FAILED` state and an error is raised
  * and handed over the the @ref StateMachine owning the token. Otherwise, a new token is generated at
  * the @ref BPMN::UntypedStartEvent of the subprocess and the token transitions to `BUSY` state.
  * @todo Describe token generation for boundary events and event subprocesses
  *
  * Upon entry to a @ref Task, feasibility of the @ref status with respect to all relevant 
- * @ref BPMNOS::Model::Restriction in the @ref BPMNOS::Model::Status extension is checked.
+ * @ref BPMNOS::Model::Restriction in @ref BPMNOS::Model::ExtensionElements is checked.
  * If the status is infeasible, token transitions to the `FAILED` state and an error is raised
  * and handed over the the @ref StateMachine owning the token. Otherwise, the token transitions 
  * to `BUSY` state.
@@ -170,11 +170,11 @@ private:
     size_t n = tokens.front()->status.size();
     BPMNOS::Values result;
     result.resize(n);
-    result[(int)BPMNOS::Model::Status::Index::Timestamp] = tokens.front()->status[(int)BPMNOS::Model::Status::Index::Timestamp];
+    result[(int)BPMNOS::Model::ExtensionElements::Index::Timestamp] = tokens.front()->status[(int)BPMNOS::Model::ExtensionElements::Index::Timestamp];
 
     for ( size_t i = 0; i < n; i++ ) {
       for ( auto& token : tokens ) {
-        if ( i == (int)BPMNOS::Model::Status::Index::Timestamp ) {
+        if ( i == (int)BPMNOS::Model::ExtensionElements::Index::Timestamp ) {
           if ( result[i].value() < token->status[i].value() ) {
             result[i] = token->status[i];
           }

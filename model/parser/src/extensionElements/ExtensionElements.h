@@ -1,5 +1,5 @@
-#ifndef BPMNOS_Model_Status_H
-#define BPMNOS_Model_Status_H
+#ifndef BPMNOS_Model_ExtensionElements_H
+#define BPMNOS_Model_ExtensionElements_H
 
 #include <memory>
 #include <vector>
@@ -15,9 +15,9 @@
 namespace BPMNOS::Model {
 
 
-class Status : public BPMN::ExtensionElements {
+class ExtensionElements : public BPMN::ExtensionElements {
 public:
-  Status(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent = nullptr);
+  ExtensionElements(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent = nullptr);
   const BPMN::Scope* parent;
   AttributeMap attributeMap; ///< Map allowing to look up all attributes by their names.
 
@@ -53,4 +53,4 @@ protected:
 
 } // namespace BPMNOS::Model
 
-#endif // BPMNOS_Model_Status_H
+#endif // BPMNOS_Model_ExtensionElements_H

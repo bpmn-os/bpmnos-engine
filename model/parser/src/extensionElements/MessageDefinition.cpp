@@ -1,6 +1,6 @@
 #include "MessageDefinition.h"
 #include "Content.h"
-#include "Status.h"
+#include "ExtensionElements.h"
 #include "model/parser/src/xml/bpmnos/tContent.h"
 
 using namespace BPMNOS::Model;
@@ -36,7 +36,7 @@ BPMNOS::Values MessageDefinition::getSenderHeader(const BPMNOS::Values& status) 
 
   for ( auto& key : header ) {
     if ( key == "sender" ) {
-      headerValues.push_back( status[BPMNOS::Model::Status::Index::Instance] );
+      headerValues.push_back( status[BPMNOS::Model::ExtensionElements::Index::Instance] );
     }
     else {
       headerValues.push_back( getHeaderValue(status, key) );
@@ -51,7 +51,7 @@ BPMNOS::Values MessageDefinition::getRecipientHeader(const BPMNOS::Values& statu
 
   for ( auto& key : header ) {
     if ( key == "recipient" ) {
-      headerValues.push_back( status[BPMNOS::Model::Status::Index::Instance] );
+      headerValues.push_back( status[BPMNOS::Model::ExtensionElements::Index::Instance] );
     }
     else {
       headerValues.push_back( getHeaderValue(status, key) );

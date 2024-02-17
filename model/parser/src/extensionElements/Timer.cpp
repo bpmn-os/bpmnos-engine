@@ -1,5 +1,5 @@
 #include "Timer.h"
-#include "Status.h"
+#include "ExtensionElements.h"
 #include "model/utility/src/Keywords.h"
 #include "model/parser/src/xml/bpmnos/tTimer.h"
 #include "model/parser/src/xml/bpmnos/tParameter.h"
@@ -10,7 +10,7 @@ Timer::Timer(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent)
   : BPMN::ExtensionElements( baseElement ) 
   , parent(parent)
 {
-  AttributeMap& attributeMap = parent->extensionElements->as<Status>()->attributeMap;
+  AttributeMap& attributeMap = parent->extensionElements->as<BPMNOS::Model::ExtensionElements>()->attributeMap;
 
   if ( element ) {
     for ( XML::bpmnos::tParameter& parameter : get<XML::bpmnos::tTimer,XML::bpmnos::tParameter>() ) {
@@ -28,6 +28,6 @@ BPMNOS::number Timer::earliest(const BPMNOS::Values& status) const {
     else if ( trigger->value.has_value() ) {
       return to_number( trigger->value->get().value, BPMNOS::ValueType::DECIMAL );
     }
-    return status[Status::Index::Timestamp].value();
+    return status[BPMNOS::Model::ExtensionElements::Index::Timestamp].value();
 }  
 
