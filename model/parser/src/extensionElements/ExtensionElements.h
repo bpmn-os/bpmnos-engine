@@ -15,6 +15,9 @@
 namespace BPMNOS::Model {
 
 
+/**
+ * @brief Class holding extension elements representing execution data for nodes 
+ **/
 class ExtensionElements : public BPMN::ExtensionElements {
 public:
   ExtensionElements(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent = nullptr);

@@ -10,6 +10,9 @@
 namespace BPMNOS::Model {
 
 
+/**
+ * @brief Class holding extension elements representing gatekeeper restrictions for sequence flows 
+ **/
 class Gatekeeper : public BPMN::ExtensionElements {
 public:
   Gatekeeper(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent);

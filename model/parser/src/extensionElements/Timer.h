@@ -10,6 +10,9 @@
 
 namespace BPMNOS::Model {
 
+/**
+ * @brief Class holding extension elements representing the trigger of timer events 
+ **/
 class Timer : public BPMN::ExtensionElements {
 public:
   Timer(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent);
