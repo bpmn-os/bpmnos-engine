@@ -119,6 +119,7 @@ if (DOCUMENTATION)
   find_path(BPMNPP_INCLUDE_PATH bpmn++.h)
   # Add Doxygen target
   add_custom_target(docs
+    COMMAND bash -c "mkdir docs/images"
     COMMAND bash -c "drawio -xt --crop execution/engine/Token_life-cycle.drawio -o docs/images/Token_life-cycle.pdf"
     COMMAND bash -c "drawio -xt execution/engine/Token_life-cycle.drawio -o docs/images/Token_life-cycle.png"
     COMMAND bash -c "sed -i 's|https://github.com/jothepro/doxygen-awesome-css|https://github.com/bpmn-os/bpmnos-engine|g' ${CMAKE_BINARY_DIR}/doxygen-awesome/doxygen-custom/header.html"
