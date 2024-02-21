@@ -9,7 +9,8 @@ using namespace BPMNOS;
 
 // Include all tests here
 
-//#ifdef TESTS
+#define ALL_TESTS
+#ifdef ALL_TESTS
 /* Model */
 #include "model/parser/test.h"
 #include "model/expression/test.h"
@@ -18,6 +19,7 @@ using namespace BPMNOS;
 #include "data/dynamic/test.h"
 
 /* Execution engine */
+
 // Process
 #include "execution/process/test.h"
 
@@ -49,7 +51,15 @@ using namespace BPMNOS;
 
 // Status
 #include "execution/status/test.h"
-//#endif
+#endif // ALL_TESTS
+
+#ifndef ALL_TESTS
+/*
+#include "execution/process/test.h" // FIXED
+#include "execution/compensationactivity/test.h" // FIXED
+#include "execution/multiinstanceactivity/test.h" // FIXED
+*/
+#endif // ALL_TESTS
 
 // When adding/modifying tests, don't forget to run: make clean; cmake ..; make all -j7; make tests
 

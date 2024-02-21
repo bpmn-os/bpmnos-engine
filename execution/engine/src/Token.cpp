@@ -218,6 +218,7 @@ bool Token::isFeasible() {
 }
 
 void Token::advanceFromCreated() {
+//std::cerr << "advanceFromCreated: " << jsonify().dump() << std::endl;
   if ( !node ) {
     // tokens at process advance to entered
     advanceToEntered();
@@ -766,7 +767,7 @@ void Token::advanceToExiting() {
     }
   }
 
-  if ( auto activity = node->represents<BPMN::Activity>() ) {
+    if ( auto activity = node->represents<BPMN::Activity>() ) {
     auto stateMachine = const_cast<StateMachine*>(owner);
     if ( !activity->boundaryEvents.empty() ) {
       // remove tokens at boundary events
@@ -783,6 +784,9 @@ void Token::advanceToExiting() {
       engine->commands.emplace_back( std::bind(&StateMachine::createCompensationEventSubProcess,stateMachine,subProcess->compensationEventSubProcess, status), stateMachine );
     }
   }
+
+  // token can no longer own a state machine
+  owned = nullptr;
 
   if ( node->outgoing.empty() ) {
     engine->commands.emplace_back(std::bind(&Token::advanceToDone,this), this);
@@ -888,9 +892,14 @@ void Token::advanceToArrived() {
 }
 
 void Token::advanceToFailed() {
-//std::cerr << "advanceToFailed: " << jsonify().dump() << std::endl;
-  update(State::FAILED);
+//std::cerr << owner->scope->id << " advanceToFailed: " << jsonify().dump() << std::endl;
   auto engine = const_cast<Engine*>(owner->systemState->engine);
+  if ( owned ) {
+    update(State::FAILING);
+    engine->commands.emplace_back(std::bind(&StateMachine::terminate,owned), owned);
+    return;
+  }
+  update(State::FAILED);
   engine->commands.emplace_back(std::bind(&StateMachine::handleFailure,const_cast<StateMachine*>(owner),this), this);
 }
 

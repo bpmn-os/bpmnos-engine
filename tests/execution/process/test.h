@@ -234,8 +234,8 @@ SCENARIO( "Constrained executable process", "[execution][process]" ) {
       engine.addEventHandler(&completionHandler);
       engine.addEventHandler(&exitHandler);
       engine.addEventHandler(&timeHandler);
-//      Execution::Recorder recorder;
-      Execution::Recorder recorder(std::cerr);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
       engine.addListener(&recorder);
       engine.run(scenario.get());
       THEN( "The process fails after completion" ) {
@@ -247,6 +247,6 @@ SCENARIO( "Constrained executable process", "[execution][process]" ) {
         REQUIRE( processLog[4]["state"] == "FAILED" );
       }
     }
-
   }
 }
+
