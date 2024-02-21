@@ -45,7 +45,7 @@ void Recorder::update( const Token* token ) {
     log.erase(log.begin());
   }
 }
-
+#include <iostream>
 nlohmann::ordered_json Recorder::find(nlohmann::json include, nlohmann::json exclude) const {
   nlohmann::ordered_json result = nlohmann::ordered_json::array();
   std::copy_if(
@@ -58,7 +58,7 @@ nlohmann::ordered_json Recorder::find(nlohmann::json include, nlohmann::json exc
         } 
       }
       for ( auto& [key,value] : exclude.items() ) {
-        if ( item.contains(key) && (!value || item[key] == value) ) {
+        if ( item.contains(key) && (value.is_null() || item[key] == value) ) {
           return false;
         } 
       }
