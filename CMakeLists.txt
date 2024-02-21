@@ -119,11 +119,11 @@ if (DOCUMENTATION)
   find_path(BPMNPP_INCLUDE_PATH bpmn++.h)
   # Add Doxygen target
   add_custom_target(docs
-    COMMAND bash -c "mkdir docs/images"
+    COMMAND bash -c "mkdir -p docs/images"
     COMMAND bash -c "drawio -xt --crop execution/engine/Token_life-cycle.drawio -o docs/images/Token_life-cycle.pdf"
     COMMAND bash -c "drawio -xt execution/engine/Token_life-cycle.drawio -o docs/images/Token_life-cycle.png"
     COMMAND bash -c "sed -i 's|https://github.com/jothepro/doxygen-awesome-css|https://github.com/bpmn-os/bpmnos-engine|g' ${CMAKE_BINARY_DIR}/doxygen-awesome/doxygen-custom/header.html"
-    COMMAND bash -c "echo '</body></html>' > ${CMAKE_BINARY_DIR}/doxygen-awesome/doxygen-custom/footer.html"
+    COMMAND bash -c "echo '<script type=\"module\">import mermaid from \"https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs\"; mermaid.initialize({ startOnLoad: true, theme: \"neutral\" });</script></body></html>' > ${CMAKE_BINARY_DIR}/doxygen-awesome/doxygen-custom/footer.html"
     COMMAND ${CMAKE_COMMAND} -E env "DOXYGEN_AWESOME_DIR=${CMAKE_BINARY_DIR}/doxygen-awesome" "BPMNPP_INCLUDE_PATH=${BPMNPP_INCLUDE_PATH}" doxygen Doxyfile
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
     COMMENT "Generating Doxygen documentation (this may take a while)"

@@ -8,13 +8,12 @@ PROJECT_BRIEF     = "BPMN for optimization and simulation"
 OUTPUT_DIRECTORY  = docs
 
 # Input sources
-INPUT             = $(BPMNPP_INCLUDE_PATH)/bpmn++.h model/ execution/ README.md
+INPUT             = $(BPMNPP_INCLUDE_PATH)/bpmn++.h model/ execution/ docs/md/
 RECURSIVE         = YES
 FILE_PATTERNS     = *.h *.cpp *.xsd *.md
+USE_MDFILE_AS_MAINPAGE = docs/md/main.md
 STRIP_FROM_PATH   = $(BPMNPP_INCLUDE_PATH) ./
 IMAGE_PATH        = docs/images
-
-USE_MDFILE_AS_MAINPAGE = README.md
 
 GENERATE_TODOLIST     = YES
 
@@ -43,8 +42,6 @@ REPEAT_BRIEF          = NO
 
 HAVE_DOT              = YES
 DOT_IMAGE_FORMAT      = svg
-DOT_TRANSPARENT       = YES
-
 
 GENERATE_TREEVIEW     = YES
 DISABLE_INDEX         = NO
