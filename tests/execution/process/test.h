@@ -148,3 +148,105 @@ SCENARIO( "Simple executable process", "[execution][process]" ) {
     }
   }
 }
+
+SCENARIO( "Constrained executable process", "[execution][process]" ) {
+  const std::string modelFile = "execution/process/Constrained_executable_process.bpmn";
+  REQUIRE_NOTHROW( Model::Model(modelFile) );
+  GIVEN( "A single instance with no input values" ) {
+    WHEN( "The engine is started at time 0" ) {
+      std::string csv =
+        "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
+        "Process_1, Instance_1,Timestamp,0\n"
+      ;
+
+      Model::StaticDataProvider dataProvider(modelFile,csv);
+      auto scenario = dataProvider.createScenario();
+      Execution::Engine engine;
+      Execution::ReadyHandler readyHandler;
+      Execution::InstantEntryHandler entryHandler;
+      Execution::DeterministicTaskCompletionHandler completionHandler;
+      Execution::InstantExitHandler exitHandler;
+      Execution::TimeWarp timeHandler;
+      engine.addEventHandler(&readyHandler);
+      engine.addEventHandler(&entryHandler);
+      engine.addEventHandler(&completionHandler);
+      engine.addEventHandler(&exitHandler);
+      engine.addEventHandler(&timeHandler);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
+      engine.addListener(&recorder);
+      engine.run(scenario.get());
+      THEN( "The process completes without failure" ) {
+        auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr }});
+        REQUIRE( processLog[0]["state"] == "ENTERED" );
+        REQUIRE( processLog[1]["state"] == "BUSY" );
+        REQUIRE( processLog[2]["state"] == "COMPLETED" );
+        REQUIRE( processLog[3]["state"] == "DONE" );
+      }
+    }
+
+    WHEN( "The engine is started at time 2" ) {
+      std::string csv =
+        "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
+        "Process_1, Instance_1,Timestamp,2\n"
+      ;
+
+      Model::StaticDataProvider dataProvider(modelFile,csv);
+      auto scenario = dataProvider.createScenario();
+      Execution::Engine engine;
+      Execution::ReadyHandler readyHandler;
+      Execution::InstantEntryHandler entryHandler;
+      Execution::DeterministicTaskCompletionHandler completionHandler;
+      Execution::InstantExitHandler exitHandler;
+      Execution::TimeWarp timeHandler;
+      engine.addEventHandler(&readyHandler);
+      engine.addEventHandler(&entryHandler);
+      engine.addEventHandler(&completionHandler);
+      engine.addEventHandler(&exitHandler);
+      engine.addEventHandler(&timeHandler);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
+      engine.addListener(&recorder);
+      engine.run(scenario.get());
+      THEN( "The process fails after entry" ) {
+        auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr }});
+        REQUIRE( processLog[0]["state"] == "ENTERED" );
+        REQUIRE( processLog[1]["state"] == "FAILED" );
+      }
+    }
+
+    WHEN( "The engine is started at time 1" ) {
+      std::string csv =
+        "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
+        "Process_1, Instance_1,Timestamp,1\n"
+      ;
+
+      Model::StaticDataProvider dataProvider(modelFile,csv);
+      auto scenario = dataProvider.createScenario();
+      Execution::Engine engine;
+      Execution::ReadyHandler readyHandler;
+      Execution::InstantEntryHandler entryHandler;
+      Execution::DeterministicTaskCompletionHandler completionHandler;
+      Execution::InstantExitHandler exitHandler;
+      Execution::TimeWarp timeHandler;
+      engine.addEventHandler(&readyHandler);
+      engine.addEventHandler(&entryHandler);
+      engine.addEventHandler(&completionHandler);
+      engine.addEventHandler(&exitHandler);
+      engine.addEventHandler(&timeHandler);
+//      Execution::Recorder recorder;
+      Execution::Recorder recorder(std::cerr);
+      engine.addListener(&recorder);
+      engine.run(scenario.get());
+      THEN( "The process fails after completion" ) {
+        auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr }});
+        REQUIRE( processLog[0]["state"] == "ENTERED" );
+        REQUIRE( processLog[1]["state"] == "BUSY" );
+        REQUIRE( processLog[2]["state"] == "COMPLETED" );
+        REQUIRE( processLog[3]["state"] == "FAILING" );
+        REQUIRE( processLog[4]["state"] == "FAILED" );
+      }
+    }
+
+  }
+}

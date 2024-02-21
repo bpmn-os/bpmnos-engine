@@ -45,7 +45,7 @@ typedef std::vector< std::shared_ptr<Token> > Tokens;
  * the @ref BPMN::UntypedStartEvent of the subprocess and the token transitions to `BUSY` state.
  * @todo Describe token generation for boundary events and event subprocesses
  *
- * Upon entry to a @ref Task, feasibility of the @ref status with respect to all relevant 
+ * Upon entry to a @ref BPMN::Task, feasibility of the @ref status with respect to all relevant 
  * @ref BPMNOS::Model::Restriction in @ref BPMNOS::Model::ExtensionElements is checked.
  * If the status is infeasible, token transitions to the `FAILED` state and an error is raised
  * and handed over the the @ref StateMachine owning the token. Otherwise, the token transitions 
@@ -73,9 +73,27 @@ typedef std::vector< std::shared_ptr<Token> > Tokens;
  *
  * @todo Add support for @ref BPMN::TimerCatchEvent
  * 
- * @todo Continue with documentation of state diagram
+ * @todo Desribe status updates conducted for each state. Operators for subprocesses must be instantaneous
+ * and are applied before a token is created for the start event.
+ * Operators for @ref BPMN::ReceiveTask and @ref BPMNOS::Model::DecisionTask must be instantaneous and are
+ * applied after the message is received or the decision is made.
+ * Operators for @ref BPMN::SendTask must be instantaneous and are applied before the message is sent.
+ * Operators for all other tasks may be non-instantaneous. If they are instantaneous they are applied 
+ * directly after entry. If they are non-instanteous, they are applied directly after entry, but the updated
+ * state is only revealed upon completion of the task. When using the @ref DeterministicTaskCompletionHandler,
+ * the updated status is revealed at the updated time attribute. Other task completion handler may override the
+ * status values to represent non-deterministic cases, where the status changes of the opertaors only express
+ * an expectation at the time the operators are applied.
+ *
+ * @todo Continue with documentation of state diagram.
+ * - Token flow for @ref BPMN::Activity with @ref BPMN::Activity::isForCompensation is `true` is READY->WAITING->ENTERED->BUSY->COMPLETED. 
+ * - Token flow for @ref BPMN::Activity with multi-instance marker is READY->WAITING->ENTERED->BUSY->COMPLETED->EXITED. 
+ * - Token flow for @ref BPMN::EventBasedGateway is READY->BUSY->WAITING
+ * All tokens can be WITHDRAWN at any time. 
  *
  * @note It is assumed that @ref XML::bpmn::tCompensateEventDefinition::waitForCompletion is `true`.
+ *
+ * @note It is assumed that @ref XML::bpmn::tAdHocSubProcess::ordering is `Sequential`.
  */
 class Token : public std::enable_shared_from_this<Token> {
 private:
@@ -92,13 +110,13 @@ public:
   const BPMNOS::Model::AttributeMap& getAttributeMap() const;
 private:
   static inline std::string stateName[] = { "CREATED", "READY", "ENTERED", "IDLE", "BUSY", "COMPLETED", "EXITING", "DEPARTED", "ARRIVED", "WAITING", "DONE", "FAILED", "FAILING", "WITHDRAWN" };
-  State state;
 public:
   Token(const StateMachine* owner, const BPMN::FlowNode* node, const Values& status);
   Token(const Token* other);
   Token(const std::vector<Token*>& others);
   ~Token();
 
+  State state;
   Values status;
   void setStatus(const BPMNOS::Values& other); ///< Copies all elements except the instance id from `other` to `status`
 

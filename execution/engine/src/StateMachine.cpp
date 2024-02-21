@@ -639,6 +639,7 @@ void StateMachine::terminate(Token* token) {
 
   // find error boundary event
   if ( auto eventToken = findTokenAwaitingErrorBoundaryEvent(token) ) {
+    // TODO: compensate
     engine->commands.emplace_back(std::bind(&Token::update,token,Token::State::FAILED), token);
     engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,eventToken), eventToken);
     return;
@@ -682,7 +683,7 @@ void StateMachine::handleFailure(Token* token) {
       }
 
       // find error boundary event
-      if ( auto eventToken = findTokenAwaitingErrorBoundaryEvent(token) ) {
+      if ( auto eventToken = findTokenAwaitingErrorBoundaryEvent(token) ) {        // TODO: compensate
         engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,eventToken), eventToken);
         return;
       }
@@ -740,7 +741,7 @@ void StateMachine::handleFailure(Token* token) {
 
   // remove all tokens
   clearObsoleteTokens();
-
+  /// TODO: remove below
   engine->commands.emplace_back(std::bind(&Token::update,parentToken,Token::State::FAILING), parentToken);
 
   if ( compensationTokens.size() ) {
@@ -784,8 +785,9 @@ void StateMachine::shutdown() {
   auto engine = const_cast<Engine*>(systemState->engine);
 //std::cerr << "shutdown: " << scope->id << std::endl;
 
+  assert( tokens.size() );
   BPMNOS::Values mergedStatus = Token::mergeStatus(tokens);
-
+  
   if ( auto eventSubProcess = scope->represents<BPMN::EventSubProcess>() ) {
     // update global objective
     assert( scope->extensionElements->as<BPMNOS::Model::ExtensionElements>() );
@@ -994,11 +996,11 @@ void StateMachine::compensate(Tokens compensations, Token* waitingToken) {
     it++;
   }
   // create awaiter for waiting token
-    if ( compensationToken->node->represents<BPMN::CompensateStartEvent>() ) {
-      tokenAwaitingCompensationEventSubProcess[const_cast<StateMachine*>(compensationToken->owner)] = waitingToken;
-    }
-    else {
-      tokenAwaitingCompensationActivity[compensationToken] = waitingToken;
-    }
+  if ( compensationToken->node->represents<BPMN::CompensateStartEvent>() ) {
+    tokenAwaitingCompensationEventSubProcess[const_cast<StateMachine*>(compensationToken->owner)] = waitingToken;
+  }
+  else {
+    tokenAwaitingCompensationActivity[compensationToken] = waitingToken;
+  }
 }
 

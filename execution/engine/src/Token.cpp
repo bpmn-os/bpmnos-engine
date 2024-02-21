@@ -13,6 +13,7 @@
 #include "execution/listener/src/Listener.h"
 #include "execution/utility/src/erase.h"
 #include <cassert>
+#include <iostream>
 
 using namespace BPMNOS::Execution;
 
@@ -192,18 +193,25 @@ nlohmann::ordered_json Token::jsonify() const {
 
 bool Token::isFeasible() {
   // TODO check restrictions within current scope and ancestor scopes
+  auto checkRestrictions = [this](BPMNOS::Model::ExtensionElements* extensionElements) {
+    for ( auto& restriction : extensionElements->restrictions ) {
+      if ( !restriction->isSatisfied(status) ) {
+        return false;
+      }
+      // TODO: check parent restrictions
+    }
+    return true;
+  };
+
+  
   if ( !node ) {
+    if ( auto extensionElements = owner->process->extensionElements->represents<BPMNOS::Model::ExtensionElements>() ) {
+      return checkRestrictions(extensionElements);
+    }
   }
   else {
-    if ( auto extensionElements = node->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
-         extensionElements
-    ) {
-      for ( auto& restriction : extensionElements->restrictions ) {
-        if ( !restriction->isSatisfied(status) ) {
-          return false;
-        }
-        // TODO: check parent restrictions
-      }
+    if ( auto extensionElements = node->extensionElements->represents<BPMNOS::Model::ExtensionElements>() ) {
+      return checkRestrictions(extensionElements);
     }
   }
   return true;
