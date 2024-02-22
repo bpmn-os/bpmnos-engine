@@ -13,7 +13,7 @@ std::unique_ptr<Event> NaiveSequentialEntryHandler::fetchEvent( const SystemStat
     if( auto token = token_ptr.lock() )  {
       assert( token );
       auto tokenAtSequentialPerformer = systemState->tokenAtSequentialPerformer.at(token.get());
-      if ( tokenAtSequentialPerformer->idle() ) {
+      if ( !tokenAtSequentialPerformer->performing ) {
         return std::make_unique<EntryEvent>(token.get());
       }
     }

@@ -24,6 +24,7 @@ Token::Token(const StateMachine* owner, const BPMN::FlowNode* node, const Values
   , sequenceFlow(nullptr)
   , state(State::CREATED)
   , status(status)
+  , performing(nullptr)
 {
 }
 
@@ -34,6 +35,7 @@ Token::Token(const Token* other)
   , sequenceFlow(nullptr)
   , state(other->state)
   , status(other->status)
+  , performing(nullptr)
 {
 }
 
@@ -44,6 +46,7 @@ Token::Token(const std::vector<Token*>& others)
   , sequenceFlow(nullptr)
   , state(others.front()->state)
   , status(mergeStatus(others))
+  , performing(nullptr)
 {
 }
 
@@ -343,15 +346,8 @@ void Token::advanceToEntered() {
       return;
     }
 
-    if ( node->represents<BPMNOS::Model::SequentialAdHocSubProcess>() ) {
-      // advance to idle state
-      engine->commands.emplace_back(std::bind(&Token::advanceToIdle,this), this);
-    }
-    else {
-      // tokens entering any other activity automatically
-      // advance to busy state
-      engine->commands.emplace_back(std::bind(&Token::advanceToBusy,this), this);
-    }
+    // advance to busy state
+    engine->commands.emplace_back(std::bind(&Token::advanceToBusy,this), this);
   }
   else if ( node->represents<BPMN::CatchEvent>() && !node->represents<BPMN::UntypedStartEvent>()
   ) {
@@ -423,20 +419,6 @@ void Token::advanceToEntered() {
   }
 }
 
-void Token::advanceToIdle() {
-  update(State::IDLE);
-  auto scope = node->as<BPMN::Scope>();
-  if ( scope->startNodes.empty() ) {
-    auto engine = const_cast<Engine*>(owner->systemState->engine);
-    engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,this), this);
-  }
-  else {
-    // create child statemachine
-    auto engine = const_cast<Engine*>(owner->systemState->engine);
-    engine->commands.emplace_back(std::bind(&StateMachine::createChild,const_cast<StateMachine*>(owner),this,scope), this);
-  }
-}
-
 void Token::advanceToBusy() {
 //std::cerr << "advanceToBusy: " << jsonify().dump() << std::endl;
   update(State::BUSY);
@@ -459,6 +441,18 @@ void Token::advanceToBusy() {
         throw std::runtime_error("Token: process '" + scope->id + "' has multiple start nodes");
       }
       return;
+    }
+  }
+  else if ( node->represents<BPMNOS::Model::SequentialAdHocSubProcess>() ) {
+    auto scope = node->as<BPMN::Scope>();
+    if ( scope->startNodes.empty() ) {
+      auto engine = const_cast<Engine*>(owner->systemState->engine);
+      engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,this), this);
+    }
+    else {
+      // create child statemachine
+      auto engine = const_cast<Engine*>(owner->systemState->engine);
+      engine->commands.emplace_back(std::bind(&StateMachine::createChild,const_cast<StateMachine*>(owner),this,scope), this);
     }
   }
   else if ( node->represents<BPMN::SubProcess>() ) {
