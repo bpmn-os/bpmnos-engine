@@ -26,9 +26,6 @@ list(APPEND bpmn_SOURCES
   extensionElements/Timer.cpp
   DecisionTask.cpp
   SequentialAdHocSubProcess.cpp
-  ResourceActivity.cpp
-  RequestActivity.cpp
-  ReleaseActivity.cpp
   Model.cpp
 )
 
@@ -53,8 +50,5 @@ list(APPEND bpmn_HEADERS
   extensionElements/Timer.h
   DecisionTask.h
   SequentialAdHocSubProcess.h
-  ResourceActivity.h
-  RequestActivity.h
-  ReleaseActivity.h
   Model.h
 )

@@ -6,9 +6,6 @@
 #include "model/parser/src/extensionElements/MessageDefinition.h"
 #include "model/parser/src/extensionElements/Timer.h"
 #include "model/parser/src/SequentialAdHocSubProcess.h"
-#include "model/parser/src/ResourceActivity.h"
-#include "model/parser/src/RequestActivity.h"
-#include "model/parser/src/ReleaseActivity.h"
 #include "model/parser/src/DecisionTask.h"
 #include "execution/listener/src/Listener.h"
 #include "execution/utility/src/erase.h"
@@ -113,17 +110,6 @@ Token::~Token() {
           }
         }
       }
-    }
-
-    if ( node->represents<BPMNOS::Model::ResourceActivity>() ) {
-      // TODO: send error message to all clients
-    }
-    else if ( node->represents<BPMNOS::Model::RequestActivity>() ) {
-      // TODO: send abort message to all allocated resources
-      // TODO: withdraw undelivered request messages
-    }
-    else if ( node->represents<BPMNOS::Model::ReleaseActivity>() ) {
-      // TODO: send revoke message to all allocated resources
     }
   }
 }
@@ -456,14 +442,15 @@ void Token::advanceToBusy() {
     }
   }
   else if ( node->represents<BPMN::SubProcess>() ) {
-//std::cerr << "node->represents<BPMN::SubProcess>()" << std::endl;
     auto scope = node->as<BPMN::Scope>();
     if ( scope->startNodes.empty() ) {
+//std::cerr << "skip child statemachine at node " << node->id << std::endl;
       auto engine = const_cast<Engine*>(owner->systemState->engine);
       engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,this), this);
     }
     else {
       if ( scope->startNodes.size() == 1 ) {
+//std::cerr << "create child statemachine at node " << node->id << std::endl;
         // create child statemachine
         auto engine = const_cast<Engine*>(owner->systemState->engine);
         engine->commands.emplace_back(std::bind(&StateMachine::createChild,const_cast<StateMachine*>(owner),this,scope), this);
@@ -592,6 +579,11 @@ void Token::advanceToCompleted() {
 //std::cerr << activity->id << " is for compensation: " << activity->isForCompensation << std::endl;
       if ( activity->isForCompensation ) {
         // final state for compensation activity reached
+        if ( !isFeasible() ) {
+          engine->commands.emplace_back(std::bind(&Token::advanceToFailed,this), this);
+          return;
+        }
+
         auto stateMachine = const_cast<StateMachine*>(owner);
         engine->commands.emplace_back(std::bind(&StateMachine::completeCompensationActivity,stateMachine,this), this);
         // update global objective
@@ -888,11 +880,19 @@ void Token::advanceToArrived() {
 void Token::advanceToFailed() {
 //std::cerr << " advanceToFailed: " << jsonify().dump() << std::endl;
   auto engine = const_cast<Engine*>(owner->systemState->engine);
+ 
   if ( owned ) {
+    if ( auto activity = owned->scope->represents<BPMN::Activity>();
+      activity && activity->isForCompensation
+    ) {
+      owned.reset(); 
+    }
+    else {
 //std::cerr << "Failing " << owned->scope->id << std::endl;
-    update(State::FAILING);
-    engine->commands.emplace_back(std::bind(&StateMachine::terminate,owned.get()), owned.get());
-    return;
+      update(State::FAILING);
+      engine->commands.emplace_back(std::bind(&StateMachine::terminate,owned.get()), owned.get());
+      return;
+    }
   }
   update(State::FAILED);
   engine->commands.emplace_back(std::bind(&StateMachine::handleFailure,const_cast<StateMachine*>(owner),this), this);

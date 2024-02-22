@@ -8,13 +8,17 @@ The token flow logic for activities depends on whether the multi-instance marker
 
 <pre class="mermaid">
 stateDiagram-v2
+    state departure <<choice>>
     [*] --> ARRIVED
     ARRIVED --> WAITING: ready event
-    WAITING --> DEPARTED
+    WAITING --> departure
     WAITING --> FAILING
     WAITING --> FAILED
     FAILING --> FAILED
+    departure --> DEPARTED: [outgoing sequence flow]
+    departure --> DONE: [no outgoing sequence flow]
     DEPARTED --> [*]
+    DONE --> [*]
     FAILED --> [*]
 </pre>
 

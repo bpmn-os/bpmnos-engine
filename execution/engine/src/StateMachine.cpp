@@ -659,8 +659,6 @@ void StateMachine::terminate() {
   }
 
   clearObsoleteTokens();
-  /// TODO: remove below
-//  engine->commands.emplace_back(std::bind(&Token::update,parentToken,Token::State::FAILING), parentToken);
   
   if ( compensationTokens.size() ) {
     // don't delete state machine and wait for all compensations to be completed
@@ -669,7 +667,6 @@ void StateMachine::terminate() {
     return;
   }
 
-  engine->commands.emplace_back(std::bind(&Token::update,parentToken,Token::State::FAILED), parentToken);
 
   auto parent = const_cast<StateMachine*>(parentToken->owner);
 
@@ -679,37 +676,13 @@ void StateMachine::terminate() {
   ) {
     parent->interruptingEventSubProcess.reset();
   }
-//  engine->commands.emplace_back(std::bind(&StateMachine::deleteChild,parent,this), this);
-
-  // find error boundary event
-  if ( auto activity = scope->represents<BPMN::Activity>() ) {
-    if (parentToken->state != Token::State::WAITING &&
-      activity->loopCharacteristics.has_value() &&
-      activity->loopCharacteristics.value() != BPMN::Activity::LoopCharacteristics::Standard
-    ) {
-      // handle failure at main token waiting for all instances       
-      auto mainToken = const_cast<SystemState*>(systemState)->tokenAtMultiInstanceActivity.at(parentToken);
-//std::cerr << "handle failure at main token waiting for all instances "  << std::endl;
-      mainToken->setStatus(parentToken->status);
-      if ( auto eventToken = findTokenAwaitingErrorBoundaryEvent(mainToken) ) {
-        engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,eventToken), eventToken);
-        return;
-      }
-    }
-    else {
-      if ( auto eventToken = findTokenAwaitingErrorBoundaryEvent(parentToken) ) {
-        engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,eventToken), eventToken);
-        return;
-      }
-    }
-    // failure is not caught by boundary event, bubble up error
-    engine->commands.emplace_back(std::bind(&Token::advanceToFailed,parent->parentToken), parent->parentToken);
-  }
-  else {
-    // process has failed, terminate parent
-    engine->commands.emplace_back(std::bind(&StateMachine::terminate,parent), parent);
-  }
-
+  assert( parentToken->owned.get() == this );
+  // delete state machine
+  parentToken->owned.reset();
+  
+  // all compensations have been completed, now handle failure
+  engine->commands.emplace_back(std::bind(&Token::update,parentToken,Token::State::FAILED), parentToken);
+  engine->commands.emplace_back(std::bind(&StateMachine::handleFailure,const_cast<StateMachine*>(parentToken->owner),parentToken), parentToken);
 //std::cerr << "terminated" << std::endl;
 }
 
@@ -718,24 +691,19 @@ void StateMachine::handleFailure(Token* token) {
 //std::cerr << scope->id << " handles failure at " << (token->node ? token->node->id : process->id ) << "/" << parentToken << "/" << token << std::endl;
   auto engine = const_cast<Engine*>(systemState->engine);
 
-  if ( !parentToken ) {
-    // failure at process before state machine containing flow elements has been created
-    assert(tokens.size() == 1);
-    assert(token = tokens.front().get());
-    assert(!token->owned);
-    engine->commands.emplace_back(std::bind(&Token::update,token,Token::State::FAILED), token);
-    engine->commands.emplace_back(std::bind(&Engine::deleteInstance,engine,this), this);
-    return;
-  }
-  assert( parentToken );
+//  assert( !token->owned );
 
 //std::cerr << "check whether failure is caught" << std::endl;
 
   if ( token->node ) {
-    if ( auto task = token->node->represents<BPMN::Task>() ) {
-      if (token->state != Token::State::WAITING &&
-        task->loopCharacteristics.has_value() &&
-        task->loopCharacteristics.value() != BPMN::Activity::LoopCharacteristics::Standard
+    if ( auto activity = token->node->represents<BPMN::Activity>() ) {
+      if ( activity->isForCompensation ) {
+        // compensation activity failed, clear all other compensations
+        compensationTokens.clear();
+      }
+      else if ( token->state != Token::State::WAITING &&
+        activity->loopCharacteristics.has_value() &&
+        activity->loopCharacteristics.value() != BPMN::Activity::LoopCharacteristics::Standard
       ) {
         // handle failure at main token waiting for all instances       
         auto mainToken = const_cast<SystemState*>(systemState)->tokenAtMultiInstanceActivity.at(token);
@@ -744,14 +712,19 @@ void StateMachine::handleFailure(Token* token) {
         handleFailure(mainToken);
         return;
       }
+    }
+  }
 
-      // find error boundary event
-      if ( auto eventToken = findTokenAwaitingErrorBoundaryEvent(token) ) {
-        engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,eventToken), eventToken);
+  // find error boundary event at token node
+  if ( token->node ) {
+    auto& tokensAwaitingBoundaryEvent = const_cast<SystemState*>(systemState)->tokensAwaitingBoundaryEvent[token];
+    for ( auto eventToken : tokensAwaitingBoundaryEvent) {
+      if ( eventToken->node->represents<BPMN::ErrorBoundaryEvent>() ) {
+        eventToken->setStatus(token->status);
+        eventToken->advanceToCompleted();
         return;
       }
     }
-    // failure is not caught by boundary event of task
   }
 
   // find event-subprocess catching error
@@ -771,40 +744,24 @@ void StateMachine::handleFailure(Token* token) {
     return;
   }
 
-  // failure is not caught by event subprocess
-  if ( token->node ) {
-    if ( auto subProcess = token->node->represents<BPMN::SubProcess>();
-      subProcess &&
-      token->state != Token::State::WAITING &&
-      subProcess->loopCharacteristics.has_value() &&
-      subProcess->loopCharacteristics.value() != BPMN::Activity::LoopCharacteristics::Standard
-    ) {
-      // handle failure at main token waiting for all instances
-      auto mainToken = const_cast<SystemState*>(systemState)->tokenAtMultiInstanceActivity.at(token);
-      mainToken->setStatus(token->status);
-      handleFailure(mainToken);
-      return;
-    }
-  }
+  // failure is not caught
+//std::cerr << "uncaught failure" << std::endl;
 
-/*
-  // find error boundary event
-  if ( token->node ) {
-    auto& tokensAwaitingBoundaryEvent = const_cast<SystemState*>(systemState)->tokensAwaitingBoundaryEvent[token];
-    for ( auto eventToken : tokensAwaitingBoundaryEvent) {
-      if ( eventToken->node->represents<BPMN::ErrorBoundaryEvent>() ) {
-        eventToken->setStatus(token->status);
-        eventToken->advanceToCompleted();
-        return;
-      }
-    }
+  
+  if ( !parentToken ) {
+//std::cerr << "process has failed" << std::endl;
+    // failure at process before state machine containing flow elements has been created
+    assert(tokens.size() == 1);
+    assert(token = tokens.front().get());
+    engine->commands.emplace_back(std::bind(&Engine::deleteInstance,engine,this), this);
+    return;
   }
-*/
-
+  
+  // bubble up error
+  
   // update status of parent token with that of current token
   parentToken->setStatus(token->status);
-  parentToken->update(Token::State::FAILING);
-  terminate();
+  engine->commands.emplace_back(std::bind(&Token::advanceToFailed,parentToken), parentToken);
 }
 
 Token* StateMachine::findTokenAwaitingErrorBoundaryEvent(Token* activityToken) {

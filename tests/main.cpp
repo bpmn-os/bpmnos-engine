@@ -54,11 +54,41 @@ using namespace BPMNOS;
 #endif // ALL_TESTS
 
 #ifndef ALL_TESTS
-/*
-#include "execution/process/test.h" // FIXED
-#include "execution/compensationactivity/test.h" // FIXED
-#include "execution/multiinstanceactivity/test.h" // FIXED
-*/
+SCENARIO( "Failing compensations of  multi instance activity", "[execution][compensation][multiinstanceactivity]" ) {
+  const std::string modelFile = "execution/compensationactivity/Failing_compensations_multi-instance_activity.bpmn";
+  REQUIRE_NOTHROW( Model::Model(modelFile) );
+  GIVEN( "A single instance with no input values" ) {
+
+    std::string csv =
+      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
+      "Process_1, Instance_1,,\n"
+    ;
+
+    Model::StaticDataProvider dataProvider(modelFile,csv);
+    auto scenario = dataProvider.createScenario();
+
+    WHEN( "The engine is started with a recorder" ) {
+      Execution::Engine engine;
+      Execution::ReadyHandler readyHandler;
+      Execution::InstantEntryHandler entryHandler;
+      Execution::DeterministicTaskCompletionHandler completionHandler;
+      Execution::InstantExitHandler exitHandler;
+      Execution::TimeWarp timeHandler;
+      engine.addEventHandler(&readyHandler);
+      engine.addEventHandler(&entryHandler);
+      engine.addEventHandler(&completionHandler);
+      engine.addEventHandler(&exitHandler);
+      engine.addEventHandler(&timeHandler);
+//      Execution::Recorder recorder;
+      Execution::Recorder recorder(std::cerr);
+      engine.addListener(&recorder);
+      engine.run(scenario.get());
+      THEN( "The dump of each entry of the recorder log is correct" ) {
+//        REQUIRE_THROWS( engine.run(scenario.get()) );
+      }
+    }
+  }
+}
 #endif // ALL_TESTS
 
 // When adding/modifying tests, don't forget to run: make clean; cmake ..; make all -j7; make tests

@@ -9,9 +9,6 @@
 #include "extensionElements/MessageDefinition.h"
 #include "DecisionTask.h"
 #include "SequentialAdHocSubProcess.h"
-#include "ResourceActivity.h"
-#include "RequestActivity.h"
-#include "ReleaseActivity.h"
 
 using namespace BPMNOS::Model;
 
@@ -53,27 +50,6 @@ std::unique_ptr<BPMN::SequenceFlow> Model::createSequenceFlow(XML::bpmn::tSequen
 
 std::unique_ptr<BPMN::FlowNode> Model::createAdHocSubProcess(XML::bpmn::tAdHocSubProcess* adHocSubProcess, BPMN::Scope* parent) {
   return std::make_unique<SequentialAdHocSubProcess>(adHocSubProcess,parent);
-}
-
-std::unique_ptr<BPMN::FlowNode> Model::createSubProcess(XML::bpmn::tSubProcess* subProcess, BPMN::Scope* parent) {
-  if ( const auto& type = subProcess->getOptionalAttributeByName("type"); 
-       type.has_value() && type->get().xmlns == "https://bpmn.telematique.eu/resources" 
-  ) {
-    if ( type->get().value.value == "Resource" ) {
-      return std::make_unique<ResourceActivity>(subProcess,parent);
-    }
-    else if ( type->get().value.value == "Request" ) {
-      return std::make_unique<RequestActivity>(subProcess,parent);
-    }
-    else if ( type->get().value.value == "Release" ) {
-      return std::make_unique<ReleaseActivity>(subProcess,parent);
-    }
-    else {
-      throw std::runtime_error("Model: Illegal type '" + (std::string)type->get().value + "'");
-    }   
-  }
-  // return regular subProcess in all other cases
-  return BPMN::Model::createSubProcess(subProcess, parent);
 }
 
 std::unique_ptr<BPMN::FlowNode> Model::createTask(XML::bpmn::tTask* task, BPMN::Scope* parent) {

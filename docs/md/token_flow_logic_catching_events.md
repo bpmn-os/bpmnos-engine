@@ -19,5 +19,6 @@ stateDiagram-v2
     DONE --> [*]
 </pre>
 
-
+@note The @ref BPMNOS::Execution::Token::State::ARRIVED "ARRIVED" state is not relevant for @ref BPMN::BoundaryEvents "boundary events" and @ref BPMN::TypedStartEvents "start events" of @ref BPMN::EventSubProcess "event-subprocesses". 
+For such events, a token is created when the respective context is activated and the state of this token is set to @ref BPMNOS::Execution::Token::State::ENTERED "ENTERED" state.
 
