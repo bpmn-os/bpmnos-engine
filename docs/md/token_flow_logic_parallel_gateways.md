@@ -12,7 +12,8 @@ stateDiagram-v2
     [*] --> ARRIVED
     ARRIVED --> merge
     merge --> ENTERED: [one incoming sequence flow]
-    merge --> [*]: [multiple incoming sequence flows]
+    merge --> WAITING
+    WAITING --> [*]: [multiple incoming sequence flows]
     ENTERED --> split
     split --> [*]: [multiple outgoing sequence flows]
     split --> DEPARTED: [one outgoing sequence flow]

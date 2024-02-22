@@ -9,7 +9,8 @@ The token flow logic for activities depends on whether the multi-instance marker
 stateDiagram-v2
     [*] --> ARRIVED
     ARRIVED --> ENTERED
-    ENTERED --> [*]
+    ENTERED --> BUSY
+    BUSY --> [*]
 </pre>
 
 <pre class="mermaid">
