@@ -380,7 +380,7 @@ void Token::advanceToEntered() {
       sendMessage();
     }
     else if ( auto compensateThrowEvent = node->represents<BPMN::CompensateThrowEvent>() ) {
-      auto context = const_cast<StateMachine*>(owner->parentToken->owned);
+      auto context = const_cast<StateMachine*>(owner->parentToken->owned.get());
 //std::cerr << compensateThrowEvent->id << " has context " << context->scope->id << std::endl;
 
       if ( auto eventSubProcess = owner->scope->represents<BPMN::EventSubProcess>();
@@ -636,7 +636,7 @@ void Token::advanceToCompleted() {
       if ( !eventSubProcess ) {
         throw std::runtime_error("Token: typed start event must belong to event subprocess");
       }
-      auto context = const_cast<StateMachine*>(owner->parentToken->owned);
+      auto context = const_cast<StateMachine*>(owner->parentToken->owned.get());
 
 /*
 std::cerr << "Node: " << this << " at " << node->id << " is owned by " << owner << std::endl;
@@ -785,8 +785,8 @@ void Token::advanceToExiting() {
     }
   }
 
-  // token can no longer own a state machine
-  owned = nullptr;
+  // clear state machine owned by token
+  owned.reset();
 
   if ( node->outgoing.empty() ) {
     engine->commands.emplace_back(std::bind(&Token::advanceToDone,this), this);
@@ -892,11 +892,12 @@ void Token::advanceToArrived() {
 }
 
 void Token::advanceToFailed() {
-//std::cerr << owner->scope->id << " advanceToFailed: " << jsonify().dump() << std::endl;
+//std::cerr << " advanceToFailed: " << jsonify().dump() << std::endl;
   auto engine = const_cast<Engine*>(owner->systemState->engine);
   if ( owned ) {
+//std::cerr << "Failing " << owned->scope->id << std::endl;
     update(State::FAILING);
-    engine->commands.emplace_back(std::bind(&StateMachine::terminate,owned), owned);
+    engine->commands.emplace_back(std::bind(&StateMachine::terminate,owned.get()), owned.get());
     return;
   }
   update(State::FAILED);

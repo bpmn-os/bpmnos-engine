@@ -299,15 +299,17 @@ void StateMachine::deleteAdHocSubProcessToken(Token* token) {
   }
 }
 
+/*
 void StateMachine::deleteChild(StateMachine* child) {
 //std::cerr << "delete child '" << child->scope->id << "' of '" << scope->id << "'" <<  std::endl;
   if ( child->scope->represents<BPMN::SubProcess>() ) {
-    erase_ptr<StateMachine>(subProcesses, child);
+//    erase_ptr<StateMachine>(subProcesses, child); /// TODO: check
   }
   else {
     interruptingEventSubProcess.reset();
   }
 }
+*/
 
 void StateMachine::deleteNonInterruptingEventSubProcess(StateMachine* eventSubProcess) {
 //std::cerr << "deleteNonInterruptingEventSubProcess" << std::endl;
@@ -436,7 +438,7 @@ void StateMachine::run(const Values& status) {
       ) {
         // token instantiates non-interrupting event subprocess
         // get instantiation counter from context
-        auto context = const_cast<StateMachine*>(parentToken->owned);
+        auto context = const_cast<StateMachine*>(parentToken->owned.get());
         auto counter = ++context->instantiations[token->node];
         // append instantiation counter for disambiguation
         const_cast<std::string&>(instanceId) = BPMNOS::to_string(token->status[BPMNOS::Model::ExtensionElements::Index::Instance].value(),STRING) + delimiter +  std::to_string(counter);
@@ -453,10 +455,14 @@ void StateMachine::run(const Values& status) {
 
 void StateMachine::createChild(Token* parent, const BPMN::Scope* scope) {
 //std::cerr << "Create child from " << this << std::endl;
-  subProcesses.push_back(std::make_shared<StateMachine>(systemState, scope, parent));
+/// TODO: check
+/*  subProcesses.push_back(std::make_shared<StateMachine>(systemState, scope, parent));
   auto subProcess = subProcesses.back().get();
   parent->owned = subProcess;
   subProcess->run(parent->status);
+*/
+  parent->owned = std::make_shared<StateMachine>(systemState, scope, parent);
+  parent->owned->run(parent->status);
 }
 
 void StateMachine::createInterruptingEventSubprocess(const StateMachine* pendingEventSubProcess, const BPMNOS::Values& status) {
@@ -665,9 +671,15 @@ void StateMachine::terminate() {
 
   engine->commands.emplace_back(std::bind(&Token::update,parentToken,Token::State::FAILED), parentToken);
 
-  // remove state machine from parent
   auto parent = const_cast<StateMachine*>(parentToken->owner);
-  engine->commands.emplace_back(std::bind(&StateMachine::deleteChild,parent,this), this);
+
+  // remove state machine from parent
+  if ( auto eventSubProcess = scope->represents<BPMN::EventSubProcess>();
+    eventSubProcess && eventSubProcess->startEvent->isInterrupting
+  ) {
+    parent->interruptingEventSubProcess.reset();
+  }
+//  engine->commands.emplace_back(std::bind(&StateMachine::deleteChild,parent,this), this);
 
   // find error boundary event
   if ( auto activity = scope->represents<BPMN::Activity>() ) {
@@ -835,7 +847,7 @@ void StateMachine::shutdown() {
 
     if (!eventSubProcess->startEvent->isInterrupting ) {
       // delete non-interrupting event subprocess
-      auto context = const_cast<StateMachine*>(parentToken->owned);
+      auto context = const_cast<StateMachine*>(parentToken->owned.get());
       engine->commands.emplace_back(std::bind(&StateMachine::deleteNonInterruptingEventSubProcess,context,this), this);
       return;
     }
@@ -872,11 +884,17 @@ void StateMachine::shutdown() {
     engine->commands.emplace_back(std::bind(&Engine::deleteInstance,engine,this), this);
   }
   else {
+//std::cerr << "delete child: " << scope->id << std::endl;
     auto parent = const_cast<StateMachine*>(parentToken->owner);
-    engine->commands.emplace_back(std::bind(&StateMachine::deleteChild,parent,this), this);
+    if ( auto eventSubProcess = scope->represents<BPMN::EventSubProcess>();
+      eventSubProcess && eventSubProcess->startEvent->isInterrupting
+    ) {
+      parent->interruptingEventSubProcess.reset();
+    }
+//    engine->commands.emplace_back(std::bind(&StateMachine::deleteChild,parent,this), this);
 
     // advance parent token to completed
-    auto context = const_cast<StateMachine*>(parentToken->owned);
+    auto context = const_cast<StateMachine*>(parentToken->owned.get());
     auto token = context->parentToken;
     engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,token), token);
   }
@@ -997,7 +1015,7 @@ void StateMachine::completeCompensationEventSubProcess() {
   tokenAwaitingCompensationEventSubProcess.erase(this);
   auto engine = const_cast<Engine*>(systemState->engine);
   // erase state machine
-  auto context = const_cast<StateMachine*>(parentToken->owned);
+  auto context = const_cast<StateMachine*>(parentToken->owned.get());
   engine->commands.emplace_back(std::bind(&StateMachine::deleteCompensationEventSubProcess,context,this), this);
 }
 

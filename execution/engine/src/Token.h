@@ -103,7 +103,7 @@ private:
 
 public:
   const StateMachine* owner; ///< State machine owning the token
-  StateMachine* owned; ///< State machine owned by the token
+  std::shared_ptr<StateMachine> owned; ///< State machine owned by the token
   const BPMN::FlowNode* node;
   const BPMN::SequenceFlow* sequenceFlow;
   enum class State { CREATED, READY, ENTERED, IDLE, BUSY, COMPLETED, EXITING, DEPARTED, ARRIVED, WAITING, DONE, FAILED, FAILING, WITHDRAWN }; ///< The states that a token can be in

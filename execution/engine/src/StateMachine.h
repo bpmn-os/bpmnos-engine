@@ -39,7 +39,6 @@ public:
   Token* parentToken;
 
   Tokens tokens; ///< Container with all tokens within the scope of the state machine.
-  StateMachines subProcesses; ///< Container with state machines of all active (sub)processes.
   std::shared_ptr<StateMachine> interruptingEventSubProcess; ///< State machines representing an active event subprocess that is interrupting.
   StateMachines nonInterruptingEventSubProcesses; ///< Container with state machines of all active event subprocesses that are not interrupting.
   StateMachines pendingEventSubProcesses; ///< Container with state machines of all inactive event subprocesses that may be triggered.
@@ -95,7 +94,7 @@ private:
   void handleFailure(Token* token);
   void attemptGatewayActivation(const BPMN::FlowNode* node);
   void attemptShutdown();
-  void deleteChild(StateMachine* child); ///< Method removing completed state machine from parent
+//  void deleteChild(StateMachine* child); ///< Method removing completed state machine from parent
   void deleteNonInterruptingEventSubProcess(StateMachine* eventSubProcess); ///< Method removing completed event subprocess from context
   void deleteCompensationEventSubProcess(StateMachine* eventSubProcess); ///< Method removing completed compensation event subprocess from context
   void deleteTokensAwaitingBoundaryEvent(Token* token); ///< Method removing all waiting tokens attached to activity of token

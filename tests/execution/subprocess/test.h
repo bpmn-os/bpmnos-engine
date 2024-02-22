@@ -122,3 +122,112 @@ SCENARIO( "Trivial executable subprocess", "[execution][subprocess]" ) {
   }
 }
 
+SCENARIO( "Constrained executable process", "[execution][subprocess]" ) {
+  const std::string modelFile = "execution/subprocess/Constrained_executable_subprocess.bpmn";
+  REQUIRE_NOTHROW( Model::Model(modelFile) );
+  GIVEN( "A single instance with no input values" ) {
+    WHEN( "The engine is started at time 0" ) {
+      std::string csv =
+        "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
+        "Process_1, Instance_1,Timestamp,0\n"
+      ;
+
+      Model::StaticDataProvider dataProvider(modelFile,csv);
+      auto scenario = dataProvider.createScenario();
+      Execution::Engine engine;
+      Execution::ReadyHandler readyHandler;
+      Execution::InstantEntryHandler entryHandler;
+      Execution::DeterministicTaskCompletionHandler completionHandler;
+      Execution::InstantExitHandler exitHandler;
+      Execution::TimeWarp timeHandler;
+      engine.addEventHandler(&readyHandler);
+      engine.addEventHandler(&entryHandler);
+      engine.addEventHandler(&completionHandler);
+      engine.addEventHandler(&exitHandler);
+      engine.addEventHandler(&timeHandler);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
+      engine.addListener(&recorder);
+      engine.run(scenario.get());
+      THEN( "The subprocess is traversed without failure" ) {
+        auto subprocessLog = recorder.find(nlohmann::json{{"nodeId","Activity_1" }});
+        REQUIRE( subprocessLog[0]["state"] == "ARRIVED" );
+        REQUIRE( subprocessLog[1]["state"] == "READY" );
+        REQUIRE( subprocessLog[2]["state"] == "ENTERED" );
+        REQUIRE( subprocessLog[3]["state"] == "BUSY" );
+        REQUIRE( subprocessLog[4]["state"] == "COMPLETED" );
+        REQUIRE( subprocessLog[5]["state"] == "EXITING" );
+        REQUIRE( subprocessLog[6]["state"] == "DEPARTED" );
+      }
+    }
+
+    WHEN( "The engine is started at time 2" ) {
+      std::string csv =
+        "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
+        "Process_1, Instance_1,Timestamp,2\n"
+      ;
+
+      Model::StaticDataProvider dataProvider(modelFile,csv);
+      auto scenario = dataProvider.createScenario();
+      Execution::Engine engine;
+      Execution::ReadyHandler readyHandler;
+      Execution::InstantEntryHandler entryHandler;
+      Execution::DeterministicTaskCompletionHandler completionHandler;
+      Execution::InstantExitHandler exitHandler;
+      Execution::TimeWarp timeHandler;
+      engine.addEventHandler(&readyHandler);
+      engine.addEventHandler(&entryHandler);
+      engine.addEventHandler(&completionHandler);
+      engine.addEventHandler(&exitHandler);
+      engine.addEventHandler(&timeHandler);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
+      engine.addListener(&recorder);
+      engine.run(scenario.get());
+      THEN( "The subprocess fails after entry" ) {
+        auto subprocessLog = recorder.find(nlohmann::json{{"nodeId","Activity_1" }});
+        REQUIRE( subprocessLog[0]["state"] == "ARRIVED" );
+        REQUIRE( subprocessLog[1]["state"] == "READY" );
+        REQUIRE( subprocessLog[2]["state"] == "ENTERED" );
+        REQUIRE( subprocessLog[3]["state"] == "FAILED" );
+      }
+    }
+
+    WHEN( "The engine is started at time 1" ) {
+      std::string csv =
+        "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
+        "Process_1, Instance_1,Timestamp,1\n"
+      ;
+
+      Model::StaticDataProvider dataProvider(modelFile,csv);
+      auto scenario = dataProvider.createScenario();
+      Execution::Engine engine;
+      Execution::ReadyHandler readyHandler;
+      Execution::InstantEntryHandler entryHandler;
+      Execution::DeterministicTaskCompletionHandler completionHandler;
+      Execution::InstantExitHandler exitHandler;
+      Execution::TimeWarp timeHandler;
+      engine.addEventHandler(&readyHandler);
+      engine.addEventHandler(&entryHandler);
+      engine.addEventHandler(&completionHandler);
+      engine.addEventHandler(&exitHandler);
+      engine.addEventHandler(&timeHandler);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
+      engine.addListener(&recorder);
+      engine.run(scenario.get());
+      THEN( "The subprocess fails when exiting" ) {
+        auto subprocessLog = recorder.find(nlohmann::json{{"nodeId","Activity_1" }});
+        REQUIRE( subprocessLog[0]["state"] == "ARRIVED" );
+        REQUIRE( subprocessLog[1]["state"] == "READY" );
+        REQUIRE( subprocessLog[2]["state"] == "ENTERED" );
+        REQUIRE( subprocessLog[3]["state"] == "BUSY" );
+        REQUIRE( subprocessLog[4]["state"] == "COMPLETED" );
+        REQUIRE( subprocessLog[5]["state"] == "EXITING" );
+        REQUIRE( subprocessLog[6]["state"] == "FAILING" );
+        REQUIRE( subprocessLog[7]["state"] == "FAILED" );
+      }
+    }
+  }
+}
+
