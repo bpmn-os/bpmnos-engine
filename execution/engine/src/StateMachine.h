@@ -84,7 +84,6 @@ private:
   void createMergedToken(const BPMN::FlowNode* gateway);
 
   void shutdown(); ///< Shutdown state machine after successful execution
-  void terminate(); ///< Terminates state machine after failure
   void interruptActivity(Token* token);
   void clearObsoleteTokens();
 

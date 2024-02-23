@@ -890,12 +890,45 @@ void Token::advanceToFailed() {
     else {
 //std::cerr << "Failing " << owned->scope->id << std::endl;
       update(State::FAILING);
-      engine->commands.emplace_back(std::bind(&StateMachine::terminate,owned.get()), owned.get());
+      engine->commands.emplace_back(std::bind(&Token::terminate,this), this);
+//      engine->commands.emplace_back(std::bind(&StateMachine::terminate,owned.get()), owned.get());
       return;
     }
   }
   update(State::FAILED);
   engine->commands.emplace_back(std::bind(&StateMachine::handleFailure,const_cast<StateMachine*>(owner),this), this);
+}
+
+void Token::terminate() {
+//std::cerr << "terminate " << (node ? node->id : owner->scope->id ) << std::endl;
+  auto engine = const_cast<Engine*>(owner->systemState->engine);
+
+  assert(owned);
+
+  owned->clearObsoleteTokens();
+  
+  if ( owned->compensationTokens.size() ) {
+    // don't delete state machine and wait for all compensations to be completed
+    // before continuing with termination
+    owned->compensate(owned->compensationTokens, this);
+    return;
+  }
+
+/*
+  // remove state machine from parent
+  if ( auto eventSubProcess = owner->scope->represents<BPMN::EventSubProcess>();
+    eventSubProcess && eventSubProcess->startEvent->isInterrupting
+  ) {
+    const_cast<StateMachine*>(owner)->interruptingEventSubProcess.reset();
+  }
+*/
+  // delete state machine
+  owned.reset();
+  
+  // all compensations have been completed, now handle failure
+  engine->commands.emplace_back(std::bind(&Token::update,this,Token::State::FAILED), this);
+  engine->commands.emplace_back(std::bind(&StateMachine::handleFailure,const_cast<StateMachine*>(owner),this), this);
+//std::cerr << "terminated" << std::endl;
 }
 
 void Token::awaitCompensation() {

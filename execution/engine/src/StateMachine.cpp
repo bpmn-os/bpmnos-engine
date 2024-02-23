@@ -640,53 +640,6 @@ void StateMachine::handleEscalation(Token* token) {
 
 }
 
-void StateMachine::terminate() {
-//std::cerr << "terminate " << (parentToken && parentToken->node ? parentToken->node->id : process->id ) << std::endl;
-  auto engine = const_cast<Engine*>(systemState->engine);
-
-  // remove all child tokens
-  if ( !parentToken ) {
-//std::cerr << "process has failed" << std::endl;
-    // process has failed
-    pendingEventSubProcesses.clear();
-    interruptingEventSubProcess.reset();
-    nonInterruptingEventSubProcesses.clear();
-    tokens.clear();
-    compensationTokens.clear();
-    // delete root state machine (and all descendants)
-    engine->commands.emplace_back(std::bind(&Engine::deleteInstance,engine,this), this);
-    return;
-  }
-
-  clearObsoleteTokens();
-  
-  if ( compensationTokens.size() ) {
-    // don't delete state machine and wait for all compensations to be completed
-    // before continuing with termination
-    compensate(compensationTokens, parentToken);
-    return;
-  }
-
-
-  auto parent = const_cast<StateMachine*>(parentToken->owner);
-
-  // remove state machine from parent
-  if ( auto eventSubProcess = scope->represents<BPMN::EventSubProcess>();
-    eventSubProcess && eventSubProcess->startEvent->isInterrupting
-  ) {
-    parent->interruptingEventSubProcess.reset();
-  }
-  assert( parentToken->owned.get() == this );
-  // delete state machine
-  parentToken->owned.reset();
-  
-  // all compensations have been completed, now handle failure
-  engine->commands.emplace_back(std::bind(&Token::update,parentToken,Token::State::FAILED), parentToken);
-  engine->commands.emplace_back(std::bind(&StateMachine::handleFailure,const_cast<StateMachine*>(parentToken->owner),parentToken), parentToken);
-//std::cerr << "terminated" << std::endl;
-}
-
-
 void StateMachine::handleFailure(Token* token) {
 //std::cerr << scope->id << " handles failure at " << (token->node ? token->node->id : process->id ) << "/" << parentToken << "/" << token << std::endl;
   auto engine = const_cast<Engine*>(systemState->engine);
@@ -943,7 +896,8 @@ void StateMachine::advanceTokenWaitingForCompensation(Token* waitingToken) {
   else if ( waitingToken->state == Token::State::FAILING ) {
 //std::cerr << "Continue with terminate: " << waitingToken->owner->scope->id << std::endl;
     assert( waitingToken->owner == this);
-    engine->commands.emplace_back(std::bind(&StateMachine::terminate,this), this);
+//    engine->commands.emplace_back(std::bind(&StateMachine::terminate,this), this);
+    engine->commands.emplace_back(std::bind(&StateMachine::handleFailure,this,waitingToken), waitingToken);
   }
   else {
 //  std::cerr << waitingToken->node->id << " has state: " << Token::stateName[(int)waitingToken->state]  << std::endl;

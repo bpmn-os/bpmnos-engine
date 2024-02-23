@@ -152,6 +152,8 @@ private:
 
   void advanceToFailed();
 
+  void terminate(); ///< Terminates state machine owned by token
+
   void awaitCompensation();
 
   void awaitReadyEvent(); ///< Wait for ready event for activities
