@@ -112,13 +112,13 @@ If any of the @ref BPMNOS::Model::ExtensionElements::restrictions "restrictions"
 Otherwise, the (ad-hoc) subprocess has been executed successfully.
 In the case, that the (ad-hoc) subprocess has an @ref BPMN::EventSubProcess "event subprocess" with a @ref BPMN::CompensateStartEvent "compensate atart event", a token is created at this start event.
 In the case, that the (ad-hoc) subprocess has a @ref BPMN::CompensateBoundaryEvent "compensate boundary event", a token is created at this boundary event.
-If the (ad-hoc) subprocess has an outgoing sequence flow, the @ref BPMNOS::Execution::Token::state "token state" is updated to @ref BPMNOS::Execution::Token::State::DEPARTING "DEPARTING".
+If the (ad-hoc) subprocess has an outgoing sequence flow, the @ref BPMNOS::Execution::Token::state "token state" is updated to @ref BPMNOS::Execution::Token::State::DEPARTED "DEPARTED".
 Otherwise, the @ref BPMNOS::Execution::Token::state "token state" is updated to @ref BPMNOS::Execution::Token::State::DONE "DONE".
 
 
-### DEPARTING
+### DEPARTED
 
-When the (ad-hoc) subprocess token reaches @ref BPMNOS::Execution::Token::State::DEPARTING "DEPARTING" state, the token moves to the next node.
+When the (ad-hoc) subprocess token reaches @ref BPMNOS::Execution::Token::State::DEPARTED "DEPARTED" state, the token moves to the next node.
 
 ### DONE
 
