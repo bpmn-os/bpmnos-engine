@@ -110,7 +110,7 @@ If any of the @ref BPMNOS::Model::ExtensionElements::restrictions "restrictions"
 @note The failure occurring at this stage can no longer be caught by an @ref BPMN::EventSubProcess "event subprocess" with an @ref BPMN::ErrorStartEvent "error start event".
 
 Otherwise, the (ad-hoc) subprocess has been executed successfully.
-In the case, that the (ad-hoc) subprocess has an @ref BPMN::EventSubProcess "event subprocess" with a @ref BPMN::CompensateStartEvent "compensate atart event", a token is created at this start event.
+In the case, that the (ad-hoc) subprocess has an @ref BPMN::EventSubProcess "event subprocess" with a @ref BPMN::CompensateStartEvent "compensate start event", a token is created at this start event.
 In the case, that the (ad-hoc) subprocess has a @ref BPMN::CompensateBoundaryEvent "compensate boundary event", a token is created at this boundary event.
 If the (ad-hoc) subprocess has an outgoing sequence flow, the @ref BPMNOS::Execution::Token::state "token state" is updated to @ref BPMNOS::Execution::Token::State::DEPARTED "DEPARTED".
 Otherwise, the @ref BPMNOS::Execution::Token::state "token state" is updated to @ref BPMNOS::Execution::Token::State::DONE "DONE".
