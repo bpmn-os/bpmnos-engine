@@ -1,5 +1,5 @@
 #include "DeterministicTaskCompletionHandler.h"
-#include "execution/engine/src/events/TaskCompletionEvent.h"
+#include "execution/engine/src/events/CompletionEvent.h"
 #include <cassert>
 
 using namespace BPMNOS::Execution;
@@ -13,7 +13,7 @@ std::unique_ptr<Event> DeterministicTaskCompletionHandler::fetchEvent( const Sys
     if ( auto token = token_ptr.lock() )  {
       assert( token );
       if ( time <= systemState->getTime() ) {
-        return std::make_unique<TaskCompletionEvent>(token.get(),updatedStatus);
+        return std::make_unique<CompletionEvent>(token.get(),updatedStatus);
       }
     }
   }

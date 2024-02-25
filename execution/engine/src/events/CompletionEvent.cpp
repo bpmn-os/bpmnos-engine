@@ -3,7 +3,12 @@
 
 using namespace BPMNOS::Execution;
 
-CompletionEvent::CompletionEvent(const Token* token)
+CompletionEvent::CompletionEvent(const Token* token,  const Values& updatedStatus)
   : Event(token)
+  , updatedStatus(updatedStatus)
 {
+}
+
+void CompletionEvent::processBy(Engine* engine) const {
+  engine->process(*this);
 }

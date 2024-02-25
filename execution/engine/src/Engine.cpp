@@ -169,11 +169,15 @@ void Engine::process(const EntryEvent& event) {
   commands.emplace_back(std::bind(&Token::advanceToEntered,token), token);
 }
 
-void Engine::process(const TaskCompletionEvent& event) {
-//std::cerr << "TaskCompletionEvent " << event.token->node->id << std::endl;
+void Engine::process(const CompletionEvent& event) {
+//std::cerr << "CompletionEvent " << event.token->node->id << std::endl;
   Token* token = const_cast<Token*>(event.token);
-  systemState->tokensAwaitingTaskCompletion.remove(token);
-
+  if ( token->node->represents<BPMNOS::Model::Decision>() ) {
+    systemState->tokensAwaitingChoice.remove(token);
+  }
+  else {
+    systemState->tokensAwaitingTaskCompletion.remove(token);
+  }
   // update token status
   token->status = event.updatedStatus;
 

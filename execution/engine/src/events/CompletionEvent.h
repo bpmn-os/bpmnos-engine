@@ -12,8 +12,9 @@ namespace BPMNOS::Execution {
  * Transition from State::BUSY to State::COMPLETED
  */
 struct CompletionEvent : Event {
-  CompletionEvent(const Token* token);
-  virtual void processBy(Engine* engine) const = 0;
+  CompletionEvent(const Token* token,  const Values& updatedStatus);
+  void processBy(Engine* engine) const;
+  Values updatedStatus;
 };
 
 } // namespace BPMNOS::Execution

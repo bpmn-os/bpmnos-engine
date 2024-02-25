@@ -15,6 +15,10 @@ The following state diagram illustrates the life-cycle and state transitions of 
 - @subpage token_flow_logic_catching_events
 
 @page token_flow_logic_activities Activities
+- @subpage token_flow_logic_subprocesses
+- @subpage token_flow_logic_tasks
+- @subpage token_flow_logic_multi_instance_activities "Multi-instance activities"
+- @subpage token_flow_logic_compensation_activities "Compensation activities"
 
 @page token_flow_logic_gateways Gateways
 - @subpage token_flow_logic_exclusive_gateways

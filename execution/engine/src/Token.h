@@ -162,7 +162,6 @@ private:
 
   void awaitChoiceEvent(); ///< Wait for choices to be made for decision tasks
   void awaitTaskCompletionEvent(); ///< Wait for completion event for tasks (except for decision tasks)
-  void awaitResourceShutdownEvent(); ///< Wait for completion event for tasks (except for decision tasks)
   void awaitExitEvent(); ///< Wait for exit event for activities
 
   void awaitTimer(BPMNOS::number time); ///< Wait for message trigger at catching events (except for catching message events)
