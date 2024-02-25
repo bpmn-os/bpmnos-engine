@@ -3,6 +3,7 @@
 #include "StateMachine.h"
 #include "model/parser/src/extensionElements/ExtensionElements.h"
 #include "model/parser/src/SequentialAdHocSubProcess.h"
+#include "model/parser/src/DecisionTask.h"
 #include "execution/utility/src/erase.h"
 #include "execution/listener/src/Listener.h"
 #include <cassert>
@@ -172,7 +173,7 @@ void Engine::process(const EntryEvent& event) {
 void Engine::process(const CompletionEvent& event) {
 //std::cerr << "CompletionEvent " << event.token->node->id << std::endl;
   Token* token = const_cast<Token*>(event.token);
-  if ( token->node->represents<BPMNOS::Model::Decision>() ) {
+  if ( token->node->represents<BPMNOS::Model::DecisionTask>() ) {
     systemState->tokensAwaitingChoice.remove(token);
   }
   else {
