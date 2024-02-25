@@ -85,35 +85,46 @@ the @ref BPMNOS::Execution::Token::status "token status" may be updated due to a
 If the token resides at a (ad-hoc) subprocess which is the  @ref BPMNOS::Model::SequentialAdHoCSubProcess::performer "performer" of a @ref BPMNOS::Model::SequentialAdHocSubProcess "sequential ad-hoc subprocess", 
 the @ref BPMNOS::Execution::Token::status "token status" is also updated whenever a token exits a child activity of the @ref BPMNOS::Model::SequentialAdHocSubProcess "sequential ad-hoc subprocess".
 
-When an (ad-hoc) subprocess terminates due to an uncaught failure, the @ref BPMNOS::Execution::Token::status "status" of the (ad-hoc) subprocess token is set to the @ref BPMNOS::Execution::Token::status "status" of the token raising the failure.
+When an uncaught failure is raised within the scope of the (ad-hoc) subprocess, the @ref BPMNOS::Execution::Token::status "status" of the (ad-hoc) subprocess token is set to the @ref BPMNOS::Execution::Token::status "status" of the token raising the failure.
+All tokens within the scope of the process (excluding those created for compensation) are disposed before the @ref BPMNOS::Execution::Token::state "state" of the process token is updated to @ref BPMNOS::Execution::Token::State::FAILING "FAILING".
 
-...
+@note A failure occurring at this stage may be caught by an @ref BPMN::EventSubProcess "event subprocess" with an @ref BPMN::ErrorStartEvent "error start event".
 
-A new token is created at the unique start node of the process.
-This token inherits the @ref BPMNOS::Execution::Token::status "status attributes" of the original token.
-The process token remains in @ref BPMNOS::Execution::Token::State::BUSY "BUSY" state as long as the process is neither terminated due to an uncaught failure nor successfully completed.
+When all tokens within the scope of the (ad-hoc) subprocess have reached @ref BPMNOS::Execution::Token::State::DONE "DONE" state and no event subprocess is running, the @ref BPMNOS::Execution::Token::status "status" of the (ad-hoc) subprocess token is updated with the merged status of all these tokens within the scope. All child tokens are disposed  (including those at start events of  @ref BPMN::EventSubProcess "event subprocesses") before the @ref BPMNOS::Execution::Token::state "state" of the (ad-hoc) subprocess token is updated to @ref BPMNOS::Execution::Token::State::COMPLETED "COMPLETED".
 
-In the case that
+An (ad-hoc) subprocess also completes if
+ an @ref BPMN::EventSubProcess "event subprocess" with a @ref BPMN::TypedStartEvent "start event" that is @ref BPMN::TypedStartEvent::isInterrupting "interrupting" completes successfully.
+ In such a case, the @ref BPMNOS::Execution::Token::status "token status" of the (ad-hoc) subprocess is analogously updated with the merged status of all tokens in @ref BPMNOS::Execution::Token::State::DONE "DONE" state within the scope of the interrupting event subprocess. All of these tokens are disposed before the @ref BPMNOS::Execution::Token::state "state" of the (ad-hoc) subprocess token is updated to @ref BPMNOS::Execution::Token::State::COMPLETED "COMPLETED".
 
-- all tokens within the scope of the process have reached @ref BPMNOS::Execution::Token::State::DONE "DONE" state and no event subprocess is running, or
-- the last @ref BPMN::EventSubProcess "event subprocess" with a @ref BPMN::TypedStartEvent "start event" that is @ref BPMN::TypedStartEvent::isInterrupting "not interrupting" completes successfully after all tokens within the scope of the process have reached @ref BPMNOS::Execution::Token::State::DONE "DONE" state,
-
-the @ref BPMNOS::Execution::Token::status "status" of the process token is updated with the merged status of all tokens within its scope. All child tokens are disposed before the @ref BPMNOS::Execution::Token::state "state" of the process token is updated to @ref BPMNOS::Execution::Token::State::COMPLETED "COMPLETED".
-
-In the case that an @ref BPMN::EventSubProcess "event subprocess" with a @ref BPMN::TypedStartEvent "start event" that is @ref BPMN::TypedStartEvent::isInterrupting "interrupting" completes successfully, the @ref BPMNOS::Execution::Token::status "token status" of the process is analogously updated with the merged status of all tokens in @ref BPMNOS::Execution::Token::State::DONE "DONE" state within the scope of the interupting event subprocess. All of these tokens are disposed before the @ref BPMNOS::Execution::Token::state "state" of the process token is updated to @ref BPMNOS::Execution::Token::State::COMPLETED "COMPLETED".
-
-In case of an uncaught failure, the @ref BPMNOS::Execution::Token::state "state" of the original token is updated to @ref BPMNOS::Execution::Token::State::FAILING "FAILING".
 
 ### COMPLETED
+
+A token in  @ref BPMNOS::Execution::Token::State::COMPLETED "COMPLETED" state waits for an @ref BPMNOS::Execution::ExitEvent "exit event" indicating that a decision is made to leave the activity. 
+When the event occurs the token state is updated to  @ref BPMNOS::Execution::Token::State::EXITING "EXITING".
+
+
+### EXITING
 Feasibility of the @ref BPMNOS::Execution::Token::status "token status" is validated.
-If none of the @ref BPMNOS::Model::ExtensionElements::restrictions "restrictions" is violated, the @ref BPMNOS::Execution::Token::state "token state" is updated to @ref BPMNOS::Execution::Token::State::DONE "DONE".
-Otherwise, the @ref BPMNOS::Execution::Token::state "token state" is updated to @ref BPMNOS::Execution::Token::State::FAILING "FAILING".
+If any of the @ref BPMNOS::Model::ExtensionElements::restrictions "restrictions" is violated,  the @ref BPMNOS::Execution::Token::state "token state" is updated to @ref BPMNOS::Execution::Token::State::FAILING "FAILING".
 
 @note The failure occurring at this stage can no longer be caught by an @ref BPMN::EventSubProcess "event subprocess" with an @ref BPMN::ErrorStartEvent "error start event".
 
+Otherwise, the (ad-hoc) subprocess has been executed successfully.
+In the case, that the (ad-hoc) subprocess has an @ref BPMN::EventSubProcess "event subprocess" with a @ref BPMN::CompensateStartEvent "compensate atart event", a token is created at this start event.
+In the case, that the (ad-hoc) subprocess has a @ref BPMN::CompensateBoundaryEvent "compensate boundary event", a token is created at this boundary event.
+If the (ad-hoc) subprocess has an outgoing sequence flow, the @ref BPMNOS::Execution::Token::state "token state" is updated to @ref BPMNOS::Execution::Token::State::DEPARTING "DEPARTING".
+Otherwise, the @ref BPMNOS::Execution::Token::state "token state" is updated to @ref BPMNOS::Execution::Token::State::DONE "DONE".
+
+
+### DEPARTING
+
+When the (ad-hoc) subprocess token reaches @ref BPMNOS::Execution::Token::State::DEPARTING "DEPARTING" state, the token moves to the next node.
+
 ### DONE
 
-When the process token reaches @ref BPMNOS::Execution::Token::State::DONE "DONE" state, it is disposed and the process instance has successfully completed.
+When the (ad-hoc) subprocess token reaches @ref BPMNOS::Execution::Token::State::DONE "DONE" state, the token remains at the node until all other tokens in the parent scope have reached @ref BPMNOS::Execution::Token::State::DONE "DONE" state or a failure occurred.
+
+@note When all tokens in the parent scope have reached @ref BPMNOS::Execution::Token::State::DONE "DONE" state, the state of the parent token is changed to @ref BPMNOS::Execution::Token::State::COMPLETED "COMPLETED" state.
 
 ### FAILING
 
@@ -124,6 +135,6 @@ and the @ref BPMNOS::Execution::Token::state "state" of the process token is upd
 
 ### FAILED
 
-Upon failure, the process token is disposed.
+Upon failure, the state of a token at an @ref BPMN::ErrorBoundaryEvent "error boundary event" is changed to @ref BPMNOS::Execution::Token::State::COMPLETED "COMPLETED". If no such @ref BPMN::ErrorBoundaryEvent "error boundary event" exists, the error is bubbled up to its parent scope.
 
 
