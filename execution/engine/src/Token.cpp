@@ -205,8 +205,17 @@ bool Token::isFeasible() const {
     if ( !checkRestrictions( context->extensionElements->as<BPMNOS::Model::ExtensionElements>() ) ) {
       return false;
     }
-    if ( context->represents<BPMN::EventSubProcess>() ) {
-      // event subprocesses do not inherit restrictions
+    if ( auto eventSubProcess = context->represents<BPMN::EventSubProcess>();
+      eventSubProcess && 
+      ( eventSubProcess->startEvent->represents<BPMN::ErrorStartEvent>() || eventSubProcess->startEvent->represents<BPMN::CompensateStartEvent>() )
+    ) {
+      // error and compensate event subprocesses do not inherit restrictions
+      break;
+    }
+    else if ( auto activity = context->represents<BPMN::Activity>();
+      activity && activity->isForCompensation
+    ) {
+      // compensation activities do not inherit restrictions
       break;
     }
     else if ( auto child = context->represents<BPMN::ChildNode>() ) {
