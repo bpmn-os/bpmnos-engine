@@ -7,6 +7,7 @@ list(APPEND engine_SOURCES
   events/ReadyEvent.cpp
   events/EntryEvent.cpp
   events/CompletionEvent.cpp
+  events/ChoiceEvent.cpp
   events/ErrorEvent.cpp
   events/MessageDeliveryEvent.cpp
   events/ExitEvent.cpp
@@ -33,6 +34,7 @@ list(APPEND engine_HEADERS
   events/ReadyEvent.h
   events/EntryEvent.h
   events/CompletionEvent.h
+  events/ChoiceEvent.h
   events/ErrorEvent.h
   events/MessageDeliveryEvent.h
   events/ExitEvent.h

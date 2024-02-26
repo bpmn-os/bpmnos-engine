@@ -97,7 +97,7 @@ public:
 
   auto_schedule<Token, Values> tokensAwaitingTaskCompletion; ///< Sorted container holding all tokens awaiting a task completion event
 
-  auto_schedule<Token, Values> tokensAwaitingChoice; ///< Container holding all tokens awaiting a choice event
+  auto_list<Token> tokensAwaitingChoice; ///< Container holding all tokens awaiting a choice event
 
   auto_list<Token> tokensAwaitingExit; ///< Container holding all tokens awaiting an exit event
 

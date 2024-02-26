@@ -7,6 +7,7 @@
 #include "Event.h"
 #include "events/ClockTickEvent.h"
 #include "events/CompletionEvent.h"
+#include "events/ChoiceEvent.h"
 #include "events/EntryEvent.h"
 #include "events/ExitEvent.h"
 #include "events/MessageDeliveryEvent.h"
@@ -39,6 +40,7 @@ public:
   void run(const BPMNOS::Model::Scenario* scenario, BPMNOS::number timeout = std::numeric_limits<BPMNOS::number>::max());
 
   void process(const CompletionEvent& event);
+  void process(const ChoiceEvent& event);
   void process(const EntryEvent& event);
   void process(const ExitEvent& event);
   void process(const MessageDeliveryEvent& event);

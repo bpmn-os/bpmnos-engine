@@ -976,18 +976,7 @@ void Token::awaitEntryEvent() {
 
 void Token::awaitChoiceEvent() {
   auto systemState = const_cast<SystemState*>(owner->systemState);
-  Values updatedStatus = status;
-  if ( auto extensionElements = node->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
-       extensionElements && extensionElements->operators.size()
-  ) {
-    extensionElements->applyOperators(updatedStatus);
-    if ( !updatedStatus[BPMNOS::Model::ExtensionElements::Index::Timestamp].has_value() ) {
-      throw std::runtime_error("Token: timestamp at node '" + node->id + "' is deleted");
-    }
-  }
-  auto time = updatedStatus[BPMNOS::Model::ExtensionElements::Index::Timestamp].value();
-
-  systemState->tokensAwaitingChoice.emplace(time,weak_from_this(),std::move(updatedStatus));
+  systemState->tokensAwaitingChoice.emplace_back(weak_from_this());
 }
 
 void Token::awaitTaskCompletionEvent() {

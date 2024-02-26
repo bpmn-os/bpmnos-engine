@@ -17,6 +17,10 @@ stateDiagram-v2
     state feasibleExit <<choice>>
     state departure <<choice>>
     [*] --> ARRIVED
+    note left of ARRIVED
+      If an activity does not have any incoming sequence flows,
+      the @ref BPMNOS::Execution::Token::State::ARRIVED "ARRIVED" state is skipped 
+    end note
     ARRIVED --> READY: ready event
     READY --> ENTERED: entry event
     ENTERED --> feasibleEntry
@@ -36,8 +40,6 @@ stateDiagram-v2
     FAILED --> [*]
 </pre>
 
-@note The @ref BPMNOS::Execution::Token::State::ARRIVED "ARRIVED" state is not relevant for activities within @ref BPMNOS::Model::SequentialAdHocSubProcess "ad-hoc subprocesses" which do not have any incoming sequence flows. 
-For such nodes, a token is created when the parent is entered. When a @ref BPMNOS::Execution::ReadyEvent "ready event" is received the state of this token is updated to @ref BPMNOS::Execution::Token::State::READY "READY" state.
 
 ### ARRIVED
 
@@ -109,7 +111,8 @@ If any of the @ref BPMNOS::Model::ExtensionElements::restrictions "restrictions"
 
 @note The failure occurring at this stage can no longer be caught by an @ref BPMN::EventSubProcess "event subprocess" with an @ref BPMN::ErrorStartEvent "error start event".
 
-Otherwise, the (ad-hoc) subprocess has been executed successfully.
+Otherwise, the (ad-hoc) subprocess has been executed successfully and all tokens at boundary events of the (ad-hoc) subprocess are withdrawn.
+
 In the case, that the (ad-hoc) subprocess has an @ref BPMN::EventSubProcess "event subprocess" with a @ref BPMN::CompensateStartEvent "compensate start event", a token is created at this start event.
 In the case, that the (ad-hoc) subprocess has a @ref BPMN::CompensateBoundaryEvent "compensate boundary event", a token is created at this boundary event.
 If the (ad-hoc) subprocess has an outgoing sequence flow, the @ref BPMNOS::Execution::Token::state "token state" is updated to @ref BPMNOS::Execution::Token::State::DEPARTED "DEPARTED".

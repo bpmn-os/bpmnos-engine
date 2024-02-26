@@ -173,14 +173,32 @@ void Engine::process(const EntryEvent& event) {
 void Engine::process(const CompletionEvent& event) {
 //std::cerr << "CompletionEvent " << event.token->node->id << std::endl;
   Token* token = const_cast<Token*>(event.token);
-  if ( token->node->represents<BPMNOS::Model::DecisionTask>() ) {
-    systemState->tokensAwaitingChoice.remove(token);
-  }
-  else {
-    systemState->tokensAwaitingTaskCompletion.remove(token);
-  }
+  systemState->tokensAwaitingTaskCompletion.remove(token);
   // update token status
   token->status = event.updatedStatus;
+
+  commands.emplace_back(std::bind(&Token::advanceToCompleted,token), token);
+}
+
+void Engine::process(const ChoiceEvent& event) {
+//std::cerr << "ChoiceEvent " << event.token->node->id << std::endl;
+  Token* token = const_cast<Token*>(event.token);
+  assert( token->node );
+  assert( token->node->represents<BPMNOS::Model::DecisionTask>() );
+  systemState->tokensAwaitingChoice.remove(token);
+
+  // apply choices
+  for ( auto& [index,value] : event.choices ) {
+    token->status[index] = value;
+  }
+
+  // apply operators
+  if ( auto extensionElements = token->node->extensionElements->represents<BPMNOS::Model::ExtensionElements>() ) {
+    if ( !extensionElements->isInstantaneous ) {
+      throw std::runtime_error("StateMachine: Operators for subprocess '" + token->node->id + "' attempt to modify timestamp");
+    }
+    extensionElements->applyOperators(token->status);
+  }
 
   commands.emplace_back(std::bind(&Token::advanceToCompleted,token), token);
 }
@@ -213,13 +231,24 @@ void Engine::process(const MessageDeliveryEvent& event) {
   Token* token = const_cast<Token*>(event.token);
   Message* message = const_cast<Message*>(event.message);
 
+  // update token status 
   message->update(token);
   erase_ptr<Message>(systemState->messages,message);
   systemState->tokensAwaitingMessageDelivery.remove(token);
   if ( message->waitingToken ) {
+    // send task is completed
     systemState->messageAwaitingDelivery.erase( message->waitingToken );
     commands.emplace_back(std::bind(&Token::advanceToCompleted,message->waitingToken), message->waitingToken);
   }
+  
+  // apply operators
+  if ( auto extensionElements = token->node->extensionElements->represents<BPMNOS::Model::ExtensionElements>() ) {
+    if ( !extensionElements->isInstantaneous ) {
+      throw std::runtime_error("StateMachine: Operators for subprocess '" + token->node->id + "' attempt to modify timestamp");
+    }
+    extensionElements->applyOperators(token->status);
+  }
+
   commands.emplace_back(std::bind(&Token::advanceToCompleted,token), token);
 }
 
