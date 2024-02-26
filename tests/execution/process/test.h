@@ -242,9 +242,17 @@ SCENARIO( "Constrained executable process", "[execution][process]" ) {
         auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr }});
         REQUIRE( processLog[0]["state"] == "ENTERED" );
         REQUIRE( processLog[1]["state"] == "BUSY" );
-        REQUIRE( processLog[2]["state"] == "COMPLETED" );
-        REQUIRE( processLog[3]["state"] == "FAILING" );
-        REQUIRE( processLog[4]["state"] == "FAILED" );
+        REQUIRE( processLog[2]["state"] == "FAILING" );
+        REQUIRE( processLog[3]["state"] == "FAILED" );
+
+        auto activityLog = recorder.find(nlohmann::json{{"nodeId","Activity_1" }});
+        REQUIRE( activityLog[0]["state"] == "ARRIVED" );
+        REQUIRE( activityLog[1]["state"] == "READY" );
+        REQUIRE( activityLog[2]["state"] == "ENTERED" );
+        REQUIRE( activityLog[3]["state"] == "BUSY" );
+        REQUIRE( activityLog[4]["state"] == "COMPLETED" );
+        REQUIRE( activityLog[5]["state"] == "EXITING" );
+        REQUIRE( activityLog[6]["state"] == "FAILED" );
       }
     }
   }

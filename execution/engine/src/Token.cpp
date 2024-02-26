@@ -49,7 +49,6 @@ Token::Token(const std::vector<Token*>& others)
 
 Token::~Token() {
 //std::cerr << "~Token(" << (node ? node->id : owner->process->id ) << "/" << this << ")" << std::endl;
-
   auto systemState = const_cast<SystemState*>(owner->systemState);
   if ( node) {
     if ( auto activity = node->represents<BPMN::Activity>(); activity && !activity->boundaryEvents.empty() ) {
@@ -180,27 +179,41 @@ nlohmann::ordered_json Token::jsonify() const {
   return jsonObject;
 }
 
-bool Token::isFeasible() {
+bool Token::isFeasible() const {
+//std::cerr << "isFeasible?" << std::endl;
   // TODO check restrictions within current scope and ancestor scopes
   auto checkRestrictions = [this](BPMNOS::Model::ExtensionElements* extensionElements) {
     for ( auto& restriction : extensionElements->restrictions ) {
       if ( !restriction->isSatisfied(status) ) {
         return false;
       }
-      // TODO: check parent restrictions
     }
     return true;
   };
 
   
   if ( !node ) {
-    if ( auto extensionElements = owner->process->extensionElements->represents<BPMNOS::Model::ExtensionElements>() ) {
-      return checkRestrictions(extensionElements);
-    }
+//std::cerr << stateName[(int)state] << "/" << owner->scope->id <<std::endl;
+    assert( owner->process->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );
+    return checkRestrictions( owner->process->extensionElements->as<BPMNOS::Model::ExtensionElements>() );
   }
-  else {
-    if ( auto extensionElements = node->extensionElements->represents<BPMNOS::Model::ExtensionElements>() ) {
-      return checkRestrictions(extensionElements);
+
+//std::cerr << node->id << "/" << stateName[(int)state]  << std::endl;
+  assert( node->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );
+  const BPMN::Node* context = node;
+  while ( context ) {
+    if ( !checkRestrictions( context->extensionElements->as<BPMNOS::Model::ExtensionElements>() ) ) {
+      return false;
+    }
+    if ( context->represents<BPMN::EventSubProcess>() ) {
+      // event subprocesses do not inherit restrictions
+      break;
+    }
+    else if ( auto child = context->represents<BPMN::ChildNode>() ) {
+      context = child->parent;
+    }
+    else {
+      break;
     }
   }
   return true;
@@ -254,6 +267,7 @@ void Token::advanceToReady() {
 
 void Token::advanceToEntered() {
 //std::cerr << "advanceToEntered: " << jsonify().dump() << std::endl;
+
   if ( status[BPMNOS::Model::ExtensionElements::Index::Timestamp] > owner->systemState->getTime() ) {
     if ( node ) {
       throw std::runtime_error("Token: entry timestamp at node '" + node->id + "' is larger than current time");
@@ -363,7 +377,6 @@ void Token::advanceToEntered() {
     }
     else if ( auto compensateThrowEvent = node->represents<BPMN::CompensateThrowEvent>() ) {
       auto context = const_cast<StateMachine*>(owner->parentToken->owned.get());
-//std::cerr << compensateThrowEvent->id << " has context " << context->scope->id << std::endl;
 
       if ( auto eventSubProcess = owner->scope->represents<BPMN::EventSubProcess>();
         eventSubProcess && eventSubProcess->startEvent->represents<BPMN::CompensateStartEvent>()
@@ -383,6 +396,7 @@ void Token::advanceToEntered() {
       }
 
       if ( context ) {
+//std::cerr << "compensate context " << context->scope->id << std::endl;
         if ( auto compensations = context->getCompensationTokens(compensateThrowEvent->activity);
           compensations.size()
         ) {
@@ -556,6 +570,7 @@ void Token::advanceToCompleted(const Values& statusUpdate) {
 
 void Token::advanceToCompleted() {
 //std::cerr << "advanceToCompleted: " << jsonify().dump() << std::endl;
+
   if ( status[BPMNOS::Model::ExtensionElements::Index::Timestamp] > owner->systemState->getTime() ) {
     if ( node ) {
       throw std::runtime_error("Token: completion timestamp at node '" + node->id + "' is larger than current time");
@@ -573,6 +588,14 @@ void Token::advanceToCompleted() {
     // update global objective
     assert( owner->scope->extensionElements->as<BPMNOS::Model::ExtensionElements>() );
     const_cast<SystemState*>(owner->systemState)->objective += owner->scope->extensionElements->as<BPMNOS::Model::ExtensionElements>()->getContributionToObjective(status);
+
+//std::cerr << "check restrictions" << std::endl;
+  // check restrictions
+    if ( !isFeasible() ) {
+//std::cerr << "infeasible: " << jsonify().dump() <<  std::endl;
+      engine->commands.emplace_back(std::bind(&Token::advanceToFailed,this), this);
+      return;
+    }
   }
   else {
     if ( auto activity = node->represents<BPMN::Activity>() ) {
@@ -596,6 +619,8 @@ void Token::advanceToCompleted() {
       return;
     }
     else if ( auto compensateBoundaryEvent = node->represents<BPMN::CompensateBoundaryEvent>(); compensateBoundaryEvent ) {
+//assert( owner->parentToken->node->represents<BPMN::Scope>() );    
+//std::cerr << "token is compensateBoundaryEvent: " << node->id << "/" << stateName[(int)state] << "/" << ( owner->parentToken->node ? owner->parentToken->node->id : owner->scope->id) << "/" << this  << "/" << owner <<std::endl;
       engine->commands.emplace_back(std::bind(&StateMachine::compensateActivity,const_cast<StateMachine*>(owner),this), this);
       return;
     }
@@ -631,8 +656,8 @@ std::cerr << "Context: " << context << " at " << context->scope->id << " has " <
 */
       // find pending subprocess
       auto it = std::find_if(context->pendingEventSubProcesses.begin(), context->pendingEventSubProcesses.end(), [this](std::shared_ptr<StateMachine>& eventSubProcess) {
-        auto token = eventSubProcess->tokens.front();
-        return token.get() == this;
+        auto pendingToken = eventSubProcess->tokens.front();
+        return pendingToken.get() == this;
       });
 
       assert( it != context->pendingEventSubProcesses.end() );
@@ -692,13 +717,6 @@ std::cerr << "Context: " << context << " at " << context->scope->id << " has " <
     }
   }
 
-//std::cerr << "check restrictions" << std::endl;
-  // check restrictions
-  if ( !isFeasible() ) {
-//std::cerr << "infeasible: " << jsonify().dump() <<  std::endl;
-    engine->commands.emplace_back(std::bind(&Token::advanceToFailed,this), this);
-    return;
-  }
 
   if ( !node || node->outgoing.empty() ) {
 //std::cerr << "done: " << jsonify().dump() <<  std::endl;
@@ -711,6 +729,7 @@ std::cerr << "Context: " << context << " at " << context->scope->id << " has " <
 
 void Token::advanceToExiting() {
 //std::cerr << "advanceToExiting: " << jsonify().dump() << std::endl;
+
   if ( status[BPMNOS::Model::ExtensionElements::Index::Timestamp] > owner->systemState->getTime() ) {
     throw std::runtime_error("Token: exit timestamp at node '" + node->id + "' is larger than current time");
   }
@@ -772,7 +791,13 @@ void Token::advanceToExiting() {
   }
 
   // clear state machine owned by token
-  owned.reset();
+  if ( owned ) {
+    owned->tokens.clear();
+    owned->interruptingEventSubProcess.reset();
+    owned->nonInterruptingEventSubProcesses.clear();
+    owned->pendingEventSubProcesses.clear();
+    owned.reset();  
+  }
 
   if ( node->outgoing.empty() ) {
     engine->commands.emplace_back(std::bind(&Token::advanceToDone,this), this);
@@ -850,7 +875,7 @@ void Token::advanceToDeparted(const BPMN::SequenceFlow* sequenceFlow) {
 }
 
 void Token::advanceToArrived() {
-//std::cerr << "advanceToArrived: " << jsonify().dump() << std::endl;
+//std::cerr << this << " / advanceToArrived: " << jsonify().dump() << std::endl;
   node = sequenceFlow->target;
   update(State::ARRIVED);
 

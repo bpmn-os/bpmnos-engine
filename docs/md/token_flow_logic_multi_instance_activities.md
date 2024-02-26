@@ -11,8 +11,8 @@ stateDiagram-v2
     state departure <<choice>>
     [*] --> ARRIVED
     note left of ARRIVED
-      If an activity does not have any incoming sequence  
-      flows, the @ref BPMNOS::Execution::Token::State::ARRIVED "ARRIVED" state is skipped 
+      If an activity does not have any incoming sequence flows,
+      the @ref BPMNOS::Execution::Token::State::ARRIVED "ARRIVED" state is skipped 
     end note
     ARRIVED --> WAITING: ready event
     WAITING --> departure

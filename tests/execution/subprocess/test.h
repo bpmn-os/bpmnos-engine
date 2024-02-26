@@ -222,10 +222,18 @@ SCENARIO( "Constrained executable process", "[execution][subprocess]" ) {
         REQUIRE( subprocessLog[1]["state"] == "READY" );
         REQUIRE( subprocessLog[2]["state"] == "ENTERED" );
         REQUIRE( subprocessLog[3]["state"] == "BUSY" );
-        REQUIRE( subprocessLog[4]["state"] == "COMPLETED" );
-        REQUIRE( subprocessLog[5]["state"] == "EXITING" );
-        REQUIRE( subprocessLog[6]["state"] == "FAILING" );
-        REQUIRE( subprocessLog[7]["state"] == "FAILED" );
+        REQUIRE( subprocessLog[4]["state"] == "FAILING" );
+        REQUIRE( subprocessLog[5]["state"] == "FAILED" );
+        
+        auto taskLog = recorder.find(nlohmann::json{{"nodeId","Activity_2" }});
+        REQUIRE( taskLog[0]["state"] == "ARRIVED" );
+        REQUIRE( taskLog[1]["state"] == "READY" );
+        REQUIRE( taskLog[2]["state"] == "ENTERED" );
+        REQUIRE( taskLog[3]["state"] == "BUSY" );
+        REQUIRE( taskLog[4]["state"] == "COMPLETED" );
+        REQUIRE( taskLog[5]["state"] == "EXITING" );
+        REQUIRE( taskLog[6]["state"] == "FAILED" );
+
       }
     }
   }

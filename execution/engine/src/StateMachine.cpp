@@ -456,11 +456,6 @@ void StateMachine::run(const Values& status) {
 void StateMachine::createChild(Token* parent, const BPMN::Scope* scope) {
 //std::cerr << "Create child from " << this << std::endl;
 /// TODO: check
-/*  subProcesses.push_back(std::make_shared<StateMachine>(systemState, scope, parent));
-  auto subProcess = subProcesses.back().get();
-  parent->owned = subProcess;
-  subProcess->run(parent->status);
-*/
   parent->owned = std::make_shared<StateMachine>(systemState, scope, parent);
   parent->owned->run(parent->status);
 }
@@ -477,13 +472,13 @@ void StateMachine::createNonInterruptingEventSubprocess(const StateMachine* pend
 
 void StateMachine::createCompensationTokenForBoundaryEvent(const BPMN::BoundaryEvent* compensateBoundaryEvent, BPMNOS::Values status) {
   std::shared_ptr<Token> compensationToken = std::make_shared<Token>(this,compensateBoundaryEvent, status);
-//std::cerr << "createCompensationTokenForBoundaryEvent " << compensateBoundaryEvent->id << "/" << compensationToken.get() <<std::endl;
   compensationToken->update(Token::State::BUSY);
   compensationTokens.push_back(std::move(compensationToken));
+  
 }
 
 void StateMachine::createCompensationEventSubProcess(const BPMN::EventSubProcess* eventSubProcess, BPMNOS::Values status) {
-//std::cerr << "createCompensationEventSubProcess " << eventSubProcess->id << "/" << scope->id << "/" << this <<std::endl;
+//std::cerr << "createCompensationEventSubProcess: " << eventSubProcess->id << "/" << scope->id << "/" << parentToken->owner->scope->id <<std::endl;
   // create state machine for compensation event subprocess
   compensationEventSubProcesses.push_back(std::make_shared<StateMachine>(systemState, eventSubProcess, parentToken));
   // create token at start event of compensation event subprocess
@@ -493,8 +488,8 @@ void StateMachine::createCompensationEventSubProcess(const BPMN::EventSubProcess
 }
 
 void StateMachine::compensateActivity(Token* token) {
-//std::cerr << "compensateActivity" <<std::endl;
   auto compensationNode = token->node->as<BPMN::BoundaryEvent>()->attachedTo->compensatedBy;
+//std::cerr << "compensationNode: " << compensationNode->id << std::endl;
   assert( compensationNode != nullptr );
   if ( auto compensationActivity = compensationNode->represents<BPMN::Activity>() ) {
     // move token to compensation activity
@@ -746,7 +741,6 @@ void StateMachine::attemptGatewayActivation(const BPMN::FlowNode* node) {
 void StateMachine::shutdown() {
   auto engine = const_cast<Engine*>(systemState->engine);
 //std::cerr << "shutdown: " << scope->id << std::endl;
-
   assert( tokens.size() );
   BPMNOS::Values mergedStatus = Token::mergeStatus(tokens);
   
@@ -785,7 +779,6 @@ void StateMachine::shutdown() {
       auto parent = const_cast<StateMachine*>(parentToken->owner);
       // move state machine pointer to ensure it is not deleted
       parent->compensableSubProcesses.push_back(shared_from_this());
-//std::cerr << parent->scope->id << " add to compensableSubProcesses: " << parent->compensableSubProcesses.size() << std::endl;
     }
   }
 
@@ -932,7 +925,8 @@ void StateMachine::completeCompensationEventSubProcess() {
 
 
 void StateMachine::compensate(Tokens compensations, Token* waitingToken) {
-//std::cerr << "\n" << scope->id << " compensate " <<  compensations.size() << " tokens before continuing with " << waitingToken->node->id << std::endl;
+//std::cerr << "\ncompensate: " << scope->id << " compensate " <<  compensations.size() << " tokens before continuing with " << waitingToken->node->id << std::endl;
+
   auto engine = const_cast<Engine*>(systemState->engine);
   auto& tokenAwaitingCompensationActivity = const_cast<SystemState*>(systemState)->tokenAwaitingCompensationActivity;
   auto& tokenAwaitingCompensationEventSubProcess = const_cast<SystemState*>(systemState)->tokenAwaitingCompensationEventSubProcess;
@@ -941,20 +935,23 @@ void StateMachine::compensate(Tokens compensations, Token* waitingToken) {
   // advance last compensation token
   auto compensationToken = it->get();
 
-  // erase compensation token and move to active tokens
-  erase_ptr<Token>(compensationTokens,compensationToken);
   if ( compensationToken->node->represents<BPMN::CompensateStartEvent>() ) {
     const_cast<StateMachine*>(compensationToken->owner)->tokens.push_back(std::move(*it));
   }
   else {
     tokens.push_back(std::move(*it));
   }
-//std::cerr << engine->commands.size() << " > Compensate " << compensationToken->node->id << std::endl;
+//std::cerr << engine->commands.size() <<" Compensate " << compensationToken->node->id << "/scope: " << compensationToken->owner->scope->id << std::endl;
+
+  // erase compensation token and move to active tokens
+  erase_ptr<Token>(compensationTokens,compensationToken);
+
   engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,compensationToken), compensationToken);
 
-  // got to next compensation token
+  // go to next compensation token
   it++;
   while ( it != compensations.rend() ) {
+//std::cerr << engine->commands.size() <<"+Compensate " << compensationToken->node->id << "/scope: " << compensationToken->owner->scope->id << std::endl;
     // create awaiters for all other compensations
     if ( compensationToken->node->represents<BPMN::CompensateStartEvent>() ) {
       tokenAwaitingCompensationEventSubProcess[const_cast<StateMachine*>(compensationToken->owner)] = it->get();

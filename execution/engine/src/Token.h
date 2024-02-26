@@ -134,7 +134,7 @@ public:
   nlohmann::ordered_json jsonify() const;
 private:
 
-  bool isFeasible(); ///< Check restrictions within current and ancestor scopes
+  bool isFeasible() const; ///< Check restrictions within current and ancestor scopes
 
   void advanceFromCreated();
   void advanceToReady();
