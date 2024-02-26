@@ -229,6 +229,8 @@ void Engine::process(const ExitEvent& event) {
 
 void Engine::process(const MessageDeliveryEvent& event) {
   Token* token = const_cast<Token*>(event.token);
+  assert( token->node );
+
   Message* message = const_cast<Message*>(event.message);
 
   // update token status 
