@@ -13,7 +13,7 @@ Recorder::Recorder(std::ostream &os, size_t maxSize) : Listener(), objective(0),
 {
   log = nlohmann::ordered_json::array();
   if (this->os.has_value()) {
-    this->os.value().get() << "[";
+    this->os.value().get() << Color::Modifier(Color::FG_LIGHT_GRAY) << "[" << Color::Modifier(Color::FG_DEFAULT);
   }
   isFirst = true;
 }
@@ -21,7 +21,7 @@ Recorder::Recorder(std::ostream &os, size_t maxSize) : Listener(), objective(0),
 Recorder::~Recorder()
 {
   if (os.has_value()) {
-    os.value().get() << "]" << std::endl;
+    os.value().get() << Color::Modifier(Color::FG_LIGHT_GRAY) << "]" << Color::Modifier(Color::FG_DEFAULT) << std::endl;
     os.value().get()  << "Objective (maximization): " << (float)objective << std::endl;
     os.value().get()  << "Objective (minimization): " << -(float)objective << std::endl;
   }
@@ -33,9 +33,9 @@ void Recorder::update( const Token* token ) {
 
   if (os.has_value()) {
     if ( !isFirst ) {
-      os.value().get() << ",";
+      os.value().get() << Color::Modifier(Color::FG_LIGHT_GRAY) <<"," << Color::Modifier(Color::FG_DEFAULT);
     }
-    os.value().get() << json.dump();
+    os.value().get() << Color::Modifier(Color::FG_LIGHT_GRAY) <<json.dump() << Color::Modifier(Color::FG_DEFAULT);
     isFirst = false;
   }
 
