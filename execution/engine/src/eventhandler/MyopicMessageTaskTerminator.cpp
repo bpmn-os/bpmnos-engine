@@ -11,9 +11,6 @@ MyopicMessageTaskTerminator::MyopicMessageTaskTerminator()
 
 std::unique_ptr<Event> MyopicMessageTaskTerminator::fetchEvent( const SystemState* systemState ) {
   // determine whether there is another decision pending
-  if ( !systemState->tokensAwaitingReadyEvent.empty() ) {
-    return nullptr;
-  }
   if ( !systemState->tokensAwaitingParallelEntry.empty() ) {
     return nullptr;
   }
@@ -31,6 +28,10 @@ std::unique_ptr<Event> MyopicMessageTaskTerminator::fetchEvent( const SystemStat
   }
 
   // only message delivery decisions are pending
+
+  if ( !systemState->tokensAwaitingReadyEvent.empty() ) {
+    return nullptr;
+  }
 
   if ( !systemState->tokensAwaitingTaskCompletion.empty() ) {
     return nullptr;
