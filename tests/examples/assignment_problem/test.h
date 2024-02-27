@@ -76,9 +76,93 @@ SCENARIO( "Assignment problem", "[examples][assignment_problem]" ) {
 //      Execution::Recorder recorder(std::cerr);
       engine.addListener(&recorder);
       engine.run(scenario.get());
-      THEN( "Then the message is delivered" ) {
+      THEN( "Then the messages are delivered" ) {
         REQUIRE( recorder.find(nlohmann::json{{"nodeId", "SendRequestTask"},{"state", "COMPLETED"}}).size() == 3 );
         REQUIRE( recorder.find(nlohmann::json{{"nodeId", "ReceiveRequestTask"},{"state", "COMPLETED"}}).size() == 3 );
+      }
+    }
+  }
+
+  GIVEN( "Three clients and two servers" ) {
+
+    std::string csv =
+      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
+      "ClientProcess,Client1,,\n"
+      "ClientProcess,Client2,,\n"
+      "ClientProcess,Client3,,\n"
+      "ServerProcess,Server1,,\n"
+      "ServerProcess,Server2,,\n"
+    ;
+
+    Model::StaticDataProvider dataProvider(modelFile,csv);
+    auto scenario = dataProvider.createScenario();
+
+    WHEN( "The engine is started with a recorder" ) {
+      Execution::Engine engine;
+      Execution::ReadyHandler readyHandler;
+      Execution::InstantEntryHandler entryHandler;
+      Execution::DeterministicTaskCompletionHandler completionHandler;
+      Execution::FirstMatchingMessageHandler messageHandler;
+      Execution::MyopicMessageTaskTerminator messageTaskTerminator;
+      Execution::InstantExitHandler exitHandler;
+      Execution::TimeWarp timeHandler;
+      engine.addEventHandler(&messageHandler);
+      engine.addEventHandler(&readyHandler);
+      engine.addEventHandler(&entryHandler);
+      engine.addEventHandler(&completionHandler);
+      engine.addEventHandler(&exitHandler);
+      engine.addEventHandler(&messageTaskTerminator);
+      engine.addEventHandler(&timeHandler);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
+      engine.addListener(&recorder);
+      engine.run(scenario.get());
+      THEN( "Then one message is not delivered" ) {
+        REQUIRE( recorder.find(nlohmann::json{{"nodeId", "SendRequestTask"},{"state", "COMPLETED"}}).size() == 2 );
+        REQUIRE( recorder.find(nlohmann::json{{"nodeId", "SendRequestTask"},{"state", "FAILED"}}).size() == 1 );
+        REQUIRE( recorder.find(nlohmann::json{{"nodeId", "ReceiveRequestTask"},{"state", "COMPLETED"}}).size() == 2 );
+      }
+    }
+  }
+
+  GIVEN( "Two clients and three servers" ) {
+
+    std::string csv =
+      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
+      "ClientProcess,Client1,,\n"
+      "ClientProcess,Client2,,\n"
+      "ServerProcess,Server1,,\n"
+      "ServerProcess,Server2,,\n"
+      "ServerProcess,Server3,,\n"
+    ;
+
+    Model::StaticDataProvider dataProvider(modelFile,csv);
+    auto scenario = dataProvider.createScenario();
+
+    WHEN( "The engine is started with a recorder" ) {
+      Execution::Engine engine;
+      Execution::ReadyHandler readyHandler;
+      Execution::InstantEntryHandler entryHandler;
+      Execution::DeterministicTaskCompletionHandler completionHandler;
+      Execution::FirstMatchingMessageHandler messageHandler;
+      Execution::MyopicMessageTaskTerminator messageTaskTerminator;
+      Execution::InstantExitHandler exitHandler;
+      Execution::TimeWarp timeHandler;
+      engine.addEventHandler(&messageHandler);
+      engine.addEventHandler(&readyHandler);
+      engine.addEventHandler(&entryHandler);
+      engine.addEventHandler(&completionHandler);
+      engine.addEventHandler(&exitHandler);
+      engine.addEventHandler(&messageTaskTerminator);
+      engine.addEventHandler(&timeHandler);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
+      engine.addListener(&recorder);
+      engine.run(scenario.get());
+      THEN( "Then one server receives no message" ) {
+        REQUIRE( recorder.find(nlohmann::json{{"nodeId", "SendRequestTask"},{"state", "COMPLETED"}}).size() == 2 );
+        REQUIRE( recorder.find(nlohmann::json{{"nodeId", "ReceiveRequestTask"},{"state", "COMPLETED"}}).size() == 2 );
+        REQUIRE( recorder.find(nlohmann::json{{"nodeId", "ReceiveRequestTask"},{"state", "FAILED"}}).size() == 1 );
       }
     }
   }
