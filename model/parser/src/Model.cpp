@@ -29,7 +29,7 @@ std::unique_ptr<BPMN::EventSubProcess> Model::createEventSubProcess(XML::bpmn::t
   // bind attributes, restrictions, and operators to all processes
   return bind<BPMN::EventSubProcess>(
     BPMN::Model::createEventSubProcess(subProcess,parent),
-    std::make_unique<BPMNOS::Model::ExtensionElements>(subProcess)
+    std::make_unique<BPMNOS::Model::ExtensionElements>(subProcess,parent)
   );
 }
 
