@@ -200,7 +200,7 @@ void StateMachine::createMultiInstanceActivityTokens(Token* token) {
       }
       else {
         // newly created tokens have to wait for previous token copy
-        const_cast<SystemState*>(systemState)->tokenAwaitingExit[tokenCopy] = tokens.back().get();
+        const_cast<SystemState*>(systemState)->tokenAwaitingMultiInstanceExit[tokenCopy] = tokens.back().get();
       }
     }
     else if ( activity->loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::MultiInstanceParallel ) {
@@ -230,13 +230,13 @@ void StateMachine::deleteMultiInstanceActivityToken(Token* token) {
 
   if ( activity->loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::MultiInstanceSequential ) {
     // advance next token for sequential multi-instance activity
-    auto& tokenAwaitingExit = const_cast<SystemState*>(systemState)->tokenAwaitingExit;
-    auto it = tokenAwaitingExit.find(token);
+    auto& tokenAwaitingMultiInstanceExit = const_cast<SystemState*>(systemState)->tokenAwaitingMultiInstanceExit;
+    auto it = tokenAwaitingMultiInstanceExit.find(token);
   
-    if ( it != tokenAwaitingExit.end() ) {
+    if ( it != tokenAwaitingMultiInstanceExit.end() ) {
       auto waitingToken = it->second;
       waitingToken->awaitEntryEvent();
-      tokenAwaitingExit.erase(it);
+      tokenAwaitingMultiInstanceExit.erase(it);
     }
   }
 
@@ -343,7 +343,7 @@ void StateMachine::interruptActivity(Token* token) {
     for ( auto activeToken : it->second ) {
 //std::cerr << "withdraw token at " << activeToken->node->id << "/" << activeToken << std::endl;
       if ( activity->loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::MultiInstanceSequential ) {
-        const_cast<SystemState*>(systemState)->tokenAwaitingExit.erase(activeToken);
+        const_cast<SystemState*>(systemState)->tokenAwaitingMultiInstanceExit.erase(activeToken);
       }
 
       const_cast<SystemState*>(systemState)->tokenAtMultiInstanceActivity.erase(activeToken);

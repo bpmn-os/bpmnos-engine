@@ -107,7 +107,7 @@ public:
   auto_list<Token,Values> tokensAwaitingMessageDelivery; ///< Container holding all tokens awaiting a message delivery event with associated header values
 
   std::unordered_map< Token*, Token* > tokenAtMultiInstanceActivity; ///< Map holding the main token waiting at a multi-instance (or loop) activity.
-  std::unordered_map< Token*, Token* > tokenAwaitingExit; ///< Map holding the token waiting for the exit of an instantiation of a multi-instance (or loop) activity.
+  std::unordered_map< Token*, Token* > tokenAwaitingMultiInstanceExit; ///< Map holding the token waiting for the exit of an instantiation of a multi-instance (or loop) activity.
   std::unordered_map< Token*, std::vector<Token*> > tokensAtActivityInstance; ///< Map holding all tokens representing an active instance of a multi-instance (or loop) activity for each token waiting at the multi-instance (or loop) activity.
   std::unordered_map< Token*, std::vector<BPMNOS::Values> > exitStatusAtActivityInstance; ///< Map holding the exit status of all instances of a multi-instance (or loop) activity for each token waiting at the multi-instance (or loop) activity.
 

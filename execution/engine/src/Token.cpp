@@ -104,7 +104,7 @@ Token::~Token() {
           else {
             systemState->tokenAtMultiInstanceActivity.erase(this);
             if ( activity->loopCharacteristics.value() != BPMN::Activity::LoopCharacteristics::MultiInstanceSequential ) {
-              systemState->tokenAwaitingExit.erase(this);
+              systemState->tokenAwaitingMultiInstanceExit.erase(this);
             }
           }
         }
