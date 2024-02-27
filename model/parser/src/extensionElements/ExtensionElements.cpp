@@ -75,8 +75,8 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, BPMN:
         try {
           restrictions.push_back(std::make_unique<Restriction>(&restriction,attributeMap));
         }
-        catch ( ... ){
-          throw std::runtime_error("ExtensionElements: illegal parameters for restriction '" + (std::string)restriction.id.value + "'");
+        catch ( const std::runtime_error& error ) {
+          throw std::runtime_error("ExtensionElements: illegal parameters for restriction '" + (std::string)restriction.id.value + "'.\n" + error.what());
         }
       }
     }    
@@ -92,8 +92,8 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, BPMN:
             isInstantaneous = false;
           }
         }
-        catch ( ... ){
-          throw std::runtime_error("ExtensionElements: illegal parameters for operator '" + (std::string)operator_.id.value + "'");
+        catch ( const std::runtime_error& error ) {
+          throw std::runtime_error("ExtensionElements: illegal parameters for operator '" + (std::string)operator_.id.value + "'.\n" + error.what() );
         }
       }
     }    
@@ -103,8 +103,8 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, BPMN:
         try {
           decisions.push_back(std::make_unique<Decision>(&decision,attributeMap));
         }
-        catch ( ... ){
-          throw std::runtime_error("ExtensionElements: illegal attributes for decision '" + (std::string)decision.id.value + "'");
+        catch ( const std::runtime_error& error ) {
+          throw std::runtime_error("ExtensionElements: illegal attributes for decision '" + (std::string)decision.id.value + "'.\n" + error.what());
         }
       }
     }    

@@ -14,6 +14,7 @@ using namespace BPMNOS;
 /* Model */
 #include "model/parser/test.h"
 #include "model/expression/test.h"
+#include "model/lookup/test.h"
 /* Data provider */
 #include "data/static/test.h"
 #include "data/dynamic/test.h"
@@ -51,6 +52,9 @@ using namespace BPMNOS;
 
 // Status
 #include "execution/status/test.h"
+
+// Examples
+#include "examples/assignment_problem/test.h"
 #endif // ALL_TESTS
 
 #ifndef ALL_TESTS

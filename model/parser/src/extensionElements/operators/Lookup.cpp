@@ -39,24 +39,10 @@ Lookup::Lookup(XML::bpmnos::tOperator* operator_, AttributeMap& attributeMap)
     }
   }
 
-  Parameter* parameter = nullptr;
+  auto& filenameParameter = parameterMap["filename"];
 
-
-  if ( !parameter->value.has_value() || parameter->value.value().get().value == "file" ) {
-    try {
-      parameter = parameterMap.at("filename").get();
-    }
-    catch ( ... ){
-      throw std::runtime_error("LookupOperator: required parameter 'filename' not provided for operator '" + id + "'");
-    }
-  }
-  else {
-    throw std::runtime_error("LookupOperator: unknown source of operator '" + id + "'");
-  }
-
-
-  if ( parameter->value.has_value() ) {
-    filename = parameter->value.value().get().value;
+  if ( filenameParameter->value.has_value() ) {
+    filename = filenameParameter->value.value().get().value;
   }
   else {
     throw std::runtime_error("LookupOperator: filename missing for operator '" + id + "'");
