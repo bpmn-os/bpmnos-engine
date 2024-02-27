@@ -12,7 +12,6 @@ LinearExpression::LinearExpression(XML::bpmnos::tOperator* operator_, AttributeM
   }
 
   parameter = parameterMap.at("linear").get();
-
   if ( parameter->attribute.has_value() || !parameter->value.has_value() ) {
     throw std::runtime_error("LinearExpression: expression of operator '" + id + "' must be given by value");
   }
@@ -35,10 +34,10 @@ LinearExpression::LinearExpression(XML::bpmnos::tOperator* operator_, AttributeM
     }
 
     Attribute* variable = nullptr;
-    for ( auto &[key, value] : attributeMap ) {
+    for ( auto &[key, attribute] : attributeMap ) {
       size_t pos = part.find(key);
       if ( pos != std::string::npos ) {
-        variable = value;
+        variable = attribute;
         part.erase(pos,key.length()); // remove attribute name from part
         part.erase(remove(part.begin(), part.end(), '*'), part.end());
         break;
