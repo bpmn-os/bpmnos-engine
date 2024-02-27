@@ -92,7 +92,7 @@ public:
 
   //TODO: make sure that elements are deleted when no longer required
   std::unordered_map< Token*, std::vector<Token*> > tokensAwaitingBoundaryEvent; ///< Map holding a container of all tokens at a boundary event awaiting to be triggered for each token at an activity
-  std::unordered_map< Token*, Token* > tokenAtAssociatedActivity; ///< Map holding the token residing at the associated activity for each token at a boundary event
+  std::unordered_map< Token*, Token* > tokenAssociatedToBoundaryEventToken; ///< Map holding the token residing at the associated activity for each token at a boundary event
 
 
   auto_schedule<Token, Values> tokensAwaitingTaskCompletion; ///< Sorted container holding all tokens awaiting a task completion event

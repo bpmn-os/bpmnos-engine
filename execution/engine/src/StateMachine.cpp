@@ -80,7 +80,7 @@ void StateMachine::initiateBoundaryEvent(Token* token, const BPMN::FlowNode* nod
 //  throw std::runtime_error("StateMachine: boundary events not yet implemented!");
   tokens.push_back( std::make_shared<Token>(this,node,token->status) );
   auto createdToken = tokens.back().get();
-  const_cast<SystemState*>(systemState)->tokenAtAssociatedActivity[createdToken] = token;
+  const_cast<SystemState*>(systemState)->tokenAssociatedToBoundaryEventToken[createdToken] = token;
   const_cast<SystemState*>(systemState)->tokensAwaitingBoundaryEvent[token].push_back(createdToken);
   createdToken->advanceToEntered();
 }

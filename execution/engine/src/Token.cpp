@@ -58,7 +58,7 @@ Token::~Token() {
     }
 
     if ( node->represents<BPMN::BoundaryEvent>() ) {
-      systemState->tokenAtAssociatedActivity.erase(this);
+      systemState->tokenAssociatedToBoundaryEventToken.erase(this);
     }
 
     if ( node->represents<BPMN::CompensateThrowEvent>() ||
@@ -635,7 +635,7 @@ void Token::advanceToCompleted() {
     }
     else if ( auto boundaryEvent = node->represents<BPMN::BoundaryEvent>() ) {
       auto stateMachine = const_cast<StateMachine*>(owner);
-      auto tokenAtActivity = const_cast<SystemState*>(owner->systemState)->tokenAtAssociatedActivity[this];
+      auto tokenAtActivity = const_cast<SystemState*>(owner->systemState)->tokenAssociatedToBoundaryEventToken[this];
       erase_ptr<Token>(const_cast<SystemState*>(owner->systemState)->tokensAwaitingBoundaryEvent[tokenAtActivity],this);
 
       if ( boundaryEvent->isInterrupting ) {
