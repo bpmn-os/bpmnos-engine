@@ -80,7 +80,7 @@ public:
   }  
 
   bool empty() const {
-    for ( auto& _ : *this ) {
+    for ( [[maybe_unused]] auto& _ : *this ) {
       return false;
     }
     return true;

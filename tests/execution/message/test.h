@@ -174,6 +174,7 @@ SCENARIO( "Message tasks", "[execution][message]" ) {
       Execution::InstantEntryHandler entryHandler;
       Execution::DeterministicTaskCompletionHandler completionHandler;
       Execution::FirstMatchingMessageHandler messageHandler;
+      Execution::MyopicMessageTaskTerminator messageTaskTerminator;
       Execution::InstantExitHandler exitHandler;
       Execution::TimeWarp timeHandler;
       engine.addEventHandler(&messageHandler);
@@ -181,6 +182,7 @@ SCENARIO( "Message tasks", "[execution][message]" ) {
       engine.addEventHandler(&entryHandler);
       engine.addEventHandler(&completionHandler);
       engine.addEventHandler(&exitHandler);
+      engine.addEventHandler(&messageTaskTerminator);
       engine.addEventHandler(&timeHandler);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
@@ -209,6 +211,7 @@ SCENARIO( "Message tasks", "[execution][message]" ) {
       Execution::InstantEntryHandler entryHandler;
       Execution::DeterministicTaskCompletionHandler completionHandler;
       Execution::FirstMatchingMessageHandler messageHandler;
+      Execution::MyopicMessageTaskTerminator messageTaskTerminator;
       Execution::InstantExitHandler exitHandler;
       Execution::TimeWarp timeHandler;
       engine.addEventHandler(&messageHandler);
@@ -216,6 +219,163 @@ SCENARIO( "Message tasks", "[execution][message]" ) {
       engine.addEventHandler(&entryHandler);
       engine.addEventHandler(&completionHandler);
       engine.addEventHandler(&exitHandler);
+      engine.addEventHandler(&messageTaskTerminator);
+      engine.addEventHandler(&timeHandler);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
+      engine.addListener(&recorder);
+      engine.run(scenario.get());
+      THEN( "Then the send task fails" ) {
+        REQUIRE( recorder.find(nlohmann::json{{"processId", "Process_1"},{"instanceId", "Instance_1"},{"nodeId", "SendTask_1"},{"state", "FAILED"}}).size() == 1 );
+      }
+    }
+  }
+
+  GIVEN( "Catching instance without sender" ) {
+
+    std::string csv =
+      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
+      "Process_2, Instance_2,,\n"
+    ;
+
+    Model::StaticDataProvider dataProvider(modelFile,csv);
+    auto scenario = dataProvider.createScenario();
+
+    WHEN( "The engine is started with a recorder" ) {
+      Execution::Engine engine;
+      Execution::ReadyHandler readyHandler;
+      Execution::InstantEntryHandler entryHandler;
+      Execution::DeterministicTaskCompletionHandler completionHandler;
+      Execution::FirstMatchingMessageHandler messageHandler;
+      Execution::MyopicMessageTaskTerminator messageTaskTerminator;
+      Execution::InstantExitHandler exitHandler;
+      Execution::TimeWarp timeHandler;
+      engine.addEventHandler(&messageHandler);
+      engine.addEventHandler(&readyHandler);
+      engine.addEventHandler(&entryHandler);
+      engine.addEventHandler(&completionHandler);
+      engine.addEventHandler(&exitHandler);
+      engine.addEventHandler(&messageTaskTerminator);
+      engine.addEventHandler(&timeHandler);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
+      engine.addListener(&recorder);
+      engine.run(scenario.get());
+      THEN( "Then the receive tasks fails" ) {
+        REQUIRE( recorder.find(nlohmann::json{{"processId", "Process_2"},{"instanceId", "Instance_2"},{"nodeId", "ReceiveTask_2"},{"state", "FAILED"}}).size() == 1 );
+      }
+    }
+  }
+
+  GIVEN( "Throwing instance waiting for recipient" ) {
+
+    std::string csv =
+      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
+      "Process_1, Instance_1,Timestamp,0\n"
+      "Process_2, Instance_2,Timestamp,1\n"
+    ;
+
+    Model::StaticDataProvider dataProvider(modelFile,csv);
+    auto scenario = dataProvider.createScenario();
+
+    WHEN( "The engine is started with a recorder" ) {
+      Execution::Engine engine;
+      Execution::ReadyHandler readyHandler;
+      Execution::InstantEntryHandler entryHandler;
+      Execution::DeterministicTaskCompletionHandler completionHandler;
+      Execution::FirstMatchingMessageHandler messageHandler;
+      Execution::MyopicMessageTaskTerminator messageTaskTerminator;
+      Execution::InstantExitHandler exitHandler;
+      Execution::TimeWarp timeHandler;
+      engine.addEventHandler(&messageHandler);
+      engine.addEventHandler(&readyHandler);
+      engine.addEventHandler(&entryHandler);
+      engine.addEventHandler(&completionHandler);
+      engine.addEventHandler(&exitHandler);
+      engine.addEventHandler(&messageTaskTerminator);
+      engine.addEventHandler(&timeHandler);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
+      engine.addListener(&recorder);
+      engine.run(scenario.get());
+      THEN( "Both message tasks fail" ) {
+        auto completionLog1 = recorder.find(nlohmann::json{{"processId", "Process_1"},{"state", "FAILED"}});
+        REQUIRE( completionLog1.back()["status"]["timestamp"] == 0.0 );
+        auto completionLog2 = recorder.find(nlohmann::json{{"processId", "Process_2"},{"state", "FAILED"}});
+        REQUIRE( completionLog2.back()["status"]["timestamp"] == 1.0 );
+      }
+    }
+  }
+
+}
+
+SCENARIO( "Message tasks with timer", "[execution][message]" ) {
+  const std::string modelFile = "execution/message/Message_tasks_with_timer.bpmn";
+  REQUIRE_NOTHROW( Model::Model(modelFile) );
+
+  GIVEN( "Two instances without input" ) {
+
+    std::string csv =
+      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
+      "Process_1, Instance_1,,\n"
+      "Process_2, Instance_2,,\n"
+    ;
+
+    Model::StaticDataProvider dataProvider(modelFile,csv);
+    auto scenario = dataProvider.createScenario();
+
+    WHEN( "The engine is started with a recorder" ) {
+      Execution::Engine engine;
+      Execution::ReadyHandler readyHandler;
+      Execution::InstantEntryHandler entryHandler;
+      Execution::DeterministicTaskCompletionHandler completionHandler;
+      Execution::FirstMatchingMessageHandler messageHandler;
+      Execution::MyopicMessageTaskTerminator messageTaskTerminator;
+      Execution::InstantExitHandler exitHandler;
+      Execution::TimeWarp timeHandler;
+      engine.addEventHandler(&messageHandler);
+      engine.addEventHandler(&readyHandler);
+      engine.addEventHandler(&entryHandler);
+      engine.addEventHandler(&completionHandler);
+      engine.addEventHandler(&exitHandler);
+      engine.addEventHandler(&messageTaskTerminator);
+      engine.addEventHandler(&timeHandler);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
+      engine.addListener(&recorder);
+      engine.run(scenario.get());
+      THEN( "Then the message is delivered" ) {
+        REQUIRE( recorder.find(nlohmann::json{{"processId", "Process_1"},{"instanceId", "Instance_1"},{"nodeId", "SendTask_1"},{"state", "COMPLETED"}}).size() == 1 );
+        REQUIRE( recorder.find(nlohmann::json{{"processId", "Process_2"},{"instanceId", "Instance_2"},{"nodeId", "ReceiveTask_2"},{"state", "COMPLETED"}}).size() == 1 );
+      }
+    }
+  }
+
+  GIVEN( "Throwing instance without recipient" ) {
+
+    std::string csv =
+      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
+      "Process_1, Instance_1,,\n"
+    ;
+
+    Model::StaticDataProvider dataProvider(modelFile,csv);
+    auto scenario = dataProvider.createScenario();
+
+    WHEN( "The engine is started with a recorder" ) {
+      Execution::Engine engine;
+      Execution::ReadyHandler readyHandler;
+      Execution::InstantEntryHandler entryHandler;
+      Execution::DeterministicTaskCompletionHandler completionHandler;
+      Execution::FirstMatchingMessageHandler messageHandler;
+      Execution::MyopicMessageTaskTerminator messageTaskTerminator;
+      Execution::InstantExitHandler exitHandler;
+      Execution::TimeWarp timeHandler;
+      engine.addEventHandler(&messageHandler);
+      engine.addEventHandler(&readyHandler);
+      engine.addEventHandler(&entryHandler);
+      engine.addEventHandler(&completionHandler);
+      engine.addEventHandler(&exitHandler);
+      engine.addEventHandler(&messageTaskTerminator);
       engine.addEventHandler(&timeHandler);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
@@ -243,6 +403,7 @@ SCENARIO( "Message tasks", "[execution][message]" ) {
       Execution::InstantEntryHandler entryHandler;
       Execution::DeterministicTaskCompletionHandler completionHandler;
       Execution::FirstMatchingMessageHandler messageHandler;
+      Execution::MyopicMessageTaskTerminator messageTaskTerminator;
       Execution::InstantExitHandler exitHandler;
       Execution::TimeWarp timeHandler;
       engine.addEventHandler(&messageHandler);
@@ -250,6 +411,7 @@ SCENARIO( "Message tasks", "[execution][message]" ) {
       engine.addEventHandler(&entryHandler);
       engine.addEventHandler(&completionHandler);
       engine.addEventHandler(&exitHandler);
+      engine.addEventHandler(&messageTaskTerminator);
       engine.addEventHandler(&timeHandler);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
@@ -278,6 +440,7 @@ SCENARIO( "Message tasks", "[execution][message]" ) {
       Execution::InstantEntryHandler entryHandler;
       Execution::DeterministicTaskCompletionHandler completionHandler;
       Execution::FirstMatchingMessageHandler messageHandler;
+      Execution::MyopicMessageTaskTerminator messageTaskTerminator;
       Execution::InstantExitHandler exitHandler;
       Execution::TimeWarp timeHandler;
       engine.addEventHandler(&messageHandler);
@@ -285,18 +448,20 @@ SCENARIO( "Message tasks", "[execution][message]" ) {
       engine.addEventHandler(&entryHandler);
       engine.addEventHandler(&completionHandler);
       engine.addEventHandler(&exitHandler);
+      engine.addEventHandler(&messageTaskTerminator);
       engine.addEventHandler(&timeHandler);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       engine.addListener(&recorder);
       engine.run(scenario.get());
-      THEN( "Then the message is delivered" ) {
+      THEN( "Then the message is delivered at time 1" ) {
         auto completionLog1 = recorder.find(nlohmann::json{{"processId", "Process_1"},{"state", "COMPLETED"}});
         REQUIRE( completionLog1.back()["status"]["timestamp"] == 1.0 );
         auto completionLog2 = recorder.find(nlohmann::json{{"processId", "Process_2"},{"state", "COMPLETED"}});
         REQUIRE( completionLog2.back()["status"]["timestamp"] == 1.0 );
       }
     }
+
   }
 
 }
