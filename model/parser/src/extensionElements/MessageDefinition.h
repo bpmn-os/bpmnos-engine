@@ -16,7 +16,7 @@ class MessageDefinition {
 public:
   MessageDefinition(XML::bpmnos::tMessage* message, AttributeMap& attributeMap);
   XML::bpmnos::tMessage* element;
-  std::string& name; ///< Message name
+  BPMNOS::number name; ///< Message name
   ParameterMap parameterMap; ///< Map allowing to look up parameters by their names.
   std::vector< std::string > header; ///< Set of parameter names always beginning with "sender" and "recipient"
   enum Index { Name, Sender, Recipient };

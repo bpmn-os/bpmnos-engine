@@ -7,10 +7,10 @@ using namespace BPMNOS::Model;
 
 MessageDefinition::MessageDefinition(XML::bpmnos::tMessage* message, AttributeMap& attributeMap)
   : element(message)
-  , name(message->name.value.value)
+  , name( BPMNOS::to_number(message->name.value.value,STRING) )
 {
     header.resize(3);
-    header[ Index::Name ] = name;
+    header[ Index::Name ] = "name";
     header[ Index::Sender ] = "sender";
     header[ Index::Recipient ] = "recipient";
 
@@ -18,7 +18,7 @@ MessageDefinition::MessageDefinition(XML::bpmnos::tMessage* message, AttributeMa
     for ( XML::bpmnos::tParameter& parameter : element->getChildren<XML::bpmnos::tParameter>() ) {
       auto& key = parameter.name.value.value;
       parameterMap.emplace(key,std::make_unique<Parameter>(&parameter,attributeMap));
-      if ( key != "sender" && key != "recipient" ) {
+      if ( key != "name" && key != "sender" && key != "recipient" ) {
         additionalHeader.insert(key);
       }
     }
@@ -35,7 +35,10 @@ BPMNOS::Values MessageDefinition::getSenderHeader(const BPMNOS::Values& status) 
   BPMNOS::Values headerValues;
 
   for ( auto& key : header ) {
-    if ( key == "sender" ) {
+    if ( key == "name" ) {
+      headerValues.push_back( name );
+    }
+    else if ( key == "sender" ) {
       headerValues.push_back( status[BPMNOS::Model::ExtensionElements::Index::Instance] );
     }
     else {
@@ -50,7 +53,10 @@ BPMNOS::Values MessageDefinition::getRecipientHeader(const BPMNOS::Values& statu
   BPMNOS::Values headerValues;
 
   for ( auto& key : header ) {
-    if ( key == "recipient" ) {
+    if ( key == "name" ) {
+      headerValues.push_back( name );
+    }
+    else if ( key == "recipient" ) {
       headerValues.push_back( status[BPMNOS::Model::ExtensionElements::Index::Instance] );
     }
     else {

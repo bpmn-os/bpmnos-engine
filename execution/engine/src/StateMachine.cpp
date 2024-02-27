@@ -283,7 +283,7 @@ void StateMachine::deleteMultiInstanceActivityToken(Token* token) {
     assert(!"cannot find tokens created for multi instance activity");
   }
 }
-// TODO: handle failures events
+// TODO: handle failure events
 // TODO: handle single-instance compensations
 // TODO: handle parallel compensations
 // TODO: set value from csv input
@@ -433,18 +433,30 @@ void StateMachine::run(const Values& status) {
 
   for ( auto token : tokens ) {
     if ( token->node ) {
-      if ( auto startEvent = token->node->represents<BPMN::TypedStartEvent>();
-        startEvent && !startEvent->isInterrupting
-      ) {
-        // token instantiates non-interrupting event subprocess
-        // get instantiation counter from context
-        auto context = const_cast<StateMachine*>(parentToken->owned.get());
-        auto counter = ++context->instantiations[token->node];
-        // append instantiation counter for disambiguation
-        const_cast<std::string&>(instanceId) = BPMNOS::to_string(token->status[BPMNOS::Model::ExtensionElements::Index::Instance].value(),STRING) + delimiter +  std::to_string(counter);
-        token->status[BPMNOS::Model::ExtensionElements::Index::Instance] = BPMNOS::to_number(instanceId,BPMNOS::ValueType::STRING);
-        const_cast<SystemState*>(systemState)->archive[ instanceId ] = weak_from_this();
-        registerRecipient();
+      if ( auto startEvent = token->node->represents<BPMN::TypedStartEvent>() ) {
+        // get new attribute vlaues
+        std::optional<BPMNOS::Values> values = ( systemState->assumedTime.has_value() ?
+          systemState->scenario->getAnticipatedValues(token->node->parent, token->status, systemState->currentTime ) :
+          systemState->scenario->getKnownValues(token->node->parent, token->status, systemState->currentTime )
+        );
+    
+        if ( !values.has_value() ) {
+          throw std::runtime_error("StateMachine: status of event subprocess '" + token->node->parent->id + "' not known at initialization");
+        }
+        
+        token->status.insert(token->status.end(), values.value().begin(), values.value().end());
+
+        if ( !startEvent->isInterrupting ) {
+          // token instantiates non-interrupting event subprocess
+          // get instantiation counter from context
+          auto context = const_cast<StateMachine*>(parentToken->owned.get());
+          auto counter = ++context->instantiations[token->node];
+          // append instantiation counter for disambiguation
+          const_cast<std::string&>(instanceId) = BPMNOS::to_string(token->status[BPMNOS::Model::ExtensionElements::Index::Instance].value(),STRING) + delimiter +  std::to_string(counter);
+          token->status[BPMNOS::Model::ExtensionElements::Index::Instance] = BPMNOS::to_number(instanceId,BPMNOS::ValueType::STRING);
+          const_cast<SystemState*>(systemState)->archive[ instanceId ] = weak_from_this();
+          registerRecipient();
+        }
       }
 //std::cerr << "Initial token: >" << token->jsonify().dump() << "<" << std::endl;
     }
@@ -460,6 +472,7 @@ void StateMachine::createChild(Token* parent, const BPMN::Scope* scope) {
   parent->owned->run(parent->status);
 }
 
+/*
 void StateMachine::createInterruptingEventSubprocess(const StateMachine* pendingEventSubProcess, const BPMNOS::Values& status) {
   interruptingEventSubProcess = std::make_shared<StateMachine>(pendingEventSubProcess);
   interruptingEventSubProcess->run(status);
@@ -469,6 +482,7 @@ void StateMachine::createNonInterruptingEventSubprocess(const StateMachine* pend
   nonInterruptingEventSubProcesses.push_back( std::make_shared<StateMachine>(pendingEventSubProcess) );
   nonInterruptingEventSubProcesses.back()->run(status);
 }
+*/
 
 void StateMachine::createCompensationTokenForBoundaryEvent(const BPMN::BoundaryEvent* compensateBoundaryEvent, BPMNOS::Values status) {
   std::shared_ptr<Token> compensationToken = std::make_shared<Token>(this,compensateBoundaryEvent, status);

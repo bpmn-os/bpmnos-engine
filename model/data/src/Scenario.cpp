@@ -174,9 +174,12 @@ BPMNOS::Values Scenario::getKnownInitialStatus(const Scenario::InstanceData* ins
   return initalStatus;
 }
 
-std::optional<BPMNOS::Values> Scenario::getKnownValues(const BPMN::FlowNode* node, Values& status, BPMNOS::number currentTime) const {
+std::optional<BPMNOS::Values> Scenario::getKnownValues(const BPMN::Node* node, Values& status, BPMNOS::number currentTime) const {
   // get instance id from status
   std::string instanceId = stringRegistry[ (long unsigned int)status[BPMNOS::Model::ExtensionElements::Index::Instance].value() ];
+  if ( auto pos = instanceId.find(delimiter); pos != std::string::npos ) {
+    instanceId = instanceId.substr(0, pos);
+  }
   auto& instance = instances.at(instanceId);
 
   Values values;
@@ -227,10 +230,15 @@ BPMNOS::Values Scenario::getAnticipatedInitialStatus(const Scenario::InstanceDat
 }
 
 
-BPMNOS::Values Scenario::getAnticipatedValues(const BPMN::FlowNode* node, Values& status, BPMNOS::number currentTime) const {
+BPMNOS::Values Scenario::getAnticipatedValues(const BPMN::Node* node, Values& status, BPMNOS::number currentTime) const {
   // get instance id from status
   std::string instanceId = stringRegistry[ (long unsigned int)status[BPMNOS::Model::ExtensionElements::Index::Instance].value() ];
+  if ( auto pos = instanceId.find(delimiter); pos != std::string::npos ) {
+    instanceId = instanceId.substr(0, pos);
+  }
+    
   auto& instance = instances.at(instanceId);
+
 
   Values values;
   for ( auto& attribute : node->extensionElements->as<const BPMNOS::Model::ExtensionElements>()->attributes ) {

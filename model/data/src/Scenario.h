@@ -50,6 +50,8 @@ public:
 
   unsigned int index;
 
+  static constexpr char delimiter = '^'; ///< Delimiter used for disambiguation of identifiers of non-interrupting event subprocesses
+
   /**
    * @brief Virtual method allowing derived scenarios to update their data.
    */
@@ -109,12 +111,12 @@ public:
    *
    * If at least one attribute value is not yet known, the returns std::nullopt.
    */
-  std::optional<BPMNOS::Values> getKnownValues(const BPMN::FlowNode* node, Values& status, BPMNOS::number currentTime) const;
+  std::optional<BPMNOS::Values> getKnownValues(const BPMN::Node* node, Values& status, BPMNOS::number currentTime) const;
 
   /**
    * @brief Method returning the disclosed values of new attributes.
    */
-  BPMNOS::Values getAnticipatedValues(const BPMN::FlowNode* node, Values& status, BPMNOS::number currentTime) const;
+  BPMNOS::Values getAnticipatedValues(const BPMN::Node* node, Values& status, BPMNOS::number currentTime) const;
 
   void addInstance(const BPMN::Process* process, const std::string& identifier, Data instantiation);
   void removeAnticipatedInstance(const std::string& identifier);

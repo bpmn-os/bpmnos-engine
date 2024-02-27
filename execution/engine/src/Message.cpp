@@ -65,7 +65,9 @@ nlohmann::ordered_json Message::jsonify() const {
   }
 
   for ( auto& [key,contentValue] : contentValueMap ) {
-    if ( std::get< std::optional<number> >(contentValue).has_value() ) {
+//std::cerr << "Key: " << key << std::endl;  
+    if ( std::holds_alternative< std::optional<number> >(contentValue) && std::get< std::optional<number> >(contentValue).has_value() ) {
+//std::cerr << "has value" << std::endl;  
       auto type = BPMNOS::ValueType::STRING;
       if ( auto it = messageDefinition->contentMap.find(key); it != messageDefinition->contentMap.end() ) {
         type = it->second->attribute->get().type;
@@ -74,9 +76,11 @@ nlohmann::ordered_json Message::jsonify() const {
       jsonObject["content"][key] = BPMNOS::to_string(value,type);
     }
     else if (std::holds_alternative<std::string>(contentValue)) {
+//std::cerr << "has string" << std::endl;  
       jsonObject["content"][key] = std::get< std::string >(contentValue);
     }
     else {
+//std::cerr << "else" << std::endl;  
       jsonObject["content"][key] = nullptr;
     }
   }
@@ -120,8 +124,8 @@ void Message::update(Token* token) const {
         throw std::runtime_error("Message: cannot receive content without attribute");
       }
       auto& attribute = definition->attribute->get();
-
-      if ( std::get< std::optional<number> >(contentValue).has_value() ) {
+//std::cerr << "Attribute: " << attribute.name << "/" << attribute.index << "/" << token->jsonify().dump() <<std::endl;
+      if ( std::holds_alternative< std::optional<number> >(contentValue) && std::get< std::optional<number> >(contentValue).has_value() ) {
         // use attribute value sent in message
         token->status[attribute.index] = std::get< std::optional<number> >(contentValue).value();
       }

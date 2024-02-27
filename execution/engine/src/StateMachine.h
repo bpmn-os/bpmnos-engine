@@ -4,6 +4,7 @@
 #include <bpmn++.h>
 #include "Token.h"
 #include "model/utility/src/Number.h"
+#include "model/data/src/Scenario.h"
 #include "execution/utility/src/auto_list.h"
 
 namespace BPMNOS::Execution {
@@ -55,7 +56,7 @@ private:
   friend class SystemState;
   friend class Token;
 
-  static constexpr char delimiter = '^'; ///< Delimiter used for disambiguation of identifiers of non-interrupting event subprocesses
+  static constexpr char delimiter = BPMNOS::Model::Scenario::delimiter; ///< Delimiter used for disambiguation of identifiers of non-interrupting event subprocesses
   std::map< const BPMN::FlowNode*, unsigned int > instantiations; ///< Instantiation counter for start events of non-interrupting event subprocesses
 
   void registerRecipient(); ///< Register new state machine to allow directed message delivery
@@ -68,9 +69,9 @@ private:
 
   void createCompensationEventSubProcess(const BPMN::EventSubProcess* eventSubProcess, BPMNOS::Values status); ///< Method creating the compensation event subproces of an activity
 
-  void createInterruptingEventSubprocess(const StateMachine* pendingEventSubProcess, const BPMNOS::Values& status); ///< Method creating the state machine for an interrupting event subprocess
+//  void createInterruptingEventSubprocess(const StateMachine* pendingEventSubProcess, const BPMNOS::Values& status); ///< Method creating the state machine for an interrupting event subprocess
 
-  void createNonInterruptingEventSubprocess(const StateMachine* pendingEventSubProcess, const BPMNOS::Values& status); ///< Method creating the state machine for an non-interrupting event subprocess
+//  void createNonInterruptingEventSubprocess(const StateMachine* pendingEventSubProcess, const BPMNOS::Values& status); ///< Method creating the state machine for an non-interrupting event subprocess
 
   void initiateBoundaryEvents(Token* token); ///< Method placing tokens on all boundary events
   void initiateBoundaryEvent(Token* token, const BPMN::FlowNode*); ///< Method placing tokens on a boundary event
