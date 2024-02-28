@@ -1,4 +1,5 @@
 #include "ExtensionElements.h"
+#include "model/parser/src/Model.h"
 #include "model/parser/src/xml/bpmnos/tStatus.h"
 #include "model/parser/src/xml/bpmnos/tAttribute.h"
 #include "model/parser/src/xml/bpmnos/tRestrictions.h"
@@ -12,12 +13,13 @@
 #include "model/parser/src/xml/bpmnos/tLoopCharacteristics.h"
 #include "model/parser/src/xml/bpmnos/tGuidance.h"
 #include "model/utility/src/Keywords.h"
-
+#include<iostream>
 using namespace BPMNOS::Model;
 
 ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent)
   : BPMN::ExtensionElements( baseElement )
   , parent(parent)
+  , hasSequentialPerformer(false)
   , isInstantaneous(true)
 {
 
@@ -132,6 +134,13 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, BPMN:
     }
   }
 
+  if ( auto process = baseElement->is<XML::bpmn::tProcess>() ) {
+    hasSequentialPerformer = BPMNOS::Model::Model::hasSequentialPerformer( process->resourceRole );
+  }
+  else if ( auto activity = baseElement->is<XML::bpmn::tActivity>() ) {
+    hasSequentialPerformer = BPMNOS::Model::Model::hasSequentialPerformer( activity->resourceRole );
+  }
+  
   // add all guidances
   for ( XML::bpmnos::tGuidance& item : element->getChildren<XML::bpmnos::tGuidance>() ) {
     auto guidance = std::make_unique<Guidance>(&item,attributeMap);

@@ -36,6 +36,8 @@ public:
 
   std::optional< std::unique_ptr<Parameter> > loopCardinality;
   std::optional< std::unique_ptr<Parameter> > loopIndex;
+  
+  bool hasSequentialPerformer; ///< Boolean indicating whether element has a performer with name "Sequential".
 
   inline std::size_t size() const { return parentSize + attributes.size(); };
 

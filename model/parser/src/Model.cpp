@@ -305,4 +305,16 @@ void Model::createMessageCandidates( BPMN::Process* sendingProcess, BPMN::FlowNo
   }
 }
 
+bool Model::hasSequentialPerformer(const std::vector< std::reference_wrapper<XML::bpmn::tResourceRole> >& resources) {
+  for ( auto& resource : resources ) {
+    if ( auto performer = resource.get().get<XML::bpmn::tPerformer>();
+      performer && performer->name.has_value() && performer->name.value().get().value.value == "Sequential"
+    ) {
+      return true;
+    } 
+  }
+  return false;
+}
+
+
 
