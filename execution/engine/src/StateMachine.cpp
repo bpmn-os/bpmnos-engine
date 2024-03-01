@@ -778,7 +778,9 @@ void StateMachine::shutdown() {
 //std::cerr << "start shutdown: " << scope->id << std::endl;
 
   // update status of parent token (if it doesn't have a sequential performer)
-  if ( parentToken && !scope->extensionElements->as<BPMNOS::Model::ExtensionElements>()->hasSequentialPerformer ) {
+  if ( parentToken &&
+    !scope->extensionElements->as<BPMNOS::Model::ExtensionElements>()->hasSequentialPerformer
+  ) {
     parentToken->setStatus(mergedStatus);
   }
   tokens.clear();

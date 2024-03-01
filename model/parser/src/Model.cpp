@@ -34,10 +34,17 @@ std::unique_ptr<BPMN::EventSubProcess> Model::createEventSubProcess(XML::bpmn::t
 }
 
 std::unique_ptr<BPMN::FlowNode> Model::createActivity(XML::bpmn::tActivity* activity, BPMN::Scope* parent) {
-  return bind<BPMN::FlowNode>(
+  auto node =  bind<BPMN::FlowNode>(
     BPMN::Model::createActivity(activity,parent),
     std::make_unique<BPMNOS::Model::ExtensionElements>(activity,parent)
   );
+  if ( auto adHocSubProcess = node->represents<SequentialAdHocSubProcess>();
+    adHocSubProcess && adHocSubProcess->performer == adHocSubProcess
+  ) {
+    // set flag in case performer is not explicitly provided
+    node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->hasSequentialPerformer = true;
+  }
+  return node;
 }
 
 std::unique_ptr<BPMN::SequenceFlow> Model::createSequenceFlow(XML::bpmn::tSequenceFlow* sequenceFlow, BPMN::Scope* scope) {
