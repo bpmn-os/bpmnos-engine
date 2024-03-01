@@ -26,7 +26,7 @@ SCENARIO( "Failed task", "[execution][boundaryevent]" ) {
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       engine.addListener(&recorder);
-      engine.run(scenario.get(),0);
+      engine.run(scenario.get(),1);
       THEN( "The dump of the recorder log is correct" ) {
 
         auto entryLog = recorder.find(nlohmann::json{{"state", "ENTERED"}});
@@ -40,9 +40,10 @@ SCENARIO( "Failed task", "[execution][boundaryevent]" ) {
         REQUIRE( failureLog[0]["nodeId"] == "Activity_1" );
 
         auto completionLog = recorder.find(nlohmann::json{{"state", "COMPLETED"}});
-        REQUIRE( completionLog[0]["nodeId"] == "BoundaryEvent_1" );
-        REQUIRE( completionLog[1]["nodeId"] == nullptr );
-        REQUIRE( recorder.log.back().dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"state\":\"DONE\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
+        REQUIRE( completionLog[0]["nodeId"] == "Activity_1" );
+        REQUIRE( completionLog[1]["nodeId"] == "BoundaryEvent_1" );
+        REQUIRE( completionLog[2]["nodeId"] == nullptr );
+        REQUIRE( recorder.log.back().dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"state\":\"DONE\",\"status\":{\"timestamp\":1.0,\"instance\":\"Instance_1\"}}" );
       }
     }
   }

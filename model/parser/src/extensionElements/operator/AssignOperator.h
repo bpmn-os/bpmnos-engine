@@ -1,5 +1,5 @@
-#ifndef BPMNOS_Model_Assign_H
-#define BPMNOS_Model_Assign_H
+#ifndef BPMNOS_Model_AssignOperator_H
+#define BPMNOS_Model_AssignOperator_H
 
 #include "model/parser/src/extensionElements/Attribute.h"
 #include "model/parser/src/extensionElements/Parameter.h"
@@ -13,9 +13,9 @@ namespace BPMNOS::Model {
 /**
  * @brief Class representing an operator that assigns a value to a status attribute.
  **/
-class Assign : public Operator {
+class AssignOperator : public Operator {
 public:
-  Assign(XML::bpmnos::tOperator* operator_, AttributeMap& attributeMap);
+  AssignOperator(XML::bpmnos::tOperator* operator_, AttributeMap& attributeMap);
   Parameter* parameter;
 
 /**
@@ -40,4 +40,4 @@ public:
 
 } // namespace BPMNOS::Model
 
-#endif // BPMNOS_Model_Assign_H
+#endif // BPMNOS_Model_AssignOperator_H

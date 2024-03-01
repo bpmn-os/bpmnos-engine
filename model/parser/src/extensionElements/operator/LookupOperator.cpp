@@ -1,9 +1,9 @@
-#include "Lookup.h"
+#include "LookupOperator.h"
 #include "model/parser/src/extensionElements/Operator.h"
 
 using namespace BPMNOS::Model;
 
-Lookup::Lookup(XML::bpmnos::tOperator* operator_, AttributeMap& attributeMap)
+LookupOperator::LookupOperator(XML::bpmnos::tOperator* operator_, AttributeMap& attributeMap)
   : Operator(operator_, attributeMap)
 {
   try {
@@ -52,7 +52,7 @@ Lookup::Lookup(XML::bpmnos::tOperator* operator_, AttributeMap& attributeMap)
   table = getLookupTable(filename);
 }
 
-void Lookup::apply(Values& status) const {
+void LookupOperator::apply(Values& status) const {
   std::unordered_map< std::string, Value > arguments;
   for ( auto& [name,lookupAttribute] : lookups) {
     if ( !status[lookupAttribute->index].has_value() ) {

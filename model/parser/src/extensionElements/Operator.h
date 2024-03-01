@@ -20,7 +20,7 @@ namespace BPMNOS::Model {
  **/
 class Operator {
 public:
-  Operator(XML::bpmnos::tOperator* operator_, AttributeMap& attributeMap);
+  Operator(XML::bpmnos::tOperator* operator_, const AttributeMap& attributeMap);
   virtual ~Operator() = default;  // Virtual destructor
   XML::bpmnos::tOperator* element;
 

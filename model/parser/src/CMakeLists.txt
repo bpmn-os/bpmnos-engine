@@ -8,15 +8,16 @@ list(TRANSFORM bpmn_SOURCES PREPEND "xml/")
 list(APPEND bpmn_SOURCES
   extensionElements/Attribute.cpp
   extensionElements/Parameter.cpp
+  extensionElements/Expression.cpp
+  extensionElements/expression/LinearExpression.cpp
+  extensionElements/expression/GenericExpression.cpp
   extensionElements/Restriction.cpp
   extensionElements/Operator.cpp
-  extensionElements/operators/Unassign.cpp
-  extensionElements/operators/Assign.cpp
-  extensionElements/operators/LookupTable.cpp
-  extensionElements/operators/Lookup.cpp
-  extensionElements/operators/Expression.cpp
-  extensionElements/operators/LinearExpression.cpp
-  extensionElements/operators/GenericExpression.cpp
+  extensionElements/operator/UnassignOperator.cpp
+  extensionElements/operator/AssignOperator.cpp
+  extensionElements/operator/LookupTable.cpp
+  extensionElements/operator/LookupOperator.cpp
+  extensionElements/operator/ExpressionOperator.cpp
   extensionElements/Decision.cpp
   extensionElements/Guidance.cpp
   extensionElements/Content.cpp
@@ -32,15 +33,16 @@ list(APPEND bpmn_SOURCES
 list(APPEND bpmn_HEADERS
   extensionElements/Attribute.h
   extensionElements/Parameter.h
+  extensionElements/Expression.h
+  extensionElements/expression/LinearExpression.h
+  extensionElements/expression/GenericExpression.h
   extensionElements/Restriction.h
   extensionElements/Operator.h
-  extensionElements/operators/Unassign.h
-  extensionElements/operators/Assign.h
-  extensionElements/operators/LookupTable.h
-  extensionElements/operators/Lookup.h
-  extensionElements/operators/Expression.h
-  extensionElements/operators/LinearExpression.h
-  extensionElements/operators/GenericExpression.h
+  extensionElements/operator/UnassignOperator.h
+  extensionElements/operator/AssignOperator.h
+  extensionElements/operator/LookupTable.h
+  extensionElements/operator/LookupOperator.h
+  extensionElements/operator/ExpressionOperator.h
   extensionElements/Decision.h
   extensionElements/Guidance.h
   extensionElements/Content.h

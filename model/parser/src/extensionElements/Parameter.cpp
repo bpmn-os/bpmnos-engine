@@ -2,7 +2,7 @@
 
 using namespace BPMNOS::Model;
 
-Parameter::Parameter(XML::bpmnos::tParameter* parameter, AttributeMap& attributeMap)
+Parameter::Parameter(XML::bpmnos::tParameter* parameter, const AttributeMap& attributeMap)
   : element(parameter)
   , name(parameter->name.value.value)
   , attribute(getAttribute(attributeMap))
@@ -10,7 +10,7 @@ Parameter::Parameter(XML::bpmnos::tParameter* parameter, AttributeMap& attribute
 {
 }
 
-std::optional< std::reference_wrapper<Attribute> > Parameter::getAttribute(AttributeMap& attributeMap) {
+std::optional< std::reference_wrapper<Attribute> > Parameter::getAttribute(const AttributeMap& attributeMap) {
   if ( element->attribute.has_value() ) {
     try {
       return *attributeMap.at(element->attribute->get().value);

@@ -7,7 +7,7 @@
 #include "model/parser/src/extensionElements/Parameter.h"
 #include "model/utility/src/Number.h"
 #include "model/utility/src/StringRegistry.h"
-#include "Expression.h"
+#include "model/parser/src/extensionElements/Expression.h"
 
 namespace BPMNOS::Model {
 
@@ -18,8 +18,7 @@ namespace BPMNOS::Model {
  **/
 class GenericExpression : public Expression {
 public:
-  GenericExpression(XML::bpmnos::tOperator* operator_, AttributeMap& attributeMap);
-  Parameter* parameter;
+  GenericExpression(XML::bpmnos::tParameter* parameter, const AttributeMap& attributeMap);
 
   // From: https://www.partow.net/programming/exprtk/index.html:
   // Note: NumericType can be any floating point type. This includes but is not limited to:
@@ -27,10 +26,10 @@ public:
   // with the standard floating point type.
   using NumericType = double;
 
-  exprtk::expression<NumericType> expression; 
+  exprtk::expression<NumericType> compiledExpression; 
   std::vector< std::pair<NumericType&, Attribute *> > bindings; ///< Bindings of expression variables. 
 
-  void apply(Values& status) const override;
+  std::optional<BPMNOS::number> execute(const Values& values) const override;
 };
 
 } // namespace BPMNOS::Model

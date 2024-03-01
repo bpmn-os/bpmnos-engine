@@ -1,5 +1,5 @@
-#ifndef BPMNOS_Model_Unassign_H
-#define BPMNOS_Model_Unassign_H
+#ifndef BPMNOS_Model_UnassignOperator_H
+#define BPMNOS_Model_UnassignOperator_H
 
 #include "model/parser/src/extensionElements/Attribute.h"
 #include "model/utility/src/Number.h"
@@ -10,9 +10,9 @@ namespace BPMNOS::Model {
 /**
  * @brief Class representing an operator that unassigns the value from a status attribute.
  **/
-class Unassign : public Operator {
+class UnassignOperator : public Operator {
 public:
-  Unassign(XML::bpmnos::tOperator* operator_, AttributeMap& attributeMap);
+  UnassignOperator(XML::bpmnos::tOperator* operator_, AttributeMap& attributeMap);
 
 /**
  * @brief Sets a status attribute as undefined.
@@ -24,4 +24,4 @@ public:
 
 } // namespace BPMNOS::Model
 
-#endif // BPMNOS_Model_Unassign_H
+#endif // BPMNOS_Model_UnassignOperator_H

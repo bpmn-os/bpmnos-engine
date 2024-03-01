@@ -81,38 +81,8 @@
   <xsd:element name="restriction" type="tRestriction"/>
   <xsd:complexType name="tRestriction">
     <xsd:attribute name="id" type="xsd:ID" use="required"/>
-    <xsd:attribute name="attribute" type="xsd:string" use="required"/>
     <xsd:sequence>
-      <xsd:element ref="enumeration" minOccurs="0" maxOccurs="unbounded"/>
-    </xsd:sequence>
-    <xsd:sequence>
-      <xsd:element ref="minInclusive" minOccurs="0" maxOccurs="1"/>
-    </xsd:sequence>
-    <xsd:sequence>
-      <xsd:element ref="maxInclusive" minOccurs="0" maxOccurs="1"/>
-    </xsd:sequence>
-    <xsd:attribute name="negate" type="xsd:boolean" use="optional"/>
-    <xsd:attribute name="required" type="xsd:boolean" use="optional"/>
-  </xsd:complexType>
-
-  <xsd:element name="enumeration" type="tEnumeration"/>
-  <xsd:complexType name="tEnumeration">
-    <xsd:sequence>
-      <xsd:attribute name="value" type="xsd:string" use="required"/>
-    </xsd:sequence>
-  </xsd:complexType>
-
-  <xsd:element name="minInclusive" type="tMinInclusive"/>
-  <xsd:complexType name="tMinInclusive">
-    <xsd:sequence>
-      <xsd:attribute name="value" type="xsd:decimal" use="required"/>
-    </xsd:sequence>
-  </xsd:complexType>
-
-  <xsd:element name="maxInclusive" type="tMaxInclusive"/>
-  <xsd:complexType name="tMaxInclusive">
-    <xsd:sequence>
-      <xsd:attribute name="value" type="xsd:decimal" use="required"/>
+      <xsd:element ref="parameter" minOccurs="1" maxOccurs="1"/>
     </xsd:sequence>
   </xsd:complexType>
 
@@ -176,20 +146,6 @@
     <xsd:sequence>
       <xsd:element ref="parameter" minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
-  </xsd:complexType>
-
-  <xsd:element name="allocations" type="tAllocations"/>
-  <xsd:complexType name="tAllocations">
-    <xsd:choice>
-      <xsd:sequence>
-        <xsd:element ref="allocation" minOccurs="0" maxOccurs="unbounded"/>
-      </xsd:sequence>
-    </xsd:choice>
-  </xsd:complexType>
-
-  <xsd:element name="allocation" type="tAllocation"/>
-  <xsd:complexType name="tAllocation">
-    <xsd:attribute name="id" type="xsd:IDREF" use="required"/>
   </xsd:complexType>
 
 </xsd:schema>

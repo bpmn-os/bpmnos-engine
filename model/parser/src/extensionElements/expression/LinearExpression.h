@@ -5,27 +5,28 @@
 #include "model/parser/src/extensionElements/Attribute.h"
 #include "model/parser/src/extensionElements/Parameter.h"
 #include "model/utility/src/Number.h"
-#include "Expression.h"
+#include "model/parser/src/extensionElements/Expression.h"
 
 namespace BPMNOS::Model {
 
 /**
- * @brief Class representing an operator that uses a linear expression to determine that value
- * of a status attribute.
+ * @brief Class representing a linear expression to determine a value by applying
+ * the expression to a value vector.
  **/
 class LinearExpression : public Expression {
 public:
-  LinearExpression(XML::bpmnos::tOperator* operator_, AttributeMap& attributeMap);
-  Parameter* parameter;
+  LinearExpression(XML::bpmnos::tParameter* parameter, const AttributeMap& attributeMap);
  
   using NumericType = double;
   using Term = std::tuple<NumericType,Attribute*>;
   std::vector<Term> terms;
+  enum class Type { DEFAULT, EQUAL, NOTEQUAL, GREATEROREQUAL, GREATERTHAN, LESSOREQUAL, LESSTHAN };
+  Type type;
 
 /**
- * @brief Applies the linear expression to update a status value.
+ * @brief Executes the linear expression and returns the result.
  *
- * This updates the attribute value based on a linear expression composed of terms.
+ * This determines a value based on a linear expression composed of terms.
  * Linear expressions must follow these rules:
  * - Terms are separated by operators "+" or "-".
  * - Each term may consist of: 
@@ -34,13 +35,17 @@ public:
  *   - and a variable represented by an attribute name.
  * - The denominator of a division must be a coefficient.
  * - Alternatively a term may consist of only a coeffcient or only a variable. 
- * - If any of the variables in the expression is undefined, the result for the
- *   attribute is set to `std::nullopt`.
+ * - If any of the variables in the expression is undefined, the result is set
+ *   to `std::nullopt`.
  * - Keyword::True and Keyword::False are replaced by 1 and 0, respectively.
  *
- * @param status The status values to be updated.
+ * Additionaly, boolean expression containing the comparison
+ * operators "==", "!=", ">=", ">", "<=", "<" are supported.
  */
-  void apply(Values& status) const override;
+  std::optional<BPMNOS::number> execute(const Values& values) const override;
+private:
+  void parse(std::string expressionString, NumericType SIGN = 1.0);
+  void parseInequality(const std::string& comparisonOperator);
 };
 
 } // namespace BPMNOS::Model

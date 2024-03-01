@@ -1,5 +1,5 @@
-#ifndef BPMNOS_Model_Lookup_H
-#define BPMNOS_Model_Lookup_H
+#ifndef BPMNOS_Model_LookupOperator_H
+#define BPMNOS_Model_LookupOperator_H
 
 #include "model/parser/src/extensionElements/Attribute.h"
 #include "model/parser/src/extensionElements/Parameter.h"
@@ -14,9 +14,9 @@ namespace BPMNOS::Model {
  * @brief Class representing an operator that uses a lookup table to determine that value
  * of a status attribute.
  **/
-class Lookup : public Operator {
+class LookupOperator : public Operator {
 public:
-  Lookup(XML::bpmnos::tOperator* operator_, AttributeMap& attributeMap);
+  LookupOperator(XML::bpmnos::tOperator* operator_, AttributeMap& attributeMap);
   std::string filename;
   std::string key;
   std::vector< std::pair< std::string, Attribute*> > lookups;
@@ -54,4 +54,4 @@ public:
 
 } // namespace BPMNOS::Model
 
-#endif // BPMNOS_Model_Lookup_H
+#endif // BPMNOS_Model_LookupOperator_H

@@ -86,7 +86,7 @@ void test() {
 
   parser.enable_unknown_symbol_resolver();
 
-  std::string user_expression = "2 * x[i] + y";
+  std::string user_expression = "not(2 * x[i] > y)";
 /*
   if (auto result = parser.compile(user_expression, expression); !result) {
     throw std::runtime_error("GenericExpression: compilation of expression failed with: " + parser.error());
@@ -149,7 +149,7 @@ parser.compile(user_expression, expression);
 
 
 TEST_CASE("My Test Case") {
-    //test();
+    test();
 }
 
 

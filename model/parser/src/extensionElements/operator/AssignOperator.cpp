@@ -1,9 +1,9 @@
-#include "Assign.h"
+#include "AssignOperator.h"
 #include "model/parser/src/extensionElements/Operator.h"
 
 using namespace BPMNOS::Model;
 
-Assign::Assign(XML::bpmnos::tOperator* operator_, AttributeMap& attributeMap)
+AssignOperator::AssignOperator(XML::bpmnos::tOperator* operator_, AttributeMap& attributeMap)
   : Operator(operator_, attributeMap)
 {
   try {
@@ -14,7 +14,7 @@ Assign::Assign(XML::bpmnos::tOperator* operator_, AttributeMap& attributeMap)
   }
 }
 
-void Assign::apply(Values& status) const {
+void AssignOperator::apply(Values& status) const {
   if ( parameter->attribute.has_value() && status[parameter->attribute->get().index].has_value() ) {
     // Assign value to value of given attribute (if defined)
     status[attribute->index] = status[parameter->attribute->get().index];
