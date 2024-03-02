@@ -7,6 +7,8 @@ namespace BPMNOS::Keyword {
 
 const std::string False = "false";
 const std::string True = "true";
+const std::string Undefined = "undefined";
+
 const std::string Timestamp = "Timestamp";
 const std::string Instance = "Instance";
 

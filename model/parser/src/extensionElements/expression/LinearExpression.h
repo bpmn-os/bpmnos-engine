@@ -26,7 +26,7 @@ public:
 /**
  * @brief Executes the linear expression and returns the result.
  *
- * This determines a value based on a linear expression composed of terms.
+ * Determines a value based on a linear expression composed of terms.
  * Linear expressions must follow these rules:
  * - Terms are separated by operators "+" or "-".
  * - Each term may consist of: 
