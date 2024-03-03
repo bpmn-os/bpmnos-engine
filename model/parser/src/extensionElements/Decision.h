@@ -10,12 +10,18 @@
 
 namespace BPMNOS::Model {
 
+/**
+ * @brief Class representing a decision to be made within a @ref BPMNOS::Model::DecisionTask.
+ */
 class Decision {
 public:
   Decision(XML::bpmnos::tDecision* decision, AttributeMap& attributeMap);
   XML::bpmnos::tDecision* element;
 
   Attribute* attribute;
+  BPMNOS::number min;
+  BPMNOS::number max;
+  
 };
 
 } // namespace BPMNOS::Model

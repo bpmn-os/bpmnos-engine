@@ -193,12 +193,6 @@ void ExtensionElements::applyOperators(Values& values) const {
   }
 }
 
-void ExtensionElements::makeChoices(const std::unordered_map<Decision*,number>& choices, Values& values) const {
-  for ( auto& [decision,value] : choices ) {
-    values[decision->attribute->index] = value;
-  }
-}
-
 BPMNOS::number ExtensionElements::getContributionToObjective(const Values& values) const {
   BPMNOS::number contribution = 0;
   for ( auto& attribute : attributes ) {

@@ -22,6 +22,7 @@ list(APPEND engine_SOURCES
   eventhandler/DeterministicTaskCompletionHandler.cpp
   eventhandler/InstantExitHandler.cpp
   eventhandler/FirstMatchingMessageHandler.cpp
+  eventhandler/RandomChoiceHandler.cpp
   eventhandler/MyopicDecisionTaskTerminator.cpp
   eventhandler/MyopicMessageTaskTerminator.cpp
   Engine.cpp
@@ -51,6 +52,7 @@ list(APPEND engine_HEADERS
   eventhandler/DeterministicTaskCompletionHandler.h
   eventhandler/InstantExitHandler.h
   eventhandler/FirstMatchingMessageHandler.h
+  eventhandler/RandomChoiceHandler.h
   eventhandler/MyopicDecisionTaskTerminator.h
   eventhandler/MyopicMessageTaskTerminator.h
   Engine.h

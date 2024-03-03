@@ -10,6 +10,9 @@
 namespace BPMNOS::Model {
 
 
+/**
+ * @brief Class representing a task is which one or more decisions have to be made.
+ */
 class DecisionTask : public BPMN::Task {
   friend class Model;
 public:

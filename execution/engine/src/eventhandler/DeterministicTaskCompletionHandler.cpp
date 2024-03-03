@@ -13,7 +13,7 @@ std::unique_ptr<Event> DeterministicTaskCompletionHandler::fetchEvent( const Sys
     if ( auto token = token_ptr.lock() )  {
       assert( token );
       if ( time <= systemState->getTime() ) {
-        return std::make_unique<CompletionEvent>(token.get(),updatedStatus);
+        return std::make_unique<CompletionEvent>(token.get(),std::move(updatedStatus));
       }
     }
   }
