@@ -176,38 +176,83 @@ std::pair< std::optional<BPMNOS::number>, std::optional<BPMNOS::number> > Linear
   }
 
   if ( type == Type::EQUAL ) {
-    return { BPMNOS::to_number( (number(result)/denominator), DECIMAL), BPMNOS::to_number( (number(result)/denominator), DECIMAL) };
+    if ( attribute->type == DECIMAL ) {
+      return { BPMNOS::to_number( (number(result)/denominator), DECIMAL), BPMNOS::to_number( (number(result)/denominator), DECIMAL) };
+    }
+    else {
+      return { BPMNOS::to_number( ceil(number(result)/denominator), DECIMAL), BPMNOS::to_number( floor(number(result)/denominator), DECIMAL) };
+    }
   }
   else if ( type == Type::GREATEROREQUAL ) {
     if ( denominator > 0 ) {
-      return { BPMNOS::to_number( (number(result)/denominator), DECIMAL), std::nullopt };
+      if ( attribute->type == DECIMAL ) {
+        return { BPMNOS::to_number( (number(result)/denominator), DECIMAL), std::nullopt };
+      }
+      else {
+        return { BPMNOS::to_number( ceil(number(result)/denominator), DECIMAL), std::nullopt };
+      }
     }
     else {
-      return { std::nullopt, BPMNOS::to_number( (number(result)/denominator), DECIMAL) };
+      if ( attribute->type == DECIMAL ) {
+        return { std::nullopt, BPMNOS::to_number( (number(result)/denominator), DECIMAL) };
+      }
+      else {
+        return { std::nullopt, BPMNOS::to_number( floor(number(result)/denominator), DECIMAL) };
+      }
     }
   }
   else if ( type == Type::GREATERTHAN ) {
     if ( denominator > 0 ) {
-      return { BPMNOS::to_number( (number(result)/denominator), DECIMAL) + BPMNOS_NUMBER_PRECISION, std::nullopt };
+      if ( attribute->type == DECIMAL ) {
+        return { BPMNOS::to_number( (number(result)/denominator), DECIMAL) + BPMNOS_NUMBER_PRECISION, std::nullopt };
+      }
+      else {
+        return { BPMNOS::to_number( floor(number(result)/denominator), INTEGER) + 1, std::nullopt };
+      }
     }
     else {
-      return { std::nullopt, BPMNOS::to_number( (number(result)/denominator) , DECIMAL) - BPMNOS_NUMBER_PRECISION };
+      if ( attribute->type == DECIMAL ) {
+        return { std::nullopt, BPMNOS::to_number( (number(result)/denominator) , DECIMAL) - BPMNOS_NUMBER_PRECISION };
+      }
+      else {
+        return { std::nullopt, BPMNOS::to_number( ceil(number(result)/denominator) , DECIMAL) - 1 };
+      }
     }
   }
   else if ( type == Type::LESSOREQUAL ) {
     if ( denominator > 0 ) {
-      return { std::nullopt, BPMNOS::to_number( (number(result)/denominator), DECIMAL) };
+      if ( attribute->type == DECIMAL ) {
+        return { std::nullopt, BPMNOS::to_number( (number(result)/denominator), DECIMAL) };
+      }
+      else {
+        return { std::nullopt, BPMNOS::to_number( floor(number(result)/denominator), DECIMAL) };
+      }
     }
     else {
-      return { BPMNOS::to_number( (number(result)/denominator), DECIMAL), std::nullopt };
+      if ( attribute->type == DECIMAL ) {
+        return { BPMNOS::to_number( (number(result)/denominator), DECIMAL), std::nullopt };
+      }
+      else {
+        return { BPMNOS::to_number( ceil(number(result)/denominator), DECIMAL), std::nullopt };
+      }
     }
   }
   else if ( type == Type::LESSTHAN ) {
     if ( denominator > 0 ) {
-      return { std::nullopt, BPMNOS::to_number( (number(result)/denominator), DECIMAL) - BPMNOS_NUMBER_PRECISION};
+      if ( attribute->type == DECIMAL ) {
+        return { std::nullopt, BPMNOS::to_number( (number(result)/denominator), DECIMAL) - BPMNOS_NUMBER_PRECISION};
+      }
+      else {
+        return { std::nullopt, BPMNOS::to_number( ceil(number(result)/denominator), DECIMAL) - 1};
+      }
     }
     else {
-      return { BPMNOS::to_number( (number(result)/denominator), DECIMAL) + BPMNOS_NUMBER_PRECISION, std::nullopt };
+      if ( attribute->type == DECIMAL ) {
+        return { BPMNOS::to_number( (number(result)/denominator), DECIMAL) + BPMNOS_NUMBER_PRECISION, std::nullopt };
+      }
+      else {
+        return { BPMNOS::to_number( floor(number(result)/denominator), DECIMAL) + 1, std::nullopt };
+      }
     }
   }
   return {std::nullopt,std::nullopt};
