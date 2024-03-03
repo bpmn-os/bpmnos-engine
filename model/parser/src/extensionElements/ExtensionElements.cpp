@@ -159,14 +159,33 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, BPMN:
   }
 }
 
-bool ExtensionElements::isFeasible(const Values& values) const {
+bool ExtensionElements::entryScopeRestrictionsSatisfied(const Values& values) const {
   for ( auto& restriction : restrictions ) {
-    if ( !restriction->isSatisfied(values) ) {
-      return false; 
+    if ( restriction->scope != Restriction::Scope::EXIT && !restriction->isSatisfied(values) ) {
+      return false;
     }
   }
-  return true; 
-}  
+  return true;
+}
+
+bool ExtensionElements::exitScopeRestrictionsSatisfied(const Values& values) const {
+  for ( auto& restriction : restrictions ) {
+    if ( restriction->scope != Restriction::Scope::ENTRY && !restriction->isSatisfied(values) ) {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool ExtensionElements::fullScopeRestrictionsSatisfied(const Values& values) const {
+  for ( auto& restriction : restrictions ) {
+    if ( restriction->scope == Restriction::Scope::FULL && !restriction->isSatisfied(values) ) {
+      return false;
+    }
+  }
+  return true;
+}
+
 
 void ExtensionElements::applyOperators(Values& values) const {
   for ( auto& operator_ : operators ) {

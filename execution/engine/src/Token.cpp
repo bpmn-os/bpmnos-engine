@@ -179,47 +179,59 @@ nlohmann::ordered_json Token::jsonify() const {
   return jsonObject;
 }
 
-bool Token::isFeasible() const {
-//std::cerr << "isFeasible?" << std::endl;
-  // TODO check restrictions within current scope and ancestor scopes
-  auto checkRestrictions = [this](BPMNOS::Model::ExtensionElements* extensionElements) {
-    for ( auto& restriction : extensionElements->restrictions ) {
-      if ( !restriction->isSatisfied(status) ) {
-        return false;
-      }
-    }
-    return true;
-  };
 
-  
+bool Token::entryIsFeasible() const {
   if ( !node ) {
 //std::cerr << stateName[(int)state] << "/" << owner->scope->id <<std::endl;
     assert( owner->process->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );
-    return checkRestrictions( owner->process->extensionElements->as<BPMNOS::Model::ExtensionElements>() );
+    return owner->process->extensionElements->as<BPMNOS::Model::ExtensionElements>()->entryScopeRestrictionsSatisfied(status);
   }
 
-//std::cerr << node->id << "/" << stateName[(int)state]  << std::endl;
   assert( node->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );
-  const BPMN::Node* context = node;
-  while ( context ) {
-    if ( !checkRestrictions( context->extensionElements->as<BPMNOS::Model::ExtensionElements>() ) ) {
+  if ( node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->entryScopeRestrictionsSatisfied(status) ) {
+    return satisfiesInheritedRestrictions();
+  }  
+  return false;
+}
+
+bool Token::exitIsFeasible() const {
+  if ( !node ) {
+//std::cerr << stateName[(int)state] << "/" << owner->scope->id <<std::endl;
+    assert( owner->process->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );
+    return owner->process->extensionElements->as<BPMNOS::Model::ExtensionElements>()->exitScopeRestrictionsSatisfied(status);
+  }
+
+  assert( node->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );
+  if ( node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->exitScopeRestrictionsSatisfied(status) ) {
+    return satisfiesInheritedRestrictions();
+  }  
+  return false;
+}
+
+bool Token::satisfiesInheritedRestrictions() const {
+//std::cerr << "satisfiesInheritedRestrictions?" << std::endl;
+  // check restrictions within ancestor scopes
+  const BPMN::Node* ancestor = node->parent;
+  while ( ancestor ) {
+    assert( ancestor->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );
+    if ( !ancestor->extensionElements->as<BPMNOS::Model::ExtensionElements>()->fullScopeRestrictionsSatisfied(status) ) {
       return false;
     }
-    if ( auto eventSubProcess = context->represents<BPMN::EventSubProcess>();
+    if ( auto eventSubProcess = ancestor->represents<BPMN::EventSubProcess>();
       eventSubProcess && 
       ( eventSubProcess->startEvent->represents<BPMN::ErrorStartEvent>() || eventSubProcess->startEvent->represents<BPMN::CompensateStartEvent>() )
     ) {
       // error and compensate event subprocesses do not inherit restrictions
       break;
     }
-    else if ( auto activity = context->represents<BPMN::Activity>();
+    else if ( auto activity = ancestor->represents<BPMN::Activity>();
       activity && activity->isForCompensation
     ) {
       // compensation activities do not inherit restrictions
       break;
     }
-    else if ( auto child = context->represents<BPMN::ChildNode>() ) {
-      context = child->parent;
+    else if ( auto child = ancestor->represents<BPMN::ChildNode>() ) {
+      ancestor = child->parent;
     }
     else {
       break;
@@ -330,7 +342,7 @@ void Token::advanceToEntered() {
   // (also for newly created or merged tokens)
   if ( !node ) {
     // check restrictions
-    if ( !isFeasible() ) {
+    if ( !entryIsFeasible() ) {
       engine->commands.emplace_back(std::bind(&Token::advanceToFailed,this), this);
       return;
     }
@@ -350,7 +362,7 @@ void Token::advanceToEntered() {
 
 //std::cerr << "check restrictions: " << isFeasible() << std::endl;
     // check restrictions
-    if ( !isFeasible() ) {
+    if ( !entryIsFeasible() ) {
       engine->commands.emplace_back(std::bind(&Token::advanceToFailed,this), this);
       return;
     }
@@ -600,7 +612,7 @@ void Token::advanceToCompleted() {
 
 //std::cerr << "check restrictions" << std::endl;
   // check restrictions
-    if ( !isFeasible() ) {
+    if ( !exitIsFeasible() ) {
 //std::cerr << "infeasible: " << jsonify().dump() <<  std::endl;
       engine->commands.emplace_back(std::bind(&Token::advanceToFailed,this), this);
       return;
@@ -611,7 +623,7 @@ void Token::advanceToCompleted() {
 //std::cerr << activity->id << " is for compensation: " << activity->isForCompensation << std::endl;
       if ( activity->isForCompensation ) {
         // final state for compensation activity reached
-        if ( !isFeasible() ) {
+        if ( !exitIsFeasible() ) {
           engine->commands.emplace_back(std::bind(&Token::advanceToFailed,this), this);
           return;
         }
@@ -748,7 +760,7 @@ void Token::advanceToExiting() {
   auto engine = const_cast<Engine*>(owner->systemState->engine);
 
   // check restrictions
-  if ( !isFeasible() ) {
+  if ( !exitIsFeasible() ) {
     engine->commands.emplace_back(std::bind(&Token::advanceToFailed,this), this);
     return;
   }

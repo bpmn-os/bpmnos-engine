@@ -42,21 +42,21 @@
     <xsd:attribute name="weight" type="xsd:decimal" use="optional"/>
   </xsd:complexType>
 
-	<xsd:simpleType name="tAttributeType">
-		<xsd:restriction base="xsd:string">
-      <xsd:enumeration value="xsd:string"/>
-      <xsd:enumeration value="xsd:integer"/>
-      <xsd:enumeration value="xsd:decimal"/>
-      <xsd:enumeration value="xsd:boolean"/>
-		</xsd:restriction>
-	</xsd:simpleType>
+  <xsd:simpleType name="tAttributeType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="string"/>
+      <xsd:enumeration value="integer"/>
+      <xsd:enumeration value="decimal"/>
+      <xsd:enumeration value="boolean"/>
+    </xsd:restriction>
+  </xsd:simpleType>
 
-	<xsd:simpleType name="tObjectiveType">
-		<xsd:restriction base="xsd:string">
+  <xsd:simpleType name="tObjectiveType">
+    <xsd:restriction base="xsd:string">
       <xsd:enumeration value="maximize"/>
       <xsd:enumeration value="minimize"/>
-		</xsd:restriction>
-	</xsd:simpleType>
+    </xsd:restriction>
+  </xsd:simpleType>
 
   <xsd:element name="decisions" type="tDecisions"/>
   <xsd:complexType name="tDecisions">
@@ -81,10 +81,19 @@
   <xsd:element name="restriction" type="tRestriction"/>
   <xsd:complexType name="tRestriction">
     <xsd:attribute name="id" type="xsd:ID" use="required"/>
+    <xsd:attribute name="scope" type="tRestrictionScope" use="optional" default="full"/>
     <xsd:sequence>
       <xsd:element ref="parameter" minOccurs="1" maxOccurs="1"/>
     </xsd:sequence>
   </xsd:complexType>
+
+  <xsd:simpleType name="tRestrictionScope">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="entry"/>
+      <xsd:enumeration value="exit"/>
+      <xsd:enumeration value="full"/>
+    </xsd:restriction>
+  </xsd:simpleType>
 
   <xsd:element name="operators" type="tOperators"/>
   <xsd:complexType name="tOperators">

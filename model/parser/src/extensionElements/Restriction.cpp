@@ -6,7 +6,16 @@ Restriction::Restriction(XML::bpmnos::tRestriction* restriction, AttributeMap& a
   : element(restriction)
   , id(restriction->id.value.value)
   , expression(Expression::create( &restriction->getRequiredChild<XML::bpmnos::tParameter>(), attributeMap))
+  , scope(Scope::FULL)
 {
+  if ( restriction->scope.has_value() ) {
+    if ( restriction->scope->get().value.value == "entry" ) {
+      scope = Scope::ENTRY;
+    }
+    else if ( restriction->scope->get().value.value == "exit" ) {
+      scope = Scope::EXIT;
+    }
+  }  
 }
 
 bool Restriction::isSatisfied(const Values& status) const {

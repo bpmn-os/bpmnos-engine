@@ -21,6 +21,9 @@ public:
   std::string& id;
   std::unique_ptr<Expression> expression;
 
+  enum class Scope { ENTRY, EXIT, FULL };
+  Scope scope;
+
 /**
  * @brief Check if the restriction is satisfied using an expression applied on status values.
  *

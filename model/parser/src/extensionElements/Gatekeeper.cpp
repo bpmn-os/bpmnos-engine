@@ -15,3 +15,12 @@ Gatekeeper::Gatekeeper(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent
   }
 }
 
+bool Gatekeeper::restrictionsSatisfied(const Values& values) const {
+  for ( auto& restriction : restrictions ) {
+    if ( !restriction->isSatisfied(values) ) {
+      return false; 
+    }
+  }
+  return true; 
+}
+

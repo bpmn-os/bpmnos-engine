@@ -6,6 +6,7 @@
 #include <string>
 #include <bpmn++.h>
 #include "Restriction.h"
+#include "model/utility/src/Number.h"
 
 namespace BPMNOS::Model {
 
@@ -18,17 +19,9 @@ public:
   Gatekeeper(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent);
   const BPMN::Scope* parent;
   std::vector< std::unique_ptr<Restriction> > restrictions;
-
-  template <typename T>
-  bool restrictionsSatisfied(const std::vector<std::optional<T> >& values) const {
-    for ( auto& restriction : restrictions ) {
-      if ( !restriction->isSatisfied(values) ) {
-        return false; 
-      }
-    }
-    return true; 
-  }  
+  bool restrictionsSatisfied(const Values& values) const;
 };
+
 
 } // namespace BPMNOS::Model
 
