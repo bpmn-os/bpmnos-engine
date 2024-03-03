@@ -145,6 +145,11 @@ void test() {
 parser.compile(user_expression, expression);
     std::cout << "Result for i = " << i << ": " << expression.value() << std::endl;
 
+    BPMNOS::number n = 0;
+    n += BPMNOS_NUMBER_PRECISION;
+    std::cout << "Numeric precision: " << to_rep(n) << "/" << (double)n << std::endl;
+//    BPMNOS::number m = cnl::from_rep< int, cnl::power<-16> >(r);
+    
 }
 
 

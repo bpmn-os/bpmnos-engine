@@ -16,10 +16,12 @@
 #ifndef BPMNOS_NUMBER_TYPE
   #define BPMNOS_NUMBER_TYPE cnl::scaled_integer< int64_t, cnl::power<-16> >
   #define BPMNOS_NUMBER_HASH std::hash<int64_t>()(cnl::unwrap(value))
+  #define BPMNOS_NUMBER_PRECISION (1.0 / (1 << 16))
 #endif
 
 #ifndef BPMNOS_NUMBER_HASH
   #define BPMNOS_NUMBER_HASH std::hash<BPMNOS_NUMBER_TYPE>()(value)
+  #define BPMNOS_NUMBER_PRECISION 1e-6
 #endif
 
 namespace BPMNOS {

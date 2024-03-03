@@ -143,8 +143,73 @@ std::optional<BPMNOS::number> LinearExpression::execute(const Values& values) co
   return std::nullopt;
 }
 
-std::pair< std::optional<BPMNOS::number>, std::optional<BPMNOS::number> > LinearExpression::getBounds([[maybe_unused]] const Attribute* attribute, [[maybe_unused]] const Values& values) const {
+std::pair< std::optional<BPMNOS::number>, std::optional<BPMNOS::number> > LinearExpression::getBounds(const Attribute* attribute, const Values& values) const {
   throw std::runtime_error("LinearExpression: not yet implemented");
+
+  if ( type == Type::DEFAULT || type == Type::NOTEQUAL ) {
+    return {std::nullopt,std::nullopt};
+  }
+
+  NumericType result = 0;
+  NumericType denominator = 0;
+  
+  for ( auto& [coefficient,variable] : terms ) {
+    if ( variable ) {
+      if ( variable == attribute ) {
+        denominator = -coefficient;
+      }
+      else {
+        if ( !values[variable->index].has_value() ) {
+          // return no bounds due to missing variable 
+          return {std::nullopt,std::nullopt};
+        }
+        result += coefficient * values[variable->index].value();
+      }
+    }
+    else {
+      result += coefficient;
+    }
+  }
+
+  if ( denominator == 0 ) {
+    return {std::nullopt,std::nullopt};
+  }
+
+  if ( type == Type::EQUAL ) {
+    return { BPMNOS::to_number( (number(result)/denominator), DECIMAL), BPMNOS::to_number( (number(result)/denominator), DECIMAL) };
+  }
+  else if ( type == Type::GREATEROREQUAL ) {
+    if ( denominator > 0 ) {
+      return { BPMNOS::to_number( (number(result)/denominator), DECIMAL), std::nullopt };
+    }
+    else {
+      return { std::nullopt, BPMNOS::to_number( (number(result)/denominator), DECIMAL) };
+    }
+  }
+  else if ( type == Type::GREATERTHAN ) {
+    if ( denominator > 0 ) {
+      return { BPMNOS::to_number( (number(result)/denominator), DECIMAL) + BPMNOS_NUMBER_PRECISION, std::nullopt };
+    }
+    else {
+      return { std::nullopt, BPMNOS::to_number( (number(result)/denominator) , DECIMAL) - BPMNOS_NUMBER_PRECISION };
+    }
+  }
+  else if ( type == Type::LESSOREQUAL ) {
+    if ( denominator > 0 ) {
+      return { std::nullopt, BPMNOS::to_number( (number(result)/denominator), DECIMAL) };
+    }
+    else {
+      return { BPMNOS::to_number( (number(result)/denominator), DECIMAL), std::nullopt };
+    }
+  }
+  else if ( type == Type::LESSTHAN ) {
+    if ( denominator > 0 ) {
+      return { std::nullopt, BPMNOS::to_number( (number(result)/denominator), DECIMAL) - BPMNOS_NUMBER_PRECISION};
+    }
+    else {
+      return { BPMNOS::to_number( (number(result)/denominator), DECIMAL) + BPMNOS_NUMBER_PRECISION, std::nullopt };
+    }
+  }
   return {std::nullopt,std::nullopt};
 }
 
