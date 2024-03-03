@@ -43,6 +43,9 @@ public:
  * operators "==", "!=", ">=", ">", "<=", "<" are supported.
  */
   std::optional<BPMNOS::number> execute(const Values& values) const override;
+  
+  std::pair< std::optional<BPMNOS::number>, std::optional<BPMNOS::number> > getBounds(const Attribute* attribute, const Values& values) const override;
+
 private:
   void parse(std::string expressionString, NumericType SIGN = 1.0);
   void parseInequality(const std::string& comparisonOperator);

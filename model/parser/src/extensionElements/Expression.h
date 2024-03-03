@@ -22,6 +22,7 @@ public:
   const std::string expression;
   static std::unique_ptr<Expression> create(XML::bpmnos::tParameter* parameter, const AttributeMap& attributeMap);
   virtual std::optional<BPMNOS::number> execute(const Values& values) const = 0;
+  virtual std::pair< std::optional<BPMNOS::number>, std::optional<BPMNOS::number> > getBounds(const Attribute* attribute, const Values& values) const;
 };
 
 } // namespace BPMNOS::Model

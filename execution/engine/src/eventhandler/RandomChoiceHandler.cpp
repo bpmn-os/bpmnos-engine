@@ -13,7 +13,6 @@ RandomChoiceHandler::RandomChoiceHandler()
 }
 
 std::unique_ptr<Event> RandomChoiceHandler::fetchEvent( const SystemState* systemState ) {
-  // assume that feasible choices are already made by an appropriate handler
   for ( auto& [ token_ptr ] : systemState->tokensAwaitingChoice ) {
     if( auto token = token_ptr.lock() )  {
       assert( token );
@@ -28,7 +27,17 @@ std::unique_ptr<Event> RandomChoiceHandler::fetchEvent( const SystemState* syste
       for ( auto& decision : extensionElements->decisions ) {
         BPMNOS::number min = decision->min;
         BPMNOS::number max = decision->max;
-        // TODO: deduce stricter limits from restrictions
+
+        // deduce stricter limits from restrictions
+        for ( auto& restriction : extensionElements->restrictions ) {
+          auto [lb,ub] = restriction->expression->getBounds(decision->attribute, updatedStatus);
+          if ( lb.has_value() && lb.value() > min ) {
+            min = lb.value();
+          }
+          if ( ub.has_value() && ub.value() < max ) {
+            max = ub.value();
+          }
+        }
         
         if ( min <= max ) {
           if ( decision->attribute->type == DECIMAL ) {

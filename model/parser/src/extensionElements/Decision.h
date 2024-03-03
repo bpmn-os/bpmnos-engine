@@ -12,6 +12,8 @@ namespace BPMNOS::Model {
 
 /**
  * @brief Class representing a decision to be made within a @ref BPMNOS::Model::DecisionTask.
+ *
+ * The decision to be made may be restricted through @ref BPMNOS::Model::Restriction "restrictions". 
  */
 class Decision {
 public:

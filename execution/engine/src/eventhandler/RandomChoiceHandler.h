@@ -14,7 +14,9 @@ namespace BPMNOS::Execution {
  * exit restrictions at the @ref BPMNOS::Model::DecisionTask. These limits are deduced
  * from the attribute type of the decision and stricter decisions may be provided
  * through restrictions of type @ref BPMNOS::Model::LinearExpression. If these stricter
- * limits imply an empty domain, an error event is created. 
+ * limits imply an empty domain, an error event is created. It is assumed that the existence
+ * of a feasible choice does not depend on the timestamp for any moment after entry
+ * of the decision task and until the decision is made.
  */
 class RandomChoiceHandler : public EventHandler {
 public:

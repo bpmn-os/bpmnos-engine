@@ -143,3 +143,8 @@ std::optional<BPMNOS::number> LinearExpression::execute(const Values& values) co
   return std::nullopt;
 }
 
+std::pair< std::optional<BPMNOS::number>, std::optional<BPMNOS::number> > LinearExpression::getBounds([[maybe_unused]] const Attribute* attribute, [[maybe_unused]] const Values& values) const {
+  throw std::runtime_error("LinearExpression: not yet implemented");
+  return {std::nullopt,std::nullopt};
+}
+

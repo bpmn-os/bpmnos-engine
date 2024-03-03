@@ -26,3 +26,7 @@ std::unique_ptr<Expression> Expression::create(XML::bpmnos::tParameter* paramete
   }
 }
 
+std::pair< std::optional<BPMNOS::number>, std::optional<BPMNOS::number> > Expression::getBounds([[maybe_unused]] const Attribute* attribute, [[maybe_unused]] const Values& values) const {
+  return {std::nullopt,std::nullopt};
+}
+
