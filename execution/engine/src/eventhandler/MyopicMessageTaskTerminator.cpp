@@ -1,7 +1,6 @@
 #include "MyopicMessageTaskTerminator.h"
 #include "execution/engine/src/events/ErrorEvent.h"
 #include <cassert>
-#include <iostream>
 
 using namespace BPMNOS::Execution;
 
