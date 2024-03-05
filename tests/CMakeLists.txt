@@ -76,12 +76,12 @@ endif()
 
 target_link_libraries(run_tests 
   PRIVATE 
+  bpmnos-execution
+  bpmnos-model
+  bpmn++
   pthread
   nlohmann_json::nlohmann_json
   xerces-c
-  bpmn++
-  bpmnos-model
-  bpmnos-execution
   Catch2::Catch2WithMain
 )
 

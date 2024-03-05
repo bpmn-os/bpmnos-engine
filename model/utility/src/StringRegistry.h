@@ -33,7 +33,7 @@ namespace BPMNOS {
   };
 
 
-} // namespace BPMNOS::Model
+} // namespace BPMNOS
 
 #endif // BPMNOS_Model_StringRegistry_H
 

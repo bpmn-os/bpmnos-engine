@@ -150,6 +150,7 @@ parser.compile(user_expression, expression);
     std::cout << "Numeric precision: " << to_rep(n) << "/" << (double)n << std::endl;
 //    BPMNOS::number m = cnl::from_rep< int, cnl::power<-16> >(r);
     
+    std::cerr << "Element of: " << "∈" << ", not element of: " << "∉" << std::endl;
 }
 
 

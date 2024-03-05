@@ -7,7 +7,7 @@
 #include "execution/utility/src/erase.h"
 #include "model/parser/src/extensionElements/ExtensionElements.h"
 #include "model/parser/src/extensionElements/Timer.h"
-#include "execution/utility/src/VectorRegistry.h"
+#include "model/utility/src/VectorRegistry.h"
 #include "bpmn++.h"
 #include <cassert>
 #include <ranges>
