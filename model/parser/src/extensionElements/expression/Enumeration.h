@@ -18,11 +18,11 @@ namespace BPMNOS::Model {
 class Enumeration : public Expression {
 public:
   Enumeration(XML::bpmnos::tParameter* parameter, const AttributeMap& attributeMap);
-  Attribute* attribute;
   enum class Type { IN, NOTIN };
   Type type;
   static constexpr std::string IN = std::string("in");
   static constexpr std::string NOTIN = std::string("not in");
+  Attribute* attribute;
   std::variant<const Attribute*, std::vector< std::variant<const Attribute*, std::optional<BPMNOS::number> > > > collection;
 
 /**

@@ -3,6 +3,7 @@
 #include "model/parser/src/extensionElements/expression/GenericExpression.h"
 #include "model/parser/src/extensionElements/expression/NullCondition.h"
 #include "model/parser/src/extensionElements/expression/Enumeration.h"
+#include "model/parser/src/extensionElements/expression/StringExpression.h"
 
 using namespace BPMNOS::Model;
 
@@ -24,6 +25,9 @@ std::unique_ptr<Expression> Expression::create(XML::bpmnos::tParameter* paramete
   }
   else if ( parameter->name.value.value == "enumeration" ) {
     return std::make_unique<Enumeration>(parameter, attributeMap);
+  }
+  else if ( parameter->name.value.value == "string" ) {
+    return std::make_unique<StringExpression>(parameter, attributeMap);
   }
   else {
     throw std::logic_error("Expression: illegal expression type");

@@ -13,6 +13,7 @@ list(APPEND bpmn_SOURCES
   extensionElements/expression/GenericExpression.cpp
   extensionElements/expression/NullCondition.cpp
   extensionElements/expression/Enumeration.cpp
+  extensionElements/expression/StringExpression.cpp
   extensionElements/Restriction.cpp
   extensionElements/Operator.cpp
   extensionElements/operator/UnassignOperator.cpp
@@ -40,6 +41,7 @@ list(APPEND bpmn_HEADERS
   extensionElements/expression/GenericExpression.h
   extensionElements/expression/NullCondition.h
   extensionElements/expression/Enumeration.h
+  extensionElements/expression/StringExpression.h
   extensionElements/Restriction.h
   extensionElements/Operator.h
   extensionElements/operator/UnassignOperator.h
