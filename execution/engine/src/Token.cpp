@@ -158,10 +158,6 @@ nlohmann::ordered_json Token::jsonify() const {
     if ( !status[attribute->index].has_value() ) {
       jsonObject["status"][attributeName] = nullptr ;
     }
-    else if ( attribute->type == STRING) {
-      std::string value = BPMNOS::to_string(status[attribute->index].value(),STRING);
-      jsonObject["status"][attributeName] = value ;
-    }
     else if ( attribute->type == BOOLEAN) {
       bool value = (bool)status[attribute->index].value();
       jsonObject["status"][attributeName] = value ;
@@ -172,6 +168,14 @@ nlohmann::ordered_json Token::jsonify() const {
     }
     else if ( attribute->type == DECIMAL) {
       double value = (double)status[attribute->index].value();
+      jsonObject["status"][attributeName] = value ;
+    }
+    else if ( attribute->type == STRING) {
+      std::string value = BPMNOS::to_string(status[attribute->index].value(),attribute->type);
+      jsonObject["status"][attributeName] = value ;
+    }
+    else if ( attribute->type == COLLECTION) {
+      std::string value = BPMNOS::to_string(status[attribute->index].value(),attribute->type);
       jsonObject["status"][attributeName] = value ;
     }
   }

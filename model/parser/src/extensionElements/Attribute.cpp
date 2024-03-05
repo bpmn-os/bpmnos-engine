@@ -10,10 +10,7 @@ Attribute::Attribute(XML::bpmnos::tAttribute* attribute, AttributeMap& attribute
   , id(attribute->id.value.value)
   , name(attribute->name.value.value)
 {
-  if ( attribute->type.value.value == "string" ) {
-    type = ValueType::STRING;
-  }
-  else if ( attribute->type.value.value == "boolean" ) {
+  if ( attribute->type.value.value == "boolean" ) {
     type = ValueType::BOOLEAN;
   }
   else if ( attribute->type.value.value == "integer" ) {
@@ -21,6 +18,12 @@ Attribute::Attribute(XML::bpmnos::tAttribute* attribute, AttributeMap& attribute
   }
   else if ( attribute->type.value.value == "decimal" ) {
     type = ValueType::DECIMAL;
+  }
+  else if ( attribute->type.value.value == "string" ) {
+    type = ValueType::STRING;
+  }
+  else if ( attribute->type.value.value == "collection" ) {
+    type = ValueType::COLLECTION;
   }
 
   if ( attribute->parameter.has_value() ) {

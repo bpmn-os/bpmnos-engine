@@ -87,6 +87,11 @@ std::optional<BPMNOS::number> MessageDefinition::getHeaderValue(const BPMNOS::Va
         double value = (double)status[parameter->attribute->get().index].value();
         return to_number( std::to_string(value), BPMNOS::ValueType::STRING );
       }
+      else if ( parameter->attribute->get().type == BPMNOS::ValueType::COLLECTION ) {
+        // use string representation of collection
+        double value = (double)status[parameter->attribute->get().index].value();
+        return to_number( std::to_string(value), BPMNOS::ValueType::STRING );
+      }
       return status[parameter->attribute->get().index].value();
     }
     else if ( parameter->value.has_value() ) {

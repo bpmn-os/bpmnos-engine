@@ -1,6 +1,6 @@
 #include "Enumeration.h"
 #include "model/utility/src/Keywords.h"
-#include "model/utility/src/VectorRegistry.h"
+#include "model/utility/src/CollectionRegistry.h"
 #include <regex>
 #include <strutil.h>
 
@@ -43,43 +43,25 @@ Enumeration::Enumeration(XML::bpmnos::tParameter* parameter, const AttributeMap&
     type = Type::NOTIN;
     trimmed = strutil::trim_copy( trimmed.substr(NOTIN.size()) );
   } 
+  else {
+    throw std::runtime_error("Enumeration: illegal comparison");
+  }
     
+  if ( trimmed.empty() ) {
+    throw std::runtime_error("Enumeration: cannot find collection entries");
+  }
+
   // get enumeration entries
-  if ( strutil::starts_with(trimmed,"[") && strutil::ends_with(trimmed,"]") ) {
-    // determine comma separated values    
-    auto elements = strutil::split( trimmed.substr(1,trimmed.size()-2), "," );
-    collection = std::vector< std::variant<const Attribute*, std::optional<BPMNOS::number> > >();
-    auto& entries = std::get< std::vector< std::variant<const Attribute*, std::optional<BPMNOS::number> > > >(collection); 
-    for ( auto& element : elements ) {
-      strutil::trim(element);
-      if ( strutil::starts_with(element,"\"") && strutil::ends_with(element,"\"") ) {
-        entries.push_back( BPMNOS::to_number( element.substr(1,element.size()-2), STRING ) );
-      }
-      else if ( element == Keyword::False ) {
-        entries.push_back( BPMNOS::to_number( false , BOOLEAN) );
-      }
-      else if ( element == Keyword::True ) {
-        entries.push_back( BPMNOS::to_number( true , BOOLEAN) );
-      }
-      else if ( element == Keyword::Undefined ) {
-        entries.push_back( std::nullopt );
-      }
-      else {
-        if ( auto it = attributeMap.find(element);
-          it != attributeMap.end()
-        ) {
-          entries.push_back( it->second );
-        }
-        else {
-          throw std::runtime_error("Enumeration: cannot find attribute of enumeration entry");
-        }
-      }
-    }
+  if ( trimmed[0] == '[') {
+    collection = collectionRegistry(trimmed);
   }
   else {
     if ( auto it = attributeMap.find(trimmed);
       it != attributeMap.end()
     ) {
+      if ( it->second->type != ValueType::COLLECTION ) {
+        throw std::runtime_error("Enumeration: variable '" + attribute->name + "' is not a collection");
+      }
       collection = it->second;
     }
     else {
@@ -93,7 +75,7 @@ std::optional<BPMNOS::number> Enumeration::execute(const Values& values) const {
   if ( std::holds_alternative<const Attribute *>(collection) ) {
     auto other = std::get<const Attribute *>(collection);
     if ( values[other->index].has_value() ) {
-      auto& entries = vectorRegistry[(long unsigned int)values[other->index].value()];
+      auto& entries = collectionRegistry[(long unsigned int)values[other->index].value()].values;
       for ( auto entry : entries ) {
         if ( values[attribute->index] == entry ) {
           found = true;
@@ -103,24 +85,13 @@ std::optional<BPMNOS::number> Enumeration::execute(const Values& values) const {
     }
   }
   else {
-    auto& entries = std::get< std::vector< std::variant<const Attribute*, std::optional<BPMNOS::number> > > >(collection);
-    for ( auto entry : entries ) {
-      if ( std::holds_alternative<const Attribute *>(entry) ) {
-        auto other = std::get<const Attribute *>(entry);
-        if ( values[attribute->index] == values[other->index] ) {
-          found = true;
-          break;
-        }
-      }
-      else {
-        if ( values[attribute->index] == std::get< std::optional<BPMNOS::number> >(entry) ) {
-          found = true;
-          break;
-        }
+    for ( auto value : collectionRegistry[(long unsigned int)std::get< BPMNOS::number >(collection)].values ) {
+      if ( values[attribute->index] == value ) {
+        found = true;
+        break;
       }
     }
   }
-
 
   if ( type == Type::IN ) {
     return BPMNOS::to_number( found , BOOLEAN);

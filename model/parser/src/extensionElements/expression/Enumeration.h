@@ -23,7 +23,7 @@ public:
   static constexpr std::string IN = std::string("in");
   static constexpr std::string NOTIN = std::string("not in");
   Attribute* attribute;
-  std::variant<const Attribute*, std::vector< std::variant<const Attribute*, std::optional<BPMNOS::number> > > > collection;
+  std::variant<const Attribute*, BPMNOS::number> collection;
 
 /**
  * @brief Checks whether the attribute value is in the collection of values.

@@ -61,6 +61,9 @@ void LinearExpression::parse(std::string expressionString, NumericType SIGN) {
     for ( auto &[key, attribute] : attributeMap ) {
       size_t pos = part.find(key);
       if ( pos != std::string::npos ) {
+        if ( attribute->type == ValueType::STRING || attribute->type == ValueType::COLLECTION ) {
+          throw std::runtime_error("LinearExpression: non-numeric variable '" + attribute->name + "'");
+        }
         variable = attribute;
         part.erase(pos,key.length()); // remove attribute name from part
         part.erase(remove(part.begin(), part.end(), '*'), part.end());
@@ -144,8 +147,6 @@ std::optional<BPMNOS::number> LinearExpression::execute(const Values& values) co
 }
 
 std::pair< std::optional<BPMNOS::number>, std::optional<BPMNOS::number> > LinearExpression::getBounds(const Attribute* attribute, const Values& values) const {
-  throw std::runtime_error("LinearExpression: not yet implemented");
-
   if ( type == Type::DEFAULT || type == Type::NOTEQUAL ) {
     return {std::nullopt,std::nullopt};
   }

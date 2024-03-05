@@ -6,8 +6,8 @@
 
 namespace BPMNOS {
 
-enum ValueType { STRING, BOOLEAN, INTEGER, DECIMAL };
-typedef std::variant< std::string, bool, int, double > Value;
+enum ValueType { BOOLEAN, INTEGER, DECIMAL, STRING, COLLECTION };
+typedef std::variant< bool, int, double, std::string > Value;
 
 } // BPMNOS
 

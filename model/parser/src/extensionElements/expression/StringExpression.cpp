@@ -34,6 +34,9 @@ StringExpression::StringExpression(XML::bpmnos::tParameter* parameter, const Att
     it != attributeMap.end()
   ) {
     attribute = it->second;
+    if ( attribute->type != ValueType::STRING ) {
+      throw std::runtime_error("LinearExpression: variable '" + attribute->name + "' is not a string");
+    }
   }
   else {
     throw std::runtime_error("StringExpression: cannot find attribute");
@@ -46,6 +49,9 @@ StringExpression::StringExpression(XML::bpmnos::tParameter* parameter, const Att
     if ( auto it = attributeMap.find(parts.back());
       it != attributeMap.end()
     ) {
+      if ( it->second->type != ValueType::STRING ) {
+        throw std::runtime_error("LinearExpression: variable '" + it->second->name + "' is not a string");
+      }
       rhs = it->second;
     }
     else {

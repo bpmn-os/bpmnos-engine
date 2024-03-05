@@ -1,15 +1,15 @@
 list(APPEND model_utility_SOURCES
-  StringRegistry.cpp
   Number.cpp
+  StringRegistry.cpp
+  CollectionRegistry.cpp
   RandomDistributionFactory.cpp
-  VectorRegistry.cpp
 )
 
 list(APPEND model_utility_HEADERS
   Keywords.h
-  StringRegistry.h
   Value.h
   Number.h
+  StringRegistry.h
+  CollectionRegistry.h
   RandomDistributionFactory.h
-  VectorRegistry.h
 )

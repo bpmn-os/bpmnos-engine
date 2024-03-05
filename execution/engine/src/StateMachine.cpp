@@ -7,7 +7,7 @@
 #include "execution/utility/src/erase.h"
 #include "model/parser/src/extensionElements/ExtensionElements.h"
 #include "model/parser/src/extensionElements/Timer.h"
-#include "model/utility/src/VectorRegistry.h"
+#include "model/utility/src/CollectionRegistry.h"
 #include "bpmn++.h"
 #include <cassert>
 #include <ranges>
@@ -136,16 +136,19 @@ void StateMachine::createMultiInstanceActivityTokens(Token* token) {
     if ( attribute->collection->attribute.has_value() &&
       token->status[ attribute->collection->attribute->get().index ].has_value()
     ) {
+      if ( attribute->collection->attribute->get().type != COLLECTION ) {
+        throw std::runtime_error("StateMachine: attribute '" + attribute->collection->attribute->get().name + "' is not a collection");
+      }
       collectionIndex = token->status[ attribute->collection->attribute->get().index ].value();
     }
     else if ( attribute->collection->value.has_value() ) {
-      collectionIndex = BPMNOS::to_number( attribute->collection->value.value().get().value, STRING );
+      collectionIndex = collectionRegistry(attribute->collection->value.value().get().value);
     }
     else {
       throw std::runtime_error("StateMachine: cannot determine values for multi-instance activity '" + token->node->id +"'");
     }
 
-    auto& collection = vectorRegistry[(long unsigned int)collectionIndex];
+    auto& collection = collectionRegistry[(long unsigned int)collectionIndex].values;
     if ( valueMaps.empty() ) {
       valueMaps.resize(collection.size());
     }
