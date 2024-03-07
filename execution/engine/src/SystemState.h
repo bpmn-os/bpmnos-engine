@@ -4,7 +4,7 @@
 #include "StateMachine.h"
 #include "execution/engine/src/Message.h"
 #include "execution/utility/src/auto_list.h"
-#include "execution/utility/src/auto_schedule.h"
+#include "execution/utility/src/auto_set.h"
 #include "model/data/src/Scenario.h"
 #include <set>
 #include <queue>
@@ -71,22 +71,22 @@ public:
   /**
    * @brief Map holding unsent messages with recipient that isn't instantiated yet.
    */
-  std::unordered_map<std::string, auto_list<Message> > unsent;
+  std::unordered_map<std::string, auto_list< std::weak_ptr<Message> > > unsent;
 
   /**
    * @brief Map holding the undelivered correspondence associated with a state machine which will be withdrawn when the state machine goes out of scope.
    */
-  std::unordered_map<StateMachine*, auto_list<Message> > correspondence;
+  std::unordered_map<StateMachine*, auto_list< std::weak_ptr<Message> > > correspondence;
 
   /**
    * @brief Map holding messages sent from given node.
    */
-  std::unordered_map<const BPMN::FlowNode*, auto_list<Message> > outbox;
+  std::unordered_map<const BPMN::FlowNode*, auto_list< std::weak_ptr<Message> > > outbox;
 
-  auto_list<Token> tokensAwaitingReadyEvent; ///< Container holding all tokens awaiting a ready event
+  auto_list< std::weak_ptr<Token> > tokensAwaitingReadyEvent; ///< Container holding all tokens awaiting a ready event
 
-  auto_list<Token> tokensAwaitingParallelEntry; ///< Container holding all tokens at activities (not within a sequential adhoc subprocess) awaiting an entry event
-  auto_list<Token> tokensAwaitingSequentialEntry; ///< Container holding all tokens awaiting an entry event at an activity for each sequential adhoc subprocess
+  auto_list< std::weak_ptr<Token> > tokensAwaitingParallelEntry; ///< Container holding all tokens at activities (not within a sequential adhoc subprocess) awaiting an entry event
+  auto_list< std::weak_ptr<Token> > tokensAwaitingSequentialEntry; ///< Container holding all tokens awaiting an entry event at an activity for each sequential adhoc subprocess
 
   std::unordered_map< Token*, Token* > tokenAtSequentialPerformer; ///< Map holding a token at a sequential performer for each token awaiting sequential entry
 
@@ -95,16 +95,16 @@ public:
   std::unordered_map< Token*, Token* > tokenAssociatedToBoundaryEventToken; ///< Map holding the token residing at the associated activity for each token at a boundary event
 
 
-  auto_schedule<Token, Values> tokensAwaitingTaskCompletion; ///< Sorted container holding all tokens awaiting a task completion event
+  auto_set<BPMNOS::number, std::weak_ptr<Token>, Values> tokensAwaitingTaskCompletion; ///< Sorted container holding all tokens awaiting a task completion event
 
-  auto_list<Token> tokensAwaitingChoice; ///< Container holding all tokens awaiting a choice event
+  auto_list< std::weak_ptr<Token> > tokensAwaitingChoice; ///< Container holding all tokens awaiting a choice event
 
-  auto_list<Token> tokensAwaitingExit; ///< Container holding all tokens awaiting an exit event
+  auto_list< std::weak_ptr<Token> > tokensAwaitingExit; ///< Container holding all tokens awaiting an exit event
 
-  auto_schedule<Token> tokensAwaitingTimer; ///< Sorted container holding holding all tokens awaiting a timer event
+  auto_set<BPMNOS::number, std::weak_ptr<Token>> tokensAwaitingTimer; ///< Sorted container holding holding all tokens awaiting a timer event
 
   std::unordered_map< Token*, std::weak_ptr<Message> > messageAwaitingDelivery; ///< Container holding message awaiting delivery for tokens at send tasks
-  auto_list<Token,Values> tokensAwaitingMessageDelivery; ///< Container holding all tokens awaiting a message delivery event with associated header values
+  auto_list< std::weak_ptr<Token>, Values > tokensAwaitingMessageDelivery; ///< Container holding all tokens awaiting a message delivery event with associated header values
 
   std::unordered_map< Token*, Token* > tokenAtMultiInstanceActivity; ///< Map holding the main token waiting at a multi-instance (or loop) activity.
   std::unordered_map< Token*, Token* > tokenAwaitingMultiInstanceExit; ///< Map holding the token waiting for the exit of an instantiation of a multi-instance (or loop) activity.
