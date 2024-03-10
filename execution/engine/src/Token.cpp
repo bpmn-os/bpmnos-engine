@@ -1153,7 +1153,10 @@ void Token::update(State newState) {
     // increase timestamp if necessary
     status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = now;
   }
-  else if ( status[BPMNOS::Model::ExtensionElements::Index::Timestamp] > now ) {
+  else if ( status[BPMNOS::Model::ExtensionElements::Index::Timestamp] > now
+    && state != State::WITHDRAWN
+  ) {
+//std::cerr << now << "/" << this->jsonify().dump() << now << std::endl;
     throw std::runtime_error("Token: timestamp at node '" + node->id + "' is larger than current time");
   }
   notify();

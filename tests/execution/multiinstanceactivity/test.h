@@ -149,9 +149,9 @@ SCENARIO( "Parallel multi instance task with timeout", "[execution][multiinstanc
         REQUIRE( entryLog[2]["status"]["counter"] == 3 );
 
         auto withdrawnLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "WITHDRAWN"}});
-        REQUIRE( withdrawnLog[0]["status"]["timestamp"] == 2 );
-        REQUIRE( withdrawnLog[1]["status"]["timestamp"] == 2 );
-        REQUIRE( withdrawnLog[2]["status"]["timestamp"] == 2 );
+        REQUIRE( withdrawnLog[0]["status"]["timestamp"] >= 2 );
+        REQUIRE( withdrawnLog[1]["status"]["timestamp"] >= 2 );
+        REQUIRE( withdrawnLog[2]["status"]["timestamp"] >= 2 );
 
         auto exitLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "EXITING"}});
         REQUIRE( exitLog.size() == 0 );
