@@ -7,14 +7,14 @@
 namespace BPMNOS::Execution {
 
 /**
- * @brief Abstract base class representing the event of a token having completed an activity.
+ * @brief Class representing the event of a token having completed an activity.
  *
  * Transition from State::BUSY to State::COMPLETED
  */
 struct CompletionEvent : Event {
-  CompletionEvent(const Token* token,  const Values& updatedStatus);
+  CompletionEvent(const Token* token,  std::optional<Values> updatedStatus = std::nullopt);
   void processBy(Engine* engine) const;
-  Values updatedStatus;
+  std::optional<Values> updatedStatus;
 };
 
 } // namespace BPMNOS::Execution

@@ -9,5 +9,5 @@ ErrorEvent::ErrorEvent(const Token* token)
 }
 
 void ErrorEvent::processBy(Engine* engine) const {
-  engine->process(*this);
+  engine->process(this);
 }

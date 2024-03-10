@@ -16,7 +16,7 @@ namespace BPMNOS::Execution {
 class MyopicDecisionTaskTerminator : public EventHandler {
 public:
   MyopicDecisionTaskTerminator();
-  std::unique_ptr<Event> fetchEvent( const SystemState* systemState ) override;
+  std::shared_ptr<Event> dispatchEvent( const SystemState* systemState ) override;
 };
 
 } // namespace BPMNOS::Execution

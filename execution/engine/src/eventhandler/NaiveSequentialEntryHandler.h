@@ -7,12 +7,15 @@
 namespace BPMNOS::Execution {
 
 /**
- * @brief Class creating an entry event for a token awaiting the entry at an activity within a sequential adhoc subprocess.
+ * @brief Class dispatching an entry event for a token awaiting the entry at an activity within a sequential adhoc subprocess.
  */
 class NaiveSequentialEntryHandler : public EventHandler {
 public:
   NaiveSequentialEntryHandler();
-  std::unique_ptr<Event> fetchEvent( const SystemState* systemState ) override;
+  std::shared_ptr<Event> dispatchEvent( const SystemState* systemState ) override;
+  void notice(EntryEvent* event);
+private:
+  auto_list< std::weak_ptr<const Token>, std::weak_ptr<Event> > sequentialEntryEvents;
 };
 
 } // namespace BPMNOS::Execution

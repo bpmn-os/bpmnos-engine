@@ -3,6 +3,7 @@
 
 #include <bpmn++.h>
 #include "execution/engine/src/EventHandler.h"
+#include "execution/engine/src/events/ExitEvent.h"
 
 namespace BPMNOS::Execution {
 
@@ -12,7 +13,7 @@ namespace BPMNOS::Execution {
 class InstantExitHandler : public EventHandler {
 public:
   InstantExitHandler();
-  std::unique_ptr<Event> fetchEvent( const SystemState* systemState ) override;
+  std::shared_ptr<Event> dispatchEvent( const SystemState* systemState ) override;
 };
 
 } // namespace BPMNOS::Execution

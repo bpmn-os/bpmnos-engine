@@ -7,7 +7,10 @@ namespace BPMNOS::Execution {
 
 class Engine;
 
-struct Event {
+//class Event;
+//typedef std::vector< std::shared_ptr<Token> > Events;
+
+struct Event : public std::enable_shared_from_this<Event> {
   Event(const Token* token);
   virtual ~Event() = default;  // Virtual destructor
   const Token* token;  

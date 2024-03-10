@@ -20,7 +20,11 @@ namespace BPMNOS::Execution {
 class MyopicMessageTaskTerminator : public EventHandler {
 public:
   MyopicMessageTaskTerminator();
-  std::unique_ptr<Event> fetchEvent( const SystemState* systemState ) override;
+  std::shared_ptr<Event> dispatchEvent( const SystemState* systemState ) override;
+  void notice(Event* event);
+private:
+  auto_list< std::weak_ptr<const Token>, std::weak_ptr<Event> > receiveTaskEvents;
+  auto_list< std::weak_ptr<const Token>, std::weak_ptr<Event> > otherEvents;
 };
 
 } // namespace BPMNOS::Execution

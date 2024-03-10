@@ -8,14 +8,14 @@
 namespace BPMNOS::Execution {
 
 /**
- * @brief Represents the event of choices that are made for a DecisionTask.
+ * @brief Represents the event that choices are made for a DecisionTask.
  *
  * Transition from State::BUSY to State::COMPLETED
  */
 struct ChoiceEvent : Event {
-  ChoiceEvent(const Token* token, const std::vector< std::pair< size_t, std::optional<BPMNOS::number> > >& choices);
+  ChoiceEvent(const Token* token);
   void processBy(Engine* engine) const;
-  std::vector< std::pair< size_t, std::optional<BPMNOS::number> > > choices;
+  Values updatedStatus;
 };
 
 } // namespace BPMNOS::Execution

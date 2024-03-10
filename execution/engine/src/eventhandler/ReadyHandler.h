@@ -7,12 +7,12 @@
 namespace BPMNOS::Execution {
 
 /**
- * @brief Class creating a ready event when the required data is available a token at an activity.
+ * @brief Class dispatching a ready event when the required data is available a token at an activity.
  */
 class ReadyHandler : public EventHandler {
 public:
   ReadyHandler();
-  std::unique_ptr<Event> fetchEvent( const SystemState* systemState ) override;
+  std::shared_ptr<Event> dispatchEvent( const SystemState* systemState ) override;
 };
 
 } // namespace BPMNOS::Execution

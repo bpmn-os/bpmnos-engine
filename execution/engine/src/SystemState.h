@@ -6,6 +6,13 @@
 #include "execution/utility/src/auto_list.h"
 #include "execution/utility/src/auto_set.h"
 #include "model/data/src/Scenario.h"
+#include "events/ErrorEvent.h"
+#include "events/ReadyEvent.h"
+#include "events/EntryEvent.h"
+#include "events/ChoiceEvent.h"
+#include "events/CompletionEvent.h"
+#include "events/MessageDeliveryEvent.h"
+#include "events/ExitEvent.h"
 #include <set>
 #include <queue>
 
@@ -62,6 +69,13 @@ public:
    * In all other cases values of attributes declared to contribute to the objective will be ignored.
    */
   BPMNOS::number objective;
+  
+  auto_list< std::weak_ptr<Token>, std::shared_ptr<ReadyEvent> > pendingReadyEvents;
+  auto_list< std::weak_ptr<Token>, std::shared_ptr<EntryEvent> > pendingEntryEvents;
+  auto_list< std::weak_ptr<Token>, std::shared_ptr<ChoiceEvent> > pendingChoiceEvents;
+  auto_set< BPMNOS::number, std::weak_ptr<Token>, std::shared_ptr<CompletionEvent> > pendingCompletionEvents;
+  auto_list< std::weak_ptr<Token>, std::shared_ptr<ExitEvent> > pendingExitEvents;
+  auto_list< std::weak_ptr<Token>, std::shared_ptr<MessageDeliveryEvent> > pendingMessageDeliveryEvents;
 
   /**
    * @brief Container holding instance identifier and corresponding state machine pointer for each instantiation.
@@ -83,10 +97,12 @@ public:
    */
   std::unordered_map<const BPMN::FlowNode*, auto_list< std::weak_ptr<Message> > > outbox;
 
-  auto_list< std::weak_ptr<Token> > tokensAwaitingReadyEvent; ///< Container holding all tokens awaiting a ready event
+/// TODO: remove or move below to state machine 
 
-  auto_list< std::weak_ptr<Token> > tokensAwaitingParallelEntry; ///< Container holding all tokens at activities (not within a sequential adhoc subprocess) awaiting an entry event
-  auto_list< std::weak_ptr<Token> > tokensAwaitingSequentialEntry; ///< Container holding all tokens awaiting an entry event at an activity for each sequential adhoc subprocess
+//  auto_list< std::weak_ptr<Token> > tokensAwaitingReadyEvent; ///< Container holding all tokens awaiting a ready event
+
+//  auto_list< std::weak_ptr<Token> > tokensAwaitingParallelEntry; ///< Container holding all tokens at activities (not within a sequential adhoc subprocess) awaiting an entry event
+//  auto_list< std::weak_ptr<Token> > tokensAwaitingSequentialEntry; ///< Container holding all tokens awaiting an entry event at an activity for each sequential adhoc subprocess
 
   std::unordered_map< Token*, Token* > tokenAtSequentialPerformer; ///< Map holding a token at a sequential performer for each token awaiting sequential entry
 
@@ -95,16 +111,16 @@ public:
   std::unordered_map< Token*, Token* > tokenAssociatedToBoundaryEventToken; ///< Map holding the token residing at the associated activity for each token at a boundary event
 
 
-  auto_set<BPMNOS::number, std::weak_ptr<Token>, Values> tokensAwaitingTaskCompletion; ///< Sorted container holding all tokens awaiting a task completion event
+//  auto_set<BPMNOS::number, std::weak_ptr<Token>, Values> tokensAwaitingTaskCompletion; ///< Sorted container holding all tokens awaiting a task completion event
 
-  auto_list< std::weak_ptr<Token> > tokensAwaitingChoice; ///< Container holding all tokens awaiting a choice event
+//  auto_list< std::weak_ptr<Token> > tokensAwaitingChoice; ///< Container holding all tokens awaiting a choice event
 
-  auto_list< std::weak_ptr<Token> > tokensAwaitingExit; ///< Container holding all tokens awaiting an exit event
+//  auto_list< std::weak_ptr<Token> > tokensAwaitingExit; ///< Container holding all tokens awaiting an exit event
 
   auto_set<BPMNOS::number, std::weak_ptr<Token>> tokensAwaitingTimer; ///< Sorted container holding holding all tokens awaiting a timer event
 
   std::unordered_map< Token*, std::weak_ptr<Message> > messageAwaitingDelivery; ///< Container holding message awaiting delivery for tokens at send tasks
-  auto_list< std::weak_ptr<Token>, Values > tokensAwaitingMessageDelivery; ///< Container holding all tokens awaiting a message delivery event with associated header values
+//  auto_list< std::weak_ptr<Token>, Values > tokensAwaitingMessageDelivery; ///< Container holding all tokens awaiting a message delivery event with associated header values
 
   std::unordered_map< Token*, Token* > tokenAtMultiInstanceActivity; ///< Map holding the main token waiting at a multi-instance (or loop) activity.
   std::unordered_map< Token*, Token* > tokenAwaitingMultiInstanceExit; ///< Map holding the token waiting for the exit of an instantiation of a multi-instance (or loop) activity.

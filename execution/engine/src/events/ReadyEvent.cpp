@@ -3,12 +3,11 @@
 
 using namespace BPMNOS::Execution;
 
-ReadyEvent::ReadyEvent(const Token* token, BPMNOS::Values values)
+ReadyEvent::ReadyEvent(const Token* token)
   : Event(token)
-  , values(values)
 {
 }
 
 void ReadyEvent::processBy(Engine* engine) const {
-  engine->process(*this);
+  engine->process(this);
 }

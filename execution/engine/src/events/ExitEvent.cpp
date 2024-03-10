@@ -10,5 +10,5 @@ ExitEvent::ExitEvent(const Token* token, std::optional<Values> exitStatus)
 }
 
 void ExitEvent::processBy(Engine* engine) const {
-  engine->process(*this);
+  engine->process(this);
 }

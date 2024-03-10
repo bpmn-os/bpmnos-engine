@@ -4,11 +4,11 @@ list(APPEND engine_SOURCES
   Event.cpp
   events/TerminationEvent.cpp
   events/ClockTickEvent.cpp
+  events/ErrorEvent.cpp
   events/ReadyEvent.cpp
   events/EntryEvent.cpp
-  events/CompletionEvent.cpp
   events/ChoiceEvent.cpp
-  events/ErrorEvent.cpp
+  events/CompletionEvent.cpp
   events/MessageDeliveryEvent.cpp
   events/ExitEvent.cpp
   StateMachine.cpp
@@ -34,11 +34,11 @@ list(APPEND engine_HEADERS
   Event.h
   events/TerminationEvent.h
   events/ClockTickEvent.h
+  events/ErrorEvent.h
   events/ReadyEvent.h
   events/EntryEvent.h
-  events/CompletionEvent.h
   events/ChoiceEvent.h
-  events/ErrorEvent.h
+  events/CompletionEvent.h
   events/MessageDeliveryEvent.h
   events/ExitEvent.h
   StateMachine.h

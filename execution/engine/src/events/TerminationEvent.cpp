@@ -9,5 +9,5 @@ TerminationEvent::TerminationEvent()
 }
 
 void TerminationEvent::processBy(Engine* engine) const {
-  engine->process(*this);
+  engine->process(this);
 }

@@ -5,15 +5,15 @@
 #include <vector>
 #include <list>
 #include "Event.h"
-#include "events/ClockTickEvent.h"
-#include "events/CompletionEvent.h"
-#include "events/ChoiceEvent.h"
-#include "events/EntryEvent.h"
-#include "events/ExitEvent.h"
-#include "events/MessageDeliveryEvent.h"
-#include "events/ReadyEvent.h"
 #include "events/TerminationEvent.h"
+#include "events/ClockTickEvent.h"
 #include "events/ErrorEvent.h"
+#include "events/ReadyEvent.h"
+#include "events/EntryEvent.h"
+#include "events/ChoiceEvent.h"
+#include "events/CompletionEvent.h"
+#include "events/MessageDeliveryEvent.h"
+#include "events/ExitEvent.h"
 #include "EventHandler.h"
 #include "SystemState.h"
 
@@ -31,23 +31,29 @@ public:
   ~Engine();
   void addEventHandler(EventHandler* eventHandler);
   void addListener(Listener* listener);
-
-  std::unique_ptr<Event> fetchEvent();
+  void subscribeReadyEvents(EventHandler* eventHandler);
+  void subscribeEntryEvents(EventHandler* eventHandler);
+  void subscribeChoiceEvents(EventHandler* eventHandler);
+  void subscribeCompletionEvents(EventHandler* eventHandler);
+  void subscribeExitEvents(EventHandler* eventHandler);
+  void subscribeMessageDeliveryEvents(EventHandler* eventHandler);
+  
+  std::shared_ptr<Event> fetchEvent();
 
   /**
    * @brief Runs a scenario as long as there is a token or new instantiations. Terminates when the time if the system exceeds the timeout.
    */
   void run(const BPMNOS::Model::Scenario* scenario, BPMNOS::number timeout = std::numeric_limits<BPMNOS::number>::max());
 
-  void process(const CompletionEvent& event);
-  void process(const ChoiceEvent& event);
-  void process(const EntryEvent& event);
-  void process(const ExitEvent& event);
-  void process(const MessageDeliveryEvent& event);
-  void process(const ReadyEvent& event);
-  void process(const ErrorEvent& event);
-  void process([[maybe_unused]] const ClockTickEvent& event);
-  void process([[maybe_unused]] const TerminationEvent& event);
+  void process(const ReadyEvent* event);
+  void process(const EntryEvent* event);
+  void process(const ChoiceEvent* event);
+  void process(const CompletionEvent* event);
+  void process(const MessageDeliveryEvent* event);
+  void process(const ExitEvent* event);
+  void process(const ErrorEvent* event);
+  void process([[maybe_unused]] const ClockTickEvent* event);
+  void process([[maybe_unused]] const TerminationEvent* event);
 
 /**
  * @brief Returns the timestamp the engine is in.
@@ -97,6 +103,13 @@ protected:
 //  friend void Token::notify() const;
   std::vector<EventHandler*> eventHandlers;
   std::vector<Listener*> listeners;
+
+  std::vector<EventHandler*> readyEventSubscribers;
+  std::vector<EventHandler*> entryEventSubscribers;
+  std::vector<EventHandler*> choiceEventSubscribers;
+  std::vector<EventHandler*> completionEventSubscribers;
+  std::vector<EventHandler*> exitEventSubscribers;
+  std::vector<EventHandler*> messageDeliveryEventSubscribers;
 
 };
 

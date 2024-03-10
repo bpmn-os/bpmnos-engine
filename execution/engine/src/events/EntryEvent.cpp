@@ -10,5 +10,5 @@ EntryEvent::EntryEvent(const Token* token, std::optional<Values> entryStatus)
 }
 
 void EntryEvent::processBy(Engine* engine) const {
-  engine->process(*this);
+  engine->process(this);
 }

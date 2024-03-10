@@ -8,6 +8,27 @@ ReadyHandler::ReadyHandler()
 {
 }
 
+std::shared_ptr<Event> ReadyHandler::dispatchEvent( const SystemState* systemState ) {
+  for ( auto& [token_ptr, event] : systemState->pendingReadyEvents ) {
+    if ( auto token = token_ptr.lock() )  {
+      assert( token );
+      if ( systemState->assumedTime ) {
+        event->values = systemState->scenario->getAnticipatedValues(token->node, token->status, systemState->currentTime );
+        return event;
+      }
+      else {
+        auto values = systemState->scenario->getKnownValues(token->node, token->status, systemState->currentTime );
+        if ( values ) {
+          event->values = std::move( values.value() );
+          return event;
+        }
+      }
+    }
+  }
+  return nullptr;
+}
+
+/*
 std::unique_ptr<Event> ReadyHandler::fetchEvent( const SystemState* systemState ) {
   for ( auto& [token_ptr] : systemState->tokensAwaitingReadyEvent ) {
     if ( auto token = token_ptr.lock() )  {
@@ -26,4 +47,4 @@ std::unique_ptr<Event> ReadyHandler::fetchEvent( const SystemState* systemState 
   }
   return nullptr;
 }
-
+*/

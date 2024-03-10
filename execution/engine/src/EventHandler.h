@@ -6,9 +6,13 @@
 
 namespace BPMNOS::Execution {
 
+class Engine;
+
 class EventHandler {
 public:
-  virtual std::unique_ptr<Event> fetchEvent( const SystemState* systemState ) = 0;
+  virtual std::shared_ptr<Event> dispatchEvent( [[maybe_unused]] const SystemState* systemState ) = 0;
+  void subscribe(Engine* engine);
+  void notice([[maybe_unused]] Event* event) {};
 };
 
 } // namespace BPMNOS::Execution

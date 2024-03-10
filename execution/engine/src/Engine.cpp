@@ -38,9 +38,33 @@ void Engine::addEventHandler(EventHandler* eventHandler) {
   eventHandlers.push_back(eventHandler);
 }
 
-std::unique_ptr<Event> Engine::fetchEvent() {
+void Engine::subscribeReadyEvents(EventHandler* eventHandler) {
+  readyEventSubscribers.push_back(eventHandler);
+}
+
+void Engine::subscribeEntryEvents(EventHandler* eventHandler) {
+  entryEventSubscribers.push_back(eventHandler);
+}
+
+void Engine::subscribeChoiceEvents(EventHandler* eventHandler) {
+  choiceEventSubscribers.push_back(eventHandler);
+}
+
+void Engine::subscribeCompletionEvents(EventHandler* eventHandler) {
+  completionEventSubscribers.push_back(eventHandler);
+}
+
+void Engine::subscribeExitEvents(EventHandler* eventHandler) {
+  exitEventSubscribers.push_back(eventHandler);
+}
+
+void Engine::subscribeMessageDeliveryEvents(EventHandler* eventHandler) {
+  messageDeliveryEventSubscribers.push_back(eventHandler);
+}
+
+std::shared_ptr<Event> Engine::fetchEvent() {
   for ( auto eventHandler : eventHandlers ) {
-    if ( auto event = eventHandler->fetchEvent(systemState.get()) ) {
+    if ( auto event = eventHandler->dispatchEvent(systemState.get()) ) {
       return event;
     }
   }
@@ -133,64 +157,55 @@ void Engine::deleteInstance(StateMachine* instance) {
   erase_ptr<StateMachine>(systemState->instances,instance);
 }
 
-void Engine::process(const ReadyEvent& event) {
+void Engine::process(const ReadyEvent* event) {
 //std::cerr << "ReadyEvent " << event.token->node->id << std::endl;
-  Token* token = const_cast<Token*>(event.token);
-  systemState->tokensAwaitingReadyEvent.remove(token);
+  Token* token = const_cast<Token*>(event->token);
 
   token->sequenceFlow = nullptr;
-  token->status.insert(token->status.end(), event.values.begin(), event.values.end());
+  token->status.insert(token->status.end(), event->values.begin(), event->values.end());
 
   commands.emplace_back(std::bind(&Token::advanceToReady,token), token);
+
+  systemState->pendingReadyEvents.remove(token);
 }
 
-void Engine::process(const EntryEvent& event) {
+void Engine::process(const EntryEvent* event) {
 //std::cerr << "EntryEvent " << event.token->node->id << std::endl;
-  Token* token = const_cast<Token*>(event.token);
+  Token* token = const_cast<Token*>(event->token);
   if ( token->node->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() ) {
     auto tokenAtSequentialPerformer = systemState->tokenAtSequentialPerformer.at(token);
     if ( tokenAtSequentialPerformer->performing ) {
       throw std::runtime_error("Engine: illegal start of sequential activity '" + token->node->id + "'" );
     }
-    systemState->tokensAwaitingSequentialEntry.remove(token);
+//    systemState->tokensAwaitingSequentialEntry.remove(token);
     // sequential performer is no longer idle
     tokenAtSequentialPerformer->performing = token;
     // use sequential performer status
     token->setStatus(tokenAtSequentialPerformer->status);
   }
   else {
-    systemState->tokensAwaitingParallelEntry.remove(token);
+//    systemState->tokensAwaitingParallelEntry.remove(token);
   }
 
   // update token status
-  if ( event.entryStatus.has_value() ) {
-    token->status = event.entryStatus.value();
+  if ( event->entryStatus.has_value() ) {
+    token->status = event->entryStatus.value();
   }
 
   commands.emplace_back(std::bind(&Token::advanceToEntered,token), token);
+
+  systemState->pendingEntryEvents.remove(token);
 }
 
-void Engine::process(const CompletionEvent& event) {
-//std::cerr << "CompletionEvent " << event.token->node->id << std::endl;
-  Token* token = const_cast<Token*>(event.token);
-  systemState->tokensAwaitingTaskCompletion.remove(token);
-  // update token status
-  token->status = event.updatedStatus;
-
-  commands.emplace_back(std::bind(&Token::advanceToCompleted,token), token);
-}
-
-void Engine::process(const ChoiceEvent& event) {
+void Engine::process(const ChoiceEvent* event) {
 //std::cerr << "ChoiceEvent " << event.token->node->id << std::endl;
-  Token* token = const_cast<Token*>(event.token);
+  Token* token = const_cast<Token*>(event->token);
   assert( token->node );
   assert( token->node->represents<BPMNOS::Model::DecisionTask>() );
-  systemState->tokensAwaitingChoice.remove(token);
+//  systemState->tokensAwaitingChoice.remove(token);
 
   // apply choices
-  for ( auto& [index,value] : event.choices ) {
-    token->status[index] = value;
-  }
+  token->status = std::move( event->updatedStatus );
 
   // apply operators
   if ( auto extensionElements = token->node->extensionElements->represents<BPMNOS::Model::ExtensionElements>() ) {
@@ -201,42 +216,34 @@ void Engine::process(const ChoiceEvent& event) {
   }
 
   commands.emplace_back(std::bind(&Token::advanceToCompleted,token), token);
+
+  systemState->pendingChoiceEvents.remove(token);
 }
 
-void Engine::process(const ExitEvent& event) {
-//std::cerr << "ExitEvent " << event.token->node->id << std::endl;
-  Token* token = const_cast<Token*>(event.token);
-  systemState->tokensAwaitingExit.remove(token);
-
-  if ( token->node->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() ) {
-    auto tokenAtSequentialPerformer = systemState->tokenAtSequentialPerformer.at(token);
-    // update sequential performer status
-    tokenAtSequentialPerformer->setStatus(token->status);
-    tokenAtSequentialPerformer->update(tokenAtSequentialPerformer->state);
-    // sequential performer becomes idle
-    assert(tokenAtSequentialPerformer->performing);
-    tokenAtSequentialPerformer->performing = nullptr;
-    systemState->tokenAtSequentialPerformer.erase(token);
-  }
-
+void Engine::process(const CompletionEvent* event) {
+//std::cerr << "CompletionEvent " << event.token->node->id << std::endl;
+  Token* token = const_cast<Token*>(event->token);
+//  systemState->tokensAwaitingTaskCompletion.remove(token);
   // update token status
-  if ( event.exitStatus.has_value() ) {
-    token->status = event.exitStatus.value();
+  if ( event->updatedStatus.has_value() ) {
+    token->status = std::move( event->updatedStatus.value() );
   }
+  
+  commands.emplace_back(std::bind(&Token::advanceToCompleted,token), token);
 
-  commands.emplace_back(std::bind(&Token::advanceToExiting,token), token);
+  systemState->pendingCompletionEvents.remove(token);
 }
 
-void Engine::process(const MessageDeliveryEvent& event) {
-  Token* token = const_cast<Token*>(event.token);
+void Engine::process(const MessageDeliveryEvent* event) {
+  Token* token = const_cast<Token*>(event->token);
   assert( token->node );
 
-  Message* message = const_cast<Message*>(event.message);
+  Message* message = const_cast<Message*>(event->message);
 
   // update token status 
   message->update(token);
   erase_ptr<Message>(systemState->messages,message);
-  systemState->tokensAwaitingMessageDelivery.remove(token);
+//  systemState->tokensAwaitingMessageDelivery.remove(token);
   if ( message->waitingToken ) {
     // send task is completed
     systemState->messageAwaitingDelivery.erase( message->waitingToken );
@@ -252,15 +259,42 @@ void Engine::process(const MessageDeliveryEvent& event) {
   }
 
   commands.emplace_back(std::bind(&Token::advanceToCompleted,token), token);
+
+  systemState->pendingMessageDeliveryEvents.remove(token);
 }
 
+void Engine::process(const ExitEvent* event) {
+//std::cerr << "ExitEvent " << event.token->node->id << std::endl;
+  Token* token = const_cast<Token*>(event->token);
+//  systemState->tokensAwaitingExit.remove(token);
 
-void Engine::process(const ErrorEvent& event) {
-  Token* token = const_cast<Token*>(event.token);
+  if ( token->node->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() ) {
+    auto tokenAtSequentialPerformer = systemState->tokenAtSequentialPerformer.at(token);
+    // update sequential performer status
+    tokenAtSequentialPerformer->setStatus(token->status);
+    tokenAtSequentialPerformer->update(tokenAtSequentialPerformer->state);
+    // sequential performer becomes idle
+    assert(tokenAtSequentialPerformer->performing);
+    tokenAtSequentialPerformer->performing = nullptr;
+    systemState->tokenAtSequentialPerformer.erase(token);
+  }
+
+  // update token status
+  if ( event->exitStatus.has_value() ) {
+    token->status = event->exitStatus.value();
+  }
+
+  commands.emplace_back(std::bind(&Token::advanceToExiting,token), token);
+
+  systemState->pendingExitEvents.remove(token);
+}
+
+void Engine::process(const ErrorEvent* event) {
+  Token* token = const_cast<Token*>(event->token);
   commands.emplace_back(std::bind(&Token::advanceToFailed,token), token);
 }
 
-void Engine::process([[maybe_unused]] const ClockTickEvent& event) {
+void Engine::process([[maybe_unused]] const ClockTickEvent* event) {
 //std::cerr << "ClockTickEvent " << std::endl;
   systemState->incrementTimeBy(clockTick);
   // trigger tokens awaiting timer
@@ -277,7 +311,7 @@ void Engine::process([[maybe_unused]] const ClockTickEvent& event) {
   }
 }
 
-void Engine::process([[maybe_unused]] const TerminationEvent& event) {
+void Engine::process([[maybe_unused]] const TerminationEvent* event) {
   throw std::runtime_error("Engine: TerminationEvent not yet implemented");
 }
 

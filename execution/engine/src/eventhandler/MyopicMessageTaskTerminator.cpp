@@ -8,6 +8,42 @@ MyopicMessageTaskTerminator::MyopicMessageTaskTerminator()
 {
 }
 
+std::shared_ptr<Event> MyopicMessageTaskTerminator::dispatchEvent( [[maybe_unused]] const SystemState* systemState ) {
+  // determine whether there is another decision pending
+  if ( !otherEvents.empty() ) {
+    return nullptr;
+  }
+
+  if ( !systemState->tokensAwaitingTimer.empty() ) {
+    return nullptr;
+  }
+
+  // all tokens have moved as far as they can
+  
+  // assume that no message can be delivered
+
+  for ( auto& [token_ptr, event ] : receiveTaskEvents ) {
+    if( auto token = token_ptr.lock() )  {
+      assert( token );
+      // raise error at receive task
+      return std::make_shared<ErrorEvent>(token.get());
+    }
+  }
+
+  return nullptr;
+}
+
+void MyopicMessageTaskTerminator::notice(Event* event) {
+  assert(event->token->node);
+  if ( !dynamic_cast<MessageDeliveryEvent*>(event) ) {
+    otherEvents.emplace_back(event->token->weak_from_this(), event->weak_from_this());
+  }
+  else if ( event->token->node->represents<BPMN::ReceiveTask>() ) {
+    receiveTaskEvents.emplace_back(event->token->weak_from_this(), event->weak_from_this());
+  }
+};
+
+/*
 std::unique_ptr<Event> MyopicMessageTaskTerminator::fetchEvent( const SystemState* systemState ) {
   // determine whether there is another decision pending
   if ( !systemState->tokensAwaitingParallelEntry.empty() ) {
@@ -60,4 +96,5 @@ std::unique_ptr<Event> MyopicMessageTaskTerminator::fetchEvent( const SystemStat
   }
   return nullptr;
 }
+*/
 

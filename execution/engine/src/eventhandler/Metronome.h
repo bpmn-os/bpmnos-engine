@@ -14,7 +14,7 @@ namespace BPMNOS::Execution {
 class Metronome : public EventHandler {
 public:
   Metronome(unsigned int clockTickDuration = 1000);
-  std::unique_ptr<Event> fetchEvent( const SystemState* systemState ) override;
+  std::shared_ptr<Event> dispatchEvent( const SystemState* systemState ) override;
   void initialize(unsigned int clockTickDuration); ///< Change clockTickDuration and set timestamp to current time and 
 private:
   std::chrono::high_resolution_clock::time_point timestamp;

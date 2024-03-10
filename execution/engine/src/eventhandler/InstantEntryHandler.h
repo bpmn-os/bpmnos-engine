@@ -7,12 +7,15 @@
 namespace BPMNOS::Execution {
 
 /**
- * @brief Class creating an entry event for a token awaiting the entry at a regular activity (i.e. not a job).
+ * @brief Class dispatching an entry event for a token awaiting the entry at an activity that is not a child of a sequential ad-hoc subprocess.
  */
 class InstantEntryHandler : public EventHandler {
 public:
   InstantEntryHandler();
-  std::unique_ptr<Event> fetchEvent( const SystemState* systemState ) override;
+  std::shared_ptr<Event> dispatchEvent( const SystemState* systemState ) override;
+  void notice(EntryEvent* event);
+private:
+  auto_list< std::weak_ptr<const Token>, std::weak_ptr<Event> > parallelEntryEvents;
 };
 
 } // namespace BPMNOS::Execution

@@ -14,6 +14,7 @@ class Engine;
 class StateMachine;
 class Token;
 typedef std::vector< std::shared_ptr<Token> > Tokens;
+class EventHandler;
 
 /**
  * @brief Represents a token running through the execution flow of a (sub)process.
@@ -173,6 +174,9 @@ private:
 
   void awaitGatewayActivation(); ///< Wait for activiation of merging gateway
 
+  template<typename EventType, typename... Args>
+  std::shared_ptr<EventType> createPendingEvent(const std::vector<EventHandler*>& subscribers, Args&&... args);
+    
   void withdraw(); ///< Remove token
 
   void sendMessage( size_t index = 0 ); 

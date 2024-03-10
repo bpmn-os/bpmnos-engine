@@ -7,7 +7,7 @@ TimeWarp::TimeWarp()
 {
 }
 
-std::unique_ptr<Event> TimeWarp::fetchEvent( [[maybe_unused]] const SystemState* systemState ) {
-  return std::make_unique<ClockTickEvent>();
+std::shared_ptr<Event> TimeWarp::dispatchEvent( [[maybe_unused]] const SystemState* systemState ) {
+  return std::make_shared<ClockTickEvent>();
 }
 

@@ -1008,59 +1008,59 @@ void Token::awaitCompensation() {
 void Token::awaitReadyEvent() {
 //std::cerr << "awaitReadyEvent" << std::endl;
   auto systemState = const_cast<SystemState*>(owner->systemState);
-  systemState->tokensAwaitingReadyEvent.emplace_back(weak_from_this());
+  auto event = createPendingEvent<ReadyEvent>(systemState->engine->readyEventSubscribers);
+  systemState->pendingReadyEvents.emplace_back( weak_from_this(), event );
 }
 
 void Token::awaitEntryEvent() {
   auto systemState = const_cast<SystemState*>(owner->systemState);
+  auto event = createPendingEvent<EntryEvent>(systemState->engine->entryEventSubscribers);
+  systemState->pendingEntryEvents.emplace_back( weak_from_this(), event );
 
   if ( node->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() ) {
-    auto tokenAtSequentialPerformer = getSequentialPerfomerToken();
-    systemState->tokenAtSequentialPerformer[this] = tokenAtSequentialPerformer;
-    systemState->tokensAwaitingSequentialEntry.emplace_back(weak_from_this());
-  }
-  else {
-    systemState->tokensAwaitingParallelEntry.emplace_back(weak_from_this());
+    systemState->tokenAtSequentialPerformer[this] = getSequentialPerfomerToken();
   }
 }
 
 void Token::awaitChoiceEvent() {
   auto systemState = const_cast<SystemState*>(owner->systemState);
-  systemState->tokensAwaitingChoice.emplace_back(weak_from_this());
+  auto event = createPendingEvent<ChoiceEvent>(systemState->engine->choiceEventSubscribers);
+  systemState->pendingChoiceEvents.emplace_back( weak_from_this(), event );
 }
 
 void Token::awaitTaskCompletionEvent() {
   auto systemState = const_cast<SystemState*>(owner->systemState);
-  Values updatedStatus = status;
   if ( auto extensionElements = node->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
        extensionElements && extensionElements->operators.size()
   ) {
-    extensionElements->applyOperators(updatedStatus);
-    if ( !updatedStatus[BPMNOS::Model::ExtensionElements::Index::Timestamp].has_value() ) {
+    extensionElements->applyOperators(status);
+    if ( !status[BPMNOS::Model::ExtensionElements::Index::Timestamp].has_value() ) {
       throw std::runtime_error("Token: timestamp at node '" + node->id + "' is deleted");
     }
   }
-  auto time = updatedStatus[BPMNOS::Model::ExtensionElements::Index::Timestamp].value();
+  auto time = status[BPMNOS::Model::ExtensionElements::Index::Timestamp].value();
 
-  systemState->tokensAwaitingTaskCompletion.emplace(time,weak_from_this(),std::move(updatedStatus));
+  auto event = createPendingEvent<CompletionEvent>(systemState->engine->completionEventSubscribers);
+  systemState->pendingCompletionEvents.emplace( time, weak_from_this(), event );
 }
 
 void Token::awaitExitEvent() {
   auto systemState = const_cast<SystemState*>(owner->systemState);
-  systemState->tokensAwaitingExit.emplace_back(weak_from_this());
+  auto event = createPendingEvent<ExitEvent>(systemState->engine->exitEventSubscribers);
+  systemState->pendingExitEvents.emplace_back( weak_from_this(), event );
+}
+
+void Token::awaitMessageDelivery() {
+  auto systemState = const_cast<SystemState*>(owner->systemState);
+  auto recipientHeader = node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->messageDefinitions.front()->getRecipientHeader(status);
+  auto event = createPendingEvent<MessageDeliveryEvent>(systemState->engine->messageDeliveryEventSubscribers, recipientHeader);
+  systemState->pendingMessageDeliveryEvents.emplace_back( weak_from_this(), event );
+//  systemState->tokensAwaitingMessageDelivery.emplace_back(weak_from_this(),recipientHeader);
 }
 
 void Token::awaitTimer(BPMNOS::number time) {
   auto systemState = const_cast<SystemState*>(owner->systemState);
   systemState->tokensAwaitingTimer.emplace(time,weak_from_this());
-}
-
-
-void Token::awaitMessageDelivery() {
-  auto systemState = const_cast<SystemState*>(owner->systemState);
-// TODO!
-  auto recipientHeader = node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->messageDefinitions.front()-> getRecipientHeader(status);
-  systemState->tokensAwaitingMessageDelivery.emplace_back(weak_from_this(),recipientHeader);
 }
 
 void Token::awaitGatewayActivation() {
@@ -1077,6 +1077,16 @@ void Token::awaitGatewayActivation() {
   auto& [key,tokens] = *gatewayIt;
   tokens.emplace_back(this);
 }
+
+template<typename EventType, typename... Args>
+std::shared_ptr<EventType> Token::createPendingEvent(const std::vector<EventHandler*>& subscribers, Args&&... args) {
+  auto event = std::make_shared<EventType>(this, std::forward<Args>(args)...);
+  for (auto& subscriber : subscribers) {
+    subscriber->notice(event.get());
+  }
+  return event;
+}
+
 
 void Token::withdraw() {
   if ( state != State::DONE && state != State::FAILED 

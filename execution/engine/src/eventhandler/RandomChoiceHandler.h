@@ -21,7 +21,7 @@ namespace BPMNOS::Execution {
 class RandomChoiceHandler : public EventHandler {
 public:
   RandomChoiceHandler();
-  std::unique_ptr<Event> fetchEvent( const SystemState* systemState ) override;
+  std::shared_ptr<Event> dispatchEvent( const SystemState* systemState ) override;
   BPMNOS::RandomGenerator randomGenerator;
 };
 

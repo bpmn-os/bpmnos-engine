@@ -9,5 +9,5 @@ ClockTickEvent::ClockTickEvent()
 }
 
 void ClockTickEvent::processBy(Engine* engine) const {
-  engine->process(*this);
+  engine->process(this);
 }

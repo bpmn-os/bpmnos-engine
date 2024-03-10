@@ -12,7 +12,7 @@ namespace BPMNOS::Execution {
 class DeterministicTaskCompletionHandler : public EventHandler {
 public:
   DeterministicTaskCompletionHandler();
-  std::unique_ptr<Event> fetchEvent( const SystemState* systemState ) override;
+  std::shared_ptr<Event> dispatchEvent( const SystemState* systemState ) override;
 };
 
 } // namespace BPMNOS::Execution

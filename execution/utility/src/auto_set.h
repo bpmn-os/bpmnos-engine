@@ -4,7 +4,6 @@
 #include <set>
 #include <tuple>
 #include <memory>
-#include "model/utility/src/Number.h"
 #include "expired.h"
 
 namespace BPMNOS::Execution {
@@ -40,7 +39,7 @@ public:
 
   private:
     void skipExpired() {
-      // erase all tuples in which any of initial weak_ptrs are expired
+      // erase all tuples in which any of the initial weak_ptrs are expired
       while ( current != container->tuples.end() && expired<1>(*current) ) {
         current = container->tuples.erase(current);
       }

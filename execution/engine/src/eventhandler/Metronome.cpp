@@ -14,11 +14,11 @@ void Metronome::initialize(unsigned int clockTickDuration) {
   timestamp = std::chrono::system_clock::now();
 }
 
-std::unique_ptr<Event> Metronome::fetchEvent( [[maybe_unused]] const SystemState* systemState ) {
+std::shared_ptr<Event> Metronome::dispatchEvent( [[maybe_unused]] const SystemState* systemState ) {
   auto trigger = timestamp + std::chrono::milliseconds( clockTickDuration );
   std::this_thread::sleep_until(trigger);
   timestamp = std::chrono::system_clock::now();
 
-  return std::make_unique<ClockTickEvent>();
+  return std::make_shared<ClockTickEvent>();
 }
 

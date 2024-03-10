@@ -14,8 +14,9 @@ namespace BPMNOS::Execution {
  * Transition from State::BUSY to State::COMPLETED
  */
 struct MessageDeliveryEvent : Event {
-  MessageDeliveryEvent(const Token* token, const Message* message);
+  MessageDeliveryEvent(const Token* token, const BPMNOS::Values& recipientHeader, Message* message = nullptr);
   void processBy(Engine* engine) const override;
+  const BPMNOS::Values recipientHeader;
   const Message* message;
 };
 
