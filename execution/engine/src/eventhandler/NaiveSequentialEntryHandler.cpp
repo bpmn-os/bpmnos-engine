@@ -30,7 +30,8 @@ std::shared_ptr<Event> NaiveSequentialEntryHandler::dispatchEvent( [[maybe_unuse
   return nullptr;
 }
 
-void NaiveSequentialEntryHandler::notice(EntryEvent* event) {
+void NaiveSequentialEntryHandler::notice(Event* event) {
+  assert(dynamic_cast<EntryEvent*>(event));
   assert(event->token->node);
   if ( event->token->node->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() ) {
     sequentialEntryEvents.emplace_back(event->token->weak_from_this(), event->weak_from_this());

@@ -43,6 +43,12 @@ std::shared_ptr<Event> MyopicMessageTaskTerminator::dispatchEvent( [[maybe_unuse
     }
   }
 
+  // no receive task is pending, raise error at remaining send tasks
+  for ( auto& [token,message_ptr] : systemState->messageAwaitingDelivery ) {
+    // raise error at send task
+    return std::make_shared<ErrorEvent>(token);
+  }
+
   return nullptr;
 }
 

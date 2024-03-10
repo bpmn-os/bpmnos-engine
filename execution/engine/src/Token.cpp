@@ -1013,6 +1013,8 @@ void Token::awaitReadyEvent() {
 }
 
 void Token::awaitEntryEvent() {
+//std::cerr << "awaitEntryEvent" << std::endl;
+
   auto systemState = const_cast<SystemState*>(owner->systemState);
   auto event = createPendingEvent<EntryEvent>(systemState->engine->entryEventSubscribers);
   systemState->pendingEntryEvents.emplace_back( weak_from_this(), event );
@@ -1051,6 +1053,7 @@ void Token::awaitExitEvent() {
 }
 
 void Token::awaitMessageDelivery() {
+//std::cerr << "awaitMessageDelivery" << std::endl;
   auto systemState = const_cast<SystemState*>(owner->systemState);
   auto recipientHeader = node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->messageDefinitions.front()->getRecipientHeader(status);
   auto event = createPendingEvent<MessageDeliveryEvent>(systemState->engine->messageDeliveryEventSubscribers, recipientHeader);
@@ -1080,6 +1083,7 @@ void Token::awaitGatewayActivation() {
 
 template<typename EventType, typename... Args>
 std::shared_ptr<EventType> Token::createPendingEvent(const std::vector<EventHandler*>& subscribers, Args&&... args) {
+//std::cerr << "Create pending event for token in state " << stateName[(int)state] << " at node " << node->id << std::endl;
   auto event = std::make_shared<EventType>(this, std::forward<Args>(args)...);
   for (auto& subscriber : subscribers) {
     subscriber->notice(event.get());

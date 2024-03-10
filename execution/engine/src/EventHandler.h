@@ -12,7 +12,7 @@ class EventHandler {
 public:
   virtual std::shared_ptr<Event> dispatchEvent( [[maybe_unused]] const SystemState* systemState ) = 0;
   void subscribe(Engine* engine);
-  void notice([[maybe_unused]] Event* event) {};
+  virtual void notice([[maybe_unused]] Event* event);
 };
 
 } // namespace BPMNOS::Execution

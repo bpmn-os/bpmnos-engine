@@ -26,7 +26,8 @@ std::shared_ptr<Event> InstantEntryHandler::dispatchEvent( [[maybe_unused]] cons
   return nullptr;
 }
 
-void InstantEntryHandler::notice(EntryEvent* event) {
+void InstantEntryHandler::notice(Event* event) {
+  assert(dynamic_cast<EntryEvent*>(event));
   assert(event->token->node);
   if ( !event->token->node->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() ) {
     parallelEntryEvents.emplace_back(event->token->weak_from_this(), event->weak_from_this());
