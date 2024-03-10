@@ -13,6 +13,7 @@ class InstantEntryHandler : public EventHandler {
 public:
   InstantEntryHandler();
   std::shared_ptr<Event> dispatchEvent( const SystemState* systemState ) override;
+  void subscribe(Engine* engine);
   void notice(EntryEvent* event);
 private:
   auto_list< std::weak_ptr<const Token>, std::weak_ptr<Event> > parallelEntryEvents;

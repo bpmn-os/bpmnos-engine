@@ -22,14 +22,18 @@ namespace BPMNOS::Execution {
 class Token;
 class StateMachine;
 class Listener;
+class Controller;
 
 class Engine {
   friend class Token;
   friend class StateMachine;
+  friend void EventHandler::subscribe(Engine* engine);
 public:
   Engine();
   ~Engine();
+private:
   void addEventHandler(EventHandler* eventHandler);
+public:
   void addListener(Listener* listener);
   void subscribeReadyEvents(EventHandler* eventHandler);
   void subscribeEntryEvents(EventHandler* eventHandler);

@@ -1,5 +1,6 @@
 #include "MyopicMessageTaskTerminator.h"
 #include "execution/engine/src/events/ErrorEvent.h"
+#include "execution/engine/src/Engine.h"
 #include <cassert>
 
 using namespace BPMNOS::Execution;
@@ -7,6 +8,18 @@ using namespace BPMNOS::Execution;
 MyopicMessageTaskTerminator::MyopicMessageTaskTerminator()
 {
 }
+
+void MyopicMessageTaskTerminator::subscribe(Engine* engine) {
+  engine->subscribeEntryEvents(this);
+  engine->subscribeReadyEvents(this);
+  engine->subscribeEntryEvents(this);
+  engine->subscribeChoiceEvents(this);
+  engine->subscribeCompletionEvents(this);
+  engine->subscribeExitEvents(this);
+  engine->subscribeMessageDeliveryEvents(this);
+  EventHandler::subscribe(engine);
+}
+
 
 std::shared_ptr<Event> MyopicMessageTaskTerminator::dispatchEvent( [[maybe_unused]] const SystemState* systemState ) {
   // determine whether there is another decision pending

@@ -1,5 +1,6 @@
 #include "NaiveSequentialEntryHandler.h"
 #include "execution/engine/src/events/EntryEvent.h"
+#include "execution/engine/src/Engine.h"
 #include "model/parser/src/SequentialAdHocSubProcess.h"
 #include <cassert>
 
@@ -7,6 +8,11 @@ using namespace BPMNOS::Execution;
 
 NaiveSequentialEntryHandler::NaiveSequentialEntryHandler()
 {
+}
+
+void NaiveSequentialEntryHandler::subscribe(Engine* engine) {
+  engine->subscribeEntryEvents(this);
+  EventHandler::subscribe(engine);
 }
 
 std::shared_ptr<Event> NaiveSequentialEntryHandler::dispatchEvent( [[maybe_unused]] const SystemState* systemState ) {

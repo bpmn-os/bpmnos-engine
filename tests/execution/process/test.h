@@ -15,7 +15,7 @@ SCENARIO( "Empty executable process", "[execution][process]" ) {
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine;
       Execution::TimeWarp timeHandler;
-      engine.addEventHandler(&timeHandler);
+      timeHandler.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       engine.addListener(&recorder);
@@ -65,7 +65,7 @@ SCENARIO( "Trivial executable process", "[execution][process]" ) {
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine;
       Execution::TimeWarp timeHandler;
-      engine.addEventHandler(&timeHandler);
+      timeHandler.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       engine.addListener(&recorder);
@@ -109,11 +109,11 @@ SCENARIO( "Simple executable process", "[execution][process]" ) {
       Execution::DeterministicTaskCompletionHandler completionHandler;
       Execution::InstantExitHandler exitHandler;
       Execution::TimeWarp timeHandler;
-      engine.addEventHandler(&readyHandler);
-      engine.addEventHandler(&entryHandler);
-      engine.addEventHandler(&completionHandler);
-      engine.addEventHandler(&exitHandler);
-      engine.addEventHandler(&timeHandler);
+      readyHandler.subscribe(&engine);
+      entryHandler.subscribe(&engine);
+      completionHandler.subscribe(&engine);
+      exitHandler.subscribe(&engine);
+      timeHandler.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       engine.addListener(&recorder);
@@ -167,11 +167,11 @@ SCENARIO( "Constrained executable process", "[execution][process]" ) {
       Execution::DeterministicTaskCompletionHandler completionHandler;
       Execution::InstantExitHandler exitHandler;
       Execution::TimeWarp timeHandler;
-      engine.addEventHandler(&readyHandler);
-      engine.addEventHandler(&entryHandler);
-      engine.addEventHandler(&completionHandler);
-      engine.addEventHandler(&exitHandler);
-      engine.addEventHandler(&timeHandler);
+      readyHandler.subscribe(&engine);
+      entryHandler.subscribe(&engine);
+      completionHandler.subscribe(&engine);
+      exitHandler.subscribe(&engine);
+      timeHandler.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       engine.addListener(&recorder);
@@ -199,11 +199,11 @@ SCENARIO( "Constrained executable process", "[execution][process]" ) {
       Execution::DeterministicTaskCompletionHandler completionHandler;
       Execution::InstantExitHandler exitHandler;
       Execution::TimeWarp timeHandler;
-      engine.addEventHandler(&readyHandler);
-      engine.addEventHandler(&entryHandler);
-      engine.addEventHandler(&completionHandler);
-      engine.addEventHandler(&exitHandler);
-      engine.addEventHandler(&timeHandler);
+      readyHandler.subscribe(&engine);
+      entryHandler.subscribe(&engine);
+      completionHandler.subscribe(&engine);
+      exitHandler.subscribe(&engine);
+      timeHandler.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       engine.addListener(&recorder);
@@ -229,11 +229,11 @@ SCENARIO( "Constrained executable process", "[execution][process]" ) {
       Execution::DeterministicTaskCompletionHandler completionHandler;
       Execution::InstantExitHandler exitHandler;
       Execution::TimeWarp timeHandler;
-      engine.addEventHandler(&readyHandler);
-      engine.addEventHandler(&entryHandler);
-      engine.addEventHandler(&completionHandler);
-      engine.addEventHandler(&exitHandler);
-      engine.addEventHandler(&timeHandler);
+      readyHandler.subscribe(&engine);
+      entryHandler.subscribe(&engine);
+      completionHandler.subscribe(&engine);
+      exitHandler.subscribe(&engine);
+      timeHandler.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       engine.addListener(&recorder);

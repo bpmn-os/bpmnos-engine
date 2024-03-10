@@ -18,7 +18,7 @@ SCENARIO( "Parallel fork", "[execution][parallelgateway]" ) {
       Execution::DeterministicTaskCompletionHandler completionHandler;
       Execution::InstantExitHandler exitHandler;
       Execution::TimeWarp timeHandler;
-      engine.addEventHandler(&timeHandler);
+      timeHandler.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       engine.addListener(&recorder);
@@ -77,11 +77,11 @@ SCENARIO( "Symmetric parallel gateways", "[execution][parallelgateway]" ) {
       Execution::DeterministicTaskCompletionHandler completionHandler;
       Execution::InstantExitHandler exitHandler;
       Execution::TimeWarp timeHandler;
-      engine.addEventHandler(&readyHandler);
-      engine.addEventHandler(&entryHandler);
-      engine.addEventHandler(&completionHandler);
-      engine.addEventHandler(&exitHandler);
-      engine.addEventHandler(&timeHandler);
+      readyHandler.subscribe(&engine);
+      entryHandler.subscribe(&engine);
+      completionHandler.subscribe(&engine);
+      exitHandler.subscribe(&engine);
+      timeHandler.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       engine.addListener(&recorder);

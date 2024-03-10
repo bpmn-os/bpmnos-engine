@@ -7,7 +7,7 @@ Controller::Controller()
 }
 
 void Controller::connect(Engine* engine) {
-  engine->addListener(this);
-  engine->addEventHandler(this);
+//  engine->addListener(this);
+//  engine->addEventHandler(this);
 }
 

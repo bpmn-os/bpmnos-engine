@@ -18,11 +18,11 @@ SCENARIO( "Task with expression operator", "[execution][task]" ) {
       Execution::DeterministicTaskCompletionHandler completionHandler;
       Execution::InstantExitHandler exitHandler;
       Execution::TimeWarp timeHandler;
-      engine.addEventHandler(&readyHandler);
-      engine.addEventHandler(&entryHandler);
-      engine.addEventHandler(&completionHandler);
-      engine.addEventHandler(&exitHandler);
-      engine.addEventHandler(&timeHandler);
+      readyHandler.subscribe(&engine);
+      entryHandler.subscribe(&engine);
+      completionHandler.subscribe(&engine);
+      exitHandler.subscribe(&engine);
+      timeHandler.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       engine.addListener(&recorder);
