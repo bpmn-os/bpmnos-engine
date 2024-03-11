@@ -35,14 +35,6 @@ public:
 private:
   void addEventHandler(EventHandler* eventHandler);
 public:
-//  void addListener(Listener* listener);
-  void subscribeReadyEvents(EventHandler* eventHandler);
-  void subscribeEntryEvents(EventHandler* eventHandler);
-  void subscribeChoiceEvents(EventHandler* eventHandler);
-  void subscribeCompletionEvents(EventHandler* eventHandler);
-  void subscribeExitEvents(EventHandler* eventHandler);
-  void subscribeMessageDeliveryEvents(EventHandler* eventHandler);
-  
   std::shared_ptr<Event> fetchEvent();
 
   /**
@@ -107,14 +99,6 @@ protected:
   bool advance();
 //  friend void Token::notify() const;
   std::vector<EventHandler*> eventHandlers;
-
-  std::vector<EventHandler*> readyEventSubscribers;
-  std::vector<EventHandler*> entryEventSubscribers;
-  std::vector<EventHandler*> choiceEventSubscribers;
-  std::vector<EventHandler*> completionEventSubscribers;
-  std::vector<EventHandler*> exitEventSubscribers;
-  std::vector<EventHandler*> messageDeliveryEventSubscribers;
-
 };
 
 } // namespace BPMNOS::Execution

@@ -11,7 +11,7 @@ NaiveSequentialEntryHandler::NaiveSequentialEntryHandler()
 }
 
 void NaiveSequentialEntryHandler::subscribe(Engine* engine) {
-  engine->subscribeEntryEvents(this);
+  engine->addSubscriber(this, Execution::Observable::Type::EntryEvent);
   EventHandler::subscribe(engine);
 }
 
@@ -30,26 +30,12 @@ std::shared_ptr<Event> NaiveSequentialEntryHandler::dispatchEvent( [[maybe_unuse
   return nullptr;
 }
 
-void NaiveSequentialEntryHandler::notice(Event* event) {
-  assert(dynamic_cast<EntryEvent*>(event));
+void NaiveSequentialEntryHandler::notice(const Observable* observable) {
+  assert(dynamic_cast<const EntryEvent*>(observable));
+  auto event = const_cast<EntryEvent*>(static_cast<const EntryEvent*>(observable));
   assert(event->token->node);
   if ( event->token->node->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() ) {
     sequentialEntryEvents.emplace_back(event->token->weak_from_this(), event->weak_from_this());
   }
-};
-
-/*
-std::unique_ptr<Event> NaiveSequentialEntryHandler::fetchEvent( const SystemState* systemState ) {
-  for ( auto& [token_ptr] : systemState->tokensAwaitingSequentialEntry ) {
-    if( auto token = token_ptr.lock() )  {
-      assert( token );
-      auto tokenAtSequentialPerformer = systemState->tokenAtSequentialPerformer.at(token.get());
-      if ( !tokenAtSequentialPerformer->performing ) {
-        return std::make_unique<EntryEvent>(token.get());
-      }
-    }
-  }
-
-  return nullptr;
 }
-*/
+

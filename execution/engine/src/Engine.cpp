@@ -37,30 +37,6 @@ void Engine::addEventHandler(EventHandler* eventHandler) {
   eventHandlers.push_back(eventHandler);
 }
 
-void Engine::subscribeReadyEvents(EventHandler* eventHandler) {
-  readyEventSubscribers.push_back(eventHandler);
-}
-
-void Engine::subscribeEntryEvents(EventHandler* eventHandler) {
-  entryEventSubscribers.push_back(eventHandler);
-}
-
-void Engine::subscribeChoiceEvents(EventHandler* eventHandler) {
-  choiceEventSubscribers.push_back(eventHandler);
-}
-
-void Engine::subscribeCompletionEvents(EventHandler* eventHandler) {
-  completionEventSubscribers.push_back(eventHandler);
-}
-
-void Engine::subscribeExitEvents(EventHandler* eventHandler) {
-  exitEventSubscribers.push_back(eventHandler);
-}
-
-void Engine::subscribeMessageDeliveryEvents(EventHandler* eventHandler) {
-  messageDeliveryEventSubscribers.push_back(eventHandler);
-}
-
 std::shared_ptr<Event> Engine::fetchEvent() {
   for ( auto eventHandler : eventHandlers ) {
     if ( auto event = eventHandler->dispatchEvent(systemState.get()) ) {

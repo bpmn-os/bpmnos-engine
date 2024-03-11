@@ -5,6 +5,7 @@
 #include <string>
 #include <memory>
 #include <bpmn++.h>
+#include "Observable.h"
 #include "model/utility/src/Number.h"
 #include <nlohmann/json.hpp>
 
@@ -15,9 +16,15 @@ class Token;
 class Message;
 typedef std::vector< std::shared_ptr<Message> > Messages;
 
-class Message : public std::enable_shared_from_this<Message> {
+class Message : public Observable, public std::enable_shared_from_this<Message> {
 public:
+  constexpr Type getObservableType() const override { return Type::Message; };
   Message(Token* token, size_t index);
+  enum class State { CREATED, DELIVERED, WITHDRAWN }; ///< The states that a message can be in
+private:
+  static inline std::string stateName[] = { "CREATED", "DELIVERED", "WITHDRAWN" };
+public:
+  State state;
   const BPMN::FlowNode* origin;
   Token* waitingToken;
   std::optional< std::string > recipient;

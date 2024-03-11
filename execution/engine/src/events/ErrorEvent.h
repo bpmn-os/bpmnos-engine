@@ -11,7 +11,8 @@ namespace BPMNOS::Execution {
  *
  * Transition from any state to State::FAILED
  */
-struct ErrorEvent: Event {
+struct ErrorEvent : Event {
+  constexpr Type getObservableType() const override { return Type::ErrorEvent; };
   ErrorEvent(const Token* token);
   void processBy(Engine* engine) const override;
 };

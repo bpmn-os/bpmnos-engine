@@ -1007,7 +1007,7 @@ void Token::awaitCompensation() {
 void Token::awaitReadyEvent() {
 //std::cerr << "awaitReadyEvent" << std::endl;
   auto systemState = const_cast<SystemState*>(owner->systemState);
-  auto event = createPendingEvent<ReadyEvent>(systemState->engine->readyEventSubscribers);
+  auto event = createPendingEvent<ReadyEvent>();
   systemState->pendingReadyEvents.emplace_back( weak_from_this(), event );
 }
 
@@ -1015,7 +1015,7 @@ void Token::awaitEntryEvent() {
 //std::cerr << "awaitEntryEvent" << std::endl;
 
   auto systemState = const_cast<SystemState*>(owner->systemState);
-  auto event = createPendingEvent<EntryEvent>(systemState->engine->entryEventSubscribers);
+  auto event = createPendingEvent<EntryEvent>();
   systemState->pendingEntryEvents.emplace_back( weak_from_this(), event );
 
   if ( node->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() ) {
@@ -1025,7 +1025,7 @@ void Token::awaitEntryEvent() {
 
 void Token::awaitChoiceEvent() {
   auto systemState = const_cast<SystemState*>(owner->systemState);
-  auto event = createPendingEvent<ChoiceEvent>(systemState->engine->choiceEventSubscribers);
+  auto event = createPendingEvent<ChoiceEvent>();
   systemState->pendingChoiceEvents.emplace_back( weak_from_this(), event );
 }
 
@@ -1041,13 +1041,13 @@ void Token::awaitTaskCompletionEvent() {
   }
   auto time = status[BPMNOS::Model::ExtensionElements::Index::Timestamp].value();
 
-  auto event = createPendingEvent<CompletionEvent>(systemState->engine->completionEventSubscribers);
+  auto event = createPendingEvent<CompletionEvent>();
   systemState->pendingCompletionEvents.emplace( time, weak_from_this(), event );
 }
 
 void Token::awaitExitEvent() {
   auto systemState = const_cast<SystemState*>(owner->systemState);
-  auto event = createPendingEvent<ExitEvent>(systemState->engine->exitEventSubscribers);
+  auto event = createPendingEvent<ExitEvent>();
   systemState->pendingExitEvents.emplace_back( weak_from_this(), event );
 }
 
@@ -1055,7 +1055,7 @@ void Token::awaitMessageDelivery() {
 //std::cerr << "awaitMessageDelivery" << std::endl;
   auto systemState = const_cast<SystemState*>(owner->systemState);
   auto recipientHeader = node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->messageDefinitions.front()->getRecipientHeader(status);
-  auto event = createPendingEvent<MessageDeliveryEvent>(systemState->engine->messageDeliveryEventSubscribers, recipientHeader);
+  auto event = createPendingEvent<MessageDeliveryEvent>(recipientHeader);
   systemState->pendingMessageDeliveryEvents.emplace_back( weak_from_this(), event );
 //  systemState->tokensAwaitingMessageDelivery.emplace_back(weak_from_this(),recipientHeader);
 }
@@ -1081,12 +1081,10 @@ void Token::awaitGatewayActivation() {
 }
 
 template<typename EventType, typename... Args>
-std::shared_ptr<EventType> Token::createPendingEvent(const std::vector<EventHandler*>& subscribers, Args&&... args) {
+std::shared_ptr<EventType> Token::createPendingEvent(Args&&... args) {
 //std::cerr << "Create pending event for token in state " << stateName[(int)state] << " at node " << node->id << std::endl;
   auto event = std::make_shared<EventType>(this, std::forward<Args>(args)...);
-  for (auto& subscriber : subscribers) {
-    subscriber->notice(event.get());
-  }
+  owner->systemState->engine->notify(event.get());
   return event;
 }
 

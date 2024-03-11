@@ -13,6 +13,7 @@ namespace BPMNOS::Execution {
  * Transition from State::BUSY to State::COMPLETED
  */
 struct ChoiceEvent : Event {
+  constexpr Type getObservableType() const override { return Type::ChoiceEvent; };
   ChoiceEvent(const Token* token);
   void processBy(Engine* engine) const;
   Values updatedStatus;

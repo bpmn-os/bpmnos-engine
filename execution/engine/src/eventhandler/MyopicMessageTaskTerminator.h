@@ -3,6 +3,7 @@
 
 #include <bpmn++.h>
 #include "execution/engine/src/EventHandler.h"
+#include "execution/engine/src/Observer.h"
 
 namespace BPMNOS::Execution {
 
@@ -17,12 +18,12 @@ namespace BPMNOS::Execution {
  * so that no message can currently be delivered. The handler is myopic and does not consider future instantiations
  * of processes.
  */
-class MyopicMessageTaskTerminator : public EventHandler {
+class MyopicMessageTaskTerminator : public EventHandler, public Observer {
 public:
   MyopicMessageTaskTerminator();
   std::shared_ptr<Event> dispatchEvent( const SystemState* systemState ) override;
   void subscribe(Engine* engine);
-  void notice(Event* event) override;
+  void notice(const Observable* observable) override;
 private:
   auto_list< std::weak_ptr<const Token>, std::weak_ptr<Event> > receiveTaskEvents;
   auto_list< std::weak_ptr<const Token>, std::weak_ptr<Event> > otherEvents;

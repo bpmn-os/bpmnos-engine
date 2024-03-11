@@ -5,7 +5,8 @@
 using namespace BPMNOS::Execution;
 
 Message::Message(Token* token, size_t index)
-  : origin(token->node)
+  : state(State::CREATED)
+  , origin(token->node)
   , waitingToken(nullptr)
 {
   if ( token->node->represents<BPMN::SendTask>() ) {
@@ -51,7 +52,10 @@ bool Message::matches(const BPMNOS::Values& otherHeader) {
 
 nlohmann::ordered_json Message::jsonify() const {
   nlohmann::ordered_json jsonObject;
-// TODO!
+
+  jsonObject["origin"] = origin->id;
+  jsonObject["state"] = stateName[(int)state];
+
   auto& messageDefinition = origin->extensionElements->as<BPMNOS::Model::ExtensionElements>()->messageDefinitions.front();
   size_t i = 0;
   for ( auto headerName : messageDefinition->header ) {

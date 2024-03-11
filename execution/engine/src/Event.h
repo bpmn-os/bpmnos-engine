@@ -2,6 +2,7 @@
 #define BPMNOS_Execution_Event_H
 
 #include "Token.h"
+#include "Observable.h"
 
 namespace BPMNOS::Execution {
 
@@ -10,7 +11,7 @@ class Engine;
 //class Event;
 //typedef std::vector< std::shared_ptr<Token> > Events;
 
-struct Event : public std::enable_shared_from_this<Event> {
+struct Event : Observable, std::enable_shared_from_this<Event> {
   Event(const Token* token);
   virtual ~Event() = default;  // Virtual destructor
   const Token* token;  

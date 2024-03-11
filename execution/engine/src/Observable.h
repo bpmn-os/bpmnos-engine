@@ -4,7 +4,7 @@
 namespace BPMNOS::Execution {
 
 struct Observable {
-  enum class Type { Token, Message, ReadyEvent, EntryEvent, ChoiceEvent, CompletionEvent, ExitEvent, MessageDeliveryEvent, ClockTickEvent, TerminationEvent, Count };
+  enum class Type { Token, Message, ReadyEvent, EntryEvent, ChoiceEvent, CompletionEvent, ExitEvent, MessageDeliveryEvent, ClockTickEvent, ErrorEvent, TerminationEvent, Count };
   virtual constexpr Type getObservableType() const = 0;
   ~Observable() {};
 };
