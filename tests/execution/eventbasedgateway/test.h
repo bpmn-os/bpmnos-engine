@@ -26,7 +26,7 @@ SCENARIO( "Event-based gateway with two timer events", "[execution][eventbasedga
       timeHandler.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
-      engine.addListener(&recorder);
+      recorder.subscribe(&engine);
       engine.run(scenario.get());
       THEN( "The token at timer 2 is withdrawn" ) {
         auto completionLog =recorder.find(nlohmann::json{{"state", "COMPLETED"}});
@@ -62,7 +62,7 @@ SCENARIO( "Event-based gateway with two timer events", "[execution][eventbasedga
       timeHandler.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
-      engine.addListener(&recorder);
+      recorder.subscribe(&engine);
       engine.run(scenario.get());
       THEN( "The token at timer 1 is withdrawn" ) {
         auto completionLog =recorder.find(nlohmann::json{{"state", "COMPLETED"}});

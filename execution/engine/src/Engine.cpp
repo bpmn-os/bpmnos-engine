@@ -5,7 +5,6 @@
 #include "model/parser/src/SequentialAdHocSubProcess.h"
 #include "model/parser/src/DecisionTask.h"
 #include "execution/utility/src/erase.h"
-#include "execution/listener/src/Listener.h"
 #include <cassert>
 
 using namespace BPMNOS::Execution;
@@ -69,10 +68,6 @@ std::shared_ptr<Event> Engine::fetchEvent() {
     }
   }
   return nullptr;
-}
-
-void Engine::addListener(Listener* listener) {
-  listeners.push_back(listener);
 }
 
 void Engine::run(const BPMNOS::Model::Scenario* scenario, BPMNOS::number timeout) {

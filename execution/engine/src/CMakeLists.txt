@@ -1,4 +1,5 @@
 list(APPEND engine_SOURCES
+  Notifier.cpp
   Message.cpp
   Token.cpp
   Event.cpp
@@ -29,6 +30,9 @@ list(APPEND engine_SOURCES
 )
 
 list(APPEND engine_HEADERS
+  Observable.h
+  Observer.h
+  Notifier.h
   Message.h
   Token.h
   Event.h

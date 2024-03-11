@@ -25,7 +25,7 @@ SCENARIO( "Parallel multi instance task", "[execution][multiinstanceactivity]" )
       timeHandler.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
-      engine.addListener(&recorder);
+      recorder.subscribe(&engine);
       engine.run(scenario.get());
       THEN( "The dump of each entry of the recorder log is correct" ) {
         auto waitingLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "WAITING"}});
@@ -79,7 +79,7 @@ SCENARIO( "Sequential multi instance task", "[execution][multiinstanceactivity]"
       timeHandler.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
-      engine.addListener(&recorder);
+      recorder.subscribe(&engine);
       engine.run(scenario.get());
       THEN( "The dump of each entry of the recorder log is correct" ) {
         auto waitingLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "WAITING"}});
@@ -133,7 +133,7 @@ SCENARIO( "Parallel multi instance task with timeout", "[execution][multiinstanc
       timeHandler.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
-      engine.addListener(&recorder);
+      recorder.subscribe(&engine);
       engine.run(scenario.get());
       THEN( "The dump of each entry of the recorder log is correct" ) {
         auto waitingLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "WAITING"}});
@@ -195,7 +195,7 @@ SCENARIO( "Sequential multi instance task with timeout", "[execution][multiinsta
       timeHandler.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
-      engine.addListener(&recorder);
+      recorder.subscribe(&engine);
       engine.run(scenario.get());
       THEN( "The dump of each entry of the recorder log is correct" ) {
         auto waitingLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "WAITING"}});
@@ -255,7 +255,7 @@ SCENARIO( "Sequential multi instance subprocess with error", "[execution][multii
       timeHandler.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
-      engine.addListener(&recorder);
+      recorder.subscribe(&engine);
       engine.run(scenario.get());
       THEN( "The dump of each entry of the recorder log is correct" ) {
         auto waitingLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "WAITING"}});
@@ -309,7 +309,7 @@ SCENARIO( "Sequential multi instance subprocess with escalation", "[execution][m
       timeHandler.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
-      engine.addListener(&recorder);
+      recorder.subscribe(&engine);
       engine.run(scenario.get());
       THEN( "The dump of each entry of the recorder log is correct" ) {
         auto waitingLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "WAITING"}});

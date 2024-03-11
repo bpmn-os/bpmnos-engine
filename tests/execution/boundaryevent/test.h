@@ -25,7 +25,7 @@ SCENARIO( "Failed task", "[execution][boundaryevent]" ) {
       timeHandler.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
-      engine.addListener(&recorder);
+      recorder.subscribe(&engine);
       engine.run(scenario.get(),1);
       THEN( "The dump of the recorder log is correct" ) {
 
@@ -76,7 +76,7 @@ SCENARIO( "Failed subprocess", "[execution][boundaryevent]" ) {
       timeHandler.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
-      engine.addListener(&recorder);
+      recorder.subscribe(&engine);
       engine.run(scenario.get(),0);
       THEN( "The dump of each entry of the recorder log is correct" ) {
         auto failureLog = recorder.find(nlohmann::json{{"state", "FAILED"}});

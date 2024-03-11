@@ -25,7 +25,7 @@ SCENARIO( "Task with expression operator", "[status][nestedactivities]" ) {
       timeHandler.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
-      engine.addListener(&recorder);
+      recorder.subscribe(&engine);
       engine.run(scenario.get());
       THEN( "The status updates are correct" ) {
         auto subProcessLog = recorder.find(nlohmann::json{{"nodeId", "SubProcess_1"}});

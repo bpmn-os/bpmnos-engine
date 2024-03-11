@@ -25,7 +25,7 @@ SCENARIO( "Intermediate escalation", "[execution][escalation]" ) {
       timeHandler.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
-      engine.addListener(&recorder);
+      recorder.subscribe(&engine);
       engine.run(scenario.get());
       THEN( "The recorder log has exactly 20 entries" ) {
         REQUIRE( recorder.log.size() == 20 );

@@ -18,7 +18,7 @@ SCENARIO( "Empty executable process", "[execution][process]" ) {
       timeHandler.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
-      engine.addListener(&recorder);
+      recorder.subscribe(&engine);
       engine.run(scenario.get());
       THEN( "The recorder log has exactly 4 entries" ) {
         REQUIRE( recorder.log.size() == 4 );
@@ -68,7 +68,7 @@ SCENARIO( "Trivial executable process", "[execution][process]" ) {
       timeHandler.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
-      engine.addListener(&recorder);
+      recorder.subscribe(&engine);
       engine.run(scenario.get());
       THEN( "The recorder log has exactly 6 entries" ) {
         REQUIRE( recorder.log.size() == 6 );
@@ -116,7 +116,7 @@ SCENARIO( "Simple executable process", "[execution][process]" ) {
       timeHandler.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
-      engine.addListener(&recorder);
+      recorder.subscribe(&engine);
       engine.run(scenario.get());
       THEN( "The recorder log has exactly 16 entries" ) {
         REQUIRE( recorder.log.size() == 16 );
@@ -174,7 +174,7 @@ SCENARIO( "Constrained executable process", "[execution][process]" ) {
       timeHandler.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
-      engine.addListener(&recorder);
+      recorder.subscribe(&engine);
       engine.run(scenario.get());
       THEN( "The process completes without failure" ) {
         auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr }});
@@ -206,7 +206,7 @@ SCENARIO( "Constrained executable process", "[execution][process]" ) {
       timeHandler.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
-      engine.addListener(&recorder);
+      recorder.subscribe(&engine);
       engine.run(scenario.get());
       THEN( "The process fails after entry" ) {
         auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr }});
@@ -236,7 +236,7 @@ SCENARIO( "Constrained executable process", "[execution][process]" ) {
       timeHandler.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
-      engine.addListener(&recorder);
+      recorder.subscribe(&engine);
       engine.run(scenario.get());
       THEN( "The process fails after completion" ) {
         auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr }});

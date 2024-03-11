@@ -25,7 +25,7 @@ SCENARIO( "Simple compensation event subprocess", "[execution][compensation]" ) 
       timeHandler.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
-      engine.addListener(&recorder);
+      recorder.subscribe(&engine);
       engine.run(scenario.get());
       THEN( "Then the nodes change their states in the correct order" ) {
         auto entryLog = recorder.find(nlohmann::json{{"state", "ENTERED"}});
@@ -74,7 +74,7 @@ SCENARIO( "Recursive compensations", "[execution][compensation]" ) {
       timeHandler.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
-      engine.addListener(&recorder);
+      recorder.subscribe(&engine);
       engine.run(scenario.get());
       THEN( "Then the nodes change their states in the correct order" ) {
         auto entryLog = recorder.find(nlohmann::json{{"state", "ENTERED"}});
@@ -134,7 +134,7 @@ SCENARIO( "Recursive named compensations", "[execution][compensation]" ) {
       timeHandler.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
-      engine.addListener(&recorder);
+      recorder.subscribe(&engine);
       engine.run(scenario.get());
       THEN( "Then the nodes change their states in the correct order" ) {
         auto entryLog = recorder.find(nlohmann::json{{"state", "ENTERED"}});

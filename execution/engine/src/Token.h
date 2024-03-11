@@ -4,6 +4,7 @@
 #include <bpmn++.h>
 #include "model/parser/src/extensionElements/ExtensionElements.h"
 #include "model/utility/src/Number.h"
+#include "Observable.h"
 #include <nlohmann/json.hpp>
 #include <iostream>
 #include <cassert>
@@ -96,13 +97,14 @@ class EventHandler;
  *
  * @note It is assumed that @ref XML::bpmn::tAdHocSubProcess::ordering is `Sequential`.
  */
-class Token : public std::enable_shared_from_this<Token> {
+class Token : public Observable, public std::enable_shared_from_this<Token> {
 private:
   friend class SystemState;
   friend class StateMachine;
   friend class Engine;
 
 public:
+  constexpr Type getObservableType() const override { return Type::Token; };
   const StateMachine* owner; ///< State machine owning the token
   std::shared_ptr<StateMachine> owned; ///< State machine owned by the token
   const BPMN::FlowNode* node;

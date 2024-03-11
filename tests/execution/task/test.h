@@ -25,7 +25,7 @@ SCENARIO( "Task with expression operator", "[execution][task]" ) {
       timeHandler.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
-      engine.addListener(&recorder);
+      recorder.subscribe(&engine);
       engine.run(scenario.get());
       THEN( "The recorder log has exactly 16 entries" ) {
         REQUIRE( recorder.log.size() == 16 );

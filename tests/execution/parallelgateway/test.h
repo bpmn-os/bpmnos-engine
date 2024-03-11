@@ -21,7 +21,7 @@ SCENARIO( "Parallel fork", "[execution][parallelgateway]" ) {
       timeHandler.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
-      engine.addListener(&recorder);
+      recorder.subscribe(&engine);
       engine.run(scenario.get(),0);
       THEN( "The dump of each entry of the recorder log has 16 entries" ) {        
         REQUIRE( recorder.log.size() == 16 );
@@ -84,7 +84,7 @@ SCENARIO( "Symmetric parallel gateways", "[execution][parallelgateway]" ) {
       timeHandler.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
-      engine.addListener(&recorder);
+      recorder.subscribe(&engine);
       engine.run(scenario.get(),0);
       THEN( "The dump of each entry of the recorder log has 33 entries" ) {        
         REQUIRE( recorder.log.size() == 33 );

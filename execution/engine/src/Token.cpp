@@ -7,7 +7,6 @@
 #include "model/parser/src/extensionElements/Timer.h"
 #include "model/parser/src/SequentialAdHocSubProcess.h"
 #include "model/parser/src/DecisionTask.h"
-#include "execution/listener/src/Listener.h"
 #include "execution/utility/src/erase.h"
 #include <cassert>
 #include <iostream>
@@ -1163,7 +1162,5 @@ void Token::update(State newState) {
 }
 
 void Token::notify() const {
-  for ( auto listener : owner->systemState->engine->listeners ) {
-    listener->update(this);
-  }
+  owner->systemState->engine->notify(this);
 }

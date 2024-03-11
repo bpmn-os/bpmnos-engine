@@ -3,7 +3,8 @@
 
 #include <ostream>
 #include <bpmn++.h>
-#include "Listener.h"
+#include "execution/engine/src/Engine.h"
+#include "execution/engine/src/Observer.h"
 #include "model/utility/src/Number.h"
 #include <nlohmann/json.hpp>
 
@@ -46,13 +47,15 @@ namespace Color {
 /**
  * @brief Class recording all token changes.
  */
-class Recorder : public Listener {
+class Recorder : public Observer {
 public:
   Recorder(size_t maxSize = std::numeric_limits<size_t>::max());
   Recorder(std::ostream &os, size_t maxSize = std::numeric_limits<size_t>::max());
   ~Recorder();
 
-  void update( const Token* token ) override;
+  void subscribe(Engine* engine);
+  void notice(const Observable* observable) override;
+
   BPMNOS::number objective; ///< The global objective.
   nlohmann::ordered_json log; ///< A json object of the entire log.
   /**

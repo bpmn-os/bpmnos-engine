@@ -59,7 +59,7 @@ using namespace BPMNOS;
 #endif // ALL_TESTS
 
 #ifndef ALL_TESTS
-#include "examples/knapsack_problem/test.h"
+#include "execution/process/test.h"
 #endif // ALL_TESTS
 
 // When adding/modifying tests, don't forget to run: make clean; cmake ..; make all -j7; make tests
@@ -155,7 +155,7 @@ parser.compile(user_expression, expression);
 
 
 TEST_CASE("My Test Case") {
-    test();
+//    test();
 }
 
 

@@ -29,7 +29,7 @@ SCENARIO( "Simple messaging", "[execution][message]" ) {
       timeHandler.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
-      engine.addListener(&recorder);
+      recorder.subscribe(&engine);
       engine.run(scenario.get());
       THEN( "Then the message is delivered" ) {
         REQUIRE( recorder.find(nlohmann::json{{"processId", "Process_1"},{"instanceId", "Instance_1"},{"nodeId", "MessageThrowEvent_1"},{"state", "DONE"}}).size() == 1 );
@@ -65,7 +65,7 @@ SCENARIO( "Simple messaging", "[execution][message]" ) {
       timeHandler.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
-      engine.addListener(&recorder);
+      recorder.subscribe(&engine);
       engine.run(scenario.get(),0);
       THEN( "Then the message is not delivered" ) {
         REQUIRE( recorder.find(nlohmann::json{{"processId", "Process_1"},{"instanceId", "Instance_1"},{"nodeId", "MessageThrowEvent_1"},{"state", "DONE"}}).size() == 1 );
@@ -102,7 +102,7 @@ SCENARIO( "Simple messaging", "[execution][message]" ) {
       timeHandler.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
-      engine.addListener(&recorder);
+      recorder.subscribe(&engine);
       engine.run(scenario.get(),1);
       THEN( "Then the message is not delivered" ) {
         REQUIRE( recorder.find(nlohmann::json{{"processId", "Process_1"},{"instanceId", "Instance_1"},{"nodeId", "MessageThrowEvent_1"},{"state", "DONE"}}).size() == 1 );
@@ -140,7 +140,7 @@ SCENARIO( "Simple messaging", "[execution][message]" ) {
       completionHandler.subscribe(&engine);
       exitHandler.subscribe(&engine);
       timeHandler.subscribe(&engine);
-      engine.addListener(&recorder);
+      recorder.subscribe(&engine);
       engine.run(scenario.get(),0);
       THEN( "Then the message is only delivered to one recipient" ) {
         REQUIRE( recorder.find(nlohmann::json{{"processId", "Process_1"},{"instanceId", "Instance_1"},{"nodeId", "MessageThrowEvent_1"},{"state", "DONE"}}).size() == 1 );
@@ -186,7 +186,7 @@ SCENARIO( "Message tasks", "[execution][message]" ) {
       timeHandler.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
-      engine.addListener(&recorder);
+      recorder.subscribe(&engine);
       engine.run(scenario.get());
       THEN( "Then the message is delivered" ) {
         REQUIRE( recorder.find(nlohmann::json{{"processId", "Process_1"},{"instanceId", "Instance_1"},{"nodeId", "SendTask_1"},{"state", "COMPLETED"}}).size() == 1 );
@@ -223,7 +223,7 @@ SCENARIO( "Message tasks", "[execution][message]" ) {
       timeHandler.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
-      engine.addListener(&recorder);
+      recorder.subscribe(&engine);
       engine.run(scenario.get());
       THEN( "Then the send task fails" ) {
         REQUIRE( recorder.find(nlohmann::json{{"processId", "Process_1"},{"instanceId", "Instance_1"},{"nodeId", "SendTask_1"},{"state", "FAILED"}}).size() == 1 );
@@ -259,7 +259,7 @@ SCENARIO( "Message tasks", "[execution][message]" ) {
       timeHandler.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
-      engine.addListener(&recorder);
+      recorder.subscribe(&engine);
       engine.run(scenario.get());
       THEN( "Then the receive tasks fails" ) {
         REQUIRE( recorder.find(nlohmann::json{{"processId", "Process_2"},{"instanceId", "Instance_2"},{"nodeId", "ReceiveTask_2"},{"state", "FAILED"}}).size() == 1 );
@@ -296,7 +296,7 @@ SCENARIO( "Message tasks", "[execution][message]" ) {
       timeHandler.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
-      engine.addListener(&recorder);
+      recorder.subscribe(&engine);
       engine.run(scenario.get());
       THEN( "Both message tasks fail" ) {
         auto completionLog1 = recorder.find(nlohmann::json{{"processId", "Process_1"},{"state", "FAILED"}});
@@ -342,7 +342,7 @@ SCENARIO( "Message tasks with timer", "[execution][message]" ) {
       timeHandler.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
-      engine.addListener(&recorder);
+      recorder.subscribe(&engine);
       engine.run(scenario.get());
       THEN( "Then the message is delivered" ) {
         REQUIRE( recorder.find(nlohmann::json{{"processId", "Process_1"},{"instanceId", "Instance_1"},{"nodeId", "SendTask_1"},{"state", "COMPLETED"}}).size() == 1 );
@@ -379,7 +379,7 @@ SCENARIO( "Message tasks with timer", "[execution][message]" ) {
       timeHandler.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
-      engine.addListener(&recorder);
+      recorder.subscribe(&engine);
       engine.run(scenario.get());
       THEN( "Then the message is withdrawn" ) {
         REQUIRE( recorder.find(nlohmann::json{{"processId", "Process_1"},{"instanceId", "Instance_1"},{"nodeId", "SendTask_1"},{"state", "WITHDRAWN"}}).size() == 1 );
@@ -415,7 +415,7 @@ SCENARIO( "Message tasks with timer", "[execution][message]" ) {
       timeHandler.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
-      engine.addListener(&recorder);
+      recorder.subscribe(&engine);
       engine.run(scenario.get());
       THEN( "Then the message is withdrawn" ) {
         REQUIRE( recorder.find(nlohmann::json{{"processId", "Process_2"},{"instanceId", "Instance_2"},{"nodeId", "ReceiveTask_2"},{"state", "WITHDRAWN"}}).size() == 1 );
@@ -452,7 +452,7 @@ SCENARIO( "Message tasks with timer", "[execution][message]" ) {
       timeHandler.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
-      engine.addListener(&recorder);
+      recorder.subscribe(&engine);
       engine.run(scenario.get());
       THEN( "Then the message is delivered at time 1" ) {
         auto completionLog1 = recorder.find(nlohmann::json{{"processId", "Process_1"},{"state", "COMPLETED"}});

@@ -14,6 +14,7 @@
 #include "events/CompletionEvent.h"
 #include "events/MessageDeliveryEvent.h"
 #include "events/ExitEvent.h"
+#include "Notifier.h"
 #include "EventHandler.h"
 #include "SystemState.h"
 
@@ -21,10 +22,10 @@ namespace BPMNOS::Execution {
 
 class Token;
 class StateMachine;
-class Listener;
+//class Listener;
 class Controller;
 
-class Engine {
+class Engine : public Notifier {
   friend class Token;
   friend class StateMachine;
   friend void EventHandler::subscribe(Engine* engine);
@@ -34,7 +35,7 @@ public:
 private:
   void addEventHandler(EventHandler* eventHandler);
 public:
-  void addListener(Listener* listener);
+//  void addListener(Listener* listener);
   void subscribeReadyEvents(EventHandler* eventHandler);
   void subscribeEntryEvents(EventHandler* eventHandler);
   void subscribeChoiceEvents(EventHandler* eventHandler);
@@ -106,7 +107,6 @@ protected:
   bool advance();
 //  friend void Token::notify() const;
   std::vector<EventHandler*> eventHandlers;
-  std::vector<Listener*> listeners;
 
   std::vector<EventHandler*> readyEventSubscribers;
   std::vector<EventHandler*> entryEventSubscribers;

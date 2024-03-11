@@ -4,12 +4,12 @@
 
 using namespace BPMNOS::Execution;
 
-Recorder::Recorder(size_t maxSize) : Listener(), objective(0), os(std::nullopt), maxSize(maxSize)
+Recorder::Recorder(size_t maxSize) : objective(0), os(std::nullopt), maxSize(maxSize)
 {
   log = nlohmann::ordered_json::array();
 }
 
-Recorder::Recorder(std::ostream &os, size_t maxSize) : Listener(), objective(0), os(os), maxSize(maxSize)
+Recorder::Recorder(std::ostream &os, size_t maxSize) : objective(0), os(os), maxSize(maxSize)
 {
   log = nlohmann::ordered_json::array();
   if (this->os.has_value()) {
@@ -27,7 +27,13 @@ Recorder::~Recorder()
   }
 }
 
-void Recorder::update( const Token* token ) {
+void Recorder::subscribe(Engine* engine) {
+  engine->addSubscriber(this, Execution::Observable::Type::Token);
+}
+
+void Recorder::notice(const Observable* observable) {
+  auto token = static_cast<const Token*>(observable);
+//      std::cerr << "Observable with type: " << observable->getObservableType() << std::endl;
   objective = token->owner->systemState->objective;
   auto json = token->jsonify();
 
@@ -44,8 +50,9 @@ void Recorder::update( const Token* token ) {
   if ( log.size() > maxSize) {
     log.erase(log.begin());
   }
-}
-#include <iostream>
+
+};
+
 nlohmann::ordered_json Recorder::find(nlohmann::json include, nlohmann::json exclude) const {
   nlohmann::ordered_json result = nlohmann::ordered_json::array();
   std::copy_if(

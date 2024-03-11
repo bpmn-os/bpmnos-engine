@@ -4,7 +4,6 @@
 #include <bpmn++.h>
 #include "execution/engine/src/EventHandler.h"
 #include "execution/engine/src/Engine.h"
-#include "execution/listener/src/Listener.h"
 
 namespace BPMNOS::Execution {
 
@@ -12,7 +11,7 @@ namespace BPMNOS::Execution {
  * @brief Base class for an execution controller which dispatches events
  * to the engine and listens to notification from the engine. 
  */
-class Controller : public EventHandler, public Listener {
+class Controller : public EventHandler {
 public:
   Controller();
   virtual void connect(Engine* engine);

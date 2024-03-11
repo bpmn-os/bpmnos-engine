@@ -25,7 +25,7 @@ SCENARIO( "Compensate throw event without compensations", "[execution][compensat
       timeHandler.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
-      engine.addListener(&recorder);
+      recorder.subscribe(&engine);
       engine.run(scenario.get());
       THEN( "Then the nodes change their states in the correct order" ) {
         auto entryLog = recorder.find(nlohmann::json{{"state", "ENTERED"}});
@@ -69,7 +69,7 @@ SCENARIO( "Task with unused compensation task", "[execution][compensation]" ) {
       timeHandler.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
-      engine.addListener(&recorder);
+      recorder.subscribe(&engine);
       engine.run(scenario.get());
       THEN( "Then the nodes change their states in the correct order" ) {
         auto entryLog = recorder.find(nlohmann::json{{"state", "ENTERED"}});
@@ -118,7 +118,7 @@ SCENARIO( "Task with compensation task", "[execution][compensation]" ) {
       timeHandler.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
-      engine.addListener(&recorder);
+      recorder.subscribe(&engine);
       engine.run(scenario.get());
       THEN( "Then the nodes change their states in the correct order" ) {
         auto entryLog = recorder.find(nlohmann::json{{"state", "ENTERED"}});
@@ -166,7 +166,7 @@ SCENARIO( "Task with compensation triggered by error", "[execution][compensation
       timeHandler.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
-      engine.addListener(&recorder);
+      recorder.subscribe(&engine);
       engine.run(scenario.get());
       THEN( "Then the nodes change their states in the correct order" ) {
         auto entryLog = recorder.find(nlohmann::json{{"state", "ENTERED"}});
@@ -216,7 +216,7 @@ SCENARIO( "Task with compensation subprocess", "[execution][compensation]" ) {
       timeHandler.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
-      engine.addListener(&recorder);
+      recorder.subscribe(&engine);
       engine.run(scenario.get());
       THEN( "Then the nodes change their states in the correct order" ) {
         auto entryLog = recorder.find(nlohmann::json{{"state", "ENTERED"}});
@@ -264,7 +264,7 @@ SCENARIO( "Named task with compensation task", "[execution][compensation]" ) {
       timeHandler.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
-      engine.addListener(&recorder);
+      recorder.subscribe(&engine);
       engine.run(scenario.get());
       THEN( "Then the nodes change their states in the correct order" ) {
         auto entryLog = recorder.find(nlohmann::json{{"state", "ENTERED"}});
@@ -312,7 +312,7 @@ SCENARIO( "Multi instance compensation", "[execution][compensation][multiinstanc
       timeHandler.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
-      engine.addListener(&recorder);
+      recorder.subscribe(&engine);
       engine.run(scenario.get());
       THEN( "The dump of each entry of the recorder log is correct" ) {
         auto waitingLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "WAITING"}});
@@ -368,7 +368,7 @@ SCENARIO( "Compensation of  multi instance activity", "[execution][compensation]
       timeHandler.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
-      engine.addListener(&recorder);
+      recorder.subscribe(&engine);
 //      engine.run(scenario.get());
       THEN( "The engine throws an error" ) {
         REQUIRE_THROWS( engine.run(scenario.get()) );
@@ -404,7 +404,7 @@ SCENARIO( "Failing compensations of  multi instance activity", "[execution][comp
       timeHandler.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
-      engine.addListener(&recorder);
+      recorder.subscribe(&engine);
       engine.run(scenario.get());
       THEN( "The dump of each entry of the recorder log is correct" ) {
 //        REQUIRE_THROWS( engine.run(scenario.get()) );

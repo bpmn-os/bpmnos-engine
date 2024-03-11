@@ -25,7 +25,7 @@ SCENARIO( "Empty executable subprocess", "[execution][subprocess]" ) {
       timeHandler.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
-      engine.addListener(&recorder);
+      recorder.subscribe(&engine);
       engine.run(scenario.get());
       THEN( "The recorder log has exactly 16 entries" ) {
         REQUIRE( recorder.log.size() == 16 );
@@ -85,7 +85,7 @@ SCENARIO( "Trivial executable subprocess", "[execution][subprocess]" ) {
       timeHandler.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
-      engine.addListener(&recorder);
+      recorder.subscribe(&engine);
       engine.run(scenario.get());
       THEN( "The recorder log has exactly 18 entries" ) {
         REQUIRE( recorder.log.size() == 18 );
@@ -147,7 +147,7 @@ SCENARIO( "Constrained executable process", "[execution][subprocess]" ) {
       timeHandler.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
-      engine.addListener(&recorder);
+      recorder.subscribe(&engine);
       engine.run(scenario.get());
       THEN( "The subprocess is traversed without failure" ) {
         auto subprocessLog = recorder.find(nlohmann::json{{"nodeId","Activity_1" }});
@@ -182,7 +182,7 @@ SCENARIO( "Constrained executable process", "[execution][subprocess]" ) {
       timeHandler.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
-      engine.addListener(&recorder);
+      recorder.subscribe(&engine);
       engine.run(scenario.get());
       THEN( "The subprocess fails after entry" ) {
         auto subprocessLog = recorder.find(nlohmann::json{{"nodeId","Activity_1" }});
@@ -214,7 +214,7 @@ SCENARIO( "Constrained executable process", "[execution][subprocess]" ) {
       timeHandler.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
-      engine.addListener(&recorder);
+      recorder.subscribe(&engine);
       engine.run(scenario.get());
       THEN( "The subprocess fails when exiting" ) {
         auto subprocessLog = recorder.find(nlohmann::json{{"nodeId","Activity_1" }});

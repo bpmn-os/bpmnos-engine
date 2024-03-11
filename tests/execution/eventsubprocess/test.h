@@ -25,7 +25,7 @@ SCENARIO( "Caught error end event", "[execution][eventsubprocess]" ) {
       timeHandler.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
-      engine.addListener(&recorder);
+      recorder.subscribe(&engine);
       engine.run(scenario.get(),0);
       THEN( "The dump of each entry of the recorder log is correct" ) {
         size_t i= 0;
@@ -83,7 +83,7 @@ SCENARIO( "Interrupting escalation", "[execution][eventsubprocess]" ) {
       timeHandler.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
-      engine.addListener(&recorder);
+      recorder.subscribe(&engine);
       engine.run(scenario.get());
       THEN( "The dump of each entry of the recorder log is correct" ) {
         size_t i= 0;
@@ -150,7 +150,7 @@ SCENARIO( "Non-interrupting escalation", "[execution][eventsubprocess]" ) {
       timeHandler.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
-      engine.addListener(&recorder);
+      recorder.subscribe(&engine);
       engine.run(scenario.get());
       THEN( "The dump of each entry of the recorder log is correct" ) {
         size_t i=0;
@@ -241,7 +241,7 @@ SCENARIO( "Caught and rethrown error", "[execution][eventsubprocess]" ) {
       timeHandler.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
-      engine.addListener(&recorder);
+      recorder.subscribe(&engine);
       engine.run(scenario.get(),0);
       THEN( "The dump of each entry of the recorder log is correct" ) {
         size_t i= 0;
@@ -303,7 +303,7 @@ SCENARIO( "Non-interrupting escalation throwing error", "[execution][eventsubpro
       timeHandler.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
-      engine.addListener(&recorder);
+      recorder.subscribe(&engine);
       engine.run(scenario.get(),0);
       THEN( "The dump of each entry of the recorder log is correct" ) {
         size_t i= 0;
@@ -368,7 +368,7 @@ SCENARIO( "Interrupting escalation throwing error", "[execution][eventsubprocess
       timeHandler.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
-      engine.addListener(&recorder);
+      recorder.subscribe(&engine);
       engine.run(scenario.get(),0);
       THEN( "The dump of each entry of the recorder log is correct" ) {
         size_t i= 0;
