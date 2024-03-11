@@ -4,6 +4,8 @@
 #include <bpmn++.h>
 #include "execution/engine/src/EventHandler.h"
 #include "execution/engine/src/Observer.h"
+#include "execution/engine/src/events/EntryEvent.h"
+#include "execution/engine/src/SequentialPerformerUpdate.h"
 
 namespace BPMNOS::Execution {
 
@@ -16,8 +18,12 @@ public:
   std::shared_ptr<Event> dispatchEvent( const SystemState* systemState ) override;
   void subscribe(Engine* engine);
   void notice(const Observable* observable) override;
+
+  void noticeEntryEvent(const EntryEvent* event);
+  void noticeSequentialPerformerUpdate(const SequentialPerformerUpdate* update);
 private:
-  auto_list< std::weak_ptr<const Token>, std::weak_ptr<Event> > sequentialEntryEvents;
+  std::map< std::weak_ptr<const Token>, auto_list< std::weak_ptr<const Token>, std::weak_ptr<Event> >, std::owner_less<> > tokensAtIdlePerformers;
+  std::map< std::weak_ptr<const Token>, auto_list< std::weak_ptr<const Token>, std::weak_ptr<Event> >, std::owner_less<> > tokensAtBusyPerformers;
 };
 
 } // namespace BPMNOS::Execution

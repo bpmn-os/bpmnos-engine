@@ -12,3 +12,6 @@ void Notifier::notify(const Observable* observable) const {
   }
 }
 
+void Notifier::notify(const Observable& observable) const {
+  notify(&observable);
+}

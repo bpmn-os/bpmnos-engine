@@ -35,6 +35,7 @@ list(APPEND engine_HEADERS
   Notifier.h
   Message.h
   Token.h
+  SequentialPerformerUpdate.h
   Event.h
   events/TerminationEvent.h
   events/ClockTickEvent.h

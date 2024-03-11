@@ -1,6 +1,7 @@
 #include "Token.h"
 #include "StateMachine.h"
 #include "Engine.h"
+#include "SequentialPerformerUpdate.h"
 #include "model/parser/src/extensionElements/ExtensionElements.h"
 #include "model/parser/src/extensionElements/Gatekeeper.h"
 #include "model/parser/src/extensionElements/MessageDefinition.h"
@@ -108,6 +109,11 @@ Token::~Token() {
           }
         }
       }
+    }
+    
+    if ( performing ) {
+      performing = nullptr;
+      owner->systemState->engine->notify(SequentialPerformerUpdate(this));
     }
   }
 }
@@ -1015,12 +1021,13 @@ void Token::awaitEntryEvent() {
 //std::cerr << "awaitEntryEvent" << std::endl;
 
   auto systemState = const_cast<SystemState*>(owner->systemState);
-  auto event = createPendingEvent<EntryEvent>();
-  systemState->pendingEntryEvents.emplace_back( weak_from_this(), event );
-
   if ( node->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() ) {
     systemState->tokenAtSequentialPerformer[this] = getSequentialPerfomerToken();
   }
+  
+  auto event = createPendingEvent<EntryEvent>();
+  systemState->pendingEntryEvents.emplace_back( weak_from_this(), event );
+
 }
 
 void Token::awaitChoiceEvent() {

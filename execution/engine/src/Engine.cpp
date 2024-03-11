@@ -1,6 +1,7 @@
 #include "Engine.h"
 #include "Token.h"
 #include "StateMachine.h"
+#include "SequentialPerformerUpdate.h"
 #include "model/parser/src/extensionElements/ExtensionElements.h"
 #include "model/parser/src/SequentialAdHocSubProcess.h"
 #include "model/parser/src/DecisionTask.h"
@@ -151,6 +152,7 @@ void Engine::process(const EntryEvent* event) {
 //    systemState->tokensAwaitingSequentialEntry.remove(token);
     // sequential performer is no longer idle
     tokenAtSequentialPerformer->performing = token;
+    notify(SequentialPerformerUpdate(tokenAtSequentialPerformer));
     // use sequential performer status
     token->setStatus(tokenAtSequentialPerformer->status);
   }
@@ -247,6 +249,7 @@ void Engine::process(const ExitEvent* event) {
     // sequential performer becomes idle
     assert(tokenAtSequentialPerformer->performing);
     tokenAtSequentialPerformer->performing = nullptr;
+    notify(SequentialPerformerUpdate(tokenAtSequentialPerformer));
     systemState->tokenAtSequentialPerformer.erase(token);
   }
 

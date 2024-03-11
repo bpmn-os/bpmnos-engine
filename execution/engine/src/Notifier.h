@@ -17,6 +17,7 @@ public:
   }
 
   void notify(const Observable* observable) const;
+  void notify(const Observable& observable) const;
 private:
   std::vector< std::vector<Observer*> > subscribers;
 };
