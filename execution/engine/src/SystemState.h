@@ -97,12 +97,7 @@ public:
    */
   std::unordered_map<const BPMN::FlowNode*, auto_list< std::weak_ptr<Message> > > outbox;
 
-/// TODO: remove or move below to state machine 
-
-//  auto_list< std::weak_ptr<Token> > tokensAwaitingReadyEvent; ///< Container holding all tokens awaiting a ready event
-
-//  auto_list< std::weak_ptr<Token> > tokensAwaitingParallelEntry; ///< Container holding all tokens at activities (not within a sequential adhoc subprocess) awaiting an entry event
-//  auto_list< std::weak_ptr<Token> > tokensAwaitingSequentialEntry; ///< Container holding all tokens awaiting an entry event at an activity for each sequential adhoc subprocess
+  //TODO: move below to StateMachine or Token?
 
   std::unordered_map< Token*, Token* > tokenAtSequentialPerformer; ///< Map holding a token at a sequential performer for each token awaiting sequential entry
 
@@ -110,17 +105,9 @@ public:
   std::unordered_map< Token*, std::vector<Token*> > tokensAwaitingBoundaryEvent; ///< Map holding a container of all tokens at a boundary event awaiting to be triggered for each token at an activity
   std::unordered_map< Token*, Token* > tokenAssociatedToBoundaryEventToken; ///< Map holding the token residing at the associated activity for each token at a boundary event
 
-
-//  auto_set<BPMNOS::number, std::weak_ptr<Token>, Values> tokensAwaitingTaskCompletion; ///< Sorted container holding all tokens awaiting a task completion event
-
-//  auto_list< std::weak_ptr<Token> > tokensAwaitingChoice; ///< Container holding all tokens awaiting a choice event
-
-//  auto_list< std::weak_ptr<Token> > tokensAwaitingExit; ///< Container holding all tokens awaiting an exit event
-
   auto_set<BPMNOS::number, std::weak_ptr<Token>> tokensAwaitingTimer; ///< Sorted container holding holding all tokens awaiting a timer event
 
   std::unordered_map< Token*, std::weak_ptr<Message> > messageAwaitingDelivery; ///< Container holding message awaiting delivery for tokens at send tasks
-//  auto_list< std::weak_ptr<Token>, Values > tokensAwaitingMessageDelivery; ///< Container holding all tokens awaiting a message delivery event with associated header values
 
   std::unordered_map< Token*, Token* > tokenAtMultiInstanceActivity; ///< Map holding the main token waiting at a multi-instance (or loop) activity.
   std::unordered_map< Token*, Token* > tokenAwaitingMultiInstanceExit; ///< Map holding the token waiting for the exit of an instantiation of a multi-instance (or loop) activity.
@@ -130,7 +117,6 @@ public:
   std::unordered_map< Token*, Token* > tokenAtEventBasedGateway; ///< Map holding the token at the relevant event-based gateway
   std::unordered_map< Token*, std::vector<Token*> > tokensAwaitingEvent; ///< Map holding all tokens at catching events subsequent to an event-based gateway
 
-  //TODO: move below to StateMachine or Token?
   std::unordered_map< StateMachine*, std::map<const BPMN::FlowNode*, std::vector<Token*> > > tokensAwaitingGatewayActivation; ///< Map holding tokens awaiting activation of a converging gateway
 
 //  std::unordered_map< StateMachine*, std::map<const BPMN::Node*, Token* > > tokensAwaitingCompensation; ///< Map holding tokens awaiting completion of a compensation
