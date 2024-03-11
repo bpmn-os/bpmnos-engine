@@ -19,7 +19,7 @@ list(APPEND engine_SOURCES
   eventhandler/Metronome.cpp
   eventhandler/ReadyHandler.cpp
   eventhandler/InstantEntryHandler.cpp
-  eventhandler/NaiveSequentialEntryHandler.cpp
+  eventhandler/FirstComeFirstServedSequentialEntryHandler.cpp
   eventhandler/DeterministicTaskCompletionHandler.cpp
   eventhandler/InstantExitHandler.cpp
   eventhandler/FirstMatchingMessageHandler.cpp
@@ -53,7 +53,7 @@ list(APPEND engine_HEADERS
   eventhandler/Metronome.h
   eventhandler/ReadyHandler.h
   eventhandler/InstantEntryHandler.h
-  eventhandler/NaiveSequentialEntryHandler.h
+  eventhandler/FirstComeFirstServedSequentialEntryHandler.h
   eventhandler/DeterministicTaskCompletionHandler.h
   eventhandler/InstantExitHandler.h
   eventhandler/FirstMatchingMessageHandler.h

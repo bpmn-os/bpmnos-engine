@@ -1,15 +1,15 @@
-#include "NaiveSequentialEntryHandler.h"
+#include "FirstComeFirstServedSequentialEntryHandler.h"
 #include "execution/engine/src/Engine.h"
 #include "model/parser/src/SequentialAdHocSubProcess.h"
 #include <cassert>
 
 using namespace BPMNOS::Execution;
 
-NaiveSequentialEntryHandler::NaiveSequentialEntryHandler()
+FirstComeFirstServedSequentialEntryHandler::FirstComeFirstServedSequentialEntryHandler()
 {
 }
 
-void NaiveSequentialEntryHandler::subscribe(Engine* engine) {
+void FirstComeFirstServedSequentialEntryHandler::subscribe(Engine* engine) {
   engine->addSubscriber(this, 
     Observable::Type::EntryEvent,
     Observable::Type::SequentialPerformerUpdate
@@ -17,7 +17,7 @@ void NaiveSequentialEntryHandler::subscribe(Engine* engine) {
   EventHandler::subscribe(engine);
 }
 
-std::shared_ptr<Event> NaiveSequentialEntryHandler::dispatchEvent( [[maybe_unused]] const SystemState* systemState ) {
+std::shared_ptr<Event> FirstComeFirstServedSequentialEntryHandler::dispatchEvent( [[maybe_unused]] const SystemState* systemState ) {
   for ( auto it = tokensAtIdlePerformers.begin(), next_it = it; it != tokensAtIdlePerformers.end(); it = next_it) {
     next_it++;
     if ( it->first.expired() ) {
@@ -37,7 +37,7 @@ std::shared_ptr<Event> NaiveSequentialEntryHandler::dispatchEvent( [[maybe_unuse
   return nullptr;
 }
 
-void NaiveSequentialEntryHandler::notice(const Observable* observable) {
+void FirstComeFirstServedSequentialEntryHandler::notice(const Observable* observable) {
   if ( observable->getObservableType() == Observable::Type::EntryEvent ) {
     noticeEntryEvent(static_cast<const EntryEvent*>(observable));
   }
@@ -49,7 +49,7 @@ void NaiveSequentialEntryHandler::notice(const Observable* observable) {
   }
 }
 
-void NaiveSequentialEntryHandler::noticeEntryEvent(const EntryEvent* event) {
+void FirstComeFirstServedSequentialEntryHandler::noticeEntryEvent(const EntryEvent* event) {
   assert(event->token->node);
   auto token = const_cast<Token*>(event->token);
   if ( event->token->node->parent->represents<const BPMNOS::Model::SequentialAdHocSubProcess>() ) {
@@ -64,7 +64,7 @@ void NaiveSequentialEntryHandler::noticeEntryEvent(const EntryEvent* event) {
   }
 }
 
-void NaiveSequentialEntryHandler::noticeSequentialPerformerUpdate(const SequentialPerformerUpdate* update) {
+void FirstComeFirstServedSequentialEntryHandler::noticeSequentialPerformerUpdate(const SequentialPerformerUpdate* update) {
   auto tokenAtSequentialPerformer = update->token;
   if ( tokenAtSequentialPerformer->performing ) {
     if ( auto it = tokensAtIdlePerformers.find(tokenAtSequentialPerformer->weak_from_this());

@@ -15,7 +15,7 @@ SCENARIO( "Sequential adhoc subprocess", "[execution][adhocsubprocess]" ) {
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
       Execution::InstantEntryHandler entryHandler;
-      Execution::NaiveSequentialEntryHandler sequentialEntryHandler;
+      Execution::FirstComeFirstServedSequentialEntryHandler sequentialEntryHandler;
       Execution::DeterministicTaskCompletionHandler completionHandler;
       Execution::InstantExitHandler exitHandler;
       Execution::TimeWarp timeHandler;
@@ -72,7 +72,7 @@ SCENARIO( "Sequential adhoc subprocesses with common performer", "[execution][ad
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
       Execution::InstantEntryHandler entryHandler;
-      Execution::NaiveSequentialEntryHandler sequentialEntryHandler;
+      Execution::FirstComeFirstServedSequentialEntryHandler sequentialEntryHandler;
       Execution::DeterministicTaskCompletionHandler completionHandler;
       Execution::InstantExitHandler exitHandler;
       Execution::TimeWarp timeHandler;
