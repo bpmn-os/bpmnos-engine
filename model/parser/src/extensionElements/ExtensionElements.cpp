@@ -193,6 +193,15 @@ void ExtensionElements::applyOperators(Values& values) const {
   }
 }
 
+BPMNOS::number ExtensionElements::getObjective(const Values& values) const {
+  BPMNOS::number contribution = 0;
+  for ( auto& [name, attribute] : attributeMap ) {
+    if ( values[attribute->index].has_value() ) {
+      contribution += attribute->weight * values[attribute->index].value();
+    }
+  }
+  return contribution;
+}
 BPMNOS::number ExtensionElements::getContributionToObjective(const Values& values) const {
   BPMNOS::number contribution = 0;
   for ( auto& attribute : attributes ) {

@@ -24,7 +24,7 @@ public:
 private:
   std::map< std::weak_ptr<const Token>, auto_set< BPMNOS::number, std::weak_ptr<const Token>, std::weak_ptr<Event> >, std::owner_less<> > tokensAtIdlePerformers;
   std::map< std::weak_ptr<const Token>, auto_set< BPMNOS::number, std::weak_ptr<const Token>, std::weak_ptr<Event> >, std::owner_less<> > tokensAtBusyPerformers;
-  BPMNOS::number evaluate(const EntryEvent* event);
+  BPMNOS::number cost(const EntryEvent* event);
 };
 
 } // namespace BPMNOS::Execution

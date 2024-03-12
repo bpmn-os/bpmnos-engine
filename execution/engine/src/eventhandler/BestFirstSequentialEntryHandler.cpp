@@ -61,7 +61,7 @@ void BestFirstSequentialEntryHandler::noticeEntryEvent(const EntryEvent* event) 
     }
     else {
       // evaluate event
-      tokensAtIdlePerformers[tokenAtSequentialPerformer->weak_from_this()].emplace( evaluate(event), token->weak_from_this(), const_cast<EntryEvent*>(event)->weak_from_this() );
+      tokensAtIdlePerformers[tokenAtSequentialPerformer->weak_from_this()].emplace( cost(event), token->weak_from_this(), const_cast<EntryEvent*>(event)->weak_from_this() );
     }
   }
 }
@@ -84,11 +84,12 @@ void BestFirstSequentialEntryHandler::noticeSequentialPerformerUpdate(const Sequ
     if ( auto it = tokensAtBusyPerformers.find(tokenAtSequentialPerformer->weak_from_this());
       it != tokensAtBusyPerformers.end()
     ) {
-      for ( auto [cost, token_ptr, event_ptr] : it->second ) {
-        if ( auto event = event_ptr.lock() ) {
-          // re-evaluate event
-          cost = evaluate( (const EntryEvent*)event.get()); 
-          tokensAtIdlePerformers[tokenAtSequentialPerformer->weak_from_this()].emplace( cost, token_ptr, event_ptr );
+      for ( auto [_, token_ptr, event_ptr] : it->second ) {
+        if ( auto token = token_ptr.lock() ) {
+          if ( auto event = event_ptr.lock() ) {
+            // re-evaluate event
+            tokensAtIdlePerformers[tokenAtSequentialPerformer->weak_from_this()].emplace( cost((const EntryEvent*)event.get()), token_ptr, event_ptr );
+          }
         }
       }
       tokensAtBusyPerformers.erase(it);
@@ -96,11 +97,11 @@ void BestFirstSequentialEntryHandler::noticeSequentialPerformerUpdate(const Sequ
   }
 }
 
-BPMNOS::number BestFirstSequentialEntryHandler::evaluate(const EntryEvent* event) {
+BPMNOS::number BestFirstSequentialEntryHandler::cost(const EntryEvent* event) {
   auto extensionElements = event->token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   Values status = event->token->status;
-  BPMNOS::number cost = extensionElements->getContributionToObjective(status);
+  BPMNOS::number cost = extensionElements->getObjective(status);
   extensionElements->applyOperators(status);
-  cost -= extensionElements->getContributionToObjective(status);
+  cost -= extensionElements->getObjective(status);
   return cost;
 }

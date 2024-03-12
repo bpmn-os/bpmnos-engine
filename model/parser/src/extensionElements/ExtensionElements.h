@@ -48,6 +48,7 @@ public:
   bool isInstantaneous; ///< Boolean indicating whether operators may modify timestamp.
   void applyOperators(Values& values) const;
 
+  BPMNOS::number getObjective(const Values& values) const; ///< Returns the contribution to the objective.
   BPMNOS::number getContributionToObjective(const Values& values) const; ///< Returns the contribution to the objective by the attributes declared for the node.
   
   std::optional< std::unique_ptr<Guidance> > messageGuidance;
