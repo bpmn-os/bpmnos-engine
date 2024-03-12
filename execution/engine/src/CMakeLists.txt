@@ -20,6 +20,7 @@ list(APPEND engine_SOURCES
   eventhandler/ReadyHandler.cpp
   eventhandler/InstantEntryHandler.cpp
   eventhandler/FirstComeFirstServedSequentialEntryHandler.cpp
+  eventhandler/BestFirstSequentialEntryHandler.cpp
   eventhandler/DeterministicTaskCompletionHandler.cpp
   eventhandler/InstantExitHandler.cpp
   eventhandler/FirstMatchingMessageHandler.cpp
@@ -54,6 +55,7 @@ list(APPEND engine_HEADERS
   eventhandler/ReadyHandler.h
   eventhandler/InstantEntryHandler.h
   eventhandler/FirstComeFirstServedSequentialEntryHandler.h
+  eventhandler/BestFirstSequentialEntryHandler.h
   eventhandler/DeterministicTaskCompletionHandler.h
   eventhandler/InstantExitHandler.h
   eventhandler/FirstMatchingMessageHandler.h
