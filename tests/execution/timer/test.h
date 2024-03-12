@@ -9,7 +9,7 @@ SCENARIO( "Simple process with timer", "[execution][timer]" ) {
         "Process_1, Instance_1,,\n"
       ;
 
-      Model::StaticDataProvider dataProvider(modelFile,csv);
+      Model::StaticDataProvider dataProvider(modelFile,csv,',');
       auto scenario = dataProvider.createScenario();
 
       Execution::Engine engine;
@@ -39,7 +39,7 @@ SCENARIO( "Simple process with timer", "[execution][timer]" ) {
         "Process_1, Instance_1,Trigger,10\n"
       ;
 
-      Model::StaticDataProvider dataProvider(modelFile,csv);
+      Model::StaticDataProvider dataProvider(modelFile,csv,',');
       auto scenario = dataProvider.createScenario();
 
       Execution::Engine engine;

@@ -67,6 +67,7 @@ void FirstComeFirstServedSequentialEntryHandler::noticeEntryEvent(const EntryEve
 void FirstComeFirstServedSequentialEntryHandler::noticeSequentialPerformerUpdate(const SequentialPerformerUpdate* update) {
   auto tokenAtSequentialPerformer = update->token;
   if ( tokenAtSequentialPerformer->performing ) {
+    // perfomer has just become busy
     if ( auto it = tokensAtIdlePerformers.find(tokenAtSequentialPerformer->weak_from_this());
       it != tokensAtIdlePerformers.end()
     ) {
@@ -77,6 +78,7 @@ void FirstComeFirstServedSequentialEntryHandler::noticeSequentialPerformerUpdate
     }
   }
   else {
+    // perfomer has just become idle
     if ( auto it = tokensAtBusyPerformers.find(tokenAtSequentialPerformer->weak_from_this());
       it != tokensAtBusyPerformers.end()
     ) {

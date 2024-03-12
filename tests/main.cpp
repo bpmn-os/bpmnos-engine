@@ -56,10 +56,12 @@ using namespace BPMNOS;
 // Examples
 #include "examples/assignment_problem/test.h"
 #include "examples/knapsack_problem/test.h"
+#include "examples/travelling_salesperson_problem/test.h"
 #endif // ALL_TESTS
 
 #ifndef ALL_TESTS
 #include "execution/process/test.h"
+//#include "examples/travelling_salesperson_problem/test.h"
 #endif // ALL_TESTS
 
 // When adding/modifying tests, don't forget to run: make clean; cmake ..; make all -j7; make tests

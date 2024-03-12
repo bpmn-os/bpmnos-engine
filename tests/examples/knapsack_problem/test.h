@@ -5,14 +5,14 @@ SCENARIO( "Knapsack problem", "[examples][knapsack_problem]" ) {
   GIVEN( "One knapsack and three items" ) {
 
     std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-      "KnapsackProcess,Knapsack1,Capacity,40\n"
-      "ItemProcess,Item1,Weight,20\n"
-      "ItemProcess,Item1,Value,100\n"
-      "ItemProcess,Item2,Weight,15\n"
-      "ItemProcess,Item2,Value,50\n"
-      "ItemProcess,Item3,Weight,22\n"
-      "ItemProcess,Item3,Value,120\n"
+      "PROCESS_ID; INSTANCE_ID; ATTRIBUTE_ID; VALUE\n"
+      "KnapsackProcess;Knapsack1;Capacity;40\n"
+      "ItemProcess;Item1;Weight;20\n"
+      "ItemProcess;Item1;Value;100\n"
+      "ItemProcess;Item2;Weight;15\n"
+      "ItemProcess;Item2;Value;50\n"
+      "ItemProcess;Item3;Weight;22\n"
+      "ItemProcess;Item3;Value;120\n"
     ;
 
     Model::StaticDataProvider dataProvider(modelFile,csv);

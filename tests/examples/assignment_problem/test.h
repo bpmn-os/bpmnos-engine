@@ -6,9 +6,9 @@ SCENARIO( "Assignment problem", "[examples][assignment_problem]" ) {
   GIVEN( "One client and one server" ) {
 
     std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-      "ClientProcess,Client1,,\n"
-      "ServerProcess,Server1,,\n"
+      "PROCESS_ID; INSTANCE_ID; ATTRIBUTE_ID; VALUE\n"
+      "ClientProcess;Client1;;\n"
+      "ServerProcess;Server1;;\n"
     ;
 
     Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -44,13 +44,13 @@ SCENARIO( "Assignment problem", "[examples][assignment_problem]" ) {
   GIVEN( "Three clients and three servers" ) {
 
     std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-      "ClientProcess,Client1,,\n"
-      "ClientProcess,Client2,,\n"
-      "ClientProcess,Client3,,\n"
-      "ServerProcess,Server1,,\n"
-      "ServerProcess,Server2,,\n"
-      "ServerProcess,Server3,,\n"
+      "PROCESS_ID; INSTANCE_ID; ATTRIBUTE_ID; VALUE\n"
+      "ClientProcess;Client1;;\n"
+      "ClientProcess;Client2;;\n"
+      "ClientProcess;Client3;;\n"
+      "ServerProcess;Server1;;\n"
+      "ServerProcess;Server2;;\n"
+      "ServerProcess;Server3;;\n"
     ;
 
     Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -86,12 +86,12 @@ SCENARIO( "Assignment problem", "[examples][assignment_problem]" ) {
   GIVEN( "Three clients and two servers" ) {
 
     std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-      "ClientProcess,Client1,,\n"
-      "ClientProcess,Client2,,\n"
-      "ClientProcess,Client3,,\n"
-      "ServerProcess,Server1,,\n"
-      "ServerProcess,Server2,,\n"
+      "PROCESS_ID; INSTANCE_ID; ATTRIBUTE_ID; VALUE\n"
+      "ClientProcess;lient1;;\n"
+      "ClientProcess;Client2;;\n"
+      "ClientProcess;Client3;;\n"
+      "ServerProcess;Server1;;\n"
+      "ServerProcess;Server2;;\n"
     ;
 
     Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -128,12 +128,12 @@ SCENARIO( "Assignment problem", "[examples][assignment_problem]" ) {
   GIVEN( "Two clients and three servers" ) {
 
     std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-      "ClientProcess,Client1,,\n"
-      "ClientProcess,Client2,,\n"
-      "ServerProcess,Server1,,\n"
-      "ServerProcess,Server2,,\n"
-      "ServerProcess,Server3,,\n"
+      "PROCESS_ID; INSTANCE_ID; ATTRIBUTE_ID; VALUE\n"
+      "ClientProcess;Client1;;\n"
+      "ClientProcess;Client2;;\n"
+      "ServerProcess;Server1;;\n"
+      "ServerProcess;Server2;;\n"
+      "ServerProcess;Server3;;\n"
     ;
 
     Model::StaticDataProvider dataProvider(modelFile,csv);

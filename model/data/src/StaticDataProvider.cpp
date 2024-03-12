@@ -8,8 +8,9 @@
 
 using namespace BPMNOS::Model;
 
-StaticDataProvider::StaticDataProvider(const std::string& modelFile, const std::string& instanceFileOrString)
+StaticDataProvider::StaticDataProvider(const std::string& modelFile, const std::string& instanceFileOrString, char delimiter)
   : DataProvider(modelFile)
+  , delimiter(delimiter)
   , reader( initReader(instanceFileOrString) )
 {
   earliestInstantiation = std::numeric_limits<BPMNOS::number>::max();
@@ -19,8 +20,10 @@ StaticDataProvider::StaticDataProvider(const std::string& modelFile, const std::
 
 csv::CSVReader StaticDataProvider::initReader(const std::string& instanceFileOrString) {
   csv::CSVFormat format;
+  format.delimiter( { delimiter } );
   format.trim({' ', '\t'});
-  if (instanceFileOrString.find(",") == std::string::npos) {
+
+  if (instanceFileOrString.find("\n") == std::string::npos) {
     return csv::CSVReader(instanceFileOrString, format);
   }
   else {
