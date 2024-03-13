@@ -7,7 +7,7 @@ SCENARIO( "Trivial executable process", "[data][static]" ) {
       "Process_1, Instance_1,,\n";
 
     WHEN( "The instance is loaded" ) {
-      Model::StaticDataProvider dataProvider(modelFile,csv,',');
+      Model::StaticDataProvider dataProvider(modelFile,csv);
 
       auto scenario = dataProvider.createScenario();
       auto instances = scenario->getCreatedInstances(0);
@@ -49,7 +49,7 @@ SCENARIO( "Trivial executable process", "[data][static]" ) {
     ;
 
     WHEN( "The instance is loaded" ) {
-      Model::StaticDataProvider dataProvider(modelFile,csv,',');
+      Model::StaticDataProvider dataProvider(modelFile,csv);
 
       auto scenario = dataProvider.createScenario();
       THEN( "There earliest instantiation is at time 42" ) {
@@ -114,7 +114,7 @@ SCENARIO( "Trivial executable process", "[data][static]" ) {
     ;
 
     WHEN( "The instance is loaded" ) {
-      Model::StaticDataProvider dataProvider(modelFile,csv,',');
+      Model::StaticDataProvider dataProvider(modelFile,csv);
 
       auto scenario = dataProvider.createScenario();
       THEN( "There earliest instantiation is at time 0" ) {

@@ -10,7 +10,7 @@ SCENARIO( "Lookup table", "[model][lookup]" ) {
         "Process_1, Instance_1,Client,Client2\n"
         "Process_1, Instance_1,Server,Server3\n"
       ;
-      Model::StaticDataProvider dataProvider(modelFile,csv,',');
+      Model::StaticDataProvider dataProvider(modelFile,csv);
       auto scenario = dataProvider.createScenario();
 
       auto instantiations = scenario->getCurrentInstantiations(0);
@@ -33,7 +33,7 @@ SCENARIO( "Lookup table", "[model][lookup]" ) {
         "Process_1, Instance_1,Client,Client4\n"
         "Process_1, Instance_1,Server,Server3\n"
       ;
-      Model::StaticDataProvider dataProvider(modelFile,csv,',');
+      Model::StaticDataProvider dataProvider(modelFile,csv);
       auto scenario = dataProvider.createScenario();
 
       auto instantiations = scenario->getCurrentInstantiations(0);

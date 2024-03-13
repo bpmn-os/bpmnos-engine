@@ -9,7 +9,7 @@ SCENARIO( "Linear expression", "[model][expression]" ) {
         "Process_1, Instance_1,X,8\n"
         "Process_1, Instance_1,Y,15\n"
       ;
-      Model::StaticDataProvider dataProvider(modelFile,csv,',');
+      Model::StaticDataProvider dataProvider(modelFile,csv);
       auto scenario = dataProvider.createScenario();
 
       auto instantiations = scenario->getCurrentInstantiations(0);
@@ -32,7 +32,7 @@ SCENARIO( "Linear expression", "[model][expression]" ) {
         "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
         "Process_1, Instance_1,Y,15\n"
       ;
-      Model::StaticDataProvider dataProvider(modelFile,csv,',');
+      Model::StaticDataProvider dataProvider(modelFile,csv);
 
       auto scenario = dataProvider.createScenario();
       auto instantiations = scenario->getCurrentInstantiations(0);
@@ -65,7 +65,7 @@ SCENARIO( "Another linear expression", "[model][expression]" ) {
         "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
         "Process_1, Instance_1,Y,15\n"
       ;
-      Model::StaticDataProvider dataProvider(modelFile,csv,',');
+      Model::StaticDataProvider dataProvider(modelFile,csv);
 
       auto scenario = dataProvider.createScenario();
       auto instantiations = scenario->getCurrentInstantiations(0);
@@ -99,7 +99,7 @@ SCENARIO( "Generic expression", "[model][expression]" ) {
         "Process_1, Instance_1,X,8\n"
         "Process_1, Instance_1,Y,15\n"
       ;
-      Model::StaticDataProvider dataProvider(modelFile,csv,',');
+      Model::StaticDataProvider dataProvider(modelFile,csv);
 
       auto scenario = dataProvider.createScenario();
       auto instantiations = scenario->getCurrentInstantiations(0);
@@ -124,7 +124,7 @@ SCENARIO( "Generic expression", "[model][expression]" ) {
         "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
         "Process_1, Instance_1,Y,15\n"
       ;
-      Model::StaticDataProvider dataProvider(modelFile,csv,',');
+      Model::StaticDataProvider dataProvider(modelFile,csv);
 
       auto scenario = dataProvider.createScenario();
       auto instantiations = scenario->getCurrentInstantiations(0);

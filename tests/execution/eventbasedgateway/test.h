@@ -10,7 +10,7 @@ SCENARIO( "Event-based gateway with two timer events", "[execution][eventbasedga
         "Process_1, Instance_1,Trigger2,2\n"
       ;
 
-      Model::StaticDataProvider dataProvider(modelFile,csv,',');
+      Model::StaticDataProvider dataProvider(modelFile,csv);
       auto scenario = dataProvider.createScenario();
 
       Execution::Engine engine;
@@ -46,7 +46,7 @@ SCENARIO( "Event-based gateway with two timer events", "[execution][eventbasedga
         "Process_1, Instance_1,Trigger2,1\n"
       ;
 
-      Model::StaticDataProvider dataProvider(modelFile,csv,',');
+      Model::StaticDataProvider dataProvider(modelFile,csv);
       auto scenario = dataProvider.createScenario();
 
       Execution::Engine engine;

@@ -10,7 +10,7 @@ SCENARIO( "Simple messaging", "[execution][message]" ) {
       "Process_2, Instance_2,Timestamp,0\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv,',');
+    Model::StaticDataProvider dataProvider(modelFile,csv);
     auto scenario = dataProvider.createScenario();
 
     WHEN( "The engine is started with a recorder" ) {
@@ -46,7 +46,7 @@ SCENARIO( "Simple messaging", "[execution][message]" ) {
       "Process_2, Instance_X,Timestamp,0\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv,',');
+    Model::StaticDataProvider dataProvider(modelFile,csv);
     auto scenario = dataProvider.createScenario();
 
     WHEN( "The engine is started with a recorder" ) {
@@ -83,7 +83,7 @@ SCENARIO( "Simple messaging", "[execution][message]" ) {
       "Process_2, Instance_2,Timestamp,1\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv,',');
+    Model::StaticDataProvider dataProvider(modelFile,csv);
     auto scenario = dataProvider.createScenario();
 
     WHEN( "The engine is started with a recorder" ) {
@@ -121,7 +121,7 @@ SCENARIO( "Simple messaging", "[execution][message]" ) {
       "Process_2, Instance_2,Timestamp,0\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv,',');
+    Model::StaticDataProvider dataProvider(modelFile,csv);
     auto scenario = dataProvider.createScenario();
 
     WHEN( "The engine is started with a recorder" ) {
@@ -165,7 +165,7 @@ SCENARIO( "Message tasks", "[execution][message]" ) {
       "Process_2, Instance_2,,\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv,',');
+    Model::StaticDataProvider dataProvider(modelFile,csv);
     auto scenario = dataProvider.createScenario();
 
     WHEN( "The engine is started with a recorder" ) {
@@ -202,7 +202,7 @@ SCENARIO( "Message tasks", "[execution][message]" ) {
       "Process_1, Instance_1,,\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv,',');
+    Model::StaticDataProvider dataProvider(modelFile,csv);
     auto scenario = dataProvider.createScenario();
 
     WHEN( "The engine is started with a recorder" ) {
@@ -238,7 +238,7 @@ SCENARIO( "Message tasks", "[execution][message]" ) {
       "Process_2, Instance_2,,\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv,',');
+    Model::StaticDataProvider dataProvider(modelFile,csv);
     auto scenario = dataProvider.createScenario();
 
     WHEN( "The engine is started with a recorder" ) {
@@ -275,7 +275,7 @@ SCENARIO( "Message tasks", "[execution][message]" ) {
       "Process_2, Instance_2,Timestamp,1\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv,',');
+    Model::StaticDataProvider dataProvider(modelFile,csv);
     auto scenario = dataProvider.createScenario();
 
     WHEN( "The engine is started with a recorder" ) {
@@ -321,7 +321,7 @@ SCENARIO( "Message tasks with timer", "[execution][message]" ) {
       "Process_2, Instance_2,,\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv,',');
+    Model::StaticDataProvider dataProvider(modelFile,csv);
     auto scenario = dataProvider.createScenario();
 
     WHEN( "The engine is started with a recorder" ) {
@@ -358,7 +358,7 @@ SCENARIO( "Message tasks with timer", "[execution][message]" ) {
       "Process_1, Instance_1,,\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv,',');
+    Model::StaticDataProvider dataProvider(modelFile,csv);
     auto scenario = dataProvider.createScenario();
 
     WHEN( "The engine is started with a recorder" ) {
@@ -394,7 +394,7 @@ SCENARIO( "Message tasks with timer", "[execution][message]" ) {
       "Process_2, Instance_2,,\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv,',');
+    Model::StaticDataProvider dataProvider(modelFile,csv);
     auto scenario = dataProvider.createScenario();
 
     WHEN( "The engine is started with a recorder" ) {
@@ -431,7 +431,7 @@ SCENARIO( "Message tasks with timer", "[execution][message]" ) {
       "Process_2, Instance_2,Timestamp,1\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv,',');
+    Model::StaticDataProvider dataProvider(modelFile,csv);
     auto scenario = dataProvider.createScenario();
 
     WHEN( "The engine is started with a recorder" ) {

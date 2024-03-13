@@ -8,9 +8,8 @@
 
 using namespace BPMNOS::Model;
 
-StaticDataProvider::StaticDataProvider(const std::string& modelFile, const std::string& instanceFileOrString, char delimiter)
+StaticDataProvider::StaticDataProvider(const std::string& modelFile, const std::string& instanceFileOrString)
   : DataProvider(modelFile)
-  , delimiter(delimiter)
   , reader( initReader(instanceFileOrString) )
 {
   earliestInstantiation = std::numeric_limits<BPMNOS::number>::max();
@@ -20,16 +19,25 @@ StaticDataProvider::StaticDataProvider(const std::string& modelFile, const std::
 
 csv::CSVReader StaticDataProvider::initReader(const std::string& instanceFileOrString) {
   csv::CSVFormat format;
-  format.delimiter( { delimiter } );
-  format.trim({' ', '\t'});
 
-  if (instanceFileOrString.find("\n") == std::string::npos) {
-    return csv::CSVReader(instanceFileOrString, format);
-  }
-  else {
+  if ( auto pos = instanceFileOrString.find("\n");
+    pos != std::string::npos
+  ) {
+    // determine delimiter from first line of string
+    auto delimiter = csv::internals::_guess_format(instanceFileOrString.substr(0,pos+1)).delim;
+    (delimiter == '\t') ? format.trim({' '}) : format.trim({' ', '\t'});
+    format.delimiter( { delimiter } );
     std::stringstream is;
     is << instanceFileOrString;
     return csv::CSVReader(is, format);
+  }
+  else {
+    // no line break in instanceFileOrString so it must be a filename
+    // determine delimiter from file
+    auto delimiter = csv::guess_format(instanceFileOrString).delim;
+    (delimiter == '\t') ? format.trim({' '}) : format.trim({' ', '\t'});
+    format.delimiter( { delimiter } );
+    return csv::CSVReader(instanceFileOrString, format);
   }
 }
 

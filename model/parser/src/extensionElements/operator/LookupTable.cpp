@@ -11,10 +11,12 @@ LookupTable::LookupTable(const std::string& filename) {
 
 csv::CSVReader LookupTable::openCsv(const std::string& filename) {
   csv::CSVFormat format;
-  format.trim({' ', '\t'});
 
   // First, try to open the file using the given filename.
   if (std::filesystem::exists(filename)) {
+    // determine delimiter from file
+    auto delimiter = csv::guess_format(filename).delim;
+    (delimiter == '\t') ? format.trim({' '}) : format.trim({' ', '\t'});
     csv::CSVReader reader = csv::CSVReader(filename, format);
     return reader;
   }
@@ -23,6 +25,9 @@ csv::CSVReader LookupTable::openCsv(const std::string& filename) {
   for (const std::string& folder : folders) {
     std::filesystem::path fullPath = std::filesystem::path(folder) / filename;
     if (std::filesystem::exists(fullPath)) {
+      // determine delimiter from file
+      auto delimiter = csv::guess_format(fullPath.string()).delim;
+      (delimiter == '\t') ? format.trim({' '}) : format.trim({' ', '\t'});
       csv::CSVReader reader = csv::CSVReader(fullPath.string(), format);
       return reader;
     }

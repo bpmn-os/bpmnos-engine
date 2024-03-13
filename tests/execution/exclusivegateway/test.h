@@ -8,7 +8,7 @@ SCENARIO( "Symmetric exclusive gateways", "[execution][exclusivegateway]" ) {
       "Process_1, Instance_1,Timestamp,0\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv,',');
+    Model::StaticDataProvider dataProvider(modelFile,csv);
     auto scenario = dataProvider.createScenario();
 
     WHEN( "The engine is started with a recorder" ) {
@@ -52,7 +52,7 @@ SCENARIO( "Symmetric exclusive gateways", "[execution][exclusivegateway]" ) {
       "Process_1, Instance_1,Timestamp,1\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv,',');
+    Model::StaticDataProvider dataProvider(modelFile,csv);
     auto scenario = dataProvider.createScenario();
 
     WHEN( "The engine is started with a recorder" ) {
@@ -96,7 +96,7 @@ SCENARIO( "Symmetric exclusive gateways", "[execution][exclusivegateway]" ) {
       "Process_1, Instance_1,Timestamp,2\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv,',');
+    Model::StaticDataProvider dataProvider(modelFile,csv);
     auto scenario = dataProvider.createScenario();
 
     WHEN( "The engine is started with a recorder" ) {

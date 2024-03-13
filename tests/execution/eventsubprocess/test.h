@@ -8,7 +8,7 @@ SCENARIO( "Caught error end event", "[execution][eventsubprocess]" ) {
       "Process_1, Instance_1,,\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv,',');
+    Model::StaticDataProvider dataProvider(modelFile,csv);
     auto scenario = dataProvider.createScenario();
 
     WHEN( "The engine is started with a recorder" ) {
@@ -66,7 +66,7 @@ SCENARIO( "Interrupting escalation", "[execution][eventsubprocess]" ) {
       "Process_1, Instance_1,,\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv,',');
+    Model::StaticDataProvider dataProvider(modelFile,csv);
     auto scenario = dataProvider.createScenario();
 
     WHEN( "The engine is started with a recorder" ) {
@@ -133,7 +133,7 @@ SCENARIO( "Non-interrupting escalation", "[execution][eventsubprocess]" ) {
       "Process_1, Instance_1,,\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv,',');
+    Model::StaticDataProvider dataProvider(modelFile,csv);
     auto scenario = dataProvider.createScenario();
 
     WHEN( "The engine is started with a recorder" ) {
@@ -224,7 +224,7 @@ SCENARIO( "Caught and rethrown error", "[execution][eventsubprocess]" ) {
       "Process_1, Instance_1,,\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv,',');
+    Model::StaticDataProvider dataProvider(modelFile,csv);
     auto scenario = dataProvider.createScenario();
 
     WHEN( "The engine is started with a recorder" ) {
@@ -286,7 +286,7 @@ SCENARIO( "Non-interrupting escalation throwing error", "[execution][eventsubpro
       "Process_1, Instance_1,,\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv,',');
+    Model::StaticDataProvider dataProvider(modelFile,csv);
     auto scenario = dataProvider.createScenario();
 
     WHEN( "The engine is started with a recorder" ) {
@@ -351,7 +351,7 @@ SCENARIO( "Interrupting escalation throwing error", "[execution][eventsubprocess
       "Process_1, Instance_1,,\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv,',');
+    Model::StaticDataProvider dataProvider(modelFile,csv);
     auto scenario = dataProvider.createScenario();
 
     WHEN( "The engine is started with a recorder" ) {

@@ -9,7 +9,7 @@ SCENARIO( "Empty executable process", "[execution][process]" ) {
       "Process_1, Instance_1,,\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv,',');
+    Model::StaticDataProvider dataProvider(modelFile,csv);
     auto scenario = dataProvider.createScenario();
 
     WHEN( "The engine is started with a recorder" ) {
@@ -59,7 +59,7 @@ SCENARIO( "Trivial executable process", "[execution][process]" ) {
       "Process_1, Instance_1,,\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv,',');
+    Model::StaticDataProvider dataProvider(modelFile,csv);
     auto scenario = dataProvider.createScenario();
 
     WHEN( "The engine is started with a recorder" ) {
@@ -99,7 +99,7 @@ SCENARIO( "Simple executable process", "[execution][process]" ) {
       "Process_1, Instance_1,,\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv,',');
+    Model::StaticDataProvider dataProvider(modelFile,csv);
     auto scenario = dataProvider.createScenario();
 
     WHEN( "The engine is started with a recorder" ) {
@@ -159,7 +159,7 @@ SCENARIO( "Constrained executable process", "[execution][process]" ) {
         "Process_1, Instance_1,Timestamp,0\n"
       ;
 
-      Model::StaticDataProvider dataProvider(modelFile,csv,',');
+      Model::StaticDataProvider dataProvider(modelFile,csv);
       auto scenario = dataProvider.createScenario();
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
@@ -191,7 +191,7 @@ SCENARIO( "Constrained executable process", "[execution][process]" ) {
         "Process_1, Instance_1,Timestamp,2\n"
       ;
 
-      Model::StaticDataProvider dataProvider(modelFile,csv,',');
+      Model::StaticDataProvider dataProvider(modelFile,csv);
       auto scenario = dataProvider.createScenario();
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
@@ -221,7 +221,7 @@ SCENARIO( "Constrained executable process", "[execution][process]" ) {
         "Process_1, Instance_1,Timestamp,1\n"
       ;
 
-      Model::StaticDataProvider dataProvider(modelFile,csv,',');
+      Model::StaticDataProvider dataProvider(modelFile,csv);
       auto scenario = dataProvider.createScenario();
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;

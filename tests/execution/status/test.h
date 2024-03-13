@@ -8,7 +8,7 @@ SCENARIO( "Task with expression operator", "[status][nestedactivities]" ) {
       "Process_1, Instance_1,,\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv,',');
+    Model::StaticDataProvider dataProvider(modelFile,csv);
     auto scenario = dataProvider.createScenario();
 
     WHEN( "The engine is started with a recorder" ) {
