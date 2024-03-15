@@ -34,7 +34,6 @@ public:
   Engine();
   ~Engine();
 public:
-  std::shared_ptr<Event> fetchEvent();
 
   /**
    * @brief Runs a scenario as long as there is a token or new instantiations. Terminates when the time if the system exceeds the timeout.

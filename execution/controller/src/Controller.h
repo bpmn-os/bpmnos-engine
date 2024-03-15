@@ -3,7 +3,8 @@
 
 #include <bpmn++.h>
 #include "execution/engine/src/EventDispatcher.h"
-#include "execution/engine/src/Engine.h"
+#include "execution/engine/src/Mediator.h"
+#include "execution/engine/src/Observer.h"
 
 namespace BPMNOS::Execution {
 
@@ -11,10 +12,11 @@ namespace BPMNOS::Execution {
  * @brief Base class for an execution controller which dispatches events
  * to the engine and listens to notification from the engine. 
  */
-class Controller : public EventDispatcher {
+class Controller : public Observer, public EventDispatcher, public Mediator {
 public:
   Controller();
-  virtual void connect(Engine* engine);
+  virtual void connect(Mediator* mediator);
+  void notice(const Observable* observable) override;
 };
 
 } // namespace BPMNOS::Execution

@@ -3,6 +3,7 @@
 
 #include "execution/engine/src/EventListener.h"
 #include "execution/engine/src/Notifier.h"
+#include "execution/engine/src/Observer.h"
 
 namespace BPMNOS::Execution {
 

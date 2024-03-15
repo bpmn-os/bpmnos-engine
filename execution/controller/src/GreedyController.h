@@ -3,17 +3,18 @@
 
 #include <bpmn++.h>
 #include "Controller.h"
-#include "execution/engine/src/Engine.h"
+#include "execution/engine/src/Mediator.h"
 
 namespace BPMNOS::Execution {
 
 /**
- * @brief A controller which dispatches the best evaluated decisions
+ * @brief A controller dispatching the best evaluated decisions
  */
 class GreedyController : public Controller {
 public:
   GreedyController();
-  void connect(Engine* engine);
+  void connect(Mediator* mediator);
+  std::vector< std::unique_ptr<EventDispatcher> > eventDispatchers;
 };
 
 } // namespace BPMNOS::Execution

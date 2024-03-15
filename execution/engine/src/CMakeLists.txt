@@ -16,18 +16,6 @@ list(APPEND engine_SOURCES
   StateMachine.cpp
   SystemState.cpp
   EventDispatcher.cpp
-  eventdispatcher/TimeWarp.cpp
-  eventdispatcher/Metronome.cpp
-  eventdispatcher/ReadyHandler.cpp
-  eventdispatcher/InstantEntry.cpp
-  eventdispatcher/FirstComeFirstServedSequentialEntry.cpp
-  eventdispatcher/BestFirstSequentialEntry.cpp
-  eventdispatcher/DeterministicTaskCompletion.cpp
-  eventdispatcher/InstantExit.cpp
-  eventdispatcher/FirstMatchingMessageDelivery.cpp
-  eventdispatcher/RandomChoice.cpp
-  eventdispatcher/MyopicDecisionTaskTerminator.cpp
-  eventdispatcher/MyopicMessageTaskTerminator.cpp
   EventListener.cpp
   Engine.cpp
 )
@@ -53,18 +41,6 @@ list(APPEND engine_HEADERS
   StateMachine.h
   SystemState.h
   EventDispatcher.h
-  eventdispatcher/TimeWarp.h
-  eventdispatcher/Metronome.h
-  eventdispatcher/ReadyHandler.h
-  eventdispatcher/InstantEntry.h
-  eventdispatcher/FirstComeFirstServedSequentialEntry.h
-  eventdispatcher/BestFirstSequentialEntry.h
-  eventdispatcher/DeterministicTaskCompletion.h
-  eventdispatcher/InstantExit.h
-  eventdispatcher/FirstMatchingMessageDelivery.h
-  eventdispatcher/RandomChoice.h
-  eventdispatcher/MyopicDecisionTaskTerminator.h
-  eventdispatcher/MyopicMessageTaskTerminator.h
   EventListener.h
   Mediator.h
   Engine.h

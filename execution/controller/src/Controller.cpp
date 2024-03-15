@@ -6,8 +6,19 @@ Controller::Controller()
 {
 }
 
-void Controller::connect(Engine* engine) {
-//  engine->addListener(this);
-//  engine->addEventHandler(this);
+void Controller::connect(Mediator* mediator) {
+  mediator->addSubscriber(this,
+    Observable::Type::EntryRequest,
+    Observable::Type::ChoiceRequest,
+    Observable::Type::ExitRequest,
+    Observable::Type::MessageDeliveryRequest,
+    Observable::Type::SequentialPerformerUpdate 
+  );
+  EventDispatcher::connect(mediator);
+}
+
+void Controller::notice(const Observable* observable) {
+  // forward observables
+  notify(observable);
 }
 

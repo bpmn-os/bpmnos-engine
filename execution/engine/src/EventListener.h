@@ -12,6 +12,7 @@ class EventListener {
 public:
   void subscribe(EventDispatcher* eventDispatcher);
 protected:
+  std::shared_ptr<Event> fetchEvent(SystemState* systemState);
   std::vector<EventDispatcher*> eventDispatchers;
 };
 

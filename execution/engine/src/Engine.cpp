@@ -34,15 +34,6 @@ void Engine::Command::execute() {
   function();
 }
 
-std::shared_ptr<Event> Engine::fetchEvent() {
-  for ( auto eventDispatcher : eventDispatchers ) {
-    if ( auto event = eventDispatcher->dispatchEvent(systemState.get()) ) {
-      return event;
-    }
-  }
-  return nullptr;
-}
-
 void Engine::run(const BPMNOS::Model::Scenario* scenario, BPMNOS::number timeout) {
   // create initial system state
   systemState = std::make_unique<SystemState>(this, scenario);
@@ -78,7 +69,7 @@ bool Engine::advance() {
   }
 
   // fetch and process all events
-  while ( auto event = fetchEvent() ) {
+  while ( auto event = fetchEvent(systemState.get()) ) {
 //std::cerr << "*";
     event->processBy(this);
 
