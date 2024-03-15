@@ -34,13 +34,13 @@ void Engine::Command::execute() {
   function();
 }
 
-void Engine::addEventHandler(EventHandler* eventHandler) {
-  eventHandlers.push_back(eventHandler);
+void Engine::addEventDispatcher(EventDispatcher* eventDispatcher) {
+  eventDispatchers.push_back(eventDispatcher);
 }
 
 std::shared_ptr<Event> Engine::fetchEvent() {
-  for ( auto eventHandler : eventHandlers ) {
-    if ( auto event = eventHandler->dispatchEvent(systemState.get()) ) {
+  for ( auto eventDispatcher : eventDispatchers ) {
+    if ( auto event = eventDispatcher->dispatchEvent(systemState.get()) ) {
       return event;
     }
   }

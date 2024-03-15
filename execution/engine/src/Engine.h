@@ -15,7 +15,7 @@
 #include "events/MessageDeliveryDecision.h"
 #include "events/ExitDecision.h"
 #include "Notifier.h"
-#include "EventHandler.h"
+#include "EventDispatcher.h"
 #include "SystemState.h"
 
 namespace BPMNOS::Execution {
@@ -28,12 +28,12 @@ class Controller;
 class Engine : public Notifier {
   friend class Token;
   friend class StateMachine;
-  friend void EventHandler::subscribe(Engine* engine);
+  friend void EventDispatcher::subscribe(Engine* engine);
 public:
   Engine();
   ~Engine();
 private:
-  void addEventHandler(EventHandler* eventHandler);
+  void addEventDispatcher(EventDispatcher* eventDispatcher);
 public:
   std::shared_ptr<Event> fetchEvent();
 
@@ -98,7 +98,7 @@ protected:
   std::unique_ptr<SystemState> systemState;
   bool advance();
 //  friend void Token::notify() const;
-  std::vector<EventHandler*> eventHandlers;
+  std::vector<EventDispatcher*> eventDispatchers;
 };
 
 } // namespace BPMNOS::Execution

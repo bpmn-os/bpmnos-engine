@@ -1,4 +1,4 @@
-#include "RandomChoiceHandler.h"
+#include "RandomChoice.h"
 #include "model/parser/src/DecisionTask.h"
 #include "model/parser/src/extensionElements/Attribute.h"
 #include "execution/engine/src/events/CompletionEvent.h"
@@ -7,12 +7,12 @@
 
 using namespace BPMNOS::Execution;
 
-RandomChoiceHandler::RandomChoiceHandler()
+RandomChoice::RandomChoice()
   : randomGenerator{std::random_device{}()}
 {
 }
 
-std::shared_ptr<Event> RandomChoiceHandler::dispatchEvent( const SystemState* systemState ) {
+std::shared_ptr<Event> RandomChoice::dispatchEvent( const SystemState* systemState ) {
   for ( auto& [token_ptr, event] : systemState->pendingChoiceDecisions ) {
     if( auto token = token_ptr.lock() )  {
       assert( token );

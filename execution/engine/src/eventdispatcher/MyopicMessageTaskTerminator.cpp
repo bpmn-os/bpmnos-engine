@@ -16,7 +16,7 @@ void MyopicMessageTaskTerminator::subscribe(Engine* engine) {
     Execution::Observable::Type::ExitRequest,
     Execution::Observable::Type::MessageDeliveryRequest
   );
-  EventHandler::subscribe(engine);
+  EventDispatcher::subscribe(engine);
 }
 
 

@@ -1,23 +1,23 @@
-#include "FirstComeFirstServedSequentialEntryHandler.h"
+#include "FirstComeFirstServedSequentialEntry.h"
 #include "execution/engine/src/Engine.h"
 #include "model/parser/src/SequentialAdHocSubProcess.h"
 #include <cassert>
 
 using namespace BPMNOS::Execution;
 
-FirstComeFirstServedSequentialEntryHandler::FirstComeFirstServedSequentialEntryHandler()
+FirstComeFirstServedSequentialEntry::FirstComeFirstServedSequentialEntry()
 {
 }
 
-void FirstComeFirstServedSequentialEntryHandler::subscribe(Engine* engine) {
+void FirstComeFirstServedSequentialEntry::subscribe(Engine* engine) {
   engine->addSubscriber(this, 
     Observable::Type::EntryRequest,
     Observable::Type::SequentialPerformerUpdate
   );
-  EventHandler::subscribe(engine);
+  EventDispatcher::subscribe(engine);
 }
 
-std::shared_ptr<Event> FirstComeFirstServedSequentialEntryHandler::dispatchEvent( [[maybe_unused]] const SystemState* systemState ) {
+std::shared_ptr<Event> FirstComeFirstServedSequentialEntry::dispatchEvent( [[maybe_unused]] const SystemState* systemState ) {
   for ( auto it = tokensAtIdlePerformers.begin(), next_it = it; it != tokensAtIdlePerformers.end(); it = next_it) {
     next_it++;
     if ( it->first.expired() ) {
@@ -37,7 +37,7 @@ std::shared_ptr<Event> FirstComeFirstServedSequentialEntryHandler::dispatchEvent
   return nullptr;
 }
 
-void FirstComeFirstServedSequentialEntryHandler::notice(const Observable* observable) {
+void FirstComeFirstServedSequentialEntry::notice(const Observable* observable) {
   if ( observable->getObservableType() == Observable::Type::EntryRequest ) {
     entryRequest(static_cast<const EntryDecision*>(observable));
   }
@@ -49,7 +49,7 @@ void FirstComeFirstServedSequentialEntryHandler::notice(const Observable* observ
   }
 }
 
-void FirstComeFirstServedSequentialEntryHandler::entryRequest(const EntryDecision* event) {
+void FirstComeFirstServedSequentialEntry::entryRequest(const EntryDecision* event) {
   assert(event->token->node);
   auto token = const_cast<Token*>(event->token);
   if ( event->token->node->parent->represents<const BPMNOS::Model::SequentialAdHocSubProcess>() ) {
@@ -64,7 +64,7 @@ void FirstComeFirstServedSequentialEntryHandler::entryRequest(const EntryDecisio
   }
 }
 
-void FirstComeFirstServedSequentialEntryHandler::sequentialPerformerUpdate(const SequentialPerformerUpdate* update) {
+void FirstComeFirstServedSequentialEntry::sequentialPerformerUpdate(const SequentialPerformerUpdate* update) {
   auto tokenAtSequentialPerformer = update->token;
   if ( tokenAtSequentialPerformer->performing ) {
     // perfomer has just become busy

@@ -13,6 +13,8 @@ namespace BPMNOS::Execution {
  */
 struct Decision : Event, Observable {
   Decision(const Token* token);
+  virtual std::optional<BPMNOS::number> evaluate() { return std::nullopt; };// = 0;  
+  std::optional<BPMNOS::number> evaluation;
 };
 
 } // namespace BPMNOS::Execution

@@ -2,7 +2,7 @@
 #define BPMNOS_Execution_MyopicMessageTaskTerminator_H
 
 #include <bpmn++.h>
-#include "execution/engine/src/EventHandler.h"
+#include "execution/engine/src/EventDispatcher.h"
 #include "execution/engine/src/Observer.h"
 #include "execution/engine/src/Decision.h"
 
@@ -19,7 +19,7 @@ namespace BPMNOS::Execution {
  * so that no message can currently be delivered. The handler is myopic and does not consider future instantiations
  * of processes.
  */
-class MyopicMessageTaskTerminator : public EventHandler, public Observer {
+class MyopicMessageTaskTerminator : public EventDispatcher, public Observer {
 public:
   MyopicMessageTaskTerminator();
   std::shared_ptr<Event> dispatchEvent( const SystemState* systemState ) override;

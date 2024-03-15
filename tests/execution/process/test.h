@@ -105,9 +105,9 @@ SCENARIO( "Simple executable process", "[execution][process]" ) {
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
-      Execution::InstantEntryHandler entryHandler;
-      Execution::DeterministicTaskCompletionHandler completionHandler;
-      Execution::InstantExitHandler exitHandler;
+      Execution::InstantEntry entryHandler;
+      Execution::DeterministicTaskCompletion completionHandler;
+      Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
       readyHandler.subscribe(&engine);
       entryHandler.subscribe(&engine);
@@ -163,9 +163,9 @@ SCENARIO( "Constrained executable process", "[execution][process]" ) {
       auto scenario = dataProvider.createScenario();
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
-      Execution::InstantEntryHandler entryHandler;
-      Execution::DeterministicTaskCompletionHandler completionHandler;
-      Execution::InstantExitHandler exitHandler;
+      Execution::InstantEntry entryHandler;
+      Execution::DeterministicTaskCompletion completionHandler;
+      Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
       readyHandler.subscribe(&engine);
       entryHandler.subscribe(&engine);
@@ -195,9 +195,9 @@ SCENARIO( "Constrained executable process", "[execution][process]" ) {
       auto scenario = dataProvider.createScenario();
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
-      Execution::InstantEntryHandler entryHandler;
-      Execution::DeterministicTaskCompletionHandler completionHandler;
-      Execution::InstantExitHandler exitHandler;
+      Execution::InstantEntry entryHandler;
+      Execution::DeterministicTaskCompletion completionHandler;
+      Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
       readyHandler.subscribe(&engine);
       entryHandler.subscribe(&engine);
@@ -225,9 +225,9 @@ SCENARIO( "Constrained executable process", "[execution][process]" ) {
       auto scenario = dataProvider.createScenario();
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
-      Execution::InstantEntryHandler entryHandler;
-      Execution::DeterministicTaskCompletionHandler completionHandler;
-      Execution::InstantExitHandler exitHandler;
+      Execution::InstantEntry entryHandler;
+      Execution::DeterministicTaskCompletion completionHandler;
+      Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
       readyHandler.subscribe(&engine);
       entryHandler.subscribe(&engine);

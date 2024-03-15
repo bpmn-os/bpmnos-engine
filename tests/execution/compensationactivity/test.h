@@ -14,9 +14,9 @@ SCENARIO( "Compensate throw event without compensations", "[execution][compensat
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
-      Execution::InstantEntryHandler entryHandler;
-      Execution::DeterministicTaskCompletionHandler completionHandler;
-      Execution::InstantExitHandler exitHandler;
+      Execution::InstantEntry entryHandler;
+      Execution::DeterministicTaskCompletion completionHandler;
+      Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
       readyHandler.subscribe(&engine);
       entryHandler.subscribe(&engine);
@@ -58,9 +58,9 @@ SCENARIO( "Task with unused compensation task", "[execution][compensation]" ) {
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
-      Execution::InstantEntryHandler entryHandler;
-      Execution::DeterministicTaskCompletionHandler completionHandler;
-      Execution::InstantExitHandler exitHandler;
+      Execution::InstantEntry entryHandler;
+      Execution::DeterministicTaskCompletion completionHandler;
+      Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
       readyHandler.subscribe(&engine);
       entryHandler.subscribe(&engine);
@@ -107,9 +107,9 @@ SCENARIO( "Task with compensation task", "[execution][compensation]" ) {
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
-      Execution::InstantEntryHandler entryHandler;
-      Execution::DeterministicTaskCompletionHandler completionHandler;
-      Execution::InstantExitHandler exitHandler;
+      Execution::InstantEntry entryHandler;
+      Execution::DeterministicTaskCompletion completionHandler;
+      Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
       readyHandler.subscribe(&engine);
       entryHandler.subscribe(&engine);
@@ -155,9 +155,9 @@ SCENARIO( "Task with compensation triggered by error", "[execution][compensation
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
-      Execution::InstantEntryHandler entryHandler;
-      Execution::DeterministicTaskCompletionHandler completionHandler;
-      Execution::InstantExitHandler exitHandler;
+      Execution::InstantEntry entryHandler;
+      Execution::DeterministicTaskCompletion completionHandler;
+      Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
       readyHandler.subscribe(&engine);
       entryHandler.subscribe(&engine);
@@ -205,9 +205,9 @@ SCENARIO( "Task with compensation subprocess", "[execution][compensation]" ) {
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
-      Execution::InstantEntryHandler entryHandler;
-      Execution::DeterministicTaskCompletionHandler completionHandler;
-      Execution::InstantExitHandler exitHandler;
+      Execution::InstantEntry entryHandler;
+      Execution::DeterministicTaskCompletion completionHandler;
+      Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
       readyHandler.subscribe(&engine);
       entryHandler.subscribe(&engine);
@@ -253,9 +253,9 @@ SCENARIO( "Named task with compensation task", "[execution][compensation]" ) {
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
-      Execution::InstantEntryHandler entryHandler;
-      Execution::DeterministicTaskCompletionHandler completionHandler;
-      Execution::InstantExitHandler exitHandler;
+      Execution::InstantEntry entryHandler;
+      Execution::DeterministicTaskCompletion completionHandler;
+      Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
       readyHandler.subscribe(&engine);
       entryHandler.subscribe(&engine);
@@ -301,9 +301,9 @@ SCENARIO( "Multi instance compensation", "[execution][compensation][multiinstanc
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
-      Execution::InstantEntryHandler entryHandler;
-      Execution::DeterministicTaskCompletionHandler completionHandler;
-      Execution::InstantExitHandler exitHandler;
+      Execution::InstantEntry entryHandler;
+      Execution::DeterministicTaskCompletion completionHandler;
+      Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
       readyHandler.subscribe(&engine);
       entryHandler.subscribe(&engine);
@@ -357,9 +357,9 @@ SCENARIO( "Compensation of  multi instance activity", "[execution][compensation]
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
-      Execution::InstantEntryHandler entryHandler;
-      Execution::DeterministicTaskCompletionHandler completionHandler;
-      Execution::InstantExitHandler exitHandler;
+      Execution::InstantEntry entryHandler;
+      Execution::DeterministicTaskCompletion completionHandler;
+      Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
       readyHandler.subscribe(&engine);
       entryHandler.subscribe(&engine);
@@ -393,9 +393,9 @@ SCENARIO( "Failing compensations of  multi instance activity", "[execution][comp
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
-      Execution::InstantEntryHandler entryHandler;
-      Execution::DeterministicTaskCompletionHandler completionHandler;
-      Execution::InstantExitHandler exitHandler;
+      Execution::InstantEntry entryHandler;
+      Execution::DeterministicTaskCompletion completionHandler;
+      Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
       readyHandler.subscribe(&engine);
       entryHandler.subscribe(&engine);

@@ -14,9 +14,9 @@ SCENARIO( "Simple process with timer", "[execution][timer]" ) {
 
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
-      Execution::InstantEntryHandler entryHandler;
-      Execution::DeterministicTaskCompletionHandler completionHandler;
-      Execution::InstantExitHandler exitHandler;
+      Execution::InstantEntry entryHandler;
+      Execution::DeterministicTaskCompletion completionHandler;
+      Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
       readyHandler.subscribe(&engine);
       entryHandler.subscribe(&engine);
@@ -44,9 +44,9 @@ SCENARIO( "Simple process with timer", "[execution][timer]" ) {
 
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
-      Execution::InstantEntryHandler entryHandler;
-      Execution::DeterministicTaskCompletionHandler completionHandler;
-      Execution::InstantExitHandler exitHandler;
+      Execution::InstantEntry entryHandler;
+      Execution::DeterministicTaskCompletion completionHandler;
+      Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
       readyHandler.subscribe(&engine);
       entryHandler.subscribe(&engine);

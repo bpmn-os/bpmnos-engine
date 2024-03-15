@@ -14,10 +14,10 @@ SCENARIO( "Sequential adhoc subprocess", "[execution][adhocsubprocess]" ) {
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
-      Execution::InstantEntryHandler entryHandler;
-      Execution::FirstComeFirstServedSequentialEntryHandler sequentialEntryHandler;
-      Execution::DeterministicTaskCompletionHandler completionHandler;
-      Execution::InstantExitHandler exitHandler;
+      Execution::InstantEntry entryHandler;
+      Execution::FirstComeFirstServedSequentialEntry sequentialEntryHandler;
+      Execution::DeterministicTaskCompletion completionHandler;
+      Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
       readyHandler.subscribe(&engine);
       entryHandler.subscribe(&engine);
@@ -71,10 +71,10 @@ SCENARIO( "Sequential adhoc subprocesses with common performer", "[execution][ad
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
-      Execution::InstantEntryHandler entryHandler;
-      Execution::FirstComeFirstServedSequentialEntryHandler sequentialEntryHandler;
-      Execution::DeterministicTaskCompletionHandler completionHandler;
-      Execution::InstantExitHandler exitHandler;
+      Execution::InstantEntry entryHandler;
+      Execution::FirstComeFirstServedSequentialEntry sequentialEntryHandler;
+      Execution::DeterministicTaskCompletion completionHandler;
+      Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
       readyHandler.subscribe(&engine);
       entryHandler.subscribe(&engine);

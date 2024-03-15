@@ -17,12 +17,12 @@ SCENARIO( "Travelling salesperson problem", "[examples][travelling_salesperson_p
     WHEN( "The engine is started with a first-come-first-serve policy" ) {
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
-      Execution::InstantEntryHandler entryHandler;
-      Execution::DeterministicTaskCompletionHandler completionHandler;
-      Execution::FirstComeFirstServedSequentialEntryHandler sequentialEntryHandler;
-      Execution::FirstMatchingMessageHandler messageHandler;
+      Execution::InstantEntry entryHandler;
+      Execution::DeterministicTaskCompletion completionHandler;
+      Execution::FirstComeFirstServedSequentialEntry sequentialEntryHandler;
+      Execution::FirstMatchingMessageDelivery messageHandler;
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;
-      Execution::InstantExitHandler exitHandler;
+      Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
       sequentialEntryHandler.subscribe(&engine);
       messageHandler.subscribe(&engine);
@@ -47,12 +47,12 @@ SCENARIO( "Travelling salesperson problem", "[examples][travelling_salesperson_p
     WHEN( "The engine is started with a best-first policy" ) {
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
-      Execution::InstantEntryHandler entryHandler;
-      Execution::DeterministicTaskCompletionHandler completionHandler;
-      Execution::BestFirstSequentialEntryHandler sequentialEntryHandler;
-      Execution::FirstMatchingMessageHandler messageHandler;
+      Execution::InstantEntry entryHandler;
+      Execution::DeterministicTaskCompletion completionHandler;
+      Execution::BestFirstSequentialEntry sequentialEntryHandler;
+      Execution::FirstMatchingMessageDelivery messageHandler;
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;
-      Execution::InstantExitHandler exitHandler;
+      Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
       sequentialEntryHandler.subscribe(&engine);
       messageHandler.subscribe(&engine);

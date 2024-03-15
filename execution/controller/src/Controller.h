@@ -2,7 +2,7 @@
 #define BPMNOS_Execution_Controller_H
 
 #include <bpmn++.h>
-#include "execution/engine/src/EventHandler.h"
+#include "execution/engine/src/EventDispatcher.h"
 #include "execution/engine/src/Engine.h"
 
 namespace BPMNOS::Execution {
@@ -11,7 +11,7 @@ namespace BPMNOS::Execution {
  * @brief Base class for an execution controller which dispatches events
  * to the engine and listens to notification from the engine. 
  */
-class Controller : public EventHandler {
+class Controller : public EventDispatcher {
 public:
   Controller();
   virtual void connect(Engine* engine);

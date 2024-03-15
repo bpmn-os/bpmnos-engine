@@ -14,9 +14,9 @@ SCENARIO( "Task with expression operator", "[status][nestedactivities]" ) {
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
-      Execution::InstantEntryHandler entryHandler;
-      Execution::DeterministicTaskCompletionHandler completionHandler;
-      Execution::InstantExitHandler exitHandler;
+      Execution::InstantEntry entryHandler;
+      Execution::DeterministicTaskCompletion completionHandler;
+      Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
       readyHandler.subscribe(&engine);
       entryHandler.subscribe(&engine);

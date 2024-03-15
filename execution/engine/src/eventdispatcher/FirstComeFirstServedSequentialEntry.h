@@ -1,8 +1,8 @@
-#ifndef BPMNOS_Execution_FirstComeFirstServedSequentialEntryHandler_H
-#define BPMNOS_Execution_FirstComeFirstServedSequentialEntryHandler_H
+#ifndef BPMNOS_Execution_FirstComeFirstServedSequentialEntry_H
+#define BPMNOS_Execution_FirstComeFirstServedSequentialEntry_H
 
 #include <bpmn++.h>
-#include "execution/engine/src/EventHandler.h"
+#include "execution/engine/src/EventDispatcher.h"
 #include "execution/engine/src/Observer.h"
 #include "execution/engine/src/events/EntryDecision.h"
 #include "execution/engine/src/SequentialPerformerUpdate.h"
@@ -12,9 +12,9 @@ namespace BPMNOS::Execution {
 /**
  * @brief Class dispatching an entry event for a token awaiting the entry at an activity within a sequential adhoc subprocess.
  */
-class FirstComeFirstServedSequentialEntryHandler : public EventHandler, public Observer {
+class FirstComeFirstServedSequentialEntry : public EventDispatcher, public Observer {
 public:
-  FirstComeFirstServedSequentialEntryHandler();
+  FirstComeFirstServedSequentialEntry();
   std::shared_ptr<Event> dispatchEvent( const SystemState* systemState ) override;
   void subscribe(Engine* engine);
   void notice(const Observable* observable) override;
@@ -28,5 +28,5 @@ private:
 
 } // namespace BPMNOS::Execution
 
-#endif // BPMNOS_Execution_FirstComeFirstServedSequentialEntryHandler_H
+#endif // BPMNOS_Execution_FirstComeFirstServedSequentialEntry_H
 

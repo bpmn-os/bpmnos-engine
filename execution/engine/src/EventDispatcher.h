@@ -1,5 +1,5 @@
-#ifndef BPMNOS_Execution_EventHandler_H
-#define BPMNOS_Execution_EventHandler_H
+#ifndef BPMNOS_Execution_EventDispatcher_H
+#define BPMNOS_Execution_EventDispatcher_H
 
 #include "Event.h"
 #include "SystemState.h"
@@ -8,7 +8,7 @@ namespace BPMNOS::Execution {
 
 class Engine;
 
-class EventHandler {
+class EventDispatcher {
 public:
   virtual std::shared_ptr<Event> dispatchEvent( [[maybe_unused]] const SystemState* systemState ) = 0;
   void subscribe(Engine* engine);
@@ -17,4 +17,4 @@ public:
 
 } // namespace BPMNOS::Execution
 
-#endif // BPMNOS_Execution_EventHandler_H
+#endif // BPMNOS_Execution_EventDispatcher_H

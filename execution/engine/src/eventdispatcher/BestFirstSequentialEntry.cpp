@@ -1,23 +1,23 @@
-#include "BestFirstSequentialEntryHandler.h"
+#include "BestFirstSequentialEntry.h"
 #include "execution/engine/src/Engine.h"
 #include "model/parser/src/SequentialAdHocSubProcess.h"
 #include <cassert>
 
 using namespace BPMNOS::Execution;
 
-BestFirstSequentialEntryHandler::BestFirstSequentialEntryHandler()
+BestFirstSequentialEntry::BestFirstSequentialEntry()
 {
 }
 
-void BestFirstSequentialEntryHandler::subscribe(Engine* engine) {
+void BestFirstSequentialEntry::subscribe(Engine* engine) {
   engine->addSubscriber(this, 
     Observable::Type::EntryRequest,
     Observable::Type::SequentialPerformerUpdate
   );
-  EventHandler::subscribe(engine);
+  EventDispatcher::subscribe(engine);
 }
 
-std::shared_ptr<Event> BestFirstSequentialEntryHandler::dispatchEvent( [[maybe_unused]] const SystemState* systemState ) {
+std::shared_ptr<Event> BestFirstSequentialEntry::dispatchEvent( [[maybe_unused]] const SystemState* systemState ) {
   for ( auto it = tokensAtIdlePerformers.begin(), next_it = it; it != tokensAtIdlePerformers.end(); it = next_it) {
     next_it++;
     if ( it->first.expired() ) {
@@ -37,7 +37,7 @@ std::shared_ptr<Event> BestFirstSequentialEntryHandler::dispatchEvent( [[maybe_u
   return nullptr;
 }
 
-void BestFirstSequentialEntryHandler::notice(const Observable* observable) {
+void BestFirstSequentialEntry::notice(const Observable* observable) {
   if ( observable->getObservableType() == Observable::Type::EntryRequest ) {
     entryRequest(static_cast<const EntryDecision*>(observable));
   }
@@ -49,7 +49,7 @@ void BestFirstSequentialEntryHandler::notice(const Observable* observable) {
   }
 }
 
-void BestFirstSequentialEntryHandler::entryRequest(const EntryDecision* event) {
+void BestFirstSequentialEntry::entryRequest(const EntryDecision* event) {
   assert(event->token->node);
   auto token = const_cast<Token*>(event->token);
   if ( event->token->node->parent->represents<const BPMNOS::Model::SequentialAdHocSubProcess>() ) {
@@ -66,7 +66,7 @@ void BestFirstSequentialEntryHandler::entryRequest(const EntryDecision* event) {
   }
 }
 
-void BestFirstSequentialEntryHandler::sequentialPerformerUpdate(const SequentialPerformerUpdate* update) {
+void BestFirstSequentialEntry::sequentialPerformerUpdate(const SequentialPerformerUpdate* update) {
   auto tokenAtSequentialPerformer = update->token;
   if ( tokenAtSequentialPerformer->performing ) {
     // perfomer has just become busy
@@ -97,7 +97,7 @@ void BestFirstSequentialEntryHandler::sequentialPerformerUpdate(const Sequential
   }
 }
 
-BPMNOS::number BestFirstSequentialEntryHandler::cost(const EntryDecision* event) {
+BPMNOS::number BestFirstSequentialEntry::cost(const EntryDecision* event) {
   auto extensionElements = event->token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   Values status = event->token->status;
   BPMNOS::number cost = extensionElements->getObjective(status);

@@ -15,19 +15,19 @@ list(APPEND engine_SOURCES
   events/ExitDecision.cpp
   StateMachine.cpp
   SystemState.cpp
-  EventHandler.cpp
-  eventhandler/TimeWarp.cpp
-  eventhandler/Metronome.cpp
-  eventhandler/ReadyHandler.cpp
-  eventhandler/InstantEntryHandler.cpp
-  eventhandler/FirstComeFirstServedSequentialEntryHandler.cpp
-  eventhandler/BestFirstSequentialEntryHandler.cpp
-  eventhandler/DeterministicTaskCompletionHandler.cpp
-  eventhandler/InstantExitHandler.cpp
-  eventhandler/FirstMatchingMessageHandler.cpp
-  eventhandler/RandomChoiceHandler.cpp
-  eventhandler/MyopicDecisionTaskTerminator.cpp
-  eventhandler/MyopicMessageTaskTerminator.cpp
+  EventDispatcher.cpp
+  eventdispatcher/TimeWarp.cpp
+  eventdispatcher/Metronome.cpp
+  eventdispatcher/ReadyHandler.cpp
+  eventdispatcher/InstantEntry.cpp
+  eventdispatcher/FirstComeFirstServedSequentialEntry.cpp
+  eventdispatcher/BestFirstSequentialEntry.cpp
+  eventdispatcher/DeterministicTaskCompletion.cpp
+  eventdispatcher/InstantExit.cpp
+  eventdispatcher/FirstMatchingMessageDelivery.cpp
+  eventdispatcher/RandomChoice.cpp
+  eventdispatcher/MyopicDecisionTaskTerminator.cpp
+  eventdispatcher/MyopicMessageTaskTerminator.cpp
   Engine.cpp
 )
 
@@ -51,18 +51,18 @@ list(APPEND engine_HEADERS
   events/ExitDecision.h
   StateMachine.h
   SystemState.h
-  EventHandler.h
-  eventhandler/TimeWarp.h
-  eventhandler/Metronome.h
-  eventhandler/ReadyHandler.h
-  eventhandler/InstantEntryHandler.h
-  eventhandler/FirstComeFirstServedSequentialEntryHandler.h
-  eventhandler/BestFirstSequentialEntryHandler.h
-  eventhandler/DeterministicTaskCompletionHandler.h
-  eventhandler/InstantExitHandler.h
-  eventhandler/FirstMatchingMessageHandler.h
-  eventhandler/RandomChoiceHandler.h
-  eventhandler/MyopicDecisionTaskTerminator.h
-  eventhandler/MyopicMessageTaskTerminator.h
+  EventDispatcher.h
+  eventdispatcher/TimeWarp.h
+  eventdispatcher/Metronome.h
+  eventdispatcher/ReadyHandler.h
+  eventdispatcher/InstantEntry.h
+  eventdispatcher/FirstComeFirstServedSequentialEntry.h
+  eventdispatcher/BestFirstSequentialEntry.h
+  eventdispatcher/DeterministicTaskCompletion.h
+  eventdispatcher/InstantExit.h
+  eventdispatcher/FirstMatchingMessageDelivery.h
+  eventdispatcher/RandomChoice.h
+  eventdispatcher/MyopicDecisionTaskTerminator.h
+  eventdispatcher/MyopicMessageTaskTerminator.h
   Engine.h
 )

@@ -17,11 +17,11 @@ SCENARIO( "Assignment problem", "[examples][assignment_problem]" ) {
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
-      Execution::InstantEntryHandler entryHandler;
-      Execution::DeterministicTaskCompletionHandler completionHandler;
-      Execution::FirstMatchingMessageHandler messageHandler;
+      Execution::InstantEntry entryHandler;
+      Execution::DeterministicTaskCompletion completionHandler;
+      Execution::FirstMatchingMessageDelivery messageHandler;
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;
-      Execution::InstantExitHandler exitHandler;
+      Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
       messageHandler.subscribe(&engine);
       readyHandler.subscribe(&engine);
@@ -59,11 +59,11 @@ SCENARIO( "Assignment problem", "[examples][assignment_problem]" ) {
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
-      Execution::InstantEntryHandler entryHandler;
-      Execution::DeterministicTaskCompletionHandler completionHandler;
-      Execution::FirstMatchingMessageHandler messageHandler;
+      Execution::InstantEntry entryHandler;
+      Execution::DeterministicTaskCompletion completionHandler;
+      Execution::FirstMatchingMessageDelivery messageHandler;
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;
-      Execution::InstantExitHandler exitHandler;
+      Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
       messageHandler.subscribe(&engine);
       readyHandler.subscribe(&engine);
@@ -100,11 +100,11 @@ SCENARIO( "Assignment problem", "[examples][assignment_problem]" ) {
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
-      Execution::InstantEntryHandler entryHandler;
-      Execution::DeterministicTaskCompletionHandler completionHandler;
-      Execution::FirstMatchingMessageHandler messageHandler;
+      Execution::InstantEntry entryHandler;
+      Execution::DeterministicTaskCompletion completionHandler;
+      Execution::FirstMatchingMessageDelivery messageHandler;
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;
-      Execution::InstantExitHandler exitHandler;
+      Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
       messageHandler.subscribe(&engine);
       readyHandler.subscribe(&engine);
@@ -142,11 +142,11 @@ SCENARIO( "Assignment problem", "[examples][assignment_problem]" ) {
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
-      Execution::InstantEntryHandler entryHandler;
-      Execution::DeterministicTaskCompletionHandler completionHandler;
-      Execution::FirstMatchingMessageHandler messageHandler;
+      Execution::InstantEntry entryHandler;
+      Execution::DeterministicTaskCompletion completionHandler;
+      Execution::FirstMatchingMessageDelivery messageHandler;
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;
-      Execution::InstantExitHandler exitHandler;
+      Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
       messageHandler.subscribe(&engine);
       readyHandler.subscribe(&engine);

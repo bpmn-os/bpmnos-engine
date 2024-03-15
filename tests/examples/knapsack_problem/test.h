@@ -21,12 +21,12 @@ SCENARIO( "Knapsack problem", "[examples][knapsack_problem]" ) {
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
-      Execution::InstantEntryHandler parallelEntryHandler;
-      Execution::FirstComeFirstServedSequentialEntryHandler sequentialEntryHandler;
-      Execution::DeterministicTaskCompletionHandler completionHandler;
-      Execution::FirstMatchingMessageHandler messageHandler;
+      Execution::InstantEntry parallelEntryHandler;
+      Execution::FirstComeFirstServedSequentialEntry sequentialEntryHandler;
+      Execution::DeterministicTaskCompletion completionHandler;
+      Execution::FirstMatchingMessageDelivery messageHandler;
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;
-      Execution::InstantExitHandler exitHandler;
+      Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
       messageHandler.subscribe(&engine);
       readyHandler.subscribe(&engine);

@@ -1,15 +1,15 @@
-#include "FirstMatchingMessageHandler.h"
+#include "FirstMatchingMessageDelivery.h"
 #include "execution/engine/src/events/MessageDeliveryDecision.h"
 #include "model/parser/src/extensionElements/MessageDefinition.h"
 #include <cassert>
 
 using namespace BPMNOS::Execution;
 
-FirstMatchingMessageHandler::FirstMatchingMessageHandler()
+FirstMatchingMessageDelivery::FirstMatchingMessageDelivery()
 {
 }
 
-std::shared_ptr<Event> FirstMatchingMessageHandler::dispatchEvent( const SystemState* systemState ) {
+std::shared_ptr<Event> FirstMatchingMessageDelivery::dispatchEvent( const SystemState* systemState ) {
   for ( auto& [token_ptr, event ] : systemState->pendingMessageDeliveryDecisions ) {
     if( auto token = token_ptr.lock() )  {
       assert( token );

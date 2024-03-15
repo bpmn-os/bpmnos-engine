@@ -1,13 +1,13 @@
-#include "InstantExitHandler.h"
+#include "InstantExit.h"
 #include <cassert>
 
 using namespace BPMNOS::Execution;
 
-InstantExitHandler::InstantExitHandler()
+InstantExit::InstantExit()
 {
 }
 
-std::shared_ptr<Event> InstantExitHandler::dispatchEvent( const SystemState* systemState ) {
+std::shared_ptr<Event> InstantExit::dispatchEvent( const SystemState* systemState ) {
   for ( auto& [token_ptr, event] : systemState->pendingExitDecisions ) {
     return event;
   }

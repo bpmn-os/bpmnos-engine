@@ -4,14 +4,14 @@
 #include <chrono>
 
 #include <bpmn++.h>
-#include "execution/engine/src/EventHandler.h"
+#include "execution/engine/src/EventDispatcher.h"
 
 namespace BPMNOS::Execution {
 
 /**
  * @brief Class creating a clock tick event each time fetchEvent() after sleeping in order to synchronize with real time.
  */
-class Metronome : public EventHandler {
+class Metronome : public EventDispatcher {
 public:
   Metronome(unsigned int clockTickDuration = 1000);
   std::shared_ptr<Event> dispatchEvent( const SystemState* systemState ) override;
