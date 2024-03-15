@@ -9,7 +9,7 @@ void EventListener::subscribe(EventDispatcher* eventDispatcher) {
 }
 
 std::shared_ptr<Event> EventListener::fetchEvent(SystemState* systemState) {
-  for ( auto eventDispatcher : eventDispatchers ) {
+  for ( auto& eventDispatcher : eventDispatchers ) {
     if ( auto event = eventDispatcher->dispatchEvent(systemState) ) {
       return event;
     }

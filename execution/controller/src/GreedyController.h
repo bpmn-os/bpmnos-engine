@@ -15,6 +15,8 @@ public:
   GreedyController();
   void connect(Mediator* mediator);
   std::vector< std::unique_ptr<EventDispatcher> > eventDispatchers;
+protected:
+  std::shared_ptr<Event> fetchEvent(SystemState* systemState);
 };
 
 } // namespace BPMNOS::Execution

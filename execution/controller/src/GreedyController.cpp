@@ -27,3 +27,32 @@ void GreedyController::connect(Mediator* mediator) {
   Controller::connect(mediator);
 }
 
+std::shared_ptr<Event> GreedyController::fetchEvent(SystemState* systemState) {
+  std::shared_ptr<Decision> best = nullptr;
+  for ( auto& eventDispatcher : eventDispatchers ) {
+    if ( auto event = eventDispatcher->dispatchEvent(systemState) ) {
+      assert( dynamic_pointer_cast<Decision>( event ) );
+      auto decision = static_pointer_cast<Decision>( event );
+      if ( !best ) {
+        // first decision is used as best
+        best = decision;
+      }
+      else if (
+        !best->evaluation.has_value() &&
+        decision->evaluation.has_value()
+      ) {
+        // first decision with evaluation is used as best
+        best = decision;
+      }
+      else if (
+        best->evaluation.has_value() &&
+        decision->evaluation.has_value() && 
+        decision->evaluation.value() < best->evaluation.value()
+      ) {
+        // decision has less costly evaluation than current best
+        best = decision;
+      }
+    }
+  }
+  return best;
+}
