@@ -1,9 +1,9 @@
 #include "GreedyController.h"
-#include "dispatcher/InstantEntry.h"
-#include "dispatcher/BestFirstSequentialEntry.h"
-#include "dispatcher/RandomChoice.h"
-#include "dispatcher/FirstMatchingMessageDelivery.h"
-#include "dispatcher/InstantExit.h"
+#include "dispatcher/naive/InstantEntry.h"
+#include "dispatcher/greedy/BestFirstSequentialEntry.h"
+#include "dispatcher/naive/RandomChoice.h"
+#include "dispatcher/naive/FirstMatchingMessageDelivery.h"
+#include "dispatcher/naive/InstantExit.h"
 
 using namespace BPMNOS::Execution;
 

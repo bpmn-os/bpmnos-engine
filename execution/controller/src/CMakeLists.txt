@@ -2,15 +2,15 @@ list(APPEND controller_SOURCES
   dispatcher/TimeWarp.cpp
   dispatcher/Metronome.cpp
   dispatcher/ReadyHandler.cpp
-  dispatcher/InstantEntry.cpp
-  dispatcher/FirstComeFirstServedSequentialEntry.cpp
-  dispatcher/BestFirstSequentialEntry.cpp
   dispatcher/DeterministicTaskCompletion.cpp
-  dispatcher/InstantExit.cpp
-  dispatcher/FirstMatchingMessageDelivery.cpp
-  dispatcher/RandomChoice.cpp
-  dispatcher/MyopicDecisionTaskTerminator.cpp
-  dispatcher/MyopicMessageTaskTerminator.cpp
+  dispatcher/naive/InstantEntry.cpp
+  dispatcher/naive/FirstComeFirstServedSequentialEntry.cpp
+  dispatcher/naive/InstantExit.cpp
+  dispatcher/naive/FirstMatchingMessageDelivery.cpp
+  dispatcher/naive/RandomChoice.cpp
+  dispatcher/naive/MyopicDecisionTaskTerminator.cpp
+  dispatcher/naive/MyopicMessageTaskTerminator.cpp
+  dispatcher/greedy/BestFirstSequentialEntry.cpp
   Controller.cpp
   GreedyController.cpp
 )
@@ -19,15 +19,15 @@ list(APPEND controller_HEADERS
   dispatcher/TimeWarp.h
   dispatcher/Metronome.h
   dispatcher/ReadyHandler.h
-  dispatcher/InstantEntry.h
-  dispatcher/FirstComeFirstServedSequentialEntry.h
-  dispatcher/BestFirstSequentialEntry.h
   dispatcher/DeterministicTaskCompletion.h
-  dispatcher/InstantExit.h
-  dispatcher/FirstMatchingMessageDelivery.h
-  dispatcher/RandomChoice.h
-  dispatcher/MyopicDecisionTaskTerminator.h
-  dispatcher/MyopicMessageTaskTerminator.h
+  dispatcher/naive/InstantEntry.h
+  dispatcher/naive/FirstComeFirstServedSequentialEntry.h
+  dispatcher/naive/InstantExit.h
+  dispatcher/naive/FirstMatchingMessageDelivery.h
+  dispatcher/naive/RandomChoice.h
+  dispatcher/naive/MyopicDecisionTaskTerminator.h
+  dispatcher/naive/MyopicMessageTaskTerminator.h
+  dispatcher/greedy/BestFirstSequentialEntry.h
   Controller.h
   GreedyController.h
 )
