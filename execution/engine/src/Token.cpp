@@ -1093,10 +1093,10 @@ void Token::awaitGatewayActivation() {
   tokens.emplace_back(this);
 }
 
-template<typename EventType, typename... Args>
-std::shared_ptr<EventType> Token::createDecisionRequest(Args&&... args) {
-//std::cerr << "Create pending event for token in state " << stateName[(int)state] << " at node " << node->id << std::endl;
-  auto event = std::make_shared<EventType>(this, std::forward<Args>(args)...);
+template<typename DecisionType, typename... Args>
+std::shared_ptr<DecisionType> Token::createDecisionRequest(Args&&... args) {
+//std::cerr << "Create pending decision for token in state " << stateName[(int)state] << " at node " << node->id << std::endl;
+  auto event = std::make_shared<DecisionType>(this, std::forward<Args>(args)...);
   owner->systemState->engine->notify(event.get());
   return event;
 }
