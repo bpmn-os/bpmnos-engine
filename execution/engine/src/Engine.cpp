@@ -34,10 +34,6 @@ void Engine::Command::execute() {
   function();
 }
 
-void Engine::addEventDispatcher(EventDispatcher* eventDispatcher) {
-  eventDispatchers.push_back(eventDispatcher);
-}
-
 std::shared_ptr<Event> Engine::fetchEvent() {
   for ( auto eventDispatcher : eventDispatchers ) {
     if ( auto event = eventDispatcher->dispatchEvent(systemState.get()) ) {

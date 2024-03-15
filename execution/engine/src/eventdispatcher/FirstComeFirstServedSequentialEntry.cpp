@@ -9,12 +9,12 @@ FirstComeFirstServedSequentialEntry::FirstComeFirstServedSequentialEntry()
 {
 }
 
-void FirstComeFirstServedSequentialEntry::subscribe(Engine* engine) {
-  engine->addSubscriber(this, 
+void FirstComeFirstServedSequentialEntry::connect(Mediator* mediator) {
+  mediator->addSubscriber(this, 
     Observable::Type::EntryRequest,
     Observable::Type::SequentialPerformerUpdate
   );
-  EventDispatcher::subscribe(engine);
+  EventDispatcher::connect(mediator);
 }
 
 std::shared_ptr<Event> FirstComeFirstServedSequentialEntry::dispatchEvent( [[maybe_unused]] const SystemState* systemState ) {

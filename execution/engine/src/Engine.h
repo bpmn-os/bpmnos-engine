@@ -14,7 +14,8 @@
 #include "events/CompletionEvent.h"
 #include "events/MessageDeliveryDecision.h"
 #include "events/ExitDecision.h"
-#include "Notifier.h"
+//#include "Notifier.h"
+#include "Mediator.h"
 #include "EventDispatcher.h"
 #include "SystemState.h"
 
@@ -25,15 +26,13 @@ class StateMachine;
 //class Listener;
 class Controller;
 
-class Engine : public Notifier {
+class Engine : public Mediator {
   friend class Token;
   friend class StateMachine;
-  friend void EventDispatcher::subscribe(Engine* engine);
+//  friend void EventDispatcher::subscribe(Engine* engine);
 public:
   Engine();
   ~Engine();
-private:
-  void addEventDispatcher(EventDispatcher* eventDispatcher);
 public:
   std::shared_ptr<Event> fetchEvent();
 
@@ -98,7 +97,6 @@ protected:
   std::unique_ptr<SystemState> systemState;
   bool advance();
 //  friend void Token::notify() const;
-  std::vector<EventDispatcher*> eventDispatchers;
 };
 
 } // namespace BPMNOS::Execution

@@ -10,9 +10,9 @@ InstantEntry::InstantEntry()
 {
 }
 
-void InstantEntry::subscribe(Engine* engine) {
-  engine->addSubscriber(this, Execution::Observable::Type::EntryRequest);
-  EventDispatcher::subscribe(engine);
+void InstantEntry::connect(Mediator* mediator) {
+  mediator->addSubscriber(this, Execution::Observable::Type::EntryRequest);
+  EventDispatcher::connect(mediator);
 }
 
 std::shared_ptr<Event> InstantEntry::dispatchEvent( [[maybe_unused]] const SystemState* systemState ) {

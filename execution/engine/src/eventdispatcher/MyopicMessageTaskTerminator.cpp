@@ -9,14 +9,14 @@ MyopicMessageTaskTerminator::MyopicMessageTaskTerminator()
 {
 }
 
-void MyopicMessageTaskTerminator::subscribe(Engine* engine) {
-  engine->addSubscriber(this,
+void MyopicMessageTaskTerminator::connect(Mediator* mediator) {
+  mediator->addSubscriber(this,
     Execution::Observable::Type::EntryRequest,
     Execution::Observable::Type::ChoiceRequest,
     Execution::Observable::Type::ExitRequest,
     Execution::Observable::Type::MessageDeliveryRequest
   );
-  EventDispatcher::subscribe(engine);
+  EventDispatcher::connect(mediator);
 }
 
 

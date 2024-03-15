@@ -15,7 +15,7 @@ SCENARIO( "Empty executable process", "[execution][process]" ) {
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine;
       Execution::TimeWarp timeHandler;
-      timeHandler.subscribe(&engine);
+      timeHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
@@ -65,7 +65,7 @@ SCENARIO( "Trivial executable process", "[execution][process]" ) {
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine;
       Execution::TimeWarp timeHandler;
-      timeHandler.subscribe(&engine);
+      timeHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
@@ -109,11 +109,11 @@ SCENARIO( "Simple executable process", "[execution][process]" ) {
       Execution::DeterministicTaskCompletion completionHandler;
       Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
-      readyHandler.subscribe(&engine);
-      entryHandler.subscribe(&engine);
-      completionHandler.subscribe(&engine);
-      exitHandler.subscribe(&engine);
-      timeHandler.subscribe(&engine);
+      readyHandler.connect(&engine);
+      entryHandler.connect(&engine);
+      completionHandler.connect(&engine);
+      exitHandler.connect(&engine);
+      timeHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
@@ -167,11 +167,11 @@ SCENARIO( "Constrained executable process", "[execution][process]" ) {
       Execution::DeterministicTaskCompletion completionHandler;
       Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
-      readyHandler.subscribe(&engine);
-      entryHandler.subscribe(&engine);
-      completionHandler.subscribe(&engine);
-      exitHandler.subscribe(&engine);
-      timeHandler.subscribe(&engine);
+      readyHandler.connect(&engine);
+      entryHandler.connect(&engine);
+      completionHandler.connect(&engine);
+      exitHandler.connect(&engine);
+      timeHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
@@ -199,11 +199,11 @@ SCENARIO( "Constrained executable process", "[execution][process]" ) {
       Execution::DeterministicTaskCompletion completionHandler;
       Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
-      readyHandler.subscribe(&engine);
-      entryHandler.subscribe(&engine);
-      completionHandler.subscribe(&engine);
-      exitHandler.subscribe(&engine);
-      timeHandler.subscribe(&engine);
+      readyHandler.connect(&engine);
+      entryHandler.connect(&engine);
+      completionHandler.connect(&engine);
+      exitHandler.connect(&engine);
+      timeHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
@@ -229,11 +229,11 @@ SCENARIO( "Constrained executable process", "[execution][process]" ) {
       Execution::DeterministicTaskCompletion completionHandler;
       Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
-      readyHandler.subscribe(&engine);
-      entryHandler.subscribe(&engine);
-      completionHandler.subscribe(&engine);
-      exitHandler.subscribe(&engine);
-      timeHandler.subscribe(&engine);
+      readyHandler.connect(&engine);
+      entryHandler.connect(&engine);
+      completionHandler.connect(&engine);
+      exitHandler.connect(&engine);
+      timeHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);

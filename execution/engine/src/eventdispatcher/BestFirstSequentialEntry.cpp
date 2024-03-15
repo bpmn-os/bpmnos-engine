@@ -9,12 +9,12 @@ BestFirstSequentialEntry::BestFirstSequentialEntry()
 {
 }
 
-void BestFirstSequentialEntry::subscribe(Engine* engine) {
-  engine->addSubscriber(this, 
+void BestFirstSequentialEntry::connect(Mediator* mediator) {
+  mediator->addSubscriber(this, 
     Observable::Type::EntryRequest,
     Observable::Type::SequentialPerformerUpdate
   );
-  EventDispatcher::subscribe(engine);
+  EventDispatcher::connect(mediator);
 }
 
 std::shared_ptr<Event> BestFirstSequentialEntry::dispatchEvent( [[maybe_unused]] const SystemState* systemState ) {

@@ -28,6 +28,7 @@ list(APPEND engine_SOURCES
   eventdispatcher/RandomChoice.cpp
   eventdispatcher/MyopicDecisionTaskTerminator.cpp
   eventdispatcher/MyopicMessageTaskTerminator.cpp
+  EventListener.cpp
   Engine.cpp
 )
 
@@ -64,5 +65,7 @@ list(APPEND engine_HEADERS
   eventdispatcher/RandomChoice.h
   eventdispatcher/MyopicDecisionTaskTerminator.h
   eventdispatcher/MyopicMessageTaskTerminator.h
+  EventListener.h
+  Mediator.h
   Engine.h
 )

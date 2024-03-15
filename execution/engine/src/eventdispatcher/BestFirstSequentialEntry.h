@@ -16,7 +16,7 @@ class BestFirstSequentialEntry : public EventDispatcher, public Observer {
 public:
   BestFirstSequentialEntry();
   std::shared_ptr<Event> dispatchEvent( const SystemState* systemState ) override;
-  void subscribe(Engine* engine);
+  void connect(Mediator* mediator);
   void notice(const Observable* observable) override;
 
   void entryRequest(const EntryDecision* event);

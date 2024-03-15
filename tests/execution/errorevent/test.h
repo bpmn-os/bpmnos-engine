@@ -18,11 +18,11 @@ SCENARIO( "Error end event", "[execution][error]" ) {
       Execution::DeterministicTaskCompletion completionHandler;
       Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
-      readyHandler.subscribe(&engine);
-      entryHandler.subscribe(&engine);
-      completionHandler.subscribe(&engine);
-      exitHandler.subscribe(&engine);
-      timeHandler.subscribe(&engine);
+      readyHandler.connect(&engine);
+      entryHandler.connect(&engine);
+      completionHandler.connect(&engine);
+      exitHandler.connect(&engine);
+      timeHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);

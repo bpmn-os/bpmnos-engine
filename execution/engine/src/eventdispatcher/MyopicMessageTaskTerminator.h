@@ -23,7 +23,7 @@ class MyopicMessageTaskTerminator : public EventDispatcher, public Observer {
 public:
   MyopicMessageTaskTerminator();
   std::shared_ptr<Event> dispatchEvent( const SystemState* systemState ) override;
-  void subscribe(Engine* engine);
+  void connect(Mediator* mediator);
   void notice(const Observable* observable) override;
 private:
   auto_list< std::weak_ptr<const Token>, std::weak_ptr<Event> > messageDeliveryDecisions;
