@@ -11,7 +11,7 @@ class Engine;
 //class Event;
 //typedef std::vector< std::shared_ptr<Token> > Events;
 
-struct Event : Observable, std::enable_shared_from_this<Event> {
+struct Event : std::enable_shared_from_this<Event> {
   Event(const Token* token);
   virtual ~Event() = default;  // Virtual destructor
   const Token* token;  

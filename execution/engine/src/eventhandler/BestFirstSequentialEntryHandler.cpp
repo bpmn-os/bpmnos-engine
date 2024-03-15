@@ -11,7 +11,7 @@ BestFirstSequentialEntryHandler::BestFirstSequentialEntryHandler()
 
 void BestFirstSequentialEntryHandler::subscribe(Engine* engine) {
   engine->addSubscriber(this, 
-    Observable::Type::EntryEvent,
+    Observable::Type::EntryRequest,
     Observable::Type::SequentialPerformerUpdate
   );
   EventHandler::subscribe(engine);
@@ -38,18 +38,18 @@ std::shared_ptr<Event> BestFirstSequentialEntryHandler::dispatchEvent( [[maybe_u
 }
 
 void BestFirstSequentialEntryHandler::notice(const Observable* observable) {
-  if ( observable->getObservableType() == Observable::Type::EntryEvent ) {
-    noticeEntryEvent(static_cast<const EntryEvent*>(observable));
+  if ( observable->getObservableType() == Observable::Type::EntryRequest ) {
+    entryRequest(static_cast<const EntryDecision*>(observable));
   }
   else if ( observable->getObservableType() == Observable::Type::SequentialPerformerUpdate ) {
-    noticeSequentialPerformerUpdate(static_cast<const SequentialPerformerUpdate*>(observable));
+    sequentialPerformerUpdate(static_cast<const SequentialPerformerUpdate*>(observable));
   }
   else {
     assert(!"Illegal observable type");
   }
 }
 
-void BestFirstSequentialEntryHandler::noticeEntryEvent(const EntryEvent* event) {
+void BestFirstSequentialEntryHandler::entryRequest(const EntryDecision* event) {
   assert(event->token->node);
   auto token = const_cast<Token*>(event->token);
   if ( event->token->node->parent->represents<const BPMNOS::Model::SequentialAdHocSubProcess>() ) {
@@ -57,16 +57,16 @@ void BestFirstSequentialEntryHandler::noticeEntryEvent(const EntryEvent* event) 
     auto tokenAtSequentialPerformer = token->owner->systemState->tokenAtSequentialPerformer.at(token);
     if ( tokenAtSequentialPerformer->performing ) {
       // skip evaluation of event
-      tokensAtBusyPerformers[tokenAtSequentialPerformer->weak_from_this()].emplace( 0, token->weak_from_this(), const_cast<EntryEvent*>(event)->weak_from_this() );
+      tokensAtBusyPerformers[tokenAtSequentialPerformer->weak_from_this()].emplace( 0, token->weak_from_this(), const_cast<EntryDecision*>(event)->weak_from_this() );
     }
     else {
       // evaluate event
-      tokensAtIdlePerformers[tokenAtSequentialPerformer->weak_from_this()].emplace( cost(event), token->weak_from_this(), const_cast<EntryEvent*>(event)->weak_from_this() );
+      tokensAtIdlePerformers[tokenAtSequentialPerformer->weak_from_this()].emplace( cost(event), token->weak_from_this(), const_cast<EntryDecision*>(event)->weak_from_this() );
     }
   }
 }
 
-void BestFirstSequentialEntryHandler::noticeSequentialPerformerUpdate(const SequentialPerformerUpdate* update) {
+void BestFirstSequentialEntryHandler::sequentialPerformerUpdate(const SequentialPerformerUpdate* update) {
   auto tokenAtSequentialPerformer = update->token;
   if ( tokenAtSequentialPerformer->performing ) {
     // perfomer has just become busy
@@ -88,7 +88,7 @@ void BestFirstSequentialEntryHandler::noticeSequentialPerformerUpdate(const Sequ
         if ( auto token = token_ptr.lock() ) {
           if ( auto event = event_ptr.lock() ) {
             // re-evaluate event
-            tokensAtIdlePerformers[tokenAtSequentialPerformer->weak_from_this()].emplace( cost((const EntryEvent*)event.get()), token_ptr, event_ptr );
+            tokensAtIdlePerformers[tokenAtSequentialPerformer->weak_from_this()].emplace( cost((const EntryDecision*)event.get()), token_ptr, event_ptr );
           }
         }
       }
@@ -97,7 +97,7 @@ void BestFirstSequentialEntryHandler::noticeSequentialPerformerUpdate(const Sequ
   }
 }
 
-BPMNOS::number BestFirstSequentialEntryHandler::cost(const EntryEvent* event) {
+BPMNOS::number BestFirstSequentialEntryHandler::cost(const EntryDecision* event) {
   auto extensionElements = event->token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   Values status = event->token->status;
   BPMNOS::number cost = extensionElements->getObjective(status);

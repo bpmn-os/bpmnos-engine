@@ -1,9 +1,9 @@
-#include "Decision.h"
+#include "Choice.h"
 
 using namespace BPMNOS::Model;
 
-Decision::Decision(XML::bpmnos::tDecision* decision, AttributeMap& attributeMap)
-  : element(decision)
+Choice::Choice(XML::bpmnos::tChoice* choice, AttributeMap& attributeMap)
+  : element(choice)
   , attribute(attributeMap.at(element->attribute.value))
 {
   attribute->isImmutable = false;
@@ -23,6 +23,6 @@ Decision::Decision(XML::bpmnos::tDecision* decision, AttributeMap& attributeMap)
     max = std::numeric_limits<BPMNOS::number>::max();
   }
   else {
-    throw std::runtime_error("Decision: unsupported type 'string' for attribute '" + attribute->name + "'");
+    throw std::runtime_error("Choice: unsupported type 'string' for attribute '" + attribute->name + "'");
   }
 }

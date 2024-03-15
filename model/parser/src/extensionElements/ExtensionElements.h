@@ -8,7 +8,7 @@
 #include "Attribute.h"
 #include "Restriction.h"
 #include "Operator.h"
-#include "Decision.h"
+#include "Choice.h"
 #include "MessageDefinition.h"
 #include "Guidance.h"
 
@@ -29,7 +29,7 @@ public:
   std::vector< std::unique_ptr<Attribute> > attributes; ///< Vector containing new attributes declared for the node.
   std::vector< std::unique_ptr<Restriction> > restrictions; ///< Vector containing new restrictions provided for the node.
   std::vector< std::unique_ptr<Operator> > operators;
-  std::vector< std::unique_ptr<Decision> > decisions;
+  std::vector< std::unique_ptr<Choice> > choices;
 
   std::vector< std::unique_ptr<MessageDefinition> > messageDefinitions; ///< Vector containing message definition(s) provided for the node.
   std::vector< const BPMN::FlowNode* > messageCandidates; ///< Vector containing all potential sending or receiving nodes of a message.

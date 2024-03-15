@@ -6,8 +6,8 @@
 #include "model/parser/src/xml/bpmnos/tRestriction.h"
 #include "model/parser/src/xml/bpmnos/tOperators.h"
 #include "model/parser/src/xml/bpmnos/tOperator.h"
-#include "model/parser/src/xml/bpmnos/tDecisions.h"
-#include "model/parser/src/xml/bpmnos/tDecision.h"
+#include "model/parser/src/xml/bpmnos/tChoices.h"
+#include "model/parser/src/xml/bpmnos/tChoice.h"
 #include "model/parser/src/xml/bpmnos/tMessages.h"
 #include "model/parser/src/xml/bpmnos/tMessage.h"
 #include "model/parser/src/xml/bpmnos/tLoopCharacteristics.h"
@@ -99,14 +99,14 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, BPMN:
         }
       }
     }    
-    // add all decisions
-    if ( status->get().decisions.has_value() ) {
-      for ( XML::bpmnos::tDecision& decision : status->get().decisions.value().get().decision ) {
+    // add all choices to be made
+    if ( status->get().choices.has_value() ) {
+      for ( XML::bpmnos::tChoice& choice : status->get().choices.value().get().choice ) {
         try {
-          decisions.push_back(std::make_unique<Decision>(&decision,attributeMap));
+          choices.push_back(std::make_unique<Choice>(&choice,attributeMap));
         }
         catch ( const std::runtime_error& error ) {
-          throw std::runtime_error("ExtensionElements: illegal attributes for decision '" + (std::string)decision.id.value + "'.\n" + error.what());
+          throw std::runtime_error("ExtensionElements: illegal attributes for choice '" + (std::string)choice.id.value + "'.\n" + error.what());
         }
       }
     }    

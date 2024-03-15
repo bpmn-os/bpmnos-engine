@@ -3,8 +3,9 @@
 
 using namespace BPMNOS::Execution;
 
-ReadyEvent::ReadyEvent(const Token* token)
+ReadyEvent::ReadyEvent(const Token* token, BPMNOS::Values values)
   : Event(token)
+  , values(values)
 {
 }
 

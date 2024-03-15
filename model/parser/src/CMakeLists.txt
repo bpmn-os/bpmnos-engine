@@ -21,7 +21,7 @@ list(APPEND bpmn_SOURCES
   extensionElements/operator/LookupTable.cpp
   extensionElements/operator/LookupOperator.cpp
   extensionElements/operator/ExpressionOperator.cpp
-  extensionElements/Decision.cpp
+  extensionElements/Choice.cpp
   extensionElements/Guidance.cpp
   extensionElements/Content.cpp
   extensionElements/MessageDefinition.cpp
@@ -49,7 +49,7 @@ list(APPEND bpmn_HEADERS
   extensionElements/operator/LookupTable.h
   extensionElements/operator/LookupOperator.h
   extensionElements/operator/ExpressionOperator.h
-  extensionElements/Decision.h
+  extensionElements/Choice.h
   extensionElements/Guidance.h
   extensionElements/Content.h
   extensionElements/MessageDefinition.h

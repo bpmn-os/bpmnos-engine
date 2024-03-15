@@ -11,7 +11,7 @@ FirstComeFirstServedSequentialEntryHandler::FirstComeFirstServedSequentialEntryH
 
 void FirstComeFirstServedSequentialEntryHandler::subscribe(Engine* engine) {
   engine->addSubscriber(this, 
-    Observable::Type::EntryEvent,
+    Observable::Type::EntryRequest,
     Observable::Type::SequentialPerformerUpdate
   );
   EventHandler::subscribe(engine);
@@ -38,33 +38,33 @@ std::shared_ptr<Event> FirstComeFirstServedSequentialEntryHandler::dispatchEvent
 }
 
 void FirstComeFirstServedSequentialEntryHandler::notice(const Observable* observable) {
-  if ( observable->getObservableType() == Observable::Type::EntryEvent ) {
-    noticeEntryEvent(static_cast<const EntryEvent*>(observable));
+  if ( observable->getObservableType() == Observable::Type::EntryRequest ) {
+    entryRequest(static_cast<const EntryDecision*>(observable));
   }
   else if ( observable->getObservableType() == Observable::Type::SequentialPerformerUpdate ) {
-    noticeSequentialPerformerUpdate(static_cast<const SequentialPerformerUpdate*>(observable));
+    sequentialPerformerUpdate(static_cast<const SequentialPerformerUpdate*>(observable));
   }
   else {
     assert(!"Illegal observable type");
   }
 }
 
-void FirstComeFirstServedSequentialEntryHandler::noticeEntryEvent(const EntryEvent* event) {
+void FirstComeFirstServedSequentialEntryHandler::entryRequest(const EntryDecision* event) {
   assert(event->token->node);
   auto token = const_cast<Token*>(event->token);
   if ( event->token->node->parent->represents<const BPMNOS::Model::SequentialAdHocSubProcess>() ) {
     assert( token->owner->systemState->tokenAtSequentialPerformer.find(token) != token->owner->systemState->tokenAtSequentialPerformer.end() );
     auto tokenAtSequentialPerformer = token->owner->systemState->tokenAtSequentialPerformer.at(token);
     if ( tokenAtSequentialPerformer->performing ) {
-      tokensAtBusyPerformers[tokenAtSequentialPerformer->weak_from_this()].emplace_back( token->weak_from_this(), const_cast<EntryEvent*>(event)->weak_from_this() );
+      tokensAtBusyPerformers[tokenAtSequentialPerformer->weak_from_this()].emplace_back( token->weak_from_this(), const_cast<EntryDecision*>(event)->weak_from_this() );
     }
     else {
-      tokensAtIdlePerformers[tokenAtSequentialPerformer->weak_from_this()].emplace_back( token->weak_from_this(), const_cast<EntryEvent*>(event)->weak_from_this() );
+      tokensAtIdlePerformers[tokenAtSequentialPerformer->weak_from_this()].emplace_back( token->weak_from_this(), const_cast<EntryDecision*>(event)->weak_from_this() );
     }
   }
 }
 
-void FirstComeFirstServedSequentialEntryHandler::noticeSequentialPerformerUpdate(const SequentialPerformerUpdate* update) {
+void FirstComeFirstServedSequentialEntryHandler::sequentialPerformerUpdate(const SequentialPerformerUpdate* update) {
   auto tokenAtSequentialPerformer = update->token;
   if ( tokenAtSequentialPerformer->performing ) {
     // perfomer has just become busy

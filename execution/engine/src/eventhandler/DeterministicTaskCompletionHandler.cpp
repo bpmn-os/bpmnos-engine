@@ -9,11 +9,11 @@ DeterministicTaskCompletionHandler::DeterministicTaskCompletionHandler()
 }
 
 std::shared_ptr<Event> DeterministicTaskCompletionHandler::dispatchEvent( const SystemState* systemState ) {
-  for ( auto [time, token_ptr, event] : systemState->pendingCompletionEvents ) {
+  for ( auto [time,token_ptr] : systemState->tokensAwaitingCompletionEvent ) {
     if ( time <= systemState->getTime() ) {
-      if ( auto token = token_ptr.lock() ) {
+      if ( auto token = token_ptr.lock() )  {
         assert( token );
-        return event;
+        return std::make_shared<CompletionEvent>(token.get());
       }
     }
   }

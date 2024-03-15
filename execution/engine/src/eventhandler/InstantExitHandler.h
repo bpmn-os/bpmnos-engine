@@ -3,7 +3,6 @@
 
 #include <bpmn++.h>
 #include "execution/engine/src/EventHandler.h"
-#include "execution/engine/src/events/ExitEvent.h"
 
 namespace BPMNOS::Execution {
 

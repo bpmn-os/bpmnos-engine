@@ -11,12 +11,10 @@ MyopicMessageTaskTerminator::MyopicMessageTaskTerminator()
 
 void MyopicMessageTaskTerminator::subscribe(Engine* engine) {
   engine->addSubscriber(this,
-    Execution::Observable::Type::ReadyEvent,
-    Execution::Observable::Type::EntryEvent,
-    Execution::Observable::Type::ChoiceEvent,
-    Execution::Observable::Type::CompletionEvent,
-    Execution::Observable::Type::ExitEvent,
-    Execution::Observable::Type::MessageDeliveryEvent
+    Execution::Observable::Type::EntryRequest,
+    Execution::Observable::Type::ChoiceRequest,
+    Execution::Observable::Type::ExitRequest,
+    Execution::Observable::Type::MessageDeliveryRequest
   );
   EventHandler::subscribe(engine);
 }
@@ -24,7 +22,7 @@ void MyopicMessageTaskTerminator::subscribe(Engine* engine) {
 
 std::shared_ptr<Event> MyopicMessageTaskTerminator::dispatchEvent( [[maybe_unused]] const SystemState* systemState ) {
   // determine whether there is another decision pending
-  if ( !otherEvents.empty() ) {
+  if ( !otherDecisions.empty() ) {
     return nullptr;
   }
 
@@ -32,11 +30,19 @@ std::shared_ptr<Event> MyopicMessageTaskTerminator::dispatchEvent( [[maybe_unuse
     return nullptr;
   }
 
+  if ( !systemState->tokensAwaitingReadyEvent.empty() ) {
+    return nullptr;
+  }
+
+  if ( !systemState->tokensAwaitingCompletionEvent.empty() ) {
+    return nullptr;
+  }
+
   // all tokens have moved as far as they can
   
   // assume that no message can be delivered
 
-  for ( auto& [token_ptr, event ] : receiveTaskEvents ) {
+  for ( auto& [token_ptr, decision ] : messageDeliveryDecisions ) {
     if( auto token = token_ptr.lock() )  {
       assert( token );
       // raise error at receive task
@@ -54,15 +60,15 @@ std::shared_ptr<Event> MyopicMessageTaskTerminator::dispatchEvent( [[maybe_unuse
 }
 
 void MyopicMessageTaskTerminator::notice(const Observable* observable) {
-  if ( const Event* event = dynamic_cast<const MessageDeliveryEvent*>(observable);
-    event &&
-    event->token->node->represents<const BPMN::ReceiveTask>()
+  if ( const Decision* decision = dynamic_cast<const MessageDeliveryDecision*>(observable);
+    decision &&
+    decision->token->node->represents<const BPMN::ReceiveTask>()
   ) {
-    receiveTaskEvents.emplace_back(event->token->weak_from_this(), const_cast<Event*>(event)->weak_from_this());
+    messageDeliveryDecisions.emplace_back(decision->token->weak_from_this(), const_cast<Decision*>(decision)->weak_from_this());
   }
   else {
-    event = static_cast<const Event*>(observable);
-    otherEvents.emplace_back(event->token->weak_from_this(), const_cast<Event*>(event)->weak_from_this());
+    decision = static_cast<const Decision*>(observable);
+    otherDecisions.emplace_back(decision->token->weak_from_this(), const_cast<Decision*>(decision)->weak_from_this() );
   }
 }
 

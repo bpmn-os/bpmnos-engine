@@ -132,6 +132,15 @@ void Engine::deleteInstance(StateMachine* instance) {
 void Engine::process(const ReadyEvent* event) {
 //std::cerr << "ReadyEvent " << event.token->node->id << std::endl;
   Token* token = const_cast<Token*>(event->token);
+  systemState->tokensAwaitingReadyEvent.remove(token);
+
+  token->sequenceFlow = nullptr;
+  token->status.insert(token->status.end(), event->values.begin(), event->values.end());
+
+  commands.emplace_back(std::bind(&Token::advanceToReady,token), token);
+/*
+//std::cerr << "ReadyEvent " << event.token->node->id << std::endl;
+  Token* token = const_cast<Token*>(event->token);
 
   token->sequenceFlow = nullptr;
   token->status.insert(token->status.end(), event->values.begin(), event->values.end());
@@ -139,9 +148,10 @@ void Engine::process(const ReadyEvent* event) {
   commands.emplace_back(std::bind(&Token::advanceToReady,token), token);
 
   systemState->pendingReadyEvents.remove(token);
+*/
 }
 
-void Engine::process(const EntryEvent* event) {
+void Engine::process(const EntryDecision* event) {
 //std::cerr << "EntryEvent " << event.token->node->id << std::endl;
   Token* token = const_cast<Token*>(event->token);
   if ( token->node->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() ) {
@@ -167,10 +177,10 @@ void Engine::process(const EntryEvent* event) {
 
   commands.emplace_back(std::bind(&Token::advanceToEntered,token), token);
 
-  systemState->pendingEntryEvents.remove(token);
+  systemState->pendingEntryDecisions.remove(token);
 }
 
-void Engine::process(const ChoiceEvent* event) {
+void Engine::process(const ChoiceDecision* event) {
 //std::cerr << "ChoiceEvent " << event.token->node->id << std::endl;
   Token* token = const_cast<Token*>(event->token);
   assert( token->node );
@@ -190,10 +200,19 @@ void Engine::process(const ChoiceEvent* event) {
 
   commands.emplace_back(std::bind(&Token::advanceToCompleted,token), token);
 
-  systemState->pendingChoiceEvents.remove(token);
+  systemState->pendingChoiceDecisions.remove(token);
 }
 
 void Engine::process(const CompletionEvent* event) {
+//std::cerr << "CompletionEvent " << event.token->node->id << std::endl;
+  Token* token = const_cast<Token*>(event->token);
+  systemState->tokensAwaitingCompletionEvent.remove(token);
+  // update token status
+  if ( event->updatedStatus.has_value() ) {
+    token->status = std::move( event->updatedStatus.value() );
+  }
+
+  commands.emplace_back(std::bind(&Token::advanceToCompleted,token), token);/*
 //std::cerr << "CompletionEvent " << event.token->node->id << std::endl;
   Token* token = const_cast<Token*>(event->token);
 //  systemState->tokensAwaitingTaskCompletion.remove(token);
@@ -205,9 +224,10 @@ void Engine::process(const CompletionEvent* event) {
   commands.emplace_back(std::bind(&Token::advanceToCompleted,token), token);
 
   systemState->pendingCompletionEvents.remove(token);
+*/
 }
 
-void Engine::process(const MessageDeliveryEvent* event) {
+void Engine::process(const MessageDeliveryDecision* event) {
   Token* token = const_cast<Token*>(event->token);
   assert( token->node );
 
@@ -233,10 +253,10 @@ void Engine::process(const MessageDeliveryEvent* event) {
 
   commands.emplace_back(std::bind(&Token::advanceToCompleted,token), token);
 
-  systemState->pendingMessageDeliveryEvents.remove(token);
+  systemState->pendingMessageDeliveryDecisions.remove(token);
 }
 
-void Engine::process(const ExitEvent* event) {
+void Engine::process(const ExitDecision* event) {
 //std::cerr << "ExitEvent " << event.token->node->id << std::endl;
   Token* token = const_cast<Token*>(event->token);
 //  systemState->tokensAwaitingExit.remove(token);
@@ -260,7 +280,7 @@ void Engine::process(const ExitEvent* event) {
 
   commands.emplace_back(std::bind(&Token::advanceToExiting,token), token);
 
-  systemState->pendingExitEvents.remove(token);
+  systemState->pendingExitDecisions.remove(token);
 }
 
 void Engine::process(const ErrorEvent* event) {

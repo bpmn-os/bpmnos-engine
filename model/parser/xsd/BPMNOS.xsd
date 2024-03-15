@@ -8,7 +8,7 @@
       <xsd:element ref="attributes" minOccurs="0" maxOccurs="1"/>
       <xsd:element ref="operators" minOccurs="0" maxOccurs="1"/>
       <xsd:element ref="restrictions" minOccurs="0" maxOccurs="1"/>
-      <xsd:element ref="decisions" minOccurs="0" maxOccurs="1"/>
+      <xsd:element ref="choices" minOccurs="0" maxOccurs="1"/>
     </xsd:sequence>
   </xsd:complexType>
 
@@ -58,15 +58,15 @@
     </xsd:restriction>
   </xsd:simpleType>
 
-  <xsd:element name="decisions" type="tDecisions"/>
-  <xsd:complexType name="tDecisions">
+  <xsd:element name="choices" type="tChoices"/>
+  <xsd:complexType name="tChoices">
     <xsd:sequence>
-      <xsd:element ref="decision" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element ref="choice" minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
   </xsd:complexType>
 
-  <xsd:element name="decision" type="tDecision"/>
-  <xsd:complexType name="tDecision">
+  <xsd:element name="choice" type="tChoice"/>
+  <xsd:complexType name="tChoice">
     <xsd:attribute name="id" type="xsd:ID" use="required"/>
     <xsd:attribute name="attribute" type="xsd:string" use="required"/>
   </xsd:complexType>

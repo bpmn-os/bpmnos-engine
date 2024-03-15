@@ -12,7 +12,6 @@ namespace BPMNOS::Execution {
  * Transition from State::BUSY to State::COMPLETED
  */
 struct CompletionEvent : Event {
-  constexpr Type getObservableType() const override { return Type::CompletionEvent; };
   CompletionEvent(const Token* token,  std::optional<Values> updatedStatus = std::nullopt);
   void processBy(Engine* engine) const;
   std::optional<Values> updatedStatus;

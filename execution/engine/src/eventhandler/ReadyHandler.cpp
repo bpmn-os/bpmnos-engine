@@ -9,6 +9,21 @@ ReadyHandler::ReadyHandler()
 }
 
 std::shared_ptr<Event> ReadyHandler::dispatchEvent( const SystemState* systemState ) {
+  for ( auto& [token_ptr] : systemState->tokensAwaitingReadyEvent ) {
+    if ( auto token = token_ptr.lock() )  {
+      assert( token );
+      if ( systemState->assumedTime ) {
+        return std::make_shared<ReadyEvent>( token.get(), systemState->scenario->getAnticipatedValues(token->node, token->status, systemState->currentTime ) );
+      }
+      else {
+        auto values = systemState->scenario->getKnownValues(token->node, token->status, systemState->currentTime );
+        if ( values ) {
+          return std::make_shared<ReadyEvent>( token.get(),std::move( values.value() ) );
+        }
+      }
+    }
+  }
+/*
   for ( auto& [token_ptr, event] : systemState->pendingReadyEvents ) {
     if ( auto token = token_ptr.lock() )  {
       assert( token );
@@ -25,26 +40,6 @@ std::shared_ptr<Event> ReadyHandler::dispatchEvent( const SystemState* systemSta
       }
     }
   }
-  return nullptr;
-}
-
-/*
-std::unique_ptr<Event> ReadyHandler::fetchEvent( const SystemState* systemState ) {
-  for ( auto& [token_ptr] : systemState->tokensAwaitingReadyEvent ) {
-    if ( auto token = token_ptr.lock() )  {
-      assert( token );
-      if ( systemState->assumedTime ) {
-        auto values = systemState->scenario->getAnticipatedValues(token->node, token->status, systemState->currentTime );
-        return std::make_unique<ReadyEvent>(token.get(),values);
-      }
-      else {
-        auto values = systemState->scenario->getKnownValues(token->node, token->status, systemState->currentTime );
-        if ( values ) {
-          return std::make_unique<ReadyEvent>(token.get(),values.value());
-        }
-      }
-    }
-  }
-  return nullptr;
-}
 */
+  return nullptr;
+}

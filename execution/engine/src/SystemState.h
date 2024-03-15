@@ -8,11 +8,11 @@
 #include "model/data/src/Scenario.h"
 #include "events/ErrorEvent.h"
 #include "events/ReadyEvent.h"
-#include "events/EntryEvent.h"
-#include "events/ChoiceEvent.h"
+#include "events/EntryDecision.h"
+#include "events/ChoiceDecision.h"
 #include "events/CompletionEvent.h"
-#include "events/MessageDeliveryEvent.h"
-#include "events/ExitEvent.h"
+#include "events/MessageDeliveryDecision.h"
+#include "events/ExitDecision.h"
 #include <set>
 #include <queue>
 
@@ -70,12 +70,15 @@ public:
    */
   BPMNOS::number objective;
   
-  auto_list< std::weak_ptr<Token>, std::shared_ptr<ReadyEvent> > pendingReadyEvents;
-  auto_list< std::weak_ptr<Token>, std::shared_ptr<EntryEvent> > pendingEntryEvents;
-  auto_list< std::weak_ptr<Token>, std::shared_ptr<ChoiceEvent> > pendingChoiceEvents;
-  auto_set< BPMNOS::number, std::weak_ptr<Token>, std::shared_ptr<CompletionEvent> > pendingCompletionEvents;
-  auto_list< std::weak_ptr<Token>, std::shared_ptr<ExitEvent> > pendingExitEvents;
-  auto_list< std::weak_ptr<Token>, std::shared_ptr<MessageDeliveryEvent> > pendingMessageDeliveryEvents;
+//  auto_list< std::weak_ptr<Token>, std::shared_ptr<ReadyEvent> > pendingReadyEvents;
+  auto_list< std::weak_ptr<Token>, std::shared_ptr<EntryDecision> > pendingEntryDecisions;
+  auto_list< std::weak_ptr<Token>, std::shared_ptr<ChoiceDecision> > pendingChoiceDecisions;
+//  auto_set< BPMNOS::number, std::weak_ptr<Token>, std::shared_ptr<CompletionEvent> > pendingCompletionEvents;
+  auto_list< std::weak_ptr<Token>, std::shared_ptr<ExitDecision> > pendingExitDecisions;
+  auto_list< std::weak_ptr<Token>, std::shared_ptr<MessageDeliveryDecision> > pendingMessageDeliveryDecisions;
+
+  auto_list< std::weak_ptr<Token> > tokensAwaitingReadyEvent; ///< Container holding all tokens awaiting a ready event
+  auto_set< BPMNOS::number, std::weak_ptr<Token> > tokensAwaitingCompletionEvent; ///< Sorted container holding all tokens awaiting a task completion event
 
   /**
    * @brief Container holding instance identifier and corresponding state machine pointer for each instantiation.

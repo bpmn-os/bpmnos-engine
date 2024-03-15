@@ -9,11 +9,11 @@
 #include "events/ClockTickEvent.h"
 #include "events/ErrorEvent.h"
 #include "events/ReadyEvent.h"
-#include "events/EntryEvent.h"
-#include "events/ChoiceEvent.h"
+#include "events/EntryDecision.h"
+#include "events/ChoiceDecision.h"
 #include "events/CompletionEvent.h"
-#include "events/MessageDeliveryEvent.h"
-#include "events/ExitEvent.h"
+#include "events/MessageDeliveryDecision.h"
+#include "events/ExitDecision.h"
 #include "Notifier.h"
 #include "EventHandler.h"
 #include "SystemState.h"
@@ -43,11 +43,11 @@ public:
   void run(const BPMNOS::Model::Scenario* scenario, BPMNOS::number timeout = std::numeric_limits<BPMNOS::number>::max());
 
   void process(const ReadyEvent* event);
-  void process(const EntryEvent* event);
-  void process(const ChoiceEvent* event);
+  void process(const EntryDecision* event);
+  void process(const ChoiceDecision* event);
   void process(const CompletionEvent* event);
-  void process(const MessageDeliveryEvent* event);
-  void process(const ExitEvent* event);
+  void process(const MessageDeliveryDecision* event);
+  void process(const ExitDecision* event);
   void process(const ErrorEvent* event);
   void process([[maybe_unused]] const ClockTickEvent* event);
   void process([[maybe_unused]] const TerminationEvent* event);

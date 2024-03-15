@@ -4,6 +4,7 @@
 #include <bpmn++.h>
 #include "execution/engine/src/EventHandler.h"
 #include "execution/engine/src/Observer.h"
+#include "execution/engine/src/Decision.h"
 
 namespace BPMNOS::Execution {
 
@@ -25,8 +26,8 @@ public:
   void subscribe(Engine* engine);
   void notice(const Observable* observable) override;
 private:
-  auto_list< std::weak_ptr<const Token>, std::weak_ptr<Event> > receiveTaskEvents;
-  auto_list< std::weak_ptr<const Token>, std::weak_ptr<Event> > otherEvents;
+  auto_list< std::weak_ptr<const Token>, std::weak_ptr<Event> > messageDeliveryDecisions;
+  auto_list< std::weak_ptr<const Token>, std::weak_ptr<Event> > otherDecisions;
 };
 
 } // namespace BPMNOS::Execution

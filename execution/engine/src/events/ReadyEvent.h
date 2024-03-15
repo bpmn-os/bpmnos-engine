@@ -13,8 +13,7 @@ namespace BPMNOS::Execution {
  * Transition from State::CREATED or State::ARRIVED to State::READY
  */
 struct ReadyEvent : Event {
-  constexpr Type getObservableType() const override { return Type::ReadyEvent; };
-  ReadyEvent(const Token* token);
+  ReadyEvent(const Token* token, BPMNOS::Values values);
   void processBy(Engine* engine) const override;
   BPMNOS::Values values;
 };

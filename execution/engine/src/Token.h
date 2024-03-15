@@ -177,7 +177,7 @@ private:
   void awaitGatewayActivation(); ///< Wait for activiation of merging gateway
 
   template<typename EventType, typename... Args>
-  std::shared_ptr<EventType> createPendingEvent(Args&&... args);
+  std::shared_ptr<EventType> createDecisionRequest(Args&&... args);
     
   void withdraw(); ///< Remove token
 

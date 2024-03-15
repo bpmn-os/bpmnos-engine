@@ -11,8 +11,8 @@ namespace BPMNOS::Execution {
  *
  * This event contains a pointer to the process model and a unique instance identifier.
  */
-struct ClockTickEvent : Event {
-  constexpr Type getObservableType() const override { return Type::ClockTickEvent; };
+struct ClockTickEvent : Event, Observable {
+  constexpr Type getObservableType() const override { return Type::ClockTick; };
   ClockTickEvent();
   void processBy(Engine* engine) const override;
 };
