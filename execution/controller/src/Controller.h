@@ -15,6 +15,7 @@ namespace BPMNOS::Execution {
 class Controller : public Observer, public EventDispatcher, public Mediator {
 public:
   Controller();
+  virtual ~Controller() = default;
   virtual void connect(Mediator* mediator);
   void notice(const Observable* observable) override;
 };

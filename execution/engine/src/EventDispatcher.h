@@ -10,8 +10,9 @@ class Mediator;
 
 class EventDispatcher {
 public:
+  virtual ~EventDispatcher() = default;
   virtual std::shared_ptr<Event> dispatchEvent( [[maybe_unused]] const SystemState* systemState ) = 0;
-  void connect(Mediator* mediator);
+  virtual void connect(Mediator* mediator);
   virtual void notice([[maybe_unused]] Decision* event);
 };
 

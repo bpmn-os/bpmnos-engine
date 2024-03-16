@@ -2,6 +2,7 @@
 
 using namespace BPMNOS::Execution;
 
+
 Notifier::Notifier() {
   subscribers.resize((size_t)Observable::Type::Count);
 }

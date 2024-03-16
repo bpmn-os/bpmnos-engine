@@ -16,7 +16,7 @@ public:
   void connect(Mediator* mediator);
   std::vector< std::unique_ptr<EventDispatcher> > eventDispatchers;
 protected:
-  std::shared_ptr<Event> fetchEvent(SystemState* systemState);
+  std::shared_ptr<Event> dispatchEvent(const SystemState* systemState);
 };
 
 } // namespace BPMNOS::Execution

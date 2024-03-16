@@ -16,7 +16,7 @@ class FirstComeFirstServedSequentialEntry : public EventDispatcher, public Obser
 public:
   FirstComeFirstServedSequentialEntry();
   std::shared_ptr<Event> dispatchEvent( const SystemState* systemState ) override;
-  void connect(Mediator* mediator);
+  void connect(Mediator* mediator) override;
   void notice(const Observable* observable) override;
 
   void entryRequest(const EntryDecision* event);

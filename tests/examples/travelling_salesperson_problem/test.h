@@ -54,14 +54,45 @@ SCENARIO( "Travelling salesperson problem", "[examples][travelling_salesperson_p
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;
       Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
+      
+      readyHandler.connect(&engine);
+      completionHandler.connect(&engine);
+      
       sequentialEntryHandler.connect(&engine);
       messageHandler.connect(&engine);
-      readyHandler.connect(&engine);
       entryHandler.connect(&engine);
-      completionHandler.connect(&engine);
       exitHandler.connect(&engine);
+
       messageTaskTerminator.connect(&engine);
       timeHandler.connect(&engine);
+
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
+      recorder.subscribe(&engine);
+      engine.run(scenario.get());
+      THEN( "Then locations are visited in the nearest-neighbour order" ) {
+        auto visitLog = recorder.find(nlohmann::json{{"nodeId", "VisitLocation"},{"state", "ENTERED"}});
+        REQUIRE( visitLog[0]["status"]["location"] == "Berlin" );
+        REQUIRE( visitLog[1]["status"]["location"] == "Cologne" );
+        REQUIRE( visitLog[2]["status"]["location"] == "Munich" );
+      }
+    }
+
+    WHEN( "The engine is started with the greedy controller" ) {
+      Execution::Engine engine;
+      Execution::ReadyHandler readyHandler;
+      Execution::DeterministicTaskCompletion completionHandler;
+      readyHandler.connect(&engine);
+      completionHandler.connect(&engine);
+
+      Execution::GreedyController controller;
+      controller.connect(&engine);
+      
+      Execution::MyopicMessageTaskTerminator messageTaskTerminator;
+      Execution::TimeWarp timeHandler;
+      messageTaskTerminator.connect(&engine);
+      timeHandler.connect(&engine);
+
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
@@ -74,5 +105,4 @@ SCENARIO( "Travelling salesperson problem", "[examples][travelling_salesperson_p
       }
     }
   }
-
 }

@@ -15,9 +15,6 @@ GreedyController::GreedyController()
   eventDispatchers.push_back( std::make_unique<RandomChoice>() );
   eventDispatchers.push_back( std::make_unique<FirstMatchingMessageDelivery>() );
   eventDispatchers.push_back( std::make_unique<InstantExit>() );
-//  eventDispatchers.push_back( std::make_unique<MyopicMessageTaskTerminator>() );
-//  eventDispatchers.push_back( std::make_unique<MyopicDecisionTaskTerminator>() );
-//  eventDispatchers.push_back( std::make_unique<TimeWarp>() );
 }
 
 void GreedyController::connect(Mediator* mediator) {
@@ -27,7 +24,7 @@ void GreedyController::connect(Mediator* mediator) {
   Controller::connect(mediator);
 }
 
-std::shared_ptr<Event> GreedyController::fetchEvent(SystemState* systemState) {
+std::shared_ptr<Event> GreedyController::dispatchEvent(const SystemState* systemState) {
   std::shared_ptr<Decision> best = nullptr;
   for ( auto& eventDispatcher : eventDispatchers ) {
     if ( auto event = eventDispatcher->dispatchEvent(systemState) ) {
@@ -54,5 +51,6 @@ std::shared_ptr<Event> GreedyController::fetchEvent(SystemState* systemState) {
       }
     }
   }
+
   return best;
 }

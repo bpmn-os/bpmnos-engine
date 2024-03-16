@@ -10,6 +10,7 @@ namespace BPMNOS::Execution {
 class Notifier {
 public:
   Notifier();
+  virtual ~Notifier() = default;
   
   template<typename... ObservableTypes>
   void addSubscriber(Observer* subscriber, ObservableTypes... observableTypes)  {
