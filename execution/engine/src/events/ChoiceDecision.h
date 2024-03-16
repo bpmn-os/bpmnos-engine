@@ -13,8 +13,7 @@ namespace BPMNOS::Execution {
  * Transition from State::BUSY to State::COMPLETED
  */
 struct ChoiceDecision : Decision {
-  constexpr Type getObservableType() const override { return Type::ChoiceRequest; };
-  ChoiceDecision(const Token* token);
+  ChoiceDecision(const Token* token, Values updatedStatus);
   void processBy(Engine* engine) const;
   Values updatedStatus;
 };

@@ -3,10 +3,10 @@
 
 using namespace BPMNOS::Execution;
 
-MessageDeliveryDecision::MessageDeliveryDecision(const Token* token, const BPMNOS::Values& recipientHeader, Message* message)
+MessageDeliveryDecision::MessageDeliveryDecision(const Token* token, Message* message, const BPMNOS::Values recipientHeader)
   : Decision(token)
-  , recipientHeader(recipientHeader)
   , message(message)
+  , recipientHeader(recipientHeader)
 {
 }
 

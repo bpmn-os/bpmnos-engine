@@ -60,15 +60,16 @@ std::shared_ptr<Event> MyopicMessageTaskTerminator::dispatchEvent( [[maybe_unuse
 }
 
 void MyopicMessageTaskTerminator::notice(const Observable* observable) {
-  if ( const Decision* decision = dynamic_cast<const MessageDeliveryDecision*>(observable);
-    decision &&
-    decision->token->node->represents<const BPMN::ReceiveTask>()
+  assert( dynamic_cast<const DecisionRequest*>(observable) );
+  auto request = static_cast<const DecisionRequest*>(observable);
+  assert( request->token->node );
+  if ( observable->getObservableType() == Observable::Type::MessageDeliveryRequest &&
+    request->token->node->represents<const BPMN::ReceiveTask>()
   ) {
-    messageDeliveryDecisions.emplace_back(decision->token->weak_from_this(), const_cast<Decision*>(decision)->weak_from_this());
+    messageDeliveryDecisions.emplace_back(request->token->weak_from_this(), request->weak_from_this());
   }
   else {
-    decision = static_cast<const Decision*>(observable);
-    otherDecisions.emplace_back(decision->token->weak_from_this(), const_cast<Decision*>(decision)->weak_from_this() );
+    otherDecisions.emplace_back(request->token->weak_from_this(), request->weak_from_this() );
   }
 }
 

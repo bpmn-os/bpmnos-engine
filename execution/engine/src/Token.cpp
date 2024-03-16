@@ -1,6 +1,7 @@
 #include "Token.h"
 #include "StateMachine.h"
 #include "Engine.h"
+#include "DecisionRequest.h"
 #include "SequentialPerformerUpdate.h"
 #include "model/parser/src/extensionElements/ExtensionElements.h"
 #include "model/parser/src/extensionElements/Gatekeeper.h"
@@ -1028,15 +1029,26 @@ void Token::awaitEntryEvent() {
     systemState->tokenAtSequentialPerformer[this] = getSequentialPerfomerToken();
   }
   
+/*
   auto event = createDecisionRequest<EntryDecision>();
   systemState->pendingEntryDecisions.emplace_back( weak_from_this(), event );
+*/
+  auto decisionRequest = std::make_shared<DecisionRequest>( this, Observable::Type::EntryRequest );
+  owner->systemState->engine->notify(decisionRequest.get());
+  systemState->pendingEntryDecisions.emplace_back( weak_from_this(), decisionRequest );
 
 }
 
 void Token::awaitChoiceEvent() {
   auto systemState = const_cast<SystemState*>(owner->systemState);
+/*
   auto event = createDecisionRequest<ChoiceDecision>();
   systemState->pendingChoiceDecisions.emplace_back( weak_from_this(), event );
+*/
+  auto decisionRequest = std::make_shared<DecisionRequest>( this, Observable::Type::ChoiceRequest );
+  owner->systemState->engine->notify(decisionRequest.get());
+  systemState->pendingChoiceDecisions.emplace_back( weak_from_this(), decisionRequest );
+
 }
 
 void Token::awaitTaskCompletionEvent() {
@@ -1059,18 +1071,30 @@ void Token::awaitTaskCompletionEvent() {
 }
 
 void Token::awaitExitEvent() {
+//std::cerr << "awaitExitEvent" << std::endl;
   auto systemState = const_cast<SystemState*>(owner->systemState);
+/*
   auto event = createDecisionRequest<ExitDecision>();
   systemState->pendingExitDecisions.emplace_back( weak_from_this(), event );
+*/
+  auto decisionRequest = std::make_shared<DecisionRequest>( this, Observable::Type::ExitRequest );
+  owner->systemState->engine->notify(decisionRequest.get());
+  systemState->pendingExitDecisions.emplace_back( weak_from_this(), decisionRequest );
+
 }
 
 void Token::awaitMessageDelivery() {
 //std::cerr << "awaitMessageDelivery" << std::endl;
   auto systemState = const_cast<SystemState*>(owner->systemState);
+/*
   auto recipientHeader = node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->messageDefinitions.front()->getRecipientHeader(status);
   auto event = createDecisionRequest<MessageDeliveryDecision>(recipientHeader);
   systemState->pendingMessageDeliveryDecisions.emplace_back( weak_from_this(), event );
-//  systemState->tokensAwaitingMessageDelivery.emplace_back(weak_from_this(),recipientHeader);
+*/
+
+  auto decisionRequest = std::make_shared<DecisionRequest>( this, Observable::Type::MessageDeliveryRequest );
+  owner->systemState->engine->notify(decisionRequest.get());
+  systemState->pendingMessageDeliveryDecisions.emplace_back( weak_from_this(), decisionRequest );
 }
 
 void Token::awaitTimer(BPMNOS::number time) {

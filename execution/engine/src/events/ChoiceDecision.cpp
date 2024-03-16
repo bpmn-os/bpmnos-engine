@@ -3,8 +3,9 @@
 
 using namespace BPMNOS::Execution;
 
-ChoiceDecision::ChoiceDecision(const Token* token)
+ChoiceDecision::ChoiceDecision(const Token* token, Values updatedStatus)
   : Decision(token)
+  , updatedStatus(updatedStatus)
 {
 }
 

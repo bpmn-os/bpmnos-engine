@@ -13,7 +13,6 @@ namespace BPMNOS::Execution {
  * Transition from State::READY to State::ENTERED
  */
 struct EntryDecision : Decision {
-  constexpr Type getObservableType() const override { return Type::EntryRequest; };
   EntryDecision(const Token* token, std::optional<Values> entryStatus = std::nullopt);
   void processBy(Engine* engine) const override;
   std::optional<Values> entryStatus;

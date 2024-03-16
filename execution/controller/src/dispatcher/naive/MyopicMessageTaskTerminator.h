@@ -26,8 +26,8 @@ public:
   void connect(Mediator* mediator) override;
   void notice(const Observable* observable) override;
 private:
-  auto_list< std::weak_ptr<const Token>, std::weak_ptr<Event> > messageDeliveryDecisions;
-  auto_list< std::weak_ptr<const Token>, std::weak_ptr<Event> > otherDecisions;
+  auto_list< std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest> > messageDeliveryDecisions;
+  auto_list< std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest> > otherDecisions;
 };
 
 } // namespace BPMNOS::Execution

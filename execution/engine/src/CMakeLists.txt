@@ -27,6 +27,7 @@ list(APPEND engine_HEADERS
   Message.h
   Token.h
   SequentialPerformerUpdate.h
+  DecisionRequest.h
   Event.h
   Decision.h
   events/TerminationEvent.h

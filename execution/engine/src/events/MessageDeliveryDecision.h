@@ -14,11 +14,10 @@ namespace BPMNOS::Execution {
  * Transition from State::BUSY to State::COMPLETED
  */
 struct MessageDeliveryDecision : Decision {
-  constexpr Type getObservableType() const override { return Type::MessageDeliveryRequest; };
-  MessageDeliveryDecision(const Token* token, const BPMNOS::Values& recipientHeader, Message* message = nullptr);
+  MessageDeliveryDecision(const Token* token, Message* message, const BPMNOS::Values recipientHeader );
   void processBy(Engine* engine) const override;
-  const BPMNOS::Values recipientHeader;
   const Message* message;
+  const BPMNOS::Values recipientHeader;
 };
 
 } // namespace BPMNOS::Execution

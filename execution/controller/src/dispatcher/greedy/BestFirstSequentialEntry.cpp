@@ -24,11 +24,11 @@ std::shared_ptr<Event> BestFirstSequentialEntry::dispatchEvent( [[maybe_unused]]
       tokensAtIdlePerformers.erase(it);
     }
     else {
-      for ( auto [ cost, token_ptr, event_ptr] : it->second ) {
+      for ( auto [ cost, token_ptr, request_ptr] : it->second ) {
         if( auto token = token_ptr.lock() )  {
           assert( token );
-          if ( auto event = event_ptr.lock() )  {
-            return event;
+          if ( request_ptr.lock() )  {
+            return std::make_shared<EntryDecision>(token.get());
           }
         }
       }
@@ -39,7 +39,7 @@ std::shared_ptr<Event> BestFirstSequentialEntry::dispatchEvent( [[maybe_unused]]
 
 void BestFirstSequentialEntry::notice(const Observable* observable) {
   if ( observable->getObservableType() == Observable::Type::EntryRequest ) {
-    entryRequest(static_cast<const EntryDecision*>(observable));
+    entryRequest(static_cast<const DecisionRequest*>(observable));
   }
   else if ( observable->getObservableType() == Observable::Type::SequentialPerformerUpdate ) {
     sequentialPerformerUpdate(static_cast<const SequentialPerformerUpdate*>(observable));
@@ -49,19 +49,19 @@ void BestFirstSequentialEntry::notice(const Observable* observable) {
   }
 }
 
-void BestFirstSequentialEntry::entryRequest(const EntryDecision* event) {
-  assert(event->token->node);
-  auto token = const_cast<Token*>(event->token);
-  if ( event->token->node->parent->represents<const BPMNOS::Model::SequentialAdHocSubProcess>() ) {
+void BestFirstSequentialEntry::entryRequest(const DecisionRequest* request) {
+  assert(request->token->node);
+  auto token = const_cast<Token*>(request->token);
+  if ( request->token->node->parent->represents<const BPMNOS::Model::SequentialAdHocSubProcess>() ) {
     assert( token->owner->systemState->tokenAtSequentialPerformer.find(token) != token->owner->systemState->tokenAtSequentialPerformer.end() );
     auto tokenAtSequentialPerformer = token->owner->systemState->tokenAtSequentialPerformer.at(token);
     if ( tokenAtSequentialPerformer->performing ) {
       // skip evaluation of event
-      tokensAtBusyPerformers[tokenAtSequentialPerformer->weak_from_this()].emplace( 0, token->weak_from_this(), const_cast<EntryDecision*>(event)->weak_from_this() );
+      tokensAtBusyPerformers[tokenAtSequentialPerformer->weak_from_this()].emplace( 0, token->weak_from_this(), request->weak_from_this() );
     }
     else {
       // evaluate event
-      tokensAtIdlePerformers[tokenAtSequentialPerformer->weak_from_this()].emplace( cost(event), token->weak_from_this(), const_cast<EntryDecision*>(event)->weak_from_this() );
+      tokensAtIdlePerformers[tokenAtSequentialPerformer->weak_from_this()].emplace( cost(token), token->weak_from_this(), request->weak_from_this() );
     }
   }
 }
@@ -84,11 +84,11 @@ void BestFirstSequentialEntry::sequentialPerformerUpdate(const SequentialPerform
     if ( auto it = tokensAtBusyPerformers.find(tokenAtSequentialPerformer->weak_from_this());
       it != tokensAtBusyPerformers.end()
     ) {
-      for ( auto [_, token_ptr, event_ptr] : it->second ) {
+      for ( auto [_, token_ptr, request_ptr] : it->second ) {
         if ( auto token = token_ptr.lock() ) {
-          if ( auto event = event_ptr.lock() ) {
+          if ( auto request = request_ptr.lock() ) {
             // re-evaluate event
-            tokensAtIdlePerformers[tokenAtSequentialPerformer->weak_from_this()].emplace( cost((const EntryDecision*)event.get()), token_ptr, event_ptr );
+            tokensAtIdlePerformers[tokenAtSequentialPerformer->weak_from_this()].emplace( cost(token.get()), token_ptr, request_ptr );
           }
         }
       }
@@ -97,9 +97,9 @@ void BestFirstSequentialEntry::sequentialPerformerUpdate(const SequentialPerform
   }
 }
 
-BPMNOS::number BestFirstSequentialEntry::cost(const EntryDecision* event) {
-  auto extensionElements = event->token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
-  Values status = event->token->status;
+BPMNOS::number BestFirstSequentialEntry::cost(const Token* token) {
+  auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+  Values status = token->status;
   BPMNOS::number cost = extensionElements->getObjective(status);
   extensionElements->applyOperators(status);
   cost -= extensionElements->getObjective(status);

@@ -1,4 +1,5 @@
 #include "FirstComeFirstServedSequentialEntry.h"
+#include "execution/engine/src/events/EntryDecision.h"
 #include "execution/engine/src/Engine.h"
 #include "model/parser/src/SequentialAdHocSubProcess.h"
 #include <cassert>
@@ -24,11 +25,11 @@ std::shared_ptr<Event> FirstComeFirstServedSequentialEntry::dispatchEvent( [[may
       tokensAtIdlePerformers.erase(it);
     }
     else {
-      for ( auto& [token_ptr, event_ptr] : it->second ) {
+      for ( auto& [token_ptr, request_ptr] : it->second ) {
         if( auto token = token_ptr.lock() )  {
           assert( token );
-          if ( auto event = event_ptr.lock() )  {
-            return event;
+          if ( request_ptr.lock() )  {
+            return std::make_shared<EntryDecision>(token.get());
           }
         }
       }
@@ -39,7 +40,7 @@ std::shared_ptr<Event> FirstComeFirstServedSequentialEntry::dispatchEvent( [[may
 
 void FirstComeFirstServedSequentialEntry::notice(const Observable* observable) {
   if ( observable->getObservableType() == Observable::Type::EntryRequest ) {
-    entryRequest(static_cast<const EntryDecision*>(observable));
+    entryRequest(static_cast<const DecisionRequest*>(observable));
   }
   else if ( observable->getObservableType() == Observable::Type::SequentialPerformerUpdate ) {
     sequentialPerformerUpdate(static_cast<const SequentialPerformerUpdate*>(observable));
@@ -49,17 +50,17 @@ void FirstComeFirstServedSequentialEntry::notice(const Observable* observable) {
   }
 }
 
-void FirstComeFirstServedSequentialEntry::entryRequest(const EntryDecision* event) {
-  assert(event->token->node);
-  auto token = const_cast<Token*>(event->token);
-  if ( event->token->node->parent->represents<const BPMNOS::Model::SequentialAdHocSubProcess>() ) {
+void FirstComeFirstServedSequentialEntry::entryRequest(const DecisionRequest* request) {
+  assert(request->token->node);
+  auto token = const_cast<Token*>(request->token);
+  if ( request->token->node->parent->represents<const BPMNOS::Model::SequentialAdHocSubProcess>() ) {
     assert( token->owner->systemState->tokenAtSequentialPerformer.find(token) != token->owner->systemState->tokenAtSequentialPerformer.end() );
     auto tokenAtSequentialPerformer = token->owner->systemState->tokenAtSequentialPerformer.at(token);
     if ( tokenAtSequentialPerformer->performing ) {
-      tokensAtBusyPerformers[tokenAtSequentialPerformer->weak_from_this()].emplace_back( token->weak_from_this(), const_cast<EntryDecision*>(event)->weak_from_this() );
+      tokensAtBusyPerformers[tokenAtSequentialPerformer->weak_from_this()].emplace_back( token->weak_from_this(), request->weak_from_this() );
     }
     else {
-      tokensAtIdlePerformers[tokenAtSequentialPerformer->weak_from_this()].emplace_back( token->weak_from_this(), const_cast<EntryDecision*>(event)->weak_from_this() );
+      tokensAtIdlePerformers[tokenAtSequentialPerformer->weak_from_this()].emplace_back( token->weak_from_this(), request->weak_from_this() );
     }
   }
 }

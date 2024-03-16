@@ -139,7 +139,7 @@ void Engine::process(const ReadyEvent* event) {
 }
 
 void Engine::process(const EntryDecision* event) {
-//std::cerr << "EntryEvent " << event.token->node->id << std::endl;
+//std::cerr << systemState->pendingEntryDecisions.empty() << "EntryEvent " << event->token->jsonify().dump() << std::endl;
   Token* token = const_cast<Token*>(event->token);
   if ( token->node->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() ) {
     auto tokenAtSequentialPerformer = systemState->tokenAtSequentialPerformer.at(token);
@@ -164,6 +164,7 @@ void Engine::process(const EntryDecision* event) {
 
   commands.emplace_back(std::bind(&Token::advanceToEntered,token), token);
 
+  std::weak_ptr<const DecisionRequest> wptr;
   systemState->pendingEntryDecisions.remove(token);
 }
 
@@ -244,7 +245,7 @@ void Engine::process(const MessageDeliveryDecision* event) {
 }
 
 void Engine::process(const ExitDecision* event) {
-//std::cerr << "ExitEvent " << event.token->node->id << std::endl;
+//std::cerr << "ExitEvent: " << event->token->jsonify().dump() << std::endl;
   Token* token = const_cast<Token*>(event->token);
 //  systemState->tokensAwaitingExit.remove(token);
 

@@ -2,6 +2,7 @@
 #define BPMNOS_Execution_SystemState_H
 
 #include "StateMachine.h"
+#include "DecisionRequest.h"
 #include "execution/engine/src/Message.h"
 #include "execution/utility/src/auto_list.h"
 #include "execution/utility/src/auto_set.h"
@@ -70,13 +71,17 @@ public:
    */
   BPMNOS::number objective;
   
-//  auto_list< std::weak_ptr<Token>, std::shared_ptr<ReadyEvent> > pendingReadyEvents;
+  auto_list< std::weak_ptr<Token>, std::shared_ptr<DecisionRequest> > pendingEntryDecisions;
+  auto_list< std::weak_ptr<Token>, std::shared_ptr<DecisionRequest> > pendingChoiceDecisions;
+  auto_list< std::weak_ptr<Token>, std::shared_ptr<DecisionRequest> > pendingExitDecisions;
+  auto_list< std::weak_ptr<Token>, std::shared_ptr<DecisionRequest> > pendingMessageDeliveryDecisions;
+
+/*
   auto_list< std::weak_ptr<Token>, std::shared_ptr<EntryDecision> > pendingEntryDecisions;
   auto_list< std::weak_ptr<Token>, std::shared_ptr<ChoiceDecision> > pendingChoiceDecisions;
-//  auto_set< BPMNOS::number, std::weak_ptr<Token>, std::shared_ptr<CompletionEvent> > pendingCompletionEvents;
   auto_list< std::weak_ptr<Token>, std::shared_ptr<ExitDecision> > pendingExitDecisions;
   auto_list< std::weak_ptr<Token>, std::shared_ptr<MessageDeliveryDecision> > pendingMessageDeliveryDecisions;
-
+*/
   auto_list< std::weak_ptr<Token> > tokensAwaitingReadyEvent; ///< Container holding all tokens awaiting a ready event
   auto_set< BPMNOS::number, std::weak_ptr<Token> > tokensAwaitingCompletionEvent; ///< Sorted container holding all tokens awaiting a task completion event
 

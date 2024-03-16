@@ -19,11 +19,11 @@ public:
   void connect(Mediator* mediator) override;
   void notice(const Observable* observable) override;
 
-  void entryRequest(const EntryDecision* event);
+  void entryRequest(const DecisionRequest* request);
   void sequentialPerformerUpdate(const SequentialPerformerUpdate* update);
 private:
-  std::map< std::weak_ptr<const Token>, auto_list< std::weak_ptr<const Token>, std::weak_ptr<Event> >, std::owner_less<> > tokensAtIdlePerformers;
-  std::map< std::weak_ptr<const Token>, auto_list< std::weak_ptr<const Token>, std::weak_ptr<Event> >, std::owner_less<> > tokensAtBusyPerformers;
+  std::map< std::weak_ptr<const Token>, auto_list< std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest> >, std::owner_less<> > tokensAtIdlePerformers;
+  std::map< std::weak_ptr<const Token>, auto_list< std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest> >, std::owner_less<> > tokensAtBusyPerformers;
 };
 
 } // namespace BPMNOS::Execution
