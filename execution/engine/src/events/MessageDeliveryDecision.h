@@ -14,10 +14,9 @@ namespace BPMNOS::Execution {
  * Transition from State::BUSY to State::COMPLETED
  */
 struct MessageDeliveryDecision : Decision {
-  MessageDeliveryDecision(const Token* token, Message* message, const BPMNOS::Values recipientHeader );
+  MessageDeliveryDecision(const Token* token, Message* message);
   void processBy(Engine* engine) const override;
   const Message* message;
-  const BPMNOS::Values recipientHeader;
 };
 
 } // namespace BPMNOS::Execution

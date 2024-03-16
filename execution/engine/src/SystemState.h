@@ -76,12 +76,6 @@ public:
   auto_list< std::weak_ptr<Token>, std::shared_ptr<DecisionRequest> > pendingExitDecisions;
   auto_list< std::weak_ptr<Token>, std::shared_ptr<DecisionRequest> > pendingMessageDeliveryDecisions;
 
-/*
-  auto_list< std::weak_ptr<Token>, std::shared_ptr<EntryDecision> > pendingEntryDecisions;
-  auto_list< std::weak_ptr<Token>, std::shared_ptr<ChoiceDecision> > pendingChoiceDecisions;
-  auto_list< std::weak_ptr<Token>, std::shared_ptr<ExitDecision> > pendingExitDecisions;
-  auto_list< std::weak_ptr<Token>, std::shared_ptr<MessageDeliveryDecision> > pendingMessageDeliveryDecisions;
-*/
   auto_list< std::weak_ptr<Token> > tokensAwaitingReadyEvent; ///< Container holding all tokens awaiting a ready event
   auto_set< BPMNOS::number, std::weak_ptr<Token> > tokensAwaitingCompletionEvent; ///< Sorted container holding all tokens awaiting a task completion event
 

@@ -33,7 +33,7 @@ std::shared_ptr<Event> FirstMatchingMessageDelivery::dispatchEvent( const System
             for ( auto& [message_ptr] : it->second ) {
               auto message = message_ptr.lock();
               if ( message && message->matches(recipientHeader) ) {
-                return std::make_unique<MessageDeliveryDecision>(token.get(), message.get(), recipientHeader);
+                return std::make_unique<MessageDeliveryDecision>(token.get(), message.get());
               }
             }
           }
