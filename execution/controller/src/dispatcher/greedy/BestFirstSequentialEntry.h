@@ -14,7 +14,7 @@ namespace BPMNOS::Execution {
  */
 class BestFirstSequentialEntry : public EventDispatcher, public Observer {
 public:
-  BestFirstSequentialEntry();
+  BestFirstSequentialEntry( std::function<std::optional<double>(Decision* decision)> evaluator = &EntryDecision::localEvaluator);
   std::shared_ptr<Event> dispatchEvent( const SystemState* systemState ) override;
   void connect(Mediator* mediator) override;
   void notice(const Observable* observable) override;
@@ -22,9 +22,9 @@ public:
   void entryRequest(const DecisionRequest* request);
   void sequentialPerformerUpdate(const SequentialPerformerUpdate* update);
 private:
-  std::map< std::weak_ptr<const Token>, auto_set< BPMNOS::number, std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest> >, std::owner_less<> > tokensAtIdlePerformers;
-  std::map< std::weak_ptr<const Token>, auto_set< BPMNOS::number, std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest> >, std::owner_less<> > tokensAtBusyPerformers;
-  BPMNOS::number cost(const Token* token);
+  std::function< std::optional<double>(Decision* decision) > evaluator;
+  std::map< std::weak_ptr<const Token>, auto_set< double, std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest>, std::shared_ptr<EntryDecision> >, std::owner_less<> > tokensAtIdlePerformers;
+  std::map< std::weak_ptr<const Token>, auto_set< double, std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest>, std::shared_ptr<EntryDecision> >, std::owner_less<> > tokensAtBusyPerformers;
 };
 
 } // namespace BPMNOS::Execution

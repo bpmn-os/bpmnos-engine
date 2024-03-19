@@ -11,7 +11,7 @@ GreedyController::GreedyController()
 {
   // add event dispatcher
   eventDispatchers.push_back( std::make_unique<InstantEntry>() );
-  eventDispatchers.push_back( std::make_unique<BestFirstSequentialEntry>() );
+  eventDispatchers.push_back( std::make_unique<BestFirstSequentialEntry>(&EntryDecision::localEvaluator) );
   eventDispatchers.push_back( std::make_unique<RandomChoice>() );
   eventDispatchers.push_back( std::make_unique<FirstMatchingMessageDelivery>() );
   eventDispatchers.push_back( std::make_unique<InstantExit>() );
