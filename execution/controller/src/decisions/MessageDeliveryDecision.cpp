@@ -17,17 +17,19 @@ std::optional<double> MessageDeliveryDecision::evaluate() {
 }
 
 std::optional<double> MessageDeliveryDecision::localEvaluator(Event* event) {
-  assert( event->token->ready() );
+  assert( event->token->busy() );
   assert( dynamic_cast<MessageDeliveryEvent*>(event) );
-/*
+
   auto extensionElements = event->token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
-  double cost = (double)extensionElements->getObjective(event->token->status);
-  Values status = static_cast<MessageDeliveryEvent*>(event)->updatedStatus;
+  Values status = event->token->status;
+  double cost = (double)extensionElements->getObjective(status);
+
+  auto message = dynamic_cast<MessageDeliveryEvent*>(event)->message;
+  message->apply(event->token->node,status);
+  
   extensionElements->applyOperators(status);
   cost -= (double)extensionElements->getObjective(status);
   return cost;
-*/
-  return 0;
 }
 
 std::optional<double> MessageDeliveryDecision::guidedEvaluator(Event* event) {

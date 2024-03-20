@@ -14,12 +14,14 @@ namespace BPMNOS::Execution {
  */
 class BestMatchingMessageDelivery : public EventDispatcher, public Observer {
 public:
-  BestMatchingMessageDelivery();
+  BestMatchingMessageDelivery( std::function<std::optional<double>(Event* event)> evaluator = &MessageDeliveryDecision::localEvaluator);
   std::shared_ptr<Event> dispatchEvent( const SystemState* systemState ) override;
   void connect(Mediator* mediator) override;
   void notice(const Observable* observable) override;
 private:
-  auto_list< std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest>, auto_set< double, std::weak_ptr<const Message>, std::shared_ptr<MessageDeliveryDecision> >, const BPMNOS::Values > messageDeliveryRequests;
+  std::function< std::optional<double>(Event* event) > evaluator;
+  auto_set< double, std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest>, std::weak_ptr<const Message>, std::shared_ptr<MessageDeliveryDecision> > decisions;
+  auto_list< std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest>, const BPMNOS::Values > requests;
   auto_list< std::weak_ptr<const Message> > messages;
 };
 

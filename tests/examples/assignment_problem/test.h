@@ -76,9 +76,54 @@ SCENARIO( "Assignment problem", "[examples][assignment_problem]" ) {
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
       engine.run(scenario.get());
+      THEN( "Then the messages are delivered in the first come first served order" ) {
+        REQUIRE( recorder.find(nlohmann::json{{"nodeId", "SendRequestTask"},{"state", "COMPLETED"}}).size() == 3 );
+        REQUIRE( recorder.find(nlohmann::json{{"nodeId", "ReceiveRequestTask"},{"state", "COMPLETED"}}).size() == 3 );
+        
+        auto assignmentLog = recorder.find(nlohmann::json{{"nodeId", "ReceiveRequestTask"},{"state", "COMPLETED"}});
+        REQUIRE( assignmentLog[0]["status"]["instance"] == "Server1" );
+        REQUIRE( assignmentLog[0]["status"]["client"] == "Client1" );
+
+        REQUIRE( assignmentLog[1]["status"]["instance"] == "Server2" );
+        REQUIRE( assignmentLog[1]["status"]["client"] == "Client2" );
+
+        REQUIRE( assignmentLog[2]["status"]["instance"] == "Server3" );
+        REQUIRE( assignmentLog[2]["status"]["client"] == "Client3" );
+      }
+    }
+
+    WHEN( "The engine is started with the greedy controller" ) {
+      Execution::Engine engine;
+      Execution::ReadyHandler readyHandler;
+      Execution::DeterministicTaskCompletion completionHandler;
+      readyHandler.connect(&engine);
+      completionHandler.connect(&engine);
+
+      Execution::GreedyController controller;
+      controller.connect(&engine);
+      
+      Execution::MyopicMessageTaskTerminator messageTaskTerminator;
+      Execution::TimeWarp timeHandler;
+      messageTaskTerminator.connect(&engine);
+      timeHandler.connect(&engine);
+
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
+      recorder.subscribe(&engine);
+      engine.run(scenario.get());
       THEN( "Then the messages are delivered" ) {
         REQUIRE( recorder.find(nlohmann::json{{"nodeId", "SendRequestTask"},{"state", "COMPLETED"}}).size() == 3 );
         REQUIRE( recorder.find(nlohmann::json{{"nodeId", "ReceiveRequestTask"},{"state", "COMPLETED"}}).size() == 3 );
+
+        auto assignmentLog = recorder.find(nlohmann::json{{"nodeId", "ReceiveRequestTask"},{"state", "COMPLETED"}});
+        REQUIRE( assignmentLog[0]["status"]["instance"] == "Server2" );
+        REQUIRE( assignmentLog[0]["status"]["client"] == "Client3" );
+
+        REQUIRE( assignmentLog[1]["status"]["instance"] == "Server1" );
+        REQUIRE( assignmentLog[1]["status"]["client"] == "Client2" );
+
+        REQUIRE( assignmentLog[2]["status"]["instance"] == "Server3" );
+        REQUIRE( assignmentLog[2]["status"]["client"] == "Client1" );
       }
     }
   }

@@ -222,7 +222,7 @@ void Engine::process(const MessageDeliveryEvent* event) {
   Message* message = const_cast<Message*>(event->message);
 
   // update token status 
-  message->update(token);
+  message->apply(token->node,token->status);
   
   message->state = Message::State::DELIVERED;
   notify(message);

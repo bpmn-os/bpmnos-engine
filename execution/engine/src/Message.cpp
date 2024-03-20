@@ -93,10 +93,10 @@ nlohmann::ordered_json Message::jsonify() const {
 }
 
 
-void Message::update(Token* token) const {
+void Message::apply(const BPMN::FlowNode* node, BPMNOS::Values& status) const {
   size_t index = 0;
 
-  if ( auto receiveTask = token->node->represents<BPMN::ReceiveTask>();
+  if ( auto receiveTask = node->represents<BPMN::ReceiveTask>();
     receiveTask &&
     receiveTask->loopCharacteristics.has_value()
   ) {
@@ -108,17 +108,17 @@ void Message::update(Token* token) const {
       throw std::runtime_error("Message: receive tasks with loop characteristics requires attribute holding loop index");
     }
     size_t attributeIndex = extensionElements->loopIndex->get()->attribute.value().get().index;
-    if ( !token->status[attributeIndex].has_value() ) { 
+    if ( !status[attributeIndex].has_value() ) { 
       throw std::runtime_error("Message: cannot find loop index for receive tasks with loop characteristics");
     }
-    index = (size_t)(int)token->status[index].value();
+    index = (size_t)(int)status[index].value();
   }
   
-  if ( index >= token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->messageDefinitions.size() ) {
-    throw std::runtime_error("Message: no message with index " + std::to_string(index) + " provided for '" +  token->node->id + "'" );
+  if ( index >= node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->messageDefinitions.size() ) {
+    throw std::runtime_error("Message: no message with index " + std::to_string(index) + " provided for '" +  node->id + "'" );
   }
 
-  auto& targetContentDefinition = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->messageDefinitions[index]->contentMap;
+  auto& targetContentDefinition = node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->messageDefinitions[index]->contentMap;
 
   size_t counter = 0;
   for (auto& [key,contentValue] : contentValueMap) {
@@ -128,22 +128,22 @@ void Message::update(Token* token) const {
         throw std::runtime_error("Message: cannot receive content without attribute");
       }
       auto& attribute = definition->attribute->get();
-//std::cerr << "Attribute: " << attribute.name << "/" << attribute.index << "/" << token->jsonify().dump() <<std::endl;
+//std::cerr << "Attribute: " << attribute.name << "/" << attribute.index << std::endl;
       if ( std::holds_alternative< std::optional<number> >(contentValue) && std::get< std::optional<number> >(contentValue).has_value() ) {
         // use attribute value sent in message
-        token->status[attribute.index] = std::get< std::optional<number> >(contentValue).value();
+        status[attribute.index] = std::get< std::optional<number> >(contentValue).value();
       }
       else if (std::holds_alternative<std::string>(contentValue)) {
         // use default value of sender
         Value value = std::get< std::string >(contentValue);
-        token->status[attribute.index] = BPMNOS::to_number(value,attribute.type);
+        status[attribute.index] = BPMNOS::to_number(value,attribute.type);
       }
       else if ( definition->value.has_value() ) {
         // use default value or recipient
-        token->status[attribute.index] = BPMNOS::to_number(definition->value.value(),attribute.type);
+        status[attribute.index] = BPMNOS::to_number(definition->value.value(),attribute.type);
       }
       else {
-        token->status[attribute.index] = std::nullopt;
+        status[attribute.index] = std::nullopt;
       }
     }
     else {
@@ -164,13 +164,12 @@ void Message::update(Token* token) const {
 
         if ( definition->value.has_value() ) {
           // use default value or recipient
-          token->status[attribute.index] = BPMNOS::to_number(definition->value.value(),attribute.type);
+          status[attribute.index] = BPMNOS::to_number(definition->value.value(),attribute.type);
         }
         else {
-          token->status[attribute.index] = std::nullopt;
+          status[attribute.index] = std::nullopt;
         }
       }
     }
   }
 }
-

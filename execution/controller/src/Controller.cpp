@@ -12,7 +12,8 @@ void Controller::connect(Mediator* mediator) {
     Observable::Type::ChoiceRequest,
     Observable::Type::ExitRequest,
     Observable::Type::MessageDeliveryRequest,
-    Observable::Type::SequentialPerformerUpdate 
+    Observable::Type::SequentialPerformerUpdate,
+    Observable::Type::Message
   );
   EventDispatcher::connect(mediator);
 }
