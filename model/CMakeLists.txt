@@ -63,9 +63,6 @@ foreach(HEADER ${model_utility_HEADERS} ${bpmn_HEADERS} ${data_HEADERS})
   file(APPEND "${SINGLE_HEADER_PATH}" "${HEADER_CONTENTS}")
 endforeach()
 
-# Set the C++ standard
-set(CMAKE_CXX_STANDARD 20)
-
 add_library(${PROJECT_NAME} STATIC ${model_utility_SOURCES} ${bpmn_SOURCES} ${data_SOURCES})
 
 # Delete xml directory when running `make clean`

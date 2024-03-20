@@ -11,6 +11,9 @@ endif()
 
 include_directories("${PROJECT_SOURCE_DIR}/")
 
+# Set the C++ standard
+set(CMAKE_CXX_STANDARD 23)
+
 include(FetchContent)
 set(FETCHCONTENT_QUIET FALSE)
 
@@ -86,7 +89,6 @@ include_directories(
 
 add_subdirectory(model)
 add_subdirectory(execution)
-#add_subdirectory(controller)
 add_subdirectory(tests)
 
 # Generate the documentation

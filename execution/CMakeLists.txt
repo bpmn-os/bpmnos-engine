@@ -47,9 +47,6 @@ foreach(HEADER ${execution_utility_HEADERS} ${engine_HEADERS} ${observer_HEADERS
   file(APPEND "${SINGLE_HEADER_PATH}" "${HEADER_CONTENTS}")
 endforeach()
 
-# Set the C++ standard
-set(CMAKE_CXX_STANDARD 20)
-
 add_library(${PROJECT_NAME} STATIC ${execution_utility_SOURCES} ${engine_SOURCES} ${observer_SOURCES} ${controller_SOURCES})
 
 if (DEBUG)
