@@ -24,7 +24,7 @@ void BestMatchingMessageDelivery::notice(const Observable* observable) {
     assert(request->token->node);
     auto recipientHeader = request->token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->messageDefinitions.front()->getRecipientHeader(request->token->status);
     auto senderCandidates = request->token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->messageCandidates;
-    auto_list< std::weak_ptr<const Message>, std::shared_ptr<MessageDeliveryDecision> > candidates;
+    auto_set< double, std::weak_ptr<const Message>, std::shared_ptr<MessageDeliveryDecision> > candidates;
     // determine candidate messages
     for ( auto& [ message_ptr ] : messages ) {
       if( auto message = message_ptr.lock();
@@ -32,7 +32,8 @@ void BestMatchingMessageDelivery::notice(const Observable* observable) {
         std::ranges::contains(senderCandidates, message->origin) &&
         message->matches(recipientHeader)
       ) {
-        candidates.emplace_back( message->weak_from_this(), std::make_unique<MessageDeliveryDecision>(request->token, message.get()) );
+        auto decision = std::make_shared<MessageDeliveryDecision>(request->token, message.get());
+        candidates.emplace( decision->evaluation.value_or( std::numeric_limits<double>::max() ), message->weak_from_this(), decision );
       }
     }
     messageDeliveryRequests.emplace_back(request->token->weak_from_this(), request->weak_from_this(), candidates, recipientHeader);
@@ -49,7 +50,8 @@ void BestMatchingMessageDelivery::notice(const Observable* observable) {
           std::ranges::contains(recipientCandidates, token->node) &&
           message->matches(recipientHeader)
         ) {
-          candidates.emplace_back( message->weak_from_this(), std::make_unique<MessageDeliveryDecision>(token.get(), message) );
+          auto decision = std::make_shared<MessageDeliveryDecision>(token.get(), message);
+          candidates.emplace( decision->evaluation.value_or( std::numeric_limits<double>::max() ), message->weak_from_this(), decision );
         }
       }
     }
@@ -63,7 +65,7 @@ std::shared_ptr<Event> BestMatchingMessageDelivery::dispatchEvent( [[maybe_unuse
   for ( auto& [token_ptr, request_ptr, candidates, recipientHeader ] : messageDeliveryRequests ) {
     if( auto token = token_ptr.lock() )  {
       if ( request_ptr.lock() )  {
-        for ( auto& [message_ptr, decision] : candidates ) {
+        for ( auto [_, message_ptr, decision] : candidates ) {
           if ( auto message = message_ptr.lock() ) {
             return decision;
           }

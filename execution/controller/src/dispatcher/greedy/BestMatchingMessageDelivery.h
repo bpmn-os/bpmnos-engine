@@ -19,7 +19,7 @@ public:
   void connect(Mediator* mediator) override;
   void notice(const Observable* observable) override;
 private:
-  auto_list< std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest>, auto_list< std::weak_ptr<const Message>, std::shared_ptr<MessageDeliveryDecision> >, const BPMNOS::Values > messageDeliveryRequests;
+  auto_list< std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest>, auto_set< double, std::weak_ptr<const Message>, std::shared_ptr<MessageDeliveryDecision> >, const BPMNOS::Values > messageDeliveryRequests;
   auto_list< std::weak_ptr<const Message> > messages;
 };
 
