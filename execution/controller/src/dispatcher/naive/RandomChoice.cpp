@@ -55,7 +55,7 @@ std::shared_ptr<Event> RandomChoice::dispatchEvent( const SystemState* systemSta
       }
 //      event->updatedStatus = std::move(updatedStatus);
 //      return event;
-      return std::make_unique<ChoiceDecision>(token.get(), std::move(updatedStatus));
+      return std::make_shared<ChoiceDecision>(token.get(), std::move(updatedStatus));
     }
   }
   return nullptr;

@@ -65,7 +65,7 @@ std::shared_ptr<Event> FirstMatchingMessageDelivery::dispatchEvent( [[maybe_unus
       if ( request_ptr.lock() )  {
         for ( auto& [message_ptr] : candidates ) {
           if ( auto message = message_ptr.lock() ) {
-            return std::make_unique<MessageDeliveryDecision>(token.get(), message.get());
+            return std::make_shared<MessageDeliveryDecision>(token.get(), message.get());
           }
         }
       }
