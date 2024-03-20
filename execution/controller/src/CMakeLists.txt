@@ -16,6 +16,7 @@ list(APPEND controller_SOURCES
   dispatcher/naive/MyopicDecisionTaskTerminator.cpp
   dispatcher/naive/MyopicMessageTaskTerminator.cpp
   dispatcher/greedy/BestFirstSequentialEntry.cpp
+  dispatcher/greedy/BestMatchingMessageDelivery.cpp
   Controller.cpp
   GreedyController.cpp
 )
@@ -38,6 +39,7 @@ list(APPEND controller_HEADERS
   dispatcher/naive/MyopicDecisionTaskTerminator.h
   dispatcher/naive/MyopicMessageTaskTerminator.h
   dispatcher/greedy/BestFirstSequentialEntry.h
+  dispatcher/greedy/BestMatchingMessageDelivery.h
   Controller.h
   GreedyController.h
 )
