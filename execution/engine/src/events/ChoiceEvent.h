@@ -1,9 +1,9 @@
-#ifndef BPMNOS_Execution_ChoiceDecision_H
-#define BPMNOS_Execution_ChoiceDecision_H
+#ifndef BPMNOS_Execution_ChoiceEvent_H
+#define BPMNOS_Execution_ChoiceEvent_H
 
 #include <bpmn++.h>
 #include "model/utility/src/Number.h"
-#include "execution/engine/src/Decision.h"
+#include "execution/engine/src/Event.h"
 
 namespace BPMNOS::Execution {
 
@@ -12,12 +12,12 @@ namespace BPMNOS::Execution {
  *
  * Transition from State::BUSY to State::COMPLETED
  */
-struct ChoiceDecision : Decision {
-  ChoiceDecision(const Token* token, Values updatedStatus);
+struct ChoiceEvent : virtual Event {
+  ChoiceEvent(const Token* token, Values updatedStatus);
   void processBy(Engine* engine) const;
   Values updatedStatus;
 };
 
 } // namespace BPMNOS::Execution
 
-#endif // BPMNOS_Execution_ChoiceDecision_H
+#endif // BPMNOS_Execution_ChoiceEvent_H

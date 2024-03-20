@@ -81,10 +81,12 @@ Token::~Token() {
       if ( activity->represents<BPMN::SendTask>() ) {
         auto it = systemState->messageAwaitingDelivery.find(this);
         if ( it != systemState->messageAwaitingDelivery.end() ) {
-          auto message_ptr = it->second.lock();
-          if ( message_ptr ) {
+          auto message = it->second.lock();
+          if ( message ) {
             // withdraw message
-            erase_ptr<Message>(systemState->messages, message_ptr.get());
+            message->state = Message::State::WITHDRAWN;
+            owner->systemState->engine->notify(message.get());            
+            erase_ptr<Message>(systemState->messages, message.get());
           }
           systemState->messageAwaitingDelivery.erase(it);
         }
@@ -1035,7 +1037,7 @@ void Token::awaitEntryEvent() {
 */
   auto decisionRequest = std::make_shared<DecisionRequest>( this, Observable::Type::EntryRequest );
   owner->systemState->engine->notify(decisionRequest.get());
-  systemState->pendingEntryDecisions.emplace_back( weak_from_this(), decisionRequest );
+  systemState->pendingEntryEvents.emplace_back( weak_from_this(), decisionRequest );
 
 }
 
@@ -1047,7 +1049,7 @@ void Token::awaitChoiceEvent() {
 */
   auto decisionRequest = std::make_shared<DecisionRequest>( this, Observable::Type::ChoiceRequest );
   owner->systemState->engine->notify(decisionRequest.get());
-  systemState->pendingChoiceDecisions.emplace_back( weak_from_this(), decisionRequest );
+  systemState->pendingChoiceEvents.emplace_back( weak_from_this(), decisionRequest );
 
 }
 
@@ -1079,7 +1081,7 @@ void Token::awaitExitEvent() {
 */
   auto decisionRequest = std::make_shared<DecisionRequest>( this, Observable::Type::ExitRequest );
   owner->systemState->engine->notify(decisionRequest.get());
-  systemState->pendingExitDecisions.emplace_back( weak_from_this(), decisionRequest );
+  systemState->pendingExitEvents.emplace_back( weak_from_this(), decisionRequest );
 
 }
 
@@ -1094,7 +1096,7 @@ void Token::awaitMessageDelivery() {
 
   auto decisionRequest = std::make_shared<DecisionRequest>( this, Observable::Type::MessageDeliveryRequest );
   owner->systemState->engine->notify(decisionRequest.get());
-  systemState->pendingMessageDeliveryDecisions.emplace_back( weak_from_this(), decisionRequest );
+  systemState->pendingMessageDeliveryEvents.emplace_back( weak_from_this(), decisionRequest );
 }
 
 void Token::awaitTimer(BPMNOS::number time) {
@@ -1160,6 +1162,10 @@ void Token::sendMessage(size_t index) {
   if ( node->represents<BPMN::SendTask>() ) {
     systemState->messageAwaitingDelivery[this] = message->weak_from_this();
   }
+  
+  // message->state = Message::State::CREATED;
+  owner->systemState->engine->notify(message.get());
+
 } 
 
 Token* Token::getSequentialPerfomerToken() const {

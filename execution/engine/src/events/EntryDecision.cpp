@@ -4,19 +4,9 @@
 using namespace BPMNOS::Execution;
 
 EntryDecision::EntryDecision(const Token* token, std::function<std::optional<double>(Decision* decision)> evaluator)
-  : Decision(token, evaluator)
+  : EntryEvent(token), Decision(evaluator)
 {
   evaluate();
-}
-
-EntryDecision::EntryDecision(const Token* token, Values entryStatus)
-  : Decision(token)
-  , entryStatus(entryStatus)
-{
-}
-
-void EntryDecision::processBy(Engine* engine) const {
-  engine->process(this);
 }
 
 std::optional<double> EntryDecision::localEvaluator(Decision* decision) {

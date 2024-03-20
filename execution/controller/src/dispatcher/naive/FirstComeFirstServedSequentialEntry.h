@@ -4,7 +4,6 @@
 #include <bpmn++.h>
 #include "execution/engine/src/EventDispatcher.h"
 #include "execution/engine/src/Observer.h"
-#include "execution/engine/src/events/EntryDecision.h"
 #include "execution/engine/src/SequentialPerformerUpdate.h"
 
 namespace BPMNOS::Execution {

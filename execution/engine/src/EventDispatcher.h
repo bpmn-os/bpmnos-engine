@@ -1,7 +1,7 @@
 #ifndef BPMNOS_Execution_EventDispatcher_H
 #define BPMNOS_Execution_EventDispatcher_H
 
-#include "Decision.h"
+#include "Event.h"
 #include "SystemState.h"
 
 namespace BPMNOS::Execution {
@@ -13,7 +13,7 @@ public:
   virtual ~EventDispatcher() = default;
   virtual std::shared_ptr<Event> dispatchEvent( [[maybe_unused]] const SystemState* systemState ) = 0;
   virtual void connect(Mediator* mediator);
-  virtual void notice([[maybe_unused]] Decision* event);
+  virtual void notice([[maybe_unused]] Event* event);
 };
 
 } // namespace BPMNOS::Execution

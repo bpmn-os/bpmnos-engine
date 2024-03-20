@@ -3,16 +3,15 @@ list(APPEND engine_SOURCES
   Message.cpp
   Token.cpp
   Event.cpp
-  Decision.cpp
   events/TerminationEvent.cpp
   events/ClockTickEvent.cpp
   events/ErrorEvent.cpp
   events/ReadyEvent.cpp
-  events/EntryDecision.cpp
-  events/ChoiceDecision.cpp
+  events/EntryEvent.cpp
+  events/ChoiceEvent.cpp
   events/CompletionEvent.cpp
-  events/MessageDeliveryDecision.cpp
-  events/ExitDecision.cpp
+  events/MessageDeliveryEvent.cpp
+  events/ExitEvent.cpp
   StateMachine.cpp
   SystemState.cpp
   EventDispatcher.cpp
@@ -29,16 +28,15 @@ list(APPEND engine_HEADERS
   SequentialPerformerUpdate.h
   DecisionRequest.h
   Event.h
-  Decision.h
   events/TerminationEvent.h
   events/ClockTickEvent.h
   events/ErrorEvent.h
   events/ReadyEvent.h
-  events/EntryDecision.h
-  events/ChoiceDecision.h
+  events/EntryEvent.h
+  events/ChoiceEvent.h
   events/CompletionEvent.h
-  events/MessageDeliveryDecision.h
-  events/ExitDecision.h
+  events/MessageDeliveryEvent.h
+  events/ExitEvent.h
   StateMachine.h
   SystemState.h
   EventDispatcher.h

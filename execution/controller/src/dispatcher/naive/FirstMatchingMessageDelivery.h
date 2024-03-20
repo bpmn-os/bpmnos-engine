@@ -4,6 +4,7 @@
 #include <bpmn++.h>
 #include "execution/engine/src/EventDispatcher.h"
 #include "execution/engine/src/Observer.h"
+#include "execution/engine/src/Message.h"
 
 namespace BPMNOS::Execution {
 
@@ -17,7 +18,8 @@ public:
   void connect(Mediator* mediator) override;
   void notice(const Observable* observable) override;
 private:
-  auto_list< std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest>, const BPMNOS::Values > messageDeliveryRequests;
+  auto_list< std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest>, auto_list< std::weak_ptr<const Message> >, const BPMNOS::Values > messageDeliveryRequests;
+  auto_list< std::weak_ptr<const Message> > messages;
 };
 
 } // namespace BPMNOS::Execution

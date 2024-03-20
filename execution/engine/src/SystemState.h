@@ -7,13 +7,6 @@
 #include "execution/utility/src/auto_list.h"
 #include "execution/utility/src/auto_set.h"
 #include "model/data/src/Scenario.h"
-#include "events/ErrorEvent.h"
-#include "events/ReadyEvent.h"
-#include "events/EntryDecision.h"
-#include "events/ChoiceDecision.h"
-#include "events/CompletionEvent.h"
-#include "events/MessageDeliveryDecision.h"
-#include "events/ExitDecision.h"
 #include <set>
 #include <queue>
 
@@ -71,10 +64,10 @@ public:
    */
   BPMNOS::number objective;
   
-  auto_list< std::weak_ptr<Token>, std::shared_ptr<DecisionRequest> > pendingEntryDecisions;
-  auto_list< std::weak_ptr<Token>, std::shared_ptr<DecisionRequest> > pendingChoiceDecisions;
-  auto_list< std::weak_ptr<Token>, std::shared_ptr<DecisionRequest> > pendingExitDecisions;
-  auto_list< std::weak_ptr<Token>, std::shared_ptr<DecisionRequest> > pendingMessageDeliveryDecisions;
+  auto_list< std::weak_ptr<Token>, std::shared_ptr<DecisionRequest> > pendingEntryEvents;
+  auto_list< std::weak_ptr<Token>, std::shared_ptr<DecisionRequest> > pendingChoiceEvents;
+  auto_list< std::weak_ptr<Token>, std::shared_ptr<DecisionRequest> > pendingExitEvents;
+  auto_list< std::weak_ptr<Token>, std::shared_ptr<DecisionRequest> > pendingMessageDeliveryEvents;
 
   auto_list< std::weak_ptr<Token> > tokensAwaitingReadyEvent; ///< Container holding all tokens awaiting a ready event
   auto_set< BPMNOS::number, std::weak_ptr<Token> > tokensAwaitingCompletionEvent; ///< Sorted container holding all tokens awaiting a task completion event

@@ -1,7 +1,7 @@
 #include "RandomChoice.h"
 #include "model/parser/src/DecisionTask.h"
 #include "model/parser/src/extensionElements/Attribute.h"
-#include "execution/engine/src/events/CompletionEvent.h"
+#include "execution/controller/src/decisions/ChoiceDecision.h"
 #include "execution/engine/src/events/ErrorEvent.h"
 #include <cassert>
 
@@ -13,7 +13,7 @@ RandomChoice::RandomChoice()
 }
 
 std::shared_ptr<Event> RandomChoice::dispatchEvent( const SystemState* systemState ) {
-  for ( auto& [token_ptr, event] : systemState->pendingChoiceDecisions ) {
+  for ( auto& [token_ptr, event] : systemState->pendingChoiceEvents ) {
     if( auto token = token_ptr.lock() )  {
       assert( token );
       assert( token->node );

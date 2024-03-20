@@ -87,7 +87,7 @@ SCENARIO( "Assignment problem", "[examples][assignment_problem]" ) {
 
     std::string csv =
       "PROCESS_ID; INSTANCE_ID; ATTRIBUTE_ID; VALUE\n"
-      "ClientProcess;lient1;;\n"
+      "ClientProcess;Client1;;\n"
       "ClientProcess;Client2;;\n"
       "ClientProcess;Client3;;\n"
       "ServerProcess;Server1;;\n"

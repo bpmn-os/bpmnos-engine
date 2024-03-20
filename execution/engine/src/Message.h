@@ -31,7 +31,7 @@ public:
   BPMNOS::Values header;
   VariedValueMap contentValueMap;
 
-  bool matches(const BPMNOS::Values& otherHeader); ///< Returns true if headers have the same size and all values that are defined are the same.
+  bool matches(const BPMNOS::Values& otherHeader) const; ///< Returns true if headers have the same size and all values that are defined are the same.
 
   void update(Token* token) const; ///< Updates the token status based on the message content.
 

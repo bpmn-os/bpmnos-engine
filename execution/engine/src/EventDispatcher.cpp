@@ -7,7 +7,7 @@ void EventDispatcher::connect(Mediator* mediator) {
   mediator->subscribe(this);
 }
 
-void EventDispatcher::notice([[maybe_unused]] Decision* event) {
+void EventDispatcher::notice([[maybe_unused]] Event* event) {
 //std::cerr << "Notice pending event for token at node " << event->token->node->id << std::endl;
 };
 

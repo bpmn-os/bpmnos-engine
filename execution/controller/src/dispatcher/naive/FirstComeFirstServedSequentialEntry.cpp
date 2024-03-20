@@ -1,5 +1,5 @@
 #include "FirstComeFirstServedSequentialEntry.h"
-#include "execution/engine/src/events/EntryDecision.h"
+#include "execution/controller/src/decisions/EntryDecision.h"
 #include "execution/engine/src/Engine.h"
 #include "model/parser/src/SequentialAdHocSubProcess.h"
 #include <cassert>

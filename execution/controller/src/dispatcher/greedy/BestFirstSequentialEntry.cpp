@@ -5,7 +5,7 @@
 
 using namespace BPMNOS::Execution;
 
-BestFirstSequentialEntry::BestFirstSequentialEntry( std::function<std::optional<double>(Decision* decision)> evaluator )
+BestFirstSequentialEntry::BestFirstSequentialEntry( std::function<std::optional<double>(Event* event)> evaluator )
   : evaluator(evaluator)
 {
 }

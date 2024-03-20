@@ -1,4 +1,9 @@
 list(APPEND controller_SOURCES
+  Decision.cpp
+  decisions/EntryDecision.cpp
+  decisions/ChoiceDecision.cpp
+  decisions/MessageDeliveryDecision.cpp
+  decisions/ExitDecision.cpp
   dispatcher/TimeWarp.cpp
   dispatcher/Metronome.cpp
   dispatcher/ReadyHandler.cpp
@@ -16,6 +21,11 @@ list(APPEND controller_SOURCES
 )
 
 list(APPEND controller_HEADERS
+  Decision.h
+  decisions/EntryDecision.h
+  decisions/ChoiceDecision.h
+  decisions/MessageDeliveryDecision.h
+  decisions/ExitDecision.h
   dispatcher/TimeWarp.h
   dispatcher/Metronome.h
   dispatcher/ReadyHandler.h

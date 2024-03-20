@@ -406,6 +406,9 @@ void StateMachine::unregisterRecipient() {
     ) {
       for ( auto& [message_ptr] : it->second ) {
         if ( auto message = message_ptr.lock() ) {
+          // withdraw message
+          message->state = Message::State::WITHDRAWN;
+          systemState->engine->notify(message.get());
           erase_ptr(const_cast<SystemState*>(systemState)->messages, message.get());
         }
       }

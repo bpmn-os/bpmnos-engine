@@ -75,7 +75,7 @@ SCENARIO( "Simple messaging", "[execution][message]" ) {
     }
   }
 
-  GIVEN( "Two instances with mismatching start times" ) {
+  GIVEN( "Two instances with mismatching parameters" ) {
 
     std::string csv =
       "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"

@@ -22,7 +22,6 @@ struct Event : std::enable_shared_from_this<Event> {
   template<typename T> const T* is() const {
     return dynamic_cast<const T*>(this);
   }
-
 };
 
 } // namespace BPMNOS::Execution

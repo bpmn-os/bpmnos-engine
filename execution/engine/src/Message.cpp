@@ -36,7 +36,7 @@ Message::Message(Token* token, size_t index)
   }
 }
 
-bool Message::matches(const BPMNOS::Values& otherHeader) {
+bool Message::matches(const BPMNOS::Values& otherHeader) const {
   if ( header.size() != otherHeader.size() ) {
     return false;
   }

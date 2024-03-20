@@ -1,10 +1,10 @@
-#ifndef BPMNOS_Execution_MessageDeliveryDecision_H
-#define BPMNOS_Execution_MessageDeliveryDecision_H
+#ifndef BPMNOS_Execution_MessageDeliveryEvent_H
+#define BPMNOS_Execution_MessageDeliveryEvent_H
 
 #include <bpmn++.h>
 #include "model/utility/src/Number.h"
 #include "execution/engine/src/Message.h"
-#include "execution/engine/src/Decision.h"
+#include "execution/engine/src/Event.h"
 
 namespace BPMNOS::Execution {
 
@@ -13,13 +13,13 @@ namespace BPMNOS::Execution {
  *
  * Transition from State::BUSY to State::COMPLETED
  */
-struct MessageDeliveryDecision : Decision {
-  MessageDeliveryDecision(const Token* token, Message* message);
+struct MessageDeliveryEvent : virtual Event {
+  MessageDeliveryEvent(const Token* token, const Message* message);
   void processBy(Engine* engine) const override;
   const Message* message;
 };
 
 } // namespace BPMNOS::Execution
 
-#endif // BPMNOS_Execution_MessageDeliveryDecision_H
+#endif // BPMNOS_Execution_MessageDeliveryEvent_H
 

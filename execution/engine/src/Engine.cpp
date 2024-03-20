@@ -138,8 +138,8 @@ void Engine::process(const ReadyEvent* event) {
 */
 }
 
-void Engine::process(const EntryDecision* event) {
-//std::cerr << systemState->pendingEntryDecisions.empty() << "EntryEvent " << event->token->jsonify().dump() << std::endl;
+void Engine::process(const EntryEvent* event) {
+//std::cerr << systemState->pendingEntryEvents.empty() << "EntryEvent " << event->token->jsonify().dump() << std::endl;
   Token* token = const_cast<Token*>(event->token);
   if ( token->node->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() ) {
     auto tokenAtSequentialPerformer = systemState->tokenAtSequentialPerformer.at(token);
@@ -165,10 +165,10 @@ void Engine::process(const EntryDecision* event) {
   commands.emplace_back(std::bind(&Token::advanceToEntered,token), token);
 
   std::weak_ptr<const DecisionRequest> wptr;
-  systemState->pendingEntryDecisions.remove(token);
+  systemState->pendingEntryEvents.remove(token);
 }
 
-void Engine::process(const ChoiceDecision* event) {
+void Engine::process(const ChoiceEvent* event) {
 //std::cerr << "ChoiceEvent " << event.token->node->id << std::endl;
   Token* token = const_cast<Token*>(event->token);
   assert( token->node );
@@ -188,7 +188,7 @@ void Engine::process(const ChoiceDecision* event) {
 
   commands.emplace_back(std::bind(&Token::advanceToCompleted,token), token);
 
-  systemState->pendingChoiceDecisions.remove(token);
+  systemState->pendingChoiceEvents.remove(token);
 }
 
 void Engine::process(const CompletionEvent* event) {
@@ -215,7 +215,7 @@ void Engine::process(const CompletionEvent* event) {
 */
 }
 
-void Engine::process(const MessageDeliveryDecision* event) {
+void Engine::process(const MessageDeliveryEvent* event) {
   Token* token = const_cast<Token*>(event->token);
   assert( token->node );
 
@@ -223,6 +223,10 @@ void Engine::process(const MessageDeliveryDecision* event) {
 
   // update token status 
   message->update(token);
+  
+  message->state = Message::State::DELIVERED;
+  notify(message);
+  
   erase_ptr<Message>(systemState->messages,message);
 //  systemState->tokensAwaitingMessageDelivery.remove(token);
   if ( message->waitingToken ) {
@@ -241,10 +245,10 @@ void Engine::process(const MessageDeliveryDecision* event) {
 
   commands.emplace_back(std::bind(&Token::advanceToCompleted,token), token);
 
-  systemState->pendingMessageDeliveryDecisions.remove(token);
+  systemState->pendingMessageDeliveryEvents.remove(token);
 }
 
-void Engine::process(const ExitDecision* event) {
+void Engine::process(const ExitEvent* event) {
 //std::cerr << "ExitEvent: " << event->token->jsonify().dump() << std::endl;
   Token* token = const_cast<Token*>(event->token);
 //  systemState->tokensAwaitingExit.remove(token);
@@ -268,7 +272,7 @@ void Engine::process(const ExitDecision* event) {
 
   commands.emplace_back(std::bind(&Token::advanceToExiting,token), token);
 
-  systemState->pendingExitDecisions.remove(token);
+  systemState->pendingExitEvents.remove(token);
 }
 
 void Engine::process(const ErrorEvent* event) {
