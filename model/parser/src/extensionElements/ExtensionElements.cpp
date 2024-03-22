@@ -159,19 +159,56 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, BPMN:
   }
 }
 
-bool ExtensionElements::entryScopeRestrictionsSatisfied(const Values& values) const {
+bool ExtensionElements::feasibleEntry(const Values& values) const {
   for ( auto& restriction : restrictions ) {
     if ( restriction->scope != Restriction::Scope::EXIT && !restriction->isSatisfied(values) ) {
       return false;
     }
   }
-  return true;
+  return satisfiesInheritedRestrictions(values);
 }
 
-bool ExtensionElements::exitScopeRestrictionsSatisfied(const Values& values) const {
+bool ExtensionElements::feasibleExit(const Values& values) const {
   for ( auto& restriction : restrictions ) {
     if ( restriction->scope != Restriction::Scope::ENTRY && !restriction->isSatisfied(values) ) {
       return false;
+    }
+  }
+  
+  return satisfiesInheritedRestrictions(values);
+}
+
+
+bool ExtensionElements::satisfiesInheritedRestrictions(const Values& values) const {
+  auto base = baseElement->represents<BPMN::ChildNode>();
+  
+  if ( !base ) return true;
+  
+  // check restrictions within ancestor scopes
+  const BPMN::Node* ancestor = base->parent;
+  while ( ancestor ) {
+    assert( ancestor->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );
+    if ( !ancestor->extensionElements->as<BPMNOS::Model::ExtensionElements>()->fullScopeRestrictionsSatisfied(values) ) {
+      return false;
+    }
+    if ( auto eventSubProcess = ancestor->represents<BPMN::EventSubProcess>();
+      eventSubProcess && 
+      ( eventSubProcess->startEvent->represents<BPMN::ErrorStartEvent>() || eventSubProcess->startEvent->represents<BPMN::CompensateStartEvent>() )
+    ) {
+      // error and compensate event subprocesses do not inherit restrictions
+      break;
+    }
+    else if ( auto activity = ancestor->represents<BPMN::Activity>();
+      activity && activity->isForCompensation
+    ) {
+      // compensation activities do not inherit restrictions
+      break;
+    }
+    else if ( auto child = ancestor->represents<BPMN::ChildNode>() ) {
+      ancestor = child->parent;
+    }
+    else {
+      break;
     }
   }
   return true;
@@ -194,14 +231,15 @@ void ExtensionElements::applyOperators(Values& values) const {
 }
 
 BPMNOS::number ExtensionElements::getObjective(const Values& values) const {
-  BPMNOS::number contribution = 0;
+  BPMNOS::number objective = 0;
   for ( auto& [name, attribute] : attributeMap ) {
     if ( values[attribute->index].has_value() ) {
-      contribution += attribute->weight * values[attribute->index].value();
+      objective += attribute->weight * values[attribute->index].value();
     }
   }
-  return contribution;
+  return objective;
 }
+
 BPMNOS::number ExtensionElements::getContributionToObjective(const Values& values) const {
   BPMNOS::number contribution = 0;
   for ( auto& attribute : attributes ) {

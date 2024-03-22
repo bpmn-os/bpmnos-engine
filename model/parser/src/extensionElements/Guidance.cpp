@@ -62,3 +62,46 @@ Guidance::Guidance(XML::bpmnos::tGuidance* guidance,  AttributeMap attributeMap)
   }    
 }
 
+BPMNOS::number Guidance::getObjective(const Values& values) const {
+  BPMNOS::number objective = 0;
+  for ( auto& [name, attribute] : attributeMap ) {
+    if ( attribute->index >= values.size() ) {
+      break;
+    }
+    if ( values[attribute->index].has_value() ) {
+      objective += attribute->weight * values[attribute->index].value();
+    }
+  }
+  return objective;
+}
+
+bool Guidance::restrictionsSatisfied(const Values& values) const {
+  for ( auto& restriction : restrictions ) {
+    if ( !restriction->isSatisfied(values) ) {
+      return false;
+    }
+  }
+  return true;
+}
+
+
+std::optional<BPMNOS::number> Guidance::apply(Values status, const Values& guidingAttributes) const {
+  BPMNOS::number cost = getObjective(status);
+
+  // add new attributes
+  status.insert(status.end(), guidingAttributes.begin(), guidingAttributes.end());
+
+  // apply operators
+  for ( auto& operator_ : operators ) {
+    operator_->apply(status);
+  }
+  
+  // check feasibility
+  if ( restrictionsSatisfied(status) ) {
+    // return guiding value
+    return cost - getObjective(status);
+  }
+  
+  return std::nullopt;
+}
+

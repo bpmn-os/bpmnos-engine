@@ -196,30 +196,25 @@ bool Token::entryIsFeasible() const {
   if ( !node ) {
 //std::cerr << stateName[(int)state] << "/" << owner->scope->id <<std::endl;
     assert( owner->process->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );
-    return owner->process->extensionElements->as<BPMNOS::Model::ExtensionElements>()->entryScopeRestrictionsSatisfied(status);
+    return owner->process->extensionElements->as<BPMNOS::Model::ExtensionElements>()->feasibleEntry(status);
   }
 
   assert( node->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );
-  if ( node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->entryScopeRestrictionsSatisfied(status) ) {
-    return satisfiesInheritedRestrictions();
-  }  
-  return false;
+  return node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->feasibleEntry(status);
 }
 
 bool Token::exitIsFeasible() const {
   if ( !node ) {
 //std::cerr << stateName[(int)state] << "/" << owner->scope->id <<std::endl;
     assert( owner->process->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );
-    return owner->process->extensionElements->as<BPMNOS::Model::ExtensionElements>()->exitScopeRestrictionsSatisfied(status);
+    return owner->process->extensionElements->as<BPMNOS::Model::ExtensionElements>()->feasibleExit(status);
   }
 
   assert( node->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );
-  if ( node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->exitScopeRestrictionsSatisfied(status) ) {
-    return satisfiesInheritedRestrictions();
-  }  
-  return false;
+  return node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->feasibleExit(status);
 }
 
+/*
 bool Token::satisfiesInheritedRestrictions() const {
 //std::cerr << "satisfiesInheritedRestrictions?" << std::endl;
   // check restrictions within ancestor scopes
@@ -251,6 +246,7 @@ bool Token::satisfiesInheritedRestrictions() const {
   }
   return true;
 }
+*/
 
 void Token::advanceFromCreated() {
 //std::cerr << "advanceFromCreated: " << jsonify().dump() << std::endl;
@@ -314,12 +310,11 @@ void Token::advanceToEntered() {
 //std::cerr << "!node" << std::endl;
     // process operators are applied upon entry
     if ( auto extensionElements = owner->process->extensionElements->represents<BPMNOS::Model::ExtensionElements>() ) {
-      for ( auto& operator_ : extensionElements->operators ) {
-        if ( operator_->attribute->index == BPMNOS::Model::ExtensionElements::Index::Timestamp ) {
-          throw std::runtime_error("StateMachine: Operator '" + operator_->id + "' for process '" + owner->process->id + "' attempts to modify timestamp");
-        }
-        operator_->apply(status);
+      if ( !extensionElements->isInstantaneous ) {
+        throw std::runtime_error("StateMachine: Operators for process '" + node->id + "' attempt to modify timestamp");
       }
+      // update status
+      extensionElements->applyOperators(status);
     }
   }
   else if ( node->represents<BPMN::SubProcess>() || 
@@ -331,6 +326,8 @@ void Token::advanceToEntered() {
       if ( !extensionElements->isInstantaneous ) {
         throw std::runtime_error("StateMachine: Operators for subprocess '" + node->id + "' attempt to modify timestamp");
       }
+      // update status
+      extensionElements->applyOperators(status);
     }
   }
 

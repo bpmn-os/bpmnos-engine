@@ -65,58 +65,58 @@ public:
   /**
    * @brief Method updating the completion time.
    */
-  void updateCompletion(BPMNOS::number time);
+  void updateCompletion(const BPMNOS::number time);
 
   /**
    * @brief Method returning true if the currentTime exceeds the completion time.
    */
-  bool isCompleted(BPMNOS::number currentTime) const;
+  bool isCompleted(const BPMNOS::number currentTime) const;
 
   /**
    * @brief Method returning a vector of all instances that are known to be instantiated at the given time.
    */
-  std::vector< std::pair<const BPMN::Process*, BPMNOS::Values> > getCurrentInstantiations(BPMNOS::number currentTime) const;
+  std::vector< std::pair<const BPMN::Process*, BPMNOS::Values> > getCurrentInstantiations(const BPMNOS::number currentTime) const;
 
   /**
    * @brief Method returning a vector of all instances that are anticipated to be instantiated at the assumed time.
    */
-  std::vector< std::pair<const BPMN::Process*, BPMNOS::Values> > getAnticipatedInstantiations(BPMNOS::number currentTime, BPMNOS::number assumedTime) const;
+  std::vector< std::pair<const BPMN::Process*, BPMNOS::Values> > getAnticipatedInstantiations(const BPMNOS::number currentTime, const BPMNOS::number assumedTime) const;
 
   /**
    * @brief Method returning a vector of all instances that have been created until the given time.
    */
-  std::vector< const InstanceData* > getCreatedInstances(BPMNOS::number currentTime) const;
+  std::vector< const InstanceData* > getCreatedInstances(const BPMNOS::number currentTime) const;
 
   /**
    * @brief Method returning a vector of all instances that have been created or are known for sure until the given time.
    */
-  std::vector< const InstanceData* > getKnownInstances(BPMNOS::number currentTime) const;
+  std::vector< const InstanceData* > getKnownInstances(const BPMNOS::number currentTime) const;
 
   /**
    * @brief Method returning a vector of all instances that are anticipated and not known for sure at the given time.
    */
-  std::vector< const InstanceData* > getAnticipatedInstances(BPMNOS::number currentTime) const;
+  std::vector< const InstanceData* > getAnticipatedInstances(const BPMNOS::number currentTime) const;
 
   /**
    * @brief Method returning the initial status of a known instantiation at the given time.
    */
-  Values getKnownInitialStatus(const InstanceData*, BPMNOS::number time) const;
+  Values getKnownInitialStatus(const InstanceData*, const BPMNOS::number time) const;
   /**
    * @brief Method returning the initial status of an anticipated instantiation at the given time.
    */
-  BPMNOS::Values getAnticipatedInitialStatus(const InstanceData*, BPMNOS::number currentTime) const;
+  BPMNOS::Values getAnticipatedInitialStatus(const InstanceData*, const BPMNOS::number currentTime) const;
 
   /**
    * @brief Method returning all known values of new attributes.
    *
    * If at least one attribute value is not yet known, the returns std::nullopt.
    */
-  std::optional<BPMNOS::Values> getKnownValues(const BPMN::Node* node, Values& status, BPMNOS::number currentTime) const;
+  std::optional<BPMNOS::Values> getKnownValues(const BPMN::Node* node, const Values& status, const BPMNOS::number currentTime) const;
 
   /**
    * @brief Method returning the disclosed values of new attributes.
    */
-  BPMNOS::Values getAnticipatedValues(const BPMN::Node* node, Values& status, BPMNOS::number currentTime) const;
+  BPMNOS::Values getAnticipatedValues(const BPMN::Node* node, const Values& status, const BPMNOS::number currentTime) const;
 
   void addInstance(const BPMN::Process* process, const std::string& identifier, Data instantiation);
   void removeAnticipatedInstance(const std::string& identifier);
@@ -129,7 +129,7 @@ protected:
   const Model* model;  ///< Pointer to the BPMN model.
   const DataInput& attributes; ///< Map holding all attributes in the model with keys being the process and attribute id
   std::unordered_map<std::string, InstanceData > instances; ///< Map of instances with key being the instance id.
-  const Scenario::Disclosure& getLatestDisclosure(const std::vector<Scenario::Disclosure>& data, BPMNOS::number currentTime) const;
+  const Scenario::Disclosure& getLatestDisclosure(const std::vector<Scenario::Disclosure>& data, const BPMNOS::number currentTime) const;
   BPMNOS::number inception; ///< Time earliest time in execution.
   BPMNOS::number completion; ///< The latest time in execution at which an instantiation can happen.
 };

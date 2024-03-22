@@ -24,6 +24,12 @@ public:
   std::vector< std::unique_ptr<Attribute> > attributes;
   std::vector< std::unique_ptr<Restriction> > restrictions;
   std::vector< std::unique_ptr<Operator> > operators;
+
+  std::optional<BPMNOS::number> apply(Values status, const Values& guidingAttributes) const;
+private:  
+  BPMNOS::number getObjective(const Values& values) const;
+  bool restrictionsSatisfied(const Values& values) const;
+
 };
 
 } // namespace BPMNOS::Model

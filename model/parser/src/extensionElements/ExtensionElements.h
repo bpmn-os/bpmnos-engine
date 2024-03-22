@@ -41,8 +41,9 @@ public:
 
   inline std::size_t size() const { return parentSize + attributes.size(); };
 
-  bool entryScopeRestrictionsSatisfied(const Values& values) const;
-  bool exitScopeRestrictionsSatisfied(const Values& values) const;
+  bool feasibleEntry(const Values& values) const;
+  bool feasibleExit(const Values& values) const;
+  bool satisfiesInheritedRestrictions(const Values& values) const;
   bool fullScopeRestrictionsSatisfied(const Values& values) const;
   
   bool isInstantaneous; ///< Boolean indicating whether operators may modify timestamp.

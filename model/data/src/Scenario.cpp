@@ -67,12 +67,12 @@ BPMNOS::number Scenario::getInception() const {
   return inception;
 }
 
-bool Scenario::isCompleted(BPMNOS::number currentTime) const {
+bool Scenario::isCompleted(const BPMNOS::number currentTime) const {
   return currentTime > completion;
 }
 
 
-std::vector< const Scenario::InstanceData* > Scenario::getCreatedInstances(BPMNOS::number currentTime) const {
+std::vector< const Scenario::InstanceData* > Scenario::getCreatedInstances(const BPMNOS::number currentTime) const {
   std::vector< const Scenario::InstanceData* > knownInstances;
 
   for ( auto& [id, instance] : instances ) {
@@ -86,7 +86,7 @@ std::vector< const Scenario::InstanceData* > Scenario::getCreatedInstances(BPMNO
   return knownInstances;
 }
 
-std::vector< const Scenario::InstanceData* > Scenario::getKnownInstances(BPMNOS::number currentTime) const {
+std::vector< const Scenario::InstanceData* > Scenario::getKnownInstances(const BPMNOS::number currentTime) const {
   std::vector< const Scenario::InstanceData* > knownInstances;
 
   for ( auto& [id, instance] : instances ) {
@@ -99,7 +99,7 @@ std::vector< const Scenario::InstanceData* > Scenario::getKnownInstances(BPMNOS:
   return knownInstances;
 }
 
-std::vector< const Scenario::InstanceData* > Scenario::getAnticipatedInstances(BPMNOS::number currentTime) const {
+std::vector< const Scenario::InstanceData* > Scenario::getAnticipatedInstances(const BPMNOS::number currentTime) const {
   std::vector< const Scenario::InstanceData* > anticipatedInstances;
 
   for ( auto& [id, instance] : instances ) {
@@ -118,7 +118,7 @@ std::vector< const Scenario::InstanceData* > Scenario::getAnticipatedInstances(B
   return anticipatedInstances;
 }
 
-std::vector< std::pair<const BPMN::Process*, BPMNOS::Values> > Scenario::getCurrentInstantiations(BPMNOS::number currentTime) const {
+std::vector< std::pair<const BPMN::Process*, BPMNOS::Values> > Scenario::getCurrentInstantiations(const BPMNOS::number currentTime) const {
   std::vector< std::pair<const BPMN::Process*, BPMNOS::Values> > instantiations;
 
   for ( auto& [id, instance] : instances ) {
@@ -132,7 +132,7 @@ std::vector< std::pair<const BPMN::Process*, BPMNOS::Values> > Scenario::getCurr
   return instantiations;
 }
 
-std::vector< std::pair<const BPMN::Process*, BPMNOS::Values> > Scenario::getAnticipatedInstantiations(BPMNOS::number currentTime, BPMNOS::number assumedTime) const {
+std::vector< std::pair<const BPMN::Process*, BPMNOS::Values> > Scenario::getAnticipatedInstantiations(const BPMNOS::number currentTime, const BPMNOS::number assumedTime) const {
   std::vector< std::pair<const BPMN::Process*, BPMNOS::Values> > instantiations;
 
   for ( auto& [id, instance] : instances ) {
@@ -155,7 +155,7 @@ std::vector< std::pair<const BPMN::Process*, BPMNOS::Values> > Scenario::getAnti
   return instantiations;
 }
 
-BPMNOS::Values Scenario::getKnownInitialStatus(const Scenario::InstanceData* instance, BPMNOS::number currentTime) const {
+BPMNOS::Values Scenario::getKnownInitialStatus(const Scenario::InstanceData* instance, const BPMNOS::number currentTime) const {
   BPMNOS::Values initalStatus;
   for ( auto& attribute : instance->process->extensionElements->as<const BPMNOS::Model::ExtensionElements>()->attributes ) {
     auto& data = instance->data.at(attribute.get());
@@ -174,7 +174,7 @@ BPMNOS::Values Scenario::getKnownInitialStatus(const Scenario::InstanceData* ins
   return initalStatus;
 }
 
-std::optional<BPMNOS::Values> Scenario::getKnownValues(const BPMN::Node* node, Values& status, BPMNOS::number currentTime) const {
+std::optional<BPMNOS::Values> Scenario::getKnownValues(const BPMN::Node* node, const Values& status, const BPMNOS::number currentTime) const {
   // get instance id from status
   std::string instanceId = stringRegistry[ (long unsigned int)status[BPMNOS::Model::ExtensionElements::Index::Instance].value() ];
   if ( auto pos = instanceId.find(delimiter); pos != std::string::npos ) {
@@ -205,7 +205,7 @@ std::optional<BPMNOS::Values> Scenario::getKnownValues(const BPMN::Node* node, V
   return values;
 }
 
-BPMNOS::Values Scenario::getAnticipatedInitialStatus(const Scenario::InstanceData* instance, BPMNOS::number currentTime) const {
+BPMNOS::Values Scenario::getAnticipatedInitialStatus(const Scenario::InstanceData* instance, const BPMNOS::number currentTime) const {
   BPMNOS::Values initalStatus;
   for ( auto& attribute : instance->process->extensionElements->as<const BPMNOS::Model::ExtensionElements>()->attributes ) {
     auto& data = instance->data.at(attribute.get());
@@ -230,7 +230,7 @@ BPMNOS::Values Scenario::getAnticipatedInitialStatus(const Scenario::InstanceDat
 }
 
 
-BPMNOS::Values Scenario::getAnticipatedValues(const BPMN::Node* node, Values& status, BPMNOS::number currentTime) const {
+BPMNOS::Values Scenario::getAnticipatedValues(const BPMN::Node* node, const Values& status, const BPMNOS::number currentTime) const {
   // get instance id from status
   std::string instanceId = stringRegistry[ (long unsigned int)status[BPMNOS::Model::ExtensionElements::Index::Instance].value() ];
   if ( auto pos = instanceId.find(delimiter); pos != std::string::npos ) {
@@ -263,7 +263,7 @@ BPMNOS::Values Scenario::getAnticipatedValues(const BPMN::Node* node, Values& st
   return values;
 }
 
-const Scenario::Disclosure& Scenario::getLatestDisclosure(const std::vector<Scenario::Disclosure>& data, BPMNOS::number currentTime) const {
+const Scenario::Disclosure& Scenario::getLatestDisclosure(const std::vector<Scenario::Disclosure>& data, const BPMNOS::number currentTime) const {
   // find the first element with a disclosure time larger than the given time
   auto it = std::upper_bound(data.begin(), data.end(), currentTime,
     [](BPMNOS::number t, const Disclosure& element) -> bool { return (element.disclosure > t); }

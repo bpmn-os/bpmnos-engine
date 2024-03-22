@@ -28,7 +28,30 @@ std::optional<double> EntryDecision::localEvaluator(Event* event) {
 
 std::optional<double> EntryDecision::guidedEvaluator(Event* event) {
   assert( event->token->ready() );
-  // TODO
+
+  auto extensionElements = event->token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+  if ( extensionElements->entryGuidance ) {
+    auto systemState = event->token->owner->systemState;
+    Values guidingAttributes; //TODO
+    if ( systemState->assumedTime ) {
+        guidingAttributes = systemState->scenario->getAnticipatedValues(event->token->node, event->token->status, systemState->currentTime );
+    }
+    else {
+      auto values = systemState->scenario->getKnownValues(event->token->node, event->token->status, systemState->currentTime );
+      if ( values ) {
+        guidingAttributes = std::move( values.value() );
+      }
+    }
+    
+    auto guidance = extensionElements->entryGuidance->get()->apply(event->token->status, guidingAttributes);
+    if ( guidance.has_value() ) {
+      return (double)guidance.value();
+    }
+    else {
+      return std::nullopt;
+    }
+  }
+
   return localEvaluator(event);
 }
 
