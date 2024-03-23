@@ -1,7 +1,7 @@
 #include "DynamicDataProvider.h"
 #include "model/utility/src/Keywords.h"
 #include "model/utility/src/Number.h"
-#include "model/parser/src/extensionElements/ExtensionElements.h"
+#include "model/bpmnos/src/extensionElements/ExtensionElements.h"
 #include <sstream>
 #include <unordered_map>
 #include <algorithm>

@@ -2,7 +2,7 @@
 #include "Keywords.h"
 #include "StringRegistry.h"
 #include "CollectionRegistry.h"
-#include "model/parser/src/extensionElements/ExtensionElements.h"
+#include "model/bpmnos/src/extensionElements/ExtensionElements.h"
 #include <cassert>
 
 namespace BPMNOS { 

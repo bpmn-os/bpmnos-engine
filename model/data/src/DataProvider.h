@@ -7,8 +7,8 @@
 #include <bpmn++.h>
 #include "model/utility/src/Number.h"
 #include "model/utility/src/StringRegistry.h"
-#include "model/parser/src/Model.h"
-#include "model/parser/src/extensionElements/Attribute.h"
+#include "model/bpmnos/src/Model.h"
+#include "model/bpmnos/src/extensionElements/Attribute.h"
 #include "Scenario.h"
 
 namespace BPMNOS::Model {

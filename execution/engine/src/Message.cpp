@@ -1,6 +1,6 @@
 #include "Message.h"
 #include "Token.h"
-#include "model/parser/src/extensionElements/MessageDefinition.h"
+#include "model/bpmnos/src/extensionElements/MessageDefinition.h"
 
 using namespace BPMNOS::Execution;
 

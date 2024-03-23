@@ -5,8 +5,8 @@
 #include "Event.h"
 //#include "events/EntryEvent.h"
 #include "execution/utility/src/erase.h"
-#include "model/parser/src/extensionElements/ExtensionElements.h"
-#include "model/parser/src/extensionElements/Timer.h"
+#include "model/bpmnos/src/extensionElements/ExtensionElements.h"
+#include "model/bpmnos/src/extensionElements/Timer.h"
 #include "model/utility/src/CollectionRegistry.h"
 #include "bpmn++.h"
 #include <cassert>

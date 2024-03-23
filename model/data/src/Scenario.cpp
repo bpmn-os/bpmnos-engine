@@ -1,7 +1,7 @@
 #include "Scenario.h"
 #include "model/utility/src/Keywords.h"
 #include "model/utility/src/StringRegistry.h"
-#include "model/parser/src/extensionElements/ExtensionElements.h"
+#include "model/bpmnos/src/extensionElements/ExtensionElements.h"
 #include <limits>
 #include <iostream>
 

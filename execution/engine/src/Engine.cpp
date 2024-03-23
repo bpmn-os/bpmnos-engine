@@ -2,9 +2,9 @@
 #include "Token.h"
 #include "StateMachine.h"
 #include "SequentialPerformerUpdate.h"
-#include "model/parser/src/extensionElements/ExtensionElements.h"
-#include "model/parser/src/SequentialAdHocSubProcess.h"
-#include "model/parser/src/DecisionTask.h"
+#include "model/bpmnos/src/extensionElements/ExtensionElements.h"
+#include "model/bpmnos/src/SequentialAdHocSubProcess.h"
+#include "model/bpmnos/src/DecisionTask.h"
 #include "execution/utility/src/erase.h"
 #include <cassert>
 

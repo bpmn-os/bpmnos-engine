@@ -1,6 +1,6 @@
 #include "RandomChoice.h"
-#include "model/parser/src/DecisionTask.h"
-#include "model/parser/src/extensionElements/Attribute.h"
+#include "model/bpmnos/src/DecisionTask.h"
+#include "model/bpmnos/src/extensionElements/Attribute.h"
 #include "execution/controller/src/decisions/ChoiceDecision.h"
 #include "execution/engine/src/events/ErrorEvent.h"
 #include <cassert>

@@ -1,7 +1,7 @@
 #include "EntryDecision.h"
 #include "execution/engine/src/Engine.h"
-#include "model/parser/src/DecisionTask.h"
-#include "model/parser/src/SequentialAdHocSubProcess.h"
+#include "model/bpmnos/src/DecisionTask.h"
+#include "model/bpmnos/src/SequentialAdHocSubProcess.h"
 
 using namespace BPMNOS::Execution;
 

@@ -1,7 +1,7 @@
 #include "InstantEntry.h"
 #include "execution/controller/src/decisions/EntryDecision.h"
 #include "execution/engine/src/Mediator.h"
-#include "model/parser/src/SequentialAdHocSubProcess.h"
+#include "model/bpmnos/src/SequentialAdHocSubProcess.h"
 #include <cassert>
 
 using namespace BPMNOS::Execution;

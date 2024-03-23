@@ -1,7 +1,7 @@
 #include "FirstMatchingMessageDelivery.h"
 #include "execution/engine/src/Mediator.h"
 #include "execution/controller/src/decisions/MessageDeliveryDecision.h"
-#include "model/parser/src/extensionElements/MessageDefinition.h"
+#include "model/bpmnos/src/extensionElements/MessageDefinition.h"
 #include <cassert>
 
 using namespace BPMNOS::Execution;

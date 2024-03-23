@@ -2,7 +2,7 @@
 #define BPMNOS_Execution_Token_H
 
 #include <bpmn++.h>
-#include "model/parser/src/extensionElements/ExtensionElements.h"
+#include "model/bpmnos/src/extensionElements/ExtensionElements.h"
 #include "model/utility/src/Number.h"
 #include "Observable.h"
 #include <nlohmann/json.hpp>

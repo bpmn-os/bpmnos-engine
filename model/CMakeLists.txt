@@ -33,7 +33,7 @@ include_directories(
 include("${PROJECT_SOURCE_DIR}/utility/CMakeLists.txt")
 
 # Get lists of all headers and sources of BPMN parser
-include("${PROJECT_SOURCE_DIR}/parser/CMakeLists.txt")
+include("${PROJECT_SOURCE_DIR}/bpmnos/CMakeLists.txt")
 
 # Get lists of all headers and sources of data reader
 include("${PROJECT_SOURCE_DIR}/data/CMakeLists.txt")
