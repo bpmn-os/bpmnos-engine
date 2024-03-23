@@ -18,7 +18,7 @@ SCENARIO( "Knapsack problem", "[examples][knapsack_problem]" ) {
     Model::StaticDataProvider dataProvider(modelFile,csv);
     auto scenario = dataProvider.createScenario();
 
-    WHEN( "The engine is started with a recorder" ) {
+    WHEN( "The engine is started with naive dispatcher" ) {
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
       Execution::InstantEntry parallelEntryHandler;
@@ -43,6 +43,31 @@ SCENARIO( "Knapsack problem", "[examples][knapsack_problem]" ) {
       THEN( "Some items are accepted, some are rejected" ) {
         REQUIRE( recorder.find(nlohmann::json{{"nodeId", "ItemRejected"}}).size() > 0 );
         REQUIRE( recorder.find(nlohmann::json{{"nodeId", "ItemAccepted"}}).size() > 0);
+      }
+    }
+
+    WHEN( "The engine is started with the guided controller (but no guidance)" ) {
+      Execution::Engine engine;
+      Execution::ReadyHandler readyHandler;
+      Execution::DeterministicTaskCompletion completionHandler;
+      readyHandler.connect(&engine);
+      completionHandler.connect(&engine);
+
+      Execution::GuidedController controller;
+      controller.connect(&engine);
+      
+      Execution::MyopicMessageTaskTerminator messageTaskTerminator;
+      Execution::TimeWarp timeHandler;
+      messageTaskTerminator.connect(&engine);
+      timeHandler.connect(&engine);
+
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
+      recorder.subscribe(&engine);
+      engine.run(scenario.get());
+      THEN( "Then the knapsack is closed before items are included" ) {
+        auto failureLog = recorder.find(nlohmann::json{{"nodeId", "SendRequestTask"},{"state", "FAILED"}});
+        REQUIRE( failureLog.size() == 3 );
       }
     }
   }

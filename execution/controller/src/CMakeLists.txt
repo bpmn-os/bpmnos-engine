@@ -15,10 +15,13 @@ list(APPEND controller_SOURCES
   dispatcher/naive/RandomChoice.cpp
   dispatcher/naive/MyopicDecisionTaskTerminator.cpp
   dispatcher/naive/MyopicMessageTaskTerminator.cpp
+  dispatcher/greedy/BestFirstParallelEntry.cpp
   dispatcher/greedy/BestFirstSequentialEntry.cpp
+  dispatcher/greedy/BestFirstExit.cpp
   dispatcher/greedy/BestMatchingMessageDelivery.cpp
   Controller.cpp
   GreedyController.cpp
+  GuidedController.cpp
 )
 
 list(APPEND controller_HEADERS
@@ -38,8 +41,11 @@ list(APPEND controller_HEADERS
   dispatcher/naive/RandomChoice.h
   dispatcher/naive/MyopicDecisionTaskTerminator.h
   dispatcher/naive/MyopicMessageTaskTerminator.h
+  dispatcher/greedy/BestFirstParallelEntry.h
   dispatcher/greedy/BestFirstSequentialEntry.h
+  dispatcher/greedy/BestFirstExit.h
   dispatcher/greedy/BestMatchingMessageDelivery.h
   Controller.h
   GreedyController.h
+  GuidedController.h
 )

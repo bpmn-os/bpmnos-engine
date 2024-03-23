@@ -48,6 +48,7 @@ if (DEBUG)
     -fmax-errors=1 # Remove
     -Wno-error=unused-parameter # Remove
     -Wno-error=unused-variable # Remove
+    -Wno-misleading-indentation
   )
 
   add_link_options(-fsanitize=address)
@@ -70,7 +71,8 @@ else()
     -fmax-errors=1 # Remove
     -Wno-error=unused-parameter # Remove
     -Wno-error=unused-variable # Remove
-  )
+    -Wno-misleading-indentation
+)
 endif()
 
 
