@@ -3,7 +3,7 @@
 
 using namespace BPMNOS::Execution;
 
-MessageDeliveryDecision::MessageDeliveryDecision(const Token* token, const Message* message, std::function<std::optional<double>(Event* event)> evaluator)
+MessageDeliveryDecision::MessageDeliveryDecision(const Token* token, const Message* message, std::function<std::optional<double>(const Event* event)> evaluator)
   : Event(token)
   , MessageDeliveryEvent(token,message)
   , Decision(evaluator)
@@ -16,26 +16,45 @@ std::optional<double> MessageDeliveryDecision::evaluate() {
   return evaluation;
 }
 
-std::optional<double> MessageDeliveryDecision::localEvaluator(Event* event) {
+std::optional<double> MessageDeliveryDecision::localEvaluator(const Event* event) {
   assert( event->token->busy() );
-  assert( dynamic_cast<MessageDeliveryEvent*>(event) );
+  assert( dynamic_cast<const MessageDeliveryEvent*>(event) );
 
   auto extensionElements = event->token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   Values status = event->token->status;
-  double cost = (double)extensionElements->getObjective(status);
+  double evaluation = (double)extensionElements->getObjective(status);
 
-  auto message = dynamic_cast<MessageDeliveryEvent*>(event)->message;
+  auto message = dynamic_cast<const MessageDeliveryEvent*>(event)->message;
   message->apply(event->token->node,status);
   
   extensionElements->applyOperators(status);
-  cost -= (double)extensionElements->getObjective(status);
-  return cost;
+  return evaluation - extensionElements->getObjective(status);
 }
 
-std::optional<double> MessageDeliveryDecision::guidedEvaluator(Event* event) {
-  assert( event->token->ready() );
-  // TODO
-  return localEvaluator(event);
+std::optional<double> MessageDeliveryDecision::guidedEvaluator(const Event* event) {
+  assert( event->token->busy() );
+  assert( dynamic_cast<const MessageDeliveryEvent*>(event) );
+
+  auto extensionElements = event->token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+  Values status = event->token->status;
+  auto evaluation = (double)extensionElements->getObjective(status);
+
+  auto message = dynamic_cast<const MessageDeliveryEvent*>(event)->message;
+  message->apply(event->token->node,status);
+  
+  extensionElements->applyOperators(status);
+
+  if ( !extensionElements->messageDeliveryGuidance ) {
+    return evaluation - extensionElements->getObjective(status);
+  }
+
+  auto systemState = event->token->owner->systemState;
+  auto guidance = extensionElements->messageDeliveryGuidance->get()->apply(status, event->token->node, systemState->scenario, systemState->currentTime);
+  if ( guidance.has_value() ) {
+    return evaluation - guidance.value();
+  }
+
+  return std::nullopt;
 }
 
 

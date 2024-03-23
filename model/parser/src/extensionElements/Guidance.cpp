@@ -1,4 +1,5 @@
 #include "Guidance.h"
+#include "model/data/src/Scenario.h"
 #include "model/parser/src/xml/bpmnos/tAttribute.h"
 #include "model/parser/src/xml/bpmnos/tRestrictions.h"
 #include "model/parser/src/xml/bpmnos/tRestriction.h"
@@ -13,7 +14,7 @@ Guidance::Guidance(XML::bpmnos::tGuidance* guidance,  AttributeMap attributeMap)
   , attributeMap(attributeMap)
 {
   if ( guidance->type.value.value == "message" ) {
-    type = Type::Message;
+    type = Type::MessageDelivery;
   }
   else if ( guidance->type.value.value == "entry" ) {
     type = Type::Entry;
@@ -81,12 +82,21 @@ bool Guidance::restrictionsSatisfied(const Values& values) const {
       return false;
     }
   }
+  
+  // TODO: check node restrictions
   return true;
 }
 
 
-std::optional<BPMNOS::number> Guidance::apply(Values status, const Values& guidingAttributes) const {
-  BPMNOS::number cost = getObjective(status);
+std::optional<BPMNOS::number> Guidance::apply(Values& status, const BPMN::FlowNode* node, const Scenario* scenario, BPMNOS::number currentTime) const {
+  Values guidingAttributes;
+  auto values = scenario->getKnownValues(node, status, currentTime );
+  if ( values ) {
+    guidingAttributes = std::move( values.value() );
+  }
+  else {
+    throw std::runtime_error("Guidance: guiding attributes are not known");
+  }
 
   // add new attributes
   status.insert(status.end(), guidingAttributes.begin(), guidingAttributes.end());
@@ -99,7 +109,7 @@ std::optional<BPMNOS::number> Guidance::apply(Values status, const Values& guidi
   // check feasibility
   if ( restrictionsSatisfied(status) ) {
     // return guiding value
-    return cost - getObjective(status);
+    return getObjective(status);
   }
   
   return std::nullopt;

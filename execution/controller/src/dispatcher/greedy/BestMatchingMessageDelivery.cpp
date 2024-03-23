@@ -6,7 +6,7 @@
 
 using namespace BPMNOS::Execution;
 
-BestMatchingMessageDelivery::BestMatchingMessageDelivery( std::function<std::optional<double>(Event* event)> evaluator )
+BestMatchingMessageDelivery::BestMatchingMessageDelivery( std::function<std::optional<double>(const Event* event)> evaluator )
   : evaluator(evaluator)
 {
 }

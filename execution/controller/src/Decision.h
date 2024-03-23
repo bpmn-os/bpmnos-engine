@@ -12,10 +12,10 @@ namespace BPMNOS::Execution {
  */
 class Decision : virtual public Event {
 public:
-  Decision(std::function<std::optional<double>(Event* event)> evaluator = &Decision::nullEvaluator);
+  Decision(std::function<std::optional<double>(const Event* event)> evaluator = &Decision::nullEvaluator);
 
-  constexpr static std::optional<double> nullEvaluator([[maybe_unused]] Event* event) { return std::nullopt; }
-  constexpr static std::optional<double> zeroEvaluator([[maybe_unused]] Event* event) { return 0; }
+  constexpr static std::optional<double> nullEvaluator([[maybe_unused]] const Event* event) { return std::nullopt; }
+  constexpr static std::optional<double> zeroEvaluator([[maybe_unused]] const Event* event) { return 0; }
 
   virtual std::optional<double> evaluate() = 0;
   std::optional<double> evaluation;

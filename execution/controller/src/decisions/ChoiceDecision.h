@@ -14,13 +14,13 @@ namespace BPMNOS::Execution {
  * Transition from State::BUSY to State::COMPLETED
  */
 struct ChoiceDecision : ChoiceEvent, Decision {
-  ChoiceDecision(const Token* token, Values updatedStatus, std::function<std::optional<double>(Event* event)> evaluator = &Decision::nullEvaluator);
+  ChoiceDecision(const Token* token, Values updatedStatus, std::function<std::optional<double>(const Event* event)> evaluator = &Decision::nullEvaluator);
   Values updatedStatus;
 
   std::optional<double> evaluate() override;
 
-  static std::optional<double> localEvaluator(Event* event);
-  static std::optional<double> guidedEvaluator(Event* event);
+  static std::optional<double> localEvaluator(const Event* event);
+  static std::optional<double> guidedEvaluator(const Event* event);
 };
 
 } // namespace BPMNOS::Execution

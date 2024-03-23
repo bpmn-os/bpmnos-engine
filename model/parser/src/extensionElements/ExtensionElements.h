@@ -52,7 +52,7 @@ public:
   BPMNOS::number getObjective(const Values& values) const; ///< Returns the contribution to the objective.
   BPMNOS::number getContributionToObjective(const Values& values) const; ///< Returns the contribution to the objective by the attributes declared for the node.
   
-  std::optional< std::unique_ptr<Guidance> > messageGuidance;
+  std::optional< std::unique_ptr<Guidance> > messageDeliveryGuidance;
   std::optional< std::unique_ptr<Guidance> > entryGuidance;
   std::optional< std::unique_ptr<Guidance> > exitGuidance;
   std::optional< std::unique_ptr<Guidance> > choiceGuidance;

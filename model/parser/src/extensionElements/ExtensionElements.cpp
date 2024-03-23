@@ -22,6 +22,7 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, BPMN:
   , hasSequentialPerformer(false)
   , isInstantaneous(true)
 {
+  // @attention: this->baseElement is only set after constructed extension elements have been bound to the BPMN base element. 
 
   if ( parent ) {
     parentSize = parent->extensionElements->as<ExtensionElements>()->size();
@@ -144,10 +145,7 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, BPMN:
   // add all guidances
   for ( XML::bpmnos::tGuidance& item : element->getChildren<XML::bpmnos::tGuidance>() ) {
     auto guidance = std::make_unique<Guidance>(&item,attributeMap);
-    if ( guidance->type == Guidance::Type::Message ) {
-      messageGuidance = std::move(guidance);
-    }
-    else if ( guidance->type == Guidance::Type::Entry ) {
+    if ( guidance->type == Guidance::Type::Entry ) {
       entryGuidance = std::move(guidance);
     }
     else if ( guidance->type == Guidance::Type::Exit ) {
@@ -155,6 +153,9 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, BPMN:
     }
     else if ( guidance->type == Guidance::Type::Choice ) {
       choiceGuidance = std::move(guidance);
+    }
+    else if ( guidance->type == Guidance::Type::MessageDelivery ) {
+      messageDeliveryGuidance = std::move(guidance);
     }
   }
 }

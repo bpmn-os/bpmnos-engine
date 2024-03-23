@@ -12,6 +12,7 @@
 
 namespace BPMNOS::Model {
 
+class Scenario;
 
 class Guidance {
 public:
@@ -19,13 +20,13 @@ public:
   XML::bpmnos::tGuidance* element;
   AttributeMap attributeMap; ///< Map allowing to look up attributes by their names.
 
-  enum class Type { Message, Entry, Exit, Choice };
+  enum class Type { Entry, Exit, Choice, MessageDelivery };
   Type type;
   std::vector< std::unique_ptr<Attribute> > attributes;
   std::vector< std::unique_ptr<Restriction> > restrictions;
   std::vector< std::unique_ptr<Operator> > operators;
 
-  std::optional<BPMNOS::number> apply(Values status, const Values& guidingAttributes) const;
+  std::optional<BPMNOS::number> apply(Values& status, const BPMN::FlowNode* node, const Scenario* scenario, BPMNOS::number currentTime) const;
 private:  
   BPMNOS::number getObjective(const Values& values) const;
   bool restrictionsSatisfied(const Values& values) const;

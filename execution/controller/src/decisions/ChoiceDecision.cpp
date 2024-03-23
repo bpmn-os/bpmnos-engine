@@ -3,7 +3,7 @@
 
 using namespace BPMNOS::Execution;
 
-ChoiceDecision::ChoiceDecision(const Token* token, Values updatedStatus, std::function<std::optional<double>(Event* event)> evaluator)
+ChoiceDecision::ChoiceDecision(const Token* token, Values updatedStatus, std::function<std::optional<double>(const Event* event)> evaluator)
   : Event(token)
   , ChoiceEvent(token, updatedStatus)
   , Decision(evaluator)
@@ -16,21 +16,35 @@ std::optional<double> ChoiceDecision::evaluate() {
   return evaluation;
 }
 
-std::optional<double> ChoiceDecision::localEvaluator(Event* event) {
-  assert( event->token->ready() );
-  assert( dynamic_cast<ChoiceEvent*>(event) );
+std::optional<double> ChoiceDecision::localEvaluator(const Event* event) {
+  assert( event->token->busy() );
+  assert( dynamic_cast<const ChoiceEvent*>(event) );
   auto extensionElements = event->token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
-  double cost = (double)extensionElements->getObjective(event->token->status);
-  Values status = dynamic_cast<ChoiceEvent*>(event)->updatedStatus;
+  auto evaluation = (double)extensionElements->getObjective(event->token->status);
+  Values status = dynamic_cast<const ChoiceEvent*>(event)->updatedStatus;
   extensionElements->applyOperators(status);
-  cost -= (double)extensionElements->getObjective(status);
-  return cost;
+  return evaluation - extensionElements->getObjective(status);
 }
 
-std::optional<double> ChoiceDecision::guidedEvaluator(Event* event) {
-  assert( event->token->ready() );
-  // TODO
-  return localEvaluator(event);
+std::optional<double> ChoiceDecision::guidedEvaluator(const Event* event) {
+  assert( event->token->busy() );
+  assert( dynamic_cast<const ChoiceEvent*>(event) );
+  auto extensionElements = event->token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+  auto evaluation = (double)extensionElements->getObjective(event->token->status);
+  Values status = dynamic_cast<const ChoiceEvent*>(event)->updatedStatus;
+  extensionElements->applyOperators(status);
+
+  if ( !extensionElements->choiceGuidance ) {
+    return evaluation - extensionElements->getObjective(status);
+  }
+
+  auto systemState = event->token->owner->systemState;
+  auto guidance = extensionElements->choiceGuidance->get()->apply(status, event->token->node, systemState->scenario, systemState->currentTime);
+  if ( guidance.has_value() ) {
+    return evaluation - guidance.value();
+  }
+
+  return std::nullopt;
 }
 
 
