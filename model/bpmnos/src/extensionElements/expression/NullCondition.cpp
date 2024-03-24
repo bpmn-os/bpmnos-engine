@@ -5,8 +5,8 @@
 
 using namespace BPMNOS::Model;
 
-NullCondition::NullCondition(XML::bpmnos::tParameter* parameter, const AttributeMap& attributeMap)
-  : Expression(parameter, attributeMap)
+NullCondition::NullCondition(XML::bpmnos::tParameter* parameter, const AttributeMap& statusAttributes)
+  : Expression(parameter, statusAttributes)
   , attribute(nullptr)
 {
   if ( parameter->attribute.has_value() || !parameter->value.has_value() ) {
@@ -34,8 +34,8 @@ void NullCondition::parse(const std::string& comparisonOperator) {
   std::string lhs = strutil::trim_copy(expressions.front());
   std::string rhs = strutil::trim_copy(expressions.back());
 
-  if ( auto it = attributeMap.find(lhs);
-    it != attributeMap.end()
+  if ( auto it = statusAttributes.find(lhs);
+    it != statusAttributes.end()
   ) {
     attribute = it->second;
   }

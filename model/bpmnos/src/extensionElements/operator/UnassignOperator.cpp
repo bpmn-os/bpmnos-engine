@@ -2,8 +2,8 @@
 
 using namespace BPMNOS::Model;
 
-UnassignOperator::UnassignOperator(XML::bpmnos::tOperator* operator_, AttributeMap& attributeMap)
-  : Operator(operator_, attributeMap)
+UnassignOperator::UnassignOperator(XML::bpmnos::tOperator* operator_, AttributeMap& statusAttributes)
+  : Operator(operator_, statusAttributes)
 {
 }
 

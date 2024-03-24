@@ -15,7 +15,7 @@ namespace BPMNOS::Model {
  **/
 class AssignOperator : public Operator {
 public:
-  AssignOperator(XML::bpmnos::tOperator* operator_, AttributeMap& attributeMap);
+  AssignOperator(XML::bpmnos::tOperator* operator_, AttributeMap& statusAttributes);
   Parameter* parameter;
 
 /**

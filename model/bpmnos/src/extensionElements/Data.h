@@ -16,7 +16,7 @@ class Data : public BPMN::ExtensionElements {
 public:
   Data(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* scope);
   const BPMN::Scope* scope;
-  AttributeMap attributeMap; ///< Map allowing to look up all attributes by their names.
+  AttributeMap statusAttributes; ///< Map allowing to look up all attributes by their names.
   std::vector< std::unique_ptr<Attribute> > attributes; ///< Vector containing attributes declared for the data object.
 };
 

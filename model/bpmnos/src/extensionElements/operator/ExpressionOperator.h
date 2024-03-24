@@ -18,7 +18,7 @@ namespace BPMNOS::Model {
  **/
 class ExpressionOperator : public Operator {
 public:
-  ExpressionOperator(XML::bpmnos::tOperator* operator_, const AttributeMap& attributeMap);
+  ExpressionOperator(XML::bpmnos::tOperator* operator_, const AttributeMap& statusAttributes);
   std::unique_ptr<Expression> expression;
 
   void apply(Values& values) const;

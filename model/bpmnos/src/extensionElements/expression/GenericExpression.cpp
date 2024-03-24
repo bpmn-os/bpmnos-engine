@@ -2,8 +2,8 @@
 
 using namespace BPMNOS::Model;
 
-GenericExpression::GenericExpression(XML::bpmnos::tParameter* parameter, const AttributeMap& attributeMap)
-  : Expression(parameter, attributeMap)
+GenericExpression::GenericExpression(XML::bpmnos::tParameter* parameter, const AttributeMap& statusAttributes)
+  : Expression(parameter, statusAttributes)
 {
   if ( parameter->attribute.has_value() || !parameter->value.has_value() ) {
     throw std::runtime_error("GenericExpression: expression must be given by value");
@@ -26,7 +26,7 @@ GenericExpression::GenericExpression(XML::bpmnos::tParameter* parameter, const A
   for ( auto variable : variables ) {
     Attribute* boundAttribute; 
     try {
-      boundAttribute = attributeMap.at(variable);
+      boundAttribute = statusAttributes.at(variable);
     }
     catch (...) {
       throw std::runtime_error("GenericExpression: unknown expression variable");

@@ -18,7 +18,7 @@ namespace BPMNOS::Model {
  **/
 class GenericExpression : public Expression {
 public:
-  GenericExpression(XML::bpmnos::tParameter* parameter, const AttributeMap& attributeMap);
+  GenericExpression(XML::bpmnos::tParameter* parameter, const AttributeMap& statusAttributes);
 
   // From: https://www.partow.net/programming/exprtk/index.html:
   // Note: NumericType can be any floating point type. This includes but is not limited to:

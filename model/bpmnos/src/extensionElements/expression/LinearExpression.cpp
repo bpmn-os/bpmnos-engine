@@ -5,8 +5,8 @@
 
 using namespace BPMNOS::Model;
 
-LinearExpression::LinearExpression(XML::bpmnos::tParameter* parameter, const AttributeMap& attributeMap)
-  : Expression(parameter, attributeMap)
+LinearExpression::LinearExpression(XML::bpmnos::tParameter* parameter, const AttributeMap& statusAttributes)
+  : Expression(parameter, statusAttributes)
 {
   if ( parameter->attribute.has_value() || !parameter->value.has_value() ) {
     throw std::runtime_error("LinearExpression: expression must be given by value");
@@ -58,7 +58,7 @@ void LinearExpression::parse(std::string expressionString, NumericType SIGN) {
     }
 
     Attribute* variable = nullptr;
-    for ( auto &[key, attribute] : attributeMap ) {
+    for ( auto &[key, attribute] : statusAttributes ) {
       size_t pos = part.find(key);
       if ( pos != std::string::npos ) {
         if ( attribute->type == ValueType::STRING || attribute->type == ValueType::COLLECTION ) {

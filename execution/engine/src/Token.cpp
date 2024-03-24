@@ -123,11 +123,11 @@ Token::~Token() {
 
 const BPMNOS::Model::AttributeMap& Token::getAttributeMap() const {
   if ( !node ) {
-    return owner->process->extensionElements->as<const BPMNOS::Model::ExtensionElements>()->attributeMap;
+    return owner->process->extensionElements->as<const BPMNOS::Model::ExtensionElements>()->statusAttributes;
   }
 
   if ( auto extensionElements = node->extensionElements->represents<const BPMNOS::Model::ExtensionElements>() ) {
-    return extensionElements->attributeMap;
+    return extensionElements->statusAttributes;
   }
 
   if ( !owner->parentToken ) {
@@ -156,8 +156,8 @@ nlohmann::ordered_json Token::jsonify() const {
   jsonObject["state"] = stateName[(int)state];
   jsonObject["status"] = nlohmann::ordered_json::object();
 
-  auto& attributeMap = getAttributeMap();
-  for (auto& [attributeName,attribute] : attributeMap ) {
+  auto& statusAttributes = getAttributeMap();
+  for (auto& [attributeName,attribute] : statusAttributes ) {
     if ( attribute->index >= status.size() ) {
       // skip attribute that is not in status
       continue;
@@ -781,7 +781,7 @@ void Token::advanceToExiting() {
     const_cast<SystemState*>(owner->systemState)->objective += extensionElements->getContributionToObjective(status);
 
     // remove attributes that are no longer needed
-    status.resize( extensionElements->attributeMap.size() - extensionElements->attributes.size() );
+    status.resize( extensionElements->statusAttributes.size() - extensionElements->attributes.size() );
   }
 
   if ( auto activity = node->represents<BPMN::Activity>();

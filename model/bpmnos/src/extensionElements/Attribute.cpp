@@ -4,9 +4,9 @@
 
 using namespace BPMNOS::Model;
 
-Attribute::Attribute(XML::bpmnos::tAttribute* attribute, AttributeMap& attributeMap)
+Attribute::Attribute(XML::bpmnos::tAttribute* attribute, AttributeMap& statusAttributes)
   : element(attribute)
-  , index(attributeMap.size())
+  , index(statusAttributes.size())
   , id(attribute->id.value.value)
   , name(attribute->name.value.value)
 {
@@ -29,7 +29,7 @@ Attribute::Attribute(XML::bpmnos::tAttribute* attribute, AttributeMap& attribute
   if ( attribute->parameter.has_value() ) {
     auto& parameter = attribute->parameter.value().get();
     if ( parameter.name.value.value == "collection" ) {
-      collection = std::make_unique<Parameter>(&parameter,attributeMap);
+      collection = std::make_unique<Parameter>(&parameter,statusAttributes);
     }
     else {
       throw std::runtime_error("Attribute: illegal parameter provided for attribute '" + id + "'");

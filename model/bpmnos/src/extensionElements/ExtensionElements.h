@@ -22,11 +22,11 @@ class ExtensionElements : public BPMN::ExtensionElements {
 public:
   ExtensionElements(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent = nullptr);
   const BPMN::Scope* parent;
-  AttributeMap attributeMap; ///< Map allowing to look up all attributes by their names.
+  AttributeMap statusAttributes; ///< Map allowing to look up all status attributes by their names.
 
   enum Index { Instance, Timestamp }; ///< Indices for instance and timestamp attribute.
 
-  std::vector< std::unique_ptr<Attribute> > attributes; ///< Vector containing new attributes declared for the node.
+  std::vector< std::unique_ptr<Attribute> > attributes; ///< Vector containing new status attributes declared for the node.
   std::vector< std::unique_ptr<Restriction> > restrictions; ///< Vector containing new restrictions provided for the node.
   std::vector< std::unique_ptr<Operator> > operators;
   std::vector< std::unique_ptr<Choice> > choices;

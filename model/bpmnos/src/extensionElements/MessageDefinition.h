@@ -14,7 +14,7 @@ namespace BPMNOS::Model {
 
 class MessageDefinition {
 public:
-  MessageDefinition(XML::bpmnos::tMessage* message, AttributeMap& attributeMap);
+  MessageDefinition(XML::bpmnos::tMessage* message, AttributeMap& statusAttributes);
   XML::bpmnos::tMessage* element;
   BPMNOS::number name; ///< Message name
   ParameterMap parameterMap; ///< Map allowing to look up parameters by their names.

@@ -9,9 +9,9 @@
 
 using namespace BPMNOS::Model;
 
-Guidance::Guidance(XML::bpmnos::tGuidance* guidance,  AttributeMap attributeMap)
+Guidance::Guidance(XML::bpmnos::tGuidance* guidance,  AttributeMap statusAttributes)
   : element(guidance)
-  , attributeMap(attributeMap)
+  , statusAttributes(statusAttributes)
 {
   if ( guidance->type.value.value == "message" ) {
     type = Type::MessageDelivery;
@@ -29,12 +29,12 @@ Guidance::Guidance(XML::bpmnos::tGuidance* guidance,  AttributeMap attributeMap)
   // add all attributes
   if ( guidance->attributes.has_value() ) {
     for ( XML::bpmnos::tAttribute& attributeElement : guidance->attributes.value().get().attribute ) {
-      auto attribute = std::make_unique<Attribute>(&attributeElement,attributeMap);
-      if ( attributeMap.contains(attribute->name) ) {
+      auto attribute = std::make_unique<Attribute>(&attributeElement,statusAttributes);
+      if ( statusAttributes.contains(attribute->name) ) {
         throw std::runtime_error("Guidance: illegal redeclaration of attribute '" + (std::string)attribute->name + "'");
       }
       else { 
-        attributeMap[attribute->name] = attribute.get();
+        statusAttributes[attribute->name] = attribute.get();
         attributes.push_back(std::move(attribute));
       }
     }
@@ -43,7 +43,7 @@ Guidance::Guidance(XML::bpmnos::tGuidance* guidance,  AttributeMap attributeMap)
   if ( guidance->restrictions.has_value() ) {
     for ( XML::bpmnos::tRestriction& restriction : guidance->restrictions.value().get().restriction ) {
       try {
-        restrictions.push_back(std::make_unique<Restriction>(&restriction,attributeMap));
+        restrictions.push_back(std::make_unique<Restriction>(&restriction,statusAttributes));
       }
       catch ( ... ){
         throw std::runtime_error("Guidance: illegal parameters for restriction '" + (std::string)restriction.id.value + "'");
@@ -54,7 +54,7 @@ Guidance::Guidance(XML::bpmnos::tGuidance* guidance,  AttributeMap attributeMap)
   if ( guidance->operators.has_value() ) {
     for ( XML::bpmnos::tOperator& operator_ : guidance->operators.value().get().operator_ ) {
       try {
-        operators.push_back(Operator::create(&operator_,attributeMap));
+        operators.push_back(Operator::create(&operator_,statusAttributes));
       }
       catch ( ... ){
         throw std::runtime_error("Guidance: illegal parameters for operator '" + (std::string)operator_.id.value + "'");
@@ -65,7 +65,7 @@ Guidance::Guidance(XML::bpmnos::tGuidance* guidance,  AttributeMap attributeMap)
 
 BPMNOS::number Guidance::getObjective(const Values& values) const {
   BPMNOS::number objective = 0;
-  for ( auto& [name, attribute] : attributeMap ) {
+  for ( auto& [name, attribute] : statusAttributes ) {
     if ( attribute->index >= values.size() ) {
       break;
     }

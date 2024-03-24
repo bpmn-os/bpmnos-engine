@@ -7,27 +7,27 @@
 
 using namespace BPMNOS::Model;
 
-Expression::Expression(XML::bpmnos::tParameter* parameter, const AttributeMap& attributeMap)
-  : attributeMap(attributeMap)
+Expression::Expression(XML::bpmnos::tParameter* parameter, const AttributeMap& statusAttributes)
+  : statusAttributes(statusAttributes)
   , expression(parameter->value.value().get().value)
 {
 }
 
-std::unique_ptr<Expression> Expression::create(XML::bpmnos::tParameter* parameter, const AttributeMap& attributeMap) {
+std::unique_ptr<Expression> Expression::create(XML::bpmnos::tParameter* parameter, const AttributeMap& statusAttributes) {
   if ( parameter->name.value.value == "linear" ) {
-    return std::make_unique<LinearExpression>(parameter, attributeMap);
+    return std::make_unique<LinearExpression>(parameter, statusAttributes);
   }
   else if ( parameter->name.value.value == "generic" ) {
-    return std::make_unique<GenericExpression>(parameter, attributeMap);
+    return std::make_unique<GenericExpression>(parameter, statusAttributes);
   }
   else if ( parameter->name.value.value == "nullcondition" ) {
-    return std::make_unique<NullCondition>(parameter, attributeMap);
+    return std::make_unique<NullCondition>(parameter, statusAttributes);
   }
   else if ( parameter->name.value.value == "enumeration" ) {
-    return std::make_unique<Enumeration>(parameter, attributeMap);
+    return std::make_unique<Enumeration>(parameter, statusAttributes);
   }
   else if ( parameter->name.value.value == "string" ) {
-    return std::make_unique<StringExpression>(parameter, attributeMap);
+    return std::make_unique<StringExpression>(parameter, statusAttributes);
   }
   else {
     throw std::logic_error("Expression: illegal expression type");

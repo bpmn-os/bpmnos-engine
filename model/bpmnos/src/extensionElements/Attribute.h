@@ -19,7 +19,7 @@ typedef std::unordered_map<std::string, Attribute*> AttributeMap;
 
 class Attribute {
 public:
-  Attribute(XML::bpmnos::tAttribute* attribute, AttributeMap& attributeMap);
+  Attribute(XML::bpmnos::tAttribute* attribute, AttributeMap& statusAttributes);
   XML::bpmnos::tAttribute* element;
 
   std::size_t index; ///< Index of attribute in status.

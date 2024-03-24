@@ -3,8 +3,8 @@
 
 using namespace BPMNOS::Model;
 
-AssignOperator::AssignOperator(XML::bpmnos::tOperator* operator_, AttributeMap& attributeMap)
-  : Operator(operator_, attributeMap)
+AssignOperator::AssignOperator(XML::bpmnos::tOperator* operator_, AttributeMap& statusAttributes)
+  : Operator(operator_, statusAttributes)
 {
   try {
     parameter = parameterMap.at("assign").get();

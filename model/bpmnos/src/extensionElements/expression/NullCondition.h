@@ -14,7 +14,7 @@ namespace BPMNOS::Model {
  **/
 class NullCondition : public Expression {
 public:
-  NullCondition(XML::bpmnos::tParameter* parameter, const AttributeMap& attributeMap);
+  NullCondition(XML::bpmnos::tParameter* parameter, const AttributeMap& statusAttributes);
   enum class Type { ISNULL, NOTNULL };
   Type type;
   Attribute* attribute;

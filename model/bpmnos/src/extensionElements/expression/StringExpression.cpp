@@ -5,8 +5,8 @@
 
 using namespace BPMNOS::Model;
 
-StringExpression::StringExpression(XML::bpmnos::tParameter* parameter, const AttributeMap& attributeMap)
-  : Expression(parameter, attributeMap)
+StringExpression::StringExpression(XML::bpmnos::tParameter* parameter, const AttributeMap& statusAttributes)
+  : Expression(parameter, statusAttributes)
 {
   if ( parameter->attribute.has_value() || !parameter->value.has_value() ) {
     throw std::runtime_error("StringExpression: expression must be given by value");
@@ -30,8 +30,8 @@ StringExpression::StringExpression(XML::bpmnos::tParameter* parameter, const Att
   strutil::trim(parts.front());
   strutil::trim(parts.back());
 
-  if ( auto it = attributeMap.find(parts.front());
-    it != attributeMap.end()
+  if ( auto it = statusAttributes.find(parts.front());
+    it != statusAttributes.end()
   ) {
     attribute = it->second;
     if ( attribute->type != ValueType::STRING ) {
@@ -46,8 +46,8 @@ StringExpression::StringExpression(XML::bpmnos::tParameter* parameter, const Att
     rhs = BPMNOS::to_number( parts.back().substr(1,parts.back().size()-2), STRING );
   }
   else {
-    if ( auto it = attributeMap.find(parts.back());
-      it != attributeMap.end()
+    if ( auto it = statusAttributes.find(parts.back());
+      it != statusAttributes.end()
     ) {
       if ( it->second->type != ValueType::STRING ) {
         throw std::runtime_error("LinearExpression: variable '" + it->second->name + "' is not a string");

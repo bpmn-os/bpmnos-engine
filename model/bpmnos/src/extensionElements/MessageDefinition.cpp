@@ -5,7 +5,7 @@
 
 using namespace BPMNOS::Model;
 
-MessageDefinition::MessageDefinition(XML::bpmnos::tMessage* message, AttributeMap& attributeMap)
+MessageDefinition::MessageDefinition(XML::bpmnos::tMessage* message, AttributeMap& statusAttributes)
   : element(message)
   , name( BPMNOS::to_number(message->name.value.value,STRING) )
 {
@@ -17,7 +17,7 @@ MessageDefinition::MessageDefinition(XML::bpmnos::tMessage* message, AttributeMa
     std::set< std::string > additionalHeader;
     for ( XML::bpmnos::tParameter& parameter : element->getChildren<XML::bpmnos::tParameter>() ) {
       auto& key = parameter.name.value.value;
-      parameterMap.emplace(key,std::make_unique<Parameter>(&parameter,attributeMap));
+      parameterMap.emplace(key,std::make_unique<Parameter>(&parameter,statusAttributes));
       if ( key != "name" && key != "sender" && key != "recipient" ) {
         additionalHeader.insert(key);
       }
@@ -27,7 +27,7 @@ MessageDefinition::MessageDefinition(XML::bpmnos::tMessage* message, AttributeMa
     }
 
     for ( XML::bpmnos::tContent& content : element->getChildren<XML::bpmnos::tContent>() ) {
-      contentMap.emplace(content.key.value.value,std::make_unique<Content>(&content,attributeMap));
+      contentMap.emplace(content.key.value.value,std::make_unique<Content>(&content,statusAttributes));
     }
 }
 

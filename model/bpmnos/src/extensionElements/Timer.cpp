@@ -10,12 +10,12 @@ Timer::Timer(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent)
   : BPMN::ExtensionElements( baseElement ) 
   , parent(parent)
 {
-  AttributeMap& attributeMap = parent->extensionElements->as<BPMNOS::Model::ExtensionElements>()->attributeMap;
+  AttributeMap& statusAttributes = parent->extensionElements->as<BPMNOS::Model::ExtensionElements>()->statusAttributes;
 
   if ( element ) {
     for ( XML::bpmnos::tParameter& parameter : get<XML::bpmnos::tTimer,XML::bpmnos::tParameter>() ) {
       if ( parameter.name.value.value == "trigger" ) {
-        trigger = std::make_unique<Parameter>(&parameter,attributeMap);
+        trigger = std::make_unique<Parameter>(&parameter,statusAttributes);
       }
     }
   }

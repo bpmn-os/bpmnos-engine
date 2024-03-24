@@ -14,7 +14,7 @@ namespace BPMNOS::Model {
  **/
 class StringExpression : public Expression {
 public:
-  StringExpression(XML::bpmnos::tParameter* parameter, const AttributeMap& attributeMap);
+  StringExpression(XML::bpmnos::tParameter* parameter, const AttributeMap& statusAttributes);
  
   enum class Type { EQUAL, NOTEQUAL };
   Type type;

@@ -15,7 +15,7 @@ namespace BPMNOS::Model {
 
 class Restriction {
 public:
-  Restriction(XML::bpmnos::tRestriction* restriction, AttributeMap& attributeMap);
+  Restriction(XML::bpmnos::tRestriction* restriction, AttributeMap& statusAttributes);
   XML::bpmnos::tRestriction* element;
 
   std::string& id;

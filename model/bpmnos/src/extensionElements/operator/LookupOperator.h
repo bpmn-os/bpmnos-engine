@@ -16,7 +16,7 @@ namespace BPMNOS::Model {
  **/
 class LookupOperator : public Operator {
 public:
-  LookupOperator(XML::bpmnos::tOperator* operator_, AttributeMap& attributeMap);
+  LookupOperator(XML::bpmnos::tOperator* operator_, AttributeMap& statusAttributes);
   std::string filename;
   std::string key;
   std::vector< std::pair< std::string, Attribute*> > lookups;

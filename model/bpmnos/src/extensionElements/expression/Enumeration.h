@@ -17,7 +17,7 @@ namespace BPMNOS::Model {
  **/
 class Enumeration : public Expression {
 public:
-  Enumeration(XML::bpmnos::tParameter* parameter, const AttributeMap& attributeMap);
+  Enumeration(XML::bpmnos::tParameter* parameter, const AttributeMap& statusAttributes);
   enum class Type { IN, NOTIN };
   Type type;
   static constexpr std::string IN = std::string("in");

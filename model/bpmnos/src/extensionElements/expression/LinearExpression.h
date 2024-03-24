@@ -15,7 +15,7 @@ namespace BPMNOS::Model {
  **/
 class LinearExpression : public Expression {
 public:
-  LinearExpression(XML::bpmnos::tParameter* parameter, const AttributeMap& attributeMap);
+  LinearExpression(XML::bpmnos::tParameter* parameter, const AttributeMap& statusAttributes);
  
   using NumericType = double;
   using Term = std::tuple<NumericType,Attribute*>;

@@ -18,9 +18,9 @@ SCENARIO( "Lookup table", "[model][lookup]" ) {
         for ( auto& [process,values] : instantiations ) {
           auto extensionElements = process->extensionElements->represents<Model::ExtensionElements>();
           REQUIRE( values.size() == 3 + 2 ); // don't forget timestamp and instance id
-          REQUIRE( values[extensionElements->attributeMap["cost"]->index].value() == 0 );
+          REQUIRE( values[extensionElements->statusAttributes["cost"]->index].value() == 0 );
           extensionElements->applyOperators(values);
-          REQUIRE( values[extensionElements->attributeMap["cost"]->index].value() == 12 );
+          REQUIRE( values[extensionElements->statusAttributes["cost"]->index].value() == 12 );
         }
       }
     }
@@ -41,9 +41,9 @@ SCENARIO( "Lookup table", "[model][lookup]" ) {
         for ( auto& [process,values] : instantiations ) {
           auto extensionElements = process->extensionElements->represents<Model::ExtensionElements>();
           REQUIRE( values.size() == 3 + 2 ); // don't forget timestamp and instance id
-          REQUIRE( values[extensionElements->attributeMap["cost"]->index].value() == 0 );
+          REQUIRE( values[extensionElements->statusAttributes["cost"]->index].value() == 0 );
           extensionElements->applyOperators(values);
-          REQUIRE( values[extensionElements->attributeMap["cost"]->index].has_value() == false );
+          REQUIRE( values[extensionElements->statusAttributes["cost"]->index].has_value() == false );
         }
       }
     }

@@ -20,16 +20,16 @@ namespace BPMNOS::Model {
  **/
 class Operator {
 public:
-  Operator(XML::bpmnos::tOperator* operator_, const AttributeMap& attributeMap);
+  Operator(XML::bpmnos::tOperator* operator_, const AttributeMap& statusAttributes);
   virtual ~Operator() = default;  // Virtual destructor
   XML::bpmnos::tOperator* element;
 
   std::string& id;
   Attribute* attribute;
-  const AttributeMap& attributeMap;
+  const AttributeMap& statusAttributes;
   ParameterMap parameterMap;
 
-  static std::unique_ptr<Operator> create(XML::bpmnos::tOperator* operator_, AttributeMap& attributeMap);
+  static std::unique_ptr<Operator> create(XML::bpmnos::tOperator* operator_, AttributeMap& statusAttributes);
   virtual void apply(Values& values) const = 0;
 
   /// Returns a pointer of type T of the node.

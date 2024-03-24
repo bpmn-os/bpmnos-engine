@@ -2,10 +2,10 @@
 
 using namespace BPMNOS::Model;
 
-Restriction::Restriction(XML::bpmnos::tRestriction* restriction, AttributeMap& attributeMap)
+Restriction::Restriction(XML::bpmnos::tRestriction* restriction, AttributeMap& statusAttributes)
   : element(restriction)
   , id(restriction->id.value.value)
-  , expression(Expression::create( &restriction->getRequiredChild<XML::bpmnos::tParameter>(), attributeMap))
+  , expression(Expression::create( &restriction->getRequiredChild<XML::bpmnos::tParameter>(), statusAttributes))
   , scope(Scope::FULL)
 {
   if ( restriction->scope.has_value() ) {

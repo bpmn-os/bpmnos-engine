@@ -12,7 +12,7 @@ namespace BPMNOS::Model {
  **/
 class UnassignOperator : public Operator {
 public:
-  UnassignOperator(XML::bpmnos::tOperator* operator_, AttributeMap& attributeMap);
+  UnassignOperator(XML::bpmnos::tOperator* operator_, AttributeMap& statusAttributes);
 
 /**
  * @brief Sets a status attribute as undefined.

@@ -16,9 +16,9 @@ class Scenario;
 
 class Guidance {
 public:
-  Guidance(XML::bpmnos::tGuidance* guidance, AttributeMap attributeMap);
+  Guidance(XML::bpmnos::tGuidance* guidance, AttributeMap statusAttributes);
   XML::bpmnos::tGuidance* element;
-  AttributeMap attributeMap; ///< Map allowing to look up attributes by their names.
+  AttributeMap statusAttributes; ///< Map allowing to look up attributes by their names.
 
   enum class Type { Entry, Exit, Choice, MessageDelivery };
   Type type;

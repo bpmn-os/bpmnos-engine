@@ -9,9 +9,9 @@ Gatekeeper::Gatekeeper(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent
   : BPMN::ExtensionElements( baseElement ) 
   , parent(parent)
 {
-  AttributeMap& attributeMap = parent->extensionElements->as<BPMNOS::Model::ExtensionElements>()->attributeMap;
+  AttributeMap& statusAttributes = parent->extensionElements->as<BPMNOS::Model::ExtensionElements>()->statusAttributes;
   for ( XML::bpmnos::tRestriction& restriction : get<XML::bpmnos::tRestrictions,XML::bpmnos::tRestriction>() ) {
-    restrictions.push_back( std::make_unique<Restriction>( &restriction,  attributeMap ) );
+    restrictions.push_back( std::make_unique<Restriction>( &restriction,  statusAttributes ) );
   }
 }
 

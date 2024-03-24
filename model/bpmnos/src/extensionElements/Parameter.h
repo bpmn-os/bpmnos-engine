@@ -15,7 +15,7 @@ namespace BPMNOS::Model {
 
 class Parameter {
 public:
-  Parameter(XML::bpmnos::tParameter* parameter, const AttributeMap& attributeMap);
+  Parameter(XML::bpmnos::tParameter* parameter, const AttributeMap& statusAttributes);
   XML::bpmnos::tParameter* element;
 
   std::string& name;
@@ -23,7 +23,7 @@ public:
   std::optional< std::reference_wrapper<XML::Value> > value;
 
 protected:
-  std::optional< std::reference_wrapper<Attribute> > getAttribute(const AttributeMap& attributeMap);
+  std::optional< std::reference_wrapper<Attribute> > getAttribute(const AttributeMap& statusAttributes);
 };
 
 typedef std::unordered_map< std::string, std::unique_ptr<Parameter> > ParameterMap;

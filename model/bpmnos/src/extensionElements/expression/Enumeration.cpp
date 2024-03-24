@@ -6,8 +6,8 @@
 
 using namespace BPMNOS::Model;
 
-Enumeration::Enumeration(XML::bpmnos::tParameter* parameter, const AttributeMap& attributeMap)
-  : Expression(parameter, attributeMap)
+Enumeration::Enumeration(XML::bpmnos::tParameter* parameter, const AttributeMap& statusAttributes)
+  : Expression(parameter, statusAttributes)
 {
   if ( !parameter->value.has_value() ) {
     throw std::runtime_error("Enumeration: list of allowed values must be provided");
@@ -23,8 +23,8 @@ Enumeration::Enumeration(XML::bpmnos::tParameter* parameter, const AttributeMap&
   
   auto attributeName = trimmed.substr(0,pos);
 
-  if ( auto it = attributeMap.find(attributeName);
-    it != attributeMap.end()
+  if ( auto it = statusAttributes.find(attributeName);
+    it != statusAttributes.end()
   ) {
     attribute = it->second;
   }
@@ -56,8 +56,8 @@ Enumeration::Enumeration(XML::bpmnos::tParameter* parameter, const AttributeMap&
     collection = collectionRegistry(trimmed);
   }
   else {
-    if ( auto it = attributeMap.find(trimmed);
-      it != attributeMap.end()
+    if ( auto it = statusAttributes.find(trimmed);
+      it != statusAttributes.end()
     ) {
       if ( it->second->type != ValueType::COLLECTION ) {
         throw std::runtime_error("Enumeration: variable '" + attribute->name + "' is not a collection");

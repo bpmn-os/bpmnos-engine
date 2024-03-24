@@ -16,7 +16,7 @@ namespace BPMNOS::Model {
 
 class Content {
 public:
-  Content(XML::bpmnos::tContent* content, AttributeMap& attributeMap);
+  Content(XML::bpmnos::tContent* content, AttributeMap& statusAttributes);
   XML::bpmnos::tContent* element;
 
   std::string& id;
@@ -25,7 +25,7 @@ public:
   std::optional< std::string > value; 
 
 protected:
-  std::optional< std::reference_wrapper<Attribute> > getAttribute(AttributeMap& attributeMap);
+  std::optional< std::reference_wrapper<Attribute> > getAttribute(AttributeMap& statusAttributes);
 };
 
 typedef std::unordered_map< std::string, std::unique_ptr<Content> > ContentMap;

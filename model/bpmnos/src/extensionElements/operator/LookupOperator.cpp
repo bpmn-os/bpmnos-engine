@@ -3,8 +3,8 @@
 
 using namespace BPMNOS::Model;
 
-LookupOperator::LookupOperator(XML::bpmnos::tOperator* operator_, AttributeMap& attributeMap)
-  : Operator(operator_, attributeMap)
+LookupOperator::LookupOperator(XML::bpmnos::tOperator* operator_, AttributeMap& statusAttributes)
+  : Operator(operator_, statusAttributes)
 {
   try {
     parameterMap.at("source").get();

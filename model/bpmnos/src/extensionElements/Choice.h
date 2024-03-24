@@ -17,7 +17,7 @@ namespace BPMNOS::Model {
  */
 class Choice {
 public:
-  Choice(XML::bpmnos::tChoice* choice, AttributeMap& attributeMap);
+  Choice(XML::bpmnos::tChoice* choice, AttributeMap& statusAttributes);
   XML::bpmnos::tChoice* element;
 
   Attribute* attribute;

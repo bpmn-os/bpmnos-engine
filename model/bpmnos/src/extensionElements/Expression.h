@@ -16,11 +16,11 @@ namespace BPMNOS::Model {
  **/
 class Expression {
 public:
-  Expression(XML::bpmnos::tParameter* parameter, const AttributeMap& attributeMap);
+  Expression(XML::bpmnos::tParameter* parameter, const AttributeMap& statusAttributes);
   virtual ~Expression() = default;  // Virtual destructor
-  const AttributeMap& attributeMap;
+  const AttributeMap& statusAttributes;
   const std::string expression;
-  static std::unique_ptr<Expression> create(XML::bpmnos::tParameter* parameter, const AttributeMap& attributeMap);
+  static std::unique_ptr<Expression> create(XML::bpmnos::tParameter* parameter, const AttributeMap& statusAttributes);
   virtual std::optional<BPMNOS::number> execute(const Values& values) const = 0;
   virtual std::pair< std::optional<BPMNOS::number>, std::optional<BPMNOS::number> > getBounds(const Attribute* attribute, const Values& values) const;
 };

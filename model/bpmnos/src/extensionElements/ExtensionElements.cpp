@@ -26,7 +26,7 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, BPMN:
 
   if ( parent ) {
     parentSize = parent->extensionElements->as<ExtensionElements>()->size();
-    attributeMap = parent->extensionElements->as<ExtensionElements>()->attributeMap;
+    statusAttributes = parent->extensionElements->as<ExtensionElements>()->statusAttributes;
   }
   else {
     parentSize = 0;
@@ -38,8 +38,8 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, BPMN:
     // add all attributes
     if ( status->get().attributes.has_value() ) {
       for ( XML::bpmnos::tAttribute& attributeElement : status->get().attributes.value().get().attribute ) {
-        auto attribute = std::make_unique<Attribute>(&attributeElement,attributeMap);
-        attributeMap[attribute->name] = attribute.get();
+        auto attribute = std::make_unique<Attribute>(&attributeElement,statusAttributes);
+        statusAttributes[attribute->name] = attribute.get();
         if ( attribute->id == Keyword::Instance ) {
           // always insert instance attribute at first position
           attributes.insert(attributes.begin(), std::move(attribute));
@@ -76,7 +76,7 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, BPMN:
     if ( status->get().restrictions.has_value() ) {
       for ( XML::bpmnos::tRestriction& restriction : status->get().restrictions.value().get().restriction ) {
         try {
-          restrictions.push_back(std::make_unique<Restriction>(&restriction,attributeMap));
+          restrictions.push_back(std::make_unique<Restriction>(&restriction,statusAttributes));
         }
         catch ( const std::runtime_error& error ) {
           throw std::runtime_error("ExtensionElements: illegal parameters for restriction '" + (std::string)restriction.id.value + "'.\n" + error.what());
@@ -87,7 +87,7 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, BPMN:
     if ( status->get().operators.has_value() ) {
       for ( XML::bpmnos::tOperator& operator_ : status->get().operators.value().get().operator_ ) {
         try {
-          operators.push_back(Operator::create(&operator_,attributeMap));
+          operators.push_back(Operator::create(&operator_,statusAttributes));
           if ( operators.back()->attribute->index == BPMNOS::Model::ExtensionElements::Index::Instance ) {
             throw;
           }
@@ -104,7 +104,7 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, BPMN:
     if ( status->get().choices.has_value() ) {
       for ( XML::bpmnos::tChoice& choice : status->get().choices.value().get().choice ) {
         try {
-          choices.push_back(std::make_unique<Choice>(&choice,attributeMap));
+          choices.push_back(std::make_unique<Choice>(&choice,statusAttributes));
         }
         catch ( const std::runtime_error& error ) {
           throw std::runtime_error("ExtensionElements: illegal attributes for choice '" + (std::string)choice.id.value + "'.\n" + error.what());
@@ -116,21 +116,21 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, BPMN:
   // add all message definitions
   if ( element->getOptionalChild<XML::bpmnos::tMessages>().has_value() ) {
     for ( XML::bpmnos::tMessage& message : element->getOptionalChild<XML::bpmnos::tMessages>()->get().message ) {
-      messageDefinitions.push_back(std::make_unique<MessageDefinition>(&message,attributeMap));
+      messageDefinitions.push_back(std::make_unique<MessageDefinition>(&message,statusAttributes));
     }
   }
   else if ( auto message = element->getOptionalChild<XML::bpmnos::tMessage>(); message.has_value() ) {
-    messageDefinitions.push_back(std::make_unique<MessageDefinition>(&message->get(),attributeMap));
+    messageDefinitions.push_back(std::make_unique<MessageDefinition>(&message->get(),statusAttributes));
   }
 
   // add loop characteristics
   if ( element->getOptionalChild<XML::bpmnos::tLoopCharacteristics>().has_value() ) {
     for ( XML::bpmnos::tParameter& parameter : element->getOptionalChild<XML::bpmnos::tLoopCharacteristics>()->get().parameter ) {
       if ( parameter.name.value.value == "cardinality" ) {
-        loopCardinality = std::make_unique<Parameter>(&parameter,attributeMap);
+        loopCardinality = std::make_unique<Parameter>(&parameter,statusAttributes);
       }
       else if ( parameter.name.value.value == "index" ) {
-        loopIndex = std::make_unique<Parameter>(&parameter,attributeMap);
+        loopIndex = std::make_unique<Parameter>(&parameter,statusAttributes);
       }
     }
   }
@@ -144,7 +144,7 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, BPMN:
   
   // add all guidances
   for ( XML::bpmnos::tGuidance& item : element->getChildren<XML::bpmnos::tGuidance>() ) {
-    auto guidance = std::make_unique<Guidance>(&item,attributeMap);
+    auto guidance = std::make_unique<Guidance>(&item,statusAttributes);
     if ( guidance->type == Guidance::Type::Entry ) {
       entryGuidance = std::move(guidance);
     }
@@ -233,7 +233,7 @@ void ExtensionElements::applyOperators(Values& values) const {
 
 BPMNOS::number ExtensionElements::getObjective(const Values& values) const {
   BPMNOS::number objective = 0;
-  for ( auto& [name, attribute] : attributeMap ) {
+  for ( auto& [name, attribute] : statusAttributes ) {
     if ( values[attribute->index].has_value() ) {
       objective += attribute->weight * values[attribute->index].value();
     }
