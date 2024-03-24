@@ -50,8 +50,16 @@ std::unique_ptr<BPMN::FlowNode> Model::createActivity(XML::bpmn::tActivity* acti
 std::unique_ptr<BPMN::SequenceFlow> Model::createSequenceFlow(XML::bpmn::tSequenceFlow* sequenceFlow, BPMN::Scope* scope) {
   // bind gatekeeper restrictions to all sequence flows
   return bind<BPMN::SequenceFlow>(
-    BPMN::Model::createSequenceFlow(sequenceFlow, scope),
+    BPMN::Model::createSequenceFlow(sequenceFlow,scope),
     std::make_unique<Gatekeeper>(sequenceFlow,scope)
+  );
+}
+
+std::unique_ptr<BPMN::DataObject> Model::createDataObject(XML::bpmn::tDataObject* dataObject, BPMN::Scope* scope) {
+  // bind attributes to all data objects
+  return bind<BPMN::DataObject>(
+    BPMN::Model::createDataObject(dataObject,scope),
+    std::make_unique<BPMNOS::Model::ExtensionElements>(dataObject,scope)
   );
 }
 
