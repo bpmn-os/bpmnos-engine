@@ -6,6 +6,7 @@
 #include "extensionElements/ExtensionElements.h"
 #include "extensionElements/Gatekeeper.h"
 #include "extensionElements/Timer.h"
+#include "extensionElements/Data.h"
 #include "extensionElements/MessageDefinition.h"
 #include "DecisionTask.h"
 #include "SequentialAdHocSubProcess.h"
@@ -59,7 +60,7 @@ std::unique_ptr<BPMN::DataObject> Model::createDataObject(XML::bpmn::tDataObject
   // bind attributes to all data objects
   return bind<BPMN::DataObject>(
     BPMN::Model::createDataObject(dataObject,scope),
-    std::make_unique<BPMNOS::Model::ExtensionElements>(dataObject,scope)
+    std::make_unique<BPMNOS::Model::Data>(dataObject,scope)
   );
 }
 
