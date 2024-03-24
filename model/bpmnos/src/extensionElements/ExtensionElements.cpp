@@ -160,27 +160,27 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, BPMN:
   }
 }
 
-bool ExtensionElements::feasibleEntry(const Values& values) const {
+bool ExtensionElements::feasibleEntry(const Values& status) const {
   for ( auto& restriction : restrictions ) {
-    if ( restriction->scope != Restriction::Scope::EXIT && !restriction->isSatisfied(values) ) {
+    if ( restriction->scope != Restriction::Scope::EXIT && !restriction->isSatisfied(status) ) {
       return false;
     }
   }
-  return satisfiesInheritedRestrictions(values);
+  return satisfiesInheritedRestrictions(status);
 }
 
-bool ExtensionElements::feasibleExit(const Values& values) const {
+bool ExtensionElements::feasibleExit(const Values& status) const {
   for ( auto& restriction : restrictions ) {
-    if ( restriction->scope != Restriction::Scope::ENTRY && !restriction->isSatisfied(values) ) {
+    if ( restriction->scope != Restriction::Scope::ENTRY && !restriction->isSatisfied(status) ) {
       return false;
     }
   }
   
-  return satisfiesInheritedRestrictions(values);
+  return satisfiesInheritedRestrictions(status);
 }
 
 
-bool ExtensionElements::satisfiesInheritedRestrictions(const Values& values) const {
+bool ExtensionElements::satisfiesInheritedRestrictions(const Values& status) const {
   auto base = baseElement->represents<BPMN::ChildNode>();
   
   if ( !base ) return true;
@@ -189,7 +189,7 @@ bool ExtensionElements::satisfiesInheritedRestrictions(const Values& values) con
   const BPMN::Node* ancestor = base->parent;
   while ( ancestor ) {
     assert( ancestor->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );
-    if ( !ancestor->extensionElements->as<BPMNOS::Model::ExtensionElements>()->fullScopeRestrictionsSatisfied(values) ) {
+    if ( !ancestor->extensionElements->as<BPMNOS::Model::ExtensionElements>()->fullScopeRestrictionsSatisfied(status) ) {
       return false;
     }
     if ( auto eventSubProcess = ancestor->represents<BPMN::EventSubProcess>();
@@ -215,9 +215,9 @@ bool ExtensionElements::satisfiesInheritedRestrictions(const Values& values) con
   return true;
 }
 
-bool ExtensionElements::fullScopeRestrictionsSatisfied(const Values& values) const {
+bool ExtensionElements::fullScopeRestrictionsSatisfied(const Values& status) const {
   for ( auto& restriction : restrictions ) {
-    if ( restriction->scope == Restriction::Scope::FULL && !restriction->isSatisfied(values) ) {
+    if ( restriction->scope == Restriction::Scope::FULL && !restriction->isSatisfied(status) ) {
       return false;
     }
   }
@@ -225,27 +225,27 @@ bool ExtensionElements::fullScopeRestrictionsSatisfied(const Values& values) con
 }
 
 
-void ExtensionElements::applyOperators(Values& values) const {
+void ExtensionElements::applyOperators(Values& status) const {
   for ( auto& operator_ : operators ) {
-    operator_->apply(values);
+    operator_->apply(status);
   }
 }
 
-BPMNOS::number ExtensionElements::getObjective(const Values& values) const {
+BPMNOS::number ExtensionElements::getObjective(const Values& status) const {
   BPMNOS::number objective = 0;
   for ( auto& [name, attribute] : statusAttributes ) {
-    if ( values[attribute->index].has_value() ) {
-      objective += attribute->weight * values[attribute->index].value();
+    if ( status[attribute->index].has_value() ) {
+      objective += attribute->weight * status[attribute->index].value();
     }
   }
   return objective;
 }
 
-BPMNOS::number ExtensionElements::getContributionToObjective(const Values& values) const {
+BPMNOS::number ExtensionElements::getContributionToObjective(const Values& status) const {
   BPMNOS::number contribution = 0;
   for ( auto& attribute : attributes ) {
-    if ( values[attribute->index].has_value() ) {
-      contribution += attribute->weight * values[attribute->index].value();
+    if ( status[attribute->index].has_value() ) {
+      contribution += attribute->weight * status[attribute->index].value();
     }
   }
   return contribution;

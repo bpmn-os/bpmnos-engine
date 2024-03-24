@@ -41,16 +41,16 @@ public:
 
   inline std::size_t size() const { return parentSize + attributes.size(); };
 
-  bool feasibleEntry(const Values& values) const;
-  bool feasibleExit(const Values& values) const;
-  bool satisfiesInheritedRestrictions(const Values& values) const;
-  bool fullScopeRestrictionsSatisfied(const Values& values) const;
+  bool feasibleEntry(const Values& status) const;
+  bool feasibleExit(const Values& status) const;
+  bool satisfiesInheritedRestrictions(const Values& status) const;
+  bool fullScopeRestrictionsSatisfied(const Values& status) const;
   
   bool isInstantaneous; ///< Boolean indicating whether operators may modify timestamp.
-  void applyOperators(Values& values) const;
+  void applyOperators(Values& status) const;
 
-  BPMNOS::number getObjective(const Values& values) const; ///< Returns the contribution to the objective.
-  BPMNOS::number getContributionToObjective(const Values& values) const; ///< Returns the contribution to the objective by the attributes declared for the node.
+  BPMNOS::number getObjective(const Values& status) const; ///< Returns the contribution to the objective.
+  BPMNOS::number getContributionToObjective(const Values& status) const; ///< Returns the contribution to the objective by the attributes declared for the node.
   
   std::optional< std::unique_ptr<Guidance> > messageDeliveryGuidance;
   std::optional< std::unique_ptr<Guidance> > entryGuidance;
