@@ -151,11 +151,20 @@ void Model::createDataObjects(BPMN::Scope* scope) {
   }
   
   for ( auto& dataObject : scope->dataObjects ) {
+    if ( dataObject->isCollection ) {
+      throw std::runtime_error("Model: data object collections are not supported");
+    }
     auto data = dataObject->extensionElements->as<Data>();
     for ( size_t i = 0; i < data->attributes.size(); i++ ) {
-      data->attributes[i]->index = count + i;
-      extensionElements->data.push_back( data->attributes[i].get() );
-      extensionElements->dataAttributes[data->attributes[i]->name] = data->attributes[i].get();
+      auto attribute = data->attributes[i].get();
+
+      if ( attribute->element->parameter.has_value() ) {
+        throw std::runtime_error("Model: parameters for data attributes are not supported");
+      }
+
+      attribute->index = count + i;
+      extensionElements->data.push_back( attribute );
+      extensionElements->dataAttributes[attribute->name] = attribute;
     }
     count += data->attributes.size();
   }

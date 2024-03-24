@@ -6,6 +6,7 @@ using namespace BPMNOS::Model;
 
 Attribute::Attribute(XML::bpmnos::tAttribute* attribute)
   : element(attribute)
+  , index(std::numeric_limits<size_t>::max())
   , id(attribute->id.value.value)
   , name(attribute->name.value.value)
   , isImmutable(true)

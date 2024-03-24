@@ -23,7 +23,7 @@ public:
   Attribute(XML::bpmnos::tAttribute* attribute, AttributeMap& statusAttributes);
   XML::bpmnos::tAttribute* element;
 
-  std::size_t index; ///< Index of attribute.
+  size_t index; ///< Index of attribute.
 
   std::string& id;
   std::string& name;
