@@ -140,6 +140,27 @@ std::unique_ptr<BPMN::FlowNode> Model::createMessageThrowEvent(XML::bpmn::tThrow
   );
 }
 
+void Model::createDataObjects(BPMN::Scope* scope) {
+  BPMN::Model::createDataObjects(scope);
+  
+  auto extensionElements = scope->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+  size_t count = 0;
+  if ( auto child = scope->represents<BPMN::ChildNode>() ) {
+    extensionElements->dataAttributes = child->parent->extensionElements->as<BPMNOS::Model::ExtensionElements>()->dataAttributes;
+    count = extensionElements->dataAttributes.size();
+  }
+  
+  for ( auto& dataObject : scope->dataObjects ) {
+    auto data = dataObject->extensionElements->as<Data>();
+    for ( size_t i = 0; i < data->attributes.size(); i++ ) {
+      data->attributes[i]->index = count + i;
+      extensionElements->data.push_back( data->attributes[i].get() );
+      extensionElements->dataAttributes[data->attributes[i]->name] = data->attributes[i].get();
+    }
+    count += data->attributes.size();
+  }
+}
+
 void Model::createMessageFlows() {
   BPMN::Model::createMessageFlows();
 

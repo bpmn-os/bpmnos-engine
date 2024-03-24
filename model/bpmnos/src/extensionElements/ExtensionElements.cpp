@@ -23,13 +23,10 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, BPMN:
   , isInstantaneous(true)
 {
   // @attention: this->baseElement is only set after constructed extension elements have been bound to the BPMN base element. 
+  // @attention: data objects are created after construction. 
 
   if ( parent ) {
-    parentSize = parent->extensionElements->as<ExtensionElements>()->size();
     statusAttributes = parent->extensionElements->as<ExtensionElements>()->statusAttributes;
-  }
-  else {
-    parentSize = 0;
   }
 
   if ( !element ) return; 

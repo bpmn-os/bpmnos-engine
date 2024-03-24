@@ -15,9 +15,7 @@ Data::Data(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* scope)
     // add all attributes
     if ( status->get().attributes.has_value() ) {
       for ( XML::bpmnos::tAttribute& attributeElement : status->get().attributes.value().get().attribute ) {
-        auto attribute = std::make_unique<Attribute>(&attributeElement,statusAttributes);
-        statusAttributes[attribute->name] = attribute.get();
-        attributes.push_back(std::move(attribute));
+        attributes.push_back( std::make_unique<Attribute>(&attributeElement) );
       }
     }
   }

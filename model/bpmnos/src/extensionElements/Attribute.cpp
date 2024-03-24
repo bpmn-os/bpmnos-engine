@@ -4,11 +4,11 @@
 
 using namespace BPMNOS::Model;
 
-Attribute::Attribute(XML::bpmnos::tAttribute* attribute, AttributeMap& statusAttributes)
+Attribute::Attribute(XML::bpmnos::tAttribute* attribute)
   : element(attribute)
-  , index(statusAttributes.size())
   , id(attribute->id.value.value)
   , name(attribute->name.value.value)
+  , isImmutable(true)
 {
   if ( attribute->type.value.value == "boolean" ) {
     type = ValueType::BOOLEAN;
@@ -24,16 +24,6 @@ Attribute::Attribute(XML::bpmnos::tAttribute* attribute, AttributeMap& statusAtt
   }
   else if ( attribute->type.value.value == "collection" ) {
     type = ValueType::COLLECTION;
-  }
-
-  if ( attribute->parameter.has_value() ) {
-    auto& parameter = attribute->parameter.value().get();
-    if ( parameter.name.value.value == "collection" ) {
-      collection = std::make_unique<Parameter>(&parameter,statusAttributes);
-    }
-    else {
-      throw std::runtime_error("Attribute: illegal parameter provided for attribute '" + id + "'");
-    }
   }
 
   if ( attribute->value.has_value() ) {
@@ -54,6 +44,22 @@ Attribute::Attribute(XML::bpmnos::tAttribute* attribute, AttributeMap& statusAtt
   else {
     weight = 0;
   }
+}
 
-  isImmutable = (id != Keyword::Timestamp);
+Attribute::Attribute(XML::bpmnos::tAttribute* attribute, AttributeMap& statusAttributes)
+  : Attribute(attribute)
+{
+  index = statusAttributes.size();
+
+  if ( attribute->parameter.has_value() ) {
+    auto& parameter = attribute->parameter.value().get();
+    if ( parameter.name.value.value == "collection" ) {
+      collection = std::make_unique<Parameter>(&parameter,statusAttributes);
+    }
+    else {
+      throw std::runtime_error("Attribute: illegal parameter provided for attribute '" + id + "'");
+    }
+  }
+
+  isImmutable = (id != Keyword::Timestamp); // TODO
 }

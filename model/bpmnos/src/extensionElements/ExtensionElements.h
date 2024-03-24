@@ -23,6 +23,7 @@ public:
   ExtensionElements(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent = nullptr);
   const BPMN::Scope* parent;
   AttributeMap statusAttributes; ///< Map allowing to look up all status attributes by their names.
+  AttributeMap dataAttributes; ///< Map allowing to look up all data attributes by their names.
 
   enum Index { Instance, Timestamp }; ///< Indices for instance and timestamp attribute.
 
@@ -31,6 +32,8 @@ public:
   std::vector< std::unique_ptr<Operator> > operators;
   std::vector< std::unique_ptr<Choice> > choices;
 
+  std::vector< Attribute* > data;  ///< Vector containing data attributes declared for data objects within the node's scope.
+
   std::vector< std::unique_ptr<MessageDefinition> > messageDefinitions; ///< Vector containing message definition(s) provided for the node.
   std::vector< const BPMN::FlowNode* > messageCandidates; ///< Vector containing all potential sending or receiving nodes of a message.
 
@@ -38,8 +41,6 @@ public:
   std::optional< std::unique_ptr<Parameter> > loopIndex;
   
   bool hasSequentialPerformer; ///< Boolean indicating whether element has a performer with name "Sequential".
-
-  inline std::size_t size() const { return parentSize + attributes.size(); };
 
   bool feasibleEntry(const Values& status) const;
   bool feasibleExit(const Values& status) const;
@@ -56,8 +57,6 @@ public:
   std::optional< std::unique_ptr<Guidance> > entryGuidance;
   std::optional< std::unique_ptr<Guidance> > exitGuidance;
   std::optional< std::unique_ptr<Guidance> > choiceGuidance;
-protected:
-  std::size_t parentSize;
 };
 
 } // namespace BPMNOS::Model
