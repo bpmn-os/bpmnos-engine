@@ -34,7 +34,7 @@ bool SystemState::isAlive() const {
   return !instances.empty();
 };
 
-std::vector< std::pair<const BPMN::Process*, BPMNOS::Values> > SystemState::getInstantiations() const {
+std::vector< std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values> > SystemState::getInstantiations() const {
   if ( assumedTime ) {
     return scenario->getAnticipatedInstantiations(currentTime,assumedTime.value());
   }

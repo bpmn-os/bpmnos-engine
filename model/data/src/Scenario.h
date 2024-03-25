@@ -75,12 +75,12 @@ public:
   /**
    * @brief Method returning a vector of all instances that are known to be instantiated at the given time.
    */
-  std::vector< std::pair<const BPMN::Process*, BPMNOS::Values> > getCurrentInstantiations(const BPMNOS::number currentTime) const;
+  std::vector< std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values> > getCurrentInstantiations(const BPMNOS::number currentTime) const;
 
   /**
    * @brief Method returning a vector of all instances that are anticipated to be instantiated at the assumed time.
    */
-  std::vector< std::pair<const BPMN::Process*, BPMNOS::Values> > getAnticipatedInstantiations(const BPMNOS::number currentTime, const BPMNOS::number assumedTime) const;
+  std::vector< std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values> > getAnticipatedInstantiations(const BPMNOS::number currentTime, const BPMNOS::number assumedTime) const;
 
   /**
    * @brief Method returning a vector of all instances that have been created until the given time.
@@ -101,10 +101,21 @@ public:
    * @brief Method returning the initial status of a known instantiation at the given time.
    */
   Values getKnownInitialStatus(const InstanceData*, const BPMNOS::number time) const;
+
+  /**
+   * @brief Method returning the initial data attributes of a known instantiation at the given time.
+   */
+  Values getKnownInitialData(const InstanceData*, const BPMNOS::number time) const;
+
   /**
    * @brief Method returning the initial status of an anticipated instantiation at the given time.
    */
   BPMNOS::Values getAnticipatedInitialStatus(const InstanceData*, const BPMNOS::number currentTime) const;
+
+  /**
+   * @brief Method returning the initial data attributes of an anticipated instantiation at the given time.
+   */
+  BPMNOS::Values getAnticipatedInitialData(const InstanceData*, const BPMNOS::number currentTime) const;
 
   /**
    * @brief Method returning all known values of new attributes.
@@ -128,7 +139,7 @@ public:
 protected:
   const Model* model;  ///< Pointer to the BPMN model.
   const DataInput& attributes; ///< Map holding all attributes in the model with keys being the process and attribute id
-  std::unordered_map<std::string, InstanceData > instances; ///< Map of instances with key being the instance id.
+  std::unordered_map<std::string, InstanceData > instances; ///< Map of instances with key being the instance id. // TODO: use BPMNOS::number as key
   const Scenario::Disclosure& getLatestDisclosure(const std::vector<Scenario::Disclosure>& data, const BPMNOS::number currentTime) const;
   BPMNOS::number inception; ///< Time earliest time in execution.
   BPMNOS::number completion; ///< The latest time in execution at which an instantiation can happen.

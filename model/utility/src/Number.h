@@ -4,6 +4,7 @@
 #include <cnl/all.h>
 #include <limits>
 #include <string>
+#include <vector>
 #include <optional>
 #include "Value.h"
 #include <functional>
@@ -29,6 +30,13 @@ namespace BPMNOS {
   typedef BPMNOS_NUMBER_TYPE number;
   typedef std::unordered_map< std::string, std::optional<number> > ValueMap;
   typedef std::vector< std::optional<number> > Values;
+  struct Globals : std::vector< std::reference_wrapper< std::optional<number> > > {
+    Globals() = default;
+    Globals(const Globals& other,Values& values);
+    Globals(Values& values);
+    void add(Values& values);
+  };
+  
   typedef std::unordered_map< std::string, std::variant< std::optional<number>, std::string > > VariedValueMap;
 
   struct ValueHash {

@@ -7,6 +7,22 @@
 
 namespace BPMNOS { 
 
+Globals::Globals(const Globals& other,Values& values)
+  : Globals(other)
+{
+  add(values);
+}
+
+Globals::Globals(Values& values) {
+  add(values);
+}
+
+void Globals::add(Values& values) {
+  for ( auto& value : values ) {
+    push_back(value);
+  }
+}
+
 number to_number(const std::string& valueString, const ValueType& type) {
   switch ( type ) {
     case ValueType::BOOLEAN:

@@ -15,12 +15,12 @@ SCENARIO( "Lookup table", "[model][lookup]" ) {
 
       auto instantiations = scenario->getCurrentInstantiations(0);
       THEN( "The result is correct" ) {
-        for ( auto& [process,values] : instantiations ) {
+        for ( auto& [process,status,data] : instantiations ) {
           auto extensionElements = process->extensionElements->represents<Model::ExtensionElements>();
-          REQUIRE( values.size() == 3 + 2 ); // don't forget timestamp and instance id
-          REQUIRE( values[extensionElements->statusAttributes["cost"]->index].value() == 0 );
-          extensionElements->applyOperators(values);
-          REQUIRE( values[extensionElements->statusAttributes["cost"]->index].value() == 12 );
+          REQUIRE( status.size() == 3 + 2 ); // don't forget timestamp and instance id
+          REQUIRE( status[extensionElements->statusAttributes["cost"]->index].value() == 0 );
+          extensionElements->applyOperators(status);
+          REQUIRE( status[extensionElements->statusAttributes["cost"]->index].value() == 12 );
         }
       }
     }
@@ -38,12 +38,12 @@ SCENARIO( "Lookup table", "[model][lookup]" ) {
 
       auto instantiations = scenario->getCurrentInstantiations(0);
       THEN( "The result is correct" ) {
-        for ( auto& [process,values] : instantiations ) {
+        for ( auto& [process,status,data] : instantiations ) {
           auto extensionElements = process->extensionElements->represents<Model::ExtensionElements>();
-          REQUIRE( values.size() == 3 + 2 ); // don't forget timestamp and instance id
-          REQUIRE( values[extensionElements->statusAttributes["cost"]->index].value() == 0 );
-          extensionElements->applyOperators(values);
-          REQUIRE( values[extensionElements->statusAttributes["cost"]->index].has_value() == false );
+          REQUIRE( status.size() == 3 + 2 ); // don't forget timestamp and instance id
+          REQUIRE( status[extensionElements->statusAttributes["cost"]->index].value() == 0 );
+          extensionElements->applyOperators(status);
+          REQUIRE( status[extensionElements->statusAttributes["cost"]->index].has_value() == false );
         }
       }
     }

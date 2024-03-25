@@ -118,22 +118,22 @@ std::vector< const Scenario::InstanceData* > Scenario::getAnticipatedInstances(c
   return anticipatedInstances;
 }
 
-std::vector< std::pair<const BPMN::Process*, BPMNOS::Values> > Scenario::getCurrentInstantiations(const BPMNOS::number currentTime) const {
-  std::vector< std::pair<const BPMN::Process*, BPMNOS::Values> > instantiations;
+std::vector< std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values> > Scenario::getCurrentInstantiations(const BPMNOS::number currentTime) const {
+  std::vector< std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values> > instantiations;
 
   for ( auto& [id, instance] : instances ) {
     if ( instance.instantiation.realization
          && instance.instantiation.realization->value.value() == currentTime
     ) {
       // return instantiations known to occurr at current time
-      instantiations.push_back({instance.process,getKnownInitialStatus(&instance,currentTime)});
+      instantiations.push_back({instance.process, getKnownInitialStatus(&instance,currentTime), getKnownInitialData(&instance,currentTime)});
     }
   }
   return instantiations;
 }
 
-std::vector< std::pair<const BPMN::Process*, BPMNOS::Values> > Scenario::getAnticipatedInstantiations(const BPMNOS::number currentTime, const BPMNOS::number assumedTime) const {
-  std::vector< std::pair<const BPMN::Process*, BPMNOS::Values> > instantiations;
+std::vector< std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values> > Scenario::getAnticipatedInstantiations(const BPMNOS::number currentTime, const BPMNOS::number assumedTime) const {
+  std::vector< std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values> > instantiations;
 
   for ( auto& [id, instance] : instances ) {
     if ( instance.instantiation.realization
@@ -141,14 +141,14 @@ std::vector< std::pair<const BPMN::Process*, BPMNOS::Values> > Scenario::getAnti
          && instance.instantiation.realization->value.value() == assumedTime
     ) {
       // return known instantiations if realization is already disclosed at current time
-      instantiations.push_back({instance.process,getKnownInitialStatus(&instance,currentTime)});
+      instantiations.push_back({instance.process, getKnownInitialStatus(&instance,currentTime), getKnownInitialData(&instance,currentTime)});
     }
     else if ( instance.instantiation.anticipations.size()
               && instance.instantiation.anticipations.front().disclosure <= currentTime
               && getLatestDisclosure(instance.instantiation.anticipations,currentTime).value.value() == assumedTime
     ) {
       // return anticipated instantiations if anticipation is already disclosed at current time
-     instantiations.push_back({ instance.process, getAnticipatedInitialStatus(&instance, currentTime) });
+     instantiations.push_back({ instance.process, getAnticipatedInitialStatus(&instance, currentTime), getAnticipatedInitialData(&instance, currentTime) });
     }
 
   }
@@ -162,7 +162,7 @@ BPMNOS::Values Scenario::getKnownInitialStatus(const Scenario::InstanceData* ins
     if ( data.realization.has_value() ) {
       auto realization = data.realization.value();
       if ( realization.disclosure > currentTime ) {
-        throw std::runtime_error("Scenario: cannot instantiate '" + instance->id + "' because attribute '"+ attribute->id +"' is not yet known at time " + BPMNOS::to_string(currentTime,INTEGER) );
+        throw std::runtime_error("Scenario: cannot instantiate '" + instance->id + "' because status attribute '"+ attribute->id +"' is not yet known at time " + BPMNOS::to_string(currentTime,INTEGER) );
       }
       initalStatus.push_back( data.realization->value );
     }
@@ -172,6 +172,25 @@ BPMNOS::Values Scenario::getKnownInitialStatus(const Scenario::InstanceData* ins
     }
   }
   return initalStatus;
+}
+
+BPMNOS::Values Scenario::getKnownInitialData(const Scenario::InstanceData* instance, const BPMNOS::number currentTime) const {
+  BPMNOS::Values initalData;
+  for ( auto attribute : instance->process->extensionElements->as<const BPMNOS::Model::ExtensionElements>()->data ) {
+    auto& data = instance->data.at(attribute);
+    if ( data.realization.has_value() ) {
+      auto realization = data.realization.value();
+      if ( realization.disclosure > currentTime ) {
+        throw std::runtime_error("Scenario: cannot instantiate '" + instance->id + "' because data attribute '"+ attribute->id +"' is not yet known at time " + BPMNOS::to_string(currentTime,INTEGER) );
+      }
+      initalData.push_back( data.realization->value );
+    }
+    else {
+      // value will never be set, use default value
+      initalData.push_back( attribute->value );
+    }
+  }
+  return initalData;
 }
 
 std::optional<BPMNOS::Values> Scenario::getKnownValues(const BPMN::Node* node, const Values& status, const BPMNOS::number currentTime) const {
@@ -227,6 +246,30 @@ BPMNOS::Values Scenario::getAnticipatedInitialStatus(const Scenario::InstanceDat
     }
   }
   return initalStatus;
+}
+
+BPMNOS::Values Scenario::getAnticipatedInitialData(const Scenario::InstanceData* instance, const BPMNOS::number currentTime) const {
+  BPMNOS::Values initalData;
+  for ( auto attribute : instance->process->extensionElements->as<const BPMNOS::Model::ExtensionElements>()->data ) {
+    auto& data = instance->data.at(attribute);
+
+    if ( data.realization
+         && data.realization->disclosure <= currentTime
+    ) {
+      initalData.push_back( data.realization->value );
+    }
+    else if ( data.anticipations.size()
+              && data.anticipations.front().disclosure <= currentTime
+    ) {
+      // add the currently anticipated value
+      initalData.push_back( getLatestDisclosure(data.anticipations,currentTime).value );
+    }
+    else {
+      // add undefined value
+      initalData.push_back( std::nullopt );
+    }
+  }
+  return initalData;
 }
 
 

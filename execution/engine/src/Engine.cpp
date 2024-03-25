@@ -94,7 +94,7 @@ bool Engine::advance() {
 }
 
 void Engine::addInstances() {
-  for (auto& [process,status] : systemState->getInstantiations() ) {
+  for (auto& [process,status,data] : systemState->getInstantiations() ) {
     if ( !process->isExecutable ) {
       throw std::runtime_error("Engine: process is not executable");
     }
@@ -105,7 +105,7 @@ void Engine::addInstances() {
       throw std::runtime_error("Engine: instance of process '" + process->id + "' has no timestamp");
     }
     systemState->instantiationCounter++;
-    systemState->instances.push_back(std::make_shared<StateMachine>(systemState.get(),process));
+    systemState->instances.push_back(std::make_shared<StateMachine>(systemState.get(),process,data));
     // run instance and advance token
     systemState->instances.back()->run(status);
   }

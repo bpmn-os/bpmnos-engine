@@ -14,11 +14,12 @@
 
 using namespace BPMNOS::Execution;
 
-StateMachine::StateMachine(const SystemState* systemState, const BPMN::Process* process)
+StateMachine::StateMachine(const SystemState* systemState, const BPMN::Process* process, BPMNOS::Values data)
   : systemState(systemState)
   , process(process)
   , scope(process)
   , parentToken(nullptr)
+  , ownedData(data)
 {
 //std::cerr << "StateMachine(" << scope->id  << "/" << this << " @ " << parentToken << ")" << std::endl;
 }
@@ -30,6 +31,10 @@ StateMachine::StateMachine(const SystemState* systemState, const BPMN::Scope* sc
   , parentToken(parentToken)
 {
 //std::cerr << "cStateMachine(" << scope->id << "/" << this << " @ " << parentToken << ")" << " owned by :" << parentToken->owner << std::endl;
+/*
+  ownedData = getData(scope);
+  data = Globals(parentToken->owner->data, ownedData);
+*/
 }
 
 StateMachine::StateMachine(const StateMachine* other)
@@ -37,6 +42,7 @@ StateMachine::StateMachine(const StateMachine* other)
   , process(other->process)
   , scope(other->scope)
   , parentToken(other->parentToken)
+  , ownedData(other->ownedData)
 {
 //std::cerr << "oStateMachine(" << scope->id << "/" << this << " @ " << parentToken << ")"  << " owned by :" << parentToken->owner << std::endl;
 }
@@ -46,6 +52,21 @@ StateMachine::~StateMachine() {
   const_cast<SystemState*>(systemState)->tokensAwaitingGatewayActivation.erase(this);
   const_cast<SystemState*>(systemState)->tokenAwaitingCompensationEventSubProcess.erase(this);
   unregisterRecipient();
+}
+
+BPMNOS::Values StateMachine::getData(const BPMN::Scope* scope) {
+/*
+  if ( systemState->assumedTime ) {
+    return systemState->scenario->getAnticipatedData(token->node, token->status, systemState->currentTime );
+  }
+  else {
+    auto values = systemState->scenario->getKnownData(token->node, token->status, systemState->currentTime );
+    if ( values ) {
+      return values.value();
+    }
+  }
+*/
+  throw std::runtime_error("StateMachine: data is not yet known for scope '" + scope->id + "'");
 }
 
 void StateMachine::initiateBoundaryEvents(Token* token) {

@@ -28,16 +28,20 @@ class SystemState;
  */
 class StateMachine : public std::enable_shared_from_this<StateMachine> {
 public:
-  StateMachine(const SystemState* systemState, const BPMN::Process* process);
+  StateMachine(const SystemState* systemState, const BPMN::Process* process, BPMNOS::Values data);
   StateMachine(const SystemState* systemState, const BPMN::Scope* scope, Token* parentToken);
   StateMachine(const StateMachine* other);
   ~StateMachine();
+
+  Values getData(const BPMN::Scope* scope);
 
   const SystemState* systemState;
   const BPMN::Process* process; ///< Pointer to the top-level process.
   const BPMN::Scope* scope; ///< Pointer to the current scope.
   const std::string instanceId;
   Token* parentToken;
+  Values ownedData; ///< Container holding data attributes owned by the state machine.
+  Globals data; ///< Container holding references to all data attributes.
 
   Tokens tokens; ///< Container with all tokens within the scope of the state machine.
   std::shared_ptr<StateMachine> interruptingEventSubProcess; ///< State machines representing an active event subprocess that is interrupting.

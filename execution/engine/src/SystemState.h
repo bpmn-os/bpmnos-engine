@@ -139,7 +139,7 @@ private:
   /**
    * @brief Method returning a vector of all instantiations at the given time.
    */
-  std::vector< std::pair<const BPMN::Process*, BPMNOS::Values> > getInstantiations() const;
+  std::vector< std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values> > getInstantiations() const;
 
   void incrementTimeBy(BPMNOS::number duration);
   size_t instantiationCounter;
