@@ -467,7 +467,6 @@ void Token::advanceToBusy() {
         auto engine = const_cast<Engine*>(owner->systemState->engine);
         assert( owned );
         engine->commands.emplace_back(std::bind(&StateMachine::run,owned.get(),status), owned.get());
-//        engine->commands.emplace_back(std::bind(&StateMachine::createChild,const_cast<StateMachine*>(owner),this,scope), this);
       }
       else {
         throw std::runtime_error("Token: process '" + scope->id + "' has multiple start nodes");
@@ -486,7 +485,6 @@ void Token::advanceToBusy() {
       auto engine = const_cast<Engine*>(owner->systemState->engine);
       assert( owned );
       engine->commands.emplace_back(std::bind(&StateMachine::run,owned.get(),status), owned.get());
-//      engine->commands.emplace_back(std::bind(&StateMachine::createChild,const_cast<StateMachine*>(owner),this,scope), this);
     }
   }
   else if ( node->represents<BPMN::SubProcess>() ) {
@@ -503,7 +501,6 @@ void Token::advanceToBusy() {
         auto engine = const_cast<Engine*>(owner->systemState->engine);
         assert( owned );
         engine->commands.emplace_back(std::bind(&StateMachine::run,owned.get(),status), owned.get());
-//        engine->commands.emplace_back(std::bind(&StateMachine::createChild,const_cast<StateMachine*>(owner),this,scope), this);
       }
       else {
         throw std::runtime_error("Token: subprocess '" + scope->id + "' has multiple start nodes");

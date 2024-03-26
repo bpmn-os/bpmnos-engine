@@ -114,7 +114,7 @@ void StateMachine::initiateEventSubprocesses(Token* token) {
 //std::cerr << "initiate " << scope->eventSubProcesses.size() << " eventSubprocesses for token at " << (token->node ? token->node->id : process->id ) << "/" << parentToken << "/" << token << " owned by " << token->owner << std::endl;
   for ( auto& eventSubProcess : scope->eventSubProcesses ) {
     Values data = {}; // TODO
-    pendingEventSubProcesses.push_back(std::make_shared<StateMachine>(systemState, eventSubProcess, parentToken, data));
+    pendingEventSubProcesses.push_back(std::make_shared<StateMachine>(systemState, eventSubProcess, parentToken, std::move(data)));
     auto pendingEventSubProcess = pendingEventSubProcesses.back().get();
 //std::cerr << "Pending event subprocess has parent: " << pendingEventSubProcess->parentToken->jsonify().dump() << std::endl;
 
@@ -512,7 +512,7 @@ void StateMachine::run(Values status) {
 void StateMachine::createChild(Token* parent, const BPMN::Scope* scope) {
 //std::cerr << "Create child from " << this << std::endl;
   Values data = {}; // TODO
-  parent->owned = std::make_shared<StateMachine>(systemState, scope, parent, data);
+  parent->owned = std::make_shared<StateMachine>(systemState, scope, parent, std::move(data) );
 //  parent->owned->run(parent->status);
 }
 
@@ -527,7 +527,7 @@ void StateMachine::createCompensationEventSubProcess(const BPMN::EventSubProcess
 //std::cerr << "createCompensationEventSubProcess: " << eventSubProcess->id << "/" << scope->id << "/" << parentToken->owner->scope->id <<std::endl;
   // create state machine for compensation event subprocess
   Values data = {}; // TODO
-  compensationEventSubProcesses.push_back(std::make_shared<StateMachine>(systemState, eventSubProcess, parentToken, data));
+  compensationEventSubProcesses.push_back(std::make_shared<StateMachine>(systemState, eventSubProcess, parentToken, std::move(data)));
   // create token at start event of compensation event subprocess
   std::shared_ptr<Token> compensationToken = std::make_shared<Token>(compensationEventSubProcesses.back().get(), eventSubProcess->startEvent, status );
   compensationToken->update(Token::State::BUSY);
