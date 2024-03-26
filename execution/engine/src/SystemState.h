@@ -129,6 +129,9 @@ public:
    */
   Messages messages;
 
+  std::optional<BPMNOS::Values> getStatusAttributes(const StateMachine* root, const BPMN::Node* node) const;
+  std::optional<BPMNOS::Values> getDataAttributes(const StateMachine* root, const BPMN::Node* node) const;
+
 private:
   friend class Engine;
   friend class StateMachine;

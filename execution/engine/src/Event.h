@@ -2,7 +2,6 @@
 #define BPMNOS_Execution_Event_H
 
 #include "Token.h"
-#include "Observable.h"
 
 namespace BPMNOS::Execution {
 

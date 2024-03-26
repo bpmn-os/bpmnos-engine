@@ -26,7 +26,7 @@ public:
   std::vector< std::unique_ptr<Restriction> > restrictions;
   std::vector< std::unique_ptr<Operator> > operators;
 
-  std::optional<BPMNOS::number> apply(Values& status, const BPMN::FlowNode* node, const Scenario* scenario, BPMNOS::number currentTime) const;
+  std::optional<BPMNOS::number> apply(const Scenario* scenario, BPMNOS::number currentTime, const std::string& instanceId, const BPMN::FlowNode* node, Values& status) const;
 private:  
   BPMNOS::number getObjective(const Values& values) const;
   bool restrictionsSatisfied(const Values& values) const;

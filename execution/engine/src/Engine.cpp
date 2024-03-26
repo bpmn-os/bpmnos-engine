@@ -125,20 +125,9 @@ void Engine::process(const ReadyEvent* event) {
   token->status.insert(token->status.end(), event->values.begin(), event->values.end());
 
   if ( auto scope = token->node->represents<BPMN::Scope>() ) {
-    const_cast<StateMachine*>(token->owner)->createChild(token, scope);
+    const_cast<StateMachine*>(token->owner)->createChild(token, scope, event->data);
   }
   commands.emplace_back(std::bind(&Token::advanceToReady,token), token);
-/*
-//std::cerr << "ReadyEvent " << event.token->node->id << std::endl;
-  Token* token = const_cast<Token*>(event->token);
-
-  token->sequenceFlow = nullptr;
-  token->status.insert(token->status.end(), event->values.begin(), event->values.end());
-
-  commands.emplace_back(std::bind(&Token::advanceToReady,token), token);
-
-  systemState->pendingReadyEvents.remove(token);
-*/
 }
 
 void Engine::process(const EntryEvent* event) {
@@ -203,19 +192,7 @@ void Engine::process(const CompletionEvent* event) {
     token->status = std::move( event->updatedStatus.value() );
   }
 
-  commands.emplace_back(std::bind(&Token::advanceToCompleted,token), token);/*
-//std::cerr << "CompletionEvent " << event.token->node->id << std::endl;
-  Token* token = const_cast<Token*>(event->token);
-//  systemState->tokensAwaitingTaskCompletion.remove(token);
-  // update token status
-  if ( event->updatedStatus.has_value() ) {
-    token->status = std::move( event->updatedStatus.value() );
-  }
-  
   commands.emplace_back(std::bind(&Token::advanceToCompleted,token), token);
-
-  systemState->pendingCompletionEvents.remove(token);
-*/
 }
 
 void Engine::process(const MessageDeliveryEvent* event) {

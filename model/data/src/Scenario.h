@@ -122,12 +122,24 @@ public:
    *
    * If at least one attribute value is not yet known, the returns std::nullopt.
    */
-  std::optional<BPMNOS::Values> getKnownValues(const BPMN::Node* node, const Values& status, const BPMNOS::number currentTime) const;
+  std::optional<BPMNOS::Values> getKnownValues(std::string instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const;
+
+  /**
+   * @brief Method returning all known values of new attributes.
+   *
+   * If at least one attribute value is not yet known, the returns std::nullopt.
+   */
+  std::optional<BPMNOS::Values> getKnownData(std::string instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const;
 
   /**
    * @brief Method returning the disclosed values of new attributes.
    */
-  BPMNOS::Values getAnticipatedValues(const BPMN::Node* node, const Values& status, const BPMNOS::number currentTime) const;
+  BPMNOS::Values getAnticipatedValues(std::string instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const;
+
+  /**
+   * @brief Method returning the disclosed values of new attributes.
+   */
+  BPMNOS::Values getAnticipatedData(std::string instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const;
 
   void addInstance(const BPMN::Process* process, const std::string& identifier, Data instantiation);
   void removeAnticipatedInstance(const std::string& identifier);

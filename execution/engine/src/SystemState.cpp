@@ -43,6 +43,34 @@ std::vector< std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values> > 
   }
 }
 
+std::optional<BPMNOS::Values> SystemState::getStatusAttributes(const StateMachine* root, const BPMN::Node* node) const {
+  std::optional<BPMNOS::Values> values;
+  if ( assumedTime ) {
+    return scenario->getAnticipatedValues(root->instanceId, node, currentTime);
+  }
+  else {
+    auto knownValues = scenario->getKnownValues(root->instanceId, node, currentTime);
+    if ( knownValues ) {
+      return std::move( knownValues.value() );
+    }
+  }
+  return std::nullopt;
+}
+
+std::optional<BPMNOS::Values> SystemState::getDataAttributes(const StateMachine* root, const BPMN::Node* node) const {
+  std::optional<BPMNOS::Values> values;
+  if ( assumedTime ) {
+    return scenario->getAnticipatedData(root->instanceId, node, currentTime);
+  }
+  else {
+    auto knownData = scenario->getKnownData(root->instanceId, node, currentTime);
+    if ( knownData ) {
+      return std::move( knownData.value() );
+    }
+  }
+  return std::nullopt;
+}
+
 void SystemState::incrementTimeBy(BPMNOS::number duration) {
   if ( assumedTime ) {
     assumedTime = assumedTime.value() + duration;

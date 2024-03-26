@@ -88,9 +88,9 @@ bool Guidance::restrictionsSatisfied(const Values& values) const {
 }
 
 
-std::optional<BPMNOS::number> Guidance::apply(Values& status, const BPMN::FlowNode* node, const Scenario* scenario, BPMNOS::number currentTime) const {
+std::optional<BPMNOS::number> Guidance::apply(const Scenario* scenario, BPMNOS::number currentTime, const std::string& instanceId, const BPMN::FlowNode* node, Values& status) const {
   Values guidingAttributes;
-  auto values = scenario->getKnownValues(node, status, currentTime );
+  auto values = scenario->getKnownValues(instanceId, node, currentTime );
   if ( values ) {
     guidingAttributes = std::move( values.value() );
   }

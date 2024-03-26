@@ -39,7 +39,7 @@ std::optional<double> ChoiceDecision::guidedEvaluator(const Event* event) {
   }
 
   auto systemState = event->token->owner->systemState;
-  auto guidance = extensionElements->choiceGuidance->get()->apply(status, event->token->node, systemState->scenario, systemState->currentTime);
+  auto guidance = extensionElements->choiceGuidance->get()->apply(systemState->scenario, systemState->currentTime, event->token->owner->root->instanceId, event->token->node, status);
   if ( guidance.has_value() ) {
     return evaluation - guidance.value();
   }

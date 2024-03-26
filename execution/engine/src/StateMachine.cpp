@@ -18,6 +18,7 @@ StateMachine::StateMachine(const SystemState* systemState, const BPMN::Process* 
   : systemState(systemState)
   , process(process)
   , scope(process)
+  , root(this)
   , parentToken(nullptr)
   , ownedData(data)
   , data(Globals(ownedData))
@@ -29,6 +30,7 @@ StateMachine::StateMachine(const SystemState* systemState, const BPMN::Scope* sc
   : systemState(systemState)
   , process(parentToken->owner->process)
   , scope(scope)
+  , root(parentToken->owner->root)
   , parentToken(parentToken)
   , ownedData(data)
   , data(Globals(parentToken->owner->data,ownedData))
@@ -44,6 +46,7 @@ StateMachine::StateMachine(const StateMachine* other)
   : systemState(other->systemState)
   , process(other->process)
   , scope(other->scope)
+  , root(other->root)
   , parentToken(other->parentToken)
   , ownedData(other->ownedData)
   , data(Globals(parentToken->owner->data,ownedData))
@@ -113,8 +116,11 @@ void StateMachine::initiateBoundaryEvent(Token* token, const BPMN::FlowNode* nod
 void StateMachine::initiateEventSubprocesses(Token* token) {
 //std::cerr << "initiate " << scope->eventSubProcesses.size() << " eventSubprocesses for token at " << (token->node ? token->node->id : process->id ) << "/" << parentToken << "/" << token << " owned by " << token->owner << std::endl;
   for ( auto& eventSubProcess : scope->eventSubProcesses ) {
-    Values data = {}; // TODO
-    pendingEventSubProcesses.push_back(std::make_shared<StateMachine>(systemState, eventSubProcess, parentToken, std::move(data)));
+    auto data = systemState->getDataAttributes(root,eventSubProcess);
+    if ( !data.has_value() ) {
+      throw std::runtime_error("StateMachine: required data at '" + eventSubProcess->id +"' not yet available" );
+    }
+    pendingEventSubProcesses.push_back(std::make_shared<StateMachine>( systemState, eventSubProcess, parentToken, std::move(data.value()) ) );
     auto pendingEventSubProcess = pendingEventSubProcesses.back().get();
 //std::cerr << "Pending event subprocess has parent: " << pendingEventSubProcess->parentToken->jsonify().dump() << std::endl;
 
@@ -218,7 +224,11 @@ void StateMachine::createMultiInstanceActivityTokens(Token* token) {
     tokens.push_back( std::make_shared<Token>( token ) );
     if ( auto scope = token->node->represents<BPMN::Scope>() ) {
       // create state machine for each multi-instance subprocess
-      createChild(tokens.back().get(), scope);
+      auto data = systemState->getDataAttributes(root,token->node);
+      if ( !data.has_value() ) {
+        throw std::runtime_error("StateMachine: required data at '" + token->node->id +"' not yet available" );
+      }
+      createChild( tokens.back().get(), scope, std::move(data.value()) );
     }
  
     
@@ -466,7 +476,7 @@ void StateMachine::run(Values status) {
     registerRecipient();
 
     // create child that will own tokens flowing through the process
-    createChild(tokens.back().get(),scope);
+    createChild(tokens.back().get(),scope, {});
 
   }
   else {
@@ -478,12 +488,14 @@ void StateMachine::run(Values status) {
   for ( auto token : tokens ) {
     if ( token->node ) {
       if ( auto startEvent = token->node->represents<BPMN::TypedStartEvent>() ) {
-        // get new attribute vlaues
+        // get new attribute values
+        auto values = systemState->getStatusAttributes( root, token->node->parent );
+/*
         std::optional<BPMNOS::Values> values = ( systemState->assumedTime.has_value() ?
           systemState->scenario->getAnticipatedValues(token->node->parent, token->status, systemState->currentTime ) :
           systemState->scenario->getKnownValues(token->node->parent, token->status, systemState->currentTime )
         );
-    
+*/    
         if ( !values.has_value() ) {
           throw std::runtime_error("StateMachine: status of event subprocess '" + token->node->parent->id + "' not known at initialization");
         }
@@ -509,9 +521,8 @@ void StateMachine::run(Values status) {
   }
 }
 
-void StateMachine::createChild(Token* parent, const BPMN::Scope* scope) {
+void StateMachine::createChild(Token* parent, const BPMN::Scope* scope, Values data) {
 //std::cerr << "Create child from " << this << std::endl;
-  Values data = {}; // TODO
   parent->owned = std::make_shared<StateMachine>(systemState, scope, parent, std::move(data) );
 //  parent->owned->run(parent->status);
 }
@@ -526,8 +537,11 @@ void StateMachine::createCompensationTokenForBoundaryEvent(const BPMN::BoundaryE
 void StateMachine::createCompensationEventSubProcess(const BPMN::EventSubProcess* eventSubProcess, BPMNOS::Values status) {
 //std::cerr << "createCompensationEventSubProcess: " << eventSubProcess->id << "/" << scope->id << "/" << parentToken->owner->scope->id <<std::endl;
   // create state machine for compensation event subprocess
-  Values data = {}; // TODO
-  compensationEventSubProcesses.push_back(std::make_shared<StateMachine>(systemState, eventSubProcess, parentToken, std::move(data)));
+  auto data = systemState->getDataAttributes(root,eventSubProcess);
+  if ( !data.has_value() ) {
+    throw std::runtime_error("StateMachine: required data at '" + eventSubProcess->id +"' not yet available" );
+  }
+  compensationEventSubProcesses.push_back(std::make_shared<StateMachine>( systemState, eventSubProcess, parentToken, std::move(data.value()) ) );
   // create token at start event of compensation event subprocess
   std::shared_ptr<Token> compensationToken = std::make_shared<Token>(compensationEventSubProcesses.back().get(), eventSubProcess->startEvent, status );
   compensationToken->update(Token::State::BUSY);
@@ -543,7 +557,11 @@ void StateMachine::compensateActivity(Token* token) {
     token->node = compensationActivity;
     auto engine = const_cast<Engine*>(systemState->engine);
     if ( auto scope = token->node->represents<BPMN::Scope>() ) {
-      createChild(token, scope);
+      auto data = systemState->getDataAttributes(root,token->node);
+      if ( !data.has_value() ) {
+        throw std::runtime_error("StateMachine: required data at '" + token->node->id +"' not yet available" );
+      }
+      createChild( token, scope, std::move(data.value()) );
     }
     engine->commands.emplace_back(std::bind(&Token::advanceToEntered,token), token);
   }
