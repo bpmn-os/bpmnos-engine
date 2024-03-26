@@ -29,7 +29,7 @@ class SystemState;
 class StateMachine : public std::enable_shared_from_this<StateMachine> {
 public:
   StateMachine(const SystemState* systemState, const BPMN::Process* process, Values data);
-  StateMachine(const SystemState* systemState, const BPMN::Scope* scope, Token* parentToken);
+  StateMachine(const SystemState* systemState, const BPMN::Scope* scope, Token* parentToken, Values data);
   StateMachine(const StateMachine* other);
   ~StateMachine();
 

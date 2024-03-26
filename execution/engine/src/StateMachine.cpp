@@ -25,11 +25,13 @@ StateMachine::StateMachine(const SystemState* systemState, const BPMN::Process* 
 //std::cerr << "StateMachine(" << scope->id  << "/" << this << " @ " << parentToken << ")" << std::endl;
 }
 
-StateMachine::StateMachine(const SystemState* systemState, const BPMN::Scope* scope, Token* parentToken)
+StateMachine::StateMachine(const SystemState* systemState, const BPMN::Scope* scope, Token* parentToken, Values data)
   : systemState(systemState)
   , process(parentToken->owner->process)
   , scope(scope)
   , parentToken(parentToken)
+  , ownedData(data)
+  , data(Globals(parentToken->owner->data,ownedData))
 {
 //std::cerr << "cStateMachine(" << scope->id << "/" << this << " @ " << parentToken << ")" << " owned by :" << parentToken->owner << std::endl;
 /*
@@ -43,7 +45,8 @@ StateMachine::StateMachine(const StateMachine* other)
   , process(other->process)
   , scope(other->scope)
   , parentToken(other->parentToken)
-  , ownedData(other->ownedData) // TODO: check
+  , ownedData(other->ownedData)
+  , data(Globals(parentToken->owner->data,ownedData))
 {
 //std::cerr << "oStateMachine(" << scope->id << "/" << this << " @ " << parentToken << ")"  << " owned by :" << parentToken->owner << std::endl;
 }
@@ -110,7 +113,8 @@ void StateMachine::initiateBoundaryEvent(Token* token, const BPMN::FlowNode* nod
 void StateMachine::initiateEventSubprocesses(Token* token) {
 //std::cerr << "initiate " << scope->eventSubProcesses.size() << " eventSubprocesses for token at " << (token->node ? token->node->id : process->id ) << "/" << parentToken << "/" << token << " owned by " << token->owner << std::endl;
   for ( auto& eventSubProcess : scope->eventSubProcesses ) {
-    pendingEventSubProcesses.push_back(std::make_shared<StateMachine>(systemState, eventSubProcess, parentToken));
+    Values data = {}; // TODO
+    pendingEventSubProcesses.push_back(std::make_shared<StateMachine>(systemState, eventSubProcess, parentToken, data));
     auto pendingEventSubProcess = pendingEventSubProcesses.back().get();
 //std::cerr << "Pending event subprocess has parent: " << pendingEventSubProcess->parentToken->jsonify().dump() << std::endl;
 
@@ -507,7 +511,8 @@ void StateMachine::run(Values status) {
 
 void StateMachine::createChild(Token* parent, const BPMN::Scope* scope) {
 //std::cerr << "Create child from " << this << std::endl;
-  parent->owned = std::make_shared<StateMachine>(systemState, scope, parent);
+  Values data = {}; // TODO
+  parent->owned = std::make_shared<StateMachine>(systemState, scope, parent, data);
 //  parent->owned->run(parent->status);
 }
 
@@ -521,7 +526,8 @@ void StateMachine::createCompensationTokenForBoundaryEvent(const BPMN::BoundaryE
 void StateMachine::createCompensationEventSubProcess(const BPMN::EventSubProcess* eventSubProcess, BPMNOS::Values status) {
 //std::cerr << "createCompensationEventSubProcess: " << eventSubProcess->id << "/" << scope->id << "/" << parentToken->owner->scope->id <<std::endl;
   // create state machine for compensation event subprocess
-  compensationEventSubProcesses.push_back(std::make_shared<StateMachine>(systemState, eventSubProcess, parentToken));
+  Values data = {}; // TODO
+  compensationEventSubProcesses.push_back(std::make_shared<StateMachine>(systemState, eventSubProcess, parentToken, data));
   // create token at start event of compensation event subprocess
   std::shared_ptr<Token> compensationToken = std::make_shared<Token>(compensationEventSubProcesses.back().get(), eventSubProcess->startEvent, status );
   compensationToken->update(Token::State::BUSY);
