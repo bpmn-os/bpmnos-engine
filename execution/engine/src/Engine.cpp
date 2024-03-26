@@ -105,9 +105,9 @@ void Engine::addInstances() {
       throw std::runtime_error("Engine: instance of process '" + process->id + "' has no timestamp");
     }
     systemState->instantiationCounter++;
-    systemState->instances.push_back(std::make_shared<StateMachine>(systemState.get(),process,data));
+    systemState->instances.push_back(std::make_shared<StateMachine>(systemState.get(),process,std::move(data)));
     // run instance and advance token
-    systemState->instances.back()->run(status);
+    systemState->instances.back()->run(std::move(status));
   }
 }
 
@@ -124,6 +124,9 @@ void Engine::process(const ReadyEvent* event) {
   token->sequenceFlow = nullptr;
   token->status.insert(token->status.end(), event->values.begin(), event->values.end());
 
+  if ( auto scope = token->node->represents<BPMN::Scope>() ) {
+    const_cast<StateMachine*>(token->owner)->createChild(token, scope);
+  }
   commands.emplace_back(std::bind(&Token::advanceToReady,token), token);
 /*
 //std::cerr << "ReadyEvent " << event.token->node->id << std::endl;

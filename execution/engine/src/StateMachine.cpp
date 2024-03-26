@@ -14,12 +14,13 @@
 
 using namespace BPMNOS::Execution;
 
-StateMachine::StateMachine(const SystemState* systemState, const BPMN::Process* process, BPMNOS::Values data)
+StateMachine::StateMachine(const SystemState* systemState, const BPMN::Process* process, Values data)
   : systemState(systemState)
   , process(process)
   , scope(process)
   , parentToken(nullptr)
   , ownedData(data)
+  , data(Globals(ownedData))
 {
 //std::cerr << "StateMachine(" << scope->id  << "/" << this << " @ " << parentToken << ")" << std::endl;
 }
@@ -42,7 +43,7 @@ StateMachine::StateMachine(const StateMachine* other)
   , process(other->process)
   , scope(other->scope)
   , parentToken(other->parentToken)
-  , ownedData(other->ownedData)
+  , ownedData(other->ownedData) // TODO: check
 {
 //std::cerr << "oStateMachine(" << scope->id << "/" << this << " @ " << parentToken << ")"  << " owned by :" << parentToken->owner << std::endl;
 }
@@ -211,6 +212,12 @@ void StateMachine::createMultiInstanceActivityTokens(Token* token) {
   Token* tokenCopy = nullptr;
   for ( auto valueMap : valueMaps ) {
     tokens.push_back( std::make_shared<Token>( token ) );
+    if ( auto scope = token->node->represents<BPMN::Scope>() ) {
+      // create state machine for each multi-instance subprocess
+      createChild(tokens.back().get(), scope);
+    }
+ 
+    
     // update status of token copy
     for ( auto [attribute,value] : valueMap ) {
       tokens.back().get()->status[attribute->index] = value;
@@ -438,7 +445,8 @@ void StateMachine::unregisterRecipient() {
   }
 }
 
-void StateMachine::run(const Values& status) {
+
+void StateMachine::run(Values status) {
   assert( status.size() >= 2 );
   assert( status[BPMNOS::Model::ExtensionElements::Index::Instance].has_value() );
   assert( status[BPMNOS::Model::ExtensionElements::Index::Timestamp].has_value() );
@@ -447,14 +455,19 @@ void StateMachine::run(const Values& status) {
   if ( !parentToken ) {
     // state machine without parent token represents a process
 //std::cerr << "Start process " << process->id << std::endl;
-    tokens.push_back( std::make_shared<Token>(this,nullptr,status) );
     const_cast<std::string&>(instanceId) = BPMNOS::to_string(status[BPMNOS::Model::ExtensionElements::Index::Instance].value(),STRING);
     const_cast<SystemState*>(systemState)->archive[ instanceId ] = weak_from_this();
+
+    tokens.push_back( std::make_shared<Token>(this,nullptr,std::move(status)) );
     registerRecipient();
+
+    // create child that will own tokens flowing through the process
+    createChild(tokens.back().get(),scope);
+
   }
   else {
     for ( auto startNode : scope->startNodes ) {
-      tokens.push_back( std::make_shared<Token>(this,startNode,status) );
+      tokens.push_back( std::make_shared<Token>(this,startNode,std::move(status)) );
     }
   }
 
@@ -494,22 +507,9 @@ void StateMachine::run(const Values& status) {
 
 void StateMachine::createChild(Token* parent, const BPMN::Scope* scope) {
 //std::cerr << "Create child from " << this << std::endl;
-/// TODO: check
   parent->owned = std::make_shared<StateMachine>(systemState, scope, parent);
-  parent->owned->run(parent->status);
+//  parent->owned->run(parent->status);
 }
-
-/*
-void StateMachine::createInterruptingEventSubprocess(const StateMachine* pendingEventSubProcess, const BPMNOS::Values& status) {
-  interruptingEventSubProcess = std::make_shared<StateMachine>(pendingEventSubProcess);
-  interruptingEventSubProcess->run(status);
-}
-
-void StateMachine::createNonInterruptingEventSubprocess(const StateMachine* pendingEventSubProcess, const BPMNOS::Values& status) {
-  nonInterruptingEventSubProcesses.push_back( std::make_shared<StateMachine>(pendingEventSubProcess) );
-  nonInterruptingEventSubProcesses.back()->run(status);
-}
-*/
 
 void StateMachine::createCompensationTokenForBoundaryEvent(const BPMN::BoundaryEvent* compensateBoundaryEvent, BPMNOS::Values status) {
   std::shared_ptr<Token> compensationToken = std::make_shared<Token>(this,compensateBoundaryEvent, status);
@@ -536,6 +536,9 @@ void StateMachine::compensateActivity(Token* token) {
     // move token to compensation activity
     token->node = compensationActivity;
     auto engine = const_cast<Engine*>(systemState->engine);
+    if ( auto scope = token->node->represents<BPMN::Scope>() ) {
+      createChild(token, scope);
+    }
     engine->commands.emplace_back(std::bind(&Token::advanceToEntered,token), token);
   }
 }

@@ -465,7 +465,9 @@ void Token::advanceToBusy() {
 //std::cerr << "create child statemachine" << std::endl;
         // create child statemachine
         auto engine = const_cast<Engine*>(owner->systemState->engine);
-        engine->commands.emplace_back(std::bind(&StateMachine::createChild,const_cast<StateMachine*>(owner),this,scope), this);
+        assert( owned );
+        engine->commands.emplace_back(std::bind(&StateMachine::run,owned.get(),status), owned.get());
+//        engine->commands.emplace_back(std::bind(&StateMachine::createChild,const_cast<StateMachine*>(owner),this,scope), this);
       }
       else {
         throw std::runtime_error("Token: process '" + scope->id + "' has multiple start nodes");
@@ -482,7 +484,9 @@ void Token::advanceToBusy() {
     else {
       // create child statemachine
       auto engine = const_cast<Engine*>(owner->systemState->engine);
-      engine->commands.emplace_back(std::bind(&StateMachine::createChild,const_cast<StateMachine*>(owner),this,scope), this);
+      assert( owned );
+      engine->commands.emplace_back(std::bind(&StateMachine::run,owned.get(),status), owned.get());
+//      engine->commands.emplace_back(std::bind(&StateMachine::createChild,const_cast<StateMachine*>(owner),this,scope), this);
     }
   }
   else if ( node->represents<BPMN::SubProcess>() ) {
@@ -497,7 +501,9 @@ void Token::advanceToBusy() {
 //std::cerr << "create child statemachine at node " << node->id << std::endl;
         // create child statemachine
         auto engine = const_cast<Engine*>(owner->systemState->engine);
-        engine->commands.emplace_back(std::bind(&StateMachine::createChild,const_cast<StateMachine*>(owner),this,scope), this);
+        assert( owned );
+        engine->commands.emplace_back(std::bind(&StateMachine::run,owned.get(),status), owned.get());
+//        engine->commands.emplace_back(std::bind(&StateMachine::createChild,const_cast<StateMachine*>(owner),this,scope), this);
       }
       else {
         throw std::runtime_error("Token: subprocess '" + scope->id + "' has multiple start nodes");
@@ -942,7 +948,8 @@ void Token::advanceToFailed() {
     ) {
       owned.reset(); 
     }
-    else {
+    else if ( owned->tokens.size() || owned->interruptingEventSubProcess ) {
+    // owned state machine may require compensation
 //std::cerr << "Failing " << owned->scope->id << std::endl;
       update(State::FAILING);
       engine->commands.emplace_back(std::bind(&Token::terminate,this), this);

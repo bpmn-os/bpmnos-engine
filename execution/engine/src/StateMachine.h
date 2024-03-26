@@ -28,7 +28,7 @@ class SystemState;
  */
 class StateMachine : public std::enable_shared_from_this<StateMachine> {
 public:
-  StateMachine(const SystemState* systemState, const BPMN::Process* process, BPMNOS::Values data);
+  StateMachine(const SystemState* systemState, const BPMN::Process* process, Values data);
   StateMachine(const SystemState* systemState, const BPMN::Scope* scope, Token* parentToken);
   StateMachine(const StateMachine* other);
   ~StateMachine();
@@ -53,7 +53,7 @@ public:
   StateMachines compensableSubProcesses; ///< Container holding state machines for completed subprocesses with a compensation event subprocess and compensation tokens
 
   Tokens getCompensationTokens(const BPMN::Activity* activity = nullptr) const; ///< Returns the compensation tokens for a given activity or for all activities
-  void run(const Values& status); ///< Create initial token and advance it.
+  void run(Values status); ///< Create initial token and advance it.
 
 private:
   friend class Engine;
