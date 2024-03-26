@@ -429,7 +429,7 @@ void StateMachine::registerRecipient() {
   ) {
     for ( auto& [message_ptr] : it->second ) {
       if ( auto message = message_ptr.lock() ) {
-        const_cast<SystemState*>(systemState)->correspondence[this].emplace_back(message->weak_from_this());
+        const_cast<SystemState*>(systemState)->inbox[this].emplace_back(message->weak_from_this());
         const_cast<SystemState*>(systemState)->outbox[message->origin].emplace_back(message->weak_from_this());
       }
     }
@@ -443,8 +443,8 @@ void StateMachine::unregisterRecipient() {
     ( eventSubProcess && !eventSubProcess->startEvent->isInterrupting )
   ) {
     // delete all messages directed to state machine
-    if ( auto it = const_cast<SystemState*>(systemState)->correspondence.find(this);
-      it != const_cast<SystemState*>(systemState)->correspondence.end()
+    if ( auto it = const_cast<SystemState*>(systemState)->inbox.find(this);
+      it != const_cast<SystemState*>(systemState)->inbox.end()
     ) {
       for ( auto& [message_ptr] : it->second ) {
         if ( auto message = message_ptr.lock() ) {
@@ -454,7 +454,7 @@ void StateMachine::unregisterRecipient() {
           erase_ptr(const_cast<SystemState*>(systemState)->messages, message.get());
         }
       }
-      const_cast<SystemState*>(systemState)->correspondence.erase(it);
+      const_cast<SystemState*>(systemState)->inbox.erase(it);
     }
   }
 }

@@ -1151,7 +1151,7 @@ void Token::sendMessage(size_t index) {
     }
     else if ( auto stateMachine = it->second.lock() ) {
 //std::cerr << "Message sent from " << node->id << std::endl;
-      systemState->correspondence[stateMachine.get()].emplace_back(message->weak_from_this());
+      systemState->inbox[stateMachine.get()].emplace_back(message->weak_from_this());
       systemState->outbox[node].emplace_back(message->weak_from_this());
     }
   }

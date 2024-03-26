@@ -85,7 +85,7 @@ public:
   /**
    * @brief Map holding the undelivered correspondence associated with a state machine which will be withdrawn when the state machine goes out of scope.
    */
-  std::unordered_map<StateMachine*, auto_list< std::weak_ptr<Message> > > correspondence;
+  std::unordered_map<StateMachine*, auto_list< std::weak_ptr<Message> > > inbox;
 
   /**
    * @brief Map holding messages sent from given node.
