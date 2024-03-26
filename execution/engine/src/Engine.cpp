@@ -122,10 +122,10 @@ void Engine::process(const ReadyEvent* event) {
   systemState->tokensAwaitingReadyEvent.remove(token);
 
   token->sequenceFlow = nullptr;
-  token->status.insert(token->status.end(), event->values.begin(), event->values.end());
+  token->status.insert(token->status.end(), event->statusAttributes.begin(), event->statusAttributes.end());
 
   if ( auto scope = token->node->represents<BPMN::Scope>() ) {
-    const_cast<StateMachine*>(token->owner)->createChild(token, scope, event->data);
+    const_cast<StateMachine*>(token->owner)->createChild(token, scope, event->dataAttributes);
   }
   commands.emplace_back(std::bind(&Token::advanceToReady,token), token);
 }
