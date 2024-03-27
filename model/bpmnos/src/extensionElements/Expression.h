@@ -3,8 +3,9 @@
 
 #include <exprtk.hpp>
 
-#include "model/bpmnos/src/extensionElements/Attribute.h"
-#include "model/bpmnos/src/extensionElements/Parameter.h"
+#include "Attribute.h"
+#include "AttributeRegistry.h"
+#include "Parameter.h"
 #include "model/utility/src/Number.h"
 #include "model/utility/src/StringRegistry.h"
 
@@ -16,13 +17,17 @@ namespace BPMNOS::Model {
  **/
 class Expression {
 public:
-  Expression(XML::bpmnos::tParameter* parameter, const AttributeMap& statusAttributes);
+  Expression(XML::bpmnos::tParameter* parameter, const AttributeRegistry& attributeRegistry);
   virtual ~Expression() = default;  // Virtual destructor
-  const AttributeMap& statusAttributes;
+  const AttributeRegistry& attributeRegistry;
   const std::string expression;
-  static std::unique_ptr<Expression> create(XML::bpmnos::tParameter* parameter, const AttributeMap& statusAttributes);
-  virtual std::optional<BPMNOS::number> execute(const Values& values) const = 0;
-  virtual std::pair< std::optional<BPMNOS::number>, std::optional<BPMNOS::number> > getBounds(const Attribute* attribute, const Values& values) const;
+  static std::unique_ptr<Expression> create(XML::bpmnos::tParameter* parameter, const AttributeRegistry& attributeRegistry);
+
+  virtual std::optional<BPMNOS::number> execute(const Values& status, const Values& data) const = 0;
+  virtual std::optional<BPMNOS::number> execute(const Values& status, const Globals& data) const = 0;
+
+  virtual std::pair< std::optional<BPMNOS::number>, std::optional<BPMNOS::number> > getBounds(const Attribute* attribute, const Values& status, const Values& data) const;
+  virtual std::pair< std::optional<BPMNOS::number>, std::optional<BPMNOS::number> > getBounds(const Attribute* attribute, const Values& status, const Globals& data) const;
 };
 
 } // namespace BPMNOS::Model
