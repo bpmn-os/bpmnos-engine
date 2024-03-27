@@ -18,7 +18,7 @@ class Guidance {
 public:
   Guidance(XML::bpmnos::tGuidance* guidance, const AttributeRegistry& attributeRegistry);
   XML::bpmnos::tGuidance* element;
-  AttributeRegistry attributeRegistry; ///< Map allowing to look up attributes by their names.
+  AttributeRegistry attributeRegistry; ///< Registry allowing to look up attributes by their names.
 
   enum class Type { Entry, Exit, Choice, MessageDelivery };
   Type type;
