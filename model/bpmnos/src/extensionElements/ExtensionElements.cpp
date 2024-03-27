@@ -13,7 +13,7 @@
 #include "model/bpmnos/src/xml/bpmnos/tLoopCharacteristics.h"
 #include "model/bpmnos/src/xml/bpmnos/tGuidance.h"
 #include "model/utility/src/Keywords.h"
-#include<iostream>
+
 using namespace BPMNOS::Model;
 
 ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent)
