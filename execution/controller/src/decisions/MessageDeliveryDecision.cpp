@@ -22,13 +22,14 @@ std::optional<double> MessageDeliveryDecision::localEvaluator(const Event* event
 
   auto extensionElements = event->token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   Values status = event->token->status;
-  double evaluation = (double)extensionElements->getObjective(status);
+  Values data(event->token->data);
+  double evaluation = (double)extensionElements->getObjective(status,data);
 
   auto message = dynamic_cast<const MessageDeliveryEvent*>(event)->message;
-  message->apply(event->token->node,status);
+  message->apply(event->token->node,event->token->getAttributeRegistry(),status,data);
   
-  extensionElements->applyOperators(status);
-  return evaluation - extensionElements->getObjective(status);
+  extensionElements->applyOperators(status,data);
+  return evaluation - extensionElements->getObjective(status,data);
 }
 
 std::optional<double> MessageDeliveryDecision::guidedEvaluator(const Event* event) {
@@ -37,19 +38,20 @@ std::optional<double> MessageDeliveryDecision::guidedEvaluator(const Event* even
 
   auto extensionElements = event->token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   Values status = event->token->status;
-  auto evaluation = (double)extensionElements->getObjective(status);
+  Values data(event->token->data);
+  auto evaluation = (double)extensionElements->getObjective(status,data);
 
   auto message = dynamic_cast<const MessageDeliveryEvent*>(event)->message;
-  message->apply(event->token->node,status);
+  message->apply(event->token->node,event->token->getAttributeRegistry(),status,data);
   
-  extensionElements->applyOperators(status);
+  extensionElements->applyOperators(status,data);
 
   if ( !extensionElements->messageDeliveryGuidance ) {
-    return evaluation - extensionElements->getObjective(status);
+    return evaluation - extensionElements->getObjective(status,data);
   }
 
   auto systemState = event->token->owner->systemState;
-  auto guidance = extensionElements->messageDeliveryGuidance->get()->apply(systemState->scenario, systemState->currentTime, event->token->owner->root->instanceId, event->token->node, status);
+  auto guidance = extensionElements->messageDeliveryGuidance->get()->apply(systemState->scenario, systemState->currentTime, event->token->owner->root->instanceId, event->token->node, status, data);
   if ( guidance.has_value() ) {
     return evaluation - guidance.value();
   }

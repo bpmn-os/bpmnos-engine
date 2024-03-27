@@ -30,10 +30,11 @@ std::optional<double> ExitDecision::guidedEvaluator(const Event* event) {
   }
 
   Values status = event->token->status;
-  auto evaluation = (double)extensionElements->getObjective(status);
+  Values data(event->token->data);
+  auto evaluation = (double)extensionElements->getObjective(status,data);
     
   auto systemState = event->token->owner->systemState;
-  auto guidance = extensionElements->exitGuidance->get()->apply(systemState->scenario, systemState->currentTime, event->token->owner->root->instanceId, event->token->node, status);
+  auto guidance = extensionElements->exitGuidance->get()->apply(systemState->scenario, systemState->currentTime, event->token->owner->root->instanceId, event->token->node, status, data);
   if ( guidance.has_value() ) {
     return evaluation - guidance.value();
   }

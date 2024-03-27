@@ -22,17 +22,18 @@ std::optional<double> EntryDecision::localEvaluator(const Event* event) {
   assert( event->token->ready() );
   auto extensionElements = event->token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   Values status = event->token->status;
-  double evaluation = (double)extensionElements->getObjective(status);
+  Values data(event->token->data);
+  double evaluation = (double)extensionElements->getObjective(status,data);
 
   if ( 
     event->token->node->represents<BPMN::SubProcess>() ||
     event->token->node->represents<BPMNOS::Model::SequentialAdHocSubProcess>()
   ) {
     // apply operators before checking entry restrictions
-    extensionElements->applyOperators(status);
+    extensionElements->applyOperators(status,data);
   }
 
-  if ( !extensionElements->feasibleEntry(status) ) {
+  if ( !extensionElements->feasibleEntry(status,data) ) {
     // entry would be infeasible
     return std::nullopt;
   }
@@ -43,15 +44,15 @@ std::optional<double> EntryDecision::localEvaluator(const Event* event) {
   ) {
     // apply operators after checking entry restrictions and before applying guidance
     // receive tasks and decision tasks require further decision before operators are applied
-    extensionElements->applyOperators(status);
-    if ( !extensionElements->feasibleExit(status) ) {
+    extensionElements->applyOperators(status,data);
+    if ( !extensionElements->feasibleExit(status,data) ) {
       // entry would lead to infeasible exit
       return std::nullopt;
     }
   }
 
   // return evaluation of entry
-  return evaluation - extensionElements->getObjective(status);
+  return evaluation - extensionElements->getObjective(status,data);
 }
 
 std::optional<double> EntryDecision::guidedEvaluator(const Event* event) {
@@ -59,17 +60,18 @@ std::optional<double> EntryDecision::guidedEvaluator(const Event* event) {
 
   auto extensionElements = event->token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   Values status = event->token->status;
-  auto evaluation = (double)extensionElements->getObjective(status);
+  Values data(event->token->data);
+  auto evaluation = (double)extensionElements->getObjective(status,data);
 
   if ( 
     event->token->node->represents<BPMN::SubProcess>() ||
     event->token->node->represents<BPMNOS::Model::SequentialAdHocSubProcess>()
   ) {
     // apply operators before checking entry restrictions
-    extensionElements->applyOperators(status);
+    extensionElements->applyOperators(status,data);
   }
 
-  if ( !extensionElements->feasibleEntry(status) ) {
+  if ( !extensionElements->feasibleEntry(status,data) ) {
     // entry would be infeasible
     return std::nullopt;
   }
@@ -80,8 +82,8 @@ std::optional<double> EntryDecision::guidedEvaluator(const Event* event) {
   ) {
     // apply operators after checking entry restrictions and before applying guidance
     // receive tasks and decision tasks require further decision before operators are applied
-    extensionElements->applyOperators(status);
-    if ( !extensionElements->feasibleExit(status) ) {
+    extensionElements->applyOperators(status,data);
+    if ( !extensionElements->feasibleExit(status,data) ) {
       // entry would lead to infeasible exit
       return std::nullopt;
     }
@@ -89,12 +91,12 @@ std::optional<double> EntryDecision::guidedEvaluator(const Event* event) {
 
   if ( !extensionElements->entryGuidance ) {
     // return evaluation of entry
-    return evaluation - extensionElements->getObjective(status);
+    return evaluation - extensionElements->getObjective(status,data);
   }
     
   auto systemState = event->token->owner->systemState;
-  auto guidance = extensionElements->entryGuidance->get()->apply(systemState->scenario, systemState->currentTime, event->token->owner->root->instanceId, event->token->node, status);
-  if ( guidance.has_value() && extensionElements->feasibleExit(status) ) {
+  auto guidance = extensionElements->entryGuidance->get()->apply(systemState->scenario, systemState->currentTime, event->token->owner->root->instanceId, event->token->node, status, data);
+  if ( guidance.has_value() && extensionElements->feasibleExit(status,data) ) {
     return evaluation - guidance.value();
   }
 
