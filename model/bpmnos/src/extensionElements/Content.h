@@ -10,13 +10,14 @@
 #include <bpmn++.h>
 #include "model/bpmnos/src/xml/bpmnos/tContent.h"
 #include "Attribute.h"
+#include "AttributeRegistry.h"
 #include "model/utility/src/Number.h"
 
 namespace BPMNOS::Model {
 
 class Content {
 public:
-  Content(XML::bpmnos::tContent* content, AttributeMap& statusAttributes);
+  Content(XML::bpmnos::tContent* content, const AttributeRegistry& attributeRegistry);
   XML::bpmnos::tContent* element;
 
   std::string& id;
@@ -25,7 +26,7 @@ public:
   std::optional< std::string > value; 
 
 protected:
-  std::optional< std::reference_wrapper<Attribute> > getAttribute(AttributeMap& statusAttributes);
+  std::optional< std::reference_wrapper<Attribute> > getAttribute(const AttributeRegistry& attributeRegistry) const;
 };
 
 typedef std::unordered_map< std::string, std::unique_ptr<Content> > ContentMap;
