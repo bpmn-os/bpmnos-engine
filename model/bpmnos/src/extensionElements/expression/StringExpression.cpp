@@ -5,8 +5,8 @@
 
 using namespace BPMNOS::Model;
 
-StringExpression::StringExpression(XML::bpmnos::tParameter* parameter, const AttributeMap& statusAttributes)
-  : Expression(parameter, statusAttributes)
+StringExpression::StringExpression(XML::bpmnos::tParameter* parameter, const AttributeRegistry& attributeRegistry)
+  : Expression(parameter, attributeRegistry)
 {
   if ( parameter->attribute.has_value() || !parameter->value.has_value() ) {
     throw std::runtime_error("StringExpression: expression must be given by value");
@@ -30,44 +30,28 @@ StringExpression::StringExpression(XML::bpmnos::tParameter* parameter, const Att
   strutil::trim(parts.front());
   strutil::trim(parts.back());
 
-  if ( auto it = statusAttributes.find(parts.front());
-    it != statusAttributes.end()
-  ) {
-    attribute = it->second;
-    if ( attribute->type != ValueType::STRING ) {
-      throw std::runtime_error("LinearExpression: variable '" + attribute->name + "' is not a string");
-    }
-  }
-  else {
-    throw std::runtime_error("StringExpression: cannot find attribute");
-  }
+  attribute = attributeRegistry[parts.front()];
 
   if ( strutil::starts_with(parts.back(),"\"") && strutil::ends_with(parts.back(),"\"") ) {
+    // right hand side with quotes is a string
     rhs = BPMNOS::to_number( parts.back().substr(1,parts.back().size()-2), STRING );
   }
   else {
-    if ( auto it = statusAttributes.find(parts.back());
-      it != statusAttributes.end()
-    ) {
-      if ( it->second->type != ValueType::STRING ) {
-        throw std::runtime_error("LinearExpression: variable '" + it->second->name + "' is not a string");
-      }
-      rhs = it->second;
-    }
-    else {
-      throw std::runtime_error("StringExpression: cannot find attribute holding comparison string");
-   }
+    // right hand side without quotes is an attribute name
+    rhs = attributeRegistry[parts.back()];
   }
 }
 
-std::optional<BPMNOS::number> StringExpression::execute(const Values& values) const {
+template <typename DataType>
+std::optional<BPMNOS::number> StringExpression::_execute(const BPMNOS::Values& status, const DataType& data) const {
   bool equals;
   if ( std::holds_alternative<const Attribute*>(rhs) ) {
     auto other = std::get<const Attribute *>(rhs);
-    equals = ( values[attribute->index] == values[other->index] );
+    equals = ( attributeRegistry.getValue(attribute,status,data) == attributeRegistry.getValue(other,status,data) );
   }
   else {
-    equals = ( values[attribute->index].has_value() && values[attribute->index].value() == std::get<BPMNOS::number>(rhs) );
+    auto value = attributeRegistry.getValue(attribute,status,data);
+    equals = ( value.has_value() && value.value() == std::get<BPMNOS::number>(rhs) );
   }
   
   if ( type == Type::EQUAL ) {
@@ -79,3 +63,7 @@ std::optional<BPMNOS::number> StringExpression::execute(const Values& values) co
   
   return std::nullopt;
 }
+
+template std::optional<BPMNOS::number> StringExpression::_execute<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data) const;
+template std::optional<BPMNOS::number> StringExpression::_execute<BPMNOS::Globals>(const BPMNOS::Values& status, const BPMNOS::Globals& data) const;
+

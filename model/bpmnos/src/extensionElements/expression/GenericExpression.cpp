@@ -2,8 +2,8 @@
 
 using namespace BPMNOS::Model;
 
-GenericExpression::GenericExpression(XML::bpmnos::tParameter* parameter, const AttributeMap& statusAttributes)
-  : Expression(parameter, statusAttributes)
+GenericExpression::GenericExpression(XML::bpmnos::tParameter* parameter, const AttributeRegistry& attributeRegistry)
+  : Expression(parameter, attributeRegistry)
 {
   if ( parameter->attribute.has_value() || !parameter->value.has_value() ) {
     throw std::runtime_error("GenericExpression: expression must be given by value");
@@ -26,7 +26,7 @@ GenericExpression::GenericExpression(XML::bpmnos::tParameter* parameter, const A
   for ( auto variable : variables ) {
     Attribute* boundAttribute; 
     try {
-      boundAttribute = statusAttributes.at(variable);
+      boundAttribute = attributeRegistry[variable];
     }
     catch (...) {
       throw std::runtime_error("GenericExpression: unknown expression variable");
@@ -39,15 +39,21 @@ GenericExpression::GenericExpression(XML::bpmnos::tParameter* parameter, const A
   }
 }
 
-std::optional<BPMNOS::number> GenericExpression::execute(const Values& values) const {
+template <typename DataType>
+std::optional<BPMNOS::number> GenericExpression::_execute(const BPMNOS::Values& status, const DataType& data) const {
   for ( auto& [variable,boundAttribute] : bindings ) {
-    if ( !values[boundAttribute->index].has_value() ) {
+    auto value = attributeRegistry.getValue(boundAttribute,status,data);
+    if ( !value.has_value() ) {
       // return nullopt because required attribute value is not given
       return std::nullopt;
     }
-    variable = (NumericType)values[boundAttribute->index].value();
+    variable = (NumericType)value.value();
   }
 
   return number(compiledExpression.value());
 }
+
+template std::optional<BPMNOS::number> GenericExpression::_execute<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data) const;
+template std::optional<BPMNOS::number> GenericExpression::_execute<BPMNOS::Globals>(const BPMNOS::Values& status, const BPMNOS::Globals& data) const;
+
 

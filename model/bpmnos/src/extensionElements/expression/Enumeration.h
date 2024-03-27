@@ -17,7 +17,7 @@ namespace BPMNOS::Model {
  **/
 class Enumeration : public Expression {
 public:
-  Enumeration(XML::bpmnos::tParameter* parameter, const AttributeMap& statusAttributes);
+  Enumeration(XML::bpmnos::tParameter* parameter, const AttributeRegistry& attributeRegistry);
   enum class Type { IN, NOTIN };
   Type type;
   static constexpr std::string IN = std::string("in");
@@ -28,7 +28,11 @@ public:
 /**
  * @brief Checks whether the attribute value is in the collection of values.
  */
-  std::optional<BPMNOS::number> execute(const Values& values) const override;
+  template <typename DataType>
+  std::optional<BPMNOS::number> _execute(const BPMNOS::Values& status, const DataType& data) const;
+
+  std::optional<BPMNOS::number> execute(const BPMNOS::Values& status, const BPMNOS::Values& data) const override { return _execute(status,data); };
+  std::optional<BPMNOS::number> execute(const BPMNOS::Values& status, const BPMNOS::Globals& data) const override { return _execute(status,data); };
 };
 
 } // namespace BPMNOS::Model

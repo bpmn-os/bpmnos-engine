@@ -6,8 +6,8 @@
 
 using namespace BPMNOS::Model;
 
-Enumeration::Enumeration(XML::bpmnos::tParameter* parameter, const AttributeMap& statusAttributes)
-  : Expression(parameter, statusAttributes)
+Enumeration::Enumeration(XML::bpmnos::tParameter* parameter, const AttributeRegistry& attributeRegistry)
+  : Expression(parameter, attributeRegistry)
 {
   if ( !parameter->value.has_value() ) {
     throw std::runtime_error("Enumeration: list of allowed values must be provided");
@@ -23,14 +23,7 @@ Enumeration::Enumeration(XML::bpmnos::tParameter* parameter, const AttributeMap&
   
   auto attributeName = trimmed.substr(0,pos);
 
-  if ( auto it = statusAttributes.find(attributeName);
-    it != statusAttributes.end()
-  ) {
-    attribute = it->second;
-  }
-  else {
-    throw std::runtime_error("Enumeration: cannot find attribute");
-  }
+  attribute = attributeRegistry[attributeName];
 
   trimmed = strutil::trim_copy( trimmed.substr(pos) );
 
@@ -56,28 +49,21 @@ Enumeration::Enumeration(XML::bpmnos::tParameter* parameter, const AttributeMap&
     collection = collectionRegistry(trimmed);
   }
   else {
-    if ( auto it = statusAttributes.find(trimmed);
-      it != statusAttributes.end()
-    ) {
-      if ( it->second->type != ValueType::COLLECTION ) {
-        throw std::runtime_error("Enumeration: variable '" + attribute->name + "' is not a collection");
-      }
-      collection = it->second;
-    }
-    else {
-      throw std::runtime_error("Enumeration: cannot determine collection");
-    }
+    collection = attributeRegistry[trimmed];
   } 
 }
 
-std::optional<BPMNOS::number> Enumeration::execute(const Values& values) const {
+template <typename DataType>
+std::optional<BPMNOS::number> Enumeration::_execute(const BPMNOS::Values& status, const DataType& data) const {
   bool found = false;
+  auto attributeValue = attributeRegistry.getValue(attribute,status,data);
   if ( std::holds_alternative<const Attribute *>(collection) ) {
     auto other = std::get<const Attribute *>(collection);
-    if ( values[other->index].has_value() ) {
-      auto& entries = collectionRegistry[(long unsigned int)values[other->index].value()].values;
+    auto otherValue = attributeRegistry.getValue(other,status,data);
+    if ( otherValue.has_value() ) {
+      auto& entries = collectionRegistry[(long unsigned int)otherValue.value()].values;
       for ( auto entry : entries ) {
-        if ( values[attribute->index] == entry ) {
+        if ( attributeValue == entry ) {
           found = true;
           break;
         }
@@ -86,7 +72,7 @@ std::optional<BPMNOS::number> Enumeration::execute(const Values& values) const {
   }
   else {
     for ( auto value : collectionRegistry[(long unsigned int)std::get< BPMNOS::number >(collection)].values ) {
-      if ( values[attribute->index] == value ) {
+      if ( attributeValue == value ) {
         found = true;
         break;
       }
@@ -101,4 +87,7 @@ std::optional<BPMNOS::number> Enumeration::execute(const Values& values) const {
   } 
   return std::nullopt;
 }
+
+template std::optional<BPMNOS::number> Enumeration::_execute<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data) const;
+template std::optional<BPMNOS::number> Enumeration::_execute<BPMNOS::Globals>(const BPMNOS::Values& status, const BPMNOS::Globals& data) const;
 

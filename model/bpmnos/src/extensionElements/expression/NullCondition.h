@@ -14,7 +14,7 @@ namespace BPMNOS::Model {
  **/
 class NullCondition : public Expression {
 public:
-  NullCondition(XML::bpmnos::tParameter* parameter, const AttributeMap& statusAttributes);
+  NullCondition(XML::bpmnos::tParameter* parameter, const AttributeRegistry& attributeRegistry);
   enum class Type { ISNULL, NOTNULL };
   Type type;
   Attribute* attribute;
@@ -27,7 +27,11 @@ public:
  * - a comparison operator "==" or "!=" 
  * - the @ref Keyword::Undefined on the r.h.s.
  */
-  std::optional<BPMNOS::number> execute(const Values& values) const override;
+  template <typename DataType>
+  std::optional<BPMNOS::number> _execute(const BPMNOS::Values& status, const DataType& data) const;
+
+  std::optional<BPMNOS::number> execute(const BPMNOS::Values& status, const BPMNOS::Values& data) const override { return _execute(status,data); };
+  std::optional<BPMNOS::number> execute(const BPMNOS::Values& status, const BPMNOS::Globals& data) const override { return _execute(status,data); };
 private:
   void parse(const std::string& comparisonOperator);
 };

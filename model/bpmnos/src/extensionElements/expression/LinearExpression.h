@@ -3,6 +3,7 @@
 
 #include <vector>
 #include "model/bpmnos/src/extensionElements/Attribute.h"
+#include "model/bpmnos/src/extensionElements/AttributeRegistry.h"
 #include "model/bpmnos/src/extensionElements/Parameter.h"
 #include "model/utility/src/Number.h"
 #include "model/bpmnos/src/extensionElements/Expression.h"
@@ -15,7 +16,7 @@ namespace BPMNOS::Model {
  **/
 class LinearExpression : public Expression {
 public:
-  LinearExpression(XML::bpmnos::tParameter* parameter, const AttributeMap& statusAttributes);
+  LinearExpression(XML::bpmnos::tParameter* parameter, const AttributeRegistry& attributeRegistry);
  
   using NumericType = double;
   using Term = std::tuple<NumericType,Attribute*>;
@@ -42,9 +43,17 @@ public:
  * Additionaly, boolean expression containing the comparison
  * operators "==", "!=", ">=", ">", "<=", "<" are supported.
  */
-  std::optional<BPMNOS::number> execute(const Values& values) const override;
+  template <typename DataType>
+  std::optional<BPMNOS::number> _execute(const BPMNOS::Values& status, const DataType& data) const;
+
+  std::optional<BPMNOS::number> execute(const BPMNOS::Values& status, const BPMNOS::Values& data) const override { return _execute(status,data); };
+  std::optional<BPMNOS::number> execute(const BPMNOS::Values& status, const BPMNOS::Globals& data) const override { return _execute(status,data); };
   
-  std::pair< std::optional<BPMNOS::number>, std::optional<BPMNOS::number> > getBounds(const Attribute* attribute, const Values& values) const override;
+  template <typename DataType>
+  std::pair< std::optional<BPMNOS::number>, std::optional<BPMNOS::number> > _getBounds(const Attribute* attribute, const BPMNOS::Values& status, const DataType& data) const;
+  
+  std::pair< std::optional<BPMNOS::number>, std::optional<BPMNOS::number> > getBounds(const Attribute* attribute, const Values& status, const Values& data) const override { return _getBounds(attribute,status,data); };
+  std::pair< std::optional<BPMNOS::number>, std::optional<BPMNOS::number> > getBounds(const Attribute* attribute, const Values& status, const Globals& data) const override { return _getBounds(attribute,status,data); };
 
 private:
   void parse(std::string expressionString, NumericType SIGN = 1.0);

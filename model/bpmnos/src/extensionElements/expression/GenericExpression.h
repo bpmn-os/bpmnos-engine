@@ -18,7 +18,7 @@ namespace BPMNOS::Model {
  **/
 class GenericExpression : public Expression {
 public:
-  GenericExpression(XML::bpmnos::tParameter* parameter, const AttributeMap& statusAttributes);
+  GenericExpression(XML::bpmnos::tParameter* parameter, const AttributeRegistry& attributeRegistry);
 
   // From: https://www.partow.net/programming/exprtk/index.html:
   // Note: NumericType can be any floating point type. This includes but is not limited to:
@@ -29,7 +29,11 @@ public:
   exprtk::expression<NumericType> compiledExpression; 
   std::vector< std::pair<NumericType&, Attribute *> > bindings; ///< Bindings of expression variables. 
 
-  std::optional<BPMNOS::number> execute(const Values& values) const override;
+  template <typename DataType>
+  std::optional<BPMNOS::number> _execute(const BPMNOS::Values& status, const DataType& data) const;
+
+  std::optional<BPMNOS::number> execute(const BPMNOS::Values& status, const BPMNOS::Values& data) const override { return _execute(status,data); };
+  std::optional<BPMNOS::number> execute(const BPMNOS::Values& status, const BPMNOS::Globals& data) const override { return _execute(status,data); };
 };
 
 } // namespace BPMNOS::Model

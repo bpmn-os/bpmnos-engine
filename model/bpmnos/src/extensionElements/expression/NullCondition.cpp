@@ -5,8 +5,8 @@
 
 using namespace BPMNOS::Model;
 
-NullCondition::NullCondition(XML::bpmnos::tParameter* parameter, const AttributeMap& statusAttributes)
-  : Expression(parameter, statusAttributes)
+NullCondition::NullCondition(XML::bpmnos::tParameter* parameter, const AttributeRegistry& attributeRegistry)
+  : Expression(parameter, attributeRegistry)
   , attribute(nullptr)
 {
   if ( parameter->attribute.has_value() || !parameter->value.has_value() ) {
@@ -34,15 +34,8 @@ void NullCondition::parse(const std::string& comparisonOperator) {
   std::string lhs = strutil::trim_copy(expressions.front());
   std::string rhs = strutil::trim_copy(expressions.back());
 
-  if ( auto it = statusAttributes.find(lhs);
-    it != statusAttributes.end()
-  ) {
-    attribute = it->second;
-  }
-  else {
-    throw std::runtime_error("NullCondition: cannot find attribute in l.h.s.");
-  }
-  
+  attribute = attributeRegistry[lhs];
+
   if ( rhs != Keyword::Undefined ) {
     throw std::runtime_error("NullCondition: cannot find " + Keyword::Undefined + " keyword in r.h.s.");
   }
@@ -51,13 +44,18 @@ void NullCondition::parse(const std::string& comparisonOperator) {
 }
 
 
-std::optional<BPMNOS::number> NullCondition::execute(const Values& values) const {
+template <typename DataType>
+std::optional<BPMNOS::number> NullCondition::_execute(const BPMNOS::Values& status, const DataType& data) const {
+  auto value = attributeRegistry.getValue(attribute,status,data);
   if ( type == Type::ISNULL ) {
-    return BPMNOS::to_number( !values[attribute->index].has_value() , BOOLEAN);
+    return BPMNOS::to_number( !value.has_value() , BOOLEAN);
   }
   else if ( type == Type::NOTNULL ) {
-    return BPMNOS::to_number( values[attribute->index].has_value() , BOOLEAN);
+    return BPMNOS::to_number( value.has_value() , BOOLEAN);
   } 
   return std::nullopt;
 }
+
+template std::optional<BPMNOS::number> NullCondition::_execute<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data) const;
+template std::optional<BPMNOS::number> NullCondition::_execute<BPMNOS::Globals>(const BPMNOS::Values& status, const BPMNOS::Globals& data) const;
 

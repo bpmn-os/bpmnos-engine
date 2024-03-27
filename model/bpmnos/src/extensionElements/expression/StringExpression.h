@@ -14,7 +14,7 @@ namespace BPMNOS::Model {
  **/
 class StringExpression : public Expression {
 public:
-  StringExpression(XML::bpmnos::tParameter* parameter, const AttributeMap& statusAttributes);
+  StringExpression(XML::bpmnos::tParameter* parameter, const AttributeRegistry& attributeRegistry);
  
   enum class Type { EQUAL, NOTEQUAL };
   Type type;
@@ -24,7 +24,11 @@ public:
 /**
  * @brief Checks whether the attribute matches a given string.
  */
-  std::optional<BPMNOS::number> execute(const Values& values) const override;
+  template <typename DataType>
+  std::optional<BPMNOS::number> _execute(const BPMNOS::Values& status, const DataType& data) const;
+
+  std::optional<BPMNOS::number> execute(const BPMNOS::Values& status, const BPMNOS::Values& data) const override { return _execute(status,data); };
+  std::optional<BPMNOS::number> execute(const BPMNOS::Values& status, const BPMNOS::Globals& data) const override { return _execute(status,data); };
 };
 
 } // namespace BPMNOS::Model
