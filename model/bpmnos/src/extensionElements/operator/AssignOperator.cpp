@@ -3,8 +3,8 @@
 
 using namespace BPMNOS::Model;
 
-AssignOperator::AssignOperator(XML::bpmnos::tOperator* operator_, AttributeMap& statusAttributes)
-  : Operator(operator_, statusAttributes)
+AssignOperator::AssignOperator(XML::bpmnos::tOperator* operator_, const AttributeRegistry& attributeRegistry)
+  : Operator(operator_, attributeRegistry)
 {
   try {
     parameter = parameterMap.at("assign").get();
@@ -14,18 +14,22 @@ AssignOperator::AssignOperator(XML::bpmnos::tOperator* operator_, AttributeMap& 
   }
 }
 
-void AssignOperator::apply(Values& status) const {
+template <typename DataType>
+void AssignOperator::_apply(BPMNOS::Values& status, DataType& data) const {
   if ( parameter->attribute.has_value() && status[parameter->attribute->get().index].has_value() ) {
     // Assign value to value of given attribute (if defined)
-    status[attribute->index] = status[parameter->attribute->get().index];
+    attributeRegistry.setValue( attribute, status, data, attributeRegistry.getValue(&parameter->attribute->get(), status, data) );
   }
   else if ( parameter->value.has_value() ) {
     // Assign value to parameter value (if defined)
-    status[attribute->index] = to_number( parameter->value->get().value, attribute->type );
+    attributeRegistry.setValue( attribute, status, data, to_number( parameter->value->get().value, attribute->type ) );
   }
   else {
     // Assign value to undefined if no attribute with value is given and no explicit value is given
-    status[attribute->index] = std::nullopt;
+    attributeRegistry.setValue( attribute, status, data, std::nullopt);
   }
 }
+
+template void AssignOperator::_apply<BPMNOS::Values>(BPMNOS::Values& status, BPMNOS::Values& data) const;
+template void AssignOperator::_apply<BPMNOS::Globals>(BPMNOS::Values& status, BPMNOS::Globals& data) const;
 

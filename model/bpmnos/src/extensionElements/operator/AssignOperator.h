@@ -15,27 +15,29 @@ namespace BPMNOS::Model {
  **/
 class AssignOperator : public Operator {
 public:
-  AssignOperator(XML::bpmnos::tOperator* operator_, AttributeMap& statusAttributes);
+  AssignOperator(XML::bpmnos::tOperator* operator_, const AttributeRegistry& attributeRegistry);
   Parameter* parameter;
 
 /**
- * @brief Assigns a a value to a status attribute.
+ * @brief Assigns a a value to a status or data attribute.
  *
- * This function Assigns a status attribute based on the provided parameter configuration.
+ * This function sets a status or data attribute based on the provided parameter configuration.
  * The function performs the following steps:
  *
- * - If the parameter specifies an attribute and the status contains a value for
+ * - If the parameter specifies an attribute and the status or data contains a value for
  *   that attribute, the value from the respective attribute is used to update
- *   the target attribute in the status.
- * - If the parameter doesn't specify an attribute or the status doesn't contain
+ *   the target attribute.
+ * - If the parameter doesn't specify an attribute or the status or data doesn't contain
  *   a value for that attribute, but a parameter value is available, the parameter
- *   value is used to update the target attribute in the status.
+ *   value is used to update the target attribute.
  * - If neither a parameter attribute with value nor a parameter value is available,
- *   the target attribute in the status is Assign to undefined (std::nullopt).
- *
- * @param status The status values to be updated.
+ *   the target attribute is set to undefined (std::nullopt).
  */
-  void apply(Values& status) const override;
+  template <typename DataType>
+  void _apply(BPMNOS::Values& status, DataType& data) const;
+
+  void apply(BPMNOS::Values& status, BPMNOS::Values& data) const override { return _apply(status,data); };
+  void apply(BPMNOS::Values& status, BPMNOS::Globals& data) const override { return _apply(status,data); };
 };
 
 } // namespace BPMNOS::Model

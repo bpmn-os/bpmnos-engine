@@ -16,7 +16,7 @@ namespace BPMNOS::Model {
  **/
 class LookupOperator : public Operator {
 public:
-  LookupOperator(XML::bpmnos::tOperator* operator_, AttributeMap& statusAttributes);
+  LookupOperator(XML::bpmnos::tOperator* operator_, const AttributeRegistry& attributeRegistry);
   std::string filename;
   std::string key;
   std::vector< std::pair< std::string, Attribute*> > lookups;
@@ -32,24 +32,24 @@ public:
   };
 
 /**
- * @brief Applies the lookup operator to update a status attribute.
+ * @brief Applies the lookup operator to update an attribute value.
  *
  * This function update a status attribute by querying a table with specified
- * lookup attributes. It then updates a status attribute based on the lookup result.
+ * lookup attributes. It then updates an attribute value based on the lookup result.
  * The function performs the following steps:
  *
- * - For each attribute to be looked up, it checks if the corresponding status
+ * - For each attribute to be looked up, it checks if the corresponding attribute
  *   value is available. If not, it sets the target attribute to undefined and
  *   returns.
  * - It performs a lookup in a table using the specified lookup attributes.
- * - If a lookup result is available, it updates the target attribute in the
- *   status with the lookup value.
- * - If no lookup result is available, it sets the target attribute in the status
- *   to undefined (std::nullopt).
- *
- * @param status The status values to be updated.
+ * - If a lookup result is available, it updates the target attribute with the lookup value.
+ * - If no lookup result is available, it sets the target attribute to undefined (std::nullopt).
  */
-  void apply(Values& status) const override;
+  template <typename DataType>
+  void _apply(BPMNOS::Values& status, DataType& data) const;
+
+  void apply(BPMNOS::Values& status, BPMNOS::Values& data) const override { return _apply(status,data); };
+  void apply(BPMNOS::Values& status, BPMNOS::Globals& data) const override { return _apply(status,data); };
 };
 
 } // namespace BPMNOS::Model

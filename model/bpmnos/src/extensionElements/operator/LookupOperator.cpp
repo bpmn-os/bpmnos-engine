@@ -3,8 +3,8 @@
 
 using namespace BPMNOS::Model;
 
-LookupOperator::LookupOperator(XML::bpmnos::tOperator* operator_, AttributeMap& statusAttributes)
-  : Operator(operator_, statusAttributes)
+LookupOperator::LookupOperator(XML::bpmnos::tOperator* operator_, const AttributeRegistry& attributeRegistry)
+  : Operator(operator_, attributeRegistry)
 {
   try {
     parameterMap.at("source").get();
@@ -52,28 +52,34 @@ LookupOperator::LookupOperator(XML::bpmnos::tOperator* operator_, AttributeMap& 
   table = getLookupTable(filename);
 }
 
-void LookupOperator::apply(Values& status) const {
+template <typename DataType>
+void LookupOperator::_apply(BPMNOS::Values& status, DataType& data) const {
   std::unordered_map< std::string, Value > arguments;
   for ( auto& [name,lookupAttribute] : lookups) {
-    if ( !status[lookupAttribute->index].has_value() ) {
+    auto value = attributeRegistry.getValue(lookupAttribute, status, data);
+    if ( !value.has_value() ) {
       // set attribute to undefined because required lookup value is not given
-      status[attribute->index] = std::nullopt;
+      attributeRegistry.setValue( attribute, status, data, std::nullopt );
       return;
     }
 
-    arguments[name] = to_string(status[lookupAttribute->index].value(),lookupAttribute->type);
+    arguments[name] = to_string(value.value(),lookupAttribute->type);
   }
 
   std::optional<std::string> value = table->lookup(key, arguments);
   if ( value.has_value() ) {
     // set value to the value looked up
-    status[attribute->index] = to_number( value.value(), attribute->type );
+    attributeRegistry.setValue( attribute, status, data, to_number( value.value(), attribute->type ) );
   }
   else {
     // set value to undefined if no attribute with value is given and no explicit value is given
-    status[attribute->index] = std::nullopt;
+    attributeRegistry.setValue( attribute, status, data, std::nullopt );
   }
 }
+
+template void LookupOperator::_apply<BPMNOS::Values>(BPMNOS::Values& status, BPMNOS::Values& data) const;
+template void LookupOperator::_apply<BPMNOS::Globals>(BPMNOS::Values& status, BPMNOS::Globals& data) const;
+
 
 
 

@@ -13,15 +13,18 @@
 namespace BPMNOS::Model {
 
 /**
- * @brief Class representing an operator that uses an expression to determine that value
- * of a status attribute.
+ * @brief Class representing an operator that uses an expression on status and data attributes.
  **/
 class ExpressionOperator : public Operator {
 public:
-  ExpressionOperator(XML::bpmnos::tOperator* operator_, const AttributeMap& statusAttributes);
+  ExpressionOperator(XML::bpmnos::tOperator* operator_, const AttributeRegistry& attributeRegistry);
   std::unique_ptr<Expression> expression;
 
-  void apply(Values& values) const;
+  template <typename DataType>
+  void _apply(BPMNOS::Values& status, DataType& data) const;
+
+  void apply(BPMNOS::Values& status, BPMNOS::Values& data) const override { return _apply(status,data); };
+  void apply(BPMNOS::Values& status, BPMNOS::Globals& data) const override { return _apply(status,data); };
 };
 
 } // namespace BPMNOS::Model

@@ -8,18 +8,21 @@
 namespace BPMNOS::Model {
 
 /**
- * @brief Class representing an operator that unassigns the value from a status attribute.
+ * @brief Class representing an operator that unassigns the value from an attribute.
  **/
 class UnassignOperator : public Operator {
 public:
-  UnassignOperator(XML::bpmnos::tOperator* operator_, AttributeMap& statusAttributes);
+  UnassignOperator(XML::bpmnos::tOperator* operator_, const AttributeRegistry& attributeRegistry);
 
 /**
- * @brief Sets a status attribute as undefined.
- *
- * @param status The status values to be updated.
+ * @brief Sets an attribute value to undefined.
  */
-  void apply(Values& status) const override;
+  template <typename DataType>
+  void _apply(BPMNOS::Values& status, DataType& data) const;
+
+  void apply(BPMNOS::Values& status, BPMNOS::Values& data) const override { return _apply(status,data); };
+  void apply(BPMNOS::Values& status, BPMNOS::Globals& data) const override { return _apply(status,data); };
+
 };
 
 } // namespace BPMNOS::Model

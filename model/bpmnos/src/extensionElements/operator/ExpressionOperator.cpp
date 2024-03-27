@@ -2,16 +2,21 @@
 
 using namespace BPMNOS::Model;
 
-ExpressionOperator::ExpressionOperator(XML::bpmnos::tOperator* operator_, const AttributeMap& statusAttributes)
-  : Operator(operator_, statusAttributes)
-  , expression(Expression::create( &operator_->getRequiredChild<XML::bpmnos::tParameter>(), statusAttributes))
+ExpressionOperator::ExpressionOperator(XML::bpmnos::tOperator* operator_, const AttributeRegistry& attributeRegistry)
+  : Operator(operator_, attributeRegistry)
+  , expression(Expression::create( &operator_->getRequiredChild<XML::bpmnos::tParameter>(), attributeRegistry))
 {
   if ( attribute->type == ValueType::STRING || attribute->type == ValueType::COLLECTION ) {
     throw std::runtime_error("ExpressionOperator: non-numeric result of expression operator '" + id + "'");
   }
 }
 
-void ExpressionOperator::apply(Values& values) const {
-  values[attribute->index] = expression->execute(values);
+template <typename DataType>
+void ExpressionOperator::_apply(BPMNOS::Values& status, DataType& data) const {
+  attributeRegistry.setValue( attribute, status, data, expression->execute(status,data) );
 }
+
+template void ExpressionOperator::_apply<BPMNOS::Values>(BPMNOS::Values& status, BPMNOS::Values& data) const;
+template void ExpressionOperator::_apply<BPMNOS::Globals>(BPMNOS::Values& status, BPMNOS::Globals& data) const;
+
 
