@@ -110,8 +110,7 @@ public:
   const BPMN::FlowNode* node;
   const BPMN::SequenceFlow* sequenceFlow;
   enum class State { CREATED, READY, ENTERED, BUSY, COMPLETED, EXITING, DEPARTED, ARRIVED, WAITING, DONE, FAILED, FAILING, WITHDRAWN }; ///< The states that a token can be in
-  const BPMNOS::Model::AttributeMap& getStatusAttributes() const;
-  const BPMNOS::Model::AttributeMap& getDataAttributes() const;
+  const BPMNOS::Model::AttributeRegistry& getAttributeRegistry() const;
 private:
   static inline std::string stateName[] = { "CREATED", "READY", "ENTERED", "BUSY", "COMPLETED", "EXITING", "DEPARTED", "ARRIVED", "WAITING", "DONE", "FAILED", "FAILING", "WITHDRAWN" };
 public:
@@ -122,6 +121,7 @@ public:
 
   State state;
   Values status;
+  Globals& data;
   Token* performing; ///< Pointer to the activity token currently perfomed (only applies if node is a performer referenced by sequential ad-hoc subprocesses)
   
   void setStatus(const BPMNOS::Values& other); ///< Copies all elements except the instance id from `other` to `status`
