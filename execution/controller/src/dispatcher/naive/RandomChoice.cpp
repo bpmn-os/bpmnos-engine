@@ -30,7 +30,7 @@ std::shared_ptr<Event> RandomChoice::dispatchEvent( const SystemState* systemSta
 
         // deduce stricter limits from restrictions
         for ( auto& restriction : extensionElements->restrictions ) {
-          auto [lb,ub] = restriction->expression->getBounds(choice->attribute, updatedStatus);
+          auto [lb,ub] = restriction->expression->getBounds(choice->attribute, updatedStatus,token->owner->data);
           if ( lb.has_value() && lb.value() > min ) {
             min = lb.value();
           }
