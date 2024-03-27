@@ -7,6 +7,7 @@ list(TRANSFORM bpmn_SOURCES PREPEND "xml/")
 
 list(APPEND bpmn_SOURCES
   extensionElements/Attribute.cpp
+  extensionElements/AttributeRegistry.cpp
   extensionElements/Parameter.cpp
   extensionElements/Expression.cpp
   extensionElements/expression/LinearExpression.cpp
@@ -36,6 +37,7 @@ list(APPEND bpmn_SOURCES
 
 list(APPEND bpmn_HEADERS
   extensionElements/Attribute.h
+  extensionElements/AttributeRegistry.h
   extensionElements/Parameter.h
   extensionElements/Expression.h
   extensionElements/expression/LinearExpression.h
