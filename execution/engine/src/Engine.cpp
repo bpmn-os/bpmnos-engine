@@ -138,15 +138,11 @@ void Engine::process(const EntryEvent* event) {
     if ( tokenAtSequentialPerformer->performing ) {
       throw std::runtime_error("Engine: illegal start of sequential activity '" + token->node->id + "'" );
     }
-//    systemState->tokensAwaitingSequentialEntry.remove(token);
     // sequential performer is no longer idle
     tokenAtSequentialPerformer->performing = token;
     notify(SequentialPerformerUpdate(tokenAtSequentialPerformer));
     // use sequential performer status
     token->setStatus(tokenAtSequentialPerformer->status);
-  }
-  else {
-//    systemState->tokensAwaitingParallelEntry.remove(token);
   }
 
   // update token status
@@ -165,7 +161,6 @@ void Engine::process(const ChoiceEvent* event) {
   Token* token = const_cast<Token*>(event->token);
   assert( token->node );
   assert( token->node->represents<BPMNOS::Model::DecisionTask>() );
-//  systemState->tokensAwaitingChoice.remove(token);
 
   // apply choices
   token->status = std::move( event->updatedStatus );
@@ -175,7 +170,7 @@ void Engine::process(const ChoiceEvent* event) {
     if ( !extensionElements->isInstantaneous ) {
       throw std::runtime_error("StateMachine: Operators for subprocess '" + token->node->id + "' attempt to modify timestamp");
     }
-    extensionElements->applyOperators(token->status);
+    extensionElements->applyOperators(token->status,token->data);
   }
 
   commands.emplace_back(std::bind(&Token::advanceToCompleted,token), token);
@@ -202,13 +197,13 @@ void Engine::process(const MessageDeliveryEvent* event) {
   Message* message = const_cast<Message*>(event->message);
 
   // update token status 
-  message->apply(token->node,token->status);
+  message->apply(token->node,token->getAttributeRegistry(),token->status,token->data);
   
   message->state = Message::State::DELIVERED;
   notify(message);
   
   erase_ptr<Message>(systemState->messages,message);
-//  systemState->tokensAwaitingMessageDelivery.remove(token);
+
   if ( message->waitingToken ) {
     // send task is completed
     systemState->messageAwaitingDelivery.erase( message->waitingToken );
@@ -220,7 +215,7 @@ void Engine::process(const MessageDeliveryEvent* event) {
     if ( !extensionElements->isInstantaneous ) {
       throw std::runtime_error("StateMachine: Operators for subprocess '" + token->node->id + "' attempt to modify timestamp");
     }
-    extensionElements->applyOperators(token->status);
+    extensionElements->applyOperators(token->status,token->data);
   }
 
   commands.emplace_back(std::bind(&Token::advanceToCompleted,token), token);
@@ -231,7 +226,6 @@ void Engine::process(const MessageDeliveryEvent* event) {
 void Engine::process(const ExitEvent* event) {
 //std::cerr << "ExitEvent: " << event->token->jsonify().dump() << std::endl;
   Token* token = const_cast<Token*>(event->token);
-//  systemState->tokensAwaitingExit.remove(token);
 
   if ( token->node->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() ) {
     auto tokenAtSequentialPerformer = systemState->tokenAtSequentialPerformer.at(token);
