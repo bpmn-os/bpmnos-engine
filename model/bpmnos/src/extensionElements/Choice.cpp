@@ -2,9 +2,9 @@
 
 using namespace BPMNOS::Model;
 
-Choice::Choice(XML::bpmnos::tChoice* choice, AttributeMap& statusAttributes)
+Choice::Choice(XML::bpmnos::tChoice* choice, const AttributeRegistry& attributeRegistry)
   : element(choice)
-  , attribute(statusAttributes.at(element->attribute.value))
+  , attribute(attributeRegistry[element->attribute.value])
 {
   attribute->isImmutable = false;
 

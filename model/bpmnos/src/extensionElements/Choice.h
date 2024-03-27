@@ -7,6 +7,7 @@
 #include <bpmn++.h>
 #include "model/bpmnos/src/xml/bpmnos/tChoice.h"
 #include "Attribute.h"
+#include "AttributeRegistry.h"
 
 namespace BPMNOS::Model {
 
@@ -17,7 +18,7 @@ namespace BPMNOS::Model {
  */
 class Choice {
 public:
-  Choice(XML::bpmnos::tChoice* choice, AttributeMap& statusAttributes);
+  Choice(XML::bpmnos::tChoice* choice, const AttributeRegistry& attributeRegistry);
   XML::bpmnos::tChoice* element;
 
   Attribute* attribute;
