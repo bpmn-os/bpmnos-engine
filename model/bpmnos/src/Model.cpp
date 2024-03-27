@@ -140,36 +140,6 @@ std::unique_ptr<BPMN::FlowNode> Model::createMessageThrowEvent(XML::bpmn::tThrow
   );
 }
 
-void Model::createDataObjects(BPMN::Scope* scope) {
-  BPMN::Model::createDataObjects(scope);
-  
-  auto extensionElements = scope->extensionElements->as<BPMNOS::Model::ExtensionElements>();
-  size_t count = 0;
-  if ( auto child = scope->represents<BPMN::ChildNode>() ) {
-    extensionElements->dataAttributes = child->parent->extensionElements->as<BPMNOS::Model::ExtensionElements>()->dataAttributes;
-    count = extensionElements->dataAttributes.size();
-  }
-  
-  for ( auto& dataObject : scope->dataObjects ) {
-    if ( dataObject->isCollection ) {
-      throw std::runtime_error("Model: data object collections are not supported");
-    }
-    auto data = dataObject->extensionElements->as<Data>();
-    for ( size_t i = 0; i < data->attributes.size(); i++ ) {
-      auto attribute = data->attributes[i].get();
-
-      if ( attribute->element->parameter.has_value() ) {
-        throw std::runtime_error("Model: parameters for data attributes are not supported");
-      }
-
-      attribute->index = count + i;
-      extensionElements->data.push_back( attribute );
-      extensionElements->dataAttributes[attribute->name] = attribute;
-    }
-    count += data->attributes.size();
-  }
-}
-
 void Model::createMessageFlows() {
   BPMN::Model::createMessageFlows();
 
