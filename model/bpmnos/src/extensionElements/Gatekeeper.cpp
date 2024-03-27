@@ -9,18 +9,21 @@ Gatekeeper::Gatekeeper(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent
   : BPMN::ExtensionElements( baseElement ) 
   , parent(parent)
 {
-  AttributeMap& statusAttributes = parent->extensionElements->as<BPMNOS::Model::ExtensionElements>()->statusAttributes;
+  AttributeRegistry& attributeRegistry = parent->extensionElements->as<BPMNOS::Model::ExtensionElements>()->attributeRegistry;
   for ( XML::bpmnos::tRestriction& restriction : get<XML::bpmnos::tRestrictions,XML::bpmnos::tRestriction>() ) {
-    restrictions.push_back( std::make_unique<Restriction>( &restriction,  statusAttributes ) );
+    restrictions.push_back( std::make_unique<Restriction>( &restriction,  attributeRegistry ) );
   }
 }
 
-bool Gatekeeper::restrictionsSatisfied(const Values& values) const {
+template <typename DataType>
+bool Gatekeeper::restrictionsSatisfied(const BPMNOS::Values& status, const DataType& data) const {
   for ( auto& restriction : restrictions ) {
-    if ( !restriction->isSatisfied(values) ) {
+    if ( !restriction->isSatisfied(status,data) ) {
       return false; 
     }
   }
   return true; 
 }
 
+template bool Gatekeeper::restrictionsSatisfied<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data) const;
+template bool Gatekeeper::restrictionsSatisfied<BPMNOS::Globals>(const BPMNOS::Values& status, const BPMNOS::Globals& data) const;

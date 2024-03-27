@@ -19,7 +19,9 @@ public:
   Gatekeeper(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent);
   const BPMN::Scope* parent;
   std::vector< std::unique_ptr<Restriction> > restrictions;
-  bool restrictionsSatisfied(const Values& values) const;
+
+  template <typename DataType>
+  bool restrictionsSatisfied(const BPMNOS::Values& status, const DataType& data) const;
 };
 
 
