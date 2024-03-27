@@ -2,10 +2,10 @@
 
 using namespace BPMNOS::Model;
 
-Restriction::Restriction(XML::bpmnos::tRestriction* restriction, AttributeMap& statusAttributes)
+Restriction::Restriction(XML::bpmnos::tRestriction* restriction, const AttributeRegistry& attributeRegistry)
   : element(restriction)
   , id(restriction->id.value.value)
-  , expression(Expression::create( &restriction->getRequiredChild<XML::bpmnos::tParameter>(), statusAttributes))
+  , expression(Expression::create( &restriction->getRequiredChild<XML::bpmnos::tParameter>(), attributeRegistry))
   , scope(Scope::FULL)
 {
   if ( restriction->scope.has_value() ) {
@@ -18,9 +18,11 @@ Restriction::Restriction(XML::bpmnos::tRestriction* restriction, AttributeMap& s
   }  
 }
 
-bool Restriction::isSatisfied(const Values& status) const {
-  auto feasible = expression->execute(status);
+template <typename DataType>
+bool Restriction::isSatisfied(const BPMNOS::Values& status, const DataType& data) const {
+  auto feasible = expression->execute(status,data);
   return feasible.has_value() && feasible.value();
-}  
+}
 
-
+template bool Restriction::isSatisfied<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data) const;
+template bool Restriction::isSatisfied<BPMNOS::Globals>(const BPMNOS::Values& status, const BPMNOS::Globals& data) const;
