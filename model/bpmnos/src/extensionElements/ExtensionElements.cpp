@@ -26,7 +26,7 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, BPMN:
   // @attention: data objects are created after construction. 
 
   if ( parent ) {
-    statusAttributes = parent->extensionElements->as<ExtensionElements>()->statusAttributes;
+    attributeRegistry = parent->extensionElements->as<ExtensionElements>()->attributeRegistry;
   }
 
   if ( !element ) return; 
@@ -35,8 +35,7 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, BPMN:
     // add all attributes
     if ( status->get().attributes.has_value() ) {
       for ( XML::bpmnos::tAttribute& attributeElement : status->get().attributes.value().get().attribute ) {
-        auto attribute = std::make_unique<Attribute>(&attributeElement,statusAttributes);
-        statusAttributes[attribute->name] = attribute.get();
+        auto attribute = std::make_unique<Attribute>(&attributeElement,Attribute::Category::STATUS, attributeRegistry);
         if ( attribute->id == Keyword::Instance ) {
           // always insert instance attribute at first position
           attributes.insert(attributes.begin(), std::move(attribute));
@@ -73,7 +72,7 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, BPMN:
     if ( status->get().restrictions.has_value() ) {
       for ( XML::bpmnos::tRestriction& restriction : status->get().restrictions.value().get().restriction ) {
         try {
-          restrictions.push_back(std::make_unique<Restriction>(&restriction,statusAttributes));
+          restrictions.push_back(std::make_unique<Restriction>(&restriction,attributeRegistry));
         }
         catch ( const std::runtime_error& error ) {
           throw std::runtime_error("ExtensionElements: illegal parameters for restriction '" + (std::string)restriction.id.value + "'.\n" + error.what());
@@ -84,7 +83,7 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, BPMN:
     if ( status->get().operators.has_value() ) {
       for ( XML::bpmnos::tOperator& operator_ : status->get().operators.value().get().operator_ ) {
         try {
-          operators.push_back(Operator::create(&operator_,statusAttributes));
+          operators.push_back(Operator::create(&operator_,attributeRegistry));
           if ( operators.back()->attribute->index == BPMNOS::Model::ExtensionElements::Index::Instance ) {
             throw;
           }
@@ -101,7 +100,7 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, BPMN:
     if ( status->get().choices.has_value() ) {
       for ( XML::bpmnos::tChoice& choice : status->get().choices.value().get().choice ) {
         try {
-          choices.push_back(std::make_unique<Choice>(&choice,statusAttributes));
+          choices.push_back(std::make_unique<Choice>(&choice,attributeRegistry));
         }
         catch ( const std::runtime_error& error ) {
           throw std::runtime_error("ExtensionElements: illegal attributes for choice '" + (std::string)choice.id.value + "'.\n" + error.what());
@@ -113,21 +112,21 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, BPMN:
   // add all message definitions
   if ( element->getOptionalChild<XML::bpmnos::tMessages>().has_value() ) {
     for ( XML::bpmnos::tMessage& message : element->getOptionalChild<XML::bpmnos::tMessages>()->get().message ) {
-      messageDefinitions.push_back(std::make_unique<MessageDefinition>(&message,statusAttributes));
+      messageDefinitions.push_back(std::make_unique<MessageDefinition>(&message,attributeRegistry));
     }
   }
   else if ( auto message = element->getOptionalChild<XML::bpmnos::tMessage>(); message.has_value() ) {
-    messageDefinitions.push_back(std::make_unique<MessageDefinition>(&message->get(),statusAttributes));
+    messageDefinitions.push_back(std::make_unique<MessageDefinition>(&message->get(),attributeRegistry));
   }
 
   // add loop characteristics
   if ( element->getOptionalChild<XML::bpmnos::tLoopCharacteristics>().has_value() ) {
     for ( XML::bpmnos::tParameter& parameter : element->getOptionalChild<XML::bpmnos::tLoopCharacteristics>()->get().parameter ) {
       if ( parameter.name.value.value == "cardinality" ) {
-        loopCardinality = std::make_unique<Parameter>(&parameter,statusAttributes);
+        loopCardinality = std::make_unique<Parameter>(&parameter,attributeRegistry);
       }
       else if ( parameter.name.value.value == "index" ) {
-        loopIndex = std::make_unique<Parameter>(&parameter,statusAttributes);
+        loopIndex = std::make_unique<Parameter>(&parameter,attributeRegistry);
       }
     }
   }
@@ -141,7 +140,7 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, BPMN:
   
   // add all guidances
   for ( XML::bpmnos::tGuidance& item : element->getChildren<XML::bpmnos::tGuidance>() ) {
-    auto guidance = std::make_unique<Guidance>(&item,statusAttributes);
+    auto guidance = std::make_unique<Guidance>(&item,attributeRegistry);
     if ( guidance->type == Guidance::Type::Entry ) {
       entryGuidance = std::move(guidance);
     }
@@ -157,27 +156,36 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, BPMN:
   }
 }
 
-bool ExtensionElements::feasibleEntry(const Values& status) const {
+template <typename DataType>
+bool ExtensionElements::feasibleEntry(const BPMNOS::Values& status, const DataType& data) const {
   for ( auto& restriction : restrictions ) {
-    if ( restriction->scope != Restriction::Scope::EXIT && !restriction->isSatisfied(status) ) {
+    if ( restriction->scope != Restriction::Scope::EXIT && !restriction->isSatisfied(status,data) ) {
       return false;
     }
   }
-  return satisfiesInheritedRestrictions(status);
+  return satisfiesInheritedRestrictions(status,data);
 }
 
-bool ExtensionElements::feasibleExit(const Values& status) const {
+template bool ExtensionElements::feasibleEntry<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data) const;
+template bool ExtensionElements::feasibleEntry<BPMNOS::Globals>(const BPMNOS::Values& status, const BPMNOS::Globals& data) const;
+
+template <typename DataType>
+bool ExtensionElements::feasibleExit(const BPMNOS::Values& status, const DataType& data) const {
   for ( auto& restriction : restrictions ) {
-    if ( restriction->scope != Restriction::Scope::ENTRY && !restriction->isSatisfied(status) ) {
+    if ( restriction->scope != Restriction::Scope::ENTRY && !restriction->isSatisfied(status,data) ) {
       return false;
     }
   }
   
-  return satisfiesInheritedRestrictions(status);
+  return satisfiesInheritedRestrictions(status,data);
 }
 
+template bool ExtensionElements::feasibleExit<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data) const;
+template bool ExtensionElements::feasibleExit<BPMNOS::Globals>(const BPMNOS::Values& status, const BPMNOS::Globals& data) const;
 
-bool ExtensionElements::satisfiesInheritedRestrictions(const Values& status) const {
+
+template <typename DataType>
+bool ExtensionElements::satisfiesInheritedRestrictions(const BPMNOS::Values& status, const DataType& data) const {
   auto base = baseElement->represents<BPMN::ChildNode>();
   
   if ( !base ) return true;
@@ -186,7 +194,7 @@ bool ExtensionElements::satisfiesInheritedRestrictions(const Values& status) con
   const BPMN::Node* ancestor = base->parent;
   while ( ancestor ) {
     assert( ancestor->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );
-    if ( !ancestor->extensionElements->as<BPMNOS::Model::ExtensionElements>()->fullScopeRestrictionsSatisfied(status) ) {
+    if ( !ancestor->extensionElements->as<BPMNOS::Model::ExtensionElements>()->fullScopeRestrictionsSatisfied(status,data) ) {
       return false;
     }
     if ( auto eventSubProcess = ancestor->represents<BPMN::EventSubProcess>();
@@ -212,38 +220,73 @@ bool ExtensionElements::satisfiesInheritedRestrictions(const Values& status) con
   return true;
 }
 
-bool ExtensionElements::fullScopeRestrictionsSatisfied(const Values& status) const {
+template bool ExtensionElements::satisfiesInheritedRestrictions<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data) const;
+template bool ExtensionElements::satisfiesInheritedRestrictions<BPMNOS::Globals>(const BPMNOS::Values& status, const BPMNOS::Globals& data) const;
+
+template <typename DataType>
+bool ExtensionElements::fullScopeRestrictionsSatisfied(const BPMNOS::Values& status, const DataType& data) const {
   for ( auto& restriction : restrictions ) {
-    if ( restriction->scope == Restriction::Scope::FULL && !restriction->isSatisfied(status) ) {
+    if ( restriction->scope == Restriction::Scope::FULL && !restriction->isSatisfied(status,data) ) {
       return false;
     }
   }
   return true;
 }
 
+template bool ExtensionElements::fullScopeRestrictionsSatisfied<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data) const;
+template bool ExtensionElements::fullScopeRestrictionsSatisfied<BPMNOS::Globals>(const BPMNOS::Values& status, const BPMNOS::Globals& data) const;
 
-void ExtensionElements::applyOperators(Values& status) const {
+
+template <typename DataType>
+void ExtensionElements::applyOperators(BPMNOS::Values& status, DataType& data) const {
   for ( auto& operator_ : operators ) {
-    operator_->apply(status);
+    operator_->apply(status,data);
   }
 }
 
-BPMNOS::number ExtensionElements::getObjective(const Values& status) const {
+template void ExtensionElements::applyOperators<BPMNOS::Values>(Values& status, BPMNOS::Values& data) const;
+template void ExtensionElements::applyOperators<BPMNOS::Globals>(Values& status, BPMNOS::Globals& data) const;
+
+template <typename DataType>
+BPMNOS::number ExtensionElements::getObjective(const BPMNOS::Values& status, const DataType& data) const {
   BPMNOS::number objective = 0;
-  for ( auto& [name, attribute] : statusAttributes ) {
-    if ( status[attribute->index].has_value() ) {
-      objective += attribute->weight * status[attribute->index].value();
+  for ( auto& [name, attribute] : attributeRegistry.statusAttributes ) {
+    auto value = attributeRegistry.getValue(attribute,status,data);
+    if ( value.has_value() ) {
+      objective += attribute->weight * value.value();
+    }
+  }
+  for ( auto& [name, attribute] : attributeRegistry.dataAttributes ) {
+    auto value = attributeRegistry.getValue(attribute,status,data);
+    if ( value.has_value() ) {
+      objective += attribute->weight * value.value();
     }
   }
   return objective;
 }
 
-BPMNOS::number ExtensionElements::getContributionToObjective(const Values& status) const {
+template BPMNOS::number ExtensionElements::getObjective<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data) const;
+template BPMNOS::number ExtensionElements::getObjective<BPMNOS::Globals>(const BPMNOS::Values& status, const BPMNOS::Globals& data) const;
+
+
+template <typename DataType>
+BPMNOS::number ExtensionElements::getContributionToObjective(const BPMNOS::Values& status, const DataType& data) const {
   BPMNOS::number contribution = 0;
   for ( auto& attribute : attributes ) {
-    if ( status[attribute->index].has_value() ) {
-      contribution += attribute->weight * status[attribute->index].value();
+    auto value = attributeRegistry.getValue(attribute.get(),status,data);
+    if ( value.has_value() ) {
+      contribution += attribute->weight * value.value();
+    }
+  }
+  for ( auto& attribute : this->data ) {
+    auto value = attributeRegistry.getValue(attribute,status,data);
+    if ( value.has_value() ) {
+      contribution += attribute->weight * value.value();
     }
   }
   return contribution;
 }
+
+template BPMNOS::number ExtensionElements::getContributionToObjective<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data) const;
+template BPMNOS::number ExtensionElements::getContributionToObjective<BPMNOS::Globals>(const BPMNOS::Values& status, const BPMNOS::Globals& data) const;
+

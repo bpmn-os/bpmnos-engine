@@ -6,6 +6,7 @@
 #include <string>
 #include <bpmn++.h>
 #include "Attribute.h"
+#include "AttributeRegistry.h"
 #include "Restriction.h"
 #include "Operator.h"
 #include "Choice.h"
@@ -22,8 +23,7 @@ class ExtensionElements : public BPMN::ExtensionElements {
 public:
   ExtensionElements(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent = nullptr);
   const BPMN::Scope* parent;
-  AttributeMap statusAttributes; ///< Map allowing to look up all status attributes by their names.
-  AttributeMap dataAttributes; ///< Map allowing to look up all data attributes by their names.
+  AttributeRegistry attributeRegistry; ///< Registry allowing to look up all status and data attributes by their names.
 
   enum Index { Instance, Timestamp }; ///< Indices for instance and timestamp attribute.
 
@@ -42,16 +42,28 @@ public:
   
   bool hasSequentialPerformer; ///< Boolean indicating whether element has a performer with name "Sequential".
 
-  bool feasibleEntry(const Values& status) const;
-  bool feasibleExit(const Values& status) const;
-  bool satisfiesInheritedRestrictions(const Values& status) const;
-  bool fullScopeRestrictionsSatisfied(const Values& status) const;
+  template <typename DataType>
+  bool feasibleEntry(const BPMNOS::Values& status, const DataType& data) const;
+  
+  template <typename DataType>
+  bool feasibleExit(const BPMNOS::Values& status, const DataType& data) const;
+  
+  template <typename DataType>
+  bool satisfiesInheritedRestrictions(const BPMNOS::Values& status, const DataType& data) const;
+  
+  template <typename DataType>
+  bool fullScopeRestrictionsSatisfied(const BPMNOS::Values& status, const DataType& data) const;
   
   bool isInstantaneous; ///< Boolean indicating whether operators may modify timestamp.
-  void applyOperators(Values& status) const;
 
-  BPMNOS::number getObjective(const Values& status) const; ///< Returns the contribution to the objective.
-  BPMNOS::number getContributionToObjective(const Values& status) const; ///< Returns the contribution to the objective by the attributes declared for the node.
+  template <typename DataType>
+  void applyOperators(BPMNOS::Values& status, DataType& data) const;
+
+  template <typename DataType>
+  BPMNOS::number getObjective(const BPMNOS::Values& status, const DataType& data) const; ///< Returns the contribution to the objective.
+
+  template <typename DataType>
+  BPMNOS::number getContributionToObjective(const BPMNOS::Values& status, const DataType& data) const; ///< Returns the contribution to the objective by the attributes declared for the node.
   
   std::optional< std::unique_ptr<Guidance> > messageDeliveryGuidance;
   std::optional< std::unique_ptr<Guidance> > entryGuidance;
