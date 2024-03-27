@@ -16,9 +16,9 @@ class Scenario;
 
 class Guidance {
 public:
-  Guidance(XML::bpmnos::tGuidance* guidance, AttributeMap statusAttributes);
+  Guidance(XML::bpmnos::tGuidance* guidance, const AttributeRegistry& attributeRegistry);
   XML::bpmnos::tGuidance* element;
-  AttributeMap statusAttributes; ///< Map allowing to look up attributes by their names.
+  AttributeRegistry attributeRegistry; ///< Map allowing to look up attributes by their names.
 
   enum class Type { Entry, Exit, Choice, MessageDelivery };
   Type type;
@@ -26,10 +26,14 @@ public:
   std::vector< std::unique_ptr<Restriction> > restrictions;
   std::vector< std::unique_ptr<Operator> > operators;
 
-  std::optional<BPMNOS::number> apply(const Scenario* scenario, BPMNOS::number currentTime, const std::string& instanceId, const BPMN::FlowNode* node, Values& status) const;
+  template <typename DataType>
+  std::optional<BPMNOS::number> apply(const Scenario* scenario, BPMNOS::number currentTime, const std::string& instanceId, const BPMN::FlowNode* node, BPMNOS::Values& status, DataType& data) const;
 private:  
-  BPMNOS::number getObjective(const Values& values) const;
-  bool restrictionsSatisfied(const Values& values) const;
+  template <typename DataType>
+  BPMNOS::number getObjective(const BPMNOS::Values& status, const DataType& data) const;
+
+  template <typename DataType>
+  bool restrictionsSatisfied(const BPMNOS::Values& status, const DataType& data) const;
 
 };
 
