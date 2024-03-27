@@ -29,7 +29,14 @@ namespace BPMNOS {
 
   typedef BPMNOS_NUMBER_TYPE number;
   typedef std::unordered_map< std::string, std::optional<number> > ValueMap;
-  typedef std::vector< std::optional<number> > Values;
+
+  struct Globals;
+
+  struct Values : std::vector<std::optional<number>> {
+    Values() = default;
+    Values(const Globals& globals);
+  };
+
   struct Globals : std::vector< std::reference_wrapper< std::optional<number> > > {
     Globals() = default;
     Globals(const Globals& other,Values& values);
