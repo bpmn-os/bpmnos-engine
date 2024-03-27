@@ -121,7 +121,7 @@ Token::~Token() {
   }
 }
 
-const BPMNOS::Model::AttributeMap& Token::getAttributeMap() const {
+const BPMNOS::Model::AttributeMap& Token::getStatusAttributes() const {
   if ( !node ) {
     return owner->process->extensionElements->as<const BPMNOS::Model::ExtensionElements>()->statusAttributes;
   }
@@ -130,11 +130,16 @@ const BPMNOS::Model::AttributeMap& Token::getAttributeMap() const {
     return extensionElements->statusAttributes;
   }
 
+  // return status attributes of parent for nodes without extension elements
   if ( !owner->parentToken ) {
     throw std::runtime_error("Token: cannot determine attribute map");
   }
 
-  return owner->parentToken->getAttributeMap();
+  return owner->parentToken->getStatusAttributes();
+}
+
+const BPMNOS::Model::AttributeMap& Token::getDataAttributes() const {
+  return owner->scope->extensionElements->as<const BPMNOS::Model::ExtensionElements>()->dataAttributes;
 }
 
 void Token::setStatus(const BPMNOS::Values& other) {
@@ -156,7 +161,7 @@ nlohmann::ordered_json Token::jsonify() const {
   jsonObject["state"] = stateName[(int)state];
   jsonObject["status"] = nlohmann::ordered_json::object();
 
-  auto& statusAttributes = getAttributeMap();
+  auto& statusAttributes = getStatusAttributes();
   for (auto& [attributeName,attribute] : statusAttributes ) {
     if ( attribute->index >= status.size() ) {
       // skip attribute that is not in status
@@ -185,6 +190,44 @@ nlohmann::ordered_json Token::jsonify() const {
     else if ( attribute->type == COLLECTION) {
       std::string value = BPMNOS::to_string(status[attribute->index].value(),attribute->type);
       jsonObject["status"][attributeName] = value ;
+    }
+  }
+
+  if ( owner->data.empty() ) {
+    return jsonObject;
+  }
+
+  jsonObject["data"] = nlohmann::ordered_json::object();
+
+  auto& dataAttributes = getDataAttributes();
+  for (auto& [attributeName,attribute] : dataAttributes ) {
+    if ( attribute->index >= owner->data.size() ) {
+      // skip attribute that is not in owner->data
+    }
+
+    std::optional<BPMNOS::number>& dataValue = owner->data[attribute->index];
+    if ( !dataValue.has_value() ) {
+      jsonObject["data"][attributeName] = nullptr ;
+    }
+    else if ( attribute->type == BOOLEAN) {
+      bool value = (bool)dataValue.value();
+      jsonObject["data"][attributeName] = value ;
+    }
+    else if ( attribute->type == INTEGER) {
+      int value = (int)dataValue.value();
+      jsonObject["data"][attributeName] = value ;
+    }
+    else if ( attribute->type == DECIMAL) {
+      double value = (double)dataValue.value();
+      jsonObject["data"][attributeName] = value ;
+    }
+    else if ( attribute->type == STRING) {
+      std::string value = BPMNOS::to_string(dataValue.value(),attribute->type);
+      jsonObject["data"][attributeName] = value ;
+    }
+    else if ( attribute->type == COLLECTION) {
+      std::string value = BPMNOS::to_string(dataValue.value(),attribute->type);
+      jsonObject["data"][attributeName] = value ;
     }
   }
 
