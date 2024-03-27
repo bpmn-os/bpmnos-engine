@@ -17,9 +17,11 @@ class Timer : public BPMN::ExtensionElements {
 public:
   Timer(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent);
   const BPMN::Scope* parent;
+  const AttributeRegistry& attributeRegistry;
   std::unique_ptr<BPMNOS::Model::Parameter> trigger;
 
-  BPMNOS::number earliest(const BPMNOS::Values& values) const;
+  template <typename DataType>
+  BPMNOS::number earliest(const BPMNOS::Values& status, const DataType& data) const;
 };
 
 } // namespace BPMNOS::Model
