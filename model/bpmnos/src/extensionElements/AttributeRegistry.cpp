@@ -3,6 +3,9 @@
 using namespace BPMNOS::Model;
 
 void AttributeRegistry::add(Attribute* attribute) {
+  if ( statusAttributes.contains(attribute->name) || dataAttributes.contains(attribute->name) ) {
+    throw std::runtime_error("AttributeRegistry: duplicate attribute name '" + attribute->name + "'");
+  }
   if ( attribute->category == Attribute::Category::STATUS ) {
     attribute->index = statusAttributes.size();
     statusAttributes[attribute->name] = attribute;
@@ -51,6 +54,7 @@ std::optional<BPMNOS::number> AttributeRegistry::getValue(const Attribute* attri
     return status[attribute->index];
   }
   else {
+    assert(attribute->index < data.size());
     return data[attribute->index].get();
   }
 }
