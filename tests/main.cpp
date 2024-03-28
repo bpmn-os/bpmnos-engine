@@ -53,6 +53,9 @@ using namespace BPMNOS;
 // Status
 #include "execution/status/test.h"
 
+// Data
+#include "execution/data/test.h"
+
 // Examples
 #include "examples/assignment_problem/test.h"
 #include "examples/knapsack_problem/test.h"
