@@ -25,7 +25,7 @@ void BestMatchingMessageDelivery::notice(const Observable* observable) {
     assert(request->token->node);
 //std::cerr << "Request: " << request->token->jsonify().dump() << std::endl;
     
-    auto recipientHeader = request->token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->messageDefinitions.front()->getRecipientHeader(request->token->status);
+    auto recipientHeader = request->token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->messageDefinitions.front()->getRecipientHeader(request->token->getAttributeRegistry(),request->token->status,request->token->data);
     requests.emplace_back( request->token->weak_from_this(), request->weak_from_this(), recipientHeader );
 
     auto senderCandidates = request->token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->messageCandidates;

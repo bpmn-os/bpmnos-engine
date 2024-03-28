@@ -5,7 +5,7 @@
 
 using namespace BPMNOS::Model;
 
-MessageDefinition::MessageDefinition(XML::bpmnos::tMessage* message, AttributeMap& statusAttributes)
+MessageDefinition::MessageDefinition(XML::bpmnos::tMessage* message, const AttributeRegistry& attributeRegistry)
   : element(message)
   , name( BPMNOS::to_number(message->name.value.value,STRING) )
 {
@@ -17,7 +17,7 @@ MessageDefinition::MessageDefinition(XML::bpmnos::tMessage* message, AttributeMa
     std::set< std::string > additionalHeader;
     for ( XML::bpmnos::tParameter& parameter : element->getChildren<XML::bpmnos::tParameter>() ) {
       auto& key = parameter.name.value.value;
-      parameterMap.emplace(key,std::make_unique<Parameter>(&parameter,statusAttributes));
+      parameterMap.emplace(key,std::make_unique<Parameter>(&parameter,attributeRegistry));
       if ( key != "name" && key != "sender" && key != "recipient" ) {
         additionalHeader.insert(key);
       }
@@ -27,11 +27,12 @@ MessageDefinition::MessageDefinition(XML::bpmnos::tMessage* message, AttributeMa
     }
 
     for ( XML::bpmnos::tContent& content : element->getChildren<XML::bpmnos::tContent>() ) {
-      contentMap.emplace(content.key.value.value,std::make_unique<Content>(&content,statusAttributes));
+      contentMap.emplace(content.key.value.value,std::make_unique<Content>(&content,attributeRegistry));
     }
 }
 
-BPMNOS::Values MessageDefinition::getSenderHeader(const BPMNOS::Values& status) const {
+template <typename DataType>
+BPMNOS::Values MessageDefinition::getSenderHeader(const AttributeRegistry& attributeRegistry, const BPMNOS::Values& status, const DataType& data) const {
   BPMNOS::Values headerValues;
 
   for ( auto& key : header ) {
@@ -42,14 +43,18 @@ BPMNOS::Values MessageDefinition::getSenderHeader(const BPMNOS::Values& status) 
       headerValues.push_back( status[BPMNOS::Model::ExtensionElements::Index::Instance] );
     }
     else {
-      headerValues.push_back( getHeaderValue(status, key) );
+      headerValues.push_back( getHeaderValue(key, attributeRegistry, status, data) );
     }
   }
 
   return headerValues;
 }
 
-BPMNOS::Values MessageDefinition::getRecipientHeader(const BPMNOS::Values& status) const {
+template  BPMNOS::Values MessageDefinition::getSenderHeader<BPMNOS::Values>(const AttributeRegistry& attributeRegistry, const BPMNOS::Values& status, const BPMNOS::Values& data) const;
+template  BPMNOS::Values MessageDefinition::getSenderHeader<BPMNOS::Globals>(const AttributeRegistry& attributeRegistry, const BPMNOS::Values& status, const BPMNOS::Globals& data) const;
+
+template <typename DataType>
+BPMNOS::Values MessageDefinition::getRecipientHeader(const AttributeRegistry& attributeRegistry, const BPMNOS::Values& status, const DataType& data) const {
   BPMNOS::Values headerValues;
 
   for ( auto& key : header ) {
@@ -60,39 +65,40 @@ BPMNOS::Values MessageDefinition::getRecipientHeader(const BPMNOS::Values& statu
       headerValues.push_back( status[BPMNOS::Model::ExtensionElements::Index::Instance] );
     }
     else {
-      headerValues.push_back( getHeaderValue(status, key) );
+      headerValues.push_back( getHeaderValue(key, attributeRegistry, status, data) );
     }
   }
 
   return headerValues;
 }
 
-std::optional<BPMNOS::number> MessageDefinition::getHeaderValue(const BPMNOS::Values& status, const std::string& key) const {
+template  BPMNOS::Values MessageDefinition::getRecipientHeader<BPMNOS::Values>(const AttributeRegistry& attributeRegistry, const BPMNOS::Values& status, const BPMNOS::Values& data) const;
+template  BPMNOS::Values MessageDefinition::getRecipientHeader<BPMNOS::Globals>(const AttributeRegistry& attributeRegistry, const BPMNOS::Values& status, const BPMNOS::Globals& data) const;
+
+template <typename DataType>
+std::optional<BPMNOS::number> MessageDefinition::getHeaderValue(const std::string& key, const AttributeRegistry& attributeRegistry, const BPMNOS::Values& status, const DataType& data) const {
   auto it = parameterMap.find(key);
   if ( it != parameterMap.end() ) {
     auto& parameter = it->second;
-    if ( parameter->attribute.has_value() && status[parameter->attribute->get().index].has_value() ) {
+    auto value = ( parameter->attribute.has_value() ? attributeRegistry.getValue(&parameter->attribute->get(),status,data) : std::nullopt );
+    if ( value.has_value() ) {
       if ( parameter->attribute->get().type == BPMNOS::ValueType::BOOLEAN ) {
         // use string representation of boolean values
-        bool value = (bool)status[parameter->attribute->get().index].value();
-        return to_number( value, BPMNOS::ValueType::STRING );
+        return to_number( (bool)value.value(), BPMNOS::ValueType::STRING );
       }
       else if ( parameter->attribute->get().type == BPMNOS::ValueType::INTEGER ) {
         // use string representation of  integer values
-        int value = (int)status[parameter->attribute->get().index].value();
-        return to_number( std::to_string(value), BPMNOS::ValueType::STRING );
+        return to_number( std::to_string((int)value.value()), BPMNOS::ValueType::STRING );
       }
       else if ( parameter->attribute->get().type == BPMNOS::ValueType::DECIMAL ) {
         // use string representation of  decimal values
-        double value = (double)status[parameter->attribute->get().index].value();
-        return to_number( std::to_string(value), BPMNOS::ValueType::STRING );
+        return to_number( std::to_string((double)value.value()), BPMNOS::ValueType::STRING );
       }
       else if ( parameter->attribute->get().type == BPMNOS::ValueType::COLLECTION ) {
         // use string representation of collection
-        double value = (double)status[parameter->attribute->get().index].value();
-        return to_number( std::to_string(value), BPMNOS::ValueType::STRING );
+        return to_number( std::to_string((double)value.value()), BPMNOS::ValueType::STRING );
       }
-      return status[parameter->attribute->get().index].value();
+      return value.value();
     }
     else if ( parameter->value.has_value() ) {
       return to_number( parameter->value->get().value, BPMNOS::ValueType::STRING );
@@ -100,3 +106,7 @@ std::optional<BPMNOS::number> MessageDefinition::getHeaderValue(const BPMNOS::Va
   }
   return std::nullopt;
 }
+
+template std::optional<BPMNOS::number> MessageDefinition::getHeaderValue<BPMNOS::Values>(const std::string& key, const AttributeRegistry& attributeRegistry, const BPMNOS::Values& status, const BPMNOS::Values& data) const; 
+template std::optional<BPMNOS::number> MessageDefinition::getHeaderValue<BPMNOS::Globals>(const std::string& key, const AttributeRegistry& attributeRegistry, const BPMNOS::Values& status, const BPMNOS::Globals& data) const; 
+

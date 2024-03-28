@@ -7,6 +7,7 @@
 #include <bpmn++.h>
 #include "Observable.h"
 #include "model/utility/src/Number.h"
+#include "model/bpmnos/src/extensionElements/AttributeRegistry.h"
 #include <nlohmann/json.hpp>
 
 namespace BPMNOS::Execution {
@@ -33,7 +34,8 @@ public:
 
   bool matches(const BPMNOS::Values& otherHeader) const; ///< Returns true if headers have the same size and all values that are defined are the same.
 
-  void apply(const BPMN::FlowNode* node, BPMNOS::Values& status) const; ///< Updates the status at a node based on the message content.
+  template <typename DataType>
+  void apply(const BPMN::FlowNode* node, const BPMNOS::Model::AttributeRegistry& attributeRegistry, BPMNOS::Values& status, DataType& data) const; ///< Updates the status at a node based on the message content.
 
   nlohmann::ordered_json jsonify() const;
 };

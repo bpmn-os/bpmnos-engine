@@ -14,17 +14,23 @@ namespace BPMNOS::Model {
 
 class MessageDefinition {
 public:
-  MessageDefinition(XML::bpmnos::tMessage* message, AttributeMap& statusAttributes);
+  MessageDefinition(XML::bpmnos::tMessage* message, const AttributeRegistry& attributeRegistry);
   XML::bpmnos::tMessage* element;
   BPMNOS::number name; ///< Message name
   ParameterMap parameterMap; ///< Map allowing to look up parameters by their names.
   std::vector< std::string > header; ///< Set of parameter names always beginning with "sender" and "recipient"
   enum Index { Name, Sender, Recipient };
   ContentMap contentMap; ///< Map allowing to look up contents by their keys.
-  BPMNOS::Values getSenderHeader(const BPMNOS::Values& status) const; /// Returns a vector of values including message name, recipient, sender, and all other header parameters
-  BPMNOS::Values getRecipientHeader(const BPMNOS::Values& status) const; /// Returns a vector of values including message name, recipient, sender, and all other header parameters
+
+  template <typename DataType>
+  BPMNOS::Values getSenderHeader(const AttributeRegistry& attributeRegistry, const BPMNOS::Values& status, const DataType& data) const; /// Returns a vector of values including message name, recipient, sender, and all other header parameters
+
+  template <typename DataType>
+  BPMNOS::Values getRecipientHeader(const AttributeRegistry& attributeRegistry, const BPMNOS::Values& status, const DataType& data) const; /// Returns a vector of values including message name, recipient, sender, and all other header parameters
 private:
-  std::optional<BPMNOS::number> getHeaderValue(const BPMNOS::Values& status, const std::string& key) const; ///< Returns the header value string with the given key represented as number.
+
+  template <typename DataType>
+  std::optional<BPMNOS::number> getHeaderValue(const std::string& key, const AttributeRegistry& attributeRegistry, const BPMNOS::Values& status, const DataType& data ) const; ///< Returns the header value string with the given key represented as number.
 
 };
 
