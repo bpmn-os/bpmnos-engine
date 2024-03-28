@@ -49,6 +49,7 @@ void LinearExpression::parse(std::string expressionString, NumericType SIGN) {
   std::sregex_token_iterator first{expressionString.begin(), expressionString.end(), re1, -1}, last; // split by "+"
   std::vector<std::string> parts{first, last};
   for (auto part : parts) {
+//std::cerr << "Part: " << part << std::endl;
     if ( part.length() == 0 ) {
       throw std::runtime_error{"LinearExpression::Empty term in expression"};
     }
@@ -59,24 +60,28 @@ void LinearExpression::parse(std::string expressionString, NumericType SIGN) {
 
     Attribute* variable = nullptr;
     for ( auto &[key, attribute] : attributeRegistry.statusAttributes ) {
-      size_t pos = part.find(key);
-      if ( pos != std::string::npos ) {
+      std::regex regex("\\b" + key + "\\b"); // the pattern \b matches a word boundary
+      std::smatch match;
+      if ( std::regex_search(part, match, regex) ) {
         if ( attribute->type == ValueType::STRING || attribute->type == ValueType::COLLECTION ) {
           throw std::runtime_error("LinearExpression: non-numeric variable '" + attribute->name + "'");
         }
         variable = attribute;
+        size_t pos = part.find(key);
         part.erase(pos,key.length()); // remove attribute name from part
         part.erase(remove(part.begin(), part.end(), '*'), part.end());
         break;
       }
     }
     for ( auto &[key, attribute] : attributeRegistry.dataAttributes ) {
-      size_t pos = part.find(key);
-      if ( pos != std::string::npos ) {
+      std::regex regex("\\b" + key + "\\b"); // the pattern \b matches a word boundary
+      std::smatch match;
+      if ( std::regex_search(part, match, regex) ) {
         if ( attribute->type == ValueType::STRING || attribute->type == ValueType::COLLECTION ) {
           throw std::runtime_error("LinearExpression: non-numeric variable '" + attribute->name + "'");
         }
         variable = attribute;
+        size_t pos = part.find(key);
         part.erase(pos,key.length()); // remove attribute name from part
         part.erase(remove(part.begin(), part.end(), '*'), part.end());
         break;
@@ -96,7 +101,7 @@ void LinearExpression::parse(std::string expressionString, NumericType SIGN) {
 
     size_t pos = part.find("/");
     if ( pos == std::string::npos ) {
-      terms.push_back({ SIGN * NumericType(stod(part)), variable });
+      terms.push_back({ SIGN * NumericType(BPMNOS::stod(part)), variable });
     }
     else {
       if ( pos == 0 ) {
@@ -104,7 +109,7 @@ void LinearExpression::parse(std::string expressionString, NumericType SIGN) {
         part = std::string("1") + part;
         pos++;
       }
-      terms.push_back({ SIGN * NumericType(stod(part.substr(0,pos)) / stod(part.substr(pos+1))), variable });      
+      terms.push_back({ SIGN * NumericType(BPMNOS::stod(part.substr(0,pos)) / BPMNOS::stod(part.substr(pos+1))), variable });      
     } 
   }
 }
