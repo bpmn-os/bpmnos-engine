@@ -141,8 +141,6 @@ void Engine::process(const EntryEvent* event) {
     // sequential performer is no longer idle
     tokenAtSequentialPerformer->performing = token;
     notify(SequentialPerformerUpdate(tokenAtSequentialPerformer));
-//    // use sequential performer status
-    token->setStatus(tokenAtSequentialPerformer->status); // TODO: remove
   }
 
   // update token status
@@ -229,8 +227,6 @@ void Engine::process(const ExitEvent* event) {
 
   if ( token->node->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() ) {
     auto tokenAtSequentialPerformer = systemState->tokenAtSequentialPerformer.at(token);
-//    // update sequential performer status
-    tokenAtSequentialPerformer->setStatus(token->status);  // TODO: remove
     tokenAtSequentialPerformer->update(tokenAtSequentialPerformer->state);
     // sequential performer becomes idle
     assert(tokenAtSequentialPerformer->performing);
