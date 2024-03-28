@@ -4,8 +4,9 @@
 
 using namespace BPMNOS::Model;
 
-Attribute::Attribute(XML::bpmnos::tAttribute* attribute)
+Attribute::Attribute(XML::bpmnos::tAttribute* attribute, Attribute::Category category)
   : element(attribute)
+  , category(category)
   , index(std::numeric_limits<size_t>::max())
   , id(attribute->id.value.value)
   , name(attribute->name.value.value)
@@ -47,20 +48,20 @@ Attribute::Attribute(XML::bpmnos::tAttribute* attribute)
   }
 }
 
-Attribute::Attribute(XML::bpmnos::tAttribute* attribute, AttributeMap& statusAttributes)
-  : Attribute(attribute)
+Attribute::Attribute(XML::bpmnos::tAttribute* attribute, Attribute::Category category, AttributeRegistry& attributeRegistry)
+  : Attribute(attribute, category)
 {
-  index = statusAttributes.size();
-
+  attributeRegistry.add(this); 
+  
   if ( attribute->parameter.has_value() ) {
     auto& parameter = attribute->parameter.value().get();
     if ( parameter.name.value.value == "collection" ) {
-      collection = std::make_unique<Parameter>(&parameter,statusAttributes);
+      collection = std::make_unique<Parameter>(&parameter,attributeRegistry);
     }
     else {
       throw std::runtime_error("Attribute: illegal parameter provided for attribute '" + id + "'");
     }
   }
 
-  isImmutable = (id != Keyword::Timestamp); // TODO
+  isImmutable = (id != Keyword::Timestamp);
 }

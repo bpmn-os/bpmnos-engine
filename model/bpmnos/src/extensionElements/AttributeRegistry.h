@@ -23,7 +23,7 @@ public:
   void setValue(const Attribute* attribute, Values& status, Globals& data, std::optional<BPMNOS::number> value) const;
 private:
   friend class Attribute;
-  void emplace(Attribute* attribute);
+  void add(Attribute* attribute);
 };
 
 } // namespace BPMNOS::Model

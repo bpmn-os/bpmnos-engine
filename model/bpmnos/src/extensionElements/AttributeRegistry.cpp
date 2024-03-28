@@ -2,13 +2,13 @@
 
 using namespace BPMNOS::Model;
 
-void AttributeRegistry::emplace(Attribute* attribute) {
+void AttributeRegistry::add(Attribute* attribute) {
   if ( attribute->category == Attribute::Category::STATUS ) {
-//    attribute->index = statusAttributes.size(); // TODO: check
+    attribute->index = statusAttributes.size();
     statusAttributes[attribute->name] = attribute;
   }
   else {
-//    attribute->index = dataAttributes.size(); // TODO: check
+    attribute->index = dataAttributes.size(); 
     dataAttributes[attribute->name] = attribute;
   }
 }
