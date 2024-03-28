@@ -141,8 +141,8 @@ void Engine::process(const EntryEvent* event) {
     // sequential performer is no longer idle
     tokenAtSequentialPerformer->performing = token;
     notify(SequentialPerformerUpdate(tokenAtSequentialPerformer));
-    // use sequential performer status
-    token->setStatus(tokenAtSequentialPerformer->status);
+//    // use sequential performer status
+    token->setStatus(tokenAtSequentialPerformer->status); // TODO: remove
   }
 
   // update token status
@@ -170,7 +170,7 @@ void Engine::process(const ChoiceEvent* event) {
     if ( !extensionElements->isInstantaneous ) {
       throw std::runtime_error("StateMachine: Operators for subprocess '" + token->node->id + "' attempt to modify timestamp");
     }
-    extensionElements->applyOperators(token->status,token->data);
+    extensionElements->applyOperators(token->status,*token->data);
   }
 
   commands.emplace_back(std::bind(&Token::advanceToCompleted,token), token);
@@ -197,7 +197,7 @@ void Engine::process(const MessageDeliveryEvent* event) {
   Message* message = const_cast<Message*>(event->message);
 
   // update token status 
-  message->apply(token->node,token->getAttributeRegistry(),token->status,token->data);
+  message->apply(token->node,token->getAttributeRegistry(),token->status,*token->data);
   
   message->state = Message::State::DELIVERED;
   notify(message);
@@ -215,7 +215,7 @@ void Engine::process(const MessageDeliveryEvent* event) {
     if ( !extensionElements->isInstantaneous ) {
       throw std::runtime_error("StateMachine: Operators for subprocess '" + token->node->id + "' attempt to modify timestamp");
     }
-    extensionElements->applyOperators(token->status,token->data);
+    extensionElements->applyOperators(token->status,*token->data);
   }
 
   commands.emplace_back(std::bind(&Token::advanceToCompleted,token), token);
@@ -229,8 +229,8 @@ void Engine::process(const ExitEvent* event) {
 
   if ( token->node->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() ) {
     auto tokenAtSequentialPerformer = systemState->tokenAtSequentialPerformer.at(token);
-    // update sequential performer status
-    tokenAtSequentialPerformer->setStatus(token->status);
+//    // update sequential performer status
+    tokenAtSequentialPerformer->setStatus(token->status);  // TODO: remove
     tokenAtSequentialPerformer->update(tokenAtSequentialPerformer->state);
     // sequential performer becomes idle
     assert(tokenAtSequentialPerformer->performing);

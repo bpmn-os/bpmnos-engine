@@ -22,7 +22,7 @@ std::optional<double> MessageDeliveryDecision::localEvaluator(const Event* event
 
   auto extensionElements = event->token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   Values status = event->token->status;
-  Values data(event->token->data);
+  Values data(*event->token->data);
   double evaluation = (double)extensionElements->getObjective(status,data);
 
   auto message = dynamic_cast<const MessageDeliveryEvent*>(event)->message;
@@ -38,7 +38,7 @@ std::optional<double> MessageDeliveryDecision::guidedEvaluator(const Event* even
 
   auto extensionElements = event->token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   Values status = event->token->status;
-  Values data(event->token->data);
+  Values data(*event->token->data);
   auto evaluation = (double)extensionElements->getObjective(status,data);
 
   auto message = dynamic_cast<const MessageDeliveryEvent*>(event)->message;

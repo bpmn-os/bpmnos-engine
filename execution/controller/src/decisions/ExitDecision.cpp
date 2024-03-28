@@ -30,7 +30,7 @@ std::optional<double> ExitDecision::guidedEvaluator(const Event* event) {
   }
 
   Values status = event->token->status;
-  Values data(event->token->data);
+  Values data(*event->token->data);
   auto evaluation = (double)extensionElements->getObjective(status,data);
     
   auto systemState = event->token->owner->systemState;

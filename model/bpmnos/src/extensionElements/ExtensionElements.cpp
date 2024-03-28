@@ -13,6 +13,7 @@
 #include "model/bpmnos/src/xml/bpmnos/tLoopCharacteristics.h"
 #include "model/bpmnos/src/xml/bpmnos/tGuidance.h"
 #include "model/utility/src/Keywords.h"
+//#include<iostream>
 
 using namespace BPMNOS::Model;
 
@@ -27,9 +28,12 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, BPMN:
 
   if ( parent ) {
     attributeRegistry = parent->extensionElements->as<ExtensionElements>()->attributeRegistry;
+//std::cerr << "Parent extension elements has " << parent->extensionElements->as<ExtensionElements>()->attributeRegistry.statusAttributes.size() << " status attributes" << " and " << parent->extensionElements->as<ExtensionElements>()->attributeRegistry.dataAttributes.size() << " data attributes" << std::endl;
   }
 
   if ( !element ) return; 
+
+//std::cerr << "Create extension elements for child of " << (parent ? parent->id : "root") << " with " << attributeRegistry.statusAttributes.size() << " inherited status attributes" << " and " << attributeRegistry.dataAttributes.size() << " inherited data attributes" << std::endl;
 
   if ( auto status = element->getOptionalChild<XML::bpmnos::tStatus>(); status.has_value() ) {
     // add all attributes

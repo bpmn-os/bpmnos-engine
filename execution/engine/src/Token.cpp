@@ -22,7 +22,7 @@ Token::Token(const StateMachine* owner, const BPMN::FlowNode* node, const Values
   , sequenceFlow(nullptr)
   , state(State::CREATED)
   , status(status)
-  , data(const_cast<StateMachine*>(owner)->data)
+  , data(&const_cast<StateMachine*>(owner)->data)
   , performing(nullptr)
 {
 }
@@ -34,7 +34,7 @@ Token::Token(const Token* other)
   , sequenceFlow(nullptr)
   , state(other->state)
   , status(other->status)
-  , data(const_cast<StateMachine*>(owner)->data)
+  , data(&const_cast<StateMachine*>(owner)->data)
   , performing(nullptr)
 {
 }
@@ -46,7 +46,7 @@ Token::Token(const std::vector<Token*>& others)
   , sequenceFlow(nullptr)
   , state(others.front()->state)
   , status(mergeStatus(others))
-  , data(const_cast<StateMachine*>(owner)->data)
+  , data(&const_cast<StateMachine*>(owner)->data)
   , performing(nullptr)
 {
 }
@@ -164,47 +164,51 @@ nlohmann::ordered_json Token::jsonify() const {
   auto& attributeRegistry = getAttributeRegistry();
   for (auto& [attributeName,attribute] : attributeRegistry.statusAttributes ) {
     if ( attribute->index >= status.size() ) {
-      // skip attribute that is not in status
+      // skip attribute that is not yet included in status
       continue;
     }
 
-    if ( !status[attribute->index].has_value() ) {
+    auto statusValue = attributeRegistry.getValue(attribute,status,*data);
+    if ( !statusValue.has_value() ) {
       jsonObject["status"][attributeName] = nullptr ;
     }
     else if ( attribute->type == BOOLEAN) {
-      bool value = (bool)status[attribute->index].value();
+      bool value = (bool)statusValue.value();
       jsonObject["status"][attributeName] = value ;
     }
     else if ( attribute->type == INTEGER) {
-      int value = (int)status[attribute->index].value();
+      int value = (int)statusValue.value();
       jsonObject["status"][attributeName] = value ;
     }
     else if ( attribute->type == DECIMAL) {
-      double value = (double)status[attribute->index].value();
+      double value = (double)statusValue.value();
       jsonObject["status"][attributeName] = value ;
     }
     else if ( attribute->type == STRING) {
-      std::string value = BPMNOS::to_string(status[attribute->index].value(),attribute->type);
+      std::string value = BPMNOS::to_string(statusValue.value(),attribute->type);
       jsonObject["status"][attributeName] = value ;
     }
     else if ( attribute->type == COLLECTION) {
-      std::string value = BPMNOS::to_string(status[attribute->index].value(),attribute->type);
+      std::string value = BPMNOS::to_string(statusValue.value(),attribute->type);
       jsonObject["status"][attributeName] = value ;
     }
   }
 
-  if ( data.empty() ) {
+//std::cerr << jsonObject << std::endl;
+  assert(data);
+  if ( data->empty() ) {
     return jsonObject;
   }
 
   jsonObject["data"] = nlohmann::ordered_json::object();
 
   for (auto& [attributeName,attribute] : attributeRegistry.dataAttributes ) {
-    if ( attribute->index >= data.size() ) {
-      // skip attribute that is not in data
+    if ( attribute->index >= data->size() ) {
+      // skip attribute that is not yet included in data
+      continue;
     }
 
-    std::optional<BPMNOS::number>& dataValue = data[attribute->index];
+    auto dataValue = attributeRegistry.getValue(attribute,status,*data);
     if ( !dataValue.has_value() ) {
       jsonObject["data"][attributeName] = nullptr ;
     }
@@ -238,22 +242,22 @@ bool Token::entryIsFeasible() const {
   if ( !node ) {
 //std::cerr << stateName[(int)state] << "/" << owner->scope->id <<std::endl;
     assert( owner->process->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );
-    return owner->process->extensionElements->as<BPMNOS::Model::ExtensionElements>()->feasibleEntry(status,data);
+    return owner->process->extensionElements->as<BPMNOS::Model::ExtensionElements>()->feasibleEntry(status,*data);
   }
 
   assert( node->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );
-  return node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->feasibleEntry(status,data);
+  return node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->feasibleEntry(status,*data);
 }
 
 bool Token::exitIsFeasible() const {
   if ( !node ) {
 //std::cerr << stateName[(int)state] << "/" << owner->scope->id <<std::endl;
     assert( owner->process->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );
-    return owner->process->extensionElements->as<BPMNOS::Model::ExtensionElements>()->feasibleExit(status,data);
+    return owner->process->extensionElements->as<BPMNOS::Model::ExtensionElements>()->feasibleExit(status,*data);
   }
 
   assert( node->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );
-  return node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->feasibleExit(status,data);
+  return node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->feasibleExit(status,*data);
 }
 
 void Token::advanceFromCreated() {
@@ -279,6 +283,11 @@ void Token::advanceToReady() {
     throw std::runtime_error("Token: ready timestamp at node '" + node->id + "' is larger than current time");
   }
 
+  if ( owned ) {
+//std::cerr << "Use data of scope " << owned->scope->id << std::endl;
+    data = &owned->data;
+  }
+  
   update(State::READY);
   
   if ( auto activity = node->represents<BPMN::Activity>();
@@ -321,7 +330,7 @@ void Token::advanceToEntered() {
         throw std::runtime_error("StateMachine: Operators for process '" + node->id + "' attempt to modify timestamp");
       }
       // update status
-      extensionElements->applyOperators(status,data);
+      extensionElements->applyOperators(status,*data);
     }
   }
   else if ( node->represents<BPMN::SubProcess>() || 
@@ -334,7 +343,7 @@ void Token::advanceToEntered() {
         throw std::runtime_error("StateMachine: Operators for subprocess '" + node->id + "' attempt to modify timestamp");
       }
       // update status
-      extensionElements->applyOperators(status,data);
+      extensionElements->applyOperators(status,*data);
     }
   }
 
@@ -563,7 +572,7 @@ void Token::advanceToBusy() {
       if ( auto extensionElements = node->extensionElements->represents<BPMNOS::Model::ExtensionElements>() ) {
         if ( extensionElements->isInstantaneous ) {
           // update status directly
-          extensionElements->applyOperators(status,data);
+          extensionElements->applyOperators(status,*data);
 
           if ( auto sendTask = node->represents<BPMN::SendTask>() ) {
             if ( sendTask->loopCharacteristics.has_value() ) {
@@ -627,7 +636,7 @@ void Token::advanceToCompleted() {
   if ( !node ) {
     // update global objective
     assert( owner->scope->extensionElements->as<BPMNOS::Model::ExtensionElements>() );
-    const_cast<SystemState*>(owner->systemState)->objective += owner->scope->extensionElements->as<BPMNOS::Model::ExtensionElements>()->getContributionToObjective(status,data);
+    const_cast<SystemState*>(owner->systemState)->objective += owner->scope->extensionElements->as<BPMNOS::Model::ExtensionElements>()->getContributionToObjective(status,*data);
 
 //std::cerr << "check restrictions" << std::endl;
   // check restrictions
@@ -651,7 +660,7 @@ void Token::advanceToCompleted() {
         engine->commands.emplace_back(std::bind(&StateMachine::completeCompensationActivity,stateMachine,this), this);
         // update global objective
         assert( node->extensionElements->as<BPMNOS::Model::ExtensionElements>() );
-        const_cast<SystemState*>(owner->systemState)->objective += node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->getContributionToObjective(status,data);
+        const_cast<SystemState*>(owner->systemState)->objective += node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->getContributionToObjective(status,*data);
       }
       else {
         awaitExitEvent();
@@ -777,24 +786,32 @@ void Token::advanceToExiting() {
   update(State::EXITING);
 
   auto engine = const_cast<Engine*>(owner->systemState->engine);
-
   // check restrictions
   if ( !exitIsFeasible() ) {
     engine->commands.emplace_back(std::bind(&Token::advanceToFailed,this), this);
     return;
   }
 
+
   if ( auto extensionElements = node->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
-       extensionElements && extensionElements->attributes.size()
+       extensionElements && ( extensionElements->attributes.size() || extensionElements->data.size() )
   ) {
+    // TODO: also consider data !!!
     // update global objective
-    const_cast<SystemState*>(owner->systemState)->objective += extensionElements->getContributionToObjective(status,data);
+    const_cast<SystemState*>(owner->systemState)->objective += extensionElements->getContributionToObjective(status,*data);
 
     // remove attributes that are no longer needed
     assert( status.size() == extensionElements->attributeRegistry.statusAttributes.size() );
     status.resize( status.size() - extensionElements->attributes.size() );
-  }
 
+//std::cerr << "objective updated" << std::endl;
+  }
+  
+  if ( owned ) {
+//std::cerr << "Use data of scope " << owner->scope->id << std::endl;
+    data = &const_cast<StateMachine*>(owner)->data;
+  }
+  
   if ( auto activity = node->represents<BPMN::Activity>();
     activity && 
     activity->loopCharacteristics.has_value()
@@ -861,7 +878,7 @@ void Token::advanceToDone() {
 }
 
 void Token::advanceToDeparting() {
-//std::cerr << "advanceToDeparting: " << jsonify().dump() << std::endl;
+//std::cerr << "advanceToDeparting: " /*<< jsonify().dump()*/ << std::endl;
 
   if ( node->outgoing.size() == 1 ) {
     auto engine = const_cast<Engine*>(owner->systemState->engine);
@@ -878,7 +895,7 @@ void Token::advanceToDeparting() {
       if ( sequenceFlow != exclusiveGateway->defaultFlow ) {
         // check gatekeeper conditions
         if ( auto gatekeeper = sequenceFlow->extensionElements->as<BPMNOS::Model::Gatekeeper>() ) {
-          if ( gatekeeper->restrictionsSatisfied(status,data) ) {
+          if ( gatekeeper->restrictionsSatisfied(status,*data) ) {
             auto engine = const_cast<Engine*>(owner->systemState->engine);
             engine->commands.emplace_back(std::bind(&Token::advanceToDeparted,this,sequenceFlow), this);
             return;
@@ -916,7 +933,7 @@ void Token::advanceToDeparted(const BPMN::SequenceFlow* sequenceFlow) {
 }
 
 void Token::advanceToArrived() {
-//std::cerr << this << " / advanceToArrived: " << jsonify().dump() << std::endl;
+//std::cerr << "advanceToArrived: " << jsonify().dump() << std::endl;
   node = sequenceFlow->target;
   update(State::ARRIVED);
 
@@ -948,6 +965,9 @@ void Token::advanceToFailed() {
   auto engine = const_cast<Engine*>(owner->systemState->engine);
  
   if ( owned ) {
+//std::cerr << "Use data of scope " << owner->scope->id << std::endl;
+    data = &const_cast<StateMachine*>(owner)->data;
+
     if ( auto activity = owned->scope->represents<BPMN::Activity>();
       activity && activity->isForCompensation
     ) {
@@ -1063,7 +1083,7 @@ void Token::awaitTaskCompletionEvent() {
   if ( auto extensionElements = node->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
        extensionElements && extensionElements->operators.size()
   ) {
-    extensionElements->applyOperators(status,data);
+    extensionElements->applyOperators(status,*data);
     if ( !status[BPMNOS::Model::ExtensionElements::Index::Timestamp].has_value() ) {
       throw std::runtime_error("Token: timestamp at node '" + node->id + "' is deleted");
     }

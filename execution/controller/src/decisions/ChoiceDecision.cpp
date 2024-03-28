@@ -20,9 +20,9 @@ std::optional<double> ChoiceDecision::localEvaluator(const Event* event) {
   assert( event->token->busy() );
   assert( dynamic_cast<const ChoiceEvent*>(event) );
   auto extensionElements = event->token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
-  auto evaluation = (double)extensionElements->getObjective(event->token->status, event->token->data);
+  auto evaluation = (double)extensionElements->getObjective(event->token->status, *event->token->data);
   Values status = dynamic_cast<const ChoiceEvent*>(event)->updatedStatus;
-  Values data(event->token->data);
+  Values data(*event->token->data);
   extensionElements->applyOperators(status,data);
   return evaluation - extensionElements->getObjective(status,data);
 }
@@ -31,9 +31,9 @@ std::optional<double> ChoiceDecision::guidedEvaluator(const Event* event) {
   assert( event->token->busy() );
   assert( dynamic_cast<const ChoiceEvent*>(event) );
   auto extensionElements = event->token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
-  auto evaluation = (double)extensionElements->getObjective(event->token->status, event->token->data);
+  auto evaluation = (double)extensionElements->getObjective(event->token->status, *event->token->data);
   Values status = dynamic_cast<const ChoiceEvent*>(event)->updatedStatus;
-  Values data(event->token->data);
+  Values data(*event->token->data);
   extensionElements->applyOperators(status,data);
 
   if ( !extensionElements->choiceGuidance ) {

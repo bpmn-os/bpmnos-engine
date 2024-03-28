@@ -22,7 +22,7 @@ std::optional<double> EntryDecision::localEvaluator(const Event* event) {
   assert( event->token->ready() );
   auto extensionElements = event->token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   Values status = event->token->status;
-  Values data(event->token->data);
+  Values data(*event->token->data);
   double evaluation = (double)extensionElements->getObjective(status,data);
 
   if ( 
@@ -60,7 +60,7 @@ std::optional<double> EntryDecision::guidedEvaluator(const Event* event) {
 
   auto extensionElements = event->token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   Values status = event->token->status;
-  Values data(event->token->data);
+  Values data(*event->token->data);
   auto evaluation = (double)extensionElements->getObjective(status,data);
 
   if ( 

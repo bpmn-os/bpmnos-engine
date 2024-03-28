@@ -10,7 +10,6 @@ Data::Data(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* scope)
   , scope(scope)
 {
   if ( !element ) return; 
-
   auto extensionElements = scope->extensionElements->as<BPMNOS::Model::ExtensionElements>();
 
   if ( auto elements = element->getOptionalChild<XML::bpmnos::tAttributes>();
@@ -18,7 +17,7 @@ Data::Data(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* scope)
     elements.has_value()
   ) {
     for ( XML::bpmnos::tAttribute& attributeElement : elements.value().get().attribute ) {
-      attributes.push_back( std::make_unique<Attribute>(&attributeElement, Attribute::Category::DATA, extensionElements->attributeRegistry) );
+      attributes.emplace_back( std::make_unique<Attribute>(&attributeElement, Attribute::Category::DATA, extensionElements->attributeRegistry) );
       extensionElements->data.push_back(attributes.back().get());
     }
   }

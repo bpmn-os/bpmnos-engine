@@ -1,5 +1,6 @@
 #include "StringRegistry.h"
 #include "Keywords.h"
+#include <cassert>
 
 using namespace BPMNOS;
 
@@ -10,6 +11,7 @@ StringRegistry::StringRegistry() {
 }
 
 std::string StringRegistry::operator[](long unsigned int i) const {
+  assert( i < registeredStrings.size() );
   return registeredStrings[i];
 }
 

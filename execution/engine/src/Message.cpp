@@ -19,15 +19,15 @@ Message::Message(Token* token, size_t index)
   auto& messageDefinition = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->messageDefinitions[index];
 
   auto& attributeRegistry = token->getAttributeRegistry();
-  // TODO: token->owner->status
-  header = messageDefinition->getSenderHeader(attributeRegistry,token->status,token->data);
+
+  header = messageDefinition->getSenderHeader(attributeRegistry,token->status,*token->data);
   if ( header[ BPMNOS::Model::MessageDefinition::Index::Recipient ].has_value() ) {
     recipient = BPMNOS::to_string(header[ BPMNOS::Model::MessageDefinition::Index::Recipient ].value(),STRING);
   }
 
   for (auto& [key,contentDefinition] : messageDefinition->contentMap) {
     if ( contentDefinition->attribute.has_value() && token->status[contentDefinition->attribute->get().index].has_value() ) {
-      contentValueMap.emplace( key, attributeRegistry.getValue(&contentDefinition->attribute->get(),token->status,token->data) );
+      contentValueMap.emplace( key, attributeRegistry.getValue(&contentDefinition->attribute->get(),token->status,*token->data) );
     }
     else if ( contentDefinition->value.has_value() ) {
       contentValueMap.emplace( key, contentDefinition->value.value() );
@@ -97,7 +97,6 @@ nlohmann::ordered_json Message::jsonify() const {
 
 template <typename DataType>
 void Message::apply(const BPMN::FlowNode* node, const BPMNOS::Model::AttributeRegistry& attributeRegistry, BPMNOS::Values& status, DataType& data) const {
-//void Message::apply(const BPMN::FlowNode* node, BPMNOS::Values& status) const {
   size_t index = 0;
 
   if ( auto receiveTask = node->represents<BPMN::ReceiveTask>();

@@ -18,18 +18,18 @@ using namespace BPMNOS;
 /* Data provider */
 #include "data/static/test.h"
 #include "data/dynamic/test.h"
-
 /* Execution engine */
-
 // Process
 #include "execution/process/test.h"
 
 // Activities
 #include "execution/task/test.h"
 #include "execution/subprocess/test.h"
+
 // Gateways
 #include "execution/parallelgateway/test.h"
 #include "execution/exclusivegateway/test.h"
+
 // Event-based gateways
 #include "execution/eventbasedgateway/test.h"
 // Events
@@ -60,64 +60,12 @@ using namespace BPMNOS;
 #include "examples/assignment_problem/test.h"
 #include "examples/knapsack_problem/test.h"
 #include "examples/travelling_salesperson_problem/test.h"
+
 #endif // ALL_TESTS
 
 #ifndef ALL_TESTS
-SCENARIO( "Assignment problem", "[examples][assignment_problem]" ) {
-  const std::string modelFile = "examples/assignment_problem/Assignment_problem.bpmn";
-  BPMNOS::Model::LookupTable::folders = { std::string(std::filesystem::current_path()) + "/examples/assignment_problem" };
-  REQUIRE_NOTHROW( Model::Model(modelFile) );
-
-  GIVEN( "Three clients and three servers" ) {
-
-    std::string csv =
-      "PROCESS_ID; INSTANCE_ID; ATTRIBUTE_ID; VALUE\n"
-      "ClientProcess;Client1;;\n"
-      "ClientProcess;Client2;;\n"
-      "ClientProcess;Client3;;\n"
-      "ServerProcess;Server1;;\n"
-      "ServerProcess;Server2;;\n"
-      "ServerProcess;Server3;;\n"
-    ;
-
-    Model::StaticDataProvider dataProvider(modelFile,csv);
-    auto scenario = dataProvider.createScenario();
-
-
-    WHEN( "The engine is started with the greedy controller" ) {
-      Execution::Engine engine;
-      Execution::ReadyHandler readyHandler;
-      Execution::DeterministicTaskCompletion completionHandler;
-      readyHandler.connect(&engine);
-      completionHandler.connect(&engine);
-
-      Execution::GreedyController controller;
-      controller.connect(&engine);
-      
-      Execution::MyopicMessageTaskTerminator messageTaskTerminator;
-      Execution::TimeWarp timeHandler;
-      messageTaskTerminator.connect(&engine);
-      timeHandler.connect(&engine);
-
-//      Execution::Recorder recorder;
-      Execution::Recorder recorder(std::cerr);
-      recorder.subscribe(&engine);
-      engine.run(scenario.get());
-      THEN( "Then the messages are delivered" ) {
-        auto assignmentLog = recorder.find(nlohmann::json{{"nodeId", "ReceiveRequestTask"},{"state", "COMPLETED"}});
-std::cerr << assignmentLog.dump() << std::endl;
-        REQUIRE( assignmentLog[0]["status"]["instance"] == "Server2" );
-        REQUIRE( assignmentLog[0]["status"]["client"] == "Client3" );
-
-        REQUIRE( assignmentLog[1]["status"]["instance"] == "Server1" );
-        REQUIRE( assignmentLog[1]["status"]["client"] == "Client2" );
-
-        REQUIRE( assignmentLog[2]["status"]["instance"] == "Server3" );
-        REQUIRE( assignmentLog[2]["status"]["client"] == "Client1" );
-      }
-    }
-  }
-}
+#include "execution/data/test.h"
+#include "execution/subprocess/test.h"
 #endif // ALL_TESTS
 
 // When adding/modifying tests, don't forget to run: make clean; cmake ..; make all -j7; make tests
