@@ -34,14 +34,36 @@ void Globals::add(Values& values) {
   }
 }
 
+double stod(const std::string& str) {
+  double result;
+  try {
+    result = std::stod(str);
+  }
+  catch( ... ) {
+    throw std::runtime_error("Cannot convert '" + str + "' to double" );
+  }
+  return result;
+}
+
+int stoi(const std::string& str) {
+  int result;
+  try {
+    result = std::stoi(str);
+  }
+  catch( ... ) {
+    throw std::runtime_error("Cannot convert '" + str + "' to int" );
+  }
+  return result;
+}
+
 number to_number(const std::string& valueString, const ValueType& type) {
   switch ( type ) {
     case ValueType::BOOLEAN:
       return number(stringRegistry( valueString ));
     case ValueType::INTEGER:
-      return number(std::stoi( valueString ));
+      return number(BPMNOS::stoi( valueString ));
     case ValueType::DECIMAL:
-      return number(std::stod( valueString ));
+      return number(BPMNOS::stod( valueString ));
     case ValueType::STRING:
       return number(stringRegistry( valueString ));
     case ValueType::COLLECTION:
@@ -70,7 +92,7 @@ number to_number(const Value& value, const ValueType& type) {
       }
     case ValueType::INTEGER:
       if (std::holds_alternative<std::string>(value)) {
-        return number(std::stoi(std::get<std::string>(value)));
+        return number(BPMNOS::stoi(std::get<std::string>(value)));
       }
       else if (std::holds_alternative<bool>(value)) {
         return number(std::get<bool>(value) ? 1 : 0);
@@ -86,7 +108,7 @@ number to_number(const Value& value, const ValueType& type) {
       }
     case ValueType::DECIMAL:
       if (std::holds_alternative<std::string>(value)) {
-        return number(std::stod(std::get<std::string>(value)));
+        return number(BPMNOS::stod(std::get<std::string>(value)));
       }
       else if (std::holds_alternative<bool>(value)) {
         return number(std::get<bool>(value) ? 1 : 0);

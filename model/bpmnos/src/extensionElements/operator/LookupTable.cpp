@@ -56,10 +56,10 @@ const csv::CSVRow* LookupTable::row(const std::unordered_map< std::string, Value
         SAME = ( std::get<bool>(columnValue) == (row[columnName].get<std::string>() == "true") );
       }
       else if (std::holds_alternative<int>(columnValue)) {
-        SAME = ( std::get<int>(columnValue) == std::stoi(row[columnName].get<std::string>()) );
+        SAME = ( std::get<int>(columnValue) == BPMNOS::stoi(row[columnName].get<std::string>()) );
       }
       else if (std::holds_alternative<double>(columnValue)) {
-        SAME = ( std::abs( std::get<double>(columnValue) - std::stod(row[columnName].get<std::string>()) )
+        SAME = ( std::abs( std::get<double>(columnValue) - BPMNOS::stod(row[columnName].get<std::string>()) )
                   <= std::numeric_limits<double>::epsilon() 
                );
       }

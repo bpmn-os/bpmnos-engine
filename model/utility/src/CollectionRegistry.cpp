@@ -33,7 +33,7 @@ Collection::Collection(const std::string& string)
     else {
       try {
         // try to convert to number
-        values.push_back( std::stod(element) );
+        values.push_back( BPMNOS::stod(element) );
       }
       catch(...) {
         throw std::runtime_error("Collection: illegal value '" + element + "' in '" + string + "'");

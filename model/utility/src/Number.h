@@ -52,6 +52,9 @@ namespace BPMNOS {
     }
   };
 
+  double stod(const std::string& str);
+  int stoi(const std::string& str);
+
   /**
    * @brief Converts a string to a number.
    */
