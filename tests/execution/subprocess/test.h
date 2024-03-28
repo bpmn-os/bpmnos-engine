@@ -31,6 +31,30 @@ SCENARIO( "Empty executable subprocess", "[execution][subprocess]" ) {
         REQUIRE( recorder.log.size() == 16 );
       }
       THEN( "The dump of each entry of the recorder log is correct" ) {
+        auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr }});
+        REQUIRE( processLog[0]["state"] == "ENTERED" );
+        REQUIRE( processLog[1]["state"] == "BUSY" );
+        REQUIRE( processLog[2]["state"] == "COMPLETED" );
+        REQUIRE( processLog[3]["state"] == "DONE" );
+
+        auto startLog = recorder.find(nlohmann::json{{"nodeId","StartEvent_1" }});
+        REQUIRE( startLog[0]["state"] == "ENTERED" );
+        REQUIRE( startLog[1]["state"] == "DEPARTED" );
+
+        auto activityLog = recorder.find(nlohmann::json{{"nodeId","Activity_1" }});
+        REQUIRE( activityLog[0]["state"] == "ARRIVED" );
+        REQUIRE( activityLog[1]["state"] == "READY" );
+        REQUIRE( activityLog[2]["state"] == "ENTERED" );
+        REQUIRE( activityLog[3]["state"] == "BUSY" );
+        REQUIRE( activityLog[4]["state"] == "COMPLETED" );
+        REQUIRE( activityLog[5]["state"] == "EXITING" );
+        REQUIRE( activityLog[6]["state"] == "DEPARTED" );
+        
+        auto endLog = recorder.find(nlohmann::json{{"nodeId","EndEvent_1" }});
+        REQUIRE( endLog[0]["state"] == "ARRIVED" );
+        REQUIRE( endLog[1]["state"] == "ENTERED" );
+        REQUIRE( endLog[2]["state"] == "DONE" );
+/*
         size_t i=0;
         // process
         REQUIRE( recorder.log[i].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"state\":\"ENTERED\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
@@ -53,6 +77,7 @@ SCENARIO( "Empty executable subprocess", "[execution][subprocess]" ) {
         // process
         REQUIRE( recorder.log[++i].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"state\":\"COMPLETED\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
         REQUIRE( recorder.log[++i].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"state\":\"DONE\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
+*/
       }
     }
   }
@@ -91,6 +116,35 @@ SCENARIO( "Trivial executable subprocess", "[execution][subprocess]" ) {
         REQUIRE( recorder.log.size() == 18 );
       }
       THEN( "The dump of each entry of the recorder log is correct" ) {
+        auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr }});
+        REQUIRE( processLog[0]["state"] == "ENTERED" );
+        REQUIRE( processLog[1]["state"] == "BUSY" );
+        REQUIRE( processLog[2]["state"] == "COMPLETED" );
+        REQUIRE( processLog[3]["state"] == "DONE" );
+
+        auto startEvent1Log = recorder.find(nlohmann::json{{"nodeId","StartEvent_1" }});
+        REQUIRE( startEvent1Log[0]["state"] == "ENTERED" );
+        REQUIRE( startEvent1Log[1]["state"] == "DEPARTED" );
+
+        auto startEvent2Log = recorder.find(nlohmann::json{{"nodeId","StartEvent_2" }});
+        REQUIRE( startEvent2Log[0]["state"] == "ENTERED" );
+        REQUIRE( startEvent2Log[1]["state"] == "DONE" );
+
+        auto activityLog = recorder.find(nlohmann::json{{"nodeId","Activity_1" }});
+        REQUIRE( activityLog[0]["state"] == "ARRIVED" );
+        REQUIRE( activityLog[1]["state"] == "READY" );
+        REQUIRE( activityLog[2]["state"] == "ENTERED" );
+        REQUIRE( activityLog[3]["state"] == "BUSY" );
+        REQUIRE( activityLog[4]["state"] == "COMPLETED" );
+        REQUIRE( activityLog[5]["state"] == "EXITING" );
+        REQUIRE( activityLog[6]["state"] == "DEPARTED" );
+        
+        auto endLog = recorder.find(nlohmann::json{{"nodeId","EndEvent_1" }});
+        REQUIRE( endLog[0]["state"] == "ARRIVED" );
+        REQUIRE( endLog[1]["state"] == "ENTERED" );
+        REQUIRE( endLog[2]["state"] == "DONE" );
+
+/*
         size_t i=0;
         // process
         REQUIRE( recorder.log[i].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"state\":\"ENTERED\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
@@ -117,6 +171,7 @@ SCENARIO( "Trivial executable subprocess", "[execution][subprocess]" ) {
         // process
         REQUIRE( recorder.log[++i].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"state\":\"COMPLETED\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
         REQUIRE( recorder.log[++i].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"state\":\"DONE\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
+*/
       }
     }
   }

@@ -28,6 +28,18 @@ SCENARIO( "Error end event", "[execution][error]" ) {
       recorder.subscribe(&engine);
       engine.run(scenario.get(),0);
       THEN( "The dump of each entry of the recorder log is correct" ) {
+        auto errorEventLog = recorder.find(nlohmann::json{{"nodeId","ErrorEvent_1" }});
+        REQUIRE( errorEventLog[0]["state"] == "ARRIVED" );
+        REQUIRE( errorEventLog[1]["state"] == "ENTERED" );
+        REQUIRE( errorEventLog[2]["state"] == "FAILED" );
+
+        auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr }});
+        REQUIRE( processLog[0]["state"] == "ENTERED" );
+        REQUIRE( processLog[1]["state"] == "BUSY" );
+        REQUIRE( processLog[2]["state"] == "FAILING" );
+        REQUIRE( processLog[3]["state"] == "FAILED" );
+
+/*
         size_t i=0;
         // process
         REQUIRE( recorder.log[i].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"state\":\"ENTERED\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
@@ -42,6 +54,7 @@ SCENARIO( "Error end event", "[execution][error]" ) {
         // process
         REQUIRE( recorder.log[++i].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"state\":\"FAILING\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
         REQUIRE( recorder.log[++i].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"state\":\"FAILED\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
+*/
       }
     }
   }

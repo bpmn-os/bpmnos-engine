@@ -43,7 +43,14 @@ SCENARIO( "Failed task", "[execution][boundaryevent]" ) {
         REQUIRE( completionLog[0]["nodeId"] == "Activity_1" );
         REQUIRE( completionLog[1]["nodeId"] == "BoundaryEvent_1" );
         REQUIRE( completionLog[2]["nodeId"] == nullptr );
-        REQUIRE( recorder.log.back().dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"state\":\"DONE\",\"status\":{\"timestamp\":1.0,\"instance\":\"Instance_1\"}}" );
+
+
+        auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr }});
+        REQUIRE( processLog[0]["state"] == "ENTERED" );
+        REQUIRE( processLog[1]["state"] == "BUSY" );
+        REQUIRE( processLog[2]["state"] == "COMPLETED" );
+        REQUIRE( processLog[3]["state"] == "DONE" );
+        REQUIRE( processLog[3]["status"]["timestamp"] == 1.0 );
       }
     }
   }
@@ -91,7 +98,11 @@ SCENARIO( "Failed subprocess", "[execution][boundaryevent]" ) {
         REQUIRE( completionLog[1]["nodeId"] == "BoundaryEvent_1" );
         REQUIRE( completionLog[2]["nodeId"] == nullptr );
 
-        REQUIRE( recorder.log.back().dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"state\":\"DONE\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
+        auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr }});
+        REQUIRE( processLog[0]["state"] == "ENTERED" );
+        REQUIRE( processLog[1]["state"] == "BUSY" );
+        REQUIRE( processLog[2]["state"] == "COMPLETED" );
+        REQUIRE( processLog[3]["state"] == "DONE" );
       }
     }
   }

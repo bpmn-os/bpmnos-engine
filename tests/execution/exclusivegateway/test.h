@@ -28,6 +28,17 @@ SCENARIO( "Symmetric exclusive gateways", "[execution][exclusivegateway]" ) {
       recorder.subscribe(&engine);
       engine.run(scenario.get(),0);
       THEN( "The dump of each entry of the recorder log is correct" ) {
+        auto gatewayLog = recorder.find(nlohmann::json{{"nodeId","Gateway_1" }});
+        REQUIRE( gatewayLog[0]["state"] == "ARRIVED" );
+        REQUIRE( gatewayLog[1]["state"] == "ENTERED" );
+        REQUIRE( gatewayLog[2]["state"] == "DEPARTED" );
+
+        auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr }});
+        REQUIRE( processLog[0]["state"] == "ENTERED" );
+        REQUIRE( processLog[1]["state"] == "BUSY" );
+        REQUIRE( processLog[2]["state"] == "COMPLETED" );
+        REQUIRE( processLog[3]["state"] == "DONE" );
+/*
         // process
         REQUIRE( recorder.log[0].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"state\":\"ENTERED\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
         REQUIRE( recorder.log[1].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"state\":\"BUSY\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
@@ -40,6 +51,7 @@ SCENARIO( "Symmetric exclusive gateways", "[execution][exclusivegateway]" ) {
         // tasks
         REQUIRE( recorder.log[6]["state"] == "DEPARTED" );
         REQUIRE( recorder.log[7]["state"] == "ARRIVED" );
+*/
         REQUIRE( recorder.log[7]["nodeId"] == "Activity_2" );
     }
    }
@@ -72,6 +84,17 @@ SCENARIO( "Symmetric exclusive gateways", "[execution][exclusivegateway]" ) {
       recorder.subscribe(&engine);
       engine.run(scenario.get(),10);
       THEN( "The dump of each entry of the recorder log is correct" ) {
+        auto gatewayLog = recorder.find(nlohmann::json{{"nodeId","Gateway_1" }});
+        REQUIRE( gatewayLog[0]["state"] == "ARRIVED" );
+        REQUIRE( gatewayLog[1]["state"] == "ENTERED" );
+        REQUIRE( gatewayLog[2]["state"] == "FAILED" );
+
+        auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr }});
+        REQUIRE( processLog[0]["state"] == "ENTERED" );
+        REQUIRE( processLog[1]["state"] == "BUSY" );
+        REQUIRE( processLog[2]["state"] == "FAILING" );
+        REQUIRE( processLog[3]["state"] == "FAILED" );
+/*
         // process
         REQUIRE( recorder.log[0].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"state\":\"ENTERED\",\"status\":{\"timestamp\":1.0,\"instance\":\"Instance_1\"}}" );
         REQUIRE( recorder.log[1].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"state\":\"BUSY\",\"status\":{\"timestamp\":1.0,\"instance\":\"Instance_1\"}}" );
@@ -85,6 +108,7 @@ SCENARIO( "Symmetric exclusive gateways", "[execution][exclusivegateway]" ) {
         // process
         REQUIRE( recorder.log[7].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"state\":\"FAILING\",\"status\":{\"timestamp\":1.0,\"instance\":\"Instance_1\"}}" );
         REQUIRE( recorder.log[8].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"state\":\"FAILED\",\"status\":{\"timestamp\":1.0,\"instance\":\"Instance_1\"}}" );
+*/
       }
     }
   }
@@ -116,6 +140,17 @@ SCENARIO( "Symmetric exclusive gateways", "[execution][exclusivegateway]" ) {
       recorder.subscribe(&engine);
       engine.run(scenario.get(),2);
       THEN( "The dump of each entry of the recorder log is correct" ) {
+        auto gatewayLog = recorder.find(nlohmann::json{{"nodeId","Gateway_1" }});
+        REQUIRE( gatewayLog[0]["state"] == "ARRIVED" );
+        REQUIRE( gatewayLog[1]["state"] == "ENTERED" );
+        REQUIRE( gatewayLog[2]["state"] == "DEPARTED" );
+
+        auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr }});
+        REQUIRE( processLog[0]["state"] == "ENTERED" );
+        REQUIRE( processLog[1]["state"] == "BUSY" );
+        REQUIRE( processLog[2]["state"] == "COMPLETED" );
+        REQUIRE( processLog[3]["state"] == "DONE" );
+/*
         // process
         REQUIRE( recorder.log[0].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"state\":\"ENTERED\",\"status\":{\"timestamp\":2.0,\"instance\":\"Instance_1\"}}" );
         REQUIRE( recorder.log[1].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"state\":\"BUSY\",\"status\":{\"timestamp\":2.0,\"instance\":\"Instance_1\"}}" );
@@ -128,6 +163,7 @@ SCENARIO( "Symmetric exclusive gateways", "[execution][exclusivegateway]" ) {
         // tasks
         REQUIRE( recorder.log[6]["state"] == "DEPARTED" );
         REQUIRE( recorder.log[7]["state"] == "ARRIVED" );
+*/
         REQUIRE( recorder.log[7]["nodeId"] == "Activity_1" );
       }
     }

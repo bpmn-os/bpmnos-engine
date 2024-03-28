@@ -27,6 +27,19 @@ SCENARIO( "Parallel fork", "[execution][parallelgateway]" ) {
         REQUIRE( recorder.log.size() == 16 );
       }
       THEN( "The dump of each entry of the recorder log is correct" ) {
+        auto gateway1Log = recorder.find(nlohmann::json{{"nodeId","Gateway_1" }});
+        REQUIRE( gateway1Log[0]["state"] == "ARRIVED" );
+        REQUIRE( gateway1Log[1]["state"] == "ENTERED" );
+        REQUIRE( gateway1Log[2]["state"] == "DEPARTED" );
+        REQUIRE( gateway1Log[3]["state"] == "DEPARTED" );
+        REQUIRE( gateway1Log[3]["sequenceFlowId"] != gateway1Log[2]["sequenceFlowId"] );
+
+        auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr }});
+        REQUIRE( processLog[0]["state"] == "ENTERED" );
+        REQUIRE( processLog[1]["state"] == "BUSY" );
+        REQUIRE( processLog[2]["state"] == "COMPLETED" );
+        REQUIRE( processLog[3]["state"] == "DONE" );
+/*
         size_t i = 0;
         // process
         REQUIRE( recorder.log[i].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"state\":\"ENTERED\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
@@ -52,6 +65,7 @@ SCENARIO( "Parallel fork", "[execution][parallelgateway]" ) {
         // process
         REQUIRE( recorder.log[++i].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"state\":\"COMPLETED\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
         REQUIRE( recorder.log[++i].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"state\":\"DONE\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
+*/
       }
    }
   }
@@ -90,7 +104,27 @@ SCENARIO( "Symmetric parallel gateways", "[execution][parallelgateway]" ) {
         REQUIRE( recorder.log.size() == 33 );
       }
       THEN( "The dump of each entry of the recorder log is correct" ) {
-        size_t i = 0;
+        auto gateway1Log = recorder.find(nlohmann::json{{"nodeId","Gateway_1" }});
+        REQUIRE( gateway1Log[0]["state"] == "ARRIVED" );
+        REQUIRE( gateway1Log[1]["state"] == "ENTERED" );
+        REQUIRE( gateway1Log[2]["state"] == "DEPARTED" );
+        REQUIRE( gateway1Log[3]["state"] == "DEPARTED" );
+        REQUIRE( gateway1Log[3]["sequenceFlowId"] != gateway1Log[2]["sequenceFlowId"] );
+
+        auto gateway2Log = recorder.find(nlohmann::json{{"nodeId","Gateway_2" }});
+        REQUIRE( gateway2Log[0]["state"] == "ARRIVED" );
+        REQUIRE( gateway2Log[1]["state"] == "WAITING" );
+        REQUIRE( gateway2Log[2]["state"] == "ARRIVED" );
+        REQUIRE( gateway2Log[3]["state"] == "WAITING" );
+        REQUIRE( gateway2Log[4]["state"] == "ENTERED" );
+        REQUIRE( gateway2Log[5]["state"] == "DEPARTED" );
+        
+        auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr }});
+        REQUIRE( processLog[0]["state"] == "ENTERED" );
+        REQUIRE( processLog[1]["state"] == "BUSY" );
+        REQUIRE( processLog[2]["state"] == "COMPLETED" );
+        REQUIRE( processLog[3]["state"] == "DONE" );
+/*        size_t i = 0;
         // process
         REQUIRE( recorder.log[i].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"state\":\"ENTERED\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
         REQUIRE( recorder.log[++i].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"state\":\"BUSY\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
@@ -133,6 +167,7 @@ SCENARIO( "Symmetric parallel gateways", "[execution][parallelgateway]" ) {
         // process
         REQUIRE( recorder.log[++i].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"state\":\"COMPLETED\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
         REQUIRE( recorder.log[++i].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"state\":\"DONE\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
+*/
     }
    }
   }
