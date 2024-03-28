@@ -12,8 +12,8 @@ DataProvider::DataProvider(const std::string& modelFile)
     std::vector< BPMN::Node* > nodes = process->find_all(
       [](BPMN::Node* node) {
         if ( node->extensionElements ) {
-          if ( auto status = node->extensionElements->represents<BPMNOS::Model::ExtensionElements>(); status ) {
-            return !status->attributes.empty();
+          if ( auto extensionElements = node->extensionElements->represents<BPMNOS::Model::ExtensionElements>() ) {
+            return extensionElements->attributes.size() || extensionElements->data.size();
           }
         }
         return false;
@@ -23,9 +23,12 @@ DataProvider::DataProvider(const std::string& modelFile)
     attributes[process.get()] = {};
     // add all attributes of process
     for ( auto& node : nodes ) {
-      auto status = node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
-      for ( auto& attribute : status->attributes ) {
+      auto extensionElements = node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+      for ( auto& attribute : extensionElements->attributes ) {
         attributes[process.get()].emplace(attribute->id,attribute.get());
+      }
+      for ( auto attribute : extensionElements->data ) {
+        attributes[process.get()].emplace(attribute->id,attribute);
       }
     }
   }
