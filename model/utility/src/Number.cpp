@@ -35,25 +35,23 @@ void Globals::add(Values& values) {
 }
 
 double stod(const std::string& str) {
-  double result;
   try {
-    result = std::stod(str);
+    double result = std::stod(str);
+    return result;
   }
   catch( ... ) {
     throw std::runtime_error("Cannot convert '" + str + "' to double" );
   }
-  return result;
 }
 
 int stoi(const std::string& str) {
-  int result;
   try {
-    result = std::stoi(str);
+    int result = std::stoi(str);
+    return result;
   }
   catch( ... ) {
     throw std::runtime_error("Cannot convert '" + str + "' to int" );
   }
-  return result;
 }
 
 number to_number(const std::string& valueString, const ValueType& type) {

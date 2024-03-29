@@ -1,6 +1,8 @@
 SCENARIO( "Sequential adhoc subprocess", "[execution][adhocsubprocess]" ) {
+std::cerr << "Sequential adhoc subprocess" << std::endl;
   const std::string modelFile = "execution/adhocsubprocess/AdHocSubProcess.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
+std::cerr << "Sequential adhoc subprocess did not throw" << std::endl;
   GIVEN( "A single instance with no input values" ) {
 
     std::string csv =
@@ -25,8 +27,8 @@ SCENARIO( "Sequential adhoc subprocess", "[execution][adhocsubprocess]" ) {
       completionHandler.connect(&engine);
       exitHandler.connect(&engine);
       timeHandler.connect(&engine);
-      Execution::Recorder recorder;
-//      Execution::Recorder recorder(std::cerr);
+//      Execution::Recorder recorder;
+      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
       engine.run(scenario.get());
       THEN( "The dump of each entry of the recorder log is correct" ) {
@@ -34,11 +36,11 @@ SCENARIO( "Sequential adhoc subprocess", "[execution][adhocsubprocess]" ) {
         REQUIRE( adHocSubProcessLog[0]["state"] == "ARRIVED" );
         REQUIRE( adHocSubProcessLog[1]["state"] == "READY" );
         REQUIRE( adHocSubProcessLog[2]["state"] == "ENTERED" );
-        REQUIRE( adHocSubProcessLog[3]["status"]["x"] == 0 );
+        REQUIRE( adHocSubProcessLog[3]["data"]["x"] == 0 );
         REQUIRE( adHocSubProcessLog[3]["state"] == "BUSY" );
-        REQUIRE( adHocSubProcessLog[4]["status"]["x"] == 1 );
+        REQUIRE( adHocSubProcessLog[4]["data"]["x"] == 1 );
         REQUIRE( adHocSubProcessLog[4]["state"] == "BUSY" );
-        REQUIRE( adHocSubProcessLog[5]["status"]["x"] == 2 );
+        REQUIRE( adHocSubProcessLog[5]["data"]["x"] == 2 );
         REQUIRE( adHocSubProcessLog[5]["state"] == "BUSY" );
         REQUIRE( adHocSubProcessLog[6]["state"] == "COMPLETED" );
         REQUIRE( adHocSubProcessLog[7]["state"] == "EXITING" );
@@ -82,18 +84,18 @@ SCENARIO( "Sequential adhoc subprocesses with common performer", "[execution][ad
       completionHandler.connect(&engine);
       exitHandler.connect(&engine);
       timeHandler.connect(&engine);
-      Execution::Recorder recorder;
-//      Execution::Recorder recorder(std::cerr);
+//      Execution::Recorder recorder;
+      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
       engine.run(scenario.get());
       THEN( "The dump of each entry of the recorder log is correct" ) {
         auto processLog = recorder.find(nlohmann::json{},nlohmann::json{{"nodeId",nullptr}});
         REQUIRE( processLog[0]["state"] == "ENTERED" );
-        REQUIRE( processLog[0]["status"]["x"] == 0 );
+        REQUIRE( processLog[0]["data"]["x"] == 0 );
         REQUIRE( processLog[1]["state"] == "BUSY" );
-        REQUIRE( processLog[2]["status"]["x"] == 1 );
+        REQUIRE( processLog[2]["data"]["x"] == 1 );
         REQUIRE( processLog[2]["state"] == "BUSY" );
-        REQUIRE( processLog[3]["status"]["x"] == 2 );
+        REQUIRE( processLog[3]["data"]["x"] == 2 );
         REQUIRE( processLog[3]["state"] == "BUSY" );
         REQUIRE( processLog[4]["state"] == "COMPLETED" );
         REQUIRE( processLog[5]["state"] == "DONE" );

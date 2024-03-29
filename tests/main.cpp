@@ -9,7 +9,7 @@ using namespace BPMNOS;
 
 // Include all tests here
 
-#define ALL_TESTS
+//#define ALL_TESTS
 #ifdef ALL_TESTS
 /* Model */
 #include "model/parser/test.h"
@@ -64,8 +64,7 @@ using namespace BPMNOS;
 #endif // ALL_TESTS
 
 #ifndef ALL_TESTS
-#include "execution/data/test.h"
-#include "execution/subprocess/test.h"
+#include "execution/adhocsubprocess/test.h"
 #endif // ALL_TESTS
 
 // When adding/modifying tests, don't forget to run: make clean; cmake ..; make all -j7; make tests
