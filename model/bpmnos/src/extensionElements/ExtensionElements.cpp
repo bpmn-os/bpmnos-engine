@@ -1,6 +1,7 @@
 #include "ExtensionElements.h"
 #include "model/bpmnos/src/Model.h"
 #include "model/bpmnos/src/xml/bpmnos/tStatus.h"
+#include "model/bpmnos/src/xml/bpmnos/tAttributes.h"
 #include "model/bpmnos/src/xml/bpmnos/tAttribute.h"
 #include "model/bpmnos/src/xml/bpmnos/tRestrictions.h"
 #include "model/bpmnos/src/xml/bpmnos/tRestriction.h"
@@ -16,18 +17,22 @@
 
 using namespace BPMNOS::Model;
 
-ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent)
+ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent, std::vector<std::reference_wrapper<XML::bpmnos::tAttribute>> dataAttributes)
   : BPMN::ExtensionElements( baseElement )
   , parent(parent)
   , hasSequentialPerformer(false)
   , isInstantaneous(true)
 {
   // @attention: this->baseElement is only set after constructed extension elements have been bound to the BPMN base element. 
-  // @attention: data objects are created after construction. 
 
   if ( parent ) {
     attributeRegistry = parent->extensionElements->as<ExtensionElements>()->attributeRegistry;
 //std::cerr << "Parent extension elements has " << parent->extensionElements->as<ExtensionElements>()->attributeRegistry.statusAttributes.size() << " status attributes" << " and " << parent->extensionElements->as<ExtensionElements>()->attributeRegistry.dataAttributes.size() << " data attributes" << std::endl;
+  }
+
+  // add all data attributes
+  for ( XML::bpmnos::tAttribute& attributeElement : dataAttributes ) {
+    data.push_back( std::make_unique<Attribute>(&attributeElement, Attribute::Category::DATA, attributeRegistry) );
   }
 
   if ( !element ) return; 
@@ -286,7 +291,7 @@ BPMNOS::number ExtensionElements::getContributionToObjective(const BPMNOS::Value
     }
   }
   for ( auto& attribute : this->data ) {
-    auto value = attributeRegistry.getValue(attribute,status,data);
+    auto value = attributeRegistry.getValue(attribute.get(),status,data);
     if ( value.has_value() ) {
       contribution += attribute->weight * value.value();
     }

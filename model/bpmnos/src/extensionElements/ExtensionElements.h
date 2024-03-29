@@ -12,6 +12,7 @@
 #include "Choice.h"
 #include "MessageDefinition.h"
 #include "Guidance.h"
+#include "model/bpmnos/src/xml/bpmnos/tAttribute.h"
 
 namespace BPMNOS::Model {
 
@@ -21,7 +22,7 @@ namespace BPMNOS::Model {
  **/
 class ExtensionElements : public BPMN::ExtensionElements {
 public:
-  ExtensionElements(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent = nullptr);
+  ExtensionElements(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent = nullptr, std::vector<std::reference_wrapper<XML::bpmnos::tAttribute>> = {});
   const BPMN::Scope* parent;
   AttributeRegistry attributeRegistry; ///< Registry allowing to look up all status and data attributes by their names.
 
@@ -32,7 +33,7 @@ public:
   std::vector< std::unique_ptr<Operator> > operators;
   std::vector< std::unique_ptr<Choice> > choices;
 
-  std::vector< Attribute* > data;  ///< Vector containing data attributes declared for data objects within the node's scope.
+  std::vector< std::unique_ptr<Attribute> > data;  ///< Vector containing data attributes declared for data objects within the node's scope.
 
   std::vector< std::unique_ptr<MessageDefinition> > messageDefinitions; ///< Vector containing message definition(s) provided for the node.
   std::vector< const BPMN::FlowNode* > messageCandidates; ///< Vector containing all potential sending or receiving nodes of a message.

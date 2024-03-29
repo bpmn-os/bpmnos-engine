@@ -178,9 +178,9 @@ BPMNOS::Values Scenario::getKnownInitialStatus(const Scenario::InstanceData* ins
 
 BPMNOS::Values Scenario::getKnownInitialData(const Scenario::InstanceData* instance, const BPMNOS::number currentTime) const {
   BPMNOS::Values initalData;
-  for ( auto attribute : instance->process->extensionElements->as<const BPMNOS::Model::ExtensionElements>()->data ) {
-    assert( instance->data.contains(attribute) );
-    auto& data = instance->data.at(attribute);
+  for ( auto& attribute : instance->process->extensionElements->as<const BPMNOS::Model::ExtensionElements>()->data ) {
+    assert( instance->data.contains(attribute.get()) );
+    auto& data = instance->data.at(attribute.get());
     if ( data.realization.has_value() ) {
       auto realization = data.realization.value();
       if ( realization.disclosure > currentTime ) {
@@ -228,9 +228,9 @@ std::optional<BPMNOS::Values> Scenario::getKnownData(std::string instanceId, con
   auto& instance = instances.at(instanceId);
 
   Values values;
-  for ( auto attribute : node->extensionElements->as<const BPMNOS::Model::ExtensionElements>()->data ) {
-    assert( instance.data.contains(attribute) );
-    auto& data = instance.data.at(attribute);
+  for ( auto& attribute : node->extensionElements->as<const BPMNOS::Model::ExtensionElements>()->data ) {
+    assert( instance.data.contains(attribute.get()) );
+    auto& data = instance.data.at(attribute.get());
 
     if ( data.realization.has_value() ) {
       auto realization = data.realization.value();
@@ -278,9 +278,9 @@ BPMNOS::Values Scenario::getAnticipatedInitialStatus(const Scenario::InstanceDat
 
 BPMNOS::Values Scenario::getAnticipatedInitialData(const Scenario::InstanceData* instance, const BPMNOS::number currentTime) const {
   BPMNOS::Values initalData;
-  for ( auto attribute : instance->process->extensionElements->as<const BPMNOS::Model::ExtensionElements>()->data ) {
-    assert( instance->data.contains(attribute) );
-    auto& data = instance->data.at(attribute);
+  for ( auto& attribute : instance->process->extensionElements->as<const BPMNOS::Model::ExtensionElements>()->data ) {
+    assert( instance->data.contains(attribute.get()) );
+    auto& data = instance->data.at(attribute.get());
 
     if ( data.realization
          && data.realization->disclosure <= currentTime
@@ -334,9 +334,9 @@ BPMNOS::Values Scenario::getAnticipatedData(std::string instanceId, const BPMN::
   auto& instance = instances.at(instanceId);
 
   Values values;
-  for ( auto attribute : node->extensionElements->as<const BPMNOS::Model::ExtensionElements>()->data ) {
-    assert( instance.data.contains(attribute) );
-    auto& data = instance.data.at(attribute);
+  for ( auto& attribute : node->extensionElements->as<const BPMNOS::Model::ExtensionElements>()->data ) {
+    assert( instance.data.contains(attribute.get()) );
+    auto& data = instance.data.at(attribute.get());
     if ( data.realization
          && data.realization->disclosure <= currentTime
     ) {

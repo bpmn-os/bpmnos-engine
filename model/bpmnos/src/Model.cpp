@@ -6,10 +6,11 @@
 #include "extensionElements/ExtensionElements.h"
 #include "extensionElements/Gatekeeper.h"
 #include "extensionElements/Timer.h"
-#include "extensionElements/Data.h"
 #include "extensionElements/MessageDefinition.h"
 #include "DecisionTask.h"
 #include "SequentialAdHocSubProcess.h"
+#include "model/bpmnos/src/xml/bpmnos/tAttributes.h"
+#include "model/bpmnos/src/xml/bpmnos/tAttribute.h"
 
 using namespace BPMNOS::Model;
 
@@ -18,27 +19,42 @@ Model::Model(const std::string& filename)
   readBPMNFile(filename);
 }
 
+std::vector<std::reference_wrapper<XML::bpmnos::tAttribute>> Model::getData(XML::bpmn::tBaseElement* element) {
+  std::vector<std::reference_wrapper<XML::bpmnos::tAttribute>> attributes;
+  auto dataObjects = element->getChildren<XML::bpmn::tDataObject>();
+  for ( XML::bpmn::tDataObject& dataObject : dataObjects ) {
+    if ( !dataObject.extensionElements.has_value() ) {
+      continue;
+    }
+    if ( auto elements = dataObject.extensionElements->get().getOptionalChild<XML::bpmnos::tAttributes>(); elements.has_value()) {
+      for ( XML::bpmnos::tAttribute& attribute : elements.value().get().attribute ) {
+        attributes.emplace_back( attribute );
+      }
+    }
+  }
+  return attributes;
+}
+ 
 std::unique_ptr<BPMN::Process> Model::createProcess(XML::bpmn::tProcess* process) {
+  auto baseElement = BPMN::Model::createProcess(process);
+  auto extensionElements = std::make_unique<BPMNOS::Model::ExtensionElements>(process, nullptr, getData(process) );
   // bind attributes, restrictions, and operators to all processes
-  return bind<BPMN::Process>(
-    BPMN::Model::createProcess(process),
-    std::make_unique<BPMNOS::Model::ExtensionElements>(process)
-  );
+  return bind<BPMN::Process>( std::move(baseElement), std::move(extensionElements) );
 }
 
 std::unique_ptr<BPMN::EventSubProcess> Model::createEventSubProcess(XML::bpmn::tSubProcess* subProcess, BPMN::Scope* parent) {
+  auto baseElement = BPMN::Model::createEventSubProcess(subProcess,parent);
+  auto extensionElements = std::make_unique<BPMNOS::Model::ExtensionElements>(subProcess, parent, getData(subProcess));
   // bind attributes, restrictions, and operators to all event subprocesses
-  return bind<BPMN::EventSubProcess>(
-    BPMN::Model::createEventSubProcess(subProcess,parent),
-    std::make_unique<BPMNOS::Model::ExtensionElements>(subProcess,parent)
-  );
+  return bind<BPMN::EventSubProcess>( std::move(baseElement), std::move(extensionElements) );
 }
 
 std::unique_ptr<BPMN::FlowNode> Model::createActivity(XML::bpmn::tActivity* activity, BPMN::Scope* parent) {
-  auto node =  bind<BPMN::FlowNode>(
-    BPMN::Model::createActivity(activity,parent),
-    std::make_unique<BPMNOS::Model::ExtensionElements>(activity,parent)
-  );
+  auto baseElement = BPMN::Model::createActivity(activity,parent);
+  auto extensionElements = std::make_unique<BPMNOS::Model::ExtensionElements>(activity, parent, getData(activity));
+  // bind attributes, restrictions, and operators to all activities
+  auto node = bind<BPMN::FlowNode>( std::move(baseElement), std::move(extensionElements) );
+
   if ( auto adHocSubProcess = node->represents<SequentialAdHocSubProcess>();
     adHocSubProcess && adHocSubProcess->performer == adHocSubProcess
   ) {
@@ -53,14 +69,6 @@ std::unique_ptr<BPMN::SequenceFlow> Model::createSequenceFlow(XML::bpmn::tSequen
   return bind<BPMN::SequenceFlow>(
     BPMN::Model::createSequenceFlow(sequenceFlow,scope),
     std::make_unique<Gatekeeper>(sequenceFlow,scope)
-  );
-}
-
-std::unique_ptr<BPMN::DataObject> Model::createDataObject(XML::bpmn::tDataObject* dataObject, BPMN::Scope* scope) {
-  // bind attributes to all data objects
-  return bind<BPMN::DataObject>(
-    BPMN::Model::createDataObject(dataObject,scope),
-    std::make_unique<BPMNOS::Model::Data>(dataObject,scope)
   );
 }
 

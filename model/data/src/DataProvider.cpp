@@ -27,8 +27,8 @@ DataProvider::DataProvider(const std::string& modelFile)
       for ( auto& attribute : extensionElements->attributes ) {
         attributes[process.get()].emplace(attribute->id,attribute.get());
       }
-      for ( auto attribute : extensionElements->data ) {
-        attributes[process.get()].emplace(attribute->id,attribute);
+      for ( auto& attribute : extensionElements->data ) {
+        attributes[process.get()].emplace(attribute->id,attribute.get());
       }
     }
   }
