@@ -1,8 +1,6 @@
 SCENARIO( "Sequential adhoc subprocess", "[execution][adhocsubprocess]" ) {
-std::cerr << "Sequential adhoc subprocess" << std::endl;
   const std::string modelFile = "execution/adhocsubprocess/AdHocSubProcess.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
-std::cerr << "Sequential adhoc subprocess did not throw" << std::endl;
   GIVEN( "A single instance with no input values" ) {
 
     std::string csv =

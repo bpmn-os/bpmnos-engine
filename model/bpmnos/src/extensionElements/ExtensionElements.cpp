@@ -13,7 +13,6 @@
 #include "model/bpmnos/src/xml/bpmnos/tLoopCharacteristics.h"
 #include "model/bpmnos/src/xml/bpmnos/tGuidance.h"
 #include "model/utility/src/Keywords.h"
-//#include<iostream>
 
 using namespace BPMNOS::Model;
 
@@ -72,6 +71,7 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, BPMN:
         }
       }
     }    
+
     // add all restrictions
     if ( status->get().restrictions.has_value() ) {
       for ( XML::bpmnos::tRestriction& restriction : status->get().restrictions.value().get().restriction ) {
@@ -83,23 +83,26 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, BPMN:
         }
       }
     }    
+
     // add all operators
     if ( status->get().operators.has_value() ) {
       for ( XML::bpmnos::tOperator& operator_ : status->get().operators.value().get().operator_ ) {
         try {
-          operators.push_back(Operator::create(&operator_,attributeRegistry));
-          if ( operators.back()->attribute->index == BPMNOS::Model::ExtensionElements::Index::Instance ) {
-            throw;
-          }
-          if ( operators.back()->attribute->index == BPMNOS::Model::ExtensionElements::Index::Timestamp ) {
-            isInstantaneous = false;
-          }
+          operators.push_back( Operator::create(&operator_,attributeRegistry) );
         }
         catch ( const std::runtime_error& error ) {
           throw std::runtime_error("ExtensionElements: illegal parameters for operator '" + (std::string)operator_.id.value + "'.\n" + error.what() );
         }
+        auto attribute = operators.back()->attribute;
+        if ( attribute->category == Attribute::Category::STATUS && attribute->index == BPMNOS::Model::ExtensionElements::Index::Timestamp ) {
+          isInstantaneous = false;
+        }
+        if ( attribute->category == Attribute::Category::STATUS && attribute->index == BPMNOS::Model::ExtensionElements::Index::Instance ) {
+          throw std::runtime_error("ExtensionElements: operator '" + (std::string)operator_.id.value + "' modifies instance attribute.\n" );
+        }
       }
     }    
+
     // add all choices to be made
     if ( status->get().choices.has_value() ) {
       for ( XML::bpmnos::tChoice& choice : status->get().choices.value().get().choice ) {

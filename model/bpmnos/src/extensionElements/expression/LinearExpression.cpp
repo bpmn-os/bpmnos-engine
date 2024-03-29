@@ -49,7 +49,6 @@ void LinearExpression::parse(std::string expressionString, NumericType SIGN) {
   std::sregex_token_iterator first{expressionString.begin(), expressionString.end(), re1, -1}, last; // split by "+"
   std::vector<std::string> parts{first, last};
   for (auto part : parts) {
-//std::cerr << "Part: " << part << std::endl;
     if ( part.length() == 0 ) {
       throw std::runtime_error{"LinearExpression::Empty term in expression"};
     }

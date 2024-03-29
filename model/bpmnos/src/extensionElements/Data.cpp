@@ -11,7 +11,7 @@ Data::Data(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* scope)
 {
   if ( !element ) return; 
   auto extensionElements = scope->extensionElements->as<BPMNOS::Model::ExtensionElements>();
-
+  assert( extensionElements );
   if ( auto elements = element->getOptionalChild<XML::bpmnos::tAttributes>();
     elements &&
     elements.has_value()
