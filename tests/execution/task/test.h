@@ -43,7 +43,7 @@ SCENARIO( "Task with expression operator", "[execution][task]" ) {
         REQUIRE( activityLog.back()["instanceId"] == "Instance_1");
         REQUIRE( activityLog.back()["processId"] == "Process_1");
         REQUIRE( activityLog.back()["state"] == "DEPARTED");
-        REQUIRE( activityLog.back()["status"]["instance"] == "Instance_1");
+        REQUIRE( activityLog.back()["data"]["instance"] == "Instance_1");
         REQUIRE( activityLog.back()["status"]["timestamp"] == 1.0);
 
       }

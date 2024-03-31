@@ -27,7 +27,7 @@ SCENARIO( "Empty executable process", "[execution][process]" ) {
         REQUIRE( recorder.log.front()["instanceId"] == "Instance_1");
         REQUIRE( recorder.log.front()["processId"] == "Process_1");
         REQUIRE( recorder.log.front()["state"] == "ENTERED");
-        REQUIRE( recorder.log.front()["status"]["instance"] == "Instance_1");
+        REQUIRE( recorder.log.front()["data"]["instance"] == "Instance_1");
         REQUIRE( recorder.log.front()["status"]["timestamp"] == 0.0);
       }
       THEN( "The dump of each entry of the recorder log is correct" ) {

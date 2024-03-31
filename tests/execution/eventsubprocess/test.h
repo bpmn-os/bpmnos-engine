@@ -157,9 +157,9 @@ SCENARIO( "Non-interrupting escalation", "[execution][eventsubprocess]" ) {
         
         auto escalationStartEventLog = recorder.find(nlohmann::json{{"nodeId","EscalationStartEvent_1" },{"state","ENTERED"}});
         REQUIRE( escalationStartEventLog[0]["status"]["timestamp"] == 0.0);
-        REQUIRE( escalationStartEventLog[0]["status"]["instance"] == "Instance_1^1");
+        REQUIRE( escalationStartEventLog[0]["data"]["instance"] == "Instance_1^1");
         REQUIRE( escalationStartEventLog[1]["status"]["timestamp"] == 1.0);
-        REQUIRE( escalationStartEventLog[1]["status"]["instance"] == "Instance_1^2");
+        REQUIRE( escalationStartEventLog[1]["data"]["instance"] == "Instance_1^2");
         
         auto escalationEvent1Log = recorder.find(nlohmann::json{{"nodeId","EscalationEvent_1" }});
         REQUIRE( escalationEvent1Log[0]["state"] == "ARRIVED" );
@@ -374,9 +374,9 @@ SCENARIO( "Non-interrupting escalation throwing error", "[execution][eventsubpro
         
         auto escalationStartEventLog = recorder.find(nlohmann::json{{"nodeId","EscalationStartEvent_1" },{"state","ENTERED"}});
         REQUIRE( escalationStartEventLog[0]["status"]["timestamp"] == 0.0);
-        REQUIRE( escalationStartEventLog[0]["status"]["instance"] == "Instance_1^1");
+        REQUIRE( escalationStartEventLog[0]["data"]["instance"] == "Instance_1^1");
         REQUIRE( escalationStartEventLog[1]["status"]["timestamp"] == 0.0);
-        REQUIRE( escalationStartEventLog[1]["status"]["instance"] == "Instance_1^2");
+        REQUIRE( escalationStartEventLog[1]["data"]["instance"] == "Instance_1^2");
 
         auto errorEndEventLog = recorder.find(nlohmann::json{{"nodeId","ErrorEndEvent_2" }});
         REQUIRE( errorEndEventLog[0]["state"] == "ARRIVED" );

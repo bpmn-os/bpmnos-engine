@@ -81,13 +81,13 @@ SCENARIO( "Assignment problem", "[examples][assignment_problem]" ) {
         REQUIRE( recorder.find(nlohmann::json{{"nodeId", "ReceiveRequestTask"},{"state", "COMPLETED"}}).size() == 3 );
         
         auto assignmentLog = recorder.find(nlohmann::json{{"nodeId", "ReceiveRequestTask"},{"state", "COMPLETED"}});
-        REQUIRE( assignmentLog[0]["status"]["instance"] == "Server1" );
+        REQUIRE( assignmentLog[0]["data"]["instance"] == "Server1" );
         REQUIRE( assignmentLog[0]["status"]["client"] == "Client1" );
 
-        REQUIRE( assignmentLog[1]["status"]["instance"] == "Server2" );
+        REQUIRE( assignmentLog[1]["data"]["instance"] == "Server2" );
         REQUIRE( assignmentLog[1]["status"]["client"] == "Client2" );
 
-        REQUIRE( assignmentLog[2]["status"]["instance"] == "Server3" );
+        REQUIRE( assignmentLog[2]["data"]["instance"] == "Server3" );
         REQUIRE( assignmentLog[2]["status"]["client"] == "Client3" );
       }
     }
@@ -116,13 +116,13 @@ SCENARIO( "Assignment problem", "[examples][assignment_problem]" ) {
         REQUIRE( recorder.find(nlohmann::json{{"nodeId", "ReceiveRequestTask"},{"state", "COMPLETED"}}).size() == 3 );
 
         auto assignmentLog = recorder.find(nlohmann::json{{"nodeId", "ReceiveRequestTask"},{"state", "COMPLETED"}});
-        REQUIRE( assignmentLog[0]["status"]["instance"] == "Server2" );
+        REQUIRE( assignmentLog[0]["data"]["instance"] == "Server2" );
         REQUIRE( assignmentLog[0]["status"]["client"] == "Client3" );
 
-        REQUIRE( assignmentLog[1]["status"]["instance"] == "Server1" );
+        REQUIRE( assignmentLog[1]["data"]["instance"] == "Server1" );
         REQUIRE( assignmentLog[1]["status"]["client"] == "Client2" );
 
-        REQUIRE( assignmentLog[2]["status"]["instance"] == "Server3" );
+        REQUIRE( assignmentLog[2]["data"]["instance"] == "Server3" );
         REQUIRE( assignmentLog[2]["status"]["client"] == "Client1" );
       }
     }

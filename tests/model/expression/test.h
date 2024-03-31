@@ -16,7 +16,7 @@ SCENARIO( "Linear expression", "[model][expression]" ) {
       THEN( "The result is correct" ) {
         for ( auto& [process,status,data] : instantiations ) {
           auto extensionElements = process->extensionElements->represents<Model::ExtensionElements>();
-          REQUIRE( status.size() == 3 + 2 ); // don't forget timestamp and instance id
+          REQUIRE( status.size() == 3 + 1 ); // don't forget timestamp
           REQUIRE( status[extensionElements->attributeRegistry["x"]->index].value() == 8 );
           REQUIRE( status[extensionElements->attributeRegistry["y"]->index].value() == 15 );
           REQUIRE( status[extensionElements->attributeRegistry["z"]->index].has_value() == false );
@@ -41,7 +41,7 @@ SCENARIO( "Linear expression", "[model][expression]" ) {
         for ( auto& [process,status,data] : instantiations ) {
           auto extensionElements = process->extensionElements->represents<Model::ExtensionElements>();
 
-          REQUIRE( status.size() == 3 + 2); // don't forget timestamp and instance id
+          REQUIRE( status.size() == 3 + 1); // don't forget timestamp
           REQUIRE( status[extensionElements->attributeRegistry["x"]->index].has_value() == false );
           REQUIRE( status[extensionElements->attributeRegistry["y"]->index].value() == 15 );
           REQUIRE( status[extensionElements->attributeRegistry["z"]->index].has_value() == false );
@@ -74,7 +74,7 @@ SCENARIO( "Another linear expression", "[model][expression]" ) {
         for ( auto& [process,status,data] : instantiations ) {
           auto extensionElements = process->extensionElements->represents<Model::ExtensionElements>();
 
-          REQUIRE( status.size() == 3 + 2); // don't forget timestamp and instance id
+          REQUIRE( status.size() == 3 + 1); // don't forget timestamp
           REQUIRE( status[extensionElements->attributeRegistry["x"]->index].has_value() == false );
           REQUIRE( status[extensionElements->attributeRegistry["y"]->index].value() == 15 );
           REQUIRE( status[extensionElements->attributeRegistry["z"]->index].has_value() == false );
@@ -108,7 +108,7 @@ SCENARIO( "Generic expression", "[model][expression]" ) {
         for ( auto& [process,status,data] : instantiations ) {
           auto extensionElements = process->extensionElements->represents<Model::ExtensionElements>();
 
-          REQUIRE( status.size() == 3 + 2); // don't forget timestamp and instance id
+          REQUIRE( status.size() == 3 + 1); // don't forget timestamp
           REQUIRE( status[extensionElements->attributeRegistry["x"]->index].value() == 8 );
           REQUIRE( status[extensionElements->attributeRegistry["y"]->index].value() == 15 );
           REQUIRE( status[extensionElements->attributeRegistry["z"]->index].has_value() == false );
@@ -133,7 +133,7 @@ SCENARIO( "Generic expression", "[model][expression]" ) {
         for ( auto& [process,status,data] : instantiations ) {
           auto extensionElements = process->extensionElements->represents<Model::ExtensionElements>();
 
-          REQUIRE( status.size() == 3 + 2); // don't forget timestamp and instance id
+          REQUIRE( status.size() == 3 + 1); // don't forget timestamp
           REQUIRE( status[extensionElements->attributeRegistry["x"]->index].has_value() == false );
           REQUIRE( status[extensionElements->attributeRegistry["y"]->index].value() == 15 );
           REQUIRE( status[extensionElements->attributeRegistry["z"]->index].has_value() == false );
