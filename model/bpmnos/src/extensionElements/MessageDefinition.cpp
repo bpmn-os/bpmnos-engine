@@ -40,7 +40,7 @@ BPMNOS::Values MessageDefinition::getSenderHeader(const AttributeRegistry& attri
       headerValues.push_back( name );
     }
     else if ( key == "sender" ) {
-      headerValues.push_back( status[BPMNOS::Model::ExtensionElements::Index::Instance] );
+      headerValues.push_back( data[BPMNOS::Model::ExtensionElements::Index::Instance] );
     }
     else {
       headerValues.push_back( getHeaderValue(key, attributeRegistry, status, data) );
@@ -62,7 +62,7 @@ BPMNOS::Values MessageDefinition::getRecipientHeader(const AttributeRegistry& at
       headerValues.push_back( name );
     }
     else if ( key == "recipient" ) {
-      headerValues.push_back( status[BPMNOS::Model::ExtensionElements::Index::Instance] );
+      headerValues.push_back( data[BPMNOS::Model::ExtensionElements::Index::Instance] );
     }
     else {
       headerValues.push_back( getHeaderValue(key, attributeRegistry, status, data) );

@@ -102,7 +102,7 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, BPMN:
         if ( attribute->category == Attribute::Category::STATUS && attribute->index == BPMNOS::Model::ExtensionElements::Index::Timestamp ) {
           isInstantaneous = false;
         }
-        if ( attribute->category == Attribute::Category::STATUS && attribute->index == BPMNOS::Model::ExtensionElements::Index::Instance ) {
+        if ( attribute->category == Attribute::Category::DATA && attribute->index == BPMNOS::Model::ExtensionElements::Index::Instance ) {
           throw std::runtime_error("ExtensionElements: operator '" + (std::string)operator_.id.value + "' modifies instance attribute.\n" );
         }
       }

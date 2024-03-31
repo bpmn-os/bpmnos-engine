@@ -461,15 +461,16 @@ void StateMachine::unregisterRecipient() {
 
 
 void StateMachine::run(Values status) {
-  assert( status.size() >= 2 );
-  assert( status[BPMNOS::Model::ExtensionElements::Index::Instance].has_value() );
+  assert( status.size() >= 1 );
+  assert( data.size() >= 1 );
+  assert( data[BPMNOS::Model::ExtensionElements::Index::Instance].get().has_value() );
   assert( status[BPMNOS::Model::ExtensionElements::Index::Timestamp].has_value() );
 
 //std::cerr << "Run " << scope->id << "/" << this << "/" << parentToken << std::endl;
   if ( !parentToken ) {
     // state machine without parent token represents a process
 //std::cerr << "Start process " << process->id << std::endl;
-    const_cast<std::string&>(instanceId) = BPMNOS::to_string(status[BPMNOS::Model::ExtensionElements::Index::Instance].value(),STRING);
+    const_cast<std::string&>(instanceId) = BPMNOS::to_string(data[BPMNOS::Model::ExtensionElements::Index::Instance].get().value(),STRING);
     const_cast<SystemState*>(systemState)->archive[ instanceId ] = weak_from_this();
 
     tokens.push_back( std::make_shared<Token>(this,nullptr,std::move(status)) );
@@ -508,8 +509,9 @@ void StateMachine::run(Values status) {
           auto context = const_cast<StateMachine*>(parentToken->owned.get());
           auto counter = ++context->instantiations[token->node];
           // append instantiation counter for disambiguation
-          const_cast<std::string&>(instanceId) = BPMNOS::to_string(token->status[BPMNOS::Model::ExtensionElements::Index::Instance].value(),STRING) + delimiter +  std::to_string(counter);
-          token->status[BPMNOS::Model::ExtensionElements::Index::Instance] = BPMNOS::to_number(instanceId,BPMNOS::ValueType::STRING);
+// TODO:
+          const_cast<std::string&>(instanceId) = BPMNOS::to_string(data[BPMNOS::Model::ExtensionElements::Index::Instance].get().value(),STRING) + delimiter +  std::to_string(counter);
+          data[BPMNOS::Model::ExtensionElements::Index::Instance].get() = BPMNOS::to_number(instanceId,BPMNOS::ValueType::STRING);
           const_cast<SystemState*>(systemState)->archive[ instanceId ] = weak_from_this();
           registerRecipient();
         }

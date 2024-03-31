@@ -151,7 +151,7 @@ void Token::setStatus(const BPMNOS::Values& other) {
 nlohmann::ordered_json Token::jsonify() const {
   nlohmann::ordered_json jsonObject;
   jsonObject["processId"] = owner->process->id;
-  jsonObject["instanceId"] = BPMNOS::to_string(status[BPMNOS::Model::ExtensionElements::Index::Instance].value(),STRING);
+  jsonObject["instanceId"] = BPMNOS::to_string((*data)[BPMNOS::Model::ExtensionElements::Index::Instance].get().value(),STRING);
   if ( node ) {
     jsonObject["nodeId"] = node->id;
   }
@@ -1191,8 +1191,9 @@ Token* Token::getSequentialPerfomerToken() const {
 }
 
 void Token::update(State newState) {
-  assert( status.size() >= 2 );
-  assert( status[BPMNOS::Model::ExtensionElements::Index::Instance].has_value() );
+  assert( status.size() >= 1 );
+  assert( data->size() >= 1 );
+  assert( (*data)[BPMNOS::Model::ExtensionElements::Index::Instance].get().has_value() );
   assert( status[BPMNOS::Model::ExtensionElements::Index::Timestamp].has_value() );
 
   state = newState;

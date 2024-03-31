@@ -98,7 +98,7 @@ void Engine::addInstances() {
     if ( !process->isExecutable ) {
       throw std::runtime_error("Engine: process is not executable");
     }
-    if ( !status[Model::ExtensionElements::Index::Instance].has_value() ) {
+    if ( !data[Model::ExtensionElements::Index::Instance].has_value() ) {
       throw std::runtime_error("Engine: instance of process '" + process->id + "' has no id");
     }
     if ( !status[Model::ExtensionElements::Index::Timestamp].has_value() ) {
