@@ -75,12 +75,12 @@ public:
   /**
    * @brief Container holding instance identifier and corresponding state machine pointer for each instantiation.
    */
-  std::unordered_map< std::string, std::weak_ptr<StateMachine> > archive;
+  std::unordered_map< long unsigned int, std::weak_ptr<StateMachine> > archive;
 
   /**
    * @brief Map holding unsent messages with recipient that isn't instantiated yet.
    */
-  std::unordered_map<std::string, auto_list< std::weak_ptr<Message> > > unsent;
+  std::unordered_map<long unsigned int, auto_list< std::weak_ptr<Message> > > unsent;
 
   /**
    * @brief Map holding the undelivered correspondence associated with a state machine which will be withdrawn when the state machine goes out of scope.

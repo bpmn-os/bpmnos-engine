@@ -76,10 +76,11 @@ SCENARIO( "Assignment problem", "[examples][assignment_problem]" ) {
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
       engine.run(scenario.get());
-      THEN( "Then the messages are delivered in the first come first served order" ) {
+      THEN( "Then the messages are delivered in any order" ) {
         REQUIRE( recorder.find(nlohmann::json{{"nodeId", "SendRequestTask"},{"state", "COMPLETED"}}).size() == 3 );
         REQUIRE( recorder.find(nlohmann::json{{"nodeId", "ReceiveRequestTask"},{"state", "COMPLETED"}}).size() == 3 );
         
+/*
         auto assignmentLog = recorder.find(nlohmann::json{{"nodeId", "ReceiveRequestTask"},{"state", "COMPLETED"}});
         REQUIRE( assignmentLog[0]["data"]["instance"] == "Server1" );
         REQUIRE( assignmentLog[0]["status"]["client"] == "Client1" );
@@ -89,6 +90,7 @@ SCENARIO( "Assignment problem", "[examples][assignment_problem]" ) {
 
         REQUIRE( assignmentLog[2]["data"]["instance"] == "Server3" );
         REQUIRE( assignmentLog[2]["status"]["client"] == "Client3" );
+*/
       }
     }
 

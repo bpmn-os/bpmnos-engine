@@ -29,28 +29,28 @@ Scenario::Scenario(const Scenario& other, unsigned int index)
     for ( auto& [attribute, attributeData] : instance.data ) {
       data[attribute] = attributeData;
     }
-    instances[identifier] = {instance.process,instance.id,instance.instantiation,data};
+    instances[(long unsigned int)identifier] = {instance.process,instance.id,instance.instantiation,data};
   }
 }
 
-void Scenario::addInstance(const BPMN::Process* process, const std::string& instanceId, Scenario::Data instantiation ) {
+void Scenario::addInstance(const BPMN::Process* process, const BPMNOS::number instanceId, Scenario::Data instantiation ) {
   // add instance
-  instances[instanceId] = {process,instanceId,instantiation,{}};
-  auto& instance = instances[instanceId];
+  instances[(long unsigned int)instanceId] = {process,(long unsigned int)instanceId,instantiation,{}};
+  auto& instanceData = instances[(long unsigned int)instanceId];
   // initialize all attribute data
   assert( attributes.contains(process) );
   for ( auto& [id,attribute] : attributes.at(process) ) {
-    instance.data[attribute] = { {}, std::nullopt };
+    instanceData.data[attribute] = { {}, std::nullopt };
   }
 
 }
 
-void Scenario::removeAnticipatedInstance(const std::string& instanceId) {
-  auto& instance = instances[instanceId];
-  if ( instance.instantiation.realization ) {
-    throw std::runtime_error("Scenario: illegal removal of instance '" + instanceId + "'with known realization");
+void Scenario::removeAnticipatedInstance(const BPMNOS::number instanceId) {
+  auto& instanceData = instances[(long unsigned int)instanceId];
+  if ( instanceData.instantiation.realization ) {
+    throw std::runtime_error("Scenario: illegal removal of instance '" + BPMNOS::to_string(instanceId,STRING) + "'with known realization");
   }
-  instances.erase(instanceId);
+  instances.erase((long unsigned int)instanceId);
 }
 
 void Scenario::addAnticipation( Scenario::Data& data, Scenario::Disclosure anticipation ) {
@@ -164,7 +164,7 @@ BPMNOS::Values Scenario::getKnownInitialStatus(const Scenario::InstanceData* ins
     if ( data.realization.has_value() ) {
       auto realization = data.realization.value();
       if ( realization.disclosure > currentTime ) {
-        throw std::runtime_error("Scenario: cannot instantiate '" + instance->id + "' because status attribute '"+ attribute->id +"' is not yet known at time " + BPMNOS::to_string(currentTime,INTEGER) );
+        throw std::runtime_error("Scenario: cannot instantiate '" + BPMNOS::to_string(instance->id,STRING) + "' because status attribute '"+ attribute->id +"' is not yet known at time " + BPMNOS::to_string(currentTime,INTEGER) );
       }
       initalStatus.push_back( data.realization->value );
     }
@@ -184,7 +184,7 @@ BPMNOS::Values Scenario::getKnownInitialData(const Scenario::InstanceData* insta
     if ( data.realization.has_value() ) {
       auto realization = data.realization.value();
       if ( realization.disclosure > currentTime ) {
-        throw std::runtime_error("Scenario: cannot instantiate '" + instance->id + "' because data attribute '"+ attribute->id +"' is not yet known at time " + BPMNOS::to_string(currentTime,INTEGER) );
+        throw std::runtime_error("Scenario: cannot instantiate '" + BPMNOS::to_string(instance->id,STRING) + "' because data attribute '"+ attribute->id +"' is not yet known at time " + BPMNOS::to_string(currentTime,INTEGER) );
       }
       initalData.push_back( data.realization->value );
     }
@@ -196,13 +196,13 @@ BPMNOS::Values Scenario::getKnownInitialData(const Scenario::InstanceData* insta
   return initalData;
 }
 
-std::optional<BPMNOS::Values> Scenario::getKnownValues(std::string instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const {
-  auto& instance = instances.at(instanceId);
+std::optional<BPMNOS::Values> Scenario::getKnownValues(const BPMNOS::number instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const {
+  auto& instanceData = instances.at((long unsigned int)instanceId);
 
   Values values;
   for ( auto& attribute : node->extensionElements->as<const BPMNOS::Model::ExtensionElements>()->attributes ) {
-    assert( instance.data.contains(attribute.get()) );
-    auto& data = instance.data.at(attribute.get());
+    assert( instanceData.data.contains(attribute.get()) );
+    auto& data = instanceData.data.at(attribute.get());
 
     if ( data.realization.has_value() ) {
       auto realization = data.realization.value();
@@ -224,13 +224,13 @@ std::optional<BPMNOS::Values> Scenario::getKnownValues(std::string instanceId, c
 }
 
 
-std::optional<BPMNOS::Values> Scenario::getKnownData(std::string instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const {
-  auto& instance = instances.at(instanceId);
+std::optional<BPMNOS::Values> Scenario::getKnownData(const BPMNOS::number instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const {
+  auto& instanceData = instances.at((long unsigned int)instanceId);
 
   Values values;
   for ( auto& attribute : node->extensionElements->as<const BPMNOS::Model::ExtensionElements>()->data ) {
-    assert( instance.data.contains(attribute.get()) );
-    auto& data = instance.data.at(attribute.get());
+    assert( instanceData.data.contains(attribute.get()) );
+    auto& data = instanceData.data.at(attribute.get());
 
     if ( data.realization.has_value() ) {
       auto realization = data.realization.value();
@@ -302,14 +302,14 @@ BPMNOS::Values Scenario::getAnticipatedInitialData(const Scenario::InstanceData*
 }
 
 
-BPMNOS::Values Scenario::getAnticipatedValues(std::string instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const {
-  auto& instance = instances.at(instanceId);
+BPMNOS::Values Scenario::getAnticipatedValues(const BPMNOS::number instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const {
+  auto& instanceData = instances.at((long unsigned int)instanceId);
 
 
   Values values;
   for ( auto& attribute : node->extensionElements->as<const BPMNOS::Model::ExtensionElements>()->attributes ) {
-    assert( instance.data.contains(attribute.get()) );
-    auto& data = instance.data.at(attribute.get());
+    assert( instanceData.data.contains(attribute.get()) );
+    auto& data = instanceData.data.at(attribute.get());
     if ( data.realization
          && data.realization->disclosure <= currentTime
     ) {
@@ -330,13 +330,13 @@ BPMNOS::Values Scenario::getAnticipatedValues(std::string instanceId, const BPMN
   return values;
 }
 
-BPMNOS::Values Scenario::getAnticipatedData(std::string instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const {
-  auto& instance = instances.at(instanceId);
+BPMNOS::Values Scenario::getAnticipatedData(const BPMNOS::number instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const {
+  auto& instanceData = instances.at((long unsigned int)instanceId);
 
   Values values;
   for ( auto& attribute : node->extensionElements->as<const BPMNOS::Model::ExtensionElements>()->data ) {
-    assert( instance.data.contains(attribute.get()) );
-    auto& data = instance.data.at(attribute.get());
+    assert( instanceData.data.contains(attribute.get()) );
+    auto& data = instanceData.data.at(attribute.get());
     if ( data.realization
          && data.realization->disclosure <= currentTime
     ) {
@@ -371,13 +371,13 @@ const Scenario::Disclosure& Scenario::getLatestDisclosure(const std::vector<Scen
 }
 
 
-Scenario::Data& Scenario::getInstantiationData(std::string instanceId) {
-  auto& instance = instances[instanceId];
-  return instance.instantiation;
+Scenario::Data& Scenario::getInstantiationData(const BPMNOS::number instanceId) {
+  auto& instanceData = instances[(long unsigned int)instanceId];
+  return instanceData.instantiation;
 }
 
-Scenario::Data& Scenario::getAttributeData(std::string instanceId, const Attribute* attribute) {
-  auto& instance = instances[instanceId];
-  return instance.data[attribute];
+Scenario::Data& Scenario::getAttributeData(const BPMNOS::number instanceId, const Attribute* attribute) {
+  auto& instanceData = instances[(long unsigned int)instanceId];
+  return instanceData.data[attribute];
 }
 

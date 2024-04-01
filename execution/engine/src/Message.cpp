@@ -22,7 +22,7 @@ Message::Message(Token* token, size_t index)
 
   header = messageDefinition->getSenderHeader(attributeRegistry,token->status,*token->data);
   if ( header[ BPMNOS::Model::MessageDefinition::Index::Recipient ].has_value() ) {
-    recipient = BPMNOS::to_string(header[ BPMNOS::Model::MessageDefinition::Index::Recipient ].value(),STRING);
+    recipient = header[ BPMNOS::Model::MessageDefinition::Index::Recipient ].value();
   }
 
   for (auto& [key,contentDefinition] : messageDefinition->contentMap) {

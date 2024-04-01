@@ -48,7 +48,7 @@ void DynamicDataProvider::readInstances() {
 
     auto process = processIt->get();
 
-    std::string instanceId = row[INSTANCE_ID].get();
+    auto instanceId = (long unsigned int)BPMNOS::to_number( row[INSTANCE_ID].get(), STRING );
     // find instance with respective identifier
     if ( !instances.contains(instanceId) ) {
       // row has first entry for instance, create new entry in data
@@ -61,7 +61,7 @@ void DynamicDataProvider::readInstances() {
          it == instance.data.end()
     ) {
       // instance attribute is assumed to be known, even if instantiation is disclosed later
-      instance.data[ instanceAtribute ] = { { std::numeric_limits<BPMNOS::number>::min(), BPMNOS::to_number(instanceId,BPMNOS::ValueType::STRING) } };
+      instance.data[ instanceAtribute ] = { { std::numeric_limits<BPMNOS::number>::min(), instanceId } };
     }
 
     std::string attributeId = row[ATTRIBUTE_ID].get();

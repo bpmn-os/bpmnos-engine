@@ -1153,11 +1153,11 @@ void Token::sendMessage(size_t index) {
 
   if ( message->recipient.has_value() ) {
     // TODO: add to unsent or outbox
-    auto it = systemState->archive.find(message->recipient.value());
+    auto it = systemState->archive.find((long unsigned int)message->recipient.value());
     if ( it == systemState->archive.end() ) {
 //std::cerr << "Message unsent" << std::endl;
       // defer sending of message to when recipient is instantiated
-      systemState->unsent[message->recipient.value()].emplace_back(message->weak_from_this());
+      systemState->unsent[(long unsigned int)message->recipient.value()].emplace_back(message->weak_from_this());
     }
     else if ( auto stateMachine = it->second.lock() ) {
 //std::cerr << "Message sent from " << node->id << std::endl;

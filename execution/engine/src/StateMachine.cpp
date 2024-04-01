@@ -434,7 +434,7 @@ void StateMachine::deleteTokensAwaitingBoundaryEvent(Token* token) {
 }
 
 void StateMachine::registerRecipient() {
-  if ( auto it = const_cast<SystemState*>(systemState)->unsent.find(instanceId);
+  if ( auto it = const_cast<SystemState*>(systemState)->unsent.find((long unsigned int)instance.value());
     it != const_cast<SystemState*>(systemState)->unsent.end()
   ) {
     for ( auto& [message_ptr] : it->second ) {
@@ -480,7 +480,7 @@ void StateMachine::run(Values status) {
   if ( !parentToken ) {
     // state machine without parent token represents a process
 //std::cerr << "Start process " << process->id << std::endl;
-    const_cast<std::string&>(instanceId) = BPMNOS::to_string(data[BPMNOS::Model::ExtensionElements::Index::Instance].get().value(),STRING);
+    auto instanceId = (long unsigned int)data[BPMNOS::Model::ExtensionElements::Index::Instance].get().value();
     const_cast<SystemState*>(systemState)->archive[ instanceId ] = weak_from_this();
 
     tokens.push_back( std::make_shared<Token>(this,nullptr,std::move(status)) );
@@ -519,9 +519,9 @@ void StateMachine::run(Values status) {
           auto context = const_cast<StateMachine*>(parentToken->owned.get());
           auto counter = ++context->instantiations[token->node];
           // append instantiation counter for disambiguation
-          const_cast<std::string&>(instanceId) = BPMNOS::to_string(data[BPMNOS::Model::ExtensionElements::Index::Instance].get().value(),STRING) + delimiter +  std::to_string(counter);
+          auto instanceId = BPMNOS::to_string(data[BPMNOS::Model::ExtensionElements::Index::Instance].get().value(),STRING) + delimiter +  std::to_string(counter);
           data[BPMNOS::Model::ExtensionElements::Index::Instance].get() = BPMNOS::to_number(instanceId,BPMNOS::ValueType::STRING);
-          const_cast<SystemState*>(systemState)->archive[ instanceId ] = weak_from_this();
+          const_cast<SystemState*>(systemState)->archive[ (long unsigned int)data[BPMNOS::Model::ExtensionElements::Index::Instance].get().value() ] = weak_from_this();
           registerRecipient();
         }
       }

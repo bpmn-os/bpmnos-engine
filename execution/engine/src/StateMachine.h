@@ -39,8 +39,8 @@ public:
   const BPMN::Process* process; ///< Pointer to the top-level process.
   const BPMN::Scope* scope; ///< Pointer to the current scope.
   const StateMachine* root; ///< Pointer to the root state machine
-  std::optional<BPMNOS::number> instance; ///< Numeric representation of instance id // TODO: can we const this?
-  const std::string instanceId; // TODO: remove
+  std::optional<BPMNOS::number> instance; ///< Numeric representation of instance id (TODO: can we const this?)
+
   Token* parentToken;
   Values ownedData; ///< Container holding data attributes owned by the state machine.
   Globals data; ///< Container holding references to all data attributes.

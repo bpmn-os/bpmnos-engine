@@ -30,11 +30,11 @@ protected:
   void readInstances();
   struct StaticInstanceData {
     const BPMN::Process* process;
-    std::string id;
+    BPMNOS::number id;
     BPMNOS::number instantiation;
     std::unordered_map< const Attribute*, BPMNOS::number > data;
   };
-  std::unordered_map< std::string, StaticInstanceData > instances;
+  std::unordered_map< long unsigned int, StaticInstanceData > instances;
   BPMNOS::number earliestInstantiation;
   BPMNOS::number latestInstantiation;
   void ensureDefaultValue(StaticInstanceData& instance, const std::string attributeId, std::optional<BPMNOS::number> value = std::nullopt);

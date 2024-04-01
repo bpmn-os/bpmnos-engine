@@ -58,7 +58,7 @@ void StaticDataProvider::readInstances() {
 
     auto process = processIt->get();
 
-    std::string instanceId = row[INSTANCE_ID].get();
+    auto instanceId = (long unsigned int)BPMNOS::to_number( row[INSTANCE_ID].get(), STRING );
     // find instance with respective identifier
     if ( !instances.contains(instanceId) ) {
       // row has first entry for instance, create new entry in data
@@ -84,7 +84,7 @@ void StaticDataProvider::readInstances() {
 
   for (auto& [id, instance] : instances) {
     // ensure that default attributes are available
-    ensureDefaultValue(instance,Keyword::Instance,BPMNOS::to_number(id,BPMNOS::ValueType::STRING));
+    ensureDefaultValue(instance,Keyword::Instance, id);
     ensureDefaultValue(instance,Keyword::Timestamp);
     // set time of instantiation
     instance.instantiation = instance.data.at( attributes[instance.process][Keyword::Timestamp] );

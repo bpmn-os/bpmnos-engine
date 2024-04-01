@@ -31,7 +31,7 @@ public:
 
   struct InstanceData {
     const BPMN::Process* process;
-    std::string id; ///< Instance identifier.
+    long unsigned int id; ///< Instance identifier.
     Data instantiation; ///< Data regarding the time of instantiation.
     std::unordered_map< const Attribute*, Data > data; ///< Data regarding attribute values.
   };
@@ -122,36 +122,36 @@ public:
    *
    * If at least one attribute value is not yet known, the returns std::nullopt.
    */
-  std::optional<BPMNOS::Values> getKnownValues(std::string instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const;
+  std::optional<BPMNOS::Values> getKnownValues(const BPMNOS::number instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const;
 
   /**
    * @brief Method returning all known values of new attributes.
    *
    * If at least one attribute value is not yet known, the returns std::nullopt.
    */
-  std::optional<BPMNOS::Values> getKnownData(std::string instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const;
+  std::optional<BPMNOS::Values> getKnownData(const BPMNOS::number instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const;
 
   /**
    * @brief Method returning the disclosed values of new attributes.
    */
-  BPMNOS::Values getAnticipatedValues(std::string instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const;
+  BPMNOS::Values getAnticipatedValues(const BPMNOS::number instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const;
 
   /**
    * @brief Method returning the disclosed values of new attributes.
    */
-  BPMNOS::Values getAnticipatedData(std::string instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const;
+  BPMNOS::Values getAnticipatedData(const BPMNOS::number instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const;
 
-  void addInstance(const BPMN::Process* process, const std::string& identifier, Data instantiation);
-  void removeAnticipatedInstance(const std::string& identifier);
+  void addInstance(const BPMN::Process* process, const BPMNOS::number instanceId, Data instantiation);
+  void removeAnticipatedInstance(const BPMNOS::number instanceId);
 
-  Data& getInstantiationData(std::string instanceId);
-  Data& getAttributeData(std::string instanceId, const Attribute* attribute);
+  Data& getInstantiationData(const BPMNOS::number instanceId);
+  Data& getAttributeData(const BPMNOS::number instanceId, const Attribute* attribute);
   void addAnticipation( Data& data, Disclosure anticipation );
   void setRealization( Data& data, Disclosure realization );
 protected:
   const Model* model;  ///< Pointer to the BPMN model.
   const DataInput& attributes; ///< Map holding all attributes in the model with keys being the process and attribute id
-  std::unordered_map<std::string, InstanceData > instances; ///< Map of instances with key being the instance id. // TODO: use BPMNOS::number as key
+  std::unordered_map<long unsigned int, InstanceData > instances; ///< Map of instances with key being the instance id.
   const Scenario::Disclosure& getLatestDisclosure(const std::vector<Scenario::Disclosure>& data, const BPMNOS::number currentTime) const;
   BPMNOS::number inception; ///< Time earliest time in execution.
   BPMNOS::number completion; ///< The latest time in execution at which an instantiation can happen.

@@ -95,7 +95,7 @@ std::optional<double> EntryDecision::guidedEvaluator(const Event* event) {
   }
     
   auto systemState = event->token->owner->systemState;
-  auto guidance = extensionElements->entryGuidance->get()->apply(systemState->scenario, systemState->currentTime, event->token->owner->root->instanceId, event->token->node, status, data);
+  auto guidance = extensionElements->entryGuidance->get()->apply(systemState->scenario, systemState->currentTime, event->token->owner->root->instance.value(), event->token->node, status, data);
   if ( guidance.has_value() && extensionElements->feasibleExit(status,data) ) {
     return evaluation - guidance.value();
   }

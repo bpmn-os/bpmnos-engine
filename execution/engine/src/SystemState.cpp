@@ -46,10 +46,10 @@ std::vector< std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values> > 
 std::optional<BPMNOS::Values> SystemState::getStatusAttributes(const StateMachine* root, const BPMN::Node* node) const {
   std::optional<BPMNOS::Values> values;
   if ( assumedTime ) {
-    return scenario->getAnticipatedValues(root->instanceId, node, currentTime);
+    return scenario->getAnticipatedValues(root->instance.value(), node, currentTime);
   }
   else {
-    auto knownValues = scenario->getKnownValues(root->instanceId, node, currentTime);
+    auto knownValues = scenario->getKnownValues(root->instance.value(), node, currentTime);
     if ( knownValues ) {
       return std::move( knownValues.value() );
     }
@@ -60,10 +60,10 @@ std::optional<BPMNOS::Values> SystemState::getStatusAttributes(const StateMachin
 std::optional<BPMNOS::Values> SystemState::getDataAttributes(const StateMachine* root, const BPMN::Node* node) const {
   std::optional<BPMNOS::Values> values;
   if ( assumedTime ) {
-    return scenario->getAnticipatedData(root->instanceId, node, currentTime);
+    return scenario->getAnticipatedData(root->instance.value(), node, currentTime);
   }
   else {
-    auto knownData = scenario->getKnownData(root->instanceId, node, currentTime);
+    auto knownData = scenario->getKnownData(root->instance.value(), node, currentTime);
     if ( knownData ) {
       return std::move( knownData.value() );
     }

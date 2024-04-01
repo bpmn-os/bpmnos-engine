@@ -28,7 +28,7 @@ public:
   State state;
   const BPMN::FlowNode* origin;
   Token* waitingToken;
-  std::optional< std::string > recipient;
+  std::optional< BPMNOS::number > recipient;
   BPMNOS::Values header;
   VariedValueMap contentValueMap;
 

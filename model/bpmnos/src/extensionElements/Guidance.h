@@ -27,7 +27,7 @@ public:
   std::vector< std::unique_ptr<Operator> > operators;
 
   template <typename DataType>
-  std::optional<BPMNOS::number> apply(const Scenario* scenario, BPMNOS::number currentTime, const std::string& instanceId, const BPMN::FlowNode* node, BPMNOS::Values& status, DataType& data) const;
+  std::optional<BPMNOS::number> apply(const Scenario* scenario, BPMNOS::number currentTime, const BPMNOS::number instanceId, const BPMN::FlowNode* node, BPMNOS::Values& status, DataType& data) const;
 private:  
   template <typename DataType>
   BPMNOS::number getObjective(const BPMNOS::Values& status, const DataType& data) const;

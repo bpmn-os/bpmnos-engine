@@ -95,7 +95,7 @@ template bool Guidance::restrictionsSatisfied<BPMNOS::Globals>(const BPMNOS::Val
 
 
 template <typename DataType>
-std::optional<BPMNOS::number> Guidance::apply(const Scenario* scenario, BPMNOS::number currentTime, const std::string& instanceId, const BPMN::FlowNode* node, BPMNOS::Values& status, DataType& data) const {
+std::optional<BPMNOS::number> Guidance::apply(const Scenario* scenario, BPMNOS::number currentTime, const BPMNOS::number instanceId, const BPMN::FlowNode* node, BPMNOS::Values& status, DataType& data) const {
   Values guidingAttributes;
   auto values = scenario->getKnownValues(instanceId, node, currentTime );
   if ( values ) {
@@ -122,6 +122,6 @@ std::optional<BPMNOS::number> Guidance::apply(const Scenario* scenario, BPMNOS::
   return std::nullopt;
 }
 
-template std::optional<BPMNOS::number> Guidance::apply<BPMNOS::Values>(const Scenario* scenario, BPMNOS::number currentTime, const std::string& instanceId, const BPMN::FlowNode* node, BPMNOS::Values& status, BPMNOS::Values& data) const;
-template std::optional<BPMNOS::number> Guidance::apply<BPMNOS::Globals>(const Scenario* scenario, BPMNOS::number currentTime, const std::string& instanceId, const BPMN::FlowNode* node, BPMNOS::Values& status, BPMNOS::Globals& data) const;
+template std::optional<BPMNOS::number> Guidance::apply<BPMNOS::Values>(const Scenario* scenario, BPMNOS::number currentTime, const BPMNOS::number instanceId, const BPMN::FlowNode* node, BPMNOS::Values& status, BPMNOS::Values& data) const;
+template std::optional<BPMNOS::number> Guidance::apply<BPMNOS::Globals>(const Scenario* scenario, BPMNOS::number currentTime, const BPMNOS::number instanceId, const BPMN::FlowNode* node, BPMNOS::Values& status, BPMNOS::Globals& data) const;
 

@@ -51,7 +51,7 @@ std::optional<double> MessageDeliveryDecision::guidedEvaluator(const Event* even
   }
 
   auto systemState = event->token->owner->systemState;
-  auto guidance = extensionElements->messageDeliveryGuidance->get()->apply(systemState->scenario, systemState->currentTime, event->token->owner->root->instanceId, event->token->node, status, data);
+  auto guidance = extensionElements->messageDeliveryGuidance->get()->apply(systemState->scenario, systemState->currentTime, event->token->owner->root->instance.value(), event->token->node, status, data);
   if ( guidance.has_value() ) {
     return evaluation - guidance.value();
   }

@@ -30,11 +30,11 @@ protected:
 
   struct DynamicInstanceData {
     const BPMN::Process* process;
-    std::string instanceId;
+    BPMNOS::number instanceId;
     std::vector< std::pair<BPMNOS::number,BPMNOS::number> > instantiation; ///< Instantiation data consisting of disclosure-value pairs
     std::unordered_map< const Attribute*, std::vector< std::pair<BPMNOS::number,BPMNOS::number> > > data; ///< Map of attribute data consisting of disclosure-value pairs
   };
-  std::unordered_map< std::string, DynamicInstanceData > instances;
+  std::unordered_map< long unsigned int, DynamicInstanceData > instances;
   BPMNOS::number earliestInstantiation;
   BPMNOS::number latestInstantiation;
 };

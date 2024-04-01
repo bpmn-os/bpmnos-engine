@@ -18,7 +18,7 @@ SCENARIO( "Trivial executable process", "[data][static]" ) {
       THEN( "The model data is correct" ) {
         for ( auto& instance : instances ) {
           REQUIRE( instance->process->id == "Process_1" );
-          REQUIRE( instance->id == "Instance_1" );
+          REQUIRE( BPMNOS::to_string(instance->id,STRING) == "Instance_1" );
           auto extensionElements = instance->process->extensionElements->represents<Model::ExtensionElements>();
           REQUIRE( extensionElements->attributes.size() == 1 );
 //          REQUIRE( (std::string)extensionElements->attributes[Model::ExtensionElements::Index::Instance]->id == Keyword::Instance );
