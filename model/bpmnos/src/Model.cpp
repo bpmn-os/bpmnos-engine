@@ -11,6 +11,7 @@
 #include "SequentialAdHocSubProcess.h"
 #include "model/bpmnos/src/xml/bpmnos/tAttributes.h"
 #include "model/bpmnos/src/xml/bpmnos/tAttribute.h"
+#include "model/utility/src/Keywords.h"
 
 using namespace BPMNOS::Model;
 
@@ -28,14 +29,29 @@ std::vector<std::reference_wrapper<XML::bpmnos::tAttribute>> Model::getData(XML:
     }
     if ( auto elements = dataObject.extensionElements->get().getOptionalChild<XML::bpmnos::tAttributes>(); elements.has_value()) {
       for ( XML::bpmnos::tAttribute& attribute : elements.value().get().attribute ) {
-        attributes.emplace_back( attribute );
+        if ( attributes.size() && attribute.id.value.value == BPMNOS::Keyword::Instance ) {
+          // make sure instance attribute is at first position
+          attributes.emplace_back( std::move(attributes[0]) );
+          attributes[0] = std::ref(attribute);
+        }
+        else {
+          attributes.emplace_back( attribute );
+        }
       }
     }
   }
+/*
+std::cerr << "added ";
+for ( auto& attribute : attributes ) {
+std::cerr << attribute.get().name.value.value << ", ";
+}
+std::cerr << std::endl;
+*/
   return attributes;
 }
  
 std::unique_ptr<BPMN::Process> Model::createProcess(XML::bpmn::tProcess* process) {
+//std::cerr << "add process" << std::endl;
   auto baseElement = BPMN::Model::createProcess(process);
   auto extensionElements = std::make_unique<BPMNOS::Model::ExtensionElements>(process, nullptr, getData(process) );
   // bind attributes, restrictions, and operators to all processes
@@ -50,6 +66,7 @@ std::unique_ptr<BPMN::EventSubProcess> Model::createEventSubProcess(XML::bpmn::t
 }
 
 std::unique_ptr<BPMN::FlowNode> Model::createActivity(XML::bpmn::tActivity* activity, BPMN::Scope* parent) {
+//std::cerr << "add child" << std::endl;
   auto baseElement = BPMN::Model::createActivity(activity,parent);
   auto extensionElements = std::make_unique<BPMNOS::Model::ExtensionElements>(activity, parent, getData(activity));
   // bind attributes, restrictions, and operators to all activities

@@ -28,8 +28,8 @@ class SystemState;
  */
 class StateMachine : public std::enable_shared_from_this<StateMachine> {
 public:
-  StateMachine(const SystemState* systemState, const BPMN::Process* process, Values data);
-  StateMachine(const SystemState* systemState, const BPMN::Scope* scope, Token* parentToken, Values data);
+  StateMachine(const SystemState* systemState, const BPMN::Process* process, Values dataAttributes);
+  StateMachine(const SystemState* systemState, const BPMN::Scope* scope, Token* parentToken, Values dataAttributes);
   StateMachine(const StateMachine* other);
   ~StateMachine();
 
@@ -39,7 +39,8 @@ public:
   const BPMN::Process* process; ///< Pointer to the top-level process.
   const BPMN::Scope* scope; ///< Pointer to the current scope.
   const StateMachine* root; ///< Pointer to the root state machine
-  const std::string instanceId;
+  const BPMNOS::number instance; ///< Numeric representation of instance id
+  const std::string instanceId; // TODO: remove
   Token* parentToken;
   Values ownedData; ///< Container holding data attributes owned by the state machine.
   Globals data; ///< Container holding references to all data attributes.

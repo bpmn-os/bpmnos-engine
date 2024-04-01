@@ -64,7 +64,7 @@ using namespace BPMNOS;
 #endif // ALL_TESTS
 
 #ifndef ALL_TESTS
-//#include "execution/adhocsubprocess/test.h"
+#include "execution/data/test.h"
 #endif // ALL_TESTS
 
 // When adding/modifying tests, don't forget to run: make clean; cmake ..; make all -j7; make tests

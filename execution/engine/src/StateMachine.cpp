@@ -14,32 +14,39 @@
 
 using namespace BPMNOS::Execution;
 
-StateMachine::StateMachine(const SystemState* systemState, const BPMN::Process* process, Values data)
+StateMachine::StateMachine(const SystemState* systemState, const BPMN::Process* process, Values dataAttributes)
   : systemState(systemState)
   , process(process)
   , scope(process)
   , root(this)
+  , instance( dataAttributes.size() ? dataAttributes[BPMNOS::Model::ExtensionElements::Index::Instance].value_or(-1) : -1 )
   , parentToken(nullptr)
-  , ownedData(data)
+  , ownedData(dataAttributes)
   , data(Globals(ownedData))
 {
-//std::cerr << "StateMachine(" << scope->id  << "/" << this << " @ " << parentToken << ")" << std::endl;
+  assert( instance >= 0 );
 }
 
-StateMachine::StateMachine(const SystemState* systemState, const BPMN::Scope* scope, Token* parentToken, Values data)
+StateMachine::StateMachine(const SystemState* systemState, const BPMN::Scope* scope, Token* parentToken, Values dataAttributes)
   : systemState(systemState)
   , process(parentToken->owner->process)
   , scope(scope)
   , root(parentToken->owner->root)
+  , instance( (*parentToken->data)[BPMNOS::Model::ExtensionElements::Index::Instance].get().value_or(-1) )
   , parentToken(parentToken)
-  , ownedData(data)
+  , ownedData(dataAttributes)
   , data(Globals(parentToken->owner->data,ownedData))
 {
-//std::cerr << "cStateMachine(" << scope->id << "/" << this << " @ " << parentToken << ")" << " owned by :" << parentToken->owner << std::endl;
 /*
-  ownedData = getData(scope);
-  data = Globals(parentToken->owner->data, ownedData);
+std::cerr << "child StateMachine(" << scope->id << "/" << this << " @ " << parentToken << ")" << " owned by: " << parentToken->owner << std::endl;
+//std::cerr << data.size() << "[" <<BPMNOS::Model::ExtensionElements::Index::Instance <<"] = " << data[BPMNOS::Model::ExtensionElements::Index::Instance].value_or(-1) <<  "/" << ( data.size() ? (int)data[BPMNOS::Model::ExtensionElements::Index::Instance].get().value_or(-1) : -1 ) << "/" << instance << "/" << this->instance <<std::endl;
+std::cerr << "data: ";
+for ( auto& attribute : data ) {
+std::cerr << (int)attribute.get().value() << ", ";
+}
+std::cerr << std::endl;
 */
+  assert( instance >= 0 );
 }
 
 StateMachine::StateMachine(const StateMachine* other)
@@ -47,6 +54,7 @@ StateMachine::StateMachine(const StateMachine* other)
   , process(other->process)
   , scope(other->scope)
   , root(other->root)
+  , instance( other->instance )
   , parentToken(other->parentToken)
   , ownedData(other->ownedData)
   , data(Globals(parentToken->owner->data,ownedData))
@@ -509,7 +517,7 @@ void StateMachine::run(Values status) {
           auto context = const_cast<StateMachine*>(parentToken->owned.get());
           auto counter = ++context->instantiations[token->node];
           // append instantiation counter for disambiguation
-// TODO:
+// TODO: first item in `Globals data` needs to refer to value of state machine
           const_cast<std::string&>(instanceId) = BPMNOS::to_string(data[BPMNOS::Model::ExtensionElements::Index::Instance].get().value(),STRING) + delimiter +  std::to_string(counter);
           data[BPMNOS::Model::ExtensionElements::Index::Instance].get() = BPMNOS::to_number(instanceId,BPMNOS::ValueType::STRING);
           const_cast<SystemState*>(systemState)->archive[ instanceId ] = weak_from_this();
