@@ -9,26 +9,26 @@ MessageDefinition::MessageDefinition(XML::bpmnos::tMessage* message, const Attri
   : element(message)
   , name( BPMNOS::to_number(message->name.value.value,STRING) )
 {
-    header.resize(3);
-    header[ Index::Name ] = "name";
-    header[ Index::Sender ] = "sender";
-    header[ Index::Recipient ] = "recipient";
+  header.resize(3);
+  header[ Index::Name ] = "name";
+  header[ Index::Sender ] = "sender";
+  header[ Index::Recipient ] = "recipient";
 
-    std::set< std::string > additionalHeader;
-    for ( XML::bpmnos::tParameter& parameter : element->getChildren<XML::bpmnos::tParameter>() ) {
-      auto& key = parameter.name.value.value;
-      parameterMap.emplace(key,std::make_unique<Parameter>(&parameter,attributeRegistry));
-      if ( key != "name" && key != "sender" && key != "recipient" ) {
-        additionalHeader.insert(key);
-      }
+  std::set< std::string > additionalHeader;
+  for ( XML::bpmnos::tParameter& parameter : element->getChildren<XML::bpmnos::tParameter>() ) {
+    auto& key = parameter.name.value.value;
+    parameterMap.emplace(key,std::make_unique<Parameter>(&parameter,attributeRegistry));
+    if ( key != "name" && key != "sender" && key != "recipient" ) {
+      additionalHeader.insert(key);
     }
-    for ( auto& key : additionalHeader ) {
-      header.push_back(key);
-    }
+  }
+  for ( auto& key : additionalHeader ) {
+    header.push_back(key);
+  }
 
-    for ( XML::bpmnos::tContent& content : element->getChildren<XML::bpmnos::tContent>() ) {
-      contentMap.emplace(content.key.value.value,std::make_unique<Content>(&content,attributeRegistry));
-    }
+  for ( XML::bpmnos::tContent& content : element->getChildren<XML::bpmnos::tContent>() ) {
+    contentMap.emplace(content.key.value.value,std::make_unique<Content>(&content,attributeRegistry));
+  }
 }
 
 template <typename DataType>

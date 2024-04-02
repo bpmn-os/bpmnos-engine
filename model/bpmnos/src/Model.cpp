@@ -69,16 +69,26 @@ std::unique_ptr<BPMN::FlowNode> Model::createActivity(XML::bpmn::tActivity* acti
 //std::cerr << "add child" << std::endl;
   auto baseElement = BPMN::Model::createActivity(activity,parent);
   auto extensionElements = std::make_unique<BPMNOS::Model::ExtensionElements>(activity, parent, getData(activity));
-  // bind attributes, restrictions, and operators to all activities
-  auto node = bind<BPMN::FlowNode>( std::move(baseElement), std::move(extensionElements) );
 
-  if ( auto adHocSubProcess = node->represents<SequentialAdHocSubProcess>();
+  if ( baseElement->represents<BPMN::ReceiveTask>() ) {
+    for ( auto& messageDefinition : extensionElements->messageDefinitions ) {
+      for ( auto& [_,content] : messageDefinition->contentMap ) {
+        if ( content->attribute.has_value() ) {
+          content->attribute.value().get().isImmutable = false;
+        }
+      }
+    }
+  }
+
+  if ( auto adHocSubProcess = baseElement->represents<SequentialAdHocSubProcess>();
     adHocSubProcess && adHocSubProcess->performer == adHocSubProcess
   ) {
     // set flag in case performer is not explicitly provided
-    node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->hasSequentialPerformer = true;
+    extensionElements->as<BPMNOS::Model::ExtensionElements>()->hasSequentialPerformer = true;
   }
-  return node;
+
+  // bind attributes, restrictions, and operators to all activities
+  return bind<BPMN::FlowNode>( std::move(baseElement), std::move(extensionElements) );;
 }
 
 std::unique_ptr<BPMN::SequenceFlow> Model::createSequenceFlow(XML::bpmn::tSequenceFlow* sequenceFlow, BPMN::Scope* scope) {
@@ -134,27 +144,80 @@ std::unique_ptr<BPMN::FlowNode> Model::createTimerCatchEvent(XML::bpmn::tCatchEv
 }
 
 std::unique_ptr<BPMN::FlowNode> Model::createMessageStartEvent(XML::bpmn::tStartEvent* startEvent, BPMN::Scope* parent) {
+  auto baseElement = BPMN::Model::createMessageStartEvent(startEvent,parent);
+  auto extensionElements = std::make_unique<BPMNOS::Model::ExtensionElements>(startEvent,parent);
+  
+  // Lambda function to compare unique_ptrs by their raw pointers
+  auto contains = [](const std::vector<std::unique_ptr<Attribute>>& attributes, Attribute* attribute) {
+    return std::any_of(attributes.begin(), attributes.end(),[attribute](const std::unique_ptr<Attribute>& ptr) {
+      return ptr.get() == attribute;
+    });
+  };
+  
+  for ( auto& messageDefinition : extensionElements->messageDefinitions ) {
+    for ( auto& [_,content] : messageDefinition->contentMap ) {
+      if ( content->attribute.has_value() ) {
+        Attribute* attribute = &content->attribute.value().get();
+        auto extensionElements = parent->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+        if ( !contains(extensionElements->attributes,attribute) && !contains(extensionElements->data,attribute) ) {
+          attribute->isImmutable = false;
+        }
+      }
+    }
+  }
+  // bind attributes, restrictions, and operators to all event subprocesses
+  return bind<BPMN::FlowNode>( std::move(baseElement), std::move(extensionElements) );
+/*
   // bind message content
   return bind<BPMN::FlowNode>(
     BPMN::Model::createMessageStartEvent(startEvent,parent),
     std::make_unique<BPMNOS::Model::ExtensionElements>(startEvent,parent)
   );
+*/
 }
 
 std::unique_ptr<BPMN::FlowNode> Model::createMessageBoundaryEvent(XML::bpmn::tBoundaryEvent* boundaryEvent, BPMN::Scope* parent) {
+  auto baseElement = BPMN::Model::createMessageBoundaryEvent(boundaryEvent,parent);
+  auto extensionElements = std::make_unique<BPMNOS::Model::ExtensionElements>(boundaryEvent,parent);
+  
+  for ( auto& messageDefinition : extensionElements->messageDefinitions ) {
+    for ( auto& [_,content] : messageDefinition->contentMap ) {
+      if ( content->attribute.has_value() ) {
+        content->attribute.value().get().isImmutable = false;
+      }
+    }
+  }
+  // bind attributes, restrictions, and operators to all event subprocesses
+  return bind<BPMN::FlowNode>( std::move(baseElement), std::move(extensionElements) );
+/*
   // bind message content
   return bind<BPMN::FlowNode>(
     BPMN::Model::createMessageBoundaryEvent(boundaryEvent,parent),
     std::make_unique<BPMNOS::Model::ExtensionElements>(boundaryEvent,parent)
   );
+*/
 }
 
 std::unique_ptr<BPMN::FlowNode> Model::createMessageCatchEvent(XML::bpmn::tCatchEvent* catchEvent, BPMN::Scope* parent) {
+  auto baseElement = BPMN::Model::createMessageCatchEvent(catchEvent,parent);
+  auto extensionElements = std::make_unique<BPMNOS::Model::ExtensionElements>(catchEvent,parent);
+  
+  for ( auto& messageDefinition : extensionElements->messageDefinitions ) {
+    for ( auto& [_,content] : messageDefinition->contentMap ) {
+      if ( content->attribute.has_value() ) {
+        content->attribute.value().get().isImmutable = false;
+      }
+    }
+  }
+  // bind attributes, restrictions, and operators to all event subprocesses
+  return bind<BPMN::FlowNode>( std::move(baseElement), std::move(extensionElements) );
+/*
   // bind message content
   return bind<BPMN::FlowNode>(
     BPMN::Model::createMessageCatchEvent(catchEvent,parent),
     std::make_unique<BPMNOS::Model::ExtensionElements>(catchEvent,parent)
   );
+*/
 }
 
 std::unique_ptr<BPMN::FlowNode> Model::createMessageThrowEvent(XML::bpmn::tThrowEvent* throwEvent, BPMN::Scope* parent) {

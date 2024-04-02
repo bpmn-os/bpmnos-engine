@@ -25,8 +25,8 @@ SCENARIO( "Sequential adhoc subprocess", "[execution][adhocsubprocess]" ) {
       completionHandler.connect(&engine);
       exitHandler.connect(&engine);
       timeHandler.connect(&engine);
-//      Execution::Recorder recorder;
-      Execution::Recorder recorder(std::cerr);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
       engine.run(scenario.get());
       THEN( "The dump of each entry of the recorder log is correct" ) {
@@ -82,8 +82,8 @@ SCENARIO( "Sequential adhoc subprocesses with common performer", "[execution][ad
       completionHandler.connect(&engine);
       exitHandler.connect(&engine);
       timeHandler.connect(&engine);
-//      Execution::Recorder recorder;
-      Execution::Recorder recorder(std::cerr);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
       engine.run(scenario.get());
       THEN( "The dump of each entry of the recorder log is correct" ) {

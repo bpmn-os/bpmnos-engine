@@ -65,7 +65,7 @@ public:
   void applyOperators(BPMNOS::Values& status, DataType& data) const;
 
   template <typename DataType>
-  BPMNOS::number getObjective(const BPMNOS::Values& status, const DataType& data) const; ///< Returns the contribution to the objective.
+  BPMNOS::number getObjective(const BPMNOS::Values& status, const DataType& data) const; ///< Returns the total objective of all attributes provided.
 
   template <typename DataType>
   BPMNOS::number getContributionToObjective(const BPMNOS::Values& status, const DataType& data) const; ///< Returns the contribution to the objective by the attributes declared for the node.
