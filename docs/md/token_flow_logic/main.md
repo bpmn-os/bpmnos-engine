@@ -1,9 +1,7 @@
 # Token flow logic
 @page token_flow_logic Token flow logic
 
-The following state diagram illustrates the life-cycle and state transitions of a token.
-
-@image html Token_life-cycle.png
+State transitions of a token are described for the different node types.
 
 - @subpage token_flow_logic_processes "Processes"
 - @subpage token_flow_logic_events
@@ -24,4 +22,3 @@ The following state diagram illustrates the life-cycle and state transitions of 
 - @subpage token_flow_logic_exclusive_gateways
 - @subpage token_flow_logic_parallel_gateways
 - @subpage token_flow_logic_eventbased_gateways
-

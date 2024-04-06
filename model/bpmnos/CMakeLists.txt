@@ -4,9 +4,14 @@ if(NOT XERCES_LIB)
   message(FATAL_ERROR "xerces-c library not found.\nTo install run: sudo apt install libxerces-c-dev")
 endif()
 
+find_library(BPMNPP_LIB bpmn++)
+if(NOT BPMNPP_LIB)
+  message(FATAL_ERROR "bpmn++ library not found.\nDownload bpmn++ from: https://github.com/bpmn-os/bpmnpp")
+endif()
+
 find_program(SCHEMATICPP schematic++)
 if(NOT SCHEMATICPP)
-  message(FATAL_ERROR "schematic++ not found.\nDownload schematic++ from: https://github.com/rajgoel/schematicpp")
+  message(FATAL_ERROR "schematic++ not found.\nDownload schematic++ from: https://github.com/bpmn-os/schematicpp")
 endif()
 
 

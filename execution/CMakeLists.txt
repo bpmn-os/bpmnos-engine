@@ -93,8 +93,8 @@ else()
 endif()
 
 # Install the header files
-#install(FILES ${SINGLE_HEADER_PATH} DESTINATION include)
+install(FILES ${SINGLE_HEADER_PATH} DESTINATION include)
 
 # Install the library
-#install(TARGETS ${PROJECT_NAME} ARCHIVE DESTINATION lib)
+install(TARGETS ${PROJECT_NAME} ARCHIVE DESTINATION lib)
 

@@ -94,6 +94,14 @@ add_subdirectory(tests)
 # Generate the documentation
 set(DOCUMENTATION ON CACHE BOOL "Create documentation")
 if (DOCUMENTATION)
+  find_program(BPMN2SVG_FOUND "bpmn2svg")
+  if (NOT BPMN2SVG_FOUND)
+    message(FATAL_ERROR "bpmn2svg not found.\n\nDownload bpmn2svg from: https://github.com/bpmn-os/bpmnos-modeller")
+  endif()
+  find_program(BPMNDOC_FOUND "bpmndoc")
+  if (NOT BPMNDOC_FOUND)
+    message(FATAL_ERROR "bpmndoc not found.\n\nDownload bpmndoc from: https://github.com/bpmn-os/bpmndoc")
+  endif()
   find_program(DOXYGEN_FOUND "doxygen")
   if (NOT DOXYGEN_FOUND)
     message(FATAL_ERROR "doxygen not found.\nTo install run: sudo apt install doxygen")
@@ -102,10 +110,10 @@ if (DOCUMENTATION)
   if (NOT DOT_FOUND)
     message(FATAL_ERROR "dot not found.\nTo install run: sudo apt install graphviz")
   endif()
-  find_program(DRAWIO_FOUND "drawio")
-  if (NOT DRAWIO_FOUND)
-    message(FATAL_ERROR "drawio not found.\nTo install run: sudo snap install drawio")
-  endif()
+#  find_program(DRAWIO_FOUND "drawio")
+#  if (NOT DRAWIO_FOUND)
+#    message(FATAL_ERROR "drawio not found.\nTo install run: sudo snap install drawio")
+#  endif()
   include(ExternalProject)
 
   ExternalProject_Add(doxygen-awesome
@@ -117,19 +125,28 @@ if (DOCUMENTATION)
         CONFIGURE_COMMAND ""
   )
 
+  set(MODEL_SRC ${PROJECT_SOURCE_DIR}/tests/examples)
+  set(MODEL_DOC ${PROJECT_SOURCE_DIR}/docs/md/models)
+  add_custom_target(bpmndoc
+    COMMAND bash -c "echo 'Convert bpmn to svg ...'"
+    COMMAND bash -c "for model in ${MODEL_SRC}/*/*bpmn; do baseName=$(basename $model '.bpmn'); folder=$(basename $(dirname $model)); bpmn2svg $model -o $folder; done"
+    COMMAND bash -c "echo 'Convert bpmn to md ...'"
+    COMMAND bash -c "for model in ${MODEL_SRC}/*/*bpmn; do baseName=$(basename $model '.bpmn'); folder=$(basename $(dirname $model)); cd $folder; bpmndoc $model; cd ..; done"
+    WORKING_DIRECTORY ${MODEL_DOC}
+    COMMENT "Generating BPMN model documentation (this may take a while)"
+    VERBATIM
+  )
+  
   # Configure Doxyfile
   find_path(BPMNPP_INCLUDE_PATH bpmn++.h)
   # Add Doxygen target
   add_custom_target(docs
-    COMMAND bash -c "mkdir -p docs/images"
-    COMMAND bash -c "drawio -xt --crop execution/engine/Token_life-cycle.drawio -o docs/images/Token_life-cycle.pdf"
-    COMMAND bash -c "drawio -xt execution/engine/Token_life-cycle.drawio -o docs/images/Token_life-cycle.png"
     COMMAND bash -c "sed -i 's|https://github.com/jothepro/doxygen-awesome-css|https://github.com/bpmn-os/bpmnos-engine|g' ${CMAKE_BINARY_DIR}/doxygen-awesome/doxygen-custom/header.html"
     COMMAND bash -c "echo '<script type=\"module\">import mermaid from \"https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs\"; mermaid.initialize({ startOnLoad: true, theme: \"neutral\" });</script></body></html>' > ${CMAKE_BINARY_DIR}/doxygen-awesome/doxygen-custom/footer.html"
     COMMAND ${CMAKE_COMMAND} -E env "DOXYGEN_AWESOME_DIR=${CMAKE_BINARY_DIR}/doxygen-awesome" "BPMNPP_INCLUDE_PATH=${BPMNPP_INCLUDE_PATH}" doxygen Doxyfile
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
     COMMENT "Generating Doxygen documentation (this may take a while)"
     VERBATIM
-    DEPENDS doxygen-awesome
+    DEPENDS doxygen-awesome bpmndoc
   )
 endif()
