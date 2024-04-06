@@ -147,6 +147,6 @@ if (DOCUMENTATION)
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
     COMMENT "Generating Doxygen documentation (this may take a while)"
     VERBATIM
-    DEPENDS doxygen-awesome bpmndoc
+    DEPENDS doxygen-awesome
   )
 endif()
