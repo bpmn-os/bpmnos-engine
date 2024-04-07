@@ -125,18 +125,44 @@ if (DOCUMENTATION)
         CONFIGURE_COMMAND ""
   )
 
+  add_subdirectory(docs)
   set(MODEL_SRC ${PROJECT_SOURCE_DIR}/tests/examples)
   set(MODEL_DOC ${PROJECT_SOURCE_DIR}/docs/md/models)
-  add_custom_target(bpmndoc
+  set(HTML_DIR ${PROJECT_SOURCE_DIR}/docs/html)
+  add_custom_target(bpmndoc_svg
     COMMAND bash -c "echo 'Convert bpmn to svg ...'"
     COMMAND bash -c "for model in ${MODEL_SRC}/*/*bpmn; do baseName=$(basename $model '.bpmn'); folder=$(basename $(dirname $model)); bpmn2svg $model -o $folder; done"
-    COMMAND bash -c "echo 'Convert bpmn to md ...'"
-    COMMAND bash -c "for model in ${MODEL_SRC}/*/*bpmn; do baseName=$(basename $model '.bpmn'); folder=$(basename $(dirname $model)); cd $folder; bpmndoc $model; cd ..; done"
-    WORKING_DIRECTORY ${MODEL_DOC}
-    COMMENT "Generating BPMN model documentation (this may take a while)"
+    COMMENT "Generating BPMN model diagrams (this may take a while)"
     VERBATIM
   )
-  
+
+  add_custom_target(bpmndoc_md
+    COMMAND bash -c "mkdir -p ${HTML_DIR}"
+    COMMAND bash -c "echo 'Convert bpmn to md ...'"
+    COMMAND bash -c "for model in ${MODEL_SRC}/*/*bpmn; do baseName=$(basename $model '.bpmn'); folder=$(basename $(dirname $model)); cd $folder; bpmndoc $model; cp *.svg  ${HTML_DIR}; cd ..; done"
+    WORKING_DIRECTORY ${MODEL_DOC}
+    COMMENT "Generating BPMN model documentation"
+    VERBATIM
+#    DEPENDS bpmndoc_svg
+  )
+
+add_custom_target(bpmndoc
+  COMMAND bash -c "IFS=';' read -ra pages <<< '${MODEL_PAGES}'; for page in \"\${pages[@]}\"; do filename=\$(echo \$page | cut -d' ' -f1); title=\$(echo \$page | cut -d' ' -f2-); sed 's|!\\[\\([^ ]*\\)](\\([^ ]*\\.svg\\))|\\\\htmlonly\\n<object data=\"\\2\" type=\"image\\/svg+xml\" style=\"max-width: 100%;\">\\1<\\/object>\\n\\\\endhtmlonly\\n|g' \$filename > temp_file && mv temp_file \$filename; echo \"$(echo \"$title\"; cat $filename)\" > $filename; done"
+  WORKING_DIRECTORY ${MODEL_DOC}
+  COMMENT "Generating BPMN model pages"
+  VERBATIM
+  DEPENDS bpmndoc_md
+)
+
+#add_custom_target(bpmndoc
+#    COMMAND bash -c "IFS=';' read -ra pages <<< '${MODEL_PAGES}'; for page in \"\${pages[@]}\"; do filename=\$(echo \$page | cut -d' ' -f1); title=\$(echo \$page | cut -d' ' -f2-); echo \"$(echo \"$title\"; cat $filename)\" > $filename; done"
+#    WORKING_DIRECTORY ${MODEL_DOC}
+#    COMMENT "Generating BPMN model pages"
+#    VERBATIM
+#    DEPENDS bpmndoc_md
+#  )
+
+
   # Configure Doxyfile
   find_path(BPMNPP_INCLUDE_PATH bpmn++.h)
   # Add Doxygen target
