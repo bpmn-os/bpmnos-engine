@@ -129,10 +129,11 @@ if (DOCUMENTATION)
   set(MODEL_SRC ${PROJECT_SOURCE_DIR}/tests/examples)
   set(MODEL_DOC ${PROJECT_SOURCE_DIR}/docs/md/models)
   set(HTML_DIR ${PROJECT_SOURCE_DIR}/docs/html)
-  add_custom_target(bpmndoc_svg
+  add_custom_target(bpmn2svg
     COMMAND bash -c "echo 'Convert bpmn to svg ...'"
     COMMAND bash -c "for model in ${MODEL_SRC}/*/*bpmn; do baseName=$(basename $model '.bpmn'); folder=$(basename $(dirname $model)); bpmn2svg $model -o $folder; done"
     COMMENT "Generating BPMN model diagrams (this may take a while)"
+    WORKING_DIRECTORY ${MODEL_DOC}
     VERBATIM
   )
 
@@ -143,7 +144,7 @@ if (DOCUMENTATION)
     WORKING_DIRECTORY ${MODEL_DOC}
     COMMENT "Generating BPMN model documentation"
     VERBATIM
-#    DEPENDS bpmndoc_svg
+#    DEPENDS bpmn2svg
   )
 
 add_custom_target(bpmndoc
@@ -153,15 +154,6 @@ add_custom_target(bpmndoc
   VERBATIM
   DEPENDS bpmndoc_md
 )
-
-#add_custom_target(bpmndoc
-#    COMMAND bash -c "IFS=';' read -ra pages <<< '${MODEL_PAGES}'; for page in \"\${pages[@]}\"; do filename=\$(echo \$page | cut -d' ' -f1); title=\$(echo \$page | cut -d' ' -f2-); echo \"$(echo \"$title\"; cat $filename)\" > $filename; done"
-#    WORKING_DIRECTORY ${MODEL_DOC}
-#    COMMENT "Generating BPMN model pages"
-#    VERBATIM
-#    DEPENDS bpmndoc_md
-#  )
-
 
   # Configure Doxyfile
   find_path(BPMNPP_INCLUDE_PATH bpmn++.h)
@@ -173,6 +165,6 @@ add_custom_target(bpmndoc
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
     COMMENT "Generating Doxygen documentation (this may take a while)"
     VERBATIM
-    DEPENDS doxygen-awesome
+    DEPENDS doxygen-awesome bpmndoc
   )
 endif()
