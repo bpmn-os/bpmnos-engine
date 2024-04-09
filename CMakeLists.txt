@@ -131,7 +131,7 @@ if (DOCUMENTATION)
   set(HTML_DIR ${PROJECT_SOURCE_DIR}/docs/html)
   add_custom_target(bpmn2svg
     COMMAND bash -c "echo 'Convert bpmn to svg ...'"
-    COMMAND bash -c "for model in ${MODEL_SRC}/*/*bpmn; do baseName=$(basename $model '.bpmn'); folder=$(basename $(dirname $model)); echo $model \"$folder/$baseName.svg\"; if [[ $model -nt \"$folder/$baseName.svg\" ]]; then bpmn2svg $model -o $folder; fi; done"
+    COMMAND bash -c "for model in ${MODEL_SRC}/*/*bpmn; do baseName=$(basename $model '.bpmn'); folder=$(basename $(dirname $model)); if [[ $model -nt \"$folder/$baseName.svg\" ]]; then bpmn2svg $model -o $folder; fi; done"
     COMMENT "Generating BPMN model diagrams (this may take a while)"
     WORKING_DIRECTORY ${MODEL_DOC}
     VERBATIM
