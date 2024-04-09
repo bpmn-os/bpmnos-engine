@@ -12,8 +12,8 @@ DataProvider::DataProvider(const std::string& modelFile)
     std::vector< BPMN::Node* > nodes = process->find_all(
       [](BPMN::Node* node) {
         if ( node->extensionElements ) {
-          if ( auto extensionElements = node->extensionElements->represents<BPMNOS::Model::ExtensionElements>() ) {
-            return extensionElements->attributes.size() || extensionElements->data.size();
+          if ( node->extensionElements->represents<BPMNOS::Model::ExtensionElements>() ) {
+            return true;
           }
         }
         return false;
@@ -24,11 +24,35 @@ DataProvider::DataProvider(const std::string& modelFile)
     // add all attributes of process
     for ( auto& node : nodes ) {
       auto extensionElements = node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+      // add all status attributes
       for ( auto& attribute : extensionElements->attributes ) {
         attributes[process.get()].emplace(attribute->id,attribute.get());
       }
+      // add all data attributes
       for ( auto& attribute : extensionElements->data ) {
         attributes[process.get()].emplace(attribute->id,attribute.get());
+      }
+      
+      // add all guiding attributes
+      if ( extensionElements->entryGuidance.has_value() ) {
+        for ( auto& attribute : extensionElements->entryGuidance.value()->attributes ) {
+          attributes[process.get()].emplace(attribute->id,attribute.get());
+        }
+      }
+      if ( extensionElements->exitGuidance.has_value() ) {
+        for ( auto& attribute : extensionElements->exitGuidance.value()->attributes ) {
+          attributes[process.get()].emplace(attribute->id,attribute.get());
+        }
+      }
+      if ( extensionElements->choiceGuidance.has_value() ) {
+        for ( auto& attribute : extensionElements->choiceGuidance.value()->attributes ) {
+          attributes[process.get()].emplace(attribute->id,attribute.get());
+        }
+      }
+      if ( extensionElements->messageDeliveryGuidance.has_value() ) {
+        for ( auto& attribute : extensionElements->messageDeliveryGuidance.value()->attributes ) {
+          attributes[process.get()].emplace(attribute->id,attribute.get());
+        }
       }
     }
   }
