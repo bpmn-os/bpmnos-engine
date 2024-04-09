@@ -98,6 +98,20 @@ public:
   std::vector< const InstanceData* > getAnticipatedInstances(const BPMNOS::number currentTime) const;
 
   /**
+   * @brief Method returning a known value of an attribute.
+   *
+   * If the attribute value is not yet known, the method returns std::nullopt.
+   */
+  std::optional<BPMNOS::number> getKnownValue(const Scenario::InstanceData* instance, const BPMNOS::Model::Attribute* attribute, const BPMNOS::number currentTime) const;
+
+  /**
+   * @brief Method returning a known value of an attribute.
+   *
+   * If the attribute value is not yet known, the method returns std::nullopt.
+   */
+  std::optional<BPMNOS::number> getKnownValue(const BPMNOS::number instanceId, const BPMNOS::Model::Attribute* attribute, const BPMNOS::number currentTime) const;
+
+  /**
    * @brief Method returning the initial status of a known instantiation at the given time.
    */
   Values getKnownInitialStatus(const InstanceData*, const BPMNOS::number time) const;
@@ -106,6 +120,20 @@ public:
    * @brief Method returning the initial data attributes of a known instantiation at the given time.
    */
   Values getKnownInitialData(const InstanceData*, const BPMNOS::number time) const;
+
+  /**
+   * @brief Method returning disclosed value of an attribute.
+   *
+   * If no attribute value is yet disclosed, the method returns std::nullopt.
+   */
+  std::optional<BPMNOS::number> getAnticipatedValue(const Scenario::InstanceData* instance, const BPMNOS::Model::Attribute* attribute, const BPMNOS::number currentTime) const;
+
+  /**
+   * @brief Method returning disclosed value of an attribute.
+   *
+   * If no attribute value is yet disclosed, the method returns std::nullopt.
+   */
+  std::optional<BPMNOS::number> getAnticipatedValue(const BPMNOS::number instanceId, const BPMNOS::Model::Attribute* attribute, const BPMNOS::number currentTime) const;
 
   /**
    * @brief Method returning the initial status of an anticipated instantiation at the given time.
@@ -120,16 +148,17 @@ public:
   /**
    * @brief Method returning all known values of new attributes.
    *
-   * If at least one attribute value is not yet known, the returns std::nullopt.
+   * If at least one attribute value is not yet known, the method returns std::nullopt.
    */
   std::optional<BPMNOS::Values> getKnownValues(const BPMNOS::number instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const;
 
   /**
    * @brief Method returning all known values of new attributes.
    *
-   * If at least one attribute value is not yet known, the returns std::nullopt.
+   * If at least one attribute value is not yet known, the method returns std::nullopt.
    */
   std::optional<BPMNOS::Values> getKnownData(const BPMNOS::number instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const;
+
 
   /**
    * @brief Method returning the disclosed values of new attributes.

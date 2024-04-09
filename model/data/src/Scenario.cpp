@@ -3,7 +3,6 @@
 #include "model/utility/src/StringRegistry.h"
 #include "model/bpmnos/src/extensionElements/ExtensionElements.h"
 #include <limits>
-#include <iostream>
 
 using namespace BPMNOS::Model;
 
@@ -161,17 +160,11 @@ BPMNOS::Values Scenario::getKnownInitialStatus(const Scenario::InstanceData* ins
   for ( auto& attribute : instance->process->extensionElements->as<const BPMNOS::Model::ExtensionElements>()->attributes ) {
     assert( instance->data.contains(attribute.get()) );
     auto& data = instance->data.at(attribute.get());
-    if ( data.realization.has_value() ) {
-      auto realization = data.realization.value();
-      if ( realization.disclosure > currentTime ) {
-        throw std::runtime_error("Scenario: cannot instantiate '" + BPMNOS::to_string(instance->id,STRING) + "' because status attribute '"+ attribute->id +"' is not yet known at time " + BPMNOS::to_string(currentTime,INTEGER) );
-      }
-      initalStatus.push_back( data.realization->value );
+    if ( data.realization.has_value() && data.realization.value().disclosure > currentTime ) {
+        throw std::runtime_error("Scenario: cannot instantiate '" + BPMNOS::to_string(instance->id,STRING) + "' because data attribute '"+ attribute->id +"' is not yet known at time " + BPMNOS::to_string(currentTime,INTEGER) );
     }
-    else {
-      // value will never be set, use default value
-      initalStatus.push_back( attribute->value );
-    }
+
+    initalStatus.push_back( getKnownValue(instance,attribute.get(),currentTime) );
   }
   return initalStatus;
 }
@@ -181,20 +174,38 @@ BPMNOS::Values Scenario::getKnownInitialData(const Scenario::InstanceData* insta
   for ( auto& attribute : instance->process->extensionElements->as<const BPMNOS::Model::ExtensionElements>()->data ) {
     assert( instance->data.contains(attribute.get()) );
     auto& data = instance->data.at(attribute.get());
-    if ( data.realization.has_value() ) {
-      auto realization = data.realization.value();
-      if ( realization.disclosure > currentTime ) {
+    if ( data.realization.has_value() && data.realization.value().disclosure > currentTime ) {
         throw std::runtime_error("Scenario: cannot instantiate '" + BPMNOS::to_string(instance->id,STRING) + "' because data attribute '"+ attribute->id +"' is not yet known at time " + BPMNOS::to_string(currentTime,INTEGER) );
-      }
-      initalData.push_back( data.realization->value );
     }
-    else {
-      // value will never be set, use default value
-      initalData.push_back( attribute->value );
-    }
+
+    initalData.push_back( getKnownValue(instance,attribute.get(),currentTime) );
   }
   return initalData;
 }
+
+std::optional<BPMNOS::number> Scenario::getKnownValue(const Scenario::InstanceData* instance, const BPMNOS::Model::Attribute* attribute, const BPMNOS::number currentTime) const {
+  auto& data = instance->data.at(attribute);
+
+  if ( data.realization.has_value() ) {
+    auto realization = data.realization.value();
+    if ( realization.disclosure > currentTime ) {
+      // value not yet disclosed
+      return std::nullopt;
+      }
+    else {
+      return realization.value;
+    }
+  }
+
+  // value will never be set, use default value
+  return attribute->value;
+}
+
+std::optional<BPMNOS::number> Scenario::getKnownValue(const BPMNOS::number instanceId, const BPMNOS::Model::Attribute* attribute, const BPMNOS::number currentTime) const {
+  auto& instanceData = instances.at((long unsigned int)instanceId);
+  return getKnownValue(&instanceData,attribute,currentTime);
+}
+
 
 std::optional<BPMNOS::Values> Scenario::getKnownValues(const BPMNOS::number instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const {
   auto& instanceData = instances.at((long unsigned int)instanceId);
@@ -202,22 +213,7 @@ std::optional<BPMNOS::Values> Scenario::getKnownValues(const BPMNOS::number inst
   Values values;
   for ( auto& attribute : node->extensionElements->as<const BPMNOS::Model::ExtensionElements>()->attributes ) {
     assert( instanceData.data.contains(attribute.get()) );
-    auto& data = instanceData.data.at(attribute.get());
-
-    if ( data.realization.has_value() ) {
-      auto realization = data.realization.value();
-      if ( realization.disclosure > currentTime ) {
-        // not all values are disclosed
-        return std::nullopt;
-      }
-      else {
-        values.push_back( realization.value );
-      }
-    }
-    else {
-      // value will never be set, use default value
-      values.push_back( attribute->value );
-    }
+    values.push_back( getKnownValue(&instanceData,attribute.get(),currentTime) );
   }
 
   return values;
@@ -230,48 +226,37 @@ std::optional<BPMNOS::Values> Scenario::getKnownData(const BPMNOS::number instan
   Values values;
   for ( auto& attribute : node->extensionElements->as<const BPMNOS::Model::ExtensionElements>()->data ) {
     assert( instanceData.data.contains(attribute.get()) );
-    auto& data = instanceData.data.at(attribute.get());
-
-    if ( data.realization.has_value() ) {
-      auto realization = data.realization.value();
-      if ( realization.disclosure > currentTime ) {
-        // not all values are disclosed
-        return std::nullopt;
-      }
-      else {
-        values.push_back( realization.value );
-      }
-    }
-    else {
-      // value will never be set, use default value
-      values.push_back( attribute->value );
-    }
+    values.push_back( getKnownValue(&instanceData,attribute.get(),currentTime) );
   }
 
   return values;
+}
+
+std::optional<BPMNOS::number> Scenario::getAnticipatedValue(const Scenario::InstanceData* instance, const BPMNOS::Model::Attribute* attribute, const BPMNOS::number currentTime) const {
+  auto& data = instance->data.at(attribute);
+  if ( data.realization && data.realization->disclosure <= currentTime ) {
+    // return the realized value
+    return data.realization->value;
+  }
+  else if ( data.anticipations.size() && data.anticipations.front().disclosure <= currentTime ) {
+    // return the currently anticipated value
+    return getLatestDisclosure(data.anticipations,currentTime).value;
+  }
+
+  // return undefined value
+  return std::nullopt;
+}
+
+std::optional<BPMNOS::number> Scenario::getAnticipatedValue(const BPMNOS::number instanceId, const BPMNOS::Model::Attribute* attribute, const BPMNOS::number currentTime) const {
+  auto& instanceData = instances.at((long unsigned int)instanceId);
+  return getAnticipatedValue(&instanceData,attribute,currentTime);
 }
 
 BPMNOS::Values Scenario::getAnticipatedInitialStatus(const Scenario::InstanceData* instance, const BPMNOS::number currentTime) const {
   BPMNOS::Values initalStatus;
   for ( auto& attribute : instance->process->extensionElements->as<const BPMNOS::Model::ExtensionElements>()->attributes ) {
     assert( instance->data.contains(attribute.get()) );
-    auto& data = instance->data.at(attribute.get());
-
-    if ( data.realization
-         && data.realization->disclosure <= currentTime
-    ) {
-      initalStatus.push_back( data.realization->value );
-    }
-    else if ( data.anticipations.size()
-              && data.anticipations.front().disclosure <= currentTime
-    ) {
-      // add the currently anticipated value
-      initalStatus.push_back( getLatestDisclosure(data.anticipations,currentTime).value );
-    }
-    else {
-      // add undefined value
-      initalStatus.push_back( std::nullopt );
-    }
+    initalStatus.push_back( getAnticipatedValue(instance,attribute.get(),currentTime) );
   }
   return initalStatus;
 }
@@ -280,23 +265,7 @@ BPMNOS::Values Scenario::getAnticipatedInitialData(const Scenario::InstanceData*
   BPMNOS::Values initalData;
   for ( auto& attribute : instance->process->extensionElements->as<const BPMNOS::Model::ExtensionElements>()->data ) {
     assert( instance->data.contains(attribute.get()) );
-    auto& data = instance->data.at(attribute.get());
-
-    if ( data.realization
-         && data.realization->disclosure <= currentTime
-    ) {
-      initalData.push_back( data.realization->value );
-    }
-    else if ( data.anticipations.size()
-              && data.anticipations.front().disclosure <= currentTime
-    ) {
-      // add the currently anticipated value
-      initalData.push_back( getLatestDisclosure(data.anticipations,currentTime).value );
-    }
-    else {
-      // add undefined value
-      initalData.push_back( std::nullopt );
-    }
+    initalData.push_back( getAnticipatedValue(instance,attribute.get(),currentTime) );
   }
   return initalData;
 }
@@ -309,23 +278,7 @@ BPMNOS::Values Scenario::getAnticipatedValues(const BPMNOS::number instanceId, c
   Values values;
   for ( auto& attribute : node->extensionElements->as<const BPMNOS::Model::ExtensionElements>()->attributes ) {
     assert( instanceData.data.contains(attribute.get()) );
-    auto& data = instanceData.data.at(attribute.get());
-    if ( data.realization
-         && data.realization->disclosure <= currentTime
-    ) {
-      // add the realized value
-      values.push_back( data.realization->value );
-    }
-    else if ( data.anticipations.size()
-              && data.anticipations.front().disclosure <= currentTime
-    ) {
-      // add the currently anticipated value
-      values.push_back( getLatestDisclosure(data.anticipations,currentTime).value );
-    }
-    else {
-      // add undefined value
-      values.push_back( std::nullopt );
-    }
+    values.push_back( getAnticipatedValue(&instanceData,attribute.get(),currentTime) );
   }
   return values;
 }
@@ -335,24 +288,7 @@ BPMNOS::Values Scenario::getAnticipatedData(const BPMNOS::number instanceId, con
 
   Values values;
   for ( auto& attribute : node->extensionElements->as<const BPMNOS::Model::ExtensionElements>()->data ) {
-    assert( instanceData.data.contains(attribute.get()) );
-    auto& data = instanceData.data.at(attribute.get());
-    if ( data.realization
-         && data.realization->disclosure <= currentTime
-    ) {
-      // add the realized value
-      values.push_back( data.realization->value );
-    }
-    else if ( data.anticipations.size()
-              && data.anticipations.front().disclosure <= currentTime
-    ) {
-      // add the currently anticipated value
-      values.push_back( getLatestDisclosure(data.anticipations,currentTime).value );
-    }
-    else {
-      // add undefined value
-      values.push_back( std::nullopt );
-    }
+    values.push_back( getAnticipatedValue(&instanceData,attribute.get(),currentTime) );
   }
   return values;
 }
