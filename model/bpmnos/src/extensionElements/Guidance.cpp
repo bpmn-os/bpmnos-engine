@@ -6,6 +6,7 @@
 #include "model/bpmnos/src/xml/bpmnos/tOperators.h"
 #include "model/bpmnos/src/xml/bpmnos/tOperator.h"
 #include "model/utility/src/Keywords.h"
+//#include<iostream>
 
 using namespace BPMNOS::Model;
 
@@ -96,30 +97,28 @@ template bool Guidance::restrictionsSatisfied<BPMNOS::Globals>(const BPMNOS::Val
 
 template <typename DataType>
 std::optional<BPMNOS::number> Guidance::apply(const Scenario* scenario, BPMNOS::number currentTime, const BPMNOS::number instanceId, const BPMN::FlowNode* node, BPMNOS::Values& status, DataType& data) const {
-  Values guidingAttributes;
-  auto values = scenario->getKnownValues(instanceId, node, currentTime );
-  if ( values ) {
-    guidingAttributes = std::move( values.value() );
-  }
-  else {
-    throw std::runtime_error("Guidance: guiding attributes are not known");
-  }
 
-  // add guiding attributes to status
-  status.insert(status.end(), guidingAttributes.begin(), guidingAttributes.end());
+  auto originalSize = status.size();
+
+  for ( auto& attribute : attributes ) {
+    status.push_back( scenario->getKnownValue(instanceId, attribute.get(), currentTime ) );
+  }
 
   // apply operators
   for ( auto& operator_ : operators ) {
     operator_->apply(status,data);
   }
   
+  std::optional<BPMNOS::number> result = std::nullopt;
   // check feasibility
   if ( restrictionsSatisfied(status,data) ) {
     // return guiding value
-    return getObjective(status,data);
+    result = getObjective(status,data);
   }
   
-  return std::nullopt;
+  status.resize(originalSize);
+//std::cerr << "Guiding value for node " << node->id << " is " << result.value_or(0) << std::endl;
+  return result;
 }
 
 template std::optional<BPMNOS::number> Guidance::apply<BPMNOS::Values>(const Scenario* scenario, BPMNOS::number currentTime, const BPMNOS::number instanceId, const BPMN::FlowNode* node, BPMNOS::Values& status, BPMNOS::Values& data) const;
