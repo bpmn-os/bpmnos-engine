@@ -25,6 +25,7 @@ StateMachine::StateMachine(const SystemState* systemState, const BPMN::Process* 
   , data(Globals(ownedData))
 {
   assert( instance.has_value() && instance.value() >= 0 );
+  data[BPMNOS::Model::ExtensionElements::Index::Instance] = std::ref(instance);
 }
 
 StateMachine::StateMachine(const SystemState* systemState, const BPMN::Scope* scope, Token* parentToken, Values dataAttributes)
@@ -62,6 +63,7 @@ StateMachine::StateMachine(const StateMachine* other)
   , data(Globals(parentToken->owner->data,ownedData))
 {
 //std::cerr << "oStateMachine(" << scope->id << "/" << this << " @ " << parentToken << ")"  << " owned by :" << parentToken->owner << std::endl;
+  data[BPMNOS::Model::ExtensionElements::Index::Instance] = std::ref(instance);
 }
 
 StateMachine::~StateMachine() {
@@ -518,8 +520,8 @@ void StateMachine::run(Values status) {
           // get instantiation counter from context
           auto context = const_cast<StateMachine*>(parentToken->owned.get());
           auto counter = ++context->instantiations[token->node];
-          // append instantiation counter for disambiguation
-          auto instanceId = BPMNOS::to_string(data[BPMNOS::Model::ExtensionElements::Index::Instance].get().value(),STRING) + delimiter +  std::to_string(counter);
+          // append instantiation counter to instance identifier of parent for disambiguation
+          auto instanceId = BPMNOS::to_string((*parentToken->data)[BPMNOS::Model::ExtensionElements::Index::Instance].get().value(),STRING) + delimiter +  std::to_string(counter);
           data[BPMNOS::Model::ExtensionElements::Index::Instance].get() = BPMNOS::to_number(instanceId,BPMNOS::ValueType::STRING);
           const_cast<SystemState*>(systemState)->archive[ (long unsigned int)data[BPMNOS::Model::ExtensionElements::Index::Instance].get().value() ] = weak_from_this();
           registerRecipient();
