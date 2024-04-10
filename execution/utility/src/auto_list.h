@@ -91,6 +91,10 @@ public:
     return true;
   }
 
+  void clear() {
+    tuples.clear();
+  }
+
 private:
   mutable std::list< std::tuple< U... > > tuples;
 };

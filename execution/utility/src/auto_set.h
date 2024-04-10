@@ -96,6 +96,9 @@ public:
     return true;
   }
 
+  void clear() {
+    tuples.clear();
+  }
 private:
   struct comparator {
     bool operator()(const std::tuple<V, U... >& lhs, const std::tuple<V, U... >& rhs) const {
