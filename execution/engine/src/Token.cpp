@@ -351,11 +351,13 @@ void Token::advanceToEntered() {
   update(State::ENTERED);
 //std::cerr << "updatedToEntered" << std::endl;
 
-  if ( auto extensionElements = node->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
-    extensionElements && !extensionElements->dataUpdateOnEntry.empty()
-  ) {
-    // notify about data update
-    owner->systemState->engine->notify( DataUpdate( owner->root->instance.value(), extensionElements->dataUpdateOnEntry ) );
+  if ( node ) {
+    if ( auto extensionElements = node->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
+      extensionElements && !extensionElements->dataUpdateOnEntry.empty()
+    ) {
+      // notify about data update
+      owner->systemState->engine->notify( DataUpdate( owner->root->instance.value(), extensionElements->dataUpdateOnEntry ) );
+    }
   }
 
 //std::cerr << jsonify().dump() << std::endl;
@@ -639,11 +641,13 @@ void Token::advanceToCompleted() {
 
   update(State::COMPLETED);
 
-  if ( auto extensionElements = node->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
-    extensionElements && !extensionElements->dataUpdateOnCompletion.empty()
-  ) {
-    // notify about data update
-    owner->systemState->engine->notify( DataUpdate( owner->root->instance.value(), extensionElements->dataUpdateOnCompletion ) );
+  if ( node ) {
+    if ( auto extensionElements = node->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
+      extensionElements && !extensionElements->dataUpdateOnCompletion.empty()
+    ) {
+      // notify about data update
+      owner->systemState->engine->notify( DataUpdate( owner->root->instance.value(), extensionElements->dataUpdateOnCompletion ) );
+    }
   }
 
   auto engine = const_cast<Engine*>(owner->systemState->engine);
