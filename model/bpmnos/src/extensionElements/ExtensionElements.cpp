@@ -105,6 +105,10 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, BPMN:
         if ( attribute->category == Attribute::Category::DATA && attribute->index == BPMNOS::Model::ExtensionElements::Index::Instance ) {
           throw std::runtime_error("ExtensionElements: operator '" + (std::string)operator_.id.value + "' modifies instance attribute.\n" );
         }
+        
+        // TODO:
+        // if baseElement is task add attribute to dataUpdateOnCompletion
+        // add attribute to dataUpdateOnEntry (really?)
       }
     }    
 
@@ -121,6 +125,30 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, BPMN:
     }    
   }
 
+  // add data attributes modified by operator to dataUpdateOnEntry or dataUpdateOnCompletion
+  if ( baseElement->is<XML::bpmn::tTask>() ) {
+    for ( auto& operator_ : operators ) {
+      if ( operator_->attribute->category == Attribute::Category::DATA ) {
+        dataUpdateOnCompletion.push_back(operator_->attribute);
+      }
+    }
+  }
+  else if ( baseElement->is<XML::bpmn::tActivity>() ) {
+    // baseElement is not a task
+    for ( auto& operator_ : operators ) {
+      if ( operator_->attribute->category == Attribute::Category::DATA ) {
+        dataUpdateOnEntry.push_back(operator_->attribute);
+      }
+    }
+  }
+
+  // add data attributes modified by choice to dataUpdateOnCompletion
+  for ( auto& choice : choices ) {
+    if ( choice->attribute->category == Attribute::Category::DATA ) {
+      dataUpdateOnCompletion.push_back(choice->attribute);
+    }
+  }
+
   // add all message definitions
   if ( element->getOptionalChild<XML::bpmnos::tMessages>().has_value() ) {
     for ( XML::bpmnos::tMessage& message : element->getOptionalChild<XML::bpmnos::tMessages>()->get().message ) {
@@ -130,6 +158,22 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, BPMN:
   else if ( auto message = element->getOptionalChild<XML::bpmnos::tMessage>(); message.has_value() ) {
     messageDefinitions.push_back(std::make_unique<MessageDefinition>(&message->get(),attributeRegistry));
   }
+
+  if ( baseElement->is<XML::bpmn::tReceiveTask>() || baseElement->is<XML::bpmn::tCatchEvent>() ) {
+    // add data attributes modified by message to dataUpdateOnCompletion
+    for ( auto& messageDefinition : messageDefinitions ) {
+       for ( auto& [key,content] : messageDefinition->contentMap ) {
+         if ( !content->attribute.has_value() ) {
+           throw std::runtime_error("ExtensionElements: missing attribute for content '" + (std::string)content->id + "'.");
+         }
+         Attribute* attribute = &content->attribute.value().get();
+         if ( attribute->category == Attribute::Category::DATA ) {
+           dataUpdateOnCompletion.push_back(attribute);
+         }
+       }
+    }
+  }
+
 
   // add loop characteristics
   if ( element->getOptionalChild<XML::bpmnos::tLoopCharacteristics>().has_value() ) {

@@ -39,6 +39,9 @@ public:
 
   std::vector< std::unique_ptr<Attribute> > data;  ///< Vector containing data attributes declared for data objects within the node's scope.
 
+  std::vector< const Attribute* > dataUpdateOnEntry; ///< Vector containing data attributes that are modified upon entry.
+  std::vector< const Attribute* > dataUpdateOnCompletion; ///< Vector containing data attributes that are modified upon completion.
+
   std::vector< std::unique_ptr<MessageDefinition> > messageDefinitions; ///< Vector containing message definition(s) provided for the node.
   std::vector< const BPMN::FlowNode* > messageCandidates; ///< Vector containing all potential sending or receiving nodes of a message.
 

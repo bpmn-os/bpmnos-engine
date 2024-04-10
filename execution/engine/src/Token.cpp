@@ -3,6 +3,7 @@
 #include "Engine.h"
 #include "DecisionRequest.h"
 #include "SequentialPerformerUpdate.h"
+#include "DataUpdate.h"
 #include "model/bpmnos/src/extensionElements/ExtensionElements.h"
 #include "model/bpmnos/src/extensionElements/Gatekeeper.h"
 #include "model/bpmnos/src/extensionElements/MessageDefinition.h"
@@ -350,6 +351,13 @@ void Token::advanceToEntered() {
   update(State::ENTERED);
 //std::cerr << "updatedToEntered" << std::endl;
 
+  if ( auto extensionElements = node->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
+    extensionElements && !extensionElements->dataUpdateOnEntry.empty()
+  ) {
+    // notify about data update
+    owner->systemState->engine->notify( DataUpdate( owner->root->instance.value(), extensionElements->dataUpdateOnEntry ) );
+  }
+
 //std::cerr << jsonify().dump() << std::endl;
 
   auto engine = const_cast<Engine*>(owner->systemState->engine);
@@ -630,6 +638,13 @@ void Token::advanceToCompleted() {
   }
 
   update(State::COMPLETED);
+
+  if ( auto extensionElements = node->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
+    extensionElements && !extensionElements->dataUpdateOnCompletion.empty()
+  ) {
+    // notify about data update
+    owner->systemState->engine->notify( DataUpdate( owner->root->instance.value(), extensionElements->dataUpdateOnCompletion ) );
+  }
 
   auto engine = const_cast<Engine*>(owner->systemState->engine);
 
