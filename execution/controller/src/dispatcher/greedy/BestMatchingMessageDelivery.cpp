@@ -7,7 +7,7 @@
 using namespace BPMNOS::Execution;
 
 BestMatchingMessageDelivery::BestMatchingMessageDelivery( std::function<std::optional<double>(const Event* event)> evaluator )
-  : evaluator(evaluator)
+  : GreedyDispatcher(evaluator)
 {
 }
 
@@ -16,7 +16,7 @@ void BestMatchingMessageDelivery::connect(Mediator* mediator) {
     Execution::Observable::Type::MessageDeliveryRequest,
     Execution::Observable::Type::Message
   );
-  EventDispatcher::connect(mediator);
+  GreedyDispatcher::connect(mediator);
 }
 
 void BestMatchingMessageDelivery::notice(const Observable* observable) {
@@ -37,7 +37,7 @@ void BestMatchingMessageDelivery::notice(const Observable* observable) {
         message->matches(recipientHeader)
       ) {
         auto decision = std::make_shared<MessageDeliveryDecision>(request->token, message.get(), evaluator);
-        decisions.emplace( decision->evaluation.value_or( std::numeric_limits<double>::max() ), request->token->weak_from_this(), request->weak_from_this(), message_ptr, decision );
+        decisionsWithoutEvaluation.emplace_back( request->token->weak_from_this(), request->weak_from_this(), decision );
       }
     }
   }
@@ -55,16 +55,16 @@ void BestMatchingMessageDelivery::notice(const Observable* observable) {
           message->matches(recipientHeader)
         ) {
           auto decision = std::make_shared<MessageDeliveryDecision>(token.get(), message, evaluator);
-          decisions.emplace( decision->evaluation.value_or( std::numeric_limits<double>::max() ), token_ptr, request_ptr, message->weak_from_this(), decision );
+          decisionsWithoutEvaluation.emplace_back( token_ptr, request_ptr, decision );
         }
       }
     }
   }
   else {
-    assert(!"Unexpected observable type");
+    GreedyDispatcher::notice(observable);
   }
 }
-
+/*
 std::shared_ptr<Event> BestMatchingMessageDelivery::dispatchEvent( [[maybe_unused]] const SystemState* systemState ) {
   for ( auto [evaluation, token_ptr, request_ptr, message_ptr, decision ] : decisions ) {
 //std::cerr << "Dispatch: " << evaluation << std::endl;
@@ -72,4 +72,4 @@ std::shared_ptr<Event> BestMatchingMessageDelivery::dispatchEvent( [[maybe_unuse
   }
   return nullptr;
 }
-
+*/

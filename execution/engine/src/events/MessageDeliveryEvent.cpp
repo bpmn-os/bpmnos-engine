@@ -5,8 +5,12 @@ using namespace BPMNOS::Execution;
 
 MessageDeliveryEvent::MessageDeliveryEvent(const Token* token, const Message* message)
   : Event(token)
-  , message(message)
+  , message(message->weak_from_this())
 {
+}
+
+bool MessageDeliveryEvent::expired() {
+  return message.expired();
 }
 
 void MessageDeliveryEvent::processBy(Engine* engine) const {

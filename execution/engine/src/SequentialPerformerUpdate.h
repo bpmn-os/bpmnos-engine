@@ -9,8 +9,8 @@ namespace BPMNOS::Execution {
 
 struct SequentialPerformerUpdate : Observable {
   constexpr Type getObservableType() const override { return Type::SequentialPerformerUpdate; };
-  SequentialPerformerUpdate(const Token* t) : token(t) {}
-  const Token* token;  
+  SequentialPerformerUpdate(const Token* token) : token(token) {}
+  const Token* token;
 };
 
 } // namespace BPMNOS::Execution

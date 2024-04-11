@@ -5,7 +5,7 @@
 using namespace BPMNOS::Execution;
 
 BestFirstExit::BestFirstExit( std::function<std::optional<double>(const Event* event)> evaluator )
-  : evaluator(evaluator)
+  : GreedyDispatcher(evaluator)
 {
 }
 
@@ -13,9 +13,10 @@ void BestFirstExit::connect(Mediator* mediator) {
   mediator->addSubscriber(this, 
     Observable::Type::ExitRequest
   );
-  EventDispatcher::connect(mediator);
+  GreedyDispatcher::connect(mediator);
 }
 
+/*
 std::shared_ptr<Event> BestFirstExit::dispatchEvent( [[maybe_unused]] const SystemState* systemState ) {
   for ( auto [ cost, token_ptr, request_ptr, decision ] : decisions ) {
     if( auto token = token_ptr.lock() )  {
@@ -28,14 +29,21 @@ std::shared_ptr<Event> BestFirstExit::dispatchEvent( [[maybe_unused]] const Syst
   }
   return nullptr;
 }
+*/
 
 void BestFirstExit::notice(const Observable* observable) {
-  assert( dynamic_cast<const DecisionRequest*>(observable) );
-  auto request = static_cast<const DecisionRequest*>(observable);
+  if ( observable->getObservableType() == Observable::Type::ExitRequest ) {
+    assert( dynamic_cast<const DecisionRequest*>(observable) );
+    auto request = static_cast<const DecisionRequest*>(observable);
 
-  auto token = const_cast<Token*>(request->token);
-  auto decision = std::make_shared<ExitDecision>(token, evaluator);
-  decisions.emplace( decision->evaluation.value_or( std::numeric_limits<double>::max() ), token->weak_from_this(), request->weak_from_this(), decision );
+//    auto token = const_cast<Token*>(request->token);
+    auto decision = std::make_shared<ExitDecision>(request->token, evaluator);
+//    decisions.emplace( decision->evaluation.value_or( std::numeric_limits<double>::max() ), token->weak_from_this(), request->weak_from_this(), decision );
+    decisionsWithoutEvaluation.emplace_back( request->token->weak_from_this(), request->weak_from_this(), decision );
+  }
+  else {
+    GreedyDispatcher::notice(observable);
+  }
 }
 
 

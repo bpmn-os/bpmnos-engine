@@ -16,7 +16,8 @@ namespace BPMNOS::Execution {
 struct MessageDeliveryEvent : virtual Event {
   MessageDeliveryEvent(const Token* token, const Message* message);
   void processBy(Engine* engine) const override;
-  const Message* message;
+  bool expired() override;
+  std::weak_ptr<const Message> message;
 };
 
 } // namespace BPMNOS::Execution

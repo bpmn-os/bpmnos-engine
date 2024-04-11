@@ -10,9 +10,9 @@ namespace BPMNOS::Execution {
 
 struct DataUpdate : Observable {
   constexpr Type getObservableType() const override { return Type::DataUpdate; };
-  DataUpdate(const BPMNOS::number instanceId, const std::vector<const BPMNOS::Model::Attribute*>& updates) : instanceId(instanceId), updates(updates) {}
+  DataUpdate(const BPMNOS::number instanceId, const std::vector<const BPMNOS::Model::Attribute*>& attributes) : instanceId(instanceId), attributes(attributes) {}
   const BPMNOS::number instanceId;
-  const std::vector<const BPMNOS::Model::Attribute*>& updates;
+  const std::vector<const BPMNOS::Model::Attribute*>& attributes;
 };
 
 } // namespace BPMNOS::Execution

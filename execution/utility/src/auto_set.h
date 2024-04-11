@@ -74,6 +74,10 @@ public:
     tuples.emplace(value, data...);
   }
 
+  iterator erase(iterator it) {
+    return iterator(tuples.erase(it.current), this);
+  }
+
   template <typename T>
   void remove(T* pointer) {
     auto it = begin();

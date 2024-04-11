@@ -192,8 +192,9 @@ void Engine::process(const MessageDeliveryEvent* event) {
   Token* token = const_cast<Token*>(event->token);
   assert( token->node );
 
-  Message* message = const_cast<Message*>(event->message);
-
+  auto message_ptr = event->message.lock();
+  assert( message_ptr );
+  Message* message = const_cast<Message*>(message_ptr.get());
   // update token status 
   message->apply(token->node,token->getAttributeRegistry(),token->status,*token->data);
   

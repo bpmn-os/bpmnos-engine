@@ -4,6 +4,7 @@ list(APPEND controller_SOURCES
   decisions/ChoiceDecision.cpp
   decisions/MessageDeliveryDecision.cpp
   decisions/ExitDecision.cpp
+  GreedyDispatcher.cpp
   dispatcher/TimeWarp.cpp
   dispatcher/Metronome.cpp
   dispatcher/ReadyHandler.cpp
@@ -30,6 +31,7 @@ list(APPEND controller_HEADERS
   decisions/ChoiceDecision.h
   decisions/MessageDeliveryDecision.h
   decisions/ExitDecision.h
+  GreedyDispatcher.h
   dispatcher/TimeWarp.h
   dispatcher/Metronome.h
   dispatcher/ReadyHandler.h

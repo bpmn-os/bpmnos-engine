@@ -73,6 +73,10 @@ public:
     tuples.emplace_back(data...);
   }
 
+  iterator erase(iterator it) {
+    return iterator(tuples.erase(it.current), this);
+  }
+
   template <typename T>
   void remove(T* pointer) {
     tuples.remove_if([pointer](const std::tuple< U... >& elements) {

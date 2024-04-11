@@ -25,7 +25,8 @@ std::optional<double> MessageDeliveryDecision::localEvaluator(const Event* event
   Values data(*event->token->data);
   double evaluation = (double)extensionElements->getObjective(status,data);
 
-  auto message = dynamic_cast<const MessageDeliveryEvent*>(event)->message;
+  auto message = dynamic_cast<const MessageDeliveryEvent*>(event)->message.lock();
+  assert(message);
   message->apply(event->token->node,event->token->getAttributeRegistry(),status,data);
   
   extensionElements->applyOperators(status,data);
@@ -41,7 +42,8 @@ std::optional<double> MessageDeliveryDecision::guidedEvaluator(const Event* even
   Values data(*event->token->data);
   auto evaluation = (double)extensionElements->getObjective(status,data);
 
-  auto message = dynamic_cast<const MessageDeliveryEvent*>(event)->message;
+  auto message = dynamic_cast<const MessageDeliveryEvent*>(event)->message.lock();
+  assert(message);
   message->apply(event->token->node,event->token->getAttributeRegistry(),status,data);
   
   extensionElements->applyOperators(status,data);

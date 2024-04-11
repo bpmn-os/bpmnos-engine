@@ -6,7 +6,7 @@
 using namespace BPMNOS::Execution;
 
 BestFirstSequentialEntry::BestFirstSequentialEntry( std::function<std::optional<double>(const Event* event)> evaluator )
-  : evaluator(evaluator)
+  : GreedyDispatcher(evaluator)
 {
 }
 
@@ -15,86 +15,119 @@ void BestFirstSequentialEntry::connect(Mediator* mediator) {
     Observable::Type::EntryRequest,
     Observable::Type::SequentialPerformerUpdate
   );
-  EventDispatcher::connect(mediator);
+  GreedyDispatcher::connect(mediator);
 }
 
 std::shared_ptr<Event> BestFirstSequentialEntry::dispatchEvent( [[maybe_unused]] const SystemState* systemState ) {
-  for ( auto it = tokensAtIdlePerformers.begin(), next_it = it; it != tokensAtIdlePerformers.end(); it = next_it) {
-    next_it++;
-    if ( it->first.expired() ) {
-      tokensAtIdlePerformers.erase(it);
-    }
-    else {
-      for ( auto [ cost, token_ptr, request_ptr, decision ] : it->second ) {
-        if( auto token = token_ptr.lock() )  {
-          assert( token );
-          if ( request_ptr.lock() && decision->evaluation.has_value() )  {
-            // request is still valid and evaluation of decision gave a value
-            return decision;
-          }
-        }
+  auto_list< std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest>, std::shared_ptr<Decision> > notEvaluated;
+  for ( auto& [ token_ptr, request_ptr, decision ] : decisionsWithoutEvaluation ) {
+    assert(decision);
+    if ( decision && !decision->expired() ) {
+      auto token = token_ptr.lock();
+      assert( token );
+      auto tokenAtSequentialPerformer = token->owner->systemState->tokenAtSequentialPerformer.at(const_cast<Token*>(token.get()));
+      assert( tokenAtSequentialPerformer );
+      if ( tokenAtSequentialPerformer->performing ) {
+        pendingDecisionsWithoutEvaluation.emplace_back(token_ptr, request_ptr, decision);
+      }
+      else {
+        evaluate( token_ptr, request_ptr, decision );
       }
     }
   }
+  decisionsWithoutEvaluation.clear();
+
+  for ( auto [ cost, token_ptr, request_ptr, evaluation_ptr ] : evaluatedDecisions ) {
+    auto token = token_ptr.lock();
+    assert( token );
+    auto tokenAtSequentialPerformer = token->owner->systemState->tokenAtSequentialPerformer.at(const_cast<Token*>(token.get()));
+    assert( tokenAtSequentialPerformer );
+    if ( !tokenAtSequentialPerformer->performing ) {
+      if( auto evaluation = evaluation_ptr.lock();
+        evaluation && !evaluation->decision->expired()
+      )  {
+        return evaluation->decision;
+      }
+    }
+  }
+
   return nullptr;
 }
 
 void BestFirstSequentialEntry::notice(const Observable* observable) {
   if ( observable->getObservableType() == Observable::Type::EntryRequest ) {
+    assert(dynamic_cast<const DecisionRequest*>(observable));
     entryRequest(static_cast<const DecisionRequest*>(observable));
   }
   else if ( observable->getObservableType() == Observable::Type::SequentialPerformerUpdate ) {
+    assert(dynamic_cast<const SequentialPerformerUpdate*>(observable));
     sequentialPerformerUpdate(static_cast<const SequentialPerformerUpdate*>(observable));
   }
   else {
-    assert(!"Illegal observable type");
+    GreedyDispatcher::notice(observable);
   }
 }
 
 void BestFirstSequentialEntry::entryRequest(const DecisionRequest* request) {
   assert(request->token->node);
-  auto token = const_cast<Token*>(request->token);
   if ( request->token->node->parent->represents<const BPMNOS::Model::SequentialAdHocSubProcess>() ) {
     auto decision = std::make_shared<EntryDecision>(request->token, evaluator);
-    assert( token->owner->systemState->tokenAtSequentialPerformer.find(token) != token->owner->systemState->tokenAtSequentialPerformer.end() );
-    auto tokenAtSequentialPerformer = token->owner->systemState->tokenAtSequentialPerformer.at(token);
-    if ( tokenAtSequentialPerformer->performing ) {
-      tokensAtBusyPerformers[tokenAtSequentialPerformer->weak_from_this()].emplace( 0, token->weak_from_this(), request->weak_from_this(), decision );
-    }
-    else {
-      tokensAtIdlePerformers[tokenAtSequentialPerformer->weak_from_this()].emplace( decision->evaluation.value_or( std::numeric_limits<double>::max() ), token->weak_from_this(), request->weak_from_this(), decision );
-    }
+    decisionsWithoutEvaluation.emplace_back( request->token->weak_from_this(), request->weak_from_this(), decision );
   }
 }
 
 void BestFirstSequentialEntry::sequentialPerformerUpdate(const SequentialPerformerUpdate* update) {
   auto tokenAtSequentialPerformer = update->token;
   if ( tokenAtSequentialPerformer->performing ) {
-    // perfomer has just become busy
-    if ( auto it = tokensAtIdlePerformers.find(tokenAtSequentialPerformer->weak_from_this());
-      it != tokensAtIdlePerformers.end()
-    ) {
-      if ( !it->second.empty() ) {
-        tokensAtBusyPerformers[tokenAtSequentialPerformer->weak_from_this()] = std::move(it->second);
+    // performer has become busy
+    for ( auto it = evaluatedDecisions.begin(); it != evaluatedDecisions.end(); ) {
+      auto [ cost, token_ptr, request_ptr, evaluation_ptr ] = *it;
+      auto token = token_ptr.lock();
+      assert( token );
+      if ( tokenAtSequentialPerformer == token->owner->systemState->tokenAtSequentialPerformer.at(const_cast<Token*>(token.get())) ) {
+        it = evaluatedDecisions.erase(it);
+        pendingEvaluatedDecisions.emplace(cost, token_ptr, request_ptr, evaluation_ptr);
+        continue;
       }
-      tokensAtIdlePerformers.erase(it);
+      ++it;
+    }
+    
+    for ( auto it = decisionsWithoutEvaluation.begin(); it != decisionsWithoutEvaluation.end(); ) {
+      auto [ token_ptr, request_ptr, decision ] = *it;
+      auto token = token_ptr.lock();
+      assert( token );
+      if ( tokenAtSequentialPerformer == token->owner->systemState->tokenAtSequentialPerformer.at(const_cast<Token*>(token.get())) ) {
+        it = decisionsWithoutEvaluation.erase(it);        
+        pendingDecisionsWithoutEvaluation.emplace_back(token_ptr, request_ptr, decision);
+        continue;
+      }
+      ++it;
     }
   }
   else {
-    // perfomer has just become idle
-    if ( auto it = tokensAtBusyPerformers.find(tokenAtSequentialPerformer->weak_from_this());
-      it != tokensAtBusyPerformers.end()
-    ) {
-      for ( auto [_, token_ptr, request_ptr, decision ] : it->second ) {
-        if ( auto token = token_ptr.lock() ) {
-          if ( auto request = request_ptr.lock() ) {
-            // re-evaluate event
-            decision->evaluate();
-            tokensAtIdlePerformers[tokenAtSequentialPerformer->weak_from_this()].emplace( decision->evaluation.value_or( std::numeric_limits<double>::max() ), token_ptr, request_ptr, decision );
-          }
-        }
+    // performer has become idle
+    for ( auto it = pendingEvaluatedDecisions.begin(); it != pendingEvaluatedDecisions.end(); ) {
+      auto [ cost, token_ptr, request_ptr, evaluation_ptr ] = *it;
+      auto token = token_ptr.lock();
+      assert( token );
+      if ( tokenAtSequentialPerformer == token->owner->systemState->tokenAtSequentialPerformer.at(const_cast<Token*>(token.get())) ) {
+        it = pendingEvaluatedDecisions.erase(it);
+        evaluatedDecisions.emplace(cost, token_ptr, request_ptr, evaluation_ptr);
+        continue;
       }
-      tokensAtBusyPerformers.erase(it);
+      ++it;
+    }
+    
+    for ( auto it = pendingDecisionsWithoutEvaluation.begin(); it != pendingDecisionsWithoutEvaluation.end(); ) {
+      auto [ token_ptr, request_ptr, decision ] = *it;
+      auto token = token_ptr.lock();
+      assert( token );
+      if ( tokenAtSequentialPerformer == token->owner->systemState->tokenAtSequentialPerformer.at(const_cast<Token*>(token.get())) ) {
+        it = pendingDecisionsWithoutEvaluation.erase(it);
+        decisionsWithoutEvaluation.emplace_back(token_ptr, request_ptr, decision);
+        continue;
+      }
+      ++it;
     }
   }
 }
