@@ -31,6 +31,7 @@ StringExpression::StringExpression(XML::bpmnos::tParameter* parameter, const Att
   strutil::trim(parts.back());
 
   attribute = attributeRegistry[parts.front()];
+  inputs.insert( attribute );
 
   if ( strutil::starts_with(parts.back(),"\"") && strutil::ends_with(parts.back(),"\"") ) {
     // right hand side with quotes is a string
@@ -39,6 +40,7 @@ StringExpression::StringExpression(XML::bpmnos::tParameter* parameter, const Att
   else {
     // right hand side without quotes is an attribute name
     rhs = attributeRegistry[parts.back()];
+    inputs.insert( std::get<const Attribute *>(rhs) );
   }
 }
 

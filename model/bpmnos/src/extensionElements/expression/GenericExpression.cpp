@@ -36,6 +36,7 @@ GenericExpression::GenericExpression(XML::bpmnos::tParameter* parameter, const A
       throw std::runtime_error("GenericExpression: non-numeric variable '" + boundAttribute->name + "'");
     }
     bindings.push_back({ symbolTable.variable_ref(variable), boundAttribute });
+    inputs.insert(boundAttribute);
   }
 }
 

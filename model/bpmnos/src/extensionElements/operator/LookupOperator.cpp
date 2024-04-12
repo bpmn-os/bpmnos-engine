@@ -36,6 +36,7 @@ LookupOperator::LookupOperator(XML::bpmnos::tOperator* operator_, const Attribut
         throw std::runtime_error("Lookup: lookup argument of operator '" + id + "' must be given by attribute name");
       }
       lookups.push_back({ parameterName, &parameter->attribute->get() });
+      inputs.insert( &parameter->attribute->get() );
     }
   }
 

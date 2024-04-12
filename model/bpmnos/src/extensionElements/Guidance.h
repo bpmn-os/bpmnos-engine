@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <vector>
+#include <set>
 #include <string>
 #include <bpmn++.h>
 #include "Attribute.h"
@@ -25,6 +26,8 @@ public:
   std::vector< std::unique_ptr<Attribute> > attributes;
   std::vector< std::unique_ptr<Restriction> > restrictions;
   std::vector< std::unique_ptr<Operator> > operators;
+  
+  std::set<const Attribute*> dependencies;
 
   template <typename DataType>
   std::optional<BPMNOS::number> apply(const Scenario* scenario, BPMNOS::number currentTime, const BPMNOS::number instanceId, const BPMN::FlowNode* node, BPMNOS::Values& status, DataType& data) const;
@@ -33,7 +36,7 @@ private:
   BPMNOS::number getObjective(const BPMNOS::Values& status, const DataType& data) const;
 
   template <typename DataType>
-  bool restrictionsSatisfied(const BPMNOS::Values& status, const DataType& data) const;
+  bool restrictionsSatisfied(const BPMN::FlowNode* node, const BPMNOS::Values& status, const DataType& data) const;
 
 };
 

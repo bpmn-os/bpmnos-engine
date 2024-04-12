@@ -3,7 +3,7 @@
 
 #include <memory>
 #include <optional>
-#include <vector>
+#include <set>
 #include <string>
 #include <bpmn++.h>
 #include <variant>
@@ -28,6 +28,7 @@ public:
   Attribute* attribute; ///< The status or data attribute to be modified by the operator
   const AttributeRegistry& attributeRegistry;
   ParameterMap parameterMap;
+  std::set<const Attribute*> inputs; ///< Set containing all input attributes influencing the result of the operator.
 
   static std::unique_ptr<Operator> create(XML::bpmnos::tOperator* operator_, AttributeRegistry& attributeRegistry);
   virtual void apply(Values& status, Globals& data) const = 0;

@@ -9,6 +9,18 @@ MessageDeliveryDecision::MessageDeliveryDecision(const Token* token, const Messa
   , Decision(evaluator)
 {
   evaluate();
+
+  if (*evaluator.target<std::optional<double> (*)(const BPMNOS::Execution::Event*)>() == &MessageDeliveryDecision::localEvaluator) {
+    auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+    determineDependencies( extensionElements->operatorDependencies );
+  }
+  else if (*evaluator.target<std::optional<double> (*)(const BPMNOS::Execution::Event*)>() == &MessageDeliveryDecision::guidedEvaluator) {
+    auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+    determineDependencies( extensionElements->operatorDependencies );
+    if ( extensionElements->messageDeliveryGuidance.has_value() ) {
+      determineDependencies( extensionElements->messageDeliveryGuidance.value()->dependencies );
+    }
+  }
 }
 
 std::optional<double> MessageDeliveryDecision::evaluate() {

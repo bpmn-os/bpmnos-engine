@@ -35,6 +35,7 @@ void NullCondition::parse(const std::string& comparisonOperator) {
   std::string rhs = strutil::trim_copy(expressions.back());
 
   attribute = attributeRegistry[lhs];
+  inputs.insert( attribute );
 
   if ( rhs != Keyword::Undefined ) {
     throw std::runtime_error("NullCondition: cannot find " + Keyword::Undefined + " keyword in r.h.s.");

@@ -39,6 +39,9 @@ Guidance::Guidance(XML::bpmnos::tGuidance* guidance, const AttributeRegistry& at
     for ( XML::bpmnos::tRestriction& restriction : guidance->restrictions.value().get().restriction ) {
       try {
         restrictions.push_back(std::make_unique<Restriction>(&restriction,this->attributeRegistry));
+        for ( auto input : restrictions.back()->expression->inputs ) {
+          dependencies.insert(input);
+        }
       }
       catch ( ... ){
         throw std::runtime_error("Guidance: illegal parameters for restriction '" + (std::string)restriction.id.value + "'");
@@ -50,6 +53,9 @@ Guidance::Guidance(XML::bpmnos::tGuidance* guidance, const AttributeRegistry& at
     for ( XML::bpmnos::tOperator& operator_ : guidance->operators.value().get().operator_ ) {
       try {
         operators.push_back(Operator::create(&operator_,this->attributeRegistry));
+        for ( auto input : operators.back()->inputs ) {
+          dependencies.insert(input);
+        }
       }
       catch ( ... ){
         throw std::runtime_error("Guidance: illegal parameters for operator '" + (std::string)operator_.id.value + "'");
@@ -80,7 +86,7 @@ template BPMNOS::number Guidance::getObjective<BPMNOS::Values>(const BPMNOS::Val
 template BPMNOS::number Guidance::getObjective<BPMNOS::Globals>(const BPMNOS::Values& status, const BPMNOS::Globals& data) const;
 
 template <typename DataType>
-bool Guidance::restrictionsSatisfied(const BPMNOS::Values& status, const DataType& data) const {
+bool Guidance::restrictionsSatisfied(const BPMN::FlowNode* node, const BPMNOS::Values& status, const DataType& data) const {
   for ( auto& restriction : restrictions ) {
     if ( !restriction->isSatisfied(status,data) ) {
       return false;
@@ -91,8 +97,8 @@ bool Guidance::restrictionsSatisfied(const BPMNOS::Values& status, const DataTyp
   return true;
 }
 
-template bool Guidance::restrictionsSatisfied<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data) const;
-template bool Guidance::restrictionsSatisfied<BPMNOS::Globals>(const BPMNOS::Values& status, const BPMNOS::Globals& data) const;
+template bool Guidance::restrictionsSatisfied<BPMNOS::Values>(const BPMN::FlowNode* node, const BPMNOS::Values& status, const BPMNOS::Values& data) const;
+template bool Guidance::restrictionsSatisfied<BPMNOS::Globals>(const BPMN::FlowNode* node, const BPMNOS::Values& status, const BPMNOS::Globals& data) const;
 
 
 template <typename DataType>
@@ -111,7 +117,7 @@ std::optional<BPMNOS::number> Guidance::apply(const Scenario* scenario, BPMNOS::
   
   std::optional<BPMNOS::number> result = std::nullopt;
   // check feasibility
-  if ( restrictionsSatisfied(status,data) ) {
+  if ( restrictionsSatisfied(node,status,data) ) {
     // return guiding value
     result = getObjective(status,data);
   }

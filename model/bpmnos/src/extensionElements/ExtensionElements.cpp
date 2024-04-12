@@ -14,6 +14,8 @@
 #include "model/bpmnos/src/xml/bpmnos/tLoopCharacteristics.h"
 #include "model/bpmnos/src/xml/bpmnos/tGuidance.h"
 #include "model/utility/src/Keywords.h"
+#include <algorithm>
+#include <iostream>
 
 using namespace BPMNOS::Model;
 
@@ -87,7 +89,37 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, BPMN:
           throw std::runtime_error("ExtensionElements: illegal parameters for restriction '" + (std::string)restriction.id.value + "'.\n" + error.what());
         }
       }
-    }    
+
+      auto& restriction = restrictions.back();
+      for ( auto input : restriction->expression->inputs ) {
+        if ( restriction->scope != Restriction::Scope::EXIT ) {
+          entryDependencies.insert(input);
+        }
+        if ( restriction->scope != Restriction::Scope::ENTRY ) {
+          exitDependencies.insert(input);
+        }
+      }
+    }
+    // recursivlye determine entry and exit dependencies
+    auto ancestor = parent;
+    while ( ancestor ) {
+      if ( auto extensionElements = ancestor->extensionElements->represents<BPMNOS::Model::ExtensionElements>() ) {
+        for ( auto& restriction : extensionElements->restrictions ) {
+          for ( auto input : restriction->expression->inputs ) {
+            if ( restriction->scope == Restriction::Scope::FULL ) {
+              entryDependencies.insert(input);
+              exitDependencies.insert(input);
+            }
+          }
+        }
+      }
+      if ( auto child = ancestor->represents<BPMN::ChildNode>() ) {
+        ancestor = child->parent;
+      }
+      else {
+        break;
+      }
+    }
 
     // add all operators
     if ( status->get().operators.has_value() ) {
@@ -106,9 +138,9 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, BPMN:
           throw std::runtime_error("ExtensionElements: operator '" + (std::string)operator_.id.value + "' modifies instance attribute.\n" );
         }
         
-        // TODO:
-        // if baseElement is task add attribute to dataUpdateOnCompletion
-        // add attribute to dataUpdateOnEntry (really?)
+        for ( auto input : operators.back()->inputs ) {
+          operatorDependencies.insert(input);
+        }
       }
     }    
 
@@ -309,12 +341,14 @@ BPMNOS::number ExtensionElements::getObjective(const BPMNOS::Values& status, con
   for ( auto& [name, attribute] : attributeRegistry.statusAttributes ) {
     auto value = attributeRegistry.getValue(attribute,status,data);
     if ( value.has_value() ) {
+//std::cerr << attribute->name << " contributes " <<  attribute->weight * value.value() << std::endl;
       objective += attribute->weight * value.value();
     }
   }
   for ( auto& [name, attribute] : attributeRegistry.dataAttributes ) {
     auto value = attributeRegistry.getValue(attribute,status,data);
     if ( value.has_value() ) {
+//std::cerr << attribute->name << " contributes " <<  attribute->weight * value.value() << std::endl;
       objective += attribute->weight * value.value();
     }
   }

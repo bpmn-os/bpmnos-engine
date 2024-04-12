@@ -9,6 +9,18 @@ ChoiceDecision::ChoiceDecision(const Token* token, Values updatedStatus, std::fu
   , Decision(evaluator)
 {
   evaluate();
+  
+  if (*evaluator.target<std::optional<double> (*)(const BPMNOS::Execution::Event*)>() == &ChoiceDecision::localEvaluator) {
+    auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+    determineDependencies( extensionElements->operatorDependencies );
+  }
+  else if (*evaluator.target<std::optional<double> (*)(const BPMNOS::Execution::Event*)>() == &ChoiceDecision::guidedEvaluator) {
+    auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+    determineDependencies( extensionElements->operatorDependencies );
+    if ( extensionElements->choiceGuidance.has_value() ) {
+      determineDependencies( extensionElements->choiceGuidance.value()->dependencies );
+    }
+  }
 }
 
 std::optional<double> ChoiceDecision::evaluate() {

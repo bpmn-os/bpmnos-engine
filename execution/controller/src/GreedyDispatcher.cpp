@@ -20,12 +20,17 @@ void GreedyDispatcher::connect(Mediator* mediator) {
 }
 
 void GreedyDispatcher::evaluate(std::weak_ptr<const Token> token_ptr, std::weak_ptr<const DecisionRequest> request_ptr, std::shared_ptr<Decision> decision) {
-  // (re-)evaluate decision 
+  assert ( !token_ptr.expired() );
+  assert ( !request_ptr.expired() );
+  assert ( decision );
+
   auto value = decision->evaluate();
   // infeasible decisions are evaluated with high costs
   auto evaluation = std::make_shared<Evaluation>( (value.has_value() ? (double)value.value() : std::numeric_limits<double>::max() ), std::move(decision));
-  evaluatedDecisions.emplace(value.value(), token_ptr, request_ptr, evaluation->weak_from_this());
+  evaluatedDecisions.emplace(evaluation->value, token_ptr, request_ptr, evaluation->weak_from_this());
+//std::cerr << "Evaluation " << evaluation->value << " for " << token_ptr.lock()->jsonify() << std::endl;
 
+  assert ( evaluation->decision );
   // add evaluation to respective container
   if ( !evaluation->decision->timeDependent && evaluation->decision->dataDependencies.empty() ) {
     invariantEvaluations.emplace_back(token_ptr, request_ptr, std::move(evaluation) );
@@ -36,12 +41,14 @@ void GreedyDispatcher::evaluate(std::weak_ptr<const Token> token_ptr, std::weak_
   else if ( !evaluation->decision->timeDependent && evaluation->decision->dataDependencies.size() ) {
     assert(evaluation->decision->token);
     BPMNOS::number instanceId = evaluation->decision->token->owner->root->instance.value();
-    dataDependentEvaluations[(long unsigned int)instanceId].emplace_back(token_ptr, request_ptr, evaluation->weak_from_this(), std::move(evaluation) );
+    auto evaluation_ptr = evaluation->weak_from_this();
+    dataDependentEvaluations[(long unsigned int)instanceId].emplace_back(token_ptr, request_ptr, evaluation_ptr, std::move(evaluation) );
   }
   else if ( evaluation->decision->timeDependent && evaluation->decision->dataDependencies.size() ) {
     assert(evaluation->decision->token);
     BPMNOS::number instanceId = evaluation->decision->token->owner->root->instance.value();
-    timeAndDataDependentEvaluations[(long unsigned int)instanceId].emplace_back(token_ptr, request_ptr, evaluation->weak_from_this(), std::move(evaluation) );
+    auto evaluation_ptr = evaluation->weak_from_this();
+    timeAndDataDependentEvaluations[(long unsigned int)instanceId].emplace_back(token_ptr, request_ptr, evaluation_ptr, std::move(evaluation) );
   }
 }
 
@@ -75,13 +82,17 @@ void GreedyDispatcher::notice(const Observable* observable) {
 }
 
 void GreedyDispatcher::dataUpdate(const DataUpdate* update) {
+//std::cerr << "DataUpdate " << (int)update->instanceId << std::endl;
+/*
+for ( auto attribute : update->attributes ) {
+std::cerr << "Updated " << attribute->name << std::endl;
+}
+*/
   auto removeDependentEvaluations = [this,&update](std::unordered_map< long unsigned int, auto_list< std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest>, std::weak_ptr<Evaluation>, std::shared_ptr<Evaluation> > >& evaluations) -> void {
-    auto intersect = [](const std::vector<const BPMNOS::Model::Attribute*>& first, const std::vector<const BPMNOS::Model::Attribute*>& second) -> bool {
+    auto intersect = [](const std::vector<const BPMNOS::Model::Attribute*>& first, const std::set<const BPMNOS::Model::Attribute*>& second) -> bool {
       for ( auto lhs : first ) {
-        for ( auto rhs : second ) {
-          if ( lhs == rhs ) {
-            return true;
-          }
+        if ( second.contains(lhs) ) {
+          return true;
         }
       }
       return false;

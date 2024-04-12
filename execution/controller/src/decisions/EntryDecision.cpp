@@ -11,23 +11,67 @@ EntryDecision::EntryDecision(const Token* token, std::function<std::optional<dou
   , Decision(evaluator)
 {
   evaluate();
+
+  if (*evaluator.target<std::optional<double> (*)(const BPMNOS::Execution::Event*)>() == &EntryDecision::localEvaluator) {
+    auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+    if ( 
+      token->node->represents<BPMN::Activity>() &&
+      !token->node->represents<BPMN::Task>()
+    ) {
+      determineDependencies( extensionElements->operatorDependencies );
+    }
+    determineDependencies( extensionElements->entryDependencies );
+
+    if ( token->node->represents<BPMN::Task>() && 
+      !token->node->represents<BPMN::ReceiveTask>() &&
+      !token->node->represents<BPMNOS::Model::DecisionTask>()
+    ) {
+      determineDependencies( extensionElements->operatorDependencies );
+      determineDependencies( extensionElements->exitDependencies );
+    }
+  }
+  else if (*evaluator.target<std::optional<double> (*)(const BPMNOS::Execution::Event*)>() == &EntryDecision::guidedEvaluator) {
+    auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+    if ( 
+      token->node->represents<BPMN::Activity>() &&
+      !token->node->represents<BPMN::Task>()
+    ) {
+      determineDependencies( extensionElements->operatorDependencies );
+    }
+    determineDependencies( extensionElements->entryDependencies );
+
+    if ( token->node->represents<BPMN::Task>() && 
+      !token->node->represents<BPMN::ReceiveTask>() &&
+      !token->node->represents<BPMNOS::Model::DecisionTask>()
+    ) {
+      determineDependencies( extensionElements->operatorDependencies );
+      determineDependencies( extensionElements->exitDependencies );
+    }
+
+    if ( extensionElements->entryGuidance.has_value() ) {
+      determineDependencies( extensionElements->entryGuidance.value()->dependencies );
+    }
+  }
 }
 
 std::optional<double> EntryDecision::evaluate() {
   evaluation = evaluator((EntryEvent*)this);
+//std::cerr << "Entry decision has value: " << (evaluation ? evaluation.value() : std::numeric_limits<double>::max()) << std::endl;
   return evaluation;
 }
 
 std::optional<double> EntryDecision::localEvaluator(const Event* event) {
+//std::cerr << "Local evaluator : " << event->token->jsonify() << std::endl;
   assert( event->token->ready() );
   auto extensionElements = event->token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   Values status = event->token->status;
   Values data(*event->token->data);
   double evaluation = (double)extensionElements->getObjective(status,data);
+//std::cerr << "Initial evaluation: " << evaluation << std::endl;
 
   if ( 
-    event->token->node->represents<BPMN::SubProcess>() ||
-    event->token->node->represents<BPMNOS::Model::SequentialAdHocSubProcess>()
+    event->token->node->represents<BPMN::Activity>() &&
+    !event->token->node->represents<BPMN::Task>()
   ) {
     // apply operators before checking entry restrictions
     extensionElements->applyOperators(status,data);
@@ -35,8 +79,10 @@ std::optional<double> EntryDecision::localEvaluator(const Event* event) {
 
   if ( !extensionElements->feasibleEntry(status,data) ) {
     // entry would be infeasible
+//std::cerr << "Local evaluator: std::nullopt" << std::endl;
     return std::nullopt;
   }
+
 
   if ( event->token->node->represents<BPMN::Task>() && 
     !event->token->node->represents<BPMN::ReceiveTask>() &&
@@ -52,10 +98,12 @@ std::optional<double> EntryDecision::localEvaluator(const Event* event) {
   }
 
   // return evaluation of entry
+//std::cerr << "Updated evaluation: " << extensionElements->getObjective(status,data) << std::endl;
   return evaluation - extensionElements->getObjective(status,data);
 }
 
 std::optional<double> EntryDecision::guidedEvaluator(const Event* event) {
+//std::cerr << "Guided evaluator : " << event->token->jsonify() << std::endl;
   assert( event->token->ready() );
 
   auto extensionElements = event->token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
@@ -64,8 +112,8 @@ std::optional<double> EntryDecision::guidedEvaluator(const Event* event) {
   auto evaluation = (double)extensionElements->getObjective(status,data);
 
   if ( 
-    event->token->node->represents<BPMN::SubProcess>() ||
-    event->token->node->represents<BPMNOS::Model::SequentialAdHocSubProcess>()
+    event->token->node->represents<BPMN::Activity>() &&
+    !event->token->node->represents<BPMN::Task>()
   ) {
     // apply operators before checking entry restrictions
     extensionElements->applyOperators(status,data);

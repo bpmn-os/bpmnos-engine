@@ -9,6 +9,12 @@ ExitDecision::ExitDecision(const Token* token, std::function<std::optional<doubl
   , Decision(evaluator)
 {
   evaluate();
+  if (*evaluator.target<std::optional<double> (*)(const BPMNOS::Execution::Event*)>() == &ExitDecision::guidedEvaluator) {
+    auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+    if ( extensionElements->exitGuidance.has_value() ) {
+      determineDependencies( extensionElements->exitGuidance.value()->dependencies );
+    }
+  }
 }
 
 std::optional<double> ExitDecision::evaluate() {

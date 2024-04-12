@@ -5,10 +5,12 @@ using namespace BPMNOS::Model;
 ExpressionOperator::ExpressionOperator(XML::bpmnos::tOperator* operator_, const AttributeRegistry& attributeRegistry)
   : Operator(operator_, attributeRegistry)
   , expression(Expression::create( &operator_->getRequiredChild<XML::bpmnos::tParameter>(), attributeRegistry))
+
 {
   if ( attribute->type == ValueType::STRING || attribute->type == ValueType::COLLECTION ) {
     throw std::runtime_error("ExpressionOperator: non-numeric result of expression operator '" + id + "'");
   }
+  inputs = expression->inputs;
 }
 
 template <typename DataType>

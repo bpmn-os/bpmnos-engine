@@ -24,6 +24,7 @@ Enumeration::Enumeration(XML::bpmnos::tParameter* parameter, const AttributeRegi
   auto attributeName = trimmed.substr(0,pos);
 
   attribute = attributeRegistry[attributeName];
+  inputs.insert(attribute);
 
   trimmed = strutil::trim_copy( trimmed.substr(pos) );
 
@@ -50,6 +51,7 @@ Enumeration::Enumeration(XML::bpmnos::tParameter* parameter, const AttributeRegi
   }
   else {
     collection = attributeRegistry[trimmed];
+    inputs.insert(std::get<const Attribute *>(collection));
   } 
 }
 

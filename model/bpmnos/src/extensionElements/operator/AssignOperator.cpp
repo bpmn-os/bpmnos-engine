@@ -8,6 +8,10 @@ AssignOperator::AssignOperator(XML::bpmnos::tOperator* operator_, const Attribut
 {
   try {
     parameter = parameterMap.at("assign").get();
+    if ( parameter->attribute.has_value() ) {
+      inputs.insert( &parameter->attribute->get() );
+    }
+    
   }
   catch ( ... ){
     throw std::runtime_error("Assign: required parameter 'assign' not provided for operator " + id + "'");

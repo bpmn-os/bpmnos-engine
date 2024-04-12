@@ -17,17 +17,14 @@ public:
   constexpr static std::optional<double> nullEvaluator([[maybe_unused]] const Event* event) { return std::nullopt; }
   constexpr static std::optional<double> zeroEvaluator([[maybe_unused]] const Event* event) { return 0; }
 
-  // entryRestrictions->dataInputs, exitRestrictions->dataInputs, operators->dataInputs, entryGuidance->dataInputs, choiceGuidance->dataInputs, messageDeliveryGuidance->dataInputs, exitGuidance->dataInputs
-  // DataDependencies Entry; entryRestrictions->dataInputs + (Activity!Task ? operators->dataInputs)
-
   virtual std::optional<double> evaluate() = 0;
   std::optional<double> evaluation;
   
   bool timeDependent;
-  std::vector<const BPMNOS::Model::Attribute*> dataDependencies;
+  std::set<const BPMNOS::Model::Attribute*> dataDependencies;
+  void determineDependencies(const std::set<const BPMNOS::Model::Attribute*>& dependencies);
 protected:
   std::function< std::optional<double>(Event* event) > evaluator;
-//  std::function< void(const BPMN::Node* node) > determineDependencies;
 };
 
 } // namespace BPMNOS::Execution

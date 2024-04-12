@@ -66,6 +66,7 @@ void LinearExpression::parse(std::string expressionString, NumericType SIGN) {
           throw std::runtime_error("LinearExpression: non-numeric variable '" + attribute->name + "'");
         }
         variable = attribute;
+        inputs.insert(attribute);
         size_t pos = part.find(key);
         part.erase(pos,key.length()); // remove attribute name from part
         part.erase(remove(part.begin(), part.end(), '*'), part.end());
@@ -80,6 +81,7 @@ void LinearExpression::parse(std::string expressionString, NumericType SIGN) {
           throw std::runtime_error("LinearExpression: non-numeric variable '" + attribute->name + "'");
         }
         variable = attribute;
+        inputs.insert(attribute);
         size_t pos = part.find(key);
         part.erase(pos,key.length()); // remove attribute name from part
         part.erase(remove(part.begin(), part.end(), '*'), part.end());

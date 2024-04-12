@@ -22,6 +22,7 @@ public:
   const AttributeRegistry& attributeRegistry;
   const std::string expression;
   static std::unique_ptr<Expression> create(XML::bpmnos::tParameter* parameter, const AttributeRegistry& attributeRegistry);
+  std::set<const Attribute*> inputs; ///< Vector containing all input attributes influencing the result of the expression.
 
   virtual std::optional<BPMNOS::number> execute(const Values& status, const Values& data) const = 0;
   virtual std::optional<BPMNOS::number> execute(const Values& status, const Globals& data) const = 0;
