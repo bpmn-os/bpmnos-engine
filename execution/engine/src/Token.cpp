@@ -331,6 +331,7 @@ void Token::advanceToEntered() {
         throw std::runtime_error("StateMachine: Operators for process '" + node->id + "' attempt to modify timestamp");
       }
       // update status
+      status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = owner->systemState->currentTime;
       extensionElements->applyOperators(status,*data);
     }
   }
@@ -344,6 +345,7 @@ void Token::advanceToEntered() {
         throw std::runtime_error("StateMachine: Operators for subprocess '" + node->id + "' attempt to modify timestamp");
       }
       // update status
+      status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = owner->systemState->currentTime;
       extensionElements->applyOperators(status,*data);
     }
   }
@@ -582,6 +584,7 @@ void Token::advanceToBusy() {
       if ( auto extensionElements = node->extensionElements->represents<BPMNOS::Model::ExtensionElements>() ) {
         if ( extensionElements->isInstantaneous ) {
           // update status directly
+          status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = owner->systemState->currentTime;
           extensionElements->applyOperators(status,*data);
 
           if ( auto sendTask = node->represents<BPMN::SendTask>() ) {
@@ -1102,6 +1105,7 @@ void Token::awaitTaskCompletionEvent() {
   if ( auto extensionElements = node->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
        extensionElements && extensionElements->operators.size()
   ) {
+    status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = systemState->currentTime;
     extensionElements->applyOperators(status,*data);
     if ( !status[BPMNOS::Model::ExtensionElements::Index::Timestamp].has_value() ) {
       throw std::runtime_error("Token: timestamp at node '" + node->id + "' is deleted");

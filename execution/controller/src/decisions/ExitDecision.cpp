@@ -36,6 +36,7 @@ std::optional<double> ExitDecision::guidedEvaluator(const Event* event) {
   }
 
   Values status = event->token->status;
+  status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = event->token->owner->systemState->currentTime;
   Values data(*event->token->data);
   auto evaluation = (double)extensionElements->getObjective(status,data);
     

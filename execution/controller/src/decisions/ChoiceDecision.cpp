@@ -34,6 +34,7 @@ std::optional<double> ChoiceDecision::localEvaluator(const Event* event) {
   auto extensionElements = event->token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   auto evaluation = (double)extensionElements->getObjective(event->token->status, *event->token->data);
   Values status = dynamic_cast<const ChoiceEvent*>(event)->updatedStatus;
+  status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = event->token->owner->systemState->currentTime;
   Values data(*event->token->data);
   extensionElements->applyOperators(status,data);
   return evaluation - extensionElements->getObjective(status,data);
@@ -45,6 +46,7 @@ std::optional<double> ChoiceDecision::guidedEvaluator(const Event* event) {
   auto extensionElements = event->token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   auto evaluation = (double)extensionElements->getObjective(event->token->status, *event->token->data);
   Values status = dynamic_cast<const ChoiceEvent*>(event)->updatedStatus;
+  status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = event->token->owner->systemState->currentTime;
   Values data(*event->token->data);
   extensionElements->applyOperators(status,data);
 
