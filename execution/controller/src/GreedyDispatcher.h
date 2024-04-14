@@ -38,8 +38,8 @@ private:
 
   auto_list< std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest>, std::shared_ptr<Evaluation> > invariantEvaluations;
   auto_list< std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest>, std::shared_ptr<Evaluation> > timeDependentEvaluations;
-  std::unordered_map< long unsigned int, auto_list< std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest>, std::weak_ptr<Evaluation>, std::shared_ptr<Evaluation> > > dataDependentEvaluations;
-  std::unordered_map< long unsigned int, auto_list< std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest>, std::weak_ptr<Evaluation>, std::shared_ptr<Evaluation> > > timeAndDataDependentEvaluations;
+  std::unordered_map< long unsigned int, auto_list< std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest>, std::shared_ptr<Evaluation> > > dataDependentEvaluations;
+  std::unordered_map< long unsigned int, auto_list< std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest>, std::shared_ptr<Evaluation> > > timeAndDataDependentEvaluations;
 };
 
 } // namespace BPMNOS::Execution

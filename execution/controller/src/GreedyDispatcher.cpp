@@ -41,14 +41,12 @@ void GreedyDispatcher::evaluate(std::weak_ptr<const Token> token_ptr, std::weak_
   else if ( !evaluation->decision->timeDependent && evaluation->decision->dataDependencies.size() ) {
     assert(evaluation->decision->token);
     BPMNOS::number instanceId = evaluation->decision->token->owner->root->instance.value();
-    auto evaluation_ptr = evaluation->weak_from_this();
-    dataDependentEvaluations[(long unsigned int)instanceId].emplace_back(token_ptr, request_ptr, evaluation_ptr, std::move(evaluation) );
+    dataDependentEvaluations[(long unsigned int)instanceId].emplace_back(token_ptr, request_ptr, std::move(evaluation) );
   }
   else if ( evaluation->decision->timeDependent && evaluation->decision->dataDependencies.size() ) {
     assert(evaluation->decision->token);
     BPMNOS::number instanceId = evaluation->decision->token->owner->root->instance.value();
-    auto evaluation_ptr = evaluation->weak_from_this();
-    timeAndDataDependentEvaluations[(long unsigned int)instanceId].emplace_back(token_ptr, request_ptr, evaluation_ptr, std::move(evaluation) );
+    timeAndDataDependentEvaluations[(long unsigned int)instanceId].emplace_back(token_ptr, request_ptr, std::move(evaluation) );
   }
 }
 
@@ -88,7 +86,7 @@ for ( auto attribute : update->attributes ) {
 std::cerr << "Updated " << attribute->name << std::endl;
 }
 */
-  auto removeDependentEvaluations = [this,&update](std::unordered_map< long unsigned int, auto_list< std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest>, std::weak_ptr<Evaluation>, std::shared_ptr<Evaluation> > >& evaluations) -> void {
+  auto removeDependentEvaluations = [this,&update](std::unordered_map< long unsigned int, auto_list< std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest>, std::shared_ptr<Evaluation> > >& evaluations) -> void {
     auto intersect = [](const std::vector<const BPMNOS::Model::Attribute*>& first, const std::set<const BPMNOS::Model::Attribute*>& second) -> bool {
       for ( auto lhs : first ) {
         if ( second.contains(lhs) ) {
@@ -98,18 +96,22 @@ std::cerr << "Updated " << attribute->name << std::endl;
       return false;
     };
 
-    if ( auto it = evaluations.find((long unsigned int)update->instanceId);
-      it != evaluations.end()
+    if ( auto evaluationIt = evaluations.find((long unsigned int)update->instanceId);
+      evaluationIt != evaluations.end()
     ) {
       // check whether evaluation has become obsolete
-      for ( auto& [ token_ptr, request_ptr, evaluation_ptr, evaluation ] : it->second ) { 
+      for ( auto it = evaluationIt->second.begin(); it != evaluationIt->second.end(); ) {
+        auto& [ token_ptr, request_ptr, evaluation ] = *it;
         if ( intersect(update->attributes, evaluation->decision->dataDependencies) ) {
           if ( !evaluation->decision->expired() ) {
             evaluation->decision->evaluation = std::nullopt;
             decisionsWithoutEvaluation.emplace_back( token_ptr, request_ptr, std::move(evaluation->decision) );
           }
-          // invalidate evaluation_ptr for auto removal
-          evaluation.reset();
+          // remove evaluation
+          it = evaluationIt->second.erase(it);
+        }
+        else {
+          ++it;
         }
       }
     }
@@ -129,7 +131,7 @@ void GreedyDispatcher::clockTick() {
   timeDependentEvaluations.clear();
 
   for ( auto& [ instance, evaluations ] : timeAndDataDependentEvaluations ) {
-    for ( auto& [token_ptr, request_ptr, evaluation_ptr, evaluation ] : evaluations ) {
+    for ( auto& [token_ptr, request_ptr, evaluation ] : evaluations ) {
       if ( !evaluation->decision->expired() ) {
         evaluation->decision->evaluation = std::nullopt;
         decisionsWithoutEvaluation.emplace_back( token_ptr, request_ptr, std::move(evaluation->decision) );
