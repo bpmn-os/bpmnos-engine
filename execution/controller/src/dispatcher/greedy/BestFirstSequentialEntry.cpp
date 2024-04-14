@@ -30,7 +30,7 @@ std::shared_ptr<Event> BestFirstSequentialEntry::dispatchEvent( [[maybe_unused]]
         pendingDecisionsWithoutEvaluation.emplace_back(token_ptr, request_ptr, decision);
       }
       else {
-        evaluate( token_ptr, request_ptr, decision );
+        evaluate( token_ptr, request_ptr, std::move(decision) );
       }
     }
   }

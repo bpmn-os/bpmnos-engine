@@ -55,7 +55,7 @@ std::shared_ptr<Event> GreedyDispatcher::dispatchEvent( [[maybe_unused]] const S
 //std::cerr << "(Re-)evaluate " << token_ptr.lock()->jsonify() << std::endl;
     assert(decision);
     if ( decision && !decision->expired() ) {
-      evaluate( token_ptr, request_ptr, decision );
+      evaluate( token_ptr, request_ptr, std::move(decision) );
     }
   }
   decisionsWithoutEvaluation.clear();
