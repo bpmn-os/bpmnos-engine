@@ -30,8 +30,6 @@ void GreedyDispatcher::evaluate(std::weak_ptr<const Token> token_ptr, std::weak_
 //std::cerr << value.value_or(-1) << "Evaluation " << decision->evaluation.value_or(-1) << " for " << token_ptr.lock()->jsonify() << std::endl;
 
   assert ( decision );
-auto decision_ptr = std::static_pointer_cast<Decision>(decision)->weak_from_this();
-assert( !decision_ptr.expired() );
 
   // add evaluation to respective container
   if ( !decision->timeDependent && decision->dataDependencies.empty() ) {
@@ -62,12 +60,12 @@ std::shared_ptr<Event> GreedyDispatcher::dispatchEvent( [[maybe_unused]] const S
   }
   decisionsWithoutEvaluation.clear();
 
-  for ( auto [ cost, token_ptr, request_ptr, decision_ptr ] : evaluatedDecisions ) {
+  for ( auto [ cost, token_ptr, request_ptr, event_ptr ] : evaluatedDecisions ) {
 //std::cerr << "Decide " << token_ptr.lock()->jsonify() << std::endl;
-    if( auto decision = decision_ptr.lock();
-      decision && !decision->expired()
+    if( auto event = event_ptr.lock();
+      event && !event->expired()
     )  {
-      return decision;
+      return event;
     }
   }
   return nullptr;

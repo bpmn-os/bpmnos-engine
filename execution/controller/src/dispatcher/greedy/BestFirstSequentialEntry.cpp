@@ -36,16 +36,16 @@ std::shared_ptr<Event> BestFirstSequentialEntry::dispatchEvent( [[maybe_unused]]
   }
   decisionsWithoutEvaluation.clear();
 
-  for ( auto [ cost, token_ptr, request_ptr, decision_ptr ] : evaluatedDecisions ) {
+  for ( auto [ cost, token_ptr, request_ptr, event_ptr ] : evaluatedDecisions ) {
     auto token = token_ptr.lock();
     assert( token );
     auto tokenAtSequentialPerformer = token->owner->systemState->tokenAtSequentialPerformer.at(const_cast<Token*>(token.get()));
     assert( tokenAtSequentialPerformer );
     if ( !tokenAtSequentialPerformer->performing ) {
-      if( auto decision = decision_ptr.lock();
-        decision && !decision->expired()
+      if( auto event = event_ptr.lock();
+        event && !event->expired()
       )  {
-        return decision;
+        return event;
       }
     }
   }
@@ -80,12 +80,12 @@ void BestFirstSequentialEntry::sequentialPerformerUpdate(const SequentialPerform
   if ( tokenAtSequentialPerformer->performing ) {
     // performer has become busy
     for ( auto it = evaluatedDecisions.begin(); it != evaluatedDecisions.end(); ) {
-      auto [ cost, token_ptr, request_ptr, decision_ptr ] = *it;
+      auto [ cost, token_ptr, request_ptr, event_ptr ] = *it;
       auto token = token_ptr.lock();
       assert( token );
       if ( tokenAtSequentialPerformer == token->owner->systemState->tokenAtSequentialPerformer.at(const_cast<Token*>(token.get())) ) {
         it = evaluatedDecisions.erase(it);
-        pendingEvaluatedDecisions.emplace(cost, token_ptr, request_ptr, decision_ptr);
+        pendingEvaluatedDecisions.emplace(cost, token_ptr, request_ptr, event_ptr);
         continue;
       }
       ++it;
@@ -106,12 +106,12 @@ void BestFirstSequentialEntry::sequentialPerformerUpdate(const SequentialPerform
   else {
     // performer has become idle
     for ( auto it = pendingEvaluatedDecisions.begin(); it != pendingEvaluatedDecisions.end(); ) {
-      auto [ cost, token_ptr, request_ptr, decision_ptr ] = *it;
+      auto [ cost, token_ptr, request_ptr, event_ptr ] = *it;
       auto token = token_ptr.lock();
       assert( token );
       if ( tokenAtSequentialPerformer == token->owner->systemState->tokenAtSequentialPerformer.at(const_cast<Token*>(token.get())) ) {
         it = pendingEvaluatedDecisions.erase(it);
-        evaluatedDecisions.emplace(cost, token_ptr, request_ptr, decision_ptr);
+        evaluatedDecisions.emplace(cost, token_ptr, request_ptr, event_ptr);
         continue;
       }
       ++it;
