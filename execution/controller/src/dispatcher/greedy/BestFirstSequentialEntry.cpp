@@ -86,9 +86,10 @@ void BestFirstSequentialEntry::sequentialPerformerUpdate(const SequentialPerform
       if ( tokenAtSequentialPerformer == token->owner->systemState->tokenAtSequentialPerformer.at(const_cast<Token*>(token.get())) ) {
         it = evaluatedDecisions.erase(it);
         pendingEvaluatedDecisions.emplace(cost, token_ptr, request_ptr, event_ptr);
-        continue;
       }
-      ++it;
+      else {
+        ++it;
+      }
     }
     
     for ( auto it = decisionsWithoutEvaluation.begin(); it != decisionsWithoutEvaluation.end(); ) {
@@ -98,9 +99,10 @@ void BestFirstSequentialEntry::sequentialPerformerUpdate(const SequentialPerform
       if ( tokenAtSequentialPerformer == token->owner->systemState->tokenAtSequentialPerformer.at(const_cast<Token*>(token.get())) ) {
         it = decisionsWithoutEvaluation.erase(it);        
         pendingDecisionsWithoutEvaluation.emplace_back(token_ptr, request_ptr, std::move(decision));
-        continue;
       }
-      ++it;
+      else {
+        ++it;
+      }
     }
   }
   else {
@@ -112,9 +114,10 @@ void BestFirstSequentialEntry::sequentialPerformerUpdate(const SequentialPerform
       if ( tokenAtSequentialPerformer == token->owner->systemState->tokenAtSequentialPerformer.at(const_cast<Token*>(token.get())) ) {
         it = pendingEvaluatedDecisions.erase(it);
         evaluatedDecisions.emplace(cost, token_ptr, request_ptr, event_ptr);
-        continue;
       }
-      ++it;
+      else {
+        ++it;
+      }
     }
     
     for ( auto it = pendingDecisionsWithoutEvaluation.begin(); it != pendingDecisionsWithoutEvaluation.end(); ) {
@@ -124,9 +127,10 @@ void BestFirstSequentialEntry::sequentialPerformerUpdate(const SequentialPerform
       if ( tokenAtSequentialPerformer == token->owner->systemState->tokenAtSequentialPerformer.at(const_cast<Token*>(token.get())) ) {
         it = pendingDecisionsWithoutEvaluation.erase(it);
         decisionsWithoutEvaluation.emplace_back(token_ptr, request_ptr, std::move(decision));
-        continue;
       }
-      ++it;
+      else {
+        ++it;
+      }
     }
   }
 }
