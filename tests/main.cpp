@@ -64,29 +64,34 @@ using namespace BPMNOS;
 #endif // ALL_TESTS
 
 #ifndef ALL_TESTS
-SCENARIO( "Travelling salesperson problem", "[examples][travelling_salesperson_problem]" ) {
-  const std::string modelFile = "examples/travelling_salesperson_problem/Travelling_salesperson_problem.bpmn";
-  BPMNOS::Model::LookupTable::folders = { std::string(std::filesystem::current_path()) + "/examples/travelling_salesperson_problem" };
+SCENARIO( "Knapsack problem", "[examples][knapsack_problem]" ) {
+  const std::string modelFile = "examples/knapsack_problem/Knapsack_problem.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
 
-  GIVEN( "A TSP with four location" ) {
+  GIVEN( "One knapsack and three items" ) {
 
     std::string csv =
       "PROCESS_ID; INSTANCE_ID; ATTRIBUTE_ID; VALUE\n"
-      "TravellingSalesperson_Process;Instance1;Origin;Hamburg\n"
-      "TravellingSalesperson_Process;Instance1;Locations;[\"Munich\",\"Berlin\",\"Cologne\"]\n"
+      "KnapsackProcess;Knapsack1;Capacity;40\n"
+      "ItemProcess;Item1;Weight;20\n"
+      "ItemProcess;Item1;Value;100\n"
+      "ItemProcess;Item2;Weight;15\n"
+      "ItemProcess;Item2;Value;50\n"
+      "ItemProcess;Item3;Weight;22\n"
+      "ItemProcess;Item3;Value;120\n"
     ;
 
     Model::StaticDataProvider dataProvider(modelFile,csv);
     auto scenario = dataProvider.createScenario();
-    WHEN( "The engine is started with the greedy controller" ) {
+
+    WHEN( "The engine is started with the guided controller (but no guidance)" ) {
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
       Execution::DeterministicTaskCompletion completionHandler;
       readyHandler.connect(&engine);
       completionHandler.connect(&engine);
 
-      Execution::GreedyController controller;
+      Execution::GuidedController controller;
       controller.connect(&engine);
       
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;
@@ -98,11 +103,9 @@ SCENARIO( "Travelling salesperson problem", "[examples][travelling_salesperson_p
       Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
       engine.run(scenario.get());
-      THEN( "Then locations are visited in the nearest-neighbour order" ) {
-        auto visitLog = recorder.find(nlohmann::json{{"nodeId", "VisitLocation"},{"state", "ENTERED"}});
-        REQUIRE( visitLog[0]["status"]["location"] == "Berlin" );
-        REQUIRE( visitLog[1]["status"]["location"] == "Cologne" );
-        REQUIRE( visitLog[2]["status"]["location"] == "Munich" );
+      THEN( "Then the knapsack is closed before items are included" ) {
+        auto failureLog = recorder.find(nlohmann::json{{"nodeId", "SendRequestTask"},{"state", "FAILED"}});
+        REQUIRE( failureLog.size() == 3 );
       }
     }
   }

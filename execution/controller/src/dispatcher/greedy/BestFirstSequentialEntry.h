@@ -22,7 +22,7 @@ public:
   void sequentialPerformerUpdate(const SequentialPerformerUpdate* update);
 protected:
   auto_list< std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest>, std::shared_ptr<Decision> > pendingDecisionsWithoutEvaluation;
-  auto_set< double, std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest>, std::weak_ptr<Evaluation> > pendingEvaluatedDecisions;  
+  auto_set< double, std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest>, std::weak_ptr<Event> > pendingEvaluatedDecisions;  
 };
 
 } // namespace BPMNOS::Execution
