@@ -27,8 +27,8 @@ protected:
   void evaluate(std::weak_ptr<const Token> token_ptr, std::weak_ptr<const DecisionRequest> request_ptr, std::shared_ptr<Decision> decision);
 
   struct Evaluation : std::enable_shared_from_this<Evaluation> {
-    Evaluation(double value, std::shared_ptr<Decision> decision) : value(value), decision(decision) {};
-    double value;
+    Evaluation(std::shared_ptr<Decision> decision) : decision(decision) {};
+//    double value;
     std::shared_ptr<Decision> decision;
   };
   auto_set< double, std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest>, std::weak_ptr<Evaluation> > evaluatedDecisions;  

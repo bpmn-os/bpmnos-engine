@@ -25,9 +25,9 @@ void GreedyDispatcher::evaluate(std::weak_ptr<const Token> token_ptr, std::weak_
   assert ( decision );
 
   auto value = decision->evaluate();
-  // infeasible decisions are evaluated with high costs
-  auto evaluation = std::make_shared<Evaluation>( (value.has_value() ? (double)value.value() : std::numeric_limits<double>::max() ), std::move(decision));
-  evaluatedDecisions.emplace(evaluation->value, token_ptr, request_ptr, evaluation->weak_from_this());
+  auto evaluation = std::make_shared<Evaluation>( std::move(decision) );
+  // decisions without evaluation are assumed to be prioritized
+  evaluatedDecisions.emplace( (value.has_value() ? (double)value.value() : std::numeric_limits<double>::min() ), token_ptr, request_ptr, evaluation->weak_from_this());
 //std::cerr << "Evaluation " << evaluation->value << " for " << token_ptr.lock()->jsonify() << std::endl;
 
   assert ( evaluation->decision );
