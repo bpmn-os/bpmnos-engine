@@ -10,7 +10,7 @@
 namespace BPMNOS::Execution {
 
 /**
- * @brief Abstract base clase for dispatching the event with the best evaluation.
+ * @brief Class for dispatching the event with the best evaluation.
  */
 class GreedyDispatcher : public EventDispatcher, public Observer {
 public:
