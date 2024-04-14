@@ -27,7 +27,7 @@ std::shared_ptr<Event> BestFirstSequentialEntry::dispatchEvent( [[maybe_unused]]
       auto tokenAtSequentialPerformer = token->owner->systemState->tokenAtSequentialPerformer.at(const_cast<Token*>(token.get()));
       assert( tokenAtSequentialPerformer );
       if ( tokenAtSequentialPerformer->performing ) {
-        pendingDecisionsWithoutEvaluation.emplace_back(token_ptr, request_ptr, decision);
+        pendingDecisionsWithoutEvaluation.emplace_back(token_ptr, request_ptr, std::move(decision) );
       }
       else {
         evaluate( token_ptr, request_ptr, std::move(decision) );
@@ -71,7 +71,7 @@ void BestFirstSequentialEntry::entryRequest(const DecisionRequest* request) {
   assert(request->token->node);
   if ( request->token->node->parent->represents<const BPMNOS::Model::SequentialAdHocSubProcess>() ) {
     auto decision = std::make_shared<EntryDecision>(request->token, evaluator);
-    decisionsWithoutEvaluation.emplace_back( request->token->weak_from_this(), request->weak_from_this(), decision );
+    decisionsWithoutEvaluation.emplace_back( request->token->weak_from_this(), request->weak_from_this(), std::move(decision) );
   }
 }
 
@@ -97,7 +97,7 @@ void BestFirstSequentialEntry::sequentialPerformerUpdate(const SequentialPerform
       assert( token );
       if ( tokenAtSequentialPerformer == token->owner->systemState->tokenAtSequentialPerformer.at(const_cast<Token*>(token.get())) ) {
         it = decisionsWithoutEvaluation.erase(it);        
-        pendingDecisionsWithoutEvaluation.emplace_back(token_ptr, request_ptr, decision);
+        pendingDecisionsWithoutEvaluation.emplace_back(token_ptr, request_ptr, std::move(decision));
         continue;
       }
       ++it;
@@ -123,7 +123,7 @@ void BestFirstSequentialEntry::sequentialPerformerUpdate(const SequentialPerform
       assert( token );
       if ( tokenAtSequentialPerformer == token->owner->systemState->tokenAtSequentialPerformer.at(const_cast<Token*>(token.get())) ) {
         it = pendingDecisionsWithoutEvaluation.erase(it);
-        decisionsWithoutEvaluation.emplace_back(token_ptr, request_ptr, decision);
+        decisionsWithoutEvaluation.emplace_back(token_ptr, request_ptr, std::move(decision));
         continue;
       }
       ++it;
