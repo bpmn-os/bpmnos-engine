@@ -1,6 +1,6 @@
 #include "FirstMatchingMessageDelivery.h"
 #include "execution/engine/src/Mediator.h"
-#include "execution/controller/src/decisions/MessageDeliveryDecision.h"
+#include "execution/engine/src/events/MessageDeliveryEvent.h"
 #include "model/bpmnos/src/extensionElements/MessageDefinition.h"
 #include <cassert>
 
@@ -65,7 +65,7 @@ std::shared_ptr<Event> FirstMatchingMessageDelivery::dispatchEvent( [[maybe_unus
       if ( request_ptr.lock() )  {
         for ( auto& [message_ptr] : candidates ) {
           if ( auto message = message_ptr.lock() ) {
-            return std::make_shared<MessageDeliveryDecision>(token.get(), message.get());
+            return std::make_shared<MessageDeliveryEvent>(token.get(), message.get());
           }
         }
       }

@@ -1,5 +1,5 @@
 #include "FirstComeFirstServedSequentialEntry.h"
-#include "execution/controller/src/decisions/EntryDecision.h"
+#include "execution/engine/src/events/EntryEvent.h"
 #include "execution/engine/src/Engine.h"
 #include "model/bpmnos/src/SequentialAdHocSubProcess.h"
 #include <cassert>
@@ -29,7 +29,7 @@ std::shared_ptr<Event> FirstComeFirstServedSequentialEntry::dispatchEvent( [[may
         if( auto token = token_ptr.lock() )  {
           assert( token );
           if ( request_ptr.lock() )  {
-            return std::make_shared<EntryDecision>(token.get());
+            return std::make_shared<EntryEvent>(token.get());
           }
         }
       }

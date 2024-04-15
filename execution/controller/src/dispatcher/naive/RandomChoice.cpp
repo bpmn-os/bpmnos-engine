@@ -1,7 +1,7 @@
 #include "RandomChoice.h"
 #include "model/bpmnos/src/DecisionTask.h"
 #include "model/bpmnos/src/extensionElements/Attribute.h"
-#include "execution/controller/src/decisions/ChoiceDecision.h"
+#include "execution/engine/src/events/ChoiceEvent.h"
 #include "execution/engine/src/events/ErrorEvent.h"
 #include <cassert>
 
@@ -53,9 +53,7 @@ std::shared_ptr<Event> RandomChoice::dispatchEvent( const SystemState* systemSta
           return std::make_shared<ErrorEvent>(token.get());
         }
       }
-//      event->updatedStatus = std::move(updatedStatus);
-//      return event;
-      return std::make_shared<ChoiceDecision>(token.get(), std::move(updatedStatus));
+      return std::make_shared<ChoiceEvent>(token.get(), std::move(updatedStatus));
     }
   }
   return nullptr;

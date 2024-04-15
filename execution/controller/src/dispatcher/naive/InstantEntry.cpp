@@ -1,5 +1,5 @@
 #include "InstantEntry.h"
-#include "execution/controller/src/decisions/EntryDecision.h"
+#include "execution/engine/src/events/EntryEvent.h"
 #include "execution/engine/src/Mediator.h"
 #include "model/bpmnos/src/SequentialAdHocSubProcess.h"
 #include <cassert>
@@ -29,9 +29,7 @@ std::shared_ptr<Event> InstantEntry::dispatchEvent( [[maybe_unused]] const Syste
     if ( auto token = token_ptr.lock() ) {
       if ( auto request = request_ptr.lock() )  {
         assert( request->token->ready() );
-        auto ee = EntryDecision((const Token*)token.get());
-        auto e = std::make_shared<EntryDecision>((const Token*)token.get());
-        return std::make_shared<EntryDecision>(token.get());
+        return std::make_shared<EntryEvent>(token.get());
       }
     }
   }
