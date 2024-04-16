@@ -3,6 +3,7 @@
 
 #include <bpmn++.h>
 #include "execution/controller/src/GreedyDispatcher.h"
+#include "execution/controller/src/Evaluator.h"
 #include "execution/controller/src/decisions/EntryDecision.h"
 
 namespace BPMNOS::Execution {
@@ -12,14 +13,9 @@ namespace BPMNOS::Execution {
  */
 class BestFirstParallelEntry : public GreedyDispatcher {
 public:
-  BestFirstParallelEntry( std::function<std::optional<double>(const Event* event)> evaluator = &EntryDecision::localEvaluator);
-//  std::shared_ptr<Event> dispatchEvent( const SystemState* systemState ) override;
+  BestFirstParallelEntry(Evaluator* evaluator);
   void connect(Mediator* mediator) override;
   void notice(const Observable* observable) override;
-
-private:
-//  std::function< std::optional<double>(const Event* event) > evaluator;
-//  auto_set< double, std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest>, std::shared_ptr<EntryDecision> > decisions;
 };
 
 } // namespace BPMNOS::Execution

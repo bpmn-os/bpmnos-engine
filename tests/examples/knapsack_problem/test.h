@@ -53,7 +53,8 @@ SCENARIO( "Knapsack problem", "[examples][knapsack_problem]" ) {
       readyHandler.connect(&engine);
       completionHandler.connect(&engine);
 
-      Execution::GuidedController controller;
+      Execution::GuidedEvaluator evaluator;
+      Execution::GreedyController controller(&evaluator);
       controller.connect(&engine);
       
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;

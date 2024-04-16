@@ -8,19 +8,17 @@
 
 namespace BPMNOS::Execution {
 
+class Evaluator;
+
 /**
  * @brief Represents the event that choices are made for a DecisionTask.
  *
  * Transition from State::BUSY to State::COMPLETED
  */
 struct ChoiceDecision : ChoiceEvent, Decision {
-  ChoiceDecision(const Token* token, Values updatedStatus, std::function<std::optional<double>(const Event* event)> evaluator = &Decision::nullEvaluator);
+  ChoiceDecision(const Token* token, Values updatedStatus);
   Values updatedStatus;
-
-  std::optional<double> evaluate() override;
-
-  static std::optional<double> localEvaluator(const Event* event);
-  static std::optional<double> guidedEvaluator(const Event* event);
+  std::optional<double> evaluate(Evaluator* evaluator) override;
 };
 
 } // namespace BPMNOS::Execution

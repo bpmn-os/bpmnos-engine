@@ -6,9 +6,12 @@
 
 using namespace BPMNOS::Execution;
 
-GreedyDispatcher::GreedyDispatcher( std::function<std::optional<double>(const Event* event)> evaluator )
+GreedyDispatcher::GreedyDispatcher(Evaluator* evaluator)
   : evaluator(evaluator)
 {
+  if ( !evaluator ) {
+    throw std::runtime_error("GreedyDispatcher: missing evaluator");
+  }
 }
 
 void GreedyDispatcher::connect(Mediator* mediator) {
@@ -24,9 +27,9 @@ void GreedyDispatcher::evaluate(std::weak_ptr<const Token> token_ptr, std::weak_
   assert ( !request_ptr.expired() );
   assert ( decision );
 
-  auto value = decision->evaluate();
-  // decisions without evaluation are assumed to be prioritized
-  evaluatedDecisions.emplace( (value.has_value() ? (double)value.value() : std::numeric_limits<double>::min() ), token_ptr, request_ptr, decision->weak_from_this());
+  auto value = decision->evaluate(evaluator);
+  // decisions without evaluation are assumed to be infeasible
+  evaluatedDecisions.emplace( (value.has_value() ? (double)value.value() : std::numeric_limits<double>::max() ), token_ptr, request_ptr, decision->weak_from_this());
 //std::cerr << value.value_or(-1) << "Evaluation " << decision->evaluation.value_or(-1) << " for " << token_ptr.lock()->jsonify() << std::endl;
 
   assert ( decision );

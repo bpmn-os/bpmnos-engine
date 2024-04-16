@@ -6,7 +6,7 @@
 
 using namespace BPMNOS::Execution;
 
-BestMatchingMessageDelivery::BestMatchingMessageDelivery( std::function<std::optional<double>(const Event* event)> evaluator )
+BestMatchingMessageDelivery::BestMatchingMessageDelivery(Evaluator* evaluator)
   : GreedyDispatcher(evaluator)
 {
 }
@@ -36,7 +36,7 @@ void BestMatchingMessageDelivery::notice(const Observable* observable) {
         std::ranges::contains(senderCandidates, message->origin) &&
         message->matches(recipientHeader)
       ) {
-        auto decision = std::make_shared<MessageDeliveryDecision>(request->token, message.get(), evaluator);
+        auto decision = std::make_shared<MessageDeliveryDecision>(request->token, message.get());
         decisionsWithoutEvaluation.emplace_back( request->token->weak_from_this(), request->weak_from_this(), decision );
       }
     }
@@ -54,7 +54,7 @@ void BestMatchingMessageDelivery::notice(const Observable* observable) {
           std::ranges::contains(recipientCandidates, token->node) &&
           message->matches(recipientHeader)
         ) {
-          auto decision = std::make_shared<MessageDeliveryDecision>(token.get(), message, evaluator);
+          auto decision = std::make_shared<MessageDeliveryDecision>(token.get(), message);
           decisionsWithoutEvaluation.emplace_back( token_ptr, request_ptr, decision );
         }
       }
@@ -64,12 +64,4 @@ void BestMatchingMessageDelivery::notice(const Observable* observable) {
     GreedyDispatcher::notice(observable);
   }
 }
-/*
-std::shared_ptr<Event> BestMatchingMessageDelivery::dispatchEvent( [[maybe_unused]] const SystemState* systemState ) {
-  for ( auto [evaluation, token_ptr, request_ptr, message_ptr, decision ] : decisions ) {
-//std::cerr << "Dispatch: " << evaluation << std::endl;
-    return decision;
-  }
-  return nullptr;
-}
-*/
+

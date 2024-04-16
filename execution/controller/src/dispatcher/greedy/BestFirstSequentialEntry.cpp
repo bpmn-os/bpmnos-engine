@@ -5,7 +5,7 @@
 
 using namespace BPMNOS::Execution;
 
-BestFirstSequentialEntry::BestFirstSequentialEntry( std::function<std::optional<double>(const Event* event)> evaluator )
+BestFirstSequentialEntry::BestFirstSequentialEntry(Evaluator* evaluator)
   : GreedyDispatcher(evaluator)
 {
 }
@@ -70,7 +70,7 @@ void BestFirstSequentialEntry::notice(const Observable* observable) {
 void BestFirstSequentialEntry::entryRequest(const DecisionRequest* request) {
   assert(request->token->node);
   if ( request->token->node->parent->represents<const BPMNOS::Model::SequentialAdHocSubProcess>() ) {
-    auto decision = std::make_shared<EntryDecision>(request->token, evaluator);
+    auto decision = std::make_shared<EntryDecision>(request->token);
     decisionsWithoutEvaluation.emplace_back( request->token->weak_from_this(), request->weak_from_this(), std::move(decision) );
   }
 }

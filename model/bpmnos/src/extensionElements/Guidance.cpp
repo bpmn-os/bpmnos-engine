@@ -83,7 +83,7 @@ BPMNOS::number Guidance::getObjective(const BPMNOS::Values& status, const DataTy
 }
 
 template BPMNOS::number Guidance::getObjective<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data) const;
-template BPMNOS::number Guidance::getObjective<BPMNOS::Globals>(const BPMNOS::Values& status, const BPMNOS::Globals& data) const;
+//template BPMNOS::number Guidance::getObjective<BPMNOS::Globals>(const BPMNOS::Values& status, const BPMNOS::Globals& data) const;
 
 template <typename DataType>
 bool Guidance::restrictionsSatisfied(const BPMN::FlowNode* node, const BPMNOS::Values& status, const DataType& data) const {
@@ -98,11 +98,11 @@ bool Guidance::restrictionsSatisfied(const BPMN::FlowNode* node, const BPMNOS::V
 }
 
 template bool Guidance::restrictionsSatisfied<BPMNOS::Values>(const BPMN::FlowNode* node, const BPMNOS::Values& status, const BPMNOS::Values& data) const;
-template bool Guidance::restrictionsSatisfied<BPMNOS::Globals>(const BPMN::FlowNode* node, const BPMNOS::Values& status, const BPMNOS::Globals& data) const;
+//template bool Guidance::restrictionsSatisfied<BPMNOS::Globals>(const BPMN::FlowNode* node, const BPMNOS::Values& status, const BPMNOS::Globals& data) const;
 
 
 template <typename DataType>
-std::optional<BPMNOS::number> Guidance::apply(const Scenario* scenario, BPMNOS::number currentTime, const BPMNOS::number instanceId, const BPMN::FlowNode* node, BPMNOS::Values& status, DataType& data) const {
+void Guidance::apply(const Scenario* scenario, BPMNOS::number currentTime, const BPMNOS::number instanceId, const BPMN::FlowNode* node, BPMNOS::Values& status, DataType& data) const {
 
   auto originalSize = status.size();
 
@@ -115,18 +115,10 @@ std::optional<BPMNOS::number> Guidance::apply(const Scenario* scenario, BPMNOS::
     operator_->apply(status,data);
   }
   
-  std::optional<BPMNOS::number> result = std::nullopt;
   // check feasibility
-  if ( restrictionsSatisfied(node,status,data) ) {
-    // return guiding value
-    result = getObjective(status,data);
-  }
-  
-  status.resize(originalSize);
-//std::cerr << "Guiding value for node " << node->id << " is " << result.value_or(0) << std::endl;
-  return result;
+//  return restrictionsSatisfied(node,status,data);
 }
 
-template std::optional<BPMNOS::number> Guidance::apply<BPMNOS::Values>(const Scenario* scenario, BPMNOS::number currentTime, const BPMNOS::number instanceId, const BPMN::FlowNode* node, BPMNOS::Values& status, BPMNOS::Values& data) const;
-template std::optional<BPMNOS::number> Guidance::apply<BPMNOS::Globals>(const Scenario* scenario, BPMNOS::number currentTime, const BPMNOS::number instanceId, const BPMN::FlowNode* node, BPMNOS::Values& status, BPMNOS::Globals& data) const;
+template void Guidance::apply<BPMNOS::Values>(const Scenario* scenario, BPMNOS::number currentTime, const BPMNOS::number instanceId, const BPMN::FlowNode* node, BPMNOS::Values& status, BPMNOS::Values& data) const;
+//template void Guidance::apply<BPMNOS::Globals>(const Scenario* scenario, BPMNOS::number currentTime, const BPMNOS::number instanceId, const BPMN::FlowNode* node, BPMNOS::Values& status, BPMNOS::Globals& data) const;
 

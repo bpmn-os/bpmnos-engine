@@ -49,10 +49,12 @@ SCENARIO( "Travelling salesperson problem", "[examples][travelling_salesperson_p
 
     WHEN( "The engine is started with a best-first policy" ) {
       Execution::Engine engine;
+      Execution::LocalEvaluator evaluator;
+      
       Execution::ReadyHandler readyHandler;
       Execution::InstantEntry entryHandler;
       Execution::DeterministicTaskCompletion completionHandler;
-      Execution::BestFirstSequentialEntry sequentialEntryHandler;
+      Execution::BestFirstSequentialEntry sequentialEntryHandler(&evaluator);
       Execution::FirstMatchingMessageDelivery messageHandler;
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;
       Execution::InstantExit exitHandler;
@@ -88,7 +90,8 @@ SCENARIO( "Travelling salesperson problem", "[examples][travelling_salesperson_p
       readyHandler.connect(&engine);
       completionHandler.connect(&engine);
 
-      Execution::GreedyController controller;
+      Execution::LocalEvaluator evaluator;
+      Execution::GreedyController controller(&evaluator);
       controller.connect(&engine);
       
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;

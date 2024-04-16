@@ -3,28 +3,24 @@
 
 #include <bpmn++.h>
 #include "execution/engine/src/Event.h"
-#include <functional>
 
 namespace BPMNOS::Execution {
+
+class Evaluator;
 
 /**
  * @brief Represents an abstract base class for a pending decision
  */
 class Decision : virtual public Event {
 public:
-  Decision(std::function<std::optional<double>(const Event* event)> evaluator = &Decision::nullEvaluator);
+  Decision();
 
-  constexpr static std::optional<double> nullEvaluator([[maybe_unused]] const Event* event) { return std::nullopt; }
-  constexpr static std::optional<double> zeroEvaluator([[maybe_unused]] const Event* event) { return 0; }
-
-  virtual std::optional<double> evaluate() = 0;
-  std::optional<double> evaluation;
+  virtual std::optional<double> evaluate(Evaluator* evaluator) = 0;
+  std::optional<double> evaluation;  ///< Latest evaluation or null if decision has not been evaluated or evaluation is no longer valid
   
   bool timeDependent;
   std::set<const BPMNOS::Model::Attribute*> dataDependencies;
   void determineDependencies(const std::set<const BPMNOS::Model::Attribute*>& dependencies);
-protected:
-  std::function< std::optional<double>(Event* event) > evaluator;
 };
 
 } // namespace BPMNOS::Execution

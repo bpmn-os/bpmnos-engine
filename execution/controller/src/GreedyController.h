@@ -3,6 +3,7 @@
 
 #include <bpmn++.h>
 #include "Controller.h"
+#include "Evaluator.h"
 #include "execution/engine/src/Mediator.h"
 
 namespace BPMNOS::Execution {
@@ -12,10 +13,11 @@ namespace BPMNOS::Execution {
  */
 class GreedyController : public Controller {
 public:
-  GreedyController();
+  GreedyController(Evaluator* evaluator);
   void connect(Mediator* mediator);
   std::vector< std::unique_ptr<EventDispatcher> > eventDispatchers;
 protected:
+  Evaluator* evaluator;
   std::shared_ptr<Event> dispatchEvent(const SystemState* systemState);
 };
 

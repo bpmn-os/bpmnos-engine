@@ -4,6 +4,9 @@ list(APPEND controller_SOURCES
   decisions/ChoiceDecision.cpp
   decisions/MessageDeliveryDecision.cpp
   decisions/ExitDecision.cpp
+  Evaluator.cpp
+  evaluators/LocalEvaluator.cpp
+  evaluators/GuidedEvaluator.cpp
   GreedyDispatcher.cpp
   dispatcher/TimeWarp.cpp
   dispatcher/Metronome.cpp
@@ -22,7 +25,6 @@ list(APPEND controller_SOURCES
   dispatcher/greedy/BestMatchingMessageDelivery.cpp
   Controller.cpp
   GreedyController.cpp
-  GuidedController.cpp
 )
 
 list(APPEND controller_HEADERS
@@ -31,6 +33,9 @@ list(APPEND controller_HEADERS
   decisions/ChoiceDecision.h
   decisions/MessageDeliveryDecision.h
   decisions/ExitDecision.h
+  Evaluator.h
+  evaluators/LocalEvaluator.h
+  evaluators/GuidedEvaluator.h
   GreedyDispatcher.h
   dispatcher/TimeWarp.h
   dispatcher/Metronome.h
@@ -49,5 +54,4 @@ list(APPEND controller_HEADERS
   dispatcher/greedy/BestMatchingMessageDelivery.h
   Controller.h
   GreedyController.h
-  GuidedController.h
 )

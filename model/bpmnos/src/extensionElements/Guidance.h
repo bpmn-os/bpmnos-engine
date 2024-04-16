@@ -30,8 +30,8 @@ public:
   std::set<const Attribute*> dependencies;
 
   template <typename DataType>
-  std::optional<BPMNOS::number> apply(const Scenario* scenario, BPMNOS::number currentTime, const BPMNOS::number instanceId, const BPMN::FlowNode* node, BPMNOS::Values& status, DataType& data) const;
-private:  
+  void apply(const Scenario* scenario, BPMNOS::number currentTime, const BPMNOS::number instanceId, const BPMN::FlowNode* node, BPMNOS::Values& status, DataType& data) const;
+
   template <typename DataType>
   BPMNOS::number getObjective(const BPMNOS::Values& status, const DataType& data) const;
 

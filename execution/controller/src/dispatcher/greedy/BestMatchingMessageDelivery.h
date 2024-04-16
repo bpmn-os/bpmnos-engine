@@ -4,6 +4,7 @@
 #include <bpmn++.h>
 #include "execution/engine/src/Message.h"
 #include "execution/controller/src/GreedyDispatcher.h"
+#include "execution/controller/src/Evaluator.h"
 #include "execution/controller/src/decisions/MessageDeliveryDecision.h"
 
 namespace BPMNOS::Execution {
@@ -13,7 +14,7 @@ namespace BPMNOS::Execution {
  */
 class BestMatchingMessageDelivery : public GreedyDispatcher {
 public:
-  BestMatchingMessageDelivery( std::function<std::optional<double>(const Event* event)> evaluator = &MessageDeliveryDecision::localEvaluator);
+  BestMatchingMessageDelivery(Evaluator* evaluator);
 //  std::shared_ptr<Event> dispatchEvent( const SystemState* systemState ) override;
   void connect(Mediator* mediator) override;
   void notice(const Observable* observable) override;

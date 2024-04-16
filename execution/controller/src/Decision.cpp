@@ -3,8 +3,8 @@
 using namespace BPMNOS::Execution;
 
 
-Decision::Decision(std::function<std::optional<double>(const Event* event)> evaluator)
-  : Event(nullptr), timeDependent(false), evaluator(evaluator)
+Decision::Decision()
+  : timeDependent(false)
 {
 }
 

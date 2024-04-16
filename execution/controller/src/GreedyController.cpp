@@ -1,20 +1,21 @@
 #include "GreedyController.h"
-#include "dispatcher/naive/InstantEntry.h"
+#include "dispatcher/greedy/BestFirstParallelEntry.h"
 #include "dispatcher/greedy/BestFirstSequentialEntry.h"
-#include "dispatcher/naive/RandomChoice.h"
+#include "dispatcher/naive/RandomChoice.h"  // TODO: replace with  dispatcher returning best choice
 #include "dispatcher/greedy/BestMatchingMessageDelivery.h"
-#include "dispatcher/naive/InstantExit.h"
+#include "dispatcher/greedy/BestFirstExit.h"
 
 using namespace BPMNOS::Execution;
 
-GreedyController::GreedyController()
+GreedyController::GreedyController(Evaluator* evaluator)
+  : evaluator(evaluator)
 {
   // add event dispatcher
-  eventDispatchers.push_back( std::make_unique<InstantEntry>() );
-  eventDispatchers.push_back( std::make_unique<InstantExit>() );
-  eventDispatchers.push_back( std::make_unique<RandomChoice>() );
-  eventDispatchers.push_back( std::make_unique<BestFirstSequentialEntry>(&EntryDecision::localEvaluator) );
-  eventDispatchers.push_back( std::make_unique<BestMatchingMessageDelivery>(&MessageDeliveryDecision::localEvaluator) );
+  eventDispatchers.push_back( std::make_unique<BestFirstParallelEntry>(evaluator) );
+  eventDispatchers.push_back( std::make_unique<BestFirstExit>(evaluator) );
+  eventDispatchers.push_back( std::make_unique<RandomChoice>() ); // TODO: replace with  dispatcher returning best choice
+  eventDispatchers.push_back( std::make_unique<BestFirstSequentialEntry>(evaluator) );
+  eventDispatchers.push_back( std::make_unique<BestMatchingMessageDelivery>(evaluator) );
 }
 
 void GreedyController::connect(Mediator* mediator) {
