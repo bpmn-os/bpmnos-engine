@@ -67,5 +67,5 @@ std::optional<BPMNOS::number> StringExpression::_execute(const BPMNOS::Values& s
 }
 
 template std::optional<BPMNOS::number> StringExpression::_execute<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data) const;
-template std::optional<BPMNOS::number> StringExpression::_execute<BPMNOS::Globals>(const BPMNOS::Values& status, const BPMNOS::Globals& data) const;
+template std::optional<BPMNOS::number> StringExpression::_execute<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data) const;
 

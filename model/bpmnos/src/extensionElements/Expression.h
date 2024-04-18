@@ -25,10 +25,10 @@ public:
   std::set<const Attribute*> inputs; ///< Vector containing all input attributes influencing the result of the expression.
 
   virtual std::optional<BPMNOS::number> execute(const Values& status, const Values& data) const = 0;
-  virtual std::optional<BPMNOS::number> execute(const Values& status, const Globals& data) const = 0;
+  virtual std::optional<BPMNOS::number> execute(const Values& status, const SharedValues& data) const = 0;
 
   virtual std::pair< std::optional<BPMNOS::number>, std::optional<BPMNOS::number> > getBounds(const Attribute* attribute, const Values& status, const Values& data) const;
-  virtual std::pair< std::optional<BPMNOS::number>, std::optional<BPMNOS::number> > getBounds(const Attribute* attribute, const Values& status, const Globals& data) const;
+  virtual std::pair< std::optional<BPMNOS::number>, std::optional<BPMNOS::number> > getBounds(const Attribute* attribute, const Values& status, const SharedValues& data) const;
 };
 
 } // namespace BPMNOS::Model

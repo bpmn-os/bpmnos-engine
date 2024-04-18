@@ -255,7 +255,7 @@ bool ExtensionElements::feasibleEntry(const BPMNOS::Values& status, const DataTy
 }
 
 template bool ExtensionElements::feasibleEntry<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data) const;
-template bool ExtensionElements::feasibleEntry<BPMNOS::Globals>(const BPMNOS::Values& status, const BPMNOS::Globals& data) const;
+template bool ExtensionElements::feasibleEntry<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data) const;
 
 template <typename DataType>
 bool ExtensionElements::feasibleExit(const BPMNOS::Values& status, const DataType& data) const {
@@ -269,7 +269,7 @@ bool ExtensionElements::feasibleExit(const BPMNOS::Values& status, const DataTyp
 }
 
 template bool ExtensionElements::feasibleExit<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data) const;
-template bool ExtensionElements::feasibleExit<BPMNOS::Globals>(const BPMNOS::Values& status, const BPMNOS::Globals& data) const;
+template bool ExtensionElements::feasibleExit<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data) const;
 
 
 template <typename DataType>
@@ -309,7 +309,7 @@ bool ExtensionElements::satisfiesInheritedRestrictions(const BPMNOS::Values& sta
 }
 
 template bool ExtensionElements::satisfiesInheritedRestrictions<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data) const;
-template bool ExtensionElements::satisfiesInheritedRestrictions<BPMNOS::Globals>(const BPMNOS::Values& status, const BPMNOS::Globals& data) const;
+template bool ExtensionElements::satisfiesInheritedRestrictions<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data) const;
 
 template <typename DataType>
 bool ExtensionElements::fullScopeRestrictionsSatisfied(const BPMNOS::Values& status, const DataType& data) const {
@@ -322,7 +322,7 @@ bool ExtensionElements::fullScopeRestrictionsSatisfied(const BPMNOS::Values& sta
 }
 
 template bool ExtensionElements::fullScopeRestrictionsSatisfied<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data) const;
-template bool ExtensionElements::fullScopeRestrictionsSatisfied<BPMNOS::Globals>(const BPMNOS::Values& status, const BPMNOS::Globals& data) const;
+template bool ExtensionElements::fullScopeRestrictionsSatisfied<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data) const;
 
 
 template <typename DataType>
@@ -333,7 +333,7 @@ void ExtensionElements::applyOperators(BPMNOS::Values& status, DataType& data) c
 }
 
 template void ExtensionElements::applyOperators<BPMNOS::Values>(Values& status, BPMNOS::Values& data) const;
-template void ExtensionElements::applyOperators<BPMNOS::Globals>(Values& status, BPMNOS::Globals& data) const;
+template void ExtensionElements::applyOperators<BPMNOS::SharedValues>(Values& status, BPMNOS::SharedValues& data) const;
 
 template <typename DataType>
 BPMNOS::number ExtensionElements::getObjective(const BPMNOS::Values& status, const DataType& data) const {
@@ -356,7 +356,7 @@ BPMNOS::number ExtensionElements::getObjective(const BPMNOS::Values& status, con
 }
 
 template BPMNOS::number ExtensionElements::getObjective<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data) const;
-template BPMNOS::number ExtensionElements::getObjective<BPMNOS::Globals>(const BPMNOS::Values& status, const BPMNOS::Globals& data) const;
+template BPMNOS::number ExtensionElements::getObjective<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data) const;
 
 
 template <typename DataType>
@@ -378,5 +378,5 @@ BPMNOS::number ExtensionElements::getContributionToObjective(const BPMNOS::Value
 }
 
 template BPMNOS::number ExtensionElements::getContributionToObjective<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data) const;
-template BPMNOS::number ExtensionElements::getContributionToObjective<BPMNOS::Globals>(const BPMNOS::Values& status, const BPMNOS::Globals& data) const;
+template BPMNOS::number ExtensionElements::getContributionToObjective<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data) const;
 

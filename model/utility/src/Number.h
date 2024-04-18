@@ -30,17 +30,17 @@ namespace BPMNOS {
   typedef BPMNOS_NUMBER_TYPE number;
   typedef std::unordered_map< std::string, std::optional<number> > ValueMap;
 
-  struct Globals;
+  struct SharedValues;
 
   struct Values : std::vector<std::optional<number>> {
     Values() = default;
-    Values(const Globals& globals);
+    Values(const SharedValues& values);
   };
 
-  struct Globals : std::vector< std::reference_wrapper< std::optional<number> > > {
-    Globals() = default;
-    Globals(const Globals& other,Values& values);
-    Globals(Values& values);
+  struct SharedValues : std::vector< std::reference_wrapper< std::optional<number> > > {
+    SharedValues() = default;
+    SharedValues(const SharedValues& other,Values& values);
+    SharedValues(Values& values);
     void add(Values& values);
   };
   

@@ -167,7 +167,7 @@ std::optional<BPMNOS::number> LinearExpression::_execute(const BPMNOS::Values& s
 }
 
 template std::optional<BPMNOS::number> LinearExpression::_execute<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data) const;
-template std::optional<BPMNOS::number> LinearExpression::_execute<BPMNOS::Globals>(const BPMNOS::Values& status, const BPMNOS::Globals& data) const;
+template std::optional<BPMNOS::number> LinearExpression::_execute<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data) const;
 
 template <typename DataType>
 std::pair< std::optional<BPMNOS::number>, std::optional<BPMNOS::number> > LinearExpression::_getBounds(const Attribute* attribute, const BPMNOS::Values& status, const DataType& data) const {
@@ -285,5 +285,5 @@ std::pair< std::optional<BPMNOS::number>, std::optional<BPMNOS::number> > Linear
 }
 
 template std::pair< std::optional<BPMNOS::number>, std::optional<BPMNOS::number> > LinearExpression::_getBounds<BPMNOS::Values>(const Attribute* attribute, const BPMNOS::Values& status, const BPMNOS::Values& data) const;
-template std::pair< std::optional<BPMNOS::number>, std::optional<BPMNOS::number> > LinearExpression::_getBounds<BPMNOS::Globals>(const Attribute* attribute, const BPMNOS::Values& status, const BPMNOS::Globals& data) const;
+template std::pair< std::optional<BPMNOS::number>, std::optional<BPMNOS::number> > LinearExpression::_getBounds<BPMNOS::SharedValues>(const Attribute* attribute, const BPMNOS::Values& status, const BPMNOS::SharedValues& data) const;
 

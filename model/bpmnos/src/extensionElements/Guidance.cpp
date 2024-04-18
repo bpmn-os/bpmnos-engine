@@ -82,7 +82,7 @@ BPMNOS::number Guidance::getObjective(const BPMNOS::Values& status, const DataTy
 }
 
 template BPMNOS::number Guidance::getObjective<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data) const;
-//template BPMNOS::number Guidance::getObjective<BPMNOS::Globals>(const BPMNOS::Values& status, const BPMNOS::Globals& data) const;
+//template BPMNOS::number Guidance::getObjective<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data) const;
 
 template <typename DataType>
 bool Guidance::restrictionsSatisfied(const BPMN::FlowNode* node, const BPMNOS::Values& status, const DataType& data) const {
@@ -97,7 +97,7 @@ bool Guidance::restrictionsSatisfied(const BPMN::FlowNode* node, const BPMNOS::V
 }
 
 template bool Guidance::restrictionsSatisfied<BPMNOS::Values>(const BPMN::FlowNode* node, const BPMNOS::Values& status, const BPMNOS::Values& data) const;
-//template bool Guidance::restrictionsSatisfied<BPMNOS::Globals>(const BPMN::FlowNode* node, const BPMNOS::Values& status, const BPMNOS::Globals& data) const;
+//template bool Guidance::restrictionsSatisfied<BPMNOS::SharedValues>(const BPMN::FlowNode* node, const BPMNOS::Values& status, const BPMNOS::SharedValues& data) const;
 
 
 template <typename DataType>
@@ -114,5 +114,5 @@ void Guidance::apply(const Scenario* scenario, BPMNOS::number currentTime, const
 }
 
 template void Guidance::apply<BPMNOS::Values>(const Scenario* scenario, BPMNOS::number currentTime, const BPMNOS::number instanceId, const BPMN::FlowNode* node, BPMNOS::Values& status, BPMNOS::Values& data) const;
-//template void Guidance::apply<BPMNOS::Globals>(const Scenario* scenario, BPMNOS::number currentTime, const BPMNOS::number instanceId, const BPMN::FlowNode* node, BPMNOS::Values& status, BPMNOS::Globals& data) const;
+//template void Guidance::apply<BPMNOS::SharedValues>(const Scenario* scenario, BPMNOS::number currentTime, const BPMNOS::number instanceId, const BPMN::FlowNode* node, BPMNOS::Values& status, BPMNOS::SharedValues& data) const;
 

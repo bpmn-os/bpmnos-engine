@@ -31,7 +31,7 @@ public:
   std::set<const Attribute*> inputs; ///< Set containing all input attributes influencing the result of the operator.
 
   static std::unique_ptr<Operator> create(XML::bpmnos::tOperator* operator_, AttributeRegistry& attributeRegistry);
-  virtual void apply(Values& status, Globals& data) const = 0;
+  virtual void apply(Values& status, SharedValues& data) const = 0;
   virtual void apply(Values& status, Values& data) const = 0;
 
   /// Returns a pointer of type T of the node.

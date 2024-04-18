@@ -22,7 +22,7 @@ StateMachine::StateMachine(const SystemState* systemState, const BPMN::Process* 
   , instance( dataAttributes.size() ? dataAttributes[BPMNOS::Model::ExtensionElements::Index::Instance] : -1 )
   , parentToken(nullptr)
   , ownedData(dataAttributes)
-  , data(Globals(ownedData))
+  , data(SharedValues(ownedData))
 {
   assert( instance.has_value() && instance.value() >= 0 );
   data[BPMNOS::Model::ExtensionElements::Index::Instance] = std::ref(instance);
@@ -36,7 +36,7 @@ StateMachine::StateMachine(const SystemState* systemState, const BPMN::Scope* sc
   , instance( (*parentToken->data)[BPMNOS::Model::ExtensionElements::Index::Instance].get() )
   , parentToken(parentToken)
   , ownedData(dataAttributes)
-  , data(Globals(parentToken->owner->data,ownedData))
+  , data(SharedValues(parentToken->owner->data,ownedData))
 {
   
   data[BPMNOS::Model::ExtensionElements::Index::Instance] = std::ref(instance);
@@ -60,7 +60,7 @@ StateMachine::StateMachine(const StateMachine* other)
   , instance( other->instance )
   , parentToken(other->parentToken)
   , ownedData(other->ownedData)
-  , data(Globals(parentToken->owner->data,ownedData))
+  , data(SharedValues(parentToken->owner->data,ownedData))
 {
 //std::cerr << "oStateMachine(" << scope->id << "/" << this << " @ " << parentToken << ")"  << " owned by :" << parentToken->owner << std::endl;
   data[BPMNOS::Model::ExtensionElements::Index::Instance] = std::ref(instance);

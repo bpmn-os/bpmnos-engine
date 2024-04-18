@@ -49,7 +49,7 @@ public:
   void _apply(BPMNOS::Values& status, DataType& data) const;
 
   void apply(BPMNOS::Values& status, BPMNOS::Values& data) const override { return _apply(status,data); };
-  void apply(BPMNOS::Values& status, BPMNOS::Globals& data) const override { return _apply(status,data); };
+  void apply(BPMNOS::Values& status, BPMNOS::SharedValues& data) const override { return _apply(status,data); };
 };
 
 } // namespace BPMNOS::Model

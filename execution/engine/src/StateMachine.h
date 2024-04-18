@@ -43,7 +43,7 @@ public:
 
   Token* parentToken;
   Values ownedData; ///< Container holding data attributes owned by the state machine.
-  Globals data; ///< Container holding references to all data attributes.
+  SharedValues data; ///< Container holding references to all data attributes.
 
   Tokens tokens; ///< Container with all tokens within the scope of the state machine.
   std::shared_ptr<StateMachine> interruptingEventSubProcess; ///< State machines representing an active event subprocess that is interrupting.

@@ -25,4 +25,4 @@ bool Restriction::isSatisfied(const BPMNOS::Values& status, const DataType& data
 }
 
 template bool Restriction::isSatisfied<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data) const;
-template bool Restriction::isSatisfied<BPMNOS::Globals>(const BPMNOS::Values& status, const BPMNOS::Globals& data) const;
+template bool Restriction::isSatisfied<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data) const;

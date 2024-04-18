@@ -48,7 +48,7 @@ std::optional<BPMNOS::number> AttributeRegistry::getValue(const Attribute* attri
   }
 }
 
-std::optional<BPMNOS::number> AttributeRegistry::getValue(const Attribute* attribute, const Values& status, const Globals& data) const {
+std::optional<BPMNOS::number> AttributeRegistry::getValue(const Attribute* attribute, const Values& status, const SharedValues& data) const {
   if ( attribute->category == Attribute::Category::STATUS ) {
     assert(attribute->index < status.size());
     return status[attribute->index];
@@ -70,7 +70,7 @@ void AttributeRegistry::setValue(const Attribute* attribute, Values& status, Val
   }
 }
 
-void AttributeRegistry::setValue(const Attribute* attribute, Values& status, Globals& data, std::optional<BPMNOS::number> value) const {
+void AttributeRegistry::setValue(const Attribute* attribute, Values& status, SharedValues& data, std::optional<BPMNOS::number> value) const {
   if ( attribute->category == Attribute::Category::STATUS ) {
     assert(attribute->index < status.size());
     status[attribute->index] = value;

@@ -18,9 +18,9 @@ public:
   Attribute* operator[](const std::string& name) const;
   bool contains(const std::string& name) const;
   std::optional<BPMNOS::number> getValue(const Attribute* attribute, const Values& status, const Values& data) const;
-  std::optional<BPMNOS::number> getValue(const Attribute* attribute, const Values& status, const Globals& data) const;
+  std::optional<BPMNOS::number> getValue(const Attribute* attribute, const Values& status, const SharedValues& data) const;
   void setValue(const Attribute* attribute, Values& status, Values& data, std::optional<BPMNOS::number> value) const;
-  void setValue(const Attribute* attribute, Values& status, Globals& data, std::optional<BPMNOS::number> value) const;
+  void setValue(const Attribute* attribute, Values& status, SharedValues& data, std::optional<BPMNOS::number> value) const;
 private:
   friend class Attribute;
   void add(Attribute* attribute);

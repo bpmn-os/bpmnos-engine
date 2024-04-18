@@ -33,4 +33,4 @@ BPMNOS::number Timer::earliest(const BPMNOS::Values& status, const DataType& dat
 }  
 
 template BPMNOS::number Timer::earliest<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data) const;
-template BPMNOS::number Timer::earliest<BPMNOS::Globals>(const BPMNOS::Values& status, const BPMNOS::Globals& data) const;
+template BPMNOS::number Timer::earliest<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data) const;

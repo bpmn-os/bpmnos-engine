@@ -51,7 +51,7 @@ BPMNOS::Values MessageDefinition::getSenderHeader(const AttributeRegistry& attri
 }
 
 template  BPMNOS::Values MessageDefinition::getSenderHeader<BPMNOS::Values>(const AttributeRegistry& attributeRegistry, const BPMNOS::Values& status, const BPMNOS::Values& data) const;
-template  BPMNOS::Values MessageDefinition::getSenderHeader<BPMNOS::Globals>(const AttributeRegistry& attributeRegistry, const BPMNOS::Values& status, const BPMNOS::Globals& data) const;
+template  BPMNOS::Values MessageDefinition::getSenderHeader<BPMNOS::SharedValues>(const AttributeRegistry& attributeRegistry, const BPMNOS::Values& status, const BPMNOS::SharedValues& data) const;
 
 template <typename DataType>
 BPMNOS::Values MessageDefinition::getRecipientHeader(const AttributeRegistry& attributeRegistry, const BPMNOS::Values& status, const DataType& data) const {
@@ -73,7 +73,7 @@ BPMNOS::Values MessageDefinition::getRecipientHeader(const AttributeRegistry& at
 }
 
 template  BPMNOS::Values MessageDefinition::getRecipientHeader<BPMNOS::Values>(const AttributeRegistry& attributeRegistry, const BPMNOS::Values& status, const BPMNOS::Values& data) const;
-template  BPMNOS::Values MessageDefinition::getRecipientHeader<BPMNOS::Globals>(const AttributeRegistry& attributeRegistry, const BPMNOS::Values& status, const BPMNOS::Globals& data) const;
+template  BPMNOS::Values MessageDefinition::getRecipientHeader<BPMNOS::SharedValues>(const AttributeRegistry& attributeRegistry, const BPMNOS::Values& status, const BPMNOS::SharedValues& data) const;
 
 template <typename DataType>
 std::optional<BPMNOS::number> MessageDefinition::getHeaderValue(const std::string& key, const AttributeRegistry& attributeRegistry, const BPMNOS::Values& status, const DataType& data) const {
@@ -108,5 +108,5 @@ std::optional<BPMNOS::number> MessageDefinition::getHeaderValue(const std::strin
 }
 
 template std::optional<BPMNOS::number> MessageDefinition::getHeaderValue<BPMNOS::Values>(const std::string& key, const AttributeRegistry& attributeRegistry, const BPMNOS::Values& status, const BPMNOS::Values& data) const; 
-template std::optional<BPMNOS::number> MessageDefinition::getHeaderValue<BPMNOS::Globals>(const std::string& key, const AttributeRegistry& attributeRegistry, const BPMNOS::Values& status, const BPMNOS::Globals& data) const; 
+template std::optional<BPMNOS::number> MessageDefinition::getHeaderValue<BPMNOS::SharedValues>(const std::string& key, const AttributeRegistry& attributeRegistry, const BPMNOS::Values& status, const BPMNOS::SharedValues& data) const; 
 

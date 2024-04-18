@@ -55,6 +55,6 @@ std::optional<BPMNOS::number> GenericExpression::_execute(const BPMNOS::Values& 
 }
 
 template std::optional<BPMNOS::number> GenericExpression::_execute<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data) const;
-template std::optional<BPMNOS::number> GenericExpression::_execute<BPMNOS::Globals>(const BPMNOS::Values& status, const BPMNOS::Globals& data) const;
+template std::optional<BPMNOS::number> GenericExpression::_execute<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data) const;
 
 

@@ -7,10 +7,10 @@
 
 namespace BPMNOS { 
 
-Values::Values(const Globals& globals) {
-  for (const auto& global : globals) {
-    if (global.get().has_value()) {
-      push_back(global.get().value());
+Values::Values(const SharedValues& values) {
+  for (const auto& value : values) {
+    if (value.get().has_value()) {
+      push_back(value.get().value());
     }
     else {
       push_back(std::nullopt);
@@ -18,17 +18,17 @@ Values::Values(const Globals& globals) {
   }
 }
 
-Globals::Globals(const Globals& other,Values& values)
-  : Globals(other)
+SharedValues::SharedValues(const SharedValues& other,Values& values)
+  : SharedValues(other)
 {
   add(values);
 }
 
-Globals::Globals(Values& values) {
+SharedValues::SharedValues(Values& values) {
   add(values);
 }
 
-void Globals::add(Values& values) {
+void SharedValues::add(Values& values) {
   for ( auto& value : values ) {
     push_back(value);
   }

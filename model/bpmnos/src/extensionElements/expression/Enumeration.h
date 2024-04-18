@@ -32,7 +32,7 @@ public:
   std::optional<BPMNOS::number> _execute(const BPMNOS::Values& status, const DataType& data) const;
 
   std::optional<BPMNOS::number> execute(const BPMNOS::Values& status, const BPMNOS::Values& data) const override { return _execute(status,data); };
-  std::optional<BPMNOS::number> execute(const BPMNOS::Values& status, const BPMNOS::Globals& data) const override { return _execute(status,data); };
+  std::optional<BPMNOS::number> execute(const BPMNOS::Values& status, const BPMNOS::SharedValues& data) const override { return _execute(status,data); };
 };
 
 } // namespace BPMNOS::Model

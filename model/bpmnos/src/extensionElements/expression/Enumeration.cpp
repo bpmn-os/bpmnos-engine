@@ -91,5 +91,5 @@ std::optional<BPMNOS::number> Enumeration::_execute(const BPMNOS::Values& status
 }
 
 template std::optional<BPMNOS::number> Enumeration::_execute<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data) const;
-template std::optional<BPMNOS::number> Enumeration::_execute<BPMNOS::Globals>(const BPMNOS::Values& status, const BPMNOS::Globals& data) const;
+template std::optional<BPMNOS::number> Enumeration::_execute<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data) const;
 

@@ -13,5 +13,5 @@ void UnassignOperator::_apply(BPMNOS::Values& status, DataType& data) const {
 }
 
 template void UnassignOperator::_apply<BPMNOS::Values>(BPMNOS::Values& status, BPMNOS::Values& data) const;
-template void UnassignOperator::_apply<BPMNOS::Globals>(BPMNOS::Values& status, BPMNOS::Globals& data) const;
+template void UnassignOperator::_apply<BPMNOS::SharedValues>(BPMNOS::Values& status, BPMNOS::SharedValues& data) const;
 

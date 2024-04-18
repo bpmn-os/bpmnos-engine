@@ -58,5 +58,5 @@ std::optional<BPMNOS::number> NullCondition::_execute(const BPMNOS::Values& stat
 }
 
 template std::optional<BPMNOS::number> NullCondition::_execute<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data) const;
-template std::optional<BPMNOS::number> NullCondition::_execute<BPMNOS::Globals>(const BPMNOS::Values& status, const BPMNOS::Globals& data) const;
+template std::optional<BPMNOS::number> NullCondition::_execute<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data) const;
 

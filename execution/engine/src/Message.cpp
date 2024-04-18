@@ -185,5 +185,5 @@ void Message::apply(const BPMN::FlowNode* node, const BPMNOS::Model::AttributeRe
 }
 
 template void Message::apply<BPMNOS::Values>(const BPMN::FlowNode* node, const BPMNOS::Model::AttributeRegistry& attributeRegistry, BPMNOS::Values& status, Values& data) const;
-template void Message::apply<BPMNOS::Globals>(const BPMN::FlowNode* node, const BPMNOS::Model::AttributeRegistry& attributeRegistry, BPMNOS::Values& status, Globals& data) const;
+template void Message::apply<BPMNOS::SharedValues>(const BPMN::FlowNode* node, const BPMNOS::Model::AttributeRegistry& attributeRegistry, BPMNOS::Values& status, SharedValues& data) const;
 
