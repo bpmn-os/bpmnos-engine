@@ -21,7 +21,7 @@ class Attribute {
 public:
   enum class Category { STATUS, DATA };
 private:
-  Attribute(XML::bpmnos::tAttribute* attribute, Attribute::Category category = Attribute::Category::STATUS);
+  Attribute(XML::bpmnos::tAttribute* attribute, Attribute::Category category);
 public:
   Attribute(XML::bpmnos::tAttribute* attribute, Attribute::Category category, AttributeRegistry& attributeRegistry);
   XML::bpmnos::tAttribute* element;
