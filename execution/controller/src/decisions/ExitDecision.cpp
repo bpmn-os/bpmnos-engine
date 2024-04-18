@@ -4,14 +4,15 @@
 
 using namespace BPMNOS::Execution;
 
-ExitDecision::ExitDecision(const Token* token)
+ExitDecision::ExitDecision(const Token* token, Evaluator* evaluator)
   : Event(token)
   , ExitEvent(token)
-  , Decision()
+  , Decision(evaluator)
 {
+  determineDependencies( evaluator->getDependencies(this) );
 }
 
-std::optional<double> ExitDecision::evaluate(Evaluator* evaluator) {
+std::optional<double> ExitDecision::evaluate() {
   evaluation = evaluator->evaluate(this);
   return evaluation;
 }

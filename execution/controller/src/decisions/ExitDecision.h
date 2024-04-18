@@ -14,8 +14,8 @@ namespace BPMNOS::Execution {
  * Transition from State::COMPLETION to State::DONE or State::DEPARTED
  */
 struct ExitDecision : ExitEvent, Decision {
-  ExitDecision(const Token* token);
-  std::optional<double> evaluate(Evaluator* evaluator) override;
+  ExitDecision(const Token* token, Evaluator* evaluator);
+  std::optional<double> evaluate() override;
 };
 
 } // namespace BPMNOS::Execution

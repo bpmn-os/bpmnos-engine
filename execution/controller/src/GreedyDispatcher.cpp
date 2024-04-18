@@ -2,7 +2,7 @@
 #include "execution/engine/src/Engine.h"
 #include <limits>
 #include <cassert>
-#include <iostream>
+//#include <iostream>
 
 using namespace BPMNOS::Execution;
 
@@ -27,7 +27,8 @@ void GreedyDispatcher::evaluate(std::weak_ptr<const Token> token_ptr, std::weak_
   assert ( !request_ptr.expired() );
   assert ( decision );
 
-  auto value = decision->evaluate(evaluator);
+  auto value = decision->evaluate();
+//std::cerr << "GreedyDispatcher: Decision evaluated with  " << decision->evaluation.value_or(99999) <<" for: " << decision->token->jsonify() << std::endl;
   // decisions without evaluation are assumed to be infeasible
   evaluatedDecisions.emplace( (value.has_value() ? (double)value.value() : std::numeric_limits<double>::max() ), token_ptr, request_ptr, decision->weak_from_this());
 //std::cerr << value.value_or(-1) << "Evaluation " << decision->evaluation.value_or(-1) << " for " << token_ptr.lock()->jsonify() << std::endl;
@@ -36,19 +37,23 @@ void GreedyDispatcher::evaluate(std::weak_ptr<const Token> token_ptr, std::weak_
 
   // add evaluation to respective container
   if ( !decision->timeDependent && decision->dataDependencies.empty() ) {
+//std::cerr << "GreedyDispatcher: Decision is invariant"<< std::endl;
     invariantEvaluations.emplace_back(token_ptr, request_ptr, std::move(decision) );
   }
   else if ( decision->timeDependent && decision->dataDependencies.empty() ) {
+//std::cerr << "GreedyDispatcher: Decision is time dependent" << std::endl;
     timeDependentEvaluations.emplace_back(token_ptr, request_ptr, std::move(decision) );
   }
   else if ( !decision->timeDependent && decision->dataDependencies.size() ) {
     assert(decision->token);
     BPMNOS::number instanceId = decision->token->owner->root->instance.value();
+//std::cerr << "GreedyDispatcher: Decision is data dependent with index " << (long unsigned int)instanceId << std::endl;
     dataDependentEvaluations[(long unsigned int)instanceId].emplace_back(token_ptr, request_ptr, std::move(decision) );
   }
   else if ( decision->timeDependent && decision->dataDependencies.size() ) {
     assert(decision->token);
     BPMNOS::number instanceId = decision->token->owner->root->instance.value();
+//std::cerr << "GreedyDispatcher: Decision is time and data dependent with index " << (long unsigned int)instanceId << std::endl;
     timeAndDataDependentEvaluations[(long unsigned int)instanceId].emplace_back(token_ptr, request_ptr, std::move(decision) );
   }
 }
@@ -84,11 +89,12 @@ void GreedyDispatcher::notice(const Observable* observable) {
 }
 
 void GreedyDispatcher::dataUpdate(const DataUpdate* update) {
-//std::cerr << "DataUpdate " << (int)update->instanceId << std::endl;
 /*
+std::cerr << "DataUpdate: ";
 for ( auto attribute : update->attributes ) {
-std::cerr << "Updated " << attribute->name << std::endl;
+std::cerr << attribute->name << ", ";
 }
+std::cerr << std::endl;
 */
   auto removeDependentEvaluations = [this,&update](std::unordered_map< long unsigned int, auto_list< std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest>, std::shared_ptr<Decision> > >& evaluations) -> void {
     auto intersect = [](const std::vector<const BPMNOS::Model::Attribute*>& first, const std::set<const BPMNOS::Model::Attribute*>& second) -> bool {
@@ -100,14 +106,17 @@ std::cerr << "Updated " << attribute->name << std::endl;
       return false;
     };
 
+//std::cerr << "Check "  << evaluations.size() <<  " evaluations for instance " << (long unsigned int)update->instanceId << std::endl;          
     if ( auto evaluationIt = evaluations.find((long unsigned int)update->instanceId);
       evaluationIt != evaluations.end()
     ) {
+//std::cerr << "Validate evaluation" << std::endl;          
       // check whether evaluation has become obsolete
       for ( auto it = evaluationIt->second.begin(); it != evaluationIt->second.end(); ) {
         auto& [ token_ptr, request_ptr, decision ] = *it;
         if ( intersect(update->attributes, decision->dataDependencies) ) {
           if ( !decision->expired() ) {
+//std::cerr << "Unevaluate decision: " << decision->token->jsonify() << std::endl;          
             decision->evaluation = std::nullopt;
             decisionsWithoutEvaluation.emplace_back( token_ptr, request_ptr, std::move(decision) );
           }
@@ -121,7 +130,9 @@ std::cerr << "Updated " << attribute->name << std::endl;
     }
   };
     
+//std::cerr << "Check "  << dataDependentEvaluations.size() <<  " dataDependentEvaluations" << std::endl;          
   removeDependentEvaluations(dataDependentEvaluations);
+//std::cerr << "Check "  << timeAndDataDependentEvaluations.size() <<  " timeAndDataDependentEvaluations" << std::endl;          
   removeDependentEvaluations(timeAndDataDependentEvaluations);
 }
 

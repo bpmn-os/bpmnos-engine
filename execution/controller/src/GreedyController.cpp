@@ -4,6 +4,7 @@
 #include "dispatcher/naive/RandomChoice.h"  // TODO: replace with  dispatcher returning best choice
 #include "dispatcher/greedy/BestMatchingMessageDelivery.h"
 #include "dispatcher/greedy/BestFirstExit.h"
+//#include <iostream>
 
 using namespace BPMNOS::Execution;
 
@@ -30,12 +31,17 @@ std::shared_ptr<Event> GreedyController::dispatchEvent(const SystemState* system
   for ( auto& eventDispatcher : eventDispatchers ) {
     if ( auto event = eventDispatcher->dispatchEvent(systemState) ) {
       if (  auto decision = dynamic_pointer_cast<Decision>(event) ) {
-        assert( decision->evaluation.has_value() );
+//std::cerr << "GreedyController: Decision with evaluation " << decision->evaluation.value_or(99999) <<" for: " << decision->token->jsonify() << std::endl;
+
         if ( !best ) {
           // first decision is used as best
           best = decision;
         }
-        else if ( decision->evaluation.value() < best->evaluation.value() ) {
+        else if ( decision->evaluation.has_value() && !best->evaluation.has_value() ) {
+          // first feasible decision is used as best
+          best = decision;
+        }
+        else if ( decision->evaluation.has_value() && decision->evaluation.value() < best->evaluation.value() ) {
           // decision has less costly evaluation than current best
           best = decision;
         }
@@ -46,6 +52,10 @@ std::shared_ptr<Event> GreedyController::dispatchEvent(const SystemState* system
       }
     }
   }
-
+/*
+if ( best ) {
+std::cerr << "GreedyController: Best decision with evaluation " << best->evaluation.value_or(99999) <<" for: " << best->token->jsonify() << std::endl;
+}
+*/
   return best;
 }

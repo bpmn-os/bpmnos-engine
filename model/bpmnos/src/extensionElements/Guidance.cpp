@@ -6,7 +6,6 @@
 #include "model/bpmnos/src/xml/bpmnos/tOperators.h"
 #include "model/bpmnos/src/xml/bpmnos/tOperator.h"
 #include "model/utility/src/Keywords.h"
-//#include<iostream>
 
 using namespace BPMNOS::Model;
 
@@ -93,7 +92,7 @@ bool Guidance::restrictionsSatisfied(const BPMN::FlowNode* node, const BPMNOS::V
     }
   }
   
-  // TODO: check node restrictions
+  // TODO: do we need to check node restrictions?
   return true;
 }
 
@@ -104,8 +103,6 @@ template bool Guidance::restrictionsSatisfied<BPMNOS::Values>(const BPMN::FlowNo
 template <typename DataType>
 void Guidance::apply(const Scenario* scenario, BPMNOS::number currentTime, const BPMNOS::number instanceId, const BPMN::FlowNode* node, BPMNOS::Values& status, DataType& data) const {
 
-  auto originalSize = status.size();
-
   for ( auto& attribute : attributes ) {
     status.push_back( scenario->getKnownValue(instanceId, attribute.get(), currentTime ) );
   }
@@ -114,9 +111,6 @@ void Guidance::apply(const Scenario* scenario, BPMNOS::number currentTime, const
   for ( auto& operator_ : operators ) {
     operator_->apply(status,data);
   }
-  
-  // check feasibility
-//  return restrictionsSatisfied(node,status,data);
 }
 
 template void Guidance::apply<BPMNOS::Values>(const Scenario* scenario, BPMNOS::number currentTime, const BPMNOS::number instanceId, const BPMN::FlowNode* node, BPMNOS::Values& status, BPMNOS::Values& data) const;

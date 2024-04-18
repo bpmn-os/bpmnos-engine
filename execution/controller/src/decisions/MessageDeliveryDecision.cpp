@@ -4,14 +4,15 @@
 
 using namespace BPMNOS::Execution;
 
-MessageDeliveryDecision::MessageDeliveryDecision(const Token* token, const Message* message)
+MessageDeliveryDecision::MessageDeliveryDecision(const Token* token, const Message* message, Evaluator* evaluator)
   : Event(token)
   , MessageDeliveryEvent(token,message)
-  , Decision()
+  , Decision(evaluator)
 {
+  determineDependencies( evaluator->getDependencies(this) );
 }
 
-std::optional<double> MessageDeliveryDecision::evaluate(Evaluator* evaluator) {
+std::optional<double> MessageDeliveryDecision::evaluate() {
   evaluation = evaluator->evaluate(this);
   return evaluation;
 }

@@ -64,14 +64,15 @@ using namespace BPMNOS;
 #endif // ALL_TESTS
 
 #ifndef ALL_TESTS
-SCENARIO( "Knapsack problem", "[examples][knapsack_problem]" ) {
-  const std::string modelFile = "examples/knapsack_problem/Knapsack_problem.bpmn";
+SCENARIO( "Guided knapsack problem", "[examples][knapsack_problem]" ) {
+  const std::string modelFile = "examples/knapsack_problem/Guided_knapsack_problem.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
 
   GIVEN( "One knapsack and three items" ) {
 
     std::string csv =
       "PROCESS_ID; INSTANCE_ID; ATTRIBUTE_ID; VALUE\n"
+      "KnapsackProcess;Knapsack1;Items;3\n"
       "KnapsackProcess;Knapsack1;Capacity;40\n"
       "ItemProcess;Item1;Weight;20\n"
       "ItemProcess;Item1;Value;100\n"
@@ -84,14 +85,15 @@ SCENARIO( "Knapsack problem", "[examples][knapsack_problem]" ) {
     Model::StaticDataProvider dataProvider(modelFile,csv);
     auto scenario = dataProvider.createScenario();
 
-    WHEN( "The engine is started with the guided controller (but no guidance)" ) {
+    WHEN( "The engine is started with the guided controller" ) {
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
       Execution::DeterministicTaskCompletion completionHandler;
       readyHandler.connect(&engine);
       completionHandler.connect(&engine);
 
-      Execution::GuidedController controller;
+      Execution::GuidedEvaluator evaluator;
+      Execution::GreedyController controller(&evaluator);
       controller.connect(&engine);
       
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;
@@ -103,9 +105,9 @@ SCENARIO( "Knapsack problem", "[examples][knapsack_problem]" ) {
       Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
       engine.run(scenario.get());
-      THEN( "Then the knapsack is closed before items are included" ) {
+      THEN( "Then the knapsack is not closed before items are included" ) {
         auto failureLog = recorder.find(nlohmann::json{{"nodeId", "SendRequestTask"},{"state", "FAILED"}});
-        REQUIRE( failureLog.size() == 3 );
+        REQUIRE( failureLog.size() == 0 );
       }
     }
   }

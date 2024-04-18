@@ -39,7 +39,16 @@ bool LocalEvaluator::updateValues(EntryDecision* decision, Values& status, Value
 }
 
 bool LocalEvaluator::updateValues(ExitDecision* decision, Values& status, Values& data) {
-  // TODO: check feasibility
+  auto token = decision->token;
+  assert( token->completed() );
+  auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+  assert(extensionElements);
+
+  if ( !extensionElements->feasibleExit(status,data) ) {
+    // exit would be infeasible
+    return false;
+  }
+
   return true;
 }
 
@@ -48,7 +57,12 @@ bool LocalEvaluator::updateValues(ChoiceDecision* decision, Values& status, Valu
   auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   assert(extensionElements);
   extensionElements->applyOperators(status,data);
-  // TODO: check feasibility  
+  // TODO: do we want to check feasibility here?  
+  if ( !extensionElements->fullScopeRestrictionsSatisfied(status,data) ) {
+    // exit would be infeasible
+    return false;
+  }
+
   return true;
 }
 
@@ -61,7 +75,12 @@ bool LocalEvaluator::updateValues(MessageDeliveryDecision* decision, Values& sta
   message->apply(token->node,token->getAttributeRegistry(),status,data);
   extensionElements->applyOperators(status,data);
 
-  // TODO: check feasibility, but not for receive tasks (which require exit decision)
+  // TODO: do we want to check feasibility here?  
+  if ( !extensionElements->fullScopeRestrictionsSatisfied(status,data) ) {
+    // exit would be infeasible
+    return false;
+  }
+
   return true;
 }
 
@@ -151,6 +170,7 @@ std::set<const BPMNOS::Model::Attribute*> LocalEvaluator::getDependencies(EntryD
   ) {
     dependencies.insert(extensionElements->operatorDependencies.begin(), extensionElements->operatorDependencies.end());
   }
+
   dependencies.insert(extensionElements->entryDependencies.begin(), extensionElements->entryDependencies.end());
 
   if ( token->node->represents<BPMN::Task>() && 
@@ -158,14 +178,21 @@ std::set<const BPMNOS::Model::Attribute*> LocalEvaluator::getDependencies(EntryD
     !token->node->represents<BPMNOS::Model::DecisionTask>()
   ) {
     dependencies.insert(extensionElements->operatorDependencies.begin(), extensionElements->operatorDependencies.end());
-    dependencies.insert(extensionElements->exitDependencies.begin(), extensionElements->exitDependencies.end());
+//    dependencies.insert(extensionElements->exitDependencies.begin(), extensionElements->exitDependencies.end());
   }
   return dependencies;
 }
 
 std::set<const BPMNOS::Model::Attribute*> LocalEvaluator::getDependencies(ExitDecision* decision) {
-  // TODO: add exit dependencies
-  return {};
+  std::set<const BPMNOS::Model::Attribute*> dependencies;
+
+  auto token = decision->token;
+  auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+  assert(extensionElements);
+
+  dependencies.insert(extensionElements->exitDependencies.begin(), extensionElements->exitDependencies.end());
+
+  return dependencies;
 }
 
 std::set<const BPMNOS::Model::Attribute*> LocalEvaluator::getDependencies(ChoiceDecision* decision) {

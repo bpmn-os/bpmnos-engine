@@ -73,7 +73,7 @@ SCENARIO( "Knapsack problem", "[examples][knapsack_problem]" ) {
     }
   }
 }
-/*
+
 SCENARIO( "Guided knapsack problem", "[examples][knapsack_problem]" ) {
   const std::string modelFile = "examples/knapsack_problem/Guided_knapsack_problem.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
@@ -95,33 +95,6 @@ SCENARIO( "Guided knapsack problem", "[examples][knapsack_problem]" ) {
     Model::StaticDataProvider dataProvider(modelFile,csv);
     auto scenario = dataProvider.createScenario();
 
-    WHEN( "The engine is started with naive dispatcher" ) {
-      Execution::Engine engine;
-      Execution::ReadyHandler readyHandler;
-      Execution::InstantEntry parallelEntryHandler;
-      Execution::FirstComeFirstServedSequentialEntry sequentialEntryHandler;
-      Execution::DeterministicTaskCompletion completionHandler;
-      Execution::FirstMatchingMessageDelivery messageHandler;
-      Execution::MyopicMessageTaskTerminator messageTaskTerminator;
-      Execution::InstantExit exitHandler;
-      Execution::TimeWarp timeHandler;
-      messageHandler.connect(&engine);
-      readyHandler.connect(&engine);
-      parallelEntryHandler.connect(&engine);
-      sequentialEntryHandler.connect(&engine);
-      completionHandler.connect(&engine);
-      exitHandler.connect(&engine);
-      messageTaskTerminator.connect(&engine);
-      timeHandler.connect(&engine);
-      Execution::Recorder recorder;
-//      Execution::Recorder recorder(std::cerr);
-      recorder.subscribe(&engine);
-      engine.run(scenario.get());
-      THEN( "Some items are accepted, some are rejected" ) {
-        REQUIRE( recorder.find(nlohmann::json{{"nodeId", "ItemRejected"}}).size() > 0 );
-        REQUIRE( recorder.find(nlohmann::json{{"nodeId", "ItemAccepted"}}).size() > 0);
-      }
-    }
     WHEN( "The engine is started with the guided controller" ) {
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
@@ -129,7 +102,8 @@ SCENARIO( "Guided knapsack problem", "[examples][knapsack_problem]" ) {
       readyHandler.connect(&engine);
       completionHandler.connect(&engine);
 
-      Execution::GuidedController controller;
+      Execution::GuidedEvaluator evaluator;
+      Execution::GreedyController controller(&evaluator);
       controller.connect(&engine);
       
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;
@@ -137,15 +111,25 @@ SCENARIO( "Guided knapsack problem", "[examples][knapsack_problem]" ) {
       messageTaskTerminator.connect(&engine);
       timeHandler.connect(&engine);
 
-//      Execution::Recorder recorder;
-      Execution::Recorder recorder(std::cerr);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
       engine.run(scenario.get());
-      THEN( "Some items are accepted, some are rejected" ) {
-        REQUIRE( recorder.find(nlohmann::json{{"nodeId", "ItemRejected"}}).size() > 0 );
-        REQUIRE( recorder.find(nlohmann::json{{"nodeId", "ItemAccepted"}}).size() > 0);
+      THEN( "Then the knapsack considers all items" ) {
+        auto failureLog = recorder.find(nlohmann::json{{"nodeId", "SendRequestTask"},{"state", "FAILED"}});
+        REQUIRE( failureLog.size() == 0 );
+      }
+      THEN( "Then the knapsack handles items with best value to weight ratio first" ) {
+        auto handleLog = recorder.find(nlohmann::json{{"nodeId", "HandleItemActivity"},{"state", "COMPLETED"}});
+        REQUIRE( handleLog[0]["status"]["item"] == "Item3" );
+        REQUIRE( handleLog[1]["status"]["item"] == "Item1" );
+        REQUIRE( handleLog[2]["status"]["item"] == "Item2" );
+      }
+      THEN( "Then the knapsack includes Item3 and Item2" ) {
+        auto acceptanceLog = recorder.find(nlohmann::json{{"nodeId", "ItemAccepted"},{"state", "ENTERED"}});
+        REQUIRE( acceptanceLog[0]["instanceId"] == "Item3" );
+        REQUIRE( acceptanceLog[1]["instanceId"] == "Item2" );
       }
     }
   }
 }
-*/

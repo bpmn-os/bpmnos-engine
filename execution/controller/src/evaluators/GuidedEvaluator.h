@@ -7,7 +7,7 @@
 namespace BPMNOS::Execution {
 
 /**
- * @brief Represents an abstract base class for a pending GuidedEvaluator
+ * @brief Class representing an evaluator that uses the guidance that may be provided.
  */
 class GuidedEvaluator : public LocalEvaluator {
 public:
@@ -15,6 +15,11 @@ public:
   bool updateValues(ExitDecision* decision, Values& status, Values& data) override;
   bool updateValues(ChoiceDecision* decision, Values& status, Values& data) override;
   bool updateValues(MessageDeliveryDecision* decision, Values& status, Values& data) override;
+
+  std::optional<double> evaluate(EntryDecision* decision) override;
+  std::optional<double> evaluate(ExitDecision* decision) override;
+  std::optional<double> evaluate(ChoiceDecision* decision) override;
+  std::optional<double> evaluate(MessageDeliveryDecision* decision) override;
 
   std::set<const BPMNOS::Model::Attribute*> getDependencies(EntryDecision* decision) override;
   std::set<const BPMNOS::Model::Attribute*> getDependencies(ExitDecision* decision) override;

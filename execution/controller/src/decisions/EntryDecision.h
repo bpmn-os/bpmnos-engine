@@ -14,8 +14,8 @@ namespace BPMNOS::Execution {
  * Transition from State::READY to State::ENTERED
  */
 struct EntryDecision : EntryEvent, Decision {
-  EntryDecision(const Token* token);
-  std::optional<double> evaluate(Evaluator* evaluator) override;
+  EntryDecision(const Token* token, Evaluator* evaluator);
+  std::optional<double> evaluate() override;
 };
 
 } // namespace BPMNOS::Execution

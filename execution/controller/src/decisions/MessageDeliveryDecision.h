@@ -15,8 +15,8 @@ namespace BPMNOS::Execution {
  * Transition from State::BUSY to State::COMPLETED
  */
 struct MessageDeliveryDecision : MessageDeliveryEvent, Decision {
-  MessageDeliveryDecision(const Token* token, const Message* message);
-  std::optional<double> evaluate(Evaluator* evaluator) override;
+  MessageDeliveryDecision(const Token* token, const Message* message, Evaluator* evaluator);
+  std::optional<double> evaluate() override;
 };
 
 } // namespace BPMNOS::Execution

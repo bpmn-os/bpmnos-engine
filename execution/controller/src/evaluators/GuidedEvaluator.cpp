@@ -85,6 +85,98 @@ bool GuidedEvaluator::updateValues(MessageDeliveryDecision* decision, Values& st
   return guidance->restrictionsSatisfied(decision->token->node,status,data);
 }
 
+std::optional<double> GuidedEvaluator::evaluate(EntryDecision* decision) {
+  auto token = decision->token;
+  assert( token->ready() );
+  auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+  assert(extensionElements);
+  Values status = token->status;
+  status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = token->owner->systemState->currentTime;
+  Values data(*token->data);
+  double evaluation = (double)extensionElements->getObjective(status,data);
+//std::cerr << "Initial evaluation: " << evaluation << std::endl;
+
+  bool feasible = updateValues(decision,status,data); 
+  if ( !feasible ) {
+    return std::nullopt;
+  }
+
+  if ( !extensionElements->entryGuidance ) {
+    return evaluation - extensionElements->getObjective(status,data);
+  }
+  // return evaluation of entry
+//std::cerr << "Updated evaluation: " << extensionElements->getObjective(status,data) << std::endl;
+  return evaluation - extensionElements->entryGuidance.value()->getObjective(status,data);
+}
+
+std::optional<double> GuidedEvaluator::evaluate(ExitDecision* decision) {
+  auto token = decision->token;
+  assert( token->completed() );
+  auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+  assert(extensionElements);
+  Values status = token->status;
+  status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = token->owner->systemState->currentTime;
+  Values data(*token->data);
+  double evaluation = (double)extensionElements->getObjective(status,data);
+
+  bool feasible = updateValues(decision,status,data); 
+  if ( !feasible ) {
+    return std::nullopt;
+  }
+
+  if ( !extensionElements->exitGuidance ) {
+    return evaluation - extensionElements->getObjective(status,data);
+  }
+
+  return evaluation - extensionElements->exitGuidance.value()->getObjective(status,data);
+}
+
+std::optional<double> GuidedEvaluator::evaluate(ChoiceDecision* decision) {
+  auto token = decision->token;
+  assert( token->busy() );
+  auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+  assert(extensionElements);
+  auto evaluation = (double)extensionElements->getObjective(token->status, *token->data);
+
+  assert( dynamic_cast<const ChoiceEvent*>(decision) );
+  Values status = static_cast<const ChoiceEvent*>(decision)->updatedStatus;
+  status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = token->owner->systemState->currentTime;
+  Values data(*token->data);
+
+  bool feasible = updateValues(decision,status,data); 
+  if ( !feasible ) {
+    return std::nullopt;
+  }
+
+  if ( !extensionElements->choiceGuidance ) {
+    return evaluation - extensionElements->getObjective(status,data);
+  }
+
+  return evaluation - extensionElements->choiceGuidance.value()->getObjective(status,data);
+}
+
+std::optional<double> GuidedEvaluator::evaluate(MessageDeliveryDecision* decision) {
+  auto token = decision->token;
+  assert( token->busy() );
+
+  auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+  assert(extensionElements);
+  Values status = token->status;
+  status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = token->owner->systemState->currentTime;
+  Values data(*token->data);
+  double evaluation = (double)extensionElements->getObjective(status,data);
+
+  bool feasible = updateValues(decision,status,data); 
+  if ( !feasible ) {
+    return std::nullopt;
+  }
+
+  if ( !extensionElements->messageDeliveryGuidance ) {
+    return evaluation - extensionElements->getObjective(status,data);
+  }
+
+  return evaluation - extensionElements->messageDeliveryGuidance.value()->getObjective(status,data);
+}
 
 
 std::set<const BPMNOS::Model::Attribute*> GuidedEvaluator::getDependencies(EntryDecision* decision) {
@@ -93,7 +185,7 @@ std::set<const BPMNOS::Model::Attribute*> GuidedEvaluator::getDependencies(Entry
 
   std::set<const BPMNOS::Model::Attribute*> dependencies = LocalEvaluator::getDependencies(decision);
   // add guidance dependencies
-  if ( extensionElements->choiceGuidance.has_value() ) {
+  if ( extensionElements->entryGuidance.has_value() ) {
     dependencies.insert(extensionElements->entryGuidance.value()->dependencies.begin(), extensionElements->entryGuidance.value()->dependencies.end());
   }
 
@@ -106,7 +198,7 @@ std::set<const BPMNOS::Model::Attribute*> GuidedEvaluator::getDependencies(ExitD
 
   std::set<const BPMNOS::Model::Attribute*> dependencies = LocalEvaluator::getDependencies(decision);
   // add guidance dependencies
-  if ( extensionElements->choiceGuidance.has_value() ) {
+  if ( extensionElements->exitGuidance.has_value() ) {
     dependencies.insert(extensionElements->exitGuidance.value()->dependencies.begin(), extensionElements->exitGuidance.value()->dependencies.end());
   }
 
@@ -132,7 +224,7 @@ std::set<const BPMNOS::Model::Attribute*> GuidedEvaluator::getDependencies(Messa
 
   std::set<const BPMNOS::Model::Attribute*> dependencies = LocalEvaluator::getDependencies(decision);
   // add guidance dependencies
-  if ( extensionElements->choiceGuidance.has_value() ) {
+  if ( extensionElements->messageDeliveryGuidance.has_value() ) {
     dependencies.insert(extensionElements->messageDeliveryGuidance.value()->dependencies.begin(), extensionElements->messageDeliveryGuidance.value()->dependencies.end());
   }
 

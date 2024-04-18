@@ -13,14 +13,16 @@ class Evaluator;
  */
 class Decision : virtual public Event {
 public:
-  Decision();
+  Decision(Evaluator* evaluator);
 
-  virtual std::optional<double> evaluate(Evaluator* evaluator) = 0;
+  virtual std::optional<double> evaluate() = 0;
   std::optional<double> evaluation;  ///< Latest evaluation or null if decision has not been evaluated or evaluation is no longer valid
   
   bool timeDependent;
   std::set<const BPMNOS::Model::Attribute*> dataDependencies;
+protected:
   void determineDependencies(const std::set<const BPMNOS::Model::Attribute*>& dependencies);
+  Evaluator* evaluator;
 };
 
 } // namespace BPMNOS::Execution

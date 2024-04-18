@@ -4,14 +4,15 @@
 
 using namespace BPMNOS::Execution;
 
-ChoiceDecision::ChoiceDecision(const Token* token, Values updatedStatus)
+ChoiceDecision::ChoiceDecision(const Token* token, Values updatedStatus, Evaluator* evaluator)
   : Event(token)
   , ChoiceEvent(token, updatedStatus)
-  , Decision()
+  , Decision(evaluator)
 {
+  determineDependencies( evaluator->getDependencies(this) );
 }
 
-std::optional<double> ChoiceDecision::evaluate(Evaluator* evaluator) {
+std::optional<double> ChoiceDecision::evaluate() {
   evaluation = evaluator->evaluate(this);
   return evaluation;
 }

@@ -26,7 +26,7 @@ void BestFirstParallelEntry::notice(const Observable* observable) {
       return;
     }
 
-    auto decision = std::make_shared<EntryDecision>(request->token);
+    auto decision = std::make_shared<EntryDecision>(request->token, evaluator);
     decisionsWithoutEvaluation.emplace_back( request->token->weak_from_this(), request->weak_from_this(), decision );
   }
   else {

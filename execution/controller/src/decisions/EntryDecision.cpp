@@ -6,14 +6,15 @@
 
 using namespace BPMNOS::Execution;
 
-EntryDecision::EntryDecision(const Token* token)
+EntryDecision::EntryDecision(const Token* token, Evaluator* evaluator)
   : Event(token)
   , EntryEvent(token)
-  , Decision()
+  , Decision(evaluator)
 {
+  determineDependencies( evaluator->getDependencies(this) );
 }
 
-std::optional<double> EntryDecision::evaluate(Evaluator* evaluator) {
+std::optional<double> EntryDecision::evaluate() {
   evaluation = evaluator->evaluate(this);
   return evaluation;
 }

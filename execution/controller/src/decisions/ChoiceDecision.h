@@ -16,9 +16,9 @@ class Evaluator;
  * Transition from State::BUSY to State::COMPLETED
  */
 struct ChoiceDecision : ChoiceEvent, Decision {
-  ChoiceDecision(const Token* token, Values updatedStatus);
+  ChoiceDecision(const Token* token, Values updatedStatus, Evaluator* evaluator);
   Values updatedStatus;
-  std::optional<double> evaluate(Evaluator* evaluator) override;
+  std::optional<double> evaluate() override;
 };
 
 } // namespace BPMNOS::Execution
