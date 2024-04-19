@@ -8,7 +8,7 @@ SystemState::SystemState(const Engine* engine, const BPMNOS::Model::Scenario* sc
   : engine(engine)
   , scenario(scenario)
   , currentTime(currentTime)
-  , objective(0)
+  , contributionsToObjective(0)
   , globals(scenario->globals)
 {  
 }
@@ -36,7 +36,7 @@ bool SystemState::isAlive() const {
 };
 
 BPMNOS::number SystemState::getObjective() const {
-  auto result = objective;
+  auto result = contributionsToObjective;
   
   for ( auto& attribute : scenario->getModel()->attributes ) {
     assert( attribute->category == BPMNOS::Model::Attribute::Category::GLOBAL );

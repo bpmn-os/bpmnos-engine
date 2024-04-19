@@ -690,7 +690,7 @@ void Token::advanceToCompleted() {
   if ( !node ) {
     // update global objective
     assert( owner->scope->extensionElements->as<BPMNOS::Model::ExtensionElements>() );
-    const_cast<SystemState*>(owner->systemState)->objective += owner->scope->extensionElements->as<BPMNOS::Model::ExtensionElements>()->getContributionToObjective(status,*data,globals);
+    const_cast<SystemState*>(owner->systemState)->contributionsToObjective += owner->scope->extensionElements->as<BPMNOS::Model::ExtensionElements>()->getContributionToObjective(status,*data,globals);
 
 //std::cerr << "check restrictions" << std::endl;
   // check restrictions
@@ -714,7 +714,7 @@ void Token::advanceToCompleted() {
         engine->commands.emplace_back(std::bind(&StateMachine::completeCompensationActivity,stateMachine,this), this);
         // update global objective
         assert( node->extensionElements->as<BPMNOS::Model::ExtensionElements>() );
-        const_cast<SystemState*>(owner->systemState)->objective += node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->getContributionToObjective(status,*data,globals);
+        const_cast<SystemState*>(owner->systemState)->contributionsToObjective += node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->getContributionToObjective(status,*data,globals);
       }
       else {
         awaitExitEvent();
@@ -852,7 +852,7 @@ void Token::advanceToExiting() {
   ) {
     // TODO: also consider data !!!
     // update global objective
-    const_cast<SystemState*>(owner->systemState)->objective += extensionElements->getContributionToObjective(status,*data,globals);
+    const_cast<SystemState*>(owner->systemState)->contributionsToObjective += extensionElements->getContributionToObjective(status,*data,globals);
 
     // remove attributes that are no longer needed
     assert( status.size() == extensionElements->attributeRegistry.statusAttributes.size() );

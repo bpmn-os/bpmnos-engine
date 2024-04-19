@@ -66,7 +66,7 @@ public:
    */
   BPMNOS::number getObjective() const;
 
-  BPMNOS::number objective;
+  BPMNOS::number contributionsToObjective; ///< All contributions that have already been added to the objective.
   
   auto_list< std::weak_ptr<Token>, std::shared_ptr<DecisionRequest> > pendingEntryEvents;
   auto_list< std::weak_ptr<Token>, std::shared_ptr<DecisionRequest> > pendingChoiceEvents;
