@@ -52,7 +52,9 @@ public:
   bool isAlive() const;
 
   /**
-   * @brief The total objective value (assuming maximization) accumulated during execution.
+   * @brief Returns the total objective value (assuming maximization) accumulated during execution.
+   *
+   * Global attributes are evaluated upon each call of the method.
    *
    * Attributes declared for activities, event-subprocesses, and processes contribute to the objective when
    * - the activity is exited,
@@ -62,6 +64,8 @@ public:
    *
    * In all other cases values of attributes declared to contribute to the objective will be ignored.
    */
+  BPMNOS::number getObjective() const;
+
   BPMNOS::number objective;
   
   auto_list< std::weak_ptr<Token>, std::shared_ptr<DecisionRequest> > pendingEntryEvents;

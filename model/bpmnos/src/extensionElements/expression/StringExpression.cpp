@@ -45,14 +45,14 @@ StringExpression::StringExpression(XML::bpmnos::tParameter* parameter, const Att
 }
 
 template <typename DataType>
-std::optional<BPMNOS::number> StringExpression::_execute(const BPMNOS::Values& status, const DataType& data) const {
+std::optional<BPMNOS::number> StringExpression::_execute(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const {
   bool equals;
   if ( std::holds_alternative<const Attribute*>(rhs) ) {
     auto other = std::get<const Attribute *>(rhs);
-    equals = ( attributeRegistry.getValue(attribute,status,data) == attributeRegistry.getValue(other,status,data) );
+    equals = ( attributeRegistry.getValue(attribute,status,data,globals) == attributeRegistry.getValue(other,status,data,globals) );
   }
   else {
-    auto value = attributeRegistry.getValue(attribute,status,data);
+    auto value = attributeRegistry.getValue(attribute,status,data,globals);
     equals = ( value.has_value() && value.value() == std::get<BPMNOS::number>(rhs) );
   }
   
@@ -66,6 +66,6 @@ std::optional<BPMNOS::number> StringExpression::_execute(const BPMNOS::Values& s
   return std::nullopt;
 }
 
-template std::optional<BPMNOS::number> StringExpression::_execute<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data) const;
-template std::optional<BPMNOS::number> StringExpression::_execute<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data) const;
+template std::optional<BPMNOS::number> StringExpression::_execute<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data, const BPMNOS::Values& globals) const;
+template std::optional<BPMNOS::number> StringExpression::_execute<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data, const BPMNOS::Values& globals) const;
 

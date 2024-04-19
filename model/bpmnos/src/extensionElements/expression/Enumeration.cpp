@@ -56,12 +56,12 @@ Enumeration::Enumeration(XML::bpmnos::tParameter* parameter, const AttributeRegi
 }
 
 template <typename DataType>
-std::optional<BPMNOS::number> Enumeration::_execute(const BPMNOS::Values& status, const DataType& data) const {
+std::optional<BPMNOS::number> Enumeration::_execute(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const {
   bool found = false;
-  auto attributeValue = attributeRegistry.getValue(attribute,status,data);
+  auto attributeValue = attributeRegistry.getValue(attribute,status,data,globals);
   if ( std::holds_alternative<const Attribute *>(collection) ) {
     auto other = std::get<const Attribute *>(collection);
-    auto otherValue = attributeRegistry.getValue(other,status,data);
+    auto otherValue = attributeRegistry.getValue(other,status,data,globals);
     if ( otherValue.has_value() ) {
       auto& entries = collectionRegistry[(long unsigned int)otherValue.value()].values;
       for ( auto entry : entries ) {
@@ -90,6 +90,6 @@ std::optional<BPMNOS::number> Enumeration::_execute(const BPMNOS::Values& status
   return std::nullopt;
 }
 
-template std::optional<BPMNOS::number> Enumeration::_execute<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data) const;
-template std::optional<BPMNOS::number> Enumeration::_execute<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data) const;
+template std::optional<BPMNOS::number> Enumeration::_execute<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data, const BPMNOS::Values& globals) const;
+template std::optional<BPMNOS::number> Enumeration::_execute<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data, const BPMNOS::Values& globals) const;
 

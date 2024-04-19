@@ -22,7 +22,7 @@ namespace BPMNOS::Model {
  **/
 class ExtensionElements : public BPMN::ExtensionElements {
 public:
-  ExtensionElements(XML::bpmn::tBaseElement* baseElement, AttributeRegistry attributeRegistry_, BPMN::Scope* parent = nullptr, std::vector<std::reference_wrapper<XML::bpmnos::tAttribute>> = {});
+  ExtensionElements(XML::bpmn::tBaseElement* baseElement, const AttributeRegistry attributeRegistry_, BPMN::Scope* parent = nullptr, std::vector<std::reference_wrapper<XML::bpmnos::tAttribute>> = {});
   AttributeRegistry attributeRegistry; ///< Registry allowing to look up all status and data attributes by their names.
   const BPMN::Scope* parent;
 
@@ -55,27 +55,27 @@ public:
   bool hasSequentialPerformer; ///< Boolean indicating whether element has a performer with name "Sequential".
 
   template <typename DataType>
-  bool feasibleEntry(const BPMNOS::Values& status, const DataType& data) const;
+  bool feasibleEntry(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const;
   
   template <typename DataType>
-  bool feasibleExit(const BPMNOS::Values& status, const DataType& data) const;
+  bool feasibleExit(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const;
   
   template <typename DataType>
-  bool satisfiesInheritedRestrictions(const BPMNOS::Values& status, const DataType& data) const;
+  bool satisfiesInheritedRestrictions(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const;
   
   template <typename DataType>
-  bool fullScopeRestrictionsSatisfied(const BPMNOS::Values& status, const DataType& data) const;
+  bool fullScopeRestrictionsSatisfied(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const;
   
   bool isInstantaneous; ///< Boolean indicating whether operators may modify timestamp.
 
   template <typename DataType>
-  void applyOperators(BPMNOS::Values& status, DataType& data) const;
+  void applyOperators(BPMNOS::Values& status, DataType& data, BPMNOS::Values& globals) const;
 
   template <typename DataType>
-  BPMNOS::number getObjective(const BPMNOS::Values& status, const DataType& data) const; ///< Returns the total objective of all attributes provided.
+  BPMNOS::number getObjective(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const; ///< Returns the total objective of all attributes provided.
 
   template <typename DataType>
-  BPMNOS::number getContributionToObjective(const BPMNOS::Values& status, const DataType& data) const; ///< Returns the contribution to the objective by the attributes declared for the node.
+  BPMNOS::number getContributionToObjective(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const; ///< Returns the contribution to the objective by the attributes declared for the node.
   
   std::optional< std::unique_ptr<Guidance> > messageDeliveryGuidance;
   std::optional< std::unique_ptr<Guidance> > entryGuidance;

@@ -34,7 +34,7 @@ void Recorder::subscribe(Engine* engine) {
 void Recorder::notice(const Observable* observable) {
   auto token = static_cast<const Token*>(observable);
 //      std::cerr << "Observable with type: " << observable->getObservableType() << std::endl;
-  objective = token->owner->systemState->objective;
+  objective = token->owner->systemState->getObjective();
   auto json = token->jsonify();
 
   if (os.has_value()) {

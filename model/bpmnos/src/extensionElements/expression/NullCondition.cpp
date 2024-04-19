@@ -46,8 +46,8 @@ void NullCondition::parse(const std::string& comparisonOperator) {
 
 
 template <typename DataType>
-std::optional<BPMNOS::number> NullCondition::_execute(const BPMNOS::Values& status, const DataType& data) const {
-  auto value = attributeRegistry.getValue(attribute,status,data);
+std::optional<BPMNOS::number> NullCondition::_execute(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const {
+  auto value = attributeRegistry.getValue(attribute,status,data,globals);
   if ( type == Type::ISNULL ) {
     return BPMNOS::to_number( !value.has_value() , BOOLEAN);
   }
@@ -57,6 +57,6 @@ std::optional<BPMNOS::number> NullCondition::_execute(const BPMNOS::Values& stat
   return std::nullopt;
 }
 
-template std::optional<BPMNOS::number> NullCondition::_execute<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data) const;
-template std::optional<BPMNOS::number> NullCondition::_execute<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data) const;
+template std::optional<BPMNOS::number> NullCondition::_execute<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data, const BPMNOS::Values& globals) const;
+template std::optional<BPMNOS::number> NullCondition::_execute<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data, const BPMNOS::Values& globals) const;
 

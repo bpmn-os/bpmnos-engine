@@ -54,13 +54,13 @@ LookupOperator::LookupOperator(XML::bpmnos::tOperator* operator_, const Attribut
 }
 
 template <typename DataType>
-void LookupOperator::_apply(BPMNOS::Values& status, DataType& data) const {
+void LookupOperator::_apply(BPMNOS::Values& status, DataType& data, BPMNOS::Values& globals) const {
   std::unordered_map< std::string, Value > arguments;
   for ( auto& [name,lookupAttribute] : lookups) {
-    auto value = attributeRegistry.getValue(lookupAttribute, status, data);
+    auto value = attributeRegistry.getValue(lookupAttribute, status, data, globals);
     if ( !value.has_value() ) {
       // set attribute to undefined because required lookup value is not given
-      attributeRegistry.setValue( attribute, status, data, std::nullopt );
+      attributeRegistry.setValue( attribute, status, data, globals, std::nullopt );
       return;
     }
 
@@ -70,16 +70,16 @@ void LookupOperator::_apply(BPMNOS::Values& status, DataType& data) const {
   std::optional<std::string> value = table->lookup(key, arguments);
   if ( value.has_value() ) {
     // set value to the value looked up
-    attributeRegistry.setValue( attribute, status, data, to_number( value.value(), attribute->type ) );
+    attributeRegistry.setValue( attribute, status, data, globals, to_number( value.value(), attribute->type ) );
   }
   else {
     // set value to undefined if no attribute with value is given and no explicit value is given
-    attributeRegistry.setValue( attribute, status, data, std::nullopt );
+    attributeRegistry.setValue( attribute, status, data, globals, std::nullopt );
   }
 }
 
-template void LookupOperator::_apply<BPMNOS::Values>(BPMNOS::Values& status, BPMNOS::Values& data) const;
-template void LookupOperator::_apply<BPMNOS::SharedValues>(BPMNOS::Values& status, BPMNOS::SharedValues& data) const;
+template void LookupOperator::_apply<BPMNOS::Values>(BPMNOS::Values& status, BPMNOS::Values& data, BPMNOS::Values& globals) const;
+template void LookupOperator::_apply<BPMNOS::SharedValues>(BPMNOS::Values& status, BPMNOS::SharedValues& data, BPMNOS::Values& globals) const;
 
 
 

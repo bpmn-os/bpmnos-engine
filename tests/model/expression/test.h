@@ -14,13 +14,14 @@ SCENARIO( "Linear expression", "[model][expression]" ) {
 
       auto instantiations = scenario->getCurrentInstantiations(0);
       THEN( "The result is correct" ) {
+        Values globals;
         for ( auto& [process,status,data] : instantiations ) {
           auto extensionElements = process->extensionElements->represents<Model::ExtensionElements>();
           REQUIRE( status.size() == 3 + 1 ); // don't forget timestamp
           REQUIRE( status[extensionElements->attributeRegistry["x"]->index].value() == 8 );
           REQUIRE( status[extensionElements->attributeRegistry["y"]->index].value() == 15 );
           REQUIRE( status[extensionElements->attributeRegistry["z"]->index].has_value() == false );
-          extensionElements->applyOperators(status,data);
+          extensionElements->applyOperators(status,data,globals);
           REQUIRE( status[extensionElements->attributeRegistry["x"]->index].value() == 8 );
           REQUIRE( status[extensionElements->attributeRegistry["y"]->index].value() == 15 );
           REQUIRE( status[extensionElements->attributeRegistry["z"]->index].value() == 3*8 + 5*15 );
@@ -38,6 +39,7 @@ SCENARIO( "Linear expression", "[model][expression]" ) {
       auto instantiations = scenario->getCurrentInstantiations(0);
 
       THEN( "The result is correct" ) {
+        Values globals;
         for ( auto& [process,status,data] : instantiations ) {
           auto extensionElements = process->extensionElements->represents<Model::ExtensionElements>();
 
@@ -45,7 +47,7 @@ SCENARIO( "Linear expression", "[model][expression]" ) {
           REQUIRE( status[extensionElements->attributeRegistry["x"]->index].has_value() == false );
           REQUIRE( status[extensionElements->attributeRegistry["y"]->index].value() == 15 );
           REQUIRE( status[extensionElements->attributeRegistry["z"]->index].has_value() == false );
-          extensionElements->applyOperators(status,data);
+          extensionElements->applyOperators(status,data,globals);
           REQUIRE( status[extensionElements->attributeRegistry["x"]->index].has_value() == false );
           REQUIRE( status[extensionElements->attributeRegistry["y"]->index].value() == 15 );
           REQUIRE( status[extensionElements->attributeRegistry["z"]->index].has_value() == false );
@@ -71,6 +73,7 @@ SCENARIO( "Another linear expression", "[model][expression]" ) {
       auto instantiations = scenario->getCurrentInstantiations(0);
 
       THEN( "The result is correct" ) {
+        Values globals;
         for ( auto& [process,status,data] : instantiations ) {
           auto extensionElements = process->extensionElements->represents<Model::ExtensionElements>();
 
@@ -78,7 +81,7 @@ SCENARIO( "Another linear expression", "[model][expression]" ) {
           REQUIRE( status[extensionElements->attributeRegistry["x"]->index].has_value() == false );
           REQUIRE( status[extensionElements->attributeRegistry["y"]->index].value() == 15 );
           REQUIRE( status[extensionElements->attributeRegistry["z"]->index].has_value() == false );
-          extensionElements->applyOperators(status,data);
+          extensionElements->applyOperators(status,data,globals);
           REQUIRE( status[extensionElements->attributeRegistry["x"]->index].has_value() == false );
           REQUIRE( status[extensionElements->attributeRegistry["y"]->index].value() == 15 );
           REQUIRE( status[extensionElements->attributeRegistry["z"]->index].value() == 3 + 15/5 );
@@ -105,6 +108,7 @@ SCENARIO( "Generic expression", "[model][expression]" ) {
       auto instantiations = scenario->getCurrentInstantiations(0);
 
       THEN( "The result is correct" ) {
+        Values globals;
         for ( auto& [process,status,data] : instantiations ) {
           auto extensionElements = process->extensionElements->represents<Model::ExtensionElements>();
 
@@ -112,7 +116,7 @@ SCENARIO( "Generic expression", "[model][expression]" ) {
           REQUIRE( status[extensionElements->attributeRegistry["x"]->index].value() == 8 );
           REQUIRE( status[extensionElements->attributeRegistry["y"]->index].value() == 15 );
           REQUIRE( status[extensionElements->attributeRegistry["z"]->index].has_value() == false );
-          extensionElements->applyOperators(status,data);
+          extensionElements->applyOperators(status,data,globals);
           REQUIRE( status[extensionElements->attributeRegistry["x"]->index].value() == 8 );
           REQUIRE( status[extensionElements->attributeRegistry["y"]->index].value() == 15 );
           REQUIRE( status[extensionElements->attributeRegistry["z"]->index].value() == 3*8 + 5*15 );
@@ -130,6 +134,7 @@ SCENARIO( "Generic expression", "[model][expression]" ) {
       auto instantiations = scenario->getCurrentInstantiations(0);
 
       THEN( "The result is correct" ) {
+        Values globals;
         for ( auto& [process,status,data] : instantiations ) {
           auto extensionElements = process->extensionElements->represents<Model::ExtensionElements>();
 
@@ -137,7 +142,7 @@ SCENARIO( "Generic expression", "[model][expression]" ) {
           REQUIRE( status[extensionElements->attributeRegistry["x"]->index].has_value() == false );
           REQUIRE( status[extensionElements->attributeRegistry["y"]->index].value() == 15 );
           REQUIRE( status[extensionElements->attributeRegistry["z"]->index].has_value() == false );
-          extensionElements->applyOperators(status,data);
+          extensionElements->applyOperators(status,data,globals);
           REQUIRE( status[extensionElements->attributeRegistry["x"]->index].has_value() == false );
           REQUIRE( status[extensionElements->attributeRegistry["y"]->index].value() == 15 );
           REQUIRE( status[extensionElements->attributeRegistry["z"]->index].has_value() == false );

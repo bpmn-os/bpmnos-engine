@@ -67,6 +67,10 @@ void Scenario::setRealization( Scenario::Data& data, Scenario::Disclosure realiz
   data.realization = realization;
 }
 
+const Model* Scenario::getModel() const {
+  return model;
+}
+
 BPMNOS::number Scenario::getInception() const {
   return inception;
 }

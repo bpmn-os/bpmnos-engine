@@ -21,7 +21,7 @@ public:
   std::unique_ptr<BPMNOS::Model::Parameter> trigger;
 
   template <typename DataType>
-  BPMNOS::number earliest(const BPMNOS::Values& status, const DataType& data) const;
+  BPMNOS::number earliest(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const;
 };
 
 } // namespace BPMNOS::Model

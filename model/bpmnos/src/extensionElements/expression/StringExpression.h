@@ -25,10 +25,10 @@ public:
  * @brief Checks whether the attribute matches a given string.
  */
   template <typename DataType>
-  std::optional<BPMNOS::number> _execute(const BPMNOS::Values& status, const DataType& data) const;
+  std::optional<BPMNOS::number> _execute(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const;
 
-  std::optional<BPMNOS::number> execute(const BPMNOS::Values& status, const BPMNOS::Values& data) const override { return _execute(status,data); };
-  std::optional<BPMNOS::number> execute(const BPMNOS::Values& status, const BPMNOS::SharedValues& data) const override { return _execute(status,data); };
+  std::optional<BPMNOS::number> execute(const BPMNOS::Values& status, const BPMNOS::Values& data, const BPMNOS::Values& globals) const override { return _execute(status,data,globals); };
+  std::optional<BPMNOS::number> execute(const BPMNOS::Values& status, const BPMNOS::SharedValues& data, const BPMNOS::Values& globals) const override { return _execute(status,data,globals); };
 };
 
 } // namespace BPMNOS::Model

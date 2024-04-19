@@ -7,7 +7,7 @@
 using namespace BPMNOS::Execution;
 
 
-bool LocalEvaluator::updateValues(EntryDecision* decision, Values& status, Values& data) {
+bool LocalEvaluator::updateValues(EntryDecision* decision, Values& status, Values& data, Values& globals) {
   auto token = decision->token;
   assert( token->ready() );
   auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
@@ -17,10 +17,10 @@ bool LocalEvaluator::updateValues(EntryDecision* decision, Values& status, Value
     !token->node->represents<BPMN::Task>()
   ) {
     // apply operators before checking entry restrictions
-    extensionElements->applyOperators(status,data);
+    extensionElements->applyOperators(status,data,globals);
   }
 
-  if ( !extensionElements->feasibleEntry(status,data) ) {
+  if ( !extensionElements->feasibleEntry(status,data,globals) ) {
     // entry would be infeasible
 //std::cerr << "Local evaluator: std::nullopt" << std::endl;
     return false;
@@ -33,18 +33,18 @@ bool LocalEvaluator::updateValues(EntryDecision* decision, Values& status, Value
   ) {
     // apply operators after checking entry restrictions and before applying guidance
     // receive tasks and decision tasks require further decision before operators are applied
-    extensionElements->applyOperators(status,data);
+    extensionElements->applyOperators(status,data,globals);
   }
   return true;
 }
 
-bool LocalEvaluator::updateValues(ExitDecision* decision, Values& status, Values& data) {
+bool LocalEvaluator::updateValues(ExitDecision* decision, Values& status, Values& data, Values& globals) {
   auto token = decision->token;
   assert( token->completed() );
   auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   assert(extensionElements);
 
-  if ( !extensionElements->feasibleExit(status,data) ) {
+  if ( !extensionElements->feasibleExit(status,data,globals) ) {
     // exit would be infeasible
     return false;
   }
@@ -52,13 +52,13 @@ bool LocalEvaluator::updateValues(ExitDecision* decision, Values& status, Values
   return true;
 }
 
-bool LocalEvaluator::updateValues(ChoiceDecision* decision, Values& status, Values& data) {
+bool LocalEvaluator::updateValues(ChoiceDecision* decision, Values& status, Values& data, Values& globals) {
   auto token = decision->token;
   auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   assert(extensionElements);
-  extensionElements->applyOperators(status,data);
+  extensionElements->applyOperators(status,data,globals);
   // TODO: do we want to check feasibility here?  
-  if ( !extensionElements->fullScopeRestrictionsSatisfied(status,data) ) {
+  if ( !extensionElements->fullScopeRestrictionsSatisfied(status,data,globals) ) {
     // exit would be infeasible
     return false;
   }
@@ -66,17 +66,17 @@ bool LocalEvaluator::updateValues(ChoiceDecision* decision, Values& status, Valu
   return true;
 }
 
-bool LocalEvaluator::updateValues(MessageDeliveryDecision* decision, Values& status, Values& data) {
+bool LocalEvaluator::updateValues(MessageDeliveryDecision* decision, Values& status, Values& data, Values& globals) {
   auto token = decision->token;
   auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   assert(extensionElements);
   assert( dynamic_cast<const MessageDeliveryEvent*>(decision) );
   auto message = static_cast<const MessageDeliveryEvent*>(decision)->message.lock();
-  message->apply(token->node,token->getAttributeRegistry(),status,data);
-  extensionElements->applyOperators(status,data);
+  message->apply(token->node,token->getAttributeRegistry(),status,data,globals);
+  extensionElements->applyOperators(status,data,globals);
 
   // TODO: do we want to check feasibility here?  
-  if ( !extensionElements->fullScopeRestrictionsSatisfied(status,data) ) {
+  if ( !extensionElements->fullScopeRestrictionsSatisfied(status,data,globals) ) {
     // exit would be infeasible
     return false;
   }
@@ -92,16 +92,17 @@ std::optional<double> LocalEvaluator::evaluate(EntryDecision* decision) {
   Values status = token->status;
   status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = token->owner->systemState->currentTime;
   Values data(*token->data);
-  double evaluation = (double)extensionElements->getObjective(status,data);
+  Values globals = token->globals;
+  double evaluation = (double)extensionElements->getObjective(status,data,globals);
 //std::cerr << "Initial evaluation: " << evaluation << std::endl;
 
-  bool feasible = updateValues(decision,status,data); 
+  bool feasible = updateValues(decision,status,data,globals); 
   if ( !feasible ) {
     return std::nullopt;
   }
   // return evaluation of entry
-//std::cerr << "Updated evaluation: " << extensionElements->getObjective(status,data) << std::endl;
-  return evaluation - extensionElements->getObjective(status,data);
+//std::cerr << "Updated evaluation: " << extensionElements->getObjective(status,data,globals) << std::endl;
+  return evaluation - extensionElements->getObjective(status,data,globals);
 }
 
 std::optional<double> LocalEvaluator::evaluate(ExitDecision* decision) {
@@ -110,7 +111,8 @@ std::optional<double> LocalEvaluator::evaluate(ExitDecision* decision) {
   Values status = token->status;
   status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = token->owner->systemState->currentTime;
   Values data(*token->data);
-  bool feasible = updateValues(decision,status,data); 
+  Values globals = token->globals;
+  bool feasible = updateValues(decision,status,data,globals); 
   if ( !feasible ) {
     return std::nullopt;
   }
@@ -122,19 +124,20 @@ std::optional<double> LocalEvaluator::evaluate(ChoiceDecision* decision) {
   assert( token->busy() );
   auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   assert(extensionElements);
-  auto evaluation = (double)extensionElements->getObjective(token->status, *token->data);
+  auto evaluation = (double)extensionElements->getObjective(token->status, *token->data, token->globals);
 
   assert( dynamic_cast<const ChoiceEvent*>(decision) );
   Values status = static_cast<const ChoiceEvent*>(decision)->updatedStatus;
   status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = token->owner->systemState->currentTime;
   Values data(*token->data);
+  Values globals = token->globals;
 
-  bool feasible = updateValues(decision,status,data); 
+  bool feasible = updateValues(decision,status,data,globals); 
   if ( !feasible ) {
     return std::nullopt;
   }
 
-  return evaluation - extensionElements->getObjective(status,data);
+  return evaluation - extensionElements->getObjective(status,data,globals);
 }
 
 std::optional<double> LocalEvaluator::evaluate(MessageDeliveryDecision* decision) {
@@ -146,14 +149,15 @@ std::optional<double> LocalEvaluator::evaluate(MessageDeliveryDecision* decision
   Values status = token->status;
   status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = token->owner->systemState->currentTime;
   Values data(*token->data);
-  double evaluation = (double)extensionElements->getObjective(status,data);
+  Values globals = token->globals;
+  double evaluation = (double)extensionElements->getObjective(status,data,globals);
 
-  bool feasible = updateValues(decision,status,data); 
+  bool feasible = updateValues(decision,status,data,globals); 
   if ( !feasible ) {
     return std::nullopt;
   }
 
-  return evaluation - extensionElements->getObjective(status,data);
+  return evaluation - extensionElements->getObjective(status,data,globals);
 }
 
 

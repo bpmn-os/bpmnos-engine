@@ -15,11 +15,12 @@ SCENARIO( "Lookup table", "[model][lookup]" ) {
 
       auto instantiations = scenario->getCurrentInstantiations(0);
       THEN( "The result is correct" ) {
+        Values globals;
         for ( auto& [process,status,data] : instantiations ) {
           auto extensionElements = process->extensionElements->represents<Model::ExtensionElements>();
           REQUIRE( status.size() == 3 + 1); // don't forget timestamp
           REQUIRE( status[extensionElements->attributeRegistry["cost"]->index].value() == 0 );
-          extensionElements->applyOperators(status,data);
+          extensionElements->applyOperators(status,data,globals);
           REQUIRE( status[extensionElements->attributeRegistry["cost"]->index].value() == 12 );
         }
       }
@@ -38,11 +39,12 @@ SCENARIO( "Lookup table", "[model][lookup]" ) {
 
       auto instantiations = scenario->getCurrentInstantiations(0);
       THEN( "The result is correct" ) {
+        Values globals;
         for ( auto& [process,status,data] : instantiations ) {
           auto extensionElements = process->extensionElements->represents<Model::ExtensionElements>();
           REQUIRE( status.size() == 3 + 1 ); // don't forget timestamp
           REQUIRE( status[extensionElements->attributeRegistry["cost"]->index].value() == 0 );
-          extensionElements->applyOperators(status,data);
+          extensionElements->applyOperators(status,data,globals);
           REQUIRE( status[extensionElements->attributeRegistry["cost"]->index].has_value() == false );
         }
       }

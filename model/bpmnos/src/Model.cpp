@@ -85,6 +85,9 @@ std::unique_ptr<BPMN::FlowNode> Model::createActivity(XML::bpmn::tActivity* acti
     for ( auto& messageDefinition : extensionElements->messageDefinitions ) {
       for ( auto& [_,content] : messageDefinition->contentMap ) {
         if ( content->attribute.has_value() ) {
+          if ( content->attribute.value().get().category == Attribute::Category::GLOBAL ) {
+            throw std::runtime_error("Model: Receive task '" + baseElement->id + "' attempts to modify global attribute '" + content->attribute.value().get().id + "'");
+          } 
           content->attribute.value().get().isImmutable = false;
         }
       }
@@ -170,6 +173,9 @@ std::unique_ptr<BPMN::FlowNode> Model::createMessageStartEvent(XML::bpmn::tStart
       if ( content->attribute.has_value() ) {
         Attribute* attribute = &content->attribute.value().get();
         auto extensionElements = parent->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+        if ( attribute->category == Attribute::Category::GLOBAL ) {
+          throw std::runtime_error("Model: Message start event '" + baseElement->id + "' attempts to modify global attribute '" + attribute->id + "'");
+        } 
         if ( !contains(extensionElements->attributes,attribute) && !contains(extensionElements->data,attribute) ) {
           attribute->isImmutable = false;
         }
@@ -186,6 +192,9 @@ std::unique_ptr<BPMN::FlowNode> Model::createMessageBoundaryEvent(XML::bpmn::tBo
   
   for ( auto& messageDefinition : extensionElements->messageDefinitions ) {
     for ( auto& [_,content] : messageDefinition->contentMap ) {
+      if ( content->attribute.value().get().category == Attribute::Category::GLOBAL ) {
+        throw std::runtime_error("Model: Message boundary event '" + baseElement->id + "' attempts to modify global attribute '" + content->attribute.value().get().id + "'");
+      } 
       if ( content->attribute.has_value() ) {
         content->attribute.value().get().isImmutable = false;
       }
@@ -201,6 +210,9 @@ std::unique_ptr<BPMN::FlowNode> Model::createMessageCatchEvent(XML::bpmn::tCatch
   
   for ( auto& messageDefinition : extensionElements->messageDefinitions ) {
     for ( auto& [_,content] : messageDefinition->contentMap ) {
+      if ( content->attribute.value().get().category == Attribute::Category::GLOBAL ) {
+        throw std::runtime_error("Model: Message catch event '" + baseElement->id + "' attempts to modify global attribute '" + content->attribute.value().get().id + "'");
+      } 
       if ( content->attribute.has_value() ) {
         content->attribute.value().get().isImmutable = false;
       }

@@ -19,7 +19,7 @@
 
 using namespace BPMNOS::Model;
 
-ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, AttributeRegistry attributeRegistry_, BPMN::Scope* parent, std::vector<std::reference_wrapper<XML::bpmnos::tAttribute>> dataAttributes)
+ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const AttributeRegistry attributeRegistry_, BPMN::Scope* parent, std::vector<std::reference_wrapper<XML::bpmnos::tAttribute>> dataAttributes)
   : BPMN::ExtensionElements( baseElement )
   , attributeRegistry(attributeRegistry_)
   , parent(parent)
@@ -239,35 +239,35 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, Attri
 }
 
 template <typename DataType>
-bool ExtensionElements::feasibleEntry(const BPMNOS::Values& status, const DataType& data) const {
+bool ExtensionElements::feasibleEntry(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const {
   for ( auto& restriction : restrictions ) {
-    if ( restriction->scope != Restriction::Scope::EXIT && !restriction->isSatisfied(status,data) ) {
+    if ( restriction->scope != Restriction::Scope::EXIT && !restriction->isSatisfied(status,data,globals) ) {
       return false;
     }
   }
-  return satisfiesInheritedRestrictions(status,data);
+  return satisfiesInheritedRestrictions(status,data,globals);
 }
 
-template bool ExtensionElements::feasibleEntry<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data) const;
-template bool ExtensionElements::feasibleEntry<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data) const;
+template bool ExtensionElements::feasibleEntry<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data, const BPMNOS::Values& globals) const;
+template bool ExtensionElements::feasibleEntry<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data, const BPMNOS::Values& globals) const;
 
 template <typename DataType>
-bool ExtensionElements::feasibleExit(const BPMNOS::Values& status, const DataType& data) const {
+bool ExtensionElements::feasibleExit(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const {
   for ( auto& restriction : restrictions ) {
-    if ( restriction->scope != Restriction::Scope::ENTRY && !restriction->isSatisfied(status,data) ) {
+    if ( restriction->scope != Restriction::Scope::ENTRY && !restriction->isSatisfied(status,data,globals) ) {
       return false;
     }
   }
   
-  return satisfiesInheritedRestrictions(status,data);
+  return satisfiesInheritedRestrictions(status,data,globals);
 }
 
-template bool ExtensionElements::feasibleExit<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data) const;
-template bool ExtensionElements::feasibleExit<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data) const;
+template bool ExtensionElements::feasibleExit<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data, const BPMNOS::Values& globals) const;
+template bool ExtensionElements::feasibleExit<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data, const BPMNOS::Values& globals) const;
 
 
 template <typename DataType>
-bool ExtensionElements::satisfiesInheritedRestrictions(const BPMNOS::Values& status, const DataType& data) const {
+bool ExtensionElements::satisfiesInheritedRestrictions(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const {
   auto base = baseElement->represents<BPMN::ChildNode>();
   
   if ( !base ) return true;
@@ -276,7 +276,7 @@ bool ExtensionElements::satisfiesInheritedRestrictions(const BPMNOS::Values& sta
   const BPMN::Node* ancestor = base->parent;
   while ( ancestor ) {
     assert( ancestor->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );
-    if ( !ancestor->extensionElements->as<BPMNOS::Model::ExtensionElements>()->fullScopeRestrictionsSatisfied(status,data) ) {
+    if ( !ancestor->extensionElements->as<BPMNOS::Model::ExtensionElements>()->fullScopeRestrictionsSatisfied(status,data,globals) ) {
       return false;
     }
     if ( auto eventSubProcess = ancestor->represents<BPMN::EventSubProcess>();
@@ -302,45 +302,52 @@ bool ExtensionElements::satisfiesInheritedRestrictions(const BPMNOS::Values& sta
   return true;
 }
 
-template bool ExtensionElements::satisfiesInheritedRestrictions<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data) const;
-template bool ExtensionElements::satisfiesInheritedRestrictions<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data) const;
+template bool ExtensionElements::satisfiesInheritedRestrictions<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data, const BPMNOS::Values& globals) const;
+template bool ExtensionElements::satisfiesInheritedRestrictions<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data, const BPMNOS::Values& globals) const;
 
 template <typename DataType>
-bool ExtensionElements::fullScopeRestrictionsSatisfied(const BPMNOS::Values& status, const DataType& data) const {
+bool ExtensionElements::fullScopeRestrictionsSatisfied(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const {
   for ( auto& restriction : restrictions ) {
-    if ( restriction->scope == Restriction::Scope::FULL && !restriction->isSatisfied(status,data) ) {
+    if ( restriction->scope == Restriction::Scope::FULL && !restriction->isSatisfied(status,data,globals) ) {
       return false;
     }
   }
   return true;
 }
 
-template bool ExtensionElements::fullScopeRestrictionsSatisfied<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data) const;
-template bool ExtensionElements::fullScopeRestrictionsSatisfied<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data) const;
+template bool ExtensionElements::fullScopeRestrictionsSatisfied<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data, const BPMNOS::Values& globals) const;
+template bool ExtensionElements::fullScopeRestrictionsSatisfied<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data, const BPMNOS::Values& globals) const;
 
 
 template <typename DataType>
-void ExtensionElements::applyOperators(BPMNOS::Values& status, DataType& data) const {
+void ExtensionElements::applyOperators(BPMNOS::Values& status, DataType& data, BPMNOS::Values& globals) const {
   for ( auto& operator_ : operators ) {
-    operator_->apply(status,data);
+    operator_->apply(status,data,globals);
   }
 }
 
-template void ExtensionElements::applyOperators<BPMNOS::Values>(Values& status, BPMNOS::Values& data) const;
-template void ExtensionElements::applyOperators<BPMNOS::SharedValues>(Values& status, BPMNOS::SharedValues& data) const;
+template void ExtensionElements::applyOperators<BPMNOS::Values>(Values& status, BPMNOS::Values& data, BPMNOS::Values& globals) const;
+template void ExtensionElements::applyOperators<BPMNOS::SharedValues>(Values& status, BPMNOS::SharedValues& data, BPMNOS::Values& globals) const;
 
 template <typename DataType>
-BPMNOS::number ExtensionElements::getObjective(const BPMNOS::Values& status, const DataType& data) const {
+BPMNOS::number ExtensionElements::getObjective(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const {
   BPMNOS::number objective = 0;
   for ( auto& [name, attribute] : attributeRegistry.statusAttributes ) {
-    auto value = attributeRegistry.getValue(attribute,status,data);
+    auto value = attributeRegistry.getValue(attribute,status,data,globals);
     if ( value.has_value() ) {
 //std::cerr << attribute->name << " contributes " <<  attribute->weight * value.value() << std::endl;
       objective += attribute->weight * value.value();
     }
   }
   for ( auto& [name, attribute] : attributeRegistry.dataAttributes ) {
-    auto value = attributeRegistry.getValue(attribute,status,data);
+    auto value = attributeRegistry.getValue(attribute,status,data,globals);
+    if ( value.has_value() ) {
+//std::cerr << attribute->name << " contributes " <<  attribute->weight * value.value() << std::endl;
+      objective += attribute->weight * value.value();
+    }
+  }
+  for ( auto& [name, attribute] : attributeRegistry.globalAttributes ) {
+    auto value = attributeRegistry.getValue(attribute,status,data,globals);
     if ( value.has_value() ) {
 //std::cerr << attribute->name << " contributes " <<  attribute->weight * value.value() << std::endl;
       objective += attribute->weight * value.value();
@@ -349,21 +356,21 @@ BPMNOS::number ExtensionElements::getObjective(const BPMNOS::Values& status, con
   return objective;
 }
 
-template BPMNOS::number ExtensionElements::getObjective<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data) const;
-template BPMNOS::number ExtensionElements::getObjective<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data) const;
+template BPMNOS::number ExtensionElements::getObjective<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data, const BPMNOS::Values& globals) const;
+template BPMNOS::number ExtensionElements::getObjective<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data, const BPMNOS::Values& globals) const;
 
 
 template <typename DataType>
-BPMNOS::number ExtensionElements::getContributionToObjective(const BPMNOS::Values& status, const DataType& data) const {
+BPMNOS::number ExtensionElements::getContributionToObjective(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const {
   BPMNOS::number contribution = 0;
   for ( auto& attribute : attributes ) {
-    auto value = attributeRegistry.getValue(attribute.get(),status,data);
+    auto value = attributeRegistry.getValue(attribute.get(),status,data,globals);
     if ( value.has_value() ) {
       contribution += attribute->weight * value.value();
     }
   }
   for ( auto& attribute : this->data ) {
-    auto value = attributeRegistry.getValue(attribute.get(),status,data);
+    auto value = attributeRegistry.getValue(attribute.get(),status,data,globals);
     if ( value.has_value() ) {
       contribution += attribute->weight * value.value();
     }
@@ -371,6 +378,6 @@ BPMNOS::number ExtensionElements::getContributionToObjective(const BPMNOS::Value
   return contribution;
 }
 
-template BPMNOS::number ExtensionElements::getContributionToObjective<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data) const;
-template BPMNOS::number ExtensionElements::getContributionToObjective<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data) const;
+template BPMNOS::number ExtensionElements::getContributionToObjective<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data, const BPMNOS::Values& globals) const;
+template BPMNOS::number ExtensionElements::getContributionToObjective<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data, const BPMNOS::Values& globals) const;
 

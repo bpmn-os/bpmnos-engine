@@ -44,16 +44,16 @@ public:
  * operators "==", "!=", ">=", ">", "<=", "<" are supported.
  */
   template <typename DataType>
-  std::optional<BPMNOS::number> _execute(const BPMNOS::Values& status, const DataType& data) const;
+  std::optional<BPMNOS::number> _execute(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const;
 
-  std::optional<BPMNOS::number> execute(const BPMNOS::Values& status, const BPMNOS::Values& data) const override { return _execute(status,data); };
-  std::optional<BPMNOS::number> execute(const BPMNOS::Values& status, const BPMNOS::SharedValues& data) const override { return _execute(status,data); };
+  std::optional<BPMNOS::number> execute(const BPMNOS::Values& status, const BPMNOS::Values& data, const BPMNOS::Values& globals) const override { return _execute(status,data,globals); };
+  std::optional<BPMNOS::number> execute(const BPMNOS::Values& status, const BPMNOS::SharedValues& data, const BPMNOS::Values& globals) const override { return _execute(status,data,globals); };
   
   template <typename DataType>
-  std::pair< std::optional<BPMNOS::number>, std::optional<BPMNOS::number> > _getBounds(const Attribute* attribute, const BPMNOS::Values& status, const DataType& data) const;
+  std::pair< std::optional<BPMNOS::number>, std::optional<BPMNOS::number> > _getBounds(const Attribute* attribute, const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const;
   
-  std::pair< std::optional<BPMNOS::number>, std::optional<BPMNOS::number> > getBounds(const Attribute* attribute, const Values& status, const Values& data) const override { return _getBounds(attribute,status,data); };
-  std::pair< std::optional<BPMNOS::number>, std::optional<BPMNOS::number> > getBounds(const Attribute* attribute, const Values& status, const SharedValues& data) const override { return _getBounds(attribute,status,data); };
+  std::pair< std::optional<BPMNOS::number>, std::optional<BPMNOS::number> > getBounds(const Attribute* attribute, const Values& status, const Values& data, const BPMNOS::Values& globals) const override { return _getBounds(attribute,status,data,globals); };
+  std::pair< std::optional<BPMNOS::number>, std::optional<BPMNOS::number> > getBounds(const Attribute* attribute, const Values& status, const SharedValues& data, const BPMNOS::Values& globals) const override { return _getBounds(attribute,status,data,globals); };
 
 private:
   void parse(std::string expressionString, NumericType SIGN = 1.0);

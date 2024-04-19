@@ -11,10 +11,10 @@ namespace BPMNOS::Execution {
  */
 class GuidedEvaluator : public LocalEvaluator {
 public:
-  bool updateValues(EntryDecision* decision, Values& status, Values& data) override;
-  bool updateValues(ExitDecision* decision, Values& status, Values& data) override;
-  bool updateValues(ChoiceDecision* decision, Values& status, Values& data) override;
-  bool updateValues(MessageDeliveryDecision* decision, Values& status, Values& data) override;
+  bool updateValues(EntryDecision* decision, Values& status, Values& data, Values& globals) override;
+  bool updateValues(ExitDecision* decision, Values& status, Values& data, Values& globals) override;
+  bool updateValues(ChoiceDecision* decision, Values& status, Values& data, Values& globals) override;
+  bool updateValues(MessageDeliveryDecision* decision, Values& status, Values& data, Values& globals) override;
 
   std::optional<double> evaluate(EntryDecision* decision) override;
   std::optional<double> evaluate(ExitDecision* decision) override;

@@ -34,11 +34,11 @@ std::unique_ptr<Expression> Expression::create(XML::bpmnos::tParameter* paramete
   }
 }
 
-std::pair< std::optional<BPMNOS::number>, std::optional<BPMNOS::number> > Expression::getBounds([[maybe_unused]] const Attribute* attribute, [[maybe_unused]] const Values& status, [[maybe_unused]] const Values& data) const {
+std::pair< std::optional<BPMNOS::number>, std::optional<BPMNOS::number> > Expression::getBounds([[maybe_unused]] const Attribute* attribute, [[maybe_unused]] const Values& status, [[maybe_unused]] const Values& data, [[maybe_unused]] const BPMNOS::Values& globals) const {
   return {std::nullopt,std::nullopt};
 }
 
-std::pair< std::optional<BPMNOS::number>, std::optional<BPMNOS::number> > Expression::getBounds([[maybe_unused]] const Attribute* attribute, [[maybe_unused]] const Values& status, [[maybe_unused]] const SharedValues& data) const {
+std::pair< std::optional<BPMNOS::number>, std::optional<BPMNOS::number> > Expression::getBounds([[maybe_unused]] const Attribute* attribute, [[maybe_unused]] const Values& status, [[maybe_unused]] const SharedValues& data, [[maybe_unused]] const BPMNOS::Values& globals) const {
   return {std::nullopt,std::nullopt};
 }
 

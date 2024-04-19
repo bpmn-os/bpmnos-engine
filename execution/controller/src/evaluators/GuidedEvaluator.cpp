@@ -7,8 +7,8 @@
 using namespace BPMNOS::Execution;
 
 
-bool GuidedEvaluator::updateValues(EntryDecision* decision, Values& status, Values& data) {
-  if ( !LocalEvaluator::updateValues(decision,status,data) ) {
+bool GuidedEvaluator::updateValues(EntryDecision* decision, Values& status, Values& data, Values& globals) {
+  if ( !LocalEvaluator::updateValues(decision,status,data,globals) ) {
     return false;
   }
 
@@ -21,13 +21,13 @@ bool GuidedEvaluator::updateValues(EntryDecision* decision, Values& status, Valu
   // apply guidance
   auto guidance = extensionElements->entryGuidance.value().get();
   auto systemState = decision->token->owner->systemState;
-  guidance->apply(systemState->scenario, systemState->currentTime, decision->token->owner->root->instance.value(), decision->token->node, status, data);
+  guidance->apply(systemState->scenario, systemState->currentTime, decision->token->owner->root->instance.value(), decision->token->node, status, data, globals);
   
-  return guidance->restrictionsSatisfied(decision->token->node,status,data);
+  return guidance->restrictionsSatisfied(decision->token->node,status,data,globals);
 }
 
-bool GuidedEvaluator::updateValues(ExitDecision* decision, Values& status, Values& data) {
-  if ( !LocalEvaluator::updateValues(decision,status,data) ) {
+bool GuidedEvaluator::updateValues(ExitDecision* decision, Values& status, Values& data, Values& globals) {
+  if ( !LocalEvaluator::updateValues(decision,status,data,globals) ) {
     return false;
   }
 
@@ -40,14 +40,14 @@ bool GuidedEvaluator::updateValues(ExitDecision* decision, Values& status, Value
   // apply guidance
   auto guidance = extensionElements->exitGuidance.value().get();
   auto systemState = decision->token->owner->systemState;
-  guidance->apply(systemState->scenario, systemState->currentTime, decision->token->owner->root->instance.value(), decision->token->node, status, data);
+  guidance->apply(systemState->scenario, systemState->currentTime, decision->token->owner->root->instance.value(), decision->token->node, status, data, globals);
 
-  return guidance->restrictionsSatisfied(decision->token->node,status,data);
+  return guidance->restrictionsSatisfied(decision->token->node,status,data,globals);
 }
 
 
-bool GuidedEvaluator::updateValues(ChoiceDecision* decision, Values& status, Values& data) {
-  if ( !LocalEvaluator::updateValues(decision,status,data) ) {
+bool GuidedEvaluator::updateValues(ChoiceDecision* decision, Values& status, Values& data, Values& globals) {
+  if ( !LocalEvaluator::updateValues(decision,status,data,globals) ) {
     return false;
   }
 
@@ -60,14 +60,14 @@ bool GuidedEvaluator::updateValues(ChoiceDecision* decision, Values& status, Val
   // apply guidance
   auto guidance = extensionElements->choiceGuidance.value().get();
   auto systemState = decision->token->owner->systemState;
-  guidance->apply(systemState->scenario, systemState->currentTime, decision->token->owner->root->instance.value(), decision->token->node, status, data);
+  guidance->apply(systemState->scenario, systemState->currentTime, decision->token->owner->root->instance.value(), decision->token->node, status, data, globals);
 
-  return guidance->restrictionsSatisfied(decision->token->node,status,data);
+  return guidance->restrictionsSatisfied(decision->token->node,status,data,globals);
 }
 
 
-bool GuidedEvaluator::updateValues(MessageDeliveryDecision* decision, Values& status, Values& data) {
-  if ( !LocalEvaluator::updateValues(decision,status,data) ) {
+bool GuidedEvaluator::updateValues(MessageDeliveryDecision* decision, Values& status, Values& data, Values& globals) {
+  if ( !LocalEvaluator::updateValues(decision,status,data,globals) ) {
     return false;
   }
 
@@ -80,9 +80,9 @@ bool GuidedEvaluator::updateValues(MessageDeliveryDecision* decision, Values& st
   // apply guidance
   auto guidance = extensionElements->messageDeliveryGuidance.value().get();
   auto systemState = decision->token->owner->systemState;
-  guidance->apply(systemState->scenario, systemState->currentTime, decision->token->owner->root->instance.value(), decision->token->node, status, data);
+  guidance->apply(systemState->scenario, systemState->currentTime, decision->token->owner->root->instance.value(), decision->token->node, status, data, globals);
 
-  return guidance->restrictionsSatisfied(decision->token->node,status,data);
+  return guidance->restrictionsSatisfied(decision->token->node,status,data,globals);
 }
 
 std::optional<double> GuidedEvaluator::evaluate(EntryDecision* decision) {
@@ -93,20 +93,21 @@ std::optional<double> GuidedEvaluator::evaluate(EntryDecision* decision) {
   Values status = token->status;
   status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = token->owner->systemState->currentTime;
   Values data(*token->data);
-  double evaluation = (double)extensionElements->getObjective(status,data);
+  Values globals = token->globals;
+  double evaluation = (double)extensionElements->getObjective(status,data,globals);
 //std::cerr << "Initial evaluation: " << evaluation << std::endl;
 
-  bool feasible = updateValues(decision,status,data); 
+  bool feasible = updateValues(decision,status,data,globals); 
   if ( !feasible ) {
     return std::nullopt;
   }
 
   if ( !extensionElements->entryGuidance ) {
-    return evaluation - extensionElements->getObjective(status,data);
+    return evaluation - extensionElements->getObjective(status,data,globals);
   }
   // return evaluation of entry
-//std::cerr << "Updated evaluation: " << extensionElements->getObjective(status,data) << std::endl;
-  return evaluation - extensionElements->entryGuidance.value()->getObjective(status,data);
+//std::cerr << "Updated evaluation: " << extensionElements->getObjective(status,data,globals) << std::endl;
+  return evaluation - extensionElements->entryGuidance.value()->getObjective(status,data,globals);
 }
 
 std::optional<double> GuidedEvaluator::evaluate(ExitDecision* decision) {
@@ -117,18 +118,19 @@ std::optional<double> GuidedEvaluator::evaluate(ExitDecision* decision) {
   Values status = token->status;
   status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = token->owner->systemState->currentTime;
   Values data(*token->data);
-  double evaluation = (double)extensionElements->getObjective(status,data);
+  Values globals = token->globals;
+  double evaluation = (double)extensionElements->getObjective(status,data,globals);
 
-  bool feasible = updateValues(decision,status,data); 
+  bool feasible = updateValues(decision,status,data,globals); 
   if ( !feasible ) {
     return std::nullopt;
   }
 
   if ( !extensionElements->exitGuidance ) {
-    return evaluation - extensionElements->getObjective(status,data);
+    return evaluation - extensionElements->getObjective(status,data,globals);
   }
 
-  return evaluation - extensionElements->exitGuidance.value()->getObjective(status,data);
+  return evaluation - extensionElements->exitGuidance.value()->getObjective(status,data,globals);
 }
 
 std::optional<double> GuidedEvaluator::evaluate(ChoiceDecision* decision) {
@@ -136,23 +138,24 @@ std::optional<double> GuidedEvaluator::evaluate(ChoiceDecision* decision) {
   assert( token->busy() );
   auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   assert(extensionElements);
-  auto evaluation = (double)extensionElements->getObjective(token->status, *token->data);
+  auto evaluation = (double)extensionElements->getObjective(token->status, *token->data, token->globals);
 
   assert( dynamic_cast<const ChoiceEvent*>(decision) );
   Values status = static_cast<const ChoiceEvent*>(decision)->updatedStatus;
   status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = token->owner->systemState->currentTime;
   Values data(*token->data);
+  Values globals = token->globals;
 
-  bool feasible = updateValues(decision,status,data); 
+  bool feasible = updateValues(decision,status,data,globals); 
   if ( !feasible ) {
     return std::nullopt;
   }
 
   if ( !extensionElements->choiceGuidance ) {
-    return evaluation - extensionElements->getObjective(status,data);
+    return evaluation - extensionElements->getObjective(status,data,globals);
   }
 
-  return evaluation - extensionElements->choiceGuidance.value()->getObjective(status,data);
+  return evaluation - extensionElements->choiceGuidance.value()->getObjective(status,data,globals);
 }
 
 std::optional<double> GuidedEvaluator::evaluate(MessageDeliveryDecision* decision) {
@@ -164,18 +167,19 @@ std::optional<double> GuidedEvaluator::evaluate(MessageDeliveryDecision* decisio
   Values status = token->status;
   status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = token->owner->systemState->currentTime;
   Values data(*token->data);
-  double evaluation = (double)extensionElements->getObjective(status,data);
+  Values globals = token->globals;
+  double evaluation = (double)extensionElements->getObjective(status,data,globals);
 
-  bool feasible = updateValues(decision,status,data); 
+  bool feasible = updateValues(decision,status,data,globals); 
   if ( !feasible ) {
     return std::nullopt;
   }
 
   if ( !extensionElements->messageDeliveryGuidance ) {
-    return evaluation - extensionElements->getObjective(status,data);
+    return evaluation - extensionElements->getObjective(status,data,globals);
   }
 
-  return evaluation - extensionElements->messageDeliveryGuidance.value()->getObjective(status,data);
+  return evaluation - extensionElements->messageDeliveryGuidance.value()->getObjective(status,data,globals);
 }
 
 

@@ -125,11 +125,11 @@ void LinearExpression::parseInequality(const std::string& comparisonOperator) {
 }
 
 template <typename DataType>
-std::optional<BPMNOS::number> LinearExpression::_execute(const BPMNOS::Values& status, const DataType& data) const {
+std::optional<BPMNOS::number> LinearExpression::_execute(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const {
   NumericType result = 0;
   for ( auto& [coefficient,variable] : terms ) {
     if ( variable ) {
-      auto value = attributeRegistry.getValue(variable,status,data);
+      auto value = attributeRegistry.getValue(variable,status,data,globals);
       if ( !value.has_value() ) {
         // return undefined due to missing variable 
         return std::nullopt;
@@ -166,11 +166,11 @@ std::optional<BPMNOS::number> LinearExpression::_execute(const BPMNOS::Values& s
   return std::nullopt;
 }
 
-template std::optional<BPMNOS::number> LinearExpression::_execute<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data) const;
-template std::optional<BPMNOS::number> LinearExpression::_execute<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data) const;
+template std::optional<BPMNOS::number> LinearExpression::_execute<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data, const BPMNOS::Values& globals) const;
+template std::optional<BPMNOS::number> LinearExpression::_execute<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data, const BPMNOS::Values& globals) const;
 
 template <typename DataType>
-std::pair< std::optional<BPMNOS::number>, std::optional<BPMNOS::number> > LinearExpression::_getBounds(const Attribute* attribute, const BPMNOS::Values& status, const DataType& data) const {
+std::pair< std::optional<BPMNOS::number>, std::optional<BPMNOS::number> > LinearExpression::_getBounds(const Attribute* attribute, const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const {
   if ( type == Type::DEFAULT || type == Type::NOTEQUAL ) {
     return {std::nullopt,std::nullopt};
   }
@@ -184,7 +184,7 @@ std::pair< std::optional<BPMNOS::number>, std::optional<BPMNOS::number> > Linear
         denominator = -coefficient;
       }
       else {
-        auto value = attributeRegistry.getValue(variable,status,data);
+        auto value = attributeRegistry.getValue(variable,status,data,globals);
         if ( !value.has_value() ) {
           // return no bounds due to missing variable 
           return {std::nullopt,std::nullopt};
@@ -284,6 +284,6 @@ std::pair< std::optional<BPMNOS::number>, std::optional<BPMNOS::number> > Linear
   return {std::nullopt,std::nullopt};
 }
 
-template std::pair< std::optional<BPMNOS::number>, std::optional<BPMNOS::number> > LinearExpression::_getBounds<BPMNOS::Values>(const Attribute* attribute, const BPMNOS::Values& status, const BPMNOS::Values& data) const;
-template std::pair< std::optional<BPMNOS::number>, std::optional<BPMNOS::number> > LinearExpression::_getBounds<BPMNOS::SharedValues>(const Attribute* attribute, const BPMNOS::Values& status, const BPMNOS::SharedValues& data) const;
+template std::pair< std::optional<BPMNOS::number>, std::optional<BPMNOS::number> > LinearExpression::_getBounds<BPMNOS::Values>(const Attribute* attribute, const BPMNOS::Values& status, const BPMNOS::Values& data, const BPMNOS::Values& globals) const;
+template std::pair< std::optional<BPMNOS::number>, std::optional<BPMNOS::number> > LinearExpression::_getBounds<BPMNOS::SharedValues>(const Attribute* attribute, const BPMNOS::Values& status, const BPMNOS::SharedValues& data, const BPMNOS::Values& globals) const;
 

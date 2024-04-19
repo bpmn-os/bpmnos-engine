@@ -16,14 +16,14 @@ Gatekeeper::Gatekeeper(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent
 }
 
 template <typename DataType>
-bool Gatekeeper::restrictionsSatisfied(const BPMNOS::Values& status, const DataType& data) const {
+bool Gatekeeper::restrictionsSatisfied(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const {
   for ( auto& restriction : restrictions ) {
-    if ( !restriction->isSatisfied(status,data) ) {
+    if ( !restriction->isSatisfied(status,data,globals) ) {
       return false; 
     }
   }
   return true; 
 }
 
-template bool Gatekeeper::restrictionsSatisfied<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data) const;
-template bool Gatekeeper::restrictionsSatisfied<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data) const;
+template bool Gatekeeper::restrictionsSatisfied<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data, const BPMNOS::Values& globals) const;
+template bool Gatekeeper::restrictionsSatisfied<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data, const BPMNOS::Values& globals) const;

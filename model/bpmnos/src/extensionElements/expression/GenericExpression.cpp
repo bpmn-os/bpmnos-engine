@@ -41,9 +41,9 @@ GenericExpression::GenericExpression(XML::bpmnos::tParameter* parameter, const A
 }
 
 template <typename DataType>
-std::optional<BPMNOS::number> GenericExpression::_execute(const BPMNOS::Values& status, const DataType& data) const {
+std::optional<BPMNOS::number> GenericExpression::_execute(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const {
   for ( auto& [variable,boundAttribute] : bindings ) {
-    auto value = attributeRegistry.getValue(boundAttribute,status,data);
+    auto value = attributeRegistry.getValue(boundAttribute,status,data,globals);
     if ( !value.has_value() ) {
       // return nullopt because required attribute value is not given
       return std::nullopt;
@@ -54,7 +54,7 @@ std::optional<BPMNOS::number> GenericExpression::_execute(const BPMNOS::Values& 
   return number(compiledExpression.value());
 }
 
-template std::optional<BPMNOS::number> GenericExpression::_execute<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data) const;
-template std::optional<BPMNOS::number> GenericExpression::_execute<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data) const;
+template std::optional<BPMNOS::number> GenericExpression::_execute<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data, const BPMNOS::Values& globals) const;
+template std::optional<BPMNOS::number> GenericExpression::_execute<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data, const BPMNOS::Values& globals) const;
 
 

@@ -34,7 +34,7 @@ public:
  * @return `true` if the restriction is satisfied, `false` otherwise.
  */
   template <typename DataType>
-  bool isSatisfied(const BPMNOS::Values& status, const DataType& data) const;
+  bool isSatisfied(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const;
 };
 
 } // namespace BPMNOS::Model

@@ -30,13 +30,13 @@ public:
   std::set<const Attribute*> dependencies;
 
   template <typename DataType>
-  void apply(const Scenario* scenario, BPMNOS::number currentTime, const BPMNOS::number instanceId, const BPMN::FlowNode* node, BPMNOS::Values& status, DataType& data) const;
+  void apply(const Scenario* scenario, BPMNOS::number currentTime, const BPMNOS::number instanceId, const BPMN::FlowNode* node, BPMNOS::Values& status, DataType& data, BPMNOS::Values& globals) const;
 
   template <typename DataType>
-  BPMNOS::number getObjective(const BPMNOS::Values& status, const DataType& data) const;
+  BPMNOS::number getObjective(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const;
 
   template <typename DataType>
-  bool restrictionsSatisfied(const BPMN::FlowNode* node, const BPMNOS::Values& status, const DataType& data) const;
+  bool restrictionsSatisfied(const BPMN::FlowNode* node, const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const;
 
 };
 

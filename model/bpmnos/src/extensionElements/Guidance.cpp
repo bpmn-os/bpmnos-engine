@@ -64,16 +64,22 @@ Guidance::Guidance(XML::bpmnos::tGuidance* guidance, const AttributeRegistry& at
 }
 
 template <typename DataType>
-BPMNOS::number Guidance::getObjective(const BPMNOS::Values& status, const DataType& data) const {
+BPMNOS::number Guidance::getObjective(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const {
   BPMNOS::number objective = 0;
   for ( auto& [name, attribute] : attributeRegistry.statusAttributes ) {
-    auto value = attributeRegistry.getValue(attribute,status,data);
+    auto value = attributeRegistry.getValue(attribute,status,data,globals);
     if ( value.has_value() ) {
       objective += attribute->weight * value.value();
     }
   }
   for ( auto& [name, attribute] : attributeRegistry.dataAttributes ) {
-    auto value = attributeRegistry.getValue(attribute,status,data);
+    auto value = attributeRegistry.getValue(attribute,status,data,globals);
+    if ( value.has_value() ) {
+      objective += attribute->weight * value.value();
+    }
+  }
+  for ( auto& [name, attribute] : attributeRegistry.globalAttributes ) {
+    auto value = attributeRegistry.getValue(attribute,status,data,globals);
     if ( value.has_value() ) {
       objective += attribute->weight * value.value();
     }
@@ -81,13 +87,13 @@ BPMNOS::number Guidance::getObjective(const BPMNOS::Values& status, const DataTy
   return objective;
 }
 
-template BPMNOS::number Guidance::getObjective<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data) const;
-//template BPMNOS::number Guidance::getObjective<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data) const;
+template BPMNOS::number Guidance::getObjective<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data, const BPMNOS::Values& globals) const;
+//template BPMNOS::number Guidance::getObjective<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data, const BPMNOS::Values& globals) const;
 
 template <typename DataType>
-bool Guidance::restrictionsSatisfied(const BPMN::FlowNode* node, const BPMNOS::Values& status, const DataType& data) const {
+bool Guidance::restrictionsSatisfied(const BPMN::FlowNode* node, const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const {
   for ( auto& restriction : restrictions ) {
-    if ( !restriction->isSatisfied(status,data) ) {
+    if ( !restriction->isSatisfied(status,data,globals) ) {
       return false;
     }
   }
@@ -96,12 +102,12 @@ bool Guidance::restrictionsSatisfied(const BPMN::FlowNode* node, const BPMNOS::V
   return true;
 }
 
-template bool Guidance::restrictionsSatisfied<BPMNOS::Values>(const BPMN::FlowNode* node, const BPMNOS::Values& status, const BPMNOS::Values& data) const;
-//template bool Guidance::restrictionsSatisfied<BPMNOS::SharedValues>(const BPMN::FlowNode* node, const BPMNOS::Values& status, const BPMNOS::SharedValues& data) const;
+template bool Guidance::restrictionsSatisfied<BPMNOS::Values>(const BPMN::FlowNode* node, const BPMNOS::Values& status, const BPMNOS::Values& data, const BPMNOS::Values& globals) const;
+//template bool Guidance::restrictionsSatisfied<BPMNOS::SharedValues>(const BPMN::FlowNode* node, const BPMNOS::Values& status, const BPMNOS::SharedValues& data, const BPMNOS::Values& globals) const;
 
 
 template <typename DataType>
-void Guidance::apply(const Scenario* scenario, BPMNOS::number currentTime, const BPMNOS::number instanceId, const BPMN::FlowNode* node, BPMNOS::Values& status, DataType& data) const {
+void Guidance::apply(const Scenario* scenario, BPMNOS::number currentTime, const BPMNOS::number instanceId, const BPMN::FlowNode* node, BPMNOS::Values& status, DataType& data, BPMNOS::Values& globals) const {
 
   for ( auto& attribute : attributes ) {
     status.push_back( scenario->getKnownValue(instanceId, attribute.get(), currentTime ) );
@@ -109,10 +115,10 @@ void Guidance::apply(const Scenario* scenario, BPMNOS::number currentTime, const
 
   // apply operators
   for ( auto& operator_ : operators ) {
-    operator_->apply(status,data);
+    operator_->apply(status,data,globals);
   }
 }
 
-template void Guidance::apply<BPMNOS::Values>(const Scenario* scenario, BPMNOS::number currentTime, const BPMNOS::number instanceId, const BPMN::FlowNode* node, BPMNOS::Values& status, BPMNOS::Values& data) const;
-//template void Guidance::apply<BPMNOS::SharedValues>(const Scenario* scenario, BPMNOS::number currentTime, const BPMNOS::number instanceId, const BPMN::FlowNode* node, BPMNOS::Values& status, BPMNOS::SharedValues& data) const;
+template void Guidance::apply<BPMNOS::Values>(const Scenario* scenario, BPMNOS::number currentTime, const BPMNOS::number instanceId, const BPMN::FlowNode* node, BPMNOS::Values& status, BPMNOS::Values& data, BPMNOS::Values& globals) const;
+//template void Guidance::apply<BPMNOS::SharedValues>(const Scenario* scenario, BPMNOS::number currentTime, const BPMNOS::number instanceId, const BPMN::FlowNode* node, BPMNOS::Values& status, BPMNOS::SharedValues& data, BPMNOS::Values& globals) const;
 

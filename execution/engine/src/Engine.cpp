@@ -34,7 +34,7 @@ void Engine::Command::execute() {
   function();
 }
 
-void Engine::run(const BPMNOS::Model::Scenario* scenario, BPMNOS::number timeout) {
+BPMNOS::number Engine::run(const BPMNOS::Model::Scenario* scenario, BPMNOS::number timeout) {
   // create initial system state
   systemState = std::make_unique<SystemState>(this, scenario);
 
@@ -50,6 +50,11 @@ void Engine::run(const BPMNOS::Model::Scenario* scenario, BPMNOS::number timeout
       break;
     }
   }
+  
+  // get final objective value
+  return systemState->getObjective();
+//  std::cout << "Objective (maximization): " << (float)objective << std::endl;
+//  std::cout  << "Objective (minimization): " << -(float)objective << std::endl;
 }
 
 bool Engine::advance() {
@@ -168,7 +173,7 @@ void Engine::process(const ChoiceEvent* event) {
     if ( !extensionElements->isInstantaneous ) {
       throw std::runtime_error("StateMachine: Operators for subprocess '" + token->node->id + "' attempt to modify timestamp");
     }
-    extensionElements->applyOperators(token->status,*token->data);
+    extensionElements->applyOperators(token->status,*token->data,token->globals);
   }
 
   commands.emplace_back(std::bind(&Token::advanceToCompleted,token), token);
@@ -196,7 +201,7 @@ void Engine::process(const MessageDeliveryEvent* event) {
   assert( message_ptr );
   Message* message = const_cast<Message*>(message_ptr.get());
   // update token status 
-  message->apply(token->node,token->getAttributeRegistry(),token->status,*token->data);
+  message->apply(token->node,token->getAttributeRegistry(),token->status,*token->data,token->globals);
   
   message->state = Message::State::DELIVERED;
   notify(message);
@@ -214,7 +219,7 @@ void Engine::process(const MessageDeliveryEvent* event) {
     if ( !extensionElements->isInstantaneous ) {
       throw std::runtime_error("StateMachine: Operators for subprocess '" + token->node->id + "' attempt to modify timestamp");
     }
-    extensionElements->applyOperators(token->status,*token->data);
+    extensionElements->applyOperators(token->status,*token->data,token->globals);
   }
 
   commands.emplace_back(std::bind(&Token::advanceToCompleted,token), token);

@@ -38,51 +38,66 @@ Attribute* AttributeRegistry::operator[](const std::string& name) const {
 }
 
 bool AttributeRegistry::contains(const std::string& name) const {
-  return statusAttributes.contains(name) || dataAttributes.contains(name);
+  return statusAttributes.contains(name) || dataAttributes.contains(name) || globalAttributes.contains(name);
 }
 
-std::optional<BPMNOS::number> AttributeRegistry::getValue(const Attribute* attribute, const Values& status, const Values& data) const {
+
+std::optional<BPMNOS::number> AttributeRegistry::getValue(const Attribute* attribute, const Values& status, const Values& data, const Values& globals) const {
   if ( attribute->category == Attribute::Category::STATUS ) {
     assert(attribute->index < status.size());
     return status[attribute->index];
   }
-  else {
+  else if ( attribute->category == Attribute::Category::DATA ) {
     assert(attribute->index < data.size());
     return data[attribute->index];
   }
+  else {
+    assert(attribute->index < globals.size());
+    return globals[attribute->index];
+  }
 }
 
-std::optional<BPMNOS::number> AttributeRegistry::getValue(const Attribute* attribute, const Values& status, const SharedValues& data) const {
+std::optional<BPMNOS::number> AttributeRegistry::getValue(const Attribute* attribute, const Values& status, const SharedValues& data, const Values& globals) const {
   if ( attribute->category == Attribute::Category::STATUS ) {
     assert(attribute->index < status.size());
     return status[attribute->index];
   }
-  else {
+  else if ( attribute->category == Attribute::Category::DATA ) {
     assert(attribute->index < data.size());
     return data[attribute->index].get();
   }
+  else {
+    assert(attribute->index < globals.size());
+    return globals[attribute->index];
+  }
 }
 
-void AttributeRegistry::setValue(const Attribute* attribute, Values& status, Values& data, std::optional<BPMNOS::number> value) const {
+void AttributeRegistry::setValue(const Attribute* attribute, Values& status, Values& data, Values& globals, std::optional<BPMNOS::number> value) const {
   if ( attribute->category == Attribute::Category::STATUS ) {
     assert(attribute->index < status.size());
     status[attribute->index] = value;
   }
-  else {
+  else if ( attribute->category == Attribute::Category::DATA ) {
     assert(attribute->index < data.size());
     data[attribute->index] = value;
   }
+  else {
+    assert(attribute->index < globals.size());
+    globals[attribute->index] = value;
+  }
 }
 
-void AttributeRegistry::setValue(const Attribute* attribute, Values& status, SharedValues& data, std::optional<BPMNOS::number> value) const {
+void AttributeRegistry::setValue(const Attribute* attribute, Values& status, SharedValues& data, Values& globals, std::optional<BPMNOS::number> value) const {
   if ( attribute->category == Attribute::Category::STATUS ) {
     assert(attribute->index < status.size());
     status[attribute->index] = value;
   }
-  else {
+  else if ( attribute->category == Attribute::Category::DATA ) {
     assert(attribute->index < data.size());
     data[attribute->index].get() = value;
   }
+  else {
+    assert(attribute->index < globals.size());
+    globals[attribute->index] = value;
+  }
 }
-
-

@@ -35,6 +35,20 @@ bool SystemState::isAlive() const {
   return !instances.empty();
 };
 
+BPMNOS::number SystemState::getObjective() const {
+  auto result = objective;
+  
+  for ( auto& attribute : scenario->getModel()->attributes ) {
+    assert( attribute->category == BPMNOS::Model::Attribute::Category::GLOBAL );
+    auto value = globals[attribute->index];
+    if ( value.has_value() ) {
+      result += attribute->weight * value.value();
+    }
+  }
+  
+  return result;
+}
+
 std::vector< std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values> > SystemState::getInstantiations() const {
   if ( assumedTime ) {
     return scenario->getAnticipatedInstantiations(currentTime,assumedTime.value());

@@ -34,10 +34,10 @@ public:
  *   the target attribute is set to undefined (std::nullopt).
  */
   template <typename DataType>
-  void _apply(BPMNOS::Values& status, DataType& data) const;
+  void _apply(BPMNOS::Values& status, DataType& data, BPMNOS::Values& globals) const;
 
-  void apply(BPMNOS::Values& status, BPMNOS::Values& data) const override { return _apply(status,data); };
-  void apply(BPMNOS::Values& status, BPMNOS::SharedValues& data) const override { return _apply(status,data); };
+  void apply(BPMNOS::Values& status, BPMNOS::Values& data, BPMNOS::Values& globals) const override { return _apply(status,data,globals); };
+  void apply(BPMNOS::Values& status, BPMNOS::SharedValues& data, BPMNOS::Values& globals) const override { return _apply(status,data,globals); };
 };
 
 } // namespace BPMNOS::Model

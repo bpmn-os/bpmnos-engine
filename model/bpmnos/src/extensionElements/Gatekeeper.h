@@ -21,7 +21,7 @@ public:
   std::vector< std::unique_ptr<Restriction> > restrictions;
 
   template <typename DataType>
-  bool restrictionsSatisfied(const BPMNOS::Values& status, const DataType& data) const;
+  bool restrictionsSatisfied(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const;
 };
 
 

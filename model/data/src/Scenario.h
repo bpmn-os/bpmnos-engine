@@ -46,7 +46,7 @@ public:
    */
   Scenario(const Scenario& other, unsigned int index);
 
-  const Model& getModel() const;
+  const Model* getModel() const;
 
   unsigned int index;
 
