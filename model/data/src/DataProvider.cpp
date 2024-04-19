@@ -6,6 +6,12 @@ using namespace BPMNOS::Model;
 DataProvider::DataProvider(const std::string& modelFile)
   : model(std::make_unique<Model>(modelFile))
 {
+  // determine all global attributes
+  attributes[nullptr] = {};
+  for ( auto& attribute : model->attributes ) {
+    attributes[nullptr].emplace(attribute->id,attribute.get());
+  }
+
   // determine all attributes of all processes
   for ( auto& process : model->processes ) {
     // get all nodes in process with attribute definition

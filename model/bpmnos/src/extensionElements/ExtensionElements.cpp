@@ -19,18 +19,14 @@
 
 using namespace BPMNOS::Model;
 
-ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent, std::vector<std::reference_wrapper<XML::bpmnos::tAttribute>> dataAttributes)
+ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, AttributeRegistry attributeRegistry_, BPMN::Scope* parent, std::vector<std::reference_wrapper<XML::bpmnos::tAttribute>> dataAttributes)
   : BPMN::ExtensionElements( baseElement )
+  , attributeRegistry(attributeRegistry_)
   , parent(parent)
   , hasSequentialPerformer(false)
   , isInstantaneous(true)
 {
   // @attention: this->baseElement is only set after constructed extension elements have been bound to the BPMN base element. 
-
-  if ( parent ) {
-    attributeRegistry = parent->extensionElements->as<ExtensionElements>()->attributeRegistry;
-//std::cerr << "Parent extension elements has " << parent->extensionElements->as<ExtensionElements>()->attributeRegistry.statusAttributes.size() << " status attributes" << " and " << parent->extensionElements->as<ExtensionElements>()->attributeRegistry.dataAttributes.size() << " data attributes" << std::endl;
-  }
 
   // add all data attributes
   for ( XML::bpmnos::tAttribute& attributeElement : dataAttributes ) {
@@ -39,13 +35,11 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, BPMN:
 
   if ( !element ) return; 
 
-//std::cerr << "Create extension elements for child of " << (parent ? parent->id : "root") << " with " << attributeRegistry.statusAttributes.size() << " inherited status attributes" << " and " << attributeRegistry.dataAttributes.size() << " inherited data attributes" << std::endl;
-
   if ( auto status = element->getOptionalChild<XML::bpmnos::tStatus>(); status.has_value() ) {
     // add all attributes
     if ( status->get().attributes.has_value() ) {
       for ( XML::bpmnos::tAttribute& attributeElement : status->get().attributes.value().get().attribute ) {
-        auto attribute = std::make_unique<Attribute>(&attributeElement,Attribute::Category::STATUS, attributeRegistry);
+        auto attribute = std::make_unique<Attribute>(&attributeElement, Attribute::Category::STATUS, attributeRegistry);
         if ( attribute->id == Keyword::Instance ) {
           // always insert instance attribute at first position
           attributes.insert(attributes.begin(), std::move(attribute));

@@ -9,7 +9,8 @@ SystemState::SystemState(const Engine* engine, const BPMNOS::Model::Scenario* sc
   , scenario(scenario)
   , currentTime(currentTime)
   , objective(0)
-{
+  , globals(scenario->globals)
+{  
 }
 
 SystemState::~SystemState() {

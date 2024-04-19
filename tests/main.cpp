@@ -9,7 +9,7 @@ using namespace BPMNOS;
 
 // Include all tests here
 
-#define ALL_TESTS
+//#define ALL_TESTS
 #ifdef ALL_TESTS
 /* Model */
 #include "model/parser/test.h"
@@ -64,22 +64,16 @@ using namespace BPMNOS;
 #endif // ALL_TESTS
 
 #ifndef ALL_TESTS
-SCENARIO( "Guided knapsack problem", "[examples][knapsack_problem]" ) {
-  const std::string modelFile = "examples/knapsack_problem/Guided_knapsack_problem.bpmn";
+SCENARIO( "Globals", "[globals]" ) {
+  const std::string modelFile = "/home/asvin/Downloads/diagram.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
 
   GIVEN( "One knapsack and three items" ) {
 
     std::string csv =
       "PROCESS_ID; INSTANCE_ID; ATTRIBUTE_ID; VALUE\n"
-      "KnapsackProcess;Knapsack1;Items;3\n"
-      "KnapsackProcess;Knapsack1;Capacity;40\n"
-      "ItemProcess;Item1;Weight;20\n"
-      "ItemProcess;Item1;Value;100\n"
-      "ItemProcess;Item2;Weight;15\n"
-      "ItemProcess;Item2;Value;50\n"
-      "ItemProcess;Item3;Weight;22\n"
-      "ItemProcess;Item3;Value;120\n"
+      ";;GlobalAttribute;42\n"
+      "Process_1;Instance1;Timestamp;0\n"
     ;
 
     Model::StaticDataProvider dataProvider(modelFile,csv);

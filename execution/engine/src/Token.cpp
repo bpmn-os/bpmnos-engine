@@ -24,6 +24,7 @@ Token::Token(const StateMachine* owner, const BPMN::FlowNode* node, const Values
   , state(State::CREATED)
   , status(status)
   , data(&const_cast<StateMachine*>(owner)->data)
+  , globals(const_cast<SystemState*>(owner->systemState)->globals)
   , performing(nullptr)
 {
 }
@@ -36,6 +37,7 @@ Token::Token(const Token* other)
   , state(other->state)
   , status(other->status)
   , data(&const_cast<StateMachine*>(owner)->data)
+  , globals(const_cast<SystemState*>(owner->systemState)->globals)
   , performing(nullptr)
 {
 }
@@ -48,6 +50,7 @@ Token::Token(const std::vector<Token*>& others)
   , state(others.front()->state)
   , status(mergeStatus(others))
   , data(&const_cast<StateMachine*>(owner)->data)
+  , globals(const_cast<SystemState*>(owner->systemState)->globals)
   , performing(nullptr)
 {
 }
@@ -197,44 +200,74 @@ nlohmann::ordered_json Token::jsonify() const {
 
 //std::cerr << jsonObject << std::endl;
   assert(data);
-  if ( data->empty() ) {
-    return jsonObject;
+  if ( data->size() ) {
+    jsonObject["data"] = nlohmann::ordered_json::object();
+
+    for (auto& [attributeName,attribute] : attributeRegistry.dataAttributes ) {
+      if ( attribute->index >= data->size() ) {
+        // skip attribute that is not yet included in data
+        continue;
+      }
+
+      auto dataValue = attributeRegistry.getValue(attribute,status,*data);
+      if ( !dataValue.has_value() ) {
+        jsonObject["data"][attributeName] = nullptr ;
+      }
+      else if ( attribute->type == BOOLEAN) {
+        bool value = (bool)dataValue.value();
+        jsonObject["data"][attributeName] = value ;
+      }
+      else if ( attribute->type == INTEGER) {
+        int value = (int)dataValue.value();
+        jsonObject["data"][attributeName] = value ;
+      }
+      else if ( attribute->type == DECIMAL) {
+        double value = (double)dataValue.value();
+        jsonObject["data"][attributeName] = value ;
+      }
+      else if ( attribute->type == STRING) {
+        std::string value = BPMNOS::to_string(dataValue.value(),attribute->type);
+        jsonObject["data"][attributeName] = value ;
+      }
+      else if ( attribute->type == COLLECTION) {
+        std::string value = BPMNOS::to_string(dataValue.value(),attribute->type);
+        jsonObject["data"][attributeName] = value ;
+      }
+    }
   }
 
-  jsonObject["data"] = nlohmann::ordered_json::object();
+  if ( globals.size() ) {
+    jsonObject["globals"] = nlohmann::ordered_json::object();
 
-  for (auto& [attributeName,attribute] : attributeRegistry.dataAttributes ) {
-    if ( attribute->index >= data->size() ) {
-      // skip attribute that is not yet included in data
-      continue;
-    }
-
-    auto dataValue = attributeRegistry.getValue(attribute,status,*data);
-    if ( !dataValue.has_value() ) {
-      jsonObject["data"][attributeName] = nullptr ;
-    }
-    else if ( attribute->type == BOOLEAN) {
-      bool value = (bool)dataValue.value();
-      jsonObject["data"][attributeName] = value ;
-    }
-    else if ( attribute->type == INTEGER) {
-      int value = (int)dataValue.value();
-      jsonObject["data"][attributeName] = value ;
-    }
-    else if ( attribute->type == DECIMAL) {
-      double value = (double)dataValue.value();
-      jsonObject["data"][attributeName] = value ;
-    }
-    else if ( attribute->type == STRING) {
-      std::string value = BPMNOS::to_string(dataValue.value(),attribute->type);
-      jsonObject["data"][attributeName] = value ;
-    }
-    else if ( attribute->type == COLLECTION) {
-      std::string value = BPMNOS::to_string(dataValue.value(),attribute->type);
-      jsonObject["data"][attributeName] = value ;
+assert(globals.size() == attributeRegistry.globalAttributes.size() );
+    for (auto& [attributeName,attribute] : attributeRegistry.globalAttributes ) {
+      auto globalValue = globals[attribute->index];
+      if ( !globalValue.has_value() ) {
+        jsonObject["globals"][attributeName] = nullptr ;
+      }
+      else if ( attribute->type == BOOLEAN) {
+        bool value = (bool)globalValue.value();
+        jsonObject["globals"][attributeName] = value ;
+      }
+      else if ( attribute->type == INTEGER) {
+        int value = (int)globalValue.value();
+        jsonObject["globals"][attributeName] = value ;
+      }
+      else if ( attribute->type == DECIMAL) {
+        double value = (double)globalValue.value();
+        jsonObject["globals"][attributeName] = value ;
+      }
+      else if ( attribute->type == STRING) {
+        std::string value = BPMNOS::to_string(globalValue.value(),attribute->type);
+        jsonObject["globals"][attributeName] = value ;
+      }
+      else if ( attribute->type == COLLECTION) {
+        std::string value = BPMNOS::to_string(globalValue.value(),attribute->type);
+        jsonObject["globals"][attributeName] = value ;
+      }
     }
   }
-
+  
   return jsonObject;
 }
 

@@ -46,6 +46,7 @@ void DynamicDataProvider::readInstances() {
       throw std::runtime_error("DynamicDataProvider: model has no process '" + processId + "'");
     }
 
+    // TODO: populate globalValueMap!!!
     auto process = processIt->get();
 
     auto instanceId = (long unsigned int)BPMNOS::to_number( row[INSTANCE_ID].get(), STRING );
@@ -108,7 +109,7 @@ void DynamicDataProvider::readInstances() {
 }
 
 std::unique_ptr<Scenario> DynamicDataProvider::createScenario(unsigned int scenarioId) {
-  std::unique_ptr<Scenario> scenario = std::make_unique<Scenario>(model.get(), earliestInstantiation, latestInstantiation, attributes, scenarioId);
+  std::unique_ptr<Scenario> scenario = std::make_unique<Scenario>(model.get(), earliestInstantiation, latestInstantiation, attributes, globalValueMap, scenarioId);
   for ( auto& [id, instance] : instances ) {
     if ( instance.instantiation.size() ) {
       // instances become known at last disclosure of the instantiation

@@ -1,6 +1,5 @@
 #include <unordered_set>
 #include <cassert>
-#include <iostream>
 
 #include "Model.h"
 #include "extensionElements/ExtensionElements.h"
@@ -20,47 +19,59 @@ Model::Model(const std::string& filename)
   readBPMNFile(filename);
 }
 
+std::vector<std::reference_wrapper<XML::bpmnos::tAttribute>> Model::getAttributes(XML::bpmn::tBaseElement* baseElement) {
+  std::vector<std::reference_wrapper<XML::bpmnos::tAttribute>> attributes;
+  if ( baseElement->extensionElements.has_value() ) {
+    if ( auto elements = baseElement->extensionElements->get().getOptionalChild<XML::bpmnos::tAttributes>(); elements.has_value()) {
+      for ( XML::bpmnos::tAttribute& attribute : elements.value().get().attribute ) {
+        attributes.emplace_back( attribute );
+      }
+    }
+  }
+  return attributes;
+}
+
 std::vector<std::reference_wrapper<XML::bpmnos::tAttribute>> Model::getData(XML::bpmn::tBaseElement* element) {
   std::vector<std::reference_wrapper<XML::bpmnos::tAttribute>> attributes;
   auto dataObjects = element->getChildren<XML::bpmn::tDataObject>();
   for ( XML::bpmn::tDataObject& dataObject : dataObjects ) {
-    if ( !dataObject.extensionElements.has_value() ) {
-      continue;
-    }
-    if ( auto elements = dataObject.extensionElements->get().getOptionalChild<XML::bpmnos::tAttributes>(); elements.has_value()) {
-      for ( XML::bpmnos::tAttribute& attribute : elements.value().get().attribute ) {
-        if ( attributes.size() && attribute.id.value.value == BPMNOS::Keyword::Instance ) {
-          // make sure instance attribute is at first position
-          attributes.emplace_back( std::move(attributes[0]) );
-          attributes[0] = std::ref(attribute);
-        }
-        else {
-          attributes.emplace_back( attribute );
-        }
+    for ( XML::bpmnos::tAttribute& attribute : getAttributes(&dataObject) ) {
+      if ( attributes.size() && attribute.id.value.value == BPMNOS::Keyword::Instance ) {
+        // make sure instance attribute is at first position
+        attributes.emplace_back( std::move(attributes[0]) );
+        attributes[0] = std::ref(attribute);
+      }
+      else {
+        attributes.emplace_back( attribute );
       }
     }
   }
-/*
-std::cerr << "added ";
-for ( auto& attribute : attributes ) {
-std::cerr << attribute.get().name.value.value << ", ";
-}
-std::cerr << std::endl;
-*/
   return attributes;
+}
+
+std::unique_ptr<XML::XMLObject> Model::createRoot(const std::string& filename) {
+  auto root = BPMN::Model::createRoot(filename);
+  if ( auto collaboration = root->getOptionalChild<XML::bpmn::tCollaboration>();
+    collaboration.has_value()
+  ) {
+    for ( XML::bpmnos::tAttribute& attributeElement : getAttributes(&collaboration.value().get()) ) {
+      attributes.push_back( std::make_unique<Attribute>(&attributeElement, Attribute::Category::GLOBAL, attributeRegistry) );
+    }
+  }
+  return root;
 }
  
 std::unique_ptr<BPMN::Process> Model::createProcess(XML::bpmn::tProcess* process) {
 //std::cerr << "add process" << std::endl;
   auto baseElement = BPMN::Model::createProcess(process);
-  auto extensionElements = std::make_unique<BPMNOS::Model::ExtensionElements>(process, nullptr, getData(process) );
+  auto extensionElements = std::make_unique<BPMNOS::Model::ExtensionElements>(process, attributeRegistry, nullptr, getData(process) );
   // bind attributes, restrictions, and operators to all processes
   return bind<BPMN::Process>( std::move(baseElement), std::move(extensionElements) );
 }
 
 std::unique_ptr<BPMN::EventSubProcess> Model::createEventSubProcess(XML::bpmn::tSubProcess* subProcess, BPMN::Scope* parent) {
   auto baseElement = BPMN::Model::createEventSubProcess(subProcess,parent);
-  auto extensionElements = std::make_unique<BPMNOS::Model::ExtensionElements>(subProcess, parent, getData(subProcess));
+  auto extensionElements = std::make_unique<BPMNOS::Model::ExtensionElements>(subProcess, parent->extensionElements->as<ExtensionElements>()->attributeRegistry, parent, getData(subProcess));
   // bind attributes, restrictions, and operators to all event subprocesses
   return bind<BPMN::EventSubProcess>( std::move(baseElement), std::move(extensionElements) );
 }
@@ -68,7 +79,7 @@ std::unique_ptr<BPMN::EventSubProcess> Model::createEventSubProcess(XML::bpmn::t
 std::unique_ptr<BPMN::FlowNode> Model::createActivity(XML::bpmn::tActivity* activity, BPMN::Scope* parent) {
 //std::cerr << "add child" << std::endl;
   auto baseElement = BPMN::Model::createActivity(activity,parent);
-  auto extensionElements = std::make_unique<BPMNOS::Model::ExtensionElements>(activity, parent, getData(activity));
+  auto extensionElements = std::make_unique<BPMNOS::Model::ExtensionElements>(activity, parent->extensionElements->as<ExtensionElements>()->attributeRegistry, parent, getData(activity));
 
   if ( baseElement->represents<BPMN::ReceiveTask>() ) {
     for ( auto& messageDefinition : extensionElements->messageDefinitions ) {
@@ -145,7 +156,7 @@ std::unique_ptr<BPMN::FlowNode> Model::createTimerCatchEvent(XML::bpmn::tCatchEv
 
 std::unique_ptr<BPMN::FlowNode> Model::createMessageStartEvent(XML::bpmn::tStartEvent* startEvent, BPMN::Scope* parent) {
   auto baseElement = BPMN::Model::createMessageStartEvent(startEvent,parent);
-  auto extensionElements = std::make_unique<BPMNOS::Model::ExtensionElements>(startEvent,parent);
+  auto extensionElements = std::make_unique<BPMNOS::Model::ExtensionElements>(startEvent,parent->extensionElements->as<ExtensionElements>()->attributeRegistry,parent);
   
   // Lambda function to compare unique_ptrs by their raw pointers
   auto contains = [](const std::vector<std::unique_ptr<Attribute>>& attributes, Attribute* attribute) {
@@ -167,18 +178,11 @@ std::unique_ptr<BPMN::FlowNode> Model::createMessageStartEvent(XML::bpmn::tStart
   }
   // bind attributes, restrictions, and operators to all event subprocesses
   return bind<BPMN::FlowNode>( std::move(baseElement), std::move(extensionElements) );
-/*
-  // bind message content
-  return bind<BPMN::FlowNode>(
-    BPMN::Model::createMessageStartEvent(startEvent,parent),
-    std::make_unique<BPMNOS::Model::ExtensionElements>(startEvent,parent)
-  );
-*/
 }
 
 std::unique_ptr<BPMN::FlowNode> Model::createMessageBoundaryEvent(XML::bpmn::tBoundaryEvent* boundaryEvent, BPMN::Scope* parent) {
   auto baseElement = BPMN::Model::createMessageBoundaryEvent(boundaryEvent,parent);
-  auto extensionElements = std::make_unique<BPMNOS::Model::ExtensionElements>(boundaryEvent,parent);
+  auto extensionElements = std::make_unique<BPMNOS::Model::ExtensionElements>(boundaryEvent,parent->extensionElements->as<ExtensionElements>()->attributeRegistry,parent);
   
   for ( auto& messageDefinition : extensionElements->messageDefinitions ) {
     for ( auto& [_,content] : messageDefinition->contentMap ) {
@@ -189,18 +193,11 @@ std::unique_ptr<BPMN::FlowNode> Model::createMessageBoundaryEvent(XML::bpmn::tBo
   }
   // bind attributes, restrictions, and operators to all event subprocesses
   return bind<BPMN::FlowNode>( std::move(baseElement), std::move(extensionElements) );
-/*
-  // bind message content
-  return bind<BPMN::FlowNode>(
-    BPMN::Model::createMessageBoundaryEvent(boundaryEvent,parent),
-    std::make_unique<BPMNOS::Model::ExtensionElements>(boundaryEvent,parent)
-  );
-*/
 }
 
 std::unique_ptr<BPMN::FlowNode> Model::createMessageCatchEvent(XML::bpmn::tCatchEvent* catchEvent, BPMN::Scope* parent) {
   auto baseElement = BPMN::Model::createMessageCatchEvent(catchEvent,parent);
-  auto extensionElements = std::make_unique<BPMNOS::Model::ExtensionElements>(catchEvent,parent);
+  auto extensionElements = std::make_unique<BPMNOS::Model::ExtensionElements>(catchEvent,parent->extensionElements->as<ExtensionElements>()->attributeRegistry,parent);
   
   for ( auto& messageDefinition : extensionElements->messageDefinitions ) {
     for ( auto& [_,content] : messageDefinition->contentMap ) {
@@ -211,20 +208,13 @@ std::unique_ptr<BPMN::FlowNode> Model::createMessageCatchEvent(XML::bpmn::tCatch
   }
   // bind attributes, restrictions, and operators to all event subprocesses
   return bind<BPMN::FlowNode>( std::move(baseElement), std::move(extensionElements) );
-/*
-  // bind message content
-  return bind<BPMN::FlowNode>(
-    BPMN::Model::createMessageCatchEvent(catchEvent,parent),
-    std::make_unique<BPMNOS::Model::ExtensionElements>(catchEvent,parent)
-  );
-*/
 }
 
 std::unique_ptr<BPMN::FlowNode> Model::createMessageThrowEvent(XML::bpmn::tThrowEvent* throwEvent, BPMN::Scope* parent) {
   // bind message content
   return bind<BPMN::FlowNode>(
     BPMN::Model::createMessageThrowEvent(throwEvent,parent),
-    std::make_unique<BPMNOS::Model::ExtensionElements>(throwEvent,parent)
+    std::make_unique<BPMNOS::Model::ExtensionElements>(throwEvent,parent->extensionElements->as<ExtensionElements>()->attributeRegistry,parent)
   );
 }
 

@@ -15,6 +15,7 @@ class AttributeRegistry {
 public:
   std::map< std::string, Attribute*> statusAttributes;
   std::map< std::string, Attribute*> dataAttributes;
+  std::map< std::string, Attribute*> globalAttributes;
   Attribute* operator[](const std::string& name) const;
   bool contains(const std::string& name) const;
   std::optional<BPMNOS::number> getValue(const Attribute* attribute, const Values& status, const Values& data) const;

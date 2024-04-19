@@ -22,9 +22,9 @@ namespace BPMNOS::Model {
  **/
 class ExtensionElements : public BPMN::ExtensionElements {
 public:
-  ExtensionElements(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent = nullptr, std::vector<std::reference_wrapper<XML::bpmnos::tAttribute>> = {});
-  const BPMN::Scope* parent;
+  ExtensionElements(XML::bpmn::tBaseElement* baseElement, AttributeRegistry attributeRegistry_, BPMN::Scope* parent = nullptr, std::vector<std::reference_wrapper<XML::bpmnos::tAttribute>> = {});
   AttributeRegistry attributeRegistry; ///< Registry allowing to look up all status and data attributes by their names.
+  const BPMN::Scope* parent;
 
 //  enum Index { Instance, Timestamp }; ///< Indices for instance and timestamp attribute.
   struct Index {

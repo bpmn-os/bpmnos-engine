@@ -40,7 +40,7 @@ public:
   /**
    * @brief Constructor for Scenario.
    */
-  Scenario(const Model* model, BPMNOS::number inception, BPMNOS::number completion, const DataInput& attributes, unsigned int index = 0);
+  Scenario(const Model* model, BPMNOS::number inception, BPMNOS::number completion, const DataInput& attributes, const std::unordered_map< const Attribute*, BPMNOS::number >& globalValueMap, unsigned int index = 0);
   /**
    * @brief Copy constructor for Scenario.
    */
@@ -177,6 +177,8 @@ public:
   Data& getAttributeData(const BPMNOS::number instanceId, const Attribute* attribute);
   void addAnticipation( Data& data, Disclosure anticipation );
   void setRealization( Data& data, Disclosure realization );
+  
+  BPMNOS::Values globals;
 protected:
   const Model* model;  ///< Pointer to the BPMN model.
   const DataInput& attributes; ///< Map holding all attributes in the model with keys being the process and attribute id

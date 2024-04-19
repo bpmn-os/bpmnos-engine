@@ -6,6 +6,8 @@
 #include <string>
 #include <bpmn++.h>
 #include "model/bpmnos/src/xml/bpmnos/tAttribute.h"
+#include "model/bpmnos/src/extensionElements/Attribute.h"
+#include "model/bpmnos/src/extensionElements/AttributeRegistry.h"
 
 namespace BPMNOS::Model {
 
@@ -19,8 +21,11 @@ public:
   Model(const std::string& filename);
 
 public:
+  std::vector<std::reference_wrapper<XML::bpmnos::tAttribute>> getAttributes(XML::bpmn::tBaseElement* element);
   std::vector<std::reference_wrapper<XML::bpmnos::tAttribute>> getData(XML::bpmn::tBaseElement* element);
   
+  std::unique_ptr<XML::XMLObject> createRoot(const std::string& filename) override;
+
   std::unique_ptr<BPMN::Process> createProcess(XML::bpmn::tProcess* process) override;
   std::unique_ptr<BPMN::EventSubProcess> createEventSubProcess(XML::bpmn::tSubProcess* subProcess, BPMN::Scope* parent) override;
   std::unique_ptr<BPMN::FlowNode> createActivity(XML::bpmn::tActivity* activity, BPMN::Scope* parent) override;
@@ -44,6 +49,9 @@ public:
   std::vector<BPMN::MessageFlow*>& determineMessageFlows(BPMN::FlowNode* messageEvent, auto getMessageFlows);
   
   static bool hasSequentialPerformer(const std::vector< std::reference_wrapper<XML::bpmn::tResourceRole> >& resources);
+  
+  AttributeRegistry attributeRegistry; ///< Registry allowing to look up all status and data attributes by their names.
+  std::vector< std::unique_ptr<Attribute> > attributes; ///< Vector containing new global attributes declared for the model.
 };
 
 } // namespace BPMNOS::Model

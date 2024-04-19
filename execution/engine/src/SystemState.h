@@ -119,6 +119,8 @@ public:
   std::unordered_map< Token*, Token* > tokenAwaitingCompensationActivity; ///< Map holding a token that waits for completion of another 
   std::unordered_map< StateMachine*, Token* > tokenAwaitingCompensationEventSubProcess; ///< Map holding a token that waits for completion of an event subprocess
 
+  BPMNOS::Values globals;
+
   /**
    * @brief Container holding a state machine for each running instance.
    */

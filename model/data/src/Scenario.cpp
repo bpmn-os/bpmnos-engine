@@ -6,19 +6,23 @@
 
 using namespace BPMNOS::Model;
 
-Scenario::Scenario(const Model* model, BPMNOS::number inception, BPMNOS::number completion, const DataInput& attributes, unsigned int index)
+Scenario::Scenario(const Model* model, BPMNOS::number inception, BPMNOS::number completion, const DataInput& attributes, const std::unordered_map< const Attribute*, BPMNOS::number >& globalValueMap, unsigned int index)
   : index(index)
   , model(model)
   , attributes(attributes)
   , inception(inception)
   , completion(completion)
 {
+  globals.resize(model->attributes.size());
+  for ( auto& [ attribute, value ] : globalValueMap ) {
+    globals[attribute->index] = value;
+  }
 }
 
 Scenario::Scenario(const Scenario& other, unsigned int index)
-    : index(index)
-    , model(other.model)
-    , attributes(other.attributes)
+  : index(index)
+  , model(other.model)
+  , attributes(other.attributes)
   , inception(other.inception)
   , completion(other.completion)
 {

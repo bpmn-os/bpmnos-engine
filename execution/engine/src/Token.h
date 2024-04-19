@@ -122,6 +122,7 @@ public:
   State state;
   Values status;
   SharedValues* data; ///< Pointer to the data of the owner or owned state machine subprocesses)
+  Values& globals;
   Token* performing; ///< Pointer to the activity token currently perfomed (only applies if node is a performer referenced by sequential ad-hoc subprocesses)
   
   void setStatus(const BPMNOS::Values& other); ///< Copies all elements except the instance id from `other` to `status`

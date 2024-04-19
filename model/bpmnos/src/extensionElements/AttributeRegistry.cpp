@@ -1,5 +1,5 @@
 #include "AttributeRegistry.h"
-#include<iostream>
+
 using namespace BPMNOS::Model;
 
 void AttributeRegistry::add(Attribute* attribute) {
@@ -10,9 +10,13 @@ void AttributeRegistry::add(Attribute* attribute) {
     attribute->index = statusAttributes.size();
     statusAttributes[attribute->name] = attribute;
   }
-  else {
+  else if ( attribute->category == Attribute::Category::DATA ) {
     attribute->index = dataAttributes.size(); 
     dataAttributes[attribute->name] = attribute;
+  }
+  else {
+    attribute->index = globalAttributes.size(); 
+    globalAttributes[attribute->name] = attribute;
   }
 }
 

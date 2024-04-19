@@ -19,7 +19,7 @@ class AttributeRegistry;
 
 class Attribute {
 public:
-  enum class Category { STATUS, DATA };
+  enum class Category { STATUS, DATA, GLOBAL };
 private:
   Attribute(XML::bpmnos::tAttribute* attribute, Attribute::Category category);
 public:
@@ -38,7 +38,7 @@ public:
  
   double weight; ///< Weight to be used for objective (assuming maximization). 
 
-  bool isImmutable; ///< Flag indicating whether attribute value may be changed by operator, choice, or intermediate catch event. // TODO: intermediate catch events 
+  bool isImmutable; ///< Flag indicating whether attribute value may be changed by operator, choice, or intermediate catch event. 
 };
 
 } // namespace BPMNOS::Model
