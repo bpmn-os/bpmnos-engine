@@ -106,13 +106,9 @@ std::cerr << std::endl;
       return false;
     };
 
-//std::cerr << "Check "  << evaluations.size() <<  " evaluations for instance " << (long unsigned int)update->instanceId << std::endl;          
-    if ( auto evaluationIt = evaluations.find((long unsigned int)update->instanceId);
-      evaluationIt != evaluations.end()
-    ) {
-//std::cerr << "Validate evaluation" << std::endl;          
+    auto removeObsolete = [this,&update,intersect](auto_list< std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest>, std::shared_ptr<Decision> >& evaluation) -> void {
       // check whether evaluation has become obsolete
-      for ( auto it = evaluationIt->second.begin(); it != evaluationIt->second.end(); ) {
+      for ( auto it = evaluation.begin(); it != evaluation.end(); ) {
         auto& [ token_ptr, request_ptr, decision ] = *it;
         if ( intersect(update->attributes, decision->dataDependencies) ) {
           if ( !decision->expired() ) {
@@ -121,11 +117,26 @@ std::cerr << std::endl;
             decisionsWithoutEvaluation.emplace_back( token_ptr, request_ptr, std::move(decision) );
           }
           // remove evaluation
-          it = evaluationIt->second.erase(it);
+          it = evaluation.erase(it);
         }
         else {
           ++it;
         }
+      }
+    };
+//std::cerr << "Check "  << evaluations.size() <<  " evaluations for instance " << (long unsigned int)update->instanceId << std::endl;          
+    if ( update->instanceId >= 0 ) {
+      // find instance that data update refers to
+      if ( auto it = evaluations.find((long unsigned int)update->instanceId);
+        it != evaluations.end()
+      ) {
+        removeObsolete(it->second);
+      }
+    }
+    else {
+      // update of global value may influence evaluations of all instances
+      for ( auto it = evaluations.begin(); it != evaluations.end(); ++it) {
+        removeObsolete(it->second);
       }
     }
   };

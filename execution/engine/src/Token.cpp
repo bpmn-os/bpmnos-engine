@@ -387,10 +387,15 @@ void Token::advanceToEntered() {
 
   if ( node ) {
     if ( auto extensionElements = node->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
-      extensionElements && !extensionElements->dataUpdateOnEntry.empty()
+      extensionElements && !extensionElements->dataUpdateOnEntry.attributes.empty()
     ) {
       // notify about data update
-      owner->systemState->engine->notify( DataUpdate( owner->root->instance.value(), extensionElements->dataUpdateOnEntry ) );
+      if ( extensionElements->dataUpdateOnEntry.global ) {
+        owner->systemState->engine->notify( DataUpdate( extensionElements->dataUpdateOnEntry.attributes ) );
+      }
+      else {
+        owner->systemState->engine->notify( DataUpdate( owner->root->instance.value(), extensionElements->dataUpdateOnEntry.attributes ) );
+      }
     }
   }
 
@@ -678,10 +683,15 @@ void Token::advanceToCompleted() {
 
   if ( node ) {
     if ( auto extensionElements = node->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
-      extensionElements && !extensionElements->dataUpdateOnCompletion.empty()
+      extensionElements && !extensionElements->dataUpdateOnCompletion.attributes.empty()
     ) {
       // notify about data update
-      owner->systemState->engine->notify( DataUpdate( owner->root->instance.value(), extensionElements->dataUpdateOnCompletion ) );
+      if ( extensionElements->dataUpdateOnEntry.global ) {
+        owner->systemState->engine->notify( DataUpdate( extensionElements->dataUpdateOnCompletion.attributes ) );
+      }
+      else {
+        owner->systemState->engine->notify( DataUpdate( owner->root->instance.value(), extensionElements->dataUpdateOnCompletion.attributes ) );
+      }
     }
   }
 
