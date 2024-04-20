@@ -47,8 +47,8 @@ public:
     bool global;
     std::vector<const Attribute*> attributes;
   };
-  struct { std::vector<const Attribute*> attributes; bool global; } dataUpdateOnEntry; ///< Struct containing data attributes that are modified upon entry and a flag indicating whether a gloabl value is changed.
-  struct { std::vector<const Attribute*> attributes; bool global; } dataUpdateOnCompletion; ///< Struct containing data attributes that are modified upon completion and a flag indicating whether a gloabl value is changed.
+  struct { std::vector<const Attribute*> attributes; bool global; } dataUpdateOnEntry; ///< Struct containing data attributes that are modified upon entry and a flag indicating whether a global value is changed.
+  struct { std::vector<const Attribute*> attributes; bool global; } dataUpdateOnCompletion; ///< Struct containing data attributes that are modified upon completion and a flag indicating whether a global value is changed.
 
   std::vector< std::unique_ptr<MessageDefinition> > messageDefinitions; ///< Vector containing message definition(s) provided for the node.
   std::vector< const BPMN::FlowNode* > messageCandidates; ///< Vector containing all potential sending or receiving nodes of a message.
