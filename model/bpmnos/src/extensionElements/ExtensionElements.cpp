@@ -155,7 +155,7 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const
   dataUpdateOnEntry.global = false; // data update does not affect all instances unless a global value is updated
   dataUpdateOnCompletion.global = false;  // data update does not affect all instances unless a global value is updated
   
-  if ( baseElement->is<XML::bpmn::tTask>() ) {
+  if ( baseElement->is<XML::bpmn::tTask>() && !baseElement->is<XML::bpmn::tSendTask>() ) {
     for ( auto& operator_ : operators ) {
       if ( operator_->attribute->category != Attribute::Category::STATUS ) {
         dataUpdateOnCompletion.attributes.push_back(operator_->attribute);
@@ -166,7 +166,7 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const
     }
   }
   else if ( baseElement->is<XML::bpmn::tActivity>() ) {
-    // baseElement is not a task
+    // baseElement is a send task or not a task 
     for ( auto& operator_ : operators ) {
       if ( operator_->attribute->category != Attribute::Category::STATUS ) {
         dataUpdateOnEntry.attributes.push_back(operator_->attribute);

@@ -385,7 +385,7 @@ void Token::advanceToEntered() {
   update(State::ENTERED);
 //std::cerr << "updatedToEntered" << std::endl;
 
-  if ( node ) {
+  if ( node && !node->represents<BPMN::SendTask>() ) {
     if ( auto extensionElements = node->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
       extensionElements && !extensionElements->dataUpdateOnEntry.attributes.empty()
     ) {
@@ -625,6 +625,18 @@ void Token::advanceToBusy() {
           extensionElements->applyOperators(status,*data,globals);
 
           if ( auto sendTask = node->represents<BPMN::SendTask>() ) {
+            if ( auto extensionElements = node->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
+              extensionElements && !extensionElements->dataUpdateOnEntry.attributes.empty()
+            ) {
+              // notify about data update
+              if ( extensionElements->dataUpdateOnEntry.global ) {
+                owner->systemState->engine->notify( DataUpdate( extensionElements->dataUpdateOnEntry.attributes ) );
+              }
+              else {
+                owner->systemState->engine->notify( DataUpdate( owner->root->instance.value(), extensionElements->dataUpdateOnEntry.attributes ) );
+              }
+            }
+
             if ( sendTask->loopCharacteristics.has_value() ) {
               // multi-instance send task
               if ( !extensionElements->loopIndex.has_value() || !extensionElements->loopIndex->get()->attribute.has_value() ) {
