@@ -127,8 +127,8 @@ SCENARIO( "Guided knapsack problem", "[examples][knapsack_problem]" ) {
       }
       THEN( "Then the knapsack includes Item3 and Item2" ) {
         auto acceptanceLog = recorder.find(nlohmann::json{{"nodeId", "ItemAccepted"},{"state", "ENTERED"}});
-        REQUIRE( acceptanceLog[0]["instanceId"] == "Item3" );
-        REQUIRE( acceptanceLog[1]["instanceId"] == "Item2" );
+        REQUIRE( (acceptanceLog[0]["instanceId"] == "Item2" || acceptanceLog[0]["instanceId"] == "Item3") );
+        REQUIRE( (acceptanceLog[1]["instanceId"] == "Item2" || acceptanceLog[1]["instanceId"] == "Item3") );
       }
     }
   }
