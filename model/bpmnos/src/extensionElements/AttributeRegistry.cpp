@@ -14,7 +14,7 @@ void AttributeRegistry::add(Attribute* attribute) {
     attribute->index = dataAttributes.size(); 
     dataAttributes[attribute->name] = attribute;
   }
-  else {
+  else /* if ( attribute->category == Attribute::Category::GLOBAL )*/ {
     attribute->index = globalAttributes.size(); 
     globalAttributes[attribute->name] = attribute;
   }
@@ -28,6 +28,11 @@ Attribute* AttributeRegistry::operator[](const std::string& name) const {
   }
   else if ( auto it = dataAttributes.find(name);
     it != dataAttributes.end()
+  ) {
+    return it->second;
+  }
+  else if ( auto it = globalAttributes.find(name);
+    it != globalAttributes.end()
   ) {
     return it->second;
   }
@@ -51,7 +56,7 @@ std::optional<BPMNOS::number> AttributeRegistry::getValue(const Attribute* attri
     assert(attribute->index < data.size());
     return data[attribute->index];
   }
-  else {
+  else /* if ( attribute->category == Attribute::Category::GLOBAL )*/ {
     assert(attribute->index < globals.size());
     return globals[attribute->index];
   }
@@ -66,7 +71,7 @@ std::optional<BPMNOS::number> AttributeRegistry::getValue(const Attribute* attri
     assert(attribute->index < data.size());
     return data[attribute->index].get();
   }
-  else {
+  else /* if ( attribute->category == Attribute::Category::GLOBAL )*/ {
     assert(attribute->index < globals.size());
     return globals[attribute->index];
   }
@@ -81,7 +86,7 @@ void AttributeRegistry::setValue(const Attribute* attribute, Values& status, Val
     assert(attribute->index < data.size());
     data[attribute->index] = value;
   }
-  else {
+  else /* if ( attribute->category == Attribute::Category::GLOBAL )*/ {
     assert(attribute->index < globals.size());
     globals[attribute->index] = value;
   }
@@ -96,7 +101,7 @@ void AttributeRegistry::setValue(const Attribute* attribute, Values& status, Sha
     assert(attribute->index < data.size());
     data[attribute->index].get() = value;
   }
-  else {
+  else /* if ( attribute->category == Attribute::Category::GLOBAL )*/ {
     assert(attribute->index < globals.size());
     globals[attribute->index] = value;
   }
