@@ -12,9 +12,15 @@ StaticDataProvider::StaticDataProvider(const std::string& modelFile, const std::
   : DataProvider(modelFile)
   , reader( initReader(instanceFileOrString) )
 {
+  for ( auto& [ attributeId, attribute ] : attributes[nullptr] ) {
+    if ( attribute->value.has_value() ) {
+      globalValueMap[ attribute ] = attribute->value.value();
+    }
+  }
   earliestInstantiation = std::numeric_limits<BPMNOS::number>::max();
   latestInstantiation = std::numeric_limits<BPMNOS::number>::min();
   readInstances();
+  
 }
 
 csv::CSVReader StaticDataProvider::initReader(const std::string& instanceFileOrString) {
