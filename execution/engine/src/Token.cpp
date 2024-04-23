@@ -686,7 +686,7 @@ void Token::advanceToCompleted() {
       extensionElements && !extensionElements->dataUpdateOnCompletion.attributes.empty()
     ) {
       // notify about data update
-      if ( extensionElements->dataUpdateOnEntry.global ) {
+      if ( extensionElements->dataUpdateOnCompletion.global ) {
         owner->systemState->engine->notify( DataUpdate( extensionElements->dataUpdateOnCompletion.attributes ) );
       }
       else {
