@@ -58,6 +58,32 @@ void LinearExpression::parse(std::string expressionString, NumericType SIGN) {
     }
 
     Attribute* variable = nullptr;
+    
+    auto findVariable = [this,&part](const std::map< std::string, Attribute*>& attributes) -> Attribute* {
+      for ( auto &[key, attribute] : attributes ) {
+        std::regex regex("\\b" + key + "\\b"); // the pattern \b matches a word boundary
+        std::smatch match;
+        if ( std::regex_search(part, match, regex) ) {
+          if ( attribute->type == ValueType::STRING || attribute->type == ValueType::COLLECTION ) {
+            throw std::runtime_error("LinearExpression: non-numeric variable '" + attribute->name + "'");
+          }
+          inputs.insert(attribute);
+          size_t pos = part.find(key);
+          part.erase(pos,key.length()); // remove attribute name from part
+          part.erase(remove(part.begin(), part.end(), '*'), part.end());
+          return attribute;
+        }
+      }
+      return nullptr;
+    };
+
+    if ( variable = findVariable( attributeRegistry.statusAttributes ); !variable ) {
+      if ( variable = findVariable( attributeRegistry.dataAttributes ); !variable ) {
+        variable = findVariable( attributeRegistry.globalAttributes );
+      }
+    }
+
+/*
     for ( auto &[key, attribute] : attributeRegistry.statusAttributes ) {
       std::regex regex("\\b" + key + "\\b"); // the pattern \b matches a word boundary
       std::smatch match;
@@ -88,7 +114,7 @@ void LinearExpression::parse(std::string expressionString, NumericType SIGN) {
         break;
       }
     }
-
+*/
     if ( part.length() == 0 ) {
       // use factor 1 if not explicitly provided
       part = "1";
