@@ -2,6 +2,7 @@
 #include "model/utility/src/Keywords.h"
 #include <regex>
 #include <strutil.h>
+//#include <iostream>
 
 using namespace BPMNOS::Model;
 
@@ -48,12 +49,22 @@ void LinearExpression::parse(std::string expressionString, NumericType SIGN) {
   std::regex re1("[+]");
   std::sregex_token_iterator first{expressionString.begin(), expressionString.end(), re1, -1}, last; // split by "+"
   std::vector<std::string> parts{first, last};
+  
+/*
+std::cerr<< "\n\n" << expressionString << " split to ";
+for ( auto part : parts ) {
+std::cerr << part<< ", ";
+}
+std::cerr << std::endl; 
+*/
+  
   for (auto part : parts) {
+    NumericType sign = SIGN;
     if ( part.length() == 0 ) {
       throw std::runtime_error{"LinearExpression::Empty term in expression"};
     }
     if ( part[0] == '-' ) {
-      SIGN *= -1.0;
+      sign *= -1.0;
       part.erase(0,1);
     }
 
@@ -83,38 +94,6 @@ void LinearExpression::parse(std::string expressionString, NumericType SIGN) {
       }
     }
 
-/*
-    for ( auto &[key, attribute] : attributeRegistry.statusAttributes ) {
-      std::regex regex("\\b" + key + "\\b"); // the pattern \b matches a word boundary
-      std::smatch match;
-      if ( std::regex_search(part, match, regex) ) {
-        if ( attribute->type == ValueType::STRING || attribute->type == ValueType::COLLECTION ) {
-          throw std::runtime_error("LinearExpression: non-numeric variable '" + attribute->name + "'");
-        }
-        variable = attribute;
-        inputs.insert(attribute);
-        size_t pos = part.find(key);
-        part.erase(pos,key.length()); // remove attribute name from part
-        part.erase(remove(part.begin(), part.end(), '*'), part.end());
-        break;
-      }
-    }
-    for ( auto &[key, attribute] : attributeRegistry.dataAttributes ) {
-      std::regex regex("\\b" + key + "\\b"); // the pattern \b matches a word boundary
-      std::smatch match;
-      if ( std::regex_search(part, match, regex) ) {
-        if ( attribute->type == ValueType::STRING || attribute->type == ValueType::COLLECTION ) {
-          throw std::runtime_error("LinearExpression: non-numeric variable '" + attribute->name + "'");
-        }
-        variable = attribute;
-        inputs.insert(attribute);
-        size_t pos = part.find(key);
-        part.erase(pos,key.length()); // remove attribute name from part
-        part.erase(remove(part.begin(), part.end(), '*'), part.end());
-        break;
-      }
-    }
-*/
     if ( part.length() == 0 ) {
       // use factor 1 if not explicitly provided
       part = "1";
@@ -128,7 +107,7 @@ void LinearExpression::parse(std::string expressionString, NumericType SIGN) {
 
     size_t pos = part.find("/");
     if ( pos == std::string::npos ) {
-      terms.push_back({ SIGN * NumericType(BPMNOS::stod(part)), variable });
+      terms.push_back({ sign * NumericType(BPMNOS::stod(part)), variable });
     }
     else {
       if ( pos == 0 ) {
@@ -136,9 +115,17 @@ void LinearExpression::parse(std::string expressionString, NumericType SIGN) {
         part = std::string("1") + part;
         pos++;
       }
-      terms.push_back({ SIGN * NumericType(BPMNOS::stod(part.substr(0,pos)) / BPMNOS::stod(part.substr(pos+1))), variable });      
+      terms.push_back({ sign * NumericType(BPMNOS::stod(part.substr(0,pos)) / BPMNOS::stod(part.substr(pos+1))), variable });      
     } 
   }
+/*  
+std::cerr<< "\n\n" << expressionString << " parsed to ";
+for ( auto [coefficient, variable] : terms ) {
+std::cerr << coefficient << " * " << (variable? variable->name :"1" ) << ", ";
+}
+std::cerr << std::endl; 
+*/
+  
 }
 
 void LinearExpression::parseInequality(const std::string& comparisonOperator) {
