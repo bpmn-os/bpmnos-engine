@@ -31,8 +31,6 @@ std::shared_ptr<Event> GreedyController::dispatchEvent(const SystemState* system
   for ( auto& eventDispatcher : eventDispatchers ) {
     if ( auto event = eventDispatcher->dispatchEvent(systemState) ) {
       if (  auto decision = dynamic_pointer_cast<Decision>(event) ) {
-//std::cerr << "GreedyController: Decision with evaluation " << decision->evaluation.value_or(99999) <<" for: " << decision->token->jsonify() << std::endl;
-
         if ( !best ) {
           // first decision is used as best
           best = decision;
@@ -52,10 +50,9 @@ std::shared_ptr<Event> GreedyController::dispatchEvent(const SystemState* system
       }
     }
   }
-/*
+// TODO: remove output
 if ( best ) {
-std::cerr << "GreedyController: Best decision with evaluation " << best->evaluation.value_or(99999) <<" for: " << best->token->jsonify() << std::endl;
+  std::cerr << "," << best->jsonify();
 }
-*/
   return best;
 }

@@ -28,10 +28,8 @@ void GreedyDispatcher::evaluate(std::weak_ptr<const Token> token_ptr, std::weak_
   assert ( decision );
 
   auto value = decision->evaluate();
-//std::cerr << "GreedyDispatcher: Decision evaluated with  " << decision->evaluation.value_or(99999) <<" for: " << decision->token->jsonify() << std::endl;
   // decisions without evaluation are assumed to be infeasible
   evaluatedDecisions.emplace( (value.has_value() ? (double)value.value() : std::numeric_limits<double>::max() ), token_ptr, request_ptr, decision->weak_from_this());
-//std::cerr << value.value_or(-1) << "Evaluation " << decision->evaluation.value_or(-1) << " for " << token_ptr.lock()->jsonify() << std::endl;
 
   assert ( decision );
 
@@ -60,7 +58,6 @@ void GreedyDispatcher::evaluate(std::weak_ptr<const Token> token_ptr, std::weak_
 
 std::shared_ptr<Event> GreedyDispatcher::dispatchEvent( [[maybe_unused]] const SystemState* systemState ) {
   for ( auto& [ token_ptr, request_ptr, decision ] : decisionsWithoutEvaluation ) {
-//std::cerr << "(Re-)evaluate " << token_ptr.lock()->jsonify() << std::endl;
     assert(decision);
     if ( decision && !decision->expired() ) {
       evaluate( token_ptr, request_ptr, std::move(decision) );
@@ -69,7 +66,6 @@ std::shared_ptr<Event> GreedyDispatcher::dispatchEvent( [[maybe_unused]] const S
   decisionsWithoutEvaluation.clear();
 
   for ( auto [ cost, token_ptr, request_ptr, event_ptr ] : evaluatedDecisions ) {
-//std::cerr << "Decide " << token_ptr.lock()->jsonify() << std::endl;
     if( auto event = event_ptr.lock();
       event && !event->expired()
     )  {
@@ -112,7 +108,6 @@ std::cerr << std::endl;
         auto& [ token_ptr, request_ptr, decision ] = *it;
         if ( intersect(update->attributes, decision->dataDependencies) ) {
           if ( !decision->expired() ) {
-//std::cerr << "Unevaluate decision: " << decision->token->jsonify() << std::endl;          
             decision->evaluation = std::nullopt;
             decisionsWithoutEvaluation.emplace_back( token_ptr, request_ptr, std::move(decision) );
           }
@@ -124,7 +119,7 @@ std::cerr << std::endl;
         }
       }
     };
-//std::cerr << "Check "  << evaluations.size() <<  " evaluations for instance " << (long unsigned int)update->instanceId << std::endl;          
+
     if ( update->instanceId >= 0 ) {
       // find instance that data update refers to
       if ( auto it = evaluations.find((long unsigned int)update->instanceId);
@@ -141,9 +136,7 @@ std::cerr << std::endl;
     }
   };
     
-//std::cerr << "Check "  << dataDependentEvaluations.size() <<  " dataDependentEvaluations" << std::endl;          
   removeDependentEvaluations(dataDependentEvaluations);
-//std::cerr << "Check "  << timeAndDataDependentEvaluations.size() <<  " timeAndDataDependentEvaluations" << std::endl;          
   removeDependentEvaluations(timeAndDataDependentEvaluations);
 }
 
