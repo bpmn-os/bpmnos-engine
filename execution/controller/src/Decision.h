@@ -3,6 +3,7 @@
 
 #include <bpmn++.h>
 #include "execution/engine/src/Event.h"
+#include <nlohmann/json.hpp>
 
 namespace BPMNOS::Execution {
 
@@ -20,6 +21,9 @@ public:
   
   bool timeDependent;
   std::set<const BPMNOS::Model::Attribute*> dataDependencies;
+  
+  virtual nlohmann::ordered_json jsonify() const = 0;
+
 protected:
   void determineDependencies(const std::set<const BPMNOS::Model::Attribute*>& dependencies);
   Evaluator* evaluator;

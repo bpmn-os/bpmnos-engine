@@ -19,6 +19,8 @@ struct ChoiceDecision : ChoiceEvent, Decision {
   ChoiceDecision(const Token* token, Values updatedStatus, Evaluator* evaluator);
   Values updatedStatus;
   std::optional<double> evaluate() override;
+  
+  nlohmann::ordered_json jsonify() const override;
 };
 
 } // namespace BPMNOS::Execution

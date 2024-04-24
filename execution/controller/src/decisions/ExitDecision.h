@@ -16,6 +16,8 @@ namespace BPMNOS::Execution {
 struct ExitDecision : ExitEvent, Decision {
   ExitDecision(const Token* token, Evaluator* evaluator);
   std::optional<double> evaluate() override;
+
+  nlohmann::ordered_json jsonify() const override;
 };
 
 } // namespace BPMNOS::Execution

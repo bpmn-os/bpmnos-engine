@@ -21,4 +21,3 @@ void Decision::determineDependencies(const std::set<const BPMNOS::Model::Attribu
     }
   }
 }
-
