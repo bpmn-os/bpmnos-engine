@@ -12,6 +12,7 @@ list(APPEND engine_SOURCES
   events/CompletionEvent.cpp
   events/MessageDeliveryEvent.cpp
   events/ExitEvent.cpp
+  events/TimerEvent.cpp
   StateMachine.cpp
   SystemState.cpp
   EventDispatcher.cpp
@@ -38,6 +39,7 @@ list(APPEND engine_HEADERS
   events/CompletionEvent.h
   events/MessageDeliveryEvent.h
   events/ExitEvent.h
+  events/TimerEvent.h
   StateMachine.h
   SystemState.h
   EventDispatcher.h

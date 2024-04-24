@@ -28,7 +28,7 @@ SCENARIO( "Task with expression operator", "[status][nestedactivities]" ) {
       recorder.subscribe(&engine);
       engine.run(scenario.get());
       THEN( "The status updates are correct" ) {
-        auto subProcessLog = recorder.find(nlohmann::json{{"nodeId", "SubProcess_1"}});
+        auto subProcessLog = recorder.find(nlohmann::json{{"nodeId", "SubProcess_1"}}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
         REQUIRE( subProcessLog[0]["state"] == "ARRIVED" );
         REQUIRE( subProcessLog[1]["state"] == "READY" );
         REQUIRE( subProcessLog[1]["status"].size() == subProcessLog[0]["status"].size()+1 );
@@ -37,7 +37,7 @@ SCENARIO( "Task with expression operator", "[status][nestedactivities]" ) {
         REQUIRE( subProcessLog[1]["status"].size() == subProcessLog[subProcessLog.size()-2]["status"].size() );
         REQUIRE( subProcessLog[subProcessLog.size()-1]["status"].size() == subProcessLog[subProcessLog.size()-2]["status"].size()-1 );
 
-        auto taskLog = recorder.find(nlohmann::json{{"nodeId", "Task_1"}});
+        auto taskLog = recorder.find(nlohmann::json{{"nodeId", "Task_1"}}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
         REQUIRE( taskLog[0]["state"] == "ARRIVED" );
         REQUIRE( taskLog[1]["state"] == "READY" );
         REQUIRE( taskLog[0]["status"].size() == subProcessLog[1]["status"].size() );

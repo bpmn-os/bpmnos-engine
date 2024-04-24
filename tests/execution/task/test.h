@@ -27,11 +27,12 @@ SCENARIO( "Task with expression operator", "[execution][task]" ) {
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
       engine.run(scenario.get());
-      THEN( "The recorder log has exactly 16 entries" ) {
-        REQUIRE( recorder.log.size() == 16 );
+      auto tokenLog = recorder.find(nlohmann::json{}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
+      THEN( "The token log has exactly 16 entries" ) {
+        REQUIRE( tokenLog.size() == 16 );
       }
-      THEN( "The dump of each entry of the recorder log is correct" ) {
-        auto activityLog = recorder.find(nlohmann::json{{"nodeId","Activity_1" }});
+      THEN( "The dump of each entry of the token log is correct" ) {
+        auto activityLog = recorder.find(nlohmann::json{{"nodeId","Activity_1" }}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
         REQUIRE( activityLog[0]["state"] == "ARRIVED" );
         REQUIRE( activityLog[1]["state"] == "READY" );
         REQUIRE( activityLog[2]["state"] == "ENTERED" );

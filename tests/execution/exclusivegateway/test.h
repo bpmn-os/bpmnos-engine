@@ -27,13 +27,13 @@ SCENARIO( "Symmetric exclusive gateways", "[execution][exclusivegateway]" ) {
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
       engine.run(scenario.get(),0);
-      THEN( "The dump of each entry of the recorder log is correct" ) {
-        auto gatewayLog = recorder.find(nlohmann::json{{"nodeId","Gateway_1" }});
+      THEN( "The dump of each entry of the token log is correct" ) {
+        auto gatewayLog = recorder.find(nlohmann::json{{"nodeId","Gateway_1" }}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
         REQUIRE( gatewayLog[0]["state"] == "ARRIVED" );
         REQUIRE( gatewayLog[1]["state"] == "ENTERED" );
         REQUIRE( gatewayLog[2]["state"] == "DEPARTED" );
 
-        auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr }});
+        auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr },{"event",nullptr },{"decision",nullptr }});
         REQUIRE( processLog[0]["state"] == "ENTERED" );
         REQUIRE( processLog[1]["state"] == "BUSY" );
         REQUIRE( processLog[2]["state"] == "COMPLETED" );
@@ -83,13 +83,13 @@ SCENARIO( "Symmetric exclusive gateways", "[execution][exclusivegateway]" ) {
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
       engine.run(scenario.get(),10);
-      THEN( "The dump of each entry of the recorder log is correct" ) {
-        auto gatewayLog = recorder.find(nlohmann::json{{"nodeId","Gateway_1" }});
+      THEN( "The dump of each entry of the token log is correct" ) {
+        auto gatewayLog = recorder.find(nlohmann::json{{"nodeId","Gateway_1" }}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
         REQUIRE( gatewayLog[0]["state"] == "ARRIVED" );
         REQUIRE( gatewayLog[1]["state"] == "ENTERED" );
         REQUIRE( gatewayLog[2]["state"] == "FAILED" );
 
-        auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr }});
+        auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr },{"event",nullptr },{"decision",nullptr }});
         REQUIRE( processLog[0]["state"] == "ENTERED" );
         REQUIRE( processLog[1]["state"] == "BUSY" );
         REQUIRE( processLog[2]["state"] == "FAILING" );
@@ -139,32 +139,20 @@ SCENARIO( "Symmetric exclusive gateways", "[execution][exclusivegateway]" ) {
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
       engine.run(scenario.get(),2);
-      THEN( "The dump of each entry of the recorder log is correct" ) {
-        auto gatewayLog = recorder.find(nlohmann::json{{"nodeId","Gateway_1" }});
+      THEN( "The dump of each entry of the token log is correct" ) {
+        auto gatewayLog = recorder.find(nlohmann::json{{"nodeId","Gateway_1" }}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
         REQUIRE( gatewayLog[0]["state"] == "ARRIVED" );
         REQUIRE( gatewayLog[1]["state"] == "ENTERED" );
         REQUIRE( gatewayLog[2]["state"] == "DEPARTED" );
 
-        auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr }});
+        auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr },{"event",nullptr },{"decision",nullptr }});
         REQUIRE( processLog[0]["state"] == "ENTERED" );
         REQUIRE( processLog[1]["state"] == "BUSY" );
         REQUIRE( processLog[2]["state"] == "COMPLETED" );
         REQUIRE( processLog[3]["state"] == "DONE" );
-/*
-        // process
-        REQUIRE( recorder.log[0].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"state\":\"ENTERED\",\"status\":{\"timestamp\":2.0,\"instance\":\"Instance_1\"}}" );
-        REQUIRE( recorder.log[1].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"state\":\"BUSY\",\"status\":{\"timestamp\":2.0,\"instance\":\"Instance_1\"}}" );
-        // start event
-        REQUIRE( recorder.log[2].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"nodeId\":\"StartEvent_1\",\"state\":\"ENTERED\",\"status\":{\"timestamp\":2.0,\"instance\":\"Instance_1\"}}" );
-        REQUIRE( recorder.log[3].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"nodeId\":\"StartEvent_1\",\"sequenceFlowId\":\"Flow_1ra1q8g\",\"state\":\"DEPARTED\",\"status\":{\"timestamp\":2.0,\"instance\":\"Instance_1\"}}" );
-        // forking gateway
-        REQUIRE( recorder.log[4].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"nodeId\":\"Gateway_1\",\"sequenceFlowId\":\"Flow_1ra1q8g\",\"state\":\"ARRIVED\",\"status\":{\"timestamp\":2.0,\"instance\":\"Instance_1\"}}" );
-        REQUIRE( recorder.log[5].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"nodeId\":\"Gateway_1\",\"state\":\"ENTERED\",\"status\":{\"timestamp\":2.0,\"instance\":\"Instance_1\"}}" );
-        // tasks
-        REQUIRE( recorder.log[6]["state"] == "DEPARTED" );
-        REQUIRE( recorder.log[7]["state"] == "ARRIVED" );
-*/
-        REQUIRE( recorder.log[7]["nodeId"] == "Activity_1" );
+
+        auto tokenLog = recorder.find(nlohmann::json{}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
+        REQUIRE( tokenLog[7]["nodeId"] == "Activity_1" );
       }
     }
   }

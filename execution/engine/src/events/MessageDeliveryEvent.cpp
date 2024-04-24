@@ -24,7 +24,6 @@ nlohmann::ordered_json MessageDeliveryEvent::jsonify() const {
   jsonObject["processId"] = token->owner->process->id;
   jsonObject["instanceId"] = BPMNOS::to_string((*token->data)[BPMNOS::Model::ExtensionElements::Index::Instance].get().value(),STRING);
   jsonObject["nodeId"] = token->node->id;
-  jsonObject["state"] = Token::stateName[(int)token->state];
 
   if ( auto object = message.lock() ) {
     jsonObject["message"] = object->jsonify();

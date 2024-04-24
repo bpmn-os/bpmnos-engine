@@ -27,9 +27,9 @@ SCENARIO( "Failed task", "[execution][boundaryevent]" ) {
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
       engine.run(scenario.get(),1);
-      THEN( "The dump of the recorder log is correct" ) {
+      THEN( "The dump of the token log is correct" ) {
 
-        auto entryLog = recorder.find(nlohmann::json{{"state", "ENTERED"}});
+        auto entryLog = recorder.find(nlohmann::json{{"state", "ENTERED"}}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
         REQUIRE( entryLog[0]["nodeId"] == nullptr );
         REQUIRE( entryLog[1]["nodeId"] == "StartEvent_1" );
         REQUIRE( entryLog[2]["nodeId"] == "Activity_1" );
@@ -39,13 +39,13 @@ SCENARIO( "Failed task", "[execution][boundaryevent]" ) {
         auto failureLog = recorder.find(nlohmann::json{{"state", "FAILED"}});
         REQUIRE( failureLog[0]["nodeId"] == "Activity_1" );
 
-        auto completionLog = recorder.find(nlohmann::json{{"state", "COMPLETED"}});
+        auto completionLog = recorder.find(nlohmann::json{{"state", "COMPLETED"}}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
         REQUIRE( completionLog[0]["nodeId"] == "Activity_1" );
         REQUIRE( completionLog[1]["nodeId"] == "BoundaryEvent_1" );
         REQUIRE( completionLog[2]["nodeId"] == nullptr );
 
 
-        auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr }});
+        auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr },{"event",nullptr },{"decision",nullptr }});
         REQUIRE( processLog[0]["state"] == "ENTERED" );
         REQUIRE( processLog[1]["state"] == "BUSY" );
         REQUIRE( processLog[2]["state"] == "COMPLETED" );
@@ -85,20 +85,20 @@ SCENARIO( "Failed subprocess", "[execution][boundaryevent]" ) {
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
       engine.run(scenario.get(),0);
-      THEN( "The dump of each entry of the recorder log is correct" ) {
-        auto failureLog = recorder.find(nlohmann::json{{"state", "FAILED"}});
+      THEN( "The dump of each entry of the token log is correct" ) {
+        auto failureLog = recorder.find(nlohmann::json{{"state", "FAILED"}}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
         REQUIRE( failureLog[0]["nodeId"] == "ErrorEndEvent_1" );
         REQUIRE( failureLog[1]["nodeId"] == "Activity_1" );
 
-        auto withdrawnLog = recorder.find(nlohmann::json{{"state", "WITHDRAWN"}});
+        auto withdrawnLog = recorder.find(nlohmann::json{{"state", "WITHDRAWN"}}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
         REQUIRE( withdrawnLog[0]["nodeId"] == "BoundaryEvent_2" );
 
-        auto completionLog = recorder.find(nlohmann::json{{"state", "COMPLETED"}});
+        auto completionLog = recorder.find(nlohmann::json{{"state", "COMPLETED"}}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
         REQUIRE( completionLog[0]["nodeId"] == "BoundaryEvent_2" );
         REQUIRE( completionLog[1]["nodeId"] == "BoundaryEvent_1" );
         REQUIRE( completionLog[2]["nodeId"] == nullptr );
 
-        auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr }});
+        auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr },{"event",nullptr },{"decision",nullptr }});
         REQUIRE( processLog[0]["state"] == "ENTERED" );
         REQUIRE( processLog[1]["state"] == "BUSY" );
         REQUIRE( processLog[2]["state"] == "COMPLETED" );

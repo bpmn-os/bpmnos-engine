@@ -1,23 +1,21 @@
-#include "ReadyEvent.h"
+#include "TimerEvent.h"
 #include "execution/engine/src/Engine.h"
 
 using namespace BPMNOS::Execution;
 
-ReadyEvent::ReadyEvent(const Token* token, BPMNOS::Values statusAttributes, BPMNOS::Values dataAttributes)
+TimerEvent::TimerEvent(const Token* token)
   : Event(token)
-  , statusAttributes(statusAttributes)
-  , dataAttributes(dataAttributes)
 {
 }
 
-void ReadyEvent::processBy(Engine* engine) const {
-  engine->process(this);
+void TimerEvent::processBy([[maybe_unused]] Engine* engine) const {
+  // timer is already processed by engine
 }
 
-nlohmann::ordered_json ReadyEvent::jsonify() const {
+nlohmann::ordered_json TimerEvent::jsonify() const {
   nlohmann::ordered_json jsonObject;
 
-  jsonObject["event"] = "ready";
+  jsonObject["event"] = "timer";
   jsonObject["processId"] = token->owner->process->id;
   jsonObject["instanceId"] = BPMNOS::to_string((*token->data)[BPMNOS::Model::ExtensionElements::Index::Instance].get().value(),STRING);
   jsonObject["nodeId"] = token->node->id;

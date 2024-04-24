@@ -5,6 +5,7 @@
 #include "model/bpmnos/src/extensionElements/ExtensionElements.h"
 #include "model/bpmnos/src/SequentialAdHocSubProcess.h"
 #include "model/bpmnos/src/DecisionTask.h"
+#include "execution/engine/src/events/TimerEvent.h"
 #include "execution/utility/src/erase.h"
 #include <cassert>
 
@@ -269,6 +270,7 @@ void Engine::process([[maybe_unused]] const ClockTickEvent* event) {
     }
     auto token = token_ptr.lock();
     assert( token );
+    notify(TimerEvent(token.get()));
     commands.emplace_back(std::bind(&Token::advanceToCompleted,token.get()), token.get());
     systemState->tokensAwaitingTimer.remove(token.get());
   }
