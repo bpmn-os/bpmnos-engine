@@ -57,23 +57,30 @@ using namespace BPMNOS;
 #include "execution/data/test.h"
 
 // Examples
+#include "examples/travelling_salesperson_problem/test.h"
 #include "examples/assignment_problem/test.h"
 #include "examples/knapsack_problem/test.h"
-#include "examples/travelling_salesperson_problem/test.h"
+#include "examples/bin_packing_problem/test.h"
 
 #endif // ALL_TESTS
 
 #ifndef ALL_TESTS
-SCENARIO( "Globals", "[globals]" ) {
-  const std::string modelFile = "/home/asvin/Downloads/diagram.bpmn";
+SCENARIO( "Bin packing problem", "[examples][bin_packing_problem]" ) {
+  const std::string modelFile = "examples/bin_packing_problem/Guided_bin_packing_problem.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
 
-  GIVEN( "One knapsack and three items" ) {
+  GIVEN( "Three bins and three items" ) {
 
     std::string csv =
       "PROCESS_ID; INSTANCE_ID; ATTRIBUTE_ID; VALUE\n"
-      ";;GlobalAttribute;42\n"
-      "Process_1;Instance1;Timestamp;0\n"
+      ";;Items;3\n"
+      ";;Bins;3\n"
+      "BinProcess;Bin1;Capacity;40\n"
+      "BinProcess;Bin2;Capacity;40\n"
+      "BinProcess;Bin3;Capacity;40\n"
+      "ItemProcess;Item1;Size;20\n"
+      "ItemProcess;Item2;Size;15\n"
+      "ItemProcess;Item3;Size;22\n"
     ;
 
     Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -99,10 +106,23 @@ SCENARIO( "Globals", "[globals]" ) {
       Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
       engine.run(scenario.get());
-      THEN( "Then the knapsack is not closed before items are included" ) {
-        auto failureLog = recorder.find(nlohmann::json{{"nodeId", "SendRequestTask"},{"state", "FAILED"}});
+      THEN( "Then the solution considers all items" ) {
+        auto failureLog = recorder.find(nlohmann::json{{"state", "FAILED"}});
         REQUIRE( failureLog.size() == 0 );
       }
+/*
+      THEN( "Then the knapsack handles items with best value to weight ratio first" ) {
+        auto handleLog = recorder.find(nlohmann::json{{"nodeId", "HandleItemActivity"},{"state", "COMPLETED"}});
+        REQUIRE( handleLog[0]["status"]["item"] == "Item3" );
+        REQUIRE( handleLog[1]["status"]["item"] == "Item1" );
+        REQUIRE( handleLog[2]["status"]["item"] == "Item2" );
+      }
+      THEN( "Then the knapsack includes Item3 and Item2" ) {
+        auto acceptanceLog = recorder.find(nlohmann::json{{"nodeId", "ItemAccepted"},{"state", "ENTERED"}});
+        REQUIRE( acceptanceLog[0]["instanceId"] == "Item3" );
+        REQUIRE( acceptanceLog[1]["instanceId"] == "Item2" );
+      }
+*/
     }
   }
 }
@@ -136,7 +156,7 @@ std::cerr << "BPMNOS model did not throw" << std::endl;
 TEST_CASE("My Test Case") {
 //    test();
 }
-
+/*
 SCENARIO( "Globals", "[globals]" ) {
   const std::string modelFile = "/home/asvin/Downloads/diagram.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
@@ -179,5 +199,5 @@ SCENARIO( "Globals", "[globals]" ) {
     }
   }
 }
-
+*/
 
