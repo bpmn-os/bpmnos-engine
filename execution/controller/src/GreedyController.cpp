@@ -50,9 +50,6 @@ std::shared_ptr<Event> GreedyController::dispatchEvent(const SystemState* system
       }
     }
   }
-// TODO: remove output
-if ( best ) {
-  std::cerr << "," << best->jsonify();
-}
+
   return best;
 }

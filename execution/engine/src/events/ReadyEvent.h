@@ -17,6 +17,8 @@ struct ReadyEvent : Event {
   void processBy(Engine* engine) const override;
   BPMNOS::Values statusAttributes;
   BPMNOS::Values dataAttributes;
+
+  nlohmann::ordered_json jsonify() const override;
 };
 
 } // namespace BPMNOS::Execution

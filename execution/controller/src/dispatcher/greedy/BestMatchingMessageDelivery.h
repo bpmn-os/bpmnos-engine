@@ -15,12 +15,9 @@ namespace BPMNOS::Execution {
 class BestMatchingMessageDelivery : public GreedyDispatcher {
 public:
   BestMatchingMessageDelivery(Evaluator* evaluator);
-//  std::shared_ptr<Event> dispatchEvent( const SystemState* systemState ) override;
   void connect(Mediator* mediator) override;
   void notice(const Observable* observable) override;
 private:
-//  std::function< std::optional<double>(const Event* event) > evaluator;
-//  auto_set< double, std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest>, std::weak_ptr<const Message>, std::shared_ptr<MessageDeliveryDecision> > decisions;
   auto_list< std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest>, const BPMNOS::Values > requests;
   auto_list< std::weak_ptr<const Message> > messages;
 };

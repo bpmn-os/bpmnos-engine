@@ -20,7 +20,7 @@ public:
   std::shared_ptr<Event> dispatchEvent( const SystemState* systemState ) override;
   void connect(Mediator* mediator) override;
   void notice(const Observable* observable) override;
-
+  BPMNOS::number timestamp;
 protected:
   Evaluator* evaluator;
   auto_list< std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest>, std::shared_ptr<Decision> > decisionsWithoutEvaluation;

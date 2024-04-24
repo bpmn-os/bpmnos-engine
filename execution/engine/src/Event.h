@@ -2,6 +2,7 @@
 #define BPMNOS_Execution_Event_H
 
 #include "Token.h"
+#include "Observable.h"
 
 namespace BPMNOS::Execution {
 
@@ -10,7 +11,8 @@ class Engine;
 //class Event;
 //typedef std::vector< std::shared_ptr<Token> > Events;
 
-struct Event : std::enable_shared_from_this<Event> {
+struct Event : std::enable_shared_from_this<Event>, Observable {
+  constexpr Type getObservableType() const override { return Type::Event; };
   Event(const Token* token);
   virtual ~Event() = default;  // Virtual destructor
   const Token* token;  
@@ -22,6 +24,8 @@ struct Event : std::enable_shared_from_this<Event> {
   template<typename T> const T* is() const {
     return dynamic_cast<const T*>(this);
   }
+
+  virtual nlohmann::ordered_json jsonify() const = 0;
 };
 
 } // namespace BPMNOS::Execution

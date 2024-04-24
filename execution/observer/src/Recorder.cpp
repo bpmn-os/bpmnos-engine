@@ -28,27 +28,49 @@ Recorder::~Recorder()
 }
 
 void Recorder::subscribe(Engine* engine) {
-  engine->addSubscriber(this, Execution::Observable::Type::Token);
+  engine->addSubscriber(this, 
+    Execution::Observable::Type::Token,
+    Execution::Observable::Type::Event
+  );
 }
 
 void Recorder::notice(const Observable* observable) {
-  auto token = static_cast<const Token*>(observable);
-//      std::cerr << "Observable with type: " << observable->getObservableType() << std::endl;
-  objective = token->owner->systemState->getObjective();
-  auto json = token->jsonify();
+  if ( observable->getObservableType() ==  Execution::Observable::Type::Token ) {
+    auto token = static_cast<const Token*>(observable);
+    objective = token->owner->systemState->getObjective();
+    auto json = token->jsonify();
 
-  if (os.has_value()) {
-    if ( !isFirst ) {
-      os.value().get() << Color::Modifier(Color::FG_LIGHT_GRAY) <<"," << Color::Modifier(Color::FG_DEFAULT);
+    if (os.has_value()) {
+      if ( !isFirst ) {
+        os.value().get() << Color::Modifier(Color::FG_LIGHT_GRAY) <<"," << Color::Modifier(Color::FG_DEFAULT);
+      }
+      os.value().get() << Color::Modifier(Color::FG_LIGHT_GRAY) <<json.dump() << Color::Modifier(Color::FG_DEFAULT);
+      isFirst = false;
     }
-    os.value().get() << Color::Modifier(Color::FG_LIGHT_GRAY) <<json.dump() << Color::Modifier(Color::FG_DEFAULT);
-    isFirst = false;
+
+    log.push_back( json );
+
+    if ( log.size() > maxSize) {
+      log.erase(log.begin());
+    }
   }
+  else if ( observable->getObservableType() ==  Execution::Observable::Type::Event ) {
+    auto event = static_cast<const Event*>(observable);
+    auto json = event->jsonify();
 
-  log.push_back( json );
+    if (os.has_value()) {
+      if ( !isFirst ) {
+        os.value().get() << Color::Modifier(Color::FG_LIGHT_CYAN) <<"," << Color::Modifier(Color::FG_DEFAULT);
+      }
+      os.value().get() << Color::Modifier(Color::FG_LIGHT_CYAN) <<json.dump() << Color::Modifier(Color::FG_DEFAULT);
+      isFirst = false;
+    }
 
-  if ( log.size() > maxSize) {
-    log.erase(log.begin());
+    log.push_back( json );
+
+    if ( log.size() > maxSize) {
+      log.erase(log.begin());
+    }
   }
 
 };

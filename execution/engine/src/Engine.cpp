@@ -76,6 +76,7 @@ bool Engine::advance() {
   // fetch and process all events
   while ( auto event = fetchEvent(systemState.get()) ) {
 //std::cerr << "*";
+    notify(event.get());
     event->processBy(this);
 
     while ( commands.size() ) {

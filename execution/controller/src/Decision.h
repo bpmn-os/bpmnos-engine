@@ -21,9 +21,6 @@ public:
   
   bool timeDependent;
   std::set<const BPMNOS::Model::Attribute*> dataDependencies;
-  
-  virtual nlohmann::ordered_json jsonify() const = 0;
-
 protected:
   void determineDependencies(const std::set<const BPMNOS::Model::Attribute*>& dependencies);
   Evaluator* evaluator;

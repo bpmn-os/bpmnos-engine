@@ -16,6 +16,8 @@ struct ChoiceEvent : virtual Event {
   ChoiceEvent(const Token* token, Values updatedStatus);
   void processBy(Engine* engine) const;
   Values updatedStatus;
+
+  nlohmann::ordered_json jsonify() const override;
 };
 
 } // namespace BPMNOS::Execution

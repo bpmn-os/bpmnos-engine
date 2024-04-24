@@ -12,3 +12,15 @@ ChoiceEvent::ChoiceEvent(const Token* token, Values updatedStatus)
 void ChoiceEvent::processBy(Engine* engine) const {
   engine->process(this);
 }
+
+nlohmann::ordered_json ChoiceEvent::jsonify() const {
+  nlohmann::ordered_json jsonObject;
+
+  jsonObject["event"] = "choice";
+  jsonObject["processId"] = token->owner->process->id;
+  jsonObject["instanceId"] = BPMNOS::to_string((*token->data)[BPMNOS::Model::ExtensionElements::Index::Instance].get().value(),STRING);
+  jsonObject["nodeId"] = token->node->id;
+  jsonObject["state"] = Token::stateName[(int)token->state];
+
+  return jsonObject;
+}

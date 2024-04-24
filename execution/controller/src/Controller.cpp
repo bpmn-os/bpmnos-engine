@@ -14,8 +14,7 @@ void Controller::connect(Mediator* mediator) {
     Observable::Type::MessageDeliveryRequest,
     Observable::Type::DataUpdate,
     Observable::Type::SequentialPerformerUpdate,
-    Observable::Type::Message,
-    Observable::Type::ClockTick
+    Observable::Type::Message
   );
   EventDispatcher::connect(mediator);
 }

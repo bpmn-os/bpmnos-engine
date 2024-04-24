@@ -9,10 +9,11 @@ namespace BPMNOS::Execution {
 /**
  * @brief Represents an event causing the engine to terminate.
  */
-struct TerminationEvent : Event, Observable {
-  constexpr Type getObservableType() const override { return Type::Termination; };
+struct TerminationEvent : Event {
   TerminationEvent();
   void processBy(Engine* engine) const override;
+
+  nlohmann::ordered_json jsonify() const override;
 };
 
 } // namespace BPMNOS::Execution

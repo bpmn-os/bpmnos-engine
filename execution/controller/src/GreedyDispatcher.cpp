@@ -12,12 +12,12 @@ GreedyDispatcher::GreedyDispatcher(Evaluator* evaluator)
   if ( !evaluator ) {
     throw std::runtime_error("GreedyDispatcher: missing evaluator");
   }
+  timestamp = std::numeric_limits<BPMNOS::number>::min();
 }
 
 void GreedyDispatcher::connect(Mediator* mediator) {
   mediator->addSubscriber(this, 
-    Observable::Type::DataUpdate,
-    Observable::Type::ClockTick
+    Observable::Type::DataUpdate
   );
   EventDispatcher::connect(mediator);
 }
@@ -57,6 +57,11 @@ void GreedyDispatcher::evaluate(std::weak_ptr<const Token> token_ptr, std::weak_
 }
 
 std::shared_ptr<Event> GreedyDispatcher::dispatchEvent( [[maybe_unused]] const SystemState* systemState ) {
+  if ( systemState->currentTime > timestamp ) {
+    timestamp = systemState->currentTime;
+    clockTick();
+  }
+
   for ( auto& [ token_ptr, request_ptr, decision ] : decisionsWithoutEvaluation ) {
     assert(decision);
     if ( decision && !decision->expired() ) {
@@ -78,9 +83,6 @@ std::shared_ptr<Event> GreedyDispatcher::dispatchEvent( [[maybe_unused]] const S
 void GreedyDispatcher::notice(const Observable* observable) {
   if ( observable->getObservableType() == Observable::Type::DataUpdate ) {
     dataUpdate(static_cast<const DataUpdate*>(observable));   
-  }
-  else if ( observable->getObservableType() == Observable::Type::ClockTick ) {
-    clockTick();
   }
 }
 

@@ -18,6 +18,8 @@ struct MessageDeliveryEvent : virtual Event {
   void processBy(Engine* engine) const override;
   bool expired() override;
   std::weak_ptr<const Message> message;
+
+  nlohmann::ordered_json jsonify() const override;
 };
 
 } // namespace BPMNOS::Execution

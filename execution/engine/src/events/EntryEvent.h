@@ -17,6 +17,8 @@ struct EntryEvent : virtual Event {
 
   void processBy(Engine* engine) const override;
   std::optional<Values> entryStatus;
+
+  nlohmann::ordered_json jsonify() const override;
 };
 
 } // namespace BPMNOS::Execution

@@ -16,6 +16,8 @@ struct ExitEvent : virtual Event {
   ExitEvent(const Token* token, std::optional<Values> exitStatus = std::nullopt);
   void processBy(Engine* engine) const override;
   std::optional<Values> exitStatus;
+
+  nlohmann::ordered_json jsonify() const override;
 };
 
 } // namespace BPMNOS::Execution

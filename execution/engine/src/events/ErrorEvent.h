@@ -14,6 +14,8 @@ namespace BPMNOS::Execution {
 struct ErrorEvent : Event {
   ErrorEvent(const Token* token);
   void processBy(Engine* engine) const override;
+
+  nlohmann::ordered_json jsonify() const override;
 };
 
 } // namespace BPMNOS::Execution

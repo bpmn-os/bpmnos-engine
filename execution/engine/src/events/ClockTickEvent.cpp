@@ -11,3 +11,11 @@ ClockTickEvent::ClockTickEvent()
 void ClockTickEvent::processBy(Engine* engine) const {
   engine->process(this);
 }
+
+nlohmann::ordered_json ClockTickEvent::jsonify() const {
+  nlohmann::ordered_json jsonObject;
+
+  jsonObject["event"] = "clocktick";
+
+  return jsonObject;
+}

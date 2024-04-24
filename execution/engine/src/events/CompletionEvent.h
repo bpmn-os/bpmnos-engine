@@ -15,6 +15,8 @@ struct CompletionEvent : Event {
   CompletionEvent(const Token* token,  std::optional<Values> updatedStatus = std::nullopt);
   void processBy(Engine* engine) const;
   std::optional<Values> updatedStatus;
+
+  nlohmann::ordered_json jsonify() const override;
 };
 
 } // namespace BPMNOS::Execution
