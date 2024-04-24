@@ -62,7 +62,6 @@ std::unique_ptr<XML::XMLObject> Model::createRoot(const std::string& filename) {
 }
  
 std::unique_ptr<BPMN::Process> Model::createProcess(XML::bpmn::tProcess* process) {
-//std::cerr << "add process" << std::endl;
   auto baseElement = BPMN::Model::createProcess(process);
   auto extensionElements = std::make_unique<BPMNOS::Model::ExtensionElements>(process, attributeRegistry, nullptr, getData(process) );
   // bind attributes, restrictions, and operators to all processes
@@ -77,7 +76,6 @@ std::unique_ptr<BPMN::EventSubProcess> Model::createEventSubProcess(XML::bpmn::t
 }
 
 std::unique_ptr<BPMN::FlowNode> Model::createActivity(XML::bpmn::tActivity* activity, BPMN::Scope* parent) {
-//std::cerr << "add child" << std::endl;
   auto baseElement = BPMN::Model::createActivity(activity,parent);
   auto extensionElements = std::make_unique<BPMNOS::Model::ExtensionElements>(activity, parent->extensionElements->as<ExtensionElements>()->attributeRegistry, parent, getData(activity));
 
