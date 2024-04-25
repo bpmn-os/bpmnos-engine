@@ -12,7 +12,7 @@ namespace BPMNOS::Execution {
 /**
  * @brief Class creating an entry event for a token awaiting the entry at a regular activity (i.e. not a job).
  */
-class BestMatchingMessageDelivery : public GreedyDispatcher {
+class BestMatchingMessageDelivery : public GreedyDispatcher< std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest>, std::weak_ptr<const Message> > {
 public:
   BestMatchingMessageDelivery(Evaluator* evaluator);
   void connect(Mediator* mediator) override;

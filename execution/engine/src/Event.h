@@ -17,7 +17,6 @@ struct Event : std::enable_shared_from_this<Event>, Observable {
   virtual ~Event() = default;  // Virtual destructor
   const Token* token;  
 
-  virtual bool expired() { return false;}; ///< Utility function allowing specialised events to indicate that they are no longer valid
   virtual void processBy(Engine* engine) const  = 0;
 
   /// Returns a pointer of type T of the Event.

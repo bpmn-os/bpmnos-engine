@@ -13,6 +13,8 @@ namespace BPMNOS::Execution {
 /**
  * @brief Class for dispatching the event with the best evaluation.
  */
+// WeakPtrs... are < std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest> >
+template <typename... WeakPtrs>
 class GreedyDispatcher : public EventDispatcher, public Observer {
 public:
   GreedyDispatcher(Evaluator* evaluator);
@@ -23,19 +25,19 @@ public:
   BPMNOS::number timestamp;
 protected:
   Evaluator* evaluator;
-  auto_list< std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest>, std::shared_ptr<Decision> > decisionsWithoutEvaluation;
+  auto_list< WeakPtrs..., std::shared_ptr<Decision> > decisionsWithoutEvaluation;
 
-  void evaluate(std::weak_ptr<const Token> token_ptr, std::weak_ptr<const DecisionRequest> request_ptr, std::shared_ptr<Decision> decision);
+  void evaluate(WeakPtrs..., std::shared_ptr<Decision> decision);
 
-  auto_set< double, std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest>, std::weak_ptr<Event> > evaluatedDecisions;  
+  auto_set< double, WeakPtrs..., std::weak_ptr<Event> > evaluatedDecisions;  
 private:
   void dataUpdate(const DataUpdate* update);
   void clockTick();
 
-  auto_list< std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest>, std::shared_ptr<Decision> > invariantEvaluations;
-  auto_list< std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest>, std::shared_ptr<Decision> > timeDependentEvaluations;
-  std::unordered_map< long unsigned int, auto_list< std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest>, std::shared_ptr<Decision> > > dataDependentEvaluations;
-  std::unordered_map< long unsigned int, auto_list< std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest>, std::shared_ptr<Decision> > > timeAndDataDependentEvaluations;
+  auto_list< WeakPtrs..., std::shared_ptr<Decision> > invariantEvaluations;
+  auto_list< WeakPtrs..., std::shared_ptr<Decision> > timeDependentEvaluations;
+  std::unordered_map< long unsigned int, auto_list< WeakPtrs..., std::shared_ptr<Decision> > > dataDependentEvaluations;
+  std::unordered_map< long unsigned int, auto_list< WeakPtrs..., std::shared_ptr<Decision> > > timeAndDataDependentEvaluations;
 };
 
 } // namespace BPMNOS::Execution

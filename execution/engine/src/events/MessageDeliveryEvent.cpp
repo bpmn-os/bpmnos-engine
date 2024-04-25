@@ -9,10 +9,6 @@ MessageDeliveryEvent::MessageDeliveryEvent(const Token* token, const Message* me
 {
 }
 
-bool MessageDeliveryEvent::expired() {
-  return message.expired();
-}
-
 void MessageDeliveryEvent::processBy(Engine* engine) const {
   engine->process(this);
 }

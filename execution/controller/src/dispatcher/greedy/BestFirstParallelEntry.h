@@ -11,7 +11,7 @@ namespace BPMNOS::Execution {
 /**
  * @brief Class dispatching an entry event for a token awaiting the entry at an activity within a sequential adhoc subprocess.
  */
-class BestFirstParallelEntry : public GreedyDispatcher {
+class BestFirstParallelEntry : public GreedyDispatcher< std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest> > {
 public:
   BestFirstParallelEntry(Evaluator* evaluator);
   void connect(Mediator* mediator) override;

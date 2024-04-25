@@ -16,7 +16,6 @@ namespace BPMNOS::Execution {
 struct MessageDeliveryEvent : virtual Event {
   MessageDeliveryEvent(const Token* token, const Message* message);
   void processBy(Engine* engine) const override;
-  bool expired() override;
   std::weak_ptr<const Message> message;
 
   nlohmann::ordered_json jsonify() const override;

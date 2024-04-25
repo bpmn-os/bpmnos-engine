@@ -6,7 +6,8 @@
 
 using namespace BPMNOS::Execution;
 
-GreedyDispatcher::GreedyDispatcher(Evaluator* evaluator)
+template <typename... WeakPtrs>
+GreedyDispatcher<WeakPtrs...>::GreedyDispatcher(Evaluator* evaluator)
   : evaluator(evaluator)
 {
   if ( !evaluator ) {
@@ -15,78 +16,76 @@ GreedyDispatcher::GreedyDispatcher(Evaluator* evaluator)
   timestamp = std::numeric_limits<BPMNOS::number>::min();
 }
 
-void GreedyDispatcher::connect(Mediator* mediator) {
+template <typename... WeakPtrs>
+void GreedyDispatcher<WeakPtrs...>::connect(Mediator* mediator) {
   mediator->addSubscriber(this, 
     Observable::Type::DataUpdate
   );
   EventDispatcher::connect(mediator);
 }
 
-void GreedyDispatcher::evaluate(std::weak_ptr<const Token> token_ptr, std::weak_ptr<const DecisionRequest> request_ptr, std::shared_ptr<Decision> decision) {
-  assert ( !token_ptr.expired() );
-  assert ( !request_ptr.expired() );
+template <typename... WeakPtrs>
+void GreedyDispatcher<WeakPtrs...>::evaluate(WeakPtrs... weak_ptrs, std::shared_ptr<Decision> decision) {
   assert ( decision );
 
   auto value = decision->evaluate();
   // decisions without evaluation are assumed to be infeasible
-  evaluatedDecisions.emplace( (value.has_value() ? (double)value.value() : std::numeric_limits<double>::max() ), token_ptr, request_ptr, decision->weak_from_this());
+  evaluatedDecisions.emplace( (value.has_value() ? (double)value.value() : std::numeric_limits<double>::max() ), weak_ptrs..., decision->weak_from_this());
 
   assert ( decision );
 
   // add evaluation to respective container
   if ( !decision->timeDependent && decision->dataDependencies.empty() ) {
 //std::cerr << "GreedyDispatcher: Decision is invariant"<< std::endl;
-    invariantEvaluations.emplace_back(token_ptr, request_ptr, std::move(decision) );
+    invariantEvaluations.emplace_back(weak_ptrs..., std::move(decision) );
   }
   else if ( decision->timeDependent && decision->dataDependencies.empty() ) {
 //std::cerr << "GreedyDispatcher: Decision is time dependent" << std::endl;
-    timeDependentEvaluations.emplace_back(token_ptr, request_ptr, std::move(decision) );
+    timeDependentEvaluations.emplace_back(weak_ptrs..., std::move(decision) );
   }
   else if ( !decision->timeDependent && decision->dataDependencies.size() ) {
     assert(decision->token);
     BPMNOS::number instanceId = decision->token->owner->root->instance.value();
 //std::cerr << "GreedyDispatcher: Decision is data dependent with index " << (long unsigned int)instanceId << std::endl;
-    dataDependentEvaluations[(long unsigned int)instanceId].emplace_back(token_ptr, request_ptr, std::move(decision) );
+    dataDependentEvaluations[(long unsigned int)instanceId].emplace_back(weak_ptrs..., std::move(decision) );
   }
   else if ( decision->timeDependent && decision->dataDependencies.size() ) {
     assert(decision->token);
     BPMNOS::number instanceId = decision->token->owner->root->instance.value();
 //std::cerr << "GreedyDispatcher: Decision is time and data dependent with index " << (long unsigned int)instanceId << std::endl;
-    timeAndDataDependentEvaluations[(long unsigned int)instanceId].emplace_back(token_ptr, request_ptr, std::move(decision) );
+    timeAndDataDependentEvaluations[(long unsigned int)instanceId].emplace_back(weak_ptrs..., std::move(decision) );
   }
 }
 
-std::shared_ptr<Event> GreedyDispatcher::dispatchEvent( [[maybe_unused]] const SystemState* systemState ) {
+template <typename... WeakPtrs>
+std::shared_ptr<Event> GreedyDispatcher<WeakPtrs...>::dispatchEvent( [[maybe_unused]] const SystemState* systemState ) {
   if ( systemState->currentTime > timestamp ) {
     timestamp = systemState->currentTime;
     clockTick();
   }
 
-  for ( auto& [ token_ptr, request_ptr, decision ] : decisionsWithoutEvaluation ) {
-    assert(decision);
-    if ( decision && !decision->expired() ) {
-      evaluate( token_ptr, request_ptr, std::move(decision) );
-    }
+  for ( auto& decisionTuple : decisionsWithoutEvaluation ) {
+    std::apply([this](auto&&... args) { this->evaluate(std::forward<decltype(args)>(args)...); }, decisionTuple);
   }
   decisionsWithoutEvaluation.clear();
 
-  for ( auto [ cost, token_ptr, request_ptr, event_ptr ] : evaluatedDecisions ) {
-    if( auto event = event_ptr.lock();
-      event && !event->expired()
-    )  {
-      return event;
-    }
+  for ( auto decisionTuple : evaluatedDecisions ) {
+    std::weak_ptr<Event>& event_ptr = std::get<sizeof...(WeakPtrs)+1>(decisionTuple);
+    return event_ptr.lock();
   }
+
   return nullptr;
 }
 
-void GreedyDispatcher::notice(const Observable* observable) {
+template <typename... WeakPtrs>
+void GreedyDispatcher<WeakPtrs...>::notice(const Observable* observable) {
   if ( observable->getObservableType() == Observable::Type::DataUpdate ) {
     dataUpdate(static_cast<const DataUpdate*>(observable));   
   }
 }
 
-void GreedyDispatcher::dataUpdate(const DataUpdate* update) {
+template <typename... WeakPtrs>
+void GreedyDispatcher<WeakPtrs...>::dataUpdate(const DataUpdate* update) {
 /*
 std::cerr << "DataUpdate: ";
 for ( auto attribute : update->attributes ) {
@@ -94,7 +93,7 @@ std::cerr << attribute->name << ", ";
 }
 std::cerr << std::endl;
 */
-  auto removeDependentEvaluations = [this,&update](std::unordered_map< long unsigned int, auto_list< std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest>, std::shared_ptr<Decision> > >& evaluations) -> void {
+  auto removeDependentEvaluations = [this,&update](std::unordered_map< long unsigned int, auto_list< WeakPtrs..., std::shared_ptr<Decision> > >& evaluations) -> void {
     auto intersect = [](const std::vector<const BPMNOS::Model::Attribute*>& first, const std::set<const BPMNOS::Model::Attribute*>& second) -> bool {
       for ( auto lhs : first ) {
         if ( second.contains(lhs) ) {
@@ -104,15 +103,14 @@ std::cerr << std::endl;
       return false;
     };
 
-    auto removeObsolete = [this,&update,intersect](auto_list< std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest>, std::shared_ptr<Decision> >& evaluation) -> void {
+    auto removeObsolete = [this,&update,intersect](auto_list< WeakPtrs..., std::shared_ptr<Decision> >& evaluation) -> void {
       // check whether evaluation has become obsolete
       for ( auto it = evaluation.begin(); it != evaluation.end(); ) {
-        auto& [ token_ptr, request_ptr, decision ] = *it;
+        auto& decisionTuple = *it;
+        std::shared_ptr<Decision>& decision = std::get<sizeof...(WeakPtrs)>(decisionTuple);
         if ( intersect(update->attributes, decision->dataDependencies) ) {
-          if ( !decision->expired() ) {
-            decision->evaluation = std::nullopt;
-            decisionsWithoutEvaluation.emplace_back( token_ptr, request_ptr, std::move(decision) );
-          }
+          decision->evaluation = std::nullopt;
+          std::apply([this](auto&&... args) { this->decisionsWithoutEvaluation.emplace_back(std::forward<decltype(args)>(args)...); }, decisionTuple);
           // remove evaluation
           it = evaluation.erase(it);
         }
@@ -142,25 +140,28 @@ std::cerr << std::endl;
   removeDependentEvaluations(timeAndDataDependentEvaluations);
 }
 
-void GreedyDispatcher::clockTick() {
-  for ( auto& [token_ptr, request_ptr, decision ] : timeDependentEvaluations ) {
-    if ( !decision->expired() ) {
-      decision->evaluation = std::nullopt;
-      decisionsWithoutEvaluation.emplace_back( token_ptr, request_ptr, std::move(decision) );
-    }
+template <typename... WeakPtrs>
+void GreedyDispatcher<WeakPtrs...>::clockTick() {
+  for ( auto& decisionTuple : timeDependentEvaluations ) {
+    std::shared_ptr<Decision>& decision = std::get<sizeof...(WeakPtrs)>(decisionTuple);
+    decision->evaluation = std::nullopt;
+    std::apply([this](auto&&... args) { this->decisionsWithoutEvaluation.emplace_back(std::forward<decltype(args)>(args)...); }, decisionTuple);
   }
+
   timeDependentEvaluations.clear();
 
   for ( auto& [ instance, evaluations ] : timeAndDataDependentEvaluations ) {
-    for ( auto& [token_ptr, request_ptr, decision ] : evaluations ) {
-      if ( !decision->expired() ) {
-        decision->evaluation = std::nullopt;
-        decisionsWithoutEvaluation.emplace_back( token_ptr, request_ptr, std::move(decision) );
-      }
+    for ( auto& decisionTuple : evaluations ) {
+      std::shared_ptr<Decision>& decision = std::get<sizeof...(WeakPtrs)>(decisionTuple);
+      decision->evaluation = std::nullopt;
+      std::apply([this](auto&&... args) { this->decisionsWithoutEvaluation.emplace_back(std::forward<decltype(args)>(args)...); }, decisionTuple);
     }
   }
   timeAndDataDependentEvaluations.clear();
 }
+
+template class BPMNOS::Execution::GreedyDispatcher< std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest> >;
+template class BPMNOS::Execution::GreedyDispatcher< std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest>, std::weak_ptr<const Message> >;
 
 
 

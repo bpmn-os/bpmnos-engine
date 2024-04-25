@@ -21,7 +21,7 @@ void BestFirstSequentialEntry::connect(Mediator* mediator) {
 std::shared_ptr<Event> BestFirstSequentialEntry::dispatchEvent( [[maybe_unused]] const SystemState* systemState ) {
   for ( auto& [ token_ptr, request_ptr, decision ] : decisionsWithoutEvaluation ) {
     assert(decision);
-    if ( decision && !decision->expired() ) {
+    if ( decision ) {
       auto token = token_ptr.lock();
       assert( token );
       auto tokenAtSequentialPerformer = token->owner->systemState->tokenAtSequentialPerformer.at(const_cast<Token*>(token.get()));
@@ -42,11 +42,7 @@ std::shared_ptr<Event> BestFirstSequentialEntry::dispatchEvent( [[maybe_unused]]
     auto tokenAtSequentialPerformer = token->owner->systemState->tokenAtSequentialPerformer.at(const_cast<Token*>(token.get()));
     assert( tokenAtSequentialPerformer );
     if ( !tokenAtSequentialPerformer->performing ) {
-      if( auto event = event_ptr.lock();
-        event && !event->expired()
-      )  {
-        return event;
-      }
+      return event_ptr.lock();
     }
   }
 

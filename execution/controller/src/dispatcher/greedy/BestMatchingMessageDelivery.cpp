@@ -37,7 +37,7 @@ void BestMatchingMessageDelivery::notice(const Observable* observable) {
         message->matches(recipientHeader)
       ) {
         auto decision = std::make_shared<MessageDeliveryDecision>(request->token, message.get(), evaluator);
-        decisionsWithoutEvaluation.emplace_back( request->token->weak_from_this(), request->weak_from_this(), decision );
+        decisionsWithoutEvaluation.emplace_back( request->token->weak_from_this(), request->weak_from_this(), message_ptr, decision );
       }
     }
   }
@@ -55,7 +55,7 @@ void BestMatchingMessageDelivery::notice(const Observable* observable) {
           message->matches(recipientHeader)
         ) {
           auto decision = std::make_shared<MessageDeliveryDecision>(token.get(), message, evaluator);
-          decisionsWithoutEvaluation.emplace_back( token_ptr, request_ptr, decision );
+          decisionsWithoutEvaluation.emplace_back( token_ptr, request_ptr, message->weak_from_this(), decision );
         }
       }
     }
