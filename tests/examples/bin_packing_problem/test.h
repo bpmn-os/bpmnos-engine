@@ -35,7 +35,7 @@ SCENARIO( "Bin packing problem", "[examples][bin_packing_problem]" ) {
       messageTaskTerminator.connect(&engine);
       timeHandler.connect(&engine);
 
-    Execution::Recorder recorder;
+      Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
       engine.run(scenario.get());

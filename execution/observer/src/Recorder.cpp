@@ -30,7 +30,8 @@ Recorder::~Recorder()
 void Recorder::subscribe(Engine* engine) {
   engine->addSubscriber(this, 
     Execution::Observable::Type::Token,
-    Execution::Observable::Type::Event
+    Execution::Observable::Type::Event,
+    Execution::Observable::Type::Message
   );
 }
 
@@ -63,6 +64,24 @@ void Recorder::notice(const Observable* observable) {
         os.value().get() << Color::Modifier(Color::FG_LIGHT_CYAN) <<"," << Color::Modifier(Color::FG_DEFAULT);
       }
       os.value().get() << Color::Modifier(Color::FG_LIGHT_CYAN) <<json.dump() << Color::Modifier(Color::FG_DEFAULT);
+      isFirst = false;
+    }
+
+    log.push_back( json );
+
+    if ( log.size() > maxSize) {
+      log.erase(log.begin());
+    }
+  }
+  else if ( observable->getObservableType() ==  Execution::Observable::Type::Message ) {
+    auto message = static_cast<const Message*>(observable);
+    auto json = message->jsonify();
+
+    if (os.has_value()) {
+      if ( !isFirst ) {
+        os.value().get() << Color::Modifier(Color::FG_LIGHT_YELLOW) <<"," << Color::Modifier(Color::FG_DEFAULT);
+      }
+      os.value().get() << Color::Modifier(Color::FG_LIGHT_YELLOW) << json.dump() << Color::Modifier(Color::FG_DEFAULT);
       isFirst = false;
     }
 
