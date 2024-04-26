@@ -385,7 +385,7 @@ void Token::advanceToEntered() {
   update(State::ENTERED);
 //std::cerr << "updatedToEntered" << std::endl;
 
-  if ( node && !node->represents<BPMN::SendTask>() ) {
+  if ( node && !node->represents<BPMN::SendTask>() && !node->represents<BPMN::EventSubProcess>() ) {
     if ( auto extensionElements = node->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
       extensionElements && !extensionElements->dataUpdateOnEntry.attributes.empty()
     ) {
@@ -831,6 +831,16 @@ std::cerr << "Context: " << context << " at " << context->scope->id << " has " <
         eventSubProcess->run(owner->parentToken->status);
 //std::cerr << "***" << std::endl;
       }
+      
+      // check entry scope restrictions of event-subprocess
+//std::cerr << "check entry scope restrictions of event-subprocess" << std::endl;
+      if ( !eventSubProcess->extensionElements->as<BPMNOS::Model::ExtensionElements>()->feasibleEntry(status,*data,globals) ) {
+        engine->commands.emplace_back(std::bind(&Token::advanceToFailed,this), this);
+      }
+      else {
+        engine->commands.emplace_back(std::bind(&Token::advanceToExiting,this), this);
+      }
+      return;
     }
     else if ( auto catchEvent = node->represents<BPMN::CatchEvent>();
       catchEvent &&
@@ -854,14 +864,54 @@ std::cerr << "Context: " << context << " at " << context->scope->id << " has " <
 
 void Token::advanceToExiting() {
 //std::cerr << "advanceToExiting: " << jsonify().dump() << std::endl;
+  auto engine = const_cast<Engine*>(owner->systemState->engine);
 
   if ( status[BPMNOS::Model::ExtensionElements::Index::Timestamp] > owner->systemState->getTime() ) {
     throw std::runtime_error("Token: exit timestamp at node '" + node->id + "' is larger than current time");
   }
 
+  if ( node && node->represents<BPMN::TypedStartEvent>() ) {
+
+    // apply operators of event subprocess
+    auto eventSubProcess = owner->scope->represents<BPMN::EventSubProcess>();
+    if ( !eventSubProcess ) {
+      throw std::runtime_error("Token: typed start event must belong to event subprocess");
+    }
+    if ( auto extensionElements = owner->process->extensionElements->represents<BPMNOS::Model::ExtensionElements>() ) {
+      if ( !extensionElements->isInstantaneous ) {
+        throw std::runtime_error("StateMachine: Operators for process '" + node->id + "' attempt to modify timestamp");
+      }
+      // update status
+      status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = owner->systemState->currentTime;
+      extensionElements->applyOperators(status,*data,globals);
+
+      // notify about data update
+      if ( extensionElements->dataUpdateOnEntry.global ) {
+        owner->systemState->engine->notify( DataUpdate( extensionElements->dataUpdateOnCompletion.attributes ) );
+      }
+      else {
+        owner->systemState->engine->notify( DataUpdate( owner->root->instance.value(), extensionElements->dataUpdateOnCompletion.attributes ) );
+      }
+
+    }
+    update(State::EXITING);
+
+    // check full scope restrictions of event-subprocess
+//std::cerr << "check full scope restrictions of event-subprocess" << std::endl;
+    if ( !eventSubProcess->extensionElements->as<BPMNOS::Model::ExtensionElements>()->fullScopeRestrictionsSatisfied(status,*data,globals) ) {
+      engine->commands.emplace_back(std::bind(&Token::advanceToFailed,this), this);
+    }
+    else if ( node->outgoing.empty() ) {
+      engine->commands.emplace_back(std::bind(&Token::advanceToDone,this), this);
+    }
+    else {
+      advanceToDeparting();
+    }
+    return;
+  }
+  
   update(State::EXITING);
 
-  auto engine = const_cast<Engine*>(owner->systemState->engine);
   // check restrictions
   if ( !exitIsFeasible() ) {
     engine->commands.emplace_back(std::bind(&Token::advanceToFailed,this), this);

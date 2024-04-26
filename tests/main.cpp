@@ -156,48 +156,4 @@ std::cerr << "BPMNOS model did not throw" << std::endl;
 TEST_CASE("My Test Case") {
 //    test();
 }
-/*
-SCENARIO( "Globals", "[globals]" ) {
-  const std::string modelFile = "/home/asvin/Downloads/diagram.bpmn";
-  REQUIRE_NOTHROW( Model::Model(modelFile) );
-
-  GIVEN( "One knapsack and three items" ) {
-
-    std::string csv =
-      "PROCESS_ID; INSTANCE_ID; ATTRIBUTE_ID; VALUE\n"
-      ";;GlobalAttribute;42\n"
-      "Process_1;Instance1;Timestamp;0\n"
-    ;
-
-    Model::StaticDataProvider dataProvider(modelFile,csv);
-    auto scenario = dataProvider.createScenario();
-
-    WHEN( "The engine is started with the guided controller" ) {
-      Execution::Engine engine;
-      Execution::ReadyHandler readyHandler;
-      Execution::DeterministicTaskCompletion completionHandler;
-      readyHandler.connect(&engine);
-      completionHandler.connect(&engine);
-
-      Execution::GuidedEvaluator evaluator;
-      Execution::GreedyController controller(&evaluator);
-      controller.connect(&engine);
-      
-      Execution::MyopicMessageTaskTerminator messageTaskTerminator;
-      Execution::TimeWarp timeHandler;
-      messageTaskTerminator.connect(&engine);
-      timeHandler.connect(&engine);
-
-//      Execution::Recorder recorder;
-      Execution::Recorder recorder(std::cerr);
-      recorder.subscribe(&engine);
-      engine.run(scenario.get());
-      THEN( "Then the knapsack is not closed before items are included" ) {
-        auto failureLog = recorder.find(nlohmann::json{{"nodeId", "SendRequestTask"},{"state", "FAILED"}});
-        REQUIRE( failureLog.size() == 0 );
-      }
-    }
-  }
-}
-*/
 

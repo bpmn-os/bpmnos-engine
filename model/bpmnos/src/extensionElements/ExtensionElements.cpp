@@ -166,7 +166,7 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const
     }
   }
   else if ( baseElement->is<XML::bpmn::tActivity>() ) {
-    // baseElement is a send task or not a task 
+    // baseElement is a send task or a subprocess
     for ( auto& operator_ : operators ) {
       if ( operator_->attribute->category != Attribute::Category::STATUS ) {
         dataUpdateOnEntry.attributes.push_back(operator_->attribute);
