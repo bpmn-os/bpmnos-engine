@@ -9,7 +9,7 @@ Collection::Collection(const std::string& string)
 {
   // get values
   if ( !strutil::starts_with(string,"[") || !strutil::ends_with(string,"]") ) {
-    throw std::runtime_error("Collection: string must start with '[' and must end with ']'");
+    throw std::runtime_error("Collection: string '" + string + "' must start with '[' and must end with ']'");
   }
   // determine list of comma separated values
   auto list = string.substr(1,string.size()-2);
