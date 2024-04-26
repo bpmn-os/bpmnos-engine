@@ -31,11 +31,13 @@ void BestMatchingMessageDelivery::notice(const Observable* observable) {
     auto senderCandidates = request->token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->messageCandidates;
     // determine candidate decisions
     for ( auto& [ message_ptr ] : messages ) {
+//std::cerr << "Candidate: " <<std::make_shared<MessageDeliveryDecision>(request->token, message_ptr.lock().get(), evaluator)->jsonify().dump() << std::endl;
       if ( auto message = message_ptr.lock();
         message &&
         std::ranges::contains(senderCandidates, message->origin) &&
         message->matches(recipientHeader)
       ) {
+//std::cerr << "match" << std::endl;
         auto decision = std::make_shared<MessageDeliveryDecision>(request->token, message.get(), evaluator);
         decisionsWithoutEvaluation.emplace_back( request->token->weak_from_this(), request->weak_from_this(), message_ptr, decision );
       }
@@ -49,11 +51,13 @@ void BestMatchingMessageDelivery::notice(const Observable* observable) {
       // add new decision
       auto recipientCandidates = message->origin->extensionElements->as<BPMNOS::Model::ExtensionElements>()->messageCandidates;
       for ( auto& [token_ptr, request_ptr, recipientHeader ] : requests ) {
+//std::cerr << "Candidate: " <<std::make_shared<MessageDeliveryDecision>(token_ptr.lock().get(), message, evaluator)->jsonify().dump() << std::endl;
         if ( auto token = token_ptr.lock();
           token &&
           std::ranges::contains(recipientCandidates, token->node) &&
           message->matches(recipientHeader)
         ) {
+//std::cerr << "match" << std::endl;
           auto decision = std::make_shared<MessageDeliveryDecision>(token.get(), message, evaluator);
           decisionsWithoutEvaluation.emplace_back( token_ptr, request_ptr, message->weak_from_this(), decision );
         }
