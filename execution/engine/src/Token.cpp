@@ -877,20 +877,21 @@ void Token::advanceToExiting() {
     if ( !eventSubProcess ) {
       throw std::runtime_error("Token: typed start event must belong to event subprocess");
     }
-    if ( auto extensionElements = owner->process->extensionElements->represents<BPMNOS::Model::ExtensionElements>() ) {
+    if ( auto extensionElements = owner->scope->extensionElements->represents<BPMNOS::Model::ExtensionElements>() ) {
       if ( !extensionElements->isInstantaneous ) {
-        throw std::runtime_error("StateMachine: Operators for process '" + node->id + "' attempt to modify timestamp");
+        throw std::runtime_error("StateMachine: Operators for event-subprocess '" + owner->scope->id + "' attempt to modify timestamp");
       }
       // update status
       status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = owner->systemState->currentTime;
+
       extensionElements->applyOperators(status,*data,globals);
 
       // notify about data update
       if ( extensionElements->dataUpdateOnEntry.global ) {
-        owner->systemState->engine->notify( DataUpdate( extensionElements->dataUpdateOnCompletion.attributes ) );
+        owner->systemState->engine->notify( DataUpdate( extensionElements->dataUpdateOnEntry.attributes ) );
       }
       else {
-        owner->systemState->engine->notify( DataUpdate( owner->root->instance.value(), extensionElements->dataUpdateOnCompletion.attributes ) );
+        owner->systemState->engine->notify( DataUpdate( owner->root->instance.value(), extensionElements->dataUpdateOnEntry.attributes ) );
       }
 
     }

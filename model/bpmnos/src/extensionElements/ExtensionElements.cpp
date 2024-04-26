@@ -94,7 +94,7 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const
         }
       }
     }
-    // recursivlye determine entry and exit dependencies
+    // recursively determine entry and exit dependencies
     auto ancestor = parent;
     while ( ancestor ) {
       if ( auto extensionElements = ancestor->extensionElements->represents<BPMNOS::Model::ExtensionElements>() ) {
