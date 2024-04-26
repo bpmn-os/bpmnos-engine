@@ -207,9 +207,22 @@ std::set<const BPMNOS::Model::Attribute*> LocalEvaluator::getDependencies(Choice
 }
 
 std::set<const BPMNOS::Model::Attribute*> LocalEvaluator::getDependencies(MessageDeliveryDecision* decision) {
+  std::set<const BPMNOS::Model::Attribute*> dependencies;
   auto token = decision->token;
-  auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
-  assert(extensionElements);
-  return extensionElements->operatorDependencies;
+
+  if ( token->node->represents<BPMN::SendTask>() ) {
+    auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+    assert(extensionElements);
+    dependencies.insert(extensionElements->operatorDependencies.begin(), extensionElements->operatorDependencies.end());
+  }
+  else if ( token->node->represents<BPMN::MessageStartEvent>() ) {
+    auto eventSubProcess = token->node->parent;
+    auto extensionElements = eventSubProcess->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+    assert(extensionElements);
+    dependencies.insert(extensionElements->entryDependencies.begin(), extensionElements->entryDependencies.end());
+    dependencies.insert(extensionElements->operatorDependencies.begin(), extensionElements->operatorDependencies.end());
+  }
+  return dependencies;
+
 }
 

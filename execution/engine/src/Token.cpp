@@ -473,7 +473,7 @@ void Token::advanceToEntered() {
     else if ( auto compensateThrowEvent = node->represents<BPMN::CompensateThrowEvent>() ) {
       auto context = const_cast<StateMachine*>(owner->parentToken->owned.get());
 
-      if ( auto eventSubProcess = owner->scope->represents<BPMN::EventSubProcess>();
+      if ( auto eventSubProcess = node->parent->represents<BPMN::EventSubProcess>();
         eventSubProcess && eventSubProcess->startEvent->represents<BPMN::CompensateStartEvent>()
       ) {
 //std::cerr << "try to update context " << context->compensableSubProcesses.size() << std::endl;
@@ -768,7 +768,7 @@ void Token::advanceToCompleted() {
     } 
     else if ( auto startEvent = node->represents<BPMN::TypedStartEvent>() ) {
       // event subprocess is triggered
-      auto eventSubProcess = owner->scope->represents<BPMN::EventSubProcess>();
+      auto eventSubProcess = node->parent->represents<BPMN::EventSubProcess>();
       if ( !eventSubProcess ) {
         throw std::runtime_error("Token: typed start event must belong to event subprocess");
       }
@@ -873,13 +873,13 @@ void Token::advanceToExiting() {
   if ( node && node->represents<BPMN::TypedStartEvent>() ) {
 
     // apply operators of event subprocess
-    auto eventSubProcess = owner->scope->represents<BPMN::EventSubProcess>();
+    auto eventSubProcess = node->parent->represents<BPMN::EventSubProcess>();
     if ( !eventSubProcess ) {
       throw std::runtime_error("Token: typed start event must belong to event subprocess");
     }
     if ( auto extensionElements = owner->scope->extensionElements->represents<BPMNOS::Model::ExtensionElements>() ) {
       if ( !extensionElements->isInstantaneous ) {
-        throw std::runtime_error("StateMachine: Operators for event-subprocess '" + owner->scope->id + "' attempt to modify timestamp");
+        throw std::runtime_error("StateMachine: Operators for event-subprocess '" + node->parent->id + "' attempt to modify timestamp");
       }
       // update status
       status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = owner->systemState->currentTime;
@@ -1128,14 +1128,6 @@ void Token::terminate() {
     return;
   }
 
-/*
-  // remove state machine from parent
-  if ( auto eventSubProcess = owner->scope->represents<BPMN::EventSubProcess>();
-    eventSubProcess && eventSubProcess->startEvent->isInterrupting
-  ) {
-    const_cast<StateMachine*>(owner)->interruptingEventSubProcess.reset();
-  }
-*/
   // delete state machine
   owned.reset();
   
