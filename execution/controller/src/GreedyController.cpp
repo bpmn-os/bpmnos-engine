@@ -4,7 +4,7 @@
 #include "dispatcher/naive/RandomChoice.h"  // TODO: replace with  dispatcher returning best choice
 #include "dispatcher/greedy/BestMatchingMessageDelivery.h"
 #include "dispatcher/greedy/BestFirstExit.h"
-//#include <iostream>
+#include <iostream>
 
 using namespace BPMNOS::Execution;
 
@@ -31,17 +31,16 @@ std::shared_ptr<Event> GreedyController::dispatchEvent(const SystemState* system
   for ( auto& eventDispatcher : eventDispatchers ) {
     if ( auto event = eventDispatcher->dispatchEvent(systemState) ) {
       if (  auto decision = dynamic_pointer_cast<Decision>(event) ) {
-        if ( !best ) {
-          // first decision is used as best
-          best = decision;
-        }
-        else if ( decision->evaluation.has_value() && !best->evaluation.has_value() ) {
-          // first feasible decision is used as best
-          best = decision;
-        }
-        else if ( decision->evaluation.has_value() && decision->evaluation.value() < best->evaluation.value() ) {
-          // decision has less costly evaluation than current best
-          best = decision;
+//std::cerr << decision->jsonify() << std::endl;
+        if ( decision->evaluation.has_value() ) {
+          if ( !best ) {
+            // first feasible decision is used as best
+            best = decision;
+          }
+          else if ( decision->evaluation.value() < best->evaluation.value() ) {
+            // decision has less costly evaluation than current best
+            best = decision;
+          }
         }
       }
       else {
