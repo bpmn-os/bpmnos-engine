@@ -126,6 +126,7 @@ void Engine::deleteInstance(StateMachine* instance) {
 void Engine::process(const ReadyEvent* event) {
 //std::cerr << "ReadyEvent " << event.token->node->id << std::endl;
   Token* token = const_cast<Token*>(event->token);
+  token->status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = systemState->currentTime;
   systemState->tokensAwaitingReadyEvent.remove(token);
 
   token->sequenceFlow = nullptr;
@@ -140,6 +141,7 @@ void Engine::process(const ReadyEvent* event) {
 void Engine::process(const EntryEvent* event) {
 //std::cerr << systemState->pendingEntryEvents.empty() << "EntryEvent " << event->token->jsonify().dump() << std::endl;
   Token* token = const_cast<Token*>(event->token);
+  token->status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = systemState->currentTime;
   if ( token->node->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() ) {
     auto tokenAtSequentialPerformer = systemState->tokenAtSequentialPerformer.at(token);
     if ( tokenAtSequentialPerformer->performing ) {
@@ -164,6 +166,7 @@ void Engine::process(const EntryEvent* event) {
 void Engine::process(const ChoiceEvent* event) {
 //std::cerr << "ChoiceEvent " << event.token->node->id << std::endl;
   Token* token = const_cast<Token*>(event->token);
+  token->status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = systemState->currentTime;
   assert( token->node );
   assert( token->node->represents<BPMNOS::Model::DecisionTask>() );
 
@@ -186,6 +189,7 @@ void Engine::process(const ChoiceEvent* event) {
 void Engine::process(const CompletionEvent* event) {
 //std::cerr << "CompletionEvent " << event.token->node->id << std::endl;
   Token* token = const_cast<Token*>(event->token);
+  token->status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = systemState->currentTime;
   systemState->tokensAwaitingCompletionEvent.remove(token);
   // update token status
   if ( event->updatedStatus.has_value() ) {
@@ -197,6 +201,7 @@ void Engine::process(const CompletionEvent* event) {
 
 void Engine::process(const MessageDeliveryEvent* event) {
   Token* token = const_cast<Token*>(event->token);
+  token->status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = systemState->currentTime;
   assert( token->node );
 
   auto message_ptr = event->message.lock();
@@ -219,7 +224,7 @@ void Engine::process(const MessageDeliveryEvent* event) {
   // apply operators
   if ( auto extensionElements = token->node->extensionElements->represents<BPMNOS::Model::ExtensionElements>() ) {
     if ( !extensionElements->isInstantaneous ) {
-      throw std::runtime_error("StateMachine: Operators for subprocess '" + token->node->id + "' attempt to modify timestamp");
+      throw std::runtime_error("Engine: Operators for subprocess '" + token->node->id + "' attempt to modify timestamp");
     }
     extensionElements->applyOperators(token->status,*token->data,token->globals);
   }
