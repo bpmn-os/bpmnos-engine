@@ -583,8 +583,17 @@ void Token::advanceToBusy() {
     auto trigger = node->extensionElements->as<BPMNOS::Model::Timer>()->trigger.get();
     BPMNOS::number time;
 
-    if ( trigger && trigger->attribute && status[trigger->attribute.value().get().index].has_value() ) {
-      time = status[trigger->attribute.value().get().index].value();
+    auto getTrigger = [this,trigger]() -> std::optional<BPMNOS::number> {
+      if (!trigger || !trigger->attribute ) {
+        return std::nullopt;
+      }
+      return getAttributeRegistry().getValue( &trigger->attribute.value().get(), status, *data, globals);
+    };
+
+    if ( auto triggerAttributeValue = getTrigger();
+      triggerAttributeValue.has_value()
+    ) {
+      time = triggerAttributeValue.value();
     }
     else if ( trigger && trigger->value && trigger->value.has_value() ) {
       time = (int)trigger->value.value().get();

@@ -147,11 +147,17 @@ void StateMachine::createMultiInstanceActivityTokens(Token* token) {
   std::vector< std::map< const Model::Attribute*, std::optional<BPMNOS::number> > > valueMaps;
 
   if ( extensionElements->loopCardinality.has_value() ) {
+    auto getLoopCardinality = [token,extensionElements]() -> std::optional<BPMNOS::number> {
+      if (!extensionElements->loopCardinality.value()->attribute.has_value()) {
+        return std::nullopt;
+      }
+      return token->getAttributeRegistry().getValue( &extensionElements->loopCardinality.value()->attribute->get(), token->status, *token->data, token->globals);
+    };
     // use provided cardinality to determine number of tokens 
-    if ( extensionElements->loopCardinality.value()->attribute.has_value() &&
-      token->status[ extensionElements->loopCardinality.value()->attribute->get().index ].has_value()
+    if ( auto loopCardinality = getLoopCardinality();
+      loopCardinality.has_value()
     ) {
-      valueMaps.resize( (size_t)token->status[ extensionElements->loopCardinality.value()->attribute->get().index ].value() );
+      valueMaps.resize( (size_t)loopCardinality.value() );
     }
     else if ( extensionElements->loopCardinality.value()->value.has_value() ) {
       valueMaps.resize( (size_t)(int)extensionElements->loopCardinality.value()->value.value().get() );
@@ -176,14 +182,21 @@ void StateMachine::createMultiInstanceActivityTokens(Token* token) {
 
   for ( auto& attribute : attributes ) {
     BPMNOS::number collectionIndex;
+    auto getCollection = [token,&attribute]() -> std::optional<BPMNOS::number> {
+      if (!attribute->collection->attribute.has_value()) {
+        return std::nullopt;
+      }
+      return token->getAttributeRegistry().getValue( &attribute->collection->attribute->get(), token->status, *token->data, token->globals);
+    };
+
     
-    if ( attribute->collection->attribute.has_value() &&
-      token->status[ attribute->collection->attribute->get().index ].has_value()
+    if ( auto collection = getCollection();
+      collection.has_value()
     ) {
       if ( attribute->collection->attribute->get().type != COLLECTION ) {
         throw std::runtime_error("StateMachine: attribute '" + attribute->collection->attribute->get().name + "' is not a collection");
       }
-      collectionIndex = token->status[ attribute->collection->attribute->get().index ].value();
+      collectionIndex = collection.value();
     }
     else if ( attribute->collection->value.has_value() ) {
       collectionIndex = collectionRegistry(attribute->collection->value.value().get().value);
