@@ -1,27 +1,42 @@
 # Execution engine
 @page engine Execution engine
 
-State transitions of a token are described for the different node types.
 
-- @subpage token_flow_logic_processes "Processes"
-- @subpage token_flow_logic_events
-- @subpage token_flow_logic_activities "Activities"
-- @subpage token_flow_logic_gateways
+@todo Describe required @ref BPMNOS::Execution::EventDispatcher
 
-@page token_flow_logic_events Events
-- @subpage token_flow_logic_untyped_start_events
-- @subpage token_flow_logic_typed_start_events
-- @subpage token_flow_logic_boundary_events
-- @subpage token_flow_logic_intermediate_catching_events
-- @subpage token_flow_logic_throwing_events
 
-@page token_flow_logic_activities Activities
-- @subpage token_flow_logic_subprocesses
-- @subpage token_flow_logic_tasks
-- @subpage token_flow_logic_multi_instance_activities "Multi-instance activities"
-- @subpage token_flow_logic_compensation_activities "Compensation activities"
+```cpp
+#include <bpmnos-model.h>
+#include <bpmnos-execution.h>
+  
+int main() {
+  // load model and instances
+  BPMNOS::Model::StaticDataProvider dataProvider("diagram.bpmn","scenario.csv");
+  auto scenario = dataProvider.createScenario();
 
-@page token_flow_logic_gateways Gateways
-- @subpage token_flow_logic_exclusive_gateways
-- @subpage token_flow_logic_parallel_gateways
-- @subpage token_flow_logic_eventbased_gateways
+  // initialize execution engine
+  BPMNOS::Execution::Engine engine;
+
+  // initialize and connect BPMNOS::Execution::EventDispatcher for BPMNOS::Execution::ReadyEvent
+  BPMNOS::Execution::ReadyHandler readyHandler;
+  readyHandler.connect(&engine);
+
+  // initialize and connect BPMNOS::Execution::EventDispatcher for BPMNOS::Execution::CompletionEvent
+  BPMNOS::Execution::DeterministicTaskCompletion completionHandler;
+  completionHandler.connect(&engine);
+
+  // initialize and connect BPMNOS::Execution::EventDispatcher for BPMNOS::Execution::ClockTickEvent
+  BPMNOS::Execution::TimeWarp timeHandler;
+  timeHandler.connect(&engine);
+
+  // initialize and connect BPMNOS::Execution::Controller for BPMNOS::Execution::Decision
+  BPMNOS::Execution::GuidedEvaluator evaluator;
+  BPMNOS::Execution::GreedyController controller(&evaluator);
+  controller.connect(&engine);
+
+  // run engine on scenario
+  engine.run(scenario.get());
+}
+```
+
+

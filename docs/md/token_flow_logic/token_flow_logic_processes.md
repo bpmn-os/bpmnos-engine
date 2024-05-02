@@ -28,34 +28,34 @@ stateDiagram-v2
 
 ### Token creation
 
-After initialization, the @ref BPMNOS::Execution::Token::state "state" of the process token is immediately set to @ref BPMNOS::Execution::Token::State::ENTERED "ENTERED". 
+After initialization, the @ref BPMNOS::Execution::Token::state "state" of the process token is immediately set to @ref BPMNOS::Execution::Token::State::ENTERED "ENTERED".
 
 ### ENTERED
 Upon entry, the @ref BPMNOS::Model::ExtensionElements::operators "operators" are applied to update the @ref BPMNOS::Execution::Token::status "status" of the process token.
 Feasibility of the @ref BPMNOS::Execution::Token::status "token status" is validated.
 If any of the @ref BPMNOS::Model::ExtensionElements::restrictions "restrictions" is violated, the @ref BPMNOS::Execution::Token::state "token state" is updated to @ref BPMNOS::Execution::Token::State::FAILED "FAILED".
-Otherwise, 
+Otherwise,
 a token is created at the @ref BPMN::Process::startNodes "start node" of the process
 and at the @ref BPMN::EventSubProcess::startEvent "start event" of each @ref BPMN::EventSubProcess "event subprocess" (excluding those having a @ref BPMN::CompensateStartEvent "compensate start event").
 These tokens inherit the @ref BPMNOS::Execution::Token::status "status attributes" of the process token.
-Furthermore, 
-the @ref BPMNOS::Execution::Token::state "token state" is updated to @ref BPMNOS::Execution::Token::State::BUSY "BUSY" and 
+Furthermore,
+the @ref BPMNOS::Execution::Token::state "token state" is updated to @ref BPMNOS::Execution::Token::State::BUSY "BUSY" and
 @attention All operators must be instantaneous, i.e., they must not change the timestamp.
-@par 
+@par
 @attention It is assumed that each process has a unique @ref BPMN::UntypedStartEvent "blank start event".
-@par 
+@par
 @note @ref BPMN::EventSubProcess "Event-subprocesses" must have a unique @ref BPMN::TypedStartEvent "typed start event".
-@par 
+@par
 @note A failure occurring at this stage can not yet be caught by an @ref BPMN::EventSubProcess "event subprocess" with an @ref BPMN::ErrorStartEvent "error start event".
 
 ### BUSY
-A process token remains in @ref BPMNOS::Execution::Token::State::BUSY "BUSY" state until the process 
-- is terminated due to an uncaught failure, or 
+A process token remains in @ref BPMNOS::Execution::Token::State::BUSY "BUSY" state until the process
+- is terminated due to an uncaught failure, or
 - the last active token within the scope has completed without failure.
 
-While the process token is in @ref BPMNOS::Execution::Token::State::BUSY "BUSY" state, 
+While the process token is in @ref BPMNOS::Execution::Token::State::BUSY "BUSY" state,
 the @ref BPMNOS::Execution::Token::status "token status" may be updated due to an escalation raised downstream by an @ref BPMN::EscalationThrowEvent "escalation event".
-If the token resides at a process which is the  @ref BPMNOS::Model::SequentialAdHoCSubProcess::performer "performer" of a @ref BPMNOS::Model::SequentialAdHocSubProcess "sequential ad-hoc subprocess", 
+If the token resides at a process which is the  @ref BPMNOS::Model::SequentialAdHocSubProcess::performer "performer" of a @ref BPMNOS::Model::SequentialAdHocSubProcess "sequential ad-hoc subprocess", 
 the @ref BPMNOS::Execution::Token::status "token status" is also updated whenever a token exits a child activity of the @ref BPMNOS::Model::SequentialAdHocSubProcess "sequential ad-hoc subprocess".
 
 When an uncaught failure is raised within the scope of the process, the @ref BPMNOS::Execution::Token::status "status" of the process token is set to the @ref BPMNOS::Execution::Token::status "status" of the token raising the failure.
@@ -84,12 +84,11 @@ When the process token reaches @ref BPMNOS::Execution::Token::State::DONE "DONE"
 
 ### FAILING
 
-When the process token reaches @ref BPMNOS::Execution::Token::State::FAILING "FAILING" state, 
+When the process token reaches @ref BPMNOS::Execution::Token::State::FAILING "FAILING" state,
 the @ref BPMNOS::Execution::Token::status "status" of the process token is updated using the values of the token causing the failure,
-all tokens within the scope of the process are withdrawn, 
+all tokens within the scope of the process are withdrawn,
 and the @ref BPMNOS::Execution::Token::state "state" of the process token is updated to @ref BPMNOS::Execution::Token::State::FAILED "FAILED" after all relevant activities within the scope of the process have been compensated.
 
 ### FAILED
 
 Upon failure, the process token is disposed.
-

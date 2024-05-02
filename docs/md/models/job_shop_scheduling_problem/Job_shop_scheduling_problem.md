@@ -23,10 +23,6 @@
 		<bpmnos:attributes>
 			<bpmnos:attribute id="Timestamp" name="timestamp" type="decimal" value="0">
 			</bpmnos:attribute>
-			<bpmnos:attribute id="Machines" name="machines" type="collection">
-			</bpmnos:attribute>
-			<bpmnos:attribute id="Durations" name="durations" type="collection">
-			</bpmnos:attribute>
 		</bpmnos:attributes>
 	</bpmnos:status>
 </bpmn2:extensionElements>
@@ -38,6 +34,19 @@
 <bpmn2:extensionElements>
 	<bpmnos:attributes>
 		<bpmnos:attribute id="Instance" name="instance" type="string">
+		</bpmnos:attribute>
+	</bpmnos:attributes>
+</bpmn2:extensionElements>
+```
+
+
+## DataObject `DataObject_1vrduku`
+```xml
+<bpmn2:extensionElements>
+	<bpmnos:attributes>
+		<bpmnos:attribute id="Machines" name="machines" type="collection">
+		</bpmnos:attribute>
+		<bpmnos:attribute id="Durations" name="durations" type="collection">
 		</bpmnos:attribute>
 	</bpmnos:attributes>
 </bpmn2:extensionElements>
