@@ -8,7 +8,6 @@ The token flow logic depends on the node type and is described in below sections
 
 - @subpage token_flow_logic_processes
 
-
 - Activities
   - @subpage token_flow_logic_subprocesses
   - @subpage token_flow_logic_tasks

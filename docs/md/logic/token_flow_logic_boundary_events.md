@@ -1,7 +1,7 @@
-# Untyped start events
-@page token_flow_logic_untyped_start_events Untyped start events
+# Boundary events
+@page token_flow_logic_boundary_events Boundary events
 
-The token flow logic for activities depends on whether the start event is typed or not.
+@todo
 
 ## States
 
@@ -9,7 +9,9 @@ The token flow logic for activities depends on whether the start event is typed 
 stateDiagram-v2
     state departure <<choice>>
     [*] --> ENTERED
-    ENTERED --> departure
+    ENTERED --> BUSY
+    BUSY --> COMPLETED: trigger
+    COMPLETED --> departure
     departure --> DEPARTED: [outgoing sequence flow]
     departure --> DONE: [no outgoing sequence flow]
     DEPARTED --> [*]

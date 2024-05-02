@@ -10,7 +10,7 @@ OUTPUT_DIRECTORY  = docs
 # Input sources
 INPUT             = $(BPMNPP_INCLUDE_PATH)/bpmn++.h model/ execution/ \ 
                     docs/md/main.md \
-                    docs/md/token_flow_logic \
+                    docs/md/logic \
                     docs/md/bpmnos \
                     docs/md/data \
                     docs/md/engine \

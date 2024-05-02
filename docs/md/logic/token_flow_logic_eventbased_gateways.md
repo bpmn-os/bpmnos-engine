@@ -1,7 +1,9 @@
-# Exclusive gateways
-@page token_flow_logic_exclusive_gateways Exclusive gateways
+# Event-based gateways
+@page token_flow_logic_eventbased_gateways Event-based gateways
 
 The token flow logic for activities depends on whether the multi-instance marker for the activity is set or not. 
+
+@todo
 
 ## States
 
@@ -9,9 +11,14 @@ The token flow logic for activities depends on whether the multi-instance marker
 stateDiagram-v2
     [*] --> ARRIVED
     ARRIVED --> ENTERED
-    ENTERED --> DEPARTED
-    DEPARTED --> [*]
+    ENTERED --> BUSY
+    BUSY --> [*]
 </pre>
 
+<pre class="mermaid">
+stateDiagram-v2
+    [*] --> DEPARTED
+    DEPARTED --> [*]
+</pre>
 
 
