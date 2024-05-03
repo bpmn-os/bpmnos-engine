@@ -1,6 +1,8 @@
 # BPMN elements
 @page elements BPMN elements
 
+In the following the BPMN element supported by the BPMNOS framework are listed and notes are given where relevant.
+
 ## @ref BPMN::Process "Processes"
 ![Process](BPMN/Process.svg)
 @par
@@ -128,7 +130,9 @@ Supported gateways are @ref BPMN::ExclusiveGateway "exclusive gateways", @ref BP
   @attention
   - @ref BPMN::ConditionalStartEvent "Conditional start events" are **not** supported.
   - @ref BPMN::SignalStartEvent "Signal start events" are **not** supported.
-
+  @par
+  @attention Typed start events are only supported for @ref BPMN::EventSubProcess "event-subprocesses". 
+  
 - Intermediate events
   - @ref BPMN::MessageCatchEvent "Message catch events"
     @par
@@ -215,21 +219,27 @@ Supported gateways are @ref BPMN::ExclusiveGateway "exclusive gateways", @ref BP
 - Multiple @ref XML::bpmn::tEventDefinition "event definitions" are **not** supported.
 
 ## @ref BPMN::SequenceFlow "Sequence flows"
-@todo
+Only gateways are allowed to have multiple incoming or outgoing sequence flows.
+Gatekeepers must be provided for diverging @ref BPMN::ExclusiveGateway "exclusive gateways" and @ref BPMN::InclusiveGateway "inclusive gateways". 
 
 @attention
 - Implicit gateways, i.e. multiple sequence flows entering or leaving a node that is not a gateway, are **not** supported.
 - Default flows and conditional flows are **not** supported.
 
 ## @ref BPMN::MessageFlow "Message flows"
-@todo
+Message flows restrict the flow of messages to the events or (sub)processes the message flow is connected to.
+All messages sent by a node subject to such a restriction may only be delivered to a node subject to the restriction, and vice versa.
+A message sent by a node can also be received by another node if no message flow restricts messaging between the nodes.
 
 ## Data
 ![DataObject](BPMN/DataObject.svg)
 @par
 
+@ref XML::bpmn::tDataObjectReference "Data object references" can refer to @ref BPMN::DataObject "data objects" containing information relevant for execution.
+
 @note The visual representation is only a reference to a @ref BPMN::DataObject "data object". A model may contain @ref BPMN::DataObject "data objects" without visual representations, and multiple visual representations may refer to the same @ref BPMN::DataObject "data object".
 @attention
+- @ref BPMN::DataObject::isCollection "Collection markers" are **not** supported for @ref BPMN::DataObject "data objects". 
 - @ref XML::bpmn::tDataStore "Data stores" are **not** supported.
 - @ref XML::bpmn::tDataAssociation "Data associations" are **not** supported.
 - @ref XML::bpmn::tDataInput "Data inputs" are **not** supported.

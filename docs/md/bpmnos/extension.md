@@ -21,8 +21,8 @@ For each attribute the following fields can be provided
 - `objective`: an optional field indicating whether the attribute value contributes to a global objective which must be either `maximize` or `minimize`, and
 - `weight`: an optional decimal indicating a multiplier for the objective function which must be provided if `objective` is set.
 
-.
-@todo Multi-instance attributes can be populated from collections.
+Attributes of multi-instance activities may contain a @ref BPMNOS::Model::Attribute::collection "collection parameter" specifying whether the attribute value is initialized via an atttibute or a default value of type `collection`.
+
 
 
 ### Global attributes
@@ -87,23 +87,46 @@ The requirements on the expression text for the different types of expressions a
 
 - **Enumeration**
   @par
-  @todo
+  An enumeration restriction can be specified by providing a parameter with `name="enumeration"` and `value` being an attribute name followed by the keyword `in` and a collection of allowed values within square brackets and separated by comma. String values must be quoted. An example is shown in the following.
+  
+  ```xml
+  <bpmnos:parameter name="enumeration" value="offduty_type in [&#34;break&#34;,&#34;rest&#34;]" />
+  ```
+  @note Quotes must be replaced by the the html escape code `&#34;`.
   
 - **Null condition**
   @par
-  @todo
+  A null condition can be specified by providing a parameter with `name="nullcondition"` and `value` being an attribute name followed by either `==` or `!=` and the  @ref BPMNOS::Keyword "keyword" `undefined`. An example is shown in the following.
+  
+  ```xml
+  <bpmnos:parameter name="nullcondition" value="offduty_type != undefined" />
+  ```
   
 - **String expression**
   @par
-  @todo
+  A string expression can be specified by providing a parameter with `name="sting"` and `value` being an attribute name followed by either `==` or `!=` and the either an attribute name or a quoted string. An example is shown in the following.
   
-- **Generic expressions**
-  @par
-  @todo
+  ```xml
+  <bpmnos:parameter name="string" value="origin != destination" />
+  ```
   
-- **Linear expressions**
+- **Linear expression**
   @par
-  @todo
+  A linear expression can be specified by providing  parameter with `name="linear"` and a `value` being a left hand side and a right hand side part separated by `<`, `<=`, `>`, `>=`, `==`, or `!=`. The left hand side and right hand side part must be composed of terms sepparated by `+` or `-`  and must only contain numbers, attribute names, or attribute names multiplied or divided with numbers.
+  
+  ```xml
+  <bpmnos:parameter name="linear" value="total_value + value" />
+  ```
+  @note The symbols `<` and `>` must be replaced by the the html escape codes `&#60;` and `&#62;`.
+
+- **Generic expression**
+  @par
+  A generic expression can be specified by providing a parameter with `name="generic"` and `value` being an expression supported by the [C++ Mathematical Expression Toolkit Library (ExprTk)](https://www.partow.net/programming/exprtk/). An example is shown in the following.
+  
+  ```xml
+  <bpmnos:parameter name="generic" value="max( earliest_visit - timestamp, max_rest_duration )" />
+  ```
+  
   
 
 ### Node restrictions 
@@ -152,9 +175,7 @@ The requirements on the parameters for the different types of operators are the 
 
 - **Assign**
   @par
-  @todo
-  
-  The following shows an example.
+  The assignment operator requires one parameter with `name="assign"` and either the field `attribute` being set to an attribute name or the field `value` being set to the desired value. The following shows an example.
   ```xml
   <bpmn2:extensionElements>
     <bpmnos:status>
@@ -169,8 +190,7 @@ The requirements on the parameters for the different types of operators are the 
 
 - **Unassign**
   @par
-  The unassign operator sets the value of the attribute to undefined and requires no parameter.  
-  The following shows an example.
+  The unassign operator sets the value of the attribute to undefined and requires no parameter. The following shows an example.
   ```xml
   <bpmn2:extensionElements>
     <bpmnos:status>
@@ -183,7 +203,13 @@ The requirements on the parameters for the different types of operators are the 
   
 - **Lookup**
   @par
-  @todo The folders to search for a lookup table can be specified.
+  The lookup operator allows to lookup a value from a data source. It requires several parameters depending on the type of the source.
+  For file sources the following parameters are required:
+  - a parameter with `name="source"` and `value="file"`,
+  - a parameter with `name="filename"` and `value` being a filename,
+  - a parameter with `name="key"` and `value` being the column name in which the value to be looked up is found, and
+  - one or multiple parameters with `name` being a column name containing the value specified in the `value` field.
+  
   
   The following shows an example.
   ```xml
@@ -201,10 +227,16 @@ The requirements on the parameters for the different types of operators are the 
     </bpmnos:status>
   </bpmn2:extensionElements>
   ```
+  @note Currently, the only supported source are csv files.
+  @par
+  @note The folders to search for lookup table files can be provided by adding them to @ref BPMNOS::Model::LookupTable::folders as shown in the following example. 
+  ```cpp
+  BPMNOS::Model::LookupTable::folders = { std::string(std::filesystem::current_path()) + "/examples/assignment_problem" };
+  ```
 
 - **Expression**
   @par
-  @todo Expressions can be boolean or arithmetic.
+  The expression operator requires one parameter with `name` being the name of the expression type and the field `value` being set to expression text. For boolean expressions a `true` value results in `true` for boolean attributes, `"true"` for string attributes and `1` for  integer or decimal attributes. A `false` value results in `false` for boolean attributes, `"false"` for string attributes and `0` for  integer or decimal attributes.   
 
   The following shows an example.
   ```xml
@@ -258,7 +290,10 @@ For @ref BPMN::SendTask "send tasks" and @ref BPMN::ReceiveTask "receive tasks" 
 For other @ref BPMN::MessageCatchEvent "message catch events" and @ref BPMN::MessageThrowEvent "message throw events" the `<bpmnos:message>` element must **not** be embedded in a `<bpmnos:message>` container. 
 
 
-### Timer
+## Timer
 @todo
 
+## Loop parameters
+
+For multi-instance activities, the number of instances can be specified by @ref BPMNOS::Model::ExtensionElements::loopCardinality "loop cardinality parameter". An attribute containing the index of the instance can be specified by @ref BPMNOS::Model::ExtensionElements::loopIndex "loop index parameter".
 

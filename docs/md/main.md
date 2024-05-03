@@ -19,11 +19,11 @@ The framework is composed of serveral components illustrated above:
 
 ## Installation
 
-@todo Describe installation
+@todo Describe how to install the framework.
 
 ## Getting started
 
-@todo Describe example project for getting started
+@todo Describe example project for getting started.
 
 ## License
 
