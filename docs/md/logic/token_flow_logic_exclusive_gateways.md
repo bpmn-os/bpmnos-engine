@@ -1,11 +1,8 @@
 # Exclusive gateways
 @page token_flow_logic_exclusive_gateways Exclusive gateways
 
-The token flow logic for activities depends on whether the multi-instance marker for the activity is set or not. 
+A token at an exclusive gateway changes its state as follows:
 
-@todo
-
-## States
 
 <pre class="mermaid">
 stateDiagram-v2

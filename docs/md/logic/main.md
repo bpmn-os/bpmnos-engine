@@ -14,10 +14,16 @@ The token flow logic depends on the node type and is described in below sections
   - @subpage token_flow_logic_multi_instance_activities "Multi-instance activities"
   - @subpage token_flow_logic_compensation_activities "Compensation activities"
 
+  @par
+  @note @ref BPMN::CallActivity "Call activities" are **not** supported. 
+
 - Gateways
   - @subpage token_flow_logic_exclusive_gateways
   - @subpage token_flow_logic_parallel_gateways
   - @subpage token_flow_logic_eventbased_gateways
+
+  @par
+  @note @ref BPMN::InclusiveGateway "Inclusive gateways" and @ref BPMN::ComplexGateway "complex gateways" are **not** supported. 
 
 - Events
   - @subpage token_flow_logic_untyped_start_events
