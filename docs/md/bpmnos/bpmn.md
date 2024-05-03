@@ -77,9 +77,11 @@ Furthermore, ad-hoc subprocesses are expected to have a sequential ordering (i.e
 - @ref XML::bpmn::tStandardLoopCharacteristics "Loop markers" are **not** supported.
 
 ### Compensation activities
-@todo
+![CompensationActivity](BPMN/CompensationActivity.svg)
+@par
+Compensation activities are @ref BPMN::Activity "activities" with the @ref BPMN::Activity::isForCompensation "isForCompensation" field set to `true`.
 
-
+@note It is assumed that no no activtiies are compensated within the scope of a compensation activity.
 
 
 ## @ref BPMN::EventSubProcess "Event-subprocesses"
