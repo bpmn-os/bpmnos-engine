@@ -2,7 +2,7 @@
 @page engine Execution engine
 
 
-@todo Describe required @ref BPMNOS::Execution::EventDispatcher
+@todo Describe required @ref BPMNOS::Execution::EventDispatcher.
 
 
 ```cpp
