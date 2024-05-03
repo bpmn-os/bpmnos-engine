@@ -73,7 +73,7 @@ Status attributes are attached to @ref BPMNOS::Execution::Token "tokens" moving 
 ## Restrictions
 
 @ref BPMNOS::Model::Restriction "Restrictions" allow to constrain the domain of attributes and to determine the sequence flows out of diverging gateways.
-Within an `<bpmnos:restrictions>` container any number of `<bpmnos:restriction>` elements can be provided to specify restrictions. 
+Within a `<bpmnos:restrictions>` container any number of `<bpmnos:restriction>` elements can be provided to specify restrictions. 
 For each restriction the following fields can be provided
 - `id`: a unique identifier, 
 - `scope`: the scope indicating when the restriction has to be satisfied which must be one of  `entry`, `exit`, `full`.
@@ -252,15 +252,43 @@ The requirements on the parameters for the different types of operators are the 
   ```
 
 ## Choices
-@todo
+@ref BPMNOS::Model::DecisionTask "Decision tasks" are represented by @ref XML::bpmn::tTask "task elements" with an additional field `bpmnos:type="Decision"`. 
+For these decision tasks, @ref BPMNOS::Model::Choice "choice" on the value fo one or more attributes can be made.
+Within a `<bpmnos:decisions>` container any number of `<bpmnos:decision>` elements can be provided to define the respective attributes as shown in the following example. 
+
+```xml
+<bpmn2:extensionElements>
+  <bpmnos:status>
+    <bpmnos:restrictions>
+      <bpmnos:restriction id="Restriction_0uj7fj8" scope="exit">
+        <bpmnos:parameter name="enumeration" value="wait_type in [&#34;wait&#34;, &#34;break&#34;, &#34;rest&#34;]" />
+      </bpmnos:restriction>
+    </bpmnos:restrictions>
+     <bpmnos:decisions>
+       <bpmnos:decision id="Decision_0udt1qg" attribute="wait_type" />
+     </bpmnos:decisions>
+  </bpmnos:status>
+</bpmn2:extensionElements>
+```
+
+@note Restrictions can constrain the attribute values that may be chosen.
 
 ## Messages
 @ref BPMNOS::Model::MessageDefinition "Messages" can be used to exchange information by delivering a @ref BPMNOS::Model::Content "content" from one process to another. 
 
-@todo
-- Parameter
-- Content
+For @ref BPMN::MessageThrowEvent "message throw events" and @ref BPMN::MessageCatchEvent "message catch events" a `<bpmnos:message>` element must be provided with field `name` representing a name of the message.
+Message definitions may contain one or more parameters defining a message header, where the `name` field represents a name for the header entry and either the `attribute` field provides an attribute name holding the value of the header entry or the `value` field explicitly specifies the value.
+By default, every header contains entries with names `sender` and `recipient`.
+Messages can only be deliered to a recipient if the recipient specifies the same message name as the sender and the entry names of the headers are identical and all header values match, i.e. either have the same value or one of both is undefined.
+ 
+Moreover, message definitions may contain one or more `<bpmnos:content>` element defining a message content.
+For each such element the following fields can be provided
+- `id`: a unique identifier, 
+- `key`: a key allowing to refer to the content,
+- `attribute`: the attribute name containing the value to be added to the message content or the name of the attribute for which the value is set to the message content,
+- `value`: an optional field providing a default value to be used.
 
+@note The `value` field may only be specified for @ref BPMN::MessageThrowEvent "message throw events".
 
 The following shows an example of an outgoing message definition for a @ref BPMN::SendTask "send task" sending a message with name `Request` to a recipient that must also have a parameter named `machine` having the value of the `machine` attribute. The message content is populated with the values of the `instance` and `duration`  attributes.
 ```xml
@@ -291,7 +319,15 @@ For other @ref BPMN::MessageCatchEvent "message catch events" and @ref BPMN::Mes
 
 
 ## Timer
-@todo
+The trigger for a @ref BPMN::TimerCatchEvent "timer event" can be specified by providing a parameter with name `trigger` within a  `<bpmnos:timer>` element as shown in the following example.
+
+```xml
+<bpmn2:extensionElements>
+  <bpmnos:timer>
+    <bpmnos:parameter name="trigger" attribute="trigger" value="5" />
+  </bpmnos:timer>
+</bpmn2:extensionElements>
+```
 
 ## Loop parameters
 
