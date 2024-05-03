@@ -4,9 +4,6 @@
 A process instance is created when all data required for the @ref BPMNOS::Model::ExtensionElements::attributes "attributes" defined for the @ref BPMN::Process "process" element, in particular, the instance identifier and the timestamp, become known and the timestamp is reached.
 Upon instantiation, a @ref BPMNOS::Execution::Token "token" is created which resides at the process element.
 
-@todo
-
-## States
 A token at a process element changes its state as follows:
 
 <pre class="mermaid">
@@ -28,11 +25,11 @@ stateDiagram-v2
 </pre>
 
 
-### Token creation
+## Token creation
 
 After initialization, the @ref BPMNOS::Execution::Token::state "state" of the process token is immediately set to @ref BPMNOS::Execution::Token::State::ENTERED "ENTERED".
 
-### ENTERED
+## ENTERED
 Upon entry, the @ref BPMNOS::Model::ExtensionElements::operators "operators" are applied to update the @ref BPMNOS::Execution::Token::status "status" of the process token.
 Feasibility of the @ref BPMNOS::Execution::Token::status "token status" is validated.
 If any of the @ref BPMNOS::Model::ExtensionElements::restrictions "restrictions" is violated, the @ref BPMNOS::Execution::Token::state "token state" is updated to @ref BPMNOS::Execution::Token::State::FAILED "FAILED".
@@ -50,7 +47,7 @@ the @ref BPMNOS::Execution::Token::state "token state" is updated to @ref BPMNOS
 @par
 @note A failure occurring at this stage can not yet be caught by an @ref BPMN::EventSubProcess "event subprocess" with an @ref BPMN::ErrorStartEvent "error start event".
 
-### BUSY
+## BUSY
 A process token remains in @ref BPMNOS::Execution::Token::State::BUSY "BUSY" state until the process
 - is terminated due to an uncaught failure, or
 - the last active token within the scope has completed without failure.
@@ -73,24 +70,24 @@ A process also completes if
 
 
 
-### COMPLETED
+## COMPLETED
 Feasibility of the @ref BPMNOS::Execution::Token::status "token status" is validated.
 If none of the @ref BPMNOS::Model::ExtensionElements::restrictions "restrictions" is violated, the @ref BPMNOS::Execution::Token::state "token state" is updated to @ref BPMNOS::Execution::Token::State::DONE "DONE".
 Otherwise, the @ref BPMNOS::Execution::Token::state "token state" is updated to @ref BPMNOS::Execution::Token::State::FAILING "FAILING".
 
 @note The failure occurring at this stage can no longer be caught by an @ref BPMN::EventSubProcess "event subprocess" with an @ref BPMN::ErrorStartEvent "error start event".
 
-### DONE
+## DONE
 
 When the process token reaches @ref BPMNOS::Execution::Token::State::DONE "DONE" state, it is disposed and the process instance has successfully completed.
 
-### FAILING
+## FAILING
 
 When the process token reaches @ref BPMNOS::Execution::Token::State::FAILING "FAILING" state,
 the @ref BPMNOS::Execution::Token::status "status" of the process token is updated using the values of the token causing the failure,
 all tokens within the scope of the process are withdrawn,
 and the @ref BPMNOS::Execution::Token::state "state" of the process token is updated to @ref BPMNOS::Execution::Token::State::FAILED "FAILED" after all relevant activities within the scope of the process have been compensated.
 
-### FAILED
+## FAILED
 
 Upon failure, the process token is disposed.

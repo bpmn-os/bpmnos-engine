@@ -1,17 +1,14 @@
 # Tasks
 @page token_flow_logic_tasks Tasks
 
-The token flow logic for activities depends on whether the multi-instance marker for the activity is set or not. 
+The token flow logic for activities depends on whether the multi-instance marker for the activity is set or not and whether the activity is for compensation or not. 
 
 - @subpage token_flow_logic_multi_instance_activities "Multi-instance activities"
 - @subpage token_flow_logic_compensation_activities "Compensation activities"
 
-@todo
-
 # Tasks (excluding multi-instance and compensation activities)
 
-## States
-A token at an activity (excluding multi-instance and compensation activities) changes its state as follows:
+A token at a task changes its state as follows:
 
 <pre class="mermaid">
 stateDiagram-v2
@@ -42,44 +39,57 @@ stateDiagram-v2
 </pre>
 
 
-### ARRIVED
+## ARRIVED
 
 A token in  @ref BPMNOS::Execution::Token::State::ARRIVED "ARRIVED" state waits for a @ref BPMNOS::Execution::ReadyEvent "ready event" indicating that all relevant data has become known. When the event occurs the token state is updated to  @ref BPMNOS::Execution::Token::State::READY "READY".
 
 
-### READY
+## READY
 
 A token in  @ref BPMNOS::Execution::Token::State::READY "READY" state waits for an @ref BPMNOS::Execution::EntryEvent "entry event" indicating that a decision is made to start with the activity. 
 When the event occurs the token state is updated to  @ref BPMNOS::Execution::Token::State::ENTERED "ENTERED".
 
-### ENTERED
+## ENTERED
 
-Upon entry, the @ref BPMNOS::Model::ExtensionElements::operators "operators" are applied to determine an expected status update and the @ref BPMNOS::Execution::Token::state "state" of the token is updated to @ref BPMNOS::Execution::Token::State::BUSY "BUSY".
-@note The actual @ref BPMNOS::Execution::Token::status "status" of the token is not updated before completion of the task.
-
-A token is created at each @ref BPMN::BoundaryEvent "boundary event" (excluding @ref BPMN::CompensateBoundaryEvent "compensate boundary events").
-These tokens inherit the @ref BPMNOS::Execution::Token::status "status attributes" of the (ad-hoc) subprocess  token.
-Furthermore, 
-the @ref BPMNOS::Execution::Token::state "token state" is updated to @ref BPMNOS::Execution::Token::State::BUSY "BUSY".
+Upon entry at a task, a token is created at each @ref BPMN::BoundaryEvent "boundary event" (excluding @ref BPMN::CompensateBoundaryEvent "compensate boundary events").
+These tokens inherit the @ref BPMNOS::Execution::Token::status "status attributes" of the task token.
+Then, feasibility of the @ref BPMNOS::Execution::Token::status "token status" is validated.
+If any of the @ref BPMNOS::Model::ExtensionElements::restrictions "restrictions" is violated, the @ref BPMNOS::Execution::Token::state "token state" is updated to @ref BPMNOS::Execution::Token::State::FAILED "FAILED".
+Otherwise, the @ref BPMNOS::Execution::Token::state "token state" is updated to @ref BPMNOS::Execution::Token::State::BUSY "BUSY".
 
 
-@todo @ref BPMNOS::Model::DecisionTask operators must be instantaneous and are applied after the choices have been mad
+
+
+## BUSY
+
+
+For a task which is not a @ref BPMN::ReceiveTask  "receive task" or @ref BPMNOS::Model::DecisionTask "decision task",
+ the @ref BPMNOS::Model::ExtensionElements::operators "operators" are applied to update the @ref BPMNOS::Execution::Token::status "status" of the token.
+If the token resides at a @ref BPMN::SendTask "send task", a @ref BPMNOS::Execution::Message "message" is created after application of the operators. 
+If the operators are instantaneous, the @ref BPMNOS::Execution::Token::state "token state" is updated to @ref BPMNOS::Execution::Token::State::COMPLETED "COMPLETED".
+Otherwise, the token waits for a @ref BPMNOS::Execution::CompletionEvent "completion event". 
+
+A token at a @ref BPMN::ReceiveTask  "receive task" waits for a @ref BPMNOS::Execution::MessageDeliveryEvent "message delivery". When the message is delivered, the @ref BPMNOS::Model::Content "message content" is used to update the @ref BPMNOS::Execution::Token::status "status" of the token. Thereafter, the @ref BPMNOS::Model::ExtensionElements::operators "operators" are applied and  the @ref BPMNOS::Execution::Token::state "token state" is updated to @ref BPMNOS::Execution::Token::State::COMPLETED "COMPLETED".
+
+A token at a @ref BPMN::DecisionTask  "decision task" waits for a @ref BPMNOS::Execution::ChoiceEvent "choice" to be made. When the choice is made, the @ref BPMNOS::Execution::Token::status "status" of the token is updated accordingly. Thereafter, the @ref BPMNOS::Model::ExtensionElements::operators "operators" are applied and  the @ref BPMNOS::Execution::Token::state "token state" is updated to @ref BPMNOS::Execution::Token::State::COMPLETED "COMPLETED".
+
+@attention Operators for @ref BPMN::SendTask "send tasks", @ref BPMN::ReceiveTask  "receive tasks", and  @ref BPMNOS::Model::DecisionTask "decision tasks" must be instantaneous, i.e., they must not change the timestamp. 
 @par
-@todo @ref BPMN::ReceiveTask  operators must be instantaneous and are applied after the message is received
+@attention Operators for @ref BPMN::ReceiveTask  "receive tasks" are applied **after** the message is received.
 @par
-@todo @ref BPMN::SendTask operators must be instantaneous and are applied before the message is sent
+@attention Operators for @ref BPMNOS::Model::DecisionTask "decision tasks" are applied **after** the choices have been made.
 
 
-### BUSY
+ 
 A token in @ref BPMNOS::Execution::Token::State::BUSY "BUSY" state waits for a @ref BPMNOS::Execution::CompletionEvent "completion event" before the state is changed to @ref BPMNOS::Execution::Token::State::COMPLETED "COMPLETED" state.
 
-### COMPLETED
+## COMPLETED
 
 A token in  @ref BPMNOS::Execution::Token::State::COMPLETED "COMPLETED" state waits for an @ref BPMNOS::Execution::ExitEvent "exit event" indicating that a decision is made to leave the activity. 
 When the event occurs the token state is updated to  @ref BPMNOS::Execution::Token::State::EXITING "EXITING".
 
 
-### EXITING
+## EXITING
 Feasibility of the @ref BPMNOS::Execution::Token::status "token status" is validated.
 If any of the @ref BPMNOS::Model::ExtensionElements::restrictions "restrictions" is violated,  the @ref BPMNOS::Execution::Token::state "token state" is updated to @ref BPMNOS::Execution::Token::State::FAILED "FAILED".
 
@@ -88,17 +98,17 @@ In the case, that the task has a @ref BPMN::CompensateBoundaryEvent "compensate 
 If the task has an outgoing sequence flow, the @ref BPMNOS::Execution::Token::state "token state" is updated to @ref BPMNOS::Execution::Token::State::DEPARTED "DEPARTED".
 Otherwise, the @ref BPMNOS::Execution::Token::state "token state" is updated to @ref BPMNOS::Execution::Token::State::DONE "DONE".
 
-### DEPARTED
+## DEPARTED
 
 When the token reaches @ref BPMNOS::Execution::Token::State::DEPARTED "DEPARTED" state, the token moves to the next node.
 
-### DONE
+## DONE
 
 When the token reaches @ref BPMNOS::Execution::Token::State::DONE "DONE" state, the token remains at the node until all other tokens in the parent scope have reached @ref BPMNOS::Execution::Token::State::DONE "DONE" state or a failure occurred.
 
 @note When all tokens in the parent scope have reached @ref BPMNOS::Execution::Token::State::DONE "DONE" state, the state of the parent token is changed to @ref BPMNOS::Execution::Token::State::COMPLETED "COMPLETED" state.
 
-### FAILED
+## FAILED
 
 Upon failure, the state of a token at an @ref BPMN::ErrorBoundaryEvent "error boundary event" is changed to @ref BPMNOS::Execution::Token::State::COMPLETED "COMPLETED". If no such @ref BPMN::ErrorBoundaryEvent "error boundary event" exists, the error is bubbled up to its parent scope.
 
