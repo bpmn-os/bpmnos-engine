@@ -317,7 +317,7 @@ void Token::advanceToReady() {
   }
 
   if ( owned ) {
-//std::cerr << "Use data of scope " << owned->scope->id << std::endl;
+    // ensure that data is set appropriately
     data = &owned->data;
   }
   
@@ -384,6 +384,16 @@ void Token::advanceToEntered() {
 
   update(State::ENTERED);
 //std::cerr << "updatedToEntered" << std::endl;
+
+  if ( const BPMN::Activity* activity = (node ? node->represents<BPMN::Activity>() : nullptr);
+    activity && 
+    activity->loopCharacteristics.has_value() &&
+    owned
+  ) {
+    // register state machines of multi-instance activities
+    const_cast<SystemState*>(owner->systemState)->archive[ (long unsigned int)owned->instance.value() ] = owned->weak_from_this();
+    owned->registerRecipient();
+  }
 
   if ( node && !node->represents<BPMN::SendTask>() && !node->represents<BPMN::EventSubProcess>() ) {
     if ( auto extensionElements = node->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
@@ -1104,7 +1114,10 @@ void Token::advanceToFailed() {
 //std::cerr << "Use data of scope " << owner->scope->id << std::endl;
     data = &const_cast<StateMachine*>(owner)->data;
 
-    if ( auto activity = owned->scope->represents<BPMN::Activity>();
+    if ( !owned->scope ) {
+      owned.reset(); 
+    }
+    else if ( auto activity = owned->scope->represents<BPMN::Activity>();
       activity && activity->isForCompensation
     ) {
       owned.reset(); 

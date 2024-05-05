@@ -29,7 +29,7 @@ class SystemState;
 class StateMachine : public std::enable_shared_from_this<StateMachine> {
 public:
   StateMachine(const SystemState* systemState, const BPMN::Process* process, Values dataAttributes);
-  StateMachine(const SystemState* systemState, const BPMN::Scope* scope, Token* parentToken, Values dataAttributes);
+  StateMachine(const SystemState* systemState, const BPMN::Scope* scope, Token* parentToken, Values dataAttributes, std::optional<BPMNOS::number> instance = std::nullopt);
   StateMachine(const StateMachine* other);
   ~StateMachine();
 
@@ -62,13 +62,12 @@ private:
   friend class SystemState;
   friend class Token;
 
-  static constexpr char delimiter = BPMNOS::Model::Scenario::delimiter; ///< Delimiter used for disambiguation of identifiers of non-interrupting event subprocesses
   std::map< const BPMN::FlowNode*, unsigned int > instantiations; ///< Instantiation counter for start events of non-interrupting event subprocesses
 
   void registerRecipient(); ///< Register new state machine to allow directed message delivery
   void unregisterRecipient(); ///< Register new state machine id to withdraw directed messages
 
-  void createChild(Token* parent, const BPMN::Scope* scope, Values data); ///< Method creating the state machine for a (sub)process
+  void createChild(Token* parent, const BPMN::Scope* scope, Values data, std::optional<BPMNOS::number> instance = std::nullopt); ///< Method creating the state machine for a (sub)process
 
   void createCompensationTokenForBoundaryEvent(const BPMN::BoundaryEvent* compensateBoundaryEvent, BPMNOS::Values status); ///< Method creating a compensation token at a compensate boundary event of an activity
 //  void createCompensationTokenForEventSubProcess(const BPMN::EventSubProcess* compensationEventSubProcess, Token* token); ///< Method creating a compensation token at a compensation event subproces of an activity

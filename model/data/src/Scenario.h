@@ -50,7 +50,7 @@ public:
 
   unsigned int index;
 
-  static constexpr char delimiter = '^'; ///< Delimiter used for disambiguation of identifiers of non-interrupting event subprocesses
+  static constexpr char delimiters[] = {'^','#'}; ///< Delimiters used for disambiguation of identifiers of non-interrupting event subprocesses and multi-instance activities
 
   /**
    * @brief Virtual method allowing derived scenarios to update their data.

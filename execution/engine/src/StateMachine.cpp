@@ -3,7 +3,6 @@
 #include "Token.h"
 #include "SystemState.h"
 #include "Event.h"
-//#include "events/EntryEvent.h"
 #include "execution/utility/src/erase.h"
 #include "model/bpmnos/src/extensionElements/ExtensionElements.h"
 #include "model/bpmnos/src/extensionElements/Timer.h"
@@ -28,18 +27,18 @@ StateMachine::StateMachine(const SystemState* systemState, const BPMN::Process* 
   data[BPMNOS::Model::ExtensionElements::Index::Instance] = std::ref(instance);
 }
 
-StateMachine::StateMachine(const SystemState* systemState, const BPMN::Scope* scope, Token* parentToken, Values dataAttributes)
+StateMachine::StateMachine(const SystemState* systemState, const BPMN::Scope* scope, Token* parentToken, Values dataAttributes, std::optional<BPMNOS::number> instance )
   : systemState(systemState)
   , process(parentToken->owner->process)
   , scope(scope)
   , root(parentToken->owner->root)
-  , instance( (*parentToken->data)[BPMNOS::Model::ExtensionElements::Index::Instance].get() )
+  , instance(instance.value_or( (*parentToken->data)[BPMNOS::Model::ExtensionElements::Index::Instance].get().value() ) )
   , parentToken(parentToken)
   , ownedData(dataAttributes)
   , data(SharedValues(parentToken->owner->data,ownedData))
 {
   
-  data[BPMNOS::Model::ExtensionElements::Index::Instance] = std::ref(instance);
+  data[BPMNOS::Model::ExtensionElements::Index::Instance] = std::ref(this->instance);
 /*
 std::cerr << "child StateMachine(" << scope->id << "/" << this << " @ " << parentToken << ")" << " owned by: " << parentToken->owner << std::endl;
 //std::cerr << data.size() << "[" <<BPMNOS::Model::ExtensionElements::Index::Instance <<"] = " << data[BPMNOS::Model::ExtensionElements::Index::Instance].value_or(-1) <<  "/" << ( data.size() ? (int)data[BPMNOS::Model::ExtensionElements::Index::Instance].get().value_or(-1) : -1 ) << "/" << instance << "/" << this->instance <<std::endl;
@@ -49,7 +48,7 @@ std::cerr << (int)attribute.get().value() << ", ";
 }
 std::cerr << std::endl;
 */
-  assert( instance.has_value() && instance.value() >= 0 );
+  assert( this->instance.has_value() && this->instance.value() >= 0 );
 }
 
 StateMachine::StateMachine(const StateMachine* other)
@@ -70,7 +69,9 @@ StateMachine::~StateMachine() {
 //std::cerr << "~StateMachine(" << scope->id << "/" << this << " @ " << parentToken << ")" << std::endl;
   const_cast<SystemState*>(systemState)->tokensAwaitingGatewayActivation.erase(this);
   const_cast<SystemState*>(systemState)->tokenAwaitingCompensationEventSubProcess.erase(this);
-  unregisterRecipient();
+  if ( scope ) {
+    unregisterRecipient();
+  }
 }
 
 BPMNOS::Values StateMachine::getData(const BPMN::Scope* scope) {
@@ -245,17 +246,29 @@ void StateMachine::createMultiInstanceActivityTokens(Token* token) {
   assert ( systemState->exitStatusAtActivityInstance.find(token) == systemState->exitStatusAtActivityInstance.end() );
 
   Token* tokenCopy = nullptr;
+  size_t counter = 0;
   for ( auto valueMap : valueMaps ) {
+    counter++;
+    // disambiguate instance id
+    auto instanceId = BPMNOS::to_string(this->data[BPMNOS::Model::ExtensionElements::Index::Instance].get().value(),STRING) + BPMNOS::Model::Scenario::delimiters[0] + token->node->id + BPMNOS::Model::Scenario::delimiters[1] +  std::to_string(counter);
+
     tokens.push_back( std::make_shared<Token>( token ) );
     if ( auto scope = token->node->represents<BPMN::Scope>() ) {
       // create state machine for each multi-instance subprocess
-      auto data = systemState->getDataAttributes(root,token->node);
+      auto data = systemState->getDataAttributes(root,token->node);     
       if ( !data.has_value() ) {
         throw std::runtime_error("StateMachine: required data at '" + token->node->id +"' not yet available" );
       }
-      createChild( tokens.back().get(), scope, std::move(data.value()) );
+
+      // create child state machine with disambiguated instance identifier
+      createChild( tokens.back().get(), scope, std::move(data.value()), BPMNOS::to_number(instanceId,BPMNOS::ValueType::STRING) );
     }
- 
+    else {
+      // create child fake state machine with disambiguated instance identifier
+      createChild( tokens.back().get(), nullptr, {}, BPMNOS::to_number(instanceId,BPMNOS::ValueType::STRING) );
+      // ensure that data is set appropriately
+      tokens.back()->data = &tokens.back()->owned->data;
+    }       
     
     // update status of token copy
     for ( auto [attribute,value] : valueMap ) {
@@ -533,8 +546,8 @@ void StateMachine::run(Values status) {
           // get instantiation counter from context
           auto context = const_cast<StateMachine*>(parentToken->owned.get());
           auto counter = ++context->instantiations[token->node];
-          // append instantiation counter to instance identifier of parent for disambiguation
-          auto instanceId = BPMNOS::to_string((*parentToken->data)[BPMNOS::Model::ExtensionElements::Index::Instance].get().value(),STRING) + delimiter +  std::to_string(counter);
+          // disambiguate instance id
+          auto instanceId = BPMNOS::to_string((*parentToken->data)[BPMNOS::Model::ExtensionElements::Index::Instance].get().value(),STRING) + BPMNOS::Model::Scenario::delimiters[0] + scope->id + BPMNOS::Model::Scenario::delimiters[1] + std::to_string(counter);
           data[BPMNOS::Model::ExtensionElements::Index::Instance].get() = BPMNOS::to_number(instanceId,BPMNOS::ValueType::STRING);
           const_cast<SystemState*>(systemState)->archive[ (long unsigned int)data[BPMNOS::Model::ExtensionElements::Index::Instance].get().value() ] = weak_from_this();
           registerRecipient();
@@ -547,9 +560,9 @@ void StateMachine::run(Values status) {
   }
 }
 
-void StateMachine::createChild(Token* parent, const BPMN::Scope* scope, Values data) {
+void StateMachine::createChild(Token* parent, const BPMN::Scope* scope, Values data, std::optional<BPMNOS::number> instance) {
 //std::cerr << "Create child from " << this << std::endl;
-  parent->owned = std::make_shared<StateMachine>(systemState, scope, parent, std::move(data) );
+  parent->owned = std::make_shared<StateMachine>(systemState, scope, parent, std::move(data), instance.value_or( (*parent->data)[BPMNOS::Model::ExtensionElements::Index::Instance].get().value() ) );
 //  parent->owned->run(parent->status);
 }
 
@@ -867,7 +880,7 @@ void StateMachine::shutdown() {
 
   // ensure that messages to state machine are removed  
   unregisterRecipient();
-
+  
   if ( auto subProcess = scope->represents<BPMN::SubProcess>();
     subProcess && subProcess->compensatedBy
   ) {
