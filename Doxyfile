@@ -16,6 +16,7 @@ INPUT             = $(BPMNPP_INCLUDE_PATH)/bpmn++.h model/ execution/ \
                     docs/md/engine \
                     docs/md/controller \
                     docs/md/observer \
+                    docs/md/models \
                     
 RECURSIVE         = YES
 FILE_PATTERNS     = *.h *.cpp *.xsd *.md

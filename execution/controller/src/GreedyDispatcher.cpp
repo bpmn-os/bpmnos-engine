@@ -13,7 +13,7 @@ GreedyDispatcher<WeakPtrs...>::GreedyDispatcher(Evaluator* evaluator)
   if ( !evaluator ) {
     throw std::runtime_error("GreedyDispatcher: missing evaluator");
   }
-  timestamp = std::numeric_limits<BPMNOS::number>::min();
+  timestamp = std::numeric_limits<BPMNOS::number>::lowest();
 }
 
 template <typename... WeakPtrs>
