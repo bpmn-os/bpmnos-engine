@@ -13,13 +13,13 @@ Choice::Choice(XML::bpmnos::tChoice* choice, const AttributeRegistry& attributeR
     max = 1;
   }
   else if ( attribute->type == INTEGER ) {
-    assert( std::numeric_limits<BPMNOS::number>::min() < 0 );
-    min = BPMNOS::to_number( (int)std::numeric_limits<BPMNOS::number>::min(), INTEGER);
+    assert( std::numeric_limits<BPMNOS::number>::lowest() < 0 );
+    min = BPMNOS::to_number( (int)std::numeric_limits<BPMNOS::number>::lowest(), INTEGER);
     assert( std::numeric_limits<BPMNOS::number>::max() > 0 );
     max = BPMNOS::to_number( (int)std::numeric_limits<BPMNOS::number>::max(), INTEGER);
   }
   else if ( attribute->type == DECIMAL ) {
-    min = std::numeric_limits<BPMNOS::number>::min();
+    min = std::numeric_limits<BPMNOS::number>::lowest();
     max = std::numeric_limits<BPMNOS::number>::max();
   }
   else {
