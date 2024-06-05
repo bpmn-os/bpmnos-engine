@@ -25,6 +25,7 @@ list(APPEND controller_SOURCES
   dispatcher/greedy/BestMatchingMessageDelivery.cpp
   Controller.cpp
   GreedyController.cpp
+  CPController.cpp
 )
 
 list(APPEND controller_HEADERS
@@ -54,4 +55,5 @@ list(APPEND controller_HEADERS
   dispatcher/greedy/BestMatchingMessageDelivery.h
   Controller.h
   GreedyController.h
+  CPController.h
 )

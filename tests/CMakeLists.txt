@@ -28,6 +28,7 @@ add_executable(run_tests EXCLUDE_FROM_ALL main.cpp)
 
 include_directories(
   ${CMAKE_SOURCE_DIR}/lib
+  /home/asvin/Code/bpmnos/cp/ # TODO
 )
 
 if (DEBUG)

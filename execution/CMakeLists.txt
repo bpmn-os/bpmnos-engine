@@ -6,6 +6,27 @@ project(bpmnos-execution)
 set(LIB_DIR "lib" CACHE STRING "Library directory")
 message("-- Library will be created in folder: ${CMAKE_SOURCE_DIR}/${LIB_DIR}")
 
+#include(FetchContent)
+#set(FETCHCONTENT_QUIET FALSE)
+
+# CP
+#FetchContent_Declare(
+#        cp
+#        GIT_REPOSITORY https://github.com/bpmno-os/cp.git
+#        GIT_TAG dafb13e8e5e7761dc9a731862a666221e82cd546 # Version 1.0.2 as of Jan 7, 2023
+#)
+#
+#if (NOT cp_POPULATED)
+#    FetchContent_Populate(cp)
+#endif ()
+#
+include_directories(
+  SYSTEM
+#  ${cp_SOURCE_DIR} 
+  /home/asvin/Code/bpmnos/cp/ # TODO
+)
+
+
 # Set output directories
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/${LIB_DIR})
 #set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR})
