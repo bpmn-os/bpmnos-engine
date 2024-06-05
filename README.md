@@ -25,21 +25,4 @@ The library is built like a typical CMake project. A normal build will look some
  ~/bpmnos/build$ make
  ```
 
-This creates a single header file `lib/bpmnos-model.h` and a library `lib/libbpmnos-model.a`.
-
-## Example
-
-An example using the library can be found in `example` folder.
-
-After successful installation of the library, you can build the example by
-
-```sh
-cd example
-g++ -std=c++20 main.cpp -L../parser/lib -lbpmn++ -lbpmnos-model -lxerces-c -o bpmnos
-```
-
-You can run the example by
-```sh
-cd example
-./bpmnos diagram.bpmn
-```
+This creates a single header file `lib/bpmnos-model.h` and a library `lib/libbpmnos-model.a`. Moreover, an executable `bpmnos` using these libraries is created in the `bin` folder. An example showing how to use this executable is given in the [example folder](example).

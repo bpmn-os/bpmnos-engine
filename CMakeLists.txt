@@ -90,6 +90,7 @@ include_directories(
 add_subdirectory(model)
 add_subdirectory(execution)
 add_subdirectory(tests)
+add_subdirectory(app)
 
 # Generate the documentation
 set(DOCUMENTATION ON CACHE BOOL "Create documentation")
@@ -168,3 +169,5 @@ add_custom_target(bpmndoc
     DEPENDS doxygen-awesome bpmndoc
   )
 endif()
+
+

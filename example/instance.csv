@@ -1,0 +1,8 @@
+PROCESS_ID; INSTANCE_ID; ATTRIBUTE_ID; VALUE\n
+ClientProcess;Client1;;
+ClientProcess;Client2;;
+ClientProcess;Client3;;
+ServerProcess;Server1;;
+ServerProcess;Server2;;
+ServerProcess;Server3;;
+
