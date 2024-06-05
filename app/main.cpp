@@ -10,8 +10,8 @@ void print_usage() {
   std::cout << "\tbpmnos --model <model file> --data <data file> [--paths <path1> <path2> ...] [--verbose]" << std::endl;
   std::cout << "\tbpmnos -m <model file> -d <data file> [-p <path1> <path2> ...] [-v]" << std::endl;
   std::cout << std::endl;
-  std::cout << "\t-m, --model <model file>:         filename of the BPMN model" << std::endl;
-  std::cout << "\t-d, --data <data file>:           filename of the CSV containing the instance data" << std::endl;
+  std::cout << "\t-m, --model <model file>:         name of the BPMN model file" << std::endl;
+  std::cout << "\t-d, --data <data file>:           name of the CSV file containing the instance data" << std::endl;
   std::cout << "\t-p, --paths <path1> <path2> ...:  paths in which lookup tables can be found" << std::endl;
   std::cout << "\t-v, --verbose:                    display the execution log" << std::endl;
   exit(1);
