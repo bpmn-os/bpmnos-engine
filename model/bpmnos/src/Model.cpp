@@ -79,13 +79,6 @@ std::unique_ptr<BPMN::FlowNode> Model::createActivity(XML::bpmn::tActivity* acti
   auto baseElement = BPMN::Model::createActivity(activity,parent);
   auto extensionElements = std::make_unique<BPMNOS::Model::ExtensionElements>(activity, parent->extensionElements->as<ExtensionElements>()->attributeRegistry, parent, getData(activity));
 
-  // Lambda function to compare unique_ptrs by their raw pointers
-  auto contains = [](const std::vector<std::unique_ptr<Attribute>>& attributes, Attribute* attribute) {
-    return std::any_of(attributes.begin(), attributes.end(),[attribute](const std::unique_ptr<Attribute>& ptr) {
-      return ptr.get() == attribute;
-    });
-  };
-
   if ( baseElement->represents<BPMN::ReceiveTask>() ) {
     for ( auto& messageDefinition : extensionElements->messageDefinitions ) {
       for ( auto& [_,content] : messageDefinition->contentMap ) {
