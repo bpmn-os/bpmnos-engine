@@ -210,13 +210,13 @@ std::optional<BPMNOS::number> Scenario::getKnownValue(const Scenario::InstanceDa
 }
 
 std::optional<BPMNOS::number> Scenario::getKnownValue(const BPMNOS::number instanceId, const BPMNOS::Model::Attribute* attribute, const BPMNOS::number currentTime) const {
-  auto& instanceData = instances.at((long unsigned int)instanceId);
+  auto& instanceData = instances.at((size_t)instanceId);
   return getKnownValue(&instanceData,attribute,currentTime);
 }
 
 
 std::optional<BPMNOS::Values> Scenario::getKnownValues(const BPMNOS::number instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const {
-  auto& instanceData = instances.at((long unsigned int)instanceId);
+  auto& instanceData = instances.at((size_t)instanceId);
 
   Values values;
   for ( auto& attribute : node->extensionElements->as<const BPMNOS::Model::ExtensionElements>()->attributes ) {
@@ -229,7 +229,7 @@ std::optional<BPMNOS::Values> Scenario::getKnownValues(const BPMNOS::number inst
 
 
 std::optional<BPMNOS::Values> Scenario::getKnownData(const BPMNOS::number instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const {
-  auto& instanceData = instances.at((long unsigned int)instanceId);
+  auto& instanceData = instances.at((size_t)instanceId);
 
   Values values;
   for ( auto& attribute : node->extensionElements->as<const BPMNOS::Model::ExtensionElements>()->data ) {
@@ -256,7 +256,7 @@ std::optional<BPMNOS::number> Scenario::getAnticipatedValue(const Scenario::Inst
 }
 
 std::optional<BPMNOS::number> Scenario::getAnticipatedValue(const BPMNOS::number instanceId, const BPMNOS::Model::Attribute* attribute, const BPMNOS::number currentTime) const {
-  auto& instanceData = instances.at((long unsigned int)instanceId);
+  auto& instanceData = instances.at((size_t)instanceId);
   return getAnticipatedValue(&instanceData,attribute,currentTime);
 }
 
@@ -280,7 +280,7 @@ BPMNOS::Values Scenario::getAnticipatedInitialData(const Scenario::InstanceData*
 
 
 BPMNOS::Values Scenario::getAnticipatedValues(const BPMNOS::number instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const {
-  auto& instanceData = instances.at((long unsigned int)instanceId);
+  auto& instanceData = instances.at((size_t)instanceId);
 
 
   Values values;
@@ -292,7 +292,7 @@ BPMNOS::Values Scenario::getAnticipatedValues(const BPMNOS::number instanceId, c
 }
 
 BPMNOS::Values Scenario::getAnticipatedData(const BPMNOS::number instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const {
-  auto& instanceData = instances.at((long unsigned int)instanceId);
+  auto& instanceData = instances.at((size_t)instanceId);
 
   Values values;
   for ( auto& attribute : node->extensionElements->as<const BPMNOS::Model::ExtensionElements>()->data ) {
@@ -316,12 +316,12 @@ const Scenario::Disclosure& Scenario::getLatestDisclosure(const std::vector<Scen
 
 
 Scenario::Data& Scenario::getInstantiationData(const BPMNOS::number instanceId) {
-  auto& instanceData = instances[(long unsigned int)instanceId];
+  auto& instanceData = instances[(size_t)instanceId];
   return instanceData.instantiation;
 }
 
 Scenario::Data& Scenario::getAttributeData(const BPMNOS::number instanceId, const Attribute* attribute) {
-  auto& instanceData = instances[(long unsigned int)instanceId];
+  auto& instanceData = instances[(size_t)instanceId];
   return instanceData.data[attribute];
 }
 

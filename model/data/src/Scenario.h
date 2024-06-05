@@ -31,7 +31,7 @@ public:
 
   struct InstanceData {
     const BPMN::Process* process;
-    long unsigned int id; ///< Instance identifier.
+    size_t id; ///< Instance identifier.
     Data instantiation; ///< Data regarding the time of instantiation.
     std::unordered_map< const Attribute*, Data > data; ///< Data regarding attribute values.
   };
@@ -179,10 +179,10 @@ public:
   void setRealization( Data& data, Disclosure realization );
   
   BPMNOS::Values globals;
-protected:
   const Model* model;  ///< Pointer to the BPMN model.
+protected:
   const DataInput& attributes; ///< Map holding all attributes in the model with keys being the process and attribute id
-  std::unordered_map<long unsigned int, InstanceData > instances; ///< Map of instances with key being the instance id.
+  std::unordered_map<size_t, InstanceData > instances; ///< Map of instances with key being the instance id.
   const Scenario::Disclosure& getLatestDisclosure(const std::vector<Scenario::Disclosure>& data, const BPMNOS::number currentTime) const;
   BPMNOS::number inception; ///< Time earliest time in execution.
   BPMNOS::number completion; ///< The latest time in execution at which an instantiation can happen.
