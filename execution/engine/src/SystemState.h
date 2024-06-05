@@ -138,6 +138,13 @@ public:
   std::optional<BPMNOS::Values> getStatusAttributes(const StateMachine* root, const BPMN::Node* node) const;
   std::optional<BPMNOS::Values> getDataAttributes(const StateMachine* root, const BPMN::Node* node) const;
 
+  /**
+   * @brief Method returning a vector of all instantiations at the given time.
+   *
+   * A vector representing an instantiation contains a reference to the process, the initial status, and the initial data attribute value
+   */
+  std::vector< std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values> > getInstantiations() const;
+
 private:
   friend class Engine;
   friend class StateMachine;
@@ -145,10 +152,6 @@ private:
 
   SystemState() = delete;
 
-  /**
-   * @brief Method returning a vector of all instantiations at the given time.
-   */
-  std::vector< std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values> > getInstantiations() const;
 
   void incrementTimeBy(BPMNOS::number duration);
   size_t instantiationCounter;
