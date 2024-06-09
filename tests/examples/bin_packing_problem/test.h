@@ -2,18 +2,18 @@ SCENARIO( "Bin packing problem", "[examples][bin_packing_problem]" ) {
   const std::string modelFile = "examples/bin_packing_problem/Guided_bin_packing_problem.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
 
-  GIVEN( "One knapsack and three items" ) {
+  GIVEN( "Three bins and three items" ) {
 
     std::string csv =
       "PROCESS_ID; INSTANCE_ID; ATTRIBUTE_ID; VALUE\n"
-      ";;Items;3\n"
       ";;Bins;3\n"
-      "BinProcess;Bin1;Capacity;40\n"
-      "BinProcess;Bin2;Capacity;40\n"
-      "BinProcess;Bin3;Capacity;40\n"
-      "ItemProcess;Item1;Size;20\n"
-      "ItemProcess;Item2;Size;15\n"
-      "ItemProcess;Item3;Size;22\n"
+      ";;Items;3\n"
+      "BinProcess;Bin1;Capacity;40.0\n"
+      "BinProcess;Bin2;Capacity;40.0\n"
+      "BinProcess;Bin3;Capacity;40.0\n"
+      "ItemProcess;Item1;Size;20.0\n"
+      "ItemProcess;Item2;Size;15.0\n"
+      "ItemProcess;Item3;Size;22.0\n"
     ;
 
     Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -39,7 +39,7 @@ SCENARIO( "Bin packing problem", "[examples][bin_packing_problem]" ) {
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
       engine.run(scenario.get());
-      THEN( "Then the knapsack considers all items" ) {
+      THEN( "Then no failure occurs" ) {
         auto failureLog = recorder.find(nlohmann::json{{"state", "FAILED"}});
         REQUIRE( failureLog.size() == 0 );
       }
@@ -52,11 +52,11 @@ SCENARIO( "Bin packing problem", "[examples][bin_packing_problem]" ) {
         auto decisionLog = recorder.find(nlohmann::json{{"decision","messagedelivery"}});
         REQUIRE( decisionLog.size() == 3 );
         REQUIRE( decisionLog[0]["message"]["header"]["sender"] == "Item3" );
-        REQUIRE( decisionLog[0]["evaluation"] == 18 + 2);
+        REQUIRE( decisionLog[0]["evaluation"] == 18);
         REQUIRE( decisionLog[1]["message"]["header"]["sender"] == "Item2" );
-        REQUIRE( decisionLog[1]["evaluation"] == 3 + 2);
+        REQUIRE( decisionLog[1]["evaluation"] == 3);
         REQUIRE( decisionLog[2]["message"]["header"]["sender"] == "Item1" );
-        REQUIRE( decisionLog[2]["evaluation"] == 20 + 2);
+        REQUIRE( decisionLog[2]["evaluation"] == 20);
       }
       THEN( "Then Item3 is allocated before Item2 which is allocated before Item1" ) {
         auto allocationLog = recorder.find(nlohmann::json{{"nodeId", "CatchRequestMessage"},{"state", "COMPLETED"}},nlohmann::json{{"event", nullptr},{"decision", nullptr}});
@@ -67,4 +67,53 @@ SCENARIO( "Bin packing problem", "[examples][bin_packing_problem]" ) {
       }
     }
   }
+
+  GIVEN( "Four bins and four items" ) {
+
+    std::string csv =
+      "PROCESS_ID; INSTANCE_ID; ATTRIBUTE_ID; VALUE\n"
+      ";;Bins;4\n"
+      ";;Items;4\n"
+      "BinProcess;Bin1;Capacity;100.0\n"
+      "BinProcess;Bin2;Capacity;100.0\n"
+      "BinProcess;Bin3;Capacity;100.0\n"
+      "BinProcess;Bin4;Capacity;100.0\n"
+      "ItemProcess;Item1;Size;36.6\n"
+      "ItemProcess;Item2;Size;26.8\n"
+      "ItemProcess;Item3;Size;36.6\n"
+      "ItemProcess;Item4;Size;43.0\n"
+    ;
+
+    Model::StaticDataProvider dataProvider(modelFile,csv);
+    auto scenario = dataProvider.createScenario();
+
+    WHEN( "The engine is started with the guided controller" ) {
+      Execution::Engine engine;
+      Execution::ReadyHandler readyHandler;
+      Execution::DeterministicTaskCompletion completionHandler;
+      readyHandler.connect(&engine);
+      completionHandler.connect(&engine);
+
+      Execution::GuidedEvaluator evaluator;
+      Execution::GreedyController controller(&evaluator);
+      controller.connect(&engine);
+      
+      Execution::MyopicMessageTaskTerminator messageTaskTerminator;
+      Execution::TimeWarp timeHandler;
+      messageTaskTerminator.connect(&engine);
+      timeHandler.connect(&engine);
+
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
+      recorder.subscribe(&engine);
+      engine.run(scenario.get());
+      THEN( "Then no failure occurs" ) {
+        auto failureLog = recorder.find(nlohmann::json{{"state", "FAILED"}});
+        REQUIRE( failureLog.size() == 0 );
+        auto processLog = recorder.find(nlohmann::json{{"processId", "BinProcess"},{"state", "DONE"}},nlohmann::json{{"nodeId", nullptr},{"event", nullptr},{"decision", nullptr}});
+        REQUIRE( processLog.size() == 4 );
+      }
+    }
+  }
 }
+
