@@ -49,7 +49,22 @@ endforeach()
 
 add_library(${PROJECT_NAME} STATIC ${execution_utility_SOURCES} ${engine_SOURCES} ${observer_SOURCES} ${controller_SOURCES})
 
-if (DEBUG)
+if (NDEBUG)
+  target_compile_options(${PROJECT_NAME}
+    PRIVATE
+    -O3
+    -Werror
+    -pedantic-errors
+    -Wpedantic
+    -Wall
+    -Wextra
+    -Wconversion
+    -Wsign-conversion
+    -fmax-errors=1 # Remove
+    -Wno-error=unused-parameter # Remove
+    -Wno-error=unused-variable # Remove
+  )
+else()
   target_compile_options(${PROJECT_NAME}
     PRIVATE
     -O0
@@ -74,21 +89,6 @@ if (DEBUG)
   target_link_options(${PROJECT_NAME}
     PRIVATE
     -fsanitize=address
-  )
-else()
-  target_compile_options(${PROJECT_NAME}
-    PRIVATE
-    -O3
-    -Werror
-    -pedantic-errors
-    -Wpedantic
-    -Wall
-    -Wextra
-    -Wconversion
-    -Wsign-conversion
-    -fmax-errors=1 # Remove
-    -Wno-error=unused-parameter # Remove
-    -Wno-error=unused-variable # Remove
   )
 endif()
 

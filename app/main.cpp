@@ -7,12 +7,13 @@
 
 void print_usage() {
   std::cout << "Usage:" << std::endl;
-  std::cout << "\tbpmnos --model <model file> --data <data file> [--paths <path1> <path2> ...] [--verbose]" << std::endl;
-  std::cout << "\tbpmnos -m <model file> -d <data file> [-p <path1> <path2> ...] [-v]" << std::endl;
+  std::cout << "\tbpmnos --model <model file> --data <data file> [--paths <path1> <path2> ...] [--timeout] [--verbose]" << std::endl;
+  std::cout << "\tbpmnos -m <model file> -d <data file> [-p <path1> <path2> ...] [-t] [-v]" << std::endl;
   std::cout << std::endl;
   std::cout << "\t-m, --model <model file>:         name of the BPMN model file" << std::endl;
   std::cout << "\t-d, --data <data file>:           name of the CSV file containing the instance data" << std::endl;
   std::cout << "\t-p, --paths <path1> <path2> ...:  paths in which lookup tables can be found" << std::endl;
+  std::cout << "\t-t, --timeout:                    time when execution is terminated" << std::endl;
   std::cout << "\t-v, --verbose:                    display the execution log" << std::endl;
   exit(1);
 }
@@ -22,6 +23,7 @@ struct Arguments {
   std::string modelFile;
   std::string dataFile;
   std::vector<std::string> paths;
+  std::optional<BPMNOS::number> timeout;
   bool verbose;
 };
 
@@ -41,6 +43,9 @@ Arguments parse_arguments(int argc, char* argv[]) {
       while (i + 1 < argc && argv[i + 1][0] != '-') {
         args.paths.push_back(argv[++i]);
       }
+    }
+    else if ((arg == "--timeout" || arg == "-t") && i + 1 < argc) {
+      args.timeout = BPMNOS::to_number(std::string(argv[++i]),BPMNOS::STRING);
     }
     else if ((arg == "--verbose" || arg == "-v")) {
       args.verbose = true;
@@ -96,8 +101,13 @@ int main(int argc, char* argv[]) {
   auto recorder = createRecorder();
   recorder.subscribe(&engine);
 
-  engine.run(scenario.get());
-
+  if (args.timeout.has_value()) {
+    engine.run(scenario.get(),args.timeout.value());
+  }
+  else {
+    engine.run(scenario.get());
+  }
+  
   return 0;
 }
 

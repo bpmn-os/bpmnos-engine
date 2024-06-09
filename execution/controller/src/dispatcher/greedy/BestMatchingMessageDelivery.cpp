@@ -19,11 +19,38 @@ void BestMatchingMessageDelivery::connect(Mediator* mediator) {
   GreedyDispatcher::connect(mediator);
 }
 
+std::shared_ptr<Event> BestMatchingMessageDelivery::dispatchEvent( [[maybe_unused]] const SystemState* systemState ) {
+  for ( auto& [ token_ptr, request_ptr, message_ptr, decision ] : decisionsWithoutEvaluation ) {
+    assert(decision);
+    if ( decision ) {
+//std::cerr << "Re-evaluate message delivery decision: " << decision->jsonify().dump() << std::endl;
+      evaluate( token_ptr, request_ptr, message_ptr, std::move(decision) );
+    }
+  }
+  decisionsWithoutEvaluation.clear();
+
+
+/*
+  for ( auto [ cost, token_ptr, request_ptr, message_ptr, event_ptr ] : evaluatedDecisions ) {
+if ( cost < 1000 )
+std::cerr << "Message delivery decision " << event_ptr.lock()->jsonify() << " evaluated with " << cost << std::endl;
+  }
+*/
+  for ( auto [ cost, token_ptr, request_ptr, message_ptr, event_ptr ] : evaluatedDecisions ) {
+    // return best evaluated decision
+//std::cerr << "Message delivery decision " << event_ptr.lock()->jsonify() << " evaluated with " << cost << std::endl;
+    return event_ptr.lock();
+  }
+
+//std::cerr << "No evaluated message delivery decision" << std::endl;
+  return nullptr;
+}
+
 void BestMatchingMessageDelivery::notice(const Observable* observable) {
   if ( observable->getObservableType() == Observable::Type::MessageDeliveryRequest ) {
     auto request = static_cast<const DecisionRequest*>(observable);
     assert(request->token->node);
-//std::cerr << "Request: " << request->token->jsonify().dump() << std::endl;
+//std::cerr << "MessageDeliveryRequest: " << request->token->jsonify().dump() << std::endl;
     
     auto recipientHeader = request->token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->messageDefinitions.front()->getRecipientHeader(request->token->getAttributeRegistry(),request->token->status,*request->token->data,request->token->globals);
     requests.emplace_back( request->token->weak_from_this(), request->weak_from_this(), recipientHeader );

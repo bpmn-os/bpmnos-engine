@@ -66,7 +66,7 @@ using namespace BPMNOS;
 #endif // ALL_TESTS
 
 #ifndef ALL_TESTS
-SCENARIO( "Bin packing problem", "[examples][bin_packing_problem]" ) {
+SCENARIO( "Test problem", "[examples][bin_packing_problem]" ) {
   const std::string modelFile = "examples/bin_packing_problem/Guided_bin_packing_problem.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
 

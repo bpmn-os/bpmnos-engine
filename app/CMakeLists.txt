@@ -26,7 +26,8 @@ target_link_libraries(bpmnos
   xerces-c
 )
 
-target_compile_options(bpmnos
+if (NDEBUG)
+  target_compile_options(bpmnos
     PRIVATE
     -O3
     -Werror
@@ -39,11 +40,32 @@ target_compile_options(bpmnos
     -fmax-errors=1 # Remove
     -Wno-error=unused-parameter # Remove
     -Wno-error=unused-variable # Remove
-#    -fsanitize=address  # Enable ASan
 )
-
-# Set link options
-target_link_options(bpmnos
+else()
+  target_compile_options(bpmnos
     PRIVATE
-    -fsanitize=address  # Ensure ASan is linked
-)
+    -O0
+    -Werror
+    -pedantic-errors
+    -Wpedantic
+    -Wall
+    -Wextra
+    -Wconversion
+    -Wsign-conversion
+    -fsanitize=address
+    -fno-omit-frame-pointer
+    -g
+    -ggdb3
+    -fmax-errors=1 # Remove
+    -Wno-error=unused-parameter # Remove
+    -Wno-error=unused-variable # Remove
+  )
+
+  add_link_options(-fsanitize=address)
+
+  target_link_options(bpmnos
+    PRIVATE
+    -fsanitize=address
+  )  
+endif()
+

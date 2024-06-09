@@ -2,11 +2,11 @@ cmake_minimum_required(VERSION 3.26.4)
 
 project(bpmnos)
 
-option(DEBUG "Whether compilation uses address sanitizer without optimization" ON)
-if (DEBUG)
-  message("-- Compiler optimizations turned off and address sanitizer used")
-else()
+option(NDEBUG "Whether compilation uses address sanitizer without optimization" ON)
+if (NDEBUG)
   message("-- Compiler optimizations turned on")
+else()
+  message("-- Compiler optimizations turned off and address sanitizer used")
 endif()
 
 include_directories("${PROJECT_SOURCE_DIR}/")
@@ -36,7 +36,8 @@ include_directories(
 FetchContent_Declare(
         csv
         GIT_REPOSITORY https://github.com/vincentlaucsb/csv-parser.git
-        GIT_TAG 2.1.3
+        GIT_TAG 2.2.3
+#        GIT_TAG 2.1.3
 )
 
 if (NOT csv_POPULATED)

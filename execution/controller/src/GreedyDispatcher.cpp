@@ -18,7 +18,7 @@ GreedyDispatcher<WeakPtrs...>::GreedyDispatcher(Evaluator* evaluator)
 
 template <typename... WeakPtrs>
 void GreedyDispatcher<WeakPtrs...>::connect(Mediator* mediator) {
-  mediator->addSubscriber(this, 
+  mediator->addSubscriber(this,
     Observable::Type::DataUpdate
   );
   EventDispatcher::connect(mediator);

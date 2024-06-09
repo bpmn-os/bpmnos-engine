@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 3.26.4)
 
 project(bpmnos-model)
 
+# Set the C++ standard
+set(CMAKE_CXX_STANDARD 23)
+
 # Set folder for the library to be created
 set(LIB_DIR "lib" CACHE STRING "Library directory")
 message("-- Library will be created in folder: ${CMAKE_SOURCE_DIR}/${LIB_DIR}")
@@ -72,7 +75,25 @@ set_property(
   PROPERTY ADDITIONAL_CLEAN_FILES "${XML_DIR}"
 )
 
-if (DEBUG)
+if (NDEBUG)
+  target_compile_options(${PROJECT_NAME}
+    PRIVATE
+    -O3
+    -Werror
+    -pedantic-errors
+    -Wpedantic
+    -Wall
+    -Wextra
+    -Wconversion
+    -Wsign-conversion
+    -fmax-errors=1 # Remove
+    -Wno-error=unused-parameter # Remove
+    -Wno-error=unused-variable # Remove
+# Add below line to suppress warnings for CSV Parser (not necessary for -O2)
+#    -Wno-array-bounds 
+#    -Wno-stringop-overread
+  )
+else()
   target_compile_options(${PROJECT_NAME}
     PRIVATE
     -O0
@@ -97,22 +118,6 @@ if (DEBUG)
   target_link_options(${PROJECT_NAME}
     PRIVATE
     -fsanitize=address
-  )
-else()
-  message("Compiling with optimizations")
-  target_compile_options(${PROJECT_NAME}
-    PRIVATE
-    -O3
-    -Werror
-    -pedantic-errors
-    -Wpedantic
-    -Wall
-    -Wextra
-    -Wconversion
-    -Wsign-conversion
-    -fmax-errors=1 # Remove
-    -Wno-error=unused-parameter # Remove
-    -Wno-error=unused-variable # Remove
   )
 endif()
 
