@@ -12,4 +12,5 @@ list(APPEND model_utility_HEADERS
   StringRegistry.h
   CollectionRegistry.h
   RandomDistributionFactory.h
+  getDelimiter.h
 )

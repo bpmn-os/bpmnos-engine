@@ -2,6 +2,7 @@
 #include "model/utility/src/Keywords.h"
 #include "model/utility/src/Number.h"
 #include "model/utility/src/Value.h"
+#include "model/utility/src/getDelimiter.h"
 #include <sstream>
 #include <unordered_map>
 #include <algorithm>
@@ -24,26 +25,21 @@ StaticDataProvider::StaticDataProvider(const std::string& modelFile, const std::
 }
 
 csv::CSVReader StaticDataProvider::initReader(const std::string& instanceFileOrString) {
+  auto pos = instanceFileOrString.find("\n");
   csv::CSVFormat format;
-
-  if ( auto pos = instanceFileOrString.find("\n");
-    pos != std::string::npos
-  ) {
-    // determine delimiter from first line of string
-    auto delimiter = csv::internals::_guess_format(instanceFileOrString.substr(0,pos+1)).delim;
-    (delimiter == '\t') ? format.trim({' '}) : format.trim({' ', '\t'});
-    format.delimiter( { delimiter } );
+  format.delimiter( { getDelimiter(instanceFileOrString,pos) } );
+  (format.get_delim() == '\t') ? format.trim({' '}) : format.trim({' ', '\t'});
+  
+  if ( pos == std::string::npos ) {
+    // no line break in instanceFileOrString so it must be a filename
+    // determine delimiter from file
+    return csv::CSVReader(instanceFileOrString, format);
+  }
+  else {
+    // string input
     std::stringstream is;
     is << instanceFileOrString;
     return csv::CSVReader(is, format);
-  }
-  else {
-    // no line break in instanceFileOrString so it must be a filename
-    // determine delimiter from file
-    auto delimiter = csv::guess_format(instanceFileOrString).delim;
-    (delimiter == '\t') ? format.trim({' '}) : format.trim({' ', '\t'});
-    format.delimiter( { delimiter } );
-    return csv::CSVReader(instanceFileOrString, format);
   }
 }
 

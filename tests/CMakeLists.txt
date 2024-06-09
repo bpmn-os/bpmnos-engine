@@ -16,7 +16,7 @@ if (NOT catch_POPULATED)
 endif ()
 
 # Set the C++ standard
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 
 # Add the -ggdb3 flag for debugging information
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ggdb3")

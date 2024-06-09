@@ -90,8 +90,8 @@ if (NDEBUG)
     -Wno-error=unused-parameter # Remove
     -Wno-error=unused-variable # Remove
 # Add below line to suppress warnings for CSV Parser (not necessary for -O2)
-#    -Wno-array-bounds 
-#    -Wno-stringop-overread
+    -Wno-array-bounds 
+    -Wno-stringop-overread
   )
 else()
   target_compile_options(${PROJECT_NAME}
