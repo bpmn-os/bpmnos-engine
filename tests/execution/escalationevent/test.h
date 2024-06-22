@@ -1,5 +1,5 @@
 SCENARIO( "Intermediate escalation", "[execution][escalation]" ) {
-  const std::string modelFile = "execution/escalationevent/Uncaught_escalation.bpmn";
+  const std::string modelFile = "tests/execution/escalationevent/Uncaught_escalation.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
   GIVEN( "A single instance with no input values" ) {
 

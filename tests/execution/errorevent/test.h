@@ -1,5 +1,5 @@
 SCENARIO( "Error end event", "[execution][error]" ) {
-  const std::string modelFile = "execution/errorevent/Simple_error.bpmn";
+  const std::string modelFile = "tests/execution/errorevent/Simple_error.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
   GIVEN( "A single instance with no input values" ) {
 

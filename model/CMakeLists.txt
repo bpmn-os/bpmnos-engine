@@ -108,6 +108,7 @@ else()
     -fno-omit-frame-pointer
     -g
     -ggdb3
+    -pg # Profiling
     -fmax-errors=1 # Remove
     -Wno-error=unused-parameter # Remove
     -Wno-error=unused-variable # Remove
@@ -118,6 +119,7 @@ else()
   target_link_options(${PROJECT_NAME}
     PRIVATE
     -fsanitize=address
+    -pg # Profiling
   )
 endif()
 

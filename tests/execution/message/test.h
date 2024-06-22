@@ -1,5 +1,5 @@
 SCENARIO( "Simple messaging", "[execution][message]" ) {
-  const std::string modelFile = "execution/message/Simple_messaging.bpmn";
+  const std::string modelFile = "tests/execution/message/Simple_messaging.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
 
   GIVEN( "Two instances starting at time 0" ) {
@@ -154,7 +154,7 @@ SCENARIO( "Simple messaging", "[execution][message]" ) {
 
 
 SCENARIO( "Message tasks", "[execution][message]" ) {
-  const std::string modelFile = "execution/message/Message_tasks.bpmn";
+  const std::string modelFile = "tests/execution/message/Message_tasks.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
 
   GIVEN( "Two instances without input" ) {
@@ -310,7 +310,7 @@ SCENARIO( "Message tasks", "[execution][message]" ) {
 }
 
 SCENARIO( "Message tasks with timer", "[execution][message]" ) {
-  const std::string modelFile = "execution/message/Message_tasks_with_timer.bpmn";
+  const std::string modelFile = "tests/execution/message/Message_tasks_with_timer.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
 
   GIVEN( "Two instances without input" ) {

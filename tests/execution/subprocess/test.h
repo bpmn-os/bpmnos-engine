@@ -1,5 +1,5 @@
 SCENARIO( "Empty executable subprocess", "[execution][subprocess]" ) {
-  const std::string modelFile = "execution/subprocess/Empty_executable_subprocess.bpmn";
+  const std::string modelFile = "tests/execution/subprocess/Empty_executable_subprocess.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
   GIVEN( "A single instance with no input values" ) {
 
@@ -61,7 +61,7 @@ SCENARIO( "Empty executable subprocess", "[execution][subprocess]" ) {
 }
 
 SCENARIO( "Trivial executable subprocess", "[execution][subprocess]" ) {
-  const std::string modelFile = "execution/subprocess/Trivial_executable_subprocess.bpmn";
+  const std::string modelFile = "tests/execution/subprocess/Trivial_executable_subprocess.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
   GIVEN( "A single instance with no input values" ) {
 
@@ -128,7 +128,7 @@ SCENARIO( "Trivial executable subprocess", "[execution][subprocess]" ) {
 }
 
 SCENARIO( "Constrained executable process", "[execution][subprocess]" ) {
-  const std::string modelFile = "execution/subprocess/Constrained_executable_subprocess.bpmn";
+  const std::string modelFile = "tests/execution/subprocess/Constrained_executable_subprocess.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
   GIVEN( "A single instance with no input values" ) {
     WHEN( "The engine is started at time 0" ) {

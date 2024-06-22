@@ -1,6 +1,6 @@
 SCENARIO( "Lookup table", "[model][lookup]" ) {
-  const std::string modelFile = "model/lookup/lookupTable.bpmn";
-  BPMNOS::Model::LookupTable::folders = { std::string(std::filesystem::current_path()) + "/model/lookup" };
+  const std::string modelFile = "tests/model/lookup/lookupTable.bpmn";
+  BPMNOS::Model::LookupTable::folders = { "tests/model/lookup" };
   REQUIRE_NOTHROW( Model::Model(modelFile) );
 
   GIVEN( "An instance without existing client and server attributes" ) {

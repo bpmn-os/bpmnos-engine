@@ -1,5 +1,5 @@
 SCENARIO( "Failed task", "[execution][boundaryevent]" ) {
-  const std::string modelFile = "execution/boundaryevent/Failed_Task.bpmn";
+  const std::string modelFile = "tests/execution/boundaryevent/Failed_Task.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
   GIVEN( "A single instance with no input values" ) {
 
@@ -57,7 +57,7 @@ SCENARIO( "Failed task", "[execution][boundaryevent]" ) {
 }
 
 SCENARIO( "Failed subprocess", "[execution][boundaryevent]" ) {
-  const std::string modelFile = "execution/boundaryevent/Failed_SubProcess.bpmn";
+  const std::string modelFile = "tests/execution/boundaryevent/Failed_SubProcess.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
   GIVEN( "A single instance with no input values" ) {
 

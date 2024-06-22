@@ -1,5 +1,5 @@
 SCENARIO( "Symmetric exclusive gateways", "[execution][exclusivegateway]" ) {
-  const std::string modelFile = "execution/exclusivegateway/Symmetric.bpmn";
+  const std::string modelFile = "tests/execution/exclusivegateway/Symmetric.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
   GIVEN( "A single instance starting at time 0" ) {
 

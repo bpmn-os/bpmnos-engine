@@ -1,5 +1,5 @@
 SCENARIO( "Parallel fork", "[execution][parallelgateway]" ) {
-  const std::string modelFile = "execution/parallelgateway/Fork.bpmn";
+  const std::string modelFile = "tests/execution/parallelgateway/Fork.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
   GIVEN( "A single instance with no input values" ) {
 
@@ -73,7 +73,7 @@ SCENARIO( "Parallel fork", "[execution][parallelgateway]" ) {
 }
 
 SCENARIO( "Symmetric parallel gateways", "[execution][parallelgateway]" ) {
-  const std::string modelFile = "execution/parallelgateway/Symmetric.bpmn";
+  const std::string modelFile = "tests/execution/parallelgateway/Symmetric.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
   GIVEN( "A single instance with no input values" ) {
 

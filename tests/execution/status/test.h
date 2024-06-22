@@ -1,5 +1,5 @@
 SCENARIO( "Task with expression operator", "[status][nestedactivities]" ) {
-  const std::string modelFile = "execution/status/Nested_activities.bpmn";
+  const std::string modelFile = "tests/execution/status/Nested_activities.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
   GIVEN( "A single instance with no input values" ) {
 

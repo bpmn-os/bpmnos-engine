@@ -1,5 +1,5 @@
 SCENARIO( "Task with expression operator", "[data]" ) {
-  const std::string modelFile = "execution/data/Data.bpmn";
+  const std::string modelFile = "tests/execution/data/Data.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
   GIVEN( "A single instance with no input values" ) {
 

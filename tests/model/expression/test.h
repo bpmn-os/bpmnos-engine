@@ -1,5 +1,5 @@
 SCENARIO( "Linear expression", "[model][expression]" ) {
-  const std::string modelFile = "model/expression/linearExpression.bpmn";
+  const std::string modelFile = "tests/model/expression/linearExpression.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
 
   GIVEN( "An expression z = 3*x + 5*y" ) {
@@ -58,7 +58,7 @@ SCENARIO( "Linear expression", "[model][expression]" ) {
 }
 
 SCENARIO( "Another linear expression", "[model][expression]" ) {
-  const std::string modelFile = "model/expression/anotherLinearExpression.bpmn";
+  const std::string modelFile = "tests/model/expression/anotherLinearExpression.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
 
   GIVEN( "An expression z = 3 + y/5" ) {
@@ -92,7 +92,7 @@ SCENARIO( "Another linear expression", "[model][expression]" ) {
 }
 
 SCENARIO( "Generic expression", "[model][expression]" ) {
-  const std::string modelFile = "model/expression/genericExpression.bpmn";
+  const std::string modelFile = "tests/model/expression/genericExpression.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
 
   GIVEN( "An expression z = 3*x + 5*y" ) {

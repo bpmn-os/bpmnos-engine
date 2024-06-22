@@ -1,5 +1,5 @@
 SCENARIO( "Caught error end event", "[execution][eventsubprocess]" ) {
-  const std::string modelFile = "execution/eventsubprocess/Caught_error.bpmn";
+  const std::string modelFile = "tests/execution/eventsubprocess/Caught_error.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
   GIVEN( "A single instance with no input values" ) {
 
@@ -57,7 +57,7 @@ SCENARIO( "Caught error end event", "[execution][eventsubprocess]" ) {
 }
 
 SCENARIO( "Interrupting escalation", "[execution][eventsubprocess]" ) {
-  const std::string modelFile = "execution/eventsubprocess/Interrupting_escalation.bpmn";
+  const std::string modelFile = "tests/execution/eventsubprocess/Interrupting_escalation.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
   GIVEN( "A single instance with no input values" ) {
 
@@ -124,7 +124,7 @@ SCENARIO( "Interrupting escalation", "[execution][eventsubprocess]" ) {
 }
 
 SCENARIO( "Non-interrupting escalation", "[execution][eventsubprocess]" ) {
-  const std::string modelFile = "execution/eventsubprocess/Non-interrupting_escalation.bpmn";
+  const std::string modelFile = "tests/execution/eventsubprocess/Non-interrupting_escalation.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
   GIVEN( "A single instance with no input values" ) {
 
@@ -194,7 +194,7 @@ SCENARIO( "Non-interrupting escalation", "[execution][eventsubprocess]" ) {
 }
 
 SCENARIO( "Caught and rethrown error", "[execution][eventsubprocess]" ) {
-  const std::string modelFile = "execution/eventsubprocess/Caught_and_rethrown_error.bpmn";
+  const std::string modelFile = "tests/execution/eventsubprocess/Caught_and_rethrown_error.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
   GIVEN( "A single instance with no input values" ) {
 
@@ -255,7 +255,7 @@ SCENARIO( "Caught and rethrown error", "[execution][eventsubprocess]" ) {
 }
 
 SCENARIO( "Non-interrupting escalation throwing error", "[execution][eventsubprocess]" ) {
-  const std::string modelFile = "execution/eventsubprocess/Non-interrupting_escalation_throwing_error.bpmn";
+  const std::string modelFile = "tests/execution/eventsubprocess/Non-interrupting_escalation_throwing_error.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
   GIVEN( "A single instance with no input values" ) {
 
@@ -310,7 +310,7 @@ SCENARIO( "Non-interrupting escalation throwing error", "[execution][eventsubpro
 }
 
 SCENARIO( "Interrupting escalation throwing error", "[execution][eventsubprocess]" ) {
-  const std::string modelFile = "execution/eventsubprocess/Interrupting_escalation_throwing_error.bpmn";
+  const std::string modelFile = "tests/execution/eventsubprocess/Interrupting_escalation_throwing_error.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
   GIVEN( "A single instance with no input values" ) {
 

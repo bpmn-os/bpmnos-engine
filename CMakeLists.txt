@@ -128,7 +128,7 @@ if (DOCUMENTATION)
   )
 
   add_subdirectory(docs)
-  set(MODEL_SRC ${PROJECT_SOURCE_DIR}/tests/examples)
+  set(MODEL_SRC ${PROJECT_SOURCE_DIR}/examples)
   set(MODEL_DOC ${PROJECT_SOURCE_DIR}/docs/md/models)
   set(HTML_DIR ${PROJECT_SOURCE_DIR}/docs/html)
   add_custom_target(bpmn2svg

@@ -1,5 +1,5 @@
 SCENARIO( "Compensate throw event without compensations", "[execution][compensation]" ) {
-  const std::string modelFile = "execution/compensationactivity/No_compensation.bpmn";
+  const std::string modelFile = "tests/execution/compensationactivity/No_compensation.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
   GIVEN( "A single instance with no input values" ) {
 
@@ -43,7 +43,7 @@ SCENARIO( "Compensate throw event without compensations", "[execution][compensat
 }
 
 SCENARIO( "Task with unused compensation task", "[execution][compensation]" ) {
-  const std::string modelFile = "execution/compensationactivity/Unused_compensation_task.bpmn";
+  const std::string modelFile = "tests/execution/compensationactivity/Unused_compensation_task.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
   GIVEN( "A single instance with no input values" ) {
 
@@ -92,7 +92,7 @@ SCENARIO( "Task with unused compensation task", "[execution][compensation]" ) {
 }
 
 SCENARIO( "Task with compensation task", "[execution][compensation]" ) {
-  const std::string modelFile = "execution/compensationactivity/Compensation_task.bpmn";
+  const std::string modelFile = "tests/execution/compensationactivity/Compensation_task.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
   GIVEN( "A single instance with no input values" ) {
 
@@ -140,7 +140,7 @@ SCENARIO( "Task with compensation task", "[execution][compensation]" ) {
 }
 
 SCENARIO( "Task with compensation triggered by error", "[execution][compensation]" ) {
-  const std::string modelFile = "execution/compensationactivity/Compensation_triggered_by_error.bpmn";
+  const std::string modelFile = "tests/execution/compensationactivity/Compensation_triggered_by_error.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
   GIVEN( "A single instance with no input values" ) {
 
@@ -190,7 +190,7 @@ SCENARIO( "Task with compensation triggered by error", "[execution][compensation
 }
 
 SCENARIO( "Task with compensation subprocess", "[execution][compensation]" ) {
-  const std::string modelFile = "execution/compensationactivity/Compensation_subprocess.bpmn";
+  const std::string modelFile = "tests/execution/compensationactivity/Compensation_subprocess.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
   GIVEN( "A single instance with no input values" ) {
 
@@ -238,7 +238,7 @@ SCENARIO( "Task with compensation subprocess", "[execution][compensation]" ) {
 }
 
 SCENARIO( "Named task with compensation task", "[execution][compensation]" ) {
-  const std::string modelFile = "execution/compensationactivity/Named_compensation.bpmn";
+  const std::string modelFile = "tests/execution/compensationactivity/Named_compensation.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
   GIVEN( "A single instance with no input values" ) {
 
@@ -286,7 +286,7 @@ SCENARIO( "Named task with compensation task", "[execution][compensation]" ) {
 }
 
 SCENARIO( "Multi instance compensation", "[execution][compensation][multiinstanceactivity]" ) {
-  const std::string modelFile = "execution/compensationactivity/Multi-instance_compensation.bpmn";
+  const std::string modelFile = "tests/execution/compensationactivity/Multi-instance_compensation.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
   GIVEN( "A single instance with no input values" ) {
 
@@ -342,7 +342,7 @@ SCENARIO( "Multi instance compensation", "[execution][compensation][multiinstanc
 
 
 SCENARIO( "Compensation of  multi instance activity", "[execution][compensation][multiinstanceactivity]" ) {
-  const std::string modelFile = "execution/compensationactivity/Compensation_multi-instance_activity.bpmn";
+  const std::string modelFile = "tests/execution/compensationactivity/Compensation_multi-instance_activity.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
   GIVEN( "A single instance with no input values" ) {
 
@@ -378,7 +378,7 @@ SCENARIO( "Compensation of  multi instance activity", "[execution][compensation]
 }
 
 SCENARIO( "Failing compensations of  multi instance activity", "[execution][compensation][multiinstanceactivity]" ) {
-  const std::string modelFile = "execution/compensationactivity/Failing_compensations_multi-instance_activity.bpmn";
+  const std::string modelFile = "tests/execution/compensationactivity/Failing_compensations_multi-instance_activity.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
   GIVEN( "A single instance with no input values" ) {
 
