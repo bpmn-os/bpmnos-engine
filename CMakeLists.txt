@@ -128,6 +128,7 @@ if (DOCUMENTATION)
   )
 
   add_subdirectory(docs)
+  
   set(MODEL_SRC ${PROJECT_SOURCE_DIR}/examples)
   set(MODEL_DOC ${PROJECT_SOURCE_DIR}/docs/md/models)
   set(HTML_DIR ${PROJECT_SOURCE_DIR}/docs/html)
@@ -169,6 +170,12 @@ add_custom_target(bpmndoc
     VERBATIM
     DEPENDS doxygen-awesome bpmndoc
   )
+
+endif()
+
+# Generate code profiles
+if (NOT NDEBUG)
+  add_subdirectory(profile)
 endif()
 
 

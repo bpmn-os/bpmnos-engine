@@ -53,5 +53,5 @@ echo "Created: ${output}.dot"
 dot -Tsvg ${output}.dot > ${output}.svg
 echo "Created: ${output}.svg"
 # Cleanup
-rm gmon.out
+rm -f gmon.out
 
