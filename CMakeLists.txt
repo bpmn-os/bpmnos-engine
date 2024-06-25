@@ -35,9 +35,8 @@ include_directories(
 # CSV Parser
 FetchContent_Declare(
         csv
-#        GIT_REPOSITORY https://github.com/vincentlaucsb/csv-parser.git
-        GIT_REPOSITORY https://github.com/rajgoel/csv-parser.git
-#        GIT_TAG 2.2.3
+        GIT_REPOSITORY https://github.com/vincentlaucsb/csv-parser.git
+        GIT_TAG 2.3.0
 )
 
 if (NOT csv_POPULATED)
