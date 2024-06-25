@@ -327,10 +327,7 @@ void Token::advanceToReady() {
     activity && 
     activity->loopCharacteristics.has_value()
   ) {
-    if ( activity->loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::Standard ) {
-      throw std::runtime_error("Token: standard loop marker at activity '" + node->id + "' is not yet supported");
-    }
-    else {
+    if ( activity->loopCharacteristics.value() != BPMN::Activity::LoopCharacteristics::Standard ) {
       // delegate creation of token copies for multi-instance activity to owner
       auto stateMachine = const_cast<StateMachine*>(owner);
       auto engine = const_cast<Engine*>(owner->systemState->engine);
@@ -367,21 +364,48 @@ void Token::advanceToEntered() {
       extensionElements->applyOperators(status,*data,globals);
     }
   }
-  else if ( node->represents<BPMN::SubProcess>() || 
-    node->represents<BPMNOS::Model::SequentialAdHocSubProcess>()
-  ) {
-//std::cerr << "node->represents<BPMN::SubProcess>()" << std::endl;
-    // subprocess operators are applied upon entry
-    if ( auto extensionElements = node->extensionElements->represents<BPMNOS::Model::ExtensionElements>() ) {
-      if ( !extensionElements->isInstantaneous ) {
-        throw std::runtime_error("StateMachine: Operators for subprocess '" + node->id + "' attempt to modify timestamp");
+  else {
+    if ( auto activity = node->represents<BPMN::Activity>();
+      activity && activity->loopCharacteristics.has_value() && activity->loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::Standard
+    ) {
+      // initialize or increment loop index for standard loop
+      auto extensionElements = node->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
+      if ( extensionElements->loopIndex.value()->attribute.has_value() ) {
+        auto& attributeRegistry = getAttributeRegistry();
+        auto& attribute = extensionElements->loopIndex.value()->attribute.value();
+        if ( auto index = attributeRegistry.getValue( &attribute.get(), status, *data, globals);
+          index.has_value()
+        ) {
+          // increment existing value 
+          attributeRegistry.setValue(&attribute.get(), status, *data, globals, (unsigned int)index.value() + 1);
+        }
+        else {
+          // initialize non-existing value 
+          attributeRegistry.setValue(&attribute.get(), status, *data, globals, 1);
+        }
       }
-      // update status
-      status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = owner->systemState->currentTime;
-      extensionElements->applyOperators(status,*data,globals);
+      else if ( extensionElements->loopMaximum.value()->attribute.has_value() ) {
+        throw std::runtime_error("Token: no attribute provided for loop index parameter of standard loop activity '" + node->id +"' with loop maximum" );
+      }
+    }
+
+    if ( node->represents<BPMN::SubProcess>() || 
+      node->represents<BPMNOS::Model::SequentialAdHocSubProcess>()
+    ) {
+//std::cerr << "node->represents<BPMN::SubProcess>()" << std::endl;
+      // subprocess operators are applied upon entry
+      if ( auto extensionElements = node->extensionElements->represents<BPMNOS::Model::ExtensionElements>() ) {
+        if ( !extensionElements->isInstantaneous ) {
+          throw std::runtime_error("StateMachine: Operators for subprocess '" + node->id + "' attempt to modify timestamp");
+        }
+        // update status
+        status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = owner->systemState->currentTime;
+        extensionElements->applyOperators(status,*data,globals);
+      }
     }
   }
 
+  
   update(State::ENTERED);
 //std::cerr << "updatedToEntered" << std::endl;
 
@@ -938,45 +962,79 @@ void Token::advanceToExiting() {
     return;
   }
 
+  auto extensionElements = node->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
 
-  if ( auto extensionElements = node->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
-       extensionElements && ( extensionElements->attributes.size() || extensionElements->data.size() )
-  ) {
-    // TODO: also consider data !!!
+  if (  extensionElements && ( extensionElements->attributes.size() || extensionElements->data.size() ) ) {
     // update global objective
     const_cast<SystemState*>(owner->systemState)->contributionsToObjective += extensionElements->getContributionToObjective(status,*data,globals);
-
-    // remove attributes that are no longer needed
-    assert( status.size() == extensionElements->attributeRegistry.statusAttributes.size() );
-    status.resize( status.size() - extensionElements->attributes.size() );
-
 //std::cerr << "objective updated" << std::endl;
   }
-  
+    
   if ( owned ) {
 //std::cerr << "Use data of scope " << owner->scope->id << std::endl;
     data = &const_cast<StateMachine*>(owner)->data;
   }
   
-  if ( auto activity = node->represents<BPMN::Activity>();
-    activity && 
-    activity->loopCharacteristics.has_value()
-  ) {
-    if ( activity->loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::Standard ) {
-      throw std::runtime_error("Token: standard loop marker at activity '" + node->id + "' is not yet supported");
-    }
-    else {
-      awaitCompensation();
+  auto activity = node->represents<BPMN::Activity>();
+  if ( activity && activity->loopCharacteristics.has_value() && activity->loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::Standard ) {
+    auto& attributeRegistry = getAttributeRegistry(); 
 
-      // delegate removal of token copies for multi-instance activity to owner
-      auto stateMachine = const_cast<StateMachine*>(owner);
-      auto engine = const_cast<Engine*>(owner->systemState->engine);
-      engine->commands.emplace_back(std::bind(&StateMachine::deleteMultiInstanceActivityToken,stateMachine,this), this);
+    auto LOOP = [&]() -> bool {
+      if (extensionElements->loopCondition.has_value()) {
+        auto& conditionAttribute = extensionElements->loopCondition.value()->attribute.value();
+        auto value = attributeRegistry.getValue(&conditionAttribute.get(), status, *data, globals);
+        assert( value.has_value() );
+        if ( !value.value() ) {          
+          // do not loop if loop condition is violated
+          return false;
+        }
+      }
+
+      if ( extensionElements->loopMaximum.has_value() ) {
+        unsigned int maximum = 0;
+        if ( extensionElements->loopMaximum.value()->attribute.has_value() ) {
+          auto& maximumAttribute = extensionElements->loopMaximum.value()->attribute.value();
+          maximum = (unsigned int)attributeRegistry.getValue( &maximumAttribute.get(), status, *data, globals).value();
+//std::cout << maximumAttribute.get().id << " = " << maximum << std::endl;
+        }
+        else {
+          maximum = (unsigned int)(int)extensionElements->loopMaximum.value()->value.value().get(); 
+        } 
+
+        auto& indexAttribute = extensionElements->loopIndex.value()->attribute.value();
+        auto index = (unsigned int)attributeRegistry.getValue( &indexAttribute.get(), status, *data, globals).value();
+        if ( index >= maximum ) {
+          // do not loop if loop maximum loop count is reached
+          return false;
+        }
+      }
+
+      return true;
+    }();
+
+    if ( LOOP ) {
+      advanceToEntered();
       return;
     }
   }
 
-    if ( auto activity = node->represents<BPMN::Activity>() ) {
+  if ( extensionElements && extensionElements->attributes.size() ) {
+    // remove attributes that are no longer needed
+    assert( status.size() == extensionElements->attributeRegistry.statusAttributes.size() );
+    status.resize( status.size() - extensionElements->attributes.size() );
+  }
+  
+  if ( activity && activity->loopCharacteristics.has_value() && activity->loopCharacteristics.value() != BPMN::Activity::LoopCharacteristics::Standard ) {
+    awaitCompensation();
+
+    // delegate removal of token copies for multi-instance activity to owner
+    auto stateMachine = const_cast<StateMachine*>(owner);
+    auto engine = const_cast<Engine*>(owner->systemState->engine);
+    engine->commands.emplace_back(std::bind(&StateMachine::deleteMultiInstanceActivityToken,stateMachine,this), this);
+    return;
+  }
+
+  if ( auto activity = node->represents<BPMN::Activity>() ) {
     auto stateMachine = const_cast<StateMachine*>(owner);
     if ( !activity->boundaryEvents.empty() ) {
       // remove tokens at boundary events
