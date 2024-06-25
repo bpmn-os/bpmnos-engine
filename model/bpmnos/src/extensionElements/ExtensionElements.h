@@ -55,6 +55,8 @@ public:
 
   std::optional< std::unique_ptr<Parameter> > loopCardinality;
   std::optional< std::unique_ptr<Parameter> > loopIndex;
+  std::optional< std::unique_ptr<Parameter> > loopCondition; ///< Boolean attribute indicating whether an exit condition holds.
+  std::optional< std::unique_ptr<Parameter> > loopMaximum;  ///< Maximum number of iterations of a standard loop
   
   bool hasSequentialPerformer; ///< Boolean indicating whether element has a performer with name "Sequential".
 

@@ -222,6 +222,12 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const
       else if ( parameter.name.value.value == "index" ) {
         loopIndex = std::make_unique<Parameter>(&parameter,attributeRegistry);
       }
+      else if ( parameter.name.value.value == "condition" ) {
+        loopCondition = std::make_unique<Parameter>(&parameter,attributeRegistry);
+      }
+      else if ( parameter.name.value.value == "maximum" ) {
+        loopMaximum = std::make_unique<Parameter>(&parameter,attributeRegistry);
+      }
     }
   }
 
