@@ -30,6 +30,10 @@ stateDiagram-v2
     COMPLETED --> EXITING: exit event
     EXITING --> feasibleExit
     feasibleExit --> departure: [feasible]
+    note left of departure
+      In case of @ref XML::bpmn::tStandardLoopCharacteristics  "loop activities", the token may return to @ref BPMNOS::Execution::Token::State::ENTERED "ENTERED" state
+      after receipt of the respective @ref BPMNOS::Execution::EntryEvent "entry event".
+    end note
     feasibleExit --> FAILING: [infeasible]
     departure --> DEPARTED: [outgoing sequence flow]
     departure --> DONE: [no outgoing sequence flow]
@@ -114,8 +118,11 @@ Otherwise, the (ad-hoc) subprocess has been executed successfully and all tokens
 
 In the case, that the (ad-hoc) subprocess has an @ref BPMN::EventSubProcess "event subprocess" with a @ref BPMN::CompensateStartEvent "compensate start event", a token is created at this start event.
 In the case, that the (ad-hoc) subprocess has a @ref BPMN::CompensateBoundaryEvent "compensate boundary event", a token is created at this boundary event.
+
 If the (ad-hoc) subprocess has an outgoing sequence flow, the @ref BPMNOS::Execution::Token::state "token state" is updated to @ref BPMNOS::Execution::Token::State::DEPARTED "DEPARTED".
 Otherwise, the @ref BPMNOS::Execution::Token::state "token state" is updated to @ref BPMNOS::Execution::Token::State::DONE "DONE".
+In case of @ref XML::bpmn::tStandardLoopCharacteristics  "loop activities", the token may advance to @ref BPMNOS::Execution::Token::State::ENTERED "ENTERED" state after the respective entry decision has been made for the next loop of the activity.
+
 
 
 ## DEPARTED

@@ -30,6 +30,10 @@ stateDiagram-v2
     COMPLETED --> EXITING: exit event
     EXITING --> feasibleExit
     feasibleExit --> departure: [feasible]
+    note left of departure
+      In case of @ref XML::bpmn::tStandardLoopCharacteristics  "loop activities", the token may return to @ref BPMNOS::Execution::Token::State::ENTERED "ENTERED" state
+      after receipt of the respective @ref BPMNOS::Execution::EntryEvent "entry event".
+    end note
     feasibleExit --> FAILED: [infeasible]
     departure --> DEPARTED: [outgoing sequence flow]
     departure --> DONE: [no outgoing sequence flow]
@@ -95,8 +99,10 @@ If any of the @ref BPMNOS::Model::ExtensionElements::restrictions "restrictions"
 
 Otherwise, the task has been executed successfully and all tokens at boundary events of the task are withdrawn.
 In the case, that the task has a @ref BPMN::CompensateBoundaryEvent "compensate boundary event", a token is created at this boundary event.
+
 If the task has an outgoing sequence flow, the @ref BPMNOS::Execution::Token::state "token state" is updated to @ref BPMNOS::Execution::Token::State::DEPARTED "DEPARTED".
 Otherwise, the @ref BPMNOS::Execution::Token::state "token state" is updated to @ref BPMNOS::Execution::Token::State::DONE "DONE".
+In case of @ref XML::bpmn::tStandardLoopCharacteristics  "loop activities", the token may advance to @ref BPMNOS::Execution::Token::State::ENTERED "ENTERED" state after the respective entry decision has been made for the next loop of the activity.
 
 ## DEPARTED
 
