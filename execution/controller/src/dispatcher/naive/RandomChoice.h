@@ -10,10 +10,10 @@ namespace BPMNOS::Execution {
 /**
  * @brief Class creating a random choice event for a token at a decision task.
  *
- * The RandomChoice creates a random choice event within the limits implied by the 
- * exit restrictions at the @ref BPMNOS::Model::DecisionTask. These limits are deduced
- * from the attribute type of the decision and stricter decisions may be provided
- * through restrictions of type @ref BPMNOS::Model::LinearExpression. If these stricter
+ * The RandomChoice dispatcher creates a the random choice considering the
+ * boundaries for a numeric decision or any enumerated value for a string decision.
+ * The boundaries and enumeration values are deduced from the attribute type 
+ * and restrictions of type @ref BPMNOS::Model::LinearExpression or @ref BPMNOS::Model::Enumeration.
  * limits imply an empty domain, an error event is created. It is assumed that the existence
  * of a feasible choice does not depend on the timestamp for any moment after entry
  * of the decision task and until the decision is made.

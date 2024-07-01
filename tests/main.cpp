@@ -25,6 +25,7 @@ using namespace BPMNOS;
 // Activities
 #include "execution/task/test.h"
 #include "execution/subprocess/test.h"
+#include "execution/decisiontask/test.h"
 
 // Gateways
 #include "execution/parallelgateway/test.h"
@@ -68,7 +69,7 @@ using namespace BPMNOS;
 #endif // ALL_TESTS
 
 #ifndef ALL_TESTS
-#include "execution/loopactivity/test.h"
+#include "execution/decisiontask/test.h"
 #endif // ALL_TESTS
 
 

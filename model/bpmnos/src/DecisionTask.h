@@ -11,7 +11,7 @@ namespace BPMNOS::Model {
 
 
 /**
- * @brief Class representing a task is which one or more choices have to be made.
+ * @brief Class representing a task in which one or more choices have to be made.
  */
 class DecisionTask : public BPMN::Task {
   friend class Model;

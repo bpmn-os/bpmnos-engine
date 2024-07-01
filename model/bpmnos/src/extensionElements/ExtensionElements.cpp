@@ -7,8 +7,8 @@
 #include "model/bpmnos/src/xml/bpmnos/tRestriction.h"
 #include "model/bpmnos/src/xml/bpmnos/tOperators.h"
 #include "model/bpmnos/src/xml/bpmnos/tOperator.h"
-#include "model/bpmnos/src/xml/bpmnos/tChoices.h"
-#include "model/bpmnos/src/xml/bpmnos/tChoice.h"
+#include "model/bpmnos/src/xml/bpmnos/tDecisions.h"
+#include "model/bpmnos/src/xml/bpmnos/tDecision.h"
 #include "model/bpmnos/src/xml/bpmnos/tMessages.h"
 #include "model/bpmnos/src/xml/bpmnos/tMessage.h"
 #include "model/bpmnos/src/xml/bpmnos/tLoopCharacteristics.h"
@@ -139,13 +139,13 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const
     }    
 
     // add all choices to be made
-    if ( status->get().choices.has_value() ) {
-      for ( XML::bpmnos::tChoice& choice : status->get().choices.value().get().choice ) {
+    if ( status->get().decisions.has_value() ) {
+      for ( XML::bpmnos::tDecision& decision : status->get().decisions.value().get().decision ) {
         try {
-          choices.push_back(std::make_unique<Choice>(&choice,attributeRegistry));
+          choices.push_back(std::make_unique<Choice>(&decision,attributeRegistry,restrictions));
         }
         catch ( const std::runtime_error& error ) {
-          throw std::runtime_error("ExtensionElements: illegal attributes for choice '" + (std::string)choice.id.value + "'.\n" + error.what());
+          throw std::runtime_error("ExtensionElements: illegal attributes for choice '" + (std::string)decision.id.value + "'.\n" + error.what());
         }
       }
     }    

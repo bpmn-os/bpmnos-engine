@@ -141,10 +141,14 @@ std::optional<double> GuidedEvaluator::evaluate(ChoiceDecision* decision) {
   auto evaluation = (double)extensionElements->getObjective(token->status, *token->data, token->globals);
 
   assert( dynamic_cast<const ChoiceEvent*>(decision) );
-  Values status = static_cast<const ChoiceEvent*>(decision)->updatedStatus;
+  Values status(token->status);
   status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = token->owner->systemState->currentTime;
   Values data(*token->data);
   Values globals = token->globals;
+  // apply choices
+  for (size_t i = 0; i < extensionElements->choices.size(); i++) {
+    extensionElements->attributeRegistry.setValue( extensionElements->choices[i]->attribute, status, data, globals, decision->choices[i] );
+  }
 
   bool feasible = updateValues(decision,status,data,globals); 
   if ( !feasible ) {

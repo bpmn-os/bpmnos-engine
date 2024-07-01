@@ -468,7 +468,7 @@ void Token::advanceToEntered() {
       engine->commands.emplace_back(std::bind(&StateMachine::initiateBoundaryEvents,stateMachine,this), this);
     }
 
-//std::cerr << "check restrictions: " << isFeasible() << std::endl;
+//std::cerr << "check restrictions: " << entryIsFeasible() << std::endl;
     // check restrictions
     if ( !entryIsFeasible() ) {
       engine->commands.emplace_back(std::bind(&Token::advanceToFailed,this), this);

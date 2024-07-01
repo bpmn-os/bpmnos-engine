@@ -12,7 +12,7 @@
 namespace BPMNOS::Model {
 
 /**
- * @brief Abstract base class representing an operator that uses an expression to determine that value
+ * @brief Abstract base class representing an operator that uses an expression to determine the value
  * of a status attribute.
  **/
 class Expression {

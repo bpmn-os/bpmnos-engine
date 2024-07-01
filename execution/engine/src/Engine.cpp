@@ -170,16 +170,19 @@ void Engine::process(const ChoiceEvent* event) {
   assert( token->node );
   assert( token->node->represents<BPMNOS::Model::DecisionTask>() );
 
+  auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+  assert( extensionElements );
+  assert( extensionElements->choices.size() == event->choices.size() );
   // apply choices
-  token->status = std::move( event->updatedStatus );
+  for (size_t i = 0; i < extensionElements->choices.size(); i++) {
+    extensionElements->attributeRegistry.setValue( extensionElements->choices[i]->attribute, token->status, *token->data, token->globals, event->choices[i] );
+  }
 
   // apply operators
-  if ( auto extensionElements = token->node->extensionElements->represents<BPMNOS::Model::ExtensionElements>() ) {
-    if ( !extensionElements->isInstantaneous ) {
-      throw std::runtime_error("StateMachine: Operators for subprocess '" + token->node->id + "' attempt to modify timestamp");
-    }
-    extensionElements->applyOperators(token->status,*token->data,token->globals);
+  if ( !extensionElements->isInstantaneous ) {
+    throw std::runtime_error("StateMachine: Operators for subprocess '" + token->node->id + "' attempt to modify timestamp");
   }
+  extensionElements->applyOperators(token->status,*token->data,token->globals);
 
   commands.emplace_back(std::bind(&Token::advanceToCompleted,token), token);
 
