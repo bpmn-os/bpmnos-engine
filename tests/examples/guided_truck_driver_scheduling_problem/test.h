@@ -77,8 +77,8 @@ SCENARIO( "Truck driver scheduling problem", "[examples][truck_driver_scheduling
       messageTaskTerminator.connect(&engine);
       timeHandler.connect(&engine);
 
-//      Execution::Recorder recorder;
-      Execution::Recorder recorder(std::cerr);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
       engine.run(scenario.get());
       THEN( "Then no failure occurs" ) {
@@ -89,7 +89,6 @@ SCENARIO( "Truck driver scheduling problem", "[examples][truck_driver_scheduling
         auto processLog = recorder.find(nlohmann::json{{"state", "DONE"}},nlohmann::json{{"nodeId", nullptr}});
         REQUIRE( processLog.size() == 1 );
         REQUIRE( processLog.back()["status"]["timestamp"] == 930 );
-//std::cout<< processLog.dump() << std::endl;
       }
     }
   }
