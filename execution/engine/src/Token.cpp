@@ -368,14 +368,13 @@ void Token::advanceToEntered() {
     if ( auto activity = node->represents<BPMN::Activity>();
       activity && activity->loopCharacteristics.has_value() && activity->loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::Standard
     ) {
+//std::cerr << "initialize or increment loop index for standard loop" << std::endl;
       // initialize or increment loop index for standard loop
       auto extensionElements = node->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
-      if ( extensionElements->loopIndex.value()->attribute.has_value() ) {
+      if ( extensionElements->loopIndex.has_value() && extensionElements->loopIndex.value()->attribute.has_value() ) {
         auto& attributeRegistry = getAttributeRegistry();
         auto& attribute = extensionElements->loopIndex.value()->attribute.value();
-        if ( auto index = attributeRegistry.getValue( &attribute.get(), status, *data, globals);
-          index.has_value()
-        ) {
+        if ( auto index = attributeRegistry.getValue( &attribute.get(), status, *data, globals); index.has_value() ) {
           // increment existing value 
           attributeRegistry.setValue(&attribute.get(), status, *data, globals, (unsigned int)index.value() + 1);
         }
@@ -384,7 +383,7 @@ void Token::advanceToEntered() {
           attributeRegistry.setValue(&attribute.get(), status, *data, globals, 1);
         }
       }
-      else if ( extensionElements->loopMaximum.value()->attribute.has_value() ) {
+      else if ( extensionElements->loopMaximum.has_value() && extensionElements->loopMaximum.value()->attribute.has_value() ) {
         throw std::runtime_error("Token: no attribute provided for loop index parameter of standard loop activity '" + node->id +"' with loop maximum" );
       }
     }
