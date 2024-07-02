@@ -7,13 +7,13 @@ A @ref BPMNOS::Execution::Controller "controller" is responsible for making @ref
 - @ref BPMNOS::Execution::ChoiceDecision "choice decisions", and
 - @ref BPMNOS::Execution::MessageDeliveryDecision "message delivery decisions"
 
-during process execution. 
+during process execution.
 
 A controller has to @ref BPMNOS::Execution::Controller::connect "connect" to an @ref BPMNOS::Execution::Engine "execution engine" to be informed about relevant changes in the @ref BPMNOS::Execution::SystemState "system state", i.e., about
 - @ref BPMNOS::Execution::DecisionRequest "requests for a decision" to
-  - @ref BPMNOS::Execution::Observable::Type::EntryRequest  "enter a node", 
+  - @ref BPMNOS::Execution::Observable::Type::EntryRequest  "enter a node",
   - @ref BPMNOS::Execution::Observable::Type::ExitRequest "exit a node",
-  - @ref BPMNOS::Execution::Observable::Type::ChoiceRequest "make a choice", or to 
+  - @ref BPMNOS::Execution::Observable::Type::ChoiceRequest "make a choice", or to
   - @ref BPMNOS::Execution::Observable::Type::MessageDeliveryRequest"deliver a message",
 - @ref BPMNOS::Execution::DataUpdate "updates of data attribute values or global attribute values",
 - @ref BPMNOS::Execution::SequentialPerformerUpdate "sequential performers becoming busy or idle", and
@@ -28,9 +28,8 @@ The @ref BPMNOS::Execution::GreedyController::connect "greedy controller" implem
 - the @ref BPMNOS::Execution::BestFirstParallelEntry "best first parallel entry" dispatcher evaluates entry decisions for all activities which are not within an @ref BPMNOS::Model::SequentialAdHocSubProcess "ad-hoc subprocesses with sequential ordering" and dispatches the entry decision with the best evaluation,
 - @ref BPMNOS::Execution::BestFirstExit "best first exit" dispatcher evaluates exit decisions for all activities and dispatches the exit decision with the best evaluation,
 - @ref BPMNOS::Execution::BestMatchingMessageDelivery "best matching message delivery" dispatcher evaluates message delivery decisions for all @ref BPMNOS::Execution::Message "sent messages" and @ref BPMN::MessageCatchEvents "potential recipients" and dispatches the message delivery decision with the best evaluation.
-- @ref BPMNOS::Execution::RandomChoice 
-  @bug @ref BPMNOS::Execution::RandomChoice needs to be replaced by a greedy dispatcher.
-  
+- the @ref BPMNOS::Execution::BestLimitedChoice "best limited choice dispatcher" evaluates all choices that are explicitly enumerated and, in case, of numeric choices the minimum and maximum value possible. Minimum and maximum are derived from the attribute type and restrictions provided by linear expressions.
+
 Among all decisions dispatched by any of the greedy dispatchers, the greedy controller selects the decision with the overall best evaluation.
 
 All evaluations are conducted by an @ref BPMNOS::Execution::Evaluator "evaluator".
@@ -44,4 +43,3 @@ The @ref BPMNOS::Execution::LocalEvaluator "Local evaluator" makes local observa
 
 ### Guided evaluator
 The @ref BPMNOS::Execution::GuidedEvaluator "Guided evaluator" makes local observations and includes @ref BPMNOS::Model::Guidance "guidance" provided with the model to evaluate a decision.
-
