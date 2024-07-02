@@ -42,8 +42,8 @@ Guidance::Guidance(XML::bpmnos::tGuidance* guidance, const AttributeRegistry& at
           dependencies.insert(input);
         }
       }
-      catch ( ... ){
-        throw std::runtime_error("Guidance: illegal parameters for restriction '" + (std::string)restriction.id.value + "'");
+      catch ( const std::exception &error ){
+        throw std::runtime_error("Guidance: illegal parameters for restriction '" + (std::string)restriction.id.value + "'\n" + error.what() );
       }
     }
   }    
@@ -56,8 +56,8 @@ Guidance::Guidance(XML::bpmnos::tGuidance* guidance, const AttributeRegistry& at
           dependencies.insert(input);
         }
       }
-      catch ( ... ){
-        throw std::runtime_error("Guidance: illegal parameters for operator '" + (std::string)operator_.id.value + "'");
+      catch ( const std::exception &error ){
+        throw std::runtime_error("Guidance: illegal parameters for operator '" + (std::string)operator_.id.value + "'" + "'\n" + error.what() );
       }
     }
   }    

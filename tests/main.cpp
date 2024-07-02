@@ -60,6 +60,7 @@ using namespace BPMNOS;
 
 // Examples
 #include "examples/travelling_salesperson_problem/test.h"
+#include "examples/guided_truck_driver_scheduling_problem/test.h"
 #include "examples/assignment_problem/test.h"
 #include "examples/knapsack_problem/test.h"
 #include "examples/guided_knapsack_problem/test.h"
@@ -69,7 +70,7 @@ using namespace BPMNOS;
 #endif // ALL_TESTS
 
 #ifndef ALL_TESTS
-#include "execution/decisiontask/test.h"
+#include "examples/guided_truck_driver_scheduling_problem/test.h"
 #endif // ALL_TESTS
 
 

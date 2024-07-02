@@ -7,5 +7,6 @@ set(MODEL_PAGES
     "job_shop_scheduling_problem/Job_shop_scheduling_problem.md @page job_shop_scheduling_problem Job shop scheduling problem"
     "travelling_salesperson_problem/Travelling_salesperson_problem.md @page travelling_salesperson_problem Travelling salesperson problem"
     "truck_driver_scheduling_problem/US_Truck_driver_scheduling_problem.md @page truck_driver_scheduling_problem Truck driver scheduling problem"
+    "guided_truck_driver_scheduling_problem/Guided_US_Truck_driver_scheduling_problem.md @page guided_truck_driver_scheduling_problem Truck driver scheduling problem (guided)"
     PARENT_SCOPE
 )

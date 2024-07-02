@@ -79,7 +79,7 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const
         try {
           restrictions.push_back(std::make_unique<Restriction>(&restriction,attributeRegistry));
         }
-        catch ( const std::runtime_error& error ) {
+        catch ( const std::exception& error ) {
           throw std::runtime_error("ExtensionElements: illegal parameters for restriction '" + (std::string)restriction.id.value + "'.\n" + error.what());
         }
       }
@@ -121,7 +121,7 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const
         try {
           operators.push_back( Operator::create(&operator_,attributeRegistry) );
         }
-        catch ( const std::runtime_error& error ) {
+        catch ( const std::exception& error ) {
           throw std::runtime_error("ExtensionElements: illegal parameters for operator '" + (std::string)operator_.id.value + "'.\n" + error.what() );
         }
         auto attribute = operators.back()->attribute;
@@ -144,7 +144,7 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const
         try {
           choices.push_back(std::make_unique<Choice>(&decision,attributeRegistry,restrictions));
         }
-        catch ( const std::runtime_error& error ) {
+        catch ( const std::exception& error ) {
           throw std::runtime_error("ExtensionElements: illegal attributes for choice '" + (std::string)decision.id.value + "'.\n" + error.what());
         }
       }
