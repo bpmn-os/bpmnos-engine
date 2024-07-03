@@ -1,5 +1,5 @@
-#ifndef BPMN_LookupTable_H
-#define BPMN_LookupTable_H
+#ifndef BPMNOS_LookupTable_H
+#define BPMNOS_LookupTable_H
 
 #include <csv.hpp>
 #include <string>
@@ -9,6 +9,9 @@
 #include <filesystem>
 #include "model/bpmnos/src/extensionElements/Attribute.h"
 #include "model/utility/src/Value.h"
+#include "model/utility/src/vector_map.h"
+
+#include <functional>
 
 namespace BPMNOS::Model {
 
@@ -41,26 +44,21 @@ public:
   static inline std::vector<std::string> folders = std::vector<std::string>();
 
   /**
-   * @brief Performs a lookup operation in the LookupTable based on the given key and arguments.
-   *
-   * This function performs a lookup operation in the LookupTable using the provided key and arguments.
-   * It searches for a row in the LookupTable's data that matches the given arguments.
-   *
-   * @param key The key used for the lookup operation.
-   * @param arguments The arguments used to filter the rows during the lookup operation.
-   *
-   * @return An optional string containing the value found in the specified row and column if a matching row is found.
-   *         If no matching row is found, std::nullopt is returned.
-   */
-  std::optional<std::string> lookup(const std::string& key, const std::unordered_map< std::string, Value > &arguments) const;
+   * @brief Container allowing to obtain lookup map for each header combination.
+   **/
+  BPMNOS::vector_map< std::vector<std::string>, BPMNOS::vector_map< std::vector< BPMNOS::number >, BPMNOS::number > > lookupMaps;
+  /**
+   * @brief Method returning lookup map for a given header combination.
+   **/
+  BPMNOS::vector_map< std::vector< BPMNOS::number >, BPMNOS::number >* getLookupMap(const std::vector< std::pair< std::string, Attribute*> >& keys, const std::pair< std::string, Attribute*>& value);
+
 
 //  unsigned int size() { return data.size(); }
 protected:
   csv::CSVReader openCsv(const std::string& filename);
-  const csv::CSVRow* row(const std::unordered_map< std::string, Value > &arguments) const;
   std::vector<csv::CSVRow> data;
 };
 
 } // namespace bpmn::execution
 
-#endif // BPMN_LookupTable_H
+#endif // BPMNOS_LookupTable_H

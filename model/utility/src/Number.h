@@ -1,13 +1,14 @@
-#ifndef BPMNOS_Model_Number_H
-#define BPMNOS_Model_Number_H
+#ifndef BPMNOS_Number_H
+#define BPMNOS_Number_H
 
 #include <cnl/all.h>
 #include <limits>
 #include <string>
 #include <vector>
 #include <optional>
-#include "Value.h"
 #include <functional>
+
+#include "Value.h"
 
 //#define BPMNOS_NUMBER_TYPE double
 
@@ -15,15 +16,26 @@
 //scaled_integer< int64_t, power<-16> > has max: 1.4e14, and precision: ~ 0.000015
 
 #ifndef BPMNOS_NUMBER_TYPE
-  #define BPMNOS_NUMBER_TYPE cnl::scaled_integer< int64_t, cnl::power<-16> >
-  #define BPMNOS_NUMBER_HASH std::hash<int64_t>()(cnl::unwrap(value))
-  #define BPMNOS_NUMBER_PRECISION (1.0 / (1 << 16))
+#define BPMNOS_NUMBER_REP int64_t
+#define BPMNOS_NUMBER_SCALE 16
+#define BPMNOS_NUMBER_TYPE cnl::scaled_integer< BPMNOS_NUMBER_REP, cnl::power<-BPMNOS_NUMBER_SCALE> >
+// Specialize std::hash for BPMNOS_NUMBER_TYPE
+namespace std {
+  template <>
+  struct hash<BPMNOS_NUMBER_TYPE> {
+    std::size_t operator()(const BPMNOS_NUMBER_TYPE& value) const {
+      // Hash the underlying value
+      return std::hash<BPMNOS_NUMBER_REP>()(cnl::unwrap(value));
+    }
+  };
+}
+#define BPMNOS_NUMBER_PRECISION (1.0 / (1 << 16))
 #endif
 
-#ifndef BPMNOS_NUMBER_HASH
-  #define BPMNOS_NUMBER_HASH std::hash<BPMNOS_NUMBER_TYPE>()(value)
-  #define BPMNOS_NUMBER_PRECISION 1e-6
+#ifndef BPMNOS_NUMBER_PRECISION
+#define BPMNOS_NUMBER_PRECISION 1e-6
 #endif
+
 
 namespace BPMNOS {
 
@@ -45,12 +57,6 @@ namespace BPMNOS {
   };
   
   typedef std::unordered_map< std::string, std::variant< std::optional<number>, std::string > > VariedValueMap;
-
-  struct ValueHash {
-    size_t operator()(const number& value) const {
-        return BPMNOS_NUMBER_HASH;
-    }
-  };
 
   double stod(const std::string& str);
   int stoi(const std::string& str);
@@ -75,7 +81,7 @@ namespace BPMNOS {
    **/
   BPMNOS::Values mergeValues(const std::vector<BPMNOS::Values>& valueSets);
 
-} // namespace BPMNOS::Model
+} // namespace BPMNOS
 
-#endif // BPMNOS_Model_Number_H
+#endif // BPMNOS_Number_H
 

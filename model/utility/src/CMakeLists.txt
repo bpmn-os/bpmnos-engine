@@ -13,4 +13,6 @@ list(APPEND model_utility_HEADERS
   CollectionRegistry.h
   RandomDistributionFactory.h
   getDelimiter.h
+  tuple_map.h
+  vector_map.h
 )

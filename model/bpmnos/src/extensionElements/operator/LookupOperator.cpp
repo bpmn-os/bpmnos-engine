@@ -51,10 +51,34 @@ LookupOperator::LookupOperator(XML::bpmnos::tOperator* operator_, const Attribut
 
   // make sure lookup table is read and available;
   table = getLookupTable(filename);
+  // make sure lookup map is populated;
+  lookupMap = table->getLookupMap(lookups,{key,attribute});
 }
 
 template <typename DataType>
 void LookupOperator::_apply(BPMNOS::Values& status, DataType& data, BPMNOS::Values& globals) const {
+  std::vector< BPMNOS::number > inputs;
+  for ( auto& [key,attribute] : lookups) {
+    auto value = attributeRegistry.getValue(attribute, status, data, globals);
+    if ( !value.has_value() ) {
+      // set attribute to undefined because required lookup value is not given
+      attributeRegistry.setValue( attribute, status, data, globals, std::nullopt );
+      return;
+    }
+    inputs.push_back(value.value());
+  }
+  
+  auto it = lookupMap->find( inputs );
+  if ( it == lookupMap->end() ) {
+    // set attribute to undefined because lookup value is not found
+    attributeRegistry.setValue( attribute, status, data, globals, std::nullopt );
+    return;
+  }
+
+  // set value to the value looked up
+  attributeRegistry.setValue( attribute, status, data, globals, it->second );
+
+/*
   std::unordered_map< std::string, Value > arguments;
   for ( auto& [name,lookupAttribute] : lookups) {
     auto value = attributeRegistry.getValue(lookupAttribute, status, data, globals);
@@ -67,7 +91,7 @@ void LookupOperator::_apply(BPMNOS::Values& status, DataType& data, BPMNOS::Valu
     arguments[name] = to_string(value.value(),lookupAttribute->type);
   }
 
-  std::optional<std::string> value = table->lookup(key, arguments);
+  std::optional<std::string> value = table->lookup(arguments, key);
   if ( value.has_value() ) {
     // set value to the value looked up
     attributeRegistry.setValue( attribute, status, data, globals, to_number( value.value(), attribute->type ) );
@@ -76,6 +100,7 @@ void LookupOperator::_apply(BPMNOS::Values& status, DataType& data, BPMNOS::Valu
     // set value to undefined if no attribute with value is given and no explicit value is given
     attributeRegistry.setValue( attribute, status, data, globals, std::nullopt );
   }
+*/
 }
 
 template void LookupOperator::_apply<BPMNOS::Values>(BPMNOS::Values& status, BPMNOS::Values& data, BPMNOS::Values& globals) const;

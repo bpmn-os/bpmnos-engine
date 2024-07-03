@@ -36,42 +36,28 @@ csv::CSVReader LookupTable::openCsv(const std::string& filename) {
   throw std::runtime_error("CSV file not found.");
 }
 
-std::optional<std::string> LookupTable::lookup(const std::string& key, const std::unordered_map< std::string, Value > &arguments) const {
-  const csv::CSVRow* matchingRow = row(arguments);
-  if ( matchingRow ) {
-    return (*matchingRow)[key].get<>();
+BPMNOS::vector_map< std::vector< BPMNOS::number >, BPMNOS::number >* LookupTable::getLookupMap(const std::vector< std::pair< std::string, Attribute*> >& keys, const std::pair< std::string, Attribute*>& value) {
+  std::vector<std::string> headers;
+  for ( auto& [ header, _] : keys ) {
+    headers.push_back(header);
   }
-  return std::nullopt;
+  headers.push_back(value.first); // add output header
+  
+  if ( lookupMaps.find(headers) == lookupMaps.end() ) {
+    // create and populate lookup map
+    BPMNOS::vector_map< std::vector< BPMNOS::number >, BPMNOS::number > lookupMap;
+    
+    for ( auto& row : data ) {
+      std::vector< BPMNOS::number > inputs;
+      for ( auto& [key, attribute] : keys ) {
+        inputs.push_back( BPMNOS::to_number( row[key].get<std::string>(), attribute->type) );
+      }
+      lookupMap.emplace( inputs, BPMNOS::to_number( row[value.first].get<std::string>(), value.second->type) );
+    }
+    
+    lookupMaps.emplace( headers, std::move(lookupMap) );
+  }
+  
+  return &lookupMaps.at(headers);
 }
 
-const csv::CSVRow* LookupTable::row(const std::unordered_map< std::string, Value > &arguments) const {
-  for (const csv::CSVRow& row : data) {
-    bool SAME = true;
-    for ( auto &[columnName,columnValue] : arguments ) {
-      if (std::holds_alternative<std::string>(columnValue)) {
-        SAME = ( std::get<std::string>(columnValue) == row[columnName].get<std::string>() );
-      }
-      else if (std::holds_alternative<bool>(columnValue)) {
-        SAME = ( std::get<bool>(columnValue) == (row[columnName].get<std::string>() == "true") );
-      }
-      else if (std::holds_alternative<int>(columnValue)) {
-        SAME = ( std::get<int>(columnValue) == BPMNOS::stoi(row[columnName].get<std::string>()) );
-      }
-      else if (std::holds_alternative<double>(columnValue)) {
-        SAME = ( std::abs( std::get<double>(columnValue) - BPMNOS::stod(row[columnName].get<std::string>()) )
-                  <= std::numeric_limits<double>::epsilon() 
-               );
-      }
-
-      if (!SAME) {
-        // no need to continue with next arguments because row is not matching
-        break;
-      }
-    }
-
-    if ( SAME == true) {
-      return &row;
-    }
-  }
-  return nullptr;
-}
