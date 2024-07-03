@@ -21,15 +21,15 @@ public:
   std::string key;
   std::vector< std::pair< std::string, Attribute*> > lookups;
 
-  LookupTable* table;
+  LookupTable* lookupTable;
   BPMNOS::vector_map< std::vector< BPMNOS::number >, BPMNOS::number >* lookupMap;
 
-  static inline std::unordered_map< std::string, LookupTable > lookupTable = {};
+  static inline std::unordered_map< std::string, LookupTable > lookupTables = {};
   static inline LookupTable* getLookupTable(const std::string& filename) {
-    if ( lookupTable.find(filename) == lookupTable.end() ) {
-      lookupTable.emplace( filename, LookupTable(filename) );
+    if ( lookupTables.find(filename) == lookupTables.end() ) {
+      lookupTables.emplace( filename, LookupTable(filename) );
     }
-    return &lookupTable.at(filename);
+    return &lookupTables.at(filename);
   };
 
 /**
