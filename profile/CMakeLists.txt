@@ -11,6 +11,7 @@ set(instances
   travelling_salesperson_problem/Travelling_salesperson_problem.bpmn
   assignment_problem/Assignment_problem.bpmn
   guided_knapsack_problem/Guided_knapsack_problem.bpmn
+  guided_bin_packing_problem/Guided_bin_packing_problem.bpmn
   job_shop_scheduling_problem/Job_shop_scheduling_problem.bpmn
 )
 
@@ -27,14 +28,9 @@ foreach(instance ${instances})
     COMMAND ${CMAKE_COMMAND} -E echo "-- Create profile for ${name}"
 #    COMMAND ${CMAKE_COMMAND} -E echo "./profile.sh -m ${EXAMPLES_DIR}/${instance} -d ${EXAMPLES_DIR}/${name}/instance.csv -p ${EXAMPLES_DIR}/${name} profile_${name}" 
     COMMAND ./profile.sh -m ${EXAMPLES_DIR}/${instance} -d ${EXAMPLES_DIR}/${name}/instance.csv -p ${EXAMPLES_DIR}/${name} profile_${name} 
+    COMMAND ${CMAKE_COMMAND} -E copy profile_${name}.svg  ${CMAKE_SOURCE_DIR}/docs/images/
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
   )
-endforeach()
-
-# Copy svg of profiling graphs to docs
-file(GLOB SVG_FILES "${CMAKE_CURRENT_SOURCE_DIR}/*.svg")
-foreach(svg_file ${SVG_FILES})
-    file(COPY ${svg_file} DESTINATION ${CMAKE_SOURCE_DIR}/docs/images/)
 endforeach()
 
 add_custom_command(
@@ -43,7 +39,7 @@ add_custom_command(
   COMMAND mkdir -p profiles
   COMMAND ${CMAKE_COMMAND} -E echo "# Code profiles" > profiles/main.md VERBATIM
   COMMAND ${CMAKE_COMMAND} -E echo "@page profiles Code profiles" >> profiles/main.md VERBATIM
-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/docs/md
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/docs/md/
 )
 
 # Iterate over each instance and add link to profile
