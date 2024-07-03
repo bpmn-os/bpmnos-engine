@@ -42,11 +42,14 @@ fi
 output=$1
 
 echo "Profiling (this may take a while)..."
-if [ -z "${path}" ]; then
-  $bpmnos -m ${model} -d ${data}
-else
-  $bpmnos -m ${model} -d ${data} -p ${path}
-fi
+{
+  TIMEFORMAT="Instance executed in %Rs"
+  if [ -z "${path}" ]; then
+    time $bpmnos -m ${model} -d ${data}
+  else
+    time $bpmnos -m ${model} -d ${data} -p ${path}
+  fi
+}
 
 gprof $bpmnos gmon.out | gprof2dot -w -n 10 > ${output}.dot
 echo "Created: ${output}.dot"
