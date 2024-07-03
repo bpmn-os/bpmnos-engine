@@ -18,7 +18,9 @@ INPUT             = $(BPMNPP_INCLUDE_PATH)/bpmn++.h model/ execution/ \
                     docs/md/observer \
                     docs/md/models \
                     docs/md/profiles
-                    
+
+EXAMPLE_PATH = examples/
+
 RECURSIVE         = YES
 FILE_PATTERNS     = *.h *.cpp *.xsd *.md
 USE_MDFILE_AS_MAINPAGE = docs/md/main.md

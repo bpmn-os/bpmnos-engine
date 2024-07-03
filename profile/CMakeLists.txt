@@ -56,9 +56,12 @@ foreach(instance ${instances})
     TARGET profiles
     COMMAND ${CMAKE_COMMAND} -E echo "# Code profile for the ${model}" > profiles/profile_${name}.md VERBATIM
     COMMAND ${CMAKE_COMMAND} -E echo "@page profile_${name} Code profile for the ${model}" >> profiles/profile_${name}.md VERBATIM
-    COMMAND ${CMAKE_COMMAND} -E echo "This page contains a code profile for the  @ref ${name} model." >> profiles/profile_${name}.md VERBATIM    
+    COMMAND ${CMAKE_COMMAND} -E echo "This page contains a code profile for the  @ref ${name} model and this @subpage instance_${name} \"instance\"." >> profiles/profile_${name}.md VERBATIM    
     COMMAND ${CMAKE_COMMAND} -E echo "" >> profiles/profile_${name}.md VERBATIM    
     COMMAND ${CMAKE_COMMAND} -E echo "![Code profiling graph](profile_${name}.svg)" >> profiles/profile_${name}.md VERBATIM    
+    COMMAND ${CMAKE_COMMAND} -E echo "# Instance" > profiles/instance_${name}.md VERBATIM
+    COMMAND ${CMAKE_COMMAND} -E echo "@page instance_${name} Instance" >> profiles/instance_${name}.md VERBATIM
+    COMMAND ${CMAKE_COMMAND} -E echo "@include ${name}/instance.csv" >> profiles/instance_${name}.md VERBATIM    
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/docs/md
   )
 endforeach()
