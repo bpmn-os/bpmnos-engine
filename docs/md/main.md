@@ -90,7 +90,13 @@ To create code profiles for selected examples use
 make profiles
 ```
 
-Compiler optimizations must be turned off to profile the code. After creating the code profiles, re-create the documentation to include profiling graphs.
+Compiler optimizations must be turned off to profile the code.
+
+To create graphs visualising the profiles, `gprof2dot` is required. On Ubuntu Linux `gprof2dot` can be installed by
+```sh
+pipx install gprof2dot
+```
+After creating the code profiles, re-create the documentation to include profiling graphs.
 
 
 ## License
