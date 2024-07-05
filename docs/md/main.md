@@ -19,6 +19,8 @@ The framework is composed of the components illustrated above:
 
 ## Installation
 
+You can obtain BPMN-OS from  https://github.com/bpmn-os/bpmnos-engine.
+
 ### Dependencies
 
 BPMN-OS requires Xerces-C++ 3.2.x., `bpmn++`, and  `schematic++`.
