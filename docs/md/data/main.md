@@ -1,7 +1,7 @@
 # Data provider
 @page data Data provider
 
-A @ref BPMNOS::Model::DataProvider "data provider" is responsible for creating @ref BPMNOS::Model::Scenario "scenarios" providing access to all known or anticpated process instances and all known or anticpated attribute values.
+A @ref BPMNOS::Model::DataProvider "data provider" is responsible for creating @ref BPMNOS::Model::Scenario "scenarios" providing access to all known or anticipated process instances and all known or anticipated attribute values.
 
 ## Static data provider
 
@@ -10,7 +10,7 @@ The @ref BPMNOS::Model::StaticDataProvider "static data provider" can be used in
 Below is a minimal example creating a scenario containing instances of a BPMN model.
 ```cpp
 #include <bpmnos-model.h>
-  
+
 int main() {
   BPMNOS::Model::StaticDataProvider dataProvider("diagram.bpmn","scenario.csv");
   auto scenario = dataProvider.createScenario();
@@ -33,18 +33,18 @@ OrderProcess;Order3;Durations;[4,3]
 ```
 
 The data file must begin with a header `PROCESS_ID; INSTANCE_ID; ATTRIBUTE_ID; VALUE`. Then each of the subsequent lines contains attribute values for a specific process instance.
-Values provided for `string` attributes must be quoted, values provided for `boolean` attributes must be `true` or `false`,  and values provided for `collection` attributes must be embraced in square brackets. 
+Values provided for `string` attributes must be quoted, values provided for `boolean` attributes must be `true` or `false`,  and values provided for `collection` attributes must be embraced in square brackets.
 
 Alternatively, the instance data may be provided by a string as shown in below example.
 
 ```cpp
 #include <bpmnos-model.h>
 #include <string>
-  
+
 int main() {
   std::string csv =
     "PROCESS_ID; INSTANCE_ID; ATTRIBUTE_ID; VALUE\n"
-    ";;Items;3\n" // value of global attribute is provided without process and instance id 
+    ";;Items;3\n" // value of global attribute is provided without process and instance id
     ";;Bins;3\n"  // value of global attribute is provided without process and instance id
     "BinProcess;Bin1;Capacity;40\n"
     "BinProcess;Bin2;Capacity;40\n"

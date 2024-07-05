@@ -1,4 +1,4 @@
 # Observer
 @page observer Observer
 
-@todo
+@todo Describe observers.
