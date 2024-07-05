@@ -32,7 +32,7 @@ sudo apt install libxerces-c-dev
 
 You can obtain `bpmn++` from https://github.com/bpmn-os/bpmnpp and `schematic++` from https://github.com/rajgoel/schematicpp. Please follow build and install instructions provided by these dependencies.
 
-## Build BPMN-OS
+### Build BPMN-OS
 
 The library is built like a typical CMake project.
 
