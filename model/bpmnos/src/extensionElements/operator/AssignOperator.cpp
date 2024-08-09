@@ -14,13 +14,13 @@ AssignOperator::AssignOperator(XML::bpmnos::tOperator* operator_, const Attribut
     
   }
   catch ( ... ){
-    throw std::runtime_error("Assign: required parameter 'assign' not provided for operator " + id + "'");
+    throw std::runtime_error("AssignOperator: required parameter 'assign' not provided for operator " + id + "'");
   }
 }
 
 template <typename DataType>
 void AssignOperator::_apply(BPMNOS::Values& status, DataType& data, BPMNOS::Values& globals) const {
-  if ( parameter->attribute.has_value() && status[parameter->attribute->get().index].has_value() ) {
+  if ( parameter->attribute.has_value() && attributeRegistry.getValue(&parameter->attribute->get(), status, data, globals).has_value() ) {
     // Assign value to value of given attribute (if defined)
     attributeRegistry.setValue( attribute, status, data, globals, attributeRegistry.getValue(&parameter->attribute->get(), status, data, globals) );
   }
