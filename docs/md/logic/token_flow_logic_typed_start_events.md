@@ -2,7 +2,7 @@
 @page token_flow_logic_typed_start_events Typed start events
 
 The state of a token at a typed start event is immediately advanced from @ref BPMNOS::Execution::Token::State::ENTERED "ENTERED" to @ref BPMNOS::Execution::Token::State::BUSY "BUSY" and awaits the trigger.
-If the token is at a @ref BPMN::MessageStartEvent "message start event", the @ref BPMNOS::Model::Content "message content" is used to update the @ref BPMNOS::Execution::Token::status "status" of the token. Thereafter, the @ref BPMNOS::Model::ExtensionElements::operators "operators" are applied.
+If the token is at a @ref BPMN::MessageStartEvent "message start event", the @ref BPMNOS::Model::Content "message content" is used to update the @ref BPMNOS::Execution::Token::status "status" of the token. Thereafter, the @ref BPMNOS::Model::ExtensionElements::operators "operators" of the event-subprocess are applied.
 
 After the start event is triggered, the state is advanced @ref BPMNOS::Execution::Token::State::COMPLETED "COMPLETED".
 If the respective @ref BPMN:EventSubProcess "event-subprocesses" is interrupting, all other tokens within the scope of the event-subrocess are withdrawn.
