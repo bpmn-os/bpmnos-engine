@@ -70,7 +70,7 @@ using namespace BPMNOS;
 #endif // ALL_TESTS
 
 #ifndef ALL_TESTS
-#include "examples/guided_truck_driver_scheduling_problem/test.h"
+#include "execution/eventsubprocess/test.h"
 #endif // ALL_TESTS
 
 

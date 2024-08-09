@@ -178,12 +178,6 @@ void Engine::process(const ChoiceEvent* event) {
     extensionElements->attributeRegistry.setValue( extensionElements->choices[i]->attribute, token->status, *token->data, token->globals, event->choices[i] );
   }
 
-  // apply operators
-  if ( !extensionElements->isInstantaneous ) {
-    throw std::runtime_error("StateMachine: Operators for subprocess '" + token->node->id + "' attempt to modify timestamp");
-  }
-  extensionElements->applyOperators(token->status,*token->data,token->globals);
-
   commands.emplace_back(std::bind(&Token::advanceToCompleted,token), token);
 
   systemState->pendingChoiceEvents.remove(token);
@@ -224,14 +218,6 @@ void Engine::process(const MessageDeliveryEvent* event) {
     commands.emplace_back(std::bind(&Token::advanceToCompleted,message->waitingToken), message->waitingToken);
   }
   
-  // apply operators
-  if ( auto extensionElements = token->node->extensionElements->represents<BPMNOS::Model::ExtensionElements>() ) {
-    if ( !extensionElements->isInstantaneous ) {
-      throw std::runtime_error("Engine: Operators for subprocess '" + token->node->id + "' attempt to modify timestamp");
-    }
-    extensionElements->applyOperators(token->status,*token->data,token->globals);
-  }
-
   commands.emplace_back(std::bind(&Token::advanceToCompleted,token), token);
 
   systemState->pendingMessageDeliveryEvents.remove(token);

@@ -371,3 +371,94 @@ SCENARIO( "Interrupting escalation throwing error", "[execution][eventsubprocess
     }
   }
 }
+
+SCENARIO( "N-to-1 assignment", "[execution][eventsubprocess]" ) {
+  const std::string modelFile = "tests/execution/eventsubprocess/N-to-1-assignment.bpmn";
+  REQUIRE_NOTHROW( Model::Model(modelFile) );
+
+  Execution::Engine engine;
+  Execution::ReadyHandler readyHandler;
+  Execution::DeterministicTaskCompletion completionHandler;
+  readyHandler.connect(&engine);
+  completionHandler.connect(&engine);
+
+  Execution::GuidedEvaluator evaluator;
+  Execution::GreedyController controller(&evaluator);
+  controller.connect(&engine);
+      
+//    Execution::MyopicMessageTaskTerminator messageTaskTerminator;
+//    messageTaskTerminator.connect(&engine);
+  Execution::TimeWarp timeHandler;
+  timeHandler.connect(&engine);
+
+  Execution::Recorder recorder;
+//  Execution::Recorder recorder(std::cerr);
+  recorder.subscribe(&engine);
+
+  GIVEN( "A 1-1 assignment" ) {
+
+    std::string csv =
+      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
+      "Process_1, Instance_0,Expected,1\n"
+      "Process_2, Instance_1,,\n"
+    ;
+
+    Model::StaticDataProvider dataProvider(modelFile,csv);
+    auto scenario = dataProvider.createScenario();
+
+    WHEN( "The engine is started with a recorder" ) {
+      engine.run(scenario.get(),0);
+      THEN( "The task is started after one message is received" ) {
+        auto taskLog = recorder.find(nlohmann::json{{"nodeId","WaitTask" }, {"state","ENTERED" }});
+        REQUIRE( taskLog.size() == 1);
+        REQUIRE( taskLog[0]["data"]["received"] == 1);
+      }
+    }
+  }
+
+  GIVEN( "A 2-1 assignment" ) {
+
+    std::string csv =
+      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
+      "Process_1, Instance_0,Expected,2\n"
+      "Process_2, Instance_1,,\n"
+      "Process_2, Instance_2,,\n"
+    ;
+
+    Model::StaticDataProvider dataProvider(modelFile,csv);
+    auto scenario = dataProvider.createScenario();
+
+    WHEN( "The engine is started with a recorder" ) {
+      engine.run(scenario.get(),0);
+      THEN( "The task is started after one message is received" ) {
+        auto taskLog = recorder.find(nlohmann::json{{"nodeId","WaitTask" }, {"state","ENTERED" }});
+        REQUIRE( taskLog.size() == 1);
+        REQUIRE( taskLog[0]["data"]["received"] == 2);
+      }
+    }
+  }
+
+  GIVEN( "An unbalanced assignment" ) {
+
+    std::string csv =
+      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
+      "Process_1, Instance_0,Expected,1\n"
+      "Process_2, Instance_1,,\n"
+      "Process_2, Instance_2,,\n"
+    ;
+
+    Model::StaticDataProvider dataProvider(modelFile,csv);
+    auto scenario = dataProvider.createScenario();
+
+    WHEN( "The engine is started with a recorder" ) {
+      engine.run(scenario.get(),0);
+      THEN( "The task is started after one message is received" ) {
+        auto taskLog = recorder.find(nlohmann::json{{"nodeId","WaitTask" }, {"state","ENTERED" }});
+        REQUIRE( taskLog.size() == 1);
+        REQUIRE( taskLog[0]["data"]["received"] >= 1);
+        // one message may be withdrawn
+      }
+    }
+  }
+}
+

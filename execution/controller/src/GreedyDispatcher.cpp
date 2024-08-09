@@ -28,9 +28,9 @@ template <typename... WeakPtrs>
 void GreedyDispatcher<WeakPtrs...>::evaluate(WeakPtrs... weak_ptrs, std::shared_ptr<Decision> decision) {
   assert ( decision );
 
-  auto value = decision->evaluate();
-  // decisions without evaluation are assumed to be infeasible
-  evaluatedDecisions.emplace( (value.has_value() ? (double)value.value() : std::numeric_limits<double>::max() ), weak_ptrs..., decision->weak_from_this());
+  auto reward = decision->evaluate();
+  // decisions without reward are assumed to be infeasible
+  evaluatedDecisions.emplace( (reward.has_value() ? (double)reward.value() : std::numeric_limits<double>::max() ), weak_ptrs..., decision->weak_from_this());
 
   assert ( decision );
 

@@ -733,6 +733,31 @@ void Token::advanceToCompleted() {
     }
   }
 
+  if ( node ) {
+    if ( node->is<BPMN::TypedStartEvent>() ) {
+      auto eventSubProcess = node->parent->represents<BPMN::EventSubProcess>();
+      if ( !eventSubProcess ) {
+        throw std::runtime_error("Token: typed start event must belong to event subprocess");
+      }
+      if ( auto extensionElements = eventSubProcess->extensionElements->represents<BPMNOS::Model::ExtensionElements>() ) {
+        if ( !extensionElements->isInstantaneous ) {
+          throw std::runtime_error("Engine: Operators for event-subprocess '" + eventSubProcess->id + "' attempt to modify timestamp");
+        }
+        extensionElements->applyOperators(status,*data,globals);
+      }
+    }
+    else if ( node->is<BPMN::ReceiveTask>() || node->is<BPMNOS::Model::DecisionTask>() ) {
+      // apply operators
+      if ( auto extensionElements = node->extensionElements->represents<BPMNOS::Model::ExtensionElements>() ) {
+        if ( !extensionElements->isInstantaneous ) {
+          throw std::runtime_error("Engine: Operators for task '" + node->id + "' attempt to modify timestamp");
+        }
+        extensionElements->applyOperators(status,*data,globals);
+      }
+    }
+  }
+
+
   update(State::COMPLETED);
 
   if ( node ) {

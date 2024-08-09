@@ -16,7 +16,7 @@ class Decision : virtual public Event {
 public:
   Decision(Evaluator* evaluator);
 
-  virtual std::optional<double> evaluate() = 0;
+  virtual std::optional<double> evaluate() = 0; ///< Evaluates the reward for the decision. Returns null if decision is infeasible.
   std::optional<double> evaluation;  ///< Latest evaluation or null if decision has not been evaluated or evaluation is no longer valid
   
   bool timeDependent;
