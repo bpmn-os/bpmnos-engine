@@ -1,4 +1,4 @@
-SCENARIO( "Task with expression operator", "[execution][task]" ) {
+SCENARIO( "Task with linear expression incrementing timestamp", "[execution][task]" ) {
   const std::string modelFile = "tests/execution/task/Task_with_linear_expression.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
   GIVEN( "A single instance with no input values" ) {
@@ -36,8 +36,11 @@ SCENARIO( "Task with expression operator", "[execution][task]" ) {
         REQUIRE( activityLog[0]["state"] == "ARRIVED" );
         REQUIRE( activityLog[1]["state"] == "READY" );
         REQUIRE( activityLog[2]["state"] == "ENTERED" );
+        REQUIRE( activityLog[2]["status"]["timestamp"] == 0.0);
         REQUIRE( activityLog[3]["state"] == "BUSY" );
+        REQUIRE( activityLog[3]["status"]["timestamp"] == 1.0);
         REQUIRE( activityLog[4]["state"] == "COMPLETED" );
+        REQUIRE( activityLog[4]["status"]["timestamp"] == 1.0);
         REQUIRE( activityLog[5]["state"] == "EXITING" );
         REQUIRE( activityLog[6]["state"] == "DEPARTED" );
 

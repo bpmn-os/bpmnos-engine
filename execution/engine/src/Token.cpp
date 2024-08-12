@@ -549,6 +549,30 @@ void Token::advanceToEntered() {
 
 void Token::advanceToBusy() {
 //std::cerr << "advanceToBusy: " << jsonify().dump() << std::endl;
+
+  if ( 
+      node &&
+      node->represents<BPMN::Task>()
+      && !node->represents<BPMN::ReceiveTask>()
+      && !node->represents<BPMNOS::Model::DecisionTask>()
+    ) {
+    if ( auto extensionElements = node->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
+       extensionElements && extensionElements->operators.size()
+    ) {
+      // apply operators for regular tasks (if timestamp is in the future, updated status is an expectation)
+      auto now = owner->systemState->getTime();
+      status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = now;
+      extensionElements->applyOperators(status,*data,globals);
+      if ( !status[BPMNOS::Model::ExtensionElements::Index::Timestamp].has_value() ) {
+        throw std::runtime_error("Token: timestamp at node '" + node->id + "' is deleted");
+      }
+      if ( node->represents<BPMN::SendTask>() && status[BPMNOS::Model::ExtensionElements::Index::Timestamp].value() != now) {
+std::cerr << status[BPMNOS::Model::ExtensionElements::Index::Timestamp].value() << " != " << now << std::endl;
+        throw std::runtime_error("Token: Operators for task '" + node->id + "' attempt to modify timestamp");
+      }
+    }
+  }
+    
   update(State::BUSY);
 
   if ( !node ) {
@@ -657,60 +681,49 @@ void Token::advanceToBusy() {
   else if ( node->represents<BPMN::Task>() ) {
     if ( node->represents<BPMNOS::Model::DecisionTask>() ) {
       awaitChoiceEvent();
+      return;
     }
-    else {
-      // apply operators for completion status
-      if ( auto extensionElements = node->extensionElements->represents<BPMNOS::Model::ExtensionElements>() ) {
-        if ( extensionElements->isInstantaneous ) {
-          // update status directly
-          status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = owner->systemState->currentTime;
-          extensionElements->applyOperators(status,*data,globals);
 
-          if ( auto sendTask = node->represents<BPMN::SendTask>() ) {
-            if ( auto extensionElements = node->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
-              extensionElements && !extensionElements->dataUpdateOnEntry.attributes.empty()
-            ) {
-              // notify about data update
-              if ( extensionElements->dataUpdateOnEntry.global ) {
-                owner->systemState->engine->notify( DataUpdate( extensionElements->dataUpdateOnEntry.attributes ) );
-              }
-              else {
-                owner->systemState->engine->notify( DataUpdate( owner->root->instance.value(), extensionElements->dataUpdateOnEntry.attributes ) );
-              }
-            }
-
-            if ( sendTask->loopCharacteristics.has_value() ) {
-              // multi-instance send task
-              if ( !extensionElements->loopIndex.has_value() || !extensionElements->loopIndex->get()->attribute.has_value() ) {
-                throw std::runtime_error("Token: send tasks with loop characteristics requires attribute holding loop index");
-              }
-              size_t attributeIndex = extensionElements->loopIndex->get()->attribute.value().get().index;
-              if ( !status[attributeIndex].has_value() ) { 
-                throw std::runtime_error("Token: cannot find loop index for send tasks with loop characteristics");
-              }
-              sendMessage( (size_t)(int)status[attributeIndex].value() );
-            }
-            else {
-              sendMessage();
-            }
-            // wait for delivery
-            return;
+    if ( auto sendTask = node->represents<BPMN::SendTask>() ) {
+      if ( auto extensionElements = node->extensionElements->represents<BPMNOS::Model::ExtensionElements>(); extensionElements ) {
+      // send message(s)
+        if ( !extensionElements->dataUpdateOnEntry.attributes.empty() ) {
+          // notify about data update
+          if ( extensionElements->dataUpdateOnEntry.global ) {
+            owner->systemState->engine->notify( DataUpdate( extensionElements->dataUpdateOnEntry.attributes ) );
           }
+          else {
+            owner->systemState->engine->notify( DataUpdate( owner->root->instance.value(), extensionElements->dataUpdateOnEntry.attributes ) );
+          }
+        }
+
+        if ( sendTask->loopCharacteristics.has_value() ) {
+          // multi-instance send task
+          if ( !extensionElements->loopIndex.has_value() || !extensionElements->loopIndex->get()->attribute.has_value() ) {
+            throw std::runtime_error("Token: send tasks with loop characteristics requires attribute holding loop index");
+          }
+          size_t attributeIndex = extensionElements->loopIndex->get()->attribute.value().get().index;
+          if ( !status[attributeIndex].has_value() ) { 
+            throw std::runtime_error("Token: cannot find loop index for send tasks with loop characteristics");
+          }
+        
+        sendMessage( (size_t)(int)status[attributeIndex].value() );
         }
         else {
-          if ( node->represents<BPMN::SendTask>() ) {
-            throw std::runtime_error("Token: send tasks must not have operators modifying timestamp ");
-          }
-          // defer status update status until task completion
-          awaitTaskCompletionEvent();
-          return;
+          sendMessage();
         }
+        // wait for delivery
+        return;
       }
-
-      auto engine = const_cast<Engine*>(owner->systemState->engine);
-      engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,this), this);
-
+      // send tasks without extension elements are interpreted like regular tasks
     }
+    if ( status[BPMNOS::Model::ExtensionElements::Index::Timestamp] > owner->systemState->getTime() ) { 
+      awaitTaskCompletionEvent();
+      return;
+    }
+
+    auto engine = const_cast<Engine*>(owner->systemState->engine);
+    engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,this), this);
   }
 }
 
@@ -1303,17 +1316,7 @@ void Token::awaitChoiceEvent() {
 
 void Token::awaitTaskCompletionEvent() {
   auto systemState = const_cast<SystemState*>(owner->systemState);
-  if ( auto extensionElements = node->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
-       extensionElements && extensionElements->operators.size()
-  ) {
-    status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = systemState->currentTime;
-    extensionElements->applyOperators(status,*data,globals);
-    if ( !status[BPMNOS::Model::ExtensionElements::Index::Timestamp].has_value() ) {
-      throw std::runtime_error("Token: timestamp at node '" + node->id + "' is deleted");
-    }
-  }
   auto time = status[BPMNOS::Model::ExtensionElements::Index::Timestamp].value();
-
   systemState->tokensAwaitingCompletionEvent.emplace(time,weak_from_this());
 }
 
@@ -1429,8 +1432,10 @@ void Token::update(State newState) {
     // increase timestamp if necessary
     status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = now;
   }
-  else if ( status[BPMNOS::Model::ExtensionElements::Index::Timestamp] > now
+  else if (
+    status[BPMNOS::Model::ExtensionElements::Index::Timestamp] > now
     && state != State::WITHDRAWN
+    && !(state == State::BUSY && node->represents<BPMN::Task>() && !node->represents<BPMN::ReceiveTask>() && !node->represents<BPMNOS::Model::DecisionTask>())
   ) {
 //std::cerr << now << "/" << this->jsonify().dump() << now << std::endl;
     throw std::runtime_error("Token: timestamp at node '" + node->id + "' is larger than current time");
