@@ -101,7 +101,7 @@ nlohmann::ordered_json Recorder::find(nlohmann::json include, nlohmann::json exc
     log.end(),
     std::back_inserter(result), [&include,&exclude](const nlohmann::json& item) {
       for ( auto& [key,value] : include.items() ) {
-        if ( !item.contains(key) || item[key] != value ) {
+        if ( !item.contains(key) || !(value.is_null() || item[key] == value) ) {
           return false;
         } 
       }
