@@ -10,13 +10,19 @@ using namespace BPMNOS::Execution;
 bool LocalEvaluator::updateValues(EntryDecision* decision, Values& status, Values& data, Values& globals) {
   auto token = decision->token;
   assert( token->ready() );
+
+  // make sure that timestamp used for evaluation is up to date
+  auto now = token->owner->systemState->getTime();
+  if ( status[BPMNOS::Model::ExtensionElements::Index::Timestamp].value() < now ) {
+    status[BPMNOS::Model::ExtensionElements::Index::Timestamp].value() = now;
+  } 
   auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   assert(extensionElements);
   if ( 
     token->node->represents<BPMN::Activity>() &&
     !token->node->represents<BPMN::Task>()
   ) {
-    // apply operators before checking entry restrictions
+    // for (event-)subprocesses apply operators before checking entry restrictions
     extensionElements->applyOperators(status,data,globals);
   }
 
@@ -41,6 +47,13 @@ bool LocalEvaluator::updateValues(EntryDecision* decision, Values& status, Value
 bool LocalEvaluator::updateValues(ExitDecision* decision, Values& status, Values& data, Values& globals) {
   auto token = decision->token;
   assert( token->completed() );
+
+  // make sure that timestamp used for evaluation is up to date
+  auto now = token->owner->systemState->getTime();
+  if ( status[BPMNOS::Model::ExtensionElements::Index::Timestamp].value() < now ) {
+    status[BPMNOS::Model::ExtensionElements::Index::Timestamp].value() = now;
+  }
+
   auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   assert(extensionElements);
 
@@ -54,6 +67,11 @@ bool LocalEvaluator::updateValues(ExitDecision* decision, Values& status, Values
 
 bool LocalEvaluator::updateValues(ChoiceDecision* decision, Values& status, Values& data, Values& globals) {
   auto token = decision->token;
+  // make sure that timestamp used for evaluation is up to date
+  auto now = token->owner->systemState->getTime();
+  if ( status[BPMNOS::Model::ExtensionElements::Index::Timestamp].value() < now ) {
+    status[BPMNOS::Model::ExtensionElements::Index::Timestamp].value() = now;
+  } 
   auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   assert(extensionElements);
   extensionElements->applyOperators(status,data,globals);
@@ -68,6 +86,11 @@ bool LocalEvaluator::updateValues(ChoiceDecision* decision, Values& status, Valu
 
 bool LocalEvaluator::updateValues(MessageDeliveryDecision* decision, Values& status, Values& data, Values& globals) {
   auto token = decision->token;
+  // make sure that timestamp used for evaluation is up to date
+  auto now = token->owner->systemState->getTime();
+  if ( status[BPMNOS::Model::ExtensionElements::Index::Timestamp].value() < now ) {
+    status[BPMNOS::Model::ExtensionElements::Index::Timestamp].value() = now;
+  } 
   auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   assert(extensionElements);
   assert( dynamic_cast<const MessageDeliveryEvent*>(decision) );
@@ -94,14 +117,14 @@ std::optional<double> LocalEvaluator::evaluate(EntryDecision* decision) {
   Values data(*token->data);
   Values globals = token->globals;
   double evaluation = (double)extensionElements->getObjective(status,data,globals);
-//std::cerr << "Initial evaluation: " << evaluation << std::endl;
+//std::cerr << "Initial local evaluation: " << evaluation << std::endl;
 
   bool feasible = updateValues(decision,status,data,globals); 
   if ( !feasible ) {
     return std::nullopt;
   }
   // return evaluation of entry
-//std::cerr << "Updated evaluation: " << extensionElements->getObjective(status,data,globals) << std::endl;
+//std::cerr << "Updated local evaluation: " << extensionElements->getObjective(status,data,globals) << std::endl;
   return evaluation - extensionElements->getObjective(status,data,globals);
 }
 

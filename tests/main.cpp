@@ -66,11 +66,15 @@ using namespace BPMNOS;
 #include "examples/guided_knapsack_problem/test.h"
 #include "examples/guided_bin_packing_problem/test.h"
 #include "examples/job_shop_scheduling_problem/test.h"
+#include "examples/pickup_delivery_problem/test.h"
+#include "examples/guided_pickup_delivery_problem/test.h"
 
 #endif // ALL_TESTS
 
 #ifndef ALL_TESTS
+//#include "examples/assignment_problem/test.h"
 #include "examples/pickup_delivery_problem/test.h"
+#include "examples/guided_pickup_delivery_problem/test.h"
 #endif // ALL_TESTS
 
 
