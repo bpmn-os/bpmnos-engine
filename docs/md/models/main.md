@@ -11,4 +11,5 @@
 - @subpage guided_bin_packing_problem "Bin packing problem (guided)"
 - @subpage job_shop_scheduling_problem "Job shop scheduling problem"
 - @subpage pickup_delivery_problem "Pickup and delivery problem"
+- @subpage guided_pickup_delivery_problem "Pickup and delivery problem (guided)"
 
