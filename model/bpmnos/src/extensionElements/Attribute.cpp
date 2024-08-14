@@ -44,6 +44,9 @@ Attribute::Attribute(XML::bpmnos::tAttribute* attribute, Attribute::Category cat
     }
   }
   else {
+    if ( attribute->objective.has_value() && attribute->objective->get().value.value != "none" ) {
+      throw std::runtime_error("Attribute: required objective weight missing for attribute '" + id + "'");
+    }
     weight = 0;
   }
 }
