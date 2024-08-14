@@ -71,6 +71,7 @@ std::shared_ptr<Event> GreedyDispatcher<WeakPtrs...>::dispatchEvent( [[maybe_unu
 
   for ( auto decisionTuple : evaluatedDecisions ) {
     std::weak_ptr<Event>& event_ptr = std::get<sizeof...(WeakPtrs)+1>(decisionTuple);
+//std::cerr << "\nBest decision " << event_ptr.lock()->jsonify() << " evaluated with " << std::get<0>(decisionTuple) << std::endl;
     return event_ptr.lock();
   }
 

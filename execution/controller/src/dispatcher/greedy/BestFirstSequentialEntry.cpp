@@ -42,6 +42,7 @@ std::shared_ptr<Event> BestFirstSequentialEntry::dispatchEvent( [[maybe_unused]]
     auto tokenAtSequentialPerformer = token->owner->systemState->tokenAtSequentialPerformer.at(const_cast<Token*>(token.get()));
     assert( tokenAtSequentialPerformer );
     if ( !tokenAtSequentialPerformer->performing ) {
+//std::cerr << "\nBest parallel entry decision " << event_ptr.lock()->jsonify() << " evaluated with " << cost << std::endl;
       return event_ptr.lock();
     }
   }

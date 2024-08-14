@@ -45,10 +45,13 @@ std::shared_ptr<Event> GreedyController::dispatchEvent(const SystemState* system
       }
       else {
         // events are immediately forwarded
+//std::cerr << "\nEvent " << event->jsonify() << " without evaluation" << std::endl;
         return event;
       }
     }
   }
+  
+//if ( best ) std::cerr << "\nBest decision " << best->jsonify() << " evaluated with " << best->evaluation.value_or(-999) << std::endl;
 
   return best;
 }

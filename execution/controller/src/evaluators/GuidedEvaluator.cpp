@@ -11,7 +11,7 @@ bool GuidedEvaluator::updateValues(EntryDecision* decision, Values& status, Valu
   if ( !LocalEvaluator::updateValues(decision,status,data,globals) ) {
     return false;
   }
-
+  
   auto extensionElements = decision->token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   assert(extensionElements);
   if ( !extensionElements->entryGuidance ) {
@@ -22,7 +22,7 @@ bool GuidedEvaluator::updateValues(EntryDecision* decision, Values& status, Valu
   auto guidance = extensionElements->entryGuidance.value().get();
   auto systemState = decision->token->owner->systemState;
   guidance->apply(systemState->scenario, systemState->currentTime, decision->token->owner->root->instance.value(), decision->token->node, status, data, globals);
-  
+
   return guidance->restrictionsSatisfied(decision->token->node,status,data,globals);
 }
 
@@ -95,18 +95,21 @@ std::optional<double> GuidedEvaluator::evaluate(EntryDecision* decision) {
   Values data(*token->data);
   Values globals = token->globals;
   double evaluation = (double)extensionElements->getObjective(status,data,globals);
+//std::cerr << "Decision: " << decision->jsonify() << std::endl;
+//std::cerr << "Token: " << decision->token->jsonify() << std::endl;
 //std::cerr << "Initial evaluation: " << evaluation << std::endl;
 
   bool feasible = updateValues(decision,status,data,globals); 
   if ( !feasible ) {
     return std::nullopt;
   }
+//std::cerr << "Local evaluation: " << extensionElements->getObjective(status,data,globals) << std::endl;
 
   if ( !extensionElements->entryGuidance ) {
     return evaluation - extensionElements->getObjective(status,data,globals);
   }
   // return evaluation of entry
-//std::cerr << "Updated evaluation: " << extensionElements->getObjective(status,data,globals) << std::endl;
+//std::cerr << "Guided evaluation: " << extensionElements->entryGuidance.value()->getObjective(status,data,globals) << std::endl;
   return evaluation - extensionElements->entryGuidance.value()->getObjective(status,data,globals);
 }
 
@@ -173,16 +176,21 @@ std::optional<double> GuidedEvaluator::evaluate(MessageDeliveryDecision* decisio
   Values data(*token->data);
   Values globals = token->globals;
   double evaluation = (double)extensionElements->getObjective(status,data,globals);
+//std::cerr << "Decision: " << decision->jsonify() << std::endl;
+//std::cerr << "Token: " << decision->token->jsonify() << std::endl;
+//std::cerr << "Initial evaluation:\n" << evaluation << std::endl;
 
   bool feasible = updateValues(decision,status,data,globals); 
   if ( !feasible ) {
     return std::nullopt;
   }
+//std::cerr << "Local evaluation:\n" << extensionElements->getObjective(status,data,globals) << std::endl;
 
   if ( !extensionElements->messageDeliveryGuidance ) {
     return evaluation - extensionElements->getObjective(status,data,globals);
   }
-
+//std::cerr << "Guided evaluation:\n" << extensionElements->messageDeliveryGuidance.value()->getObjective(status,data,globals) << std::endl;
+//if ( evaluation - extensionElements->messageDeliveryGuidance.value()->getObjective(status,data,globals) > 800 ) exit(0);
   return evaluation - extensionElements->messageDeliveryGuidance.value()->getObjective(status,data,globals);
 }
 

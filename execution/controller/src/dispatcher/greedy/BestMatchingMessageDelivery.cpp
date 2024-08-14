@@ -38,7 +38,7 @@ std::cerr << "Message delivery decision " << event_ptr.lock()->jsonify() << " ev
 */
   for ( auto [ cost, token_ptr, request_ptr, message_ptr, event_ptr ] : evaluatedDecisions ) {
     // return best evaluated decision
-//std::cerr << "Message delivery decision " << event_ptr.lock()->jsonify() << " evaluated with " << cost << std::endl;
+//std::cerr << "\nBest message delivery decision " << event_ptr.lock()->jsonify() << " evaluated with " << cost << std::endl;
     return event_ptr.lock();
   }
 

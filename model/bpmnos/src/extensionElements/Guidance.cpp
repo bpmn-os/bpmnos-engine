@@ -6,6 +6,7 @@
 #include "model/bpmnos/src/xml/bpmnos/tOperators.h"
 #include "model/bpmnos/src/xml/bpmnos/tOperator.h"
 #include "model/utility/src/Keywords.h"
+//#include <iostream>
 
 using namespace BPMNOS::Model;
 
@@ -69,18 +70,21 @@ BPMNOS::number Guidance::getObjective(const BPMNOS::Values& status, const DataTy
   for ( auto& [name, attribute] : attributeRegistry.statusAttributes ) {
     auto value = attributeRegistry.getValue(attribute,status,data,globals);
     if ( value.has_value() ) {
+//std::cerr << attribute->name << " contributes " <<  attribute->weight * value.value() << std::endl;
       objective += attribute->weight * value.value();
     }
   }
   for ( auto& [name, attribute] : attributeRegistry.dataAttributes ) {
     auto value = attributeRegistry.getValue(attribute,status,data,globals);
     if ( value.has_value() ) {
+//std::cerr << attribute->name << " contributes " <<  attribute->weight * value.value() << std::endl;
       objective += attribute->weight * value.value();
     }
   }
   for ( auto& [name, attribute] : attributeRegistry.globalAttributes ) {
     auto value = attributeRegistry.getValue(attribute,status,data,globals);
     if ( value.has_value() ) {
+//std::cerr << attribute->name << " contributes " <<  attribute->weight * value.value() << std::endl;
       objective += attribute->weight * value.value();
     }
   }
