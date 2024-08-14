@@ -1,4 +1,4 @@
-SCENARIO( "Bin packing problem", "[examples][bin_packing_problem]" ) {
+SCENARIO( "Guided bin packing problem", "[examples][bin_packing_problem]" ) {
   const std::string modelFile = "examples/guided_bin_packing_problem/Guided_bin_packing_problem.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
 

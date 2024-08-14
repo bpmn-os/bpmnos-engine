@@ -1,6 +1,7 @@
 SCENARIO( "Assignment problem", "[examples][assignment_problem]" ) {
   const std::string modelFile = "examples/assignment_problem/Assignment_problem.bpmn";
-  BPMNOS::Model::LookupTable::folders = { "examples/assignment_problem" };
+  BPMNOS::Model::LookupOperator::lookupTables.clear();
+  BPMNOS::Model::LookupTable::folders = { "tests/examples/assignment_problem" };
   REQUIRE_NOTHROW( Model::Model(modelFile) );
 
   GIVEN( "One client and one server" ) {
