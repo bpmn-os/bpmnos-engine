@@ -5,6 +5,8 @@ set(MODEL_PAGES
     "bin_packing_problem/Bin_packing_problem.md @page bin_packing_problem Bin packing problem"
     "guided_bin_packing_problem/Guided_bin_packing_problem.md @page guided_bin_packing_problem Bin packing problem (guided)"
     "job_shop_scheduling_problem/Job_shop_scheduling_problem.md @page job_shop_scheduling_problem Job shop scheduling problem"
+    "vehicle_routing_problem/Vehicle_routing_problem.md @page vehicle_routing_problem Vehicle routing problem"
+    "guided_vehicle_routing_problem/Guided_vehicle_routing_problem.md @page guided_vehicle_routing_problem Vehicle routing problem (guided)"
     "pickup_delivery_problem/Pickup_delivery_problem.md @page pickup_delivery_problem Pickup and delivery problem"
     "guided_pickup_delivery_problem/Guided_pickup_delivery_problem.md @page guided_pickup_delivery_problem Pickup and delivery problem (guided)"
     "travelling_salesperson_problem/Travelling_salesperson_problem.md @page travelling_salesperson_problem Travelling salesperson problem"
