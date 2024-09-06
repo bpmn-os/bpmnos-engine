@@ -83,18 +83,18 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const
         catch ( const std::exception& error ) {
           throw std::runtime_error("ExtensionElements: illegal parameters for restriction '" + (std::string)restriction.id.value + "'.\n" + error.what());
         }
-      }
-
-      auto& restriction = restrictions.back();
-      for ( auto input : restriction->expression->inputs ) {
-        if ( restriction->scope != Restriction::Scope::EXIT ) {
-          entryDependencies.insert(input);
-        }
-        if ( restriction->scope != Restriction::Scope::ENTRY ) {
-          exitDependencies.insert(input);
+        // add entry and exit dependencies
+        for ( auto input : restrictions.back()->expression->inputs ) {
+          if ( restrictions.back()->scope != Restriction::Scope::EXIT ) {
+            entryDependencies.insert(input);
+          }
+          if ( restrictions.back()->scope != Restriction::Scope::ENTRY ) {
+            exitDependencies.insert(input);
+          }
         }
       }
     }
+
     // recursively determine entry and exit dependencies
     auto ancestor = parent;
     while ( ancestor ) {
@@ -227,6 +227,24 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const
       Attribute* attribute = &content->attribute.value().get();
       if ( attribute->category == Attribute::Category::DATA ) {
         dataUpdateOnCompletion.attributes.push_back(attribute);
+      }
+    }
+  }
+
+  // add conditions for conditional events
+  if ( auto restrictions = element->getOptionalChild<XML::bpmnos::tRestrictions>(); restrictions.has_value() ) {
+    assert( this->restrictions.empty() );
+    for ( XML::bpmnos::tRestriction& condition : restrictions.value().get().restriction ) {
+      try {
+        conditions.push_back(std::make_unique<Restriction>(&condition,attributeRegistry));
+      }
+      catch ( const std::exception& error ) {
+        throw std::runtime_error("ExtensionElements: illegal parameters for condition '" + (std::string)condition.id.value + "'.\n" + error.what());
+      }
+
+      // add exit dependencies
+      for ( auto input : conditions.back()->expression->inputs ) {
+        exitDependencies.insert(input);
       }
     }
   }

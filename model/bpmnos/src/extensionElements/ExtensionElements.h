@@ -56,6 +56,8 @@ public:
 
   std::optional< std::unique_ptr<SignalDefinition> > signalDefinition; ///< Optional signal definition provided for the node.
 
+  std::vector< std::unique_ptr<Restriction> > conditions; ///< Vector containing conditions that may be provided for conditional events.
+
   std::optional< std::unique_ptr<Parameter> > loopCardinality;  ///< Number of instances to be generated.
   std::optional< std::unique_ptr<Parameter> > loopIndex; ///< Attribute holding the automatically generated loop index.
   std::optional< std::unique_ptr<Parameter> > loopCondition; ///< Boolean attribute indicating whether an exit condition holds.
