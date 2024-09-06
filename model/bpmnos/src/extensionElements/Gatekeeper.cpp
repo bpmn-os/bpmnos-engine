@@ -10,20 +10,20 @@ Gatekeeper::Gatekeeper(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent
   , parent(parent)
 {
   AttributeRegistry& attributeRegistry = parent->extensionElements->as<BPMNOS::Model::ExtensionElements>()->attributeRegistry;
-  for ( XML::bpmnos::tRestriction& restriction : get<XML::bpmnos::tRestrictions,XML::bpmnos::tRestriction>() ) {
-    restrictions.push_back( std::make_unique<Restriction>( &restriction,  attributeRegistry ) );
+  for ( XML::bpmnos::tRestriction& condition : get<XML::bpmnos::tRestrictions,XML::bpmnos::tRestriction>() ) {
+    conditions.push_back( std::make_unique<Restriction>( &condition,  attributeRegistry ) );
   }
 }
 
 template <typename DataType>
-bool Gatekeeper::restrictionsSatisfied(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const {
-  for ( auto& restriction : restrictions ) {
-    if ( !restriction->isSatisfied(status,data,globals) ) {
+bool Gatekeeper::conditionsSatisfied(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const {
+  for ( auto& condition : conditions ) {
+    if ( !condition->isSatisfied(status,data,globals) ) {
       return false; 
     }
   }
   return true; 
 }
 
-template bool Gatekeeper::restrictionsSatisfied<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data, const BPMNOS::Values& globals) const;
-template bool Gatekeeper::restrictionsSatisfied<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data, const BPMNOS::Values& globals) const;
+template bool Gatekeeper::conditionsSatisfied<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data, const BPMNOS::Values& globals) const;
+template bool Gatekeeper::conditionsSatisfied<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data, const BPMNOS::Values& globals) const;

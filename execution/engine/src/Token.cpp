@@ -1136,7 +1136,7 @@ void Token::advanceToDeparting() {
       if ( sequenceFlow != exclusiveGateway->defaultFlow ) {
         // check gatekeeper conditions
         if ( auto gatekeeper = sequenceFlow->extensionElements->as<BPMNOS::Model::Gatekeeper>() ) {
-          if ( gatekeeper->restrictionsSatisfied(status,*data,globals) ) {
+          if ( gatekeeper->conditionsSatisfied(status,*data,globals) ) {
             auto engine = const_cast<Engine*>(owner->systemState->engine);
             engine->commands.emplace_back(std::bind(&Token::advanceToDeparted,this,sequenceFlow), this);
             return;

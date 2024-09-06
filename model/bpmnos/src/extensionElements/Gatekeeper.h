@@ -12,16 +12,16 @@ namespace BPMNOS::Model {
 
 
 /**
- * @brief Class holding extension elements representing gatekeeper restrictions for sequence flows 
+ * @brief Class holding extension elements representing gatekeeper conditions for sequence flows 
  **/
 class Gatekeeper : public BPMN::ExtensionElements {
 public:
   Gatekeeper(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent);
   const BPMN::Scope* parent;
-  std::vector< std::unique_ptr<Restriction> > restrictions;
+  std::vector< std::unique_ptr<Restriction> > conditions;
 
   template <typename DataType>
-  bool restrictionsSatisfied(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const;
+  bool conditionsSatisfied(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const;
 };
 
 
