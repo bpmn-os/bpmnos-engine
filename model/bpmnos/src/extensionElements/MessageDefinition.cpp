@@ -15,7 +15,7 @@ MessageDefinition::MessageDefinition(XML::bpmnos::tMessage* message, const Attri
   header[ Index::Recipient ] = "recipient";
 
   std::set< std::string > additionalHeader;
-  for ( XML::bpmnos::tParameter& parameter : element->getChildren<XML::bpmnos::tParameter>() ) {
+  for ( XML::bpmnos::tParameter& parameter : element->parameter ) {
     auto& key = parameter.name.value.value;
     parameterMap.emplace(key,std::make_unique<Parameter>(&parameter,attributeRegistry));
     if ( key != "name" && key != "sender" && key != "recipient" ) {
@@ -26,7 +26,7 @@ MessageDefinition::MessageDefinition(XML::bpmnos::tMessage* message, const Attri
     header.push_back(key);
   }
 
-  for ( XML::bpmnos::tContent& content : element->getChildren<XML::bpmnos::tContent>() ) {
+  for ( XML::bpmnos::tContent& content : element->content ) {
     contentMap.emplace(content.key.value.value,std::make_unique<Content>(&content,attributeRegistry));
   }
 }

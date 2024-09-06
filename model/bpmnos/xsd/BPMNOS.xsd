@@ -140,6 +140,17 @@
     <xsd:sequence>
       <xsd:element ref="parameter" minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
+    <xsd:sequence>
+      <xsd:element ref="content" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:element name="signal" type="tSignal"/>
+  <xsd:complexType name="tSignal">
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:sequence>
+      <xsd:element ref="content" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
   </xsd:complexType>
 
   <xsd:element name="content" type="tContent"/>
