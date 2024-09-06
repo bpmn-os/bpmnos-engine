@@ -11,6 +11,7 @@
 #include "model/bpmnos/src/xml/bpmnos/tDecision.h"
 #include "model/bpmnos/src/xml/bpmnos/tMessages.h"
 #include "model/bpmnos/src/xml/bpmnos/tMessage.h"
+#include "model/bpmnos/src/xml/bpmnos/tSignal.h"
 #include "model/bpmnos/src/xml/bpmnos/tLoopCharacteristics.h"
 #include "model/bpmnos/src/xml/bpmnos/tGuidance.h"
 #include "model/utility/src/Keywords.h"
@@ -200,18 +201,35 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const
   if ( baseElement->is<XML::bpmn::tReceiveTask>() || baseElement->is<XML::bpmn::tCatchEvent>() ) {
     // add data attributes modified by message to dataUpdateOnCompletion (global values must not be updated by messages)
     for ( auto& messageDefinition : messageDefinitions ) {
-       for ( auto& [key,content] : messageDefinition->contentMap ) {
-         if ( !content->attribute.has_value() ) {
-           throw std::runtime_error("ExtensionElements: missing attribute for content '" + (std::string)content->id + "'.");
-         }
-         Attribute* attribute = &content->attribute.value().get();
-         if ( attribute->category == Attribute::Category::DATA ) {
-           dataUpdateOnCompletion.attributes.push_back(attribute);
-         }
-       }
+      for ( auto& [key,content] : messageDefinition->contentMap ) {
+        if ( !content->attribute.has_value() ) {
+          throw std::runtime_error("ExtensionElements: missing attribute for content '" + (std::string)content->id + "'.");
+        }
+        Attribute* attribute = &content->attribute.value().get();
+        if ( attribute->category == Attribute::Category::DATA ) {
+          dataUpdateOnCompletion.attributes.push_back(attribute);
+        }
+      }
     }
   }
 
+  // add signal definitions
+  if ( auto signal = element->getOptionalChild<XML::bpmnos::tSignal>(); signal.has_value() ) {
+    signalDefinition = std::make_unique<SignalDefinition>(&signal->get(),attributeRegistry);
+  }
+
+  if ( signalDefinition.has_value() && baseElement->is<XML::bpmn::tCatchEvent>() ) {
+    // add data attributes modified by signal to dataUpdateOnCompletion (global values must not be updated by signals)
+    for ( auto& [key,content] : signalDefinition.value()->contentMap ) {
+      if ( !content->attribute.has_value() ) {
+        throw std::runtime_error("ExtensionElements: missing attribute for content '" + (std::string)content->id + "'.");
+      }
+      Attribute* attribute = &content->attribute.value().get();
+      if ( attribute->category == Attribute::Category::DATA ) {
+        dataUpdateOnCompletion.attributes.push_back(attribute);
+      }
+    }
+  }
 
   // add loop characteristics
   if ( element->getOptionalChild<XML::bpmnos::tLoopCharacteristics>().has_value() ) {

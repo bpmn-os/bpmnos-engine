@@ -26,6 +26,7 @@ list(APPEND bpmn_SOURCES
   extensionElements/Guidance.cpp
   extensionElements/Content.cpp
   extensionElements/MessageDefinition.cpp
+  extensionElements/SignalDefinition.cpp
   extensionElements/ExtensionElements.cpp
   extensionElements/Gatekeeper.cpp
   extensionElements/Timer.cpp
@@ -55,6 +56,7 @@ list(APPEND bpmn_HEADERS
   extensionElements/Guidance.h
   extensionElements/Content.h
   extensionElements/MessageDefinition.h
+  extensionElements/SignalDefinition.h
   extensionElements/ExtensionElements.h
   extensionElements/Gatekeeper.h
   extensionElements/Timer.h

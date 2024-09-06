@@ -11,6 +11,7 @@
 #include "Operator.h"
 #include "Choice.h"
 #include "MessageDefinition.h"
+#include "SignalDefinition.h"
 #include "Guidance.h"
 #include "model/bpmnos/src/xml/bpmnos/tAttribute.h"
 
@@ -52,6 +53,8 @@ public:
 
   std::vector< std::unique_ptr<MessageDefinition> > messageDefinitions; ///< Vector containing message definition(s) provided for the node.
   std::vector< const BPMN::FlowNode* > messageCandidates; ///< Vector containing all potential sending or receiving nodes of a message.
+
+  std::optional< std::unique_ptr<SignalDefinition> > signalDefinition; ///< Optional signal definition provided for the node.
 
   std::optional< std::unique_ptr<Parameter> > loopCardinality;  ///< Number of instances to be generated.
   std::optional< std::unique_ptr<Parameter> > loopIndex; ///< Attribute holding the automatically generated loop index.
