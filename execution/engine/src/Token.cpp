@@ -1488,7 +1488,10 @@ void Token::setSignalContent(BPMNOS::VariedValueMap& sourceMap) {
       }
     }
   }
-  // TODO: what about data update
+
+  // notify about data update
+  assert( !signalDefinition->dataUpdate.global );
+  owner->systemState->engine->notify( DataUpdate( owner->root->instance.value(), signalDefinition->dataUpdate.attributes ) );
 }
 
 

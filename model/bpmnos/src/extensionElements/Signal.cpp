@@ -32,6 +32,9 @@ Signal::Signal(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent)
         if ( attribute->category == Attribute::Category::DATA ) {
           dataUpdate.attributes.push_back(attribute);
         }
+        else if ( attribute->category == Attribute::Category::GLOBAL ) {
+          throw std::runtime_error("Signal: illegal update of global attribute'" + (std::string)attribute->id + "' for content '" + (std::string)content->id + "'.");
+        }
       }
     }
   }
