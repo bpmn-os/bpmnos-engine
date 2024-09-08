@@ -5,6 +5,7 @@
 #include "extensionElements/ExtensionElements.h"
 #include "extensionElements/Gatekeeper.h"
 #include "extensionElements/Timer.h"
+#include "extensionElements/Signal.h"
 #include "extensionElements/MessageDefinition.h"
 #include "DecisionTask.h"
 #include "SequentialAdHocSubProcess.h"
@@ -158,6 +159,32 @@ std::unique_ptr<BPMN::FlowNode> Model::createTimerCatchEvent(XML::bpmn::tCatchEv
     std::make_unique<Timer>(catchEvent,parent)
   );
 }
+
+std::unique_ptr<BPMN::FlowNode> Model::createSignalStartEvent(XML::bpmn::tStartEvent* startEvent, BPMN::Scope* parent) {
+  // bind signal
+  return bind<BPMN::FlowNode>(
+    BPMN::Model::createSignalStartEvent(startEvent,parent),
+    std::make_unique<Signal>(startEvent,parent)
+  );
+}
+
+std::unique_ptr<BPMN::FlowNode> Model::createSignalCatchEvent(XML::bpmn::tCatchEvent* catchEvent, BPMN::Scope* parent) {
+  // bind signal
+  return bind<BPMN::FlowNode>(
+    BPMN::Model::createSignalCatchEvent(catchEvent,parent),
+    std::make_unique<Signal>(catchEvent,parent)
+  );
+}
+
+std::unique_ptr<BPMN::FlowNode> Model::createSignalThrowEvent(XML::bpmn::tThrowEvent* throwEvent, BPMN::Scope* parent) {
+  // bind signal
+  return bind<BPMN::FlowNode>(
+    BPMN::Model::createSignalThrowEvent(throwEvent,parent),
+    std::make_unique<Signal>(throwEvent,parent)
+  );
+}
+
+
 
 std::unique_ptr<BPMN::FlowNode> Model::createMessageStartEvent(XML::bpmn::tStartEvent* startEvent, BPMN::Scope* parent) {
   auto baseElement = BPMN::Model::createMessageStartEvent(startEvent,parent);

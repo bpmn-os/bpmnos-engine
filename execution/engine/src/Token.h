@@ -3,6 +3,7 @@
 
 #include <bpmn++.h>
 #include "model/bpmnos/src/extensionElements/ExtensionElements.h"
+#include "model/bpmnos/src/extensionElements/Content.h"
 #include "model/utility/src/Number.h"
 #include "Observable.h"
 #include <nlohmann/json.hpp>
@@ -101,7 +102,8 @@ private:
   void awaitTaskCompletionEvent(); ///< Wait for completion event for tasks (except for decision tasks)
   void awaitExitEvent(); ///< Wait for exit event for activities
 
-  void awaitTimer(BPMNOS::number time); ///< Wait for message trigger at catching events (except for catching message events)
+  void awaitTimer(BPMNOS::number time); ///< Wait for message trigger at catching timer events
+  void awaitSignal(BPMNOS::number name); ///< Wait for signal with given name at catching signal events
   void awaitMessageDelivery(); ///< Wait for message delivery event
 
   void awaitEventBasedGateway(); ///< Wait for catching event at event-based gateways
@@ -113,6 +115,11 @@ private:
     
   void withdraw(); ///< Remove token
 
+  void emitSignal();
+  
+  BPMNOS::VariedValueMap getSignalContent(const BPMNOS::Model::ContentMap& contentMap); ///< Returns content of signal
+  void setSignalContent(BPMNOS::VariedValueMap& sourceMap); // Applies content of signal
+  
   void sendMessage( size_t index = 0 ); 
 
   Token* getSequentialPerfomerToken() const; ///< Returns token at sequential performer for tokens at activities within sequential adhoc subprocesses

@@ -8,9 +8,11 @@
 #include "model/bpmnos/src/extensionElements/Gatekeeper.h"
 #include "model/bpmnos/src/extensionElements/MessageDefinition.h"
 #include "model/bpmnos/src/extensionElements/Timer.h"
+#include "model/bpmnos/src/extensionElements/Signal.h"
 #include "model/bpmnos/src/SequentialAdHocSubProcess.h"
 #include "model/bpmnos/src/DecisionTask.h"
 #include "execution/utility/src/erase.h"
+#include "model/utility/src/Number.h"
 #include <cassert>
 #include <iostream>
 
@@ -499,6 +501,10 @@ void Token::advanceToEntered() {
       // if applicable, control will be delgated back to token
       engine->commands.emplace_back(std::bind(&StateMachine::handleEscalation,const_cast<StateMachine*>(owner),this), this);
     }
+    else if ( node->represents<BPMN::SignalThrowEvent>() ) {
+      // determine signal name
+      emitSignal();
+    }
     else if ( node->represents<BPMN::MessageThrowEvent>() ) {
       assert( !node->represents<BPMN::SendTask>() );
       sendMessage();
@@ -636,7 +642,7 @@ std::cerr << status[BPMNOS::Model::ExtensionElements::Index::Timestamp].value() 
     engine->commands.emplace_back(std::bind(&Token::advanceToDeparting,this), this);
   }
   else if ( node->represents<BPMN::TimerCatchEvent>() ) {
-    // TODO: determine time
+    // determine time
     auto trigger = node->extensionElements->as<BPMNOS::Model::Timer>()->trigger.get();
     BPMNOS::number time;
 
@@ -666,6 +672,12 @@ std::cerr << status[BPMNOS::Model::ExtensionElements::Index::Timestamp].value() 
       auto engine = const_cast<Engine*>(owner->systemState->engine);
       engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,this), this);
     }
+  }
+  else if ( node->represents<BPMN::SignalCatchEvent>() ) {
+    assert(node->extensionElements->represents<BPMNOS::Model::Signal>());
+    // determine signal name
+    assert( node->extensionElements->represents<BPMNOS::Model::Signal>() );
+    awaitSignal( node->extensionElements->as<BPMNOS::Model::Signal>()->name );
   }
   else if ( node->represents<BPMN::MessageCatchEvent>() ) {
     if ( auto receiveTask = node->represents<BPMN::ReceiveTask>();
@@ -1342,6 +1354,11 @@ void Token::awaitTimer(BPMNOS::number time) {
   systemState->tokensAwaitingTimer.emplace(time,weak_from_this());
 }
 
+void Token::awaitSignal(BPMNOS::number name) {
+  auto systemState = const_cast<SystemState*>(owner->systemState);
+  systemState->tokensAwaitingSignal[name].emplace_back(weak_from_this());
+}
+
 void Token::awaitGatewayActivation() {
 //std::cerr << "awaitGatewayActivation" << std::endl;
 
@@ -1372,6 +1389,108 @@ void Token::withdraw() {
     update(State::WITHDRAWN);
   }
 }
+
+void Token::emitSignal() {
+  auto systemState = const_cast<SystemState*>(owner->systemState);
+  assert( node->extensionElements->represents<BPMNOS::Model::Signal>() );
+  auto signalDefinition = node->extensionElements->as<BPMNOS::Model::Signal>();
+
+  auto& waitingTokens = systemState->tokensAwaitingSignal[signalDefinition->name];
+  if ( !waitingTokens.empty() ) {
+    // determine signal content
+    VariedValueMap contentValueMap = getSignalContent(signalDefinition->contentMap);
+
+    for ( auto& [token_ptr] : waitingTokens ) {
+      auto token = token_ptr.lock();
+      assert( token );
+      // receive signal content
+      token->setSignalContent(contentValueMap);
+      
+      // advance receiving token
+      auto engine = const_cast<Engine*>(owner->systemState->engine);
+      engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,token.get()), token.get());
+    }
+    waitingTokens.clear();
+  }
+}
+
+BPMNOS::VariedValueMap Token::getSignalContent(const BPMNOS::Model::ContentMap& contentMap) {
+  auto& attributeRegistry = getAttributeRegistry();
+  VariedValueMap contentValueMap;
+  for (auto& [key,contentDefinition] : contentMap) {
+    if ( contentDefinition->attribute.has_value() && status[contentDefinition->attribute->get().index].has_value() ) {
+      contentValueMap.emplace( key, attributeRegistry.getValue(&contentDefinition->attribute->get(),status,*data,globals) );
+    }
+    else if ( contentDefinition->value.has_value() ) {
+      contentValueMap.emplace( key, contentDefinition->value.value() );
+    }
+    else {
+      contentValueMap.emplace( key, std::nullopt );
+    }
+  }
+  return contentValueMap;
+}
+
+void Token::setSignalContent(BPMNOS::VariedValueMap& sourceMap) {
+  auto& attributeRegistry = getAttributeRegistry();
+  assert( node->extensionElements->represents<BPMNOS::Model::Signal>() );
+  auto signalDefinition = node->extensionElements->as<BPMNOS::Model::Signal>();
+
+  size_t counter = 0;
+  for (auto& [key,contentValue] : sourceMap) {
+    if ( auto it = signalDefinition->contentMap.find(key); it != signalDefinition->contentMap.end() ) {
+      auto& [key,definition] = *it;
+      if ( !definition->attribute.has_value() ) {
+        throw std::runtime_error("Token: cannot receive signal content without attribute");
+      }
+      auto attribute = &definition->attribute->get();
+//std::cerr << "Attribute: " << attribute.name << "/" << attribute.index << std::endl;
+      if ( std::holds_alternative< std::optional<number> >(contentValue) && std::get< std::optional<number> >(contentValue).has_value() ) {
+        // use attribute value of signal
+        attributeRegistry.setValue(attribute, status, *data, globals, std::get< std::optional<number> >(contentValue).value() );
+      }
+      else if (std::holds_alternative<std::string>(contentValue)) {
+        // use default value of emitter
+        Value value = std::get< std::string >(contentValue);
+        attributeRegistry.setValue(attribute, status, *data, globals, BPMNOS::to_number(value,attribute->type) );
+      }
+      else if ( definition->value.has_value() ) {
+        // use default value of recipient
+        attributeRegistry.setValue(attribute, status, *data, globals, BPMNOS::to_number(definition->value.value(),attribute->type) );
+      }
+      else {
+        attributeRegistry.setValue(attribute, status, *data, globals, std::nullopt );
+      }
+    }
+    else {
+      // key in signal content, but not in recipient content
+      counter++;
+    }
+  }
+
+  if ( signalDefinition->contentMap.size() > sourceMap.size() - counter ) {
+    // recipient has keys in content that are not in signal content
+    for (auto& [key,definition] : signalDefinition->contentMap) {
+      if ( !sourceMap.contains(key) ) {
+        // key in recipient content, but not in message content
+        if ( !definition->attribute.has_value() ) {
+          throw std::runtime_error("Token: cannot receive signal content without attribute");
+        }
+        auto attribute = &definition->attribute->get();
+
+        if ( definition->value.has_value() ) {
+          // use default value of recipient
+          attributeRegistry.setValue(attribute, status, *data, globals, BPMNOS::to_number(definition->value.value(),attribute->type) );
+        }
+        else {
+          attributeRegistry.setValue(attribute, status, *data, globals, std::nullopt );
+        }
+      }
+    }
+  }
+  // TODO: what about data update
+}
+
 
 void Token::sendMessage(size_t index) {
   auto systemState = const_cast<SystemState*>(owner->systemState);

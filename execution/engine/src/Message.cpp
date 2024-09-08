@@ -142,16 +142,13 @@ void Message::apply(const BPMN::FlowNode* node, const BPMNOS::Model::AttributeRe
         // use default value of sender
         Value value = std::get< std::string >(contentValue);
         attributeRegistry.setValue(attribute, status, data, globals, BPMNOS::to_number(value,attribute->type) );
-//        status[attribute.index] = BPMNOS::to_number(value,attribute.type);
       }
       else if ( definition->value.has_value() ) {
-        // use default value or recipient
+        // use default value of recipient
         attributeRegistry.setValue(attribute, status, data, globals, BPMNOS::to_number(definition->value.value(),attribute->type) );
-//        status[attribute.index] = BPMNOS::to_number(definition->value.value(),attribute.type);
       }
       else {
         attributeRegistry.setValue(attribute, status, data, globals, std::nullopt );
-//        status[attribute.index] = std::nullopt;
       }
     }
     else {
@@ -171,13 +168,11 @@ void Message::apply(const BPMN::FlowNode* node, const BPMNOS::Model::AttributeRe
         auto attribute = &definition->attribute->get();
 
         if ( definition->value.has_value() ) {
-          // use default value or recipient
+          // use default value of recipient
           attributeRegistry.setValue(attribute, status, data, globals, BPMNOS::to_number(definition->value.value(),attribute->type) );
-//          status[attribute.index] = BPMNOS::to_number(definition->value.value(),attribute.type);
         }
         else {
           attributeRegistry.setValue(attribute, status, data, globals, std::nullopt );
-//          status[attribute.index] = std::nullopt;
         }
       }
     }

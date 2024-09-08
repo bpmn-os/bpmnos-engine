@@ -35,6 +35,7 @@ using namespace BPMNOS;
 #include "execution/eventbasedgateway/test.h"
 // Events
 #include "execution/timer/test.h"
+#include "execution/signal/test.h"
 #include "execution/errorevent/test.h"
 #include "execution/escalationevent/test.h"
 // Messages
@@ -74,8 +75,7 @@ using namespace BPMNOS;
 #endif // ALL_TESTS
 
 #ifndef ALL_TESTS
-#include "examples/vehicle_routing_problem/test.h"
-#include "examples/guided_vehicle_routing_problem/test.h"
+#include "execution/signal/test.h"
 #endif // ALL_TESTS
 
 
