@@ -110,7 +110,12 @@ void StaticDataProvider::readInstances() {
 }
 
 void StaticDataProvider::ensureDefaultValue(StaticInstanceData& instance, const std::string attributeId, std::optional<BPMNOS::number> value) {
-  auto& attribute = attributes[instance.process][attributeId];
+  assert( attributes.contains(instance.process) );
+  auto it = attributes.at(instance.process).find(attributeId);
+  if ( it == attributes.at(instance.process).end() ) {
+    throw std::runtime_error("StaticDataProvider: unable to find required attribute '" + attributeId + "' for process '" + instance.process->id + "'");
+  }
+  auto attribute = it->second;
   if ( auto it = instance.data.find( attribute );
     it == instance.data.end()
   ) {
