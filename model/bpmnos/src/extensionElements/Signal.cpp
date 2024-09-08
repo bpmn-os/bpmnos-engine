@@ -22,6 +22,7 @@ Signal::Signal(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent)
       contentMap.emplace(content.key.value.value,std::make_unique<Content>(&content,attributeRegistry));
     }
 
+    dataUpdate.global = false;
     if ( baseElement->is<XML::bpmn::tCatchEvent>() ) {
       // add data attributes modified by signal to dataUpdateOnCompletion (global values must not be updated by signals)
       for ( auto& [key,content] : contentMap ) {
