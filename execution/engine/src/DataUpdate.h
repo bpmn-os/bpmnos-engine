@@ -15,6 +15,7 @@ struct DataUpdate : Observable {
   DataUpdate(const BPMNOS::number instanceId, const std::vector<const BPMNOS::Model::Attribute*>& attributes) : instanceId(instanceId), attributes(attributes) { assert(instanceId >= 0); }
   const BPMNOS::number instanceId;
   const std::vector<const BPMNOS::Model::Attribute*>& attributes;
+  bool global() const { return instanceId < 0; };
 };
 
 } // namespace BPMNOS::Execution

@@ -2,6 +2,7 @@
 #include "Token.h"
 #include "StateMachine.h"
 #include "SequentialPerformerUpdate.h"
+#include "ConditionalEventObserver.h"
 #include "model/bpmnos/src/extensionElements/ExtensionElements.h"
 #include "model/bpmnos/src/SequentialAdHocSubProcess.h"
 #include "model/bpmnos/src/DecisionTask.h"
@@ -38,6 +39,8 @@ void Engine::Command::execute() {
 BPMNOS::number Engine::run(const BPMNOS::Model::Scenario* scenario, BPMNOS::number timeout) {
   // create initial system state
   systemState = std::make_unique<SystemState>(this, scenario);
+  conditionalEventObserver = std::make_unique<ConditionalEventObserver>(systemState.get());
+  addSubscriber(conditionalEventObserver.get(), Observable::Type::DataUpdate);
 
   // advance all tokens in system state
   while ( advance() ) {

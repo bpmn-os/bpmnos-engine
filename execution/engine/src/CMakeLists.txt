@@ -2,6 +2,7 @@ list(APPEND engine_SOURCES
   Notifier.cpp
   Message.cpp
   Token.cpp
+  ConditionalEventObserver.cpp
   Event.cpp
   events/TerminationEvent.cpp
   events/ClockTickEvent.cpp
@@ -28,6 +29,7 @@ list(APPEND engine_HEADERS
   Token.h
   SequentialPerformerUpdate.h
   DataUpdate.h
+  ConditionalEventObserver.h
   DecisionRequest.h
   Event.h
   events/TerminationEvent.h

@@ -18,6 +18,7 @@
 #include "Mediator.h"
 #include "EventDispatcher.h"
 #include "SystemState.h"
+#include "ConditionalEventObserver.h"
 
 namespace BPMNOS::Execution {
 
@@ -29,6 +30,7 @@ class Controller;
 class Engine : public Mediator {
   friend class Token;
   friend class StateMachine;
+  friend class ConditionalEventObserver;
 //  friend void EventDispatcher::subscribe(Engine* engine);
 public:
   Engine();
@@ -87,13 +89,15 @@ protected:
   };
 
   std::list<Command> commands; ///< List of commands to be executed
-
+  
   void addInstances(); ///< Method adding all new instances and advancing tokens as much as possible
 
   void deleteInstance(StateMachine* instance); ///< Method removing completed instance
 
   BPMNOS::number clockTick; ///< Timestep used to advance the current time by systemState.time += clockTick
   std::unique_ptr<SystemState> systemState;
+  std::unique_ptr<ConditionalEventObserver> conditionalEventObserver;
+  
   bool advance();
 //  friend void Token::notify() const;
 };

@@ -6,6 +6,7 @@
 #include "extensionElements/Gatekeeper.h"
 #include "extensionElements/Timer.h"
 #include "extensionElements/Signal.h"
+#include "extensionElements/Conditions.h"
 #include "extensionElements/MessageDefinition.h"
 #include "DecisionTask.h"
 #include "SequentialAdHocSubProcess.h"
@@ -168,6 +169,14 @@ std::unique_ptr<BPMN::FlowNode> Model::createSignalStartEvent(XML::bpmn::tStartE
   );
 }
 
+std::unique_ptr<BPMN::FlowNode> Model::createSignalBoundaryEvent(XML::bpmn::tBoundaryEvent* boundaryEvent, BPMN::Scope* parent) {
+  // bind signal
+  return bind<BPMN::FlowNode>(
+    BPMN::Model::createSignalBoundaryEvent(boundaryEvent,parent),
+    std::make_unique<Signal>(boundaryEvent,parent)
+  );
+}
+
 std::unique_ptr<BPMN::FlowNode> Model::createSignalCatchEvent(XML::bpmn::tCatchEvent* catchEvent, BPMN::Scope* parent) {
   // bind signal
   return bind<BPMN::FlowNode>(
@@ -184,7 +193,29 @@ std::unique_ptr<BPMN::FlowNode> Model::createSignalThrowEvent(XML::bpmn::tThrowE
   );
 }
 
+std::unique_ptr<BPMN::FlowNode> Model::createConditionalStartEvent(XML::bpmn::tStartEvent* startEvent, BPMN::Scope* parent) {
+  // bind conditions
+  return bind<BPMN::FlowNode>(
+    BPMN::Model::createConditionalStartEvent(startEvent,parent),
+    std::make_unique<Conditions>(startEvent,parent)
+  );
+}
 
+std::unique_ptr<BPMN::FlowNode> Model::createConditionalBoundaryEvent(XML::bpmn::tBoundaryEvent* boundaryEvent, BPMN::Scope* parent) {
+  // bind conditions
+  return bind<BPMN::FlowNode>(
+    BPMN::Model::createConditionalBoundaryEvent(boundaryEvent,parent),
+    std::make_unique<Conditions>(boundaryEvent,parent)
+  );
+}
+
+std::unique_ptr<BPMN::FlowNode> Model::createConditionalCatchEvent(XML::bpmn::tCatchEvent* catchEvent, BPMN::Scope* parent) {
+  // bind conditions
+  return bind<BPMN::FlowNode>(
+    BPMN::Model::createConditionalCatchEvent(catchEvent,parent),
+    std::make_unique<Conditions>(catchEvent,parent)
+  );
+}
 
 std::unique_ptr<BPMN::FlowNode> Model::createMessageStartEvent(XML::bpmn::tStartEvent* startEvent, BPMN::Scope* parent) {
   auto baseElement = BPMN::Model::createMessageStartEvent(startEvent,parent);

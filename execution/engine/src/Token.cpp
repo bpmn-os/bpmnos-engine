@@ -9,6 +9,7 @@
 #include "model/bpmnos/src/extensionElements/MessageDefinition.h"
 #include "model/bpmnos/src/extensionElements/Timer.h"
 #include "model/bpmnos/src/extensionElements/Signal.h"
+#include "model/bpmnos/src/extensionElements/Conditions.h"
 #include "model/bpmnos/src/SequentialAdHocSubProcess.h"
 #include "model/bpmnos/src/DecisionTask.h"
 #include "execution/utility/src/erase.h"
@@ -674,10 +675,21 @@ std::cerr << status[BPMNOS::Model::ExtensionElements::Index::Timestamp].value() 
     }
   }
   else if ( node->represents<BPMN::SignalCatchEvent>() ) {
-    assert(node->extensionElements->represents<BPMNOS::Model::Signal>());
     // determine signal name
     assert( node->extensionElements->represents<BPMNOS::Model::Signal>() );
     awaitSignal( node->extensionElements->as<BPMNOS::Model::Signal>()->name );
+  }
+  else if ( node->represents<BPMN::ConditionalCatchEvent>() ) {
+    // determine conditions
+    assert(node->extensionElements->represents<BPMNOS::Model::Conditions>());
+    auto extensionElements = node->extensionElements->as<BPMNOS::Model::Conditions>();
+    if ( !extensionElements->conditionsSatisfied(status,*data,globals) ) {
+      awaitConditions( owner->root->instance.value() );
+    }
+    else {
+      auto engine = const_cast<Engine*>(owner->systemState->engine);
+      engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,this), this);
+    }
   }
   else if ( node->represents<BPMN::MessageCatchEvent>() ) {
     if ( auto receiveTask = node->represents<BPMN::ReceiveTask>();
@@ -1359,6 +1371,11 @@ void Token::awaitSignal(BPMNOS::number name) {
   systemState->tokensAwaitingSignal[name].emplace_back(weak_from_this());
 }
 
+void Token::awaitConditions(BPMNOS::number instanceId) {
+  auto systemState = const_cast<SystemState*>(owner->systemState);
+  systemState->tokensAwaitingCondition[instanceId].emplace_back(weak_from_this());
+}
+
 void Token::awaitGatewayActivation() {
 //std::cerr << "awaitGatewayActivation" << std::endl;
 
@@ -1490,8 +1507,7 @@ void Token::setSignalContent(BPMNOS::VariedValueMap& sourceMap) {
   }
 
   // notify about data update
-  assert( !signalDefinition->dataUpdate.global );
-  owner->systemState->engine->notify( DataUpdate( owner->root->instance.value(), signalDefinition->dataUpdate.attributes ) );
+  owner->systemState->engine->notify( DataUpdate( owner->root->instance.value(), signalDefinition->updatedData ) );
 }
 
 

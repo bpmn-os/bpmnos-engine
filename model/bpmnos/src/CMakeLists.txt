@@ -30,6 +30,7 @@ list(APPEND bpmn_SOURCES
   extensionElements/Gatekeeper.cpp
   extensionElements/Timer.cpp
   extensionElements/Signal.cpp
+  extensionElements/Conditions.cpp
   DecisionTask.cpp
   SequentialAdHocSubProcess.cpp
   Model.cpp
@@ -60,6 +61,7 @@ list(APPEND bpmn_HEADERS
   extensionElements/Gatekeeper.h
   extensionElements/Timer.h
   extensionElements/Signal.h
+  extensionElements/Conditions.h
   DecisionTask.h
   SequentialAdHocSubProcess.h
   Model.h

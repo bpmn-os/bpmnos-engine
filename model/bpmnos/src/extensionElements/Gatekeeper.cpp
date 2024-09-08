@@ -11,7 +11,12 @@ Gatekeeper::Gatekeeper(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent
 {
   AttributeRegistry& attributeRegistry = parent->extensionElements->as<BPMNOS::Model::ExtensionElements>()->attributeRegistry;
   for ( XML::bpmnos::tRestriction& condition : get<XML::bpmnos::tRestrictions,XML::bpmnos::tRestriction>() ) {
-    conditions.push_back( std::make_unique<Restriction>( &condition,  attributeRegistry ) );
+    try {
+      conditions.push_back(std::make_unique<Restriction>(&condition,attributeRegistry));
+    }
+    catch ( const std::exception& error ) {
+      throw std::runtime_error("Gatekeeper: illegal parameters for condition '" + (std::string)condition.id.value + "'.\n" + error.what());
+    }
   }
 }
 

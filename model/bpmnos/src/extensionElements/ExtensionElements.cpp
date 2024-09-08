@@ -212,27 +212,6 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const
     }
   }
 
-// TODO
-/*
-  // add conditions for conditional events
-  if ( auto restrictions = element->getOptionalChild<XML::bpmnos::tRestrictions>(); restrictions.has_value() ) {
-    assert( this->restrictions.empty() );
-    for ( XML::bpmnos::tRestriction& condition : restrictions.value().get().restriction ) {
-      try {
-        conditions.push_back(std::make_unique<Restriction>(&condition,attributeRegistry));
-      }
-      catch ( const std::exception& error ) {
-        throw std::runtime_error("ExtensionElements: illegal parameters for condition '" + (std::string)condition.id.value + "'.\n" + error.what());
-      }
-
-      // add exit dependencies
-      for ( auto input : conditions.back()->expression->inputs ) {
-        exitDependencies.insert(input);
-      }
-    }
-  }
-*/
-
   // add loop characteristics
   if ( element->getOptionalChild<XML::bpmnos::tLoopCharacteristics>().has_value() ) {
     for ( XML::bpmnos::tParameter& parameter : element->getOptionalChild<XML::bpmnos::tLoopCharacteristics>()->get().parameter ) {

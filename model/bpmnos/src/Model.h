@@ -38,8 +38,13 @@ public:
   std::unique_ptr<BPMN::FlowNode> createTimerCatchEvent(XML::bpmn::tCatchEvent* catchEvent, BPMN::Scope* parent) override;
 
   std::unique_ptr<BPMN::FlowNode> createSignalStartEvent(XML::bpmn::tStartEvent* startEvent, BPMN::Scope* parent) override;
+  std::unique_ptr<BPMN::FlowNode> createSignalBoundaryEvent(XML::bpmn::tBoundaryEvent* boundaryEvent, BPMN::Scope* parent) override;
   std::unique_ptr<BPMN::FlowNode> createSignalCatchEvent(XML::bpmn::tCatchEvent* catchEvent, BPMN::Scope* parent) override;
   std::unique_ptr<BPMN::FlowNode> createSignalThrowEvent(XML::bpmn::tThrowEvent* throwEvent, BPMN::Scope* parent) override;
+
+  std::unique_ptr<BPMN::FlowNode> createConditionalStartEvent(XML::bpmn::tStartEvent* startEvent, BPMN::Scope* parent) override;
+  std::unique_ptr<BPMN::FlowNode> createConditionalBoundaryEvent(XML::bpmn::tBoundaryEvent* boundaryEvent, BPMN::Scope* parent) override;
+  std::unique_ptr<BPMN::FlowNode> createConditionalCatchEvent(XML::bpmn::tCatchEvent* catchEvent, BPMN::Scope* parent) override;
 
   std::unique_ptr<BPMN::FlowNode> createMessageStartEvent(XML::bpmn::tStartEvent* startEvent, BPMN::Scope* parent) override;
   std::unique_ptr<BPMN::FlowNode> createMessageBoundaryEvent(XML::bpmn::tBoundaryEvent* boundaryEvent, BPMN::Scope* parent) override;

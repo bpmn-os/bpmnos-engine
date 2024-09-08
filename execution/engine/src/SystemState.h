@@ -108,6 +108,8 @@ public:
 
   std::unordered_map< BPMNOS::number, auto_list< std::weak_ptr<Token> > > tokensAwaitingSignal; ///< Map holding a container of all tokens at a signal event awaiting a signal with a given name
 
+  std::unordered_map< BPMNOS::number, auto_list< std::weak_ptr<Token> > > tokensAwaitingCondition; ///< Map holding a container of all tokens at a conditional event belonginge to a process instance
+
   std::unordered_map< Token*, std::weak_ptr<Message> > messageAwaitingDelivery; ///< Container holding message awaiting delivery for tokens at send tasks
 
   std::unordered_map< Token*, Token* > tokenAtMultiInstanceActivity; ///< Map holding the main token waiting at a multi-instance (or loop) activity.
@@ -151,6 +153,7 @@ private:
   friend class Engine;
   friend class StateMachine;
   friend class Token;
+  friend class ConditionalEventObserver;
 
   SystemState() = delete;
 

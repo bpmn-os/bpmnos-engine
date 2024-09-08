@@ -35,6 +35,7 @@ private:
   friend class SystemState;
   friend class StateMachine;
   friend class Engine;
+  friend class ConditionalEventObserver;
 
 public:
   constexpr Type getObservableType() const override { return Type::Token; };
@@ -104,6 +105,7 @@ private:
 
   void awaitTimer(BPMNOS::number time); ///< Wait for message trigger at catching timer events
   void awaitSignal(BPMNOS::number name); ///< Wait for signal with given name at catching signal events
+  void awaitConditions(BPMNOS::number instanceId); ///< Wait for conditions at catching conditional events within root instance
   void awaitMessageDelivery(); ///< Wait for message delivery event
 
   void awaitEventBasedGateway(); ///< Wait for catching event at event-based gateways

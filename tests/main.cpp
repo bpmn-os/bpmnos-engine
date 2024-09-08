@@ -36,6 +36,7 @@ using namespace BPMNOS;
 // Events
 #include "execution/timer/test.h"
 #include "execution/signal/test.h"
+#include "execution/condition/test.h"
 #include "execution/errorevent/test.h"
 #include "execution/escalationevent/test.h"
 // Messages
@@ -75,7 +76,7 @@ using namespace BPMNOS;
 #endif // ALL_TESTS
 
 #ifndef ALL_TESTS
-#include "execution/signal/test.h"
+#include "execution/condition/test.h"
 #endif // ALL_TESTS
 
 
