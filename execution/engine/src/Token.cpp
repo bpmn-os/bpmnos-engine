@@ -731,7 +731,7 @@ std::cerr << status[BPMNOS::Model::ExtensionElements::Index::Timestamp].value() 
             throw std::runtime_error("Token: cannot find loop index for send tasks with loop characteristics");
           }
         
-        sendMessage( (size_t)(int)status[attributeIndex].value() );
+          sendMessage( (size_t)(int)status[attributeIndex].value() );
         }
         else {
           sendMessage();
@@ -1285,7 +1285,7 @@ void Token::awaitCompensation() {
       compensationActivity &&
       activity->loopCharacteristics != compensationActivity->loopCharacteristics
     ) {
-      throw std::runtime_error("Token: compensation activities with different loop characteristics as the compensated activity '" + node->id + "' are not yet supported");
+      throw std::runtime_error("Token: compensation activities must have the same loop characteristics as the compensated activity '" + node->id + "'");
     }
 
     auto stateMachine = const_cast<StateMachine*>(owner);

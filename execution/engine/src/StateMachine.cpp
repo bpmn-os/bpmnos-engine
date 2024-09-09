@@ -118,7 +118,6 @@ void StateMachine::initiateBoundaryEvents(Token* token) {
 }
 
 void StateMachine::initiateBoundaryEvent(Token* token, const BPMN::FlowNode* node) {
-//  throw std::runtime_error("StateMachine: boundary events not yet implemented!");
   tokens.push_back( std::make_shared<Token>(this,node,token->status) );
   auto createdToken = tokens.back().get();
   const_cast<SystemState*>(systemState)->tokenAssociatedToBoundaryEventToken[createdToken] = token;
@@ -665,7 +664,7 @@ void StateMachine::handleDivergingGateway(Token* token) {
     }
   }
   else {
-    throw std::runtime_error("StateMachine: diverging gateway type not yet supported");
+    throw std::runtime_error("StateMachine: diverging gateway type of node '" + token->node->id + "' not yet supported");
   }
 }
 
@@ -841,7 +840,7 @@ void StateMachine::attemptGatewayActivation(const BPMN::FlowNode* node) {
     }
   }
   else {
-    throw std::runtime_error("StateMachine: converging gateway type not yet supported");
+    throw std::runtime_error("StateMachine: converging gateway type of node '" + node->id + "' not yet supported");
   }
 }
 

@@ -106,7 +106,7 @@ bool Engine::advance() {
 void Engine::addInstances() {
   for (auto& [process,status,data] : systemState->getInstantiations() ) {
     if ( !process->isExecutable ) {
-      throw std::runtime_error("Engine: process is not executable");
+      throw std::runtime_error("Engine: process '" + process->id + "' is not executable");
     }
     if ( !data[Model::ExtensionElements::Index::Instance].has_value() ) {
       throw std::runtime_error("Engine: instance of process '" + process->id + "' has no id");
