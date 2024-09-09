@@ -12,10 +12,7 @@ Message::Message(Token* token, size_t index)
   if ( token->node->represents<BPMN::SendTask>() ) {
     waitingToken = token;
   }
-  if ( index > token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->messageDefinitions.size() ) {
-    throw std::runtime_error("Message: no message with index " + std::to_string(index) + " provided for '" +  token->node->id + "'" );
-  }
-  auto& messageDefinition = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->messageDefinitions[index];
+  auto messageDefinition = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->getMessageDefinition(index);
 
   auto& attributeRegistry = token->getAttributeRegistry();
 
@@ -96,32 +93,7 @@ nlohmann::ordered_json Message::jsonify() const {
 
 template <typename DataType>
 void Message::apply(const BPMN::FlowNode* node, const BPMNOS::Model::AttributeRegistry& attributeRegistry, BPMNOS::Values& status, DataType& data, BPMNOS::Values& globals) const {
-  size_t index = 0;
-
-  if ( auto receiveTask = node->represents<BPMN::ReceiveTask>();
-    receiveTask &&
-    receiveTask->loopCharacteristics.has_value()
-  ) {
-    auto extensionElements = receiveTask->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
-    assert(extensionElements);
-
-    // multi-instance receive task
-    if ( !extensionElements->loopIndex.has_value() || !extensionElements->loopIndex->get()->attribute.has_value() ) {
-      throw std::runtime_error("Message: receive task '" + node->id + "' requires attribute holding loop index");
-    }
-    
-    size_t attributeIndex = extensionElements->loopIndex->get()->attribute.value().get().index;
-    if ( !status[attributeIndex].has_value() ) { 
-      throw std::runtime_error("Message: cannot find loop index for receive task '" + node->id + "'");
-    }
-    index = (size_t)(int)status[index].value();
-  }
-  
-  if ( index >= node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->messageDefinitions.size() ) {
-    throw std::runtime_error("Message: no message definition with index " + std::to_string(index) + " provided for '" +  node->id + "'" );
-  }
-
-  auto& targetContentDefinition = node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->messageDefinitions[index]->contentMap;
+  auto& targetContentDefinition = node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->getMessageDefinition(status)->contentMap;
 
   size_t counter = 0;
   for (auto& [key,contentValue] : contentValueMap) {

@@ -717,7 +717,7 @@ std::cerr << status[BPMNOS::Model::ExtensionElements::Index::Timestamp].value() 
       if ( sendTask->loopCharacteristics.has_value() ) {
         // multi-instance send task requires index to access respective message definition
         if ( !extensionElements->loopIndex.has_value() || !extensionElements->loopIndex->get()->attribute.has_value() ) {
-          throw std::runtime_error("Token: send task '" + sendTask->id + "' requires attribute holding loop index");
+          throw std::runtime_error("Token: send task '" + sendTask->id + "' requires status attribute holding loop index");
         }
         size_t attributeIndex = extensionElements->loopIndex->get()->attribute.value().get().index;
         if ( !status[attributeIndex].has_value() ) { 

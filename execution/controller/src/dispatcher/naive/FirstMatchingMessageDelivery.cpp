@@ -22,7 +22,8 @@ void FirstMatchingMessageDelivery::notice(const Observable* observable) {
   if ( observable->getObservableType() == Observable::Type::MessageDeliveryRequest ) {
     auto request = static_cast<const DecisionRequest*>(observable);
     assert(request->token->node);
-    auto recipientHeader = request->token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->messageDefinitions.front()->getRecipientHeader(request->token->getAttributeRegistry(),request->token->status,*request->token->data,request->token->globals);
+    auto messageDefinition = request->token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->getMessageDefinition(request->token->status);
+    auto recipientHeader = messageDefinition->getRecipientHeader(request->token->getAttributeRegistry(),request->token->status,*request->token->data,request->token->globals);
     auto senderCandidates = request->token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->messageCandidates;
     auto_list< std::weak_ptr<const Message> > candidates;
     // determine candidate messages

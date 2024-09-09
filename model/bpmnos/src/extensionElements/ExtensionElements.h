@@ -51,6 +51,9 @@ public:
   struct { std::vector<const Attribute*> attributes; bool global; } dataUpdateOnCompletion; ///< Struct containing data attributes that are modified upon completion and a flag indicating whether a global value is changed.
 
   std::vector< std::unique_ptr<MessageDefinition> > messageDefinitions; ///< Vector containing message definition(s) provided for the node.
+  const MessageDefinition* getMessageDefinition(size_t index) const;
+  const MessageDefinition* getMessageDefinition(const BPMNOS::Values& status) const;
+
   std::vector< const BPMN::FlowNode* > messageCandidates; ///< Vector containing all potential sending or receiving nodes of a message.
 
   std::vector< std::unique_ptr<Restriction> > conditions; ///< Vector containing conditions that may be provided for conditional events.

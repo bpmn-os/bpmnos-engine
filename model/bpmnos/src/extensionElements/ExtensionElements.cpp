@@ -255,6 +255,39 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const
   }
 }
 
+const MessageDefinition* ExtensionElements::getMessageDefinition(size_t index) const {
+  if ( index > messageDefinitions.size() ) {
+    throw std::runtime_error("ExtensionElements: no message definition with index " + std::to_string(index) + " provided for '" +  baseElement->id + "'" );
+  }
+  return messageDefinitions[index].get();
+}
+
+const MessageDefinition* ExtensionElements::getMessageDefinition(const BPMNOS::Values& status) const {
+  size_t index = 0;
+
+  if ( auto receiveTask = baseElement->represents<BPMN::ReceiveTask>();
+    receiveTask &&
+    receiveTask->loopCharacteristics.has_value()
+  ) {
+    // multi-instance receive task
+    if ( !loopIndex.has_value() || !loopIndex->get()->attribute.has_value() ) {
+      throw std::runtime_error("ExtensionElements: receive task '" + receiveTask->id + "' requires status attribute holding loop index");
+    }
+    
+    size_t attributeIndex = loopIndex->get()->attribute.value().get().index;
+    if ( !status[attributeIndex].has_value() ) { 
+      throw std::runtime_error("ExtensionElements: cannot find loop index for receive task '" + receiveTask->id + "'");
+    }
+    index = (size_t)(int)status[index].value();
+  }
+  
+  if ( index >= messageDefinitions.size() ) {
+    throw std::runtime_error("ExtensionElements: no message definition with index " + std::to_string(index) + " provided for '" +  baseElement->id + "'" );
+  }
+  
+  return messageDefinitions[index].get();
+}
+
 template <typename DataType>
 bool ExtensionElements::feasibleEntry(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const {
   for ( auto& restriction : restrictions ) {
