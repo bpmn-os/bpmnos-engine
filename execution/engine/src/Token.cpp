@@ -692,15 +692,7 @@ std::cerr << status[BPMNOS::Model::ExtensionElements::Index::Timestamp].value() 
     }
   }
   else if ( node->represents<BPMN::MessageCatchEvent>() ) {
-    if ( auto receiveTask = node->represents<BPMN::ReceiveTask>();
-      receiveTask && 
-      receiveTask->loopCharacteristics.has_value()
-    ) {
-      throw std::runtime_error("Token: receive tasks with loop characteristics are not yet supported");
-    }
-    else {
-      awaitMessageDelivery();
-    }
+    awaitMessageDelivery();
   }
   else if ( node->represents<BPMN::Task>() ) {
     if ( node->represents<BPMNOS::Model::DecisionTask>() ) {
@@ -709,37 +701,36 @@ std::cerr << status[BPMNOS::Model::ExtensionElements::Index::Timestamp].value() 
     }
 
     if ( auto sendTask = node->represents<BPMN::SendTask>() ) {
-      if ( auto extensionElements = node->extensionElements->represents<BPMNOS::Model::ExtensionElements>(); extensionElements ) {
-      // send message(s)
-        if ( !extensionElements->dataUpdateOnEntry.attributes.empty() ) {
-          // notify about data update
-          if ( extensionElements->dataUpdateOnEntry.global ) {
-            owner->systemState->engine->notify( DataUpdate( extensionElements->dataUpdateOnEntry.attributes ) );
-          }
-          else {
-            owner->systemState->engine->notify( DataUpdate( owner->root->instance.value(), extensionElements->dataUpdateOnEntry.attributes ) );
-          }
-        }
-
-        if ( sendTask->loopCharacteristics.has_value() ) {
-          // multi-instance send task
-          if ( !extensionElements->loopIndex.has_value() || !extensionElements->loopIndex->get()->attribute.has_value() ) {
-            throw std::runtime_error("Token: send tasks with loop characteristics requires attribute holding loop index");
-          }
-          size_t attributeIndex = extensionElements->loopIndex->get()->attribute.value().get().index;
-          if ( !status[attributeIndex].has_value() ) { 
-            throw std::runtime_error("Token: cannot find loop index for send tasks with loop characteristics");
-          }
-        
-          sendMessage( (size_t)(int)status[attributeIndex].value() );
+      assert( node->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );
+      auto extensionElements = node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+      if ( !extensionElements->dataUpdateOnEntry.attributes.empty() ) {
+        // notify about data update
+        if ( extensionElements->dataUpdateOnEntry.global ) {
+          owner->systemState->engine->notify( DataUpdate( extensionElements->dataUpdateOnEntry.attributes ) );
         }
         else {
-          sendMessage();
+          owner->systemState->engine->notify( DataUpdate( owner->root->instance.value(), extensionElements->dataUpdateOnEntry.attributes ) );
         }
-        // wait for delivery
-        return;
       }
-      // send tasks without extension elements are interpreted like regular tasks
+
+      // send message(s)
+      if ( sendTask->loopCharacteristics.has_value() ) {
+        // multi-instance send task requires index to access respective message definition
+        if ( !extensionElements->loopIndex.has_value() || !extensionElements->loopIndex->get()->attribute.has_value() ) {
+          throw std::runtime_error("Token: send task '" + sendTask->id + "' requires attribute holding loop index");
+        }
+        size_t attributeIndex = extensionElements->loopIndex->get()->attribute.value().get().index;
+        if ( !status[attributeIndex].has_value() ) { 
+          throw std::runtime_error("Token: cannot find loop index for send task '" + sendTask->id + "'");
+        }
+        assert( status[attributeIndex].value() >= 1 );
+        sendMessage( (size_t)(int)status[attributeIndex].value()-1 );
+      }
+      else {
+        sendMessage();
+      }
+      // wait for delivery
+      return;
     }
     if ( status[BPMNOS::Model::ExtensionElements::Index::Timestamp] > owner->systemState->getTime() ) { 
       awaitTaskCompletionEvent();

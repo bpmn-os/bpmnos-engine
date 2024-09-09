@@ -12,8 +12,7 @@ Message::Message(Token* token, size_t index)
   if ( token->node->represents<BPMN::SendTask>() ) {
     waitingToken = token;
   }
-
-  if ( index >= token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->messageDefinitions.size() ) {
+  if ( index > token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->messageDefinitions.size() ) {
     throw std::runtime_error("Message: no message with index " + std::to_string(index) + " provided for '" +  token->node->id + "'" );
   }
   auto& messageDefinition = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->messageDefinitions[index];
@@ -108,19 +107,18 @@ void Message::apply(const BPMN::FlowNode* node, const BPMNOS::Model::AttributeRe
 
     // multi-instance receive task
     if ( !extensionElements->loopIndex.has_value() || !extensionElements->loopIndex->get()->attribute.has_value() ) {
-      throw std::runtime_error("Message: receive tasks with loop characteristics requires attribute holding loop index");
+      throw std::runtime_error("Message: receive task '" + node->id + "' requires attribute holding loop index");
     }
     
-    // TODO:check
     size_t attributeIndex = extensionElements->loopIndex->get()->attribute.value().get().index;
     if ( !status[attributeIndex].has_value() ) { 
-      throw std::runtime_error("Message: cannot find loop index for receive tasks with loop characteristics");
+      throw std::runtime_error("Message: cannot find loop index for receive task '" + node->id + "'");
     }
     index = (size_t)(int)status[index].value();
   }
   
   if ( index >= node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->messageDefinitions.size() ) {
-    throw std::runtime_error("Message: no message with index " + std::to_string(index) + " provided for '" +  node->id + "'" );
+    throw std::runtime_error("Message: no message definition with index " + std::to_string(index) + " provided for '" +  node->id + "'" );
   }
 
   auto& targetContentDefinition = node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->messageDefinitions[index]->contentMap;

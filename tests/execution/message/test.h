@@ -465,3 +465,166 @@ SCENARIO( "Message tasks with timer", "[execution][message]" ) {
   }
 
 }
+
+
+SCENARIO( "Multi-instance send task", "[execution][message]" ) {
+  const std::string modelFile = "tests/execution/message/Multi-instance_send_task.bpmn";
+  REQUIRE_NOTHROW( Model::Model(modelFile) );
+
+  GIVEN( "One sender with two recipients" ) {
+
+    std::string csv =
+      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
+      "Process_1, Instance_1,,\n"
+      "Process_2, Instance_2,,\n"
+      "Process_2, Instance_3,,\n"
+    ;
+
+    Model::StaticDataProvider dataProvider(modelFile,csv);
+    auto scenario = dataProvider.createScenario();
+
+    WHEN( "The engine is started with a recorder" ) {
+      Execution::Engine engine;
+      Execution::ReadyHandler readyHandler;
+      Execution::InstantEntry entryHandler;
+      Execution::DeterministicTaskCompletion completionHandler;
+      Execution::FirstMatchingMessageDelivery messageHandler;
+      Execution::InstantExit exitHandler;
+      Execution::TimeWarp timeHandler;
+      messageHandler.connect(&engine);
+      readyHandler.connect(&engine);
+      entryHandler.connect(&engine);
+      completionHandler.connect(&engine);
+      exitHandler.connect(&engine);
+      timeHandler.connect(&engine);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
+      recorder.subscribe(&engine);
+      engine.run(scenario.get());
+      THEN( "Then both messages are delivered" ) {
+        REQUIRE( recorder.find(nlohmann::json{{"nodeId", "Activity_1"},{"state", "EXITING"}}).size() == 2 );
+        REQUIRE( recorder.find(nlohmann::json{{"nodeId", "Activity_1"},{"state", "DEPARTED"}}).size() == 1 );
+        REQUIRE( recorder.find(nlohmann::json{{"nodeId", "CatchEvent_2"},{"state", "COMPLETED"}}).size() == 2 );
+      }
+    }
+  }
+
+  GIVEN( "One sender with one recipient" ) {
+
+    std::string csv =
+      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
+      "Process_1, Instance_1,,\n"
+      "Process_2, Instance_2,,\n"
+    ;
+
+    Model::StaticDataProvider dataProvider(modelFile,csv);
+    auto scenario = dataProvider.createScenario();
+
+    WHEN( "The engine is started with a recorder" ) {
+      Execution::Engine engine;
+      Execution::ReadyHandler readyHandler;
+      Execution::InstantEntry entryHandler;
+      Execution::DeterministicTaskCompletion completionHandler;
+      Execution::FirstMatchingMessageDelivery messageHandler;
+      Execution::InstantExit exitHandler;
+      Execution::TimeWarp timeHandler;
+      messageHandler.connect(&engine);
+      readyHandler.connect(&engine);
+      entryHandler.connect(&engine);
+      completionHandler.connect(&engine);
+      exitHandler.connect(&engine);
+      timeHandler.connect(&engine);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
+      recorder.subscribe(&engine);
+      engine.run(scenario.get(),1);
+      THEN( "Then one message is delivered, but send task is not completed" ) {
+        REQUIRE( recorder.find(nlohmann::json{{"nodeId", "Activity_1"},{"state", "EXITING"}}).size() == 1 );
+        REQUIRE( recorder.find(nlohmann::json{{"nodeId", "Activity_1"},{"state", "DEPARTED"}}).size() == 0 );
+        REQUIRE( recorder.find(nlohmann::json{{"nodeId", "CatchEvent_2"},{"state", "COMPLETED"}}).size() == 1 );
+      }
+    }
+  }
+
+}
+
+SCENARIO( "Multi-instance receive task", "[execution][message]" ) {
+  const std::string modelFile = "tests/execution/message/Multi-instance_receive_task.bpmn";
+  REQUIRE_NOTHROW( Model::Model(modelFile) );
+
+  GIVEN( "One sender with two recipients" ) {
+
+    std::string csv =
+      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
+      "Process_1, Instance_1,,\n"
+      "Process_2, Instance_2,,\n"
+      "Process_2, Instance_3,,\n"
+    ;
+
+    Model::StaticDataProvider dataProvider(modelFile,csv);
+    auto scenario = dataProvider.createScenario();
+
+    WHEN( "The engine is started with a recorder" ) {
+      Execution::Engine engine;
+      Execution::ReadyHandler readyHandler;
+      Execution::InstantEntry entryHandler;
+      Execution::DeterministicTaskCompletion completionHandler;
+      Execution::FirstMatchingMessageDelivery messageHandler;
+      Execution::InstantExit exitHandler;
+      Execution::TimeWarp timeHandler;
+      messageHandler.connect(&engine);
+      readyHandler.connect(&engine);
+      entryHandler.connect(&engine);
+      completionHandler.connect(&engine);
+      exitHandler.connect(&engine);
+      timeHandler.connect(&engine);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
+      recorder.subscribe(&engine);
+      engine.run(scenario.get());
+      THEN( "Then both messages are delivered and the receive task is completed" ) {
+        REQUIRE( recorder.find(nlohmann::json{{"nodeId", "Activity_1"},{"state", "EXITING"}}).size() == 2 );
+        REQUIRE( recorder.find(nlohmann::json{{"nodeId", "Activity_1"},{"state", "DEPARTED"}}).size() == 1 );
+        REQUIRE( recorder.find(nlohmann::json{{"nodeId", "ThrowEvent_2"},{"state", "DEPARTED"}}).size() == 2 );
+      }
+    }
+  }
+
+  GIVEN( "One sender with one recipient" ) {
+
+    std::string csv =
+      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
+      "Process_1, Instance_1,,\n"
+      "Process_2, Instance_2,,\n"
+    ;
+
+    Model::StaticDataProvider dataProvider(modelFile,csv);
+    auto scenario = dataProvider.createScenario();
+
+    WHEN( "The engine is started with a recorder" ) {
+      Execution::Engine engine;
+      Execution::ReadyHandler readyHandler;
+      Execution::InstantEntry entryHandler;
+      Execution::DeterministicTaskCompletion completionHandler;
+      Execution::FirstMatchingMessageDelivery messageHandler;
+      Execution::InstantExit exitHandler;
+      Execution::TimeWarp timeHandler;
+      messageHandler.connect(&engine);
+      readyHandler.connect(&engine);
+      entryHandler.connect(&engine);
+      completionHandler.connect(&engine);
+      exitHandler.connect(&engine);
+      timeHandler.connect(&engine);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
+      recorder.subscribe(&engine);
+      engine.run(scenario.get(),1);
+      THEN( "Then one message is delivered and the receive task is not completed" ) {
+        REQUIRE( recorder.find(nlohmann::json{{"nodeId", "Activity_1"},{"state", "EXITING"}}).size() == 1 );
+        REQUIRE( recorder.find(nlohmann::json{{"nodeId", "Activity_1"},{"state", "DEPARTED"}}).size() == 0 );
+        REQUIRE( recorder.find(nlohmann::json{{"nodeId", "ThrowEvent_2"},{"state", "DEPARTED"}}).size() == 1 );
+      }
+    }
+  }
+
+}

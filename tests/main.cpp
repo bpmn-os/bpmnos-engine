@@ -76,7 +76,7 @@ using namespace BPMNOS;
 #endif // ALL_TESTS
 
 #ifndef ALL_TESTS
-#include "execution/condition/test.h"
+#include "execution/message/test.h"
 #endif // ALL_TESTS
 
 
