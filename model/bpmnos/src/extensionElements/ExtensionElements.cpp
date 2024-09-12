@@ -278,7 +278,8 @@ const MessageDefinition* ExtensionElements::getMessageDefinition(const BPMNOS::V
     if ( !status[attributeIndex].has_value() ) { 
       throw std::runtime_error("ExtensionElements: cannot find loop index for receive task '" + receiveTask->id + "'");
     }
-    index = (size_t)(int)status[index].value();
+    assert( status[attributeIndex].value() >= 1 );
+    index = (size_t)(int)status[attributeIndex].value() - 1;
   }
   
   if ( index >= messageDefinitions.size() ) {
