@@ -11,8 +11,6 @@ The token flow logic depends on the node type and is described in below sections
 - Activities
   - @subpage token_flow_logic_subprocesses
   - @subpage token_flow_logic_tasks
-  - @subpage token_flow_logic_multi_instance_activities "Multi-instance activities"
-  - @subpage token_flow_logic_compensation_activities "Compensation activities"
 
   @par
   @note @ref BPMN::CallActivity "Call activities" are **not** supported. 
