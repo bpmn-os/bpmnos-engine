@@ -319,19 +319,25 @@ SCENARIO( "Multi instance compensation", "[execution][compensation][multiinstanc
         REQUIRE( waitingLog.size() == 1 );
 
         auto entryLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "ENTERED"}});
-        REQUIRE( entryLog.size() == 3 );
+        REQUIRE( entryLog.size() == 2 );
 
-        auto withdrawnLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "WITHDRAWN"}});
-        REQUIRE( withdrawnLog.size() == 1 );
+        auto completionLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "COMPLETED"}});
+        REQUIRE( completionLog.size() == 2 );
+
+        auto failureLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "FAILED"}});
+        REQUIRE( failureLog.size() == 1 ); // Second exit triggers error
 
         auto exitLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "EXITING"}});
-        REQUIRE( exitLog.size() == 3 );
+        REQUIRE( exitLog.size() == 2 ); // Failure of second exit triggers compensation
 
         auto compensationLog = recorder.find(nlohmann::json{{"nodeId","CompensateBoundaryEvent_1"},{"state", "COMPLETED"}});
         REQUIRE( compensationLog.size() == 2 );
 
         auto compensationActivityLog = recorder.find(nlohmann::json{{"nodeId","CompensationActivity_1"},{"state", "COMPLETED"}});
         REQUIRE( compensationActivityLog.size() == 2 );
+
+        auto withdrawnLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "WITHDRAWN"}});
+        REQUIRE( withdrawnLog.size() == 2 ); // Tokens for failed and pending instance are withdrwn
 
         auto departureLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "DEPARTED"}});
         REQUIRE( departureLog.size() == 0 );

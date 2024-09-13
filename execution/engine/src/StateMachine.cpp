@@ -569,7 +569,6 @@ void StateMachine::createCompensationTokenForBoundaryEvent(const BPMN::BoundaryE
   std::shared_ptr<Token> compensationToken = std::make_shared<Token>(this,compensateBoundaryEvent, status);
   compensationToken->update(Token::State::BUSY);
   compensationTokens.push_back(std::move(compensationToken));
-  
 }
 
 void StateMachine::createCompensationEventSubProcess(const BPMN::EventSubProcess* eventSubProcess, BPMNOS::Values status) {

@@ -90,16 +90,18 @@ Otherwise, the @ref BPMNOS::Execution::Token::state "token state" is directly up
 
 ## COMPLETED
 
+When a token at a task with a @ref BPMN::CompensateBoundaryEvent "compensate boundary event" reaches  @ref BPMNOS::Execution::Token::State::COMPLETED "COMPLETED" state, a token is created at this boundary event.
+
 A token in  @ref BPMNOS::Execution::Token::State::COMPLETED "COMPLETED" state waits for an @ref BPMNOS::Execution::ExitEvent "exit event" indicating that a decision is made to leave the activity. 
 When the event occurs the token state is updated to  @ref BPMNOS::Execution::Token::State::EXITING "EXITING".
+
 
 
 ## EXITING
 Feasibility of the @ref BPMNOS::Execution::Token::status "token status" is validated.
 If any of the @ref BPMNOS::Model::ExtensionElements::restrictions "restrictions" is violated,  the @ref BPMNOS::Execution::Token::state "token state" is updated to @ref BPMNOS::Execution::Token::State::FAILED "FAILED".
 
-Otherwise, the task has been executed successfully and all tokens at boundary events of the task are withdrawn.
-In the case, that the task has a @ref BPMN::CompensateBoundaryEvent "compensate boundary event", a token is created at this boundary event.
+Otherwise, the task has been executed successfully and all tokens at boundary events (except @ref BPMN::CompensateBoundaryEvent "compensate boundary events") of the task are withdrawn.
 
 If the task has an outgoing sequence flow, the @ref BPMNOS::Execution::Token::state "token state" is updated to @ref BPMNOS::Execution::Token::State::DEPARTED "DEPARTED".
 Otherwise, the @ref BPMNOS::Execution::Token::state "token state" is updated to @ref BPMNOS::Execution::Token::State::DONE "DONE".

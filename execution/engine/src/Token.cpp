@@ -819,6 +819,13 @@ void Token::advanceToCompleted() {
   }
   else {
     if ( auto activity = node->represents<BPMN::Activity>() ) {
+      if ( activity->compensatedBy ) {
+        if ( activity->isForCompensation ) {
+          throw std::runtime_error("Token: compensation activity '" + activity->id + "' must not be compensated"); 
+        }
+        awaitCompensation();
+      }
+
 //std::cerr << activity->id << " is for compensation: " << activity->isForCompensation << std::endl;
       if ( activity->isForCompensation ) {
         // final state for compensation activity reached
@@ -1077,8 +1084,6 @@ void Token::advanceToExiting() {
   }
   
   if ( activity && activity->loopCharacteristics.has_value() && activity->loopCharacteristics.value() != BPMN::Activity::LoopCharacteristics::Standard ) {
-    awaitCompensation();
-
     // delegate removal of token copies for multi-instance activity to owner
     auto stateMachine = const_cast<StateMachine*>(owner);
     auto engine = const_cast<Engine*>(owner->systemState->engine);
@@ -1091,16 +1096,6 @@ void Token::advanceToExiting() {
     if ( !activity->boundaryEvents.empty() ) {
       // remove tokens at boundary events
       engine->commands.emplace_back( std::bind(&StateMachine::deleteTokensAwaitingBoundaryEvent,stateMachine,this), stateMachine );
-
-      awaitCompensation();
-    }
-
-    if ( auto subProcess = node->represents<BPMN::SubProcess>();
-      subProcess && subProcess->compensationEventSubProcess
-    ) {
-      auto stateMachine = const_cast<StateMachine*>(owner);
-      // create compensation event subprocess
-      engine->commands.emplace_back( std::bind(&StateMachine::createCompensationEventSubProcess,stateMachine,subProcess->compensationEventSubProcess, status), stateMachine );
     }
   }
 
@@ -1271,23 +1266,29 @@ void Token::terminate() {
 
 void Token::awaitCompensation() {
   auto activity = node->as<BPMN::Activity>();
-  if ( activity->compensatedBy ) {
-    if ( auto compensationActivity = activity->compensatedBy->represents<BPMN::Activity>();
-      compensationActivity &&
-      activity->loopCharacteristics != compensationActivity->loopCharacteristics
-    ) {
-      throw std::runtime_error("Token: compensation activities must have the same loop characteristics as the compensated activity '" + node->id + "'");
-    }
+  if ( auto compensationActivity = activity->compensatedBy->represents<BPMN::Activity>();
+    compensationActivity &&
+    activity->loopCharacteristics != compensationActivity->loopCharacteristics
+  ) {
+    throw std::runtime_error("Token: compensation activities must have the same loop characteristics as the compensated activity '" + node->id + "'");
+  }
 
-    auto stateMachine = const_cast<StateMachine*>(owner);
-    auto engine = const_cast<Engine*>(owner->systemState->engine);
+  auto stateMachine = const_cast<StateMachine*>(owner);
+  auto engine = const_cast<Engine*>(owner->systemState->engine);
 
+  if ( auto subProcess = node->represents<BPMN::SubProcess>();
+    subProcess && subProcess->compensationEventSubProcess
+  ) {
+    // create compensation event subprocess with token
+    engine->commands.emplace_back( std::bind(&StateMachine::createCompensationEventSubProcess,stateMachine,subProcess->compensationEventSubProcess, status), stateMachine );
+  }
+  else {
     // find compensate boundary event
     auto it = std::find_if(activity->boundaryEvents.begin(), activity->boundaryEvents.end(), [](BPMN::FlowNode* boundaryEvent) {
       return ( boundaryEvent->represents<BPMN::CompensateBoundaryEvent>() );
     });
     if ( it != activity->boundaryEvents.end() ) {
-      // create compensation token allowing
+      // create compensation token 
       engine->commands.emplace_back( std::bind(&StateMachine::createCompensationTokenForBoundaryEvent,stateMachine,*it, status), stateMachine );
     }
   }
