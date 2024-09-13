@@ -68,11 +68,11 @@ SCENARIO( "A revoked request", "[execution][request]" ) {
       messageHandler.connect(&engine);
       exitHandler.connect(&engine);
       timeHandler.connect(&engine);
-//      Execution::Recorder recorder;
-      Execution::Recorder recorder(std::cerr);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
       engine.run(scenario.get(),2);
-      THEN( "The request and the recipient process are completed" ) {
+      THEN( "The request is revoked and the recipient process receives the revoke message" ) {
         auto requestLog =recorder.find(nlohmann::json{{"nodeId","Activity_1"},{"state", "COMPLETED"}});
         REQUIRE( requestLog.size() == 0 ); 
         auto recipientLog =recorder.find(nlohmann::json{{"nodeId","EndEvent_2"},{"state", "DONE"}});

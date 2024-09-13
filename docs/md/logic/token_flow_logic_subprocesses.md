@@ -104,6 +104,9 @@ An (ad-hoc) subprocess also completes if
 
 ## COMPLETED
 
+When a token at the (ad-hoc) subprocess with an @ref BPMN::EventSubProcess "event subprocess" with a @ref BPMN::CompensateStartEvent "compensate start event" reaches  @ref BPMNOS::Execution::Token::State::COMPLETED "COMPLETED" state, a token is created at this start event.
+If the (ad-hoc) subprocess has a @ref BPMN::CompensateBoundaryEvent "compensate boundary event", a token is created at this boundary event.
+
 A token in  @ref BPMNOS::Execution::Token::State::COMPLETED "COMPLETED" state waits for an @ref BPMNOS::Execution::ExitEvent "exit event" indicating that a decision is made to leave the activity.
 When the event occurs the token state is updated to  @ref BPMNOS::Execution::Token::State::EXITING "EXITING".
 
@@ -112,18 +115,13 @@ When the event occurs the token state is updated to  @ref BPMNOS::Execution::Tok
 Feasibility of the @ref BPMNOS::Execution::Token::status "token status" is validated.
 If any of the @ref BPMNOS::Model::ExtensionElements::restrictions "restrictions" is violated,  the @ref BPMNOS::Execution::Token::state "token state" is updated to @ref BPMNOS::Execution::Token::State::FAILING "FAILING".
 
-@note The failure occurring at this stage can no longer be caught by an @ref BPMN::EventSubProcess "event subprocess" with an @ref BPMN::ErrorStartEvent "error start event".
+@note The failure occurring at this stage can no longer be caught by an @ref BPMN::EventSubProcess "event subprocess" with an @ref BPMN::ErrorStartEvent "error start event", but an @ref BPMN::EventSubProcess "event subprocess" with a @ref BPMN::CompensateStartEvent "compensate start event" can be triggered. 
 
-Otherwise, the (ad-hoc) subprocess has been executed successfully and all tokens at boundary events of the (ad-hoc) subprocess are withdrawn.
-
-In the case, that the (ad-hoc) subprocess has an @ref BPMN::EventSubProcess "event subprocess" with a @ref BPMN::CompensateStartEvent "compensate start event", a token is created at this start event.
-In the case, that the (ad-hoc) subprocess has a @ref BPMN::CompensateBoundaryEvent "compensate boundary event", a token is created at this boundary event.
+Otherwise, the (ad-hoc) subprocess has been executed successfully and all tokens at boundary events (except @ref BPMN::CompensateBoundaryEvent "compensate boundary events") of the (ad-hoc) subprocess are withdrawn.
 
 If the (ad-hoc) subprocess has an outgoing sequence flow, the @ref BPMNOS::Execution::Token::state "token state" is updated to @ref BPMNOS::Execution::Token::State::DEPARTED "DEPARTED".
 Otherwise, the @ref BPMNOS::Execution::Token::state "token state" is updated to @ref BPMNOS::Execution::Token::State::DONE "DONE".
 In case of @ref XML::bpmn::tStandardLoopCharacteristics  "loop activities", the token may advance to @ref BPMNOS::Execution::Token::State::ENTERED "ENTERED" state after the respective entry decision has been made for the next loop of the activity.
-
-
 
 ## DEPARTED
 
