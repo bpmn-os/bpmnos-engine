@@ -26,6 +26,7 @@ list(APPEND controller_SOURCES
   dispatcher/greedy/BestLimitedChoice.cpp
   Controller.cpp
   GreedyController.cpp
+  PrecedenceGraph.cpp
 )
 
 list(APPEND controller_HEADERS
@@ -56,4 +57,5 @@ list(APPEND controller_HEADERS
   dispatcher/greedy/BestLimitedChoice.h
   Controller.h
   GreedyController.h
+  PrecedenceGraph.h
 )

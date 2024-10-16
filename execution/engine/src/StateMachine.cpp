@@ -176,6 +176,7 @@ void StateMachine::createMultiInstanceActivityTokens(Token* token) {
     }
   }
 
+  // determine attributes that are instantiated using a value of a collection 
   auto attributes = extensionElements->attributes | std::views::filter([](auto& attribute) {
     return (attribute->collection != nullptr);
   });
