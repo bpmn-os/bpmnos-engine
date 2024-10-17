@@ -10,20 +10,110 @@ PrecedenceGraph::PrecedenceGraph(const BPMNOS::Model::Scenario* scenario) : scen
   // get all known instances
   auto instances = scenario->getKnownInstances(0);
   for ( auto& instance : instances ) {
-    // create process vertices
-    auto container = createVertices( instance->id, instance->id, instance->process);
-    auto entry = container.front();
-    auto exit = container.back();
-    initialVertices.push_back(entry);
-    flatten( instance->id, instance->process, entry, exit );
+    addInstance( instance );
   }
-  // TODO: message flows
-  // std::vector< const BPMN::FlowNode* > ExtensionElements::messageCandidates; 
 }
 
-std::vector< PrecedenceGraph::Vertex >& PrecedenceGraph::createLoopVertices(BPMNOS::number rootId, BPMNOS::number instanceId, const BPMN::Activity* activity) {
+void PrecedenceGraph::addInstance( const BPMNOS::Model::Scenario::InstanceData* instance ) {
+  // create process vertices
+  auto [ entry, exit ] = createVertexPair(instance->id, instance->id, instance->process);
+  initialVertices.push_back(entry);
+  flatten( instance->id, instance->process, entry, exit );
+}
+
+void PrecedenceGraph::addNonInterruptingEventSubProcess( const BPMN::EventSubProcess* eventSubProcess, Vertex& parentEntry, Vertex& parentExit ) {
+  nonInterruptingEventSubProcesses.emplace_back(eventSubProcess, parentEntry, parentExit, 0);
+  // iterate through all known trigger and flatten event-subprocess instantiations
+  auto& counter = std::get<unsigned int>( nonInterruptingEventSubProcesses.back() );
+  assert( eventSubProcess->startEvent->represents<BPMN::MessageStartEvent>() );
+  assert( eventSubProcess->startEvent->extensionElements );
+  assert( eventSubProcess->startEvent->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );
+  auto& candidates = eventSubProcess->startEvent->extensionElements->as<BPMNOS::Model::ExtensionElements>()->messageCandidates;
+  for ( auto candidate : candidates ) {
+    for ( [[maybe_unused]] auto& _ : sendingVertices[candidate] ) {
+      // create and flatten next event-subprocess
+      counter++;
+      BPMNOS::number id = BPMNOS::to_number( BPMNOS::to_string(parentEntry.instanceId,STRING) + BPMNOS::Model::Scenario::delimiters[0] + eventSubProcess->id + BPMNOS::Model::Scenario::delimiters[1] + std::to_string(counter),  STRING);
+      flatten( id, eventSubProcess, parentEntry, parentExit );
+    }
+  } 
+}
+
+void PrecedenceGraph::addSender( const BPMN::MessageThrowEvent* messageThrowEvent, Vertex& senderEntry, Vertex& senderExit ) {
+  // flatten event subprocesses if applicable
+  assert( messageThrowEvent->extensionElements );
+  assert( messageThrowEvent->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );
+  auto& candidates = messageThrowEvent->extensionElements->as<BPMNOS::Model::ExtensionElements>()->messageCandidates;
+  for ( auto& [eventSubProcess, parentEntry, parentExit, counter] : nonInterruptingEventSubProcesses ) {
+    if (std::find(candidates.begin(), candidates.end(), eventSubProcess->startEvent) != candidates.end()) {
+      // eventSubProcess may be triggered by message throw event, create and flatten next event-subprocess
+      counter++;
+      BPMNOS::number id = BPMNOS::to_number( BPMNOS::to_string(parentEntry.instanceId,STRING) + BPMNOS::Model::Scenario::delimiters[0] + eventSubProcess->id + BPMNOS::Model::Scenario::delimiters[1] + std::to_string(counter),  STRING);
+      flatten( id, eventSubProcess, parentEntry, parentExit );
+    }
+  }
+  
+  // set precedences for all recipients
+  for ( auto candidate : candidates ) {
+    for ( auto& [ recipientEntry, recipientExit] : receivingVertices[candidate] ) {
+      senderEntry.successors.push_back(recipientExit);
+      recipientExit.predecessors.push_back(senderEntry);
+      if ( messageThrowEvent->represents<BPMN::SendTask>() ) {
+        recipientExit.successors.push_back(senderExit);
+        senderExit.predecessors.push_back(recipientExit);
+      }
+    }
+  }
+  
+  sendingVertices[messageThrowEvent].emplace_back(senderEntry, senderExit);
+}
+
+void PrecedenceGraph::addRecipient( const BPMN::MessageCatchEvent* messageCatchEvent, Vertex& recipientEntry, Vertex& recipientExit ) {
+  // set precedences for all senders
+  assert( messageCatchEvent->extensionElements );
+  assert( messageCatchEvent->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );
+  auto& candidates = messageCatchEvent->extensionElements->as<BPMNOS::Model::ExtensionElements>()->messageCandidates;
+  for ( auto candidate : candidates ) {
+    for ( auto& [ senderEntry, senderExit] : sendingVertices[candidate] ) {
+      senderEntry.successors.push_back(recipientExit);
+      recipientExit.predecessors.push_back(senderEntry);
+      if ( candidate->represents<BPMN::SendTask>() ) {
+        recipientExit.successors.push_back(senderExit);
+        senderExit.predecessors.push_back(recipientExit);
+      }
+    }
+  }
+
+  receivingVertices[messageCatchEvent].emplace_back(recipientEntry, recipientExit);
+}
+
+std::pair<PrecedenceGraph::Vertex&, PrecedenceGraph::Vertex&> PrecedenceGraph::createVertexPair(BPMNOS::number rootId, BPMNOS::number instanceId, const BPMN::Node* node) {
+  vertices.emplace_back(rootId, instanceId, node, Vertex::Type::ENTRY);
+  auto& entry = vertices.back();
+  vertices.emplace_back(rootId, instanceId, node, Vertex::Type::EXIT);
+  auto& exit = vertices.back();
+
+  entry.successors.push_back(exit);
+  exit.predecessors.push_back(entry);
+  
+  auto& container = vertexMap[node][instanceId]; // get or create container
+  container.emplace_back( entry );
+  container.emplace_back( exit );
+  
+  if ( auto messageThrowEvent = node->represents<BPMN::MessageThrowEvent>() ) {
+    addSender( messageThrowEvent, entry, exit );
+  }
+  else if ( auto messageCatchEvent = node->represents<BPMN::MessageCatchEvent>() ) {
+    addRecipient( messageCatchEvent, entry, exit );
+  }
+
+  return { entry, exit };
+}
+
+
+
+void PrecedenceGraph::createLoopVertices(BPMNOS::number rootId, BPMNOS::number instanceId, const BPMN::Activity* activity) {
   // loop & multi-instance activties
-  std::vector<Vertex>& container = vertices[activity][instanceId];
   
   // lambda returning parameter value known at time zero
   auto getValue = [&](BPMNOS::Model::Parameter* parameter, BPMNOS::ValueType type) -> std::optional<BPMNOS::number> {
@@ -83,56 +173,31 @@ std::vector< PrecedenceGraph::Vertex >& PrecedenceGraph::createLoopVertices(BPMN
     throw std::runtime_error("PrecedenceGraph: cannot determine loop maximum/cardinality for activity '" + activity->id +"'" );
   }
  
-  // lambda creating entry and exit vertices
-  auto createVertexPair = [&](BPMNOS::number id) -> void {
-    container.emplace_back( Vertex(rootId, id, activity, Vertex::Type::ENTRY) );
-    auto& entry = container.back();
-    container.emplace_back( Vertex(rootId, id, activity, Vertex::Type::EXIT) );
-    auto& exit = container.back();
-    entry.successors.push_back(exit);
-    exit.predecessors.push_back(entry);
-  };
-
   if ( activity->loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::Standard ) {
     // create vertices for loop activity
     for ( int i = 1; i <= n; i++ ) {
-      createVertexPair(instanceId);
+      createVertexPair(rootId, instanceId, activity);
     }
   }
   else {
     std::string baseName = BPMNOS::to_string(instanceId,STRING) + BPMNOS::Model::Scenario::delimiters[0] + activity->id + BPMNOS::Model::Scenario::delimiters[1] ;
-    // create vertices for loop activity
+    // create vertices for multi-instance activity
     for ( int i = 1; i <= n; i++ ) {
-      createVertexPair( BPMNOS::to_number(baseName + std::to_string(i),STRING) );
+      createVertexPair(rootId, BPMNOS::to_number(baseName + std::to_string(i),STRING), activity);
     }
   }
   
   if ( activity->loopCharacteristics.value() != BPMN::Activity::LoopCharacteristics::MultiInstanceParallel ) {
     // create sequential precedences
+    auto& container = vertexMap.at(activity).at(instanceId);
     for ( size_t i = 1; i < container.size(); i += 2 ) {
-      auto& predecessor = container[i]; // exit vertex
-      auto& successor = container[i+1]; // entry vertex
+      Vertex& predecessor = container[i]; // exit vertex
+      Vertex& successor = container[i+1]; // entry vertex
       predecessor.successors.push_back(successor);
       successor.predecessors.push_back(predecessor);
     }
   }
-    
 
-
-  return container;
-}
-
-std::vector< PrecedenceGraph::Vertex >& PrecedenceGraph::createVertices(BPMNOS::number rootId, BPMNOS::number instanceId, const BPMN::Node* node) {
-  auto& container = vertices[node].emplace( 
-    instanceId, 
-    std::vector<Vertex>{ Vertex(rootId, instanceId, node, Vertex::Type::ENTRY), Vertex( rootId, instanceId, node, Vertex::Type::EXIT) }
-  ).first->second;
-  auto& entry = container.front();
-  auto& exit = container.back();
-  entry.successors.push_back(exit);
-  exit.predecessors.push_back(entry);
-  
-  return container;
 }
 
 void PrecedenceGraph::flatten(BPMNOS::number instanceId, const BPMN::Scope* scope, Vertex& scopeEntry, Vertex& scopeExit) {
@@ -140,15 +205,16 @@ void PrecedenceGraph::flatten(BPMNOS::number instanceId, const BPMN::Scope* scop
     
     // create vertices for flow node
     auto activity = flowNode->represents<BPMN::Activity>();
-    
-    std::vector<Vertex>& container = 
-      (activity && activity->loopCharacteristics.has_value()) ?
-      createLoopVertices(scopeEntry.rootId, instanceId, activity) :
-      createVertices(scopeEntry.rootId, instanceId, flowNode)
-    ;
+    if ( activity && activity->loopCharacteristics.has_value() ) {
+      createLoopVertices(scopeEntry.rootId, instanceId, activity);
+    }
+    else {
+      createVertexPair(scopeEntry.rootId, instanceId, flowNode);
+    }
         
+    auto& container = vertexMap.at(flowNode).at(instanceId);
     // add predecessors and successors for vertices
-    for ( auto& vertex : container ) {
+    for ( Vertex& vertex : container ) {
       vertex.predecessors.push_back(scopeEntry);
       vertex.successors.push_back(scopeExit);
     }
@@ -157,8 +223,8 @@ void PrecedenceGraph::flatten(BPMNOS::number instanceId, const BPMN::Scope* scop
     if ( auto childScope = flowNode->represents<BPMN::Scope>() ) {
       assert( container.size() % 2 == 0 );
       for ( size_t i = 0; i < container.size(); i += 2 ) {
-        auto& entry = container[i];
-        auto& exit = container[i+1];
+        Vertex& entry = container[i];
+        Vertex& exit = container[i+1];
         flatten( entry.instanceId, childScope, entry, exit );
       }
     }
@@ -166,8 +232,8 @@ void PrecedenceGraph::flatten(BPMNOS::number instanceId, const BPMN::Scope* scop
 
   // sequence flows
   for ( auto& sequenceFlow : scope->sequenceFlows ) {
-    auto& origin = vertices.at(sequenceFlow->source).at(instanceId).front();
-    auto& destination = vertices.at(sequenceFlow->target).at(instanceId).back();
+    Vertex& origin = vertexMap.at(sequenceFlow->source).at(instanceId).front();
+    Vertex& destination = vertexMap.at(sequenceFlow->target).at(instanceId).back();
     origin.successors.push_back(destination);
     destination.predecessors.push_back(origin);
   }
@@ -187,9 +253,8 @@ void PrecedenceGraph::flatten(BPMNOS::number instanceId, const BPMN::Scope* scop
     }
     else {
       // non-interrupting event-subprocesses
-      if ( auto messageStartEvent = eventSubProcess->startEvent->represents<BPMN::MessageStartEvent>() ) {
-        // remember non-interrupting event-subprocess to be flattened when number of instantiations is known
-        nonInterruptingEventSubProcesses.emplace_back(scopeEntry.rootId, instanceId, eventSubProcess);
+      if ( eventSubProcess->startEvent->represents<BPMN::MessageStartEvent>() ) {
+        addNonInterruptingEventSubProcess(eventSubProcess, scopeEntry, scopeExit);
       }
       else {
         throw std::runtime_error("PrecedenceGraph: Type of non-interrupting event-subprocess '" + eventSubProcess->id + "' is not supported");

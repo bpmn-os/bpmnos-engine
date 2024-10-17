@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 3.26.4)
 
 project(bpmnos-execution)
 
+# Set the C++ standard
+set(CMAKE_CXX_STANDARD 23)
+
 # Set folder for the library to be created
 set(LIB_DIR "lib" CACHE STRING "Library directory")
 message("-- Library will be created in folder: ${CMAKE_SOURCE_DIR}/${LIB_DIR}")

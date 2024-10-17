@@ -35,16 +35,23 @@ public:
   };
 
   std::vector< std::reference_wrapper<Vertex> > initialVertices; /// Container holding entry vertices of all process instances
-  std::unordered_map< const BPMN::Node*, std::unordered_map< BPMNOS::number, std::vector< Vertex > > > vertices; /// Map holding entry and exit vertices of each possible instantiation of a node
+  std::vector< Vertex > vertices; /// Map holding entry and exit vertices of each possible instantiation of a node
+  std::unordered_map< const BPMN::Node*, std::unordered_map< BPMNOS::number, std::vector< std::reference_wrapper<Vertex> > > > vertexMap; /// Map holding entry and exit vertices of each possible instantiation of a node
 
+  void addInstance( const BPMNOS::Model::Scenario::InstanceData* instance );
 private:
-  std::vector< Vertex >& createVertices(BPMNOS::number rootId, BPMNOS::number instanceId, const BPMN::Node* node);
-  std::vector< Vertex >& createLoopVertices(BPMNOS::number rootId, BPMNOS::number instanceId, const BPMN::Activity* node);
+  void addNonInterruptingEventSubProcess( const BPMN::EventSubProcess* eventSubProcess, Vertex& parentEntry, Vertex& parentExit );
+  void addSender( const BPMN::MessageThrowEvent* messageThrowEvent, Vertex& senderEntry, Vertex& senderExit );
+  void addRecipient( const BPMN::MessageCatchEvent* messageCatchEvent, Vertex& recipientEntry, Vertex& recipientExit );
+
+  std::pair<Vertex&, Vertex&> createVertexPair(BPMNOS::number rootId, BPMNOS::number instanceId, const BPMN::Node* node);
+  void createLoopVertices(BPMNOS::number rootId, BPMNOS::number instanceId, const BPMN::Activity* node);
 //  void createChildren(BPMNOS::number instanceId, const BPMN::Scope* scope, Vertex& scopeEntry, Vertex& scopeExit);
   void flatten(BPMNOS::number instanceId, const BPMN::Scope* scope, Vertex& scopeEntry, Vertex& scopeExit);
-  std::list< std::tuple<BPMNOS::number, BPMNOS::number, const BPMN::EventSubProcess*> > nonInterruptingEventSubProcesses;
-  std::unordered_map<const BPMN::FlowNode*,  std::list< std::pair<BPMNOS::number, Vertex&> > > sending;
-  std::unordered_map<const BPMN::FlowNode*,  std::list< std::pair<BPMNOS::number, Vertex&> > > receiving;
+  
+  std::vector< std::tuple<const BPMN::EventSubProcess*, Vertex&, Vertex&, unsigned int> > nonInterruptingEventSubProcesses;
+  std::unordered_map<const BPMN::FlowNode*,  std::vector< std::pair<Vertex&, Vertex&> > > sendingVertices;
+  std::unordered_map<const BPMN::FlowNode*,  std::vector< std::pair<Vertex&, Vertex&> > > receivingVertices;
 
 };
 
