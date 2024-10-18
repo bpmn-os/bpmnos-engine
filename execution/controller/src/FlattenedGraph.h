@@ -11,9 +11,9 @@
 namespace BPMNOS::Execution {
 
 /**
- * @brief Represents a precedence graph containing all BPMN nodes that may receive a token during execution of a scenario.
+ * @brief Represents a graph containing all BPMN nodes that may receive a token during execution of a scenario.
  *
- * For a given @ref BPMNOS::Model::Scenario "scenario", the `FlattenedGraph` class encapsulates a precedence graph containing a vertex for each entry and each exit of a @ref BPMN::Node "node" in a BPMN model. The precedence graph includes all instances known at time zero.
+ * For a given @ref BPMNOS::Model::Scenario "scenario", the `FlattenedGraph` class encapsulates a graph containing a vertex for each entry and each exit of a @ref BPMN::Node "node" in a BPMN model. The flattened graph includes all instances known at time zero.
  */
 class FlattenedGraph {
 public:
