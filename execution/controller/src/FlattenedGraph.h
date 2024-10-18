@@ -1,5 +1,5 @@
-#ifndef BPMNOS_Execution_PrecedenceGraph_H
-#define BPMNOS_Execution_PrecedenceGraph_H
+#ifndef BPMNOS_Execution_FlattenedGraph_H
+#define BPMNOS_Execution_FlattenedGraph_H
 
 #include <unordered_map>
 #include <vector>
@@ -13,11 +13,11 @@ namespace BPMNOS::Execution {
 /**
  * @brief Represents a precedence graph containing all BPMN nodes that may receive a token during execution of a scenario.
  *
- * For a given @ref BPMNOS::Model::Scenario "scenario", the `PrecedenceGraph` class encapsulates a precedence graph containing a vertex for each entry and each exit of a @ref BPMN::Node "node" in a BPMN model. The precedence graph includes all instances known at time zero.
+ * For a given @ref BPMNOS::Model::Scenario "scenario", the `FlattenedGraph` class encapsulates a precedence graph containing a vertex for each entry and each exit of a @ref BPMN::Node "node" in a BPMN model. The precedence graph includes all instances known at time zero.
  */
-class PrecedenceGraph {
+class FlattenedGraph {
 public:
-  PrecedenceGraph(const BPMNOS::Model::Scenario* scenario);
+  FlattenedGraph(const BPMNOS::Model::Scenario* scenario);
   const BPMNOS::Model::Scenario* scenario;
   
   class Vertex {
@@ -28,10 +28,12 @@ public:
     const BPMNOS::number instanceId;
     const BPMN::Node* node;
     const Type type;
-    std::vector<std::reference_wrapper<Vertex> > predecessors; /// Container holding all predecessors according to the token flow logic
-    std::vector<std::reference_wrapper<Vertex> > successors;   /// Container holding all successors according to the token flow logic
-//    std::vector<std::reference_wrapper<Vertex> > senders;      /// Container holding all possible sending vertices for a message catch event
-//    std::vector<std::reference_wrapper<Vertex> > recipients;   /// Container holding all possible receiving vertices for a message throw event
+    std::vector< std::pair<const BPMN::SequenceFlow*, Vertex&> > inflows;      /// Container holding vertices connecting by an incoming sequence flow
+    std::vector< std::pair<const BPMN::SequenceFlow*, Vertex&> > outflows;     /// Container holding vertices connecting by an outgoing sequence flow
+    std::vector< std::reference_wrapper<Vertex> > predecessors; /// Container holding predecessors according to the token flow logic (excl. sequence flows)
+    std::vector< std::reference_wrapper<Vertex> > successors;   /// Container holding successors according to the token flow logic (excl. sequence flows)
+    std::vector< std::reference_wrapper<Vertex> > senders;      /// Container holding all possible vertices sending a message (or the message delivery notfication for a SendTask)
+    std::vector< std::reference_wrapper<Vertex> > recipients;   /// Container holding all possible vertices receiving a message (or the message delivery notfication for a SendTask)
   };
 
   std::vector< std::reference_wrapper<Vertex> > initialVertices; /// Container holding entry vertices of all process instances
@@ -49,7 +51,7 @@ private:
 //  void createChildren(BPMNOS::number instanceId, const BPMN::Scope* scope, Vertex& scopeEntry, Vertex& scopeExit);
   void flatten(BPMNOS::number instanceId, const BPMN::Scope* scope, Vertex& scopeEntry, Vertex& scopeExit);
   
-  std::vector< std::tuple<const BPMN::EventSubProcess*, Vertex&, Vertex&, unsigned int> > nonInterruptingEventSubProcesses;
+  std::vector< std::tuple<const BPMN::EventSubProcess*, Vertex&, Vertex&, unsigned int, Vertex*> > nonInterruptingEventSubProcesses;
   std::unordered_map<const BPMN::FlowNode*,  std::vector< std::pair<Vertex&, Vertex&> > > sendingVertices;
   std::unordered_map<const BPMN::FlowNode*,  std::vector< std::pair<Vertex&, Vertex&> > > receivingVertices;
 
@@ -57,4 +59,4 @@ private:
 
 } // namespace BPMNOS::Execution
 
-#endif // BPMNOS_Execution_PrecedenceGraph_H
+#endif // BPMNOS_Execution_FlattenedGraph_H

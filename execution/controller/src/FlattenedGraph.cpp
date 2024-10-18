@@ -1,4 +1,4 @@
-#include "PrecedenceGraph.h"
+#include "FlattenedGraph.h"
 #include "model/bpmnos/src/extensionElements/ExtensionElements.h"
 #include "model/utility/src/Number.h"
 #include "model/utility/src/CollectionRegistry.h"
@@ -6,7 +6,7 @@
 
 using namespace BPMNOS::Execution;
 
-PrecedenceGraph::PrecedenceGraph(const BPMNOS::Model::Scenario* scenario) : scenario(scenario) {
+FlattenedGraph::FlattenedGraph(const BPMNOS::Model::Scenario* scenario) : scenario(scenario) {
   // get all known instances
   auto instances = scenario->getKnownInstances(0);
   for ( auto& instance : instances ) {
@@ -14,17 +14,18 @@ PrecedenceGraph::PrecedenceGraph(const BPMNOS::Model::Scenario* scenario) : scen
   }
 }
 
-void PrecedenceGraph::addInstance( const BPMNOS::Model::Scenario::InstanceData* instance ) {
+void FlattenedGraph::addInstance( const BPMNOS::Model::Scenario::InstanceData* instance ) {
   // create process vertices
   auto [ entry, exit ] = createVertexPair(instance->id, instance->id, instance->process);
   initialVertices.push_back(entry);
   flatten( instance->id, instance->process, entry, exit );
 }
 
-void PrecedenceGraph::addNonInterruptingEventSubProcess( const BPMN::EventSubProcess* eventSubProcess, Vertex& parentEntry, Vertex& parentExit ) {
-  nonInterruptingEventSubProcesses.emplace_back(eventSubProcess, parentEntry, parentExit, 0);
+void FlattenedGraph::addNonInterruptingEventSubProcess( const BPMN::EventSubProcess* eventSubProcess, Vertex& parentEntry, Vertex& parentExit ) {
+  nonInterruptingEventSubProcesses.emplace_back(eventSubProcess, parentEntry, parentExit, 0, nullptr);
   // iterate through all known trigger and flatten event-subprocess instantiations
   auto& counter = std::get<unsigned int>( nonInterruptingEventSubProcesses.back() );
+  auto& lastStart = std::get<Vertex*>( nonInterruptingEventSubProcesses.back() );
   assert( eventSubProcess->startEvent->represents<BPMN::MessageStartEvent>() );
   assert( eventSubProcess->startEvent->extensionElements );
   assert( eventSubProcess->startEvent->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );
@@ -35,16 +36,26 @@ void PrecedenceGraph::addNonInterruptingEventSubProcess( const BPMN::EventSubPro
       counter++;
       BPMNOS::number id = BPMNOS::to_number( BPMNOS::to_string(parentEntry.instanceId,STRING) + BPMNOS::Model::Scenario::delimiters[0] + eventSubProcess->id + BPMNOS::Model::Scenario::delimiters[1] + std::to_string(counter),  STRING);
       flatten( id, eventSubProcess, parentEntry, parentExit );
+      // newly created vertices at start event must succeed previous vertices at start event
+      auto& container = vertexMap.at(eventSubProcess->startEvent).at(id);
+      assert( container.size() >= 2 );
+      Vertex& startExit = container[container.size()-1];
+      if ( lastStart ) {
+        Vertex& startEntry = container[container.size()-2];
+        lastStart->successors.push_back(startEntry);
+        startEntry.predecessors.push_back(*lastStart);
+      }
+      lastStart = &startExit;
     }
   } 
 }
 
-void PrecedenceGraph::addSender( const BPMN::MessageThrowEvent* messageThrowEvent, Vertex& senderEntry, Vertex& senderExit ) {
+void FlattenedGraph::addSender( const BPMN::MessageThrowEvent* messageThrowEvent, Vertex& senderEntry, Vertex& senderExit ) {
   // flatten event subprocesses if applicable
   assert( messageThrowEvent->extensionElements );
   assert( messageThrowEvent->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );
   auto& candidates = messageThrowEvent->extensionElements->as<BPMNOS::Model::ExtensionElements>()->messageCandidates;
-  for ( auto& [eventSubProcess, parentEntry, parentExit, counter] : nonInterruptingEventSubProcesses ) {
+  for ( auto& [eventSubProcess, parentEntry, parentExit, counter, lastStart] : nonInterruptingEventSubProcesses ) {
     if (std::find(candidates.begin(), candidates.end(), eventSubProcess->startEvent) != candidates.end()) {
       // eventSubProcess may be triggered by message throw event, create and flatten next event-subprocess
       counter++;
@@ -56,11 +67,11 @@ void PrecedenceGraph::addSender( const BPMN::MessageThrowEvent* messageThrowEven
   // set precedences for all recipients
   for ( auto candidate : candidates ) {
     for ( auto& [ recipientEntry, recipientExit] : receivingVertices[candidate] ) {
-      senderEntry.successors.push_back(recipientExit);
-      recipientExit.predecessors.push_back(senderEntry);
+      senderEntry.recipients.push_back(recipientExit);
+      recipientExit.senders.push_back(senderEntry);
       if ( messageThrowEvent->represents<BPMN::SendTask>() ) {
-        recipientExit.successors.push_back(senderExit);
-        senderExit.predecessors.push_back(recipientExit);
+        recipientExit.recipients.push_back(senderExit);
+        senderExit.senders.push_back(recipientExit);
       }
     }
   }
@@ -68,18 +79,18 @@ void PrecedenceGraph::addSender( const BPMN::MessageThrowEvent* messageThrowEven
   sendingVertices[messageThrowEvent].emplace_back(senderEntry, senderExit);
 }
 
-void PrecedenceGraph::addRecipient( const BPMN::MessageCatchEvent* messageCatchEvent, Vertex& recipientEntry, Vertex& recipientExit ) {
+void FlattenedGraph::addRecipient( const BPMN::MessageCatchEvent* messageCatchEvent, Vertex& recipientEntry, Vertex& recipientExit ) {
   // set precedences for all senders
   assert( messageCatchEvent->extensionElements );
   assert( messageCatchEvent->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );
   auto& candidates = messageCatchEvent->extensionElements->as<BPMNOS::Model::ExtensionElements>()->messageCandidates;
   for ( auto candidate : candidates ) {
     for ( auto& [ senderEntry, senderExit] : sendingVertices[candidate] ) {
-      senderEntry.successors.push_back(recipientExit);
-      recipientExit.predecessors.push_back(senderEntry);
+      senderEntry.recipients.push_back(recipientExit);
+      recipientExit.senders.push_back(senderEntry);
       if ( candidate->represents<BPMN::SendTask>() ) {
-        recipientExit.successors.push_back(senderExit);
-        senderExit.predecessors.push_back(recipientExit);
+        recipientExit.recipients.push_back(senderExit);
+        senderExit.senders.push_back(recipientExit);
       }
     }
   }
@@ -87,7 +98,7 @@ void PrecedenceGraph::addRecipient( const BPMN::MessageCatchEvent* messageCatchE
   receivingVertices[messageCatchEvent].emplace_back(recipientEntry, recipientExit);
 }
 
-std::pair<PrecedenceGraph::Vertex&, PrecedenceGraph::Vertex&> PrecedenceGraph::createVertexPair(BPMNOS::number rootId, BPMNOS::number instanceId, const BPMN::Node* node) {
+std::pair<FlattenedGraph::Vertex&, FlattenedGraph::Vertex&> FlattenedGraph::createVertexPair(BPMNOS::number rootId, BPMNOS::number instanceId, const BPMN::Node* node) {
   vertices.emplace_back(rootId, instanceId, node, Vertex::Type::ENTRY);
   auto& entry = vertices.back();
   vertices.emplace_back(rootId, instanceId, node, Vertex::Type::EXIT);
@@ -112,7 +123,7 @@ std::pair<PrecedenceGraph::Vertex&, PrecedenceGraph::Vertex&> PrecedenceGraph::c
 
 
 
-void PrecedenceGraph::createLoopVertices(BPMNOS::number rootId, BPMNOS::number instanceId, const BPMN::Activity* activity) {
+void FlattenedGraph::createLoopVertices(BPMNOS::number rootId, BPMNOS::number instanceId, const BPMN::Activity* activity) {
   // loop & multi-instance activties
   
   // lambda returning parameter value known at time zero
@@ -120,7 +131,7 @@ void PrecedenceGraph::createLoopVertices(BPMNOS::number rootId, BPMNOS::number i
     if ( parameter->attribute.has_value() ) {
       BPMNOS::Model::Attribute& attribute = parameter->attribute->get();
       if ( !attribute.isImmutable ) {
-        throw std::runtime_error("PrecedenceGraph: Loop parameter '" + parameter->name + "' for activity '" + activity->id +"' must be immutable" );
+        throw std::runtime_error("FlattenedGraph: Loop parameter '" + parameter->name + "' for activity '" + activity->id +"' must be immutable" );
       }
       auto value = scenario->getKnownValue(rootId, &attribute, 0);
       if ( value.has_value() ) {
@@ -159,18 +170,18 @@ void PrecedenceGraph::createLoopVertices(BPMNOS::number rootId, BPMNOS::number i
     for ( auto& attribute : attributes ) {
       auto collectionValue = getValue( attribute->collection.get(), COLLECTION );
       if ( !collectionValue.has_value() ) {
-        throw std::runtime_error("PrecedenceGraph: unable to determine collection for attribute '" + attribute->name + "'");
+        throw std::runtime_error("FlattenedGraph: unable to determine collection for attribute '" + attribute->name + "'");
       }
       auto& collection = collectionRegistry[(long unsigned int)collectionValue.value()].values;
       if ( n > 0 && n != (int)collection.size() ) {
-        throw std::runtime_error("PrecedenceGraph: inconsistent number of values provided for multi-instance activity '" + activity->id +"'" );
+        throw std::runtime_error("FlattenedGraph: inconsistent number of values provided for multi-instance activity '" + activity->id +"'" );
       }
       n = (int)collection.size();
     }
   }
       
   if ( n <= 0 ) {
-    throw std::runtime_error("PrecedenceGraph: cannot determine loop maximum/cardinality for activity '" + activity->id +"'" );
+    throw std::runtime_error("FlattenedGraph: cannot determine loop maximum/cardinality for activity '" + activity->id +"'" );
   }
  
   if ( activity->loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::Standard ) {
@@ -200,7 +211,7 @@ void PrecedenceGraph::createLoopVertices(BPMNOS::number rootId, BPMNOS::number i
 
 }
 
-void PrecedenceGraph::flatten(BPMNOS::number instanceId, const BPMN::Scope* scope, Vertex& scopeEntry, Vertex& scopeExit) {
+void FlattenedGraph::flatten(BPMNOS::number instanceId, const BPMN::Scope* scope, Vertex& scopeEntry, Vertex& scopeExit) {
   for ( auto& flowNode : scope->flowNodes ) {
     
     // create vertices for flow node
@@ -234,14 +245,14 @@ void PrecedenceGraph::flatten(BPMNOS::number instanceId, const BPMN::Scope* scop
   for ( auto& sequenceFlow : scope->sequenceFlows ) {
     Vertex& origin = vertexMap.at(sequenceFlow->source).at(instanceId).front();
     Vertex& destination = vertexMap.at(sequenceFlow->target).at(instanceId).back();
-    origin.successors.push_back(destination);
-    destination.predecessors.push_back(origin);
+    origin.outflows.emplace_back(sequenceFlow.get(),destination);
+    destination.inflows.emplace_back(sequenceFlow.get(),origin);
   }
 
   // boundary events
   for ( auto& flowNode : scope->flowNodes ) {
     if ( auto boundaryEvent = flowNode->represents<BPMN::BoundaryEvent>() ) {
-      throw std::runtime_error("PrecedenceGraph: Boundary event '" + boundaryEvent->id + "' is not yet supported");
+      throw std::runtime_error("FlattenedGraph: Boundary event '" + boundaryEvent->id + "' is not yet supported");
     }    
   }
     
@@ -257,7 +268,7 @@ void PrecedenceGraph::flatten(BPMNOS::number instanceId, const BPMN::Scope* scop
         addNonInterruptingEventSubProcess(eventSubProcess, scopeEntry, scopeExit);
       }
       else {
-        throw std::runtime_error("PrecedenceGraph: Type of non-interrupting event-subprocess '" + eventSubProcess->id + "' is not supported");
+        throw std::runtime_error("FlattenedGraph: Type of non-interrupting event-subprocess '" + eventSubProcess->id + "' is not supported");
       }
     }
   }
@@ -266,7 +277,7 @@ void PrecedenceGraph::flatten(BPMNOS::number instanceId, const BPMN::Scope* scop
   for ( auto& flowNode : scope->flowNodes ) {
     auto activity = flowNode->represents<BPMN::Activity>();
     if ( activity && activity->isForCompensation ) {
-      throw std::runtime_error("PrecedenceGraph: Compensation activity '" + activity->id + "' is not yet supported");
+      throw std::runtime_error("FlattenedGraph: Compensation activity '" + activity->id + "' is not yet supported");
     }
   } 
 }
