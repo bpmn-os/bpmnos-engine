@@ -30,8 +30,8 @@ public:
     const Type type;
     std::vector< std::pair<const BPMN::SequenceFlow*, Vertex&> > inflows;      /// Container holding vertices connecting by an incoming sequence flow
     std::vector< std::pair<const BPMN::SequenceFlow*, Vertex&> > outflows;     /// Container holding vertices connecting by an outgoing sequence flow
-    std::vector< std::reference_wrapper<Vertex> > predecessors; /// Container holding predecessors according to the token flow logic (excl. sequence flows)
-    std::vector< std::reference_wrapper<Vertex> > successors;   /// Container holding successors according to the token flow logic (excl. sequence flows)
+    std::vector< std::reference_wrapper<Vertex> > predecessors; /// Container holding predecessors according to the execution logic (excl. sequence flows)
+    std::vector< std::reference_wrapper<Vertex> > successors;   /// Container holding successors according to the execution logic (excl. sequence flows)
     std::vector< std::reference_wrapper<Vertex> > senders;      /// Container holding all possible vertices sending a message (or the message delivery notfication for a SendTask)
     std::vector< std::reference_wrapper<Vertex> > recipients;   /// Container holding all possible vertices receiving a message (or the message delivery notfication for a SendTask)
   };
