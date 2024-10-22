@@ -82,6 +82,21 @@ include_directories(
 )
 #target_link_libraries(${PROJECT_NAME} nlohmann_json::nlohmann_json)
 
+# CP
+FetchContent_Declare(
+        cp
+        GIT_REPOSITORY https://github.com/bpmn-os/cp.git
+        GIT_TAG main
+)
+
+FetchContent_GetProperties(cp)
+FetchContent_MakeAvailable(cp)
+
+include_directories(
+  SYSTEM
+  ${cp_SOURCE_DIR}
+)
+
 add_subdirectory(model)
 add_subdirectory(execution)
 add_subdirectory(tests)

@@ -12,20 +12,6 @@ message("-- Library will be created in folder: ${CMAKE_SOURCE_DIR}/${LIB_DIR}")
 include(FetchContent)
 set(FETCHCONTENT_QUIET FALSE)
 
-# CP
-FetchContent_Declare(
-        cp
-        GIT_REPOSITORY https://github.com/bpmn-os/cp.git
-        GIT_TAG main
-)
-
-FetchContent_MakeAvailable(cp)
-
-include_directories(
-  SYSTEM
-  ${cp_SOURCE_DIR} 
-)
-
 # Set output directories
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/${LIB_DIR})
 #set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR})
