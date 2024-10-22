@@ -23,7 +23,8 @@ public:
   class Vertex {
   public:
     enum class Type { ENTRY, EXIT };
-    Vertex(BPMNOS::number rootId, BPMNOS::number instanceId, const BPMN::Node* node, Type type) : rootId(rootId), instanceId(instanceId), node(node), type(type) {};
+    Vertex(size_t index, BPMNOS::number rootId, BPMNOS::number instanceId, const BPMN::Node* node, Type type) : index(index), rootId(rootId), instanceId(instanceId), node(node), type(type) {};
+    const size_t index;
     const BPMNOS::number rootId;
     const BPMNOS::number instanceId;
     const BPMN::Node* node;

@@ -99,9 +99,9 @@ void FlattenedGraph::addRecipient( const BPMN::MessageCatchEvent* messageCatchEv
 }
 
 std::pair<FlattenedGraph::Vertex&, FlattenedGraph::Vertex&> FlattenedGraph::createVertexPair(BPMNOS::number rootId, BPMNOS::number instanceId, const BPMN::Node* node) {
-  vertices.emplace_back(rootId, instanceId, node, Vertex::Type::ENTRY);
+  vertices.emplace_back(vertices.size(), rootId, instanceId, node, Vertex::Type::ENTRY);
   auto& entry = vertices.back();
-  vertices.emplace_back(rootId, instanceId, node, Vertex::Type::EXIT);
+  vertices.emplace_back(vertices.size(), rootId, instanceId, node, Vertex::Type::EXIT);
   auto& exit = vertices.back();
 
   entry.successors.push_back(exit);
