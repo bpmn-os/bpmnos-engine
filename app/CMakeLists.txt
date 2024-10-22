@@ -22,7 +22,6 @@ target_link_libraries(bpmnos
   bpmnos-model
   bpmn++
   pthread
-  nlohmann_json::nlohmann_json
   xerces-c
 )
 

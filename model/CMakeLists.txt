@@ -16,16 +16,16 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/${LIB_DIR})
 include(FetchContent)
 set(FETCHCONTENT_QUIET FALSE)
 
+set(BUILD_TESTING OFF CACHE BOOL "Disable testing")
 # String Util
 FetchContent_Declare(
         strutil
         GIT_REPOSITORY https://github.com/Shot511/strutil.git
-        GIT_TAG dafb13e8e5e7761dc9a731862a666221e82cd546 # Version 1.0.2 as of Jan 7, 2023
+        GIT_TAG v1.1.0
+        SOURCE_SUBDIR this-directory-does-not-exist # Work around to not build the project
 )
 
-if (NOT strutil_POPULATED)
-    FetchContent_Populate(strutil)
-endif ()
+FetchContent_MakeAvailable(strutil)
 
 include_directories(
   SYSTEM

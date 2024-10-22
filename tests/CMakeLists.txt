@@ -9,11 +9,7 @@ FetchContent_Declare(
 )
 
 FetchContent_GetProperties(catch)
-
-if (NOT catch_POPULATED)
-  FetchContent_Populate(catch)
-  add_subdirectory(${catch_SOURCE_DIR} ${catch_BINARY_DIR})
-endif ()
+FetchContent_MakeAvailable(catch)
 
 # Set the C++ standard
 set(CMAKE_CXX_STANDARD 23)
@@ -83,7 +79,6 @@ target_link_libraries(run_tests
   bpmnos-model
   bpmn++
   pthread
-  nlohmann_json::nlohmann_json
   xerces-c
   Catch2::Catch2WithMain
 )

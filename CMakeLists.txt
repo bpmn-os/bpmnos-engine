@@ -22,11 +22,11 @@ FetchContent_Declare(
         cnl
         GIT_REPOSITORY https://github.com/johnmcfarlane/cnl.git
         GIT_TAG v1.1.2
+        SOURCE_SUBDIR this-directory-does-not-exist # Work around to not build the project
 )
 
-if (NOT cnl_POPULATED)
-    FetchContent_Populate(cnl)
-endif ()
+FetchContent_MakeAvailable(cnl)
+
 include_directories(
   SYSTEM
   ${cnl_SOURCE_DIR}/include 
@@ -37,11 +37,11 @@ FetchContent_Declare(
         csv
         GIT_REPOSITORY https://github.com/vincentlaucsb/csv-parser.git
         GIT_TAG 2.3.0
+        SOURCE_SUBDIR this-directory-does-not-exist # Work around to not build the project
 )
 
-if (NOT csv_POPULATED)
-    FetchContent_Populate(csv)
-endif ()
+FetchContent_MakeAvailable(csv)
+
 include_directories(
   SYSTEM
   ${csv_SOURCE_DIR}/single_include 
@@ -55,11 +55,9 @@ FetchContent_Declare(
 )
 
 FetchContent_GetProperties(exprtk)
-if (NOT exprtk_POPULATED)
-    FetchContent_Populate(exprtk)
-    add_library(exprtk INTERFACE)
-    # by using the SYSTEM flag the compiler ignores any warnings of the library
-endif ()
+FetchContent_MakeAvailable(exprtk)
+#add_library(exprtk INTERFACE)
+
 include_directories(
   SYSTEM INTERFACE 
   ${exprtk_SOURCE_DIR}
@@ -72,15 +70,12 @@ FetchContent_Declare(
         GIT_REPOSITORY https://github.com/nlohmann/json.git
         GIT_TAG v3.11.2
         GIT_PROGRESS   TRUE
+        SOURCE_SUBDIR this-directory-does-not-exist # Work around to not build the project
 )
 
 FetchContent_GetProperties(json)
-if (NOT json_POPULATED)
-    set(JSON_BuildTests OFF)
-    FetchContent_Populate(json)
-    add_subdirectory(${json_SOURCE_DIR} ${json_BINARY_DIR})
-    #    set_target_properties(nlohmann_json::nlohmann_json PROPERTIES POSITION_INDEPENDENT_CODE ON)
-endif ()
+FetchContent_MakeAvailable(json)
+
 include_directories(
   SYSTEM
   ${json_SOURCE_DIR}/single_include 
