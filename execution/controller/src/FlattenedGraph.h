@@ -54,7 +54,15 @@ private:
   std::vector< std::tuple<const BPMN::EventSubProcess*, Vertex&, Vertex&, unsigned int, Vertex*> > nonInterruptingEventSubProcesses;
   std::unordered_map<const BPMN::FlowNode*,  std::vector< std::pair<Vertex&, Vertex&> > > sendingVertices;
   std::unordered_map<const BPMN::FlowNode*,  std::vector< std::pair<Vertex&, Vertex&> > > receivingVertices;
-
+  
+  std::unordered_map<const Vertex*,  std::vector< std::pair<Vertex&, Vertex&> > > sequentialActivities; /// Container allowing to look up vertices of sequential activities given a pointer to the entry vertex of a performer  
+  std::unordered_map<const Vertex*, std::pair<Vertex&, Vertex&> > performer; /// Container allowing to look up performer vertices of a sequential activity
+  
+  std::unordered_map<const Vertex*,  std::vector< std::pair<Vertex&, Vertex&> > > dataModifiers; /// Container allowing to look up vertices of tasks modifying data attributes given a pointer to the entry vertex of the node owning the data
+  std::unordered_map<const Vertex*, std::unordered_map< const BPMNOS::Model::Attribute*, std::pair<Vertex&, Vertex&> > > dataOwner; /// Container allowing to look up vertices of the data owner of an attribute modified by a task
+  
+  std::pair<Vertex&, Vertex&> getPerformer( Vertex* vertex ); /// Returns the entry vertex of the performer of a sequential activity
+  std::pair<Vertex&, Vertex&> getDataOwner( Vertex* vertex, const BPMNOS::Model::Attribute* attribute ); /// Returns the entry vertex of the owner of a data attribute modified at a task 
 };
 
 } // namespace BPMNOS::Execution
