@@ -36,9 +36,9 @@ public:
     std::vector< std::reference_wrapper<Vertex> > senders;      /// Container holding all possible vertices sending a message (or the message delivery notfication for a SendTask)
     std::vector< std::reference_wrapper<Vertex> > recipients;   /// Container holding all possible vertices receiving a message (or the message delivery notfication for a SendTask)
     std::vector< std::reference_wrapper<Vertex> > dataOwners;   /// Container holding all entry vertices of nodes owning at least one data attribute
-    std::pair<Vertex&, Vertex&> parent(); /// Returns the vertices of the parent
-    std::pair<Vertex&, Vertex&> performer(); /// Returns the vertices of the performer of a sequential activity vertex
-    std::pair<Vertex&, Vertex&> dataOwner( const BPMNOS::Model::Attribute* attribute ); /// Returns the vertices of the owner of a data attribute
+    std::pair<const Vertex&, const Vertex&> parent() const; /// Returns the vertices of the parent
+    std::pair<const Vertex&, const Vertex&> performer() const ; /// Returns the vertices of the performer of a sequential activity vertex
+    std::pair<const Vertex&, const Vertex&> dataOwner( const BPMNOS::Model::Attribute* attribute ) const; /// Returns the vertices of the owner of a data attribute
   };
 
   std::vector< std::reference_wrapper<Vertex> > initialVertices; /// Container holding entry vertices of all process instances
@@ -59,8 +59,8 @@ private:
   std::unordered_map<const BPMN::FlowNode*,  std::vector< std::pair<Vertex&, Vertex&> > > sendingVertices;
   std::unordered_map<const BPMN::FlowNode*,  std::vector< std::pair<Vertex&, Vertex&> > > receivingVertices;
   
-  std::unordered_map<const Vertex*,  std::vector< std::pair<Vertex&, Vertex&> > > sequentialActivities; /// Container allowing to look up vertices of sequential activities given a pointer to the entry vertex of a performer  
-  std::unordered_map<const Vertex*,  std::vector< std::pair<Vertex&, Vertex&> > > dataModifiers; /// Container allowing to look up vertices of tasks modifying data attributes given a pointer to the entry vertex of the node owning the data
+  std::unordered_map<const Vertex*,  std::vector< std::pair<const Vertex&, const Vertex&> > > sequentialActivities; /// Container allowing to look up vertices of sequential activities given a pointer to the entry vertex of a performer  
+  std::unordered_map<const Vertex*,  std::vector< std::pair<const Vertex&, const Vertex&> > > dataModifiers; /// Container allowing to look up vertices of tasks modifying data attributes given a pointer to the entry vertex of the node owning the data
 };
 
 } // namespace BPMNOS::Execution
