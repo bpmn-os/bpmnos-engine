@@ -23,7 +23,7 @@ public:
   class Vertex {
   public:
     enum class Type { ENTRY, EXIT };
-    Vertex(size_t index, BPMNOS::number rootId, BPMNOS::number instanceId, const BPMN::Node* node, Type type) : index(index), rootId(rootId), instanceId(instanceId), node(node), type(type) {};
+    Vertex(size_t index, BPMNOS::number rootId, BPMNOS::number instanceId, const BPMN::Node* node, Type type);
     const size_t index;
     const BPMNOS::number rootId;
     const BPMNOS::number instanceId;
@@ -35,6 +35,10 @@ public:
     std::vector< std::reference_wrapper<Vertex> > successors;   /// Container holding successors according to the execution logic (excl. sequence flows)
     std::vector< std::reference_wrapper<Vertex> > senders;      /// Container holding all possible vertices sending a message (or the message delivery notfication for a SendTask)
     std::vector< std::reference_wrapper<Vertex> > recipients;   /// Container holding all possible vertices receiving a message (or the message delivery notfication for a SendTask)
+    std::vector< std::reference_wrapper<Vertex> > dataOwners;   /// Container holding all entry vertices of nodes owning at least one data attribute
+    std::pair<Vertex&, Vertex&> parent(); /// Returns the vertices of the parent
+    std::pair<Vertex&, Vertex&> performer(); /// Returns the vertices of the performer of a sequential activity vertex
+    std::pair<Vertex&, Vertex&> dataOwner( const BPMNOS::Model::Attribute* attribute ); /// Returns the vertices of the owner of a data attribute
   };
 
   std::vector< std::reference_wrapper<Vertex> > initialVertices; /// Container holding entry vertices of all process instances
@@ -56,13 +60,7 @@ private:
   std::unordered_map<const BPMN::FlowNode*,  std::vector< std::pair<Vertex&, Vertex&> > > receivingVertices;
   
   std::unordered_map<const Vertex*,  std::vector< std::pair<Vertex&, Vertex&> > > sequentialActivities; /// Container allowing to look up vertices of sequential activities given a pointer to the entry vertex of a performer  
-  std::unordered_map<const Vertex*, std::pair<Vertex&, Vertex&> > performer; /// Container allowing to look up performer vertices of a sequential activity
-  
   std::unordered_map<const Vertex*,  std::vector< std::pair<Vertex&, Vertex&> > > dataModifiers; /// Container allowing to look up vertices of tasks modifying data attributes given a pointer to the entry vertex of the node owning the data
-  std::unordered_map<const Vertex*, std::unordered_map< const BPMNOS::Model::Attribute*, std::pair<Vertex&, Vertex&> > > dataOwner; /// Container allowing to look up vertices of the data owner of an attribute modified by a task
-  
-  std::pair<Vertex&, Vertex&> getPerformer( Vertex* vertex ); /// Returns the entry vertex of the performer of a sequential activity
-  std::pair<Vertex&, Vertex&> getDataOwner( Vertex* vertex, const BPMNOS::Model::Attribute* attribute ); /// Returns the entry vertex of the owner of a data attribute modified at a task 
 };
 
 } // namespace BPMNOS::Execution

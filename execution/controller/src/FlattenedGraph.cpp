@@ -7,6 +7,67 @@
 
 using namespace BPMNOS::Execution;
 
+FlattenedGraph::Vertex::Vertex(size_t index, BPMNOS::number rootId, BPMNOS::number instanceId, const BPMN::Node* node, Type type)
+  : index(index)
+  , rootId(rootId)
+  , instanceId(instanceId)
+  , node(node)
+  , type(type)
+{
+  if ( node->represents<BPMN::ChildNode>() ) {
+    dataOwners = parent().first.dataOwners;
+  }
+}
+
+
+std::pair<FlattenedGraph::Vertex&, FlattenedGraph::Vertex&>  FlattenedGraph::Vertex::parent() {
+  if( !node->represents<BPMN::ChildNode>() ) {
+    throw std::logic_error("FlattenedGraph::Vertex: only child nodes have a parent");
+  }
+
+  assert( predecessors.size() );
+  assert( predecessors.back().get().node->represents<BPMN::Scope>() );
+  assert( predecessors.back().get().node == node->as<BPMN::ChildNode>()->parent );
+
+  assert( successors.size() );
+  assert( successors.back().get().node->represents<BPMN::Scope>() );
+  assert( successors.back().get().node == node->as<BPMN::ChildNode>()->parent );
+
+  return std::pair<Vertex&, Vertex&>(predecessors.back().get(), successors.back().get() );
+}
+
+std::pair<FlattenedGraph::Vertex&, FlattenedGraph::Vertex&> FlattenedGraph::Vertex::performer() {
+  assert( node->represents<BPMN::Activity>() );
+  assert( node->as<BPMN::Activity>()->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() );
+
+  auto performer = node->as<BPMN::Activity>()->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>()->performer;
+  Vertex* entry = (type == Type::ENTRY ? this : this - 1);
+  Vertex* exit = (type == Type::EXIT ? this : this + 1);
+  do {
+    auto parentVertices = entry->parent();
+    entry = &parentVertices.first;
+    exit = &parentVertices.second;
+  } while ( entry->node != performer );
+
+  return { *entry, *exit };
+}
+
+std::pair<FlattenedGraph::Vertex&, FlattenedGraph::Vertex&> FlattenedGraph::Vertex::dataOwner( const BPMNOS::Model::Attribute* attribute ) {
+  assert( attribute->category == BPMNOS::Model::Attribute::Category::DATA );
+  Vertex* entry = (type == Type::ENTRY ? this : this - 1);
+  Vertex* exit = (type == Type::EXIT ? this : this + 1);
+  const BPMNOS::Model::ExtensionElements* extensionElements = node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+  while ( extensionElements->attributeRegistry.dataAttributes.size() - extensionElements->data.size() > attribute->index ) {
+    auto parentVertices = entry->parent();
+    entry = &parentVertices.first;
+    exit = &parentVertices.second;
+    extensionElements = entry->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+  }
+
+  return { *entry, *exit };
+}
+
+
 FlattenedGraph::FlattenedGraph(const BPMNOS::Model::Scenario* scenario) : scenario(scenario) {
   // get all known instances
   auto instances = scenario->getKnownInstances(0);
@@ -121,8 +182,13 @@ std::pair<FlattenedGraph::Vertex&, FlattenedGraph::Vertex&> FlattenedGraph::crea
 
   assert( node->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );
   auto extensionElements = node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+
+  if ( extensionElements->data.size() ) {
+    entry.dataOwners.push_back( entry );
+    exit.dataOwners.push_back( entry );
+  }
   
-  // populate lookup maps for performers and sequential activities
+  // populate lookup maps of sequential activities for each performer
   if ( extensionElements->hasSequentialPerformer ) {
     sequentialActivities.emplace(&entry,std::vector< std::pair<Vertex&, Vertex&> >());
   }
@@ -133,69 +199,26 @@ std::pair<FlattenedGraph::Vertex&, FlattenedGraph::Vertex&> FlattenedGraph::crea
   }
 
   if ( node->represents<BPMN::Activity>() && extensionElements->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() ) {
-    // determine entry vertex of performer
-    auto performerVertices = getPerformer(&entry);
+    auto performerVertices = entry.performer();
     sequentialActivities.at( &performerVertices.first ).push_back( { entry, exit } );
-    performer.emplace(&entry, performerVertices);
-    performer.emplace(&exit, performerVertices);
   }
 
-  // populate lookup maps for data owners and modifiers
+  // populate lookup maps of data modifiers for data owner
   if ( extensionElements->data.size() ) {
     dataModifiers.emplace(&entry,std::vector< std::pair<Vertex&, Vertex&> >());
   }
 
   if ( node->represents<BPMN::Task>() ) {
-    // TODO
-    // for each operator
     for ( auto& operator_ : extensionElements->operators ) {
       if ( operator_->attribute->category == BPMNOS::Model::Attribute::Category::DATA ) {
-        // attribute modified by operator is data attribute 
-        auto dataOwnerVertices = getDataOwner(&entry,operator_->attribute);
+        auto dataOwnerVertices = entry.dataOwner(operator_->attribute);
         dataModifiers.at( &dataOwnerVertices.first ).push_back( { entry, exit } );
-        dataOwner[&entry].emplace(operator_->attribute, dataOwnerVertices);
-        dataOwner[&exit].emplace(operator_->attribute, dataOwnerVertices);
       }
     }
   }
-
+  
   return { entry, exit };
 }
-
-std::pair<FlattenedGraph::Vertex&, FlattenedGraph::Vertex&> FlattenedGraph::getPerformer( Vertex* vertex ) {
-  assert( vertex->node->represents<BPMN::Activity>() );
-  assert( vertex->node->as<BPMN::Activity>()->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() );
-  auto performer = vertex->node->as<BPMN::Activity>()->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>()->performer;
-  do {
-    assert( vertex->predecessors.size() );
-    assert( vertex->predecessors.back().get().node->represents<BPMN::Scope>() );
-    assert( vertex->predecessors.back().get().node == vertex->node->as<BPMN::ChildNode>()->parent );
-    vertex = &vertex->predecessors.back().get();
-  }
-  while ( vertex->node != performer);
-  
-  return std::pair<Vertex&, Vertex&>(*vertex, *(vertex + 1) );
-}
-
-std::pair<FlattenedGraph::Vertex&, FlattenedGraph::Vertex&> FlattenedGraph::getDataOwner( Vertex* vertex, const BPMNOS::Model::Attribute* attribute ) {
-  assert( vertex->node->represents<BPMN::Task>() );
-  assert( attribute->category == BPMNOS::Model::Attribute::Category::DATA );
-  assert( vertex->predecessors.size() );
-  const BPMNOS::Model::ExtensionElements* extensionElements;
-
-  do {
-    assert( vertex->predecessors.size() );
-    assert( vertex->predecessors.back().get().node->represents<BPMN::Scope>() );
-    assert( vertex->predecessors.back().get().node == vertex->node->as<BPMN::ChildNode>()->parent );
-    vertex = &vertex->predecessors.back().get();
-    assert( vertex->node->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );
-    extensionElements = vertex->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
-  }
-  while ( extensionElements->attributeRegistry.dataAttributes.size() - extensionElements->data.size() > attribute->index );
-
-  return std::pair<Vertex&, Vertex&>(*vertex, *(vertex + 1) );
-}
-
 
 void FlattenedGraph::createLoopVertices(BPMNOS::number rootId, BPMNOS::number instanceId, const BPMN::Activity* activity) {
   // loop & multi-instance activties
