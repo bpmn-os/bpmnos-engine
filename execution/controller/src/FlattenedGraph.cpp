@@ -214,6 +214,9 @@ std::pair<FlattenedGraph::Vertex&, FlattenedGraph::Vertex&> FlattenedGraph::crea
         auto dataOwnerVertices = entry.dataOwner(operator_->attribute);
         dataModifiers.at( &dataOwnerVertices.first ).push_back( { entry, exit } );
       }
+      else if ( operator_->attribute->category == BPMNOS::Model::Attribute::Category::GLOBAL ) {
+        globalModifiers.push_back( { entry, exit } );
+      }
     }
   }
   
