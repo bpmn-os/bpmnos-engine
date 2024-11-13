@@ -25,6 +25,7 @@ foreach(instance ${instances})
 
   add_custom_command(
     TARGET profiles
+    POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E echo "-- Create profile for ${name}"
 #    COMMAND ${CMAKE_COMMAND} -E echo "./profile.sh -m ${EXAMPLES_DIR}/${instance} -d ${EXAMPLES_DIR}/${name}/instance.csv -p ${EXAMPLES_DIR}/${name} profile_${name}" 
     COMMAND ./profile.sh -m ${EXAMPLES_DIR}/${instance} -d ${EXAMPLES_DIR}/${name}/instance.csv -p ${EXAMPLES_DIR}/${name} profile_${name} 
@@ -35,6 +36,7 @@ endforeach()
 
 add_custom_command(
   TARGET profiles
+  POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E echo "Copy profiles to docs"
   COMMAND mkdir -p profiles
   COMMAND ${CMAKE_COMMAND} -E echo "# Code profiles" > profiles/main.md VERBATIM
@@ -49,11 +51,13 @@ foreach(instance ${instances})
   string(REPLACE "_" " " model "${name}")
   add_custom_command(
     TARGET profiles
+    POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E echo "- @subpage profile_${name}" >> profiles/main.md
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/docs/md
   )
   add_custom_command(
     TARGET profiles
+    POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E echo "# Code profile for the ${model}" > profiles/profile_${name}.md VERBATIM
     COMMAND ${CMAKE_COMMAND} -E echo "@page profile_${name} Code profile for the ${model}" >> profiles/profile_${name}.md VERBATIM
     COMMAND ${CMAKE_COMMAND} -E echo "This page contains a code profile for the  @ref ${name} model and this @subpage instance_${name} \"instance\"." >> profiles/profile_${name}.md VERBATIM    
