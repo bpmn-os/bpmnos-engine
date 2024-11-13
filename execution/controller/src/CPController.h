@@ -4,6 +4,7 @@
 #include <bpmn++.h>
 #include "Controller.h"
 #include "Evaluator.h"
+#include "FlattenedGraph.h"
 #include "execution/engine/src/Mediator.h"
 #include <cp.h>
 #include <unordered_map>
@@ -20,19 +21,43 @@ namespace BPMNOS::Execution {
  * @brief A controller dispatching decisions obtained from a solution of a constraint program
  */
 class CPController : public Controller {
+using Vertex = FlattenedGraph::Vertex;
 public:
-  CPController();
+  CPController(const BPMNOS::Model::Scenario* scenario);
   void connect(Mediator* mediator);
 //  std::vector< std::unique_ptr<EventDispatcher> > eventDispatchers;
 protected:
   Evaluator* evaluator;
   std::shared_ptr<Event> dispatchEvent(const SystemState* systemState);
   const BPMNOS::Model::Scenario* scenario;
-  std::vector< const BPMNOS::Model::Scenario::InstanceData* > instances;
+//  std::vector< const BPMNOS::Model::Scenario::InstanceData* > instances;
+  const FlattenedGraph flattenedGraph;
   CP::Model model;
 public:
-  const CP::Model& createCP(const BPMNOS::Model::Scenario* scenario); /// Function creating a constraint program
 protected:
+  void createCP(); /// Method creating the constraint program
+  void createGlobalAttributeVariables();
+  std::vector< std::reference_wrapper<const Vertex> > getSortedVertices(const Vertex& initialVertex); /// Returns a topologically sorted vector of all vertices reachable from the given vertex
+  void initializeVertices(const Vertex& initialVertex);
+  void createVertexVariables(const Vertex& vertex);
+  void createEntryVariables(const Vertex& vertex);
+  void createExitVariables(const Vertex& vertex);
+  void createGlobalIndexVariable(const Vertex& vertex);
+  void createDataAttributeVariables(const Vertex& vertex);
+  void createDataIndexVariables(const Vertex& vertex);
+  
+  struct AttributeVariables {
+    const CP::Variable& defined;
+    const CP::Variable& value;
+  };
+
+  struct IndexedAttributeVariables {
+    CP::IndexedVariables& defined;
+    CP::IndexedVariables& value;
+  };
+  
+  void createMergedStatusVariables(const Vertex& vertex, const std::vector< std::reference_wrapper< std::vector< AttributeVariables > > >& inputs);
+  void createStatusAttributeVariables(const Vertex& vertex, const std::vector< AttributeVariables >& input);
 /*
   void createEntryVariables(const BPMN::Process* process, const BPMNOS::Values& status, const BPMNOS::Values& data); /// Function creating process variables
   void createEntryVariables(const BPMN::FlowNode* flowNode); /// Function creating process variables
@@ -46,11 +71,11 @@ protected:
   struct Variables {
   };
 */
-
+/*
   std::unordered_map<const BPMN::MessageThrowEvent*, std::vector<BPMNOS::number> > originInstances; /// Map containing all instance identifiers for all message throw events
 
   std::unordered_map<const BPMN::Scope*, std::vector<const BPMN::FlowNode*> > reachableFlowNodes; /// Map containing all flow nodes in a scope that can be reached without traversing a boundary event
-
+*/
  
 /*  
   auto getReachableEndNodes( const BPMN::Scope* scope ) {
@@ -81,11 +106,24 @@ protected:
     }
   };
   
-  struct AttributeVariables {
-    const CP::Variable& defined;
-    const CP::Variable& value;
-  };
- 
+  std::vector<const Vertex*> vertices; /// Container of all vertices considered
+//  CP::reference_vector<const CP::Variable> sequence; /// Container of sequence positions
+  std::unordered_map< const Vertex*, const CP::Variable& > position; /// Variables holding sequence positions for all vertices
+  std::unordered_map< const Vertex*, const CP::Variable& > visit; /// Variables indicating whether the a token enters or leaves a vertex
+
+  std::unordered_map< std::pair< const Vertex*, const Vertex* >, const CP::Variable&, pair_hash > flow; /// Variables indicating whether the a token flows from one vertex to another
+
+
+  std::vector< IndexedAttributeVariables > globals; /// Variables representing global attributes after i-th modification
+  std::unordered_map< const Vertex*, const CP::Variable& > globalIndex; /// Variables representing an index representing the state of the global attributes
+
+
+
+  std::unordered_map< const Vertex*, std::vector< IndexedAttributeVariables > > data; /// Variables representing data attributes owned by an entry vertex after i-th modification
+  std::unordered_map< const Vertex*, std::vector<  CP::reference_vector< const CP::Variable > > > dataIndex; /// Variables representing an index representing the state of the data attributes for each data owner
+
+  std::unordered_map< const Vertex*, std::vector<AttributeVariables> > status; /// Variables representing status attributes of a vertex
+/* 
   std::unordered_map<const BPMNOS::Model::Attribute*, const BPMN::Scope* > dataOwner;/// Map allowing to look up the scope owning a data attribute
   std::unordered_map<const BPMN::Scope*, std::vector<const BPMN::Node* > > sequentialActivities;/// Map allowing to look up the sequential activities that may change a data attribute (assumimng that intermediate changes are not propagated)
   
@@ -146,6 +184,7 @@ private:
   void createExitDataStateVariables(NodeReference reference); /// y^exit_{n,s,i} where n is a node, s is a scope with data, and i is a non-negative index for the exit data state at n for data belonging to s 
   void constrainExitDataStateVariables(ScopeReference reference); /// y^exit_{n,s,i} where n is a node, s is a scope with data, and i is a non-negative index for the exit data state at n for data belonging to s 
 //  void createSequenceFlowTraversalVariables(SequenceFlowReference reference);
+*/
 };
 
 } // namespace BPMNOS::Execution
