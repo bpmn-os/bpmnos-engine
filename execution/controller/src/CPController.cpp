@@ -37,7 +37,7 @@ void CPController::createCP() {
     position.emplace(vertices[i], sequence[i]);
   } 
 
-  createGlobalAttributeVariables();
+  createGlobalVariables();
   
   // create vertex and message variables
   for ( auto vertex : vertices ) {
@@ -105,7 +105,7 @@ void CPController::createCP() {
 */  
 }
 
-void CPController::createGlobalAttributeVariables() {
+void CPController::createGlobalVariables() {
   for ( auto& [name,attribute] : scenario->model->attributeRegistry.globalAttributes ) {
     assert( attribute->index == globals.size() ); // ensure that the order of attributes is correct
     globals.emplace_back(
@@ -143,18 +143,18 @@ void CPController::createGlobalAttributeVariables() {
   }
 }
 
-void CPController::createDataAttributeVariables(const FlattenedGraph::Vertex& vertex) {
+void CPController::createDataVariables(const FlattenedGraph::Vertex& vertex) {
   auto extensionElements = vertex.node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
 
-  std::vector< IndexedAttributeVariables > dataAttributeVariables;
+  std::vector< IndexedAttributeVariables > variables;
   
   for ( auto& attribute : extensionElements->data ) {
-    assert( attribute->index == dataAttributeVariables.size() ); // ensure that the order of attributes is correct
-    dataAttributeVariables.emplace_back(
+    assert( attribute->index == variables.size() ); // ensure that the order of attributes is correct
+    variables.emplace_back(
       model.addIndexedVariables(CP::Variable::Type::BOOLEAN, "defined_" + BPMNOS::to_string(vertex.instanceId,STRING) + "," + attribute->id ), 
       model.addIndexedVariables(CP::Variable::Type::REAL, "value_" + BPMNOS::to_string(vertex.instanceId,STRING) + "," + attribute->id) 
     );
-    auto& [defined,value] = dataAttributeVariables.back();
+    auto& [defined,value] = variables.back();
     // add variables holding initial values
     auto initialValue = scenario->getKnownValue(vertex.rootId, attribute.get(), 0);
     if ( initialValue.has_value() ) {
@@ -184,8 +184,87 @@ void CPController::createDataAttributeVariables(const FlattenedGraph::Vertex& ve
     }
   }
 
-  data.emplace( &vertex, std::move(dataAttributeVariables) ); 
+  data.emplace( &vertex, std::move(variables) ); 
 }
+
+void CPController::createEntryStatus(const Vertex& vertex) {
+  if ( vertex.inflows.size() == 1 || vertex.node->represents<BPMN::ExclusiveGateway>() ) {
+    std::vector< std::pair<const CP::Variable&, std::vector<AttributeVariables>& > > alternatives;
+    for ( auto& [sequenceFlow,predecessor] : vertex.inflows ) {
+      // add to alternatives
+      alternatives.emplace_back( flow.at({&predecessor,&vertex}), status.at(&predecessor) ); /// TODO: must be flow status variables
+    }
+    createAlternativeStatus(vertex, std::move(alternatives));
+  }
+  else if ( vertex.inflows.size() > 1 ) {
+    if ( !vertex.node->represents<BPMN::ParallelGateway>() && !vertex.node->represents<BPMN::InclusiveGateway>() ) {
+      throw std::runtime_error("CPController: illegal join at '" + vertex.node->id + "'");
+    }
+    // TODO: merge
+  }
+  else if ( vertex.node->represents<BPMN::UntypedStartEvent>() ) {
+    // TODO: start-event
+    assert( vertex.predecessors.size() == 1 );
+    createAlternativeStatus(vertex, {{visit.at(&vertex.predecessors.front().get()), status.at(&vertex.predecessors.front().get())}} );
+  }
+  else {
+    // sequential activity or multi-instance sequential activity
+  }
+}
+
+void CPController::createAlternativeStatus(const Vertex& vertex, std::vector< std::pair<const CP::Variable&, std::vector<AttributeVariables>& > > alternatives) {
+  auto extensionElements = vertex.node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+  std::string prefix = vertex.type == Vertex::Type::ENTRY ? "entry" : "exit";
+  std::vector<AttributeVariables> variables;
+  variables.reserve( extensionElements->attributeRegistry.statusAttributes.size() );
+  for ( auto& [name,attribute] : extensionElements->attributeRegistry.statusAttributes ) {
+    if ( attribute->index < extensionElements->attributeRegistry.statusAttributes.size() - extensionElements->attributes.size() ) {
+      // deduce variable
+      CP::BooleanExpression defined(false);
+      CP::LinearExpression value = 0.0;
+      for ( auto& [ active, attributeVariables] : alternatives ) {
+        defined = defined || attributeVariables[attribute->index].defined;
+        value = value + attributeVariables[attribute->index].value;
+      }
+    }
+    else {
+      // add new attributes
+      assert( vertex.type == Vertex::Type::ENTRY );
+      // add variables holding given values
+      auto value = scenario->getKnownValue(vertex.rootId, attribute, 0);
+    
+      if ( value.has_value() ) {
+        // defined initial value
+        variables.emplace_back(
+          model.addVariable(CP::Variable::Type::BOOLEAN, prefix + "_defined_" + BPMNOS::to_string(vertex.instanceId,STRING) + "," + attribute->id, (double)true,(double)true ), 
+          model.addVariable(CP::Variable::Type::REAL, prefix + "_value_" + BPMNOS::to_string(vertex.instanceId,STRING) + "," + attribute->id, (double)value.value(), (double)value.value()) 
+        );
+      }
+      else {
+        // no given value
+        variables.emplace_back(
+          model.addVariable(CP::Variable::Type::BOOLEAN, prefix + "_defined_" + BPMNOS::to_string(vertex.instanceId,STRING) + "," + attribute->id, (double)false,(double)false ), 
+          model.addVariable(CP::Variable::Type::REAL, prefix + "_value_" + BPMNOS::to_string(vertex.instanceId,STRING) + "," + attribute->id, 0.0, 0.0) 
+        );
+      }
+    }
+  }
+
+  status.emplace( &vertex, std::move(variables) );
+}
+
+/*
+void CPController::createAlternativeEntryStatus(const Vertex& vertex, std::vector< std::pair<const CP::Variable&, std::vector<AttributeVariables>& > > alternatives);
+void CPController::createMergedEntryStatus(const Vertex& vertex);
+
+void CPController::createExitStatus(const Vertex& vertex) {
+  // TODO: multiple end events for subprocess
+}
+
+void CPController::createInstantExitStatus(const Vertex& vertex);
+void CPController::createMessageExitStatus(const Vertex& vertex);
+void CPController::createTaskExitStatus(const Vertex& vertex);
+*/
 
 void CPController::createStatusAttributeVariables(const Vertex& vertex, const std::vector< AttributeVariables >& input) {
 // TODO: how do operators change status attributes?
@@ -371,16 +450,16 @@ void CPController::createDataIndexVariables(const Vertex& vertex) {
   dataIndex.emplace( &vertex, std::move(dataIndices) );
 }
 
+/*
 void CPController::createMergedStatusVariables(const Vertex& vertex, const std::vector< std::reference_wrapper< std::vector< AttributeVariables > > >& inputs) {
   assert( inputs.size() );
-/*
   if ( inputs.size() > 1 ) {
   }
   else {
     createStatusAttributeVariables(vertex,inputs.front());
   }
-*/
 }
+*/
 
 /*
 bool CPController::checkEntryDependencies(NodeReference reference) {

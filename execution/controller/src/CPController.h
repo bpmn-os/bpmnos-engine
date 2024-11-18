@@ -36,14 +36,14 @@ protected:
 public:
 protected:
   void createCP(); /// Method creating the constraint program
-  void createGlobalAttributeVariables();
+  void createGlobalVariables();
   std::vector< std::reference_wrapper<const Vertex> > getSortedVertices(const Vertex& initialVertex); /// Returns a topologically sorted vector of all vertices reachable from the given vertex
   void initializeVertices(const Vertex& initialVertex);
   void createVertexVariables(const Vertex& vertex);
   void createEntryVariables(const Vertex& vertex);
   void createExitVariables(const Vertex& vertex);
   void createGlobalIndexVariable(const Vertex& vertex);
-  void createDataAttributeVariables(const Vertex& vertex);
+  void createDataVariables(const Vertex& vertex);
   void createDataIndexVariables(const Vertex& vertex);
   
   struct AttributeVariables {
@@ -56,8 +56,17 @@ protected:
     CP::IndexedVariables& value;
   };
   
-  void createMergedStatusVariables(const Vertex& vertex, const std::vector< std::reference_wrapper< std::vector< AttributeVariables > > >& inputs);
+  void createEntryStatus(const Vertex& vertex);
+  void createAlternativeStatus(const Vertex& vertex, std::vector< std::pair<const CP::Variable&, std::vector<AttributeVariables>& > > alternatives);
+  void createAlternativeEntryStatus(const Vertex& vertex);
+  void createMergedEntryStatus(const Vertex& vertex);
+  void createExitStatus(const Vertex& vertex);
+  void createInstantExitStatus(const Vertex& vertex);
+  void createMessageExitStatus(const Vertex& vertex);
+  void createTaskExitStatus(const Vertex& vertex);
+  
   void createStatusAttributeVariables(const Vertex& vertex, const std::vector< AttributeVariables >& input);
+
 /*
   void createEntryVariables(const BPMN::Process* process, const BPMNOS::Values& status, const BPMNOS::Values& data); /// Function creating process variables
   void createEntryVariables(const BPMN::FlowNode* flowNode); /// Function creating process variables
