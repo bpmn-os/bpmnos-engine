@@ -56,17 +56,15 @@ protected:
     CP::IndexedVariables& value;
   };
   
-  void createEntryStatus(const Vertex& vertex);
+  void createStatus(const Vertex& vertex);
   void createAlternativeStatus(const Vertex& vertex, std::vector< std::pair<const CP::Variable&, std::vector<AttributeVariables>& > > alternatives);
-  void createAlternativeEntryStatus(const Vertex& vertex);
-  void createMergedEntryStatus(const Vertex& vertex);
-  void createExitStatus(const Vertex& vertex);
-  void createInstantExitStatus(const Vertex& vertex);
-  void createMessageExitStatus(const Vertex& vertex);
-  void createTaskExitStatus(const Vertex& vertex);
-  
-  void createStatusAttributeVariables(const Vertex& vertex, const std::vector< AttributeVariables >& input);
+  void createMergedStatus(const Vertex& vertex, std::vector< std::pair<const CP::Variable&, std::vector<AttributeVariables>& > > inputs);
 
+//  void createExitStatus(const Vertex& vertex);
+//  void createInstantExitStatus(const Vertex& vertex);
+//  void createMessageExitStatus(const Vertex& vertex);
+//  void createTaskExitStatus(const Vertex& vertex);
+  
 /*
   void createEntryVariables(const BPMN::Process* process, const BPMNOS::Values& status, const BPMNOS::Values& data); /// Function creating process variables
   void createEntryVariables(const BPMN::FlowNode* flowNode); /// Function creating process variables
@@ -122,16 +120,15 @@ protected:
 
   std::unordered_map< std::pair< const Vertex*, const Vertex* >, const CP::Variable&, pair_hash > flow; /// Variables indicating whether the a token flows from one vertex to another
 
-
   std::vector< IndexedAttributeVariables > globals; /// Variables representing global attributes after i-th modification
   std::unordered_map< const Vertex*, const CP::Variable& > globalIndex; /// Variables representing an index representing the state of the global attributes
-
-
 
   std::unordered_map< const Vertex*, std::vector< IndexedAttributeVariables > > data; /// Variables representing data attributes owned by an entry vertex after i-th modification
   std::unordered_map< const Vertex*, std::vector<  CP::reference_vector< const CP::Variable > > > dataIndex; /// Variables representing an index representing the state of the data attributes for each data owner
 
   std::unordered_map< const Vertex*, std::vector<AttributeVariables> > status; /// Variables representing status attributes of a vertex
+  std::unordered_map< std::pair< const Vertex*, const Vertex* >, std::vector<AttributeVariables>, pair_hash > statusFlow; /// Variables representing status attributes flowing from one vertex to another
+
 /* 
   std::unordered_map<const BPMNOS::Model::Attribute*, const BPMN::Scope* > dataOwner;/// Map allowing to look up the scope owning a data attribute
   std::unordered_map<const BPMN::Scope*, std::vector<const BPMN::Node* > > sequentialActivities;/// Map allowing to look up the sequential activities that may change a data attribute (assumimng that intermediate changes are not propagated)

@@ -39,6 +39,11 @@ public:
     std::pair<const Vertex&, const Vertex&> parent() const; /// Returns the vertices of the parent
     std::pair<const Vertex&, const Vertex&> performer() const ; /// Returns the vertices of the performer of a sequential activity vertex
     std::pair<const Vertex&, const Vertex&> dataOwner( const BPMNOS::Model::Attribute* attribute ) const; /// Returns the vertices of the owner of a data attribute
+    std::string reference() const; /// Returns a unique reference of the vertex
+    template<typename T>
+    bool entry() const { return (type == Type::ENTRY) && node->represents<T>(); }
+    template<typename T>
+    bool exit() const { return (type == Type::EXIT) && node->represents<T>(); }
   };
 
   std::vector< std::reference_wrapper<Vertex> > initialVertices; /// Container holding entry vertices of all process instances

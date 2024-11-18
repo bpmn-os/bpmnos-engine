@@ -67,6 +67,10 @@ std::pair< const FlattenedGraph::Vertex&, const FlattenedGraph::Vertex&> Flatten
   return { *entry, *exit };
 }
 
+std::string FlattenedGraph::Vertex::reference() const {
+  return BPMNOS::to_string(instanceId, STRING) + "," + node->id + "," + ( type == Type::ENTRY ? "entry" : "exit" );
+}
+
 
 FlattenedGraph::FlattenedGraph(const BPMNOS::Model::Scenario* scenario) : scenario(scenario) {
   // get all known instances
