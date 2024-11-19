@@ -271,7 +271,17 @@ void CPController::createMergedStatus(const Vertex& vertex, std::vector< std::pa
   std::vector<AttributeVariables> variables;
   variables.reserve( extensionElements->attributeRegistry.statusAttributes.size() );
   for ( auto& [name,attribute] : extensionElements->attributeRegistry.statusAttributes ) {
-    if ( attribute->index < extensionElements->attributeRegistry.statusAttributes.size() - extensionElements->attributes.size() ) {
+    if ( attribute->index == BPMNOS::Model::ExtensionElements::Index::Timestamp ) {
+      CP::MaxExpression timestamp;
+      for ( auto& [ active, attributeVariables] : inputs ) {
+        timestamp = CP::max( timestamp, attributeVariables[attribute->index].value );
+      }
+      variables.emplace_back(
+        model.addVariable(CP::Variable::Type::BOOLEAN, "defined_" + vertex.reference() + "," + attribute->id, (double)true, (double)true ), 
+        model.addVariable(CP::Variable::Type::REAL, "value_" + vertex.reference() + "," + attribute->id, timestamp )
+      );
+    }
+    else if ( attribute->index < extensionElements->attributeRegistry.statusAttributes.size() - extensionElements->attributes.size() ) {
       // deduce variable
       CP::BooleanExpression defined(false);
       CP::Cases cases;
