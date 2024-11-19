@@ -255,8 +255,9 @@ void CPController::createAlternativeStatus(const Vertex& vertex, std::vector< st
       }
       else {
         // no given value
+        bool defined = ( attribute->index == BPMNOS::Model::ExtensionElements::Index::Timestamp ) ? true : false;
         variables.emplace_back(
-          model.addVariable(CP::Variable::Type::BOOLEAN, "defined_" + vertex.reference() + "," + attribute->id, (double)false,(double)false ), 
+          model.addVariable(CP::Variable::Type::BOOLEAN, "defined_" + vertex.reference() + "," + attribute->id, (double)defined,(double)defined ), 
           model.addVariable(CP::Variable::Type::REAL, "value_" + vertex.reference() + "," + attribute->id, 0.0, 0.0) 
         );
       }
