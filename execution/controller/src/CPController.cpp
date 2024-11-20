@@ -491,6 +491,30 @@ void CPController::createExitVariables(const FlattenedGraph::Vertex& vertex) {
 
 }
 
+void CPController::createSequenceConstraints(const Vertex& vertex) {
+  auto addConstraints = [&](const Vertex& predecessor, const Vertex& vertex) {
+    model.addConstraint( position.at(&predecessor) <= position.at(&vertex) );
+    model.addConstraint(
+      // if a vertex is visited, its timestamp must not be before the predecessors timestamp
+      // as all timestamps are non-negative and zero if not visited, no condition on a visit
+      // of the predecessor is required
+      visit.at(&vertex).implies (
+        status.at(&predecessor)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value
+        <= status.at(&predecessor)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value
+      )
+    );
+  };
+
+  for ( auto& [sequenceFlow, predecessor] : vertex.inflows ) {
+    addConstraints(predecessor,vertex);
+  }
+
+  for ( auto& predecessor : vertex.predecessors ) {
+    addConstraints(predecessor,vertex);
+  }
+}
+
+
 void CPController::createGlobalIndexVariable(const Vertex& vertex) {
   CP::LinearExpression index;
   for ( auto& [modifierEntry, modifierExit] : flattenedGraph.globalModifiers ) {

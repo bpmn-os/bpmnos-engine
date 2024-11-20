@@ -42,6 +42,9 @@ protected:
   void createVertexVariables(const Vertex& vertex);
   void createEntryVariables(const Vertex& vertex);
   void createExitVariables(const Vertex& vertex);
+
+  void createSequenceConstraints(const Vertex& vertex);
+
   void createGlobalIndexVariable(const Vertex& vertex);
   void createDataVariables(const Vertex& vertex);
   void createDataIndexVariables(const Vertex& vertex);
