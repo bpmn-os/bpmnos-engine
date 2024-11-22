@@ -10,7 +10,7 @@ Otherwise, a new token is created allowing the event-subprocess to be triggered 
 
 After completion, the entry scope restrictions of the event-subprocess are checked.
 If the restrictions are violated, the state is changed to @ref BPMNOS::Execution::Token::State::FAILED "FAILED".
-Otherwise, state is changed to @ref BPMNOS::Execution::Token::State::EXITING "EXITING".
+Otherwise, the operators of the event-subprocess are applied and the state is changed to @ref BPMNOS::Execution::Token::State::EXITING "EXITING".
 Then, the full scope restrictions of the context are validated and either a failure is raised or the token state is changed to @ref BPMNOS::Execution::Token::State::DEPARTED "DEPARTED" or @ref BPMNOS::Execution::Token::State::DONE "DONE".
 
 <pre class="mermaid">
