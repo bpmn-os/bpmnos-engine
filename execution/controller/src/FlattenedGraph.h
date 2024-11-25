@@ -25,9 +25,12 @@ public:
   public:
     enum class Type { ENTRY, EXIT };
     Vertex(size_t index, BPMNOS::number rootId, BPMNOS::number instanceId, const BPMN::Node* node, Type type);
-    // Delete copy constructor and copy assignment operator
+    // Delete other constructors and assignment operators
+    Vertex() = delete; // Prevents default construction
     Vertex(const Vertex&) = delete;           // Non-copyable
     Vertex& operator=(const Vertex&) = delete; // Non-copy-assignable
+    Vertex(Vertex&&) = delete;               // Non-movable
+    Vertex& operator=(Vertex&&) = delete;    // Non-move-assignable
     const size_t index;
     const BPMNOS::number rootId;
     const BPMNOS::number instanceId;

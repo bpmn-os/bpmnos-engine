@@ -42,7 +42,6 @@ std::cerr << "create sequence position variables" << std::endl;
 std::cerr << "createGlobalVariables" << std::endl;
   createGlobalVariables();
 
-std::cerr << model.stringify() << std::endl;  
 std::cerr << "createVertexVariables" << std::endl;
   // create vertex and message variables
   for ( auto vertex : vertices ) {
@@ -52,6 +51,7 @@ std::cerr << "createVertexVariables" << std::endl;
 std::cerr << "createMessageVariables" << std::endl;
   createMessageVariables();
 std::cerr << "Done" << std::endl;
+std::cerr << model.stringify() << std::endl;  
 }
 
 void CPController::createGlobalVariables() {
@@ -98,7 +98,7 @@ void CPController::createMessageVariables() {
     CP::reference_vector<const CP::Variable> messages;
     for ( Vertex& sender : recipient->senders ) {
       assert( sender.exit<BPMN::MessageThrowEvent>() );
-      messages.emplace_back( model.addBinaryVariable("message_" + sender.reference() + "_" + recipient->reference() ) );
+      messages.emplace_back( model.addBinaryVariable("message_" + sender.reference() + "→" + recipient->reference() ) );
       const CP::Variable& message = messages.back();
       messageFlow.emplace( std::make_pair(&sender,recipient), message );
       model.addConstraint( message <= visit.at(recipient) );
@@ -166,6 +166,7 @@ void CPController::createDataVariables(const FlattenedGraph::Vertex& vertex) {
       value.emplace_back(0.0, 0.0); 
     }
     
+    assert( flattenedGraph.dataModifiers.contains(&vertex) );
     if ( attribute->isImmutable ) {
       // deducible variables
       for ( [[maybe_unused]] auto _ : flattenedGraph.dataModifiers.at(&vertex) ) {
@@ -186,7 +187,13 @@ void CPController::createDataVariables(const FlattenedGraph::Vertex& vertex) {
 }
 
 void CPController::createStatus(const Vertex& vertex) {
-  if ( vertex.entry<BPMN::UntypedStartEvent>() ) {
+std::cerr << "createStatus: " << vertex.reference() << std::endl;
+
+  if ( vertex.entry<BPMN::Process>() ) {
+    // TODO: initial status
+    createAlternativeEntryStatus(vertex, {});
+  }
+  else if ( vertex.entry<BPMN::UntypedStartEvent>() ) {
     // TODO: start-event
     assert( vertex.predecessors.size() == 1 );
     createAlternativeEntryStatus(vertex, {{visit.at(&vertex.predecessors.front().get()), status.at(&vertex.predecessors.front().get())}} );
@@ -219,6 +226,9 @@ void CPController::createStatus(const Vertex& vertex) {
     assert( vertex.inflows.size() == 1 );
     auto& [sequenceFlow,predecessor] = vertex.inflows.front();
     createAlternativeEntryStatus(vertex, {{tokenFlow.at({&predecessor,&vertex}), statusFlow.at({&predecessor,&vertex})}} );
+  }
+  else if ( vertex.type == Vertex::Type::EXIT ) {
+    createExitStatus(vertex);
   }
 
   // TODO: sequential activity or multi-instance sequential activity
@@ -328,8 +338,24 @@ void CPController::createMergedStatus(const Vertex& vertex, std::vector< std::pa
 }
 
 void CPController::createExitStatus(const Vertex& vertex) {
+std::cerr << "createExitStatus" << std::endl;
   assert( vertex.type == Vertex::Type::EXIT );
-  assert( !vertex.exit<BPMN::Scope>() );
+  if ( vertex.node->represents<BPMN::Scope>() && vertex.predecessors.size() > 1 ) {
+    assert( !vertex.predecessors.empty() );
+    if ( vertex.predecessors.size() > 1 ) {
+      // scope has children, entry node is last predecessor
+      assert( vertex.predecessors.front().get().node != vertex.node );
+      assert( vertex.predecessors.back().get().node == vertex.node );
+      // TODO: createMergedStatus
+      return;
+    }
+  }
+
+  // no scope or empty scope
+  assert( !vertex.exit<BPMN::Scope>() || vertex.predecessors.size() == 1 );
+
+
+
   const Vertex& entry = *(&vertex - 1);
   auto extensionElements = vertex.node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
 
@@ -393,15 +419,18 @@ void CPController::createExitStatus(const Vertex& vertex) {
   std::vector<AttributeVariables> variables;
   variables.reserve( extensionElements->attributeRegistry.statusAttributes.size() );
   for ( auto& [name,attribute] : extensionElements->attributeRegistry.statusAttributes ) {
+    assert( attribute->index == variables.size() );
     variables.emplace_back(
       model.addVariable(CP::Variable::Type::BOOLEAN, "defined_" + vertex.reference() + "," + attribute->id, currentStatus[attribute->index].defined ), 
       model.addVariable(CP::Variable::Type::REAL, "value_" + vertex.reference() + "," + attribute->id, currentStatus[attribute->index].value )
     );      
 
-    // ensure that attribute only has a value if vertex is visited and the attribute if defined 
-    model.addConstraint( status.at(&vertex)[attribute->index].defined <= visit.at(&vertex) );
-    model.addConstraint( (!status.at(&vertex)[attribute->index].defined).implies( status.at(&vertex)[attribute->index].value == 0.0 ) );
+    // ensure that attribute only has a value if vertex is visited and the attribute ifis defined
+    assert( visit.contains(&vertex) );
+    model.addConstraint( variables[attribute->index].defined <= visit.at(&vertex) );
+    model.addConstraint( (!variables[attribute->index].defined).implies( variables[attribute->index].value == 0.0 ) );
   }
+
   status.emplace( &vertex, std::move(variables) );
 }
 
@@ -469,8 +498,14 @@ std::cerr << "createExitVariables" << std::endl;
     createExitVariables(vertex);
   }
 
+std::cerr << "createDataVariables: " << vertex.reference() << std::endl;
+  if ( vertex.entry<BPMN::Scope>() ) {
+    createDataVariables(vertex);
+  }
+
 std::cerr << "createStatus" << std::endl;
   createStatus(vertex);
+std::cerr << model.stringify() << std::endl;  
   
 std::cerr << "createSequenceConstraints" << std::endl;
   createSequenceConstraints(vertex);
@@ -514,15 +549,12 @@ void CPController::createEntryVariables(const FlattenedGraph::Vertex& vertex) {
 }
 
 void CPController::createExitVariables(const FlattenedGraph::Vertex& vertex) {
-  // status attributes
-  // message content
-
-  if ( vertex.exit<BPMN::FlowNode>() ) {
+  if ( vertex.node->represents<BPMN::FlowNode>() ) {
     // flow variables
     if ( vertex.outflows.size() == 1 ) {
       tokenFlow.emplace( 
         std::make_pair(&vertex,&vertex.outflows.front().second), 
-        model.addVariable(CP::Variable::Type::BOOLEAN, "tokenflow_" + vertex.reference() + "_" + vertex.outflows.front().second.reference(), visit.at(&vertex) ) 
+        model.addVariable(CP::Variable::Type::BOOLEAN, "tokenflow_" + vertex.reference() + "→" + vertex.outflows.front().second.reference(), visit.at(&vertex) ) 
       );
       auto extensionElements = vertex.parent().first.node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
       std::vector<AttributeVariables> variables;
@@ -530,14 +562,14 @@ void CPController::createExitVariables(const FlattenedGraph::Vertex& vertex) {
       for ( auto& [name,attribute] : extensionElements->attributeRegistry.statusAttributes ) {
         // deduce variable
         variables.emplace_back(
-          model.addVariable(CP::Variable::Type::BOOLEAN, "statusflow_defined_" + vertex.reference() + "_" + vertex.outflows.front().second.reference() + "," + attribute->id, 
+          model.addVariable(CP::Variable::Type::BOOLEAN, "statusflow_defined_" + vertex.reference() + "→" + vertex.outflows.front().second.reference() + "," + attribute->id, 
             CP::if_then_else( 
               tokenFlow.at({&vertex,&vertex.outflows.front().second}), 
               status.at(&vertex)[attribute->index].defined, 
               (double)false
             )
           ), 
-          model.addVariable(CP::Variable::Type::REAL, "statusflow_value_" + vertex.reference() + "_" + vertex.outflows.front().second.reference() + "," + attribute->id, 
+          model.addVariable(CP::Variable::Type::REAL, "statusflow_value_" + vertex.reference() + "→" + vertex.outflows.front().second.reference() + "," + attribute->id, 
             CP::if_then_else( 
               tokenFlow.at({&vertex,&vertex.outflows.front().second}), 
               status.at(&vertex)[attribute->index].value, 
@@ -556,22 +588,18 @@ void CPController::createExitVariables(const FlattenedGraph::Vertex& vertex) {
       assert(!"Not yet implemented");
     }
   }
-  else {
-    assert(!"Not yet implemented");
-  }
-
 }
 
 void CPController::createSequenceConstraints(const Vertex& vertex) {
   auto addConstraints = [&](const Vertex& predecessor, const Vertex& vertex) {
-    model.addConstraint( position.at(&predecessor) <= position.at(&vertex) );
+    model.addConstraint( position.at(&predecessor) + 1 <= position.at(&vertex) );
     model.addConstraint(
       // if a vertex is visited, its timestamp must not be before the predecessors timestamp
       // as all timestamps are non-negative and zero if not visited, no condition on a visit
       // of the predecessor is required
       visit.at(&vertex).implies (
         status.at(&predecessor)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value
-        <= status.at(&predecessor)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value
+        <= status.at(&vertex)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value
       )
     );
   };
