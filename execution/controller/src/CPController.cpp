@@ -9,7 +9,7 @@ using namespace BPMNOS::Execution;
 CPController::CPController(const BPMNOS::Model::Scenario* scenario)
  : scenario(scenario)
  , flattenedGraph(FlattenedGraph(scenario))
- , model(CP::Model(CP::Model::ObjectiveSense::MAXIMIZE))
+ , model(CP::Model::ObjectiveSense::MAXIMIZE)
 {
   createCP();
 }
@@ -26,26 +26,32 @@ std::shared_ptr<Event> CPController::dispatchEvent(const SystemState* systemStat
 
 void CPController::createCP() {
   vertices.reserve( flattenedGraph.vertices.size() );
-  
+std::cerr << "initializeVertices" << std::endl;
   // determine relevant vertices of all process instances
   for ( auto initialVertex : flattenedGraph.initialVertices ) {
     initializeVertices(initialVertex);
   }
 
+std::cerr << "create sequence position variables" << std::endl;
   // create sequence position variables for all vertices
   auto sequence = model.addSequence( "sequence", vertices.size() );
   for ( size_t i = 0; i < vertices.size(); i++ ) {
     position.emplace(vertices[i], sequence[i]);
   } 
 
+std::cerr << "createGlobalVariables" << std::endl;
   createGlobalVariables();
-  
+
+std::cerr << model.stringify() << std::endl;  
+std::cerr << "createVertexVariables" << std::endl;
   // create vertex and message variables
   for ( auto vertex : vertices ) {
     createVertexVariables(*vertex);
   }
   
+std::cerr << "createMessageVariables" << std::endl;
   createMessageVariables();
+std::cerr << "Done" << std::endl;
 }
 
 void CPController::createGlobalVariables() {
@@ -449,18 +455,24 @@ void CPController::initializeVertices(const FlattenedGraph::Vertex& initialVerte
 }
 
 void CPController::createVertexVariables(const FlattenedGraph::Vertex& vertex) {
+std::cerr << "createGlobalIndexVariable" << std::endl;
   createGlobalIndexVariable(vertex);
+std::cerr << "createDataIndexVariables" << std::endl;
   createDataIndexVariables(vertex);
   
   if ( vertex.type == Vertex::Type::ENTRY ) {
+std::cerr << "createEntryVariables" << std::endl;
     createEntryVariables(vertex);
   }
   else {
+std::cerr << "createExitVariables" << std::endl;
     createExitVariables(vertex);
   }
 
+std::cerr << "createStatus" << std::endl;
   createStatus(vertex);
   
+std::cerr << "createSequenceConstraints" << std::endl;
   createSequenceConstraints(vertex);
 }
 
@@ -588,7 +600,9 @@ void CPController::createDataIndexVariables(const Vertex& vertex) {
   std::vector<  CP::reference_vector< const CP::Variable > > dataIndices;
   dataIndices.resize( vertex.dataOwners.size() );
   for ( size_t i = 0; i < vertex.dataOwners.size(); i++ ) {
-    auto dataOwner = vertex.dataOwners[i].get();
+    auto& dataOwner = vertex.dataOwners[i].get();
+    assert( flattenedGraph.dataModifiers.contains(&dataOwner) ); 
+  
     CP::LinearExpression index;
     for ( auto& [modifierEntry, modifierExit] : flattenedGraph.dataModifiers.at(&dataOwner) ) {
       // create auxiliary variables indicating modifiers preceding the vertex

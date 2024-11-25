@@ -26,6 +26,7 @@ public:
   CPController(const BPMNOS::Model::Scenario* scenario);
   void connect(Mediator* mediator);
 //  std::vector< std::unique_ptr<EventDispatcher> > eventDispatchers;
+  const CP::Model& getModel() { return model; }
 protected:
   Evaluator* evaluator;
   std::shared_ptr<Event> dispatchEvent(const SystemState* systemState);

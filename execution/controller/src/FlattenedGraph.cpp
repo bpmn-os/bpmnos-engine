@@ -4,6 +4,7 @@
 #include "model/utility/src/Number.h"
 #include "model/utility/src/CollectionRegistry.h"
 #include <ranges>
+#include <iostream>
 
 using namespace BPMNOS::Execution;
 
@@ -210,6 +211,7 @@ std::pair<FlattenedGraph::Vertex&, FlattenedGraph::Vertex&> FlattenedGraph::crea
   // populate lookup maps of data modifiers for data owner
   if ( extensionElements->data.size() ) {
     dataModifiers.emplace(&entry,std::vector< std::pair<const Vertex&, const Vertex&> >());
+//    dataModifiers.emplace(&exit,std::vector< std::pair<const Vertex&, const Vertex&> >()); // ISTHISNEEDED
   }
 
   if ( node->represents<BPMN::Task>() ) {

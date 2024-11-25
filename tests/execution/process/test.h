@@ -1,5 +1,5 @@
 SCENARIO( "Empty executable process", "[execution][process]" ) {
-  const std::string modelFile = "tests/execution/process//Empty_executable_process.bpmn";
+  const std::string modelFile = "tests/execution/process/Empty_executable_process.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
 
   GIVEN( "A single instance with no input values" ) {

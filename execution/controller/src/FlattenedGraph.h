@@ -2,6 +2,7 @@
 #define BPMNOS_Execution_FlattenedGraph_H
 
 #include <unordered_map>
+#include <deque>
 #include <vector>
 #include <list>
 #include <string>
@@ -24,6 +25,9 @@ public:
   public:
     enum class Type { ENTRY, EXIT };
     Vertex(size_t index, BPMNOS::number rootId, BPMNOS::number instanceId, const BPMN::Node* node, Type type);
+    // Delete copy constructor and copy assignment operator
+    Vertex(const Vertex&) = delete;           // Non-copyable
+    Vertex& operator=(const Vertex&) = delete; // Non-copy-assignable
     const size_t index;
     const BPMNOS::number rootId;
     const BPMNOS::number instanceId;
@@ -47,7 +51,7 @@ public:
   };
 
   std::vector< std::reference_wrapper<Vertex> > initialVertices; /// Container holding entry vertices of all process instances
-  std::vector< Vertex > vertices; /// Map holding entry and exit vertices of each possible instantiation of a node
+  std::deque< Vertex > vertices; /// Container holding entry and exit vertices of each possible instantiation of a node
   std::unordered_map< const BPMN::Node*, std::unordered_map< BPMNOS::number, std::vector< std::reference_wrapper<Vertex> > > > vertexMap; /// Map holding entry and exit vertices of each possible instantiation of a node
 
   void addInstance( const BPMNOS::Model::Scenario::InstanceData* instance );
