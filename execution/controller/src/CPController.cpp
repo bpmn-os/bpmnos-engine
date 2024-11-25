@@ -618,7 +618,7 @@ void CPController::createGlobalIndexVariable(const Vertex& vertex) {
   CP::LinearExpression index;
   for ( auto& [modifierEntry, modifierExit] : flattenedGraph.globalModifiers ) {
     // create auxiliary variables indicating modifiers preceding the vertex
-    index += model.addVariable(CP::Variable::Type::BOOLEAN, "precedes_" + modifierExit.reference() + "_" + vertex.reference(), position.at(&modifierExit) <= position.at(&vertex) );
+    index += model.addVariable(CP::Variable::Type::BOOLEAN, "precedes_" + modifierExit.reference() + "" + vertex.reference(), position.at(&modifierExit) <= position.at(&vertex) );
   }  
   globalIndex.emplace( &vertex, model.addVariable(CP::Variable::Type::INTEGER, "globals_index_" + vertex.reference(), index ) );
 }
@@ -634,9 +634,9 @@ void CPController::createDataIndexVariables(const Vertex& vertex) {
     CP::LinearExpression index;
     for ( auto& [modifierEntry, modifierExit] : flattenedGraph.dataModifiers.at(&dataOwner) ) {
       // create auxiliary variables indicating modifiers preceding the vertex
-      index += model.addVariable(CP::Variable::Type::BOOLEAN, "precedes_" + modifierExit.reference() + "_" + vertex.reference(), position.at(&modifierExit) <= position.at(&vertex) );
+      index += model.addVariable(CP::Variable::Type::BOOLEAN, "precedes_" + modifierExit.reference() + "→" + vertex.reference(), position.at(&modifierExit) <= position.at(&vertex) );
     }  
-    dataIndices[i].emplace_back( model.addVariable(CP::Variable::Type::INTEGER, "data_index_" + vertex.reference() + "," + std::to_string(i) , index ) );
+    dataIndices[i].emplace_back( model.addVariable(CP::Variable::Type::INTEGER, "data_index[" + dataOwner.node->id + "]_" + vertex.reference(), index ) );
   }
   dataIndex.emplace( &vertex, std::move(dataIndices) );
 }
