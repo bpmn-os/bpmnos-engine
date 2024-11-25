@@ -37,6 +37,8 @@ public:
 protected:
   void createCP(); /// Method creating the constraint program
   void createGlobalVariables();
+  void createMessageVariables();
+  void createMessageContent(const Vertex& vertex);
   std::vector< std::reference_wrapper<const Vertex> > getSortedVertices(const Vertex& initialVertex); /// Returns a topologically sorted vector of all vertices reachable from the given vertex
   void initializeVertices(const Vertex& initialVertex);
   void createVertexVariables(const Vertex& vertex);
@@ -52,6 +54,16 @@ protected:
   struct AttributeVariables {
     const CP::Variable& defined;
     const CP::Variable& value;
+    // Constructor
+    AttributeVariables(const CP::Variable& defined, const CP::Variable& value)
+        : defined(defined), value(value) {}
+    // Copy Constructor
+    AttributeVariables(const AttributeVariables& other)
+        : defined(other.defined), value(other.value) {}
+    // Assignment Operator
+    AttributeVariables operator=(const AttributeVariables& other) {
+        return AttributeVariables(other.defined,other.value);
+    }
   };
 
   struct IndexedAttributeVariables {
@@ -60,34 +72,13 @@ protected:
   };
   
   void createStatus(const Vertex& vertex);
-  void createAlternativeStatus(const Vertex& vertex, std::vector< std::pair<const CP::Variable&, std::vector<AttributeVariables>& > > alternatives);
+  void createAlternativeEntryStatus(const Vertex& vertex, std::vector< std::pair<const CP::Variable&, std::vector<AttributeVariables>& > > alternatives);
   void createMergedStatus(const Vertex& vertex, std::vector< std::pair<const CP::Variable&, std::vector<AttributeVariables>& > > inputs);
-
-//  void createExitStatus(const Vertex& vertex);
-//  void createInstantExitStatus(const Vertex& vertex);
-//  void createMessageExitStatus(const Vertex& vertex);
-//  void createTaskExitStatus(const Vertex& vertex);
+  void createExitStatus(const Vertex& vertex);
   
-/*
-  void createEntryVariables(const BPMN::Process* process, const BPMNOS::Values& status, const BPMNOS::Values& data); /// Function creating process variables
-  void createEntryVariables(const BPMN::FlowNode* flowNode); /// Function creating process variables
-
-  struct Reference {
-    Reference(const BPMN::Node* node, bool entered = false) : node(node), entered(entered) {};
-    const BPMN::Node* node;
-    bool entered;
-  };
-  std::list<Reference> pending; /// Map holding references of all entry/exit variables that have not yet been created
-  struct Variables {
-  };
-*/
 /*
   std::unordered_map<const BPMN::MessageThrowEvent*, std::vector<BPMNOS::number> > originInstances; /// Map containing all instance identifiers for all message throw events
 
-  std::unordered_map<const BPMN::Scope*, std::vector<const BPMN::FlowNode*> > reachableFlowNodes; /// Map containing all flow nodes in a scope that can be reached without traversing a boundary event
-*/
- 
-/*  
   auto getReachableEndNodes( const BPMN::Scope* scope ) {
     // Check if the given scope exists in the map
     auto it = reachableFlowNodes.find(scope);
@@ -117,11 +108,13 @@ protected:
   };
   
   std::vector<const Vertex*> vertices; /// Container of all vertices considered
+  std::vector<const Vertex*> messageRecipients; /// Container of all vertices catching a message
 //  CP::reference_vector<const CP::Variable> sequence; /// Container of sequence positions
   std::unordered_map< const Vertex*, const CP::Variable& > position; /// Variables holding sequence positions for all vertices
   std::unordered_map< const Vertex*, const CP::Variable& > visit; /// Variables indicating whether the a token enters or leaves a vertex
 
-  std::unordered_map< std::pair< const Vertex*, const Vertex* >, const CP::Variable&, pair_hash > flow; /// Variables indicating whether the a token flows from one vertex to another
+  std::unordered_map< std::pair< const Vertex*, const Vertex* >, const CP::Variable&, pair_hash > tokenFlow; /// Variables indicating whether the a token flows from one vertex to another
+  std::unordered_map< std::pair< const Vertex*, const Vertex* >, const CP::Variable&, pair_hash > messageFlow; /// Variables indicating whether the a token flows from one vertex to another
 
   std::vector< IndexedAttributeVariables > globals; /// Variables representing global attributes after i-th modification
   std::unordered_map< const Vertex*, const CP::Variable& > globalIndex; /// Variables representing an index representing the state of the global attributes
@@ -131,6 +124,8 @@ protected:
 
   std::unordered_map< const Vertex*, std::vector<AttributeVariables> > status; /// Variables representing status attributes of a vertex
   std::unordered_map< std::pair< const Vertex*, const Vertex* >, std::vector<AttributeVariables>, pair_hash > statusFlow; /// Variables representing status attributes flowing from one vertex to another
+
+  std::unordered_map< const Vertex*, std::vector< std::tuple< std::string_view, size_t, AttributeVariables> > > messageContent; /// Variables representing status attributes of a vertex
 
 /* 
   std::unordered_map<const BPMNOS::Model::Attribute*, const BPMN::Scope* > dataOwner;/// Map allowing to look up the scope owning a data attribute

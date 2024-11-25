@@ -1,4 +1,5 @@
 #include "CPController.h"
+#include "model/bpmnos/src/DecisionTask.h"
 #include "model/bpmnos/src/SequentialAdHocSubProcess.h"
 
 #include <iostream>
@@ -44,65 +45,7 @@ void CPController::createCP() {
     createVertexVariables(*vertex);
   }
   
-  // create message constraints
-  
-  
-/*
-  auto instances = scenario->getKnownInstances(0); // get instances at time zero
-  for ( auto instance : instances ) {
-    if ( !instance->process->isExecutable ) {
-      throw std::runtime_error("CPController: process is not executable");
-    }
-
-    // register all message sources
-    std::vector< const BPMN::Node* >  messageThrowEvents = instance->process->find_all([](const BPMN::Node* node) {  return node->represents<BPMN::MessageThrowEvent>(); } );
-    for ( auto messageThrowEvent : messageThrowEvents ) {
-      originInstances[messageThrowEvent->as<BPMN::MessageThrowEvent>()].push_back(instance->id);
-    }
-  }
-
-  for ( auto instance : instances ) {
-    auto reference = NodeReference{instance->id,instance->process};
-    addEntryVariables(reference);
-    pendingExit.push_back(reference);
-  }
-  
-  while ( pendingEntry.size() || pendingExit.size() ) {
-    bool cycle = true;
-
-    for (auto it = pendingEntry.begin(); it != pendingEntry.end(); ) {
-      if ( checkEntryDependencies(*it) ) {
-        addEntryVariables(*it);
-        if ( auto scope = it->second->represents<BPMN::Scope>() ) {
-          addChildren(ScopeReference{it->first,scope});
-        }
-        pendingExit.push_back(*it);
-        cycle = false;
-        it = pendingEntry.erase(it);
-      }
-      else {
-        it++;
-      }
-    }
-
-    for (auto it = pendingExit.begin(); it != pendingExit.end(); ) {
-      if ( checkExitDependencies(*it) ) {
-        addExitVariables(*it);
-        if ( it->second->represents<BPMN::FlowNode>() ) {
-          addSuccessors(*it);
-        }
-        cycle = false;
-        it = pendingExit.erase(it);
-      }
-      else {
-        it++;
-      }
-    }
-    if ( cycle ) {
-      throw std::runtime_error("CPController: model has cyclic dependency");
-    }
-  }
-*/  
+  createMessageVariables();
 }
 
 void CPController::createGlobalVariables() {
@@ -143,6 +86,55 @@ void CPController::createGlobalVariables() {
   }
 }
 
+void CPController::createMessageVariables() {
+  for ( auto recipient : messageRecipients ) {
+    assert( recipient->exit<BPMN::MessageCatchEvent>() );
+    CP::reference_vector<const CP::Variable> messages;
+    for ( Vertex& sender : recipient->senders ) {
+      assert( sender.exit<BPMN::MessageThrowEvent>() );
+      messages.emplace_back( model.addBinaryVariable("message_" + sender.reference() + "_" + recipient->reference() ) );
+      const CP::Variable& message = messages.back();
+      messageFlow.emplace( std::make_pair(&sender,recipient), message );
+      model.addConstraint( message <= visit.at(recipient) );
+      model.addConstraint( message <= visit.at(&sender) );
+      
+      model.addConstraint( message.implies( position.at(&sender) <= position.at(recipient) ) );
+      model.addConstraint(
+        // if a message is sent from a sender to a recipient, the recipient's timestamp must not 
+        // be before the sender's timestamp
+        message.implies (
+          status.at(&sender)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value
+          <= status.at(recipient)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value
+        )
+      );
+      if ( sender.node->represents<BPMN::SendTask>() ) {
+        auto senderExit = &sender + 1;
+        model.addConstraint(
+          message.implies (
+            status.at(recipient)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value
+            <= status.at(senderExit)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value
+          )
+        );
+      }
+
+      // TODO: add message header constraints
+    }
+    CP::LinearExpression sum;
+    for ( const CP::Variable& message : messages ) {
+      sum += message;
+    }
+    model.addConstraint( sum == visit.at(recipient) );
+  }
+}
+
+void CPController::createMessageContent(const Vertex& vertex) {
+  // TODO
+  // every visited recipient must receive a message
+  // message precedence constraints
+  
+  // message content
+}
+
 void CPController::createDataVariables(const FlattenedGraph::Vertex& vertex) {
   auto extensionElements = vertex.node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
 
@@ -169,7 +161,7 @@ void CPController::createDataVariables(const FlattenedGraph::Vertex& vertex) {
     }
     
     if ( attribute->isImmutable ) {
-      // deduced variables
+      // deducible variables
       for ( [[maybe_unused]] auto _ : flattenedGraph.dataModifiers.at(&vertex) ) {
         defined.emplace_back(defined[0]);
         value.emplace_back(value[0]); 
@@ -191,7 +183,7 @@ void CPController::createStatus(const Vertex& vertex) {
   if ( vertex.entry<BPMN::UntypedStartEvent>() ) {
     // TODO: start-event
     assert( vertex.predecessors.size() == 1 );
-    createAlternativeStatus(vertex, {{visit.at(&vertex.predecessors.front().get()), status.at(&vertex.predecessors.front().get())}} );
+    createAlternativeEntryStatus(vertex, {{visit.at(&vertex.predecessors.front().get()), status.at(&vertex.predecessors.front().get())}} );
   }
   else if ( vertex.entry<BPMN::TypedStartEvent>() ) {
     // TODO: start-event
@@ -200,9 +192,9 @@ void CPController::createStatus(const Vertex& vertex) {
     std::vector< std::pair<const CP::Variable&, std::vector<AttributeVariables>& > > alternatives;
     for ( auto& [sequenceFlow,predecessor] : vertex.inflows ) {
       // add to alternatives
-      alternatives.emplace_back( flow.at({&predecessor,&vertex}), statusFlow.at({&predecessor,&vertex}) );
+      alternatives.emplace_back( tokenFlow.at({&predecessor,&vertex}), statusFlow.at({&predecessor,&vertex}) );
     }
-    createAlternativeStatus(vertex, std::move(alternatives));
+    createAlternativeEntryStatus(vertex, std::move(alternatives));
   }
   else if ( vertex.entry<BPMN::FlowNode>() && vertex.inflows.size() > 1 ) {
     assert(vertex.entry<BPMN::ParallelGateway>() || vertex.entry<BPMN::InclusiveGateway>() );
@@ -213,20 +205,21 @@ void CPController::createStatus(const Vertex& vertex) {
     std::vector< std::pair<const CP::Variable&, std::vector<AttributeVariables>& > > inputs;
     for ( auto& [sequenceFlow,predecessor] : vertex.inflows ) {
       // add to alternatives
-      inputs.emplace_back( flow.at({&predecessor,&vertex}), statusFlow.at({&predecessor,&vertex}) );
+      inputs.emplace_back( tokenFlow.at({&predecessor,&vertex}), statusFlow.at({&predecessor,&vertex}) );
     }
     createMergedStatus(vertex, std::move(inputs));
   }
   else if ( vertex.entry<BPMN::FlowNode>() ) {
     assert( vertex.inflows.size() == 1 );
     auto& [sequenceFlow,predecessor] = vertex.inflows.front();
-    createAlternativeStatus(vertex, {{flow.at({&predecessor,&vertex}), statusFlow.at({&predecessor,&vertex})}} );
+    createAlternativeEntryStatus(vertex, {{tokenFlow.at({&predecessor,&vertex}), statusFlow.at({&predecessor,&vertex})}} );
   }
 
   // TODO: sequential activity or multi-instance sequential activity
 }
 
-void CPController::createAlternativeStatus(const Vertex& vertex, std::vector< std::pair<const CP::Variable&, std::vector<AttributeVariables>& > > alternatives) {
+void CPController::createAlternativeEntryStatus(const Vertex& vertex, std::vector< std::pair<const CP::Variable&, std::vector<AttributeVariables>& > > alternatives) {
+  assert( vertex.type == Vertex::Type::ENTRY );
   auto extensionElements = vertex.node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   std::vector<AttributeVariables> variables;
   variables.reserve( extensionElements->attributeRegistry.statusAttributes.size() );
@@ -268,6 +261,7 @@ void CPController::createAlternativeStatus(const Vertex& vertex, std::vector< st
 }
 
 void CPController::createMergedStatus(const Vertex& vertex, std::vector< std::pair<const CP::Variable&, std::vector<AttributeVariables>& > > inputs) {
+  assert( ( vertex.type == Vertex::Type::ENTRY && vertex.inflows.size() > 1) || vertex.exit<BPMN::Scope>() );
   auto extensionElements = vertex.node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   std::vector<AttributeVariables> variables;
   variables.reserve( extensionElements->attributeRegistry.statusAttributes.size() );
@@ -327,20 +321,83 @@ void CPController::createMergedStatus(const Vertex& vertex, std::vector< std::pa
   status.emplace( &vertex, std::move(variables) );
 }
 
-
-/*
-void CPController::createAlternativeEntryStatus(const Vertex& vertex, std::vector< std::pair<const CP::Variable&, std::vector<AttributeVariables>& > > alternatives);
-void CPController::createMergedEntryStatus(const Vertex& vertex);
-
 void CPController::createExitStatus(const Vertex& vertex) {
-  // TODO: multiple end events for subprocess
+  assert( vertex.type == Vertex::Type::EXIT );
+  assert( !vertex.exit<BPMN::Scope>() );
+  const Vertex& entry = *(&vertex - 1);
+  auto extensionElements = vertex.node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+
+  // From Token.cpp:
+  // - process operators are applied upon entry
+  // - subprocess operators are applied upon entry
+  // - operators of receive task and decision task are applied on completion
+  // - event subprocess operators are applied when exiting typed start event  
+
+  // copy entry status references
+  std::vector<AttributeVariables> currentStatus = status.at(&entry);
+  //std::vector<AttributeVariables> currentData = status.at(&entry);
+  //std::vector<AttributeVariables> currentGlobla = status.at(&entry);
+  
+  if ( vertex.node->represents<BPMNOS::Model::DecisionTask>() ) {
+    // apply choices
+    // TODO
+  }
+
+  if ( vertex.node->represents<BPMN::MessageCatchEvent>() ) {
+    // receive message content (globals and data attributes must not be changed)
+    if ( extensionElements->messageDefinitions.size() == 1 ) {
+      std::vector< std::tuple< std::string_view, size_t, AttributeVariables> > contentVariables;
+      auto& messageDefinition = extensionElements->messageDefinitions.front();
+      for (auto& [key,content] : messageDefinition->contentMap ) {
+        if ( !content->attribute.has_value() ) {
+          throw std::runtime_error("CPController: no attribute specified for receiving message content '" + content->id + "'");
+        }
+        auto attribute = &content->attribute.value().get();
+        
+        // create variables for the message content (relevant constraints must be added separately)
+        AttributeVariables attributeVariables = {
+          model.addBinaryVariable("content[" + content->key + "]_defined_" + vertex.reference() + "," + attribute->id ), 
+          model.addRealVariable("content[" + content->key + "]_value_" + vertex.reference() + "," + attribute->id )
+        };
+
+        // use message content variables in current status
+        currentStatus.at(attribute->index) = attributeVariables;
+
+        contentVariables.emplace_back( content->key, attribute->index, std::move(attributeVariables) );
+      }
+
+      messageContent.emplace( &vertex, std::move(contentVariables) );
+    }
+    else if ( extensionElements->messageDefinitions.size() > 1 ) {
+      // multi-instance receive task
+      assert(!"Not yet supported");
+    }
+  }
+  
+  if ( vertex.node->represents<BPMN::MessageStartEvent>() ) {
+    // add entry restrictions of event-subprocess
+    // TODO
+  }
+
+  if ( vertex.node->represents<BPMN::Task>() ) {
+    // apply operators
+    // TODO
+  }
+
+  std::vector<AttributeVariables> variables;
+  variables.reserve( extensionElements->attributeRegistry.statusAttributes.size() );
+  for ( auto& [name,attribute] : extensionElements->attributeRegistry.statusAttributes ) {
+    variables.emplace_back(
+      model.addVariable(CP::Variable::Type::BOOLEAN, "defined_" + vertex.reference() + "," + attribute->id, currentStatus[attribute->index].defined ), 
+      model.addVariable(CP::Variable::Type::REAL, "value_" + vertex.reference() + "," + attribute->id, currentStatus[attribute->index].value )
+    );      
+
+    // ensure that attribute only has a value if vertex is visited and the attribute if defined 
+    model.addConstraint( status.at(&vertex)[attribute->index].defined <= visit.at(&vertex) );
+    model.addConstraint( (!status.at(&vertex)[attribute->index].defined).implies( status.at(&vertex)[attribute->index].value == 0.0 ) );
+  }
+  status.emplace( &vertex, std::move(variables) );
 }
-
-void CPController::createInstantExitStatus(const Vertex& vertex);
-void CPController::createMessageExitStatus(const Vertex& vertex);
-void CPController::createTaskExitStatus(const Vertex& vertex);
-*/
-
 
 std::vector< std::reference_wrapper<const FlattenedGraph::Vertex> > CPController::getSortedVertices(const FlattenedGraph::Vertex& initialVertex) {
   std::vector< std::reference_wrapper<const FlattenedGraph::Vertex> > sortedVertices;
@@ -403,6 +460,8 @@ void CPController::createVertexVariables(const FlattenedGraph::Vertex& vertex) {
   }
 
   createStatus(vertex);
+  
+  createSequenceConstraints(vertex);
 }
 
 void CPController::createEntryVariables(const FlattenedGraph::Vertex& vertex) {
@@ -423,7 +482,7 @@ void CPController::createEntryVariables(const FlattenedGraph::Vertex& vertex) {
   else if ( vertex.node->represents<BPMN::FlowNode>() ) {
     if ( vertex.inflows.size() == 1 ) {
       // deduce visit from unique sequence flow
-      auto& deducedVisit = model.addVariable(CP::Variable::Type::BOOLEAN, "visit_" + BPMNOS::to_string(vertex.instanceId, STRING) + "," + vertex.node->id , flow.at( std::make_pair(&vertex.inflows.front().second, &vertex) ) );
+      auto& deducedVisit = model.addVariable(CP::Variable::Type::BOOLEAN, "visit_" + BPMNOS::to_string(vertex.instanceId, STRING) + "," + vertex.node->id , tokenFlow.at( std::make_pair(&vertex.inflows.front().second, &vertex) ) );
       visit.emplace(&vertex, deducedVisit );
       visit.emplace(&vertex+1, deducedVisit );
     }
@@ -449,9 +508,9 @@ void CPController::createExitVariables(const FlattenedGraph::Vertex& vertex) {
   if ( vertex.exit<BPMN::FlowNode>() ) {
     // flow variables
     if ( vertex.outflows.size() == 1 ) {
-      flow.emplace( 
+      tokenFlow.emplace( 
         std::make_pair(&vertex,&vertex.outflows.front().second), 
-        model.addVariable(CP::Variable::Type::BOOLEAN, "flow_" + vertex.reference() + "_" + vertex.outflows.front().second.reference(), visit.at(&vertex) ) 
+        model.addVariable(CP::Variable::Type::BOOLEAN, "tokenflow_" + vertex.reference() + "_" + vertex.outflows.front().second.reference(), visit.at(&vertex) ) 
       );
       auto extensionElements = vertex.parent().first.node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
       std::vector<AttributeVariables> variables;
@@ -459,16 +518,16 @@ void CPController::createExitVariables(const FlattenedGraph::Vertex& vertex) {
       for ( auto& [name,attribute] : extensionElements->attributeRegistry.statusAttributes ) {
         // deduce variable
         variables.emplace_back(
-          model.addVariable(CP::Variable::Type::BOOLEAN, "flow_defined_" + vertex.reference() + "_" + vertex.outflows.front().second.reference() + "," + attribute->id, 
+          model.addVariable(CP::Variable::Type::BOOLEAN, "statusflow_defined_" + vertex.reference() + "_" + vertex.outflows.front().second.reference() + "," + attribute->id, 
             CP::if_then_else( 
-              flow.at({&vertex,&vertex.outflows.front().second}), 
+              tokenFlow.at({&vertex,&vertex.outflows.front().second}), 
               status.at(&vertex)[attribute->index].defined, 
               (double)false
             )
           ), 
-          model.addVariable(CP::Variable::Type::REAL, "flow_value_" + vertex.reference() + "_" + vertex.outflows.front().second.reference() + "," + attribute->id, 
+          model.addVariable(CP::Variable::Type::REAL, "statusflow_value_" + vertex.reference() + "_" + vertex.outflows.front().second.reference() + "," + attribute->id, 
             CP::if_then_else( 
-              flow.at({&vertex,&vertex.outflows.front().second}), 
+              tokenFlow.at({&vertex,&vertex.outflows.front().second}), 
               status.at(&vertex)[attribute->index].value, 
               0.0
             )
