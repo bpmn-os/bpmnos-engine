@@ -20,7 +20,7 @@ SCENARIO( "Empty executable process", "[cpcontroller][process]" ) {
       auto& cpmodel = controller.getModel();
       auto cp = cpmodel.stringify();
 
-      std::cout << cp << std::endl;
+//      std::cout << cp << std::endl;
 /*
 ///////
       auto& cpmodel = controller.createCP(scenario.get());
@@ -57,4 +57,28 @@ SCENARIO( "Empty executable process", "[cpcontroller][process]" ) {
   }
 };
 
+SCENARIO( "Trivial executable process", "[cpcontroller][process]" ) {
+  const std::string modelFile = "tests/execution/process/Trivial_executable_process.bpmn";
+  REQUIRE_NOTHROW( Model::Model(modelFile) );
+
+  GIVEN( "A single instance with no input values" ) {
+    std::string csv =
+      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
+      "Process_1, Instance_1,,\n"
+    ;
+
+    Model::StaticDataProvider dataProvider(modelFile,csv);
+    auto scenario = dataProvider.createScenario();
+
+    REQUIRE_NOTHROW( BPMNOS::Execution::FlattenedGraph(scenario.get()) );
+
+    WHEN( "The model is created" ) {
+      Execution::CPController controller(scenario.get());
+      auto& cpmodel = controller.getModel();
+      auto cp = cpmodel.stringify();
+
+      std::cout << cp << std::endl;
+    }
+  }
+};
 

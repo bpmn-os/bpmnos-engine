@@ -24,7 +24,7 @@ public:
   class Vertex {
   public:
     enum class Type { ENTRY, EXIT };
-    Vertex(size_t index, BPMNOS::number rootId, BPMNOS::number instanceId, const BPMN::Node* node, Type type);
+    Vertex(size_t index, BPMNOS::number rootId, BPMNOS::number instanceId, const BPMN::Node* node, Type type, std::optional< std::pair<Vertex&, Vertex&> > parent);
     // Delete other constructors and assignment operators
     Vertex() = delete; // Prevents default construction
     Vertex(const Vertex&) = delete;           // Non-copyable
@@ -36,6 +36,7 @@ public:
     const BPMNOS::number instanceId;
     const BPMN::Node* node;
     const Type type;
+    std::optional< std::pair<Vertex&, Vertex&> > parent;      /// Parent vertices
     std::vector< std::pair<const BPMN::SequenceFlow*, Vertex&> > inflows;      /// Container holding vertices connecting by an incoming sequence flow
     std::vector< std::pair<const BPMN::SequenceFlow*, Vertex&> > outflows;     /// Container holding vertices connecting by an outgoing sequence flow
     std::vector< std::reference_wrapper<Vertex> > predecessors; /// Container holding predecessors according to the execution logic (excl. sequence flows)
@@ -43,7 +44,7 @@ public:
     std::vector< std::reference_wrapper<Vertex> > senders;      /// Container holding all possible vertices sending a message (or the message delivery notfication for a SendTask)
     std::vector< std::reference_wrapper<Vertex> > recipients;   /// Container holding all possible vertices receiving a message (or the message delivery notfication for a SendTask)
     std::vector< std::reference_wrapper<Vertex> > dataOwners;   /// Container holding all entry vertices of nodes owning at least one data attribute
-    std::pair<const Vertex&, const Vertex&> parent() const; /// Returns the vertices of the parent
+//    std::pair<const Vertex&, const Vertex&> parent() const; /// Returns the vertices of the parent
     std::pair<const Vertex&, const Vertex&> performer() const ; /// Returns the vertices of the performer of a sequential activity vertex
     std::pair<const Vertex&, const Vertex&> dataOwner( const BPMNOS::Model::Attribute* attribute ) const; /// Returns the vertices of the owner of a data attribute
     std::string reference() const; /// Returns a unique reference of the vertex
@@ -63,8 +64,8 @@ private:
   void addSender( const BPMN::MessageThrowEvent* messageThrowEvent, Vertex& senderEntry, Vertex& senderExit );
   void addRecipient( const BPMN::MessageCatchEvent* messageCatchEvent, Vertex& recipientEntry, Vertex& recipientExit );
 
-  std::pair<Vertex&, Vertex&> createVertexPair(BPMNOS::number rootId, BPMNOS::number instanceId, const BPMN::Node* node);
-  void createLoopVertices(BPMNOS::number rootId, BPMNOS::number instanceId, const BPMN::Activity* node);
+  std::pair<Vertex&, Vertex&> createVertexPair(BPMNOS::number rootId, BPMNOS::number instanceId, const BPMN::Node* node, std::optional< std::pair<Vertex&, Vertex&> > parent);
+  void createLoopVertices(BPMNOS::number rootId, BPMNOS::number instanceId, const BPMN::Activity* node, std::optional< std::pair<Vertex&, Vertex&> > parent);
   void flatten(BPMNOS::number instanceId, const BPMN::Scope* scope, Vertex& scopeEntry, Vertex& scopeExit);
   
   std::vector< std::tuple<const BPMN::EventSubProcess*, Vertex&, Vertex&, unsigned int, Vertex*> > nonInterruptingEventSubProcesses;

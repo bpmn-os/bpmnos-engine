@@ -8,19 +8,20 @@
 
 using namespace BPMNOS::Execution;
 
-FlattenedGraph::Vertex::Vertex(size_t index, BPMNOS::number rootId, BPMNOS::number instanceId, const BPMN::Node* node, Type type)
+FlattenedGraph::Vertex::Vertex(size_t index, BPMNOS::number rootId, BPMNOS::number instanceId, const BPMN::Node* node, Type type, std::optional< std::pair<Vertex&, Vertex&> > parent)
   : index(index)
   , rootId(rootId)
   , instanceId(instanceId)
   , node(node)
   , type(type)
+  , parent(parent)
 {
-  if ( node->represents<BPMN::ChildNode>() ) {
-    dataOwners = parent().first.dataOwners;
+  if ( parent.has_value() ) {
+    dataOwners = parent.value().first.dataOwners;
   }
 }
 
-
+/*
 std::pair<const FlattenedGraph::Vertex&, const FlattenedGraph::Vertex&>  FlattenedGraph::Vertex::parent() const {
   if( !node->represents<BPMN::ChildNode>() ) {
     throw std::logic_error("FlattenedGraph::Vertex: only child nodes have a parent");
@@ -36,6 +37,7 @@ std::pair<const FlattenedGraph::Vertex&, const FlattenedGraph::Vertex&>  Flatten
 
   return std::pair<Vertex&, Vertex&>(predecessors.back().get(), successors.back().get() );
 }
+*/
 
 std::pair<const FlattenedGraph::Vertex&, const FlattenedGraph::Vertex&> FlattenedGraph::Vertex::performer() const {
   assert( node->represents<BPMN::Activity>() );
@@ -45,7 +47,8 @@ std::pair<const FlattenedGraph::Vertex&, const FlattenedGraph::Vertex&> Flattene
   const Vertex* entry = (type == Type::ENTRY ? this : this - 1);
   const Vertex* exit = (type == Type::EXIT ? this : this + 1);
   do {
-    auto parentVertices = entry->parent();
+    assert( entry->parent.has_value() );
+    auto parentVertices = entry->parent.value();
     entry = &parentVertices.first;
     exit = &parentVertices.second;
   } while ( entry->node != performer );
@@ -59,7 +62,8 @@ std::pair< const FlattenedGraph::Vertex&, const FlattenedGraph::Vertex&> Flatten
   const Vertex* exit = (type == Type::EXIT ? this : this + 1);
   const BPMNOS::Model::ExtensionElements* extensionElements = node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   while ( extensionElements->attributeRegistry.dataAttributes.size() - extensionElements->data.size() > attribute->index ) {
-    auto parentVertices = entry->parent();
+    assert( entry->parent.has_value() );
+    auto parentVertices = entry->parent.value();
     entry = &parentVertices.first;
     exit = &parentVertices.second;
     extensionElements = entry->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
@@ -83,7 +87,7 @@ FlattenedGraph::FlattenedGraph(const BPMNOS::Model::Scenario* scenario) : scenar
 
 void FlattenedGraph::addInstance( const BPMNOS::Model::Scenario::InstanceData* instance ) {
   // create process vertices
-  auto [ entry, exit ] = createVertexPair(instance->id, instance->id, instance->process);
+  auto [ entry, exit ] = createVertexPair(instance->id, instance->id, instance->process, std::nullopt);
   initialVertices.push_back(entry);
   flatten( instance->id, instance->process, entry, exit );
 }
@@ -165,18 +169,32 @@ void FlattenedGraph::addRecipient( const BPMN::MessageCatchEvent* messageCatchEv
   receivingVertices[messageCatchEvent].emplace_back(recipientEntry, recipientExit);
 }
 
-std::pair<FlattenedGraph::Vertex&, FlattenedGraph::Vertex&> FlattenedGraph::createVertexPair(BPMNOS::number rootId, BPMNOS::number instanceId, const BPMN::Node* node) {
-  vertices.emplace_back(vertices.size(), rootId, instanceId, node, Vertex::Type::ENTRY);
+std::pair<FlattenedGraph::Vertex&, FlattenedGraph::Vertex&> FlattenedGraph::createVertexPair(BPMNOS::number rootId, BPMNOS::number instanceId, const BPMN::Node* node, std::optional< std::pair<Vertex&, Vertex&> > parent) {
+  vertices.emplace_back(vertices.size(), rootId, instanceId, node, Vertex::Type::ENTRY, parent);
   auto& entry = vertices.back();
-  vertices.emplace_back(vertices.size(), rootId, instanceId, node, Vertex::Type::EXIT);
+  vertices.emplace_back(vertices.size(), rootId, instanceId, node, Vertex::Type::EXIT, parent);
   auto& exit = vertices.back();
 
   entry.successors.push_back(exit);
   exit.predecessors.push_back(entry);
   
+  if ( parent.has_value() ) {
+    entry.predecessors.push_back( parent.value().first );
+    exit.successors.push_back( parent.value().second ); 
+    parent.value().first.successors.push_back( entry ); 
+    parent.value().second.predecessors.push_back( exit );
+  }
+  
   auto& container = vertexMap[node][instanceId]; // get or create container
   container.emplace_back( entry );
   container.emplace_back( exit );
+  
+  assert( node->extensionElements );
+  auto extensionElements = node->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
+
+  if ( !extensionElements ) {
+    return { entry, exit };
+  }
   
   if ( auto messageThrowEvent = node->represents<BPMN::MessageThrowEvent>() ) {
     addSender( messageThrowEvent, entry, exit );
@@ -184,9 +202,6 @@ std::pair<FlattenedGraph::Vertex&, FlattenedGraph::Vertex&> FlattenedGraph::crea
   else if ( auto messageCatchEvent = node->represents<BPMN::MessageCatchEvent>() ) {
     addRecipient( messageCatchEvent, entry, exit );
   }
-
-  assert( node->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );
-  auto extensionElements = node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
 
   if ( extensionElements->data.size() ) {
     entry.dataOwners.push_back( entry );
@@ -229,7 +244,7 @@ std::pair<FlattenedGraph::Vertex&, FlattenedGraph::Vertex&> FlattenedGraph::crea
   return { entry, exit };
 }
 
-void FlattenedGraph::createLoopVertices(BPMNOS::number rootId, BPMNOS::number instanceId, const BPMN::Activity* activity) {
+void FlattenedGraph::createLoopVertices(BPMNOS::number rootId, BPMNOS::number instanceId, const BPMN::Activity* activity, std::optional< std::pair<Vertex&, Vertex&> > parent) {
   // loop & multi-instance activties
   
   // lambda returning parameter value known at time zero
@@ -293,14 +308,14 @@ void FlattenedGraph::createLoopVertices(BPMNOS::number rootId, BPMNOS::number in
   if ( activity->loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::Standard ) {
     // create vertices for loop activity
     for ( int i = 1; i <= n; i++ ) {
-      createVertexPair(rootId, instanceId, activity);
+      createVertexPair(rootId, instanceId, activity, parent);
     }
   }
   else {
     std::string baseName = BPMNOS::to_string(instanceId,STRING) + BPMNOS::Model::Scenario::delimiters[0] + activity->id + BPMNOS::Model::Scenario::delimiters[1] ;
     // create vertices for multi-instance activity
     for ( int i = 1; i <= n; i++ ) {
-      createVertexPair(rootId, BPMNOS::to_number(baseName + std::to_string(i),STRING), activity);
+      createVertexPair(rootId, BPMNOS::to_number(baseName + std::to_string(i),STRING), activity, parent);
     }
   }
   
@@ -318,24 +333,26 @@ void FlattenedGraph::createLoopVertices(BPMNOS::number rootId, BPMNOS::number in
 }
 
 void FlattenedGraph::flatten(BPMNOS::number instanceId, const BPMN::Scope* scope, Vertex& scopeEntry, Vertex& scopeExit) {
+  std::pair<Vertex&, Vertex&> parent = {scopeEntry,scopeExit}; 
   for ( auto& flowNode : scope->flowNodes ) {
     
     // create vertices for flow node
     auto activity = flowNode->represents<BPMN::Activity>();
     if ( activity && activity->loopCharacteristics.has_value() ) {
-      createLoopVertices(scopeEntry.rootId, instanceId, activity);
+      createLoopVertices(scopeEntry.rootId, instanceId, activity, parent);
     }
     else {
-      createVertexPair(scopeEntry.rootId, instanceId, flowNode);
+      createVertexPair(scopeEntry.rootId, instanceId, flowNode, parent);
     }
         
     auto& container = vertexMap.at(flowNode).at(instanceId);
+/*
     // add predecessors and successors for vertices
     for ( Vertex& vertex : container ) {
       vertex.predecessors.push_back(scopeEntry);
       vertex.successors.push_back(scopeExit);
     }
-
+*/
     // flatten child scopes
     if ( auto childScope = flowNode->represents<BPMN::Scope>() ) {
       assert( container.size() % 2 == 0 );
