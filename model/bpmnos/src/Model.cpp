@@ -18,6 +18,7 @@ using namespace BPMNOS::Model;
 
 Model::Model(const std::string& filename)
 {
+  LIMEX::Expression<double>::createBuiltInCallables();
   readBPMNFile(filename);
 }
 
