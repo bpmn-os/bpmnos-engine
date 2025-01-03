@@ -1,13 +1,14 @@
 #include "Expression.h"
 #include "model/utility/src/CollectionRegistry.h"
 #include "model/utility/src/Keywords.h"
+#include "model/utility/src/encode_quoted_strings.h"
 
 using namespace BPMNOS::Model;
 
 Expression::Expression(std::string expression, const AttributeRegistry& attributeRegistry)
   : attributeRegistry(attributeRegistry)
   , expression(expression)
-  , compiled(LIMEX::Expression<double>(expression))
+  , compiled(LIMEX::Expression<double>(encodeQuotedStrings(expression)))
   , type(getType())
 {
   if ( auto name = compiled.getTarget(); name.has_value() ) {
@@ -20,7 +21,7 @@ Expression::Expression(std::string expression, const AttributeRegistry& attribut
   for ( auto& name : compiled.getVariables() ) {
     if ( name != BPMNOS::Keyword::Undefined ) {
       auto attribute = attributeRegistry[ name ];
-      inputs.push_back(attribute);
+      inputs.insert(attribute);
       variables.push_back(attribute);
     }
   }
@@ -29,13 +30,14 @@ Expression::Expression(std::string expression, const AttributeRegistry& attribut
       throw std::runtime_error("Expression: illegal expression '" + expression +"'");
     }
     auto attribute = attributeRegistry[ name ];
-    inputs.push_back(attribute);
+    inputs.insert(attribute);
     collections.push_back(attribute);
   }
 }
 
-Expression::Type Expression::getType() {
+Expression::Type Expression::getType() const {
   auto& variableNames = compiled.getVariables();
+  // check if any of the variables is named "undefined"
   if ( std::find( variableNames.begin(), variableNames.end(), BPMNOS::Keyword::Undefined ) != variableNames.end() ) {
     // only lhs == undefined, lhs != undefined, and lhs := undefined are allowed
     auto& root = compiled.getRoot(); 
@@ -65,7 +67,7 @@ Expression::Type Expression::getType() {
     auto& rhs = std::get< LIMEX::Node<double> >(node.operands[1]);
     assert( !lhs.operands.empty() );
     assert( !rhs.operands.empty() );
-//  std::cout << node.operands.size() << std::endl; // Print the entire AST
+
     if (
       lhs.type != LIMEX::Type::variable ||
       variableNames.at( std::get< size_t >(lhs.operands[0]) ) == BPMNOS::Keyword::Undefined ||
@@ -77,6 +79,7 @@ Expression::Type Expression::getType() {
 
     return node.type == LIMEX::Type::equal_to ? Type::IS_NULL : Type::IS_NOT_NULL;
   }
+  // all variables must be defined
   return Type::OTHER;
 }
 
