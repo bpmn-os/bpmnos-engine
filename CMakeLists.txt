@@ -47,22 +47,20 @@ include_directories(
   ${csv_SOURCE_DIR}/single_include 
 )
 
-# ExprTK dependency
+# LIMEX dependency
 FetchContent_Declare(
-        exprtk
-        GIT_REPOSITORY https://github.com/ArashPartow/exprtk/
-        GIT_TAG 0.0.1
+        limex
+        GIT_REPOSITORY https://github.com/bpmn-os/limex/
+        GIT_TAG main
 )
 
-FetchContent_GetProperties(exprtk)
-FetchContent_MakeAvailable(exprtk)
-#add_library(exprtk INTERFACE)
+FetchContent_GetProperties(limex)
+FetchContent_MakeAvailable(limex)
 
 include_directories(
   SYSTEM INTERFACE 
-  ${exprtk_SOURCE_DIR}
+  ${limex_SOURCE_DIR}
 )
-#target_link_libraries(${PROJECT_NAME} exprtk)
 
 # nlohmann/json dependency
 FetchContent_Declare(

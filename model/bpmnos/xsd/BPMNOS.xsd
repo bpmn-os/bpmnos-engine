@@ -82,9 +82,7 @@
   <xsd:complexType name="tRestriction">
     <xsd:attribute name="id" type="xsd:ID" use="required"/>
     <xsd:attribute name="scope" type="tRestrictionScope" use="optional" default="full"/>
-    <xsd:sequence>
-      <xsd:element ref="parameter" minOccurs="1" maxOccurs="1"/>
-    </xsd:sequence>
+    <xsd:attribute name="expression" type="xsd:string" use="required"/>
   </xsd:complexType>
 
   <xsd:simpleType name="tRestrictionScope">
@@ -105,11 +103,7 @@
   <xsd:element name="operator" type="tOperator"/>
   <xsd:complexType name="tOperator">
     <xsd:attribute name="id" type="xsd:ID" use="required"/>
-    <xsd:attribute name="type" type="xsd:string" use="required"/>
-    <xsd:attribute name="attribute" type="xsd:string" use="required"/>
-    <xsd:sequence>
-      <xsd:element ref="parameter" minOccurs="0" maxOccurs="unbounded"/>
-    </xsd:sequence>
+    <xsd:attribute name="expression" type="xsd:string" use="required"/>
   </xsd:complexType>
 
 

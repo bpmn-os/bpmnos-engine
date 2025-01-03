@@ -10,18 +10,8 @@ list(APPEND bpmn_SOURCES
   extensionElements/AttributeRegistry.cpp
   extensionElements/Parameter.cpp
   extensionElements/Expression.cpp
-  extensionElements/expression/LinearExpression.cpp
-  extensionElements/expression/GenericExpression.cpp
-  extensionElements/expression/NullCondition.cpp
-  extensionElements/expression/Enumeration.cpp
-  extensionElements/expression/StringExpression.cpp
   extensionElements/Restriction.cpp
   extensionElements/Operator.cpp
-  extensionElements/operator/UnassignOperator.cpp
-  extensionElements/operator/AssignOperator.cpp
-  extensionElements/operator/LookupTable.cpp
-  extensionElements/operator/LookupOperator.cpp
-  extensionElements/operator/ExpressionOperator.cpp
   extensionElements/Choice.cpp
   extensionElements/Guidance.cpp
   extensionElements/Content.cpp
@@ -41,18 +31,8 @@ list(APPEND bpmn_HEADERS
   extensionElements/AttributeRegistry.h
   extensionElements/Parameter.h
   extensionElements/Expression.h
-  extensionElements/expression/LinearExpression.h
-  extensionElements/expression/GenericExpression.h
-  extensionElements/expression/NullCondition.h
-  extensionElements/expression/Enumeration.h
-  extensionElements/expression/StringExpression.h
   extensionElements/Restriction.h
   extensionElements/Operator.h
-  extensionElements/operator/UnassignOperator.h
-  extensionElements/operator/AssignOperator.h
-  extensionElements/operator/LookupTable.h
-  extensionElements/operator/LookupOperator.h
-  extensionElements/operator/ExpressionOperator.h
   extensionElements/Choice.h
   extensionElements/Guidance.h
   extensionElements/Content.h
