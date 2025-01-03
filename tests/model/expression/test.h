@@ -117,3 +117,114 @@ SCENARIO( "Divide assignment", "[model][expression]" ) {
     }
   }
 }
+
+SCENARIO( "String expression", "[model][expression]" ) {
+  const std::string modelFile = "tests/model/expression/stringExpression.bpmn";
+  REQUIRE_NOTHROW( Model::Model(modelFile) );
+
+  GIVEN( "An expression result := name in {\"Peter\", example, \"Mary\"}" ) {
+    WHEN( "The expression is executed with name = \"Mary\" and example = \"Paul\"" ) {
+      std::string csv =
+        "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
+        "Process_1, Instance_1,Name,Mary\n"
+        "Process_1, Instance_1,Example,Paul\n"
+      ;
+      Model::StaticDataProvider dataProvider(modelFile,csv);
+      auto scenario = dataProvider.createScenario();
+
+      auto instantiations = scenario->getCurrentInstantiations(0);
+      THEN( "The result is correct" ) {
+        Values globals;
+        for ( auto& [process,status,data] : instantiations ) {
+          auto extensionElements = process->extensionElements->represents<Model::ExtensionElements>();
+          REQUIRE( status.size() == 3 + 1 ); // don't forget timestamp
+          REQUIRE( status[extensionElements->attributeRegistry["name"]->index].value() == BPMNOS::to_number(std::string("Mary"),STRING) );
+          REQUIRE( status[extensionElements->attributeRegistry["example"]->index].value() == BPMNOS::to_number(std::string("Paul"),STRING) );
+          REQUIRE( status[extensionElements->attributeRegistry["result"]->index].has_value() == false );
+          extensionElements->applyOperators(status,data,globals);
+          REQUIRE( status[extensionElements->attributeRegistry["name"]->index].value() == BPMNOS::to_number(std::string("Mary"),STRING) );
+          REQUIRE( status[extensionElements->attributeRegistry["example"]->index].value() == BPMNOS::to_number(std::string("Paul"),STRING) );
+          REQUIRE( status[extensionElements->attributeRegistry["result"]->index].has_value() == true );
+          REQUIRE( status[extensionElements->attributeRegistry["result"]->index].value_or(-1) == 1 );
+        }
+      }
+    }
+    WHEN( "The expression is executed with name = \"Paul\" and example = \"Paul\"" ) {
+      std::string csv =
+        "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
+        "Process_1, Instance_1,Name,Paul\n"
+        "Process_1, Instance_1,Example,Paul\n"
+      ;
+      Model::StaticDataProvider dataProvider(modelFile,csv);
+      auto scenario = dataProvider.createScenario();
+
+      auto instantiations = scenario->getCurrentInstantiations(0);
+      THEN( "The result is correct" ) {
+        Values globals;
+        for ( auto& [process,status,data] : instantiations ) {
+          auto extensionElements = process->extensionElements->represents<Model::ExtensionElements>();
+          REQUIRE( status.size() == 3 + 1 ); // don't forget timestamp
+          REQUIRE( status[extensionElements->attributeRegistry["name"]->index].value() == BPMNOS::to_number(std::string("Paul"),STRING) );
+          REQUIRE( status[extensionElements->attributeRegistry["example"]->index].value() == BPMNOS::to_number(std::string("Paul"),STRING) );
+          REQUIRE( status[extensionElements->attributeRegistry["result"]->index].has_value() == false );
+          extensionElements->applyOperators(status,data,globals);
+          REQUIRE( status[extensionElements->attributeRegistry["name"]->index].value() == BPMNOS::to_number(std::string("Paul"),STRING) );
+          REQUIRE( status[extensionElements->attributeRegistry["example"]->index].value() == BPMNOS::to_number(std::string("Paul"),STRING) );
+          REQUIRE( status[extensionElements->attributeRegistry["result"]->index].has_value() == true );
+          REQUIRE( status[extensionElements->attributeRegistry["result"]->index].value_or(-1) == 1 );
+        }
+      }
+    }
+    WHEN( "The expression is executed with name = \"Joe\" and example = \"Paul\"" ) {
+      std::string csv =
+        "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
+        "Process_1, Instance_1,Name,Joe\n"
+        "Process_1, Instance_1,Example,Paul\n"
+      ;
+      Model::StaticDataProvider dataProvider(modelFile,csv);
+      auto scenario = dataProvider.createScenario();
+
+      auto instantiations = scenario->getCurrentInstantiations(0);
+      THEN( "The result is correct" ) {
+        Values globals;
+        for ( auto& [process,status,data] : instantiations ) {
+          auto extensionElements = process->extensionElements->represents<Model::ExtensionElements>();
+          REQUIRE( status.size() == 3 + 1 ); // don't forget timestamp
+          REQUIRE( status[extensionElements->attributeRegistry["name"]->index].value() == BPMNOS::to_number(std::string("Joe"),STRING) );
+          REQUIRE( status[extensionElements->attributeRegistry["example"]->index].value() == BPMNOS::to_number(std::string("Paul"),STRING) );
+          REQUIRE( status[extensionElements->attributeRegistry["result"]->index].has_value() == false );
+          extensionElements->applyOperators(status,data,globals);
+          REQUIRE( status[extensionElements->attributeRegistry["name"]->index].value() == BPMNOS::to_number(std::string("Joe"),STRING) );
+          REQUIRE( status[extensionElements->attributeRegistry["example"]->index].value() == BPMNOS::to_number(std::string("Paul"),STRING) );
+          REQUIRE( status[extensionElements->attributeRegistry["result"]->index].has_value() == true );
+          REQUIRE( status[extensionElements->attributeRegistry["result"]->index].value_or(-1) == 0 );
+        }
+      }
+    }
+    WHEN( "The expression is executed with name = \"Paul\" and example = undefined" ) {
+      std::string csv =
+        "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
+        "Process_1, Instance_1,Name,Peter\n"
+      ;
+      Model::StaticDataProvider dataProvider(modelFile,csv);
+      auto scenario = dataProvider.createScenario();
+
+      auto instantiations = scenario->getCurrentInstantiations(0);
+      THEN( "The result is correct" ) {
+        Values globals;
+        for ( auto& [process,status,data] : instantiations ) {
+          auto extensionElements = process->extensionElements->represents<Model::ExtensionElements>();
+          REQUIRE( status.size() == 3 + 1 ); // don't forget timestamp
+          REQUIRE( status[extensionElements->attributeRegistry["name"]->index].value() == BPMNOS::to_number(std::string("Peter"),STRING) );
+          REQUIRE( status[extensionElements->attributeRegistry["example"]->index].has_value() == false );
+          REQUIRE( status[extensionElements->attributeRegistry["result"]->index].has_value() == false );
+          extensionElements->applyOperators(status,data,globals);
+          REQUIRE( status[extensionElements->attributeRegistry["name"]->index].value() == BPMNOS::to_number(std::string("Peter"),STRING) );
+          REQUIRE( status[extensionElements->attributeRegistry["example"]->index].has_value() == false );
+          REQUIRE( status[extensionElements->attributeRegistry["result"]->index].has_value() == false );
+          REQUIRE( status[extensionElements->attributeRegistry["result"]->index].value_or(-1) == -1 );
+        }
+      }
+    }
+  }
+}
