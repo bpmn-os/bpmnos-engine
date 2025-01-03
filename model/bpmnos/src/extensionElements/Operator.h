@@ -27,7 +27,6 @@ public:
   const Expression expression;
   const AttributeRegistry& attributeRegistry;
   Attribute* attribute; ///< The status or data attribute to be modified by the operator
-  const std::set<const Attribute*>& inputs; ///< Set containing all input attributes influencing the result of the operator.
 
   template <typename DataType>
   void apply(BPMNOS::Values& status, DataType& data, BPMNOS::Values& globals) const;

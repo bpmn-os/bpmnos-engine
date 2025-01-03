@@ -20,7 +20,7 @@ public:
   XML::bpmnos::tRestriction* element;
 
   std::string& id;
-  std::unique_ptr<Expression> expression;
+  const Expression expression;
 
   enum class Scope { ENTRY, EXIT, FULL };
   Scope scope;

@@ -8,7 +8,6 @@ Operator::Operator(XML::bpmnos::tOperator* operator_, const AttributeRegistry& a
   , expression(Expression(operator_->expression.value.value,attributeRegistry))
   , attributeRegistry(attributeRegistry)
   , attribute(getAttribute())
-  , inputs(expression.inputs)
 {
   attribute->isImmutable = false;
 }
