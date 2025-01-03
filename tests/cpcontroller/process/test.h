@@ -19,8 +19,7 @@ SCENARIO( "Empty executable process", "[cpcontroller][process]" ) {
       Execution::CPController controller(scenario.get());
       auto& cpmodel = controller.getModel();
       auto cp = cpmodel.stringify();
-
-//      std::cout << cp << std::endl;
+      std::cout << cp << std::endl;
 /*
 ///////
       auto& cpmodel = controller.createCP(scenario.get());
@@ -75,9 +74,10 @@ SCENARIO( "Trivial executable process", "[cpcontroller][process]" ) {
     WHEN( "The model is created" ) {
       Execution::CPController controller(scenario.get());
       auto& cpmodel = controller.getModel();
-      auto cp = cpmodel.stringify();
+//      std::cout << cpmodel.stringify() << std::endl;
+//      auto cp = cpmodel.stringify();
 
-      std::cout << cp << std::endl;
+//      std::cout << cp << std::endl;
     }
   }
 };
