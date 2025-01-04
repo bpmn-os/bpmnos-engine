@@ -59,7 +59,6 @@ std::vector< std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values> > 
 }
 
 std::optional<BPMNOS::Values> SystemState::getStatusAttributes(const StateMachine* root, const BPMN::Node* node) const {
-  std::optional<BPMNOS::Values> values;
   if ( assumedTime ) {
     return scenario->getAnticipatedValues(root->instance.value(), node, currentTime);
   }
@@ -73,7 +72,6 @@ std::optional<BPMNOS::Values> SystemState::getStatusAttributes(const StateMachin
 }
 
 std::optional<BPMNOS::Values> SystemState::getDataAttributes(const StateMachine* root, const BPMN::Node* node) const {
-  std::optional<BPMNOS::Values> values;
   if ( assumedTime ) {
     return scenario->getAnticipatedData(root->instance.value(), node, currentTime);
   }
