@@ -3,6 +3,7 @@
 #include "model/utility/src/Number.h"
 #include "model/utility/src/Value.h"
 #include "model/utility/src/getDelimiter.h"
+#include "model/bpmnos/src/extensionElements/Expression.h"
 #include <sstream>
 #include <unordered_map>
 #include <algorithm>
@@ -14,8 +15,11 @@ StaticDataProvider::StaticDataProvider(const std::string& modelFile, const std::
   , reader( initReader(instanceFileOrString) )
 {
   for ( auto& [ attributeId, attribute ] : attributes[nullptr] ) {
-    if ( attribute->value.has_value() ) {
-      globalValueMap[ attribute ] = attribute->value.value();
+    if ( attribute->expression ) {
+      if ( attribute->expression->compiled.getVariables().size() || attribute->expression->compiled.getCollections().size() ) {
+        throw std::runtime_error("StaticDataProvider: initial value of global attribute '" + attribute->id + "' must not be derived from other attributes");
+      }
+      globalValueMap[ attribute ] = attribute->expression->compiled.evaluate();
     }
   }
   earliestInstantiation = std::numeric_limits<BPMNOS::number>::max();
@@ -83,6 +87,10 @@ void StaticDataProvider::readInstances() {
       }
 
       auto attribute = attributes[process][attributeId];
+      if ( attribute->expression ) {
+        throw std::runtime_error("StaticDataProvider: value of attribute '" + attributeId + "' is initialized by expression and must not be provided explicitly");
+      }
+      
       instance.data[ attribute ] = BPMNOS::to_number(row[VALUE].get(),attribute->type);
     }
     else {
@@ -119,12 +127,17 @@ void StaticDataProvider::ensureDefaultValue(StaticInstanceData& instance, const 
   if ( auto it = instance.data.find( attribute );
     it == instance.data.end()
   ) {
-    // set attribute if not yet set
+    if ( attribute->expression ) {
+      throw std::runtime_error("StaticDataProvider: initial value of default attribute '" + attribute->id + "' must not be  provided by expression");
+    }
+    
+    // set attribute value if available
     if ( value.has_value() ) {
       instance.data[ attribute ] = value.value();
     }
-    else if ( attribute->value.has_value() ) {
-      instance.data[ attribute ] = attribute->value.value();
+    else if ( attributeId == BPMNOS::Keyword::Timestamp ) {
+      // use 0 as fallback 
+      instance.data[ attribute ] = 0;
     }
     else {
       throw std::runtime_error("StaticDataProvider: attribute '" + attribute->id + "' has no default value");

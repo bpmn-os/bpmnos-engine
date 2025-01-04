@@ -2,6 +2,7 @@
 #define BPMNOS_Model_Conditions_H
 
 #include <memory>
+#include <set>
 #include <vector>
 #include <string>
 #include <bpmn++.h>

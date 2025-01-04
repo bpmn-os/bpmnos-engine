@@ -26,7 +26,6 @@ SCENARIO( "Trivial executable process", "[data][static]" ) {
 //          REQUIRE( extensionElements->attributes[Model::ExtensionElements::Index::Instance]->value == std::nullopt );
           REQUIRE( (std::string)extensionElements->attributes[Model::ExtensionElements::Index::Timestamp]->id == Keyword::Timestamp );
           REQUIRE( extensionElements->attributes[Model::ExtensionElements::Index::Timestamp]->isImmutable == false );
-          REQUIRE( extensionElements->attributes[Model::ExtensionElements::Index::Timestamp]->value.value() == 0 );
         }
       }
       THEN( "The instantiation data is correct" ) {
@@ -92,7 +91,6 @@ SCENARIO( "Trivial executable process", "[data][static]" ) {
 //          REQUIRE( extensionElements->attributes[Model::ExtensionElements::Index::Instance]->value == std::nullopt );
           REQUIRE( (std::string)extensionElements->attributes[Model::ExtensionElements::Index::Timestamp]->id == Keyword::Timestamp );
           REQUIRE( extensionElements->attributes[Model::ExtensionElements::Index::Timestamp]->isImmutable == false );
-          REQUIRE( extensionElements->attributes[Model::ExtensionElements::Index::Timestamp]->value.value() == 0 );
         }
       }
       THEN( "The instantiation data of the first instance is correct" ) {

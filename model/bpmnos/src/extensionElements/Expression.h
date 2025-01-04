@@ -17,7 +17,7 @@ namespace BPMNOS::Model {
 class Expression {
 public:
   enum class Type { UNASSIGN, IS_NULL, IS_NOT_NULL, OTHER };
-  Expression(const std::string expression, const AttributeRegistry& attributeRegistry);
+  Expression(const std::string expression, const AttributeRegistry& attributeRegistry, bool newTarget = false);
   const AttributeRegistry& attributeRegistry;
   const std::string expression;
   const LIMEX::Expression<double> compiled;

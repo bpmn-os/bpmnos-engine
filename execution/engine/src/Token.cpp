@@ -323,7 +323,7 @@ void Token::advanceToReady() {
     // ensure that data is set appropriately
     data = &owned->data;
   }
-  
+    
   update(State::READY);
   
   if ( auto activity = node->represents<BPMN::Activity>();
@@ -343,6 +343,20 @@ void Token::advanceToReady() {
   awaitEntryEvent();
 }
 
+void Token::computeInitialValues( const BPMNOS::Model::ExtensionElements* extensionElements ) {
+  status.at(BPMNOS::Model::ExtensionElements::Index::Timestamp) = owner->systemState->currentTime;
+  for ( auto& attribute : extensionElements->attributes ) {
+    if ( attribute->expression ) {
+      status.at(attribute->index) = attribute->expression->execute(status,*data,globals);
+    }
+  }
+  for ( auto& attribute : extensionElements->data ) {
+    if ( attribute->expression ) {
+      data->at(attribute->index).get() = attribute->expression->execute(status,*data,globals);
+    }
+  }
+}
+
 void Token::advanceToEntered() {
 //std::cerr << "advanceToEntered: " << jsonify().dump() << std::endl;
 
@@ -357,54 +371,60 @@ void Token::advanceToEntered() {
 
   if ( !node ) {
 //std::cerr << "!node" << std::endl;
-    // process operators are applied upon entry
-    if ( auto extensionElements = owner->process->extensionElements->represents<BPMNOS::Model::ExtensionElements>() ) {
-      if ( !extensionElements->isInstantaneous ) {
-        throw std::runtime_error("StateMachine: Operators for process '" + node->id + "' attempt to modify timestamp");
-      }
-      // update status
-      status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = owner->systemState->currentTime;
-      extensionElements->applyOperators(status,*data,globals);
-    }
-  }
-  else {
-    if ( auto activity = node->represents<BPMN::Activity>();
-      activity && activity->loopCharacteristics.has_value() && activity->loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::Standard
-    ) {
-//std::cerr << "initialize or increment loop index for standard loop" << std::endl;
-      // initialize or increment loop index for standard loop
-      auto extensionElements = node->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
-      if ( extensionElements->loopIndex.has_value() && extensionElements->loopIndex.value()->attribute.has_value() ) {
-        auto& attributeRegistry = getAttributeRegistry();
-        auto& attribute = extensionElements->loopIndex.value()->attribute.value();
-        if ( auto index = attributeRegistry.getValue( &attribute.get(), status, *data, globals); index.has_value() ) {
-          // increment existing value 
-          attributeRegistry.setValue(&attribute.get(), status, *data, globals, (unsigned int)index.value() + 1);
-        }
-        else {
-          // initialize non-existing value 
-          attributeRegistry.setValue(&attribute.get(), status, *data, globals, 1);
-        }
-      }
-      else if ( extensionElements->loopMaximum.has_value() && extensionElements->loopMaximum.value()->attribute.has_value() ) {
-        throw std::runtime_error("Token: no attribute provided for loop index parameter of standard loop activity '" + node->id +"' with loop maximum" );
-      }
+    auto extensionElements = owner->process->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
+    assert( extensionElements );
+
+    // TODO: remove below
+    if ( extensionElements->operators.size() ) {
+        assert(!"No operators for processes");    
     }
 
+    computeInitialValues( extensionElements );
+  }
+  else {
+    if ( auto activity = node->represents<BPMN::Activity>() ) {
+      auto extensionElements = node->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
+      assert( extensionElements );
+
+      if ( 
+        activity->loopCharacteristics.has_value() && 
+        activity->loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::Standard
+      ) {
+//std::cerr << "initialize or increment loop index for standard loop" << std::endl;
+        // initialize or increment loop index for standard loop
+        if ( extensionElements->loopIndex.has_value() && extensionElements->loopIndex.value()->attribute.has_value() ) {
+          auto& attributeRegistry = getAttributeRegistry();
+          auto& attribute = extensionElements->loopIndex.value()->attribute.value();
+          if ( auto index = attributeRegistry.getValue( &attribute.get(), status, *data, globals); index.has_value() ) {
+            // increment existing value 
+            attributeRegistry.setValue(&attribute.get(), status, *data, globals, (unsigned int)index.value() + 1);
+          }
+          else {
+            // initialize non-existing value 
+            attributeRegistry.setValue(&attribute.get(), status, *data, globals, 1);
+          }
+        }
+        else if ( 
+          extensionElements->loopMaximum.has_value() && 
+          extensionElements->loopMaximum.value()->attribute.has_value()
+        ) {
+          throw std::runtime_error("Token: no attribute provided for loop index parameter of standard loop activity '" + node->id +"' with loop maximum" );
+        }
+      }
+      
+      computeInitialValues( extensionElements );
+    }
+    
+    // TODO: remove below
     if ( node->represents<BPMN::SubProcess>() || 
       node->represents<BPMNOS::Model::SequentialAdHocSubProcess>()
     ) {
-//std::cerr << "node->represents<BPMN::SubProcess>()" << std::endl;
       // subprocess operators are applied upon entry
-      if ( auto extensionElements = node->extensionElements->represents<BPMNOS::Model::ExtensionElements>() ) {
-        if ( !extensionElements->isInstantaneous ) {
-          throw std::runtime_error("StateMachine: Operators for subprocess '" + node->id + "' attempt to modify timestamp");
-        }
-        // update status
-        status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = owner->systemState->currentTime;
-        extensionElements->applyOperators(status,*data,globals);
+      if ( auto extensionElements = node->extensionElements->represents<BPMNOS::Model::ExtensionElements>(); extensionElements && extensionElements->operators.size() ) {
+        assert(!"No operators for subprocesses");    
       }
     }
+    
   }
 
   
@@ -963,7 +983,7 @@ void Token::advanceToExiting() {
   }
 
   if ( node && node->represents<BPMN::TypedStartEvent>() ) {
-    // event subprocess operators are applied when exiting typed start event  
+    // attribute values of event subprocesses are computed when exiting typed start event  
     auto eventSubProcess = node->parent->represents<BPMN::EventSubProcess>();
     if ( !eventSubProcess ) {
       throw std::runtime_error("Token: typed start event must belong to event subprocess");

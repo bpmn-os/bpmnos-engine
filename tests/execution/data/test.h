@@ -6,7 +6,7 @@ SCENARIO( "Task with expression operator", "[data]" ) {
     std::string csv =
       "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
       "Process_1, Instance_1,DataAttribute_1,8\n"
-      "Process_1, Instance_1,DataAttribute_2,15\n"
+//      "Process_1, Instance_1,DataAttribute_2,15\n"
     ;
 
     Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -24,32 +24,22 @@ SCENARIO( "Task with expression operator", "[data]" ) {
       completionHandler.connect(&engine);
       exitHandler.connect(&engine);
       timeHandler.connect(&engine);
-//      Execution::Recorder recorder;
-      Execution::Recorder recorder(std::cerr);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
       engine.run(scenario.get());
       THEN( "The status updates are correct" ) {
-/*
-        auto subProcessLog = recorder.find(nlohmann::json{{"nodeId", "SubProcess_1"}});
-        REQUIRE( subProcessLog[0]["state"] == "ARRIVED" );
-        REQUIRE( subProcessLog[1]["state"] == "READY" );
-        REQUIRE( subProcessLog[1]["status"].size() == subProcessLog[0]["status"].size()+1 );
-        REQUIRE( subProcessLog[subProcessLog.size()-2]["state"] == "EXITING" );
-        REQUIRE( subProcessLog[subProcessLog.size()-1]["state"] == "DEPARTED" );
-        REQUIRE( subProcessLog[1]["status"].size() == subProcessLog[subProcessLog.size()-2]["status"].size() );
-        REQUIRE( subProcessLog[subProcessLog.size()-1]["status"].size() == subProcessLog[subProcessLog.size()-2]["status"].size()-1 );
+        auto entryLog = recorder.find(nlohmann::json{{"nodeId", "SubProcess_1"},{"state", "ENTERED"}});
+        REQUIRE( entryLog[0]["data"]["data1"] == 8 );
+        REQUIRE( entryLog[0]["data"]["data2"] == 0 );
+        REQUIRE( entryLog[0]["data"]["data3"] == "mydata" );
+        REQUIRE( entryLog[0]["data"]["data4"] == true );
 
-        auto taskLog = recorder.find(nlohmann::json{{"nodeId", "Task_1"}});
-        REQUIRE( taskLog[0]["state"] == "ARRIVED" );
-        REQUIRE( taskLog[1]["state"] == "READY" );
-        REQUIRE( taskLog[0]["status"].size() == subProcessLog[1]["status"].size() );
-        REQUIRE( taskLog[1]["status"].size() == taskLog[0]["status"].size()+1 );
-        REQUIRE( taskLog[taskLog.size()-2]["state"] == "EXITING" );
-        REQUIRE( taskLog[taskLog.size()-1]["state"] == "DEPARTED" );
-        REQUIRE( taskLog[1]["status"].size() == taskLog[taskLog.size()-2]["status"].size() );
-        REQUIRE( taskLog[taskLog.size()-1]["status"].size() == taskLog[taskLog.size()-2]["status"].size()-1 );
-        REQUIRE( taskLog[taskLog.size()-1]["status"].size() == subProcessLog[subProcessLog.size()-2]["status"].size() );
-*/
+        auto completionLog = recorder.find(nlohmann::json{{"nodeId", "SubProcess_1"},{"state", "COMPLETED"}});
+        REQUIRE( completionLog[0]["data"]["data1"] == 42 );
+        REQUIRE( completionLog[0]["data"]["data2"] == 0 );
+        REQUIRE( completionLog[0]["data"]["data3"] == "mydata" );
+        REQUIRE( completionLog[0]["data"]["data4"] == false );
       }
     }
   }

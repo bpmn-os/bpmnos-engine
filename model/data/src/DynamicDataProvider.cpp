@@ -133,7 +133,8 @@ std::unique_ptr<Scenario> DynamicDataProvider::createScenario(unsigned int scena
       }
       else {
         // no attribute data given, use default value as realization at time
-        scenario->setRealization( scenario->getAttributeData(id, attribute), {earliestInstantiation, attribute->value} );
+// TODO
+//        scenario->setRealization( scenario->getAttributeData(id, attribute), {earliestInstantiation, attribute->value} );
       }
 
     }

@@ -1,17 +1,25 @@
 #include "Attribute.h"
 #include "model/utility/src/Keywords.h"
 #include "Parameter.h"
+#include "Expression.h"
+#include "model/utility/src/encode_collection.h"
 
 using namespace BPMNOS::Model;
 
-Attribute::Attribute(XML::bpmnos::tAttribute* attribute, Attribute::Category category)
+Attribute::Attribute(XML::bpmnos::tAttribute* attribute, Attribute::Category category, AttributeRegistry& attributeRegistry)
   : element(attribute)
   , category(category)
   , index(std::numeric_limits<size_t>::max())
   , id(attribute->id.value.value)
-  , name(attribute->name.value.value)
-  , isImmutable(true)
+  , expression(getExpression(attribute->name.value.value,attributeRegistry))
+  , name(getName(attribute->name.value.value))
 {
+  attributeRegistry.add(this); 
+  if ( expression ) {
+    // expression requires pointer to target attribute
+    const_cast<Expression*>(expression.get())->target = std::make_optional<const Attribute*>(this);
+  }
+
   if ( attribute->type.value.value == "boolean" ) {
     type = ValueType::BOOLEAN;
   }
@@ -28,8 +36,9 @@ Attribute::Attribute(XML::bpmnos::tAttribute* attribute, Attribute::Category cat
     type = ValueType::COLLECTION;
   }
 
+  // TODO: Remove below
   if ( attribute->value.has_value() ) {
-    value = to_number( attribute->value->get().value.value, type ); 
+    assert(!"Value is no longer supported"); 
   }
 
   if ( attribute->weight.has_value() ) {
@@ -49,12 +58,6 @@ Attribute::Attribute(XML::bpmnos::tAttribute* attribute, Attribute::Category cat
     }
     weight = 0;
   }
-}
-
-Attribute::Attribute(XML::bpmnos::tAttribute* attribute, Attribute::Category category, AttributeRegistry& attributeRegistry)
-  : Attribute(attribute, category)
-{
-  attributeRegistry.add(this); 
   
   if ( attribute->parameter.has_value() ) {
     auto& parameter = attribute->parameter.value().get();
@@ -68,3 +71,28 @@ Attribute::Attribute(XML::bpmnos::tAttribute* attribute, Attribute::Category cat
 
   isImmutable = (id != Keyword::Timestamp);
 }
+
+std::unique_ptr<const Expression> Attribute::getExpression(std::string& input, AttributeRegistry& attributeRegistry) {
+  if ( !input.contains(":=") ) {
+    return nullptr;
+  }
+  auto expression = std::make_unique<const Expression>(encodeCollection(input,":="),attributeRegistry,true);
+  auto& root = expression->compiled.getRoot(); 
+  assert( root.operands.size() == 1 );
+  assert( root.type == LIMEX::Type::group );
+  auto& node = std::get< LIMEX::Node<double> >(root.operands[0]);
+  if ( node.type != LIMEX::Type::assign ) {
+    throw std::runtime_error("Attribute: illegal initialization '" + input + "' for attribute '" + id + "'"); 
+  }
+  return expression;
+}
+
+std::string Attribute::getName(std::string& input) {
+  if ( expression ) {
+    assert( expression->compiled.getTarget().has_value() );
+    return expression->compiled.getTarget().value();
+  }
+  return input;
+}
+
+

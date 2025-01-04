@@ -205,8 +205,8 @@ std::optional<BPMNOS::number> Scenario::getKnownValue(const Scenario::InstanceDa
     }
   }
 
-  // value will never be set, use default value
-  return attribute->value;
+  // value will never be provided
+  return std::nullopt;
 }
 
 std::optional<BPMNOS::number> Scenario::getKnownValue(const BPMNOS::number instanceId, const BPMNOS::Model::Attribute* attribute, const BPMNOS::number currentTime) const {

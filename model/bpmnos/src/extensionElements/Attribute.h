@@ -14,15 +14,13 @@ namespace BPMNOS::Model {
 
 class Attribute;
 class Parameter;
+class Expression;
 
 class AttributeRegistry;
 
 class Attribute {
 public:
   enum class Category { STATUS, DATA, GLOBAL };
-private:
-  Attribute(XML::bpmnos::tAttribute* attribute, Attribute::Category category);
-public:
   Attribute(XML::bpmnos::tAttribute* attribute, Attribute::Category category, AttributeRegistry& attributeRegistry);
   XML::bpmnos::tAttribute* element;
 
@@ -30,15 +28,18 @@ public:
   size_t index; ///< Index of attribute (is automatically set by attribute registry).
 
   std::string& id;
-  std::string& name;
+  std::unique_ptr<const Expression> expression;
+  const std::string name; ///< Name of attribute and optial initial assignment
 
   ValueType type;
   std::unique_ptr<Parameter> collection; ///< Parameter for value initialization for multi-instance activities.
-  std::optional<number> value;
  
   double weight; ///< Weight to be used for objective (assuming maximization). 
 
   bool isImmutable; ///< Flag indicating whether attribute value may be changed by operator, choice, or intermediate catch event. 
+private:
+  std::unique_ptr<const Expression> getExpression(std::string& input, AttributeRegistry& attributeRegistry);
+  std::string getName(std::string& input);
 };
 
 } // namespace BPMNOS::Model

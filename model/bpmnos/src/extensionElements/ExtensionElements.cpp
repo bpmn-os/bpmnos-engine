@@ -80,10 +80,10 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const
           restrictions.push_back(std::make_unique<Restriction>(&restriction,attributeRegistry));
         }
         catch ( const std::exception& error ) {
-          throw std::runtime_error("ExtensionElements: illegal parameters for restriction '" + (std::string)restriction.id.value + "'.\n" + error.what());
+          throw std::runtime_error("ExtensionElements: illegal restriction '" + (std::string)restriction.id.value + "'.\n" + error.what());
         }
         // add entry and exit dependencies
-        for ( auto input : restrictions.back()->expression->inputs ) {
+        for ( auto input : restrictions.back()->expression.inputs ) {
           if ( restrictions.back()->scope != Restriction::Scope::EXIT ) {
             entryDependencies.insert(input);
           }
@@ -99,7 +99,7 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const
     while ( ancestor ) {
       if ( auto extensionElements = ancestor->extensionElements->represents<BPMNOS::Model::ExtensionElements>() ) {
         for ( auto& restriction : extensionElements->restrictions ) {
-          for ( auto input : restriction->expression->inputs ) {
+          for ( auto input : restriction->expression.inputs ) {
             if ( restriction->scope == Restriction::Scope::FULL ) {
               entryDependencies.insert(input);
               exitDependencies.insert(input);
@@ -119,10 +119,10 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const
     if ( status->get().operators.has_value() ) {
       for ( XML::bpmnos::tOperator& operator_ : status->get().operators.value().get().operator_ ) {
         try {
-          operators.push_back( Operator::create(&operator_,attributeRegistry) );
+          operators.push_back( std::make_unique<Operator>(&operator_,attributeRegistry) );
         }
         catch ( const std::exception& error ) {
-          throw std::runtime_error("ExtensionElements: illegal parameters for operator '" + (std::string)operator_.id.value + "'.\n" + error.what() );
+          throw std::runtime_error("ExtensionElements: illegal operator '" + (std::string)operator_.id.value + "'.\n" + error.what() );
         }
         auto attribute = operators.back()->attribute;
         if ( attribute->category == Attribute::Category::STATUS && attribute->index == BPMNOS::Model::ExtensionElements::Index::Timestamp ) {
@@ -132,7 +132,7 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const
           throw std::runtime_error("ExtensionElements: operator '" + (std::string)operator_.id.value + "' modifies instance attribute.\n" );
         }
         
-        for ( auto input : operators.back()->inputs ) {
+        for ( auto input : operators.back()->expression.inputs ) {
           operatorDependencies.insert(input);
         }
       }

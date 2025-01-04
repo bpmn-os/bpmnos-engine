@@ -19,7 +19,7 @@ Conditions::Conditions(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent
     }
     
     // add data dependencies
-    for ( auto input : conditions.back()->expression->inputs ) {
+    for ( auto input : conditions.back()->expression.inputs ) {
       if ( input->category == Attribute::Category::STATUS && input->index == BPMNOS::Model::ExtensionElements::Index::Timestamp ) {
         throw std::runtime_error("Conditions: condition '" + (std::string)condition.id.value + "' is time dependent");
       }

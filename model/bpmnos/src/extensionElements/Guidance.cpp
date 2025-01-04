@@ -39,12 +39,12 @@ Guidance::Guidance(XML::bpmnos::tGuidance* guidance, const AttributeRegistry& at
     for ( XML::bpmnos::tRestriction& restriction : guidance->restrictions.value().get().restriction ) {
       try {
         restrictions.push_back(std::make_unique<Restriction>(&restriction,this->attributeRegistry));
-        for ( auto input : restrictions.back()->expression->inputs ) {
+        for ( auto input : restrictions.back()->expression.inputs ) {
           dependencies.insert(input);
         }
       }
       catch ( const std::exception &error ){
-        throw std::runtime_error("Guidance: illegal parameters for restriction '" + (std::string)restriction.id.value + "'\n" + error.what() );
+        throw std::runtime_error("Guidance: illegal expression for restriction '" + (std::string)restriction.id.value + "'\n" + error.what() );
       }
     }
   }    
@@ -52,13 +52,13 @@ Guidance::Guidance(XML::bpmnos::tGuidance* guidance, const AttributeRegistry& at
   if ( guidance->operators.has_value() ) {
     for ( XML::bpmnos::tOperator& operator_ : guidance->operators.value().get().operator_ ) {
       try {
-        operators.push_back(Operator::create(&operator_,this->attributeRegistry));
-        for ( auto input : operators.back()->inputs ) {
+        operators.push_back(std::make_unique<Operator>(&operator_,this->attributeRegistry));
+        for ( auto input : operators.back()->expression.inputs ) {
           dependencies.insert(input);
         }
       }
       catch ( const std::exception &error ){
-        throw std::runtime_error("Guidance: illegal parameters for operator '" + (std::string)operator_.id.value + "'" + "'\n" + error.what() );
+        throw std::runtime_error("Guidance: illegal expression for operator '" + (std::string)operator_.id.value + "'" + "'\n" + error.what() );
       }
     }
   }    

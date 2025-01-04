@@ -5,7 +5,7 @@
 
 using namespace BPMNOS::Model;
 
-Expression::Expression(std::string expression, const AttributeRegistry& attributeRegistry)
+Expression::Expression(std::string expression, const AttributeRegistry& attributeRegistry, bool newTarget)
   : attributeRegistry(attributeRegistry)
   , expression(expression)
   , compiled(LIMEX::Expression<double>(encodeQuotedStrings(expression)))
@@ -15,7 +15,9 @@ Expression::Expression(std::string expression, const AttributeRegistry& attribut
     if ( name.value() == BPMNOS::Keyword::Undefined ) {
       throw std::runtime_error("Expression: illegal assignment '" + expression +"'");
     }
-    target = attributeRegistry[ name.value() ];
+    if ( !newTarget ) {
+      target = attributeRegistry[ name.value() ];
+    }
   }
   
   for ( auto& name : compiled.getVariables() ) {
@@ -37,12 +39,13 @@ Expression::Expression(std::string expression, const AttributeRegistry& attribut
 
 Expression::Type Expression::getType() const {
   auto& variableNames = compiled.getVariables();
+  assert( compiled.getRoot().operands.size() == 1 );
+  assert( compiled.getRoot().type == LIMEX::Type::group );
+
   // check if any of the variables is named "undefined"
   if ( std::find( variableNames.begin(), variableNames.end(), BPMNOS::Keyword::Undefined ) != variableNames.end() ) {
     // only lhs == undefined, lhs != undefined, and lhs := undefined are allowed
     auto& root = compiled.getRoot(); 
-    assert( root.operands.size() == 1 );
-    assert( root.type == LIMEX::Type::group );
     auto& node = std::get< LIMEX::Node<double> >(root.operands[0]);
     
     if ( node.type == LIMEX::Type::assign ) {
@@ -98,7 +101,7 @@ std::optional<BPMNOS::number> Expression::execute(const BPMNOS::Values& status, 
     auto value = attributeRegistry.getValue(variables[0],status,data,globals);
     return number( (double)value.has_value() );
   }
-  
+
   // collect variable values
   std::vector< double > variableValues;
   for ( auto attribute : variables ) {
@@ -127,7 +130,7 @@ std::optional<BPMNOS::number> Expression::execute(const BPMNOS::Values& status, 
       collectionValues.back().push_back( (double)value.value() );
     }
   }
-  
+    
   return number(compiled.evaluate(variableValues,collectionValues));
 }
 

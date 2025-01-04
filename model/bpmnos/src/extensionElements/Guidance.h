@@ -7,6 +7,7 @@
 #include <string>
 #include <bpmn++.h>
 #include "Attribute.h"
+#include "Parameter.h"
 #include "Restriction.h"
 #include "Operator.h"
 #include "model/bpmnos/src/xml/bpmnos/tGuidance.h"
