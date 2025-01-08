@@ -162,5 +162,19 @@
     </xsd:sequence>
   </xsd:complexType>
 
+  <xsd:element name="tables" type="tTables"/>
+  <xsd:complexType name="tTables">
+    <xsd:sequence>
+      <xsd:element ref="table" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:element name="table" type="tTable"/>
+  <xsd:complexType name="tTable">
+    <xsd:attribute name="id" type="xsd:ID" use="required"/>
+    <xsd:attribute name="source" type="xsd:string" use="required"/>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+  </xsd:complexType>
+
 </xsd:schema>
 
