@@ -8,7 +8,7 @@ using namespace BPMNOS::Model;
 Expression::Expression(std::string expression, const AttributeRegistry& attributeRegistry, bool newTarget)
   : attributeRegistry(attributeRegistry)
   , expression(expression)
-  , compiled(LIMEX::Expression<double>(encodeQuotedStrings(expression)))
+  , compiled(getExpression(expression))
   , type(getType())
 {
   if ( auto name = compiled.getTarget(); name.has_value() ) {
@@ -34,6 +34,15 @@ Expression::Expression(std::string expression, const AttributeRegistry& attribut
     auto attribute = attributeRegistry[ name ];
     inputs.insert(attribute);
     collections.push_back(attribute);
+  }
+}
+
+LIMEX::Expression<double> Expression::getExpression(const std::string& input) const {
+  try {
+    return LIMEX::Expression<double>(encodeQuotedStrings(input));
+  }
+  catch ( const std::exception& error ) {
+    throw std::runtime_error("Expression: illegal expression '" + input + "'.\n" + error.what());
   }
 }
 

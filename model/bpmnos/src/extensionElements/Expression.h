@@ -30,6 +30,7 @@ public:
   template <typename DataType>
   std::optional<BPMNOS::number> execute(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const;
 private:
+  LIMEX::Expression<double> getExpression(const std::string& input) const;
   Type getType() const;
 };
 
