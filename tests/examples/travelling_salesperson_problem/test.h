@@ -1,6 +1,5 @@
 SCENARIO( "Travelling salesperson problem", "[examples][travelling_salesperson_problem]" ) {
   const std::string modelFile = "examples/travelling_salesperson_problem/Travelling_salesperson_problem.bpmn";
-  BPMNOS::Model::LookupOperator::lookupTables.clear();
   BPMNOS::Model::LookupTable::folders = { "tests/examples/travelling_salesperson_problem" };
   REQUIRE_NOTHROW( Model::Model(modelFile) );
 
@@ -40,14 +39,13 @@ SCENARIO( "Travelling salesperson problem", "[examples][travelling_salesperson_p
       THEN( "Then locations are visited in any order" ) {
         auto visitLog = recorder.find(nlohmann::json{{"nodeId", "VisitLocation"},{"state", "ENTERED"}});
         REQUIRE( visitLog.size() == 3 );
-/*
-        REQUIRE( visitLog[0]["status"]["location"] == "Munich" );
-        REQUIRE( visitLog[1]["status"]["location"] == "Berlin" );
-        REQUIRE( visitLog[2]["status"]["location"] == "Cologne" );
-*/
+        std::set<std::string> visited;
+        for ( auto visit : visitLog ) {
+          visited.insert(visit["status"]["location"]);
+        }
+        REQUIRE( visited == std::set<std::string>{"Munich","Berlin","Cologne"}); 
       }
     }
-
     WHEN( "The engine is started with a best-first policy" ) {
       Execution::Engine engine;
       Execution::LocalEvaluator evaluator;
@@ -113,3 +111,4 @@ SCENARIO( "Travelling salesperson problem", "[examples][travelling_salesperson_p
     }
   }
 }
+

@@ -1,6 +1,6 @@
 SCENARIO( "Vehicle routing problem", "[examples][vehicle_routing_problem]" ) {
   const std::string modelFile = "examples/vehicle_routing_problem/Vehicle_routing_problem.bpmn";
-  BPMNOS::Model::LookupOperator::lookupTables.clear();
+//  BPMNOS::Model::LookupOperator::lookupTables.clear();
   BPMNOS::Model::LookupTable::folders = { "tests/examples/vehicle_routing_problem" };
   REQUIRE_NOTHROW( Model::Model(modelFile) );
 
