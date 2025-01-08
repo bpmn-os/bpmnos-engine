@@ -3,6 +3,7 @@
 #include "Parameter.h"
 #include "Expression.h"
 #include "model/utility/src/encode_collection.h"
+#include "model/utility/src/encode_quoted_strings.h"
 
 using namespace BPMNOS::Model;
 
@@ -14,6 +15,7 @@ Attribute::Attribute(XML::bpmnos::tAttribute* attribute, Attribute::Category cat
   , expression(getExpression(attribute->name.value.value,attributeRegistry))
   , name(getName(attribute->name.value.value))
 {
+//std::cerr << "Attribute: " << name << std::endl;
   attributeRegistry.add(this); 
   if ( expression ) {
     // expression requires pointer to target attribute
@@ -76,7 +78,8 @@ std::unique_ptr<const Expression> Attribute::getExpression(std::string& input, A
   if ( !input.contains(":=") ) {
     return nullptr;
   }
-  auto expression = std::make_unique<const Expression>(encodeCollection(input,":="),attributeRegistry,true);
+
+  auto expression = std::make_unique<const Expression>(encodeCollection(encodeQuotedStrings(input)),attributeRegistry,true);
   auto& root = expression->compiled.getRoot(); 
   assert( root.operands.size() == 1 );
   assert( root.type == LIMEX::Type::group );
