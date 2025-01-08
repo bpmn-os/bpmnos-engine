@@ -30,7 +30,7 @@ SCENARIO( "A simple process with subprocess and task", "[collection][process]" )
       THEN( "The attribute values are properly initialized" ) {
         auto entryLog = recorder.find(nlohmann::json{{"state", "ENTERED"}}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
         REQUIRE( entryLog[0]["processId"] == "Process_1" );
-        REQUIRE( entryLog[0]["status"]["x"] == R"(["A", "B", "C"])" );
+        REQUIRE( entryLog[0]["status"]["x"] == encodeQuotedStrings(R"(["A", "B", "C"])") );
         REQUIRE( entryLog[0]["status"]["i"] == 2 );
         REQUIRE( entryLog[0]["status"]["z"] == "B" );
         REQUIRE( entryLog[1]["nodeId"] == "StartEvent_1" );
