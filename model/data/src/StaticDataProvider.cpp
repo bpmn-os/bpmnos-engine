@@ -90,7 +90,6 @@ void StaticDataProvider::readInstances() {
       if ( attribute->expression ) {
         throw std::runtime_error("StaticDataProvider: value of attribute '" + attributeId + "' is initialized by expression and must not be provided explicitly");
       }
-      
       instance.data[ attribute ] = BPMNOS::to_number(row[VALUE].get(),attribute->type);
     }
     else {
