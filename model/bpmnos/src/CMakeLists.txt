@@ -23,6 +23,7 @@ list(APPEND bpmn_SOURCES
   extensionElements/Conditions.cpp
   DecisionTask.cpp
   SequentialAdHocSubProcess.cpp
+  LookupTable.cpp
   Model.cpp
 )
 
@@ -44,5 +45,6 @@ list(APPEND bpmn_HEADERS
   extensionElements/Conditions.h
   DecisionTask.h
   SequentialAdHocSubProcess.h
+  LookupTable.h
   Model.h
 )
