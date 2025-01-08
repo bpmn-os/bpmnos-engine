@@ -30,8 +30,18 @@ Guidance::Guidance(XML::bpmnos::tGuidance* guidance, const AttributeRegistry& at
   // add all attributes
   if ( guidance->attributes.has_value() ) {
     for ( XML::bpmnos::tAttribute& attributeElement : guidance->attributes.value().get().attribute ) {
-      auto attribute = std::make_unique<Attribute>(&attributeElement, Attribute::Category::STATUS, this->attributeRegistry);
-      attributes.push_back(std::move(attribute));
+      try {
+        auto attribute = std::make_unique<Attribute>(&attributeElement, Attribute::Category::STATUS, this->attributeRegistry);
+        if ( attribute->expression ) {
+          for ( auto input : attribute->expression->inputs ) {
+            dependencies.insert(input);
+          }
+        }
+        attributes.push_back(std::move(attribute));
+      }
+      catch ( const std::exception &error ){
+        throw std::runtime_error("Guidance: illegal expression for attribute '" + (std::string)attributeElement.id.value + "'\n" + error.what() );
+      }
     }
   }    
   // add all restrictions
@@ -69,14 +79,14 @@ BPMNOS::number Guidance::getObjective(const BPMNOS::Values& status, const DataTy
   BPMNOS::number objective = 0;
   for ( auto& [name, attribute] : attributeRegistry.statusAttributes ) {
     auto value = attributeRegistry.getValue(attribute,status,data,globals);
-    if ( value.has_value() ) {
+    if ( value.has_value() && attribute->weight ) {
 //std::cerr << attribute->name << " contributes " <<  attribute->weight * value.value() << std::endl;
       objective += attribute->weight * value.value();
     }
   }
   for ( auto& [name, attribute] : attributeRegistry.dataAttributes ) {
     auto value = attributeRegistry.getValue(attribute,status,data,globals);
-    if ( value.has_value() ) {
+    if ( value.has_value() && attribute->weight ) {
 //std::cerr << attribute->name << " contributes " <<  attribute->weight * value.value() << std::endl;
       objective += attribute->weight * value.value();
     }
@@ -115,8 +125,12 @@ void Guidance::apply(const Scenario* scenario, BPMNOS::number currentTime, const
 
   for ( auto& attribute : attributes ) {
     status.push_back( scenario->getKnownValue(instanceId, attribute.get(), currentTime ) );
+    if ( attribute->expression ) {
+      // compute initial value
+      status.back() = attribute->expression->execute(status,data,globals);
+    }
   }
-
+  
   // apply operators
   for ( auto& operator_ : operators ) {
     operator_->apply(status,data,globals);
