@@ -8,6 +8,8 @@
 #include "model/bpmnos/src/xml/bpmnos/tAttribute.h"
 #include "model/bpmnos/src/extensionElements/Attribute.h"
 #include "model/bpmnos/src/extensionElements/AttributeRegistry.h"
+#include "model/bpmnos/src/LookupTable.h"
+#include "model/bpmnos/src/xml/bpmnos/tTable.h"
 
 namespace BPMNOS::Model {
 
@@ -19,11 +21,13 @@ namespace BPMNOS::Model {
 class Model : public BPMN::Model {
 public:
   Model(const std::string& filename);
+  ~Model();
 
 public:
   std::vector<std::reference_wrapper<XML::bpmnos::tAttribute>> getAttributes(XML::bpmn::tBaseElement* element);
   std::vector<std::reference_wrapper<XML::bpmnos::tAttribute>> getData(XML::bpmn::tBaseElement* element);
   
+  std::unique_ptr<LookupTable> createLookupTable(XML::bpmnos::tTable* table);
   std::unique_ptr<XML::XMLObject> createRoot(const std::string& filename) override;
 
   std::unique_ptr<BPMN::Process> createProcess(XML::bpmn::tProcess* process) override;
@@ -60,6 +64,7 @@ public:
   static bool hasSequentialPerformer(const std::vector< std::reference_wrapper<XML::bpmn::tResourceRole> >& resources);
   
   AttributeRegistry attributeRegistry; ///< Registry allowing to look up all status and data attributes by their names.
+  std::vector< std::unique_ptr<LookupTable> > lookupTables; ///< Vector containing lookup tables declared in model.
   std::vector< std::unique_ptr<Attribute> > attributes; ///< Vector containing new global attributes declared for the model.
 };
 

@@ -12,14 +12,21 @@
 #include "SequentialAdHocSubProcess.h"
 #include "model/bpmnos/src/xml/bpmnos/tAttributes.h"
 #include "model/bpmnos/src/xml/bpmnos/tAttribute.h"
+#include "model/bpmnos/src/xml/bpmnos/tTables.h"
+#include "model/bpmnos/src/xml/bpmnos/tTable.h"
 #include "model/utility/src/Keywords.h"
 
 using namespace BPMNOS::Model;
 
 Model::Model(const std::string& filename)
 {
-  LIMEX::Expression<double>::createBuiltInCallables();
+  LIMEX::Expression<double>::initialize();
   readBPMNFile(filename);
+}
+
+Model::~Model()
+{
+  LIMEX::Expression<double>::free();
 }
 
 std::vector<std::reference_wrapper<XML::bpmnos::tAttribute>> Model::getAttributes(XML::bpmn::tBaseElement* baseElement) {
@@ -52,8 +59,43 @@ std::vector<std::reference_wrapper<XML::bpmnos::tAttribute>> Model::getData(XML:
   return attributes;
 }
 
+std::unique_ptr<LookupTable> Model::createLookupTable(XML::bpmnos::tTable* table) {
+  std::string lookupName = table->getRequiredAttributeByName("name").value;
+  std::string source = table->getRequiredAttributeByName("source").value;
+  return std::make_unique<LookupTable>(lookupName,source);
+}
+
 std::unique_ptr<XML::XMLObject> Model::createRoot(const std::string& filename) {
   auto root = BPMN::Model::createRoot(filename);
+  // TODO: make sure that only built in callables exist 
+  // create lookup tables
+  for ( XML::bpmn::tDataStoreReference& dataStoreReference : root->find<XML::bpmn::tDataStoreReference>() ) {
+    auto extensionElements = dataStoreReference.getOptionalChild<XML::bpmn::tExtensionElements>();
+    if ( extensionElements.has_value() ) {
+      auto tables = extensionElements->get().getOptionalChild<XML::bpmnos::tTables>();
+      if ( tables.has_value() ) {
+        for ( XML::bpmnos::tTable& table : tables->get().find<XML::bpmnos::tTable>() ) {
+          lookupTables.push_back( createLookupTable(&table) );
+          auto lookupTable = lookupTables.back().get();
+          // TODO: remove below check to ensure that none of the builtin callables are redefined  
+          auto callables = LIMEX::Expression<double>::getCallables(); 
+          if  ( std::ranges::find(callables, lookupTable->name) == callables.end() ) {
+            // register callable
+            // TODO: should I use shared pointers?
+            LIMEX::Expression<double>::addCallable(
+              lookupTable->name, 
+              [lookupTable](const std::vector<double>& args)
+              {
+                return lookupTable->at(args);
+              }
+            );
+          }
+        }
+      }
+    }
+  }
+
+  // create global variables
   if ( auto collaboration = root->getOptionalChild<XML::bpmn::tCollaboration>();
     collaboration.has_value()
   ) {
@@ -61,6 +103,8 @@ std::unique_ptr<XML::XMLObject> Model::createRoot(const std::string& filename) {
       attributes.push_back( std::make_unique<Attribute>(&attributeElement, Attribute::Category::GLOBAL, attributeRegistry) );
     }
   }
+
+
   return root;
 }
  
