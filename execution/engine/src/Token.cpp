@@ -344,17 +344,7 @@ void Token::advanceToReady() {
 }
 
 void Token::computeInitialValues( const BPMNOS::Model::ExtensionElements* extensionElements ) {
-  status.at(BPMNOS::Model::ExtensionElements::Index::Timestamp) = owner->systemState->currentTime;
-  for ( auto& attribute : extensionElements->attributes ) {
-    if ( attribute->expression ) {
-      status.at(attribute->index) = attribute->expression->execute(status,*data,globals);
-    }
-  }
-  for ( auto& attribute : extensionElements->data ) {
-    if ( attribute->expression ) {
-      data->at(attribute->index).get() = attribute->expression->execute(status,*data,globals);
-    }
-  }
+  extensionElements->computeInitialValues(owner->systemState->currentTime,status,*data,globals);
 }
 
 void Token::advanceToEntered() {
@@ -413,6 +403,7 @@ void Token::advanceToEntered() {
       }
       
       computeInitialValues( extensionElements );
+//std::cerr << jsonify() << std::endl;
     }
     
     // TODO: remove below
@@ -770,8 +761,6 @@ void Token::advanceToCompleted(const Values& statusUpdate) {
 */
 
 void Token::advanceToCompleted() {
-//std::cerr << "advanceToCompleted: " << jsonify().dump() << std::endl;
-
   if ( status[BPMNOS::Model::ExtensionElements::Index::Timestamp] > owner->systemState->getTime() ) {
     if ( node ) {
       throw std::runtime_error("Token: completion timestamp at node '" + node->id + "' is larger than current time");
@@ -785,7 +774,7 @@ void Token::advanceToCompleted() {
   
   if ( node ) {
     // operators of receive task and decision task are applied on completion
-    if ( node->is<BPMN::ReceiveTask>() || node->is<BPMNOS::Model::DecisionTask>() ) {
+    if ( node->represents<BPMN::ReceiveTask>() || node->represents<BPMNOS::Model::DecisionTask>() ) {
       if ( auto extensionElements = node->extensionElements->represents<BPMNOS::Model::ExtensionElements>() ) {
         if ( !extensionElements->isInstantaneous ) {
           throw std::runtime_error("Token: Operators for task '" + node->id + "' attempt to modify timestamp");
