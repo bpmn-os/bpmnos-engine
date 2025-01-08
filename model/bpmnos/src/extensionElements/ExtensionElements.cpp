@@ -27,52 +27,69 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const
   , isInstantaneous(true)
 {
   // @attention: this->baseElement is only set after constructed extension elements have been bound to the BPMN base element. 
+//std::cerr << "Base: " << baseElement->id.value().get().value.value << std::endl;
 
-  // add all data attributes
-  for ( XML::bpmnos::tAttribute& attributeElement : dataAttributes ) {
-    data.push_back( std::make_unique<Attribute>(&attributeElement, Attribute::Category::DATA, attributeRegistry) );
-  }
-
-  if ( !element ) return; 
-
-  if ( auto status = element->getOptionalChild<XML::bpmnos::tStatus>(); status.has_value() ) {
-    // add all attributes
-    if ( status->get().attributes.has_value() ) {
-      for ( XML::bpmnos::tAttribute& attributeElement : status->get().attributes.value().get().attribute ) {
-        auto attribute = std::make_unique<Attribute>(&attributeElement, Attribute::Category::STATUS, attributeRegistry);
-        if ( attribute->id == Keyword::Instance ) {
-          // always insert instance attribute at first position
-          attributes.insert(attributes.begin(), std::move(attribute));
-          // fix indices
-          for (size_t index = 0; index < attributes.size(); index ++) {
-            attributes[index]->index = index;
-          }
-        }
-        else if ( attribute->id == Keyword::Timestamp ) {
-          if ( attributes.size() && attributes[0]->id == Keyword::Instance ) {
-            // insert timestamp attribute at the second position
-            attributes.insert(++attributes.begin(), std::move(attribute));
-            // fix indices
-            for (size_t index = 0; index < attributes.size(); index ++) {
-              attributes[index]->index = index;
-            }
-          }
-          else {
-            // insert timestamp attribute at first position, expecting that 
-            // instance attribute will be inserted before
+  if ( element ) { 
+    if ( auto status = element->getOptionalChild<XML::bpmnos::tStatus>(); status.has_value() ) {
+      // add all attributes
+      if ( status->get().attributes.has_value() ) {
+        for ( XML::bpmnos::tAttribute& attributeElement : status->get().attributes.value().get().attribute ) {
+          auto attribute = std::make_unique<Attribute>(&attributeElement, Attribute::Category::STATUS, attributeRegistry);
+          if ( attribute->id == Keyword::Instance ) {
+            // always insert instance attribute at first position
             attributes.insert(attributes.begin(), std::move(attribute));
             // fix indices
             for (size_t index = 0; index < attributes.size(); index ++) {
               attributes[index]->index = index;
             }
           }
+          else if ( attribute->id == Keyword::Timestamp ) {
+            if ( attributes.size() && attributes[0]->id == Keyword::Instance ) {
+              // insert timestamp attribute at the second position
+              attributes.insert(++attributes.begin(), std::move(attribute));
+              // fix indices
+              for (size_t index = 0; index < attributes.size(); index ++) {
+                attributes[index]->index = index;
+              }
+            }
+            else {
+              // insert timestamp attribute at first position, expecting that 
+              // instance attribute will be inserted before
+              attributes.insert(attributes.begin(), std::move(attribute));
+              // fix indices
+              for (size_t index = 0; index < attributes.size(); index ++) {
+                attributes[index]->index = index;
+              }
+            }
+          }
+          else {
+            // TODO: add entry data dependencies
+            if ( attribute->expression ) {
+              for ( auto input : attribute->expression->inputs ) {
+                entryDependencies.insert(input);
+              }
+            }
+            attributes.push_back(std::move(attribute));
+          }
         }
-        else {
-          attributes.push_back(std::move(attribute));
-        }
+      }    
+    }
+  }
+  
+  // add all data attributes
+  for ( XML::bpmnos::tAttribute& attributeElement : dataAttributes ) {
+    data.push_back( std::make_unique<Attribute>(&attributeElement, Attribute::Category::DATA, attributeRegistry) );
+    // TODO: add entry data dependencies
+    if ( data.back()->expression ) {
+      for ( auto input : data.back()->expression->inputs ) {
+        entryDependencies.insert(input);
       }
-    }    
+    }
+  }
 
+  if ( !element ) return; 
+
+  if ( auto status = element->getOptionalChild<XML::bpmnos::tStatus>(); status.has_value() ) {
     // add all restrictions
     if ( status->get().restrictions.has_value() ) {
       for ( XML::bpmnos::tRestriction& restriction : status->get().restrictions.value().get().restriction ) {
@@ -117,6 +134,13 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const
 
     // add all operators
     if ( status->get().operators.has_value() ) {
+      assert( !baseElement->is<XML::bpmn::tProcess>() );
+      assert( (
+        !baseElement->is<XML::bpmn::tSubProcess>() || 
+        !baseElement->is<XML::bpmn::tSubProcess>()->triggeredByEvent.has_value() ||
+        (bool)baseElement->is<XML::bpmn::tSubProcess>()->triggeredByEvent.value().get().value
+      ) );
+    
       for ( XML::bpmnos::tOperator& operator_ : status->get().operators.value().get().operator_ ) {
         try {
           operators.push_back( std::make_unique<Operator>(&operator_,attributeRegistry) );
@@ -368,6 +392,24 @@ bool ExtensionElements::fullScopeRestrictionsSatisfied(const BPMNOS::Values& sta
 
 template bool ExtensionElements::fullScopeRestrictionsSatisfied<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data, const BPMNOS::Values& globals) const;
 template bool ExtensionElements::fullScopeRestrictionsSatisfied<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data, const BPMNOS::Values& globals) const;
+
+template <typename DataType>
+void ExtensionElements::computeInitialValues(BPMNOS::number currentTime, BPMNOS::Values& status, DataType& data, BPMNOS::Values& globals) const {
+  status.at(BPMNOS::Model::ExtensionElements::Index::Timestamp) = currentTime;
+  for ( auto& attribute : attributes ) {
+    if ( attribute->expression ) {
+      attributeRegistry.setValue( attribute.get(), status, data, globals, attribute->expression->execute(status,data,globals) );
+    }
+  }
+  for ( auto& attribute : this->data ) {
+    if ( attribute->expression ) {
+      attributeRegistry.setValue( attribute.get(), status, data, globals, attribute->expression->execute(status,data,globals) );
+    }
+  }
+}
+
+template void ExtensionElements::computeInitialValues<BPMNOS::Values>(BPMNOS::number currentTime, Values& status, BPMNOS::Values& data, BPMNOS::Values& globals) const;
+template void ExtensionElements::computeInitialValues<BPMNOS::SharedValues>(BPMNOS::number currentTime, Values& status, BPMNOS::SharedValues& data, BPMNOS::Values& globals) const;
 
 
 template <typename DataType>

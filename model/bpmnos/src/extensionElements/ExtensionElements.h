@@ -80,6 +80,9 @@ public:
   bool isInstantaneous; ///< Boolean indicating whether operators may modify timestamp.
 
   template <typename DataType>
+  void computeInitialValues(BPMNOS::number currentTime, BPMNOS::Values& status, DataType& data, BPMNOS::Values& globals) const;
+
+  template <typename DataType>
   void applyOperators(BPMNOS::Values& status, DataType& data, BPMNOS::Values& globals) const;
 
   template <typename DataType>
