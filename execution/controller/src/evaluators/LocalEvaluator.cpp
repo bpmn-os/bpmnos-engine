@@ -10,19 +10,16 @@ using namespace BPMNOS::Execution;
 bool LocalEvaluator::updateValues(EntryDecision* decision, Values& status, Values& data, Values& globals) {
   auto token = decision->token;
   assert( token->ready() );
-
-  // make sure that timestamp used for evaluation is up to date
-  auto now = token->owner->systemState->getTime();
-  if ( status[BPMNOS::Model::ExtensionElements::Index::Timestamp].value() < now ) {
-    status[BPMNOS::Model::ExtensionElements::Index::Timestamp].value() = now;
-  } 
   auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   assert(extensionElements);
-  if ( 
-    token->node->represents<BPMN::Activity>() &&
-    !token->node->represents<BPMN::Task>()
-  ) {
-    // for (event-)subprocesses apply operators before checking entry restrictions
+
+  // make sure that all initial attribute values are up to date
+  extensionElements->computeInitialValues(token->owner->systemState->getTime(),status,data,globals);
+
+  // TODO: this shoud not be relevant
+  if ( token->node->represents<BPMN::EventSubProcess>() ) {
+assert(!"No entry for event-subprocesses");
+    // for event-subprocesses apply operators before checking entry restrictions
     extensionElements->applyOperators(status,data,globals);
   }
 
@@ -117,7 +114,7 @@ std::optional<double> LocalEvaluator::evaluate(EntryDecision* decision) {
   Values data(*token->data);
   Values globals = token->globals;
   double evaluation = (double)extensionElements->getObjective(status,data,globals);
-//std::cerr << "Initial local evaluation: " << evaluation << std::endl;
+//std::cerr << "Initial local evaluation at node " << token->node->id << ": " << evaluation << std::endl;
 
   bool feasible = updateValues(decision,status,data,globals); 
   if ( !feasible ) {
