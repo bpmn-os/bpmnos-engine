@@ -6,13 +6,14 @@
 #include <regex>
 #include <stack>
 #include <tuple>
+#include <iostream>
 
 #include "StringRegistry.h"
 
 namespace BPMNOS {
 
 // Function to replace all strings within double quotes
-std::string encodeQuotedStrings(std::string text) {
+inline std::string encodeQuotedStrings(std::string text) {
   std::regex doubleQuoteRegex("\"([^\"]*)\""); // Match strings within double quotes
   std::stack< std::tuple<size_t, size_t, long unsigned int> > replacements;
 
