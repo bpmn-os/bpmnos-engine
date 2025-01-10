@@ -7,7 +7,7 @@
 namespace BPMNOS::Execution {
 
 /**
- * @brief Class creating an exit event for a token awaiting the exit at an activity that (is not within a sequential adhoc subprocess).
+ * @brief Class creating an exit event for a token awaiting the exit at an activity.
  */
 class InstantExit : public EventDispatcher {
 public:

@@ -102,8 +102,12 @@ Token::~Token() {
         }
       }
 
+      // release perfomer when activity fails
       if ( state == State::READY && activity->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() ) {
-        systemState->tokenAtSequentialPerformer.erase(this);
+        auto tokenAtSequentialPerformer = getSequentialPerfomerToken();
+        if ( tokenAtSequentialPerformer && tokenAtSequentialPerformer->performing == this ) {
+          releaseSequentialPerformer();
+        }
       }
 
       if ( activity->loopCharacteristics.has_value() &&
@@ -1308,17 +1312,21 @@ void Token::awaitEntryEvent() {
 
   auto systemState = const_cast<SystemState*>(owner->systemState);
   if ( node->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() ) {
-    systemState->tokenAtSequentialPerformer[this] = getSequentialPerfomerToken();
+    auto tokenAtSequentialPerformer = getSequentialPerfomerToken();
+//std::cerr << "Token: " << tokenAtSequentialPerformer->jsonify() << "  pendingSequentialEntries add " << jsonify() << std::endl;
+    tokenAtSequentialPerformer->pendingSequentialEntries.emplace_back(weak_from_this());
+    
+    if ( tokenAtSequentialPerformer->performing ) {
+//std::cerr << "Token: Waiting for perfomer to become idle" << std::endl;
+      // defer decision request until performer becomes idle again
+      return;
+    }
   }
   
-/*
-  auto event = createDecisionRequest<EntryDecision>();
-  systemState->pendingEntryDecisions.emplace_back( weak_from_this(), event );
-*/
-  auto decisionRequest = std::make_shared<DecisionRequest>( this, Observable::Type::EntryRequest );
+  decisionRequest = std::make_shared<DecisionRequest>( this, Observable::Type::EntryRequest );
+  systemState->_pendingEntryEvents.emplace_back( weak_from_this(), decisionRequest );
+//std::cerr << "Token: Waiting for entry" << std::endl;
   owner->systemState->engine->notify(decisionRequest.get());
-  systemState->pendingEntryEvents.emplace_back( weak_from_this(), decisionRequest );
-
 }
 
 void Token::awaitChoiceEvent() {
@@ -1545,6 +1553,51 @@ Token* Token::getSequentialPerfomerToken() const {
   }
   return sequentialPerfomerToken;
 }
+
+void Token::occupySequentialPerformer() {
+  auto tokenAtSequentialPerformer = getSequentialPerfomerToken();
+//std::cerr << "Token::releaseSequentialPerformer " << std::endl;
+  assert( !tokenAtSequentialPerformer->performing );
+  tokenAtSequentialPerformer->pendingSequentialEntries.remove(this);
+
+  // sequential performer becomes busy
+  tokenAtSequentialPerformer->performing = this;
+  owner->systemState->engine->notify(SequentialPerformerUpdate(tokenAtSequentialPerformer));
+  
+  for ( auto& [ token_ptr ]  : tokenAtSequentialPerformer->pendingSequentialEntries ) {
+    if ( auto activityToken = token_ptr.lock() ) {
+      // withdraw entry decision requests for each child activity awaiting entry
+      assert( activityToken->node->represents<BPMN::Activity>() && activityToken->state == State::READY );
+      assert( activityToken->decisionRequest );
+//std::cerr << "Token: Withdraw decision " << activityToken->jsonify() << std::endl;
+      activityToken->decisionRequest.reset();
+    }
+  }
+}
+
+void Token::releaseSequentialPerformer() {
+  auto systemState = const_cast<SystemState*>(owner->systemState);
+  auto tokenAtSequentialPerformer = getSequentialPerfomerToken();
+//std::cerr << "Token::releaseSequentialPerformer " << std::endl;
+  assert( tokenAtSequentialPerformer->performing );
+  
+  // sequential performer becomes idle
+  tokenAtSequentialPerformer->performing = nullptr;
+  systemState->engine->notify(SequentialPerformerUpdate(tokenAtSequentialPerformer));
+
+  for ( auto& [ token_ptr ]  : tokenAtSequentialPerformer->pendingSequentialEntries ) {
+    if ( auto activityToken = token_ptr.lock() ) {
+      // create entry decision requests for each child activity awaiting entry
+      assert( activityToken->node->represents<BPMN::Activity>() && activityToken->state == State::READY );
+      assert( !activityToken->decisionRequest );
+//std::cerr << "Token: Renew decision " << activityToken->jsonify() << std::endl;
+      activityToken->decisionRequest = std::make_shared<DecisionRequest>( activityToken.get(), Observable::Type::EntryRequest );
+      systemState->_pendingEntryEvents.emplace_back(activityToken,activityToken->decisionRequest);
+      owner->systemState->engine->notify(activityToken->decisionRequest.get());
+    }
+  }
+}
+
 
 void Token::update(State newState) {
   assert( status.size() >= 1 );

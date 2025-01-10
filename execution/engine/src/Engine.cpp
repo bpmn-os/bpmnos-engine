@@ -46,11 +46,11 @@ BPMNOS::number Engine::run(const BPMNOS::Model::Scenario* scenario, BPMNOS::numb
   while ( advance() ) {
 //std::cerr << ".";
     if ( !systemState->isAlive() ) {
-//std::cerr << "dead" << std::endl;
+std::cerr << "dead" << std::endl;
       break;
     }
     if ( systemState->getTime() > timeout ) {
-//std::cerr << "timeout" << std::endl;
+std::cerr << "timeout" << std::endl;
       break;
     }
   }
@@ -144,15 +144,10 @@ void Engine::process(const ReadyEvent* event) {
 void Engine::process(const EntryEvent* event) {
 //std::cerr << systemState->pendingEntryEvents.empty() << "EntryEvent " << event->token->jsonify().dump() << std::endl;
   Token* token = const_cast<Token*>(event->token);
+  token->decisionRequest.reset();
   token->status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = systemState->currentTime;
   if ( token->node->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() ) {
-    auto tokenAtSequentialPerformer = systemState->tokenAtSequentialPerformer.at(token);
-    if ( tokenAtSequentialPerformer->performing ) {
-      throw std::runtime_error("Engine: illegal start of sequential activity '" + token->node->id + "'" );
-    }
-    // sequential performer is no longer idle
-    tokenAtSequentialPerformer->performing = token;
-    notify(SequentialPerformerUpdate(tokenAtSequentialPerformer));
+    token->occupySequentialPerformer();
   }
 
   // update token status
@@ -162,8 +157,7 @@ void Engine::process(const EntryEvent* event) {
 
   commands.emplace_back(std::bind(&Token::advanceToEntered,token), token);
 
-  std::weak_ptr<const DecisionRequest> wptr;
-  systemState->pendingEntryEvents.remove(token);
+//  systemState->pendingEntryEvents.remove(token);
 }
 
 void Engine::process(const ChoiceEvent* event) {
@@ -229,15 +223,10 @@ void Engine::process(const MessageDeliveryEvent* event) {
 void Engine::process(const ExitEvent* event) {
 //std::cerr << "ExitEvent: " << event->token->jsonify().dump() << std::endl;
   Token* token = const_cast<Token*>(event->token);
+  token->decisionRequest.reset();
 
   if ( token->node->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() ) {
-    auto tokenAtSequentialPerformer = systemState->tokenAtSequentialPerformer.at(token);
-    tokenAtSequentialPerformer->update(tokenAtSequentialPerformer->state);
-    // sequential performer becomes idle
-    assert(tokenAtSequentialPerformer->performing);
-    tokenAtSequentialPerformer->performing = nullptr;
-    notify(SequentialPerformerUpdate(tokenAtSequentialPerformer));
-    systemState->tokenAtSequentialPerformer.erase(token);
+    token->releaseSequentialPerformer();
   }
 
   // update token status

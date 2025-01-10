@@ -9,7 +9,7 @@
 namespace BPMNOS::Execution {
 
 /**
- * @brief Class dispatching an entry event for a token awaiting the entry at an activity within a sequential adhoc subprocess.
+ * @brief Class dispatching the best exit event for a token awaiting the exit at an activity.
  */
 class BestFirstExit : public GreedyDispatcher< std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest> > {
 public:

@@ -19,12 +19,12 @@ SCENARIO( "Travelling salesperson problem", "[examples][travelling_salesperson_p
       Execution::ReadyHandler readyHandler;
       Execution::InstantEntry entryHandler;
       Execution::DeterministicTaskCompletion completionHandler;
-      Execution::FirstComeFirstServedSequentialEntry sequentialEntryHandler;
+//      Execution::FirstComeFirstServedSequentialEntry sequentialEntryHandler;
       Execution::FirstMatchingMessageDelivery messageHandler;
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;
       Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
-      sequentialEntryHandler.connect(&engine);
+//      sequentialEntryHandler.connect(&engine);
       messageHandler.connect(&engine);
       readyHandler.connect(&engine);
       entryHandler.connect(&engine);
@@ -51,9 +51,9 @@ SCENARIO( "Travelling salesperson problem", "[examples][travelling_salesperson_p
       Execution::LocalEvaluator evaluator;
       
       Execution::ReadyHandler readyHandler;
-      Execution::InstantEntry entryHandler;
+//      Execution::InstantEntry entryHandler;
       Execution::DeterministicTaskCompletion completionHandler;
-      Execution::BestFirstSequentialEntry sequentialEntryHandler(&evaluator);
+      Execution::BestFirstEntry entryHandler(&evaluator);
       Execution::FirstMatchingMessageDelivery messageHandler;
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;
       Execution::InstantExit exitHandler;
@@ -62,7 +62,7 @@ SCENARIO( "Travelling salesperson problem", "[examples][travelling_salesperson_p
       readyHandler.connect(&engine);
       completionHandler.connect(&engine);
       
-      sequentialEntryHandler.connect(&engine);
+//      sequentialEntryHandler.connect(&engine);
       messageHandler.connect(&engine);
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);

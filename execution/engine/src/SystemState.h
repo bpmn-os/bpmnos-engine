@@ -68,7 +68,8 @@ public:
 
   BPMNOS::number contributionsToObjective; ///< All contributions that have already been added to the objective.
   
-  auto_list< std::weak_ptr<Token>, std::shared_ptr<DecisionRequest> > pendingEntryEvents;
+  auto_list< std::weak_ptr<Token>, std::weak_ptr<DecisionRequest> > _pendingEntryEvents;
+// TODO: only weak ptrs to decision requests
   auto_list< std::weak_ptr<Token>, std::shared_ptr<DecisionRequest> > pendingChoiceEvents;
   auto_list< std::weak_ptr<Token>, std::shared_ptr<DecisionRequest> > pendingExitEvents;
   auto_list< std::weak_ptr<Token>, std::shared_ptr<DecisionRequest> > pendingMessageDeliveryEvents;
@@ -97,9 +98,6 @@ public:
   std::unordered_map<const BPMN::FlowNode*, auto_list< std::weak_ptr<Message> > > outbox;
 
   //TODO: move below to StateMachine or Token?
-
-  std::unordered_map< Token*, Token* > tokenAtSequentialPerformer; ///< Map holding a token at a sequential performer for each token awaiting sequential entry
-
   //TODO: make sure that elements are deleted when no longer required
   std::unordered_map< Token*, std::vector<Token*> > tokensAwaitingBoundaryEvent; ///< Map holding a container of all tokens at a boundary event awaiting to be triggered for each token at an activity
   std::unordered_map< Token*, Token* > tokenAssociatedToBoundaryEventToken; ///< Map holding the token residing at the associated activity for each token at a boundary event

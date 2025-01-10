@@ -22,7 +22,7 @@ SCENARIO( "Knapsack problem", "[examples][knapsack_problem]" ) {
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
       Execution::InstantEntry parallelEntryHandler;
-      Execution::FirstComeFirstServedSequentialEntry sequentialEntryHandler;
+//      Execution::FirstComeFirstServedSequentialEntry sequentialEntryHandler;
       Execution::DeterministicTaskCompletion completionHandler;
       Execution::FirstMatchingMessageDelivery messageHandler;
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;
@@ -31,7 +31,7 @@ SCENARIO( "Knapsack problem", "[examples][knapsack_problem]" ) {
       messageHandler.connect(&engine);
       readyHandler.connect(&engine);
       parallelEntryHandler.connect(&engine);
-      sequentialEntryHandler.connect(&engine);
+//      sequentialEntryHandler.connect(&engine);
       completionHandler.connect(&engine);
       exitHandler.connect(&engine);
       messageTaskTerminator.connect(&engine);

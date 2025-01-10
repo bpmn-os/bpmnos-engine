@@ -2,7 +2,7 @@ SCENARIO( "Guided pickup delivery problem", "[examples][pickup_delivery_problem]
   const std::string modelFile = "examples/guided_pickup_delivery_problem/Guided_pickup_delivery_problem.bpmn";
   BPMNOS::Model::LookupTable::folders = { "tests/examples/guided_pickup_delivery_problem" };
   REQUIRE_NOTHROW( Model::Model(modelFile) );
-/*
+
   GIVEN( "A FTL-PDP with one vehicle and one customer" ) {
 
     std::string csv =
@@ -61,7 +61,7 @@ SCENARIO( "Guided pickup delivery problem", "[examples][pickup_delivery_problem]
       }
     }
   }
-*/
+
   GIVEN( "A FTL-PDP with one vehicle and two customers" ) {
 
     std::string csv =
@@ -114,8 +114,8 @@ SCENARIO( "Guided pickup delivery problem", "[examples][pickup_delivery_problem]
     Execution::TimeWarp timeHandler;
     timeHandler.connect(&engine);
 
-//    Execution::Recorder recorder;
-    Execution::Recorder recorder(std::cerr);
+    Execution::Recorder recorder;
+//    Execution::Recorder recorder(std::cerr);
     recorder.subscribe(&engine);
 
     WHEN( "The engine is started with the greedy controller" ) {

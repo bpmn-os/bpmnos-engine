@@ -5,6 +5,7 @@
 #include "model/bpmnos/src/extensionElements/ExtensionElements.h"
 #include "model/bpmnos/src/extensionElements/Content.h"
 #include "model/utility/src/Number.h"
+#include "execution/utility/src/auto_list.h"
 #include "Observable.h"
 #include <nlohmann/json.hpp>
 #include <iostream>
@@ -17,6 +18,7 @@ class StateMachine;
 class Token;
 typedef std::vector< std::shared_ptr<Token> > Tokens;
 class EventDispatcher;
+class DecisionRequest;
 
 /**
  * @brief Represents a token running through a (sub)process.
@@ -55,7 +57,9 @@ public:
   Values status;
   SharedValues* data; ///< Pointer to the data of the owner or owned state machine subprocesses)
   Values& globals;
-  Token* performing; ///< Pointer to the activity token currently perfomed (only applies if node is a performer referenced by sequential ad-hoc subprocesses)
+  std::shared_ptr<DecisionRequest> decisionRequest;
+  Token* performing; ///< Pointer to the activity token currently performed (only applies if node is a performer referenced by sequential ad-hoc subprocesses)
+  auto_list< std::weak_ptr<Token> > pendingSequentialEntries; ///< List of tokens awaiting an activity entry (only applies if node is a performer referenced by sequential ad-hoc subprocesses)
   
   void setStatus(const BPMNOS::Values& other); ///< Copies all elements except the instance id from `other` to `status`
 
@@ -70,6 +74,8 @@ public:
 
   nlohmann::ordered_json jsonify() const;
 private:
+  void occupySequentialPerformer();
+  void releaseSequentialPerformer();
 
   bool entryIsFeasible() const; ///< Check restrictions within current and ancestor scopes
   bool exitIsFeasible() const; ///< Check restrictions within current and ancestor scopes
