@@ -166,10 +166,13 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const
     if ( status->get().decisions.has_value() ) {
       for ( XML::bpmnos::tDecision& decision : status->get().decisions.value().get().decision ) {
         try {
-          choices.push_back(std::make_unique<Choice>(&decision,attributeRegistry,restrictions));
+          choices.push_back(std::make_unique<Choice>(&decision,attributeRegistry));
         }
         catch ( const std::exception& error ) {
           throw std::runtime_error("ExtensionElements: illegal attributes for choice '" + (std::string)decision.id.value + "'.\n" + error.what());
+        }
+        for ( auto input : choices.back()->dependencies ) {
+          choiceDependencies.insert(input);
         }
       }
     }    

@@ -25,6 +25,5 @@ Attribute* Operator::getAttribute() const {
     return attributeRegistry[ name.value() ];
   }
   throw std::runtime_error("Operator: expression is not an assignment");
-
 }
 

@@ -1,94 +1,140 @@
 #include "Choice.h"
-#include "expression/LinearExpression.h"
-#include "expression/Enumeration.h"
 #include "model/utility/src/CollectionRegistry.h"
-//#include <iostream>
+#include <cmath>
+#include <strutil.h>
+#include "model/utility/src/encode_quoted_strings.h"
+#include "model/utility/src/encode_collection.h"
 
 using namespace BPMNOS::Model;
 
-Choice::Choice(XML::bpmnos::tDecision* decision, const AttributeRegistry& attributeRegistry, const std::vector< std::unique_ptr<Restriction> >& restrictions)
+Choice::Choice(XML::bpmnos::tDecision* decision, const AttributeRegistry& attributeRegistry)
   : element(decision)
   , attributeRegistry(attributeRegistry)
-  , restrictions(restrictions)
-  , attribute(attributeRegistry[element->attribute.value])
+  , attribute(nullptr)
 {
-  attribute->isImmutable = false;
+  std::string attributeName;
+  auto input = encodeQuotedStrings(decision->condition.value.value);
+  strutil::replace_all( input, "∈", " in ");
 
-  if ( attribute->type == BOOLEAN ) {
-    lowerBound = 0;
-    upperBound = 1;
+  // check whether condition provides bounds or enumeration
+  auto conditions = strutil::split(input,'<');
+  if ( conditions.size() == 3 ) {
+    // condition has two inequalities
+    if ( conditions[1][0] == '=' ) {
+      // inequality, remove '=' and trim
+      conditions[1].erase(0, 1);
+      strictness.first = false;
+    }
+    else {
+      // strict inequality
+      strictness.first = true;
+    }
+    lowerBound.emplace( strutil::trim_copy(conditions[0]), attributeRegistry);
+    for ( auto input : lowerBound.value().inputs ) {
+      dependencies.insert(input);
+    }
+    
+    // determine attribute
+    attributeName = strutil::trim_copy(conditions[1]);
+    
+    if ( conditions[2][0] == '=' ) {
+      // inequality, remove '=' and trim
+      conditions[2].erase(0, 1);
+      strictness.second = false;
+    }
+    else {
+      // strict inequality
+      strictness.second = true;
+    }
+
+    upperBound.emplace( strutil::trim_copy(conditions[2]), attributeRegistry);
+    for ( auto input : upperBound.value().inputs ) {
+      dependencies.insert(input);
+    }
+
+  }
+  else if ( auto parts = strutil::split(input," in "); parts.size() == 2 ) {
+
+    attributeName = strutil::trim_copy(parts.front());
+    auto rhs = strutil::trim_copy(parts.back());
+
+    if ( (rhs.front() == '[' && rhs.back() == ']') || (rhs.front() == '{' && rhs.back() == '}') ) {
+      auto alternatives = strutil::split( encodeCollection( rhs.substr(1, rhs.size()-2) ), ',' );
+      for ( auto& alternative : alternatives ) {
+        enumeration.emplace_back( strutil::trim_copy(alternative), attributeRegistry);
+        for ( auto input : enumeration.back().inputs ) {
+          dependencies.insert(input);
+        }
+      }
+      if ( enumeration.empty() ) {
+        throw std::runtime_error("Choice: empty enumeration");
+      }
+    }
+    else {
+      throw std::runtime_error("Choice: invalid enumeration '" + rhs + "'");
+    }
   }
   else {
-    lowerBound = std::numeric_limits<BPMNOS::number>::lowest();
-    upperBound = std::numeric_limits<BPMNOS::number>::max();
+    attributeName = strutil::trim_copy(input);
+    lowerBound.emplace("false", attributeRegistry);
+    upperBound.emplace("true", attributeRegistry);
   }
+  
+  if ( attributeName == "" ) {
+    throw std::runtime_error("Choice: unable to determine attribute name");
+  }
+
+  attribute = attributeRegistry[ attributeName ];
+  
+  if ( attribute->type == STRING && enumeration.empty() ) {
+    throw std::runtime_error("Choice: no enumeration provided for string");
+  }
+  if ( attribute->type == COLLECTION ) {
+    throw std::runtime_error("Choice: attribute is a collection");
+  }
+
+  attribute->isImmutable = false;
 }
 
-std::pair<BPMNOS::number,BPMNOS::number> Choice::getBounds(const BPMNOS::Values& status, const BPMNOS::Values& data, const BPMNOS::Values& globals) const {
+template <typename DataType>
+std::pair<BPMNOS::number,BPMNOS::number> Choice::getBounds(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const {
   assert( attribute->type != STRING );
-  
-  BPMNOS::number min = lowerBound;
-  BPMNOS::number max = upperBound;
-  for ( auto& restriction : restrictions ) {
-    if ( restriction->scope == BPMNOS::Model::Restriction::Scope::ENTRY ) {
-      continue;
-    }
-
-    if ( auto linearExpression = dynamic_cast<BPMNOS::Model::LinearExpression*>(restriction->expression.get()) ) {
-      // deduce stricter limits from linear restriction
-      auto [lb,ub] = linearExpression->getBounds(attribute,status,data,globals);
-//std::cout << "[" << (double)lb.value_or(-999) << "," << (double)ub.value_or(999) << "]" << std::endl;      
-      if ( lb.has_value() && lb.value() > min ) {
-         min = lb.value();
-      }
-      if ( ub.has_value() && ub.value() < max ) {
-         max = ub.value();
-      }
-    }
+  assert( lowerBound.has_value() );  
+  assert( upperBound.has_value() );  
+  BPMNOS::number min = lowerBound.value().execute(status,data,globals).value_or(std::numeric_limits<BPMNOS::number>::min());
+  if ( strictness.first ) {
+    min += BPMNOS_NUMBER_PRECISION;
   }
-  
+  BPMNOS::number max = upperBound.value().execute(status,data,globals).value_or(std::numeric_limits<BPMNOS::number>::max());
+  if ( strictness.second ) {
+    max -= BPMNOS_NUMBER_PRECISION;
+  }
   if ( attribute->type != DECIMAL ) {
     min = std::ceil((double)min);
     max = std::floor((double)max);
   }
-  
-//std::cout << "=> [" << (double)min << "," << (double)max << "]" << std::endl;      
+
   return {min,max};
 }
 
-std::optional< std::vector<BPMNOS::number> > Choice::getEnumeration(const BPMNOS::Values& status, const BPMNOS::Values& data, const BPMNOS::Values& globals) const {
-  std::optional< std::vector<BPMNOS::number> > allowedValues;
+template std::pair<BPMNOS::number,BPMNOS::number>  Choice::getBounds<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data, const BPMNOS::Values& globals) const;
+template std::pair<BPMNOS::number,BPMNOS::number>  Choice::getBounds<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data, const BPMNOS::Values& globals) const;
 
-  for ( auto& restriction : restrictions ) {
-    if ( restriction->scope == BPMNOS::Model::Restriction::Scope::ENTRY ) {
-      continue;
-    }
-    
-    if ( auto enumeration = dynamic_cast<BPMNOS::Model::Enumeration*>(restriction->expression.get());
-      enumeration && enumeration->type == BPMNOS::Model::Enumeration::Type::IN
-    ) {
-      // determine allowed values from enumeration
-      if ( enumeration->attribute == attribute ) {
-        auto collection = (
-            std::holds_alternative<const BPMNOS::Model::Attribute*>(enumeration->collection) ?
-            attributeRegistry.getValue(std::get<const BPMNOS::Model::Attribute *>(enumeration->collection),status,data,globals).value_or(0) :
-            std::get<BPMNOS::number>(enumeration->collection)
-        );
 
-        if ( allowedValues.has_value() ) {
-          throw std::runtime_error("Choice: redundant enumeration '" + restriction->id + "' provided for attribute '" + attribute->id + "'" );
-        }
-        else {
-          std::vector<BPMNOS::number> values;
-          auto& entries = collectionRegistry[(long unsigned int)collection].values;
-          for ( auto entry : entries ) {
-            values.push_back(entry.value());
-          }
-          allowedValues = std::move(values);
-        }
-      }
+template <typename DataType>
+std::vector<BPMNOS::number> Choice::getEnumeration(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const {
+  assert( enumeration.size() );  
+  std::vector<BPMNOS::number> allowedValues;
+  for ( auto& alternative : enumeration ) {
+    auto allowedValue = alternative.execute(status,data,globals);
+    if ( allowedValue.has_value() ) {
+      allowedValues.push_back( allowedValue.value() );
     }
   }
+
   return allowedValues;
 }
+
+template std::vector<BPMNOS::number> Choice::getEnumeration<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data, const BPMNOS::Values& globals) const;
+template std::vector<BPMNOS::number> Choice::getEnumeration<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data, const BPMNOS::Values& globals) const;
 

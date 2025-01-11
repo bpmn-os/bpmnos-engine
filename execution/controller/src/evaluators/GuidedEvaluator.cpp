@@ -9,12 +9,14 @@ using namespace BPMNOS::Execution;
 
 bool GuidedEvaluator::updateValues(EntryDecision* decision, Values& status, Values& data, Values& globals) {
   if ( !LocalEvaluator::updateValues(decision,status,data,globals) ) {
+//std::cerr << "GuidedEvaluator: infeasible entry " << decision->token->node->id << std::endl;
     return false;
   }
   
   auto extensionElements = decision->token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   assert(extensionElements);
   if ( !extensionElements->entryGuidance ) {
+//std::cerr << "GuidedEvaluator: No entry guidance" << std::endl;
     return true;
   }
 
@@ -22,18 +24,21 @@ bool GuidedEvaluator::updateValues(EntryDecision* decision, Values& status, Valu
   auto guidance = extensionElements->entryGuidance.value().get();
   auto systemState = decision->token->owner->systemState;
   guidance->apply(systemState->scenario, systemState->currentTime, decision->token->owner->root->instance.value(), decision->token->node, status, data, globals);
+//std::cerr << "GuidedEvaluator: guidance " << guidance->restrictionsSatisfied(decision->token->node,status,data,globals) << ": " << decision->token->node->id << std::endl;
 
   return guidance->restrictionsSatisfied(decision->token->node,status,data,globals);
 }
 
 bool GuidedEvaluator::updateValues(ExitDecision* decision, Values& status, Values& data, Values& globals) {
   if ( !LocalEvaluator::updateValues(decision,status,data,globals) ) {
+//std::cerr << "GuidedEvaluator: infeasible exit " << decision->token->node->id << std::endl;
     return false;
   }
 
   auto extensionElements = decision->token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   assert(extensionElements);
   if ( !extensionElements->exitGuidance ) {
+//std::cerr << "GuidedEvaluator: No exit guidance" << std::endl;
     return true;
   }
 
@@ -103,13 +108,13 @@ std::optional<double> GuidedEvaluator::evaluate(EntryDecision* decision) {
   if ( !feasible ) {
     return std::nullopt;
   }
-//std::cerr << "Local evaluation: " << extensionElements->getObjective(status,data,globals) << std::endl;
+//std::cerr << "GuidedEvaluator: unguided evaluation " << extensionElements->getObjective(status,data,globals) << std::endl;
 
   if ( !extensionElements->entryGuidance ) {
     return evaluation - extensionElements->getObjective(status,data,globals);
   }
   // return evaluation of entry
-//std::cerr << "Guided evaluation: " << extensionElements->entryGuidance.value()->getObjective(status,data,globals) << std::endl;
+//std::cerr << "GuidedEvaluator: guided evaluation " << extensionElements->entryGuidance.value()->getObjective(status,data,globals) << std::endl;
   return evaluation - extensionElements->entryGuidance.value()->getObjective(status,data,globals);
 }
 
@@ -126,6 +131,7 @@ std::optional<double> GuidedEvaluator::evaluate(ExitDecision* decision) {
 
   bool feasible = updateValues(decision,status,data,globals); 
   if ( !feasible ) {
+//std::cerr << "GuidedEvaluator: Infeasible exit " << token->jsonify() << std::endl;
     return std::nullopt;
   }
 

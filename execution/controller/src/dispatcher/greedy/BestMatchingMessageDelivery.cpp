@@ -24,7 +24,8 @@ std::shared_ptr<Event> BestMatchingMessageDelivery::dispatchEvent( [[maybe_unuse
     assert(decision);
     if ( decision ) {
 //std::cerr << "Re-evaluate message delivery decision: " << decision->jsonify().dump() << std::endl;
-      evaluate( token_ptr, request_ptr, message_ptr, std::move(decision) );
+      auto evaluation = decision->evaluate();
+      addEvaluation( token_ptr, request_ptr, message_ptr, std::move(decision), evaluation );
     }
   }
   decisionsWithoutEvaluation.clear();

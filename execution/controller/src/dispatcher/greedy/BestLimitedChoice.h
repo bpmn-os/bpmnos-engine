@@ -12,9 +12,7 @@ namespace BPMNOS::Execution {
  * @brief Class creating a choice decision for a token at a decision task.
  *
  * The BestLimitedChoice dispatcher creates a the best evaluated choice considering
- * enumerated values and the boundaries for a numeric decision.
- * The boundaries and enumeration values are deduced from the attribute type 
- * and restrictions of type @ref BPMNOS::Model::LinearExpression or @ref BPMNOS::Model::Enumeration.
+ * enumerated values and the boundaries for each choice.
  */
 class BestLimitedChoice : public GreedyDispatcher< std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest> > {
 public:
@@ -23,8 +21,8 @@ public:
   void notice(const Observable* observable) override;
   std::shared_ptr<Event> dispatchEvent( const SystemState* systemState ) override;
 private:
-  auto_list< std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest> > requestsWithoutDecisions;
-  std::vector< BPMNOS::Values > determineDecisions(const Token* token );
+  std::shared_ptr<Decision> determineBestChoices(std::shared_ptr<const DecisionRequest> request);
+  void determineAlternatives( std::vector<BPMNOS::Values>& alternatives, const BPMNOS::Model::ExtensionElements* extensionElements, BPMNOS::Values& status,  BPMNOS::Values& data, BPMNOS::Values& globals, BPMNOS::Values& choices, size_t index = 0);
 };
 
 } // namespace BPMNOS::Execution

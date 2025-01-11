@@ -27,17 +27,19 @@ protected:
   Evaluator* evaluator;
   auto_list< WeakPtrs..., std::shared_ptr<Decision> > decisionsWithoutEvaluation;
 
-  void evaluate(WeakPtrs..., std::shared_ptr<Decision> decision);
+  void addEvaluation(WeakPtrs..., std::shared_ptr<Decision> decision, std::optional<double> reward );
 
   auto_set< double, WeakPtrs..., std::weak_ptr<Event> > evaluatedDecisions;  
-private:
-  void dataUpdate(const DataUpdate* update);
-  void clockTick();
+  virtual void dataUpdate(const DataUpdate* update);
+  bool intersect(const std::vector<const BPMNOS::Model::Attribute*>& first, const std::set<const BPMNOS::Model::Attribute*>& second) const;
+  void removeObsolete(const DataUpdate* update, auto_list< WeakPtrs..., std::shared_ptr<Decision> >& evaluation, auto_list< WeakPtrs..., std::shared_ptr<Decision> >& unevaluatedDecisions);
+  void removeDependentEvaluations(const DataUpdate* update, std::unordered_map< long unsigned int, auto_list< WeakPtrs..., std::shared_ptr<Decision> > >& evaluatedDecisions, auto_list< WeakPtrs..., std::shared_ptr<Decision> >& unevaluatedDecisions);
 
   auto_list< WeakPtrs..., std::shared_ptr<Decision> > invariantEvaluations;
   auto_list< WeakPtrs..., std::shared_ptr<Decision> > timeDependentEvaluations;
   std::unordered_map< long unsigned int, auto_list< WeakPtrs..., std::shared_ptr<Decision> > > dataDependentEvaluations;
   std::unordered_map< long unsigned int, auto_list< WeakPtrs..., std::shared_ptr<Decision> > > timeAndDataDependentEvaluations;
+  void clockTick();
 };
 
 } // namespace BPMNOS::Execution

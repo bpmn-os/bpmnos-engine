@@ -867,7 +867,7 @@ void StateMachine::shutdown() {
     }
   }
 
-//std::cerr << "start shutdown: " << scope->id << std::endl;
+//std::cerr << "start shutdown: " << BPMNOS::to_string(instance.value(),STRING) << std::endl;
 
   // update status of parent token (if it doesn't have a sequential performer)
   if ( parentToken &&
@@ -891,6 +891,7 @@ void StateMachine::shutdown() {
   }
 
   if ( !parentToken ) {
+//std::cerr << "delete root: " << BPMNOS::to_string(instance.value(),STRING) << std::endl;
     // delete root state machine (and all descendants)
     engine->commands.emplace_back(std::bind(&Engine::deleteInstance,engine,this), this);
   }

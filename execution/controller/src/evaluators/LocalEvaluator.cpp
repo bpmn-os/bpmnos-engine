@@ -228,7 +228,15 @@ std::set<const BPMNOS::Model::Attribute*> LocalEvaluator::getDependencies(Choice
   auto token = decision->token;
   auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   assert(extensionElements);
-  return extensionElements->operatorDependencies;
+
+  std::set<const BPMNOS::Model::Attribute*> dependencies = extensionElements->operatorDependencies;
+
+  // add expression dependencies
+  for ( auto& choice : extensionElements->choices ) {
+    dependencies.insert(choice->dependencies.begin(), choice->dependencies.end());
+  }
+  
+  return dependencies;
 }
 
 std::set<const BPMNOS::Model::Attribute*> LocalEvaluator::getDependencies(MessageDeliveryDecision* decision) {
