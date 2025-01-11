@@ -37,7 +37,6 @@
     <xsd:sequence>
       <xsd:element ref="parameter" minOccurs="0" maxOccurs="1"/>
     </xsd:sequence>
-    <xsd:attribute name="value" type="xsd:string" use="optional"/>
     <xsd:attribute name="objective" type="tObjectiveType" use="optional"/>
     <xsd:attribute name="weight" type="xsd:decimal" use="optional"/>
   </xsd:complexType>
@@ -68,7 +67,7 @@
   <xsd:element name="decision" type="tDecision"/>
   <xsd:complexType name="tDecision">
     <xsd:attribute name="id" type="xsd:ID" use="required"/>
-    <xsd:attribute name="attribute" type="xsd:string" use="required"/>
+    <xsd:attribute name="condition" type="xsd:string" use="required"/>
   </xsd:complexType>
 
   <xsd:element name="restrictions" type="tRestrictions"/>

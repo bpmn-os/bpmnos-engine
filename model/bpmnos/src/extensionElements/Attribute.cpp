@@ -38,11 +38,6 @@ Attribute::Attribute(XML::bpmnos::tAttribute* attribute, Attribute::Category cat
     type = ValueType::COLLECTION;
   }
 
-  // TODO: Remove below
-  if ( attribute->value.has_value() ) {
-    assert(!"Value is no longer supported"); 
-  }
-
   if ( attribute->weight.has_value() ) {
     if ( attribute->objective.has_value() && attribute->objective->get().value.value == "maximize" ) {
       weight = (double)attribute->weight->get().value;
