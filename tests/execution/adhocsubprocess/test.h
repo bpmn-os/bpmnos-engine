@@ -15,13 +15,13 @@ SCENARIO( "Sequential adhoc subprocess", "[execution][adhocsubprocess]" ) {
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
       Execution::InstantEntry entryHandler;
-      Execution::FirstComeFirstServedSequentialEntry sequentialEntryHandler;
+//      Execution::FirstComeFirstServedSequentialEntry sequentialEntryHandler;
       Execution::DeterministicTaskCompletion completionHandler;
       Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
       readyHandler.connect(&engine);
       entryHandler.connect(&engine);
-      sequentialEntryHandler.connect(&engine);
+//      sequentialEntryHandler.connect(&engine);
       completionHandler.connect(&engine);
       exitHandler.connect(&engine);
       timeHandler.connect(&engine);
@@ -33,16 +33,12 @@ SCENARIO( "Sequential adhoc subprocess", "[execution][adhocsubprocess]" ) {
         auto adHocSubProcessLog = recorder.find(nlohmann::json{{"nodeId","AdHocSubProcess_1"}}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
         REQUIRE( adHocSubProcessLog[0]["state"] == "ARRIVED" );
         REQUIRE( adHocSubProcessLog[1]["state"] == "READY" );
+        REQUIRE( adHocSubProcessLog[1]["data"]["x"] == nullptr );
         REQUIRE( adHocSubProcessLog[2]["state"] == "ENTERED" );
-        REQUIRE( adHocSubProcessLog[3]["data"]["x"] == 0 );
+        REQUIRE( adHocSubProcessLog[2]["data"]["x"] == 0 );
         REQUIRE( adHocSubProcessLog[3]["state"] == "BUSY" );
-        REQUIRE( adHocSubProcessLog[4]["data"]["x"] == 1 );
-        REQUIRE( adHocSubProcessLog[4]["state"] == "BUSY" );
-        REQUIRE( adHocSubProcessLog[5]["data"]["x"] == 2 );
-        REQUIRE( adHocSubProcessLog[5]["state"] == "BUSY" );
-        REQUIRE( adHocSubProcessLog[6]["state"] == "COMPLETED" );
-        REQUIRE( adHocSubProcessLog[7]["state"] == "EXITING" );
-        REQUIRE( adHocSubProcessLog[8]["state"] == "DEPARTED" );
+        REQUIRE( adHocSubProcessLog[4]["data"]["x"] == 2 );
+        REQUIRE( adHocSubProcessLog[4]["state"] == "COMPLETED" );
 
         auto completionLog = recorder.find(nlohmann::json{{"state", "COMPLETED"}}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
         REQUIRE( (completionLog[0]["nodeId"] == "Activity_1" || completionLog[0]["nodeId"] == "Activity_2") );
@@ -53,7 +49,6 @@ SCENARIO( "Sequential adhoc subprocess", "[execution][adhocsubprocess]" ) {
     }
   }
 }
-
 
 SCENARIO( "Sequential adhoc subprocesses with common performer", "[execution][adhocsubprocess]" ) {
   const std::string modelFile = "tests/execution/adhocsubprocess/AdHocSubProcesses_with_common_performer.bpmn";
@@ -72,13 +67,13 @@ SCENARIO( "Sequential adhoc subprocesses with common performer", "[execution][ad
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
       Execution::InstantEntry entryHandler;
-      Execution::FirstComeFirstServedSequentialEntry sequentialEntryHandler;
+//      Execution::FirstComeFirstServedSequentialEntry sequentialEntryHandler;
       Execution::DeterministicTaskCompletion completionHandler;
       Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
       readyHandler.connect(&engine);
       entryHandler.connect(&engine);
-      sequentialEntryHandler.connect(&engine);
+//      sequentialEntryHandler.connect(&engine);
       completionHandler.connect(&engine);
       exitHandler.connect(&engine);
       timeHandler.connect(&engine);
@@ -91,12 +86,9 @@ SCENARIO( "Sequential adhoc subprocesses with common performer", "[execution][ad
         REQUIRE( processLog[0]["state"] == "ENTERED" );
         REQUIRE( processLog[0]["data"]["x"] == 0 );
         REQUIRE( processLog[1]["state"] == "BUSY" );
-        REQUIRE( processLog[2]["data"]["x"] == 1 );
-        REQUIRE( processLog[2]["state"] == "BUSY" );
-        REQUIRE( processLog[3]["data"]["x"] == 2 );
-        REQUIRE( processLog[3]["state"] == "BUSY" );
-        REQUIRE( processLog[4]["state"] == "COMPLETED" );
-        REQUIRE( processLog[5]["state"] == "DONE" );
+        REQUIRE( processLog[2]["data"]["x"] == 2 );
+        REQUIRE( processLog[2]["state"] == "COMPLETED" );
+        REQUIRE( processLog[3]["state"] == "DONE" );
 
         auto completionLog = recorder.find(nlohmann::json{{"state", "COMPLETED"}}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
         REQUIRE( (completionLog[0]["nodeId"] == "Activity_1" || completionLog[0]["nodeId"] == "Activity_2") );

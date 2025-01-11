@@ -38,7 +38,7 @@ SCENARIO( "Bin packing problem", "[examples][bin_packing_problem]" ) {
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get());
+      engine.run(scenario.get(),10);
       THEN( "Then no failure occurs" ) {
         auto failureLog = recorder.find(nlohmann::json{{"state", "FAILED"}});
         REQUIRE( failureLog.size() == 0 );
@@ -60,7 +60,7 @@ SCENARIO( "Bin packing problem", "[examples][bin_packing_problem]" ) {
         REQUIRE( log.size() == 3 );
       }
       THEN( "Then all item process instances complete" ) {
-        auto itemProcessLog = recorder.find({{"processId","ItemProcess" },{"state","COMPLETED"}}, nlohmann::json{{"nodeId",nullptr }, {"event",nullptr }, {"decision",nullptr }});
+        auto itemProcessLog = recorder.find({{"processId","ItemProcess" },{"state","DONE"}}, nlohmann::json{{"nodeId",nullptr }, {"event",nullptr }, {"decision",nullptr }});
 //std::cerr << itemProcessLog.dump() << std::endl;
         REQUIRE( itemProcessLog.size() == 3 );
       }
@@ -105,7 +105,7 @@ SCENARIO( "Bin packing problem", "[examples][bin_packing_problem]" ) {
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get());
+      engine.run(scenario.get(),10);
       THEN( "Then no failure occurs" ) {
         auto failureLog = recorder.find(nlohmann::json{{"state", "FAILED"}});
         REQUIRE( failureLog.size() == 0 );
@@ -127,7 +127,7 @@ SCENARIO( "Bin packing problem", "[examples][bin_packing_problem]" ) {
         REQUIRE( log.size() == 4 );
       }
       THEN( "Then all item process instances complete" ) {
-        auto itemProcessLog = recorder.find({{"processId","ItemProcess" },{"state","COMPLETED"}}, nlohmann::json{{"nodeId",nullptr }, {"event",nullptr }, {"decision",nullptr }});
+        auto itemProcessLog = recorder.find({{"processId","ItemProcess" },{"state","DONE"}}, nlohmann::json{{"nodeId",nullptr }, {"event",nullptr }, {"decision",nullptr }});
 //std::cerr << itemProcessLog.dump() << std::endl;
         REQUIRE( itemProcessLog.size() == 4 );
       }

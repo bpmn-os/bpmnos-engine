@@ -175,39 +175,26 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const
     }    
   }
 
-  // add data attributes and global values modified by operator to dataUpdateOnEntry or dataUpdateOnCompletion
-  dataUpdateOnEntry.global = false; // data update does not affect all instances unless a global value is updated
-  dataUpdateOnCompletion.global = false;  // data update does not affect all instances unless a global value is updated
+  // add data attributes and global values modified by operator to dataUpdate
+  dataUpdate.global = false; // data update does not affect all instances unless a global value is updated
   
-  if ( baseElement->is<XML::bpmn::tTask>() && !baseElement->is<XML::bpmn::tSendTask>() ) {
-    for ( auto& operator_ : operators ) {
-      if ( operator_->attribute->category != Attribute::Category::STATUS ) {
-        dataUpdateOnCompletion.attributes.push_back(operator_->attribute);
-      }
-      if ( operator_->attribute->category == Attribute::Category::GLOBAL ) {
-        dataUpdateOnCompletion.global = true;
-      }
+  // operators are applied upon entry
+  for ( auto& operator_ : operators ) {
+    if ( operator_->attribute->category != Attribute::Category::STATUS ) {
+      dataUpdate.attributes.push_back(operator_->attribute);
     }
-  }
-  else if ( baseElement->is<XML::bpmn::tActivity>() ) {
-    // baseElement is a send task or a subprocess
-    for ( auto& operator_ : operators ) {
-      if ( operator_->attribute->category != Attribute::Category::STATUS ) {
-        dataUpdateOnEntry.attributes.push_back(operator_->attribute);
-      }
-      if ( operator_->attribute->category == Attribute::Category::GLOBAL ) {
-        dataUpdateOnEntry.global = true;
-      }
+    if ( operator_->attribute->category == Attribute::Category::GLOBAL ) {
+      dataUpdate.global = true;
     }
   }
 
   // add data attributes and global values modified by choice to dataUpdateOnCompletion
   for ( auto& choice : choices ) {
     if ( choice->attribute->category != Attribute::Category::STATUS ) {
-      dataUpdateOnCompletion.attributes.push_back(choice->attribute);
+      dataUpdate.attributes.push_back(choice->attribute);
     }
     if ( choice->attribute->category == Attribute::Category::GLOBAL ) {
-      dataUpdateOnCompletion.global = true;
+      dataUpdate.global = true;
     }
   }
 
@@ -230,7 +217,7 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const
         }
         Attribute* attribute = &content->attribute.value().get();
         if ( attribute->category == Attribute::Category::DATA ) {
-          dataUpdateOnCompletion.attributes.push_back(attribute);
+          dataUpdate.attributes.push_back(attribute);
         }
       }
     }

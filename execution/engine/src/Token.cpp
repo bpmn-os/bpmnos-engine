@@ -436,20 +436,6 @@ void Token::advanceToEntered() {
     owned->registerRecipient();
   }
 
-  if ( node && !node->represents<BPMN::SendTask>() && !node->represents<BPMN::EventSubProcess>() ) {
-    if ( auto extensionElements = node->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
-      extensionElements && !extensionElements->dataUpdateOnEntry.attributes.empty()
-    ) {
-      // notify about data update
-      if ( extensionElements->dataUpdateOnEntry.global ) {
-        owner->systemState->engine->notify( DataUpdate( extensionElements->dataUpdateOnEntry.attributes ) );
-      }
-      else {
-        owner->systemState->engine->notify( DataUpdate( owner->root->instance.value(), extensionElements->dataUpdateOnEntry.attributes ) );
-      }
-    }
-  }
-
 //std::cerr << jsonify().dump() << std::endl;
 
   auto engine = const_cast<Engine*>(owner->systemState->engine);
@@ -592,6 +578,13 @@ void Token::advanceToBusy() {
 std::cerr << status[BPMNOS::Model::ExtensionElements::Index::Timestamp].value() << " != " << now << std::endl;
         throw std::runtime_error("Token: Operators for task '" + node->id + "' attempt to modify timestamp");
       }
+      // notify about data update
+      if ( extensionElements->dataUpdate.global ) {
+        owner->systemState->engine->notify( DataUpdate( extensionElements->dataUpdate.attributes ) );
+      }
+      else {
+        owner->systemState->engine->notify( DataUpdate( owner->root->instance.value(), extensionElements->dataUpdate.attributes ) );
+      }
     }
   }
     
@@ -718,16 +711,6 @@ std::cerr << status[BPMNOS::Model::ExtensionElements::Index::Timestamp].value() 
     if ( auto sendTask = node->represents<BPMN::SendTask>() ) {
       assert( node->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );
       auto extensionElements = node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
-      if ( !extensionElements->dataUpdateOnEntry.attributes.empty() ) {
-        // notify about data update
-        if ( extensionElements->dataUpdateOnEntry.global ) {
-          owner->systemState->engine->notify( DataUpdate( extensionElements->dataUpdateOnEntry.attributes ) );
-        }
-        else {
-          owner->systemState->engine->notify( DataUpdate( owner->root->instance.value(), extensionElements->dataUpdateOnEntry.attributes ) );
-        }
-      }
-
       // send message(s)
       if ( sendTask->loopCharacteristics.has_value() ) {
         // multi-instance send task requires index to access respective message definition
@@ -784,26 +767,19 @@ void Token::advanceToCompleted() {
           throw std::runtime_error("Token: Operators for task '" + node->id + "' attempt to modify timestamp");
         }
         extensionElements->applyOperators(status,*data,globals);
+        // notify about data update
+        if ( extensionElements->dataUpdate.global ) {
+          owner->systemState->engine->notify( DataUpdate( extensionElements->dataUpdate.attributes ) );
+        }
+        else {
+          owner->systemState->engine->notify( DataUpdate( owner->root->instance.value(), extensionElements->dataUpdate.attributes ) );
+        }
       }
     }
   }
 
 
   update(State::COMPLETED);
-
-  if ( node ) {
-    if ( auto extensionElements = node->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
-      extensionElements && !extensionElements->dataUpdateOnCompletion.attributes.empty()
-    ) {
-      // notify about data update
-      if ( extensionElements->dataUpdateOnCompletion.global ) {
-        owner->systemState->engine->notify( DataUpdate( extensionElements->dataUpdateOnCompletion.attributes ) );
-      }
-      else {
-        owner->systemState->engine->notify( DataUpdate( owner->root->instance.value(), extensionElements->dataUpdateOnCompletion.attributes ) );
-      }
-    }
-  }
 
   auto engine = const_cast<Engine*>(owner->systemState->engine);
 
@@ -990,11 +966,11 @@ void Token::advanceToExiting() {
       extensionElements->applyOperators(status,*data,globals);
 
       // notify about data update
-      if ( extensionElements->dataUpdateOnEntry.global ) {
-        owner->systemState->engine->notify( DataUpdate( extensionElements->dataUpdateOnEntry.attributes ) );
+      if ( extensionElements->dataUpdate.global ) {
+        owner->systemState->engine->notify( DataUpdate( extensionElements->dataUpdate.attributes ) );
       }
       else {
-        owner->systemState->engine->notify( DataUpdate( owner->root->instance.value(), extensionElements->dataUpdateOnEntry.attributes ) );
+        owner->systemState->engine->notify( DataUpdate( owner->root->instance.value(), extensionElements->dataUpdate.attributes ) );
       }
     }
   }

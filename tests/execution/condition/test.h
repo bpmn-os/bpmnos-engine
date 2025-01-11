@@ -60,7 +60,7 @@ SCENARIO( "Condition on data attribute", "[execution][condition]" ) {
       recorder.subscribe(&engine);
       engine.run(scenario.get());
       THEN( "The activity is completed and the conditional event is triggerd" ) {
-        auto activityLog =recorder.find(nlohmann::json{{"nodeId","Activity_1"},{"state", "COMPLETED"}});
+        auto activityLog =recorder.find(nlohmann::json{{"nodeId","Activity_1"},{"state", "BUSY"}});
         REQUIRE( activityLog.size() == 1 ); 
         auto conditionLog =recorder.find(nlohmann::json{{"nodeId","ConditionalEvent_2"},{"state", "COMPLETED"}});
         REQUIRE( conditionLog.size() == 1 ); 
@@ -92,7 +92,7 @@ SCENARIO( "Condition on data attribute", "[execution][condition]" ) {
       recorder.subscribe(&engine);
       engine.run(scenario.get());
       THEN( "The activity is withdrawn and the conditional event is triggerd" ) {
-        auto activityLog =recorder.find(nlohmann::json{{"nodeId","Activity_1"},{"state", "COMPLETED"}});
+        auto activityLog =recorder.find(nlohmann::json{{"nodeId","Activity_1"},{"state", "BUSY"}});
         REQUIRE( activityLog.size() == 0 ); 
         auto conditionLog =recorder.find(nlohmann::json{{"nodeId","ConditionalEvent_2"},{"state", "COMPLETED"}});
         REQUIRE( conditionLog.size() == 1 ); 
@@ -100,7 +100,6 @@ SCENARIO( "Condition on data attribute", "[execution][condition]" ) {
     }
   }
 }
-
 
 SCENARIO( "Condition on global attribute", "[execution][condition]" ) {
   const std::string modelFile = "tests/execution/condition/Condition_on_global.bpmn";
@@ -276,3 +275,4 @@ SCENARIO( "Condition on global attribute", "[execution][condition]" ) {
 
   }
 }
+

@@ -1,5 +1,5 @@
 SCENARIO( "Truck driver scheduling problem", "[examples][truck_driver_scheduling_problem]" ) {
-  const std::string modelFile = "examples/guided_truck_driver_scheduling_problem/Guided_US_Truck_driver_scheduling_problem.bpmn";
+  const std::string modelFile = "examples/truck_driver_scheduling_problem/US_Truck_driver_scheduling_problem.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
 
   GIVEN( "Two short trips without waiting" ) {
@@ -47,8 +47,8 @@ SCENARIO( "Truck driver scheduling problem", "[examples][truck_driver_scheduling
       }
     }
   }
-
-  GIVEN( "Two one longer trip with waiting" ) {
+  
+  GIVEN( "One longer trip with waiting" ) {
 
     std::string csv =
       "PROCESS_ID; INSTANCE_ID; ATTRIBUTE_ID; VALUE\n"
@@ -92,6 +92,5 @@ SCENARIO( "Truck driver scheduling problem", "[examples][truck_driver_scheduling
       }
     }
   }
-
 }
 

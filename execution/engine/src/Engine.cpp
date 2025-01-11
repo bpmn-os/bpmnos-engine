@@ -46,11 +46,11 @@ BPMNOS::number Engine::run(const BPMNOS::Model::Scenario* scenario, BPMNOS::numb
   while ( advance() ) {
 //std::cerr << ".";
     if ( !systemState->isAlive() ) {
-std::cerr << "dead" << std::endl;
+//std::cerr << "dead" << std::endl;
       break;
     }
     if ( systemState->getTime() > timeout ) {
-std::cerr << "timeout" << std::endl;
+//std::cerr << "timeout" << std::endl;
       break;
     }
   }
