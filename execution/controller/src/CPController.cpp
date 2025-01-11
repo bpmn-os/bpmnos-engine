@@ -51,7 +51,7 @@ std::cerr << "createVertexVariables:" << flattenedGraph.vertices.size() << std::
 std::cerr << "createMessageVariables" << std::endl;
   createMessageVariables();
 std::cerr << "Done" << std::endl;
-std::cerr << model.stringify() << std::endl;  
+//std::cerr << model.stringify() << std::endl;  
 }
 
 void CPController::createGlobalVariables() {
@@ -125,9 +125,9 @@ void CPController::createMessageVariables() {
 
       // TODO: add message header constraints
     }
-    CP::LinearExpression sum;
+    CP::Expression sum;
     for ( const CP::Variable& message : messages ) {
-      sum += message;
+      sum = sum + message;
     }
     model.addConstraint( sum == visit.at(recipient) );
   }
@@ -144,7 +144,7 @@ void CPController::createMessageContent(const Vertex& vertex) {
 void CPController::createDataVariables(const FlattenedGraph::Vertex& vertex) {
   auto extensionElements = vertex.node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
 
-  std::vector< IndexedAttributeVariables > variables;
+  std::vector< IndexedAttributeVariables > variables; /// CAN I MOVE THIS; SHOULD THIS BE REFERENCES?
   
   for ( auto& attribute : extensionElements->data ) {
     assert( attribute->index == variables.size() ); // ensure that the order of attributes is correct
@@ -292,7 +292,6 @@ std::cerr << "createExitStatus" << std::endl;
       };
       std::vector< std::pair<const CP::Variable&, std::vector<AttributeVariables>& > > inputs;
       for ( const Vertex& endVertex : getEndVertices() ) {
-std::cerr << "End vertex: "<< endVertex.reference() << std::endl;
         assert(visit.contains(&endVertex));
         assert(status.contains(&endVertex));
         inputs.emplace_back( visit.at(&endVertex), status.at(&endVertex) );
@@ -405,8 +404,8 @@ std::vector<CPController::AttributeVariables> CPController::createAlternativeEnt
   variables.reserve( attributeRegistry.statusAttributes.size() );
   for ( auto& [name,attribute] : attributeRegistry.statusAttributes ) {
     // deduce variable
-    CP::BooleanExpression defined(false);
-    CP::LinearExpression value = 0.0;
+    CP::Expression defined(false);
+    CP::Expression value = 0.0;
     for ( auto& [ active, attributeVariables] : alternatives ) {
       assert( attributeVariables.size() == attributeRegistry.statusAttributes.size() );
       defined = defined || attributeVariables[attribute->index].defined;
@@ -427,6 +426,8 @@ std::vector<CPController::AttributeVariables> CPController::createMergedStatus(c
   variables.reserve( attributeRegistry.statusAttributes.size() );
   for ( auto& [name,attribute] : attributeRegistry.statusAttributes ) {
     if ( attribute->index == BPMNOS::Model::ExtensionElements::Index::Timestamp ) {
+// TODO    
+/*
       CP::MaxExpression timestamp;
       for ( auto& [ active, attributeVariables] : inputs ) {
         timestamp = CP::max( timestamp, attributeVariables[attribute->index].value );
@@ -435,10 +436,11 @@ std::vector<CPController::AttributeVariables> CPController::createMergedStatus(c
         model.addVariable(CP::Variable::Type::BOOLEAN, "defined_" + vertex.reference() + "," + attribute->id, (double)true, (double)true ), 
         model.addVariable(CP::Variable::Type::REAL, "value_" + vertex.reference() + "," + attribute->id, timestamp )
       );
+*/
     }
     else {
       // deduce variable
-      CP::BooleanExpression defined(false);
+      CP::Expression defined(false);
       CP::Cases cases;
       for ( auto& [ active, attributeVariables] : inputs ) {
         defined = defined || attributeVariables[attribute->index].defined;
@@ -651,10 +653,10 @@ void CPController::createSequenceConstraints(const Vertex& vertex) {
 
 
 void CPController::createGlobalIndexVariable(const Vertex& vertex) {
-  CP::LinearExpression index;
+  CP::Expression index;
   for ( auto& [modifierEntry, modifierExit] : flattenedGraph.globalModifiers ) {
     // create auxiliary variables indicating modifiers preceding the vertex
-    index += model.addVariable(CP::Variable::Type::BOOLEAN, "precedes_" + modifierExit.reference() + "" + vertex.reference(), position.at(&modifierExit) <= position.at(&vertex) );
+    index = index + model.addVariable(CP::Variable::Type::BOOLEAN, "precedes_" + modifierExit.reference() + "" + vertex.reference(), position.at(&modifierExit) <= position.at(&vertex) );
   }  
   globalIndex.emplace( &vertex, model.addVariable(CP::Variable::Type::INTEGER, "globals_index_" + vertex.reference(), index ) );
 }
@@ -667,10 +669,10 @@ void CPController::createDataIndexVariables(const Vertex& vertex) {
     auto& dataOwner = vertex.dataOwners[i].get();
     assert( flattenedGraph.dataModifiers.contains(&dataOwner) ); 
   
-    CP::LinearExpression index;
+    CP::Expression index;
     for ( auto& [modifierEntry, modifierExit] : flattenedGraph.dataModifiers.at(&dataOwner) ) {
       // create auxiliary variables indicating modifiers preceding the vertex
-      index += model.addVariable(CP::Variable::Type::BOOLEAN, "precedes_" + modifierExit.reference() + "→" + vertex.reference(), position.at(&modifierExit) <= position.at(&vertex) );
+      index = index + model.addVariable(CP::Variable::Type::BOOLEAN, "precedes_" + modifierExit.reference() + "→" + vertex.reference(), position.at(&modifierExit) <= position.at(&vertex) );
     }  
     dataIndices[i].emplace_back( model.addVariable(CP::Variable::Type::INTEGER, "data_index[" + dataOwner.node->id + "]_" + vertex.reference(), index ) );
   }
