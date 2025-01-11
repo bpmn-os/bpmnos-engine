@@ -29,7 +29,7 @@ namespace std {
     }
   };
 }
-#define BPMNOS_NUMBER_PRECISION (1.0 / (1 << 16))
+#define BPMNOS_NUMBER_PRECISION (1.0 / (1 << BPMNOS_NUMBER_SCALE))
 #endif
 
 #ifndef BPMNOS_NUMBER_PRECISION
