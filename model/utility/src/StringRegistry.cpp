@@ -10,12 +10,12 @@ StringRegistry::StringRegistry() {
   (*this)(Keyword::True);
 }
 
-std::string StringRegistry::operator[](long unsigned int i) const {
+std::string StringRegistry::operator[](size_t i) const {
   assert( i < registeredStrings.size() );
   return registeredStrings[i];
 }
 
-long unsigned int StringRegistry::operator()(const std::string& string) {
+size_t StringRegistry::operator()(const std::string& string) {
   std::lock_guard<std::mutex> lock(registryMutex);
 
   auto it = index.find(string);
@@ -25,6 +25,13 @@ long unsigned int StringRegistry::operator()(const std::string& string) {
     return registeredStrings.size()-1;
   }
   return it->second;
+}
+
+void StringRegistry::clear() {
+  registeredStrings.clear();
+  index.clear();
+  (*this)(Keyword::False);
+  (*this)(Keyword::True);  
 }
 
 // Create global registry

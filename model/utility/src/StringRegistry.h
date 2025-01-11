@@ -19,12 +19,13 @@ namespace BPMNOS {
     StringRegistry();
 
     /// Operator providing access to a registered string by index.
-    std::string operator[](long unsigned int i) const;
+    std::string operator[](size_t i) const;
     /// Operator to register a string and return its index.
-    long unsigned int operator()(const std::string& string);
+    size_t operator()(const std::string& string);
+    void clear();
   private:
     std::vector<std::string> registeredStrings;
-    std::unordered_map<std::string, long unsigned int> index;
+    std::unordered_map<std::string, size_t> index;
     std::mutex registryMutex;
   public:
     // Prevent use of copy constructor and assignment operator as mutex is not copyable

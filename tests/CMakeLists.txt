@@ -5,7 +5,7 @@ set(FETCHCONTENT_QUIET FALSE)
 FetchContent_Declare(
         catch
         GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-        GIT_TAG v3.4.0
+        GIT_TAG v3.8.0
 )
 
 FetchContent_GetProperties(catch)
@@ -53,7 +53,7 @@ else()
     -Wextra
     -Wconversion
     -Wsign-conversion
-    -fsanitize=address
+    -fsanitize=address,undefined
     -fno-omit-frame-pointer
     -g
     -ggdb3
@@ -64,11 +64,11 @@ else()
     -Wno-misleading-indentation
   )
 
-  add_link_options(-fsanitize=address)
+  add_link_options(-fsanitize=address,undefined)
 
   target_link_options(run_tests
     PRIVATE
-    -fsanitize=address
+    -fsanitize=address,undefined
     -pg # Profiling
   )
 endif()

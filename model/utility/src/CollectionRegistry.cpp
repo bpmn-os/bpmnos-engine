@@ -47,11 +47,11 @@ CollectionRegistry::CollectionRegistry() {
   (*this)("[]");
 }
 
-const Collection&  CollectionRegistry::operator[](long unsigned int i) const {
+const Collection&  CollectionRegistry::operator[](size_t i) const {
   return registeredCollections[i];
 }
 
-long unsigned int CollectionRegistry::operator()(const std::string& string) {
+size_t CollectionRegistry::operator()(const std::string& string) {
   std::lock_guard<std::mutex> lock(registryMutex);
 
   auto it = index.find(string);
@@ -63,6 +63,12 @@ long unsigned int CollectionRegistry::operator()(const std::string& string) {
     return registeredCollections.size()-1;
   }
   return it->second;
+}
+
+void CollectionRegistry::clear() {
+  registeredCollections.clear();
+  index.clear();
+  (*this)("[]");
 }
 
 // Create global registry

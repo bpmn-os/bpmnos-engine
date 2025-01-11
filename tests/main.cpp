@@ -11,6 +11,23 @@ using namespace BPMNOS;
 
 #define ALL_TESTS
 #ifdef ALL_TESTS
+// TODO: change order of tests to avoid interdependencies
+
+// Examples
+#include "examples/travelling_salesperson_problem/test.h"
+#include "examples/assignment_problem/test.h"
+#include "examples/job_shop_scheduling_problem/test.h"
+#include "examples/knapsack_problem/test.h"
+#include "examples/guided_knapsack_problem/test.h"
+#include "examples/bin_packing_problem/test.h"
+#include "examples/guided_bin_packing_problem/test.h"
+#include "examples/vehicle_routing_problem/test.h"
+#include "examples/guided_vehicle_routing_problem/test.h"
+#include "examples/pickup_delivery_problem/test.h"
+#include "examples/guided_pickup_delivery_problem/test.h"
+#include "examples/truck_driver_scheduling_problem/test.h"
+
+
 /* Model */
 #include "model/parser/test.h"
 /* Data provider */
@@ -61,30 +78,13 @@ using namespace BPMNOS;
 #include "execution/data/test.h"
 #include "execution/collection/test.h"
 
-// Examples
-#include "examples/travelling_salesperson_problem/test.h"
-#include "examples/assignment_problem/test.h"
-#include "examples/job_shop_scheduling_problem/test.h"
-#include "examples/knapsack_problem/test.h"
-#include "examples/guided_knapsack_problem/test.h"
-#include "examples/bin_packing_problem/test.h"
-#include "examples/guided_bin_packing_problem/test.h"
-#include "examples/vehicle_routing_problem/test.h"
-#include "examples/guided_vehicle_routing_problem/test.h"
-//#include "examples/pickup_delivery_problem/test.h" // TODO
-#include "examples/guided_pickup_delivery_problem/test.h"
-#include "examples/truck_driver_scheduling_problem/test.h"
-
 // CPController
 //#include "cpcontroller/test.h"
 
 #endif // ALL_TESTS
 
 #ifndef ALL_TESTS
-//#include "examples/bin_packing_problem/test.h" // TODO: fix engine
-//#include "examples/guided_bin_packing_problem/test.h"
-
-//#include "execution/decisiontask/test.h" // TODO
+#include "examples/pickup_delivery_problem/test.h" // TODO
 //#include "cpcontroller/test.h"
 #endif // ALL_TESTS
 
@@ -112,9 +112,6 @@ std::cerr << "BPMNOS model did not throw" << std::endl;
 
 
 TEST_CASE("My Test Case") {
-std::cerr << "CNL:" << std::to_string(BPMNOS_NUMBER_PRECISION) << std::endl;
-std::cerr << "CNL:" << BPMNOS_NUMBER_PRECISION << std::endl;
-
 //    test();
 }
 

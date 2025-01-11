@@ -81,7 +81,7 @@ else()
     -Wextra
     -Wconversion
     -Wsign-conversion
-    -fsanitize=address
+    -fsanitize=address,undefined
     -fno-omit-frame-pointer
     -g
     -ggdb3
@@ -91,11 +91,11 @@ else()
     -Wno-error=unused-variable # Remove
   )
 
-  add_link_options(-fsanitize=address)
+  add_link_options(-fsanitize=address,undefined)
 
   target_link_options(${PROJECT_NAME}
     PRIVATE
-    -fsanitize=address
+    -fsanitize=address,undefined
     -pg # Profiling
   )
 endif()

@@ -1,6 +1,5 @@
 SCENARIO( "Pickup delivery problem", "[examples][pickup_delivery_problem]" ) {
   const std::string modelFile = "examples/pickup_delivery_problem/Pickup_delivery_problem.bpmn";
-  BPMNOS::Model::LookupOperator::lookupTables.clear();
   BPMNOS::Model::LookupTable::folders = { "tests/examples/pickup_delivery_problem" };
   REQUIRE_NOTHROW( Model::Model(modelFile) );
 
@@ -51,9 +50,15 @@ SCENARIO( "Pickup delivery problem", "[examples][pickup_delivery_problem]" ) {
 
     WHEN( "The engine is started with the greedy controller" ) {
       engine.run(scenario.get());
-      THEN( "Then pickup and delivery locations are visited" ) {
-//        auto visitLog = recorder.find(nlohmann::json{{"nodeId", "VisitLocation"},{"state", "ENTERED"}});
-//        REQUIRE( visitLog[0]["status"]["location"] == "Berlin" );
+      THEN( "Then all vehicle process instances complete" ) {
+        auto log = recorder.find({{"processId","VehicleProcess" },{"state","COMPLETED"}}, nlohmann::json{{"nodeId",nullptr }, {"event",nullptr }, {"decision",nullptr }});
+//std::cerr << log.dump() << std::endl;
+        REQUIRE( log.size() == 1 );
+      }
+      THEN( "Then all customer process instances complete" ) {
+        auto log = recorder.find({{"processId","CustomerProcess" },{"state","COMPLETED"}}, nlohmann::json{{"nodeId",nullptr }, {"event",nullptr }, {"decision",nullptr }});
+//std::cerr << log.dump() << std::endl;
+        REQUIRE( log.size() == 1 );
       }
     }
   }
@@ -116,9 +121,15 @@ SCENARIO( "Pickup delivery problem", "[examples][pickup_delivery_problem]" ) {
 
     WHEN( "The engine is started with the greedy controller" ) {
       engine.run(scenario.get());
-      THEN( "Then all pickup and delivery locations are visited" ) {
-//        auto visitLog = recorder.find(nlohmann::json{{"nodeId", "VisitLocation"},{"state", "ENTERED"}});
-//        REQUIRE( visitLog[0]["status"]["location"] == "Berlin" );
+      THEN( "Then all vehicle process instances complete" ) {
+        auto log = recorder.find({{"processId","VehicleProcess" },{"state","COMPLETED"}}, nlohmann::json{{"nodeId",nullptr }, {"event",nullptr }, {"decision",nullptr }});
+//std::cerr << log.dump() << std::endl;
+        REQUIRE( log.size() == 1 );
+      }
+      THEN( "Then all customer process instances complete" ) {
+        auto log = recorder.find({{"processId","CustomerProcess" },{"state","COMPLETED"}}, nlohmann::json{{"nodeId",nullptr }, {"event",nullptr }, {"decision",nullptr }});
+//std::cerr << log.dump() << std::endl;
+        REQUIRE( log.size() == 2 );
       }
     }
   }

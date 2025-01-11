@@ -26,12 +26,13 @@ namespace BPMNOS {
     CollectionRegistry();
 
     /// Operator providing access to a registered collections by index.
-    const Collection& operator[](long unsigned int i) const;
+    const Collection& operator[](size_t i) const;
     /// Operator to register a collection by its string representation and return its index.
-    long unsigned int operator()(const std::string& string);
+    size_t operator()(const std::string& string);
+    void clear();
   private:
     std::vector<Collection> registeredCollections;
-    std::unordered_map<std::string, long unsigned int> index;
+    std::unordered_map<std::string, size_t> index;
     std::mutex registryMutex;
   public:
     // Prevent use of copy constructor and assignment operator as mutex is not copyable

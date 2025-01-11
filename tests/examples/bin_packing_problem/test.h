@@ -34,11 +34,10 @@ SCENARIO( "Bin packing problem", "[examples][bin_packing_problem]" ) {
       Execution::TimeWarp timeHandler;
       messageTaskTerminator.connect(&engine);
       timeHandler.connect(&engine);
-
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get(),10);
+      engine.run(scenario.get(),2);
       THEN( "Then no failure occurs" ) {
         auto failureLog = recorder.find(nlohmann::json{{"state", "FAILED"}});
         REQUIRE( failureLog.size() == 0 );
@@ -53,12 +52,11 @@ SCENARIO( "Bin packing problem", "[examples][bin_packing_problem]" ) {
 //std::cerr << log.size() << ": " << log.dump() << std::endl;
         REQUIRE( log.size() == 3 );
       }      
-      
       THEN( "Then all bin process instances complete" ) {
         auto log = recorder.find({{"processId","BinProcess" },{"state","COMPLETED"}}, nlohmann::json{{"nodeId",nullptr }, {"event",nullptr }, {"decision",nullptr }});
 //std::cerr << log.dump() << std::endl;
         REQUIRE( log.size() == 3 );
-      }
+      } 
       THEN( "Then all item process instances complete" ) {
         auto itemProcessLog = recorder.find({{"processId","ItemProcess" },{"state","DONE"}}, nlohmann::json{{"nodeId",nullptr }, {"event",nullptr }, {"decision",nullptr }});
 //std::cerr << itemProcessLog.dump() << std::endl;

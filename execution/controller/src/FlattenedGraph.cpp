@@ -293,7 +293,7 @@ void FlattenedGraph::createLoopVertices(BPMNOS::number rootId, BPMNOS::number in
       if ( !collectionValue.has_value() ) {
         throw std::runtime_error("FlattenedGraph: unable to determine collection for attribute '" + attribute->name + "'");
       }
-      auto& collection = collectionRegistry[(long unsigned int)collectionValue.value()].values;
+      auto& collection = collectionRegistry[(size_t)collectionValue.value()].values;
       if ( n > 0 && n != (int)collection.size() ) {
         throw std::runtime_error("FlattenedGraph: inconsistent number of values provided for multi-instance activity '" + activity->id +"'" );
       }

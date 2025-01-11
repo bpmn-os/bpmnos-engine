@@ -44,12 +44,7 @@ public:
 
   std::vector< std::unique_ptr<Attribute> > data;  ///< Vector containing data attributes declared for data objects within the node's scope.
 
-  struct DataUpdate {
-    bool global;
-    std::vector<const Attribute*> attributes;
-  };
-
-  struct { std::vector<const Attribute*> attributes; bool global; } dataUpdate; ///< Struct containing data attributes that are modified through operators and a flag indicating whether a global value is changed.
+  struct { std::vector<const Attribute*> attributes; bool global = false; } dataUpdate; ///< Struct containing data attributes that are modified through operators and a flag indicating whether a global value is changed.
 
   std::vector< std::unique_ptr<MessageDefinition> > messageDefinitions; ///< Vector containing message definition(s) provided for the node.
   const MessageDefinition* getMessageDefinition(size_t index) const;

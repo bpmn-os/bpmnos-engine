@@ -52,7 +52,7 @@ else()
     -Wextra
     -Wconversion
     -Wsign-conversion
-    -fsanitize=address
+    -fsanitize=address,undefined
     -fno-omit-frame-pointer
     -g
     -ggdb3
@@ -63,11 +63,11 @@ else()
     -Wno-misleading-indentation
   )
 
-  add_link_options(-fsanitize=address)
+  add_link_options(-fsanitize=address,undefined)
 
   target_link_options(bpmnos
     PRIVATE
-    -fsanitize=address
+    -fsanitize=address,undefined
     -pg # Profiling
   )  
 endif()
