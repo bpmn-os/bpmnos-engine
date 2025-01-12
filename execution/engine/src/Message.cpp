@@ -22,11 +22,8 @@ Message::Message(Token* token, size_t index)
   }
 
   for (auto& [key,contentDefinition] : messageDefinition->contentMap) {
-    if ( contentDefinition->attribute.has_value() && token->status[contentDefinition->attribute->get().index].has_value() ) {
-      contentValueMap.emplace( key, attributeRegistry.getValue(&contentDefinition->attribute->get(),token->status,*token->data,token->globals) );
-    }
-    else if ( contentDefinition->value.has_value() ) {
-      contentValueMap.emplace( key, contentDefinition->value.value() );
+    if ( token->status[contentDefinition->attribute->index].has_value() ) {
+      contentValueMap.emplace( key, attributeRegistry.getValue(contentDefinition->attribute,token->status,*token->data,token->globals) );
     }
     else {
       contentValueMap.emplace( key, std::nullopt );
@@ -72,7 +69,7 @@ nlohmann::ordered_json Message::jsonify() const {
 //std::cerr << "has value" << std::endl;  
       auto type = BPMNOS::ValueType::STRING;
       if ( auto it = messageDefinition->contentMap.find(key); it != messageDefinition->contentMap.end() ) {
-        type = it->second->attribute->get().type;
+        type = it->second->attribute->type;
       }
       number value = std::get< std::optional<number> >(contentValue).value();
       jsonObject["content"][key] = BPMNOS::to_string(value,type);
@@ -99,10 +96,7 @@ void Message::apply(const BPMN::FlowNode* node, const BPMNOS::Model::AttributeRe
   for (auto& [key,contentValue] : contentValueMap) {
     if ( auto it = targetContentDefinition.find(key); it != targetContentDefinition.end() ) {
       auto& [_,definition] = *it;
-      if ( !definition->attribute.has_value() ) {
-        throw std::runtime_error("Message: cannot receive content without attribute");
-      }
-      auto attribute = &definition->attribute->get();
+      auto attribute = definition->attribute;
 //std::cerr << "Attribute: " << attribute.name << "/" << attribute.index << std::endl;
       if ( std::holds_alternative< std::optional<number> >(contentValue) && std::get< std::optional<number> >(contentValue).has_value() ) {
         // use attribute value sent in message
@@ -112,10 +106,6 @@ void Message::apply(const BPMN::FlowNode* node, const BPMNOS::Model::AttributeRe
         // use default value of sender
         Value value = std::get< std::string >(contentValue);
         attributeRegistry.setValue(attribute, status, data, globals, BPMNOS::to_number(value,attribute->type) );
-      }
-      else if ( definition->value.has_value() ) {
-        // use default value of recipient
-        attributeRegistry.setValue(attribute, status, data, globals, BPMNOS::to_number(definition->value.value(),attribute->type) );
       }
       else {
         attributeRegistry.setValue(attribute, status, data, globals, std::nullopt );
@@ -132,18 +122,7 @@ void Message::apply(const BPMN::FlowNode* node, const BPMNOS::Model::AttributeRe
     for (auto& [key,definition] : targetContentDefinition) {
       if ( !contentValueMap.contains(key) ) {
         // key in recipient content, but not in message content
-        if ( !definition->attribute.has_value() ) {
-          throw std::runtime_error("Message: cannot receive content without attribute");
-        }
-        auto attribute = &definition->attribute->get();
-
-        if ( definition->value.has_value() ) {
-          // use default value of recipient
-          attributeRegistry.setValue(attribute, status, data, globals, BPMNOS::to_number(definition->value.value(),attribute->type) );
-        }
-        else {
-          attributeRegistry.setValue(attribute, status, data, globals, std::nullopt );
-        }
+        attributeRegistry.setValue(definition->attribute, status, data, globals, std::nullopt );
       }
     }
   }

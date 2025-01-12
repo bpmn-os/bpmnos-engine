@@ -25,10 +25,7 @@ Signal::Signal(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent)
     if ( baseElement->is<XML::bpmn::tCatchEvent>() ) {
       // add data attributes modified by signal to dataUpdateOnCompletion (global values must not be updated by signals)
       for ( auto& [key,content] : contentMap ) {
-        if ( !content->attribute.has_value() ) {
-          throw std::runtime_error("Signal: missing attribute for content '" + (std::string)content->id + "'.");
-        }
-        Attribute* attribute = &content->attribute.value().get();
+        Attribute* attribute = content->attribute;
         if ( attribute->category == Attribute::Category::DATA ) {
           updatedData.push_back(attribute);
         }

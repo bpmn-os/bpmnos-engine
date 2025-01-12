@@ -346,10 +346,7 @@ std::cerr << "createExitStatus" << std::endl;
       std::vector< std::tuple< std::string_view, size_t, AttributeVariables> > contentVariables;
       auto& messageDefinition = extensionElements->messageDefinitions.front();
       for (auto& [key,content] : messageDefinition->contentMap ) {
-        if ( !content->attribute.has_value() ) {
-          throw std::runtime_error("CPController: no attribute specified for receiving message content '" + content->id + "'");
-        }
-        auto attribute = &content->attribute.value().get();
+        auto attribute = content->attribute;
         
         // create variables for the message content (relevant constraints must be added separately)
         AttributeVariables attributeVariables = {

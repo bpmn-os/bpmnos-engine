@@ -1409,11 +1409,8 @@ BPMNOS::VariedValueMap Token::getSignalContent(const BPMNOS::Model::ContentMap& 
   auto& attributeRegistry = getAttributeRegistry();
   VariedValueMap contentValueMap;
   for (auto& [key,contentDefinition] : contentMap) {
-    if ( contentDefinition->attribute.has_value() && status[contentDefinition->attribute->get().index].has_value() ) {
-      contentValueMap.emplace( key, attributeRegistry.getValue(&contentDefinition->attribute->get(),status,*data,globals) );
-    }
-    else if ( contentDefinition->value.has_value() ) {
-      contentValueMap.emplace( key, contentDefinition->value.value() );
+    if ( status[contentDefinition->attribute->index].has_value() ) {
+      contentValueMap.emplace( key, attributeRegistry.getValue(contentDefinition->attribute,status,*data,globals) );
     }
     else {
       contentValueMap.emplace( key, std::nullopt );
@@ -1431,10 +1428,7 @@ void Token::setSignalContent(BPMNOS::VariedValueMap& sourceMap) {
   for (auto& [key,contentValue] : sourceMap) {
     if ( auto it = signalDefinition->contentMap.find(key); it != signalDefinition->contentMap.end() ) {
       auto& [_,definition] = *it;
-      if ( !definition->attribute.has_value() ) {
-        throw std::runtime_error("Token: cannot receive signal content without attribute");
-      }
-      auto attribute = &definition->attribute->get();
+      auto attribute = definition->attribute;
 //std::cerr << "Attribute: " << attribute.name << "/" << attribute.index << std::endl;
       if ( std::holds_alternative< std::optional<number> >(contentValue) && std::get< std::optional<number> >(contentValue).has_value() ) {
         // use attribute value of signal
@@ -1444,10 +1438,6 @@ void Token::setSignalContent(BPMNOS::VariedValueMap& sourceMap) {
         // use default value of emitter
         Value value = std::get< std::string >(contentValue);
         attributeRegistry.setValue(attribute, status, *data, globals, BPMNOS::to_number(value,attribute->type) );
-      }
-      else if ( definition->value.has_value() ) {
-        // use default value of recipient
-        attributeRegistry.setValue(attribute, status, *data, globals, BPMNOS::to_number(definition->value.value(),attribute->type) );
       }
       else {
         attributeRegistry.setValue(attribute, status, *data, globals, std::nullopt );
@@ -1464,18 +1454,7 @@ void Token::setSignalContent(BPMNOS::VariedValueMap& sourceMap) {
     for (auto& [key,definition] : signalDefinition->contentMap) {
       if ( !sourceMap.contains(key) ) {
         // key in recipient content, but not in message content
-        if ( !definition->attribute.has_value() ) {
-          throw std::runtime_error("Token: cannot receive signal content without attribute");
-        }
-        auto attribute = &definition->attribute->get();
-
-        if ( definition->value.has_value() ) {
-          // use default value of recipient
-          attributeRegistry.setValue(attribute, status, *data, globals, BPMNOS::to_number(definition->value.value(),attribute->type) );
-        }
-        else {
-          attributeRegistry.setValue(attribute, status, *data, globals, std::nullopt );
-        }
+        attributeRegistry.setValue(definition->attribute, status, *data, globals, std::nullopt );
       }
     }
   }

@@ -129,16 +129,14 @@ std::unique_ptr<BPMN::FlowNode> Model::createActivity(XML::bpmn::tActivity* acti
   if ( baseElement->represents<BPMN::ReceiveTask>() ) {
     for ( auto& messageDefinition : extensionElements->messageDefinitions ) {
       for ( auto& [_,content] : messageDefinition->contentMap ) {
-        if ( content->attribute.has_value() ) {
-          Attribute* attribute = &content->attribute.value().get();
-          if ( attribute->category == Attribute::Category::GLOBAL ) {
-            throw std::runtime_error("Model: Message received by task '" + baseElement->id + "' attempts to modify global attribute '" + attribute->id + "'");
-          } 
-          else if ( attribute->category == Attribute::Category::DATA ) {
-            throw std::runtime_error("Model: Message received by task '" + baseElement->id + "' attempts to modify data attribute '" + attribute->id + "'");
-          }
-          attribute->isImmutable = false;
+        auto attribute = content->attribute;
+        if ( attribute->category == Attribute::Category::GLOBAL ) {
+          throw std::runtime_error("Model: Message received by task '" + baseElement->id + "' attempts to modify global attribute '" + attribute->id + "'");
+        } 
+        else if ( attribute->category == Attribute::Category::DATA ) {
+          throw std::runtime_error("Model: Message received by task '" + baseElement->id + "' attempts to modify data attribute '" + attribute->id + "'");
         }
+        attribute->isImmutable = false;
       }
     }
   }
@@ -275,23 +273,21 @@ std::unique_ptr<BPMN::FlowNode> Model::createMessageStartEvent(XML::bpmn::tStart
   
   for ( auto& messageDefinition : extensionElements->messageDefinitions ) {
     for ( auto& [_,content] : messageDefinition->contentMap ) {
-      if ( content->attribute.has_value() ) {
-        Attribute* attribute = &content->attribute.value().get();
-        auto parentExtension = parent->extensionElements->as<BPMNOS::Model::ExtensionElements>();
-        if ( attribute->category == Attribute::Category::GLOBAL ) {
-          throw std::runtime_error("Model: Message start event '" + baseElement->id + "' attempts to modify global attribute '" + attribute->id + "'");
+      Attribute* attribute = content->attribute;
+      auto parentExtension = parent->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+      if ( attribute->category == Attribute::Category::GLOBAL ) {
+        throw std::runtime_error("Model: Message start event '" + baseElement->id + "' attempts to modify global attribute '" + attribute->id + "'");
+      }
+      else if ( attribute->category == Attribute::Category::DATA ) {
+        if ( !contains(parentExtension->data,attribute) ) {
+          throw std::runtime_error("Model: Message start event '" + baseElement->id + "' attempts to modify data attribute '" + attribute->id + "' which is not owned by event-subprocess");
         }
-        else if ( attribute->category == Attribute::Category::DATA ) {
-          if ( !contains(parentExtension->data,attribute) ) {
-            throw std::runtime_error("Model: Message start event '" + baseElement->id + "' attempts to modify data attribute '" + attribute->id + "' which is not owned by event-subprocess");
-          }
-          // data attributes owned by event-subprocesses are considered immutable even if they are modified by the message start event  
-        }
-        else if ( attribute->category == Attribute::Category::STATUS ) {
-          // status attributes owned by event-subprocesses are considered immutable even if they are modified by the message start event  
-          if ( !contains(parentExtension->attributes,attribute) ) {
-            attribute->isImmutable = false;
-          }
+        // data attributes owned by event-subprocesses are considered immutable even if they are modified by the message start event  
+      }
+      else if ( attribute->category == Attribute::Category::STATUS ) {
+        // status attributes owned by event-subprocesses are considered immutable even if they are modified by the message start event  
+        if ( !contains(parentExtension->attributes,attribute) ) {
+          attribute->isImmutable = false;
         }
       }
     }
@@ -306,16 +302,14 @@ std::unique_ptr<BPMN::FlowNode> Model::createMessageBoundaryEvent(XML::bpmn::tBo
   
   for ( auto& messageDefinition : extensionElements->messageDefinitions ) {
     for ( auto& [_,content] : messageDefinition->contentMap ) {
-      if ( content->attribute.has_value() ) {
-        Attribute* attribute = &content->attribute.value().get();
-        if ( attribute->category == Attribute::Category::GLOBAL ) {
-          throw std::runtime_error("Model: Message boundary event '" + baseElement->id + "' attempts to modify global attribute '" + attribute->id + "'");
-        } 
-        else if ( attribute->category == Attribute::Category::DATA ) {
-          throw std::runtime_error("Model: Message boundary event '" + baseElement->id + "' attempts to modify data attribute '" + attribute->id + "'");
-        }
-        attribute->isImmutable = false;
+      Attribute* attribute = content->attribute;
+      if ( attribute->category == Attribute::Category::GLOBAL ) {
+        throw std::runtime_error("Model: Message boundary event '" + baseElement->id + "' attempts to modify global attribute '" + attribute->id + "'");
+      } 
+      else if ( attribute->category == Attribute::Category::DATA ) {
+        throw std::runtime_error("Model: Message boundary event '" + baseElement->id + "' attempts to modify data attribute '" + attribute->id + "'");
       }
+      attribute->isImmutable = false;
     }
   }
   // bind attributes, restrictions, and operators to all event subprocesses
@@ -328,16 +322,14 @@ std::unique_ptr<BPMN::FlowNode> Model::createMessageCatchEvent(XML::bpmn::tCatch
   
   for ( auto& messageDefinition : extensionElements->messageDefinitions ) {
     for ( auto& [_,content] : messageDefinition->contentMap ) {
-      if ( content->attribute.has_value() ) {
-        Attribute* attribute = &content->attribute.value().get();
-        if ( attribute->category == Attribute::Category::GLOBAL ) {
-          throw std::runtime_error("Model: Message catch event '" + baseElement->id + "' attempts to modify global attribute '" + attribute->id + "'");
-        }
-        else if ( attribute->category == Attribute::Category::DATA ) {
-          throw std::runtime_error("Model: Message catch event '" + baseElement->id + "' attempts to modify data attribute '" + attribute->id + "'");
-        }
-        attribute->isImmutable = false;
+      Attribute* attribute = content->attribute;
+      if ( attribute->category == Attribute::Category::GLOBAL ) {
+        throw std::runtime_error("Model: Message catch event '" + baseElement->id + "' attempts to modify global attribute '" + attribute->id + "'");
       }
+      else if ( attribute->category == Attribute::Category::DATA ) {
+        throw std::runtime_error("Model: Message catch event '" + baseElement->id + "' attempts to modify data attribute '" + attribute->id + "'");
+      }
+      attribute->isImmutable = false;
     }
   }
   // bind attributes, restrictions, and operators to all event subprocesses

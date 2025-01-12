@@ -215,10 +215,7 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const
     // add data attributes modified by message to dataUpdateOnCompletion (global values must not be updated by messages)
     for ( auto& messageDefinition : messageDefinitions ) {
       for ( auto& [key,content] : messageDefinition->contentMap ) {
-        if ( !content->attribute.has_value() ) {
-          throw std::runtime_error("ExtensionElements: missing attribute for content '" + (std::string)content->id + "'.");
-        }
-        Attribute* attribute = &content->attribute.value().get();
+        Attribute* attribute = content->attribute;
         if ( attribute->category == Attribute::Category::DATA ) {
           dataUpdate.attributes.push_back(attribute);
         }

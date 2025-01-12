@@ -22,11 +22,7 @@ public:
 
   std::string& id;
   std::string& key;
-  std::optional< std::reference_wrapper<Attribute> > attribute;
-  std::optional< std::string > value; 
-
-protected:
-  std::optional< std::reference_wrapper<Attribute> > getAttribute(const AttributeRegistry& attributeRegistry) const;
+  Attribute* attribute;
 };
 
 typedef std::unordered_map< std::string, std::unique_ptr<Content> > ContentMap;

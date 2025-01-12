@@ -150,8 +150,7 @@
   <xsd:complexType name="tContent">
     <xsd:attribute name="id" type="xsd:ID" use="required"/>
     <xsd:attribute name="key" type="xsd:string" use="required"/>
-    <xsd:attribute name="attribute" type="xsd:string" use="optional"/>
-    <xsd:attribute name="value" type="xsd:string" use="optional"/>
+    <xsd:attribute name="attribute" type="xsd:string" use="required"/>
   </xsd:complexType>
 
   <xsd:element name="loopCharacteristics" type="tLoopCharacteristics"/>
