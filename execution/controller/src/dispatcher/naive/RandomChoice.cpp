@@ -13,8 +13,10 @@ RandomChoice::RandomChoice()
 }
 
 std::shared_ptr<Event> RandomChoice::dispatchEvent( const SystemState* systemState ) {
-  for ( auto& [token_ptr, event] : systemState->pendingChoiceEvents ) {
-    if( auto token = token_ptr.lock() )  {
+  for ( auto& [token_ptr, request_ptr] : systemState->pendingChoiceDecisions ) {
+    if( auto request = request_ptr.lock() )  {
+      assert( request );
+      auto token = request->token;
       assert( token );
       assert( token->node );
       assert( token->node->represents<BPMNOS::Model::DecisionTask>() );
@@ -63,7 +65,7 @@ std::shared_ptr<Event> RandomChoice::dispatchEvent( const SystemState* systemSta
         }
       }
       if ( !choices.empty() ) {
-        return std::make_shared<ChoiceEvent>(token.get(), std::move(choices));
+        return std::make_shared<ChoiceEvent>(token, std::move(choices));
       }
     }
   }

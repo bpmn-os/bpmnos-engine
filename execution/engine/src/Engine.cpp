@@ -156,13 +156,12 @@ void Engine::process(const EntryEvent* event) {
   }
 
   commands.emplace_back(std::bind(&Token::advanceToEntered,token), token);
-
-//  systemState->pendingEntryEvents.remove(token);
 }
 
 void Engine::process(const ChoiceEvent* event) {
 //std::cerr << "ChoiceEvent " << event.token->node->id << std::endl;
   Token* token = const_cast<Token*>(event->token);
+  token->decisionRequest.reset();
   token->status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = systemState->currentTime;
   assert( token->node );
   assert( token->node->represents<BPMNOS::Model::DecisionTask>() );
@@ -176,8 +175,6 @@ void Engine::process(const ChoiceEvent* event) {
   }
 
   commands.emplace_back(std::bind(&Token::advanceToCompleted,token), token);
-
-  systemState->pendingChoiceEvents.remove(token);
 }
 
 void Engine::process(const CompletionEvent* event) {
@@ -195,6 +192,7 @@ void Engine::process(const CompletionEvent* event) {
 
 void Engine::process(const MessageDeliveryEvent* event) {
   Token* token = const_cast<Token*>(event->token);
+  token->decisionRequest.reset();
   token->status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = systemState->currentTime;
   assert( token->node );
 
@@ -216,8 +214,6 @@ void Engine::process(const MessageDeliveryEvent* event) {
   }
   
   commands.emplace_back(std::bind(&Token::advanceToCompleted,token), token);
-
-  systemState->pendingMessageDeliveryEvents.remove(token);
 }
 
 void Engine::process(const ExitEvent* event) {
@@ -235,8 +231,6 @@ void Engine::process(const ExitEvent* event) {
   }
 
   commands.emplace_back(std::bind(&Token::advanceToExiting,token), token);
-
-  systemState->pendingExitEvents.remove(token);
 }
 
 void Engine::process(const ErrorEvent* event) {

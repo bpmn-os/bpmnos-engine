@@ -68,11 +68,10 @@ public:
 
   BPMNOS::number contributionsToObjective; ///< All contributions that have already been added to the objective.
   
-  auto_list< std::weak_ptr<Token>, std::weak_ptr<DecisionRequest> > _pendingEntryEvents;
-// TODO: only weak ptrs to decision requests
-  auto_list< std::weak_ptr<Token>, std::shared_ptr<DecisionRequest> > pendingChoiceEvents;
-  auto_list< std::weak_ptr<Token>, std::shared_ptr<DecisionRequest> > pendingExitEvents;
-  auto_list< std::weak_ptr<Token>, std::shared_ptr<DecisionRequest> > pendingMessageDeliveryEvents;
+  auto_list< std::weak_ptr<Token>, std::weak_ptr<DecisionRequest> > pendingEntryDecisions;
+  auto_list< std::weak_ptr<Token>, std::weak_ptr<DecisionRequest> > pendingChoiceDecisions;
+  auto_list< std::weak_ptr<Token>, std::weak_ptr<DecisionRequest> > pendingExitDecisions;
+  auto_list< std::weak_ptr<Token>, std::weak_ptr<DecisionRequest> > pendingMessageDeliveryDecisions;
 
   auto_list< std::weak_ptr<Token> > tokensAwaitingReadyEvent; ///< Container holding all tokens awaiting a ready event
   auto_set< BPMNOS::number, std::weak_ptr<Token> > tokensAwaitingCompletionEvent; ///< Sorted container holding all tokens awaiting a task completion event

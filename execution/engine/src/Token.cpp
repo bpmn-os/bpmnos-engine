@@ -1280,10 +1280,6 @@ void Token::awaitReadyEvent() {
 //std::cerr << "awaitReadyEvent" << std::endl;
   auto systemState = const_cast<SystemState*>(owner->systemState);
   systemState->tokensAwaitingReadyEvent.emplace_back(weak_from_this());
-/*
-  auto event = createPendingEvent<ReadyEvent>();
-  systemState->pendingReadyEvents.emplace_back( weak_from_this(), event );
-*/
 }
 
 void Token::awaitEntryEvent() {
@@ -1303,16 +1299,16 @@ void Token::awaitEntryEvent() {
   }
   
   decisionRequest = std::make_shared<DecisionRequest>( this, Observable::Type::EntryRequest );
-  systemState->_pendingEntryEvents.emplace_back( weak_from_this(), decisionRequest );
+  systemState->pendingEntryDecisions.emplace_back( weak_from_this(), decisionRequest );
 //std::cerr << "Token: Waiting for entry" << std::endl;
   owner->systemState->engine->notify(decisionRequest.get());
 }
 
 void Token::awaitChoiceEvent() {
   auto systemState = const_cast<SystemState*>(owner->systemState);
-  auto decisionRequest = std::make_shared<DecisionRequest>( this, Observable::Type::ChoiceRequest );
+  decisionRequest = std::make_shared<DecisionRequest>( this, Observable::Type::ChoiceRequest );
   owner->systemState->engine->notify(decisionRequest.get());
-  systemState->pendingChoiceEvents.emplace_back( weak_from_this(), decisionRequest );
+  systemState->pendingChoiceDecisions.emplace_back( weak_from_this(), decisionRequest );
 
 }
 
@@ -1325,18 +1321,18 @@ void Token::awaitTaskCompletionEvent() {
 void Token::awaitExitEvent() {
 //std::cerr << "awaitExitEvent" << std::endl;
   auto systemState = const_cast<SystemState*>(owner->systemState);
-  auto decisionRequest = std::make_shared<DecisionRequest>( this, Observable::Type::ExitRequest );
+  decisionRequest = std::make_shared<DecisionRequest>( this, Observable::Type::ExitRequest );
   owner->systemState->engine->notify(decisionRequest.get());
-  systemState->pendingExitEvents.emplace_back( weak_from_this(), decisionRequest );
+  systemState->pendingExitDecisions.emplace_back( weak_from_this(), decisionRequest );
 
 }
 
 void Token::awaitMessageDelivery() {
 //std::cerr << "awaitMessageDelivery" << std::endl;
   auto systemState = const_cast<SystemState*>(owner->systemState);
-  auto decisionRequest = std::make_shared<DecisionRequest>( this, Observable::Type::MessageDeliveryRequest );
+  decisionRequest = std::make_shared<DecisionRequest>( this, Observable::Type::MessageDeliveryRequest );
   owner->systemState->engine->notify(decisionRequest.get());
-  systemState->pendingMessageDeliveryEvents.emplace_back( weak_from_this(), decisionRequest );
+  systemState->pendingMessageDeliveryDecisions.emplace_back( weak_from_this(), decisionRequest );
 }
 
 void Token::awaitTimer(BPMNOS::number time) {
@@ -1571,7 +1567,7 @@ void Token::releaseSequentialPerformer() {
       assert( !activityToken->decisionRequest );
 //std::cerr << "Token: Renew decision " << activityToken->jsonify() << std::endl;
       activityToken->decisionRequest = std::make_shared<DecisionRequest>( activityToken.get(), Observable::Type::EntryRequest );
-      systemState->_pendingEntryEvents.emplace_back(activityToken,activityToken->decisionRequest);
+      systemState->pendingEntryDecisions.emplace_back(activityToken,activityToken->decisionRequest);
       owner->systemState->engine->notify(activityToken->decisionRequest.get());
     }
   }
