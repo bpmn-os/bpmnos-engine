@@ -849,8 +849,9 @@ void Token::advanceToCompleted() {
     } 
     else if ( auto startEvent = node->represents<BPMN::TypedStartEvent>() ) {
       // event subprocess is triggered
-      auto eventSubProcess = node->parent->represents<BPMN::EventSubProcess>();
-      if ( !eventSubProcess ) {
+//      auto eventSubProcess = node->parent->represents<BPMN::EventSubProcess>();
+//      if ( !eventSubProcess ) {
+      if ( !node->parent->represents<BPMN::EventSubProcess>() ) {
         throw std::runtime_error("Token: typed start event must belong to event subprocess");
       }
       auto context = const_cast<StateMachine*>(owner->parentToken->owned.get());
@@ -915,7 +916,9 @@ std::cerr << "Context: " << context << " at " << context->scope->id << " has " <
       
       // check entry scope restrictions of event-subprocess
 //std::cerr << "check entry scope restrictions of event-subprocess" << std::endl;
-      if ( !eventSubProcess->extensionElements->as<BPMNOS::Model::ExtensionElements>()->feasibleEntry(status,*data,globals) ) {
+      assert( node->parent->represents<BPMN::EventSubProcess>()->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );
+      auto extensionElements = node->parent->represents<BPMN::EventSubProcess>()->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+      if ( !extensionElements->feasibleEntry(status,*data,globals) ) {
         engine->commands.emplace_back(std::bind(&Token::advanceToFailed,this), this);
       }
       else {
@@ -928,7 +931,7 @@ std::cerr << "Context: " << context << " at " << context->scope->id << " has " <
       node->incoming.size() == 1 &&
       node->incoming.front()->source->represents<BPMN::EventBasedGateway>()
     ) {
-      auto engine = const_cast<Engine*>(owner->systemState->engine);
+//      auto engine = const_cast<Engine*>(owner->systemState->engine);
       engine->commands.emplace_back(std::bind(&StateMachine::handleEventBasedGatewayActivation,const_cast<StateMachine*>(owner),this), this);
     }
   }
@@ -1065,12 +1068,12 @@ void Token::advanceToExiting() {
   if ( activity && activity->loopCharacteristics.has_value() && activity->loopCharacteristics.value() != BPMN::Activity::LoopCharacteristics::Standard ) {
     // delegate removal of token copies for multi-instance activity to owner
     auto stateMachine = const_cast<StateMachine*>(owner);
-    auto engine = const_cast<Engine*>(owner->systemState->engine);
+//    auto engine = const_cast<Engine*>(owner->systemState->engine);
     engine->commands.emplace_back(std::bind(&StateMachine::deleteMultiInstanceActivityToken,stateMachine,this), this);
     return;
   }
 
-  if ( auto activity = node->represents<BPMN::Activity>() ) {
+  if ( activity ) {
     auto stateMachine = const_cast<StateMachine*>(owner);
     if ( !activity->boundaryEvents.empty() ) {
       // remove tokens at boundary events
@@ -1431,7 +1434,7 @@ void Token::setSignalContent(BPMNOS::VariedValueMap& sourceMap) {
   size_t counter = 0;
   for (auto& [key,contentValue] : sourceMap) {
     if ( auto it = signalDefinition->contentMap.find(key); it != signalDefinition->contentMap.end() ) {
-      auto& [key,definition] = *it;
+      auto& [_,definition] = *it;
       if ( !definition->attribute.has_value() ) {
         throw std::runtime_error("Token: cannot receive signal content without attribute");
       }

@@ -158,7 +158,7 @@ std::string to_string(number numericValue, const ValueType& type) {
     case ValueType::STRING:
       return stringRegistry[(std::size_t)numericValue];
     case ValueType::COLLECTION:
-      return collectionRegistry[(std::size_t)numericValue].string;
+      return collectionRegistry[(std::size_t)numericValue].collection;
   }
   throw std::logic_error("to_string: unknown value type " + type );
 }

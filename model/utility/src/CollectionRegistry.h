@@ -10,8 +10,8 @@
 namespace BPMNOS {
 
   struct Collection {
-    Collection(const std::string& string);
-    std::string string;
+    Collection(const std::string& collection);
+    std::string collection;
     Values values;
   };
 
@@ -28,7 +28,7 @@ namespace BPMNOS {
     /// Operator providing access to a registered collections by index.
     const Collection& operator[](size_t i) const;
     /// Operator to register a collection by its string representation and return its index.
-    size_t operator()(const std::string& string);
+    size_t operator()(const std::string& collection);
     void clear();
   private:
     std::vector<Collection> registeredCollections;

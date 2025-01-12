@@ -1,4 +1,5 @@
 #include "LookupTable.h"
+#include <ranges>
 #include <iostream>
 
 using namespace BPMNOS::Model;
@@ -33,12 +34,8 @@ void LookupTable::createMap(const std::string& source) {
   if ( table.empty() ) {
     throw std::runtime_error("LookupTable: table '" + source + "'is empty");
   }
-  // assume a single header line
   // populate lookup map
-  for (size_t i=1; i < table.size(); i++ ) {
-//std::cerr << "row[" << i << "] = ";
-    auto& row = table[i];
-
+  for (auto& row : table | std::views::drop(1)) {   // assume a single header line
     std::vector< double > inputs;
     size_t columns = row.size();
     

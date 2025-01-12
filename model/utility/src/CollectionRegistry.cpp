@@ -4,15 +4,15 @@
 
 using namespace BPMNOS;
 
-Collection::Collection(const std::string& string)
-  : string(strutil::trim_copy(string))
+Collection::Collection(const std::string& collection)
+  : collection(strutil::trim_copy(collection))
 {
   // get values
-  if ( !strutil::starts_with(string,"[") || !strutil::ends_with(string,"]") ) {
-    throw std::runtime_error("Collection: string '" + string + "' must start with '[' and must end with ']'");
+  if ( !strutil::starts_with(collection,"[") || !strutil::ends_with(collection,"]") ) {
+    throw std::runtime_error("Collection: string '" + collection + "' must start with '[' and must end with ']'");
   }
   // determine list of comma separated values
-  auto list = string.substr(1,string.size()-2);
+  auto list = collection.substr(1,collection.size()-2);
   if ( list.empty() ) return;
     
   auto elements = strutil::split( list, "," );
@@ -36,7 +36,7 @@ Collection::Collection(const std::string& string)
         values.push_back( BPMNOS::stod(element) );
       }
       catch(...) {
-        throw std::runtime_error("Collection: illegal value '" + element + "' in '" + string + "'");
+        throw std::runtime_error("Collection: illegal value '" + element + "' in '" + collection + "'");
       }
     }
   }
@@ -51,15 +51,14 @@ const Collection&  CollectionRegistry::operator[](size_t i) const {
   return registeredCollections[i];
 }
 
-size_t CollectionRegistry::operator()(const std::string& string) {
+size_t CollectionRegistry::operator()(const std::string& collection) {
   std::lock_guard<std::mutex> lock(registryMutex);
 
-  auto it = index.find(string);
+  auto it = index.find(collection);
   if ( it == index.end() ) {
-    Values values; // TODO: parse values
-    
-    registeredCollections.emplace_back(string);
-    index[string] = index.size();
+//    Values values; // TODO: parse values    
+    registeredCollections.emplace_back(collection);
+    index[collection] = index.size();
     return registeredCollections.size()-1;
   }
   return it->second;

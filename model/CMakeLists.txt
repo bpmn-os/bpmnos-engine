@@ -80,6 +80,7 @@ if (NDEBUG)
     PRIVATE
     -O3
     -Werror
+    -Wshadow=local
     -pedantic-errors
     -Wpedantic
     -Wall
@@ -98,13 +99,14 @@ else()
     PRIVATE
     -O0
     -Werror
+    -Wshadow=local
     -pedantic-errors
     -Wpedantic
     -Wall
     -Wextra
     -Wconversion
     -Wsign-conversion
-    -fsanitize=address,undefined
+    -fsanitize=address,undefined,leak
     -fno-omit-frame-pointer
     -g
     -ggdb3
@@ -114,11 +116,11 @@ else()
     -Wno-error=unused-variable # Remove
   )
 
-  add_link_options(-fsanitize=address,undefined)
+  add_link_options(-fsanitize=address,undefined,leak)
 
   target_link_options(${PROJECT_NAME}
     PRIVATE
-    -fsanitize=address,undefined
+    -fsanitize=address,undefined,leak
     -pg # Profiling
   )
 endif()

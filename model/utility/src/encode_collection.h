@@ -28,12 +28,12 @@ std::cerr << match[2].str() << std::endl;
     }
     std::string collection = "[" + match[2].str() + "]";
     // Convert collection to a number using the registry
-    auto number = collectionRegistry(collection);
+    auto id = collectionRegistry(collection);
 
     // Replace the matched substring with the number
     size_t startPos = (size_t)match.position(2)-1;
     size_t length = (size_t)match.length(2)+2;
-    text.replace(startPos, length, std::to_string(number));
+    text.replace(startPos, length, std::to_string(id));
   }
   return text;
 }

@@ -21,17 +21,18 @@ void AttributeRegistry::add(Attribute* attribute) {
 }
 
 Attribute* AttributeRegistry::operator[](const std::string& name) const {
-  if ( auto it = statusAttributes.find(name);
+  std::map< std::string, Attribute*>::const_iterator it;
+  if ( it = statusAttributes.find(name);
     it != statusAttributes.end()
   ) {
     return it->second;
   }
-  else if ( auto it = dataAttributes.find(name);
+  else if ( it = dataAttributes.find(name);
     it != dataAttributes.end()
   ) {
     return it->second;
   }
-  else if ( auto it = globalAttributes.find(name);
+  else if ( it = globalAttributes.find(name);
     it != globalAttributes.end()
   ) {
     return it->second;

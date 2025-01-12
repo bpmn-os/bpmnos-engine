@@ -30,8 +30,8 @@ Choice::Choice(XML::bpmnos::tDecision* decision, const AttributeRegistry& attrib
       strictness.first = true;
     }
     lowerBound.emplace( strutil::trim_copy(conditions[0]), attributeRegistry);
-    for ( auto input : lowerBound.value().inputs ) {
-      dependencies.insert(input);
+    for ( auto dependency : lowerBound.value().inputs ) {
+      dependencies.insert(dependency);
     }
     
     // determine attribute
@@ -48,8 +48,8 @@ Choice::Choice(XML::bpmnos::tDecision* decision, const AttributeRegistry& attrib
     }
 
     upperBound.emplace( strutil::trim_copy(conditions[2]), attributeRegistry);
-    for ( auto input : upperBound.value().inputs ) {
-      dependencies.insert(input);
+    for ( auto dependency : upperBound.value().inputs ) {
+      dependencies.insert(dependency);
     }
 
   }
@@ -62,8 +62,8 @@ Choice::Choice(XML::bpmnos::tDecision* decision, const AttributeRegistry& attrib
       auto alternatives = strutil::split( encodeCollection( rhs.substr(1, rhs.size()-2) ), ',' );
       for ( auto& alternative : alternatives ) {
         enumeration.emplace_back( strutil::trim_copy(alternative), attributeRegistry);
-        for ( auto input : enumeration.back().inputs ) {
-          dependencies.insert(input);
+        for ( auto dependency : enumeration.back().inputs ) {
+          dependencies.insert(dependency);
         }
       }
       if ( enumeration.empty() ) {

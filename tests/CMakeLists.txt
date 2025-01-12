@@ -34,6 +34,7 @@ if (NDEBUG)
     -pedantic-errors
     -Wpedantic
     -Wall
+    -Wshadow=local
     -Wextra
     -Wconversion
     -Wsign-conversion
@@ -50,10 +51,11 @@ else()
     -pedantic-errors
     -Wpedantic
     -Wall
+    -Wshadow=local
     -Wextra
     -Wconversion
     -Wsign-conversion
-    -fsanitize=address,undefined
+    -fsanitize=address,undefined,leak
     -fno-omit-frame-pointer
     -g
     -ggdb3
@@ -64,11 +66,11 @@ else()
     -Wno-misleading-indentation
   )
 
-  add_link_options(-fsanitize=address,undefined)
+  add_link_options(-fsanitize=address,undefined,leak)
 
   target_link_options(run_tests
     PRIVATE
-    -fsanitize=address,undefined
+    -fsanitize=address,undefined,leak
     -pg # Profiling
   )
 endif()

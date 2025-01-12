@@ -332,12 +332,12 @@ void StateMachine::deleteMultiInstanceActivityToken(Token* token) {
 
   // advance main token when last multi-instance token exited
   auto& tokensAtActivityInstance = const_cast<SystemState*>(systemState)->tokensAtActivityInstance;
-  if ( auto it = tokensAtActivityInstance.find(mainToken);
-    it != tokensAtActivityInstance.end()
+  if ( auto it1 = tokensAtActivityInstance.find(mainToken);
+    it1 != tokensAtActivityInstance.end()
   ) {
-    if ( it->second.empty() ) {
+    if ( it1->second.empty() ) {
       // last multi-instance token exited
-      tokensAtActivityInstance.erase(it);
+      tokensAtActivityInstance.erase(it1);
 
       if ( !activity->boundaryEvents.empty() ) {
         // remove tokens at boundary events
@@ -345,12 +345,12 @@ void StateMachine::deleteMultiInstanceActivityToken(Token* token) {
       }
 
       auto& exitStatusAtActivityInstance = const_cast<SystemState*>(systemState)->exitStatusAtActivityInstance;
-      if ( auto it = exitStatusAtActivityInstance.find(mainToken);
-         it != exitStatusAtActivityInstance.end()
+      if ( auto it2 = exitStatusAtActivityInstance.find(mainToken);
+         it2 != exitStatusAtActivityInstance.end()
       ) {
         // merge status 
-        mainToken->status = BPMNOS::mergeValues(it->second);
-        exitStatusAtActivityInstance.erase(it);
+        mainToken->status = BPMNOS::mergeValues(it2->second);
+        exitStatusAtActivityInstance.erase(it2);
       }
 
       // advance main token

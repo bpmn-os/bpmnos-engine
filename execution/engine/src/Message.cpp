@@ -98,7 +98,7 @@ void Message::apply(const BPMN::FlowNode* node, const BPMNOS::Model::AttributeRe
   size_t counter = 0;
   for (auto& [key,contentValue] : contentValueMap) {
     if ( auto it = targetContentDefinition.find(key); it != targetContentDefinition.end() ) {
-      auto& [key,definition] = *it;
+      auto& [_,definition] = *it;
       if ( !definition->attribute.has_value() ) {
         throw std::runtime_error("Message: cannot receive content without attribute");
       }

@@ -449,12 +449,13 @@ std::vector<CPController::AttributeVariables> CPController::createMergedStatus(c
       variables.emplace_back(
         model.addVariable(CP::Variable::Type::BOOLEAN, "defined_" + vertex.reference() + "," + attribute->id, defined ), 
         model.addVariable(CP::Variable::Type::REAL, "value_" + vertex.reference() + "," + attribute->id, CP::n_ary_if( cases, 0.0 ))
-      );      
+      );
+      
       // add constraints that all defined inputs have the same value
       auto& mergedValue = variables.back().value;
       for ( auto& [ _, attributeVariables] : inputs ) {
-        auto& [ defined, value ] = attributeVariables[attribute->index];
-        model.addConstraint( defined.implies( value == mergedValue ) );
+        auto& [ hasValue, value ] = attributeVariables[attribute->index];
+        model.addConstraint( hasValue.implies( value == mergedValue ) );
       }
     }
   }
@@ -624,7 +625,7 @@ void CPController::createExitVariables(const FlattenedGraph::Vertex& vertex) {
 }
 
 void CPController::createSequenceConstraints(const Vertex& vertex) {
-  auto addConstraints = [&](const Vertex& predecessor, const Vertex& vertex) {
+  auto addConstraints = [&](const Vertex& predecessor) {
     assert( position.contains(&predecessor) );
     assert( position.contains(&vertex) );
     assert( visit.contains(&vertex) );
@@ -643,11 +644,11 @@ void CPController::createSequenceConstraints(const Vertex& vertex) {
   };
 
   for ( auto& [sequenceFlow, predecessor] : vertex.inflows ) {
-    addConstraints(predecessor,vertex);
+    addConstraints(predecessor);
   }
 
   for ( auto& predecessor : vertex.predecessors ) {
-    addConstraints(predecessor,vertex);
+    addConstraints(predecessor);
   }
 }
 
