@@ -2,7 +2,7 @@
 #define BPMNOS_Model_DynamicDataProvider_H
 
 #include "DataProvider.h"
-#include <csv.hpp>
+#include "model/utility/src/CSVReader.h"
 
 namespace BPMNOS::Model {
 
@@ -24,8 +24,7 @@ public:
   ~DynamicDataProvider() override = default;
   std::unique_ptr<Scenario> createScenario(unsigned int scenarioId = 0) override;
 protected:
-  csv::CSVReader initReader(const std::string& instanceFileOrString);
-  csv::CSVReader reader;
+  CSVReader reader;
   void readInstances();
 
   struct DynamicInstanceData {

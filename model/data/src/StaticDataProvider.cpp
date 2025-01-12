@@ -4,15 +4,15 @@
 #include "model/utility/src/Value.h"
 #include "model/utility/src/getDelimiter.h"
 #include "model/bpmnos/src/extensionElements/Expression.h"
-#include <sstream>
 #include <unordered_map>
 #include <algorithm>
+#include <ranges>
 
 using namespace BPMNOS::Model;
 
 StaticDataProvider::StaticDataProvider(const std::string& modelFile, const std::string& instanceFileOrString)
   : DataProvider(modelFile)
-  , reader( initReader(instanceFileOrString) )
+  , reader( CSVReader(instanceFileOrString) )
 {
   for ( auto& [ attributeId, attribute ] : attributes[nullptr] ) {
     if ( attribute->expression ) {
@@ -28,30 +28,25 @@ StaticDataProvider::StaticDataProvider(const std::string& modelFile, const std::
   
 }
 
-csv::CSVReader StaticDataProvider::initReader(const std::string& instanceFileOrString) {
-  auto pos = instanceFileOrString.find("\n");
-  csv::CSVFormat format;
-  format.delimiter( { getDelimiter(instanceFileOrString,pos) } );
-  (format.get_delim() == '\t') ? format.trim({' '}) : format.trim({' ', '\t'});
-  
-  if ( pos == std::string::npos ) {
-    // no line break in instanceFileOrString so it must be a filename
-    // determine delimiter from file
-    return csv::CSVReader(instanceFileOrString, format);
-  }
-  else {
-    // string input
-    std::stringstream is;
-    is << instanceFileOrString;
-    return csv::CSVReader(is, format);
-  }
-}
-
 void StaticDataProvider::readInstances() {
   enum {PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE};
 
-  for (auto &row : reader) {
-    std::string processId = row[PROCESS_ID].get();
+  CSVReader::Table table = reader.read();
+  if ( table.empty() ) {
+    throw std::runtime_error("StaticDataProvider: table '" + reader.instanceFileOrString + "' is empty");
+  }
+
+  for (auto &row : table | std::views::drop(1)) {   // assume a single header line
+    if ( row.empty() ) {
+      continue;
+    }
+    if ( row.size() != 4 ) {
+      throw std::runtime_error("StaticDataProvider: illegal number of cells");
+    }
+    if ( !std::holds_alternative<std::string>(row.at(PROCESS_ID)) ) {
+      throw std::runtime_error("StaticDataProvider: illegal process id");
+    }
+    std::string processId = std::get<std::string>(row.at(PROCESS_ID));
 
     if ( processId.size() ) {
       // find process with respective identifier
@@ -66,7 +61,11 @@ void StaticDataProvider::readInstances() {
 
       auto process = processIt->get();
 
-      auto instanceId = (long unsigned int)BPMNOS::to_number( row[INSTANCE_ID].get(), STRING );
+      if ( !std::holds_alternative<std::string>(row.at(INSTANCE_ID)) ) {
+        throw std::runtime_error("StaticDataProvider: illegal instance id");
+      }
+      auto instanceId = (size_t)BPMNOS::to_number(std::get<std::string>(row.at(INSTANCE_ID)), STRING );
+//      auto instanceId = (long unsigned int)BPMNOS::to_number( row[INSTANCE_ID].get(), STRING );
       // find instance with respective identifier
       if ( !instances.contains(instanceId) ) {
         // row has first entry for instance, create new entry in data
@@ -75,7 +74,11 @@ void StaticDataProvider::readInstances() {
 
       auto& instance = instances[instanceId];
 
-      std::string attributeId = row[ATTRIBUTE_ID].get();
+      if ( !std::holds_alternative<std::string>(row.at(ATTRIBUTE_ID)) ) {
+        throw std::runtime_error("StaticDataProvider: illegal attribute id");
+      }
+      std::string attributeId = std::get<std::string>(row.at(ATTRIBUTE_ID));
+//      std::string attributeId = row[ATTRIBUTE_ID].get();
 
       if ( attributeId == "" ) {
         // no attribute provided in this row
@@ -90,13 +93,26 @@ void StaticDataProvider::readInstances() {
       if ( attribute->expression ) {
         throw std::runtime_error("StaticDataProvider: value of attribute '" + attributeId + "' is initialized by expression and must not be provided explicitly");
       }
-      instance.data[ attribute ] = BPMNOS::to_number(row[VALUE].get(),attribute->type);
+
+      if ( !std::holds_alternative<BPMNOS::number>(row.at(VALUE)) ) {
+        throw std::runtime_error("StaticDataProvider: illegal value");
+      }
+      instance.data[ attribute ] = std::get<BPMNOS::number>(row.at(VALUE)); //BPMNOS::to_number(row[VALUE].get(),attribute->type);
+//std::cerr << processId << ", " << BPMNOS::to_string(instanceId,STRING) << ", " <<  attributeId << ", " <<  BPMNOS::to_string(instance.data[ attribute ],attribute->type) << std::endl;
     }
     else {
       // row contains global attribute
-      std::string attributeId = row[ATTRIBUTE_ID].get();
+      if ( !std::holds_alternative<std::string>(row.at(ATTRIBUTE_ID)) ) {
+        throw std::runtime_error("StaticDataProvider: illegal attribute id");
+      }
+      std::string attributeId = std::get<std::string>(row.at(ATTRIBUTE_ID));
+//      std::string attributeId = row[ATTRIBUTE_ID].get();
       auto attribute = attributes[nullptr][attributeId];
-      globalValueMap[attribute] = BPMNOS::to_number(row[VALUE].get(),attribute->type);
+      if ( !std::holds_alternative<BPMNOS::number>(row.at(VALUE)) ) {
+        throw std::runtime_error("StaticDataProvider: illegal value");
+      }
+      globalValueMap[attribute] = std::get<BPMNOS::number>(row.at(VALUE)); //BPMNOS::to_number(row[VALUE].get(),attribute->type);
+//std::cerr  << ", " << ", " <<  attributeId << ", " <<  BPMNOS::to_string(globalValueMap[attribute],attribute->type) << std::endl;
     }
   }
 

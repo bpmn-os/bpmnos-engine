@@ -2,7 +2,7 @@
 #define BPMNOS_Model_StaticDataProvider_H
 
 #include "DataProvider.h"
-#include <csv.hpp>
+#include "model/utility/src/CSVReader.h"
 #include <vector>
 
 namespace BPMNOS::Model {
@@ -25,8 +25,7 @@ public:
   ~StaticDataProvider() override = default;
   std::unique_ptr<Scenario> createScenario(unsigned int scenarioId = 0) override;
 protected:
-  csv::CSVReader initReader(const std::string& instanceFileOrString);
-  csv::CSVReader reader;
+  CSVReader reader;
   void readInstances();
   struct StaticInstanceData {
     const BPMN::Process* process;

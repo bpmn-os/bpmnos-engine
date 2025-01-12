@@ -2,39 +2,38 @@
 #include "model/utility/src/Keywords.h"
 #include "model/utility/src/Number.h"
 #include "model/bpmnos/src/extensionElements/ExtensionElements.h"
-#include <sstream>
 #include <unordered_map>
 #include <algorithm>
+#include <ranges>
 
 
 using namespace BPMNOS::Model;
 
 DynamicDataProvider::DynamicDataProvider(const std::string& modelFile, const std::string& instanceFileOrString)
   : DataProvider(modelFile)
-  , reader( initReader(instanceFileOrString) )
+  , reader( CSVReader(instanceFileOrString) )
 {
   earliestInstantiation = std::numeric_limits<BPMNOS::number>::max();
   latestInstantiation = std::numeric_limits<BPMNOS::number>::min();
   readInstances();
 }
 
-csv::CSVReader DynamicDataProvider::initReader(const std::string& instanceFileOrString) {
-  csv::CSVFormat format;
-  format.trim({' ', '\t'});
-  if (instanceFileOrString.find(",") == std::string::npos) {
-    return csv::CSVReader(instanceFileOrString, format);
-  }
-  else {
-    std::stringstream is;
-    is << instanceFileOrString;
-    return csv::CSVReader(is, format);
-  }
-}
-
 void DynamicDataProvider::readInstances() {
   enum {PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE, DISCLOSURE};
 
-  for (auto &row : reader) {
+  CSVReader::Table table = reader.read();
+  if ( table.empty() ) {
+    throw std::runtime_error("DynamicDataProvider: table '" + reader.instanceFileOrString + "' is empty");
+  }
+
+  for (auto &row : table | std::views::drop(1)) {   // assume a single header line
+    if ( row.empty() ) {
+      continue;
+    }
+    if ( row.size() != 5 ) {
+      throw std::runtime_error("DynamicDataProvider: illegal number of cells");
+    }
+/*
     std::string processId = row[PROCESS_ID].get();
     // find process with respective identifier
     auto processIt = std::find_if(
@@ -94,7 +93,7 @@ void DynamicDataProvider::readInstances() {
       }
       instance.instantiation.push_back({ disclosure, value });
     }
-
+*/
   }
   for (auto& [id, instance] : instances) {
     auto& instantiation = instance.instantiation.back().second;

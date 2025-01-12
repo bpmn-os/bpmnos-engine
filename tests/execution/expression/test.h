@@ -116,8 +116,8 @@ SCENARIO( "String expression", "[execution][expression]" ) {
     WHEN( "The expression is executed with name = \"Mary\" and example = \"Paul\"" ) {
       std::string csv =
         "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-        "Process_1, Instance_1,Name,Joe\n"
-        "Process_1, Instance_1,Example,Paul\n"
+        "Process_1, Instance_1,Name,\"Joe\"\n"
+        "Process_1, Instance_1,Example,\"Paul\"\n"
       ;
 
       Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -156,8 +156,8 @@ SCENARIO( "String expression", "[execution][expression]" ) {
     WHEN( "The expression is executed with name = \"Mary\" and example = \"Paul\"" ) {
       std::string csv =
         "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-        "Process_1, Instance_1,Name,Mary\n"
-        "Process_1, Instance_1,Example,Paul\n"
+        "Process_1, Instance_1,Name,\"Mary\"\n"
+        "Process_1, Instance_1,Example,\"Paul\"\n"
       ;
 
       Model::StaticDataProvider dataProvider(modelFile,csv);

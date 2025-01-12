@@ -1,4 +1,5 @@
 #include "CSVReader.h"
+#include "Keywords.h"
 #include <sstream>
 #include <fstream>
 #include <filesystem>
@@ -42,6 +43,12 @@ CSVReader::Table CSVReader::read() {
       if ( !cell.empty() && (std::isdigit( cell[0] ) || cell[0] == '.' || cell[0] == '-') ) {
         // treat cell as number
         row.push_back((BPMNOS::number)std::stod(cell));
+      }
+      else if ( cell == Keyword::True ) {
+        row.push_back((BPMNOS::number)1);
+      }
+      else if ( cell == Keyword::False ) {
+        row.push_back((BPMNOS::number)0);
       }
       else {
         // treat cell as string

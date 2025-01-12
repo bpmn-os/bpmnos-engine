@@ -32,21 +32,6 @@ include_directories(
   ${cnl_SOURCE_DIR}/include 
 )
 
-# CSV Parser
-FetchContent_Declare(
-        csv
-        GIT_REPOSITORY https://github.com/vincentlaucsb/csv-parser.git
-        GIT_TAG 2.3.0
-        SOURCE_SUBDIR this-directory-does-not-exist # Work around to not build the project
-)
-
-FetchContent_MakeAvailable(csv)
-
-include_directories(
-  SYSTEM
-  ${csv_SOURCE_DIR}/single_include 
-)
-
 # LIMEX dependency
 FetchContent_Declare(
         limex

@@ -18,31 +18,9 @@ public:
 
   explicit CSVReader(const std::string& instanceFileOrString);
   Table read();
-
-private:
   const std::string instanceFileOrString;
 };
 
 } // namespace BPMNOS::Model
 
 #endif // BPMNOS_LookupTable_H
-
-/*
-int main() {
-    try {
-        CSVReader reader("example.csv");
-        CSVReader::Table table = reader.read();
-
-        for (const auto& row : table) {
-            for (const auto& cell : row) {
-                std::visit([](auto&& value) { std::cout << value << " "; }, cell);
-            }
-            std::cout << "\n";
-        }
-    } catch (const std::exception& ex) {
-        std::cerr << "Error: " << ex.what() << "\n";
-    }
-
-    return 0;
-}
-*/

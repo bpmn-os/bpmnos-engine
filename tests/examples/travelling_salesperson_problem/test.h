@@ -7,7 +7,7 @@ SCENARIO( "Travelling salesperson problem", "[examples][travelling_salesperson_p
 
     std::string csv =
       "PROCESS_ID; INSTANCE_ID; ATTRIBUTE_ID; VALUE\n"
-      "TravellingSalesperson_Process;Instance1;Origin;Hamburg\n"
+      "TravellingSalesperson_Process;Instance1;Origin;\"Hamburg\"\n"
       "TravellingSalesperson_Process;Instance1;Locations;[\"Munich\",\"Berlin\",\"Cologne\"]\n"
     ;
 

@@ -41,10 +41,9 @@ SCENARIO( "Trivial executable process", "[data][static]" ) {
       }
     }
   }
-  GIVEN( "A single instance with instance and timestamp input" ) {
+  GIVEN( "A single instance with timestamp input" ) {
     std::string csv =
       "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-      "Process_1, Instance_1,Instance,Instance_1\n"
       "Process_1, Instance_1,Timestamp,42\n"
     ;
 
@@ -108,7 +107,7 @@ SCENARIO( "Trivial executable process", "[data][static]" ) {
   GIVEN( "Two instances, one with instance and timestamp input" ) {
     std::string csv =
       "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-      "Process_1, Instance_1,Instance,Instance_1\n"
+      "Process_1, Instance_1,,\n"
       "Process_1, Instance_1,Timestamp,42\n"
       "Process_1, Instance_2,,\n"
     ;

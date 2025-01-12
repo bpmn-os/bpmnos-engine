@@ -1,6 +1,7 @@
 #include "CollectionRegistry.h"
 #include "Keywords.h"
 #include <strutil.h>
+#include <cassert>
 
 using namespace BPMNOS;
 
@@ -19,6 +20,7 @@ Collection::Collection(const std::string& collection)
   for ( auto& element : elements ) {
     strutil::trim(element);
     if ( strutil::starts_with(element,"\"") && strutil::ends_with(element,"\"") ) {
+assert(!"Should not be reached");
       values.push_back( BPMNOS::to_number( element.substr(1,element.size()-2), STRING ) );
     }
     else if ( element == Keyword::False ) {
