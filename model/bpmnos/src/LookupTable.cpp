@@ -25,14 +25,14 @@ BPMNOS::CSVReader LookupTable::openCsv(const std::string& filename) {
   }
 
   // If the file is not found in any of the folders, throw an exception or handle the situation as needed.
-  throw std::runtime_error("LookupTable: CSV file '" + filename + "'not found");
+  throw std::runtime_error("LookupTable: CSV file '" + filename + "' not found");
 }
 
 void LookupTable::createMap(const std::string& source) {
   BPMNOS::CSVReader reader = openCsv(source);
   CSVReader::Table table = reader.read();
   if ( table.empty() ) {
-    throw std::runtime_error("LookupTable: table '" + source + "'is empty");
+    throw std::runtime_error("LookupTable: table '" + source + "' is empty");
   }
   // populate lookup map
   for (auto& row : table | std::views::drop(1)) {   // assume a single header line
