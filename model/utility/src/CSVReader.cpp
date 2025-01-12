@@ -1,25 +1,36 @@
 #include "CSVReader.h"
+#include <sstream>
 #include <fstream>
 #include <filesystem>
 #include <strutil.h>
 
 using namespace BPMNOS;
 
-CSVReader::CSVReader(const std::string& filename)
-  : filename(filename)
+CSVReader::CSVReader(const std::string& instanceFileOrString)
+  : instanceFileOrString(instanceFileOrString)
 {
 }
 
 CSVReader::Table CSVReader::read() {
-  Table table;
-  std::ifstream file(filename);
-
-  if (!file.is_open()) {
-    throw std::runtime_error("CSVReader: Could not open file " + filename);
+  std::unique_ptr<std::istream> input;
+    
+  if (instanceFileOrString.contains("\n")) {
+    // parameter contains linebreak, assume that it is the csv content
+    input = std::make_unique<std::istringstream>(instanceFileOrString);
+  }
+  else {
+    // parameter contains no linebreak, assume that it is a filename
+    auto fileStream = std::make_unique<std::ifstream>(instanceFileOrString);
+    if (!fileStream->is_open()) {
+      throw std::runtime_error("CSVReader: Could not open file " + instanceFileOrString);
+    }
+    input = std::move(fileStream);
   }
 
+  Table table;
+
   std::string line;
-  while (std::getline(file, line)) {
+  while (std::getline(*input, line)) {
     line = encodeCollection( encodeQuotedStrings( line ) );
     strutil::trim(line);
 //std::cerr << "Line: " << line << std::endl;
@@ -40,6 +51,5 @@ CSVReader::Table CSVReader::read() {
     table.push_back(row);
   }
 
-  file.close();
   return table;
 }
