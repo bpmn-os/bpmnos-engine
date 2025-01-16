@@ -148,7 +148,6 @@
 
   <xsd:element name="content" type="tContent"/>
   <xsd:complexType name="tContent">
-    <xsd:attribute name="id" type="xsd:ID" use="required"/>
     <xsd:attribute name="key" type="xsd:string" use="required"/>
     <xsd:attribute name="attribute" type="xsd:string" use="required"/>
   </xsd:complexType>

@@ -20,7 +20,6 @@ public:
   Content(XML::bpmnos::tContent* content, const AttributeRegistry& attributeRegistry);
   XML::bpmnos::tContent* element;
 
-  std::string& id;
   std::string& key;
   Attribute* attribute;
 };
