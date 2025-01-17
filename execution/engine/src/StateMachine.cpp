@@ -157,7 +157,6 @@ void StateMachine::createMultiInstanceActivityTokens(Token* token) {
     if ( auto loopCardinality = getLoopCardinality();
       loopCardinality.has_value()
     ) {
-std::cerr << (size_t)loopCardinality.value() << " MI-tokens" << std::endl;
       valueMaps.resize( (size_t)loopCardinality.value() );
     }
     else {
