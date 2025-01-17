@@ -77,34 +77,12 @@ template  BPMNOS::Values MessageDefinition::getRecipientHeader<BPMNOS::SharedVal
 
 template <typename DataType>
 std::optional<BPMNOS::number> MessageDefinition::getHeaderValue(const std::string& key, const AttributeRegistry& attributeRegistry, const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const {
+  std::optional<BPMNOS::number> value;
   auto it = parameterMap.find(key);
-  if ( it != parameterMap.end() ) {
-    auto& parameter = it->second;
-    auto value = ( parameter->attribute.has_value() ? attributeRegistry.getValue(&parameter->attribute->get(),status,data,globals) : std::nullopt );
-    if ( value.has_value() ) {
-      if ( parameter->attribute->get().type == BPMNOS::ValueType::BOOLEAN ) {
-        // use string representation of boolean values
-        return to_number( (bool)value.value(), BPMNOS::ValueType::STRING );
-      }
-      else if ( parameter->attribute->get().type == BPMNOS::ValueType::INTEGER ) {
-        // use string representation of  integer values
-        return to_number( std::to_string((int)value.value()), BPMNOS::ValueType::STRING );
-      }
-      else if ( parameter->attribute->get().type == BPMNOS::ValueType::DECIMAL ) {
-        // use string representation of  decimal values
-        return to_number( std::to_string((double)value.value()), BPMNOS::ValueType::STRING );
-      }
-      else if ( parameter->attribute->get().type == BPMNOS::ValueType::COLLECTION ) {
-        // use string representation of collection
-        return to_number( std::to_string((double)value.value()), BPMNOS::ValueType::STRING );
-      }
-      return value.value();
-    }
-    else if ( parameter->value.has_value() ) {
-      return to_number( parameter->value->get().value, BPMNOS::ValueType::STRING );
-    }
+  if ( it != parameterMap.end() && it->second->expression ) {
+    value =  it->second->expression->execute(status,data,globals);
   }
-  return std::nullopt;
+  return value;
 }
 
 template std::optional<BPMNOS::number> MessageDefinition::getHeaderValue<BPMNOS::Values>(const std::string& key, const AttributeRegistry& attributeRegistry, const BPMNOS::Values& status, const BPMNOS::Values& data, const BPMNOS::Values& globals) const; 

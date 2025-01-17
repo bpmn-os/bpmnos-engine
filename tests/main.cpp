@@ -14,7 +14,6 @@ using namespace BPMNOS;
 // TODO: change order of tests to avoid interdependencies
 
 // Examples
-
 #include "examples/bin_packing_problem/test.h"
 #include "examples/guided_bin_packing_problem/test.h"
 #include "examples/travelling_salesperson_problem/test.h"
@@ -27,7 +26,6 @@ using namespace BPMNOS;
 #include "examples/pickup_delivery_problem/test.h"
 #include "examples/guided_pickup_delivery_problem/test.h"
 #include "examples/truck_driver_scheduling_problem/test.h"
-
 
 /* Model */
 #include "model/parser/test.h"
@@ -85,7 +83,7 @@ using namespace BPMNOS;
 #endif // ALL_TESTS
 
 #ifndef ALL_TESTS
-#include "examples/travelling_salesperson_problem/test.h"
+#include "examples/bin_packing_problem/test.h"
 //#include "examples/pickup_delivery_problem/test.h" // TODO
 //#include "cpcontroller/test.h"
 #endif // ALL_TESTS

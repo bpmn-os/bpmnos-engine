@@ -26,7 +26,7 @@ public:
   std::set<const Attribute*> inputs; ///< Vector containing all input attributes and collections used by the expression.
   std::vector<const Attribute*> variables; ///< Vector containing all input attributes used by the expression.
   std::vector<const Attribute*> collections; ///< Vector containing all input collections used by the expression.
-
+  const Attribute* isAttribute() const; ///< Returns pointer to the attribute if and only if expression contains nothing else
   template <typename DataType>
   std::optional<BPMNOS::number> execute(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const;
 private:

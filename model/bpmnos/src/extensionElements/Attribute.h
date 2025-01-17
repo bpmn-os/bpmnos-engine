@@ -32,7 +32,6 @@ public:
   const std::string name; ///< Name of attribute and optial initial assignment
 
   ValueType type;
-  std::unique_ptr<Parameter> collection; ///< Parameter for value initialization for multi-instance activities.
  
   double weight; ///< Weight to be used for objective (assuming maximization). 
 

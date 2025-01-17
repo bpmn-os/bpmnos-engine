@@ -281,14 +281,12 @@ const MessageDefinition* ExtensionElements::getMessageDefinition(const BPMNOS::V
     receiveTask->loopCharacteristics.has_value()
   ) {
     // multi-instance receive task
-    if ( !loopIndex.has_value() || !loopIndex->get()->attribute.has_value() ) {
+    if ( !loopIndex->get()->expression || !loopIndex->get()->expression->isAttribute() || loopIndex->get()->expression->isAttribute()->category != Attribute::Category::STATUS ) {
       throw std::runtime_error("ExtensionElements: receive task '" + receiveTask->id + "' requires status attribute holding loop index");
     }
-    
-    size_t attributeIndex = loopIndex->get()->attribute.value().get().index;
-    if ( !status[attributeIndex].has_value() ) { 
-      throw std::runtime_error("ExtensionElements: cannot find loop index for receive task '" + receiveTask->id + "'");
-    }
+    size_t attributeIndex = loopIndex->get()->expression->isAttribute()->index;
+    assert( status[attributeIndex].has_value() );
+
     assert( status[attributeIndex].value() >= 1 );
     index = (size_t)(int)status[attributeIndex].value() - 1;
   }

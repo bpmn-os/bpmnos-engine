@@ -249,7 +249,9 @@ void FlattenedGraph::createLoopVertices(BPMNOS::number rootId, BPMNOS::number in
   
   // lambda returning parameter value known at time zero
   auto getValue = [&](BPMNOS::Model::Parameter* parameter, BPMNOS::ValueType type) -> std::optional<BPMNOS::number> {
+/*
     if ( parameter->attribute.has_value() ) {
+// TODO:
       BPMNOS::Model::Attribute& attribute = parameter->attribute->get();
       if ( !attribute.isImmutable ) {
         throw std::runtime_error("FlattenedGraph: Loop parameter '" + parameter->name + "' for activity '" + activity->id +"' must be immutable" );
@@ -263,6 +265,7 @@ void FlattenedGraph::createLoopVertices(BPMNOS::number rootId, BPMNOS::number in
     if ( parameter->value.has_value() ) {
       return BPMNOS::to_number( parameter->value.value().get(), type);
     }
+*/
 
     return std::nullopt;
   };
@@ -282,7 +285,8 @@ void FlattenedGraph::createLoopVertices(BPMNOS::number rootId, BPMNOS::number in
       auto value = getValue( extensionElements->loopCardinality.value().get(), INTEGER );
       n = value.has_value() ? (int)value.value() : 0;
     }
-    
+// TODO
+/*    
     // determine implicit cardinality from collection size
     auto attributes = extensionElements->attributes | std::views::filter([](auto& attribute) {
       return (attribute->collection != nullptr);
@@ -299,8 +303,9 @@ void FlattenedGraph::createLoopVertices(BPMNOS::number rootId, BPMNOS::number in
       }
       n = (int)collection.size();
     }
+*/      
   }
-      
+
   if ( n <= 0 ) {
     throw std::runtime_error("FlattenedGraph: cannot determine loop maximum/cardinality for activity '" + activity->id +"'" );
   }

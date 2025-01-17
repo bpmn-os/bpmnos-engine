@@ -10,6 +10,7 @@
 #include <bpmn++.h>
 #include "model/bpmnos/src/xml/bpmnos/tParameter.h"
 #include "Attribute.h"
+#include "Expression.h"
 #include "AttributeRegistry.h"
 
 namespace BPMNOS::Model {
@@ -20,11 +21,14 @@ public:
   XML::bpmnos::tParameter* element;
 
   std::string& name;
+  std::unique_ptr<const Expression> expression;
+/*
   std::optional< std::reference_wrapper<Attribute> > attribute;
   std::optional< std::reference_wrapper<XML::Value> > value;
-
+*/
 protected:
-  std::optional< std::reference_wrapper<Attribute> > getAttribute(const AttributeRegistry& attributeRegistry) const;
+  std::unique_ptr<const Expression> getExpression(XML::bpmnos::tParameter* parameter, const AttributeRegistry& attributeRegistry) const;
+//  std::optional< std::reference_wrapper<Attribute> > getAttribute(const AttributeRegistry& attributeRegistry) const;
 };
 
 typedef std::unordered_map< std::string, std::unique_ptr<Parameter> > ParameterMap;

@@ -56,16 +56,6 @@ Attribute::Attribute(XML::bpmnos::tAttribute* attribute, Attribute::Category cat
     weight = 0;
   }
   
-  if ( attribute->parameter.has_value() ) {
-    auto& parameter = attribute->parameter.value().get();
-    if ( parameter.name.value.value == "collection" ) {
-      collection = std::make_unique<Parameter>(&parameter,attributeRegistry);
-    }
-    else {
-      throw std::runtime_error("Attribute: illegal parameter provided for attribute '" + id + "'");
-    }
-  }
-
   isImmutable = (id != Keyword::Timestamp);
 }
 

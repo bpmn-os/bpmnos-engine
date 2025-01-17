@@ -368,11 +368,6 @@ void Token::advanceToEntered() {
     auto extensionElements = owner->process->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
     assert( extensionElements );
 
-    // TODO: remove below
-    if ( extensionElements->operators.size() ) {
-        assert(!"No operators for processes");    
-    }
-
     computeInitialValues( extensionElements );
   }
   else {
@@ -386,40 +381,26 @@ void Token::advanceToEntered() {
       ) {
 //std::cerr << "initialize or increment loop index for standard loop" << std::endl;
         // initialize or increment loop index for standard loop
-        if ( extensionElements->loopIndex.has_value() && extensionElements->loopIndex.value()->attribute.has_value() ) {
+        if ( extensionElements->loopIndex.has_value() && extensionElements->loopIndex.value()->expression ) {
           auto& attributeRegistry = getAttributeRegistry();
-          auto& attribute = extensionElements->loopIndex.value()->attribute.value();
-          if ( auto index = attributeRegistry.getValue( &attribute.get(), status, *data, globals); index.has_value() ) {
+          auto attribute = extensionElements->loopIndex.value()->expression->isAttribute();
+          if ( auto index = attributeRegistry.getValue( attribute, status, *data, globals); index.has_value() ) {
             // increment existing value 
-            attributeRegistry.setValue(&attribute.get(), status, *data, globals, (unsigned int)index.value() + 1);
+            attributeRegistry.setValue(attribute, status, *data, globals, (unsigned int)index.value() + 1);
           }
           else {
             // initialize non-existing value 
-            attributeRegistry.setValue(&attribute.get(), status, *data, globals, 1);
+            attributeRegistry.setValue(attribute, status, *data, globals, 1);
           }
         }
-        else if ( 
-          extensionElements->loopMaximum.has_value() && 
-          extensionElements->loopMaximum.value()->attribute.has_value()
-        ) {
+        else if ( extensionElements->loopMaximum.has_value() ) {
           throw std::runtime_error("Token: no attribute provided for loop index parameter of standard loop activity '" + node->id +"' with loop maximum" );
         }
       }
       
       computeInitialValues( extensionElements );
 //std::cerr << jsonify() << std::endl;
-    }
-    
-    // TODO: remove below
-    if ( node->represents<BPMN::SubProcess>() || 
-      node->represents<BPMNOS::Model::SequentialAdHocSubProcess>()
-    ) {
-      // subprocess operators are applied upon entry
-      if ( auto extensionElements = node->extensionElements->represents<BPMNOS::Model::ExtensionElements>(); extensionElements && extensionElements->operators.size() ) {
-        assert(!"No operators for subprocesses");    
-      }
-    }
-    
+    }    
   }
 
   
@@ -653,26 +634,10 @@ std::cerr << status[BPMNOS::Model::ExtensionElements::Index::Timestamp].value() 
   else if ( node->represents<BPMN::TimerCatchEvent>() ) {
     // determine time
     auto trigger = node->extensionElements->as<BPMNOS::Model::Timer>()->trigger.get();
-    BPMNOS::number time;
-
-    auto getTrigger = [this,trigger]() -> std::optional<BPMNOS::number> {
-      if (!trigger || !trigger->attribute ) {
-        return std::nullopt;
-      }
-      return getAttributeRegistry().getValue( &trigger->attribute.value().get(), status, *data, globals);
-    };
-
-    if ( auto triggerAttributeValue = getTrigger();
-      triggerAttributeValue.has_value()
-    ) {
-      time = triggerAttributeValue.value();
-    }
-    else if ( trigger && trigger->value && trigger->value.has_value() ) {
-      time = (int)trigger->value.value().get();
-    }
-    else {
+    if (!trigger->expression) {
       throw std::runtime_error("Token: no trigger given for node '" + node->id + "'");
     }
+    BPMNOS::number time = trigger->expression->execute(status, *data, globals).value_or(owner->systemState->getTime());
 
     if ( time > owner->systemState->getTime() ) {
       awaitTimer(time);
@@ -714,15 +679,15 @@ std::cerr << status[BPMNOS::Model::ExtensionElements::Index::Timestamp].value() 
       // send message(s)
       if ( sendTask->loopCharacteristics.has_value() ) {
         // multi-instance send task requires index to access respective message definition
-        if ( !extensionElements->loopIndex.has_value() || !extensionElements->loopIndex->get()->attribute.has_value() ) {
+        if ( !extensionElements->loopIndex.has_value() || !extensionElements->loopIndex->get()->expression ) {
           throw std::runtime_error("Token: send task '" + sendTask->id + "' requires status attribute holding loop index");
         }
-        size_t attributeIndex = extensionElements->loopIndex->get()->attribute.value().get().index;
-        if ( !status[attributeIndex].has_value() ) { 
+        auto attribute = extensionElements->loopIndex->get()->expression->isAttribute();
+        if ( !status[attribute->index].has_value() ) { 
           throw std::runtime_error("Token: cannot find loop index for send task '" + sendTask->id + "'");
         }
-        assert( status[attributeIndex].value() >= 1 );
-        sendMessage( (size_t)(int)status[attributeIndex].value()-1 );
+        assert( status[attribute->index].value() >= 1 );
+        sendMessage( (size_t)(int)status[attribute->index].value()-1 );
       }
       else {
         sendMessage();
@@ -849,8 +814,6 @@ void Token::advanceToCompleted() {
     } 
     else if ( auto startEvent = node->represents<BPMN::TypedStartEvent>() ) {
       // event subprocess is triggered
-//      auto eventSubProcess = node->parent->represents<BPMN::EventSubProcess>();
-//      if ( !eventSubProcess ) {
       if ( !node->parent->represents<BPMN::EventSubProcess>() ) {
         throw std::runtime_error("Token: typed start event must belong to event subprocess");
       }
@@ -868,9 +831,6 @@ std::cerr << "Context: " << context << " at " << context->scope->id << " has " <
       });
 
       assert( it != context->pendingEventSubProcesses.end() );
-
-      // initiate nested event subprocesses when event subprocess is triggered
-//      engine->commands.emplace_back(std::bind(&StateMachine::initiateEventSubprocesses,it->get(),this), this);
 
       if ( startEvent->isInterrupting ) {
         // TODO: interrupt activity or process
@@ -931,7 +891,6 @@ std::cerr << "Context: " << context << " at " << context->scope->id << " has " <
       node->incoming.size() == 1 &&
       node->incoming.front()->source->represents<BPMN::EventBasedGateway>()
     ) {
-//      auto engine = const_cast<Engine*>(owner->systemState->engine);
       engine->commands.emplace_back(std::bind(&StateMachine::handleEventBasedGatewayActivation,const_cast<StateMachine*>(owner),this), this);
     }
   }
@@ -1021,9 +980,8 @@ void Token::advanceToExiting() {
     auto& attributeRegistry = getAttributeRegistry(); 
 
     auto LOOP = [&]() -> bool {
-      if (extensionElements->loopCondition.has_value()) {
-        auto& conditionAttribute = extensionElements->loopCondition.value()->attribute.value();
-        auto value = attributeRegistry.getValue(&conditionAttribute.get(), status, *data, globals);
+      if (extensionElements->loopCondition.has_value() && extensionElements->loopCondition.value()->expression) {
+        auto value = extensionElements->loopCondition.value()->expression->execute(status, *data, globals);
         assert( value.has_value() );
         if ( !value.value() ) {          
           // do not loop if loop condition is violated
@@ -1031,19 +989,13 @@ void Token::advanceToExiting() {
         }
       }
 
-      if ( extensionElements->loopMaximum.has_value() ) {
-        unsigned int maximum = 0;
-        if ( extensionElements->loopMaximum.value()->attribute.has_value() ) {
-          auto& maximumAttribute = extensionElements->loopMaximum.value()->attribute.value();
-          maximum = (unsigned int)attributeRegistry.getValue( &maximumAttribute.get(), status, *data, globals).value();
-//std::cout << maximumAttribute.get().id << " = " << maximum << std::endl;
-        }
-        else {
-          maximum = (unsigned int)(int)extensionElements->loopMaximum.value()->value.value().get(); 
-        } 
+      if ( extensionElements->loopMaximum.has_value() && extensionElements->loopMaximum.value()->expression) {
+        auto maximum = (double)extensionElements->loopMaximum.value()->expression->execute(status, *data, globals).value_or(0);
+        assert( extensionElements->loopIndex.value()->expression );
+        auto indexAttribute = extensionElements->loopIndex.value()->expression->isAttribute();
+        assert( indexAttribute );
+        auto index = attributeRegistry.getValue( indexAttribute, status, *data, globals).value();
 
-        auto& indexAttribute = extensionElements->loopIndex.value()->attribute.value();
-        auto index = (unsigned int)attributeRegistry.getValue( &indexAttribute.get(), status, *data, globals).value();
         if ( index >= maximum ) {
           // do not loop if loop maximum loop count is reached
           return false;
@@ -1068,7 +1020,6 @@ void Token::advanceToExiting() {
   if ( activity && activity->loopCharacteristics.has_value() && activity->loopCharacteristics.value() != BPMN::Activity::LoopCharacteristics::Standard ) {
     // delegate removal of token copies for multi-instance activity to owner
     auto stateMachine = const_cast<StateMachine*>(owner);
-//    auto engine = const_cast<Engine*>(owner->systemState->engine);
     engine->commands.emplace_back(std::bind(&StateMachine::deleteMultiInstanceActivityToken,stateMachine,this), this);
     return;
   }
@@ -1214,7 +1165,6 @@ void Token::advanceToFailed() {
 //std::cerr << "Failing " << owned->scope->id << std::endl;
       update(State::FAILING);
       engine->commands.emplace_back(std::bind(&Token::terminate,this), this);
-//      engine->commands.emplace_back(std::bind(&StateMachine::terminate,owned.get()), owned.get());
       return;
     }
   }
@@ -1544,7 +1494,7 @@ void Token::releaseSequentialPerformer() {
       // create entry decision requests for each child activity awaiting entry
       assert( activityToken->node->represents<BPMN::Activity>() && activityToken->state == State::READY );
       assert( !activityToken->decisionRequest );
-//std::cerr << "Token: Renew decision " << activityToken->jsonify() << std::endl;
+//std::cerr << "Token: Renew decision request" << activityToken->jsonify() << std::endl;
       activityToken->decisionRequest = std::make_shared<DecisionRequest>( activityToken.get(), Observable::Type::EntryRequest );
       systemState->pendingEntryDecisions.emplace_back(activityToken,activityToken->decisionRequest);
       owner->systemState->engine->notify(activityToken->decisionRequest.get());

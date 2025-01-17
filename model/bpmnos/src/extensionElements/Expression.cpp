@@ -95,6 +95,18 @@ Expression::Type Expression::getType() const {
   return Type::OTHER;
 }
 
+const Attribute* Expression::isAttribute() const {
+  assert( compiled.getRoot().operands.size() == 1 );
+  assert( compiled.getRoot().type == LIMEX::Type::group );
+  auto& root = compiled.getRoot(); 
+  auto& node = std::get< LIMEX::Node<double> >(root.operands[0]);
+  if ( node.type == LIMEX::Type::variable ) {
+    assert(inputs.size());
+    return *inputs.begin();
+  }
+  return nullptr;
+}
+
 template <typename DataType>
 std::optional<BPMNOS::number> Expression::execute(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const {
   if ( type == Type::UNASSIGN ) {

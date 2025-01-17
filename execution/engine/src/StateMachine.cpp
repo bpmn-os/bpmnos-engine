@@ -148,19 +148,17 @@ void StateMachine::createMultiInstanceActivityTokens(Token* token) {
 
   if ( extensionElements->loopCardinality.has_value() ) {
     auto getLoopCardinality = [token,extensionElements]() -> std::optional<BPMNOS::number> {
-      if (!extensionElements->loopCardinality.value()->attribute.has_value()) {
+      if (!extensionElements->loopCardinality.value()->expression) {
         return std::nullopt;
       }
-      return token->getAttributeRegistry().getValue( &extensionElements->loopCardinality.value()->attribute->get(), token->status, *token->data, token->globals);
+      return extensionElements->loopCardinality.value()->expression->execute(token->status, *token->data, token->globals);
     };
     // use provided cardinality to determine number of tokens 
     if ( auto loopCardinality = getLoopCardinality();
       loopCardinality.has_value()
     ) {
+std::cerr << (size_t)loopCardinality.value() << " MI-tokens" << std::endl;
       valueMaps.resize( (size_t)loopCardinality.value() );
-    }
-    else if ( extensionElements->loopCardinality.value()->value.has_value() ) {
-      valueMaps.resize( (size_t)(int)extensionElements->loopCardinality.value()->value.value().get() );
     }
     else {
       throw std::runtime_error("StateMachine: cannot determine cardinality for multi-instance activity '" + token->node->id +"'" );
@@ -176,60 +174,15 @@ void StateMachine::createMultiInstanceActivityTokens(Token* token) {
     }
   }
 
-  // determine attributes that are instantiated using a value of a collection 
-  auto attributes = extensionElements->attributes | std::views::filter([](auto& attribute) {
-    return (attribute->collection != nullptr);
-  });
-
-  for ( auto& attribute : attributes ) {
-    BPMNOS::number collectionIndex;
-    auto getCollection = [token,&attribute]() -> std::optional<BPMNOS::number> {
-      if (!attribute->collection->attribute.has_value()) {
-        return std::nullopt;
-      }
-      return token->getAttributeRegistry().getValue( &attribute->collection->attribute->get(), token->status, *token->data, token->globals);
-    };
-
-    
-    if ( auto collection = getCollection();
-      collection.has_value()
-    ) {
-      if ( attribute->collection->attribute->get().type != COLLECTION ) {
-        throw std::runtime_error("StateMachine: attribute '" + attribute->collection->attribute->get().name + "' is not a collection");
-      }
-      collectionIndex = collection.value();
-    }
-    else if ( attribute->collection->value.has_value() ) {
-      collectionIndex = collectionRegistry(attribute->collection->value.value().get().value);
-    }
-    else {
-      throw std::runtime_error("StateMachine: cannot determine values for multi-instance activity '" + token->node->id +"'");
-    }
-
-    auto& collection = collectionRegistry[(long unsigned int)collectionIndex].values;
-    if ( valueMaps.empty() ) {
-      valueMaps.resize(collection.size());
-    }
-    else if ( valueMaps.size() != collection.size() ) {
-      throw std::runtime_error("StateMachine: inconsistent number of values provided for multi-instance activity '" + token->node->id +"'" );
-    }
-
-    // add value for each token copy
-    for ( size_t i = 0; i < collection.size(); i++ ) {
-      valueMaps[i][attribute.get()] = collection[i];
-    }
-  }
-  
   if ( valueMaps.empty() ) {
-    throw std::runtime_error("Token: no instances created for multi-instance activity '" + token->node->id +"'" );
+    throw std::runtime_error("StateMachine: no instances created for multi-instance activity '" + token->node->id +"'" );
   }
 
-  if ( extensionElements->loopIndex.has_value() ) {
+  if ( extensionElements->loopIndex.has_value() && extensionElements->loopIndex.value()->expression ) {
     // set value of loop index attribute for each instance
-    if ( extensionElements->loopIndex.value()->attribute.has_value() ) {
-      auto& attribute = extensionElements->loopIndex.value()->attribute.value();
+    if ( auto attribute = extensionElements->loopIndex.value()->expression->isAttribute() ) {
       for ( size_t i = 0; i < valueMaps.size(); i++ ) {
-        valueMaps[i][&attribute.get()] = i + 1;
+        valueMaps[i][attribute] = i + 1;
       }
     }
     else {

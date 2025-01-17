@@ -106,6 +106,7 @@ SCENARIO( "Sequential multi instance task", "[execution][multiinstanceactivity]"
   }
 }
 
+
 SCENARIO( "Parallel multi instance task with timeout", "[execution][multiinstanceactivity]" ) {
   const std::string modelFile = "tests/execution/multiinstanceactivity/Parallel_multi-instance_task_with_timeout.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
@@ -167,6 +168,7 @@ SCENARIO( "Parallel multi instance task with timeout", "[execution][multiinstanc
     }
   }
 }
+
 
 SCENARIO( "Sequential multi instance task with timeout", "[execution][multiinstanceactivity]" ) {
   const std::string modelFile = "tests/execution/multiinstanceactivity/Sequential_multi-instance_task_with_timeout.bpmn";
@@ -333,3 +335,4 @@ SCENARIO( "Sequential multi instance subprocess with escalation", "[execution][m
     }
   }
 }
+

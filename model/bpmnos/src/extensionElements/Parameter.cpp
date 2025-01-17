@@ -1,18 +1,22 @@
 #include "Parameter.h"
+#include <strutil.h>
+#include "model/utility/src/encode_quoted_strings.h"
+#include "model/utility/src/encode_collection.h"
 
 using namespace BPMNOS::Model;
 
 Parameter::Parameter(XML::bpmnos::tParameter* parameter, const AttributeRegistry& attributeRegistry)
   : element(parameter)
   , name(parameter->name.value.value)
-  , attribute(getAttribute(attributeRegistry))
-  , value(parameter->value ? std::optional< std::reference_wrapper<XML::Value> >(parameter->value->get().value) : std::nullopt )
+  , expression(getExpression(parameter, attributeRegistry))
 {
 }
 
-std::optional< std::reference_wrapper<Attribute> > Parameter::getAttribute(const AttributeRegistry& attributeRegistry) const {
-  if ( element->attribute.has_value() ) {
-    return *attributeRegistry[element->attribute->get().value];
+std::unique_ptr<const Expression> Parameter::getExpression(XML::bpmnos::tParameter* parameter, const AttributeRegistry& attributeRegistry) const {
+  if ( !parameter->value.has_value() || strutil::trim_copy(parameter->value->get().value).empty() ) {
+    return nullptr;
   }
-  return std::nullopt;  
+
+  return std::make_unique<const Expression>(encodeCollection(encodeQuotedStrings(parameter->value->get().value)),attributeRegistry,true);
 }
+
