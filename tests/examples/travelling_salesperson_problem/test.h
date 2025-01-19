@@ -11,7 +11,7 @@ SCENARIO( "Travelling salesperson problem", "[examples][travelling_salesperson_p
       "TravellingSalesperson_Process;Instance1;Locations;[\"Munich\",\"Berlin\",\"Cologne\"]\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv,folders);
+    Model::StaticDataProvider dataProvider(modelFile,folders,csv);
     auto scenario = dataProvider.createScenario();
 
     WHEN( "The engine is started with a first-come-first-serve policy" ) {

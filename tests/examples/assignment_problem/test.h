@@ -11,7 +11,7 @@ SCENARIO( "Assignment problem", "[examples][assignment_problem]" ) {
       "ServerProcess;Server1;;\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv,folders);
+    Model::StaticDataProvider dataProvider(modelFile,folders,csv);
     auto scenario = dataProvider.createScenario();
 
     WHEN( "The engine is started with a recorder" ) {
@@ -53,7 +53,7 @@ SCENARIO( "Assignment problem", "[examples][assignment_problem]" ) {
       "ServerProcess;Server3;;\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv,folders);
+    Model::StaticDataProvider dataProvider(modelFile,folders,csv);
     auto scenario = dataProvider.createScenario();
 
     WHEN( "The engine is started with a recorder" ) {
@@ -142,7 +142,7 @@ SCENARIO( "Assignment problem", "[examples][assignment_problem]" ) {
       "ServerProcess;Server2;;\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv,folders);
+    Model::StaticDataProvider dataProvider(modelFile,folders,csv);
     auto scenario = dataProvider.createScenario();
 
     WHEN( "The engine is started with a recorder" ) {
@@ -184,7 +184,7 @@ SCENARIO( "Assignment problem", "[examples][assignment_problem]" ) {
       "ServerProcess;Server3;;\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv,folders);
+    Model::StaticDataProvider dataProvider(modelFile,folders,csv);
     auto scenario = dataProvider.createScenario();
 
     WHEN( "The engine is started with a recorder" ) {

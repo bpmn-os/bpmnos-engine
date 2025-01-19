@@ -9,7 +9,12 @@
 
 using namespace BPMNOS::Model;
 
-DynamicDataProvider::DynamicDataProvider(const std::string& modelFile, const std::string& instanceFileOrString, const std::vector<std::string>& folders)
+DynamicDataProvider::DynamicDataProvider(const std::string& modelFile, const std::string& instanceFileOrString)
+  : DynamicDataProvider(modelFile,{},instanceFileOrString)
+{
+}
+
+DynamicDataProvider::DynamicDataProvider(const std::string& modelFile, const std::vector<std::string>& folders, const std::string& instanceFileOrString)
   : DataProvider(modelFile,folders)
   , reader( CSVReader(instanceFileOrString) )
 {

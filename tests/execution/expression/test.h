@@ -208,7 +208,7 @@ SCENARIO( "Lookup table", "[execution][lookup]" ) {
         "Process_1, Instance_1,,\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv,folders);
+    Model::StaticDataProvider dataProvider(modelFile,folders,csv);
     auto scenario = dataProvider.createScenario();
 
     WHEN( "The engine is started with a recorder" ) {

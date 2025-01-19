@@ -27,7 +27,7 @@ SCENARIO( "Guided vehicle routing problem", "[examples][vehicle_routing_problem]
       "CustomerProcess;Customer2;LatenessPenalty;0\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv,folders);
+    Model::StaticDataProvider dataProvider(modelFile,folders,csv);
     auto scenario = dataProvider.createScenario();
 
     Execution::Engine engine;

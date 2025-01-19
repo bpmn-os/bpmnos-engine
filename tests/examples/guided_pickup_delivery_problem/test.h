@@ -26,7 +26,7 @@ SCENARIO( "Guided pickup delivery problem", "[examples][pickup_delivery_problem]
       "CustomerProcess;Customer1;LateDeliveryPenalty;0\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv,folders);
+    Model::StaticDataProvider dataProvider(modelFile,folders,csv);
     auto scenario = dataProvider.createScenario();
 
     Execution::Engine engine;
@@ -96,7 +96,7 @@ SCENARIO( "Guided pickup delivery problem", "[examples][pickup_delivery_problem]
       "CustomerProcess;Customer2;LateDeliveryPenalty;0\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv,folders);
+    Model::StaticDataProvider dataProvider(modelFile,folders,csv);
     auto scenario = dataProvider.createScenario();
 
     Execution::Engine engine;
@@ -171,7 +171,7 @@ SCENARIO( "Guided pickup delivery problem", "[examples][pickup_delivery_problem]
       "CustomerProcess;Customer2;LateDeliveryPenalty;0\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv,folders);
+    Model::StaticDataProvider dataProvider(modelFile,folders,csv);
     auto scenario = dataProvider.createScenario();
 
     Execution::Engine engine;

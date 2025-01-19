@@ -71,7 +71,7 @@ int main(int argc, char* argv[]) {
 
   Arguments args = parse_arguments(argc, argv);
   
-  BPMNOS::Model::StaticDataProvider dataProvider(args.modelFile,args.dataFile,args.paths);
+  BPMNOS::Model::StaticDataProvider dataProvider(args.modelFile,args.paths,args.dataFile);
   auto scenario = dataProvider.createScenario();
 
   BPMNOS::Execution::Engine engine;
