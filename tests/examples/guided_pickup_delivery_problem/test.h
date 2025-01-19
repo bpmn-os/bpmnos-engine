@@ -1,7 +1,7 @@
 SCENARIO( "Guided pickup delivery problem", "[examples][pickup_delivery_problem]" ) {
   const std::string modelFile = "examples/guided_pickup_delivery_problem/Guided_pickup_delivery_problem.bpmn";
-  BPMNOS::Model::LookupTable::folders = { "tests/examples/guided_pickup_delivery_problem" };
-  REQUIRE_NOTHROW( Model::Model(modelFile) );
+  const std::vector<std::string> folders = { "tests/examples/guided_pickup_delivery_problem" };
+  REQUIRE_NOTHROW( Model::Model(modelFile,folders) );
 
   GIVEN( "A FTL-PDP with one vehicle and one customer" ) {
 
@@ -26,7 +26,7 @@ SCENARIO( "Guided pickup delivery problem", "[examples][pickup_delivery_problem]
       "CustomerProcess;Customer1;LateDeliveryPenalty;0\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv);
+    Model::StaticDataProvider dataProvider(modelFile,csv,folders);
     auto scenario = dataProvider.createScenario();
 
     Execution::Engine engine;
@@ -96,7 +96,7 @@ SCENARIO( "Guided pickup delivery problem", "[examples][pickup_delivery_problem]
       "CustomerProcess;Customer2;LateDeliveryPenalty;0\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv);
+    Model::StaticDataProvider dataProvider(modelFile,csv,folders);
     auto scenario = dataProvider.createScenario();
 
     Execution::Engine engine;
@@ -171,7 +171,7 @@ SCENARIO( "Guided pickup delivery problem", "[examples][pickup_delivery_problem]
       "CustomerProcess;Customer2;LateDeliveryPenalty;0\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv);
+    Model::StaticDataProvider dataProvider(modelFile,csv,folders);
     auto scenario = dataProvider.createScenario();
 
     Execution::Engine engine;

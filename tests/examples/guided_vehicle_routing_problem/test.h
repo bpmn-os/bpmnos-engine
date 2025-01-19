@@ -1,7 +1,7 @@
 SCENARIO( "Guided vehicle routing problem", "[examples][vehicle_routing_problem]" ) {
   const std::string modelFile = "examples/guided_vehicle_routing_problem/Guided_vehicle_routing_problem.bpmn";
-  BPMNOS::Model::LookupTable::folders = { "tests/examples/guided_vehicle_routing_problem" };
-  REQUIRE_NOTHROW( Model::Model(modelFile) );
+  const std::vector<std::string> folders = { "tests/examples/guided_vehicle_routing_problem" };
+  REQUIRE_NOTHROW( Model::Model(modelFile,folders) );
 
   GIVEN( "A VRP with one vehicle and two customers" ) {
 
@@ -27,7 +27,7 @@ SCENARIO( "Guided vehicle routing problem", "[examples][vehicle_routing_problem]
       "CustomerProcess;Customer2;LatenessPenalty;0\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv);
+    Model::StaticDataProvider dataProvider(modelFile,csv,folders);
     auto scenario = dataProvider.createScenario();
 
     Execution::Engine engine;

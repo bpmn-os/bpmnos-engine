@@ -4,13 +4,13 @@
 
 using namespace BPMNOS::Model;
 
-LookupTable::LookupTable(const std::string& name, const std::string& source)
+LookupTable::LookupTable(const std::string& name, const std::string& source, const std::vector<std::string>& folders)
   : name(name)
 {
-  createMap(source);
+  createMap(source,folders);
 }
 
-BPMNOS::CSVReader LookupTable::openCsv(const std::string& filename) {
+BPMNOS::CSVReader LookupTable::openCsv(const std::string& filename, const std::vector<std::string>& folders) {
   // First, try to open the file using the given filename.
   if (std::filesystem::exists(filename)) {
     return CSVReader(filename);
@@ -28,8 +28,8 @@ BPMNOS::CSVReader LookupTable::openCsv(const std::string& filename) {
   throw std::runtime_error("LookupTable: CSV file '" + filename + "' not found");
 }
 
-void LookupTable::createMap(const std::string& source) {
-  BPMNOS::CSVReader reader = openCsv(source);
+void LookupTable::createMap(const std::string& source, const std::vector<std::string>& folders) {
+  BPMNOS::CSVReader reader = openCsv(source,folders);
   CSVReader::Table table = reader.read();
   if ( table.empty() ) {
     throw std::runtime_error("LookupTable: table '" + source + "' is empty");

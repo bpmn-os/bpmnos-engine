@@ -9,8 +9,8 @@
 
 using namespace BPMNOS::Model;
 
-DynamicDataProvider::DynamicDataProvider(const std::string& modelFile, const std::string& instanceFileOrString)
-  : DataProvider(modelFile)
+DynamicDataProvider::DynamicDataProvider(const std::string& modelFile, const std::string& instanceFileOrString, const std::vector<std::string>& folders)
+  : DataProvider(modelFile,folders)
   , reader( CSVReader(instanceFileOrString) )
 {
   earliestInstantiation = std::numeric_limits<BPMNOS::number>::max();

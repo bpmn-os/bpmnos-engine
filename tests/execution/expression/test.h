@@ -198,8 +198,8 @@ SCENARIO( "String expression", "[execution][expression]" ) {
 
 SCENARIO( "Lookup table", "[execution][lookup]" ) {
   const std::string modelFile = "tests/execution/expression/lookupTable.bpmn";
-  BPMNOS::Model::LookupTable::folders = { "tests/execution/expression" };
-  REQUIRE_NOTHROW( Model::Model(modelFile) );
+  const std::vector<std::string> folders = { "tests/execution/expression" };
+  REQUIRE_NOTHROW( Model::Model(modelFile,folders) );
 
   GIVEN( "A trivial instance without parameters" ) {
 
@@ -208,7 +208,7 @@ SCENARIO( "Lookup table", "[execution][lookup]" ) {
         "Process_1, Instance_1,,\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv);
+    Model::StaticDataProvider dataProvider(modelFile,csv,folders);
     auto scenario = dataProvider.createScenario();
 
     WHEN( "The engine is started with a recorder" ) {

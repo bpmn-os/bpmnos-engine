@@ -38,19 +38,14 @@ public:
    *
    * @param filename The name of the CSV file to read the data from.
    */
-  LookupTable(const std::string& name, const std::string& source);
+  LookupTable(const std::string& name, const std::string& source, const std::vector<std::string>& folders);
   const std::string name;
-
-  /**
-   * @brief A vector of folders in which to search for lookup tables.
-   **/ 
-  static inline std::vector<std::string> folders = std::vector<std::string>();
 
   double at( const std::vector< double >& keys ) const;
   size_t size() const { return lookupMap.size(); }
 protected:
-  CSVReader openCsv(const std::string& filename);
-  void createMap(const std::string& source);
+  CSVReader openCsv(const std::string& filename, const std::vector<std::string>& folders);
+  void createMap(const std::string& source, const std::vector<std::string>& folders);
   BPMNOS::vector_map< std::vector< double >, double > lookupMap;
 };
 

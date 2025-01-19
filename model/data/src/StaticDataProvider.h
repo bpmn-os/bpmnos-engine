@@ -21,7 +21,7 @@ public:
    * @param modelFile The file path to the BPMN model file.
    * @param instanceFileOrString The file path to the instance data file or a string containing the data.
    */
-  StaticDataProvider(const std::string& modelFile, const std::string& instanceFileOrString);
+  StaticDataProvider(const std::string& modelFile, const std::string& instanceFileOrString, const std::vector<std::string>& folders = {});
   ~StaticDataProvider() override = default;
   std::unique_ptr<Scenario> createScenario(unsigned int scenarioId = 0) override;
 protected:

@@ -18,7 +18,9 @@
 
 using namespace BPMNOS::Model;
 
-Model::Model(const std::string& filename)
+Model::Model(const std::string filename, const std::vector<std::string> folders)
+  : filename(std::move(filename))
+  , folders(std::move(folders))
 {
   LIMEX::Expression<double>::initialize();
   readBPMNFile(filename);
@@ -62,7 +64,7 @@ std::vector<std::reference_wrapper<XML::bpmnos::tAttribute>> Model::getData(XML:
 std::unique_ptr<LookupTable> Model::createLookupTable(XML::bpmnos::tTable* table) {
   std::string lookupName = table->getRequiredAttributeByName("name").value;
   std::string source = table->getRequiredAttributeByName("source").value;
-  return std::make_unique<LookupTable>(lookupName,source);
+  return std::make_unique<LookupTable>(lookupName,source,folders);
 }
 
 std::unique_ptr<XML::XMLObject> Model::createRoot(const std::string& filename) {

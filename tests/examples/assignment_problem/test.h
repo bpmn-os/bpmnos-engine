@@ -1,8 +1,7 @@
 SCENARIO( "Assignment problem", "[examples][assignment_problem]" ) {
   const std::string modelFile = "examples/assignment_problem/Assignment_problem.bpmn";
-//  BPMNOS::Model::LookupOperator::lookupTables.clear();
-  BPMNOS::Model::LookupTable::folders = { "tests/examples/assignment_problem" };
-  REQUIRE_NOTHROW( Model::Model(modelFile) );
+  const std::vector<std::string> folders = { "tests/examples/assignment_problem" };
+  REQUIRE_NOTHROW( Model::Model(modelFile,folders) );
 
   GIVEN( "One client and one server" ) {
 
@@ -12,7 +11,7 @@ SCENARIO( "Assignment problem", "[examples][assignment_problem]" ) {
       "ServerProcess;Server1;;\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv);
+    Model::StaticDataProvider dataProvider(modelFile,csv,folders);
     auto scenario = dataProvider.createScenario();
 
     WHEN( "The engine is started with a recorder" ) {
@@ -54,7 +53,7 @@ SCENARIO( "Assignment problem", "[examples][assignment_problem]" ) {
       "ServerProcess;Server3;;\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv);
+    Model::StaticDataProvider dataProvider(modelFile,csv,folders);
     auto scenario = dataProvider.createScenario();
 
     WHEN( "The engine is started with a recorder" ) {
@@ -143,7 +142,7 @@ SCENARIO( "Assignment problem", "[examples][assignment_problem]" ) {
       "ServerProcess;Server2;;\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv);
+    Model::StaticDataProvider dataProvider(modelFile,csv,folders);
     auto scenario = dataProvider.createScenario();
 
     WHEN( "The engine is started with a recorder" ) {
@@ -185,7 +184,7 @@ SCENARIO( "Assignment problem", "[examples][assignment_problem]" ) {
       "ServerProcess;Server3;;\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv);
+    Model::StaticDataProvider dataProvider(modelFile,csv,folders);
     auto scenario = dataProvider.createScenario();
 
     WHEN( "The engine is started with a recorder" ) {

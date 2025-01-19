@@ -3,8 +3,8 @@
 
 using namespace BPMNOS::Model;
 
-DataProvider::DataProvider(const std::string& modelFile)
-  : model(std::make_unique<Model>(modelFile))
+DataProvider::DataProvider(const std::string& modelFile, const std::vector<std::string>& folders)
+  : model(std::make_unique<Model>(modelFile, folders))
 {
   // determine all global attributes
   attributes[nullptr] = {};

@@ -27,7 +27,7 @@ public:
    *
    * @param modelFile The file path to the BPMN model file.
    */
-  DataProvider(const std::string& modelFile);
+  DataProvider(const std::string& modelFile, const std::vector<std::string>& folders);
   virtual ~DataProvider() = 0;
   const Model& getModel() const;
 

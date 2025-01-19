@@ -71,8 +71,7 @@ int main(int argc, char* argv[]) {
 
   Arguments args = parse_arguments(argc, argv);
   
-  BPMNOS::Model::LookupTable::folders = args.paths;
-  BPMNOS::Model::StaticDataProvider dataProvider(args.modelFile,args.dataFile);
+  BPMNOS::Model::StaticDataProvider dataProvider(args.modelFile,args.dataFile,args.paths);
   auto scenario = dataProvider.createScenario();
 
   BPMNOS::Execution::Engine engine;

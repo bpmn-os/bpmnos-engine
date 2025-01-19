@@ -83,7 +83,8 @@ using namespace BPMNOS;
 #endif // ALL_TESTS
 
 #ifndef ALL_TESTS
-#include "examples/bin_packing_problem/test.h"
+#include "execution/expression/test.h"
+//#include "examples/bin_packing_problem/test.h"
 //#include "examples/pickup_delivery_problem/test.h" // TODO
 //#include "cpcontroller/test.h"
 #endif // ALL_TESTS

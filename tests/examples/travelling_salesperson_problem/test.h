@@ -1,7 +1,7 @@
 SCENARIO( "Travelling salesperson problem", "[examples][travelling_salesperson_problem]" ) {
   const std::string modelFile = "examples/travelling_salesperson_problem/Travelling_salesperson_problem.bpmn";
-  BPMNOS::Model::LookupTable::folders = { "tests/examples/travelling_salesperson_problem" };
-  REQUIRE_NOTHROW( Model::Model(modelFile) );
+  const std::vector<std::string> folders = { "tests/examples/travelling_salesperson_problem" };
+  REQUIRE_NOTHROW( Model::Model(modelFile,folders) );
 
   GIVEN( "A TSP with four location" ) {
 
@@ -11,7 +11,7 @@ SCENARIO( "Travelling salesperson problem", "[examples][travelling_salesperson_p
       "TravellingSalesperson_Process;Instance1;Locations;[\"Munich\",\"Berlin\",\"Cologne\"]\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv);
+    Model::StaticDataProvider dataProvider(modelFile,csv,folders);
     auto scenario = dataProvider.createScenario();
 
     WHEN( "The engine is started with a first-come-first-serve policy" ) {
