@@ -30,7 +30,7 @@ stateDiagram-v2
 After initialization, the @ref BPMNOS::Execution::Token::state "state" of the process token is immediately set to @ref BPMNOS::Execution::Token::State::ENTERED "ENTERED".
 
 ## ENTERED
-Upon entry, the @ref BPMNOS::Model::ExtensionElements::operators "operators" are applied to update the @ref BPMNOS::Execution::Token::status "status" of the process token.
+Upon entry, the initial assignment of @ref BPMNOS::Model::Attribute "attributes" are conducted in the order of attribute definitions.
 Feasibility of the @ref BPMNOS::Execution::Token::status "token status" is validated.
 If any of the @ref BPMNOS::Model::ExtensionElements::restrictions "restrictions" is violated, the @ref BPMNOS::Execution::Token::state "token state" is updated to @ref BPMNOS::Execution::Token::State::FAILED "FAILED".
 Otherwise,
@@ -39,8 +39,6 @@ and at the @ref BPMN::EventSubProcess::startEvent "start event" of each @ref BPM
 These tokens inherit the @ref BPMNOS::Execution::Token::status "status attributes" of the process token.
 Furthermore,
 the @ref BPMNOS::Execution::Token::state "token state" is updated to @ref BPMNOS::Execution::Token::State::BUSY "BUSY" and
-@attention All operators must be instantaneous, i.e., they must not change the timestamp.
-@par
 @attention It is assumed that each process has a unique @ref BPMN::UntypedStartEvent "blank start event".
 @par
 @note @ref BPMN::EventSubProcess "Event-subprocesses" must have a unique @ref BPMN::TypedStartEvent "typed start event".

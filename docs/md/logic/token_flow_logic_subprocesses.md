@@ -55,8 +55,7 @@ A token in  @ref BPMNOS::Execution::Token::State::READY "READY" state waits for 
 When the event occurs the token state is updated to  @ref BPMNOS::Execution::Token::State::ENTERED "ENTERED".
 
 ## ENTERED
-
-Upon entry, the @ref BPMNOS::Model::ExtensionElements::operators "operators" are applied to update the @ref BPMNOS::Execution::Token::status "status" of the (ad-hoc) subprocess token.
+Upon entry, the initial assignment of @ref BPMNOS::Model::Attribute "attributes" are conducted in the order of attribute definitions.
 Then, feasibility of the @ref BPMNOS::Execution::Token::status "token status" is validated.
 If any of the @ref BPMNOS::Model::ExtensionElements::restrictions "restrictions" is violated,  the @ref BPMNOS::Execution::Token::state "token state" is updated to @ref BPMNOS::Execution::Token::State::FAILED "FAILED".
 Otherwise,
@@ -67,9 +66,6 @@ These tokens inherit the @ref BPMNOS::Execution::Token::status "status attribute
 Furthermore,
 the @ref BPMNOS::Execution::Token::state "token state" is updated to @ref BPMNOS::Execution::Token::State::BUSY "BUSY".
 
-
-@attention All operators provided for @ref BPMN::SubProcess "subprocesses" and @ref BPMNOS::Model::SequentialAdHocSubProcess "ad-hocsubprocesses" must be instantaneous, i.e., they must not change the timestamp.
-@par
 @note @ref BPMN::SubProcess "Subprocesses" must have a unique @ref BPMN::UntypedStartEvent "blank start event".
 @par
 @note @ref BPMNOS::Model::SequentialAdHocSubProcess "Ad-hoc subprocesses" must not contain any start event and any flow node without incoming sequence flows must be a an @ref BPMN::Activity "activity".
