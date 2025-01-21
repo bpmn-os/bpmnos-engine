@@ -542,6 +542,7 @@ void Token::advanceToBusy() {
   if ( 
       node &&
       node->represents<BPMN::Task>()
+      && !node->represents<BPMN::SendTask>()
       && !node->represents<BPMN::ReceiveTask>()
       && !node->represents<BPMNOS::Model::DecisionTask>()
     ) {
@@ -555,10 +556,12 @@ void Token::advanceToBusy() {
       if ( !status[BPMNOS::Model::ExtensionElements::Index::Timestamp].has_value() ) {
         throw std::runtime_error("Token: timestamp at node '" + node->id + "' is deleted");
       }
+/*
       if ( node->represents<BPMN::SendTask>() && status[BPMNOS::Model::ExtensionElements::Index::Timestamp].value() != now) {
 std::cerr << status[BPMNOS::Model::ExtensionElements::Index::Timestamp].value() << " != " << now << std::endl;
         throw std::runtime_error("Token: Operators for task '" + node->id + "' attempt to modify timestamp");
       }
+*/
       // notify about data update
       if ( extensionElements->dataUpdate.global ) {
         owner->systemState->engine->notify( DataUpdate( extensionElements->dataUpdate.attributes ) );
@@ -725,8 +728,12 @@ void Token::advanceToCompleted() {
   status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = owner->systemState->getTime();
   
   if ( node ) {
-    // operators of receive task and decision task are applied on completion
-    if ( node->represents<BPMN::ReceiveTask>() || node->represents<BPMNOS::Model::DecisionTask>() ) {
+    // operators of send task, receive task, and decision task are applied on completion
+    if ( 
+      node->represents<BPMN::SendTask>() ||
+      node->represents<BPMN::ReceiveTask>() ||
+      node->represents<BPMNOS::Model::DecisionTask>() 
+    ) {
       if ( auto extensionElements = node->extensionElements->represents<BPMNOS::Model::ExtensionElements>() ) {
         if ( !extensionElements->isInstantaneous ) {
           throw std::runtime_error("Token: Operators for task '" + node->id + "' attempt to modify timestamp");
