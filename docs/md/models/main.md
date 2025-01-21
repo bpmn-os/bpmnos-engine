@@ -3,7 +3,6 @@
 
 - @subpage travelling_salesperson_problem "Travelling salesperson problem"
 - @subpage truck_driver_scheduling_problem "Truck driver scheduling problem"
-- @subpage guided_truck_driver_scheduling_problem "Truck driver scheduling problem (guided)"
 - @subpage assignment_problem "Assignment problem"
 - @subpage knapsack_problem "Knapsack problem"
 - @subpage guided_knapsack_problem "Knapsack problem (guided)"
