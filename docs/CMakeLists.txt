@@ -11,7 +11,6 @@ set(MODEL_PAGES
     "guided_pickup_delivery_problem/Guided_pickup_delivery_problem.md @page guided_pickup_delivery_problem Pickup and delivery problem (guided)"
     "travelling_salesperson_problem/Travelling_salesperson_problem.md @page travelling_salesperson_problem Travelling salesperson problem"
     "truck_driver_scheduling_problem/US_Truck_driver_scheduling_problem.md @page truck_driver_scheduling_problem Truck driver scheduling problem"
-    "guided_truck_driver_scheduling_problem/Guided_US_Truck_driver_scheduling_problem.md @page guided_truck_driver_scheduling_problem Truck driver scheduling problem (guided)"
 )
 
 # Generate the documentation
