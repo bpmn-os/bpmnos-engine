@@ -22,7 +22,7 @@ public:
    */
   DynamicDataProvider(const std::string& modelFile, const std::string& instanceFileOrString);
   /**
-   * @brief Constructor for StaticDataProvider.
+   * @brief Constructor for DynamicDataProvider.
    *
    * @param modelFile The file path to the BPMN model file.
    * @param folders The folders containing lookup tables.
