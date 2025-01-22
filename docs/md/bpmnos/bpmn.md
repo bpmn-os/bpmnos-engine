@@ -242,8 +242,16 @@ A message sent by a node can also be received by another node if no message flow
 @note The visual representation is only a reference to a @ref BPMN::DataObject "data object". A model may contain @ref BPMN::DataObject "data objects" without visual representations, and multiple visual representations may refer to the same @ref BPMN::DataObject "data object".
 @attention
 - @ref BPMN::DataObject::isCollection "Collection markers" are **not** supported for @ref BPMN::DataObject "data objects". 
-- @ref XML::bpmn::tDataStore "Data stores" are **not** supported.
 - @ref XML::bpmn::tDataAssociation "Data associations" are **not** supported.
 - @ref XML::bpmn::tDataInput "Data inputs" are **not** supported.
 - @ref XML::bpmn::tDataOutput "Data outputs" are **not** supported.
+
+![DataStore](BPMN/DataStore.svg)
+@par
+
+@ref XML::bpmn::tDataStoreReference "Data store references" can refer to data stores containing information that persists beyond the lifetime of processes.
+
+@note The visual representation is linked to a process, however, the actual data store is not. All information of a data store is globally available.
+@attention
+- The actual @ref XML::bpmn::tDataStore "Data store" is **not** supported and the @ref XML::bpmn::tDataStoreReference "data store reference" is used directly to provide relevant information.
 
