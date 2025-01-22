@@ -71,8 +71,7 @@ Otherwise, the @ref BPMNOS::Execution::Token::state "token state" is updated to 
 For a task which is not a @ref BPMN::SendTask  "send task", @ref BPMN::ReceiveTask  "receive task" or @ref BPMNOS::Model::DecisionTask "decision task",
  the @ref BPMNOS::Model::ExtensionElements::operators "operators" are applied to update the @ref BPMNOS::Execution::Token::status "status" of the token.
  
-If the token resides at a @ref BPMN::SendTask "send task", a @ref BPMNOS::Execution::Message "message" is created and
-the token waits for a @ref BPMNOS::Execution::MessageDeliveryEvent "message delivery event" at any of the recipients before the operators are applied and the state is changed to @ref BPMNOS::Execution::Token::State::COMPLETED "COMPLETED" state.
+If the token resides at a @ref BPMN::SendTask "send task", the operators are applied and a @ref BPMNOS::Execution::Message "message" is created. The token waits for a @ref BPMNOS::Execution::MessageDeliveryEvent "message delivery event" at any of the recipients before the state is changed to @ref BPMNOS::Execution::Token::State::COMPLETED "COMPLETED" state.
 
 A token at a @ref BPMN::ReceiveTask  "receive task" waits for a @ref BPMNOS::Execution::MessageDeliveryEvent "message delivery". When the message is delivered, the @ref BPMNOS::Model::Content "message content" is used to update the @ref BPMNOS::Execution::Token::status "status" of the token. Thereafter, the @ref BPMNOS::Model::ExtensionElements::operators "operators" are applied and  the @ref BPMNOS::Execution::Token::state "token state" is updated to @ref BPMNOS::Execution::Token::State::COMPLETED "COMPLETED".
 
@@ -81,7 +80,7 @@ A token at a @ref BPMN::DecisionTask  "decision task" waits for a @ref BPMNOS::E
 If any other task increments the timestamp, the token waits for a @ref BPMNOS::Execution::CompletionEvent "completion event" before the state is changed to @ref BPMNOS::Execution::Token::State::COMPLETED "COMPLETED" state.
 Otherwise, the @ref BPMNOS::Execution::Token::state "token state" is directly updated to @ref BPMNOS::Execution::Token::State::COMPLETED "COMPLETED".
 
-@attention Operators for @ref BPMN::SendTask "send tasks", @ref BPMN::ReceiveTask  "receive tasks", and  @ref BPMNOS::Model::DecisionTask "decision tasks" must be instantaneous, i.e., they must not change the timestamp. They are applied **after** the message is sent or received or the choices have been made, respectively.
+@attention Operators for @ref BPMN::SendTask "send tasks", @ref BPMN::ReceiveTask  "receive tasks", and  @ref BPMNOS::Model::DecisionTask "decision tasks" must be instantaneous, i.e., they must not change the timestamp. For @ref BPMN::SendTask "send tasks" operatores are applied **before** the message is sent, for @ref BPMN::ReceiveTask  "receive tasks" they are applied **after** the message is received, and for @ref BPMNOS::Model::DecisionTask "decision tasks" they are applied **after** the choices have been made, respectively.
 @par
 @note The timestamp of a task in @ref BPMNOS::Execution::Token::State::BUSY "BUSY" state may be in the future, representing an expected completion time.
 
