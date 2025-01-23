@@ -15,7 +15,7 @@ Processes are assumed to have exactly one @ref BPMN::UntypedStartEvent "untyped 
 
 ### @ref BPMN::Task "Tasks"
 
-Tasks may have parallel and sequential @ref XML::bpmn::tMultiInstanceLoopCharacteristics "multi-instance markers".
+Tasks may have standard  @ref XML::bpmn::tStandardLoopCharacteristics "loop markers" as well as parallel and sequential @ref XML::bpmn::tMultiInstanceLoopCharacteristics "multi-instance markers".
 
 - @ref BPMN::AbstractTask "Abstract tasks"
   @par
@@ -50,17 +50,15 @@ Tasks may have parallel and sequential @ref XML::bpmn::tMultiInstanceLoopCharact
 - @ref BPMN::ManualTask "Manual tasks" are treated like @ref BPMN::AbstractTask "abstract tasks".
 - @ref BPMN::ScriptTask "Script tasks" are treated like @ref BPMN::AbstractTask "abstract tasks".
 - @ref BPMN::UserTask "User tasks" are treated like @ref BPMN::AbstractTask "abstract tasks".
-- @ref XML::bpmn::tStandardLoopCharacteristics "Loop markers" are not supported.
 
 
 ### @ref BPMN::SubProcess "Subprocesses"
 ![SubProcess](BPMN/SubProcess.svg)
 @par
 Subprocesses are assumed to have exactly one @ref BPMN::UntypedStartEvent "untyped start event".
-They may have parallel and sequential @ref XML::bpmn::tMultiInstanceLoopCharacteristics "multi-instance markers".
+They may have standard  @ref XML::bpmn::tStandardLoopCharacteristics "loop markers" as well as parallel and sequential @ref XML::bpmn::tMultiInstanceLoopCharacteristics "multi-instance markers".
 
 @attention
-- @ref XML::bpmn::tStandardLoopCharacteristics "Loop markers" are **not** supported.
 - @ref BPMN::Transaction "Transactions" are treated like regular @ref BPMN::SubProcess "subprocesses".
 - @ref BPMN::CallActivity "Call activities" are **not** supported.
 
@@ -68,13 +66,9 @@ They may have parallel and sequential @ref XML::bpmn::tMultiInstanceLoopCharacte
 ![AdHocSubProcess](BPMN/AdHocSubProcess.svg)
 @par
 Ad-hoc subprocesses must not contain any events or gateways without incoming sequence flow.
-They may have parallel and sequential @ref XML::bpmn::tMultiInstanceLoopCharacteristics "multi-instance markers".
+They may have standard  @ref XML::bpmn::tStandardLoopCharacteristics "loop markers" as well as parallel and sequential @ref XML::bpmn::tMultiInstanceLoopCharacteristics "multi-instance markers".
 Furthermore, ad-hoc subprocesses are expected to have a sequential ordering (i.e. `ordering = "Sequential"`), indicating that activities within the scope of the ad-hoc subprocess must not be executed in parallel. For each ad-hoc subprocess, the model provider iterates through the nodes in the XML tree, starting from the ad-hoc subprocess, and goes up the hierarchy until it finds another ad-hoc subprocess or a @ref BPMN::Scope "scope" that contains a @ref XML::bpmn::tPerformer "tPerformer" element with `name = "Sequential"`. If the latter is found, the ad-hoc subprocess is associated to this performer, and all activities of any ad-hoc subprocess associated to this performer must be conducted in sequential order. Otherwise, the sequential ordering only applies to the activities within the ad-hoc subprocess.
   @note The @ref BPMN::AdHocSubProcess class is derived from @ref BPMN::Activity and not from @ref BPMN::SubProcess.
-
-@par
-@attention
-- @ref XML::bpmn::tStandardLoopCharacteristics "Loop markers" are **not** supported.
 
 ### Compensation activities
 ![CompensationActivity](BPMN/CompensationActivity.svg)
@@ -113,10 +107,18 @@ Supported gateways are @ref BPMN::ExclusiveGateway "exclusive gateways", @ref BP
     @par
     ![MessageStartEvent](BPMN/MessageStartEvent.svg)
     ![Non-interrupting MessageStartEvent](BPMN/MessageStartEvent_non-interrupting.svg)
+  - @ref BPMN::SignalStartEvent "Signal start events"
+    @par
+    ![SignalStartEvent](BPMN/SignalStartEvent.svg)
+    ![Non-interrupting SignalStartEvent](BPMN/SignalStartEvent_non-interrupting.svg)
   - @ref BPMN::TimerStartEvent "Timer start events"
     @par
     ![TimerStartEvent](BPMN/TimerStartEvent.svg)
     ![Non-interrupting TimerStartEvent](BPMN/TimerStartEvent_non-interrupting.svg)
+  - @ref BPMN::ConditionalStartEvent "Conditional start events"
+    @par
+    ![ConditionalStartEvent](BPMN/ConditionalStartEvent.svg)
+    ![Non-interrupting ConditionalStartEvent](BPMN/ConditionalStartEvent_non-interrupting.svg)
   - @ref BPMN::EscalationStartEvent "Escalation start events"
     @par
     ![EscalationStartEvent](BPMN/EscalationStartEvent.svg)
@@ -129,36 +131,43 @@ Supported gateways are @ref BPMN::ExclusiveGateway "exclusive gateways", @ref BP
     ![CompensateStartEvent](BPMN/CompensateStartEvent.svg)
   
   .
-  @attention
-  - @ref BPMN::ConditionalStartEvent "Conditional start events" are **not** supported.
-  - @ref BPMN::SignalStartEvent "Signal start events" are **not** supported.
-  @par
   @attention Typed start events are only supported for @ref BPMN::EventSubProcess "event-subprocesses". 
   
 - Intermediate events
   - @ref BPMN::MessageCatchEvent "Message catch events"
     @par
     ![IntermediateMessageCatchEvent](BPMN/IntermediateMessageCatchEvent.svg)
+  - @ref BPMN::SignalCatchEvent "Signal catch events"
+    @par
+    ![IntermediateSignalCatchEvent](BPMN/IntermediateSignalCatchEvent.svg)
   - @ref BPMN::TimerCatchEvent "Timer catch events"
     @par
     ![IntermediateTimerCatchEvent](BPMN/IntermediateTimerCatchEvent.svg)
+  - @ref BPMN::ConditionalCatchEvent "Conditional catch events"
+    @par
+    ![IntermediateConditionalCatchEvent](BPMN/IntermediateConditionalCatchEvent.svg)
   - @ref BPMN::LinkTargetEvent "Link target events"
     @par
     ![LinkTargetEvent](BPMN/LinkTargetEvent.svg)
     
   .
-  @attention
-  - @ref BPMN::ConditionalCatchEvent "Conditional catch events" are **not** supported.
-  - @ref BPMN::SignalCatchEvent "Signal catch events" are **not** supported.
 - @ref BPMN::BoundaryEvent "Boundary events"
   - @ref BPMN::MessageBoundaryEvent "Message boundary events"
     @par
     ![MessageBoundaryEvent](BPMN/MessageBoundaryEvent.svg)
     ![Non-interrupting MessageBoundaryEvent](BPMN/MessageBoundaryEvent_non-interrupting.svg)
+  - @ref BPMN::SignalBoundaryEvent "Signal boundary events"
+    @par
+    ![SignalBoundaryEvent](BPMN/SignalBoundaryEvent.svg)
+    ![Non-interrupting SignalBoundaryEvent](BPMN/SignalBoundaryEvent_non-interrupting.svg)
   - @ref BPMN::TimerBoundaryEvent "Timer boundary events"
     @par
     ![TimerBoundaryEvent](BPMN/TimerBoundaryEvent.svg)
     ![Non-interrupting TimerBoundaryEvent](BPMN/TimerBoundaryEvent_non-interrupting.svg)
+  - @ref BPMN::ConditionalBoundaryEvent "Conditional boundary events"
+    @par
+    ![ConditionalBoundaryEvent](BPMN/ConditionalBoundaryEvent.svg)
+    ![Non-interrupting ConditionalBoundaryEvent](BPMN/ConditionalBoundaryEvent_non-interrupting.svg)
   - @ref BPMN::EscalationBoundaryEvent "Escalation boundary events"
     @par
     ![EscalationBoundaryEvent](BPMN/EscalationBoundaryEvent.svg)
@@ -170,11 +179,6 @@ Supported gateways are @ref BPMN::ExclusiveGateway "exclusive gateways", @ref BP
     @par
     ![CompensateBoundaryEvent](BPMN/CompensateBoundaryEvent.svg)
 
-  .
-  @attention
-  - @ref BPMN::ConditionalBoundaryEvent "Conditional boundary events" are **not** supported.
-  - @ref BPMN::SignalBoundaryEvent "Signal boundary events" are **not** supported.
-
 .
 @attention
 - Multiple @ref XML::bpmn::tEventDefinition "event definitions" are **not** supported.
@@ -185,6 +189,9 @@ Supported gateways are @ref BPMN::ExclusiveGateway "exclusive gateways", @ref BP
   - @ref BPMN::MessageThrowEvent "Message throw events"
     @par
     ![IntermediateMessageThrowEvent](BPMN/IntermediateMessageThrowEvent.svg)
+  - @ref BPMN::SignalThrowEvent "Signal throw events"
+    @par
+    ![IntermediateSignalThrowEvent](BPMN/IntermediateSignalThrowEvent.svg)
   - @ref BPMN::EscalationThrowEvent "Escalation throw events"
     @par
     ![IntermediateEscalationThrowEvent](BPMN/IntermediateEscalationThrowEvent.svg)
@@ -195,14 +202,13 @@ Supported gateways are @ref BPMN::ExclusiveGateway "exclusive gateways", @ref BP
     @par
     ![LinkSourceEvent](BPMN/LinkSourceEvent.svg)
 
-  .
-  @attention
-  - @ref BPMN::SignalThrowEvent "Signal throw events" are **not** supported.
-
 - End events
   - @ref BPMN::MessageThrowEvent "Message end events"
     @par
     ![MessageEndEvent](BPMN/MessageEndEvent.svg)
+  - @ref BPMN::SignalThrowEvent "Signal end events"
+    @par
+    ![SignalEndEvent](BPMN/SignalEndEvent.svg)
   - @ref BPMN::CompensateThrowEvent "Compensate end events"
     @par
     ![CompensateEndEvent](BPMN/CompensateEndEvent.svg)
@@ -213,10 +219,7 @@ Supported gateways are @ref BPMN::ExclusiveGateway "exclusive gateways", @ref BP
     @par
     ![TerminateEvent](BPMN/TerminateEvent.svg)
 
-  .
-  @attention
-  - @ref BPMN::SignalThrowEvent "Signal end events" are **not** supported.
-
+.
 @attention
 - Multiple @ref XML::bpmn::tEventDefinition "event definitions" are **not** supported.
 
