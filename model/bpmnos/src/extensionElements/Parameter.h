@@ -22,13 +22,8 @@ public:
 
   std::string& name;
   std::unique_ptr<const Expression> expression;
-/*
-  std::optional< std::reference_wrapper<Attribute> > attribute;
-  std::optional< std::reference_wrapper<XML::Value> > value;
-*/
 protected:
   std::unique_ptr<const Expression> getExpression(XML::bpmnos::tParameter* parameter, const AttributeRegistry& attributeRegistry) const;
-//  std::optional< std::reference_wrapper<Attribute> > getAttribute(const AttributeRegistry& attributeRegistry) const;
 };
 
 typedef std::unordered_map< std::string, std::unique_ptr<Parameter> > ParameterMap;
