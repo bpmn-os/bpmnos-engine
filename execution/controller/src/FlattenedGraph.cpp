@@ -248,24 +248,42 @@ void FlattenedGraph::createLoopVertices(BPMNOS::number rootId, BPMNOS::number in
   // loop & multi-instance activties
   
   // lambda returning parameter value known at time zero
-  auto getValue = [&](BPMNOS::Model::Parameter* parameter, BPMNOS::ValueType type) -> std::optional<BPMNOS::number> {
-/*
-    if ( parameter->attribute.has_value() ) {
-// TODO:
-      BPMNOS::Model::Attribute& attribute = parameter->attribute->get();
-      if ( !attribute.isImmutable ) {
-        throw std::runtime_error("FlattenedGraph: Loop parameter '" + parameter->name + "' for activity '" + activity->id +"' must be immutable" );
+  auto getValue = [&](BPMNOS::Model::Parameter* parameter) -> std::optional<BPMNOS::number> {
+    if ( parameter->expression ) {
+      // collect variable values
+      std::vector< double > variableValues;
+      for ( auto attribute : parameter->expression->inputs ) {
+        if ( !attribute->isImmutable ) {
+          throw std::runtime_error("FlattenedGraph: Loop parameter '" + parameter->name + "' for activity '" + activity->id +"' must be immutable" );
+        }
+        auto value = scenario->getKnownValue(rootId, attribute, 0);
+        if ( !value.has_value() ) {
+          // return nullopt because required attribute value is not given
+          return std::nullopt;        
+        }
+        variableValues.push_back( (double)value.value() );
       }
-      auto value = scenario->getKnownValue(rootId, &attribute, 0);
-      if ( value.has_value() ) {
-        return value.value();
+
+      // collect values of all variables in collection
+      std::vector< std::vector< double > > collectionValues;
+      for ( auto attribute : parameter->expression->collections ) {
+        collectionValues.push_back( {} );
+        auto collection = scenario->getKnownValue(rootId, attribute, 0);
+        if ( !collection.has_value() ) {
+          // return nullopt because required collection is not given
+          return std::nullopt;
+        }
+        for ( auto value : collectionRegistry[(size_t)collection.value()].values ) {
+          if ( !value.has_value() ) {
+            // return nullopt because a value in required collection is missing
+            return std::nullopt;
+          }
+          collectionValues.back().push_back( (double)value.value() );
+        }
       }
+
+      return number(parameter->expression->compiled.evaluate(variableValues,collectionValues));      
     }
-      
-    if ( parameter->value.has_value() ) {
-      return BPMNOS::to_number( parameter->value.value().get(), type);
-    }
-*/
 
     return std::nullopt;
   };
@@ -276,34 +294,15 @@ void FlattenedGraph::createLoopVertices(BPMNOS::number rootId, BPMNOS::number in
 
   if ( activity->loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::Standard ) {
     if ( extensionElements->loopMaximum.has_value() ) {
-      auto value = getValue( extensionElements->loopMaximum.value().get(), INTEGER ); 
+      auto value = getValue( extensionElements->loopMaximum.value().get() ); 
       n = value.has_value() ? (int)value.value() : 0;
     }
   }
   else {
     if ( extensionElements->loopMaximum.has_value() ) {
-      auto value = getValue( extensionElements->loopCardinality.value().get(), INTEGER );
+      auto value = getValue( extensionElements->loopCardinality.value().get() );
       n = value.has_value() ? (int)value.value() : 0;
     }
-// TODO
-/*    
-    // determine implicit cardinality from collection size
-    auto attributes = extensionElements->attributes | std::views::filter([](auto& attribute) {
-      return (attribute->collection != nullptr);
-    });
-
-    for ( auto& attribute : attributes ) {
-      auto collectionValue = getValue( attribute->collection.get(), COLLECTION );
-      if ( !collectionValue.has_value() ) {
-        throw std::runtime_error("FlattenedGraph: unable to determine collection for attribute '" + attribute->name + "'");
-      }
-      auto& collection = collectionRegistry[(size_t)collectionValue.value()].values;
-      if ( n > 0 && n != (int)collection.size() ) {
-        throw std::runtime_error("FlattenedGraph: inconsistent number of values provided for multi-instance activity '" + activity->id +"'" );
-      }
-      n = (int)collection.size();
-    }
-*/      
   }
 
   if ( n <= 0 ) {
