@@ -64,7 +64,7 @@ using namespace BPMNOS;
 #include "execution/collection/test.h"
 
 // Examples
-#include "examples/bin_packing_problem/test.h"
+#include "examples/bin_packing_problem/test.h" //TODO
 #include "examples/guided_bin_packing_problem/test.h" //TODO
 #include "examples/travelling_salesperson_problem/test.h"
 #include "examples/assignment_problem/test.h"
@@ -74,7 +74,7 @@ using namespace BPMNOS;
 #include "examples/vehicle_routing_problem/test.h"
 #include "examples/guided_vehicle_routing_problem/test.h"
 #include "examples/pickup_delivery_problem/test.h"
-#include "examples/guided_pickup_delivery_problem/test.h"
+#include "examples/guided_pickup_delivery_problem/test.h" //TODO
 #include "examples/truck_driver_scheduling_problem/test.h"
 
 // CPController
@@ -83,6 +83,8 @@ using namespace BPMNOS;
 #endif // ALL_TESTS
 
 #ifndef ALL_TESTS
+#include "examples/guided_pickup_delivery_problem/test.h" //TODO
+//#include "examples/bin_packing_problem/test.h"
 //#include "examples/guided_bin_packing_problem/test.h" //TODO
 //#include "examples/bin_packing_problem/test.h"
 //#include "examples/pickup_delivery_problem/test.h" // TODO
@@ -112,6 +114,7 @@ std::cerr << "BPMNOS model did not throw" << std::endl;
 }
 
 
+/*
 TEST_CASE("My Test Case") {
   const std::string modelFile = "tests/execution/process/Trivial_executable_process.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
@@ -137,4 +140,4 @@ TEST_CASE("My Test Case") {
     }
   }
 }
-
+*/

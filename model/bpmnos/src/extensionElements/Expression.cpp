@@ -1,4 +1,5 @@
 #include "Expression.h"
+#include "model/bpmnos/src/Model.h"
 #include "model/utility/src/CollectionRegistry.h"
 #include "model/utility/src/Keywords.h"
 #include "model/utility/src/encode_quoted_strings.h"
@@ -39,7 +40,7 @@ Expression::Expression(std::string expression, const AttributeRegistry& attribut
 
 LIMEX::Expression<double> Expression::getExpression(const std::string& input) const {
   try {
-    return LIMEX::Expression<double>(encodeQuotedStrings(input));
+    return LIMEX::Expression<double>(encodeQuotedStrings(input), Model::callables);
   }
   catch ( const std::exception& error ) {
     throw std::runtime_error("Expression: illegal expression '" + input + "'.\n" + error.what());

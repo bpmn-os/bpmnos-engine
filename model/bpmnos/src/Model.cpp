@@ -22,13 +22,8 @@ Model::Model(const std::string filename, const std::vector<std::string> folders)
   : filename(std::move(filename))
   , folders(std::move(folders))
 {
-  LIMEX::Expression<double>::initialize();
+  callables = LIMEX::Callables<double>(); // TODO: remove when callables is no longer static
   readBPMNFile(filename);
-}
-
-Model::~Model()
-{
-  LIMEX::Expression<double>::free();
 }
 
 std::vector<std::reference_wrapper<XML::bpmnos::tAttribute>> Model::getAttributes(XML::bpmn::tBaseElement* baseElement) {
@@ -79,19 +74,15 @@ std::unique_ptr<XML::XMLObject> Model::createRoot(const std::string& filename) {
         for ( XML::bpmnos::tTable& table : tables->get().find<XML::bpmnos::tTable>() ) {
           lookupTables.push_back( createLookupTable(&table) );
           auto lookupTable = lookupTables.back().get();
-          // TODO: remove below check to ensure that none of the builtin callables are redefined  
-          auto callables = LIMEX::Expression<double>::getCallables(); 
-          if  ( std::ranges::find(callables, lookupTable->name) == callables.end() ) {
-            // register callable
-            // TODO: should I use shared pointers?
-            LIMEX::Expression<double>::addCallable(
-              lookupTable->name, 
-              [lookupTable](const std::vector<double>& args)
-              {
-                return lookupTable->at(args);
-              }
-            );
-          }
+          // register callable
+          // TODO: should I use shared pointers?
+          callables.add(
+            lookupTable->name, 
+            [lookupTable](const std::vector<double>& args)
+            {
+              return lookupTable->at(args);
+            }
+          );
         }
       }
     }

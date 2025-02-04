@@ -49,18 +49,24 @@ SCENARIO( "Bin packing problem", "[examples][bin_packing_problem]" ) {
         auto waitLog = recorder.find(nlohmann::json{{"nodeId","WaitActivity"}, {"state", "COMPLETED"} }, nlohmann::json{{"event",nullptr }, {"decision",nullptr }});
 //std::cerr << log.size() << ": " << log.dump() << std::endl;
         REQUIRE( waitLog.size() == 3 );
+#ifdef STRANGE_PROBLEM_FIXED // TODO: this should not be needed
       }      
       THEN( "Then all bin process instances come to the end" ) {
+#endif
         auto endEventLog = recorder.find(nlohmann::json{{"nodeId","EndEventBin"}, {"state", "DONE"} }, nlohmann::json{{"event",nullptr }, {"decision",nullptr }});
 //std::cerr << log.size() << ": " << log.dump() << std::endl;
         REQUIRE( endEventLog.size() == 3 );
+#ifdef STRANGE_PROBLEM_FIXED // TODO: this should not be needed
       }      
       THEN( "Then all bin process instances complete" ) {
+#endif
         auto binLog = recorder.find({{"processId","BinProcess" },{"state","COMPLETED"}}, nlohmann::json{{"nodeId",nullptr }, {"event",nullptr }, {"decision",nullptr }});
 //std::cerr << log.dump() << std::endl;
         REQUIRE( binLog.size() == 3 );
+#ifdef STRANGE_PROBLEM_FIXED // TODO: this should not be needed
       } 
       THEN( "Then all item process instances complete" ) {
+#endif
         auto itemProcessLog = recorder.find({{"processId","ItemProcess" },{"state","DONE"}}, nlohmann::json{{"nodeId",nullptr }, {"event",nullptr }, {"decision",nullptr }});
 //std::cerr << itemProcessLog.dump() << std::endl;
         REQUIRE( itemProcessLog.size() == 3 );
