@@ -78,12 +78,14 @@ using namespace BPMNOS;
 #include "examples/truck_driver_scheduling_problem/test.h"
 
 // CPController
-#include "cpcontroller/test.h"
+//#include "cpcontroller/test.h"
 
 #endif // ALL_TESTS
 
 #ifndef ALL_TESTS
-#include "examples/guided_pickup_delivery_problem/test.h" //TODO
+#include "model/parser/test.h"
+//#include "data/static/test.h"
+//#include "examples/guided_pickup_delivery_problem/test.h" //TODO
 //#include "examples/bin_packing_problem/test.h"
 //#include "examples/guided_bin_packing_problem/test.h" //TODO
 //#include "examples/bin_packing_problem/test.h"

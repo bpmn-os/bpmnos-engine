@@ -40,7 +40,7 @@ Expression::Expression(std::string expression, const AttributeRegistry& attribut
 
 LIMEX::Expression<double> Expression::getExpression(const std::string& input) const {
   try {
-    return LIMEX::Expression<double>(encodeQuotedStrings(input), Model::callables);
+    return LIMEX::Expression<double>(encodeQuotedStrings(input), attributeRegistry.callables);
   }
   catch ( const std::exception& error ) {
     throw std::runtime_error("Expression: illegal expression '" + input + "'.\n" + error.what());

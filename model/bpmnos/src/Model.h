@@ -24,7 +24,7 @@ public:
   Model(const std::string filename, const std::vector<std::string> folders = {});
   const std::string filename; ///< File name of the BPMN model
   const std::vector<std::string> folders; ///< Folders containing lookup tables
-  static inline LIMEX::Callables<double> callables = LIMEX::Callables<double>(); // TODO: this should not be static!
+  LIMEX::Callables<double> callables;
 
   std::vector<std::reference_wrapper<XML::bpmnos::tAttribute>> getAttributes(XML::bpmn::tBaseElement* element);
   std::vector<std::reference_wrapper<XML::bpmnos::tAttribute>> getData(XML::bpmn::tBaseElement* element);

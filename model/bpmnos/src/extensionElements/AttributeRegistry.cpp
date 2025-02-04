@@ -2,6 +2,11 @@
 
 using namespace BPMNOS::Model;
 
+AttributeRegistry::AttributeRegistry(const LIMEX::Callables<double>& callables)
+  : callables(callables)
+{
+}
+
 void AttributeRegistry::add(Attribute* attribute) {
   if ( contains(attribute->name) ) {
     throw std::runtime_error("AttributeRegistry: duplicate attribute name '" + attribute->name + "'");

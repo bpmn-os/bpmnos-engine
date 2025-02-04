@@ -21,8 +21,8 @@ using namespace BPMNOS::Model;
 Model::Model(const std::string filename, const std::vector<std::string> folders)
   : filename(std::move(filename))
   , folders(std::move(folders))
+  , attributeRegistry(callables)
 {
-  callables = LIMEX::Callables<double>(); // TODO: remove when callables is no longer static
   readBPMNFile(filename);
 }
 

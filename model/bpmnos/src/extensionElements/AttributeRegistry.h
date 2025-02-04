@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 #include <map>
+#include <limex.h>
 #include "model/utility/src/Number.h"
 
 #include "Attribute.h"
@@ -13,6 +14,9 @@ namespace BPMNOS::Model {
 
 class AttributeRegistry {
 public:
+  AttributeRegistry(const LIMEX::Callables<double>& callables);
+  const LIMEX::Callables<double>& callables;
+
   std::map< std::string, Attribute*> statusAttributes;
   std::map< std::string, Attribute*> dataAttributes;
   std::map< std::string, Attribute*> globalAttributes;
