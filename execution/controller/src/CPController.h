@@ -39,18 +39,18 @@ protected:
   void createCP(); /// Method creating the constraint program
   void createGlobalVariables();
   void createMessageVariables();
-  void createMessageContent(const Vertex& vertex);
-  std::vector< std::reference_wrapper<const Vertex> > getReachableVertices(const Vertex& initialVertex); /// Returns a topologically sorted vector of all vertices reachable from the given vertex
-  void initializeVertices(const Vertex& initialVertex);
-  void createVertexVariables(const Vertex& vertex);
-  void createEntryVariables(const Vertex& vertex);
-  void createExitVariables(const Vertex& vertex);
+  void createMessageContent(const Vertex* vertex);
+  std::vector< const Vertex* > getReachableVertices(const Vertex* initialVertex); /// Returns a topologically sorted vector of all vertices reachable from the given vertex
+  void initializeVertices(const Vertex* initialVertex);
+  void createVertexVariables(const Vertex* vertex);
+  void createEntryVariables(const Vertex* vertex);
+  void createExitVariables(const Vertex* vertex);
 
-  void createSequenceConstraints(const Vertex& vertex);
+  void createSequenceConstraints(const Vertex* vertex);
 
-  void createGlobalIndexVariable(const Vertex& vertex);
-  void createDataVariables(const Vertex& vertex);
-  void createDataIndexVariables(const Vertex& vertex);
+  void createGlobalIndexVariable(const Vertex* vertex);
+  void createDataVariables(const Vertex* vertex);
+  void createDataIndexVariables(const Vertex* vertex);
   
   struct AttributeVariables {
     const CP::Variable& defined;
@@ -72,11 +72,11 @@ protected:
     CP::IndexedVariables& value;
   };
   
-  void createStatus(const Vertex& vertex);
-  void createEntryStatus(const Vertex& vertex);
-  void createExitStatus(const Vertex& vertex);
-  std::vector<AttributeVariables> createAlternativeEntryStatus(const Vertex& vertex, const BPMNOS::Model::AttributeRegistry& attributeRegistry, std::vector< std::pair<const CP::Variable&, std::vector<AttributeVariables>& > > alternatives);
-  std::vector<AttributeVariables> createMergedStatus(const Vertex& vertex, const BPMNOS::Model::AttributeRegistry& attributeRegistry, std::vector< std::pair<const CP::Variable&, std::vector<AttributeVariables>& > > inputs);
+  void createStatus(const Vertex* vertex);
+  void createEntryStatus(const Vertex* vertex);
+  void createExitStatus(const Vertex* vertex);
+  std::vector<AttributeVariables> createAlternativeEntryStatus(const Vertex* vertex, const BPMNOS::Model::AttributeRegistry& attributeRegistry, std::vector< std::pair<const CP::Variable&, std::vector<AttributeVariables>& > > alternatives);
+  std::vector<AttributeVariables> createMergedStatus(const Vertex* vertex, const BPMNOS::Model::AttributeRegistry& attributeRegistry, std::vector< std::pair<const CP::Variable&, std::vector<AttributeVariables>& > > inputs);
   
 /*
   std::unordered_map<const BPMN::MessageThrowEvent*, std::vector<BPMNOS::number> > originInstances; /// Map containing all instance identifiers for all message throw events

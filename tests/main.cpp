@@ -78,12 +78,12 @@ using namespace BPMNOS;
 #include "examples/truck_driver_scheduling_problem/test.h"
 
 // CPController
-//#include "cpcontroller/test.h"
+#include "cpcontroller/test.h"
 
 #endif // ALL_TESTS
 
 #ifndef ALL_TESTS
-#include "examples/guided_bin_packing_problem/test.h" //TODO
+//#include "examples/guided_bin_packing_problem/test.h" //TODO
 //#include "examples/bin_packing_problem/test.h"
 //#include "examples/pickup_delivery_problem/test.h" // TODO
 //#include "cpcontroller/test.h"
@@ -113,6 +113,28 @@ std::cerr << "BPMNOS model did not throw" << std::endl;
 
 
 TEST_CASE("My Test Case") {
-//    test();
+  const std::string modelFile = "tests/execution/process/Trivial_executable_process.bpmn";
+  REQUIRE_NOTHROW( Model::Model(modelFile) );
+
+  GIVEN( "A single instance with no input values" ) {
+    std::string csv =
+      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
+      "Process_1, Instance_1,,\n"
+    ;
+
+    Model::StaticDataProvider dataProvider(modelFile,csv);
+    auto scenario = dataProvider.createScenario();
+
+    REQUIRE_NOTHROW( BPMNOS::Execution::FlattenedGraph(scenario.get()) );
+
+    WHEN( "The model is created" ) {
+      Execution::CPController controller(scenario.get());
+      auto& cpmodel = controller.getModel();
+//      std::cout << cpmodel.stringify() << std::endl;
+//      auto cp = cpmodel.stringify();
+
+//      std::cout << cp << std::endl;
+    }
+  }
 }
 
