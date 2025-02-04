@@ -42,17 +42,13 @@ SCENARIO( "Guided bin packing problem", "[examples][bin_packing_problem]" ) {
       THEN( "Then no failure occurs" ) {
         auto failureLog = recorder.find(nlohmann::json{{"state", "FAILED"}});
         REQUIRE( failureLog.size() == 0 );
-#ifdef STRANGE_PROBLEM_FIXED // TODO: this should not be needed
       }
       THEN( "Then 2 bins are used" ) {
-#endif
         auto processLog = recorder.find(nlohmann::json{{"processId", "BinProcess"},{"state", "DONE"}},nlohmann::json{{"nodeId", nullptr},{"event", nullptr},{"decision", nullptr}});
         REQUIRE( processLog.size() == 3 );
         REQUIRE( (int)processLog[0]["data"]["used"] + (int)processLog[1]["data"]["used"] + (int)processLog[2]["data"]["used"] == 2 );
-#ifdef STRANGE_PROBLEM_FIXED // TODO: this should not be needed
       }
       THEN( "Then Item3 is allocated before Item2 which is allocated before Item1" ) {
-#endif
         auto decisionLog = recorder.find(nlohmann::json{{"decision","messagedelivery"}});
         REQUIRE( decisionLog.size() == 3 );
         REQUIRE( decisionLog[0]["message"]["header"]["sender"] == "Item3" );
@@ -61,10 +57,8 @@ SCENARIO( "Guided bin packing problem", "[examples][bin_packing_problem]" ) {
         REQUIRE( decisionLog[1]["evaluation"] == 3);
         REQUIRE( decisionLog[2]["message"]["header"]["sender"] == "Item1" );
         REQUIRE( decisionLog[2]["evaluation"] == 20);
-#ifdef STRANGE_PROBLEM_FIXED // TODO: this should not be needed
       }
       THEN( "Then Item3 is allocated before Item2 which is allocated before Item1" ) {
-#endif
         auto allocationLog = recorder.find(nlohmann::json{{"nodeId", "CatchRequestMessage"},{"state", "COMPLETED"}},nlohmann::json{{"event", nullptr},{"decision", nullptr}});
         REQUIRE( allocationLog.size() == 3 );
         REQUIRE( allocationLog[0]["status"]["item"] == "Item3" );

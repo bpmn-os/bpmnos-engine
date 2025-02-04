@@ -11,7 +11,6 @@ using namespace BPMNOS;
 
 #define ALL_TESTS
 #ifdef ALL_TESTS
-// TODO: change order of tests to avoid interdependencies
 
 /* Model */
 #include "model/parser/test.h"
@@ -64,8 +63,8 @@ using namespace BPMNOS;
 #include "execution/collection/test.h"
 
 // Examples
-#include "examples/bin_packing_problem/test.h" //TODO
-#include "examples/guided_bin_packing_problem/test.h" //TODO
+#include "examples/bin_packing_problem/test.h" 
+#include "examples/guided_bin_packing_problem/test.h"
 #include "examples/travelling_salesperson_problem/test.h"
 #include "examples/assignment_problem/test.h"
 #include "examples/job_shop_scheduling_problem/test.h"
@@ -74,23 +73,16 @@ using namespace BPMNOS;
 #include "examples/vehicle_routing_problem/test.h"
 #include "examples/guided_vehicle_routing_problem/test.h"
 #include "examples/pickup_delivery_problem/test.h"
-#include "examples/guided_pickup_delivery_problem/test.h" //TODO
+#include "examples/guided_pickup_delivery_problem/test.h"
 #include "examples/truck_driver_scheduling_problem/test.h"
 
 // CPController
-//#include "cpcontroller/test.h"
+#include "cpcontroller/test.h"
 
 #endif // ALL_TESTS
 
 #ifndef ALL_TESTS
-#include "model/parser/test.h"
-//#include "data/static/test.h"
-//#include "examples/guided_pickup_delivery_problem/test.h" //TODO
-//#include "examples/bin_packing_problem/test.h"
-//#include "examples/guided_bin_packing_problem/test.h" //TODO
-//#include "examples/bin_packing_problem/test.h"
-//#include "examples/pickup_delivery_problem/test.h" // TODO
-//#include "cpcontroller/test.h"
+#include "cpcontroller/test.h"
 #endif // ALL_TESTS
 
 
