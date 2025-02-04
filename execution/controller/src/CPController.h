@@ -129,6 +129,8 @@ protected:
 
   std::unordered_map< const Vertex*, std::vector< std::tuple< std::string_view, size_t, AttributeVariables> > > messageContent; /// Variables representing status attributes of a vertex
 
+  const Vertex* entry(const Vertex* vertex);
+  const Vertex* exit(const Vertex* vertex);
 /* 
   std::unordered_map<const BPMNOS::Model::Attribute*, const BPMN::Scope* > dataOwner;/// Map allowing to look up the scope owning a data attribute
   std::unordered_map<const BPMN::Scope*, std::vector<const BPMN::Node* > > sequentialActivities;/// Map allowing to look up the sequential activities that may change a data attribute (assumimng that intermediate changes are not propagated)

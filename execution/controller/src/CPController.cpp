@@ -114,7 +114,7 @@ void CPController::createMessageVariables() {
         )
       );
       if ( sender.node->represents<BPMN::SendTask>() ) {
-        auto senderExit = &sender + 1;
+        auto senderExit = exit(&sender);
         model.addConstraint(
           message.implies (
             status.at(recipient)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value
@@ -268,7 +268,6 @@ void CPController::createEntryStatus(const Vertex* vertex) {
   }
 
   status.emplace( vertex, std::move(variables) );  
-std::cerr << "Entry status for " << vertex->reference() << " with " << status.at(vertex).size() << " attributes" << std::endl;
 }
 
 void CPController::createExitStatus(const Vertex* vertex) {
@@ -302,26 +301,17 @@ std::cerr << "createExitStatus" << std::endl;
       variables = createMergedStatus(vertex, extensionElements->attributeRegistry, std::move(inputs));
 
       status.emplace( vertex, std::move(variables) );
-std::cerr << "Exit(1) status for " << vertex->reference() << " with " << status.at(vertex).size() << " attributes" << std::endl;
       return;
   }
 
   // no scope or empty scope
   assert( !vertex->exit<BPMN::Scope>() || vertex->predecessors.size() == 1 );
 
-std::cerr << vertex->index << "/" << (vertex->index -1) << "/" << vertices.size() << std::endl;
-  const Vertex* entry = vertex - 1;
-//  auto entry = &flattenedGraph.vertices.at(vertex->index - 1);
-  
-std::cerr << "Entry: " << (vertex-1) << ", " << entry << std::endl;
-//  assert(&entry == (&vertex - 1)); // fails
-
+  const Vertex* entryVertex = entry(vertex);
   if ( !extensionElements ) {
     // exit status is the same as entry status
     extensionElements = vertex->parent.value().first.node->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
-std::cerr << "HUHU" << std::endl;
-    auto& entryStatus = status.at(entry);
-std::cerr << "HUHU!" << std::endl;
+    auto& entryStatus = status.at(entryVertex);
     for ( auto& [name,attribute] : extensionElements->attributeRegistry.statusAttributes ) {
       assert( attribute->index == variables.size() );
       variables.emplace_back(
@@ -330,7 +320,6 @@ std::cerr << "HUHU!" << std::endl;
       );      
     }
     status.emplace( vertex, std::move(variables) );
-std::cerr << "Exit(2) status for " << vertex->reference() << " with " << status.at(vertex).size() << " attributes" << std::endl;
     return;
   }
 
@@ -341,9 +330,9 @@ std::cerr << "Exit(2) status for " << vertex->reference() << " with " << status.
   // - event subprocess operators are applied when exiting typed start event  
 
   // copy entry status references
-  std::vector<AttributeVariables> currentStatus = status.at(entry);
-  //std::vector<AttributeVariables> currentData = status.at(&entry);
-  //std::vector<AttributeVariables> currentGlobla = status.at(&entry);
+  std::vector<AttributeVariables> currentStatus = status.at(entryVertex);
+  //std::vector<AttributeVariables> currentData = status.at(entryVertex);
+  //std::vector<AttributeVariables> currentGlobla = status.at(entryVertex);
   
   if ( vertex->node->represents<BPMNOS::Model::DecisionTask>() ) {
     // apply choices
@@ -402,7 +391,6 @@ std::cerr << "Exit(2) status for " << vertex->reference() << " with " << status.
   }
 
   status.emplace( vertex, std::move(variables) );
-std::cerr << "Exit(3) status for " << vertex->reference() << " with " << status.at(vertex).size() << " attributes" << std::endl;
 }
 
 std::vector<CPController::AttributeVariables> CPController::createAlternativeEntryStatus(const Vertex* vertex, const BPMNOS::Model::AttributeRegistry& attributeRegistry, std::vector< std::pair<const CP::Variable&, std::vector<AttributeVariables>& > > alternatives) {
@@ -434,7 +422,6 @@ std::vector<CPController::AttributeVariables> CPController::createMergedStatus(c
   variables.reserve( attributeRegistry.statusAttributes.size() );
   for ( auto& [name,attribute] : attributeRegistry.statusAttributes ) {
     if ( attribute->index == BPMNOS::Model::ExtensionElements::Index::Timestamp ) {
-// TODO
       std::vector<CP::Expression> terms;
       for ( auto& [ active, attributeVariables] : inputs ) {
         terms.emplace_back( attributeVariables[attribute->index].value );
@@ -443,16 +430,6 @@ std::vector<CPController::AttributeVariables> CPController::createMergedStatus(c
         model.addVariable(CP::Variable::Type::BOOLEAN, "defined_" + vertex->reference() + "," + attribute->id, (double)true, (double)true ), 
         model.addVariable(CP::Variable::Type::REAL, "value_" + vertex->reference() + "," + attribute->id, CP::max(terms) )
       );
-/*
-      CP::MaxExpression timestamp;
-      for ( auto& [ active, attributeVariables] : inputs ) {
-        timestamp = CP::max( timestamp, attributeVariables[attribute->index].value );
-      }
-      variables.emplace_back(
-        model.addVariable(CP::Variable::Type::BOOLEAN, "defined_" + vertex.reference() + "," + attribute->id, (double)true, (double)true ), 
-        model.addVariable(CP::Variable::Type::REAL, "value_" + vertex.reference() + "," + attribute->id, timestamp )
-      );
-*/
     }
     else {
       // deduce variable
@@ -489,7 +466,7 @@ std::vector< const FlattenedGraph::Vertex* > CPController::getReachableVertices(
     
   // determine vertices in topological order
   while ( !queue.empty() ) {
-std::cerr << "Queue " << queue.size() << std::endl;
+//std::cerr << "Queue " << queue.size() << std::endl;
     const FlattenedGraph::Vertex* current = queue.front();
     queue.pop_front();
     reachableVertices.push_back(current);
@@ -510,7 +487,7 @@ std::cerr << "Queue " << queue.size() << std::endl;
         // initialize in degree
         inDegree[&vertex] = vertex.inflows.size() + vertex.predecessors.size();
       }
-std::cerr << "Vertex " << vertex.reference() << " has inDegree " << inDegree.at(&vertex) << "/" << vertex.inflows.size() << "/" << vertex.predecessors.size() << std::endl;
+//std::cerr << "Vertex " << vertex.reference() << " has inDegree " << inDegree.at(&vertex) << "/" << vertex.inflows.size() << "/" << vertex.predecessors.size() << std::endl;
       // decrement in degree and add vertex to queue if zero
       if ( --inDegree.at(&vertex) == 0 ) {
         queue.push_back(&vertex);
@@ -521,7 +498,7 @@ std::cerr << "Vertex " << vertex.reference() << " has inDegree " << inDegree.at(
   if ( inDegree.size() ) {
     throw std::runtime_error("CPController: cycle detected in '" + BPMNOS::to_string(initialVertex->rootId, STRING) + "'");
   }
-std::cerr << "reachableVertices:" << reachableVertices.size() << std::endl;
+//std::cerr << "reachableVertices:" << reachableVertices.size() << std::endl;
   return reachableVertices;
 }
 
@@ -571,7 +548,7 @@ void CPController::createEntryVariables(const FlattenedGraph::Vertex* vertex) {
     // deduce visit from parent
     auto& deducedVisit = model.addVariable(CP::Variable::Type::BOOLEAN, "visit_" + BPMNOS::to_string(vertex->instanceId, STRING) + "," + vertex->node->id, visit.at( &vertex->parent.value().first ) );
     visit.emplace(vertex, deducedVisit );
-    visit.emplace(vertex+1, deducedVisit );
+    visit.emplace(exit(vertex), deducedVisit );
   }
   else if ( vertex->node->represents<BPMN::TypedStartEvent>() ) {
     assert(!"Not yet implemented");
@@ -581,7 +558,7 @@ void CPController::createEntryVariables(const FlattenedGraph::Vertex* vertex) {
       // deduce visit from unique sequence flow
       auto& deducedVisit = model.addVariable(CP::Variable::Type::BOOLEAN, "visit_" + BPMNOS::to_string(vertex->instanceId, STRING) + "," + vertex->node->id , tokenFlow.at( std::make_pair(&vertex->inflows.front().second, vertex) ) );
       visit.emplace(vertex, deducedVisit );
-      visit.emplace(vertex+1, deducedVisit );
+      visit.emplace(exit(vertex), deducedVisit );
     }
     else {
       assert(!"Not yet implemented");
@@ -591,7 +568,7 @@ void CPController::createEntryVariables(const FlattenedGraph::Vertex* vertex) {
     // every process vertex is visited
     auto& knownVisit = model.addVariable(CP::Variable::Type::BOOLEAN, "visit_" + BPMNOS::to_string(vertex->instanceId, STRING) + "," + vertex->node->id, (double)true, (double)true );
     visit.emplace(vertex, knownVisit );
-    visit.emplace(vertex+1, knownVisit );
+    visit.emplace(exit(vertex), knownVisit );
   }
 
   // status attributes
@@ -651,25 +628,23 @@ void CPController::createSequenceConstraints(const Vertex* vertex) {
     assert( status.at(vertex).size() >= BPMNOS::Model::ExtensionElements::Index::Timestamp );
 
     model.addConstraint( position.at(predecessor) + 1 <= position.at(vertex) );
+/*
 std::cerr << predecessor->reference() << " before " << vertex->reference()  << std::endl;  
 std::cerr << visit.at(vertex).stringify() << "\n implies \n";
 std::cerr << status.at(predecessor)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value.stringify() << "\n <= \n";
 std::cerr << status.at(vertex)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value.stringify() << std::endl;
-    
+*/    
     model.addConstraint(
       // if a vertex is visited, its timestamp must not be before the predecessors timestamp
       // as all timestamps are non-negative and zero if not visited, no condition on a visit
       // of the predecessor is required
       visit.at(vertex).implies(
         status.at(predecessor)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value
-//<= 0 // TODO: reomve
-// TODO: below line results in: runtime error: reference binding to misaligned address 0xbebebebebebebebe for type 'const struct Variable', which requires 8 byte alignment
         <= status.at(vertex)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value
       )
     );
-std::cerr << model.getConstraints().back().stringify() << std::endl;
+//std::cerr << model.getConstraints().back().stringify() << std::endl;
   };
-
 
   for ( auto& [sequenceFlow, predecessor] : vertex->inflows ) {
     addConstraints(&predecessor);
@@ -706,6 +681,17 @@ void CPController::createDataIndexVariables(const Vertex* vertex) {
     dataIndices[i].emplace_back( model.addVariable(CP::Variable::Type::INTEGER, "data_index[" + dataOwner.node->id + "]_" + vertex->reference(), index ) );
   }
   dataIndex.emplace( vertex, std::move(dataIndices) );
+}
+
+
+const FlattenedGraph::Vertex* CPController::entry(const Vertex* vertex) {
+  assert( vertex->type == Vertex::Type::EXIT );
+  return vertex - 1;
+}
+
+const FlattenedGraph::Vertex* CPController::exit(const Vertex* vertex) {
+  assert( vertex->type == Vertex::Type::ENTRY );
+  return vertex + 1;
 }
 
 /*
