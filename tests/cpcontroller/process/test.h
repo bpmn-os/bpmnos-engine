@@ -16,7 +16,7 @@ SCENARIO( "Empty executable process", "[cpcontroller][process]" ) {
     REQUIRE_NOTHROW( BPMNOS::Execution::FlattenedGraph(scenario.get()) );
 
     WHEN( "The model is created" ) {
-      Execution::CPController controller(scenario.get());
+      Execution::CPController controller(scenario.get(), {.instantEntry = true,.instantExit = true});
       auto& cpmodel = controller.getModel();
       auto cp = cpmodel.stringify();
       std::cout << cp << std::endl;

@@ -15,15 +15,18 @@
 
 namespace BPMNOS::Execution {
 
-
-
 /**
  * @brief A controller dispatching decisions obtained from a solution of a constraint program
  */
 class CPController : public Controller {
 using Vertex = FlattenedGraph::Vertex;
 public:
-  CPController(const BPMNOS::Model::Scenario* scenario);
+  struct Config {
+    bool instantEntry = false;
+    bool instantExit = false;
+  };
+  static Config default_config() { return {}; } // Work around for compiler bug see: https://stackoverflow.com/questions/53408962/try-to-understand-compiler-error-message-default-member-initializer-required-be/75691051#75691051
+  CPController(const BPMNOS::Model::Scenario* scenario, Config config = default_config());
   void connect(Mediator* mediator);
 //  std::vector< std::unique_ptr<EventDispatcher> > eventDispatchers;
   const CP::Model& getModel() { return model; }
@@ -31,6 +34,7 @@ protected:
   Evaluator* evaluator;
   std::shared_ptr<Event> dispatchEvent(const SystemState* systemState);
   const BPMNOS::Model::Scenario* scenario;
+  Config config;
 //  std::vector< const BPMNOS::Model::Scenario::InstanceData* > instances;
   const FlattenedGraph flattenedGraph;
   CP::Model model;
@@ -105,13 +109,16 @@ protected:
         // Mainly for demonstration purposes, i.e. works but is overly simple
         // In the real world, use sth. like boost.hash_combine
         // return h1 ^ h2;
-        return h1 * 31 + h2; // Prime multiplication
+        // return h1 * 31 + h2; // Prime multiplication
+        return h1 ^ (h2 * 2654435761u); // Uses a large prime for better distribution
     }
   };
   
   std::vector<const Vertex*> vertices; /// Container of all vertices considered
+  std::unordered_map< std::pair< const BPMN::Node*, const BPMNOS::number >, const Vertex*, pair_hash > vertexMap; /// Map holding allowing to access vertices by their node and instanceId
   std::vector<const Vertex*> messageRecipients; /// Container of all vertices catching a message
-//  CP::reference_vector<const CP::Variable> sequence; /// Container of sequence positions
+
+//  CP::Sequence* sequence; /// Reference to sequence position variables
   std::unordered_map< const Vertex*, const CP::Variable& > position; /// Variables holding sequence positions for all vertices
   std::unordered_map< const Vertex*, const CP::Variable& > visit; /// Variables indicating whether the a token enters or leaves a vertex
 
@@ -129,8 +136,17 @@ protected:
 
   std::unordered_map< const Vertex*, std::vector< std::tuple< std::string_view, size_t, AttributeVariables> > > messageContent; /// Variables representing status attributes of a vertex
 
+
+  std::list< std::tuple< BPMNOS::number, Observable::Type ,const Vertex* > > schedule; /// The decision schedule from CP
+  CP::Solution& getSolution() const; /// Method providing access to the solution of the CP
+  void createSchedule(); /// Method creating the decision schedule from CP
+  std::shared_ptr<ChoiceEvent> createChoiceEvent(Token* token, const Vertex* vertex) const; /// Method creating a choice event from CP solution
+  std::shared_ptr<MessageDeliveryEvent> createMessageDeliveryEvent(const SystemState* systemState, Token* token, const Vertex* vertex) const; /// Method creating a message delivery event from CP solution
+
   const Vertex* entry(const Vertex* vertex);
   const Vertex* exit(const Vertex* vertex);
+private:
+  CP::Solution* _solution;
 /* 
   std::unordered_map<const BPMNOS::Model::Attribute*, const BPMN::Scope* > dataOwner;/// Map allowing to look up the scope owning a data attribute
   std::unordered_map<const BPMN::Scope*, std::vector<const BPMN::Node* > > sequentialActivities;/// Map allowing to look up the sequential activities that may change a data attribute (assumimng that intermediate changes are not propagated)
