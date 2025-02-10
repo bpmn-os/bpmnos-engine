@@ -153,12 +153,16 @@ void CPController::createSchedule() {
 
     if ( vertex->exit<BPMN::MessageCatchEvent>() ) {
       // enqueue message delivery decision
-      assert(!"Not yet implemented");
+      auto timestamp = (number)solution.getVariableValue( status.at(vertex)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value );
+      /// ASSUMPTION: receive tasks are exited immediately after message is delivered
+      assert( schedule.empty() || timestamp >= std::get<0>(schedule.back()) );
+      schedule.emplace_back(std::make_tuple(timestamp, Observable::Type::MessageDeliveryRequest, vertex));
     }
 
     if ( vertex->exit<BPMNOS::Model::DecisionTask>() ) {
       // enqueue choice decision
       auto timestamp = (number)solution.getVariableValue( status.at(vertex)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value );
+      /// ASSUMPTION: decision tasks are exited immediately after decision is made
       assert( schedule.empty() || timestamp >= std::get<0>(schedule.back()) );
       schedule.emplace_back(std::make_tuple(timestamp, Observable::Type::ChoiceRequest, vertex));
     }
@@ -256,6 +260,8 @@ void CPController::createMessageVariables() {
       model.addConstraint( message <= visit.at(&sender) );
       
       model.addConstraint( message.implies( position.at(&sender) <= position.at(recipient) ) );
+      /// ASSUMPTION: receive tasks are exited immediately after message is delivered
+
       model.addConstraint(
         // if a message is sent from a sender to a recipient, the recipient's timestamp must not 
         // be before the sender's timestamp
