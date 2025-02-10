@@ -260,7 +260,6 @@ void CPController::createMessageVariables() {
       model.addConstraint( message <= visit.at(&sender) );
       
       model.addConstraint( message.implies( position.at(&sender) <= position.at(recipient) ) );
-      /// ASSUMPTION: receive tasks are exited immediately after message is delivered
 
       model.addConstraint(
         // if a message is sent from a sender to a recipient, the recipient's timestamp must not 
@@ -270,6 +269,8 @@ void CPController::createMessageVariables() {
           <= status.at(recipient)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value
         )
       );
+
+      /// ASSUMPTION: receive tasks are exited immediately after message is delivered
       if ( sender.node->represents<BPMN::SendTask>() ) {
         // if a message is sent from a send task to a recipient, the recipient's timestamp must 
         // be before the sender's exit timestamp
