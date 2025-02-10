@@ -28,6 +28,14 @@ namespace std {
       return std::hash<BPMNOS_NUMBER_REP>()(cnl::unwrap(value));
     }
   };
+
+  template <>
+  struct hash<const BPMNOS_NUMBER_TYPE> {
+    std::size_t operator()(const BPMNOS_NUMBER_TYPE& value) const {
+      // Hash the underlying value
+      return std::hash<BPMNOS_NUMBER_REP>()(cnl::unwrap(value));
+    }
+  };
 }
 #define BPMNOS_NUMBER_PRECISION (1.0 / (1 << BPMNOS_NUMBER_SCALE))
 #endif
