@@ -4,6 +4,12 @@ SCENARIO( "Empty executable process", "[cpcontroller][process]" ) {
   const std::string modelFile = "tests/execution/process/Empty_executable_process.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
 
+  auto defaultSequenceValues = [](size_t n) {
+    std::vector<double> values(n);
+    std::iota(values.begin(), values.end(), 1.0);
+    return values;
+  };
+
   GIVEN( "A single instance with no input values" ) {
     std::string csv =
       "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
@@ -16,10 +22,23 @@ SCENARIO( "Empty executable process", "[cpcontroller][process]" ) {
     REQUIRE_NOTHROW( BPMNOS::Execution::FlattenedGraph(scenario.get()) );
 
     WHEN( "The model is created" ) {
-      Execution::CPController controller(scenario.get(), {.instantEntry = true,.instantExit = true});
+      Execution::CPController controller(scenario.get(), { .instantEntry = true, .instantExit = true });
       auto& cpmodel = controller.getModel();
       auto cp = cpmodel.stringify();
-      std::cout << cp << std::endl;
+std::cout << cp << std::endl;
+      auto& solution = controller.createSolution();
+      auto& sequence = cpmodel.getSequences().front();
+      solution.setSequenceValues( sequence, defaultSequenceValues( sequence.variables.size() ) );
+std::cerr << "Solution:\n" << solution.stringify() << std::endl;
+      Execution::Engine engine;
+      controller.connect(&engine);
+      Execution::TimeWarp timeHandler;
+      timeHandler.connect(&engine);
+//      Execution::Recorder recorder;
+      Execution::Recorder recorder(std::cerr);
+      recorder.subscribe(&engine);
+      engine.run(scenario.get(),10);
+
 /*
 ///////
       auto& cpmodel = controller.createCP(scenario.get());

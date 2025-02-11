@@ -138,7 +138,10 @@ protected:
 
 
   std::list< std::tuple< BPMNOS::number, Observable::Type ,const Vertex* > > schedule; /// The decision schedule from CP
-  CP::Solution& getSolution() const; /// Method providing access to the solution of the CP
+public:
+  CP::Solution& createSolution(); /// Method creating a solution of the CP
+  const CP::Solution& getSolution() const; /// Method providing access to the solution of the CP
+protected:
   void createSchedule(); /// Method creating the decision schedule from CP
   std::shared_ptr<ChoiceEvent> createChoiceEvent(Token* token, const Vertex* vertex) const; /// Method creating a choice event from CP solution
   std::shared_ptr<MessageDeliveryEvent> createMessageDeliveryEvent(const SystemState* systemState, Token* token, const Vertex* vertex) const; /// Method creating a message delivery event from CP solution
@@ -146,7 +149,7 @@ protected:
   const Vertex* entry(const Vertex* vertex);
   const Vertex* exit(const Vertex* vertex);
 private:
-  CP::Solution* _solution;
+  std::unique_ptr<CP::Solution> _solution;
 /* 
   std::unordered_map<const BPMNOS::Model::Attribute*, const BPMN::Scope* > dataOwner;/// Map allowing to look up the scope owning a data attribute
   std::unordered_map<const BPMN::Scope*, std::vector<const BPMN::Node* > > sequentialActivities;/// Map allowing to look up the sequential activities that may change a data attribute (assumimng that intermediate changes are not propagated)

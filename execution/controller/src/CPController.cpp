@@ -22,6 +22,8 @@ void CPController::connect(Mediator* mediator) {
 }
 
 std::shared_ptr<Event> CPController::dispatchEvent(const SystemState* systemState) {
+  if ( schedule.empty() ) return nullptr;
+  
   auto& [ timestamp, type, vertex ] = schedule.front();
 
   if ( timestamp < systemState->getTime() ) {
@@ -48,6 +50,7 @@ std::shared_ptr<Event> CPController::dispatchEvent(const SystemState* systemStat
     case EntryRequest:
     {
       if ( auto token = getToken(systemState->pendingEntryDecisions) ) {
+        schedule.pop_front();
         return std::make_shared<EntryEvent>(token);
       }
       // decision is not yet requested
@@ -56,6 +59,7 @@ std::shared_ptr<Event> CPController::dispatchEvent(const SystemState* systemStat
     case ExitRequest:
     {
       if ( auto token = getToken(systemState->pendingExitDecisions) ) {
+        schedule.pop_front();
         return std::make_shared<ExitEvent>(token);
       }
       // decision is not yet requested
@@ -64,6 +68,7 @@ std::shared_ptr<Event> CPController::dispatchEvent(const SystemState* systemStat
     case ChoiceRequest:
     {
       if ( auto token = getToken(systemState->pendingChoiceDecisions) ) {
+        schedule.pop_front();
         return createChoiceEvent(token,vertex);
       }
       // decision is not yet requested
@@ -72,6 +77,7 @@ std::shared_ptr<Event> CPController::dispatchEvent(const SystemState* systemStat
     case MessageDeliveryRequest:
     {
       if ( auto token = getToken(systemState->pendingMessageDeliveryDecisions) ) {
+        schedule.pop_front();
         return createMessageDeliveryEvent(systemState,token,vertex);
       }
       // decision is not yet requested
@@ -85,7 +91,12 @@ std::shared_ptr<Event> CPController::dispatchEvent(const SystemState* systemStat
   return nullptr;
 }
 
-CP::Solution& CPController::getSolution() const {
+CP::Solution& CPController::createSolution() {
+  _solution = std::make_unique<CP::Solution>(model);
+  return *_solution;
+}
+
+const CP::Solution& CPController::getSolution() const {
   assert( _solution );
   return *_solution;
 }
@@ -127,8 +138,7 @@ void CPController::createSchedule() {
   schedule.clear();
   
   // determine vertices sorted by sequence position
-  std::vector<const Vertex *> sortedVertices;
-  sortedVertices.resize( vertices.size() );
+  std::vector<const Vertex *> sortedVertices( vertices.size() );
 
   auto& sequence = model.getSequences().front();
   assert( sequence.variables.size() == vertices.size() );
@@ -274,12 +284,22 @@ void CPController::createMessageVariables() {
       if ( sender.node->represents<BPMN::SendTask>() ) {
         // if a message is sent from a send task to a recipient, the recipient's timestamp must 
         // be before the sender's exit timestamp
-        model.addConstraint(
-          message.implies (
-            status.at(recipient)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value
-            <= status.at(exit(&sender))[BPMNOS::Model::ExtensionElements::Index::Timestamp].value
-          )
-        );
+        if ( config.instantExit ) {
+          model.addConstraint(
+            message.implies (
+              status.at(recipient)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value
+              == status.at(exit(&sender))[BPMNOS::Model::ExtensionElements::Index::Timestamp].value
+            )
+          );
+        }
+        else {
+          model.addConstraint(
+            message.implies (
+              status.at(recipient)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value
+              <= status.at(exit(&sender))[BPMNOS::Model::ExtensionElements::Index::Timestamp].value
+            )
+          );
+        }
       }
 
       // TODO: add message header constraints
