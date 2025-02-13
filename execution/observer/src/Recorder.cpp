@@ -43,9 +43,9 @@ void Recorder::notice(const Observable* observable) {
 
     if (os.has_value()) {
       if ( !isFirst ) {
-        os.value().get() << Color::Modifier(Color::FG_LIGHT_GRAY) <<"," << Color::Modifier(Color::FG_DEFAULT);
+        os.value().get() << Color::Modifier(Color::FG_LIGHT_GRAY) << "," << Color::Modifier(Color::FG_DEFAULT);
       }
-      os.value().get() << Color::Modifier(Color::FG_LIGHT_GRAY) <<json.dump() << Color::Modifier(Color::FG_DEFAULT);
+      os.value().get() << Color::Modifier(Color::FG_LIGHT_GRAY) << json.dump() << Color::Modifier(Color::FG_DEFAULT);
       isFirst = false;
     }
 
@@ -61,9 +61,9 @@ void Recorder::notice(const Observable* observable) {
 
     if (os.has_value()) {
       if ( !isFirst ) {
-        os.value().get() << Color::Modifier(Color::FG_LIGHT_CYAN) <<"," << Color::Modifier(Color::FG_DEFAULT);
+        os.value().get() << Color::Modifier(Color::FG_LIGHT_CYAN) << "," << Color::Modifier(Color::FG_DEFAULT);
       }
-      os.value().get() << Color::Modifier(Color::FG_LIGHT_CYAN) <<json.dump() << Color::Modifier(Color::FG_DEFAULT);
+      os.value().get() << Color::Modifier(Color::FG_LIGHT_CYAN) << json.dump() << Color::Modifier(Color::FG_DEFAULT);
       isFirst = false;
     }
 
@@ -79,7 +79,7 @@ void Recorder::notice(const Observable* observable) {
 
     if (os.has_value()) {
       if ( !isFirst ) {
-        os.value().get() << Color::Modifier(Color::FG_LIGHT_YELLOW) <<"," << Color::Modifier(Color::FG_DEFAULT);
+        os.value().get() << Color::Modifier(Color::FG_LIGHT_YELLOW) << "," << Color::Modifier(Color::FG_DEFAULT);
       }
       os.value().get() << Color::Modifier(Color::FG_LIGHT_YELLOW) << json.dump() << Color::Modifier(Color::FG_DEFAULT);
       isFirst = false;
