@@ -26,6 +26,7 @@ list(APPEND controller_SOURCES
   GreedyController.cpp
   FlattenedGraph.cpp
   CPController.cpp
+  CPSeed.cpp
 )
 
 list(APPEND controller_HEADERS
@@ -56,4 +57,5 @@ list(APPEND controller_HEADERS
   GreedyController.h
   FlattenedGraph.h
   CPController.h
+  CPSeed.h
 )
