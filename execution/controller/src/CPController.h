@@ -22,6 +22,7 @@ namespace BPMNOS::Execution {
  */
 class CPController : public Controller {
 using Vertex = FlattenedGraph::Vertex;
+using RequestType = Observable::Type;
 public:
   struct Config {
     bool instantEntry = false;
@@ -81,6 +82,19 @@ protected:
     CP::IndexedVariables& defined;
     CP::IndexedVariables& value;
   };
+
+  struct AttributeEvaluation {
+    AttributeEvaluation(std::expected< double, std::string > defined, std::expected< double, std::string > value) : _defined(defined), _value(value) {}
+    inline bool defined() const { return (bool)_defined.value(); }
+    inline double value() const { return _value.value(); }
+    // bool cast operator
+    explicit operator bool() const {
+      return static_cast<bool>(_defined) && static_cast<bool>(_value);
+    }
+  private:
+    std::expected< double, std::string > _defined;
+    std::expected< double, std::string > _value;
+  };
   
   void createStatus(const Vertex* vertex);
   void createEntryStatus(const Vertex* vertex);
@@ -124,7 +138,6 @@ protected:
   BPMNOS::tuple_map< std::tuple< const BPMN::Node*, const BPMNOS::number, const Vertex::Type>, const Vertex* > vertexMap; /// Map holding allowing to access vertices by their node, instanceId, and type
   std::vector<const Vertex*> messageRecipients; /// Container of all vertices catching a message
 
-//  CP::Sequence* sequence; /// Reference to sequence position variables
   std::unordered_map< const Vertex*, const CP::Variable& > position; /// Variables holding sequence positions for all vertices
   std::unordered_map< const Vertex*, const CP::Variable& > visit; /// Variables indicating whether the a token enters or leaves a vertex
 
@@ -143,14 +156,17 @@ protected:
   std::unordered_map< const Vertex*, std::vector< std::tuple< std::string_view, size_t, AttributeVariables> > > messageContent; /// Variables representing status attributes of a vertex
 
 
-  std::list< std::tuple< BPMNOS::number, Observable::Type ,const Vertex* > > schedule; /// The decision schedule from CP
+  std::queue< std::pair< RequestType, const Vertex* > > decisionQueue; /// The queue of decisions to be made
 public:
   CP::Solution& createSolution(); /// Method creating a solution of the CP
   const CP::Solution& getSolution() const; /// Method providing access to the solution of the CP
 protected:
-  void createSchedule(); /// Method creating the decision schedule from CP
-  std::shared_ptr<ChoiceEvent> createChoiceEvent(Token* token, const Vertex* vertex) const; /// Method creating a choice event from CP solution
-  std::shared_ptr<MessageDeliveryEvent> createMessageDeliveryEvent(const SystemState* systemState, Token* token, const Vertex* vertex) const; /// Method creating a message delivery event from CP solution
+  void createDecisionQueue(); /// Method creating the decision queue from CP
+  std::optional< BPMNOS::number > getTimestamp( const Vertex* vertex ) const;
+  virtual std::shared_ptr<EntryEvent> createEntryEvent(const SystemState* systemState, Token* token, const Vertex* vertex) const; /// Method creating a choice event from CP solution
+  virtual std::shared_ptr<ExitEvent> createExitEvent(const SystemState* systemState, Token* token, const Vertex* vertex) const; /// Method creating a choice event from CP solution
+  virtual std::shared_ptr<ChoiceEvent> createChoiceEvent(const SystemState* systemState, Token* token, const Vertex* vertex) const; /// Method creating a choice event from CP solution
+  virtual std::shared_ptr<MessageDeliveryEvent> createMessageDeliveryEvent(const SystemState* systemState, Token* token, const Vertex* vertex) const; /// Method creating a message delivery event from CP solution
 
   const Vertex* entry(const Vertex* vertex);
   const Vertex* exit(const Vertex* vertex);

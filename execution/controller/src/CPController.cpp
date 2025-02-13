@@ -84,25 +84,36 @@ std::cerr << "Validate: " << token->jsonify() << std::endl;
   auto& dataIndices = dataIndex.at(vertex);
   assert( dataIndices.size() == vertex->dataOwners.size() );
   for ( size_t i = 0; i < dataIndices.size(); i++ ) {
-    auto index = (size_t)solution.evaluate( dataIndices[i] );
+    auto indexEvaluation = solution.evaluate( dataIndices[i] );
+    if ( !indexEvaluation ) {
+      throw std::logic_error("CPController: Unable to determine data index for '" + vertex->reference() + "\n'" + indexEvaluation.error());
+    }
+    auto index = (size_t)indexEvaluation.value();
     auto &ownerVertex = vertex->dataOwners[i].get();
     assert( ownerVertex.entry<BPMN::Scope>() );
     auto scope = ownerVertex.node;
     auto extensionElements = scope->extensionElements->as<BPMNOS::Model::ExtensionElements>();
     for ( auto& attribute : extensionElements->data ) {
       IndexedAttributeVariables& indexedAttributeVariables = data.at(&ownerVertex)[attribute->index];
+      AttributeEvaluation evaluation(
+        solution.evaluate( indexedAttributeVariables.defined[index] ),
+        solution.evaluate( indexedAttributeVariables.value[index] )
+      );
+      if ( !evaluation ) {
+        continue;
+      }
       if ( token->data->at(attribute->index).get().has_value() ) {
         if ( 
-          !solution.evaluate( indexedAttributeVariables.defined[index] )  ||
-          solution.evaluate( indexedAttributeVariables.value[index] ) != token->data->at(attribute->index).get().value()
+          !evaluation.defined()  ||
+          evaluation.value() != token->data->at(attribute->index).get().value()
         ) {
           throw std::logic_error("CPController: '" + solution.stringify(indexedAttributeVariables.defined[index]) + "' or '" + solution.stringify(indexedAttributeVariables.defined[index]) + "' inconsistent with " + token->jsonify().dump());
         }
       }
       else {
         if ( 
-          solution.evaluate( indexedAttributeVariables.defined[index] )  ||
-          solution.evaluate( indexedAttributeVariables.value[index] ) != 0.0
+          evaluation.defined()  ||
+          evaluation.value() != 0.0
         ) {
           throw std::logic_error("CPController: '" + solution.stringify(indexedAttributeVariables.defined[index]) + "' or '" + solution.stringify(indexedAttributeVariables.defined[index]) + "' inconsistent with " + token->jsonify().dump());
         }
@@ -112,21 +123,33 @@ std::cerr << "Validate: " << token->jsonify() << std::endl;
     
 //std::cerr << "Validate globals" << std::endl;    
   // check globals
-  auto index = (size_t)solution.evaluate( globalIndex.at(vertex) );
+  auto indexEvaluation = solution.evaluate( globalIndex.at(vertex) );
+  if ( !indexEvaluation ) {
+    throw std::logic_error("CPController: Unable to determine data index for '" + vertex->reference() + "\n'" + indexEvaluation.error());
+  }
+  auto index = (size_t)indexEvaluation.value();
   for ( size_t attributeIndex = 0; attributeIndex < token->globals.size(); attributeIndex++ ) {
     IndexedAttributeVariables& indexedAttributeVariables = globals[attributeIndex];
+    AttributeEvaluation evaluation(
+      solution.evaluate( indexedAttributeVariables.defined[index] ),
+      solution.evaluate( indexedAttributeVariables.value[index] )
+    );
+    if ( !evaluation ) {
+      continue;
+    }
+
     if ( token->globals[attributeIndex].has_value() ) {
       if ( 
-        !solution.evaluate( indexedAttributeVariables.defined[index] )  ||
-        solution.evaluate( indexedAttributeVariables.value[index] ) != token->globals[attributeIndex].value()
+        !evaluation.defined()  ||
+        evaluation.value() != token->globals[attributeIndex].value()
       ) {
         throw std::logic_error("CPController: '" + solution.stringify(indexedAttributeVariables.defined[index]) + "' or '" + solution.stringify(indexedAttributeVariables.defined[index]) + "' inconsistent with " + token->jsonify().dump());
       }
     }
     else {
       if ( 
-        solution.evaluate( indexedAttributeVariables.defined[index] )  ||
-        solution.evaluate( indexedAttributeVariables.value[index] ) != 0.0
+        evaluation.defined()  ||
+        evaluation.value() != 0.0
       ) {
         throw std::logic_error("CPController: '" + solution.stringify(indexedAttributeVariables.defined[index]) + "' or '" + solution.stringify(indexedAttributeVariables.defined[index]) + "' inconsistent with " + token->jsonify().dump());
       }
@@ -142,13 +165,20 @@ void CPController::notice(const Observable* observable) {
 }
 
 std::shared_ptr<Event> CPController::dispatchEvent(const SystemState* systemState) {
-  if ( schedule.empty() ) return nullptr;
+  if ( decisionQueue.empty() ) return nullptr;
   
-  auto& [ timestamp, type, vertex ] = schedule.front();
-
-  if ( timestamp < systemState->getTime() ) {
-    return nullptr;
+  try {
+    while ( !_solution->evaluate( visit.at( decisionQueue.front().second ) ) ) {
+      // skip all decisions for vertices that are not visited
+      decisionQueue.pop();
+      if ( decisionQueue.empty() ) return nullptr;
+    }
   }
+  catch(...) {
+    throw std::runtime_error("CPController: failed determining whether '" + decisionQueue.front().second->reference() + "' is visited or not");
+  }
+  
+  auto& [ type, vertex ] = decisionQueue.front();
 
   auto getToken = [&vertex](const auto& pendingDecisions) -> Token* {
     for (const auto& [token_ptr, request_ptr] : pendingDecisions) {
@@ -165,13 +195,13 @@ std::shared_ptr<Event> CPController::dispatchEvent(const SystemState* systemStat
   };
 
 
-  using enum Observable::Type;
+  std::shared_ptr<Event> event = nullptr;
+  using enum RequestType;
   switch ( type ) {
     case EntryRequest:
     {
       if ( auto token = getToken(systemState->pendingEntryDecisions) ) {
-        schedule.pop_front();
-        return std::make_shared<EntryEvent>(token);
+        event = createEntryEvent( systemState, token, vertex);
       }
       // decision is not yet requested
       break;
@@ -179,8 +209,8 @@ std::shared_ptr<Event> CPController::dispatchEvent(const SystemState* systemStat
     case ExitRequest:
     {
       if ( auto token = getToken(systemState->pendingExitDecisions) ) {
-        schedule.pop_front();
-        return std::make_shared<ExitEvent>(token);
+//        event = std::make_shared<ExitEvent>(token);
+        event = createExitEvent( systemState, token, vertex);
       }
       // decision is not yet requested
       break;
@@ -188,8 +218,7 @@ std::shared_ptr<Event> CPController::dispatchEvent(const SystemState* systemStat
     case ChoiceRequest:
     {
       if ( auto token = getToken(systemState->pendingChoiceDecisions) ) {
-        schedule.pop_front();
-        return createChoiceEvent(token,vertex);
+        event = createChoiceEvent( systemState, token, vertex);
       }
       // decision is not yet requested
       break;
@@ -197,18 +226,20 @@ std::shared_ptr<Event> CPController::dispatchEvent(const SystemState* systemStat
     case MessageDeliveryRequest:
     {
       if ( auto token = getToken(systemState->pendingMessageDeliveryDecisions) ) {
-        schedule.pop_front();
-        return createMessageDeliveryEvent(systemState,token,vertex);
+        event = createMessageDeliveryEvent( systemState, token, vertex );
       }
       // decision is not yet requested
       break;
     }
     default:
     {
-      throw std::logic_error("CPController: unsupported decision scheduled");
+      throw std::logic_error("CPController: unsupported decision");
     } 
   }
-  return nullptr;
+  if ( event ) {
+    decisionQueue.pop();
+  }
+  return event;
 }
 
 CP::Solution& CPController::createSolution() {
@@ -221,19 +252,58 @@ const CP::Solution& CPController::getSolution() const {
   return *_solution;
 }
 
-std::shared_ptr<ChoiceEvent> CPController::createChoiceEvent(Token* token, const Vertex* vertex) const {
+std::optional< BPMNOS::number > CPController::getTimestamp( const Vertex* vertex ) const {
+  auto timestamp = _solution->evaluate( status.at(vertex)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value );
+  if ( timestamp ) {
+    return (number)timestamp.value();
+  }
+  return std::nullopt;
+}
+
+std::shared_ptr<EntryEvent> CPController::createEntryEvent(const SystemState* systemState, Token* token, const Vertex* vertex) const {
+  auto timestamp = getTimestamp(vertex);
+  if ( !timestamp.has_value() || timestamp.value() > systemState->getTime() ) {
+    return nullptr;
+  }
+//      assert( decisionQueue.empty() || timestamp >= std::get<0>(decisionQueue.back()) );
+  return std::make_shared<EntryEvent>(token);
+}
+
+std::shared_ptr<ExitEvent> CPController::createExitEvent(const SystemState* systemState, Token* token, const Vertex* vertex) const {
+  auto timestamp = getTimestamp(vertex);
+  if ( !timestamp.has_value() || timestamp.value() > systemState->getTime() ) {
+    return nullptr;
+  }
+  return std::make_shared<ExitEvent>(token);
+}
+
+std::shared_ptr<ChoiceEvent> CPController::createChoiceEvent(const SystemState* systemState, Token* token, const Vertex* vertex) const {
+  auto timestamp = getTimestamp(vertex);
+  if ( !timestamp.has_value() || timestamp.value() > systemState->getTime() ) {
+    return nullptr;
+  }
+
   auto& solution = getSolution();
   auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   BPMNOS::Values choices;
   for ( auto& choice : extensionElements->choices ) {
     assert( choice->attribute->category == BPMNOS::Model::Attribute::Category::STATUS );
-    auto value = (number)solution.getVariableValue( status.at(vertex)[choice->attribute->index].value );
-    choices.push_back( value );
+    auto value = solution.getVariableValue( status.at(vertex)[choice->attribute->index].value );
+    if ( !value ) {
+      // no choice value provided
+      return nullptr;
+    }
+    choices.push_back( (number)value.value() );
   }
   return std::make_shared<ChoiceEvent>(token,std::move(choices));
 }
 
 std::shared_ptr<MessageDeliveryEvent> CPController::createMessageDeliveryEvent(const SystemState* systemState, Token* token, const Vertex* vertex) const {
+  auto timestamp = getTimestamp(vertex);
+  if ( !timestamp.has_value() || timestamp.value() > systemState->getTime() ) {
+    return nullptr;
+  }
+
   auto& solution = getSolution();
   for ( auto& [participants,variable] : messageFlow ) {
     if ( participants.second != vertex || !solution.getVariableValue(variable) ) {
@@ -253,9 +323,9 @@ std::shared_ptr<MessageDeliveryEvent> CPController::createMessageDeliveryEvent(c
   return nullptr;
 }
   
-void CPController::createSchedule() {
+void CPController::createDecisionQueue() {
   auto& solution = getSolution();
-  schedule.clear();
+  decisionQueue = std::queue< std::pair< RequestType, const Vertex* > >();
   
   // determine vertices sorted by sequence position
   std::vector<const Vertex *> sortedVertices( vertices.size() );
@@ -263,45 +333,35 @@ void CPController::createSchedule() {
   auto& sequence = model.getSequences().front();
   assert( sequence.variables.size() == vertices.size() );
   for ( size_t i = 0; i < vertices.size(); i++) {
-    auto position = (size_t)solution.getVariableValue(sequence.variables[i]);
-    sortedVertices[ position ] = vertices[i];
+    auto position = solution.getVariableValue(sequence.variables[i]);
+    assert( position );
+    sortedVertices[ (size_t)position.value() ] = vertices[i];
   }
   
-  // now insert timestamp-vertex pairs into schedule
+  // now insert into decision sequence
   for ( auto vertex : sortedVertices ) {
-    if ( !solution.getVariableValue( visit.at(vertex) ) ) {
-      continue;
-    }
     
     if ( vertex->entry<BPMN::Activity>() ) {
       // enqueue entry decision
-      auto timestamp = (number)solution.getVariableValue( status.at(vertex)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value );
-      assert( schedule.empty() || timestamp >= std::get<0>(schedule.back()) );
-      schedule.emplace_back(std::make_tuple(timestamp, Observable::Type::EntryRequest, vertex));
+      decisionQueue.emplace(RequestType::EntryRequest, vertex);
       continue;
     }
 
     if ( vertex->exit<BPMN::MessageCatchEvent>() ) {
       // enqueue message delivery decision
-      auto timestamp = (number)solution.getVariableValue( status.at(vertex)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value );
-      /// ASSUMPTION: receive tasks are exited immediately after message is delivered
-      assert( schedule.empty() || timestamp >= std::get<0>(schedule.back()) );
-      schedule.emplace_back(std::make_tuple(timestamp, Observable::Type::MessageDeliveryRequest, vertex));
+      // ASSUMPTION: receive tasks are exited immediately after message is delivered
+      decisionQueue.emplace(RequestType::MessageDeliveryRequest, vertex);
     }
 
     if ( vertex->exit<BPMNOS::Model::DecisionTask>() ) {
       // enqueue choice decision
-      auto timestamp = (number)solution.getVariableValue( status.at(vertex)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value );
-      /// ASSUMPTION: decision tasks are exited immediately after decision is made
-      assert( schedule.empty() || timestamp >= std::get<0>(schedule.back()) );
-      schedule.emplace_back(std::make_tuple(timestamp, Observable::Type::ChoiceRequest, vertex));
+      // ASSUMPTION: decision tasks are exited immediately after decision is made
+      decisionQueue.emplace(RequestType::ChoiceRequest, vertex);
     }
 
     if ( vertex->exit<BPMN::Activity>() ) {
       // enqueue exit decision
-      auto timestamp = (number)solution.getVariableValue( status.at(vertex)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value );
-      assert( schedule.empty() || timestamp >= std::get<0>(schedule.back()) );
-      schedule.emplace_back(std::make_tuple(timestamp, Observable::Type::ExitRequest, vertex));
+      decisionQueue.emplace(RequestType::ExitRequest, vertex);
     }
   }
 }

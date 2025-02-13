@@ -4,22 +4,22 @@
 using namespace BPMNOS::Execution;
 using Vertex = FlattenedGraph::Vertex;
 
-CPSeed::CPSeed( CPController& controller, std::list<size_t> seed)
+CPSeed::CPSeed( CPController* controller, std::list<size_t> seed)
   : controller(controller)
 {
   initialize( std::move(seed) );
 }
 
-std::list<size_t> CPSeed::defaultSeed(CPController& controller) {
-  std::list<size_t> values( controller.getVertices().size() );
+std::list<size_t> CPSeed::defaultSeed(size_t length) {
+  std::list<size_t> values( length );
   std::iota(values.begin(), values.end(), 1);
   return values;
 }
 
 void CPSeed::initialize(std::list<size_t> seed) {
-  assert( seed.size() == controller.getVertices().size() );
-  assert( !controller.getModel().getSequences().empty() );
-  assert( seed.size() == controller.getModel().getSequences().front().variables.size() );
+  assert( seed.size() == controller->getVertices().size() );
+  assert( !controller->getModel().getSequences().empty() );
+  assert( seed.size() == controller->getModel().getSequences().front().variables.size() );
 
   sequence.reserve( seed.size() );
   
@@ -36,22 +36,22 @@ void CPSeed::initialize(std::list<size_t> seed) {
 }
 
 bool CPSeed::isFeasible() const {
-  return (sequence.size() == controller.getVertices().size() );
+  return (sequence.size() == controller->getVertices().size() );
 }
 
 CP::Solution& CPSeed::createSolution() const {
   if ( !isFeasible() ) {
     throw std::runtime_error("CPSeed: cannot create infeasible solution");
   }
-  auto& solution = controller.createSolution();
-  auto& sequenceVariable = controller.getModel().getSequences().front();
+  auto& solution = controller->createSolution();
+  auto& sequenceVariable = controller->getModel().getSequences().front();
   solution.setSequenceValues( sequenceVariable, sequence );
 
   return solution;
 }
 
 bool CPSeed::addSequencePosition(size_t index) {
-  auto vertex = controller.getVertices()[index];
+  auto vertex = controller->getVertices()[index];
 
   // check that all predecessors are already in the sequence
   for ( auto& [ sequenceFlow, predecessor ] : vertex->inflows ) {
