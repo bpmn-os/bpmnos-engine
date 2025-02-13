@@ -2,6 +2,7 @@
 #include "model/bpmnos/src/DecisionTask.h"
 #include "model/bpmnos/src/SequentialAdHocSubProcess.h"
 #include "model/bpmnos/src/extensionElements/MessageDefinition.h"
+#include "execution/engine/src/Engine.h"
 
 #include <iostream>
 
@@ -21,6 +22,125 @@ void CPController::connect(Mediator* mediator) {
   Controller::connect(mediator);
 }
 
+void CPController::subscribe(Engine* engine) {
+  engine->addSubscriber(this, 
+    Execution::Observable::Type::Token
+  );
+}
+
+void CPController::validate(const Token* token) {
+  if ( !token->node && token->state != Token::State::ENTERED && token->state != Token::State::DONE ) {
+    // token at process, but with irrelevant state
+    return;
+  }
+  if ( token->node && token->state != Token::State::ENTERED && token->state != Token::State::EXITING ) {
+    // token at flow node, but with irrelevant state
+    return;
+  }
+
+std::cerr << "Validate: " << token->jsonify() << std::endl;    
+
+  auto& solution = getSolution();
+  // get vertex
+  auto vertex = vertexMap.at(
+    std::make_tuple(
+      token->node ? token->node->as<BPMN::Node>() : token->owner->process->as<BPMN::Node>(),
+      token->data->at(BPMNOS::Model::ExtensionElements::Index::Instance).get().value(),
+      token->state == Token::State::ENTERED ? Vertex::Type::ENTRY : Vertex::Type::EXIT 
+    )
+  );
+
+//std::cerr << "Validate visit" << std::endl;    
+  // check visit
+  if ( solution.evaluate( visit.at(vertex) ) != 1.0 ) {
+    throw std::logic_error("CPController: vertex '" + vertex->reference() +"' not visited in solution");
+  }
+    
+//std::cerr << "Validate status" << std::endl;    
+  // check status
+  auto& statusVariables = status.at(vertex);
+  assert( token->status.size() == statusVariables.size() );
+  for (size_t i = 0; i < statusVariables.size(); i++) {
+    if ( token->status[i].has_value() ) {
+      if ( 
+        !solution.evaluate( statusVariables[i].defined )  ||
+        solution.evaluate( statusVariables[i].value ) != token->status[i].value()
+      ) {
+        throw std::logic_error("CPController: '" + solution.stringify(statusVariables[i].defined) + "' or '" + solution.stringify(statusVariables[i].value) + "' inconsistent with " + token->jsonify().dump() );
+      }
+    }
+    else {
+      if ( 
+        solution.evaluate( statusVariables[i].defined )  ||
+        solution.evaluate( statusVariables[i].value ) != 0.0
+      ) {
+        throw std::logic_error("CPController: '" + solution.stringify(statusVariables[i].defined) + "' or '" + solution.stringify(statusVariables[i].value) + "' inconsistent with " + token->jsonify().dump());
+      }
+    }
+  }
+
+//std::cerr << "Validate data" << std::endl;    
+  // check data
+  auto& dataIndices = dataIndex.at(vertex);
+  assert( dataIndices.size() == vertex->dataOwners.size() );
+  for ( size_t i = 0; i < dataIndices.size(); i++ ) {
+    auto index = (size_t)solution.evaluate( dataIndices[i] );
+    auto &ownerVertex = vertex->dataOwners[i].get();
+    assert( ownerVertex.entry<BPMN::Scope>() );
+    auto scope = ownerVertex.node;
+    auto extensionElements = scope->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+    for ( auto& attribute : extensionElements->data ) {
+      IndexedAttributeVariables& indexedAttributeVariables = data.at(&ownerVertex)[attribute->index];
+      if ( token->data->at(attribute->index).get().has_value() ) {
+        if ( 
+          !solution.evaluate( indexedAttributeVariables.defined[index] )  ||
+          solution.evaluate( indexedAttributeVariables.value[index] ) != token->data->at(attribute->index).get().value()
+        ) {
+          throw std::logic_error("CPController: '" + solution.stringify(indexedAttributeVariables.defined[index]) + "' or '" + solution.stringify(indexedAttributeVariables.defined[index]) + "' inconsistent with " + token->jsonify().dump());
+        }
+      }
+      else {
+        if ( 
+          solution.evaluate( indexedAttributeVariables.defined[index] )  ||
+          solution.evaluate( indexedAttributeVariables.value[index] ) != 0.0
+        ) {
+          throw std::logic_error("CPController: '" + solution.stringify(indexedAttributeVariables.defined[index]) + "' or '" + solution.stringify(indexedAttributeVariables.defined[index]) + "' inconsistent with " + token->jsonify().dump());
+        }
+      }
+    }
+  }
+    
+//std::cerr << "Validate globals" << std::endl;    
+  // check globals
+  auto index = (size_t)solution.evaluate( globalIndex.at(vertex) );
+  for ( size_t attributeIndex = 0; attributeIndex < token->globals.size(); attributeIndex++ ) {
+    IndexedAttributeVariables& indexedAttributeVariables = globals[attributeIndex];
+    if ( token->globals[attributeIndex].has_value() ) {
+      if ( 
+        !solution.evaluate( indexedAttributeVariables.defined[index] )  ||
+        solution.evaluate( indexedAttributeVariables.value[index] ) != token->globals[attributeIndex].value()
+      ) {
+        throw std::logic_error("CPController: '" + solution.stringify(indexedAttributeVariables.defined[index]) + "' or '" + solution.stringify(indexedAttributeVariables.defined[index]) + "' inconsistent with " + token->jsonify().dump());
+      }
+    }
+    else {
+      if ( 
+        solution.evaluate( indexedAttributeVariables.defined[index] )  ||
+        solution.evaluate( indexedAttributeVariables.value[index] ) != 0.0
+      ) {
+        throw std::logic_error("CPController: '" + solution.stringify(indexedAttributeVariables.defined[index]) + "' or '" + solution.stringify(indexedAttributeVariables.defined[index]) + "' inconsistent with " + token->jsonify().dump());
+      }
+    }
+  }
+}
+
+void CPController::notice(const Observable* observable) {
+  Controller::notice(observable);
+  
+  assert( observable->getObservableType() ==  Execution::Observable::Type::Token );
+  validate( static_cast<const Token*>(observable) );
+}
+
 std::shared_ptr<Event> CPController::dispatchEvent(const SystemState* systemState) {
   if ( schedule.empty() ) return nullptr;
   
@@ -35,7 +155,7 @@ std::shared_ptr<Event> CPController::dispatchEvent(const SystemState* systemStat
       if (auto token = token_ptr.lock()) {
         if (
           token->node == vertex->node &&
-          token->data->at(BPMNOS::Model::ExtensionElements::Index::Instance).get() == vertex->instanceId
+          token->data->at(BPMNOS::Model::ExtensionElements::Index::Instance).get().value() == vertex->instanceId
         ) {
           return token.get();
         }
@@ -324,7 +444,7 @@ void CPController::createMessageContent(const Vertex* vertex) {
 void CPController::createDataVariables(const FlattenedGraph::Vertex* vertex) {
   auto extensionElements = vertex->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
 
-  std::vector< IndexedAttributeVariables > variables; 
+  std::vector<IndexedAttributeVariables > variables; 
   
   for ( auto& attribute : extensionElements->data ) {
     assert( attribute->index == variables.size() ); // ensure that the order of attributes is correct
@@ -692,7 +812,7 @@ void CPController::initializeVertices(const FlattenedGraph::Vertex* initialVerte
 void CPController::createVertexVariables(const FlattenedGraph::Vertex* vertex) {
 std::cerr << "createVertexVariables: " << vertex->reference() << std::endl;
   // make vertex retrievable from token information
-  vertexMap.emplace(std::make_pair(vertex->node,vertex->instanceId), vertex);
+  vertexMap[std::make_tuple(vertex->node,vertex->instanceId,vertex->type)] = vertex;
   
 std::cerr << "createGlobalIndexVariable" << std::endl;
   createGlobalIndexVariable(vertex);
@@ -850,10 +970,9 @@ void CPController::createGlobalIndexVariable(const Vertex* vertex) {
 
 
 void CPController::createDataIndexVariables(const Vertex* vertex) {
-  std::vector<  CP::reference_vector< const CP::Variable > > dataIndices;
-  dataIndices.resize( vertex->dataOwners.size() );
-  for ( size_t i = 0; i < vertex->dataOwners.size(); i++ ) {
-    auto& dataOwner = vertex->dataOwners[i].get();
+  CP::reference_vector< const CP::Variable > dataIndices;
+  dataIndices.reserve( vertex->dataOwners.size() );
+  for ( Vertex& dataOwner : vertex->dataOwners ) {
     assert( flattenedGraph.dataModifiers.contains(&dataOwner) ); 
   
     CP::Expression index;
@@ -861,7 +980,8 @@ void CPController::createDataIndexVariables(const Vertex* vertex) {
       // create auxiliary variables indicating modifiers preceding the vertex
       index = index + model.addVariable(CP::Variable::Type::BOOLEAN, "precedes_" + modifierExit.reference() + "→" + vertex->reference(), position.at(&modifierExit) <= position.at(vertex) );
     }  
-    dataIndices[i].emplace_back( model.addVariable(CP::Variable::Type::INTEGER, "data_index[" + dataOwner.node->id + "]_" + vertex->reference(), index ) );
+    // data index for data owner represents the number of modifiers exited according to the sequence positions
+    dataIndices.emplace_back( model.addVariable(CP::Variable::Type::INTEGER, "data_index[" + dataOwner.node->id + "]_" + vertex->reference(), index ) );
   }
   dataIndex.emplace( vertex, std::move(dataIndices) );
 }

@@ -6,6 +6,8 @@
 #include "Evaluator.h"
 #include "FlattenedGraph.h"
 #include "execution/engine/src/Mediator.h"
+#include "execution/engine/src/Observer.h"
+#include "model/utility/src/tuple_map.h"
 #include <cp.h>
 #include <unordered_map>
 #include <utility>
@@ -28,8 +30,12 @@ public:
   static Config default_config() { return {}; } // Work around for compiler bug see: https://stackoverflow.com/questions/53408962/try-to-understand-compiler-error-message-default-member-initializer-required-be/75691051#75691051
   CPController(const BPMNOS::Model::Scenario* scenario, Config config = default_config());
   void connect(Mediator* mediator);
+  void subscribe(Engine* engine);
+  void notice(const Observable* observable) override;
+  void validate(const Token* token);
 //  std::vector< std::unique_ptr<EventDispatcher> > eventDispatchers;
-  const CP::Model& getModel() { return model; }
+  const CP::Model& getModel() const { return model; }
+  const std::vector<const Vertex*> getVertices() const { return vertices; }
 protected:
   Evaluator* evaluator;
   std::shared_ptr<Event> dispatchEvent(const SystemState* systemState);
@@ -115,7 +121,7 @@ protected:
   };
   
   std::vector<const Vertex*> vertices; /// Container of all vertices considered
-  std::unordered_map< std::pair< const BPMN::Node*, const BPMNOS::number >, const Vertex*, pair_hash > vertexMap; /// Map holding allowing to access vertices by their node and instanceId
+  BPMNOS::tuple_map< std::tuple< const BPMN::Node*, const BPMNOS::number, const Vertex::Type>, const Vertex* > vertexMap; /// Map holding allowing to access vertices by their node, instanceId, and type
   std::vector<const Vertex*> messageRecipients; /// Container of all vertices catching a message
 
 //  CP::Sequence* sequence; /// Reference to sequence position variables
@@ -129,7 +135,7 @@ protected:
   std::unordered_map< const Vertex*, const CP::Variable& > globalIndex; /// Variables representing an index representing the state of the global attributes
 
   std::unordered_map< const Vertex*, std::vector< IndexedAttributeVariables > > data; /// Variables representing data attributes owned by an entry vertex after i-th modification
-  std::unordered_map< const Vertex*, std::vector<  CP::reference_vector< const CP::Variable > > > dataIndex; /// Variables representing an index representing the state of the data attributes for each data owner
+  std::unordered_map< const Vertex*, CP::reference_vector< const CP::Variable > > dataIndex; /// Variables representing an index representing the state of the data attributes for each data owner
 
   std::unordered_map< const Vertex*, std::vector<AttributeVariables> > status; /// Variables representing status attributes of a vertex
   std::unordered_map< std::pair< const Vertex*, const Vertex* >, std::vector<AttributeVariables>, pair_hash > statusFlow; /// Variables representing status attributes flowing from one vertex to another
