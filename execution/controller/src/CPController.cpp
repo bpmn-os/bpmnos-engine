@@ -52,7 +52,8 @@ std::cerr << "Validate: " << token->jsonify() << std::endl;
 
 //std::cerr << "Validate visit" << std::endl;    
   // check visit
-  if ( solution.evaluate( visit.at(vertex) ) != 1.0 ) {
+  auto visitEvaluation = solution.evaluate( visit.at(vertex) );
+  if ( visitEvaluation && visitEvaluation.value() != 1.0 ) {
     throw std::logic_error("CPController: vertex '" + vertex->reference() +"' not visited in solution");
   }
     
@@ -61,18 +62,25 @@ std::cerr << "Validate: " << token->jsonify() << std::endl;
   auto& statusVariables = status.at(vertex);
   assert( token->status.size() == statusVariables.size() );
   for (size_t i = 0; i < statusVariables.size(); i++) {
+    AttributeEvaluation evaluation(
+      solution.evaluate( statusVariables[i].defined ),
+      solution.evaluate( statusVariables[i].value )
+    );
+    if ( !evaluation ) {
+      continue;
+    }
     if ( token->status[i].has_value() ) {
       if ( 
-        !solution.evaluate( statusVariables[i].defined )  ||
-        solution.evaluate( statusVariables[i].value ) != token->status[i].value()
+        !evaluation.defined()  ||
+        evaluation.value() != token->status[i].value()
       ) {
         throw std::logic_error("CPController: '" + solution.stringify(statusVariables[i].defined) + "' or '" + solution.stringify(statusVariables[i].value) + "' inconsistent with " + token->jsonify().dump() );
       }
     }
     else {
       if ( 
-        solution.evaluate( statusVariables[i].defined )  ||
-        solution.evaluate( statusVariables[i].value ) != 0.0
+        evaluation.defined()  ||
+        evaluation.value() != 0.0
       ) {
         throw std::logic_error("CPController: '" + solution.stringify(statusVariables[i].defined) + "' or '" + solution.stringify(statusVariables[i].value) + "' inconsistent with " + token->jsonify().dump());
       }
@@ -306,7 +314,8 @@ std::shared_ptr<MessageDeliveryEvent> CPController::createMessageDeliveryEvent(c
 
   auto& solution = getSolution();
   for ( auto& [participants,variable] : messageFlow ) {
-    if ( participants.second != vertex || !solution.getVariableValue(variable) ) {
+    auto variableValue = solution.getVariableValue(variable);
+    if ( participants.second != vertex || !variableValue || !variableValue.value() ) {
       continue;
     }
     // find message
