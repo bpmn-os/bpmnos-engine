@@ -28,6 +28,15 @@ void CPController::subscribe(Engine* engine) {
   );
 }
 
+void CPController::setMessageFlowVariableValue( const Vertex* sender, const Vertex* recipient ) {
+  for ( const Vertex& candidate : sender->recipients ) {
+    _solution->setVariableValue( messageFlow.at(std::make_pair(sender,&candidate)), (double)(&candidate == recipient) );
+  }
+  for ( const Vertex& candidate : recipient->senders ) {
+    _solution->setVariableValue( messageFlow.at({&candidate,recipient}), (double)(&candidate == sender) );
+  }
+}
+
 void CPController::validate(const Token* token) {
   if ( !token->node && token->state != Token::State::ENTERED && token->state != Token::State::DONE ) {
     // token at process, but with irrelevant state
@@ -241,7 +250,6 @@ std::shared_ptr<Event> CPController::dispatchEvent(const SystemState* systemStat
     case ExitRequest:
     {
       if ( auto token = getToken(systemState->pendingExitDecisions) ) {
-//        event = std::make_shared<ExitEvent>(token);
         event = createExitEvent( systemState, token, vertex);
       }
       // decision is not yet requested
@@ -294,16 +302,16 @@ std::optional< BPMNOS::number > CPController::getTimestamp( const Vertex* vertex
 
 std::shared_ptr<EntryEvent> CPController::createEntryEvent(const SystemState* systemState, Token* token, const Vertex* vertex) const {
   auto timestamp = getTimestamp(vertex);
-  if ( !timestamp.has_value() || timestamp.value() > systemState->getTime() ) {
+  if ( !timestamp.has_value() || systemState->getTime() < timestamp.value() ) {
     return nullptr;
   }
-//      assert( decisionQueue.empty() || timestamp >= std::get<0>(decisionQueue.back()) );
+
   return std::make_shared<EntryEvent>(token);
 }
 
 std::shared_ptr<ExitEvent> CPController::createExitEvent(const SystemState* systemState, Token* token, const Vertex* vertex) const {
   auto timestamp = getTimestamp(vertex);
-  if ( !timestamp.has_value() || timestamp.value() > systemState->getTime() ) {
+  if ( !timestamp.has_value() || systemState->getTime() < timestamp.value() ) {
     return nullptr;
   }
   return std::make_shared<ExitEvent>(token);
@@ -311,7 +319,7 @@ std::shared_ptr<ExitEvent> CPController::createExitEvent(const SystemState* syst
 
 std::shared_ptr<ChoiceEvent> CPController::createChoiceEvent(const SystemState* systemState, Token* token, const Vertex* vertex) const {
   auto timestamp = getTimestamp(vertex);
-  if ( !timestamp.has_value() || timestamp.value() > systemState->getTime() ) {
+  if ( !timestamp.has_value() || systemState->getTime() < timestamp.value() ) {
     return nullptr;
   }
 
@@ -332,7 +340,7 @@ std::shared_ptr<ChoiceEvent> CPController::createChoiceEvent(const SystemState* 
 
 std::shared_ptr<MessageDeliveryEvent> CPController::createMessageDeliveryEvent(const SystemState* systemState, Token* token, const Vertex* vertex) const {
   auto timestamp = getTimestamp(vertex);
-  if ( !timestamp.has_value() || timestamp.value() > systemState->getTime() ) {
+  if ( !timestamp.has_value() || systemState->getTime() < timestamp.value() ) {
     return nullptr;
   }
 
@@ -340,9 +348,10 @@ std::shared_ptr<MessageDeliveryEvent> CPController::createMessageDeliveryEvent(c
   for ( auto& [participants,variable] : messageFlow ) {
     auto variableValue = solution.getVariableValue(variable);
     if ( participants.second != vertex || !variableValue || !variableValue.value() ) {
+      // irrelevant message flow variable
       continue;
     }
-    // find message
+    // find message with header indicating that the sender is the sending vertex
     for ( auto& [ message_ptr ] : systemState->outbox.at(participants.first->node->as<BPMN::FlowNode>()) ) {
       if ( auto message = message_ptr.lock();
         message &&

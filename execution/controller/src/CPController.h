@@ -160,6 +160,7 @@ protected:
 public:
   CP::Solution& createSolution(); /// Method creating a solution of the CP
   const CP::Solution& getSolution() const; /// Method providing access to the solution of the CP
+  void setMessageFlowVariableValue( const Vertex* sender, const Vertex* recipient );
 protected:
   void createDecisionQueue(); /// Method creating the decision queue from CP
   std::optional< BPMNOS::number > getTimestamp( const Vertex* vertex ) const;
