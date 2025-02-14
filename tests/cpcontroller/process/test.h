@@ -4,12 +4,6 @@ SCENARIO( "Empty executable process", "[cpcontroller][process]" ) {
   const std::string modelFile = "tests/execution/process/Empty_executable_process.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
 
-  auto defaultSequenceValues = [](size_t n) {
-    std::vector<double> values(n);
-    std::iota(values.begin(), values.end(), 1.0);
-    return values;
-  };
-
   GIVEN( "A single instance with no input values" ) {
     std::string csv =
       "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
@@ -26,12 +20,11 @@ SCENARIO( "Empty executable process", "[cpcontroller][process]" ) {
       auto& cpmodel = controller.getModel();
       auto cp = cpmodel.stringify();
 std::cout << cp << std::endl;
-      auto& solution = controller.createSolution();
-      auto& sequence = cpmodel.getSequences().front();
-      solution.setSequenceValues( sequence, defaultSequenceValues( sequence.variables.size() ) );
+      auto& solution = Test::createDefaultSolution(controller);
 std::cerr << "Solution:\n" << solution.stringify() << std::endl;
       Execution::Engine engine;
       controller.connect(&engine);
+      controller.subscribe(&engine); // only necessary to validate consistency of solution with execution
       Execution::TimeWarp timeHandler;
       timeHandler.connect(&engine);
 //      Execution::Recorder recorder;
