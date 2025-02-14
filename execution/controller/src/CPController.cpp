@@ -40,7 +40,6 @@ void CPController::validate(const Token* token) {
 
 std::cerr << "Validate: " << token->jsonify() << std::endl;    
 
-  auto& solution = getSolution();
   // get vertex
   auto vertex = vertexMap.at(
     std::make_tuple(
@@ -52,8 +51,12 @@ std::cerr << "Validate: " << token->jsonify() << std::endl;
 
 //std::cerr << "Validate visit" << std::endl;    
   // check visit
-  auto visitEvaluation = solution.evaluate( visit.at(vertex) );
-  if ( visitEvaluation && visitEvaluation.value() != 1.0 ) {
+  auto visitEvaluation = _solution->evaluate( visit.at(vertex) );
+  if ( !visitEvaluation ) {
+    // set solution value
+    _solution->setVariableValue( visit.at(vertex), 1.0 );
+  }
+  else if ( visitEvaluation && visitEvaluation.value() != 1.0 ) {
     throw std::logic_error("CPController: vertex '" + vertex->reference() +"' not visited in solution");
   }
     
@@ -63,26 +66,33 @@ std::cerr << "Validate: " << token->jsonify() << std::endl;
   assert( token->status.size() == statusVariables.size() );
   for (size_t i = 0; i < statusVariables.size(); i++) {
     AttributeEvaluation evaluation(
-      solution.evaluate( statusVariables[i].defined ),
-      solution.evaluate( statusVariables[i].value )
+      _solution->evaluate( statusVariables[i].defined ),
+      _solution->evaluate( statusVariables[i].value )
     );
-    if ( !evaluation ) {
-      continue;
-    }
     if ( token->status[i].has_value() ) {
-      if ( 
+      if ( !evaluation ) {
+        // set solution value
+        _solution->setVariableValue( statusVariables[i].defined, 1.0 );
+        _solution->setVariableValue( statusVariables[i].value, (double)token->status[i].value() );
+      }
+      else if ( 
         !evaluation.defined()  ||
         evaluation.value() != token->status[i].value()
       ) {
-        throw std::logic_error("CPController: '" + solution.stringify(statusVariables[i].defined) + "' or '" + solution.stringify(statusVariables[i].value) + "' inconsistent with " + token->jsonify().dump() );
+        throw std::logic_error("CPController: '" + _solution->stringify(statusVariables[i].defined) + "' or '" + _solution->stringify(statusVariables[i].value) + "' inconsistent with " + token->jsonify().dump() );
       }
     }
     else {
-      if ( 
+      if ( !evaluation ) {
+        // set solution value
+        _solution->setVariableValue( statusVariables[i].defined, 0.0 );
+        _solution->setVariableValue( statusVariables[i].value, 0.0 );
+      }
+      else if ( 
         evaluation.defined()  ||
         evaluation.value() != 0.0
       ) {
-        throw std::logic_error("CPController: '" + solution.stringify(statusVariables[i].defined) + "' or '" + solution.stringify(statusVariables[i].value) + "' inconsistent with " + token->jsonify().dump());
+        throw std::logic_error("CPController: '" + _solution->stringify(statusVariables[i].defined) + "' or '" + _solution->stringify(statusVariables[i].value) + "' inconsistent with " + token->jsonify().dump());
       }
     }
   }
@@ -92,7 +102,7 @@ std::cerr << "Validate: " << token->jsonify() << std::endl;
   auto& dataIndices = dataIndex.at(vertex);
   assert( dataIndices.size() == vertex->dataOwners.size() );
   for ( size_t i = 0; i < dataIndices.size(); i++ ) {
-    auto indexEvaluation = solution.evaluate( dataIndices[i] );
+    auto indexEvaluation = _solution->evaluate( dataIndices[i] );
     if ( !indexEvaluation ) {
       throw std::logic_error("CPController: Unable to determine data index for '" + vertex->reference() + "\n'" + indexEvaluation.error());
     }
@@ -104,26 +114,33 @@ std::cerr << "Validate: " << token->jsonify() << std::endl;
     for ( auto& attribute : extensionElements->data ) {
       IndexedAttributeVariables& indexedAttributeVariables = data.at(&ownerVertex)[attribute->index];
       AttributeEvaluation evaluation(
-        solution.evaluate( indexedAttributeVariables.defined[index] ),
-        solution.evaluate( indexedAttributeVariables.value[index] )
+        _solution->evaluate( indexedAttributeVariables.defined[index] ),
+        _solution->evaluate( indexedAttributeVariables.value[index] )
       );
-      if ( !evaluation ) {
-        continue;
-      }
       if ( token->data->at(attribute->index).get().has_value() ) {
-        if ( 
+        if ( !evaluation ) {
+          // set solution value
+          _solution->setVariableValue( indexedAttributeVariables.defined[index], 1.0 );
+          _solution->setVariableValue( indexedAttributeVariables.value[index], (double)token->data->at(attribute->index).get().value() );
+        }
+        else if ( 
           !evaluation.defined()  ||
           evaluation.value() != token->data->at(attribute->index).get().value()
         ) {
-          throw std::logic_error("CPController: '" + solution.stringify(indexedAttributeVariables.defined[index]) + "' or '" + solution.stringify(indexedAttributeVariables.defined[index]) + "' inconsistent with " + token->jsonify().dump());
+          throw std::logic_error("CPController: '" + _solution->stringify(indexedAttributeVariables.defined[index]) + "' or '" + _solution->stringify(indexedAttributeVariables.defined[index]) + "' inconsistent with " + token->jsonify().dump());
         }
       }
       else {
-        if ( 
+        if ( !evaluation ) {
+          // set solution value
+          _solution->setVariableValue( indexedAttributeVariables.defined[index], 0.0 );
+          _solution->setVariableValue( indexedAttributeVariables.value[index], 0.0 );
+        }
+        else if ( 
           evaluation.defined()  ||
           evaluation.value() != 0.0
         ) {
-          throw std::logic_error("CPController: '" + solution.stringify(indexedAttributeVariables.defined[index]) + "' or '" + solution.stringify(indexedAttributeVariables.defined[index]) + "' inconsistent with " + token->jsonify().dump());
+          throw std::logic_error("CPController: '" + _solution->stringify(indexedAttributeVariables.defined[index]) + "' or '" + _solution->stringify(indexedAttributeVariables.defined[index]) + "' inconsistent with " + token->jsonify().dump());
         }
       }
     }
@@ -131,7 +148,7 @@ std::cerr << "Validate: " << token->jsonify() << std::endl;
     
 //std::cerr << "Validate globals" << std::endl;    
   // check globals
-  auto indexEvaluation = solution.evaluate( globalIndex.at(vertex) );
+  auto indexEvaluation = _solution->evaluate( globalIndex.at(vertex) );
   if ( !indexEvaluation ) {
     throw std::logic_error("CPController: Unable to determine data index for '" + vertex->reference() + "\n'" + indexEvaluation.error());
   }
@@ -139,27 +156,34 @@ std::cerr << "Validate: " << token->jsonify() << std::endl;
   for ( size_t attributeIndex = 0; attributeIndex < token->globals.size(); attributeIndex++ ) {
     IndexedAttributeVariables& indexedAttributeVariables = globals[attributeIndex];
     AttributeEvaluation evaluation(
-      solution.evaluate( indexedAttributeVariables.defined[index] ),
-      solution.evaluate( indexedAttributeVariables.value[index] )
+      _solution->evaluate( indexedAttributeVariables.defined[index] ),
+      _solution->evaluate( indexedAttributeVariables.value[index] )
     );
-    if ( !evaluation ) {
-      continue;
-    }
 
     if ( token->globals[attributeIndex].has_value() ) {
-      if ( 
+      if ( !evaluation ) {
+        // set solution value
+        _solution->setVariableValue( indexedAttributeVariables.defined[index], 1.0 );
+        _solution->setVariableValue( indexedAttributeVariables.value[index], (double)token->globals[attributeIndex].value() );
+      }
+      else if ( 
         !evaluation.defined()  ||
         evaluation.value() != token->globals[attributeIndex].value()
       ) {
-        throw std::logic_error("CPController: '" + solution.stringify(indexedAttributeVariables.defined[index]) + "' or '" + solution.stringify(indexedAttributeVariables.defined[index]) + "' inconsistent with " + token->jsonify().dump());
+        throw std::logic_error("CPController: '" + _solution->stringify(indexedAttributeVariables.defined[index]) + "' or '" + _solution->stringify(indexedAttributeVariables.defined[index]) + "' inconsistent with " + token->jsonify().dump());
       }
     }
     else {
-      if ( 
+      if ( !evaluation ) {
+        // set solution value
+        _solution->setVariableValue( indexedAttributeVariables.defined[index], 0.0 );
+        _solution->setVariableValue( indexedAttributeVariables.value[index], 0.0 );
+      }
+      else if ( 
         evaluation.defined()  ||
         evaluation.value() != 0.0
       ) {
-        throw std::logic_error("CPController: '" + solution.stringify(indexedAttributeVariables.defined[index]) + "' or '" + solution.stringify(indexedAttributeVariables.defined[index]) + "' inconsistent with " + token->jsonify().dump());
+        throw std::logic_error("CPController: '" + _solution->stringify(indexedAttributeVariables.defined[index]) + "' or '" + _solution->stringify(indexedAttributeVariables.defined[index]) + "' inconsistent with " + token->jsonify().dump());
       }
     }
   }
