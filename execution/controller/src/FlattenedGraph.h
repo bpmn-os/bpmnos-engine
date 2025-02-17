@@ -7,6 +7,7 @@
 #include <list>
 #include <string>
 #include <bpmn++.h>
+#include <nlohmann/json.hpp>
 #include "model/data/src/Scenario.h"
 
 namespace BPMNOS::Execution {
@@ -20,6 +21,7 @@ class FlattenedGraph {
 public:
   FlattenedGraph(const BPMNOS::Model::Scenario* scenario);
   const BPMNOS::Model::Scenario* scenario;
+  nlohmann::ordered_json jsonify() const;
   
   class Vertex {
   public:
@@ -48,6 +50,7 @@ public:
     std::pair<const Vertex&, const Vertex&> performer() const ; /// Returns the vertices of the performer of a sequential activity vertex
     std::pair<const Vertex&, const Vertex&> dataOwner( const BPMNOS::Model::Attribute* attribute ) const; /// Returns the vertices of the owner of a data attribute
     std::string reference() const; /// Returns a unique reference of the vertex
+    nlohmann::ordered_json jsonify() const;
     template<typename T>
     bool entry() const { return (type == Type::ENTRY) && node->represents<T>(); }
     template<typename T>
