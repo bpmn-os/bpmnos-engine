@@ -52,11 +52,13 @@ Expression::Type Expression::getType() const {
   assert( compiled.getRoot().operands.size() == 1 );
   assert( compiled.getRoot().type == LIMEX::Type::group );
 
+  auto& root = compiled.getRoot(); 
+  assert( !root.operands.empty() );
+  auto& node = std::get< LIMEX::Node<double> >(root.operands[0]);
+
   // check if any of the variables is named "undefined"
   if ( std::find( variableNames.begin(), variableNames.end(), BPMNOS::Keyword::Undefined ) != variableNames.end() ) {
     // only lhs == undefined, lhs != undefined, and lhs := undefined are allowed
-    auto& root = compiled.getRoot(); 
-    auto& node = std::get< LIMEX::Node<double> >(root.operands[0]);
     
     if ( node.type == LIMEX::Type::assign ) {
       assert( node.operands.size() == 1 );
@@ -93,7 +95,7 @@ Expression::Type Expression::getType() const {
     return node.type == LIMEX::Type::equal_to ? Type::IS_NULL : Type::IS_NOT_NULL;
   }
   // all variables must be defined
-  return Type::OTHER;
+  return ( node.type == LIMEX::Type::assign ) ? Type::ASSIGN : Type::OTHER;
 }
 
 const Attribute* Expression::isAttribute() const {

@@ -21,9 +21,10 @@ namespace BPMNOS::Execution {
  * @brief A controller dispatching decisions obtained from a solution of a constraint program
  */
 class CPController : public Controller {
-using Vertex = FlattenedGraph::Vertex;
-using RequestType = Observable::Type;
 public:
+  using Vertex = FlattenedGraph::Vertex;
+  using RequestType = Observable::Type;
+
   struct Config {
     bool instantEntry = false;
     bool instantExit = false;
@@ -58,6 +59,8 @@ protected:
   void createExitVariables(const Vertex* vertex);
 
   void createSequenceConstraints(const Vertex* vertex);
+  void createRestrictions(const Vertex* vertex);
+  CP::Expression createExpression(const Vertex* vertex, const Model::Expression& expression);
 
   void createGlobalIndexVariable(const Vertex* vertex);
   void createDataVariables(const Vertex* vertex);
@@ -158,20 +161,21 @@ protected:
 
   std::queue< std::pair< RequestType, const Vertex* > > decisionQueue; /// The queue of decisions to be made
 public:
-  CP::Solution& createSolution(); /// Method creating a solution of the CP
+  virtual CP::Solution& createSolution(); /// Method creating a solution of the CP
   const CP::Solution& getSolution() const; /// Method providing access to the solution of the CP
   void setMessageFlowVariableValue( const Vertex* sender, const Vertex* recipient );
 protected:
   void createDecisionQueue(); /// Method creating the decision queue from CP
   std::optional< BPMNOS::number > getTimestamp( const Vertex* vertex ) const;
-  virtual std::shared_ptr<EntryEvent> createEntryEvent(const SystemState* systemState, Token* token, const Vertex* vertex) const; /// Method creating a choice event from CP solution
-  virtual std::shared_ptr<ExitEvent> createExitEvent(const SystemState* systemState, Token* token, const Vertex* vertex) const; /// Method creating a choice event from CP solution
-  virtual std::shared_ptr<ChoiceEvent> createChoiceEvent(const SystemState* systemState, Token* token, const Vertex* vertex) const; /// Method creating a choice event from CP solution
-  virtual std::shared_ptr<MessageDeliveryEvent> createMessageDeliveryEvent(const SystemState* systemState, Token* token, const Vertex* vertex) const; /// Method creating a message delivery event from CP solution
+  void setTimestamp( const Vertex* vertex, BPMNOS::number timestamp );
+
+  virtual std::shared_ptr<Event> createEntryEvent(const SystemState* systemState, Token* token, const Vertex* vertex); /// Method creating a choice event from CP solution
+  virtual std::shared_ptr<Event> createExitEvent(const SystemState* systemState, Token* token, const Vertex* vertex); /// Method creating a choice event from CP solution
+  virtual std::shared_ptr<Event> createChoiceEvent(const SystemState* systemState, Token* token, const Vertex* vertex); /// Method creating a choice event from CP solution
+  virtual std::shared_ptr<Event> createMessageDeliveryEvent(const SystemState* systemState, Token* token, const Vertex* vertex); /// Method creating a message delivery event from CP solution
 
   const Vertex* entry(const Vertex* vertex);
   const Vertex* exit(const Vertex* vertex);
-private:
   std::unique_ptr<CP::Solution> _solution;
 /* 
   std::unordered_map<const BPMNOS::Model::Attribute*, const BPMN::Scope* > dataOwner;/// Map allowing to look up the scope owning a data attribute

@@ -8,6 +8,9 @@ Restriction::Restriction(XML::bpmnos::tRestriction* restriction, const Attribute
   , expression(Expression(restriction->expression.value.value,attributeRegistry))
   , scope(Scope::FULL)
 {
+  if ( expression.type == Expression::Type::ASSIGN || expression.type == Expression::Type::UNASSIGN ) {
+    throw std::runtime_error("Restriction: illegal restriction '" + expression.expression + "'");
+  }
   if ( restriction->scope.has_value() ) {
     if ( restriction->scope->get().value.value == "entry" ) {
       scope = Scope::ENTRY;

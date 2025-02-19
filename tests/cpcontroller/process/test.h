@@ -13,57 +13,29 @@ SCENARIO( "Empty executable process", "[cpcontroller][process]" ) {
     Model::StaticDataProvider dataProvider(modelFile,csv);
     auto scenario = dataProvider.createScenario();
 
-    REQUIRE_NOTHROW( BPMNOS::Execution::FlattenedGraph(scenario.get()) );
+    REQUIRE_NOTHROW( Execution::FlattenedGraph(scenario.get()) );
 
     WHEN( "The model is created" ) {
-      Execution::CPController controller(scenario.get(), { .instantEntry = true, .instantExit = true });
-      auto& cpmodel = controller.getModel();
-      auto cp = cpmodel.stringify();
-std::cout << cp << std::endl;
-      auto& solution = Test::createDefaultSolution(controller);
-std::cerr << "Solution:\n" << solution.stringify() << std::endl;
+      Execution::GuidedEvaluator evaluator;
+      Execution::SeededGreedyController controller(scenario.get(), &evaluator);
+      controller.setSeed( Execution::CPSeed::defaultSeed( controller.getVertices().size() ) );
+
+      auto& solution = controller.createSolution();
       Execution::Engine engine;
       controller.connect(&engine);
-      controller.subscribe(&engine); // only necessary to validate consistency of solution with execution
+      controller.subscribe(&engine); // only necessary to validate consistency of solution and identify errors
       Execution::TimeWarp timeHandler;
       timeHandler.connect(&engine);
-//      Execution::Recorder recorder;
-      Execution::Recorder recorder(std::cerr);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
       engine.run(scenario.get(),10);
-
-/*
-///////
-      auto& cpmodel = controller.createCP(scenario.get());
-      auto cp = cpmodel.stringify();
       
-      std::cout << cp << std::endl;
+//std::cerr << "Model:\n" << controller.getModel().stringify() << std::endl;
+//std::cerr << "Solution:\n" << solution.stringify() << std::endl;
+      REQUIRE( solution.errors().empty() ); // requires subscription of controller to engine
       
-      THEN( "The model has the right variables" ) {
-        REQUIRE( cp.find("x_{Instance_1,Process_1} := 1.00") != std::string::npos );
-        REQUIRE( cp.find("y^{entry,0,Process_1}_{Instance_1,Process_1} := 1.00") != std::string::npos );
-        REQUIRE( cp.find("y^{exit,0,Process_1}_{Instance_1,Process_1} ∈ [ 0.00, 1.00 ]") != std::string::npos );     
-        
-        REQUIRE( cp.find("0.00 + 1.00*y^{entry,0,Process_1}_{Instance_1,Process_1} - 1.00*x_{Instance_1,Process_1} == 0") != std::string::npos );
-        REQUIRE( cp.find("0.00 + 1.00*y^{exit,0,Process_1}_{Instance_1,Process_1} - 1.00*y^{entry,0,Process_1}_{Instance_1,Process_1} <= 0") != std::string::npos );
-        REQUIRE( cp.find("0.00 + 1.00*y^{exit,0,Process_1}_{Instance_1,Process_1} - 1.00*x_{Instance_1,Process_1} == 0") != std::string::npos );
 
-        REQUIRE( cp.find("defined^entry_{Instance_1,Process_1,instance} := 1.00") != std::string::npos );
-        REQUIRE( cp.find("value^entry_{Instance_1,Process_1,instance} := 2.00") != std::string::npos );
-        
-        REQUIRE( cp.find("defined^0_{Instance_1,Process_1} := 0.00 + 1.00*defined^entry_{Instance_1,Process_1,instance}") != std::string::npos );
-        REQUIRE( cp.find("value^0_{Instance_1,Process_1} := 0.00 + 1.00*value^entry_{Instance_1,Process_1,instance}") != std::string::npos );
-
-        REQUIRE( cp.find("defined^exit_[Instance_1,Process_1,instance} := if y^{exit,0,Process_1}_{Instance_1,Process_1} then 0.00 + 1.00*defined^0_{Instance_1,Process_1} else 0.00") != std::string::npos );
-        REQUIRE( cp.find("value^exit_{Instance_1,Process_1,instance} := if y^{exit,0,Process_1}_{Instance_1,Process_1} then 0.00 + 1.00*value^0_{Instance_1,Process_1} else 0.00") != std::string::npos );
-        
-        REQUIRE( cp.find("defined^entry_{Instance_1,Process_1,timestamp} := 1.00") != std::string::npos );
-        REQUIRE( cp.find("value^entry_{Instance_1,Process_1,timestamp} := 0.00") != std::string::npos );
-
-        REQUIRE( cp.find("defined^exit_[Instance_1,Process_1,timestamp} := 0.00 + 1.00*defined^entry_{Instance_1,Process_1,timestamp}") != std::string::npos );
-        REQUIRE( cp.find("value^exit_{Instance_1,Process_1,timestamp} := 0.00 + 1.00*value^entry_{Instance_1,Process_1,timestamp}") != std::string::npos );
-      }
-*/
     }
   }
 };
@@ -84,12 +56,63 @@ SCENARIO( "Trivial executable process", "[cpcontroller][process]" ) {
     REQUIRE_NOTHROW( BPMNOS::Execution::FlattenedGraph(scenario.get()) );
 
     WHEN( "The model is created" ) {
-      Execution::CPController controller(scenario.get());
-      auto& cpmodel = controller.getModel();
-//      std::cout << cpmodel.stringify() << std::endl;
-//      auto cp = cpmodel.stringify();
+      Execution::GuidedEvaluator evaluator;
+      Execution::SeededGreedyController controller(scenario.get(), &evaluator);
+      controller.setSeed( Execution::CPSeed::defaultSeed( controller.getVertices().size() ) );
 
-//      std::cout << cp << std::endl;
+      auto& solution = controller.createSolution();
+      Execution::Engine engine;
+      controller.connect(&engine);
+      controller.subscribe(&engine); // only necessary to validate consistency of solution and identify errors
+      Execution::TimeWarp timeHandler;
+      timeHandler.connect(&engine);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
+      recorder.subscribe(&engine);
+      engine.run(scenario.get(),10);
+      
+//std::cerr << "Model:\n" << controller.getModel().stringify() << std::endl;
+//std::cerr << "Solution:\n" << solution.stringify() << std::endl;
+      REQUIRE( solution.errors().empty() ); // requires subscription of controller to engine
+    }
+  }
+};
+
+
+SCENARIO( "Simple executable process", "[cpcontroller][process]" ) {
+  const std::string modelFile = "tests/execution/process/Constrained_executable_process.bpmn";
+  REQUIRE_NOTHROW( Model::Model(modelFile) );
+
+  GIVEN( "A single instance with no input values" ) {
+    std::string csv =
+      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
+      "Process_1, Instance_1,,\n"
+    ;
+
+    Model::StaticDataProvider dataProvider(modelFile,csv);
+    auto scenario = dataProvider.createScenario();
+
+    REQUIRE_NOTHROW( BPMNOS::Execution::FlattenedGraph(scenario.get()) );
+
+    WHEN( "The model is created" ) {
+      Execution::GuidedEvaluator evaluator;
+      Execution::SeededGreedyController controller(scenario.get(), &evaluator);
+      controller.setSeed( Execution::CPSeed::defaultSeed( controller.getVertices().size() ) );
+
+      auto& solution = controller.createSolution();
+      Execution::Engine engine;
+      controller.connect(&engine);
+      controller.subscribe(&engine); // only necessary to validate consistency of solution and identify errors
+      Execution::TimeWarp timeHandler;
+      timeHandler.connect(&engine);
+//      Execution::Recorder recorder;
+      Execution::Recorder recorder(std::cerr);
+      recorder.subscribe(&engine);
+      engine.run(scenario.get(),10);
+      
+std::cerr << "Model:\n" << controller.getModel().stringify() << std::endl;
+std::cerr << "Solution:\n" << solution.stringify() << std::endl;
+      REQUIRE( solution.errors().empty() ); // requires subscription of controller to engine
     }
   }
 };
