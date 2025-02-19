@@ -64,9 +64,9 @@ std::cerr << "Validate: " << token->jsonify() << std::endl;
   auto visitEvaluation = _solution->evaluate( visit.at(vertex) );
   if ( !visitEvaluation ) {
     // set solution value
-    _solution->setVariableValue( visit.at(vertex), 1.0 );
+    _solution->setVariableValue( visit.at(vertex), true );
   }
-  else if ( visitEvaluation && visitEvaluation.value() != 1.0 ) {
+  else if ( visitEvaluation && visitEvaluation.value() != true ) {
     throw std::logic_error("CPController: vertex '" + vertex->reference() +"' not visited in solution");
   }
     
@@ -82,7 +82,7 @@ std::cerr << "Validate: " << token->jsonify() << std::endl;
     if ( token->status[i].has_value() ) {
       if ( !evaluation ) {
         // set solution value
-        _solution->setVariableValue( statusVariables[i].defined, 1.0 );
+        _solution->setVariableValue( statusVariables[i].defined, true );
         _solution->setVariableValue( statusVariables[i].value, (double)token->status[i].value() );
       }
       else if ( 
@@ -95,7 +95,7 @@ std::cerr << "Validate: " << token->jsonify() << std::endl;
     else {
       if ( !evaluation ) {
         // set solution value
-        _solution->setVariableValue( statusVariables[i].defined, 0.0 );
+        _solution->setVariableValue( statusVariables[i].defined, false );
         _solution->setVariableValue( statusVariables[i].value, 0.0 );
       }
       else if ( 
@@ -130,7 +130,7 @@ std::cerr << "Validate: " << token->jsonify() << std::endl;
       if ( token->data->at(attribute->index).get().has_value() ) {
         if ( !evaluation ) {
           // set solution value
-          _solution->setVariableValue( indexedAttributeVariables.defined[index], 1.0 );
+          _solution->setVariableValue( indexedAttributeVariables.defined[index], true );
           _solution->setVariableValue( indexedAttributeVariables.value[index], (double)token->data->at(attribute->index).get().value() );
         }
         else if ( 
@@ -143,7 +143,7 @@ std::cerr << "Validate: " << token->jsonify() << std::endl;
       else {
         if ( !evaluation ) {
           // set solution value
-          _solution->setVariableValue( indexedAttributeVariables.defined[index], 0.0 );
+          _solution->setVariableValue( indexedAttributeVariables.defined[index], false );
           _solution->setVariableValue( indexedAttributeVariables.value[index], 0.0 );
         }
         else if ( 
@@ -173,7 +173,7 @@ std::cerr << "Validate: " << token->jsonify() << std::endl;
     if ( token->globals[attributeIndex].has_value() ) {
       if ( !evaluation ) {
         // set solution value
-        _solution->setVariableValue( indexedAttributeVariables.defined[index], 1.0 );
+        _solution->setVariableValue( indexedAttributeVariables.defined[index], true );
         _solution->setVariableValue( indexedAttributeVariables.value[index], (double)token->globals[attributeIndex].value() );
       }
       else if ( 
@@ -186,7 +186,7 @@ std::cerr << "Validate: " << token->jsonify() << std::endl;
     else {
       if ( !evaluation ) {
         // set solution value
-        _solution->setVariableValue( indexedAttributeVariables.defined[index], 0.0 );
+        _solution->setVariableValue( indexedAttributeVariables.defined[index], false );
         _solution->setVariableValue( indexedAttributeVariables.value[index], 0.0 );
       }
       else if ( 
@@ -456,12 +456,12 @@ void CPController::createGlobalVariables() {
     auto& initialValue = scenario->globals[attribute->index];
     if ( initialValue.has_value() ) {
       // defined initial value
-      defined.emplace_back((double)true,(double)true);
-      value.emplace_back((double)initialValue.value(), (double)initialValue.value()); 
+      defined.emplace_back(true,true);
+      value.emplace_back((double)initialValue.value(),(double)initialValue.value()); 
     }
     else {
       // undefined initial value
-      defined.emplace_back((double)false,(double)false);
+      defined.emplace_back(false,false);
       value.emplace_back(0.0, 0.0); 
     }
     
@@ -565,12 +565,12 @@ void CPController::createDataVariables(const FlattenedGraph::Vertex* vertex) {
     auto initialValue = scenario->getKnownValue(vertex->rootId, attribute.get(), 0);
     if ( initialValue.has_value() ) {
       // defined initial value
-      defined.emplace_back((double)true,(double)true);
+      defined.emplace_back(true,true);
       value.emplace_back((double)initialValue.value(), (double)initialValue.value()); 
     }
     else {
       // undefined initial value
-      defined.emplace_back((double)false,(double)false);
+      defined.emplace_back(false,false);
       value.emplace_back(0.0, 0.0); 
     }
     
@@ -661,7 +661,7 @@ void CPController::createEntryStatus(const Vertex* vertex) {
       if ( value.has_value() ) {
         // defined initial value
         variables.emplace_back(
-          model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->reference() + "}," + attribute->id, (double)true,(double)true ), 
+          model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->reference() + "}," + attribute->id, true, true ), 
           model.addVariable(CP::Variable::Type::REAL, "value_{" + vertex->reference() + "}," + attribute->id, (double)value.value(), (double)value.value()) 
         );
       }
@@ -669,7 +669,7 @@ void CPController::createEntryStatus(const Vertex* vertex) {
         // no given value
         bool defined = ( attribute->index == BPMNOS::Model::ExtensionElements::Index::Timestamp );
         variables.emplace_back(
-          model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->reference() + "}," + attribute->id, (double)defined,(double)defined ), 
+          model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->reference() + "}," + attribute->id, defined, defined ), 
           model.addVariable(CP::Variable::Type::REAL, "value_{" + vertex->reference() + "}," + attribute->id, 0.0, 0.0) 
         );
       }
@@ -836,7 +836,7 @@ std::vector<CPController::AttributeVariables> CPController::createMergedStatus(c
         terms.emplace_back( attributeVariables[attribute->index].value );
       }
       variables.emplace_back(
-        model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->reference() + "}," + attribute->id, (double)true, (double)true ), 
+        model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->reference() + "}," + attribute->id, true, true ), 
         model.addVariable(CP::Variable::Type::REAL, "value_{" + vertex->reference() + "}," + attribute->id, CP::max(terms) )
       );
     }
@@ -982,7 +982,7 @@ void CPController::createEntryVariables(const FlattenedGraph::Vertex* vertex) {
   }
   else if ( vertex->node->represents<BPMN::Process>() ) {
     // every process vertex is visited
-    auto& knownVisit = model.addVariable(CP::Variable::Type::BOOLEAN, "visit_{" + BPMNOS::to_string(vertex->instanceId, STRING) + "," + vertex->node->id + "}", (double)true, (double)true );
+    auto& knownVisit = model.addVariable(CP::Variable::Type::BOOLEAN, "visit_{" + BPMNOS::to_string(vertex->instanceId, STRING) + "," + vertex->node->id + "}", true, true );
     visit.emplace(vertex, knownVisit );
     visit.emplace(exit(vertex), knownVisit );
   }
@@ -1013,7 +1013,7 @@ std::cerr << "createExitVariables" << std::endl;
             CP::if_then_else( 
               tokenFlow.at({vertex,&vertex->outflows.front().second}), 
               status.at(vertex)[attribute->index].defined, 
-              (double)false
+              false
             )
           ), 
           model.addVariable(CP::Variable::Type::REAL, "statusflow_value_{" + vertex->reference() + " → " + vertex->outflows.front().second.reference() + "}," + attribute->id, 
@@ -1090,7 +1090,7 @@ void CPController::createRestrictions(const Vertex* vertex) {
         assert( restriction->expression.variables.size() == 1 );
         auto attribute = restriction->expression.variables.front();
         if ( attribute->category == Model::Attribute::Category::STATUS ) {
-          model.addConstraint( status.at(vertex)[attribute->index].defined == 0.0 );
+          model.addConstraint( status.at(vertex)[attribute->index].defined == false );
         }
         else if ( attribute->category == Model::Attribute::Category::DATA ) {
           assert(!"Not yet implemented");
@@ -1098,7 +1098,7 @@ void CPController::createRestrictions(const Vertex* vertex) {
           auto& ownerVertex = *vertex; // TODO
           IndexedAttributeVariables& indexedAttributeVariables = data.at(&ownerVertex)[attribute->index];
           size_t i = 0; //TODO
-          model.addConstraint( indexedAttributeVariables.defined[ dataIndex.at(vertex)[i] ] == 0.0 );
+          model.addConstraint( indexedAttributeVariables.defined[ dataIndex.at(vertex)[i] ] == false );
         }
         else {
           assert(!"Not yet implemented");
@@ -1108,7 +1108,7 @@ void CPController::createRestrictions(const Vertex* vertex) {
         assert( restriction->expression.variables.size() == 1 );
         auto attribute = restriction->expression.variables.front();       
         if ( attribute->category == Model::Attribute::Category::STATUS ) {
-          model.addConstraint( visit.at(vertex).implies( status.at(vertex)[attribute->index].defined == 1.0 ) );
+          model.addConstraint( visit.at(vertex).implies( status.at(vertex)[attribute->index].defined == true ) );
         }
         else if ( attribute->category == Model::Attribute::Category::DATA ) {
           assert(!"Not yet implemented");
@@ -1121,7 +1121,7 @@ void CPController::createRestrictions(const Vertex* vertex) {
         assert( restriction->expression.type == Model::Expression::Type::OTHER );
         for ( auto attribute : restriction->expression.variables ) {
           if ( attribute->category == Model::Attribute::Category::STATUS ) {
-            model.addConstraint( visit.at(vertex).implies( status.at(vertex)[attribute->index].defined == 1.0 ) );
+            model.addConstraint( visit.at(vertex).implies( status.at(vertex)[attribute->index].defined == true ) );
           }
           else if ( attribute->category == Model::Attribute::Category::DATA ) {
             assert(!"Not yet implemented");
