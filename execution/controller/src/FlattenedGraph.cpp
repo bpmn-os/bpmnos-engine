@@ -56,20 +56,23 @@ std::pair<const FlattenedGraph::Vertex&, const FlattenedGraph::Vertex&> Flattene
   return { *entry, *exit };
 }
 
-std::pair< const FlattenedGraph::Vertex&, const FlattenedGraph::Vertex&> FlattenedGraph::Vertex::dataOwner( const BPMNOS::Model::Attribute* attribute ) const {
+size_t FlattenedGraph::Vertex::dataOwnerIndex( const BPMNOS::Model::Attribute* attribute ) const {
   assert( attribute->category == BPMNOS::Model::Attribute::Category::DATA );
-  const Vertex* entry = (type == Type::ENTRY ? this : this - 1);
-  const Vertex* exit = (type == Type::EXIT ? this : this + 1);
-  const BPMNOS::Model::ExtensionElements* extensionElements = node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
-  while ( extensionElements->attributeRegistry.dataAttributes.size() - extensionElements->data.size() > attribute->index ) {
-    assert( entry->parent.has_value() );
-    auto parentVertices = entry->parent.value();
-    entry = &parentVertices.first;
-    exit = &parentVertices.second;
-    extensionElements = entry->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+  for ( size_t index = 0; index < dataOwners.size(); index++) {
+    auto extensionElements = dataOwners[index].get().node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+    if ( 
+      attribute->index < extensionElements->attributeRegistry.dataAttributes.size() &&
+      attribute->index >= extensionElements->attributeRegistry.dataAttributes.size() - extensionElements->data.size()
+    ) {
+      return index;
+    }
   }
+  throw std::logic_error("FlattenedGraph: unable to determine data owner index for '" + attribute->id + "'");
+}
 
-  return { *entry, *exit };
+std::pair< const FlattenedGraph::Vertex&, const FlattenedGraph::Vertex&> FlattenedGraph::Vertex::dataOwner( const BPMNOS::Model::Attribute* attribute ) const {
+  auto index = dataOwnerIndex(attribute);
+  return { dataOwners[index].get(), *(&dataOwners[index].get() + 1) };
 }
 
 std::string FlattenedGraph::Vertex::reference() const {

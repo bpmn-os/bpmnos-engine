@@ -150,7 +150,7 @@ protected:
   std::vector< IndexedAttributeVariables > globals; /// Variables representing global attributes after i-th modification
   std::unordered_map< const Vertex*, const CP::Variable& > globalIndex; /// Variables representing an index representing the state of the global attributes
 
-  std::unordered_map< const Vertex*, std::vector< IndexedAttributeVariables > > data; /// Variables representing data attributes owned by an entry vertex after i-th modification
+  std::unordered_map< const Model::Attribute*, IndexedAttributeVariables > data; /// Variables representing data attributes after i-th modification
   std::unordered_map< const Vertex*, CP::reference_vector< const CP::Variable > > dataIndex; /// Variables representing an index representing the state of the data attributes for each data owner
 
   std::unordered_map< const Vertex*, std::vector<AttributeVariables> > status; /// Variables representing status attributes of a vertex
@@ -168,6 +168,7 @@ protected:
   void createDecisionQueue(); /// Method creating the decision queue from CP
   std::optional< BPMNOS::number > getTimestamp( const Vertex* vertex ) const;
   void setTimestamp( const Vertex* vertex, BPMNOS::number timestamp );
+  std::pair< CP::Expression, CP::Expression > getAttributeVariables( const Vertex* vertex, const Model::Attribute* attribute);
 
   virtual std::shared_ptr<Event> createEntryEvent(const SystemState* systemState, Token* token, const Vertex* vertex); /// Method creating a choice event from CP solution
   virtual std::shared_ptr<Event> createExitEvent(const SystemState* systemState, Token* token, const Vertex* vertex); /// Method creating a choice event from CP solution

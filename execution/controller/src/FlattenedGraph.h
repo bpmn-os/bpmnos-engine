@@ -48,6 +48,7 @@ public:
     std::vector< std::reference_wrapper<Vertex> > dataOwners;   /// Container holding all entry vertices of nodes owning at least one data attribute
 //    std::pair<const Vertex&, const Vertex&> parent() const; /// Returns the vertices of the parent
     std::pair<const Vertex&, const Vertex&> performer() const ; /// Returns the vertices of the performer of a sequential activity vertex
+    size_t dataOwnerIndex( const BPMNOS::Model::Attribute* attribute ) const; /// Returns the index of the data owner of an attribute
     std::pair<const Vertex&, const Vertex&> dataOwner( const BPMNOS::Model::Attribute* attribute ) const; /// Returns the vertices of the owner of a data attribute
     std::string reference() const; /// Returns a unique reference of the vertex
     nlohmann::ordered_json jsonify() const;

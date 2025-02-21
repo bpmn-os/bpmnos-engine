@@ -122,7 +122,7 @@ std::cerr << "Validate: " << token->jsonify() << std::endl;
     auto scope = ownerVertex.node;
     auto extensionElements = scope->extensionElements->as<BPMNOS::Model::ExtensionElements>();
     for ( auto& attribute : extensionElements->data ) {
-      IndexedAttributeVariables& indexedAttributeVariables = data.at(&ownerVertex)[attribute->index];
+      IndexedAttributeVariables& indexedAttributeVariables = data.at(attribute.get());
       AttributeEvaluation evaluation(
         _solution->evaluate( indexedAttributeVariables.defined[index] ),
         _solution->evaluate( indexedAttributeVariables.value[index] )
@@ -424,7 +424,7 @@ void CPController::createCP() {
 
 //std::cerr << "create sequence position variables" << std::endl;
   // create sequence position variables for all vertices
-  auto& sequence = model.addSequence( "sequence", vertices.size() );
+  auto& sequence = model.addSequence( "position", vertices.size() );
   for ( size_t i = 0; i < vertices.size(); i++ ) {
     position.emplace(vertices[i], sequence.variables[i]);
   } 
@@ -462,7 +462,7 @@ void CPController::createGlobalVariables() {
     else {
       // undefined initial value
       defined.emplace_back(false,false);
-      value.emplace_back(0.0, 0.0); 
+      value.emplace_back(0.0,0.0); 
     }
     
     if ( attribute->isImmutable ) {
@@ -552,26 +552,22 @@ void CPController::createMessageContent(const Vertex* vertex) {
 void CPController::createDataVariables(const FlattenedGraph::Vertex* vertex) {
   auto extensionElements = vertex->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
 
-  std::vector<IndexedAttributeVariables > variables; 
-  
   for ( auto& attribute : extensionElements->data ) {
-    assert( attribute->index == variables.size() ); // ensure that the order of attributes is correct
-    variables.emplace_back(
-      model.addIndexedVariables(CP::Variable::Type::BOOLEAN, "defined_{" + BPMNOS::to_string(vertex->instanceId,STRING) + "}," + attribute->id ), 
-      model.addIndexedVariables(CP::Variable::Type::REAL, "value_{" + BPMNOS::to_string(vertex->instanceId,STRING) + "}," + attribute->id ) 
+    IndexedAttributeVariables variables( 
+      model.addIndexedVariables(CP::Variable::Type::BOOLEAN, "defined_{" + BPMNOS::to_string(vertex->instanceId, STRING) + "," + vertex->node->id + "}," + attribute->id ),
+      model.addIndexedVariables(CP::Variable::Type::REAL, "value_{" + BPMNOS::to_string(vertex->instanceId, STRING) + "," + vertex->node->id + "}," + attribute->id )
     );
-    auto& [defined,value] = variables.back();
     // add variables holding initial values
     auto initialValue = scenario->getKnownValue(vertex->rootId, attribute.get(), 0);
     if ( initialValue.has_value() ) {
       // defined initial value
-      defined.emplace_back(true,true);
-      value.emplace_back((double)initialValue.value(), (double)initialValue.value()); 
+      variables.defined.emplace_back(true,true);
+      variables.value.emplace_back((double)initialValue.value(), (double)initialValue.value()); 
     }
     else {
       // undefined initial value
-      defined.emplace_back(false,false);
-      value.emplace_back(0.0, 0.0); 
+      variables.defined.emplace_back(false,false);
+      variables.value.emplace_back(0.0,0.0); 
     }
     
     assert( flattenedGraph.dataModifiers.contains(vertex) );
@@ -579,20 +575,19 @@ void CPController::createDataVariables(const FlattenedGraph::Vertex* vertex) {
       // deducible variables
       for ( [[maybe_unused]] auto _ : flattenedGraph.dataModifiers.at(vertex) ) {
         // use initial value for all data states
-        defined.emplace_back(defined[0]);
-        value.emplace_back(value[0]); 
+        variables.defined.emplace_back(variables.defined[0]);
+        variables.value.emplace_back(variables.value[0]); 
       }
     }
     else {
       for ( [[maybe_unused]] auto _ : flattenedGraph.dataModifiers.at(vertex) ) {
         // unconstrained variables for all data states
-        defined.emplace_back();
-        value.emplace_back(); 
+        variables.defined.emplace_back();
+        variables.value.emplace_back(); 
       }
     }
+    data.emplace( attribute.get(), std::move(variables) ); 
   }
-
-  data.emplace( vertex, std::move(variables) ); 
 }
 
 void CPController::createStatus(const Vertex* vertex) {
@@ -810,7 +805,7 @@ std::vector<CPController::AttributeVariables> CPController::createAlternativeEnt
   for ( auto& [name,attribute] : attributeRegistry.statusAttributes ) {
     // deduce variable
     CP::Expression defined(false);
-    CP::Expression value = 0.0;
+    CP::Expression value(0.0);
     for ( auto& [ active, attributeVariables] : alternatives ) {
       assert( attributeVariables.size() == attributeRegistry.statusAttributes.size() );
       defined = defined || attributeVariables[attribute->index].defined;
@@ -953,6 +948,30 @@ std::cerr << "createVertexVariables: " << vertex->reference() << std::endl;
 std::cerr << "Done" << std::endl;
 }
 
+std::pair< CP::Expression, CP::Expression > CPController::getAttributeVariables( const Vertex* vertex, const Model::Attribute* attribute) {
+  if ( attribute->category == Model::Attribute::Category::STATUS ) {
+    return std::make_pair<CP::Expression,CP::Expression>( 
+      status.at(vertex)[attribute->index].defined,
+      status.at(vertex)[attribute->index].value 
+    );
+  }
+  else if ( attribute->category == Model::Attribute::Category::DATA ) {
+    auto& index = dataIndex.at(vertex)[ vertex->dataOwnerIndex(attribute) ];
+    return std::make_pair<CP::Expression,CP::Expression>( 
+      data.at(attribute).defined[ index ],
+      data.at(attribute).value[ index ]
+    );
+  }
+  else {
+    assert( attribute->category == Model::Attribute::Category::GLOBAL );
+    auto& index = globalIndex.at(vertex);
+    return std::make_pair<CP::Expression,CP::Expression>( 
+      globals[attribute->index].defined[ index ],
+      globals[attribute->index].value[ index ] 
+    );
+  }
+}
+
 void CPController::createEntryVariables(const FlattenedGraph::Vertex* vertex) {
   // visit variable
   if ( vertex->node->represents<BPMN::UntypedStartEvent>() ) {
@@ -1089,46 +1108,21 @@ void CPController::createRestrictions(const Vertex* vertex) {
       if ( restriction->expression.type == Model::Expression::Type::IS_NULL ) {
         assert( restriction->expression.variables.size() == 1 );
         auto attribute = restriction->expression.variables.front();
-        if ( attribute->category == Model::Attribute::Category::STATUS ) {
-          model.addConstraint( status.at(vertex)[attribute->index].defined == false );
-        }
-        else if ( attribute->category == Model::Attribute::Category::DATA ) {
-          assert(!"Not yet implemented");
-          // get owner of data attribute
-          auto& ownerVertex = *vertex; // TODO
-          IndexedAttributeVariables& indexedAttributeVariables = data.at(&ownerVertex)[attribute->index];
-          size_t i = 0; //TODO
-          model.addConstraint( indexedAttributeVariables.defined[ dataIndex.at(vertex)[i] ] == false );
-        }
-        else {
-          assert(!"Not yet implemented");
-        }      
+        auto [defined,value] = getAttributeVariables(vertex,attribute);
+        model.addConstraint( defined == false );
       }
       else if ( restriction->expression.type == Model::Expression::Type::IS_NOT_NULL ) {
         assert( restriction->expression.variables.size() == 1 );
         auto attribute = restriction->expression.variables.front();       
-        if ( attribute->category == Model::Attribute::Category::STATUS ) {
-          model.addConstraint( visit.at(vertex).implies( status.at(vertex)[attribute->index].defined == true ) );
-        }
-        else if ( attribute->category == Model::Attribute::Category::DATA ) {
-          assert(!"Not yet implemented");
-        }
-        else {
-          assert(!"Not yet implemented");
-        }      
+        auto [defined,value] = getAttributeVariables(vertex,attribute);
+        model.addConstraint( defined == true );
       }
       else {
         assert( restriction->expression.type == Model::Expression::Type::OTHER );
         for ( auto attribute : restriction->expression.variables ) {
-          if ( attribute->category == Model::Attribute::Category::STATUS ) {
-            model.addConstraint( visit.at(vertex).implies( status.at(vertex)[attribute->index].defined == true ) );
-          }
-          else if ( attribute->category == Model::Attribute::Category::DATA ) {
-            assert(!"Not yet implemented");
-          }
-          else {
-            assert(!"Not yet implemented");
-          }
+          // all variables in expression must be defined
+          auto [defined,value] = getAttributeVariables(vertex,attribute);
+          model.addConstraint( defined == true );
           // add restriction
           auto constraint = createExpression( vertex, restriction->expression );
           model.addConstraint( visit.at(vertex).implies(constraint) );
@@ -1140,12 +1134,12 @@ void CPController::createRestrictions(const Vertex* vertex) {
 
 
 CP::Expression CPController::createExpression(const Vertex* vertex, const Model::Expression& expression) {
-  LIMEX::Callables<CP::Expression> callables; // TODO: make member of CPController
+  LIMEX::Callables<CP::Expression,const CP::IndexedVariables> callables; // TODO: make member of CPController
 
   assert( vertex->node->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );
   auto extensionElements = vertex->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
 
-  auto compiled = LIMEX::Expression<CP::Expression>(expression.expression, callables);
+  auto compiled = LIMEX::Expression<CP::Expression,const CP::IndexedVariables>(expression.expression, callables);
   
   std::vector<CP::Expression> variables;
   for ( auto& variableName : compiled.getVariables() ) {
@@ -1153,24 +1147,22 @@ CP::Expression CPController::createExpression(const Vertex* vertex, const Model:
     if( attribute->type == ValueType::COLLECTION ) {
       throw std::runtime_error("CPController: illegal expression '" + expression.expression + "'");
     }
-    if ( attribute->category == Model::Attribute::Category::STATUS ) {
-      variables.push_back( status.at(vertex)[attribute->index].value );
-    }
-    else if ( attribute->category == Model::Attribute::Category::DATA ) {
-      assert(!"Not yet implemented");
-    }
-    else {
-      assert(!"Not yet implemented");
-    }
+
+    auto [defined,value] = getAttributeVariables(vertex,attribute);
+    variables.push_back( value );
   }
   
-  std::vector< std::vector<CP::Expression> > indexedVariables;
+  std::vector< std::reference_wrapper<const CP::IndexedVariables> > indexedVariables;
   for ( auto& variableName : compiled.getCollections() ) {
     auto attribute = extensionElements->attributeRegistry[variableName];
     if( attribute->type != ValueType::COLLECTION ) {
       throw std::runtime_error("CPController: illegal expression '" + expression.expression + "'");
     }
-    assert(!"Not yet implemented");
+
+    auto [defined,value] = getAttributeVariables(vertex,attribute);
+    assert( value.operands.size() == 1 );
+    assert( std::holds_alternative<CP::IndexedVariable>( value.operands.front() ) );
+    indexedVariables.push_back( std::get<CP::IndexedVariable>( value.operands.front() ).container );
   }
   
   return compiled.evaluate(variables,indexedVariables);
