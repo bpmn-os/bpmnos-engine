@@ -1123,10 +1123,10 @@ void CPController::createRestrictions(const Vertex* vertex) {
           // all variables in expression must be defined
           auto [defined,value] = getAttributeVariables(vertex,attribute);
           model.addConstraint( visit.at(vertex).implies(defined == true) );
-          // add restriction
-          auto constraint = createExpression( vertex, restriction->expression );
-          model.addConstraint( visit.at(vertex).implies(constraint) );
         }      
+        // add restriction
+        auto constraint = createExpression( vertex, restriction->expression );
+        model.addConstraint( visit.at(vertex).implies(constraint) );
       }
     }
   }
