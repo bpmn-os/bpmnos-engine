@@ -1109,20 +1109,20 @@ void CPController::createRestrictions(const Vertex* vertex) {
         assert( restriction->expression.variables.size() == 1 );
         auto attribute = restriction->expression.variables.front();
         auto [defined,value] = getAttributeVariables(vertex,attribute);
-        model.addConstraint( defined == false );
+        model.addConstraint( visit.at(vertex).implies(defined == false) );
       }
       else if ( restriction->expression.type == Model::Expression::Type::IS_NOT_NULL ) {
         assert( restriction->expression.variables.size() == 1 );
         auto attribute = restriction->expression.variables.front();       
         auto [defined,value] = getAttributeVariables(vertex,attribute);
-        model.addConstraint( defined == true );
+        model.addConstraint( visit.at(vertex).implies(defined == true) );
       }
       else {
         assert( restriction->expression.type == Model::Expression::Type::OTHER );
         for ( auto attribute : restriction->expression.variables ) {
           // all variables in expression must be defined
           auto [defined,value] = getAttributeVariables(vertex,attribute);
-          model.addConstraint( defined == true );
+          model.addConstraint( visit.at(vertex).implies(defined == true) );
           // add restriction
           auto constraint = createExpression( vertex, restriction->expression );
           model.addConstraint( visit.at(vertex).implies(constraint) );
