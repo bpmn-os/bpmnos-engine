@@ -16,6 +16,14 @@ CPController::CPController(const BPMNOS::Model::Scenario* scenario, Config confi
  , _solution(nullptr)
 {
 std::cerr << "Flattened graph: " << flattenedGraph.jsonify().dump() << std::endl;
+
+  // TODO: add callables for lookup tables
+std::cerr << "Callables: ";
+for ( auto name : callables.getNames() ) {
+  std::cerr << name << ", ";
+}
+std::cerr << std::endl;
+
   createCP();
 }
 
@@ -1134,8 +1142,6 @@ void CPController::createRestrictions(const Vertex* vertex) {
 
 
 CP::Expression CPController::createExpression(const Vertex* vertex, const Model::Expression& expression) {
-  LIMEX::Callables<CP::Expression,const CP::IndexedVariables> callables; // TODO: make member of CPController
-
   assert( vertex->node->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );
   auto extensionElements = vertex->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
 

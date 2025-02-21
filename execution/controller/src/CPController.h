@@ -46,6 +46,7 @@ protected:
 //  std::vector< const BPMNOS::Model::Scenario::InstanceData* > instances;
   const FlattenedGraph flattenedGraph;
   CP::Model model;
+  LIMEX::Callables<CP::Expression,const CP::IndexedVariables> callables;
 public:
 protected:
   void createCP(); /// Method creating the constraint program
