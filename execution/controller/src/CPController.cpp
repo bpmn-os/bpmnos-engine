@@ -281,7 +281,7 @@ std::shared_ptr<Event> CPController::dispatchEvent(const SystemState* systemStat
     }
     default:
     {
-      throw std::logic_error("CPController: unsupported decision");
+      throw std::logic_error("CPController: unsupported decision type");
     } 
   }
   if ( event ) {

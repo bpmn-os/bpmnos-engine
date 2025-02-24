@@ -33,6 +33,7 @@ SCENARIO( "Empty executable process", "[cpcontroller][process]" ) {
       
 //std::cerr << "Model:\n" << controller.getModel().stringify() << std::endl;
 //std::cerr << "Solution:\n" << solution.stringify() << std::endl;
+      REQUIRE( solution.complete() ); // requires subscription of controller to engine
       REQUIRE( solution.errors().empty() ); // requires subscription of controller to engine
       
 
@@ -73,6 +74,7 @@ SCENARIO( "Trivial executable process", "[cpcontroller][process]" ) {
       
 //std::cerr << "Model:\n" << controller.getModel().stringify() << std::endl;
 //std::cerr << "Solution:\n" << solution.stringify() << std::endl;
+      REQUIRE( solution.complete() ); // requires subscription of controller to engine
       REQUIRE( solution.errors().empty() ); // requires subscription of controller to engine
     }
   }
@@ -112,6 +114,7 @@ SCENARIO( "Simple executable process", "[cpcontroller][process]" ) {
       
 std::cerr << "Model:\n" << controller.getModel().stringify() << std::endl;
 std::cerr << "Solution:\n" << solution.stringify() << std::endl;
+      REQUIRE( solution.complete() ); // requires subscription of controller to engine
       REQUIRE( solution.errors().empty() ); // requires subscription of controller to engine
     }
   }
