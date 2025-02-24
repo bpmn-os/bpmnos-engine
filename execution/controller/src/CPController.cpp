@@ -16,7 +16,6 @@ CPController::CPController(const BPMNOS::Model::Scenario* scenario, Config confi
  , _solution(nullptr)
 {
 std::cerr << "Flattened graph: " << flattenedGraph.jsonify().dump() << std::endl;
-
   // TODO: add callables for lookup tables
 std::cerr << "Callables: ";
 for ( auto name : callables.getNames() ) {
@@ -293,6 +292,20 @@ std::shared_ptr<Event> CPController::dispatchEvent(const SystemState* systemStat
 
 CP::Solution& CPController::createSolution() {
   _solution = std::make_unique<CP::Solution>(model);
+
+std::cerr << "Evaluators: ";
+  // add evaluators for lookup tables
+  for ( auto& lookupTable : scenario->model->lookupTables ) {
+std::cerr << lookupTable->name << ", ";
+    _solution->addEvaluator( 
+      lookupTable->name,
+      [&lookupTable](const std::vector<double>& operands) -> double {
+        return lookupTable->at(operands);
+      }
+    );
+  }
+std::cerr << std::endl;
+
   return *_solution;
 }
 
