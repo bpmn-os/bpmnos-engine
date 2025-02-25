@@ -7,6 +7,9 @@
 #include "FlattenedGraph.h"
 #include "execution/engine/src/Mediator.h"
 #include "execution/engine/src/Observer.h"
+#include "execution/engine/src/EventDispatcher.h"
+#include "dispatcher/ReadyHandler.h"
+#include "dispatcher/DeterministicTaskCompletion.h"
 #include "model/utility/src/tuple_map.h"
 #include <cp.h>
 #include <unordered_map>
@@ -39,6 +42,8 @@ public:
   const CP::Model& getModel() const { return model; }
   const std::vector<const Vertex*> getVertices() const { return vertices; }
 protected:
+  ReadyHandler readyHandler;
+  DeterministicTaskCompletion completionHandler;
   Evaluator* evaluator;
   std::shared_ptr<Event> dispatchEvent(const SystemState* systemState);
   const BPMNOS::Model::Scenario* scenario;
@@ -103,6 +108,12 @@ protected:
   void createStatus(const Vertex* vertex);
   void createEntryStatus(const Vertex* vertex);
   void createExitStatus(const Vertex* vertex);
+  void createLocalAttributeVariables(const Vertex* vertex);
+  CP::Expression createOperatorExpression( const Model::Expression& operator_, std::tuple< std::vector<AttributeVariables>, std::vector<AttributeVariables>, std::vector<AttributeVariables> >& localVariables );
+  std::pair< CP::Expression, CP::Expression > getLocalAttributeVariables( const Model::Attribute* attribute, std::tuple< std::vector<AttributeVariables>, std::vector<AttributeVariables>, std::vector<AttributeVariables> >& localVariables );
+
+  
+  std::vector<CPController::AttributeVariables> createUniquelyDeducedEntryStatus(const Vertex* vertex, const BPMNOS::Model::AttributeRegistry& attributeRegistry, std::vector<AttributeVariables>& inheritedStatus);
   std::vector<AttributeVariables> createAlternativeEntryStatus(const Vertex* vertex, const BPMNOS::Model::AttributeRegistry& attributeRegistry, std::vector< std::pair<const CP::Variable&, std::vector<AttributeVariables>& > > alternatives);
   std::vector<AttributeVariables> createMergedStatus(const Vertex* vertex, const BPMNOS::Model::AttributeRegistry& attributeRegistry, std::vector< std::pair<const CP::Variable&, std::vector<AttributeVariables>& > > inputs);
   
@@ -155,6 +166,9 @@ protected:
   std::unordered_map< const Vertex*, CP::reference_vector< const CP::Variable > > dataIndex; /// Variables representing an index representing the state of the data attributes for each data owner
 
   std::unordered_map< const Vertex*, std::vector<AttributeVariables> > status; /// Variables representing status attributes of a vertex
+  std::unordered_map< const Vertex*, std::vector< std::tuple< std::vector<AttributeVariables>, std::vector<AttributeVariables>, std::vector<AttributeVariables> > > > local; /// Variables representing status, data, globals attributes of a vertex after the i-th operator
+
+
   std::unordered_map< std::pair< const Vertex*, const Vertex* >, std::vector<AttributeVariables>, pair_hash > statusFlow; /// Variables representing status attributes flowing from one vertex to another
 
   std::unordered_map< const Vertex*, std::vector< std::tuple< std::string_view, size_t, AttributeVariables> > > messageContent; /// Variables representing status attributes of a vertex

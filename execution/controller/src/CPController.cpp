@@ -27,6 +27,8 @@ std::cerr << std::endl;
 }
 
 void CPController::connect(Mediator* mediator) {
+  readyHandler.connect(mediator);
+  completionHandler.connect(mediator);
   Controller::connect(mediator);
 }
 
@@ -215,9 +217,11 @@ void CPController::notice(const Observable* observable) {
 
 std::shared_ptr<Event> CPController::dispatchEvent(const SystemState* systemState) {
   if ( decisionQueue.empty() ) return nullptr;
+std::cerr << "CPController::dispatchEvent: " << decisionQueue.front().second->reference() << std::endl;
   
   try {
     while ( !_solution->evaluate( visit.at( decisionQueue.front().second ) ) ) {
+std::cerr << "Skip" << std::endl;
       // skip all decisions for vertices that are not visited
       decisionQueue.pop();
       if ( decisionQueue.empty() ) return nullptr;
@@ -252,6 +256,7 @@ std::shared_ptr<Event> CPController::dispatchEvent(const SystemState* systemStat
       if ( auto token = getToken(systemState->pendingEntryDecisions) ) {
         event = createEntryEvent( systemState, token, vertex);
       }
+std::cerr << "entry not yet requested" << std::endl;
       // decision is not yet requested
       break;
     }
@@ -404,7 +409,8 @@ void CPController::createDecisionQueue() {
   for ( size_t i = 0; i < vertices.size(); i++) {
     auto position = solution.getVariableValue(sequence.variables[i]);
     assert( position );
-    sortedVertices[ (size_t)position.value() ] = vertices[i];
+std::cerr << "position[" << i << "] = " << position.value() << ": " << vertices[i]->reference() << std::endl;
+    sortedVertices[ (size_t)position.value() - 1 ] = vertices[i];
   }
   
   // now insert into decision sequence
@@ -458,6 +464,10 @@ void CPController::createCP() {
   for ( auto vertex : vertices ) {
     createVertexVariables(vertex);
   }
+
+  // TODO: constrain data variables
+  
+  // TODO: constrain global variables
   
 //std::cerr << "createMessageVariables" << std::endl;
   createMessageVariables();
@@ -660,13 +670,13 @@ void CPController::createEntryStatus(const Vertex* vertex) {
     else if ( vertex->entry<BPMN::FlowNode>() ) {
       assert( vertex->inflows.size() == 1 );
       auto& [sequenceFlow,predecessor] = vertex->inflows.front();
-      variables = createAlternativeEntryStatus(vertex, extensionElements->attributeRegistry, {{tokenFlow.at({&predecessor,vertex}), statusFlow.at({&predecessor,vertex})}} );
+      variables = createUniquelyDeducedEntryStatus(vertex, extensionElements->attributeRegistry, statusFlow.at({&predecessor,vertex}) );
     }
   }
 
+  // add new attributes if necessary
   if ( auto extensionElements = vertex->node->extensionElements->represents<BPMNOS::Model::ExtensionElements>() ) {
     variables.reserve(extensionElements->attributeRegistry.statusAttributes.size());
-    // add new attributes
     auto it = extensionElements->attributeRegistry.statusAttributes.begin();
     std::advance(it, variables.size());
     for ( ; it != extensionElements->attributeRegistry.statusAttributes.end(); it++ ) {
@@ -697,7 +707,6 @@ void CPController::createEntryStatus(const Vertex* vertex) {
 
 void CPController::createExitStatus(const Vertex* vertex) {
 //std::cerr << "createExitStatus" << std::endl;
-  std::vector<AttributeVariables> variables;
   auto extensionElements = vertex->node->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
 
   if ( vertex->node->represents<BPMN::Scope>() && vertex->predecessors.size() > 1 ) {
@@ -723,6 +732,7 @@ void CPController::createExitStatus(const Vertex* vertex) {
     }
 
     assert(extensionElements);
+    std::vector<AttributeVariables> variables;
     variables = createMergedStatus(vertex, extensionElements->attributeRegistry, std::move(inputs));
 
     status.emplace( vertex, std::move(variables) );
@@ -737,6 +747,7 @@ void CPController::createExitStatus(const Vertex* vertex) {
     // exit status is the same as entry status
     extensionElements = vertex->parent.value().first.node->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
     auto& entryStatus = status.at(entryVertex);
+    std::vector<AttributeVariables> variables;
     for ( auto& [name,attribute] : extensionElements->attributeRegistry.statusAttributes ) {
       assert( attribute->index == variables.size() );
       variables.emplace_back(
@@ -748,20 +759,32 @@ void CPController::createExitStatus(const Vertex* vertex) {
     return;
   }
 
-  // From Token.cpp:
-  // - process operators are applied upon entry
-  // - subprocess operators are applied upon entry
-  // - operators of receive task and decision task are applied on completion
-  // - event subprocess operators are applied when exiting typed start event  
+  if ( vertex->exit<BPMN::Task>() || vertex->exit<BPMN::MessageStartEvent>() ) {
+    createLocalAttributeVariables(vertex);
+    auto& [ localStatus, localData, localGlobals ] = local.at(vertex).back();
 
+    // create exit status
+    std::vector<AttributeVariables> variables;
+    for ( auto& [name,attribute] : extensionElements->attributeRegistry.statusAttributes ) {
+      auto& [ defined, value ] = localStatus.at(attribute->index);
+      variables.emplace_back(
+        model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->reference() + "}," + attribute->id, defined ), 
+        model.addVariable(CP::Variable::Type::REAL, "value_{" + vertex->reference() + "}," + attribute->id, value )
+      );      
+    }
+    status.emplace( vertex, std::move(variables) );
+    return;
+  }
+  
   // copy entry status references
   std::vector<AttributeVariables> currentStatus = status.at(entryVertex);
   //std::vector<AttributeVariables> currentData = status.at(entryVertex);
   //std::vector<AttributeVariables> currentGlobla = status.at(entryVertex);
   
   if ( vertex->node->represents<BPMNOS::Model::DecisionTask>() ) {
-    // apply choices
+    // choices are represented by unconstrained status (data/global) attributes
     // TODO
+      assert(!"Not yet implemented");
   }
 
   if ( vertex->node->represents<BPMN::MessageCatchEvent>() ) {
@@ -802,6 +825,7 @@ void CPController::createExitStatus(const Vertex* vertex) {
     // TODO
   }
 
+  std::vector<AttributeVariables> variables;
   for ( auto& [name,attribute] : extensionElements->attributeRegistry.statusAttributes ) {
     assert( attribute->index == variables.size() );
     variables.emplace_back(
@@ -817,6 +841,241 @@ void CPController::createExitStatus(const Vertex* vertex) {
 
   status.emplace( vertex, std::move(variables) );
 }
+
+std::pair< CP::Expression, CP::Expression > CPController::getLocalAttributeVariables( const Model::Attribute* attribute, std::tuple< std::vector<AttributeVariables>, std::vector<AttributeVariables>, std::vector<AttributeVariables> >& localVariables ) {
+  auto& [ status, data, globals ] = localVariables;
+  if ( attribute->category == Model::Attribute::Category::STATUS ) {
+    return std::make_pair<CP::Expression,CP::Expression>( 
+      status[attribute->index].defined,
+      status[attribute->index].value 
+    );
+  }
+  else if ( attribute->category == Model::Attribute::Category::DATA ) {
+    return std::make_pair<CP::Expression,CP::Expression>( 
+      data[attribute->index].defined,
+      data[attribute->index].value 
+    );
+  }
+  else {
+    assert( attribute->category == Model::Attribute::Category::GLOBAL );
+    return std::make_pair<CP::Expression,CP::Expression>( 
+      globals[attribute->index].defined,
+      globals[attribute->index].value 
+    );
+  }
+}
+
+CP::Expression CPController::createOperatorExpression( const Model::Expression& operator_, std::tuple< std::vector<AttributeVariables>, std::vector<AttributeVariables>, std::vector<AttributeVariables> >& localVariables ) {
+  auto compiled = LIMEX::Expression<CP::Expression,const CP::IndexedVariables>(operator_.expression, callables);
+  
+  std::vector<CP::Expression> variables;
+  for ( auto& variableName : compiled.getVariables() ) {
+    auto attribute = operator_.attributeRegistry[variableName];
+    if( attribute->type == ValueType::COLLECTION ) {
+      throw std::runtime_error("CPController: illegal operator expression '" + operator_.expression + "'");
+    }
+
+    auto [defined,value] = getLocalAttributeVariables(attribute,localVariables);
+    variables.push_back( value );
+  }
+  
+  std::vector< std::reference_wrapper<const CP::IndexedVariables> > indexedVariables;
+  for ( auto& variableName : compiled.getCollections() ) {
+    auto attribute = operator_.attributeRegistry[variableName];
+    if( attribute->type != ValueType::COLLECTION ) {
+      throw std::runtime_error("CPController: illegal operator expression '" + operator_.expression + "'");
+    }
+
+    auto [defined,value] = getLocalAttributeVariables(attribute,localVariables);
+    assert( value.operands.size() == 1 );
+    assert( std::holds_alternative<CP::IndexedVariable>( value.operands.front() ) );
+    indexedVariables.push_back( std::get<CP::IndexedVariable>( value.operands.front() ).container );
+  }
+  
+  return compiled.evaluate(variables,indexedVariables);
+}
+
+void CPController::createLocalAttributeVariables(const Vertex* vertex) {
+  assert( vertex->exit<BPMN::Task>() || vertex->exit<BPMN::MessageStartEvent>() );
+
+  auto  extensionElements = 
+    vertex->exit<BPMN::Task>() ?
+    vertex->node->extensionElements->as<BPMNOS::Model::ExtensionElements>() :
+    vertex->parent.value().first.node->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
+  ;
+
+  if ( extensionElements->messageDefinitions.size() > 1 ) {
+    assert(!"Not yet implemented");
+  }
+
+  auto messageDefinition = extensionElements->messageDefinitions.size() == 1 ? extensionElements->messageDefinitions[0].get() : nullptr;
+
+  auto localAttributeVariables = [&](const auto& attributeMap) -> std::vector<AttributeVariables> {
+    std::vector<AttributeVariables> variables;
+
+    auto findChoice = [extensionElements](BPMNOS::Model::Attribute* attribute) -> BPMNOS::Model::Choice* {
+      auto it = std::find_if(
+        extensionElements->choices.begin(),
+        extensionElements->choices.end(),
+        [&](const auto& choice) {
+          return choice->attribute == attribute;
+        }
+      ); 
+      return ( it != extensionElements->choices.end() ? it->get() : nullptr );
+    };
+
+    auto findContent = [messageDefinition](BPMNOS::Model::Attribute* attribute) -> BPMNOS::Model::Content* {
+      if ( !messageDefinition ) return nullptr;
+      auto it = std::find_if(
+        messageDefinition->contentMap.begin(),
+        messageDefinition->contentMap.end(),
+        [&](const auto& mapEntry) {
+          auto& [key, content] = mapEntry;
+          return content->attribute == attribute;
+        }
+      ); 
+      return ( it != messageDefinition->contentMap.end() ? it->second.get() : nullptr );
+    };
+
+    auto initialVariables = [&](BPMNOS::Model::Attribute* attribute) -> std::pair<CP::Expression,CP::Expression> {
+      if ( attribute->category == BPMNOS::Model::Attribute::Category::STATUS ) {
+        return std::make_pair<CP::Expression,CP::Expression>( 
+          status.at(entry(vertex))[attribute->index].defined, 
+          status.at(entry(vertex))[attribute->index].value
+        );
+      }
+      else if ( attribute->category == BPMNOS::Model::Attribute::Category::DATA ) {
+        auto& index = dataIndex.at(entry(vertex))[ entry(vertex)->dataOwnerIndex(attribute) ];
+        return std::make_pair<CP::Expression,CP::Expression>( 
+          data.at(attribute).defined[ index ], 
+          data.at(attribute).value[ index ]
+        );
+      }
+      else {
+        assert( attribute->category == BPMNOS::Model::Attribute::Category::GLOBAL );
+        auto& index = globalIndex.at(vertex);
+        return std::make_pair<CP::Expression,CP::Expression>( 
+          globals[attribute->index].defined[ index ],
+          globals[attribute->index].value[ index ] 
+        );
+      }
+    };
+
+    for ( auto& [name, attribute] : attributeMap ) {
+      auto [defined,value] = initialVariables(attribute);
+    
+      if ( auto choice = findChoice(attribute) ) {
+        // attribute set by choice
+        variables.emplace_back(
+          model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + BPMNOS::to_string(vertex->instanceId, STRING) + "," + vertex->node->id + ",0}," + attribute->id, visit.at(vertex) ), 
+          model.addRealVariable("value_{" + BPMNOS::to_string(vertex->instanceId, STRING) + "," + vertex->node->id + ",0}," + attribute->id )
+        );
+        auto& variable = variables.back().value;
+        // TODO: create constraints limiting the choice
+        assert(!"Not yet implemented");
+      }
+      else if ( auto content = findContent(attribute) ) {
+        // deduce attribute value from message content
+        assert(!"Not yet implemented");
+      }
+      else {
+        variables.emplace_back(
+          model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + BPMNOS::to_string(vertex->instanceId, STRING) + "," + vertex->node->id + ",0}," + attribute->id, defined ), 
+          model.addVariable(CP::Variable::Type::REAL, "value_{" + BPMNOS::to_string(vertex->instanceId, STRING) + "," + vertex->node->id + ",0}," + attribute->id, value )
+        );          
+      }
+    }
+    
+    return variables;
+  };
+  
+  local.emplace(
+    vertex, 
+    std::vector{ 
+      std::make_tuple(
+        localAttributeVariables(extensionElements->attributeRegistry.statusAttributes),
+        localAttributeVariables(extensionElements->attributeRegistry.dataAttributes),
+        localAttributeVariables(extensionElements->attributeRegistry.globalAttributes)
+      )
+    }
+  );
+
+  auto& locals = local.at(vertex);
+  for ( auto& operator_ : extensionElements->operators ) {
+    auto& [ currentStatus, currentData, currentGlobals ] = locals.back();
+
+    auto updatedLocalAttributeVariables = [&](const auto& attributeMap, std::vector<AttributeVariables>& current ) -> std::vector<AttributeVariables> {
+      std::vector<AttributeVariables> variables;
+      for ( auto& [name, attribute] : attributeMap ) {
+        if ( attribute == operator_->attribute ) {
+          // determine updated variable value
+          if ( operator_->expression.type == Model::Expression::Type::UNASSIGN ) {
+            variables.emplace_back(
+              model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + BPMNOS::to_string(vertex->instanceId, STRING) + "," + vertex->node->id + "," + std::to_string(locals.size()) + "}," + attribute->id, false ), 
+              model.addVariable(CP::Variable::Type::REAL, "value_{" + BPMNOS::to_string(vertex->instanceId, STRING) + "," + vertex->node->id + "," + std::to_string(locals.size()) + "}," + attribute->id, 0.0 )
+            );            
+          }
+          else if ( operator_->expression.type == Model::Expression::Type::ASSIGN ) {        
+            CP::Expression value = createOperatorExpression( operator_->expression, locals.back() );
+            variables.emplace_back(
+              model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + BPMNOS::to_string(vertex->instanceId, STRING) + "," + vertex->node->id + "," + std::to_string(locals.size()) + "}," + attribute->id, visit.at(vertex) ), 
+              model.addVariable(CP::Variable::Type::REAL, "value_{" + BPMNOS::to_string(vertex->instanceId, STRING) + "," + vertex->node->id + "," + std::to_string(locals.size()) + "}," + attribute->id, CP::if_then_else(visit.at(vertex), value, 0.0 ) )            
+            );
+            // TODO: add constraints ensuring that all inputs used by expression are defined
+          }
+          else {
+            throw std::runtime_error("CPController: illegal operator expression: " + operator_->expression.expression );
+          }
+        }
+        else {
+          // variable value remains unchanged
+          variables.emplace_back(
+            model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + BPMNOS::to_string(vertex->instanceId, STRING) + "," + vertex->node->id + "," + std::to_string(locals.size()) + "}," + attribute->id, current[attribute->index].defined ), 
+            model.addVariable(CP::Variable::Type::REAL, "value_{" + BPMNOS::to_string(vertex->instanceId, STRING) + "," + vertex->node->id + "," + std::to_string(locals.size()) + "}," + attribute->id, current[attribute->index].value )            
+          );
+        }
+      }
+      return variables;
+    };
+    
+    
+    locals.emplace_back(
+      updatedLocalAttributeVariables(extensionElements->attributeRegistry.statusAttributes,currentStatus),
+      updatedLocalAttributeVariables(extensionElements->attributeRegistry.dataAttributes,currentData),
+      updatedLocalAttributeVariables(extensionElements->attributeRegistry.globalAttributes,currentGlobals)
+    );
+  } 
+}
+
+std::vector<CPController::AttributeVariables> CPController::createUniquelyDeducedEntryStatus(const Vertex* vertex, const BPMNOS::Model::AttributeRegistry& attributeRegistry, std::vector<AttributeVariables>& inheritedStatus) {
+  assert( vertex->type == Vertex::Type::ENTRY );
+  assert( !vertex->node->represents<BPMN::Process>() );
+
+  std::vector<AttributeVariables> variables;
+  variables.reserve( attributeRegistry.statusAttributes.size() );
+  for ( auto& [name,attribute] : attributeRegistry.statusAttributes ) {
+    if ( vertex->node->represents<BPMN::Activity>() && attribute->index == BPMNOS::Model::ExtensionElements::Index::Timestamp ) {
+      auto& variable = inheritedStatus.at(attribute->index);
+      variables.emplace_back(
+        model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->reference() + "}," + attribute->id, visit.at(vertex) ), 
+        model.addRealVariable("value_{" + vertex->reference() + "}," + attribute->id )
+      );
+      auto& timestamp = variables.back().value;
+      model.addConstraint( visit.at(vertex).implies( timestamp >= variable.value ) );
+    }
+    else {
+      // deduce variable
+      auto& variable = inheritedStatus.at(attribute->index);
+      variables.emplace_back(
+        model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->reference() + "}," + attribute->id, variable.defined ), 
+        model.addVariable(CP::Variable::Type::REAL, "value_{" + vertex->reference() + "}," + attribute->id, variable.value )
+      );
+    }
+  }
+
+  return variables;
+}
+
 
 std::vector<CPController::AttributeVariables> CPController::createAlternativeEntryStatus(const Vertex* vertex, const BPMNOS::Model::AttributeRegistry& attributeRegistry, std::vector< std::pair<const CP::Variable&, std::vector<AttributeVariables>& > > alternatives) {
   assert( vertex->type == Vertex::Type::ENTRY );
@@ -840,6 +1099,7 @@ std::vector<CPController::AttributeVariables> CPController::createAlternativeEnt
 
   return variables;
 }
+
 
 std::vector<CPController::AttributeVariables> CPController::createMergedStatus(const Vertex* vertex, const BPMNOS::Model::AttributeRegistry& attributeRegistry, std::vector< std::pair<const CP::Variable&, std::vector<AttributeVariables>& > > inputs) {
   assert( ( vertex->type == Vertex::Type::ENTRY && vertex->inflows.size() > 1) || vertex->exit<BPMN::Scope>() );
@@ -959,7 +1219,7 @@ std::cerr << "createVertexVariables: " << vertex->reference() << std::endl;
   if ( vertex->type == Vertex::Type::EXIT ) {
     createExitVariables(vertex);
   }
-  
+    
 //std::cerr << "createSequenceConstraints" << std::endl;
   createSequenceConstraints(vertex);
 
@@ -1153,7 +1413,7 @@ void CPController::createRestrictions(const Vertex* vertex) {
   }
 }
 
-
+// TODO: replace
 CP::Expression CPController::createExpression(const Vertex* vertex, const Model::Expression& expression) {
   assert( vertex->node->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );
   auto extensionElements = vertex->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();

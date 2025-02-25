@@ -95,7 +95,7 @@ Expression::Type Expression::getType() const {
     return node.type == LIMEX::Type::equal_to ? Type::IS_NULL : Type::IS_NOT_NULL;
   }
   // all variables must be defined
-  return ( node.type == LIMEX::Type::assign ) ? Type::ASSIGN : Type::OTHER;
+  return ( (int)node.type >= (int)LIMEX::Type::assign ) ? Type::ASSIGN : Type::OTHER;
 }
 
 const Attribute* Expression::isAttribute() const {

@@ -26,7 +26,12 @@ CP::Solution& SeededGreedyController::createSolution() {
     throw std::runtime_error("SeededGreedyController: illegal seed");
   }
 
-  solution.setSequenceValues( sequence, _seed.getSequence() );
+  std::vector<size_t> positions(sequenceVariableValues.size());
+  for ( size_t index = 0; index < sequenceVariableValues.size(); index++ ) {
+    positions[ sequenceVariableValues[index]-1 ] = index + 1;
+  }
+  solution.setSequenceValues( sequence, positions );
+  createDecisionQueue();
   
   return solution;
 }

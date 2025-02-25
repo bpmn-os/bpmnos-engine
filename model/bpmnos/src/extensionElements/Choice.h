@@ -24,11 +24,11 @@ public:
   XML::bpmnos::tDecision* element;
   const AttributeRegistry& attributeRegistry;
   Attribute* attribute;
-  std::pair<bool,bool> strictness;
+  std::pair<bool,bool> strictness; // pair of boolans indicating whether lower and upper bound are strict or not
   std::optional< Expression > lowerBound;
   std::optional< Expression > upperBound;
   std::vector< Expression > enumeration;
-  std::set<const Attribute*> dependencies;
+  std::set<const Attribute*> dependencies; // set of attribute used as input to lower bound, upper bound, or enumeration
 
   template <typename DataType>
   std::pair<BPMNOS::number,BPMNOS::number> getBounds(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const; ///< Returns the minimal and maximal value the attribute may take.

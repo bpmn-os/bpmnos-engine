@@ -33,10 +33,10 @@ SCENARIO( "Empty executable process", "[cpcontroller][process]" ) {
       
 //std::cerr << "Model:\n" << controller.getModel().stringify() << std::endl;
 //std::cerr << "Solution:\n" << solution.stringify() << std::endl;
-      REQUIRE( solution.complete() ); // requires subscription of controller to engine
-      REQUIRE( solution.errors().empty() ); // requires subscription of controller to engine
-      
-
+      THEN( "The solution is complete and satisfies all constraints" ) {
+        REQUIRE( solution.complete() ); // requires subscription of controller to engine
+        REQUIRE( solution.errors().empty() ); // requires subscription of controller to engine
+      }
     }
   }
 };
@@ -74,8 +74,10 @@ SCENARIO( "Trivial executable process", "[cpcontroller][process]" ) {
       
 //std::cerr << "Model:\n" << controller.getModel().stringify() << std::endl;
 //std::cerr << "Solution:\n" << solution.stringify() << std::endl;
-      REQUIRE( solution.complete() ); // requires subscription of controller to engine
-      REQUIRE( solution.errors().empty() ); // requires subscription of controller to engine
+      THEN( "The solution is complete and satisfies all constraints" ) {
+        REQUIRE( solution.complete() ); // requires subscription of controller to engine
+        REQUIRE( solution.errors().empty() ); // requires subscription of controller to engine
+      }
     }
   }
 };
@@ -114,8 +116,10 @@ SCENARIO( "Simple executable process", "[cpcontroller][process]" ) {
       
 //std::cerr << "Model:\n" << controller.getModel().stringify() << std::endl;
 //std::cerr << "Solution:\n" << solution.stringify() << std::endl;
-      REQUIRE( solution.complete() ); // requires subscription of controller to engine
-      REQUIRE( solution.errors().empty() ); // requires subscription of controller to engine
+      THEN( "The solution is complete and satisfies all constraints" ) {
+        REQUIRE( solution.complete() ); // requires subscription of controller to engine
+        REQUIRE( solution.errors().empty() ); // requires subscription of controller to engine
+      }
     }
   }
 
@@ -134,7 +138,7 @@ SCENARIO( "Simple executable process", "[cpcontroller][process]" ) {
     WHEN( "The model is created" ) {
       Execution::GuidedEvaluator evaluator;
       Execution::SeededGreedyController controller(scenario.get(), &evaluator);
-      controller.setSeed( Execution::CPSeed::defaultSeed( controller.getVertices().size() ) );
+      controller.setSeed( {1,9,2,10,3,11,4,12,5,13,6,14,7,15,8,16} );
 
       auto& solution = controller.createSolution();
       Execution::Engine engine;
@@ -149,8 +153,11 @@ SCENARIO( "Simple executable process", "[cpcontroller][process]" ) {
       
 std::cerr << "Model:\n" << controller.getModel().stringify() << std::endl;
 std::cerr << "Solution:\n" << solution.stringify() << std::endl;
-      REQUIRE( solution.complete() ); // requires subscription of controller to engine
-      REQUIRE( solution.errors().empty() ); // requires subscription of controller to engine
+std::cerr << "Errors: " << solution.errors() << std::endl;
+      THEN( "The solution is complete and satisfies all constraints" ) {
+        REQUIRE( solution.complete() ); // requires subscription of controller to engine
+        REQUIRE( solution.errors().empty() ); // requires subscription of controller to engine
+      }
     }
   }
 
