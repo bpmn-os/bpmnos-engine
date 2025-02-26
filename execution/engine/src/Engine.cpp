@@ -37,13 +37,15 @@ void Engine::Command::execute() {
 }
 
 BPMNOS::number Engine::run(const BPMNOS::Model::Scenario* scenario, BPMNOS::number timeout) {
+  terminated = false;
+  
   // create initial system state
   systemState = std::make_unique<SystemState>(this, scenario);
   conditionalEventObserver = std::make_unique<ConditionalEventObserver>(systemState.get());
   addSubscriber(conditionalEventObserver.get(), Observable::Type::DataUpdate);
 
   // advance all tokens in system state
-  while ( advance() ) {
+  while ( !terminated && advance() ) {
 //std::cerr << ".";
     if ( !systemState->isAlive() ) {
 //std::cerr << "dead" << std::endl;
@@ -257,7 +259,7 @@ void Engine::process([[maybe_unused]] const ClockTickEvent* event) {
 }
 
 void Engine::process([[maybe_unused]] const TerminationEvent* event) {
-  throw std::runtime_error("Engine: TerminationEvent not yet implemented");
+  terminated = true;
 }
 
 

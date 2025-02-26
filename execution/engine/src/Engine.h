@@ -99,6 +99,7 @@ protected:
   std::unique_ptr<ConditionalEventObserver> conditionalEventObserver;
   
   bool advance();
+  bool terminated;
 //  friend void Token::notify() const;
 };
 
