@@ -48,6 +48,15 @@ void CPController::setMessageFlowVariableValue( const Vertex* sender, const Vert
 }
 
 void CPController::validate(const Token* token) {
+  if ( terminationEvent ) {
+    return;
+  }
+std::cerr << "Validate: " << token->jsonify() << std::endl;    
+
+  if ( token->state == Token::State::FAILED ) {
+    terminationEvent = std::make_shared<TerminationEvent>();
+  }
+  
   if ( !token->node && token->state != Token::State::ENTERED && token->state != Token::State::DONE ) {
     // token at process, but with irrelevant state
     return;
@@ -56,8 +65,6 @@ void CPController::validate(const Token* token) {
     // token at flow node, but with irrelevant state
     return;
   }
-
-std::cerr << "Validate: " << token->jsonify() << std::endl;    
 
   // get vertex
   auto vertex = vertexMap.at(
@@ -68,6 +75,7 @@ std::cerr << "Validate: " << token->jsonify() << std::endl;
     )
   );
 
+std::cerr << "Validate vertex " << vertex->reference() << std::endl;    
 //std::cerr << "Validate visit" << std::endl;    
   // check visit
   auto visitEvaluation = _solution->evaluate( visit.at(vertex) );
@@ -131,7 +139,7 @@ std::cerr << "Validate: " << token->jsonify() << std::endl;
     auto scope = ownerVertex.node;
     auto extensionElements = scope->extensionElements->as<BPMNOS::Model::ExtensionElements>();
     for ( auto& attribute : extensionElements->data ) {
-      IndexedAttributeVariables& indexedAttributeVariables = data.at(attribute.get());
+      IndexedAttributeVariables& indexedAttributeVariables = data.at({&ownerVertex,attribute.get()});
       AttributeEvaluation evaluation(
         _solution->evaluate( indexedAttributeVariables.defined[index] ),
         _solution->evaluate( indexedAttributeVariables.value[index] )
@@ -146,6 +154,8 @@ std::cerr << "Validate: " << token->jsonify() << std::endl;
           !evaluation.defined()  ||
           evaluation.value() != token->data->at(attribute->index).get().value()
         ) {
+std::cerr << "defined: " << evaluation.defined() << ", value: " << evaluation.value() << "/" << token->data->at(attribute->index).get().value() << std::endl;
+
           throw std::logic_error("CPController: '" + _solution->stringify(indexedAttributeVariables.defined[index]) + "' or '" + _solution->stringify(indexedAttributeVariables.defined[index]) + "' inconsistent with " + token->jsonify().dump());
         }
       }
@@ -211,11 +221,16 @@ std::cerr << "Validate: " << token->jsonify() << std::endl;
 void CPController::notice(const Observable* observable) {
   Controller::notice(observable);
   
-  assert( observable->getObservableType() ==  Execution::Observable::Type::Token );
-  validate( static_cast<const Token*>(observable) );
+  if( observable->getObservableType() ==  Execution::Observable::Type::Token ) {
+    validate( static_cast<const Token*>(observable) );
+  }
 }
 
 std::shared_ptr<Event> CPController::dispatchEvent(const SystemState* systemState) {
+  if ( terminationEvent ) {
+    return terminationEvent;
+  }
+  
   if ( decisionQueue.empty() ) return nullptr;
 std::cerr << "CPController::dispatchEvent: " << decisionQueue.front().second->reference() << std::endl;
   
@@ -256,8 +271,7 @@ std::cerr << "Skip" << std::endl;
       if ( auto token = getToken(systemState->pendingEntryDecisions) ) {
         event = createEntryEvent( systemState, token, vertex);
       }
-std::cerr << "entry not yet requested" << std::endl;
-      // decision is not yet requested
+      // no event is create if decision is not yet requested
       break;
     }
     case ExitRequest:
@@ -265,7 +279,7 @@ std::cerr << "entry not yet requested" << std::endl;
       if ( auto token = getToken(systemState->pendingExitDecisions) ) {
         event = createExitEvent( systemState, token, vertex);
       }
-      // decision is not yet requested
+      // no event is create if decision is not yet requested
       break;
     }
     case ChoiceRequest:
@@ -273,7 +287,7 @@ std::cerr << "entry not yet requested" << std::endl;
       if ( auto token = getToken(systemState->pendingChoiceDecisions) ) {
         event = createChoiceEvent( systemState, token, vertex);
       }
-      // decision is not yet requested
+      // no event is create if decision is not yet requested
       break;
     }
     case MessageDeliveryRequest:
@@ -281,7 +295,7 @@ std::cerr << "entry not yet requested" << std::endl;
       if ( auto token = getToken(systemState->pendingMessageDeliveryDecisions) ) {
         event = createMessageDeliveryEvent( systemState, token, vertex );
       }
-      // decision is not yet requested
+      // no event is create if decision is not yet requested
       break;
     }
     default:
@@ -296,6 +310,7 @@ std::cerr << "entry not yet requested" << std::endl;
 }
 
 CP::Solution& CPController::createSolution() {
+  terminationEvent.reset();
   _solution = std::make_unique<CP::Solution>(model);
 
 std::cerr << "Evaluators: ";
@@ -617,7 +632,7 @@ void CPController::createDataVariables(const FlattenedGraph::Vertex* vertex) {
         variables.value.emplace_back(); 
       }
     }
-    data.emplace( attribute.get(), std::move(variables) ); 
+    data.emplace( std::make_pair(&vertex->dataOwner(attribute.get()).first, attribute.get()), std::move(variables) ); 
   }
 }
 
@@ -960,8 +975,8 @@ void CPController::createLocalAttributeVariables(const Vertex* vertex) {
       else if ( attribute->category == BPMNOS::Model::Attribute::Category::DATA ) {
         auto& index = dataIndex.at(entry(vertex))[ entry(vertex)->dataOwnerIndex(attribute) ];
         return std::make_pair<CP::Expression,CP::Expression>( 
-          data.at(attribute).defined[ index ], 
-          data.at(attribute).value[ index ]
+          data.at( {&vertex->dataOwner(attribute).first, attribute } ).defined[ index ], 
+          data.at( {&vertex->dataOwner(attribute).first, attribute } ).value[ index ]
         );
       }
       else {
@@ -1293,8 +1308,8 @@ std::pair< CP::Expression, CP::Expression > CPController::getAttributeVariables(
   else if ( attribute->category == Model::Attribute::Category::DATA ) {
     auto& index = dataIndex.at(vertex)[ vertex->dataOwnerIndex(attribute) ];
     return std::make_pair<CP::Expression,CP::Expression>( 
-      data.at(attribute).defined[ index ],
-      data.at(attribute).value[ index ]
+      data.at( {&vertex->dataOwner(attribute).first, attribute } ).defined[ index ],
+      data.at( {&vertex->dataOwner(attribute).first, attribute } ).value[ index ]
     );
   }
   else {

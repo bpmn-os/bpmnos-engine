@@ -45,6 +45,7 @@ void SeededGreedyController::connect(Mediator* mediator) {
 }
 
 void SeededGreedyController::notice(const Observable* observable) {
+  CPController::notice(observable);
   if ( observable->getObservableType() == Observable::Type::Message ) {
     auto message = static_cast<const Message*>(observable);
     if ( message->state == Message::State::CREATED ) {

@@ -8,6 +8,7 @@
 #include "execution/engine/src/Mediator.h"
 #include "execution/engine/src/Observer.h"
 #include "execution/engine/src/EventDispatcher.h"
+#include "execution/engine/src/events/TerminationEvent.h"
 #include "dispatcher/ReadyHandler.h"
 #include "dispatcher/DeterministicTaskCompletion.h"
 #include "model/utility/src/tuple_map.h"
@@ -45,6 +46,7 @@ protected:
   ReadyHandler readyHandler;
   DeterministicTaskCompletion completionHandler;
   Evaluator* evaluator;
+  std::shared_ptr<TerminationEvent> terminationEvent;
   std::shared_ptr<Event> dispatchEvent(const SystemState* systemState);
   const BPMNOS::Model::Scenario* scenario;
   Config config;
@@ -162,7 +164,7 @@ protected:
   std::vector< IndexedAttributeVariables > globals; /// Variables representing global attributes after i-th modification
   std::unordered_map< const Vertex*, const CP::Variable& > globalIndex; /// Variables representing an index representing the state of the global attributes
 
-  std::unordered_map< const Model::Attribute*, IndexedAttributeVariables > data; /// Variables representing data attributes after i-th modification
+  std::unordered_map< std::pair< const Vertex*, const Model::Attribute*>, IndexedAttributeVariables, pair_hash > data; /// Variables representing data attributes after i-th modification
   std::unordered_map< const Vertex*, CP::reference_vector< const CP::Variable > > dataIndex; /// Variables representing an index representing the state of the data attributes for each data owner
 
   std::unordered_map< const Vertex*, std::vector<AttributeVariables> > status; /// Variables representing status attributes of a vertex

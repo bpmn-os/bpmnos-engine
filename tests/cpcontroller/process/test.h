@@ -23,7 +23,7 @@ SCENARIO( "Empty executable process", "[cpcontroller][process]" ) {
       auto& solution = controller.createSolution();
       Execution::Engine engine;
       controller.connect(&engine);
-      controller.subscribe(&engine); // only necessary to validate consistency of solution and identify errors
+      controller.subscribe(&engine);
       Execution::TimeWarp timeHandler;
       timeHandler.connect(&engine);
       Execution::Recorder recorder;
@@ -34,8 +34,10 @@ SCENARIO( "Empty executable process", "[cpcontroller][process]" ) {
 //std::cerr << "Model:\n" << controller.getModel().stringify() << std::endl;
 //std::cerr << "Solution:\n" << solution.stringify() << std::endl;
       THEN( "The solution is complete and satisfies all constraints" ) {
-        REQUIRE( solution.complete() ); // requires subscription of controller to engine
-        REQUIRE( solution.errors().empty() ); // requires subscription of controller to engine
+        auto terminationLog = recorder.find(nlohmann::json{{"event","termination"}});
+        REQUIRE( terminationLog.empty() );  
+        REQUIRE( solution.complete() );
+        REQUIRE( solution.errors().empty() );
       }
     }
   }
@@ -64,7 +66,7 @@ SCENARIO( "Trivial executable process", "[cpcontroller][process]" ) {
       auto& solution = controller.createSolution();
       Execution::Engine engine;
       controller.connect(&engine);
-      controller.subscribe(&engine); // only necessary to validate consistency of solution and identify errors
+      controller.subscribe(&engine);
       Execution::TimeWarp timeHandler;
       timeHandler.connect(&engine);
       Execution::Recorder recorder;
@@ -75,13 +77,14 @@ SCENARIO( "Trivial executable process", "[cpcontroller][process]" ) {
 //std::cerr << "Model:\n" << controller.getModel().stringify() << std::endl;
 //std::cerr << "Solution:\n" << solution.stringify() << std::endl;
       THEN( "The solution is complete and satisfies all constraints" ) {
-        REQUIRE( solution.complete() ); // requires subscription of controller to engine
-        REQUIRE( solution.errors().empty() ); // requires subscription of controller to engine
+        auto terminationLog = recorder.find(nlohmann::json{{"event","termination"}});
+        REQUIRE( terminationLog.empty() );  
+        REQUIRE( solution.complete() ); 
+        REQUIRE( solution.errors().empty() ); 
       }
     }
   }
 };
-
 
 SCENARIO( "Simple executable process", "[cpcontroller][process]" ) {
   const std::string modelFile = "tests/execution/process/Constrained_executable_process.bpmn";
@@ -106,7 +109,7 @@ SCENARIO( "Simple executable process", "[cpcontroller][process]" ) {
       auto& solution = controller.createSolution();
       Execution::Engine engine;
       controller.connect(&engine);
-      controller.subscribe(&engine); // only necessary to validate consistency of solution and identify errors
+      controller.subscribe(&engine);
       Execution::TimeWarp timeHandler;
       timeHandler.connect(&engine);
       Execution::Recorder recorder;
@@ -117,8 +120,10 @@ SCENARIO( "Simple executable process", "[cpcontroller][process]" ) {
 //std::cerr << "Model:\n" << controller.getModel().stringify() << std::endl;
 //std::cerr << "Solution:\n" << solution.stringify() << std::endl;
       THEN( "The solution is complete and satisfies all constraints" ) {
-        REQUIRE( solution.complete() ); // requires subscription of controller to engine
-        REQUIRE( solution.errors().empty() ); // requires subscription of controller to engine
+        auto terminationLog = recorder.find(nlohmann::json{{"event","termination"}});
+        REQUIRE( terminationLog.empty() );  
+        REQUIRE( solution.complete() ); 
+        REQUIRE( solution.errors().empty() );
       }
     }
   }
@@ -135,7 +140,7 @@ SCENARIO( "Simple executable process", "[cpcontroller][process]" ) {
 
     REQUIRE_NOTHROW( BPMNOS::Execution::FlattenedGraph(scenario.get()) );
 
-    WHEN( "The model is created" ) {
+    WHEN( "The model is solved with a suitable seed" ) {
       Execution::GuidedEvaluator evaluator;
       Execution::SeededGreedyController controller(scenario.get(), &evaluator);
       controller.setSeed( {1,9,2,10,3,11,4,12,5,13,6,14,7,15,8,16} );
@@ -143,20 +148,49 @@ SCENARIO( "Simple executable process", "[cpcontroller][process]" ) {
       auto& solution = controller.createSolution();
       Execution::Engine engine;
       controller.connect(&engine);
-      controller.subscribe(&engine); // only necessary to validate consistency of solution and identify errors
+      controller.subscribe(&engine);
       Execution::TimeWarp timeHandler;
       timeHandler.connect(&engine);
-//      Execution::Recorder recorder;
-      Execution::Recorder recorder(std::cerr);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
       engine.run(scenario.get(),10);
       
-std::cerr << "Model:\n" << controller.getModel().stringify() << std::endl;
-std::cerr << "Solution:\n" << solution.stringify() << std::endl;
-std::cerr << "Errors: " << solution.errors() << std::endl;
+//std::cerr << "Model:\n" << controller.getModel().stringify() << std::endl;
+//std::cerr << "Solution:\n" << solution.stringify() << std::endl;
+//std::cerr << "Errors: " << solution.errors() << std::endl;
       THEN( "The solution is complete and satisfies all constraints" ) {
-        REQUIRE( solution.complete() ); // requires subscription of controller to engine
-        REQUIRE( solution.errors().empty() ); // requires subscription of controller to engine
+        auto terminationLog = recorder.find(nlohmann::json{{"event","termination"}});
+        REQUIRE( terminationLog.empty() );  
+        REQUIRE( solution.complete() ); 
+        REQUIRE( solution.errors().empty() );
+      }
+    }
+
+    WHEN( "The model is solved with the default seed" ) {
+      Execution::GuidedEvaluator evaluator;
+      Execution::SeededGreedyController controller(scenario.get(), &evaluator);
+
+      auto& solution = controller.createSolution();
+      Execution::Engine engine;
+      controller.connect(&engine);
+      controller.subscribe(&engine);
+      Execution::TimeWarp timeHandler;
+      timeHandler.connect(&engine);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
+      recorder.subscribe(&engine);
+      engine.run(scenario.get(),10);
+      
+//std::cerr << "Model:\n" << controller.getModel().stringify() << std::endl;
+//std::cerr << "Solution:\n" << solution.stringify() << std::endl;
+//std::cerr << "Errors: " << solution.errors() << std::endl;
+      THEN( "The solution is infeasible and does not satisfy all constraints" ) {
+        auto failureLog = recorder.find(nlohmann::json{{"state","FAILED" }}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
+        REQUIRE( !failureLog.empty() ); 
+        auto terminationLog = recorder.find(nlohmann::json{{"event","termination"}});
+        REQUIRE( !terminationLog.empty() );  
+        REQUIRE( !solution.errors().empty() ); 
       }
     }
   }
