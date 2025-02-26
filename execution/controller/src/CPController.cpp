@@ -744,7 +744,7 @@ void CPController::createExitStatus(const Vertex* vertex) {
 
   const Vertex* entryVertex = entry(vertex);
   if ( !extensionElements ) {
-    // exit status is the same as entry status
+    // token just runs through the node and exit status is the same as entry status
     extensionElements = vertex->parent.value().first.node->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
     auto& entryStatus = status.at(entryVertex);
     std::vector<AttributeVariables> variables;
@@ -760,17 +760,30 @@ void CPController::createExitStatus(const Vertex* vertex) {
   }
 
   if ( vertex->exit<BPMN::Task>() || vertex->exit<BPMN::MessageStartEvent>() ) {
+    // create local attribute variables considering all changes made before the token leves the node
     createLocalAttributeVariables(vertex);
+    // use final attribute values to deduce exit status
     auto& [ localStatus, localData, localGlobals ] = local.at(vertex).back();
 
     // create exit status
     std::vector<AttributeVariables> variables;
     for ( auto& [name,attribute] : extensionElements->attributeRegistry.statusAttributes ) {
       auto& [ defined, value ] = localStatus.at(attribute->index);
-      variables.emplace_back(
-        model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->reference() + "}," + attribute->id, defined ), 
-        model.addVariable(CP::Variable::Type::REAL, "value_{" + vertex->reference() + "}," + attribute->id, value )
-      );      
+      if ( attribute->index == BPMNOS::Model::ExtensionElements::Index::Timestamp ) {
+        // exit timestamp may be later than deduced timestamp
+        variables.emplace_back(
+          model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->reference() + "}," + attribute->id, visit.at(vertex) ), 
+          model.addRealVariable("value_{" + vertex->reference() + "}," + attribute->id )
+        );
+        auto& timestamp = variables.back().value;
+        model.addConstraint( visit.at(vertex).implies( timestamp >= value ) );
+      }
+      else {
+        variables.emplace_back(
+          model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->reference() + "}," + attribute->id, defined ), 
+          model.addVariable(CP::Variable::Type::REAL, "value_{" + vertex->reference() + "}," + attribute->id, value )
+        );
+      }      
     }
     status.emplace( vertex, std::move(variables) );
     return;
@@ -965,24 +978,63 @@ void CPController::createLocalAttributeVariables(const Vertex* vertex) {
       auto [defined,value] = initialVariables(attribute);
     
       if ( auto choice = findChoice(attribute) ) {
+        if ( 
+          attribute->category == BPMNOS::Model::Attribute::Category::STATUS &&
+          attribute->index == BPMNOS::Model::ExtensionElements::Index::Timestamp
+        ) {
+          throw std::runtime_error("CPController: timestamp must not be a choice");
+        }
+
         // attribute set by choice
         variables.emplace_back(
           model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + BPMNOS::to_string(vertex->instanceId, STRING) + "," + vertex->node->id + ",0}," + attribute->id, visit.at(vertex) ), 
           model.addRealVariable("value_{" + BPMNOS::to_string(vertex->instanceId, STRING) + "," + vertex->node->id + ",0}," + attribute->id )
         );
-        auto& variable = variables.back().value;
-        // TODO: create constraints limiting the choice
+//        auto& variable = variables.back().value;
+        // TODO: 
+        // create constraints limiting the choice
+        // timestamp represents the time the choice is made
         assert(!"Not yet implemented");
       }
       else if ( auto content = findContent(attribute) ) {
+        if ( 
+          attribute->category == BPMNOS::Model::Attribute::Category::STATUS &&
+          attribute->index == BPMNOS::Model::ExtensionElements::Index::Timestamp
+        ) {
+          throw std::runtime_error("CPController: timestamp must not be changed by message content");
+        }
+        // TODO: 
         // deduce attribute value from message content
+        // timestamp represents the time of the message delivery
         assert(!"Not yet implemented");
       }
       else {
-        variables.emplace_back(
-          model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + BPMNOS::to_string(vertex->instanceId, STRING) + "," + vertex->node->id + ",0}," + attribute->id, defined ), 
-          model.addVariable(CP::Variable::Type::REAL, "value_{" + BPMNOS::to_string(vertex->instanceId, STRING) + "," + vertex->node->id + ",0}," + attribute->id, value )
-        );          
+        if ( 
+          attribute->category == BPMNOS::Model::Attribute::Category::STATUS &&
+          attribute->index == BPMNOS::Model::ExtensionElements::Index::Timestamp &&
+          ( vertex->exit<BPMN::ReceiveTask>() || vertex->exit<BPMN::SendTask>() || vertex->exit<BPMNOS::Model::DecisionTask>())
+        ) {
+          if ( vertex->exit<BPMN::ReceiveTask>() ) {
+            // TODO: deduce timestamp from time of message delivery
+            assert(!"Not yet implemented");
+          }
+          else if ( vertex->exit<BPMN::SendTask>() ) {
+            // TODO: deduce timestamp from time of message delivery
+            assert(!"Not yet implemented");
+          }
+          else {
+            assert( vertex->exit<BPMNOS::Model::DecisionTask>() );
+            // TODO: deduce timestamp from time of choice
+            assert(!"Not yet implemented");
+          }
+        }
+        else {
+          // all local attribute variables are deduced from initial variables upon entry
+          variables.emplace_back(
+            model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + BPMNOS::to_string(vertex->instanceId, STRING) + "," + vertex->node->id + ",0}," + attribute->id, defined ), 
+            model.addVariable(CP::Variable::Type::REAL, "value_{" + BPMNOS::to_string(vertex->instanceId, STRING) + "," + vertex->node->id + ",0}," + attribute->id, value )
+          );
+        }
       }
     }
     
@@ -1054,21 +1106,21 @@ std::vector<CPController::AttributeVariables> CPController::createUniquelyDeduce
   std::vector<AttributeVariables> variables;
   variables.reserve( attributeRegistry.statusAttributes.size() );
   for ( auto& [name,attribute] : attributeRegistry.statusAttributes ) {
+    auto& [ defined, value ] = inheritedStatus.at(attribute->index);
     if ( vertex->node->represents<BPMN::Activity>() && attribute->index == BPMNOS::Model::ExtensionElements::Index::Timestamp ) {
-      auto& variable = inheritedStatus.at(attribute->index);
+      // entry of activity may be later than the deduced timestamp
       variables.emplace_back(
         model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->reference() + "}," + attribute->id, visit.at(vertex) ), 
         model.addRealVariable("value_{" + vertex->reference() + "}," + attribute->id )
       );
       auto& timestamp = variables.back().value;
-      model.addConstraint( visit.at(vertex).implies( timestamp >= variable.value ) );
+      model.addConstraint( visit.at(vertex).implies( timestamp >= value ) );
     }
     else {
       // deduce variable
-      auto& variable = inheritedStatus.at(attribute->index);
       variables.emplace_back(
-        model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->reference() + "}," + attribute->id, variable.defined ), 
-        model.addVariable(CP::Variable::Type::REAL, "value_{" + vertex->reference() + "}," + attribute->id, variable.value )
+        model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->reference() + "}," + attribute->id, defined ), 
+        model.addVariable(CP::Variable::Type::REAL, "value_{" + vertex->reference() + "}," + attribute->id, value )
       );
     }
   }
@@ -1080,6 +1132,7 @@ std::vector<CPController::AttributeVariables> CPController::createUniquelyDeduce
 std::vector<CPController::AttributeVariables> CPController::createAlternativeEntryStatus(const Vertex* vertex, const BPMNOS::Model::AttributeRegistry& attributeRegistry, std::vector< std::pair<const CP::Variable&, std::vector<AttributeVariables>& > > alternatives) {
   assert( vertex->type == Vertex::Type::ENTRY );
   assert( !vertex->node->represents<BPMN::Process>() );
+  assert( !vertex->node->represents<BPMN::Activity>() );
   std::vector<AttributeVariables> variables;
   variables.reserve( attributeRegistry.statusAttributes.size() );
   for ( auto& [name,attribute] : attributeRegistry.statusAttributes ) {
@@ -1103,6 +1156,7 @@ std::vector<CPController::AttributeVariables> CPController::createAlternativeEnt
 
 std::vector<CPController::AttributeVariables> CPController::createMergedStatus(const Vertex* vertex, const BPMNOS::Model::AttributeRegistry& attributeRegistry, std::vector< std::pair<const CP::Variable&, std::vector<AttributeVariables>& > > inputs) {
   assert( ( vertex->type == Vertex::Type::ENTRY && vertex->inflows.size() > 1) || vertex->exit<BPMN::Scope>() );
+  assert( !vertex->entry<BPMN::Activity>() );
   std::vector<AttributeVariables> variables;
   variables.reserve( attributeRegistry.statusAttributes.size() );
   for ( auto& [name,attribute] : attributeRegistry.statusAttributes ) {
