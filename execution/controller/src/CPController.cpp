@@ -483,6 +483,14 @@ void CPController::createCP() {
   // TODO: constrain data variables
   
   // TODO: constrain global variables
+
+  constrainGlobalVariables();
+
+  for ( auto vertex : vertices ) {
+    if ( vertex->entry<BPMN::Scope>() ) {
+      constrainDataVariables(vertex);
+    }
+  }  
   
 //std::cerr << "createMessageVariables" << std::endl;
   createMessageVariables();
@@ -632,7 +640,52 @@ void CPController::createDataVariables(const FlattenedGraph::Vertex* vertex) {
         variables.value.emplace_back(); 
       }
     }
-    data.emplace( std::make_pair(&vertex->dataOwner(attribute.get()).first, attribute.get()), std::move(variables) ); 
+    data.emplace( std::make_pair(vertex, attribute.get()), std::move(variables) ); 
+  }
+}
+
+void CPController::constrainDataVariables(const FlattenedGraph::Vertex* vertex) {
+  auto extensionElements = vertex->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+  auto& dataModifiers = flattenedGraph.dataModifiers.at(vertex);
+  for ( auto& [entry,exit] : dataModifiers ) {
+    auto& [localStatus,localData,localGlobals] = locals.at(&exit).back();
+    for ( unsigned int i = 0; i < dataModifiers.size(); i++ ) {
+      for ( auto& attribute : extensionElements->data ) {
+        auto& index = dataIndex.at(&entry)[ entry.dataOwnerIndex(attribute.get()) ];
+        // if data index at modifier entry equals i then the i+1-th data item equals the final data of the modifier
+        model.addConstraint( 
+          ( index == i ).implies( 
+            data.at({vertex,attribute.get()}).defined[i + 1] == localData[attribute->index].defined
+          ) 
+        );
+        model.addConstraint( 
+          ( index == i ).implies( 
+            data.at({vertex,attribute.get()}).value[i + 1] == localData[attribute->index].value
+          ) 
+        );
+      }
+    }
+  }
+}
+
+void CPController::constrainGlobalVariables() {
+  for ( auto& [entry,exit] : flattenedGraph.globalModifiers ) {
+    auto& [localStatus,localData,localGlobals] = locals.at(&exit).back();
+    for ( unsigned int i = 0; i < flattenedGraph.globalModifiers.size(); i++ ) {
+      for ( auto& [name,attribute] : scenario->model->attributeRegistry.globalAttributes ) {
+        // if global index at modifier entry equals i then the i+1-th global item equals the final globals of the modifier
+        model.addConstraint( 
+          ( globalIndex.at(&entry) == i ).implies( 
+            globals[attribute->index].defined[i + 1] == localGlobals[attribute->index].defined
+          ) 
+        );
+        model.addConstraint( 
+          ( globalIndex.at(&entry) == i ).implies( 
+            globals[attribute->index].value[i + 1] == localGlobals[attribute->index].value
+          ) 
+        );
+      }
+    }
   }
 }
 
@@ -778,7 +831,7 @@ void CPController::createExitStatus(const Vertex* vertex) {
     // create local attribute variables considering all changes made before the token leves the node
     createLocalAttributeVariables(vertex);
     // use final attribute values to deduce exit status
-    auto& [ localStatus, localData, localGlobals ] = local.at(vertex).back();
+    auto& [ localStatus, localData, localGlobals ] = locals.at(vertex).back();
 
     // create exit status
     std::vector<AttributeVariables> variables;
@@ -1056,7 +1109,7 @@ void CPController::createLocalAttributeVariables(const Vertex* vertex) {
     return variables;
   };
   
-  local.emplace(
+  locals.emplace(
     vertex, 
     std::vector{ 
       std::make_tuple(
@@ -1067,26 +1120,26 @@ void CPController::createLocalAttributeVariables(const Vertex* vertex) {
     }
   );
 
-  auto& locals = local.at(vertex);
+  auto& current = locals.at(vertex);
   for ( auto& operator_ : extensionElements->operators ) {
-    auto& [ currentStatus, currentData, currentGlobals ] = locals.back();
+    auto& [ currentStatus, currentData, currentGlobals ] = current.back();
 
-    auto updatedLocalAttributeVariables = [&](const auto& attributeMap, std::vector<AttributeVariables>& current ) -> std::vector<AttributeVariables> {
+    auto updatedLocalAttributeVariables = [&](const auto& attributeMap, std::vector<AttributeVariables>& attributeVariables ) -> std::vector<AttributeVariables> {
       std::vector<AttributeVariables> variables;
       for ( auto& [name, attribute] : attributeMap ) {
         if ( attribute == operator_->attribute ) {
-          // determine updated variable value
+          // determine updated variable value (only change value if vertex is visited)
           if ( operator_->expression.type == Model::Expression::Type::UNASSIGN ) {
             variables.emplace_back(
-              model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + BPMNOS::to_string(vertex->instanceId, STRING) + "," + vertex->node->id + "," + std::to_string(locals.size()) + "}," + attribute->id, false ), 
-              model.addVariable(CP::Variable::Type::REAL, "value_{" + BPMNOS::to_string(vertex->instanceId, STRING) + "," + vertex->node->id + "," + std::to_string(locals.size()) + "}," + attribute->id, 0.0 )
+              model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + BPMNOS::to_string(vertex->instanceId, STRING) + "," + vertex->node->id + "," + std::to_string(current.size()) + "}," + attribute->id, CP::if_then_else( visit.at(vertex), false, attributeVariables[attribute->index].defined) ), 
+              model.addVariable(CP::Variable::Type::REAL, "value_{" + BPMNOS::to_string(vertex->instanceId, STRING) + "," + vertex->node->id + "," + std::to_string(current.size()) + "}," + attribute->id, CP::if_then_else( visit.at(vertex), 0.0, attributeVariables[attribute->index].value) )
             );            
           }
           else if ( operator_->expression.type == Model::Expression::Type::ASSIGN ) {        
-            CP::Expression value = createOperatorExpression( operator_->expression, locals.back() );
+            CP::Expression value = createOperatorExpression( operator_->expression, current.back() );
             variables.emplace_back(
-              model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + BPMNOS::to_string(vertex->instanceId, STRING) + "," + vertex->node->id + "," + std::to_string(locals.size()) + "}," + attribute->id, visit.at(vertex) ), 
-              model.addVariable(CP::Variable::Type::REAL, "value_{" + BPMNOS::to_string(vertex->instanceId, STRING) + "," + vertex->node->id + "," + std::to_string(locals.size()) + "}," + attribute->id, CP::if_then_else(visit.at(vertex), value, 0.0 ) )            
+              model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + BPMNOS::to_string(vertex->instanceId, STRING) + "," + vertex->node->id + "," + std::to_string(current.size()) + "}," + attribute->id, CP::if_then_else( visit.at(vertex), true, attributeVariables[attribute->index].defined) ), 
+              model.addVariable(CP::Variable::Type::REAL, "value_{" + BPMNOS::to_string(vertex->instanceId, STRING) + "," + vertex->node->id + "," + std::to_string(current.size()) + "}," + attribute->id, CP::if_then_else( visit.at(vertex), value, attributeVariables[attribute->index].value) )            
             );
             // TODO: add constraints ensuring that all inputs used by expression are defined
           }
@@ -1097,8 +1150,8 @@ void CPController::createLocalAttributeVariables(const Vertex* vertex) {
         else {
           // variable value remains unchanged
           variables.emplace_back(
-            model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + BPMNOS::to_string(vertex->instanceId, STRING) + "," + vertex->node->id + "," + std::to_string(locals.size()) + "}," + attribute->id, current[attribute->index].defined ), 
-            model.addVariable(CP::Variable::Type::REAL, "value_{" + BPMNOS::to_string(vertex->instanceId, STRING) + "," + vertex->node->id + "," + std::to_string(locals.size()) + "}," + attribute->id, current[attribute->index].value )            
+            model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + BPMNOS::to_string(vertex->instanceId, STRING) + "," + vertex->node->id + "," + std::to_string(current.size()) + "}," + attribute->id, attributeVariables[attribute->index].defined ), 
+            model.addVariable(CP::Variable::Type::REAL, "value_{" + BPMNOS::to_string(vertex->instanceId, STRING) + "," + vertex->node->id + "," + std::to_string(current.size()) + "}," + attribute->id, attributeVariables[attribute->index].value )            
           );
         }
       }
@@ -1106,7 +1159,7 @@ void CPController::createLocalAttributeVariables(const Vertex* vertex) {
     };
     
     
-    locals.emplace_back(
+    current.emplace_back(
       updatedLocalAttributeVariables(extensionElements->attributeRegistry.statusAttributes,currentStatus),
       updatedLocalAttributeVariables(extensionElements->attributeRegistry.dataAttributes,currentData),
       updatedLocalAttributeVariables(extensionElements->attributeRegistry.globalAttributes,currentGlobals)

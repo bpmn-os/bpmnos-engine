@@ -73,6 +73,9 @@ protected:
   void createGlobalIndexVariable(const Vertex* vertex);
   void createDataVariables(const Vertex* vertex);
   void createDataIndexVariables(const Vertex* vertex);
+
+  void constrainGlobalVariables();
+  void constrainDataVariables(const FlattenedGraph::Vertex* vertex);
   
   struct AttributeVariables {
     const CP::Variable& defined;
@@ -168,7 +171,7 @@ protected:
   std::unordered_map< const Vertex*, CP::reference_vector< const CP::Variable > > dataIndex; /// Variables representing an index representing the state of the data attributes for each data owner
 
   std::unordered_map< const Vertex*, std::vector<AttributeVariables> > status; /// Variables representing status attributes of a vertex
-  std::unordered_map< const Vertex*, std::vector< std::tuple< std::vector<AttributeVariables>, std::vector<AttributeVariables>, std::vector<AttributeVariables> > > > local; /// Variables representing status, data, globals attributes of a vertex after the i-th operator
+  std::unordered_map< const Vertex*, std::vector< std::tuple< std::vector<AttributeVariables>, std::vector<AttributeVariables>, std::vector<AttributeVariables> > > > locals; /// Variables representing status, data, globals attributes of a vertex after the i-th operator
 
 
   std::unordered_map< std::pair< const Vertex*, const Vertex* >, std::vector<AttributeVariables>, pair_hash > statusFlow; /// Variables representing status attributes flowing from one vertex to another
