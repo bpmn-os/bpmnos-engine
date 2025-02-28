@@ -612,11 +612,18 @@ void CPController::createDataVariables(const FlattenedGraph::Vertex* vertex) {
       model.addIndexedVariables(CP::Variable::Type::REAL, "value_{" + BPMNOS::to_string(vertex->instanceId, STRING) + "," + vertex->node->id + "}," + attribute->id )
     );
     // add variables holding initial values
-    auto initialValue = scenario->getKnownValue(vertex->rootId, attribute.get(), 0);
-    if ( initialValue.has_value() ) {
+    auto given = scenario->getKnownValue(vertex->rootId, attribute.get(), 0);
+    if ( given.has_value() ) {
       // defined initial value
-      variables.defined.emplace_back(true,true);
-      variables.value.emplace_back((double)initialValue.value(), (double)initialValue.value()); 
+      variables.defined.emplace_back(visit.at(vertex));
+      variables.value.emplace_back(CP::if_then_else( visit.at(vertex), (double)given.value(), 0.0)); 
+    }
+    else if ( attribute->expression ) {
+      // initial assignment
+      assert( attribute->expression->type == Model::Expression::Type::ASSIGN ); 
+      CP::Expression assignment = createExpression( vertex, *attribute->expression );
+      variables.defined.emplace_back(visit.at(vertex));
+      variables.value.emplace_back(CP::if_then_else( visit.at(vertex), assignment, 0.0)); 
     }
     else {
       // undefined initial value
@@ -709,7 +716,7 @@ void CPController::createEntryStatus(const Vertex* vertex) {
     if ( vertex->entry<BPMN::UntypedStartEvent>() ) {
       // TODO: start-event
       assert( vertex->predecessors.size() == 1 ); // parent vertex is the only predecessors
-      variables = createAlternativeEntryStatus(vertex, extensionElements->attributeRegistry, {{visit.at(&vertex->predecessors.front().get()), status.at(&vertex->predecessors.front().get())}} );
+      variables = createUniquelyDeducedEntryStatus(vertex, extensionElements->attributeRegistry, status.at(&vertex->predecessors.front().get()) );
     }
     else if ( vertex->entry<BPMN::TypedStartEvent>() ) {
       // TODO: start-event
@@ -745,18 +752,23 @@ void CPController::createEntryStatus(const Vertex* vertex) {
   // add new attributes if necessary
   if ( auto extensionElements = vertex->node->extensionElements->represents<BPMNOS::Model::ExtensionElements>() ) {
     variables.reserve(extensionElements->attributeRegistry.statusAttributes.size());
-    auto it = extensionElements->attributeRegistry.statusAttributes.begin();
-    std::advance(it, variables.size());
-    for ( ; it != extensionElements->attributeRegistry.statusAttributes.end(); it++ ) {
-      auto attribute = *it;
+    for ( size_t i = variables.size(); i < extensionElements->attributeRegistry.statusAttributes.size(); i++) {
+      auto attribute = extensionElements->attributeRegistry.statusAttributes[i];
       // add variables holding given values
-      auto value = scenario->getKnownValue(vertex->rootId, attribute, 0);
-    
-      if ( value.has_value() ) {
+      if ( auto given = scenario->getKnownValue(vertex->rootId, attribute, 0); given.has_value() ) {
         // defined initial value
         variables.emplace_back(
-          model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->reference() + "}," + attribute->id, true, true ), 
-          model.addVariable(CP::Variable::Type::REAL, "value_{" + vertex->reference() + "}," + attribute->id, (double)value.value(), (double)value.value()) 
+          model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->reference() + "}," + attribute->id, visit.at(vertex) ), 
+          model.addVariable(CP::Variable::Type::REAL, "value_{" + vertex->reference() + "}," + attribute->id, CP::if_then_else( visit.at(vertex), (double)given.value(), 0.0)) 
+        );
+      }
+      else if ( attribute->expression ) {
+        // initial assignment
+        assert( attribute->expression->type == Model::Expression::Type::ASSIGN ); 
+        CP::Expression assignment = createExpression( vertex, *attribute->expression );
+        variables.emplace_back(
+          model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->reference() + "}," + attribute->id, visit.at(vertex) ), 
+          model.addVariable(CP::Variable::Type::REAL, "value_{" + vertex->reference() + "}," + attribute->id, CP::if_then_else( visit.at(vertex), assignment, 0.0) )            
         );
       }
       else {
@@ -781,11 +793,11 @@ void CPController::createExitStatus(const Vertex* vertex) {
     // scope has children
     auto getEndVertices = [&]() {
       std::vector< std::reference_wrapper<const Vertex> > endVertices;
-      for ( const auto& candidate : vertex->predecessors ) {
+      for ( const Vertex& candidate : vertex->predecessors ) {
         if ( 
-          candidate.get().parent.has_value() && 
-          &candidate.get().parent.value().second == vertex &&
-          candidate.get().parent.value().second.outflows.empty()
+          candidate.parent.has_value() && 
+          &candidate.parent.value().second == vertex &&
+          candidate.outflows.empty()
         ) {
           endVertices.push_back( candidate );
         }
@@ -992,7 +1004,7 @@ void CPController::createLocalAttributeVariables(const Vertex* vertex) {
 
   auto messageDefinition = extensionElements->messageDefinitions.size() == 1 ? extensionElements->messageDefinitions[0].get() : nullptr;
 
-  auto localAttributeVariables = [&](const auto& attributeMap) -> std::vector<AttributeVariables> {
+  auto localAttributeVariables = [&](const auto& attributes) -> std::vector<AttributeVariables> {
     std::vector<AttributeVariables> variables;
 
     auto findChoice = [extensionElements](BPMNOS::Model::Attribute* attribute) -> BPMNOS::Model::Choice* {
@@ -1043,7 +1055,7 @@ void CPController::createLocalAttributeVariables(const Vertex* vertex) {
       }
     };
 
-    for ( auto& [name, attribute] : attributeMap ) {
+    for ( auto attribute : attributes ) {
       auto [defined,value] = initialVariables(attribute);
     
       if ( auto choice = findChoice(attribute) ) {
@@ -1114,9 +1126,9 @@ void CPController::createLocalAttributeVariables(const Vertex* vertex) {
     vertex, 
     std::vector{ 
       std::make_tuple(
-        localAttributeVariables(extensionElements->attributeRegistry.statusMap),
-        localAttributeVariables(extensionElements->attributeRegistry.dataMap),
-        localAttributeVariables(extensionElements->attributeRegistry.globalMap)
+        localAttributeVariables(extensionElements->attributeRegistry.statusAttributes),
+        localAttributeVariables(extensionElements->attributeRegistry.dataAttributes),
+        localAttributeVariables(extensionElements->attributeRegistry.globalAttributes)
       )
     }
   );
@@ -1125,9 +1137,9 @@ void CPController::createLocalAttributeVariables(const Vertex* vertex) {
   for ( auto& operator_ : extensionElements->operators ) {
     auto& [ currentStatus, currentData, currentGlobals ] = current.back();
 
-    auto updatedLocalAttributeVariables = [&](const auto& attributeMap, std::vector<AttributeVariables>& attributeVariables ) -> std::vector<AttributeVariables> {
+    auto updatedLocalAttributeVariables = [&](const auto& attributes, std::vector<AttributeVariables>& attributeVariables ) -> std::vector<AttributeVariables> {
       std::vector<AttributeVariables> variables;
-      for ( auto& [name, attribute] : attributeMap ) {
+      for ( auto attribute : attributes ) {
         if ( attribute == operator_->attribute ) {
           // determine updated variable value (only change value if vertex is visited)
           if ( operator_->expression.type == Model::Expression::Type::UNASSIGN ) {
@@ -1161,9 +1173,9 @@ void CPController::createLocalAttributeVariables(const Vertex* vertex) {
     
     
     current.emplace_back(
-      updatedLocalAttributeVariables(extensionElements->attributeRegistry.statusMap,currentStatus),
-      updatedLocalAttributeVariables(extensionElements->attributeRegistry.dataMap,currentData),
-      updatedLocalAttributeVariables(extensionElements->attributeRegistry.globalMap,currentGlobals)
+      updatedLocalAttributeVariables(extensionElements->attributeRegistry.statusAttributes,currentStatus),
+      updatedLocalAttributeVariables(extensionElements->attributeRegistry.dataAttributes,currentData),
+      updatedLocalAttributeVariables(extensionElements->attributeRegistry.globalAttributes,currentGlobals)
     );
   } 
 }
@@ -1175,6 +1187,7 @@ std::vector<CPController::AttributeVariables> CPController::createUniquelyDeduce
   std::vector<AttributeVariables> variables;
   variables.reserve( attributeRegistry.statusAttributes.size() );
   for ( auto attribute : attributeRegistry.statusAttributes ) {
+    assert( variables.size() == attribute->index );
     auto& [ defined, value ] = inheritedStatus.at(attribute->index);
     if ( vertex->node->represents<BPMN::Activity>() && attribute->index == BPMNOS::Model::ExtensionElements::Index::Timestamp ) {
       // entry of activity may be later than the deduced timestamp
@@ -1336,7 +1349,7 @@ std::cerr << "createVertexVariables: " << vertex->reference() << std::endl;
     createDataVariables(vertex);
   }
 
-//std::cerr << "createStatus" << std::endl;
+std::cerr << "createStatus" << std::endl;
   createStatus(vertex);
 
   if ( vertex->type == Vertex::Type::EXIT ) {
@@ -1455,6 +1468,7 @@ std::cerr << "createExitVariables" << std::endl;
       );
     }
     else if ( vertex->outflows.size() > 1 ) {
+std::cerr << vertex->reference() << std::endl;
       assert(!"Not yet implemented");
     }
   }

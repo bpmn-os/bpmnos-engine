@@ -83,11 +83,11 @@ nlohmann::ordered_json FlattenedGraph::Vertex::jsonify() const {
   nlohmann::ordered_json jsonObject;
   jsonObject["vertex"] = reference();
   jsonObject["inflows"] = nlohmann::json::array();
-  for ( auto [_,vertex] : inflows ) {
+  for ( auto& [_,vertex] : inflows ) {
     jsonObject["inflows"].push_back(vertex.reference());
   }
   jsonObject["outflows"] = nlohmann::json::array();
-  for ( auto [_,vertex] : outflows ) {
+  for ( auto& [_,vertex] : outflows ) {
     jsonObject["outflows"].push_back(vertex.reference());
   }
   jsonObject["predecessors"] = nlohmann::json::array();
@@ -106,6 +106,7 @@ nlohmann::ordered_json FlattenedGraph::Vertex::jsonify() const {
 FlattenedGraph::FlattenedGraph(const BPMNOS::Model::Scenario* scenario) : scenario(scenario) {
   // get all known instances
   auto instances = scenario->getKnownInstances(0);
+std::cerr << "Instances: " << instances.size() << std::endl;
   for ( auto& instance : instances ) {
     addInstance( instance );
   }
@@ -120,6 +121,7 @@ nlohmann::ordered_json FlattenedGraph::jsonify() const {
 }
 
 void FlattenedGraph::addInstance( const BPMNOS::Model::Scenario::InstanceData* instance ) {
+std::cerr << "addInstance: " << instance->id << std::endl;
   // create process vertices
   auto [ entry, exit ] = createVertexPair(instance->id, instance->id, instance->process, std::nullopt);
   initialVertices.push_back(entry);
@@ -371,6 +373,7 @@ void FlattenedGraph::createLoopVertices(BPMNOS::number rootId, BPMNOS::number in
 }
 
 void FlattenedGraph::flatten(BPMNOS::number instanceId, const BPMN::Scope* scope, Vertex& scopeEntry, Vertex& scopeExit) {
+std::cerr << "flatten: " << scope->id << std::endl;
   std::pair<Vertex&, Vertex&> parent = {scopeEntry,scopeExit}; 
   for ( auto& flowNode : scope->flowNodes ) {
     
@@ -402,10 +405,13 @@ void FlattenedGraph::flatten(BPMNOS::number instanceId, const BPMN::Scope* scope
     }
   }
 
+std::cerr << "sequence flows: " << scope->sequenceFlows.size() << std::endl;
   // sequence flows
   for ( auto& sequenceFlow : scope->sequenceFlows ) {
     Vertex& origin = vertexMap.at(sequenceFlow->source).at(instanceId).back();
     Vertex& destination = vertexMap.at(sequenceFlow->target).at(instanceId).front();
+std::cerr << sequenceFlow->id << ":" << origin.reference() << " -> " << destination.reference() << std::endl;
+assert(origin.outflows.empty());
     origin.outflows.emplace_back(sequenceFlow.get(),destination);
     destination.inflows.emplace_back(sequenceFlow.get(),origin);
   }

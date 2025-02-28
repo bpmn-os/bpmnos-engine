@@ -76,7 +76,7 @@ template  BPMNOS::Values MessageDefinition::getRecipientHeader<BPMNOS::Values>(c
 template  BPMNOS::Values MessageDefinition::getRecipientHeader<BPMNOS::SharedValues>(const AttributeRegistry& attributeRegistry, const BPMNOS::Values& status, const BPMNOS::SharedValues& data, const BPMNOS::Values& globals) const;
 
 template <typename DataType>
-std::optional<BPMNOS::number> MessageDefinition::getHeaderValue(const std::string& key, const AttributeRegistry& attributeRegistry, const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const {
+std::optional<BPMNOS::number> MessageDefinition::getHeaderValue(const std::string& key, [[maybe_unused]] const AttributeRegistry& attributeRegistry, const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const {
   std::optional<BPMNOS::number> value;
   auto it = parameterMap.find(key);
   if ( it != parameterMap.end() && it->second->expression ) {
