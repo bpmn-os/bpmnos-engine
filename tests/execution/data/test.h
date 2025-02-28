@@ -1,7 +1,7 @@
 SCENARIO( "Task with expression operator", "[data]" ) {
   const std::string modelFile = "tests/execution/data/Data.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
-  GIVEN( "A single instance with no input values" ) {
+  GIVEN( "A single instance with an input value" ) {
 
     std::string csv =
       "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"

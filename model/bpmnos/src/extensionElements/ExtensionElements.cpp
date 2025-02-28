@@ -410,21 +410,21 @@ template void ExtensionElements::applyOperators<BPMNOS::SharedValues>(Values& st
 template <typename DataType>
 BPMNOS::number ExtensionElements::getObjective(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const {
   BPMNOS::number objective = 0;
-  for ( auto& [name, attribute] : attributeRegistry.statusAttributes ) {
+  for ( auto attribute : attributeRegistry.statusAttributes ) {
     auto value = attributeRegistry.getValue(attribute,status,data,globals);
     if ( value.has_value() ) {
 //std::cerr << attribute->name << " contributes " <<  attribute->weight * value.value() << std::endl;
       objective += attribute->weight * value.value();
     }
   }
-  for ( auto& [name, attribute] : attributeRegistry.dataAttributes ) {
+  for ( auto attribute : attributeRegistry.dataAttributes ) {
     auto value = attributeRegistry.getValue(attribute,status,data,globals);
     if ( value.has_value() ) {
 //std::cerr << attribute->name << " contributes " <<  attribute->weight * value.value() << std::endl;
       objective += attribute->weight * value.value();
     }
   }
-  for ( auto& [name, attribute] : attributeRegistry.globalAttributes ) {
+  for ( auto attribute : attributeRegistry.globalAttributes ) {
     auto value = attributeRegistry.getValue(attribute,status,data,globals);
     if ( value.has_value() ) {
 //std::cerr << attribute->name << " contributes " <<  attribute->weight * value.value() << std::endl;

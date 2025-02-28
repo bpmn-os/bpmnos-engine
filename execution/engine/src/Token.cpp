@@ -173,7 +173,7 @@ nlohmann::ordered_json Token::jsonify() const {
   jsonObject["status"] = nlohmann::ordered_json::object();
 
   auto& attributeRegistry = getAttributeRegistry();
-  for (auto& [attributeName,attribute] : attributeRegistry.statusAttributes ) {
+  for (auto attribute : attributeRegistry.statusAttributes ) {
     if ( attribute->index >= status.size() ) {
       // skip attribute that is not yet included in status
       continue;
@@ -181,27 +181,27 @@ nlohmann::ordered_json Token::jsonify() const {
 
     auto statusValue = attributeRegistry.getValue(attribute,status,*data,globals);
     if ( !statusValue.has_value() ) {
-      jsonObject["status"][attributeName] = nullptr ;
+      jsonObject["status"][attribute->name] = nullptr ;
     }
     else if ( attribute->type == BOOLEAN) {
       bool value = (bool)statusValue.value();
-      jsonObject["status"][attributeName] = value ;
+      jsonObject["status"][attribute->name] = value ;
     }
     else if ( attribute->type == INTEGER) {
       int value = (int)statusValue.value();
-      jsonObject["status"][attributeName] = value ;
+      jsonObject["status"][attribute->name] = value ;
     }
     else if ( attribute->type == DECIMAL) {
       double value = (double)statusValue.value();
-      jsonObject["status"][attributeName] = value ;
+      jsonObject["status"][attribute->name] = value ;
     }
     else if ( attribute->type == STRING) {
       std::string value = BPMNOS::to_string(statusValue.value(),attribute->type);
-      jsonObject["status"][attributeName] = value ;
+      jsonObject["status"][attribute->name] = value ;
     }
     else if ( attribute->type == COLLECTION) {
       std::string value = BPMNOS::to_string(statusValue.value(),attribute->type);
-      jsonObject["status"][attributeName] = value ;
+      jsonObject["status"][attribute->name] = value ;
     }
   }
 
@@ -210,7 +210,7 @@ nlohmann::ordered_json Token::jsonify() const {
   if ( data->size() ) {
     jsonObject["data"] = nlohmann::ordered_json::object();
 
-    for (auto& [attributeName,attribute] : attributeRegistry.dataAttributes ) {
+    for (auto attribute : attributeRegistry.dataAttributes ) {
       if ( attribute->index >= data->size() ) {
         // skip attribute that is not yet included in data
         continue;
@@ -218,27 +218,27 @@ nlohmann::ordered_json Token::jsonify() const {
 
       auto dataValue = attributeRegistry.getValue(attribute,status,*data,globals);
       if ( !dataValue.has_value() ) {
-        jsonObject["data"][attributeName] = nullptr ;
+        jsonObject["data"][attribute->name] = nullptr ;
       }
       else if ( attribute->type == BOOLEAN) {
         bool value = (bool)dataValue.value();
-        jsonObject["data"][attributeName] = value ;
+        jsonObject["data"][attribute->name] = value ;
       }
       else if ( attribute->type == INTEGER) {
         int value = (int)dataValue.value();
-        jsonObject["data"][attributeName] = value ;
+        jsonObject["data"][attribute->name] = value ;
       }
       else if ( attribute->type == DECIMAL) {
         double value = (double)dataValue.value();
-        jsonObject["data"][attributeName] = value ;
+        jsonObject["data"][attribute->name] = value ;
       }
       else if ( attribute->type == STRING) {
         std::string value = BPMNOS::to_string(dataValue.value(),attribute->type);
-        jsonObject["data"][attributeName] = value ;
+        jsonObject["data"][attribute->name] = value ;
       }
       else if ( attribute->type == COLLECTION) {
         std::string value = BPMNOS::to_string(dataValue.value(),attribute->type);
-        jsonObject["data"][attributeName] = value ;
+        jsonObject["data"][attribute->name] = value ;
       }
     }
   }
@@ -246,30 +246,30 @@ nlohmann::ordered_json Token::jsonify() const {
   if ( globals.size() ) {
     jsonObject["globals"] = nlohmann::ordered_json::object();
 
-    for (auto& [attributeName,attribute] : attributeRegistry.globalAttributes ) {
+    for (auto attribute : attributeRegistry.globalAttributes ) {
       auto globalValue = globals[attribute->index];
       if ( !globalValue.has_value() ) {
-        jsonObject["globals"][attributeName] = nullptr ;
+        jsonObject["globals"][attribute->name] = nullptr ;
       }
       else if ( attribute->type == BOOLEAN) {
         bool value = (bool)globalValue.value();
-        jsonObject["globals"][attributeName] = value ;
+        jsonObject["globals"][attribute->name] = value ;
       }
       else if ( attribute->type == INTEGER) {
         int value = (int)globalValue.value();
-        jsonObject["globals"][attributeName] = value ;
+        jsonObject["globals"][attribute->name] = value ;
       }
       else if ( attribute->type == DECIMAL) {
         double value = (double)globalValue.value();
-        jsonObject["globals"][attributeName] = value ;
+        jsonObject["globals"][attribute->name] = value ;
       }
       else if ( attribute->type == STRING) {
         std::string value = BPMNOS::to_string(globalValue.value(),attribute->type);
-        jsonObject["globals"][attributeName] = value ;
+        jsonObject["globals"][attribute->name] = value ;
       }
       else if ( attribute->type == COLLECTION) {
         std::string value = BPMNOS::to_string(globalValue.value(),attribute->type);
-        jsonObject["globals"][attributeName] = value ;
+        jsonObject["globals"][attribute->name] = value ;
       }
     }
   }

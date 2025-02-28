@@ -499,7 +499,7 @@ void CPController::createCP() {
 }
 
 void CPController::createGlobalVariables() {
-  for ( auto& [name,attribute] : scenario->model->attributeRegistry.globalAttributes ) {
+  for ( auto attribute : scenario->model->attributeRegistry.globalAttributes ) {
     assert( attribute->index == globals.size() ); // ensure that the order of attributes is correct
     globals.emplace_back(
       model.addIndexedVariables(CP::Variable::Type::BOOLEAN, "defined_" + attribute->id ), 
@@ -672,7 +672,7 @@ void CPController::constrainGlobalVariables() {
   for ( auto& [entry,exit] : flattenedGraph.globalModifiers ) {
     auto& [localStatus,localData,localGlobals] = locals.at(&exit).back();
     for ( unsigned int i = 0; i < flattenedGraph.globalModifiers.size(); i++ ) {
-      for ( auto& [name,attribute] : scenario->model->attributeRegistry.globalAttributes ) {
+      for ( auto attribute : scenario->model->attributeRegistry.globalAttributes ) {
         // if global index at modifier entry equals i then the i+1-th global item equals the final globals of the modifier
         model.addConstraint( 
           ( globalIndex.at(&entry) == i ).implies( 
@@ -748,7 +748,7 @@ void CPController::createEntryStatus(const Vertex* vertex) {
     auto it = extensionElements->attributeRegistry.statusAttributes.begin();
     std::advance(it, variables.size());
     for ( ; it != extensionElements->attributeRegistry.statusAttributes.end(); it++ ) {
-      auto attribute = it->second;
+      auto attribute = *it;
       // add variables holding given values
       auto value = scenario->getKnownValue(vertex->rootId, attribute, 0);
     
@@ -816,8 +816,9 @@ void CPController::createExitStatus(const Vertex* vertex) {
     extensionElements = vertex->parent.value().first.node->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
     auto& entryStatus = status.at(entryVertex);
     std::vector<AttributeVariables> variables;
-    for ( auto& [name,attribute] : extensionElements->attributeRegistry.statusAttributes ) {
-      assert( attribute->index == variables.size() );
+    for ( auto attribute : extensionElements->attributeRegistry.statusAttributes ) {
+std::cerr << attribute->name << ": " << attribute->index << " == " <<  variables.size() << std::endl;
+//      assert( attribute->index == variables.size() );
       variables.emplace_back(
         model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->reference() + "}," + attribute->id, entryStatus[attribute->index].defined ), 
         model.addVariable(CP::Variable::Type::REAL, "value_{" + vertex->reference() + "}," + attribute->id, entryStatus[attribute->index].value )
@@ -835,7 +836,7 @@ void CPController::createExitStatus(const Vertex* vertex) {
 
     // create exit status
     std::vector<AttributeVariables> variables;
-    for ( auto& [name,attribute] : extensionElements->attributeRegistry.statusAttributes ) {
+    for ( auto attribute : extensionElements->attributeRegistry.statusAttributes ) {
       auto& [ defined, value ] = localStatus.at(attribute->index);
       if ( attribute->index == BPMNOS::Model::ExtensionElements::Index::Timestamp ) {
         // exit timestamp may be later than deduced timestamp
@@ -907,7 +908,7 @@ void CPController::createExitStatus(const Vertex* vertex) {
   }
 
   std::vector<AttributeVariables> variables;
-  for ( auto& [name,attribute] : extensionElements->attributeRegistry.statusAttributes ) {
+  for ( auto attribute : extensionElements->attributeRegistry.statusAttributes ) {
     assert( attribute->index == variables.size() );
     variables.emplace_back(
       model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->reference() + "}," + attribute->id, currentStatus[attribute->index].defined ), 
@@ -1113,9 +1114,9 @@ void CPController::createLocalAttributeVariables(const Vertex* vertex) {
     vertex, 
     std::vector{ 
       std::make_tuple(
-        localAttributeVariables(extensionElements->attributeRegistry.statusAttributes),
-        localAttributeVariables(extensionElements->attributeRegistry.dataAttributes),
-        localAttributeVariables(extensionElements->attributeRegistry.globalAttributes)
+        localAttributeVariables(extensionElements->attributeRegistry.statusMap),
+        localAttributeVariables(extensionElements->attributeRegistry.dataMap),
+        localAttributeVariables(extensionElements->attributeRegistry.globalMap)
       )
     }
   );
@@ -1160,9 +1161,9 @@ void CPController::createLocalAttributeVariables(const Vertex* vertex) {
     
     
     current.emplace_back(
-      updatedLocalAttributeVariables(extensionElements->attributeRegistry.statusAttributes,currentStatus),
-      updatedLocalAttributeVariables(extensionElements->attributeRegistry.dataAttributes,currentData),
-      updatedLocalAttributeVariables(extensionElements->attributeRegistry.globalAttributes,currentGlobals)
+      updatedLocalAttributeVariables(extensionElements->attributeRegistry.statusMap,currentStatus),
+      updatedLocalAttributeVariables(extensionElements->attributeRegistry.dataMap,currentData),
+      updatedLocalAttributeVariables(extensionElements->attributeRegistry.globalMap,currentGlobals)
     );
   } 
 }
@@ -1173,7 +1174,7 @@ std::vector<CPController::AttributeVariables> CPController::createUniquelyDeduce
 
   std::vector<AttributeVariables> variables;
   variables.reserve( attributeRegistry.statusAttributes.size() );
-  for ( auto& [name,attribute] : attributeRegistry.statusAttributes ) {
+  for ( auto attribute : attributeRegistry.statusAttributes ) {
     auto& [ defined, value ] = inheritedStatus.at(attribute->index);
     if ( vertex->node->represents<BPMN::Activity>() && attribute->index == BPMNOS::Model::ExtensionElements::Index::Timestamp ) {
       // entry of activity may be later than the deduced timestamp
@@ -1203,7 +1204,7 @@ std::vector<CPController::AttributeVariables> CPController::createAlternativeEnt
   assert( !vertex->node->represents<BPMN::Activity>() );
   std::vector<AttributeVariables> variables;
   variables.reserve( attributeRegistry.statusAttributes.size() );
-  for ( auto& [name,attribute] : attributeRegistry.statusAttributes ) {
+  for ( auto attribute : attributeRegistry.statusAttributes ) {
     // deduce variable
     CP::Expression defined(false);
     CP::Expression value(0.0);
@@ -1227,7 +1228,7 @@ std::vector<CPController::AttributeVariables> CPController::createMergedStatus(c
   assert( !vertex->entry<BPMN::Activity>() );
   std::vector<AttributeVariables> variables;
   variables.reserve( attributeRegistry.statusAttributes.size() );
-  for ( auto& [name,attribute] : attributeRegistry.statusAttributes ) {
+  for ( auto attribute : attributeRegistry.statusAttributes ) {
     if ( attribute->index == BPMNOS::Model::ExtensionElements::Index::Timestamp ) {
       std::vector<CP::Expression> terms;
       for ( auto& [ active, attributeVariables] : inputs ) {
@@ -1425,7 +1426,7 @@ std::cerr << "createExitVariables" << std::endl;
       auto extensionElements = vertex->parent.value().first.node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
       std::vector<AttributeVariables> variables;
       variables.reserve( extensionElements->attributeRegistry.statusAttributes.size() );
-      for ( auto& [name,attribute] : extensionElements->attributeRegistry.statusAttributes ) {
+      for ( auto attribute : extensionElements->attributeRegistry.statusAttributes ) {
 //std::cerr << "statusAttribute: " << name << "/" << vertex->reference() << std::endl;
         assert( tokenFlow.contains({vertex,&vertex->outflows.front().second}) );
         assert( status.contains(vertex) );

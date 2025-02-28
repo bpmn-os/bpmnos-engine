@@ -25,20 +25,22 @@ SCENARIO( "Task with linear expression incrementing timestamp", "[cpcontroller][
       controller.subscribe(&engine); // only necessary to validate consistency of solution and identify errors
       Execution::TimeWarp timeHandler;
       timeHandler.connect(&engine);
-//      Execution::Recorder recorder;
-      Execution::Recorder recorder(std::cerr);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
       engine.run(scenario.get(),10);
       
-std::cerr << "Model:\n" << controller.getModel().stringify() << std::endl;
-std::cerr << "Solution:\n" << solution.stringify() << std::endl;
+//std::cerr << "Model:\n" << controller.getModel().stringify() << std::endl;
+//std::cerr << "Solution:\n" << solution.stringify() << std::endl;
       THEN( "The solution is complete and satisfies all constraints" ) {
+        auto terminationLog = recorder.find(nlohmann::json{{"event","termination"}});
+        REQUIRE( terminationLog.empty() );  
         REQUIRE( solution.complete() ); // requires subscription of controller to engine
         REQUIRE( solution.errors().empty() ); // requires subscription of controller to engine
       }
       THEN( "The dump of each entry of the token log is correct" ) {
         auto activityLog = recorder.find(nlohmann::json{{"nodeId","Activity_1" }}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
-std::cerr << "Log:\n" << activityLog.dump() << std::endl;
+//std::cerr << "Log:\n" << activityLog.dump() << std::endl;
         REQUIRE( activityLog[0]["state"] == "ARRIVED" );
         REQUIRE( activityLog[1]["state"] == "READY" );
         REQUIRE( activityLog[2]["state"] == "ENTERED" );

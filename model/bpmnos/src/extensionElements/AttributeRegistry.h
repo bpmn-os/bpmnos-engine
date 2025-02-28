@@ -4,7 +4,7 @@
 #include <memory>
 #include <vector>
 #include <string>
-#include <map>
+#include <unordered_map>
 #include <limex.h>
 #include "model/utility/src/Number.h"
 
@@ -17,9 +17,12 @@ public:
   AttributeRegistry(const LIMEX::Callables<double>& callables);
   const LIMEX::Callables<double>& callables;
 
-  std::map< std::string, Attribute*> statusAttributes;
-  std::map< std::string, Attribute*> dataAttributes;
-  std::map< std::string, Attribute*> globalAttributes;
+  std::vector<Attribute*> statusAttributes;
+  std::vector<Attribute*> dataAttributes;
+  std::vector<Attribute*> globalAttributes;
+  std::unordered_map< std::string, Attribute*> statusMap;
+  std::unordered_map< std::string, Attribute*> dataMap;
+  std::unordered_map< std::string, Attribute*> globalMap;
   Attribute* operator[](const std::string& name) const;
   bool contains(const std::string& name) const;
 

@@ -13,32 +13,35 @@ void AttributeRegistry::add(Attribute* attribute) {
   }
   if ( attribute->category == Attribute::Category::STATUS ) {
     attribute->index = statusAttributes.size();
-    statusAttributes[attribute->name] = attribute;
+    statusAttributes.push_back(attribute);
+    statusMap[attribute->name] = attribute;
   }
   else if ( attribute->category == Attribute::Category::DATA ) {
     attribute->index = dataAttributes.size(); 
-    dataAttributes[attribute->name] = attribute;
+    dataAttributes.push_back(attribute);
+    dataMap[attribute->name] = attribute;
   }
   else /* if ( attribute->category == Attribute::Category::GLOBAL )*/ {
     attribute->index = globalAttributes.size(); 
-    globalAttributes[attribute->name] = attribute;
+    globalAttributes.push_back(attribute);
+    globalMap[attribute->name] = attribute;
   }
 }
 
 Attribute* AttributeRegistry::operator[](const std::string& name) const {
-  std::map< std::string, Attribute*>::const_iterator it;
-  if ( it = statusAttributes.find(name);
-    it != statusAttributes.end()
+  std::unordered_map< std::string, Attribute*>::const_iterator it;
+  if ( it = statusMap.find(name);
+    it != statusMap.end()
   ) {
     return it->second;
   }
-  else if ( it = dataAttributes.find(name);
-    it != dataAttributes.end()
+  else if ( it = dataMap.find(name);
+    it != dataMap.end()
   ) {
     return it->second;
   }
-  else if ( it = globalAttributes.find(name);
-    it != globalAttributes.end()
+  else if ( it = globalMap.find(name);
+    it != globalMap.end()
   ) {
     return it->second;
   }
@@ -49,7 +52,7 @@ Attribute* AttributeRegistry::operator[](const std::string& name) const {
 }
 
 bool AttributeRegistry::contains(const std::string& name) const {
-  return statusAttributes.contains(name) || dataAttributes.contains(name) || globalAttributes.contains(name);
+  return statusMap.contains(name) || dataMap.contains(name) || globalMap.contains(name);
 }
 
 

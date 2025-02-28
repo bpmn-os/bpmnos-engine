@@ -36,12 +36,14 @@
 #include "execution/multiinstanceactivity/test.h"
 // Ad-hoc subprocesses
 #include "execution/adhocsubprocess/test.h"
+*/
 
 // Status and Data
-#include "execution/status/test.h"
-#include "execution/data/test.h"
-#include "execution/collection/test.h"
+//#include "execution/status/test.h"
+//#include "data/test.h"
+//#include "execution/collection/test.h"
 
+/*
 // Examples
 #include "examples/bin_packing_problem/test.h" 
 #include "examples/guided_bin_packing_problem/test.h"
