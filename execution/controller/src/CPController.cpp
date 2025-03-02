@@ -471,28 +471,26 @@ void CPController::createCP() {
     position.emplace(vertices[i], sequence.variables[i]);
   } 
 
-//std::cerr << "createGlobalVariables" << std::endl;
+std::cerr << "createGlobalVariables" << std::endl;
   createGlobalVariables();
 
-//std::cerr << "createVertexVariables:" << flattenedGraph.vertices.size() << std::endl;
+std::cerr << "createVertexVariables:" << flattenedGraph.vertices.size() << std::endl;
   // create vertex and message variables
   for ( auto vertex : vertices ) {
     createVertexVariables(vertex);
   }
 
-  // TODO: constrain data variables
-  
-  // TODO: constrain global variables
-
+std::cerr << "constrainGlobalVariables" << std::endl;
   constrainGlobalVariables();
 
+std::cerr << "constrainDataVariables" << std::endl;
   for ( auto vertex : vertices ) {
     if ( vertex->entry<BPMN::Scope>() ) {
       constrainDataVariables(vertex);
     }
   }  
   
-//std::cerr << "createMessageVariables" << std::endl;
+std::cerr << "createMessageVariables" << std::endl;
   createMessageVariables();
 //std::cerr << "Done" << std::endl;
 //std::cerr << model.stringify() << std::endl;  
@@ -653,8 +651,12 @@ void CPController::createDataVariables(const FlattenedGraph::Vertex* vertex) {
 
 void CPController::constrainDataVariables(const FlattenedGraph::Vertex* vertex) {
   auto extensionElements = vertex->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+  if ( extensionElements->data.empty() ) return;
+  
+//std::cerr << "modifiers of " << vertex->reference() << std::endl;
   auto& dataModifiers = flattenedGraph.dataModifiers.at(vertex);
   for ( auto& [entry,exit] : dataModifiers ) {
+//std::cerr << "modifier: " << entry.reference() << std::endl;
     auto& [localStatus,localData,localGlobals] = locals.at(&exit).back();
     for ( unsigned int i = 0; i < dataModifiers.size(); i++ ) {
       for ( auto& attribute : extensionElements->data ) {
@@ -1356,13 +1358,13 @@ std::cerr << "createStatus" << std::endl;
     createExitVariables(vertex);
   }
     
-//std::cerr << "createSequenceConstraints" << std::endl;
+std::cerr << "createSequenceConstraints" << std::endl;
   createSequenceConstraints(vertex);
 
-//std::cerr << "createRestrictions" << std::endl;
+std::cerr << "createRestrictions" << std::endl;
   createRestrictions(vertex);
 
-std::cerr << "Done" << std::endl;
+std::cerr << "Done(createVertexVariables)" << std::endl;
 }
 
 std::pair< CP::Expression, CP::Expression > CPController::getAttributeVariables( const Vertex* vertex, const Model::Attribute* attribute) {

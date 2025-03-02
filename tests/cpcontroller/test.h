@@ -2,6 +2,12 @@
 
 // Activities
 #include "task/test.h"
+
+// Status and Data
+#include "status/test.h"
+#include "data/test.h"
+//#include "execution/collection/test.h"
+
 /*
 #include "execution/subprocess/test.h"
 #include "execution/decisiontask/test.h"
@@ -34,14 +40,11 @@
 // Multi-instance activities
 #include "execution/loopactivity/test.h"
 #include "execution/multiinstanceactivity/test.h"
-// Ad-hoc subprocesses
-#include "execution/adhocsubprocess/test.h"
 */
 
-// Status and Data
-//#include "execution/status/test.h"
-#include "data/test.h"
-//#include "execution/collection/test.h"
+// Ad-hoc subprocesses
+//#include "execution/adhocsubprocess/test.h" // TODO: (pos[entry1] < pos[entry2]).implies( pos[exit1] < pos[entry2] )
+
 
 /*
 // Examples
