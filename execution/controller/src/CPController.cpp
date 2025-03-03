@@ -17,6 +17,20 @@ CPController::CPController(const BPMNOS::Model::Scenario* scenario, Config confi
 {
 std::cerr << "Flattened graph: " << flattenedGraph.jsonify().dump() << std::endl;
   // TODO: add callables for lookup tables
+
+  // add callables for lookup tables
+  for ( auto& lookupTable : scenario->model->lookupTables ) {
+    callables.add(
+      lookupTable->name, 
+      [&lookupTable](const std::vector<CP::Expression>& args) -> CP::Expression
+      {
+        std::vector<CP::Operand> operands = { CP::Expression::getCustomIndex(lookupTable->name) };
+        operands.insert(operands.end(), args.begin(), args.end());
+        return CP::Expression(CP::Expression::Operator::custom, std::move(operands));
+      }
+    );
+  }
+
 std::cerr << "Callables: ";
 for ( auto name : callables.getNames() ) {
   std::cerr << name << ", ";
@@ -312,11 +326,8 @@ std::cerr << "Skip" << std::endl;
 CP::Solution& CPController::createSolution() {
   terminationEvent.reset();
   _solution = std::make_unique<CP::Solution>(model);
-
-std::cerr << "Evaluators: ";
   // add evaluators for lookup tables
   for ( auto& lookupTable : scenario->model->lookupTables ) {
-std::cerr << lookupTable->name << ", ";
     _solution->addEvaluator( 
       lookupTable->name,
       [&lookupTable](const std::vector<double>& operands) -> double {
@@ -324,8 +335,6 @@ std::cerr << lookupTable->name << ", ";
       }
     );
   }
-std::cerr << std::endl;
-
   return *_solution;
 }
 
@@ -1371,7 +1380,7 @@ std::cerr << "Done(createVertexVariables)" << std::endl;
 std::pair< CP::Expression, CP::Expression > CPController::getAttributeVariables( const Vertex* vertex, const Model::Attribute* attribute) {
   if ( attribute->category == Model::Attribute::Category::STATUS ) {
     assert( status.contains(vertex) );
-    assert( status.at(vertex).size() > attribute->index );
+    assert( attribute->index < status.at(vertex).size() );
     return std::make_pair<CP::Expression,CP::Expression>( 
       status.at(vertex)[attribute->index].defined,
       status.at(vertex)[attribute->index].value 
@@ -1572,6 +1581,7 @@ CP::Expression CPController::createExpression(const Vertex* vertex, const Model:
     }
 
     auto [defined,value] = getAttributeVariables(vertex,attribute);
+std::cerr << value.stringify() << std::endl;
     variables.push_back( value );
   }
   
@@ -1584,6 +1594,7 @@ CP::Expression CPController::createExpression(const Vertex* vertex, const Model:
 
     auto [defined,value] = getAttributeVariables(vertex,attribute);
     assert( value.operands.size() == 1 );
+std::cerr << compiled.stringify() << std::endl; 
     assert( std::holds_alternative<CP::IndexedVariable>( value.operands.front() ) );
     indexedVariables.push_back( std::get<CP::IndexedVariable>( value.operands.front() ).container );
   }

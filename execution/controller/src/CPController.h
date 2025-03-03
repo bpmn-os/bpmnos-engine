@@ -109,7 +109,7 @@ protected:
     std::expected< double, std::string > _defined;
     std::expected< double, std::string > _value;
   };
-    
+  
   void createStatus(const Vertex* vertex);
   void createEntryStatus(const Vertex* vertex);
   void createExitStatus(const Vertex* vertex);
