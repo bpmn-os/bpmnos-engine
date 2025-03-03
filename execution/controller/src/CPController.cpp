@@ -711,7 +711,9 @@ void CPController::createStatus(const Vertex* vertex) {
 }
 
 void CPController::createEntryStatus(const Vertex* vertex) {
-  std::vector<AttributeVariables> variables;
+  status.emplace( vertex, std::vector<AttributeVariables>() );  
+  auto& variables = status.at(vertex);
+  
   if ( vertex->parent.has_value() ) {
     auto scope = vertex->parent.value().first.node;
     auto extensionElements = scope->extensionElements->as<BPMNOS::Model::ExtensionElements>();
@@ -756,6 +758,7 @@ void CPController::createEntryStatus(const Vertex* vertex) {
     variables.reserve(extensionElements->attributeRegistry.statusAttributes.size());
     for ( size_t i = variables.size(); i < extensionElements->attributeRegistry.statusAttributes.size(); i++) {
       auto attribute = extensionElements->attributeRegistry.statusAttributes[i];
+std::cerr << attribute->id << std::endl;
       // add variables holding given values
       if ( auto given = scenario->getKnownValue(vertex->rootId, attribute, 0); given.has_value() ) {
         // defined initial value
@@ -783,8 +786,6 @@ void CPController::createEntryStatus(const Vertex* vertex) {
       }
     }
   }
-
-  status.emplace( vertex, std::move(variables) );  
 }
 
 void CPController::createExitStatus(const Vertex* vertex) {
@@ -1369,12 +1370,15 @@ std::cerr << "Done(createVertexVariables)" << std::endl;
 
 std::pair< CP::Expression, CP::Expression > CPController::getAttributeVariables( const Vertex* vertex, const Model::Attribute* attribute) {
   if ( attribute->category == Model::Attribute::Category::STATUS ) {
+    assert( status.contains(vertex) );
+    assert( status.at(vertex).size() > attribute->index );
     return std::make_pair<CP::Expression,CP::Expression>( 
       status.at(vertex)[attribute->index].defined,
       status.at(vertex)[attribute->index].value 
     );
   }
   else if ( attribute->category == Model::Attribute::Category::DATA ) {
+    assert( data.contains( {&vertex->dataOwner(attribute).first, attribute } ) );
     auto& index = dataIndex.at(vertex)[ vertex->dataOwnerIndex(attribute) ];
     return std::make_pair<CP::Expression,CP::Expression>( 
       data.at( {&vertex->dataOwner(attribute).first, attribute } ).defined[ index ],
@@ -1383,6 +1387,7 @@ std::pair< CP::Expression, CP::Expression > CPController::getAttributeVariables(
   }
   else {
     assert( attribute->category == Model::Attribute::Category::GLOBAL );
+    assert( globals.size() > attribute->index );
     auto& index = globalIndex.at(vertex);
     return std::make_pair<CP::Expression,CP::Expression>( 
       globals[attribute->index].defined[ index ],
