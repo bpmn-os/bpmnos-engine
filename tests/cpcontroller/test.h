@@ -7,7 +7,7 @@
 // Status and Data
 #include "status/test.h"
 #include "data/test.h"
-//#include "collection/test.h"
+#include "collection/test.h"
 
 // Expression
 #include "expression/test.h"

@@ -326,6 +326,14 @@ std::cerr << "Skip" << std::endl;
 CP::Solution& CPController::createSolution() {
   terminationEvent.reset();
   _solution = std::make_unique<CP::Solution>(model);
+  
+  // set collection evaluator
+  _solution->setCollectionEvaluator( 
+    [](double value) -> std::vector<double> {
+      return collectionRegistry[(size_t)value];
+    }
+  );
+
   // add evaluators for lookup tables
   for ( auto& lookupTable : scenario->model->lookupTables ) {
     _solution->addEvaluator( 
