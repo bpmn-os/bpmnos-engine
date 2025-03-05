@@ -27,6 +27,10 @@ size_t CollectionRegistry::operator()(const std::vector<double>& collection) {
   return it->second;
 }
 
+size_t CollectionRegistry::size() const {
+  return registeredCollections.size();
+}
+
 void CollectionRegistry::clear() {
   registeredCollections.clear();
   index.clear();

@@ -23,6 +23,7 @@ namespace BPMNOS {
     const std::vector<double>& operator[](size_t i) const;
     /// Operator to register a collection by its string representation and return its index.
     size_t operator()(const std::vector<double>& collection);
+    size_t size() const;
     void clear();
   private:
     std::vector< std::vector<double> > registeredCollections;
