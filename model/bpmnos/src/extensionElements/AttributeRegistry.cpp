@@ -2,8 +2,8 @@
 
 using namespace BPMNOS::Model;
 
-AttributeRegistry::AttributeRegistry(const LIMEX::Callables<double>& callables)
-  : callables(callables)
+AttributeRegistry::AttributeRegistry(const LIMEX::Handle<double>& limexHandle)
+  : limexHandle(limexHandle)
 {
 }
 

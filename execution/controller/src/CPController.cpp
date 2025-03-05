@@ -3,7 +3,7 @@
 #include "model/bpmnos/src/SequentialAdHocSubProcess.h"
 #include "model/bpmnos/src/extensionElements/MessageDefinition.h"
 #include "execution/engine/src/Engine.h"
-#include <limex_callables.h>
+#include <limex_handle.h>
 #include <iostream>
 
 using namespace BPMNOS::Execution;
@@ -20,7 +20,7 @@ std::cerr << "Flattened graph: " << flattenedGraph.jsonify().dump() << std::endl
 
   // add callables for lookup tables
   for ( auto& lookupTable : scenario->model->lookupTables ) {
-    callables.add(
+    limexHandle.add(
       lookupTable->name, 
       [&lookupTable](const std::vector<CP::Expression>& args) -> CP::Expression
       {
@@ -31,8 +31,8 @@ std::cerr << "Flattened graph: " << flattenedGraph.jsonify().dump() << std::endl
     );
   }
 
-std::cerr << "Callables: ";
-for ( auto name : callables.getNames() ) {
+std::cerr << "Limex handles: ";
+for ( auto name : limexHandle.getNames() ) {
   std::cerr << name << ", ";
 }
 std::cerr << std::endl;
@@ -972,7 +972,7 @@ std::pair< CP::Expression, CP::Expression > CPController::getLocalAttributeVaria
 }
 
 CP::Expression CPController::createOperatorExpression( const Model::Expression& operator_, std::tuple< std::vector<AttributeVariables>, std::vector<AttributeVariables>, std::vector<AttributeVariables> >& localVariables ) {
-  auto compiled = LIMEX::Expression<CP::Expression,const CP::IndexedVariables>(operator_.expression, callables);
+  auto compiled = LIMEX::Expression<CP::Expression,CP::Expression>(operator_.expression, limexHandle);
   
   std::vector<CP::Expression> variables;
   for ( auto& variableName : compiled.getVariables() ) {
@@ -985,7 +985,7 @@ CP::Expression CPController::createOperatorExpression( const Model::Expression& 
     variables.push_back( value );
   }
   
-  std::vector< std::reference_wrapper<const CP::IndexedVariables> > indexedVariables;
+  std::vector<CP::Expression> collectionVariables;
   for ( auto& variableName : compiled.getCollections() ) {
     auto attribute = operator_.attributeRegistry[variableName];
     if( attribute->type != ValueType::COLLECTION ) {
@@ -993,12 +993,10 @@ CP::Expression CPController::createOperatorExpression( const Model::Expression& 
     }
 
     auto [defined,value] = getLocalAttributeVariables(attribute,localVariables);
-    assert( value.operands.size() == 1 );
-    assert( std::holds_alternative<CP::IndexedVariable>( value.operands.front() ) );
-    indexedVariables.push_back( std::get<CP::IndexedVariable>( value.operands.front() ).container );
+    collectionVariables.push_back( value );
   }
   
-  return compiled.evaluate(variables,indexedVariables);
+  return compiled.evaluate(variables,collectionVariables);
 }
 
 void CPController::createLocalAttributeVariables(const Vertex* vertex) {
@@ -1571,7 +1569,7 @@ CP::Expression CPController::createExpression(const Vertex* vertex, const Model:
   assert( vertex->node->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );
   auto extensionElements = vertex->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
 
-  auto compiled = LIMEX::Expression<CP::Expression,const CP::IndexedVariables>(expression.expression, callables);
+  auto compiled = LIMEX::Expression<CP::Expression,CP::Expression>(expression.expression, limexHandle);
   
   std::vector<CP::Expression> variables;
   for ( auto& variableName : compiled.getVariables() ) {
@@ -1585,7 +1583,7 @@ std::cerr << value.stringify() << std::endl;
     variables.push_back( value );
   }
   
-  std::vector< std::reference_wrapper<const CP::IndexedVariables> > indexedVariables;
+  std::vector<CP::Expression> collectionVariables;
   for ( auto& variableName : compiled.getCollections() ) {
     auto attribute = extensionElements->attributeRegistry[variableName];
     if( attribute->type != ValueType::COLLECTION ) {
@@ -1593,13 +1591,11 @@ std::cerr << value.stringify() << std::endl;
     }
 
     auto [defined,value] = getAttributeVariables(vertex,attribute);
-    assert( value.operands.size() == 1 );
-std::cerr << compiled.stringify() << std::endl; 
-    assert( std::holds_alternative<CP::IndexedVariable>( value.operands.front() ) );
-    indexedVariables.push_back( std::get<CP::IndexedVariable>( value.operands.front() ).container );
+std::cerr << value.stringify() << std::endl;
+    collectionVariables.push_back( value );
   }
-  
-  return compiled.evaluate(variables,indexedVariables);
+
+  return compiled.evaluate(variables,collectionVariables);
 }
 
 void CPController::createGlobalIndexVariable(const Vertex* vertex) {

@@ -14,8 +14,8 @@ namespace BPMNOS::Model {
 
 class AttributeRegistry {
 public:
-  AttributeRegistry(const LIMEX::Callables<double>& callables);
-  const LIMEX::Callables<double>& callables;
+  AttributeRegistry(const LIMEX::Handle<double>& limexHandle);
+  const LIMEX::Handle<double>& limexHandle;
 
   std::vector<Attribute*> statusAttributes;
   std::vector<Attribute*> dataAttributes;

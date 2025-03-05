@@ -21,7 +21,7 @@ using namespace BPMNOS::Model;
 Model::Model(const std::string filename, const std::vector<std::string> folders)
   : filename(std::move(filename))
   , folders(std::move(folders))
-  , attributeRegistry(callables)
+  , attributeRegistry(limexHandle)
 {
   readBPMNFile(filename);
 }
@@ -76,7 +76,7 @@ std::unique_ptr<XML::XMLObject> Model::createRoot(const std::string& filename) {
           auto lookupTable = lookupTables.back().get();
           // register callable
           // TODO: should I use shared pointers?
-          callables.add(
+          limexHandle.add(
             lookupTable->name, 
             [lookupTable](const std::vector<double>& args)
             {
