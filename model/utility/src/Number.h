@@ -85,6 +85,11 @@ namespace BPMNOS {
   std::string to_string(number numberValue, const ValueType& type);
 
   /**
+   * @brief Converts a double to a string without trailing zeros after the decimal point.
+   */
+  std::string to_string(double value);
+
+  /**
    * Returns merged values from a set of values
    **/
   BPMNOS::Values mergeValues(const std::vector<BPMNOS::Values>& valueSets);

@@ -5,58 +5,16 @@
 
 using namespace BPMNOS;
 
-Collection::Collection(const std::string& collection)
-  : collection(strutil::trim_copy(collection))
-{
-  // get values
-  if ( !strutil::starts_with(collection,"[") || !strutil::ends_with(collection,"]") ) {
-    throw std::runtime_error("Collection: string '" + collection + "' must start with '[' and must end with ']'");
-  }
-  // determine list of comma separated values
-  auto list = collection.substr(1,collection.size()-2);
-  if ( list.empty() ) return;
-    
-  auto elements = strutil::split( list, "," );
-  for ( auto& element : elements ) {
-    strutil::trim(element);
-/*
-    if ( strutil::starts_with(element,"\"") && strutil::ends_with(element,"\"") ) {
-assert(!"Should not be reached");
-      values.push_back( BPMNOS::to_number( element.substr(1,element.size()-2), STRING ) );
-    }
-    else*/ if ( element == Keyword::False ) {
-      push_back( false );
-    }
-    else if ( element == Keyword::True ) {
-      push_back( true );
-    }
-/*
-    else if ( element == Keyword::Undefined ) {
-      push_back( std::nullopt );
-    }
-*/
-    else {
-      try {
-        // try to convert to number
-        push_back( BPMNOS::stod(element) );
-      }
-      catch(...) {
-        throw std::runtime_error("Collection: illegal value '" + element + "' in '" + collection + "'");
-      }
-    }
-  }
-}
-
 CollectionRegistry::CollectionRegistry() {
   // register empty collection with index 0
-  (*this)("[]");
+  (*this)(std::vector<double>());
 }
 
-const Collection&  CollectionRegistry::operator[](size_t i) const {
+const std::vector<double>&  CollectionRegistry::operator[](size_t i) const {
   return registeredCollections[i];
 }
 
-size_t CollectionRegistry::operator()(const std::string& collection) {
+size_t CollectionRegistry::operator()(const std::vector<double>& collection) {
   std::lock_guard<std::mutex> lock(registryMutex);
 
   auto it = index.find(collection);
@@ -72,7 +30,7 @@ size_t CollectionRegistry::operator()(const std::string& collection) {
 void CollectionRegistry::clear() {
   registeredCollections.clear();
   index.clear();
-  (*this)("[]");
+  (*this)(std::vector<double>());
 }
 
 // Create global registry

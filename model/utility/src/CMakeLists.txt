@@ -11,12 +11,12 @@ list(APPEND model_utility_HEADERS
   Value.h
   Number.h
   StringRegistry.h
+  tuple_map.h
+  vector_map.h
   CollectionRegistry.h
   CSVReader.h
   RandomDistributionFactory.h
   getDelimiter.h
-  tuple_map.h
-  vector_map.h
   encode_quoted_strings.h
   encode_collection.h
 )

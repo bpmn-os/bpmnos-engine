@@ -13,25 +13,6 @@ message("-- Library will be created in folder: ${CMAKE_SOURCE_DIR}/${LIB_DIR}")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/${LIB_DIR})
 #set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR})
 
-include(FetchContent)
-set(FETCHCONTENT_QUIET FALSE)
-
-set(BUILD_TESTING OFF CACHE BOOL "Disable testing")
-# String Util
-FetchContent_Declare(
-        strutil
-        GIT_REPOSITORY https://github.com/Shot511/strutil.git
-        GIT_TAG v1.1.0
-        SOURCE_SUBDIR this-directory-does-not-exist # Work around to not build the project
-)
-
-FetchContent_MakeAvailable(strutil)
-
-include_directories(
-  SYSTEM
-  ${strutil_SOURCE_DIR} 
-)
-
 # Get lists of all headers and sources of utilities
 include("${PROJECT_SOURCE_DIR}/utility/CMakeLists.txt")
 

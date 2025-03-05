@@ -3,17 +3,11 @@
 
 #include <string>
 #include <vector>
-#include <unordered_map>
 #include <mutex>
 #include "Number.h"
+#include "vector_map.h"
 
 namespace BPMNOS {
-
-  struct Collection : std::vector<double> {
-    Collection(const std::string& collection);
-    std::string collection;
-//    Values values;
-  };
 
  /**
    * @brief Utility class for representing collections by numeric values.
@@ -26,13 +20,13 @@ namespace BPMNOS {
     CollectionRegistry();
 
     /// Operator providing access to a registered collections by index.
-    const Collection& operator[](size_t i) const;
+    const std::vector<double>& operator[](size_t i) const;
     /// Operator to register a collection by its string representation and return its index.
-    size_t operator()(const std::string& collection);
+    size_t operator()(const std::vector<double>& collection);
     void clear();
   private:
-    std::vector<Collection> registeredCollections;
-    std::unordered_map<std::string, size_t> index;
+    std::vector< std::vector<double> > registeredCollections;
+    vector_map<std::vector<double>, size_t> index;
     std::mutex registryMutex;
   public:
     // Prevent use of copy constructor and assignment operator as mutex is not copyable

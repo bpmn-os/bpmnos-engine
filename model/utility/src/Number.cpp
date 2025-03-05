@@ -2,6 +2,8 @@
 #include "Keywords.h"
 #include "StringRegistry.h"
 #include "CollectionRegistry.h"
+#include "encode_collection.h"
+#include "encode_quoted_strings.h"
 #include "model/bpmnos/src/extensionElements/ExtensionElements.h"
 #include <cassert>
 
@@ -65,7 +67,9 @@ number to_number(const std::string& valueString, const ValueType& type) {
     case ValueType::STRING:
       return number(stringRegistry( valueString ));
     case ValueType::COLLECTION:
-      return number(collectionRegistry( valueString ));
+      // it is assumed that all collections are already encoded
+      return number(BPMNOS::stoi( valueString ));
+//      return number(collectionRegistry( valueString ));
   }
   throw std::logic_error("to_number: unknown value type " + type );
 }
@@ -138,10 +142,10 @@ number to_number(const Value& value, const ValueType& type) {
       }
     case ValueType::COLLECTION:
       if (std::holds_alternative<std::string>(value)) [[likely]] {
-        return number(collectionRegistry(std::get<std::string>(value)));
+        return number( std::stoi( encodeCollection( encodeQuotedStrings( std::get<std::string>(value) ) ) ) );
       }
       else [[unlikely]] {
-        throw std::logic_error("to_number: illegal parameters" );
+        throw std::logic_error("to_number: illegal conversion" );
       }
   }
   throw std::logic_error("to_number: unknown value type " + type );
@@ -154,13 +158,32 @@ std::string to_string(number numericValue, const ValueType& type) {
     case ValueType::INTEGER:
       return std::to_string((int)numericValue);
     case ValueType::DECIMAL:
-      return std::to_string((double)numericValue);
+      return BPMNOS::to_string((double)numericValue);
     case ValueType::STRING:
       return stringRegistry[(std::size_t)numericValue];
     case ValueType::COLLECTION:
-      return collectionRegistry[(std::size_t)numericValue].collection;
+      std::string result;
+      for ( auto value : collectionRegistry[(std::size_t)numericValue] ) {
+        result += ", " + BPMNOS::to_string(value);
+      }
+      result.front() = '[';
+      result += " ]";
+      return result;
   }
   throw std::logic_error("to_string: unknown value type " + type );
+}
+
+std::string to_string(double value) {
+  std::string result = std::to_string(value);
+  if ( result.contains('.') ) {
+    while ( result.back() == '0' ) {
+      result.pop_back();
+    }
+    if ( result.back() == '.' ) {
+      result.pop_back();
+    }
+  }
+  return result;
 }
 
 BPMNOS::Values mergeValues(const std::vector<BPMNOS::Values>& valueSets) {

@@ -4,9 +4,10 @@
 #include <string>
 #include <regex>
 #include <cassert>
-#include <iostream>
+#include <strutil.h>
 
 #include "CollectionRegistry.h"
+#include "Keywords.h"
 
 namespace BPMNOS {
 
@@ -17,16 +18,28 @@ inline std::string encodeCollection(std::string text) {
   std::smatch match;
 
   while (std::regex_search(text, match, regular_expression)) {
-/*
-std::cerr << match[0].str() << std::endl;  
-std::cerr << match[1].str() << std::endl;  
-std::cerr << match[2].str() << std::endl;  
-    assert(match[1].str().front() == '[' && match[1].str().back() == ']');
-*/
     if ( match[2].str().contains("[") ) {
       throw std::runtime_error("Nested collections are not supported");
     }
-    std::string collection = "[" + match[2].str() + "]";
+    std::vector<double> collection;
+    for ( auto value : strutil::split(match[2].str(),',') ) {
+      strutil::trim(value);
+      if ( value == Keyword::False ) {
+        collection.push_back( false );
+      }
+      else if ( value == Keyword::True ) {
+        collection.push_back( true );
+      }
+      else {
+        try {
+          // try to convert to number
+          collection.push_back( std::stod(value) );
+        }
+        catch(...) {
+          throw std::runtime_error("BPMNOS: illegal value '" + value + "' in '" + text + "'");
+        }
+      }
+    }
     // Convert collection to a number using the registry
     auto id = collectionRegistry(collection);
 
