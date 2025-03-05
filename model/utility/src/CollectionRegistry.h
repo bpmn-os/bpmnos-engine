@@ -9,10 +9,10 @@
 
 namespace BPMNOS {
 
-  struct Collection {
+  struct Collection : std::vector<double> {
     Collection(const std::string& collection);
     std::string collection;
-    Values values;
+//    Values values;
   };
 
  /**

@@ -19,23 +19,26 @@ Collection::Collection(const std::string& collection)
   auto elements = strutil::split( list, "," );
   for ( auto& element : elements ) {
     strutil::trim(element);
+/*
     if ( strutil::starts_with(element,"\"") && strutil::ends_with(element,"\"") ) {
 assert(!"Should not be reached");
       values.push_back( BPMNOS::to_number( element.substr(1,element.size()-2), STRING ) );
     }
-    else if ( element == Keyword::False ) {
-      values.push_back( BPMNOS::to_number( false , BOOLEAN) );
+    else*/ if ( element == Keyword::False ) {
+      push_back( false );
     }
     else if ( element == Keyword::True ) {
-      values.push_back( BPMNOS::to_number( true , BOOLEAN) );
+      push_back( true );
     }
+/*
     else if ( element == Keyword::Undefined ) {
-      values.push_back( std::nullopt );
+      push_back( std::nullopt );
     }
+*/
     else {
       try {
         // try to convert to number
-        values.push_back( BPMNOS::stod(element) );
+        push_back( BPMNOS::stod(element) );
       }
       catch(...) {
         throw std::runtime_error("Collection: illegal value '" + element + "' in '" + collection + "'");

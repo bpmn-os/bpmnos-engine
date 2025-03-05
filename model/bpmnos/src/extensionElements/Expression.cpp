@@ -146,12 +146,8 @@ std::optional<BPMNOS::number> Expression::execute(const BPMNOS::Values& status, 
       // return nullopt because required collection is not given
       return std::nullopt;
     }
-    for ( auto value : collectionRegistry[(size_t)collection.value()].values ) {
-      if ( !value.has_value() ) {
-        // return nullopt because a value in required collection is missing
-        return std::nullopt;
-      }
-      collectionValues.back().push_back( (double)value.value() );
+    for ( auto value : collectionRegistry[(size_t)collection.value()] ) {
+      collectionValues.back().push_back( value );
     }
   }
     
