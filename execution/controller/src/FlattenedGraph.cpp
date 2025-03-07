@@ -286,6 +286,7 @@ void FlattenedGraph::createLoopVertices(BPMNOS::number rootId, BPMNOS::number in
   // lambda returning parameter value known at time zero
   auto getValue = [&](BPMNOS::Model::Parameter* parameter) -> std::optional<BPMNOS::number> {
     if ( parameter->expression ) {
+std::cerr << parameter->expression->expression << std::endl;
       // collect variable values
       std::vector< double > variableValues;
       for ( auto attribute : parameter->expression->inputs ) {
@@ -331,7 +332,7 @@ void FlattenedGraph::createLoopVertices(BPMNOS::number rootId, BPMNOS::number in
     }
   }
   else {
-    if ( extensionElements->loopMaximum.has_value() ) {
+    if ( extensionElements->loopCardinality.has_value() ) {
       auto value = getValue( extensionElements->loopCardinality.value().get() );
       n = value.has_value() ? (int)value.value() : 0;
     }
@@ -342,29 +343,47 @@ void FlattenedGraph::createLoopVertices(BPMNOS::number rootId, BPMNOS::number in
   }
  
   if ( activity->loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::Standard ) {
-    // create vertices for loop activity
+ std::cerr << "Standard" << std::endl;
+   // create vertices for loop activity
     for ( int i = 1; i <= n; i++ ) {
       createVertexPair(rootId, instanceId, activity, parent);
     }
   }
   else {
-    std::string baseName = BPMNOS::to_string(instanceId,STRING) + BPMNOS::Model::Scenario::delimiters[0] + activity->id + BPMNOS::Model::Scenario::delimiters[1] ;
+std::cerr << "MultiInstance" << std::endl;
+   std::string baseName = BPMNOS::to_string(instanceId,STRING) + BPMNOS::Model::Scenario::delimiters[0] + activity->id + BPMNOS::Model::Scenario::delimiters[1] ;
     // create vertices for multi-instance activity
     for ( int i = 1; i <= n; i++ ) {
       createVertexPair(rootId, BPMNOS::to_number(baseName + std::to_string(i),STRING), activity, parent);
     }
   }
   
-  if ( activity->loopCharacteristics.value() != BPMN::Activity::LoopCharacteristics::MultiInstanceParallel ) {
+  if ( activity->loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::MultiInstanceParallel ) {
+std::cerr << "Parallel" << std::endl;
+/*
+    auto& container = vertexMap.at(activity).at(instanceId);
+    for ( size_t i = 2; i+1 < container.size(); i += 2 ) {
+std::cerr << i << "/" << container.size() << std::endl;
+      Vertex& entry = container[i];
+      Vertex& exit = container[i+1];
+      entry.inflows = container[0].get().inflows;
+      exit.outflows  = container[1].get().outflows;
+    }
+*/
+  }
+  else {
+std::cerr << "Sequential" << std::endl;
     // create sequential precedences
     auto& container = vertexMap.at(activity).at(instanceId);
-    for ( size_t i = 1; i < container.size(); i += 2 ) {
+    for ( size_t i = 1; i+1 < container.size(); i += 2 ) {
+std::cerr << i << "/" << container.size() << std::endl;
       Vertex& predecessor = container[i]; // exit vertex
       Vertex& successor = container[i+1]; // entry vertex
       predecessor.successors.push_back(successor);
       successor.predecessors.push_back(predecessor);
     }
   }
+std::cerr << "done" << std::endl;
 
 }
 
