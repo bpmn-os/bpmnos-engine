@@ -8,8 +8,9 @@
 
 using namespace BPMNOS::Execution;
 
-FlattenedGraph::Vertex::Vertex(size_t index, BPMNOS::number rootId, BPMNOS::number instanceId, const BPMN::Node* node, Type type, std::optional< std::pair<Vertex&, Vertex&> > parent)
-  : index(index)
+FlattenedGraph::Vertex::Vertex(FlattenedGraph* graph, BPMNOS::number rootId, BPMNOS::number instanceId, const BPMN::Node* node, Type type, std::optional< std::pair<Vertex&, Vertex&> > parent)
+  : graph(graph)
+  , index(graph->vertices.size())
   , rootId(rootId)
   , instanceId(instanceId)
   , node(node)
@@ -76,7 +77,19 @@ std::pair< const FlattenedGraph::Vertex&, const FlattenedGraph::Vertex&> Flatten
 }
 
 std::string FlattenedGraph::Vertex::reference() const {
-  return BPMNOS::to_string(instanceId, STRING) + "," + node->id + "," + ( type == Type::ENTRY ? "entry" : "exit" );
+  std::string result = BPMNOS::to_string(instanceId, STRING) + "," + node->id + "," + ( type == Type::ENTRY ? "entry" : "exit" ); 
+  if (
+    node->represents<BPMN::Activity>() &&
+    node->as<BPMN::Activity>()->loopCharacteristics.has_value()
+  ) {
+    auto& container = graph->vertexMap.at(node).at(instanceId);
+    size_t i = 0;
+    while ( &container[i].get() != this ) {
+      i++;
+    }
+    result += "," + std::to_string(1 + i/2);
+  }
+  return result;
 }
 
 nlohmann::ordered_json FlattenedGraph::Vertex::jsonify() const {
@@ -206,9 +219,9 @@ void FlattenedGraph::addRecipient( const BPMN::MessageCatchEvent* messageCatchEv
 }
 
 std::pair<FlattenedGraph::Vertex&, FlattenedGraph::Vertex&> FlattenedGraph::createVertexPair(BPMNOS::number rootId, BPMNOS::number instanceId, const BPMN::Node* node, std::optional< std::pair<Vertex&, Vertex&> > parent) {
-  vertices.emplace_back(vertices.size(), rootId, instanceId, node, Vertex::Type::ENTRY, parent);
+  vertices.emplace_back(this, rootId, instanceId, node, Vertex::Type::ENTRY, parent);
   auto& entry = vertices.back();
-  vertices.emplace_back(vertices.size(), rootId, instanceId, node, Vertex::Type::EXIT, parent);
+  vertices.emplace_back(this, rootId, instanceId, node, Vertex::Type::EXIT, parent);
   auto& exit = vertices.back();
 
   entry.successors.push_back(exit);
@@ -321,6 +334,7 @@ std::cerr << parameter->expression->expression << std::endl;
     return std::nullopt;
   };
   
+  // determine number of vertices to be created
   int n = 0;
   auto extensionElements = activity->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
   assert(extensionElements);
@@ -343,44 +357,35 @@ std::cerr << parameter->expression->expression << std::endl;
   }
  
   if ( activity->loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::Standard ) {
- std::cerr << "Standard" << std::endl;
-   // create vertices for loop activity
+std::cerr << "Standard" << std::endl;
+    // create vertices for loop activity
+    Vertex* previousExit = nullptr;
     for ( int i = 1; i <= n; i++ ) {
-      createVertexPair(rootId, instanceId, activity, parent);
+      auto [ entry, exit ] = createVertexPair(rootId, instanceId, activity, parent);
+      if ( previousExit ) {
+        // every entry vertex has an inflow from the previous loop vertex exit
+        entry.inflows.emplace_back(nullptr,*previousExit);
+        // every exit vertex has an outflow to the next loop vertex entry
+        previousExit->outflows.emplace_back(nullptr,entry);
+      }
+      previousExit = &exit;
     }
   }
   else {
 std::cerr << "MultiInstance" << std::endl;
    std::string baseName = BPMNOS::to_string(instanceId,STRING) + BPMNOS::Model::Scenario::delimiters[0] + activity->id + BPMNOS::Model::Scenario::delimiters[1] ;
     // create vertices for multi-instance activity
+    Vertex* previousExit = nullptr;
     for ( int i = 1; i <= n; i++ ) {
-      createVertexPair(rootId, BPMNOS::to_number(baseName + std::to_string(i),STRING), activity, parent);
-    }
-  }
-  
-  if ( activity->loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::MultiInstanceParallel ) {
-std::cerr << "Parallel" << std::endl;
-/*
-    auto& container = vertexMap.at(activity).at(instanceId);
-    for ( size_t i = 2; i+1 < container.size(); i += 2 ) {
-std::cerr << i << "/" << container.size() << std::endl;
-      Vertex& entry = container[i];
-      Vertex& exit = container[i+1];
-      entry.inflows = container[0].get().inflows;
-      exit.outflows  = container[1].get().outflows;
-    }
-*/
-  }
-  else {
-std::cerr << "Sequential" << std::endl;
-    // create sequential precedences
-    auto& container = vertexMap.at(activity).at(instanceId);
-    for ( size_t i = 1; i+1 < container.size(); i += 2 ) {
-std::cerr << i << "/" << container.size() << std::endl;
-      Vertex& predecessor = container[i]; // exit vertex
-      Vertex& successor = container[i+1]; // entry vertex
-      predecessor.successors.push_back(successor);
-      successor.predecessors.push_back(predecessor);
+      auto [ entry, exit ] = createVertexPair(rootId, BPMNOS::to_number(baseName + std::to_string(i),STRING), activity, parent);
+      if ( 
+        previousExit && 
+        activity->loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::MultiInstanceSequential
+      ) {
+        previousExit->successors.push_back(entry);
+        entry.predecessors.push_back(*previousExit);
+      }
+      previousExit = &exit;
     }
   }
 std::cerr << "done" << std::endl;
@@ -423,12 +428,24 @@ std::cerr << "flatten: " << scope->id << std::endl;
 std::cerr << "sequence flows: " << scope->sequenceFlows.size() << std::endl;
   // sequence flows
   for ( auto& sequenceFlow : scope->sequenceFlows ) {
-    Vertex& origin = vertexMap.at(sequenceFlow->source).at(instanceId).back();
-    Vertex& destination = vertexMap.at(sequenceFlow->target).at(instanceId).front();
+    if ( false /* activity->loopCharacteristics.has_value() */ ) {
+      // TODO: subsequent loop/multi-instance activities have n-m inflow/outflow relationship
+
+      // TODO: outflow from each instantiation
+      assert(!"Not yet implemented");
+      if ( activity->loopCharacteristics.value() != BPMN::Activity::LoopCharacteristics::Standard ) {
+        // TODO: inflow to each instantiation
+      }
+    } 
+    else {
+      // create unique flow from origin to destination
+      Vertex& origin = vertexMap.at(sequenceFlow->source).at(instanceId).back();
+      Vertex& destination = vertexMap.at(sequenceFlow->target).at(instanceId).front();
 std::cerr << sequenceFlow->id << ":" << origin.reference() << " -> " << destination.reference() << std::endl;
 assert(origin.outflows.empty());
-    origin.outflows.emplace_back(sequenceFlow.get(),destination);
-    destination.inflows.emplace_back(sequenceFlow.get(),origin);
+      origin.outflows.emplace_back(sequenceFlow.get(),destination);
+      destination.inflows.emplace_back(sequenceFlow.get(),origin);
+    }
   }
 
   // boundary events

@@ -26,21 +26,22 @@ public:
   class Vertex {
   public:
     enum class Type { ENTRY, EXIT };
-    Vertex(size_t index, BPMNOS::number rootId, BPMNOS::number instanceId, const BPMN::Node* node, Type type, std::optional< std::pair<Vertex&, Vertex&> > parent);
+    Vertex(FlattenedGraph* graph, BPMNOS::number rootId, BPMNOS::number instanceId, const BPMN::Node* node, Type type, std::optional< std::pair<Vertex&, Vertex&> > parent);
     // Delete other constructors and assignment operators
     Vertex() = delete; // Prevents default construction
     Vertex(const Vertex&) = delete;           // Non-copyable
     Vertex& operator=(const Vertex&) = delete; // Non-copy-assignable
     Vertex(Vertex&&) = delete;               // Non-movable
     Vertex& operator=(Vertex&&) = delete;    // Non-move-assignable
+    FlattenedGraph* graph;
     const size_t index;
     const BPMNOS::number rootId;
     const BPMNOS::number instanceId;
     const BPMN::Node* node;
     const Type type;
     std::optional< std::pair<Vertex&, Vertex&> > parent;      /// Parent vertices
-    std::vector< std::pair<const BPMN::SequenceFlow*, Vertex&> > inflows;      /// Container holding vertices connecting by an incoming sequence flow
-    std::vector< std::pair<const BPMN::SequenceFlow*, Vertex&> > outflows;     /// Container holding vertices connecting by an outgoing sequence flow
+    std::vector< std::pair<const BPMN::SequenceFlow*, Vertex&> > inflows;      /// Container holding vertices connecting by an incoming sequence flow, for loop activities the sequence flow may be a nullptr
+    std::vector< std::pair<const BPMN::SequenceFlow*, Vertex&> > outflows;     /// Container holding vertices connecting by an outgoing sequence flow, for loop activities the sequence flow may be a nullptr
     std::vector< std::reference_wrapper<Vertex> > predecessors; /// Container holding predecessors according to the execution logic (excl. sequence flows)
     std::vector< std::reference_wrapper<Vertex> > successors;   /// Container holding successors according to the execution logic (excl. sequence flows)
     std::vector< std::reference_wrapper<Vertex> > senders;      /// Container holding all possible vertices sending a message (or the message delivery notfication for a SendTask)
