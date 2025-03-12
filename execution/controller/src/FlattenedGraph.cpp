@@ -80,14 +80,17 @@ std::string FlattenedGraph::Vertex::reference() const {
   std::string result = BPMNOS::to_string(instanceId, STRING) + "," + node->id + "," + ( type == Type::ENTRY ? "entry" : "exit" ); 
   if (
     node->represents<BPMN::Activity>() &&
-    node->as<BPMN::Activity>()->loopCharacteristics.has_value()
+    node->as<BPMN::Activity>()->loopCharacteristics.has_value() &&
+    node->as<BPMN::Activity>()->loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::Standard
   ) {
     auto& container = graph->vertexMap.at(node).at(instanceId);
-    size_t i = 0;
-    while ( &container[i].get() != this ) {
-      i++;
+    if ( this != &container.front().get() && this != &container.back().get() ) {
+      size_t i = 1;
+      while ( &container[i].get() != this ) {
+        i++;
+      }
+      result += "," + std::to_string((i+1)/2);
     }
-    result += "," + std::to_string(1 + i/2);
   }
   return result;
 }
@@ -224,8 +227,14 @@ std::pair<FlattenedGraph::Vertex&, FlattenedGraph::Vertex&> FlattenedGraph::crea
   vertices.emplace_back(this, rootId, instanceId, node, Vertex::Type::EXIT, parent);
   auto& exit = vertices.back();
 
-  entry.successors.push_back(exit);
-  exit.predecessors.push_back(entry);
+  if ( node->represents<BPMN::Scope>() ) {
+    entry.outflows.emplace_back(nullptr,exit);
+    exit.inflows.emplace_back(nullptr,entry);
+  }
+  else {
+    entry.successors.push_back(exit);
+    exit.predecessors.push_back(entry);
+  }
   
   if ( parent.has_value() ) {
     entry.predecessors.push_back( parent.value().first );
@@ -355,39 +364,80 @@ std::cerr << parameter->expression->expression << std::endl;
   if ( n <= 0 ) {
     throw std::runtime_error("FlattenedGraph: cannot determine loop maximum/cardinality for activity '" + activity->id +"'" );
   }
+
+
+  // create main vertices
+  vertices.emplace_back(this, rootId, instanceId, activity, Vertex::Type::ENTRY, parent);
+  auto& entry = vertices.back();
+  vertices.emplace_back(this, rootId, instanceId, activity, Vertex::Type::EXIT, parent);
+  auto& exit = vertices.back();
+  entry.successors.push_back(exit);
+  exit.predecessors.push_back(entry);
+  
+  assert( parent.has_value() );
+  
+  entry.predecessors.push_back( parent.value().first );
+  exit.successors.push_back( parent.value().second ); 
+  parent.value().first.successors.push_back( entry ); 
+  parent.value().second.predecessors.push_back( exit );
+  
+  auto& container = vertexMap[activity][instanceId]; // get or create container
+  container.emplace_back( entry );
  
   if ( activity->loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::Standard ) {
 std::cerr << "Standard" << std::endl;
     // create vertices for loop activity
-    Vertex* previousExit = nullptr;
+    Vertex* previous = &entry;
     for ( int i = 1; i <= n; i++ ) {
-      auto [ entry, exit ] = createVertexPair(rootId, instanceId, activity, parent);
-      if ( previousExit ) {
-        // every entry vertex has an inflow from the previous loop vertex exit
-        entry.inflows.emplace_back(nullptr,*previousExit);
-        // every exit vertex has an outflow to the next loop vertex entry
-        previousExit->outflows.emplace_back(nullptr,entry);
+      auto [ loopingEntry, loopingExit ] = createVertexPair(rootId, instanceId, activity, parent);
+      // every looping entry vertex has an inflow from the previous
+      loopingEntry.inflows.emplace_back(nullptr,*previous);
+      previous->outflows.emplace_back(nullptr,loopingEntry);
+      
+      if ( activity->represents<BPMN::Scope>() ) {
+        loopingExit.predecessors.push_back(loopingEntry);
+        loopingEntry.successors.push_back(loopingExit);
       }
-      previousExit = &exit;
+      else {
+        loopingExit.inflows.emplace_back(nullptr,loopingEntry);
+        loopingEntry.outflows.emplace_back(nullptr,loopingExit);
+      }
+
+      // every looping exit can be the last
+      exit.inflows.emplace_back(nullptr,loopingExit );
+      loopingExit.outflows.emplace_back(nullptr,exit );
+
+      previous = &loopingExit;
+
     }
   }
   else {
 std::cerr << "MultiInstance" << std::endl;
    std::string baseName = BPMNOS::to_string(instanceId,STRING) + BPMNOS::Model::Scenario::delimiters[0] + activity->id + BPMNOS::Model::Scenario::delimiters[1] ;
     // create vertices for multi-instance activity
-    Vertex* previousExit = nullptr;
+    Vertex* previous = nullptr;
     for ( int i = 1; i <= n; i++ ) {
-      auto [ entry, exit ] = createVertexPair(rootId, BPMNOS::to_number(baseName + std::to_string(i),STRING), activity, parent);
-      if ( 
-        previousExit && 
+      auto [ multiInstanceEntry, multiInstanceExit ] = createVertexPair(rootId, BPMNOS::to_number(baseName + std::to_string(i),STRING), activity, parent);
+      // every multi-instance entry vertex has an inflow from the main entry
+      multiInstanceEntry.inflows.emplace_back(nullptr,entry);
+      entry.outflows.emplace_back(nullptr,multiInstanceEntry);
+      // every multi-instance exit vertex has an outflow to the main exit
+      multiInstanceExit.outflows.emplace_back(nullptr,exit);
+      exit.inflows.emplace_back(nullptr,multiInstanceExit);
+
+      if (
+        previous &&
         activity->loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::MultiInstanceSequential
       ) {
-        previousExit->successors.push_back(entry);
-        entry.predecessors.push_back(*previousExit);
+        previous->successors.push_back(multiInstanceEntry);
+        multiInstanceEntry.predecessors.push_back(*previous);
       }
-      previousExit = &exit;
+      previous = &multiInstanceExit;
     }
   }
+
+  container.emplace_back( exit );
+
 std::cerr << "done" << std::endl;
 
 }
@@ -430,12 +480,13 @@ std::cerr << "sequence flows: " << scope->sequenceFlows.size() << std::endl;
   for ( auto& sequenceFlow : scope->sequenceFlows ) {
     if ( false /* activity->loopCharacteristics.has_value() */ ) {
       // TODO: subsequent loop/multi-instance activities have n-m inflow/outflow relationship
-
+/*
       // TODO: outflow from each instantiation
       assert(!"Not yet implemented");
       if ( activity->loopCharacteristics.value() != BPMN::Activity::LoopCharacteristics::Standard ) {
         // TODO: inflow to each instantiation
       }
+*/
     } 
     else {
       // create unique flow from origin to destination

@@ -843,7 +843,7 @@ void CPController::createExitStatus(const Vertex* vertex) {
   }
 
   // no scope or empty scope
-  assert( !vertex->exit<BPMN::Scope>() || vertex->predecessors.size() == 1 );
+//  assert( !vertex->exit<BPMN::Scope>() || vertex->inflows.size() == 1 );
 
   const Vertex* entryVertex = entry(vertex);
   if ( !extensionElements ) {
@@ -1435,6 +1435,13 @@ void CPController::createEntryVariables(const FlattenedGraph::Vertex* vertex) {
       auto& deducedVisit = model.addVariable(CP::Variable::Type::BOOLEAN, "visit_{" + BPMNOS::to_string(vertex->instanceId, STRING) + "," + vertex->node->id + "}" , tokenFlow.at( std::make_pair(&vertex->inflows.front().second, vertex) ) );
       visit.emplace(vertex, deducedVisit );
       visit.emplace(exit(vertex), deducedVisit );
+    }
+    else if (
+      vertex->node->represents<BPMN::Activity>() && 
+      vertex->node->as<BPMN::Activity>()->loopCharacteristics.has_value()
+    ) {
+      assert( vertex->node->as<BPMN::Activity>()->loopCharacteristics.value() != BPMN::Activity::LoopCharacteristics::MultiInstanceParallel );
+      assert(!"Not yet implemented");
     }
     else {
 //std::cerr << vertex->jsonify().dump() << std::endl;
