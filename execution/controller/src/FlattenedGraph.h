@@ -52,6 +52,7 @@ public:
     size_t dataOwnerIndex( const BPMNOS::Model::Attribute* attribute ) const; /// Returns the index of the data owner of an attribute
     std::pair<const Vertex&, const Vertex&> dataOwner( const BPMNOS::Model::Attribute* attribute ) const; /// Returns the vertices of the owner of a data attribute
     std::string reference() const; /// Returns a unique reference of the vertex
+    std::string shortReference() const; /// Returns a reference of the vertex excluding the type
     nlohmann::ordered_json jsonify() const;
     template<typename T>
     bool entry() const { return (type == Type::ENTRY) && node->represents<T>(); }

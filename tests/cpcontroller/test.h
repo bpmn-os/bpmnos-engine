@@ -1,4 +1,3 @@
-
 #include "process/test.h"
 
 // Activities
@@ -12,14 +11,18 @@
 // Expression
 #include "expression/test.h"
 
+// Multi-instance activities
+#include "loopactivity/test.h"
+
+//#include "execution/multiinstanceactivity/test.h"
+
+// Ad-hoc subprocesses
+//#include "execution/adhocsubprocess/test.h" // TODO: (pos[entry1] < pos[entry2]).implies( pos[exit1] < pos[entry2] )
 
 /*
 #include "execution/subprocess/test.h"
 #include "execution/decisiontask/test.h"
 //#include "execution/request/test.h" // TODO: Check allocation id in content of request message
-
-// Expression
-#include "execution/expression/test.h"
 
 // Gateways
 #include "execution/parallelgateway/test.h"
@@ -33,6 +36,7 @@
 #include "execution/condition/test.h"
 #include "execution/errorevent/test.h"
 #include "execution/escalationevent/test.h"
+
 // Messages
 #include "execution/message/test.h"
 // Boundary events
@@ -42,14 +46,7 @@
 // Compensations
 #include "execution/compensationactivity/test.h"
 #include "execution/compensationeventsubprocess/test.h"
-// Multi-instance activities
-#include "execution/loopactivity/test.h"
-#include "execution/multiinstanceactivity/test.h"
 */
-
-// Ad-hoc subprocesses
-//#include "execution/adhocsubprocess/test.h" // TODO: (pos[entry1] < pos[entry2]).implies( pos[exit1] < pos[entry2] )
-
 
 /*
 // Examples

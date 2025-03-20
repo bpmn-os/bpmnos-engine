@@ -61,6 +61,48 @@ void CPController::setMessageFlowVariableValue( const Vertex* sender, const Vert
   }
 }
 
+const FlattenedGraph::Vertex* CPController::getVertex( const Token* token ) const {
+  auto node = token->node ? token->node->as<BPMN::Node>() : token->owner->process->as<BPMN::Node>();
+  assert( flattenedGraph.vertexMap.contains(node) );
+  assert( flattenedGraph.vertexMap.at(node).contains(token->data->at(BPMNOS::Model::ExtensionElements::Index::Instance).get().value()) );
+  auto& siblings = flattenedGraph.vertexMap.at(node).at(token->data->at(BPMNOS::Model::ExtensionElements::Index::Instance).get().value());
+  
+  if ( auto activity = node->represents<BPMN::Activity>();
+    activity &&
+    activity->loopCharacteristics.has_value() &&
+    activity->loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::Standard
+  ) {
+    // get correct vertex for loop activity
+    auto extensionElements = activity->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+    const BPMNOS::Model::Attribute* attribute = 
+      extensionElements->loopIndex.has_value() ? 
+      extensionElements->loopIndex.value()->expression->isAttribute() :
+      nullptr
+    ;
+    assert( attribute );
+    assert( token->status.size() > attribute->index );
+    assert( token->status.at(attribute->index).has_value() );
+    auto loopIndex = (size_t)token->status.at(attribute->index).value();
+    assert( loopIndex > 0 );
+    assert( siblings.size() > 2*loopIndex );
+std::cerr << "Index: " << loopIndex << std::endl;
+std::cerr << "RequestToken: " << token->jsonify() << std::endl;
+auto vertex = (token->state == Token::State::ENTERED) ? &siblings.at(2*loopIndex-1).get() : &siblings.at(2*loopIndex).get();    
+std::cerr << "Vertex: " << vertex->reference() << std::endl;  
+    return (token->state == Token::State::ENTERED) ? &siblings.at(2*loopIndex-1).get() : &siblings.at(2*loopIndex).get();
+  }
+  
+  return (token->state == Token::State::ENTERED) ? &siblings.front().get() : &siblings.back().get();
+}
+
+std::optional< BPMN::Activity::LoopCharacteristics> CPController::getLoopCharacteristics(const Vertex* vertex) const {
+  auto activity = vertex->node->represents<BPMN::Activity>();
+  if ( !activity ) {
+    return std::nullopt;
+  }
+  return activity->loopCharacteristics;
+}
+
 void CPController::validate(const Token* token) {
   if ( terminationEvent ) {
     return;
@@ -80,14 +122,7 @@ std::cerr << "Validate: " << token->jsonify() << std::endl;
     return;
   }
 
-  // get vertex
-  auto vertex = vertexMap.at(
-    std::make_tuple(
-      token->node ? token->node->as<BPMN::Node>() : token->owner->process->as<BPMN::Node>(),
-      token->data->at(BPMNOS::Model::ExtensionElements::Index::Instance).get().value(),
-      token->state == Token::State::ENTERED ? Vertex::Type::ENTRY : Vertex::Type::EXIT 
-    )
-  );
+  auto vertex = getVertex(token);
 
 std::cerr << "Validate vertex " << vertex->reference() << std::endl;    
 //std::cerr << "Validate visit" << std::endl;    
@@ -245,22 +280,49 @@ std::shared_ptr<Event> CPController::dispatchEvent(const SystemState* systemStat
     return terminationEvent;
   }
   
-  if ( decisionQueue.empty() ) return nullptr;
-std::cerr << "CPController::dispatchEvent: " << decisionQueue.front().second->reference() << std::endl;
   
-  try {
+  while ( !decisionQueue.empty() ) {
+    auto& [ type, vertex ] = decisionQueue.front();
+    try {
+      if ( !_solution->evaluate( visit.at( vertex ) ) ) {
+        // skip decision for vertex that is not visited
+std::cerr << "Skip: " << vertex->shortReference() << std::endl;
+        decisionQueue.pop();
+        continue;
+      }
+      else if ( auto loopCharacteristics = getLoopCharacteristics(vertex) ) {
+        auto& siblings = flattenedGraph.vertexMap.at(vertex->node).at(vertex->instanceId);
+        if ( vertex == &siblings.front().get() || vertex == &siblings.back().get() ) {
+          // skip decision for vertex that is initial or final loop/multi-instance vertex
+std::cerr << "Skip loop: " << vertex->reference() << std::endl;
+          decisionQueue.pop();
+          continue;
+        }
+      }
+    }
+    catch(...) {
+      throw std::runtime_error("CPController: failed determining whether '" + vertex->reference() + "' is visited or not");
+    }
+    // exit while if decision is not skipped
+    break;
+  }
+/*
+    if ( decisionQueue.empty() ) return nullptr;
+
+
     while ( !_solution->evaluate( visit.at( decisionQueue.front().second ) ) ) {
 std::cerr << "Skip" << std::endl;
       // skip all decisions for vertices that are not visited
       decisionQueue.pop();
       if ( decisionQueue.empty() ) return nullptr;
     }
+*/
+
+  if ( decisionQueue.empty() ) {
+    return nullptr;
   }
-  catch(...) {
-    throw std::runtime_error("CPController: failed determining whether '" + decisionQueue.front().second->reference() + "' is visited or not");
-  }
-  
   auto& [ type, vertex ] = decisionQueue.front();
+std::cerr << "CPController::dispatchEvent: " << vertex->reference() << std::endl;
 
   auto getToken = [&vertex](const auto& pendingDecisions) -> Token* {
     for (const auto& [token_ptr, request_ptr] : pendingDecisions) {
@@ -279,9 +341,11 @@ std::cerr << "Skip" << std::endl;
 
   std::shared_ptr<Event> event = nullptr;
   using enum RequestType;
+std::cerr << "type: " << (int)type << std::endl;
   switch ( type ) {
     case EntryRequest:
     {
+std::cerr << "pendingEntryDecisions: " << !systemState->pendingEntryDecisions.empty() << std::endl;
       if ( auto token = getToken(systemState->pendingEntryDecisions) ) {
         event = createEntryEvent( systemState, token, vertex);
       }
@@ -290,6 +354,7 @@ std::cerr << "Skip" << std::endl;
     }
     case ExitRequest:
     {
+std::cerr << "pendingExitDecisions: " << !systemState->pendingExitDecisions.empty() << std::endl;
       if ( auto token = getToken(systemState->pendingExitDecisions) ) {
         event = createExitEvent( systemState, token, vertex);
       }
@@ -512,8 +577,8 @@ std::cerr << "constrainDataVariables" << std::endl;
   
 std::cerr << "createMessageVariables" << std::endl;
   createMessageVariables();
-//std::cerr << "Done" << std::endl;
-//std::cerr << model.stringify() << std::endl;  
+std::cerr << "Done" << std::endl;
+std::cerr << model.stringify() << std::endl;  
 }
 
 void CPController::createGlobalVariables() {
@@ -626,8 +691,8 @@ void CPController::createDataVariables(const FlattenedGraph::Vertex* vertex) {
 
   for ( auto& attribute : extensionElements->data ) {
     IndexedAttributeVariables variables( 
-      model.addIndexedVariables(CP::Variable::Type::BOOLEAN, "defined_{" + BPMNOS::to_string(vertex->instanceId, STRING) + "," + vertex->node->id + "}," + attribute->id ),
-      model.addIndexedVariables(CP::Variable::Type::REAL, "value_{" + BPMNOS::to_string(vertex->instanceId, STRING) + "," + vertex->node->id + "}," + attribute->id )
+      model.addIndexedVariables(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->shortReference() + "}," + attribute->id ),
+      model.addIndexedVariables(CP::Variable::Type::REAL, "value_{" + vertex->shortReference() + "}," + attribute->id )
     );
     // add variables holding initial values
     auto given = scenario->getKnownValue(vertex->rootId, attribute.get(), 0);
@@ -733,6 +798,20 @@ void CPController::createStatus(const Vertex* vertex) {
 void CPController::createEntryStatus(const Vertex* vertex) {
   status.emplace( vertex, std::vector<AttributeVariables>() );  
   auto& variables = status.at(vertex);
+
+  if ( auto loopCharacteristics = getLoopCharacteristics(vertex);
+    loopCharacteristics.has_value() &&
+    loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::Standard
+  ) {
+    assert( flattenedGraph.vertexMap.contains(vertex->node) );
+    assert( flattenedGraph.vertexMap.at(vertex->node).contains(vertex->instanceId) );
+    auto& siblings = flattenedGraph.vertexMap.at(vertex->node).at(vertex->instanceId);
+    if ( vertex != &siblings.front().get() ) {
+      createLoopEntryStatus(vertex);
+//std::cerr << model.stringify() << std::endl;
+      return;
+    }
+  }
   
   if ( vertex->parent.has_value() ) {
     auto scope = vertex->parent.value().first.node;
@@ -812,18 +891,35 @@ void CPController::createExitStatus(const Vertex* vertex) {
 //std::cerr << "createExitStatus" << std::endl;
   auto extensionElements = vertex->node->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
 
-  if ( vertex->node->represents<BPMN::Scope>() && vertex->predecessors.size() > 1 ) {
+  if ( auto loopCharacteristics = getLoopCharacteristics(vertex);
+    loopCharacteristics.has_value() &&
+    loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::Standard
+  ) {
+    assert( flattenedGraph.vertexMap.contains(vertex->node) );
+    assert( flattenedGraph.vertexMap.at(vertex->node).contains(vertex->instanceId) );
+    auto& siblings = flattenedGraph.vertexMap.at(vertex->node).at(vertex->instanceId);
+    if ( vertex == &siblings.back().get() ) {
+      status.emplace( vertex, createLoopExitStatus(vertex) );
+      return;
+    }
+  }
+
+  if ( vertex->node->represents<BPMN::Scope>() ) {
+    if ( vertex->inflows.empty() ) {
+      throw std::runtime_error("CPController: empty scopes are not supported");
+    }
+    
     // scope has children
     auto getEndVertices = [&]() {
       std::vector< std::reference_wrapper<const Vertex> > endVertices;
-      for ( const Vertex& candidate : vertex->predecessors ) {
-        if ( 
-          candidate.parent.has_value() && 
-          &candidate.parent.value().second == vertex &&
-          candidate.outflows.empty()
-        ) {
+      for ( auto& [_,candidate] : vertex->inflows ) {
+        // ignore inflows of unreachable nodes
+        if ( visit.contains(&candidate) ) {
           endVertices.push_back( candidate );
         }
+      }
+      if ( endVertices.empty() ) {
+        throw std::runtime_error("CPController: unable to determine end nodes for  scope '" + vertex->node->id  + "'");
       }
       return endVertices;
     };
@@ -835,10 +931,7 @@ void CPController::createExitStatus(const Vertex* vertex) {
     }
 
     assert(extensionElements);
-    std::vector<AttributeVariables> variables;
-    variables = createMergedStatus(vertex, extensionElements->attributeRegistry, std::move(inputs));
-
-    status.emplace( vertex, std::move(variables) );
+    status.emplace( vertex, createMergedStatus(vertex, extensionElements->attributeRegistry, std::move(inputs)) );
     return;
   }
 
@@ -1089,8 +1182,8 @@ void CPController::createLocalAttributeVariables(const Vertex* vertex) {
 
         // attribute set by choice
         variables.emplace_back(
-          model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + BPMNOS::to_string(vertex->instanceId, STRING) + "," + vertex->node->id + ",0}," + attribute->id, visit.at(vertex) ), 
-          model.addRealVariable("value_{" + BPMNOS::to_string(vertex->instanceId, STRING) + "," + vertex->node->id + ",0}," + attribute->id )
+          model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->shortReference() + ",0}," + attribute->id, visit.at(vertex) ), 
+          model.addRealVariable("value_{" + vertex->shortReference() + ",0}," + attribute->id )
         );
 //        auto& variable = variables.back().value;
         // TODO: 
@@ -1133,8 +1226,8 @@ void CPController::createLocalAttributeVariables(const Vertex* vertex) {
         else {
           // all local attribute variables are deduced from initial variables upon entry
           variables.emplace_back(
-            model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + BPMNOS::to_string(vertex->instanceId, STRING) + "," + vertex->node->id + ",0}," + attribute->id, defined ), 
-            model.addVariable(CP::Variable::Type::REAL, "value_{" + BPMNOS::to_string(vertex->instanceId, STRING) + "," + vertex->node->id + ",0}," + attribute->id, value )
+            model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->shortReference() + ",0}," + attribute->id, defined ), 
+            model.addVariable(CP::Variable::Type::REAL, "value_{" + vertex->shortReference() + ",0}," + attribute->id, value )
           );
         }
       }
@@ -1165,15 +1258,15 @@ void CPController::createLocalAttributeVariables(const Vertex* vertex) {
           // determine updated variable value (only change value if vertex is visited)
           if ( operator_->expression.type == Model::Expression::Type::UNASSIGN ) {
             variables.emplace_back(
-              model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + BPMNOS::to_string(vertex->instanceId, STRING) + "," + vertex->node->id + "," + std::to_string(current.size()) + "}," + attribute->id, CP::if_then_else( visit.at(vertex), false, attributeVariables[attribute->index].defined) ), 
-              model.addVariable(CP::Variable::Type::REAL, "value_{" + BPMNOS::to_string(vertex->instanceId, STRING) + "," + vertex->node->id + "," + std::to_string(current.size()) + "}," + attribute->id, CP::if_then_else( visit.at(vertex), 0.0, attributeVariables[attribute->index].value) )
+              model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->shortReference() + "," + std::to_string(current.size()) + "}," + attribute->id, CP::if_then_else( visit.at(vertex), false, attributeVariables[attribute->index].defined) ), 
+              model.addVariable(CP::Variable::Type::REAL, "value_{" + vertex->shortReference() + "," + std::to_string(current.size()) + "}," + attribute->id, CP::if_then_else( visit.at(vertex), 0.0, attributeVariables[attribute->index].value) )
             );            
           }
           else if ( operator_->expression.type == Model::Expression::Type::ASSIGN ) {        
             CP::Expression value = createOperatorExpression( operator_->expression, current.back() );
             variables.emplace_back(
-              model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + BPMNOS::to_string(vertex->instanceId, STRING) + "," + vertex->node->id + "," + std::to_string(current.size()) + "}," + attribute->id, CP::if_then_else( visit.at(vertex), true, attributeVariables[attribute->index].defined) ), 
-              model.addVariable(CP::Variable::Type::REAL, "value_{" + BPMNOS::to_string(vertex->instanceId, STRING) + "," + vertex->node->id + "," + std::to_string(current.size()) + "}," + attribute->id, CP::if_then_else( visit.at(vertex), value, attributeVariables[attribute->index].value) )            
+              model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->shortReference() + "," + std::to_string(current.size()) + "}," + attribute->id, CP::if_then_else( visit.at(vertex), true, attributeVariables[attribute->index].defined) ), 
+              model.addVariable(CP::Variable::Type::REAL, "value_{" + vertex->shortReference() + "," + std::to_string(current.size()) + "}," + attribute->id, CP::if_then_else( visit.at(vertex), value, attributeVariables[attribute->index].value) )            
             );
             // TODO: add constraints ensuring that all inputs used by expression are defined
           }
@@ -1184,8 +1277,8 @@ void CPController::createLocalAttributeVariables(const Vertex* vertex) {
         else {
           // variable value remains unchanged
           variables.emplace_back(
-            model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + BPMNOS::to_string(vertex->instanceId, STRING) + "," + vertex->node->id + "," + std::to_string(current.size()) + "}," + attribute->id, attributeVariables[attribute->index].defined ), 
-            model.addVariable(CP::Variable::Type::REAL, "value_{" + BPMNOS::to_string(vertex->instanceId, STRING) + "," + vertex->node->id + "," + std::to_string(current.size()) + "}," + attribute->id, attributeVariables[attribute->index].value )            
+            model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->shortReference() + "," + std::to_string(current.size()) + "}," + attribute->id, attributeVariables[attribute->index].defined ), 
+            model.addVariable(CP::Variable::Type::REAL, "value_{" + vertex->shortReference() + "," + std::to_string(current.size()) + "}," + attribute->id, attributeVariables[attribute->index].value )            
           );
         }
       }
@@ -1210,8 +1303,12 @@ std::vector<CPController::AttributeVariables> CPController::createUniquelyDeduce
   for ( auto attribute : attributeRegistry.statusAttributes ) {
     assert( variables.size() == attribute->index );
     auto& [ defined, value ] = inheritedStatus.at(attribute->index);
-    if ( vertex->node->represents<BPMN::Activity>() && attribute->index == BPMNOS::Model::ExtensionElements::Index::Timestamp ) {
-      // entry of activity may be later than the deduced timestamp
+    if ( auto activity = vertex->node->represents<BPMN::Activity>();
+      activity &&
+      !activity->loopCharacteristics.has_value() &&
+      attribute->index == BPMNOS::Model::ExtensionElements::Index::Timestamp 
+    ) {
+      // entry of simple activity may be later than the deduced timestamp ( entry of loop or multi-instance actvities is deduced)
       variables.emplace_back(
         model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->reference() + "}," + attribute->id, visit.at(vertex) ), 
         model.addRealVariable("value_{" + vertex->reference() + "}," + attribute->id )
@@ -1265,12 +1362,14 @@ std::vector<CPController::AttributeVariables> CPController::createMergedStatus(c
   for ( auto attribute : attributeRegistry.statusAttributes ) {
     if ( attribute->index == BPMNOS::Model::ExtensionElements::Index::Timestamp ) {
       std::vector<CP::Expression> terms;
+      assert( !inputs.empty() );
       for ( auto& [ active, attributeVariables] : inputs ) {
         terms.emplace_back( attributeVariables[attribute->index].value );
       }
+      // entry of activity is the same as the maximum timestamp
       variables.emplace_back(
-        model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->reference() + "}," + attribute->id, true, true ), 
-        model.addVariable(CP::Variable::Type::REAL, "value_{" + vertex->reference() + "}," + attribute->id, CP::max(terms) )
+        model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->reference() + "}," + attribute->id, visit.at(vertex) ), 
+        model.addVariable(CP::Variable::Type::REAL, "value_{" + vertex->reference() + "}," + attribute->id, CP::if_then_else( visit.at(vertex), CP::max(terms), 0.0 ) )
       );
     }
     else {
@@ -1298,6 +1397,90 @@ std::vector<CPController::AttributeVariables> CPController::createMergedStatus(c
   return variables;
 }
 
+void CPController::createLoopEntryStatus(const Vertex* vertex) {
+  assert( vertex->inflows.size() == 1 );
+  assert( status.contains(vertex) );
+  auto& variables = status.at(vertex);
+  auto& predecessor = vertex->inflows.front().second;
+  auto& priorStatus = status.at(&predecessor);
+  auto extensionElements = vertex->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+  const BPMNOS::Model::Attribute* loopIndex = 
+    extensionElements->loopIndex.has_value() ? 
+    extensionElements->loopIndex.value()->expression->isAttribute() :
+    nullptr
+  ;
+
+  // deduce status for loop visit 
+  variables.reserve( extensionElements->attributeRegistry.statusAttributes.size() );
+  
+  for ( auto attribute : extensionElements->attributeRegistry.statusAttributes ) {
+    assert( variables.size() == attribute->index );
+    auto& [ defined, value ] = priorStatus.at(attribute->index);
+    if ( vertex->node->represents<BPMN::Activity>() && attribute->index == BPMNOS::Model::ExtensionElements::Index::Timestamp ) {
+      // entry of activity may be later than the deduced timestamp
+      variables.emplace_back(
+        model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->reference() + "}," + attribute->id, visit.at(vertex) ), 
+        model.addRealVariable("value_{" + vertex->reference() + "}," + attribute->id )
+      );
+      auto& timestamp = variables.back().value;
+      model.addConstraint( visit.at(vertex).implies( timestamp >= value ) );
+    }
+    else if ( attribute == loopIndex ) {
+      // set or increment loop index (initial value is assumed to be undefined, and therefore has a value of zero)
+      variables.emplace_back(
+        model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->reference() + "}," + attribute->id, visit.at(vertex) ), 
+        model.addVariable(CP::Variable::Type::REAL,"value_{" + vertex->reference() + "}," + attribute->id, CP::if_then_else( visit.at(vertex), value + 1, 0 ) )
+      );
+//std::cerr << model.stringify() << std::endl;
+//std::cerr << variables.back().value.stringify() << std::endl;
+//    assert(!"Not yet implemented");
+    }
+    else if ( attribute->expression ) {
+      // initial assignment
+      assert( attribute->expression->type == Model::Expression::Type::ASSIGN ); 
+      CP::Expression assignment = createExpression( vertex, *attribute->expression );
+      variables.emplace_back(
+        model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->reference() + "}," + attribute->id, visit.at(vertex) ), 
+        model.addVariable(CP::Variable::Type::REAL, "value_{" + vertex->reference() + "}," + attribute->id, CP::if_then_else( visit.at(vertex), assignment, 0.0) )            
+      );
+    }
+    else {
+      // deduce variable
+      variables.emplace_back(
+        model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->reference() + "}," + attribute->id, CP::if_then_else( visit.at(vertex), defined, false ) ), 
+        model.addVariable(CP::Variable::Type::REAL, "value_{" + vertex->reference() + "}," + attribute->id, CP::if_then_else( visit.at(vertex), value, 0.0 ) )
+      );
+    }
+  }
+}
+
+std::vector<CPController::AttributeVariables> CPController::createLoopExitStatus(const Vertex* vertex) {
+  assert( vertex->inflows.size() >= 1 );
+//  auto& priorStatus = status.at(&predecessor);
+  // deduce exit status for loop vertex 
+  std::vector<AttributeVariables> variables;
+  auto extensionElements = vertex->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+  variables.reserve( extensionElements->attributeRegistry.statusAttributes.size() );
+  
+  for ( auto attribute : extensionElements->attributeRegistry.statusAttributes ) {
+    CP::Expression defined(false);
+    CP::Expression value(0.0);
+    for ( size_t i = 0; i < vertex->inflows.size(); i++ ) {
+      auto& predecessor = vertex->inflows[i].second;
+      // determine condition whether predecessor is the last visited loop vertex
+      CP::Expression condition = ( i + 1 < vertex->inflows.size() ) ? visit.at(&predecessor) && !visit.at(&vertex->inflows[i+1].second) : visit.at(&predecessor);
+      
+      auto &priorStatus = status.at(&predecessor);
+      defined = defined || ( condition * priorStatus.at(attribute->index).defined ); 
+      value = value + ( condition * priorStatus.at(attribute->index).value ); 
+    }
+    variables.emplace_back(
+      model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->reference() + "}," + attribute->id, defined ), 
+      model.addVariable(CP::Variable::Type::REAL, "value_{" + vertex->reference() + "}," + attribute->id, value )
+    );
+  }
+  return variables;
+}
 
 std::vector< const FlattenedGraph::Vertex* > CPController::getReachableVertices(const FlattenedGraph::Vertex* initialVertex) {
   std::vector< const FlattenedGraph::Vertex* > reachableVertices;
@@ -1353,19 +1536,19 @@ void CPController::initializeVertices(const FlattenedGraph::Vertex* initialVerte
 void CPController::createVertexVariables(const FlattenedGraph::Vertex* vertex) {
 std::cerr << "createVertexVariables: " << vertex->reference() << std::endl;
   // make vertex retrievable from token information
-  vertexMap[std::make_tuple(vertex->node,vertex->instanceId,vertex->type)] = vertex;
+//  vertexMap[std::make_tuple(vertex->node,vertex->instanceId,vertex->type)] = vertex; // TODO: remove
   
-//std::cerr << "createGlobalIndexVariable" << std::endl;
+std::cerr << "createGlobalIndexVariable" << std::endl;
   createGlobalIndexVariable(vertex);
-//std::cerr << "createDataIndexVariables" << std::endl;
+std::cerr << "createDataIndexVariables" << std::endl;
   createDataIndexVariables(vertex);
   
   if ( vertex->type == Vertex::Type::ENTRY ) {
-//std::cerr << "createEntryVariables" << std::endl;
+std::cerr << "createEntryVariables" << std::endl;
     createEntryVariables(vertex);
   }
 
-//std::cerr << "createDataVariables: " << vertex->reference() << std::endl;
+std::cerr << "createDataVariables: " << vertex->reference() << std::endl;
   if ( vertex->entry<BPMN::Scope>() ) {
     createDataVariables(vertex);
   }
@@ -1417,12 +1600,12 @@ std::pair< CP::Expression, CP::Expression > CPController::getAttributeVariables(
 void CPController::createEntryVariables(const FlattenedGraph::Vertex* vertex) {
   // visit variable
   if ( vertex->node->represents<BPMN::UntypedStartEvent>() ) {
-    assert( vertex->inflows.empty() );
+    assert( vertex->inflows.size() == 1 );
     assert( vertex->predecessors.size() == 1 );
     assert( vertex->senders.empty() );
     
     // deduce visit from parent
-    auto& deducedVisit = model.addVariable(CP::Variable::Type::BOOLEAN, "visit_{" + BPMNOS::to_string(vertex->instanceId, STRING) + "," + vertex->node->id + "}", visit.at( &vertex->parent.value().first ) );
+    auto& deducedVisit = model.addVariable(CP::Variable::Type::BOOLEAN, "visit_{" + vertex->shortReference() + "}", visit.at( &vertex->parent.value().first ) );
     visit.emplace(vertex, deducedVisit );
     visit.emplace(exit(vertex), deducedVisit );
   }
@@ -1430,12 +1613,58 @@ void CPController::createEntryVariables(const FlattenedGraph::Vertex* vertex) {
     assert(!"Not yet implemented");
   }
   else if ( vertex->node->represents<BPMN::FlowNode>() ) {
-    if ( vertex->inflows.size() == 1 ) {
+    assert( flattenedGraph.vertexMap.contains(vertex->node) );
+    assert( flattenedGraph.vertexMap.at(vertex->node).contains(vertex->instanceId) );
+    auto& siblings = flattenedGraph.vertexMap.at(vertex->node).at(vertex->instanceId);
+    if ( vertex != &siblings.front().get() ) {
+      assert( vertex->node->represents<BPMN::Activity>() );
+      assert( vertex->node->as<BPMN::Activity>()->loopCharacteristics.has_value() );
+      
+      if ( auto loopCharacteristics = getLoopCharacteristics(vertex);
+        loopCharacteristics.has_value() &&
+        loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::Standard
+      ) {
+        // vertex represents a copy due to a loop
+        assert( siblings.size() > 2 ); // first and last sibling are place holders for entry and exit, siblings inbetween are the actually visited vertices
+        auto predecessor = &vertex->inflows.front().second;
+        if ( predecessor == &siblings.front().get() ) {
+          // first loop visit
+          auto& deducedVisit = model.addVariable(CP::Variable::Type::BOOLEAN, "visit_{" + vertex->shortReference() + "}" , visit.at( predecessor ) );
+          visit.emplace(vertex, deducedVisit );
+          visit.emplace(exit(vertex), deducedVisit );
+std::cerr << deducedVisit.stringify() << std::endl;
+//          assert(!"Not yet implemented");
+        }
+        else {
+          auto extensionElements = vertex->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+          if ( extensionElements->loopCondition.has_value() ) {
+            // vertex is visited only if predecessor is visited and loop condition is satisifed
+            auto condition = createExpression(predecessor, *extensionElements->loopCondition.value()->expression);
+            auto& deducedVisit = model.addVariable(CP::Variable::Type::BOOLEAN, "visit_{" + vertex->shortReference() + "}" , visit.at( predecessor ) && condition );
+            visit.emplace(vertex, deducedVisit );
+            visit.emplace(exit(vertex), deducedVisit );
+std::cerr << deducedVisit.stringify() << std::endl;
+          }
+          else {
+            // no condition is given, vertex is visited if predecessor is visited
+            auto& deducedVisit = model.addVariable(CP::Variable::Type::BOOLEAN, "visit_{" + vertex->shortReference() + "}" , visit.at( predecessor ) );
+            visit.emplace(vertex, deducedVisit );
+            visit.emplace(exit(vertex), deducedVisit );
+          }
+        }
+      }
+      else {
+        // vertex represents an instantiation of a multi-instance activity
+        assert(!"Not yet implemented");
+      }
+    }
+    else if ( vertex->inflows.size() == 1 ) {
       // deduce visit from unique sequence flow
-      auto& deducedVisit = model.addVariable(CP::Variable::Type::BOOLEAN, "visit_{" + BPMNOS::to_string(vertex->instanceId, STRING) + "," + vertex->node->id + "}" , tokenFlow.at( std::make_pair(&vertex->inflows.front().second, vertex) ) );
+      auto& deducedVisit = model.addVariable(CP::Variable::Type::BOOLEAN, "visit_{" + vertex->shortReference() + "}" , tokenFlow.at( std::make_pair(&vertex->inflows.front().second, vertex) ) );
       visit.emplace(vertex, deducedVisit );
       visit.emplace(exit(vertex), deducedVisit );
     }
+/*
     else if (
       vertex->node->represents<BPMN::Activity>() && 
       vertex->node->as<BPMN::Activity>()->loopCharacteristics.has_value()
@@ -1443,6 +1672,7 @@ void CPController::createEntryVariables(const FlattenedGraph::Vertex* vertex) {
       assert( vertex->node->as<BPMN::Activity>()->loopCharacteristics.value() != BPMN::Activity::LoopCharacteristics::MultiInstanceParallel );
       assert(!"Not yet implemented");
     }
+*/
     else {
 //std::cerr << vertex->jsonify().dump() << std::endl;
       assert(!"Not yet implemented");
@@ -1450,7 +1680,7 @@ void CPController::createEntryVariables(const FlattenedGraph::Vertex* vertex) {
   }
   else if ( vertex->node->represents<BPMN::Process>() ) {
     // every process vertex is visited
-    auto& knownVisit = model.addVariable(CP::Variable::Type::BOOLEAN, "visit_{" + BPMNOS::to_string(vertex->instanceId, STRING) + "," + vertex->node->id + "}", true, true );
+    auto& knownVisit = model.addVariable(CP::Variable::Type::BOOLEAN, "visit_{" + vertex->shortReference() + "}", true, true );
     visit.emplace(vertex, knownVisit );
     visit.emplace(exit(vertex), knownVisit );
   }
@@ -1462,6 +1692,18 @@ void CPController::createEntryVariables(const FlattenedGraph::Vertex* vertex) {
 void CPController::createExitVariables(const Vertex* vertex) {
 std::cerr << "createExitVariables" << std::endl;
   if ( vertex->node->represents<BPMN::FlowNode>() ) {
+    if ( auto loopCharacteristics = getLoopCharacteristics(vertex);
+      loopCharacteristics.has_value() &&
+      loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::Standard
+    ) {
+      assert( flattenedGraph.vertexMap.contains(vertex->node) );
+      assert( flattenedGraph.vertexMap.at(vertex->node).contains(vertex->instanceId) );
+      auto& siblings = flattenedGraph.vertexMap.at(vertex->node).at(vertex->instanceId);
+      if ( vertex != &siblings.back().get() ) {
+        return;
+      }
+    }
+
     // flow variables
     if ( vertex->outflows.size() == 1 ) {
       tokenFlow.emplace( 

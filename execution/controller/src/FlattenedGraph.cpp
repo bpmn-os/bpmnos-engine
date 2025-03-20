@@ -77,19 +77,23 @@ std::pair< const FlattenedGraph::Vertex&, const FlattenedGraph::Vertex&> Flatten
 }
 
 std::string FlattenedGraph::Vertex::reference() const {
-  std::string result = BPMNOS::to_string(instanceId, STRING) + "," + node->id + "," + ( type == Type::ENTRY ? "entry" : "exit" ); 
-  if (
-    node->represents<BPMN::Activity>() &&
-    node->as<BPMN::Activity>()->loopCharacteristics.has_value() &&
-    node->as<BPMN::Activity>()->loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::Standard
+  return shortReference() + "," + ( type == Type::ENTRY ? "entry" : "exit" );
+}
+
+std::string FlattenedGraph::Vertex::shortReference() const {
+  std::string result = BPMNOS::to_string(instanceId, STRING) + "," + node->id;
+  if ( auto activity = node->represents<BPMN::Activity>();
+    activity &&
+    activity->loopCharacteristics.has_value() &&
+    activity->loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::Standard
   ) {
-    auto& container = graph->vertexMap.at(node).at(instanceId);
-    if ( this != &container.front().get() && this != &container.back().get() ) {
+    auto& siblings = graph->vertexMap.at(activity).at(instanceId);
+    if ( this != &siblings.front().get() && this != &siblings.back().get() ) {
       size_t i = 1;
-      while ( &container[i].get() != this ) {
+      while ( &siblings[i].get() != this ) {
         i++;
       }
-      result += "," + std::to_string((i+1)/2);
+      result += BPMNOS::Model::Scenario::delimiters[1] + std::to_string((i+1)/2);
     }
   }
   return result;
@@ -228,12 +232,12 @@ std::pair<FlattenedGraph::Vertex&, FlattenedGraph::Vertex&> FlattenedGraph::crea
   auto& exit = vertices.back();
 
   if ( node->represents<BPMN::Scope>() ) {
-    entry.outflows.emplace_back(nullptr,exit);
-    exit.inflows.emplace_back(nullptr,entry);
-  }
-  else {
     entry.successors.push_back(exit);
     exit.predecessors.push_back(entry);
+  }
+  else {
+    entry.outflows.emplace_back(nullptr,exit);
+    exit.inflows.emplace_back(nullptr,entry);
   }
   
   if ( parent.has_value() ) {
@@ -444,7 +448,14 @@ std::cerr << "done" << std::endl;
 
 void FlattenedGraph::flatten(BPMNOS::number instanceId, const BPMN::Scope* scope, Vertex& scopeEntry, Vertex& scopeExit) {
 std::cerr << "flatten: " << scope->id << std::endl;
-  std::pair<Vertex&, Vertex&> parent = {scopeEntry,scopeExit}; 
+  std::pair<Vertex&, Vertex&> parent = {scopeEntry,scopeExit};
+  
+  if ( scope->flowNodes.empty() ) {
+    scopeEntry.outflows.emplace_back(nullptr,scopeExit);
+    scopeExit.inflows.emplace_back(nullptr,scopeEntry);
+    return;
+//    throw std::runtime_error("FlattenedGraph: unable to flatten empty scope '" + scope->id + "'");
+  }
   for ( auto& flowNode : scope->flowNodes ) {
     
     // create vertices for flow node
@@ -457,13 +468,20 @@ std::cerr << "flatten: " << scope->id << std::endl;
     }
         
     auto& container = vertexMap.at(flowNode).at(instanceId);
-/*
-    // add predecessors and successors for vertices
-    for ( Vertex& vertex : container ) {
-      vertex.predecessors.push_back(scopeEntry);
-      vertex.successors.push_back(scopeExit);
+
+    if ( flowNode->represents<BPMN::UntypedStartEvent>() || flowNode->represents<BPMN::TypedStartEvent>() ) {
+      auto& flowNodeEntry = container.front().get();
+      flowNodeEntry.inflows.emplace_back(nullptr,scopeEntry);
+      scopeEntry.outflows.emplace_back(nullptr,flowNodeEntry);
     }
-*/
+    
+    if ( flowNode->outgoing.empty() ) {
+      // flow node without outgoing sequence flow
+      auto& flowNodeExit = container.back().get();
+      scopeExit.inflows.emplace_back(nullptr,flowNodeExit);
+      flowNodeExit.outflows.emplace_back(nullptr,scopeExit);
+    }
+
     // flatten child scopes
     if ( auto childScope = flowNode->represents<BPMN::Scope>() ) {
       assert( container.size() % 2 == 0 );
@@ -478,25 +496,13 @@ std::cerr << "flatten: " << scope->id << std::endl;
 std::cerr << "sequence flows: " << scope->sequenceFlows.size() << std::endl;
   // sequence flows
   for ( auto& sequenceFlow : scope->sequenceFlows ) {
-    if ( false /* activity->loopCharacteristics.has_value() */ ) {
-      // TODO: subsequent loop/multi-instance activities have n-m inflow/outflow relationship
-/*
-      // TODO: outflow from each instantiation
-      assert(!"Not yet implemented");
-      if ( activity->loopCharacteristics.value() != BPMN::Activity::LoopCharacteristics::Standard ) {
-        // TODO: inflow to each instantiation
-      }
-*/
-    } 
-    else {
-      // create unique flow from origin to destination
-      Vertex& origin = vertexMap.at(sequenceFlow->source).at(instanceId).back();
-      Vertex& destination = vertexMap.at(sequenceFlow->target).at(instanceId).front();
+    // create unique flow from origin to destination
+    Vertex& origin = vertexMap.at(sequenceFlow->source).at(instanceId).back();
+    Vertex& destination = vertexMap.at(sequenceFlow->target).at(instanceId).front();
 std::cerr << sequenceFlow->id << ":" << origin.reference() << " -> " << destination.reference() << std::endl;
 assert(origin.outflows.empty());
-      origin.outflows.emplace_back(sequenceFlow.get(),destination);
-      destination.inflows.emplace_back(sequenceFlow.get(),origin);
-    }
+    origin.outflows.emplace_back(sequenceFlow.get(),destination);
+    destination.inflows.emplace_back(sequenceFlow.get(),origin);
   }
 
   // boundary events

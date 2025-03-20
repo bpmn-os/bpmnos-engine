@@ -121,6 +121,8 @@ protected:
   std::vector<CPController::AttributeVariables> createUniquelyDeducedEntryStatus(const Vertex* vertex, const BPMNOS::Model::AttributeRegistry& attributeRegistry, std::vector<AttributeVariables>& inheritedStatus);
   std::vector<AttributeVariables> createAlternativeEntryStatus(const Vertex* vertex, const BPMNOS::Model::AttributeRegistry& attributeRegistry, std::vector< std::pair<const CP::Variable&, std::vector<AttributeVariables>& > > alternatives);
   std::vector<AttributeVariables> createMergedStatus(const Vertex* vertex, const BPMNOS::Model::AttributeRegistry& attributeRegistry, std::vector< std::pair<const CP::Variable&, std::vector<AttributeVariables>& > > inputs);
+  void createLoopEntryStatus(const Vertex* vertex);
+  std::vector<CPController::AttributeVariables> createLoopExitStatus(const Vertex* vertex);
   
 /*
   std::unordered_map<const BPMN::MessageThrowEvent*, std::vector<BPMNOS::number> > originInstances; /// Map containing all instance identifiers for all message throw events
@@ -155,7 +157,7 @@ protected:
   };
   
   std::vector<const Vertex*> vertices; /// Container of all vertices considered
-  BPMNOS::tuple_map< std::tuple< const BPMN::Node*, const BPMNOS::number, const Vertex::Type>, const Vertex* > vertexMap; /// Map holding allowing to access vertices by their node, instanceId, and type
+//  BPMNOS::tuple_map< std::tuple< const BPMN::Node*, const BPMNOS::number, const Vertex::Type>, const Vertex* > vertexMap; /// Map holding allowing to access vertices by their node, instanceId, and type
   std::vector<const Vertex*> messageRecipients; /// Container of all vertices catching a message
 
   std::unordered_map< const Vertex*, const CP::Variable& > position; /// Variables holding sequence positions for all vertices
@@ -186,6 +188,8 @@ public:
   void setMessageFlowVariableValue( const Vertex* sender, const Vertex* recipient );
 protected:
   void createDecisionQueue(); /// Method creating the decision queue from CP
+  const Vertex* getVertex( const Token* token ) const;
+  std::optional< BPMN::Activity::LoopCharacteristics > getLoopCharacteristics(const Vertex* vertex) const;  
   std::optional< BPMNOS::number > getTimestamp( const Vertex* vertex ) const;
   void setTimestamp( const Vertex* vertex, BPMNOS::number timestamp );
   std::pair< CP::Expression, CP::Expression > getAttributeVariables( const Vertex* vertex, const Model::Attribute* attribute);

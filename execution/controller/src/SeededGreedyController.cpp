@@ -119,7 +119,11 @@ std::shared_ptr<Event> SeededGreedyController::createMessageDeliveryEvent(const 
   
   auto message = best->message.lock();
   assert( message );
-  auto sender = vertexMap.at( std::make_tuple(message->origin, message->header[ BPMNOS::Model::MessageDefinition::Index::Sender ].value(), Vertex::Type::ENTRY) );
+  assert( flattenedGraph.vertexMap.contains(message->origin) );
+  assert( flattenedGraph.vertexMap.at(message->origin).contains(message->header[ BPMNOS::Model::MessageDefinition::Index::Sender ].value()) );
+  auto& siblings = flattenedGraph.vertexMap.at(message->origin).at(message->header[ BPMNOS::Model::MessageDefinition::Index::Sender ].value());
+  auto sender = &siblings.front().get(); // TODO: Multi-instance/loop
+//  auto sender = vertexMap.at( std::make_tuple(message->origin, message->header[ BPMNOS::Model::MessageDefinition::Index::Sender ].value(), Vertex::Type::ENTRY) );
   setMessageFlowVariableValue(sender,vertex);
   
   return best;
