@@ -353,6 +353,9 @@ std::cerr << parameter->expression->expression << std::endl;
   assert(extensionElements);
 
   if ( activity->loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::Standard ) {
+    if( activity->represents<BPMN::SubProcess>() ) {
+      throw std::runtime_error("FlattenedGraph: loop subprocesses are not yet supported" );
+    }
     if ( extensionElements->loopMaximum.has_value() ) {
       auto value = getValue( extensionElements->loopMaximum.value().get() ); 
       n = value.has_value() ? (int)value.value() : 0;
