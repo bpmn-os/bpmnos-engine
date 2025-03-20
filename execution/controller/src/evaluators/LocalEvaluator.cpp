@@ -9,7 +9,7 @@ using namespace BPMNOS::Execution;
 
 bool LocalEvaluator::updateValues(EntryDecision* decision, Values& status, Values& data, Values& globals) {
   auto token = decision->token;
-  assert( token->ready() );
+  assert( token->ready() || ( token->state == Token::State::EXITING ) ); // loop activities may re-enter
   auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   assert(extensionElements);
 
@@ -106,7 +106,7 @@ bool LocalEvaluator::updateValues(MessageDeliveryDecision* decision, Values& sta
 
 std::optional<double> LocalEvaluator::evaluate(EntryDecision* decision) {
   auto token = decision->token;
-  assert( token->ready() );
+  assert( token->ready() || ( token->state == Token::State::EXITING ) ); // loop activities may re-enter
   auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   assert(extensionElements);
   Values status = token->status;

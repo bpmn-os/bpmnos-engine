@@ -92,7 +92,7 @@ bool GuidedEvaluator::updateValues(MessageDeliveryDecision* decision, Values& st
 
 std::optional<double> GuidedEvaluator::evaluate(EntryDecision* decision) {
   auto token = decision->token;
-  assert( token->ready() );
+  assert( token->ready() || ( token->state == Token::State::EXITING ) ); // loop activities may re-enter
   auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   assert(extensionElements);
   Values status = token->status;

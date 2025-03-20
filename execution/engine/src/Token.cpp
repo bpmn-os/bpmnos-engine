@@ -1009,7 +1009,8 @@ void Token::advanceToExiting() {
     }();
 
     if ( LOOP ) {
-      advanceToEntered();
+      awaitEntryEvent();
+//      advanceToEntered();
       return;
     }
   }
