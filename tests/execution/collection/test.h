@@ -41,9 +41,9 @@ SCENARIO( "A simple process with subprocess and task", "[collection][process]" )
 
         auto readyLog = recorder.find(nlohmann::json{{"state", "READY"}}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
         REQUIRE( readyLog[0]["nodeId"] == "SubProcess_1" );
-        REQUIRE( readyLog[0]["status"]["v"] == nullptr );
+        REQUIRE( readyLog[0]["status"]["v"] == "A" );
         REQUIRE( readyLog[1]["nodeId"] == "Task_1" );
-        REQUIRE( readyLog[1]["status"]["w"] == nullptr );
+        REQUIRE( readyLog[1]["status"]["w"] == "C" );
       }
     }
   }

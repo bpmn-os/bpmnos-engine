@@ -33,7 +33,7 @@ SCENARIO( "Sequential adhoc subprocess", "[execution][adhocsubprocess]" ) {
         auto adHocSubProcessLog = recorder.find(nlohmann::json{{"nodeId","AdHocSubProcess_1"}}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
         REQUIRE( adHocSubProcessLog[0]["state"] == "ARRIVED" );
         REQUIRE( adHocSubProcessLog[1]["state"] == "READY" );
-        REQUIRE( adHocSubProcessLog[1]["data"]["x"] == nullptr );
+        REQUIRE( adHocSubProcessLog[1]["data"]["x"] == 0 );
         REQUIRE( adHocSubProcessLog[2]["state"] == "ENTERED" );
         REQUIRE( adHocSubProcessLog[2]["data"]["x"] == 0 );
         REQUIRE( adHocSubProcessLog[3]["state"] == "BUSY" );

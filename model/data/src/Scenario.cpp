@@ -192,19 +192,58 @@ BPMNOS::Values Scenario::getKnownInitialData(const Scenario::InstanceData* insta
 }
 
 std::optional<BPMNOS::number> Scenario::getKnownValue(const Scenario::InstanceData* instance, const BPMNOS::Model::Attribute* attribute, const BPMNOS::number currentTime) const {
-  auto& data = instance->data.at(attribute);
-
-  if ( data.realization.has_value() ) {
-    auto realization = data.realization.value();
-    if ( realization.disclosure > currentTime ) {
-      // value not yet disclosed
-      return std::nullopt;
+  if ( attribute->expression && attribute->expression->type == Expression::Type::ASSIGN ) {
+    // value is obtained by an assignment
+    // collect variable values
+    std::vector< double > variableValues;
+    for ( auto input : attribute->expression->variables ) {
+      if ( !input->isImmutable ) {
+        // return nullopt because required attribute value only becomes known upon execution
+        return std::nullopt;        
       }
-    else {
-      return realization.value;
+      auto value = getKnownValue(instance, input, currentTime);
+      if ( !value.has_value() ) {
+        // return nullopt because required attribute value is not given
+        return std::nullopt;        
+      }
+      variableValues.push_back( (double)value.value() );
+    }
+
+    // collect values of all variables in collection
+    std::vector< std::vector< double > > collectionValues;
+    for ( auto input : attribute->expression->collections ) {
+      if ( !input->isImmutable ) {
+        // return nullopt because required attribute value only becomes known upon execution
+        return std::nullopt;        
+      }
+      collectionValues.push_back( {} );
+      auto collection = getKnownValue(instance, input, currentTime);
+      if ( !collection.has_value() ) {
+        // return nullopt because required collection is not given
+        return std::nullopt;
+      }
+      for ( auto value : collectionRegistry[(size_t)collection.value()] ) {
+        collectionValues.back().push_back( value );
+      }
+    }
+
+    return number(attribute->expression->compiled.evaluate(variableValues,collectionValues));      
+  }
+  else {
+    auto& data = instance->data.at(attribute);
+
+    if ( data.realization.has_value() ) {
+      auto realization = data.realization.value();
+      if ( realization.disclosure > currentTime ) {
+        // value not yet disclosed
+        return std::nullopt;
+        }
+      else {
+        return realization.value;
+      }
     }
   }
-
+  
   // value will never be provided
   return std::nullopt;
 }
@@ -241,16 +280,54 @@ std::optional<BPMNOS::Values> Scenario::getKnownData(const BPMNOS::number instan
 }
 
 std::optional<BPMNOS::number> Scenario::getAnticipatedValue(const Scenario::InstanceData* instance, const BPMNOS::Model::Attribute* attribute, const BPMNOS::number currentTime) const {
-  auto& data = instance->data.at(attribute);
-  if ( data.realization && data.realization->disclosure <= currentTime ) {
-    // return the realized value
-    return data.realization->value;
-  }
-  else if ( data.anticipations.size() && data.anticipations.front().disclosure <= currentTime ) {
-    // return the currently anticipated value
-    return getLatestDisclosure(data.anticipations,currentTime).value;
-  }
+  if ( attribute->expression && attribute->expression->type == Expression::Type::ASSIGN ) {
+    // value is obtained by an assignment
+    // collect variable values
+    std::vector< double > variableValues;
+    for ( auto input : attribute->expression->variables ) {
+      if ( !input->isImmutable ) {
+        // return nullopt because required attribute value only becomes known upon execution
+        return std::nullopt;        
+      }
+      auto value = getAnticipatedValue(instance, input, currentTime);
+      if ( !value.has_value() ) {
+        // return nullopt because required attribute value is not given
+        return std::nullopt;        
+      }
+      variableValues.push_back( (double)value.value() );
+    }
 
+    // collect values of all variables in collection
+    std::vector< std::vector< double > > collectionValues;
+    for ( auto input : attribute->expression->collections ) {
+      if ( !input->isImmutable ) {
+        // return nullopt because required attribute value only becomes known upon execution
+        return std::nullopt;        
+      }
+      collectionValues.push_back( {} );
+      auto collection = getAnticipatedValue(instance, input, currentTime);
+      if ( !collection.has_value() ) {
+        // return nullopt because required collection is not given
+        return std::nullopt;
+      }
+      for ( auto value : collectionRegistry[(size_t)collection.value()] ) {
+        collectionValues.back().push_back( value );
+      }
+    }
+
+    return number(attribute->expression->compiled.evaluate(variableValues,collectionValues));      
+  }
+  else {
+    auto& data = instance->data.at(attribute);
+    if ( data.realization && data.realization->disclosure <= currentTime ) {
+      // return the realized value
+      return data.realization->value;
+    }
+    else if ( data.anticipations.size() && data.anticipations.front().disclosure <= currentTime ) {
+      // return the currently anticipated value
+      return getLatestDisclosure(data.anticipations,currentTime).value;
+    }
+  }
   // return undefined value
   return std::nullopt;
 }
