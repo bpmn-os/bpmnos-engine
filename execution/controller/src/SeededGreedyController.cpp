@@ -119,12 +119,20 @@ std::shared_ptr<Event> SeededGreedyController::createMessageDeliveryEvent(const 
   
   auto message = best->message.lock();
   assert( message );
+  auto senderId = message->header[ BPMNOS::Model::MessageDefinition::Index::Sender ].value();
+  auto& [senderEntry,senderExit] = flattenedGraph.vertexMap.at({senderId,{},message->origin}); // TODO: sender must not be within loop
+  setMessageFlowVariableValue(&senderEntry,vertex);
+/*
+  auto& siblings = flattenedGraph.vertexMap.at(message->origin).at(message->header[ BPMNOS::Model::MessageDefinition::Index::Sender ].value());
+
+
   assert( flattenedGraph.vertexMap.contains(message->origin) );
   assert( flattenedGraph.vertexMap.at(message->origin).contains(message->header[ BPMNOS::Model::MessageDefinition::Index::Sender ].value()) );
   auto& siblings = flattenedGraph.vertexMap.at(message->origin).at(message->header[ BPMNOS::Model::MessageDefinition::Index::Sender ].value());
-  auto sender = &siblings.front().get(); // TODO: Multi-instance/loop
+  auto senderEntry = &siblings.front().get(); // TODO: Multi-instance/loop
 //  auto sender = vertexMap.at( std::make_tuple(message->origin, message->header[ BPMNOS::Model::MessageDefinition::Index::Sender ].value(), Vertex::Type::ENTRY) );
-  setMessageFlowVariableValue(sender,vertex);
+  setMessageFlowVariableValue(senderEntry,vertex);
+*/
   
   return best;
 }

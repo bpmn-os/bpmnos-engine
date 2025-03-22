@@ -9,6 +9,7 @@
 #include <bpmn++.h>
 #include <nlohmann/json.hpp>
 #include "model/data/src/Scenario.h"
+#include "model/utility/src/tuple_map.h"
 
 namespace BPMNOS::Execution {
 
@@ -26,7 +27,7 @@ public:
   class Vertex {
   public:
     enum class Type { ENTRY, EXIT };
-    Vertex(FlattenedGraph* graph, BPMNOS::number rootId, BPMNOS::number instanceId, const BPMN::Node* node, Type type, std::optional< std::pair<Vertex&, Vertex&> > parent);
+    Vertex(FlattenedGraph* graph, BPMNOS::number rootId, BPMNOS::number instanceId, std::vector< size_t > loopIndices, const BPMN::Node* node, Type type, std::optional< std::pair<Vertex&, Vertex&> > parent);
     // Delete other constructors and assignment operators
     Vertex() = delete; // Prevents default construction
     Vertex(const Vertex&) = delete;           // Non-copyable
@@ -37,6 +38,7 @@ public:
     const size_t index;
     const BPMNOS::number rootId;
     const BPMNOS::number instanceId;
+    const std::vector< size_t > loopIndices; // Container holding all loop indices (if any)
     const BPMN::Node* node;
     const Type type;
     std::optional< std::pair<Vertex&, Vertex&> > parent;      /// Parent vertices
@@ -62,7 +64,13 @@ public:
 
   std::vector< std::reference_wrapper<Vertex> > initialVertices; /// Container holding entry vertices of all process instances
   std::deque< Vertex > vertices; /// Container holding entry and exit vertices of each possible instantiation of a node
-  std::unordered_map< const BPMN::Node*, std::unordered_map< BPMNOS::number, std::vector< std::reference_wrapper<Vertex> > > > vertexMap; /// Map holding entry and exit vertices of each possible instantiation of a node
+
+  const BPMNOS::Model::Attribute* getLoopIndexAttribute(const BPMN::Activity* activity) const; 
+  std::unordered_map< const BPMN::Node*, std::vector< const BPMNOS::Model::Attribute* > > loopIndexAttributes; // Container holding all attributes representing loop indices for a given node
+  tuple_map< std::tuple<BPMNOS::number, std::vector< size_t >, const BPMN::Node* >, std::pair<Vertex&, Vertex&> > vertexMap; /// Map holding entry and exit vertices of each possible instantiation of a node
+
+
+//  std::unordered_map< const BPMN::Node*, std::unordered_map< BPMNOS::number, std::vector< std::reference_wrapper<Vertex> > > > vertexMap; /// Map holding entry and exit vertices of each possible instantiation of a node
 
   void addInstance( const BPMNOS::Model::Scenario::InstanceData* instance );
 private:
@@ -70,8 +78,8 @@ private:
   void addSender( const BPMN::MessageThrowEvent* messageThrowEvent, Vertex& senderEntry, Vertex& senderExit );
   void addRecipient( const BPMN::MessageCatchEvent* messageCatchEvent, Vertex& recipientEntry, Vertex& recipientExit );
 
-  std::pair<Vertex&, Vertex&> createVertexPair(BPMNOS::number rootId, BPMNOS::number instanceId, const BPMN::Node* node, std::optional< std::pair<Vertex&, Vertex&> > parent);
-  void createLoopVertices(BPMNOS::number rootId, BPMNOS::number instanceId, const BPMN::Activity* node, std::optional< std::pair<Vertex&, Vertex&> > parent);
+  std::pair<Vertex&, Vertex&> createVertexPair(BPMNOS::number rootId, BPMNOS::number instanceId, std::vector< size_t > loopIndices, const BPMN::Node* node, std::optional< std::pair<Vertex&, Vertex&> > parent);
+  void createLoopVertices(BPMNOS::number rootId, BPMNOS::number instanceId, std::vector< size_t > loopIndices, const BPMN::Activity* node, std::optional< std::pair<Vertex&, Vertex&> > parent);
   void flatten(BPMNOS::number instanceId, const BPMN::Scope* scope, Vertex& scopeEntry, Vertex& scopeExit);
   
   std::vector< std::tuple<const BPMN::EventSubProcess*, Vertex&, Vertex&, unsigned int, Vertex*> > nonInterruptingEventSubProcesses;

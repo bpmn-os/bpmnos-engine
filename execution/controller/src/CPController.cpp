@@ -63,36 +63,17 @@ void CPController::setMessageFlowVariableValue( const Vertex* sender, const Vert
 
 const FlattenedGraph::Vertex* CPController::getVertex( const Token* token ) const {
   auto node = token->node ? token->node->as<BPMN::Node>() : token->owner->process->as<BPMN::Node>();
-  assert( flattenedGraph.vertexMap.contains(node) );
-  assert( flattenedGraph.vertexMap.at(node).contains(token->data->at(BPMNOS::Model::ExtensionElements::Index::Instance).get().value()) );
-  auto& siblings = flattenedGraph.vertexMap.at(node).at(token->data->at(BPMNOS::Model::ExtensionElements::Index::Instance).get().value());
-  
-  if ( auto activity = node->represents<BPMN::Activity>();
-    activity &&
-    activity->loopCharacteristics.has_value() &&
-    activity->loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::Standard
-  ) {
-    // get correct vertex for loop activity
-    auto extensionElements = activity->extensionElements->as<BPMNOS::Model::ExtensionElements>();
-    const BPMNOS::Model::Attribute* attribute = 
-      extensionElements->loopIndex.has_value() ? 
-      extensionElements->loopIndex.value()->expression->isAttribute() :
-      nullptr
-    ;
-    assert( attribute );
-    assert( token->status.size() > attribute->index );
+  assert( flattenedGraph.loopIndexAttributes.contains(node) );
+  std::vector< size_t > loopIndices;
+  for ( auto attribute : flattenedGraph.loopIndexAttributes.at(node)  ) {
     assert( token->status.at(attribute->index).has_value() );
-    auto loopIndex = (size_t)token->status.at(attribute->index).value();
-    assert( loopIndex > 0 );
-    assert( siblings.size() > 2*loopIndex );
-std::cerr << "Index: " << loopIndex << std::endl;
-std::cerr << "RequestToken: " << token->jsonify() << std::endl;
-auto vertex = (token->state == Token::State::ENTERED) ? &siblings.at(2*loopIndex-1).get() : &siblings.at(2*loopIndex).get();    
-std::cerr << "Vertex: " << vertex->reference() << std::endl;  
-    return (token->state == Token::State::ENTERED) ? &siblings.at(2*loopIndex-1).get() : &siblings.at(2*loopIndex).get();
+    loopIndices.push_back( (size_t)token->status.at(attribute->index).value() );
   }
-  
-  return (token->state == Token::State::ENTERED) ? &siblings.front().get() : &siblings.back().get();
+  auto instanceId = token->data->at(BPMNOS::Model::ExtensionElements::Index::Instance).get().value();
+  assert( flattenedGraph.vertexMap.contains({instanceId,loopIndices,node}) );
+  auto& [entry,exit] = flattenedGraph.vertexMap.at({instanceId,loopIndices,node});
+
+  return (token->state == Token::State::ENTERED) ? &entry : &exit;
 }
 
 std::optional< BPMN::Activity::LoopCharacteristics> CPController::getLoopCharacteristics(const Vertex* vertex) const {
@@ -290,7 +271,15 @@ std::cerr << "Skip: " << vertex->shortReference() << std::endl;
         decisionQueue.pop();
         continue;
       }
+      else if ( vertex->loopIndices.size() < flattenedGraph.loopIndexAttributes.at(vertex->node).size() ) {
+        // skip decision for vertex that is initial or final loop/multi-instance vertex
+std::cerr << "Skip main vertex for loop: " << vertex->reference() << std::endl;
+        decisionQueue.pop();
+        continue;
+      }
+/*
       else if ( auto loopCharacteristics = getLoopCharacteristics(vertex) ) {
+        auto& [entry,exit] = flattenedGraph.vertexMap.at({vertex->instanceId, vertex->loopIndices, vertex->node});
         auto& siblings = flattenedGraph.vertexMap.at(vertex->node).at(vertex->instanceId);
         if ( vertex == &siblings.front().get() || vertex == &siblings.back().get() ) {
           // skip decision for vertex that is initial or final loop/multi-instance vertex
@@ -299,6 +288,7 @@ std::cerr << "Skip loop: " << vertex->reference() << std::endl;
           continue;
         }
       }
+*/
     }
     catch(...) {
       throw std::runtime_error("CPController: failed determining whether '" + vertex->reference() + "' is visited or not");
@@ -796,6 +786,7 @@ void CPController::createStatus(const Vertex* vertex) {
 }
 
 void CPController::createEntryStatus(const Vertex* vertex) {
+std::cerr << "createEntryStatus: " << vertex->reference() << std::endl;
   status.emplace( vertex, std::vector<AttributeVariables>() );  
   auto& variables = status.at(vertex);
 
@@ -803,10 +794,7 @@ void CPController::createEntryStatus(const Vertex* vertex) {
     loopCharacteristics.has_value() &&
     loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::Standard
   ) {
-    assert( flattenedGraph.vertexMap.contains(vertex->node) );
-    assert( flattenedGraph.vertexMap.at(vertex->node).contains(vertex->instanceId) );
-    auto& siblings = flattenedGraph.vertexMap.at(vertex->node).at(vertex->instanceId);
-    if ( vertex != &siblings.front().get() ) {
+    if ( vertex->loopIndices.size() == flattenedGraph.loopIndexAttributes.at(vertex->node).size() ) {
       createLoopEntryStatus(vertex);
 //std::cerr << model.stringify() << std::endl;
       return;
@@ -888,17 +876,14 @@ std::cerr << attribute->id << std::endl;
 }
 
 void CPController::createExitStatus(const Vertex* vertex) {
-//std::cerr << "createExitStatus" << std::endl;
+std::cerr << "createExitStatus" << std::endl;
   auto extensionElements = vertex->node->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
 
   if ( auto loopCharacteristics = getLoopCharacteristics(vertex);
     loopCharacteristics.has_value() &&
     loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::Standard
   ) {
-    assert( flattenedGraph.vertexMap.contains(vertex->node) );
-    assert( flattenedGraph.vertexMap.at(vertex->node).contains(vertex->instanceId) );
-    auto& siblings = flattenedGraph.vertexMap.at(vertex->node).at(vertex->instanceId);
-    if ( vertex == &siblings.back().get() ) {
+    if ( vertex->loopIndices.size() < flattenedGraph.loopIndexAttributes.at(vertex->node).size() ) {
       status.emplace( vertex, createLoopExitStatus(vertex) );
       return;
     }
@@ -938,10 +923,12 @@ void CPController::createExitStatus(const Vertex* vertex) {
   // no scope or empty scope
 //  assert( !vertex->exit<BPMN::Scope>() || vertex->inflows.size() == 1 );
 
+std::cerr << vertex->reference() << std::endl;  
   const Vertex* entryVertex = entry(vertex);
   if ( !extensionElements ) {
     // token just runs through the node and exit status is the same as entry status
     extensionElements = vertex->parent.value().first.node->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
+std::cerr << entryVertex->reference() << std::endl;  
     auto& entryStatus = status.at(entryVertex);
     std::vector<AttributeVariables> variables;
     for ( auto attribute : extensionElements->attributeRegistry.statusAttributes ) {
@@ -985,11 +972,11 @@ std::cerr << attribute->name << ": " << attribute->index << " == " <<  variables
     status.emplace( vertex, std::move(variables) );
     return;
   }
-  
+std::cerr << "JOJO3" << std::endl;  
   // copy entry status references
   std::vector<AttributeVariables> currentStatus = status.at(entryVertex);
-  //std::vector<AttributeVariables> currentData = status.at(entryVertex);
-  //std::vector<AttributeVariables> currentGlobla = status.at(entryVertex);
+  //std::vector<AttributeVariables> currentData = xxx.at(entryVertex);
+  //std::vector<AttributeVariables> currentGlobal = xxx.at(entryVertex);
   
   if ( vertex->node->represents<BPMNOS::Model::DecisionTask>() ) {
     // choices are represented by unconstrained status (data/global) attributes
@@ -1398,11 +1385,13 @@ std::vector<CPController::AttributeVariables> CPController::createMergedStatus(c
 }
 
 void CPController::createLoopEntryStatus(const Vertex* vertex) {
+std::cerr << "createLoopEntryStatus" << std::endl;
   assert( vertex->inflows.size() == 1 );
   assert( status.contains(vertex) );
   auto& variables = status.at(vertex);
   auto& predecessor = vertex->inflows.front().second;
   auto& priorStatus = status.at(&predecessor);
+std::cerr << predecessor.reference() << "/" << priorStatus.size() << std::endl;
   auto extensionElements = vertex->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   const BPMNOS::Model::Attribute* loopIndex = 
     extensionElements->loopIndex.has_value() ? 
@@ -1415,6 +1404,7 @@ void CPController::createLoopEntryStatus(const Vertex* vertex) {
   
   for ( auto attribute : extensionElements->attributeRegistry.statusAttributes ) {
     assert( variables.size() == attribute->index );
+std::cerr << attribute->id << std::endl;
     auto& [ defined, value ] = priorStatus.at(attribute->index);
     if ( vertex->node->represents<BPMN::Activity>() && attribute->index == BPMNOS::Model::ExtensionElements::Index::Timestamp ) {
       // entry of activity may be later than the deduced timestamp
@@ -1598,6 +1588,7 @@ std::pair< CP::Expression, CP::Expression > CPController::getAttributeVariables(
 }
 
 void CPController::createEntryVariables(const FlattenedGraph::Vertex* vertex) {
+std::cerr << "HUHU" << std::endl;      
   // visit variable
   if ( vertex->node->represents<BPMN::UntypedStartEvent>() ) {
     assert( vertex->inflows.size() == 1 );
@@ -1613,49 +1604,37 @@ void CPController::createEntryVariables(const FlattenedGraph::Vertex* vertex) {
     assert(!"Not yet implemented");
   }
   else if ( vertex->node->represents<BPMN::FlowNode>() ) {
-    assert( flattenedGraph.vertexMap.contains(vertex->node) );
-    assert( flattenedGraph.vertexMap.at(vertex->node).contains(vertex->instanceId) );
-    auto& siblings = flattenedGraph.vertexMap.at(vertex->node).at(vertex->instanceId);
-    if ( vertex != &siblings.front().get() ) {
-      assert( vertex->node->represents<BPMN::Activity>() );
-      assert( vertex->node->as<BPMN::Activity>()->loopCharacteristics.has_value() );
-      
-      if ( auto loopCharacteristics = getLoopCharacteristics(vertex);
-        loopCharacteristics.has_value() &&
-        loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::Standard
-      ) {
-        // vertex represents a copy due to a loop
-        assert( siblings.size() > 2 ); // first and last sibling are place holders for entry and exit, siblings inbetween are the actually visited vertices
-        auto predecessor = &vertex->inflows.front().second;
-        if ( predecessor == &siblings.front().get() ) {
-          // first loop visit
-          auto& deducedVisit = model.addVariable(CP::Variable::Type::BOOLEAN, "visit_{" + vertex->shortReference() + "}" , visit.at( predecessor ) );
+std::cerr << vertex->reference() << ": " <<  vertex->loopIndices.size()  << "/" << flattenedGraph.loopIndexAttributes.at(vertex->node).size() << std::endl;      
+    if ( 
+      vertex->node->represents<BPMN::Activity>() &&
+      vertex->node->as<BPMN::Activity>()->loopCharacteristics.has_value() &&
+      vertex->node->as<BPMN::Activity>()->loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::Standard &&
+      vertex->loopIndices.size() == flattenedGraph.loopIndexAttributes.at(vertex->node).size() 
+    ) {
+      // vertex represents a copy due to a loop
+      auto predecessor = &vertex->inflows.front().second;
+      if ( predecessor->loopIndices.size() < flattenedGraph.loopIndexAttributes.at(vertex->node).size() ) {
+        auto& deducedVisit = model.addVariable(CP::Variable::Type::BOOLEAN, "visit_{" + vertex->shortReference() + "}" , visit.at( predecessor ) );
+        visit.emplace(vertex, deducedVisit );
+        visit.emplace(exit(vertex), deducedVisit );
+std::cerr << deducedVisit.stringify() << std::endl;
+      }
+      else {
+        auto extensionElements = vertex->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+        if ( extensionElements->loopCondition.has_value() ) {
+          // vertex is visited only if predecessor is visited and loop condition is satisifed
+          auto condition = createExpression(predecessor, *extensionElements->loopCondition.value()->expression);
+          auto& deducedVisit = model.addVariable(CP::Variable::Type::BOOLEAN, "visit_{" + vertex->shortReference() + "}" , visit.at( predecessor ) && condition );
           visit.emplace(vertex, deducedVisit );
           visit.emplace(exit(vertex), deducedVisit );
 std::cerr << deducedVisit.stringify() << std::endl;
-//          assert(!"Not yet implemented");
         }
         else {
-          auto extensionElements = vertex->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
-          if ( extensionElements->loopCondition.has_value() ) {
-            // vertex is visited only if predecessor is visited and loop condition is satisifed
-            auto condition = createExpression(predecessor, *extensionElements->loopCondition.value()->expression);
-            auto& deducedVisit = model.addVariable(CP::Variable::Type::BOOLEAN, "visit_{" + vertex->shortReference() + "}" , visit.at( predecessor ) && condition );
-            visit.emplace(vertex, deducedVisit );
-            visit.emplace(exit(vertex), deducedVisit );
-std::cerr << deducedVisit.stringify() << std::endl;
-          }
-          else {
-            // no condition is given, vertex is visited if predecessor is visited
-            auto& deducedVisit = model.addVariable(CP::Variable::Type::BOOLEAN, "visit_{" + vertex->shortReference() + "}" , visit.at( predecessor ) );
-            visit.emplace(vertex, deducedVisit );
-            visit.emplace(exit(vertex), deducedVisit );
-          }
+          // no condition is given, vertex is visited if predecessor is visited
+          auto& deducedVisit = model.addVariable(CP::Variable::Type::BOOLEAN, "visit_{" + vertex->shortReference() + "}" , visit.at( predecessor ) );
+          visit.emplace(vertex, deducedVisit );
+          visit.emplace(exit(vertex), deducedVisit );
         }
-      }
-      else {
-        // vertex represents an instantiation of a multi-instance activity
-        assert(!"Not yet implemented");
       }
     }
     else if ( vertex->inflows.size() == 1 ) {
@@ -1674,7 +1653,7 @@ std::cerr << deducedVisit.stringify() << std::endl;
     }
 */
     else {
-//std::cerr << vertex->jsonify().dump() << std::endl;
+std::cerr << vertex->jsonify().dump() << std::endl;
       assert(!"Not yet implemented");
     }
   }
@@ -1696,10 +1675,12 @@ std::cerr << "createExitVariables" << std::endl;
       loopCharacteristics.has_value() &&
       loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::Standard
     ) {
-      assert( flattenedGraph.vertexMap.contains(vertex->node) );
+      if ( vertex->loopIndices.size() == flattenedGraph.loopIndexAttributes.at(vertex->node).size() ) {
+/*      assert( flattenedGraph.vertexMap.contains(vertex->node) );
       assert( flattenedGraph.vertexMap.at(vertex->node).contains(vertex->instanceId) );
       auto& siblings = flattenedGraph.vertexMap.at(vertex->node).at(vertex->instanceId);
       if ( vertex != &siblings.back().get() ) {
+*/
         return;
       }
     }
@@ -1887,13 +1868,21 @@ void CPController::createDataIndexVariables(const Vertex* vertex) {
 
 
 const FlattenedGraph::Vertex* CPController::entry(const Vertex* vertex) {
+/*
   assert( vertex->type == Vertex::Type::EXIT );
   return vertex - 1;
+*/
+  assert( flattenedGraph.vertexMap.contains({vertex->instanceId,vertex->loopIndices,vertex->node}));
+  return &flattenedGraph.vertexMap.at({vertex->instanceId,vertex->loopIndices,vertex->node}).first;
 }
 
 const FlattenedGraph::Vertex* CPController::exit(const Vertex* vertex) {
+/*
   assert( vertex->type == Vertex::Type::ENTRY );
   return vertex + 1;
+*/
+  assert( flattenedGraph.vertexMap.contains({vertex->instanceId,vertex->loopIndices,vertex->node}));
+  return &flattenedGraph.vertexMap.at({vertex->instanceId,vertex->loopIndices,vertex->node}).second;
 }
 
 /*

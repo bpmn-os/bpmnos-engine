@@ -1,3 +1,4 @@
+
 #include "process/test.h"
 
 // Activities
@@ -14,7 +15,8 @@
 // Multi-instance activities
 #include "loopactivity/test.h"
 
-//#include "execution/multiinstanceactivity/test.h"
+//#include "loopactivity/test.h"
+//#include "multiinstanceactivity/test.h"
 
 // Ad-hoc subprocesses
 //#include "execution/adhocsubprocess/test.h" // TODO: (pos[entry1] < pos[entry2]).implies( pos[exit1] < pos[entry2] )

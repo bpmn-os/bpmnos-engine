@@ -8,37 +8,21 @@
 
 using namespace BPMNOS::Execution;
 
-FlattenedGraph::Vertex::Vertex(FlattenedGraph* graph, BPMNOS::number rootId, BPMNOS::number instanceId, const BPMN::Node* node, Type type, std::optional< std::pair<Vertex&, Vertex&> > parent)
+FlattenedGraph::Vertex::Vertex(FlattenedGraph* graph, BPMNOS::number rootId, BPMNOS::number instanceId,  std::vector< size_t > loopIndices, const BPMN::Node* node, Type type, std::optional< std::pair<Vertex&, Vertex&> > parent)
   : graph(graph)
   , index(graph->vertices.size())
   , rootId(rootId)
   , instanceId(instanceId)
+  , loopIndices(std::move(loopIndices))
   , node(node)
   , type(type)
   , parent(parent)
 {
+assert(node);
   if ( parent.has_value() ) {
     dataOwners = parent.value().first.dataOwners;
   }
 }
-
-/*
-std::pair<const FlattenedGraph::Vertex&, const FlattenedGraph::Vertex&>  FlattenedGraph::Vertex::parent() const {
-  if( !node->represents<BPMN::ChildNode>() ) {
-    throw std::logic_error("FlattenedGraph::Vertex: only child nodes have a parent");
-  }
-
-  assert( predecessors.size() );
-  assert( predecessors.back().get().node->represents<BPMN::Scope>() );
-  assert( predecessors.back().get().node == node->as<BPMN::ChildNode>()->parent );
-
-  assert( successors.size() );
-  assert( successors.back().get().node->represents<BPMN::Scope>() );
-  assert( successors.back().get().node == node->as<BPMN::ChildNode>()->parent );
-
-  return std::pair<Vertex&, Vertex&>(predecessors.back().get(), successors.back().get() );
-}
-*/
 
 std::pair<const FlattenedGraph::Vertex&, const FlattenedGraph::Vertex&> FlattenedGraph::Vertex::performer() const {
   assert( node->represents<BPMN::Activity>() );
@@ -82,19 +66,8 @@ std::string FlattenedGraph::Vertex::reference() const {
 
 std::string FlattenedGraph::Vertex::shortReference() const {
   std::string result = BPMNOS::to_string(instanceId, STRING) + "," + node->id;
-  if ( auto activity = node->represents<BPMN::Activity>();
-    activity &&
-    activity->loopCharacteristics.has_value() &&
-    activity->loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::Standard
-  ) {
-    auto& siblings = graph->vertexMap.at(activity).at(instanceId);
-    if ( this != &siblings.front().get() && this != &siblings.back().get() ) {
-      size_t i = 1;
-      while ( &siblings[i].get() != this ) {
-        i++;
-      }
-      result += BPMNOS::Model::Scenario::delimiters[1] + std::to_string((i+1)/2);
-    }
+  for ( auto index : loopIndices ) {
+    result += "°" + std::to_string(index);
   }
   return result;
 }
@@ -143,7 +116,7 @@ nlohmann::ordered_json FlattenedGraph::jsonify() const {
 void FlattenedGraph::addInstance( const BPMNOS::Model::Scenario::InstanceData* instance ) {
 std::cerr << "addInstance: " << instance->id << std::endl;
   // create process vertices
-  auto [ entry, exit ] = createVertexPair(instance->id, instance->id, instance->process, std::nullopt);
+  auto [ entry, exit ] = createVertexPair(instance->id, instance->id, {}, instance->process, std::nullopt);
   initialVertices.push_back(entry);
   flatten( instance->id, instance->process, entry, exit );
 }
@@ -161,14 +134,18 @@ void FlattenedGraph::addNonInterruptingEventSubProcess( const BPMN::EventSubProc
     for ( [[maybe_unused]] auto& _ : sendingVertices[candidate] ) {
       // create and flatten next event-subprocess
       counter++;
-      BPMNOS::number id = BPMNOS::to_number( BPMNOS::to_string(parentEntry.instanceId,STRING) + BPMNOS::Model::Scenario::delimiters[0] + eventSubProcess->id + BPMNOS::Model::Scenario::delimiters[1] + std::to_string(counter),  STRING);
+      BPMNOS::number id = 
+        BPMNOS::to_number(
+          BPMNOS::to_string(parentEntry.instanceId,STRING) + 
+          BPMNOS::Model::Scenario::delimiters[0] + 
+          eventSubProcess->id + 
+          BPMNOS::Model::Scenario::delimiters[1] + 
+          std::to_string(counter)
+        , STRING);
       flatten( id, eventSubProcess, parentEntry, parentExit );
       // newly created vertices at start event must succeed previous vertices at start event
-      auto& container = vertexMap.at(eventSubProcess->startEvent).at(id);
-      assert( container.size() >= 2 );
-      Vertex& startExit = container[container.size()-1];
+      auto& [startEntry,startExit] = vertexMap.at({ id, parentEntry.loopIndices, eventSubProcess->startEvent });
       if ( lastStart ) {
-        Vertex& startEntry = container[container.size()-2];
         lastStart->successors.push_back(startEntry);
         startEntry.predecessors.push_back(*lastStart);
       }
@@ -225,10 +202,25 @@ void FlattenedGraph::addRecipient( const BPMN::MessageCatchEvent* messageCatchEv
   receivingVertices[messageCatchEvent].emplace_back(recipientEntry, recipientExit);
 }
 
-std::pair<FlattenedGraph::Vertex&, FlattenedGraph::Vertex&> FlattenedGraph::createVertexPair(BPMNOS::number rootId, BPMNOS::number instanceId, const BPMN::Node* node, std::optional< std::pair<Vertex&, Vertex&> > parent) {
-  vertices.emplace_back(this, rootId, instanceId, node, Vertex::Type::ENTRY, parent);
+const BPMNOS::Model::Attribute* FlattenedGraph::getLoopIndexAttribute(const BPMN::Activity* activity) const {
+  auto extensionElements = activity->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+  assert(extensionElements);
+  const BPMNOS::Model::Attribute* attribute = 
+    extensionElements->loopIndex.has_value() ? 
+    extensionElements->loopIndex.value()->expression->isAttribute() :
+    nullptr
+  ;
+  if ( !attribute ) {
+    throw std::runtime_error("FlattenedGraph: unable to determine loop index for activity '" + activity->id + "'");
+  }
+  assert( attribute->category == BPMNOS::Model::Attribute::Category::STATUS );
+  return attribute;
+} 
+
+std::pair<FlattenedGraph::Vertex&, FlattenedGraph::Vertex&> FlattenedGraph::createVertexPair(BPMNOS::number rootId, BPMNOS::number instanceId, std::vector< size_t > loopIndices, const BPMN::Node* node, std::optional< std::pair<Vertex&, Vertex&> > parent) {
+  vertices.emplace_back(this, rootId, instanceId, loopIndices, node, Vertex::Type::ENTRY, parent);
   auto& entry = vertices.back();
-  vertices.emplace_back(this, rootId, instanceId, node, Vertex::Type::EXIT, parent);
+  vertices.emplace_back(this, rootId, instanceId, loopIndices, node, Vertex::Type::EXIT, parent);
   auto& exit = vertices.back();
 
   if ( node->represents<BPMN::Scope>() ) {
@@ -247,9 +239,25 @@ std::pair<FlattenedGraph::Vertex&, FlattenedGraph::Vertex&> FlattenedGraph::crea
     parent.value().second.predecessors.push_back( exit );
   }
   
-  auto& container = vertexMap[node][instanceId]; // get or create container
-  container.emplace_back( entry );
-  container.emplace_back( exit );
+  vertexMap.emplace( {instanceId,loopIndices,node}, {entry,exit} );
+
+  if ( !loopIndexAttributes.contains(node) ) {
+    std::vector< const BPMNOS::Model::Attribute* > attributes = (
+      parent.has_value() ? 
+      loopIndexAttributes.at(parent.value().first.node) :
+      std::vector< const BPMNOS::Model::Attribute* >()
+    );
+
+    if ( auto activity = node->represents<BPMN::Activity>();
+      activity &&
+      activity->loopCharacteristics.has_value() &&
+      activity->loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::Standard
+    ) {
+      attributes.push_back( getLoopIndexAttribute(activity) );
+    } 
+std::cerr << node->id << " has " << attributes.size() << " loop index attributes" << std::endl;
+    loopIndexAttributes[node] = std::move(attributes);
+  }
   
   assert( node->extensionElements );
   auto extensionElements = node->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
@@ -306,7 +314,7 @@ std::pair<FlattenedGraph::Vertex&, FlattenedGraph::Vertex&> FlattenedGraph::crea
   return { entry, exit };
 }
 
-void FlattenedGraph::createLoopVertices(BPMNOS::number rootId, BPMNOS::number instanceId, const BPMN::Activity* activity, std::optional< std::pair<Vertex&, Vertex&> > parent) {
+void FlattenedGraph::createLoopVertices(BPMNOS::number rootId, BPMNOS::number instanceId, std::vector< size_t > loopIndices, const BPMN::Activity* activity, std::optional< std::pair<Vertex&, Vertex&> > parent) {
   // loop & multi-instance activties
   
   // lambda returning parameter value known at time zero
@@ -315,12 +323,13 @@ void FlattenedGraph::createLoopVertices(BPMNOS::number rootId, BPMNOS::number in
 std::cerr << parameter->expression->expression << std::endl;
       // collect variable values
       std::vector< double > variableValues;
-      for ( auto attribute : parameter->expression->inputs ) {
+      for ( auto attribute : parameter->expression->variables ) {
         if ( !attribute->isImmutable ) {
           throw std::runtime_error("FlattenedGraph: Loop parameter '" + parameter->name + "' for activity '" + activity->id +"' must be immutable" );
         }
         auto value = scenario->getKnownValue(rootId, attribute, 0);
         if ( !value.has_value() ) {
+std::cerr << "unknown value of '" << attribute->id << "'" << std::endl;
           // return nullopt because required attribute value is not given
           return std::nullopt;        
         }
@@ -330,9 +339,13 @@ std::cerr << parameter->expression->expression << std::endl;
       // collect values of all variables in collection
       std::vector< std::vector< double > > collectionValues;
       for ( auto attribute : parameter->expression->collections ) {
+        if ( !attribute->isImmutable ) {
+          throw std::runtime_error("FlattenedGraph: Loop parameter '" + parameter->name + "' for activity '" + activity->id +"' must be immutable" );
+        }
         collectionValues.push_back( {} );
         auto collection = scenario->getKnownValue(rootId, attribute, 0);
         if ( !collection.has_value() ) {
+std::cerr << "unknown collection value of '" << attribute->id << "'" << std::endl;
           // return nullopt because required collection is not given
           return std::nullopt;
         }
@@ -341,6 +354,7 @@ std::cerr << parameter->expression->expression << std::endl;
         }
       }
 
+std::cerr << parameter->expression->expression << " = " << number(parameter->expression->compiled.evaluate(variableValues,collectionValues)) << std::endl;
       return number(parameter->expression->compiled.evaluate(variableValues,collectionValues));      
     }
 
@@ -374,12 +388,14 @@ std::cerr << parameter->expression->expression << std::endl;
 
 
   // create main vertices
-  vertices.emplace_back(this, rootId, instanceId, activity, Vertex::Type::ENTRY, parent);
+  vertices.emplace_back(this, rootId, instanceId, loopIndices, activity, Vertex::Type::ENTRY, parent);
   auto& entry = vertices.back();
-  vertices.emplace_back(this, rootId, instanceId, activity, Vertex::Type::EXIT, parent);
+  vertices.emplace_back(this, rootId, instanceId, loopIndices, activity, Vertex::Type::EXIT, parent);
   auto& exit = vertices.back();
   entry.successors.push_back(exit);
   exit.predecessors.push_back(entry);
+
+  vertexMap.emplace( {instanceId,loopIndices,activity}, {entry,exit} );
   
   assert( parent.has_value() );
   
@@ -388,28 +404,35 @@ std::cerr << parameter->expression->expression << std::endl;
   parent.value().first.successors.push_back( entry ); 
   parent.value().second.predecessors.push_back( exit );
   
-  auto& container = vertexMap[activity][instanceId]; // get or create container
-  container.emplace_back( entry );
+  // create loopIndexAttributes
+  if ( !loopIndexAttributes.contains(activity) ) { 
+    assert( loopIndexAttributes.contains(parent.value().first.node) );
+    auto attributes = loopIndexAttributes.at(parent.value().first.node);
+    if ( activity->loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::Standard ) {
+      attributes.push_back( getLoopIndexAttribute(activity) );
+    } 
+std::cerr << activity->id << " has " << attributes.size() << " loop index attributes" << std::endl;
+    loopIndexAttributes[activity] = std::move(attributes);
+  }
+
+//  auto& container = vertexMap[activity][instanceId]; // get or create container
+//  container.emplace_back( entry );
  
   if ( activity->loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::Standard ) {
 std::cerr << "Standard" << std::endl;
     // create vertices for loop activity
     Vertex* previous = &entry;
-    for ( int i = 1; i <= n; i++ ) {
-      auto [ loopingEntry, loopingExit ] = createVertexPair(rootId, instanceId, activity, parent);
+    loopIndices.push_back(0);
+    assert( loopIndexAttributes.contains(previous->node) );
+//std::cerr << entry.reference() << ": " << loopIndices.size() << "/" << loopIndexAttributes.at(entry.node).size() << std::endl; 
+    assert( loopIndices.size() == loopIndexAttributes.at(previous->node).size() );
+    for ( size_t i = 1; i <= (size_t)n; i++ ) {
+      loopIndices.back() = i;
+      auto [ loopingEntry, loopingExit ] = createVertexPair(rootId, instanceId, loopIndices, activity, parent);
       // every looping entry vertex has an inflow from the previous
       loopingEntry.inflows.emplace_back(nullptr,*previous);
       previous->outflows.emplace_back(nullptr,loopingEntry);
       
-      if ( activity->represents<BPMN::Scope>() ) {
-        loopingExit.predecessors.push_back(loopingEntry);
-        loopingEntry.successors.push_back(loopingExit);
-      }
-      else {
-        loopingExit.inflows.emplace_back(nullptr,loopingEntry);
-        loopingEntry.outflows.emplace_back(nullptr,loopingExit);
-      }
-
       // every looping exit can be the last
       exit.inflows.emplace_back(nullptr,loopingExit );
       loopingExit.outflows.emplace_back(nullptr,exit );
@@ -424,7 +447,7 @@ std::cerr << "MultiInstance" << std::endl;
     // create vertices for multi-instance activity
     Vertex* previous = nullptr;
     for ( int i = 1; i <= n; i++ ) {
-      auto [ multiInstanceEntry, multiInstanceExit ] = createVertexPair(rootId, BPMNOS::to_number(baseName + std::to_string(i),STRING), activity, parent);
+      auto [ multiInstanceEntry, multiInstanceExit ] = createVertexPair(rootId, BPMNOS::to_number(baseName + std::to_string(i),STRING), loopIndices, activity, parent);
       // every multi-instance entry vertex has an inflow from the main entry
       multiInstanceEntry.inflows.emplace_back(nullptr,entry);
       entry.outflows.emplace_back(nullptr,multiInstanceEntry);
@@ -443,8 +466,6 @@ std::cerr << "MultiInstance" << std::endl;
     }
   }
 
-  container.emplace_back( exit );
-
 std::cerr << "done" << std::endl;
 
 }
@@ -462,37 +483,33 @@ std::cerr << "flatten: " << scope->id << std::endl;
   for ( auto& flowNode : scope->flowNodes ) {
     
     // create vertices for flow node
-    auto activity = flowNode->represents<BPMN::Activity>();
-    if ( activity && activity->loopCharacteristics.has_value() ) {
-      createLoopVertices(scopeEntry.rootId, instanceId, activity, parent);
+    if ( auto activity = flowNode->represents<BPMN::Activity>();
+      activity && 
+      activity->loopCharacteristics.has_value() 
+    ) {
+      // create copies for loop and multi-instance activities
+      createLoopVertices(scopeEntry.rootId, instanceId, scopeEntry.loopIndices, activity, parent);
     }
     else {
-      createVertexPair(scopeEntry.rootId, instanceId, flowNode, parent);
+      createVertexPair(scopeEntry.rootId, instanceId, scopeEntry.loopIndices, flowNode, parent);
     }
-        
-    auto& container = vertexMap.at(flowNode).at(instanceId);
+
+    auto& [flowNodeEntry,flowNodeExit] = vertexMap.at({instanceId,scopeEntry.loopIndices,flowNode});
 
     if ( flowNode->represents<BPMN::UntypedStartEvent>() || flowNode->represents<BPMN::TypedStartEvent>() ) {
-      auto& flowNodeEntry = container.front().get();
       flowNodeEntry.inflows.emplace_back(nullptr,scopeEntry);
       scopeEntry.outflows.emplace_back(nullptr,flowNodeEntry);
     }
     
     if ( flowNode->outgoing.empty() ) {
       // flow node without outgoing sequence flow
-      auto& flowNodeExit = container.back().get();
       scopeExit.inflows.emplace_back(nullptr,flowNodeExit);
       flowNodeExit.outflows.emplace_back(nullptr,scopeExit);
     }
 
     // flatten child scopes
     if ( auto childScope = flowNode->represents<BPMN::Scope>() ) {
-      assert( container.size() % 2 == 0 );
-      for ( size_t i = 0; i < container.size(); i += 2 ) {
-        Vertex& entry = container[i];
-        Vertex& exit = container[i+1];
-        flatten( entry.instanceId, childScope, entry, exit );
-      }
+      flatten( flowNodeEntry.instanceId, childScope, flowNodeEntry, flowNodeExit );
     }
   }
 
@@ -500,10 +517,11 @@ std::cerr << "sequence flows: " << scope->sequenceFlows.size() << std::endl;
   // sequence flows
   for ( auto& sequenceFlow : scope->sequenceFlows ) {
     // create unique flow from origin to destination
-    Vertex& origin = vertexMap.at(sequenceFlow->source).at(instanceId).back();
-    Vertex& destination = vertexMap.at(sequenceFlow->target).at(instanceId).front();
-std::cerr << sequenceFlow->id << ":" << origin.reference() << " -> " << destination.reference() << std::endl;
-assert(origin.outflows.empty());
+    Vertex& origin = vertexMap.at({instanceId,scopeEntry.loopIndices,sequenceFlow->source}).second;
+    Vertex& destination = vertexMap.at({instanceId,scopeEntry.loopIndices,sequenceFlow->target}).first;
+    
+//std::cerr << sequenceFlow->id << ":" << origin.reference() << " -> " << destination.reference() << std::endl;
+    assert(origin.outflows.empty());
     origin.outflows.emplace_back(sequenceFlow.get(),destination);
     destination.inflows.emplace_back(sequenceFlow.get(),origin);
   }
