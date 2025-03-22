@@ -9,6 +9,14 @@
 
 namespace BPMNOS {
 
+// General check for vector types
+template<typename T>
+struct is_vector : std::false_type {};
+
+template<typename T, typename Allocator>
+struct is_vector<std::vector<T, Allocator>> : std::true_type {};
+
+
 /**
  * @brief Wrapper class around `std::unordered_map` for maps with tuple keys.
  *
@@ -26,6 +34,19 @@ namespace BPMNOS {
 template<typename Key, typename Value>
 class tuple_map {
 private:
+  /// hashing for vectors
+  template<typename T>
+  class vector_hash {
+  public:
+    size_t operator()(const std::vector<T>& vec) const {
+      size_t hash = 0;
+      for (const auto& elem : vec) {
+        hash ^= std::hash<T>()(elem) + 0x9e3779b9 + (hash << 6) + (hash >> 2);
+      }
+      return hash;
+    }
+  };
+
   /// hashing for tuples
   class tuple_hash {
     template<class T>
@@ -33,7 +54,14 @@ private:
       const T& value;
       component(const T& value) : value(value) {}
       uintmax_t operator,(uintmax_t n) const {
-        n ^= std::hash<T>()(value);
+        if constexpr (is_vector<T>::value) {
+          // Use vector_hash for any std::vector<T> 
+          n ^= vector_hash<typename T::value_type>{}(value);
+        }
+        else {
+          // Use std::hash for other types
+          n ^= std::hash<T>()(value);
+        }
         n ^= n << (sizeof(uintmax_t) * 4 - 1);
         return n ^ std::hash<uintmax_t>()(n);
       }
@@ -56,6 +84,10 @@ public:
    // Element access
    Value& operator[](const Key& key) {
      return map[key];
+   }
+
+   bool contains(const Key& key) const {
+     return map.contains(key);
    }
 
    Value& at(const Key& key) {
@@ -107,6 +139,11 @@ public:
 
    std::pair<iterator, bool> insert(const std::pair<Key, Value>& value) {
      return map.insert(value);
+   }
+
+   // Emplace function
+   std::pair<iterator, bool> emplace(Key key, Value value) {
+      return map.emplace(std::move(key), std::move(value) );
    }
 
    void erase(iterator pos) {

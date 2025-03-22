@@ -55,6 +55,10 @@ public:
      return map[key];
    }
 
+   bool contains(const Key& key) const {
+     return map.contains(key);
+   }
+
    Value& at(const Key& key) {
      return map.at(key);
    }
