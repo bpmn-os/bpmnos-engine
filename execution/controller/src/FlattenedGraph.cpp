@@ -316,6 +316,35 @@ std::cerr << node->id << " has " << attributes.size() << " loop index attributes
 
 void FlattenedGraph::createLoopVertices(BPMNOS::number rootId, BPMNOS::number instanceId, std::vector< size_t > loopIndices, const BPMN::Activity* activity, std::optional< std::pair<Vertex&, Vertex&> > parent) {
   // loop & multi-instance activties
+
+  // create main vertices
+  vertices.emplace_back(this, rootId, instanceId, loopIndices, activity, Vertex::Type::ENTRY, parent);
+  auto& entry = vertices.back();
+  vertices.emplace_back(this, rootId, instanceId, loopIndices, activity, Vertex::Type::EXIT, parent);
+  auto& exit = vertices.back();
+  entry.successors.push_back(exit);
+  exit.predecessors.push_back(entry);
+
+  vertexMap.emplace( {instanceId,loopIndices,activity}, {entry,exit} );
+  dummies.insert( &entry );
+  dummies.insert( &exit );
+  assert( parent.has_value() );
+  
+  entry.predecessors.push_back( parent.value().first );
+  exit.successors.push_back( parent.value().second ); 
+  parent.value().first.successors.push_back( entry ); 
+  parent.value().second.predecessors.push_back( exit );
+  
+  // create loopIndexAttributes
+  if ( !loopIndexAttributes.contains(activity) ) { 
+    assert( loopIndexAttributes.contains(parent.value().first.node) );
+    auto attributes = loopIndexAttributes.at(parent.value().first.node);
+    if ( activity->loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::Standard ) {
+      attributes.push_back( getLoopIndexAttribute(activity) );
+    } 
+std::cerr << activity->id << " has " << attributes.size() << " loop index attributes" << std::endl;
+    loopIndexAttributes[activity] = std::move(attributes);
+  }
   
   // lambda returning parameter value known at time zero
   auto getValue = [&](BPMNOS::Model::Parameter* parameter) -> std::optional<BPMNOS::number> {
@@ -387,33 +416,6 @@ std::cerr << parameter->expression->expression << " = " << number(parameter->exp
   }
 
 
-  // create main vertices
-  vertices.emplace_back(this, rootId, instanceId, loopIndices, activity, Vertex::Type::ENTRY, parent);
-  auto& entry = vertices.back();
-  vertices.emplace_back(this, rootId, instanceId, loopIndices, activity, Vertex::Type::EXIT, parent);
-  auto& exit = vertices.back();
-  entry.successors.push_back(exit);
-  exit.predecessors.push_back(entry);
-
-  vertexMap.emplace( {instanceId,loopIndices,activity}, {entry,exit} );
-  
-  assert( parent.has_value() );
-  
-  entry.predecessors.push_back( parent.value().first );
-  exit.successors.push_back( parent.value().second ); 
-  parent.value().first.successors.push_back( entry ); 
-  parent.value().second.predecessors.push_back( exit );
-  
-  // create loopIndexAttributes
-  if ( !loopIndexAttributes.contains(activity) ) { 
-    assert( loopIndexAttributes.contains(parent.value().first.node) );
-    auto attributes = loopIndexAttributes.at(parent.value().first.node);
-    if ( activity->loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::Standard ) {
-      attributes.push_back( getLoopIndexAttribute(activity) );
-    } 
-std::cerr << activity->id << " has " << attributes.size() << " loop index attributes" << std::endl;
-    loopIndexAttributes[activity] = std::move(attributes);
-  }
 
 //  auto& container = vertexMap[activity][instanceId]; // get or create container
 //  container.emplace_back( entry );

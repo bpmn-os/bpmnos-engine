@@ -265,30 +265,12 @@ std::shared_ptr<Event> CPController::dispatchEvent(const SystemState* systemStat
   while ( !decisionQueue.empty() ) {
     auto& [ type, vertex ] = decisionQueue.front();
     try {
-      if ( !_solution->evaluate( visit.at( vertex ) ) ) {
-        // skip decision for vertex that is not visited
-std::cerr << "Skip: " << vertex->shortReference() << std::endl;
+      if ( flattenedGraph.dummies.contains(vertex) || !_solution->evaluate( visit.at( vertex ) ) ) {
+        // no decision to be made for vertex
+std::cerr << "Skip: " << vertex->reference() << std::endl;
         decisionQueue.pop();
         continue;
       }
-      else if ( vertex->loopIndices.size() < flattenedGraph.loopIndexAttributes.at(vertex->node).size() ) {
-        // skip decision for vertex that is initial or final loop/multi-instance vertex
-std::cerr << "Skip main vertex for loop: " << vertex->reference() << std::endl;
-        decisionQueue.pop();
-        continue;
-      }
-/*
-      else if ( auto loopCharacteristics = getLoopCharacteristics(vertex) ) {
-        auto& [entry,exit] = flattenedGraph.vertexMap.at({vertex->instanceId, vertex->loopIndices, vertex->node});
-        auto& siblings = flattenedGraph.vertexMap.at(vertex->node).at(vertex->instanceId);
-        if ( vertex == &siblings.front().get() || vertex == &siblings.back().get() ) {
-          // skip decision for vertex that is initial or final loop/multi-instance vertex
-std::cerr << "Skip loop: " << vertex->reference() << std::endl;
-          decisionQueue.pop();
-          continue;
-        }
-      }
-*/
     }
     catch(...) {
       throw std::runtime_error("CPController: failed determining whether '" + vertex->reference() + "' is visited or not");
@@ -296,17 +278,6 @@ std::cerr << "Skip loop: " << vertex->reference() << std::endl;
     // exit while if decision is not skipped
     break;
   }
-/*
-    if ( decisionQueue.empty() ) return nullptr;
-
-
-    while ( !_solution->evaluate( visit.at( decisionQueue.front().second ) ) ) {
-std::cerr << "Skip" << std::endl;
-      // skip all decisions for vertices that are not visited
-      decisionQueue.pop();
-      if ( decisionQueue.empty() ) return nullptr;
-    }
-*/
 
   if ( decisionQueue.empty() ) {
     return nullptr;

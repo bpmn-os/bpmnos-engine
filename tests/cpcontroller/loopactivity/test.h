@@ -40,7 +40,7 @@ std::cerr << "Solution:\n" << solution.stringify() << std::endl;
   }
 };
 
-/*
+
 SCENARIO( "Loop subprocess", "[cpcontroller][loopactivity]" ) {
   const std::string modelFile = "tests/execution/loopactivity/Loop_subprocess.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
@@ -82,4 +82,4 @@ std::cerr << "Solution:\n" << solution.stringify() << std::endl;
     }
   }
 };
-*/
+

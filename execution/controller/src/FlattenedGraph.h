@@ -6,6 +6,7 @@
 #include <vector>
 #include <list>
 #include <string>
+#include <unordered_set>
 #include <bpmn++.h>
 #include <nlohmann/json.hpp>
 #include "model/data/src/Scenario.h"
@@ -64,13 +65,11 @@ public:
 
   std::vector< std::reference_wrapper<Vertex> > initialVertices; /// Container holding entry vertices of all process instances
   std::deque< Vertex > vertices; /// Container holding entry and exit vertices of each possible instantiation of a node
-
+  std::unordered_set< const Vertex* > dummies; /// Container holding dummy vertices for loop & multi-instance activities
+  
   const BPMNOS::Model::Attribute* getLoopIndexAttribute(const BPMN::Activity* activity) const; 
   std::unordered_map< const BPMN::Node*, std::vector< const BPMNOS::Model::Attribute* > > loopIndexAttributes; // Container holding all attributes representing loop indices for a given node
   tuple_map< std::tuple<BPMNOS::number, std::vector< size_t >, const BPMN::Node* >, std::pair<Vertex&, Vertex&> > vertexMap; /// Map holding entry and exit vertices of each possible instantiation of a node
-
-
-//  std::unordered_map< const BPMN::Node*, std::unordered_map< BPMNOS::number, std::vector< std::reference_wrapper<Vertex> > > > vertexMap; /// Map holding entry and exit vertices of each possible instantiation of a node
 
   void addInstance( const BPMNOS::Model::Scenario::InstanceData* instance );
 private:
