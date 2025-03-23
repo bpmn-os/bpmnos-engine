@@ -396,9 +396,11 @@ std::cerr << parameter->expression->expression << " = " << number(parameter->exp
   assert(extensionElements);
 
   if ( activity->loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::Standard ) {
+/*
     if( activity->represents<BPMN::SubProcess>() ) {
       throw std::runtime_error("FlattenedGraph: loop subprocesses are not yet supported" );
     }
+*/
     if ( extensionElements->loopMaximum.has_value() ) {
       auto value = getValue( extensionElements->loopMaximum.value().get() ); 
       n = value.has_value() ? (int)value.value() : 0;
@@ -441,6 +443,11 @@ std::cerr << "Standard" << std::endl;
 
       previous = &loopingExit;
 
+      if( auto subprocess = activity->represents<BPMN::SubProcess>() ) {
+        flatten(instanceId, subprocess, loopingEntry, loopingExit );
+      }
+
+
     }
   }
   else {
@@ -465,6 +472,10 @@ std::cerr << "MultiInstance" << std::endl;
         multiInstanceEntry.predecessors.push_back(*previous);
       }
       previous = &multiInstanceExit;
+
+      if( auto subprocess = activity->represents<BPMN::SubProcess>() ) {
+        flatten(instanceId, subprocess, multiInstanceEntry, multiInstanceExit );
+      }
     }
   }
 
@@ -510,9 +521,16 @@ std::cerr << "flatten: " << scope->id << std::endl;
     }
 
     // flatten child scopes
-    if ( auto childScope = flowNode->represents<BPMN::Scope>() ) {
+    if ( auto subprocess = flowNode->represents<BPMN::SubProcess>();
+      subprocess && 
+      subprocess->loopCharacteristics.has_value() 
+    ) {
+      // nothing to be done because loops of each subprocess are already flattened
+    }
+    else if ( auto childScope = flowNode->represents<BPMN::Scope>() ) {
       flatten( flowNodeEntry.instanceId, childScope, flowNodeEntry, flowNodeExit );
     }
+
   }
 
 std::cerr << "sequence flows: " << scope->sequenceFlows.size() << std::endl;
