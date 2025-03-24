@@ -121,6 +121,7 @@ protected:
   std::vector<CPController::AttributeVariables> createUniquelyDeducedEntryStatus(const Vertex* vertex, const BPMNOS::Model::AttributeRegistry& attributeRegistry, std::vector<AttributeVariables>& inheritedStatus);
   std::vector<AttributeVariables> createAlternativeEntryStatus(const Vertex* vertex, const BPMNOS::Model::AttributeRegistry& attributeRegistry, std::vector< std::pair<const CP::Variable&, std::vector<AttributeVariables>& > > alternatives);
   std::vector<AttributeVariables> createMergedStatus(const Vertex* vertex, const BPMNOS::Model::AttributeRegistry& attributeRegistry, std::vector< std::pair<const CP::Variable&, std::vector<AttributeVariables>& > > inputs);
+  CP::Expression getLoopIndex(const Vertex* vertex);
   void createLoopEntryStatus(const Vertex* vertex);
   std::vector<CPController::AttributeVariables> createLoopExitStatus(const Vertex* vertex);
   

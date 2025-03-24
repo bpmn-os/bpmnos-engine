@@ -14,8 +14,8 @@
 
 // Multi-instance activities
 #include "loopactivity/test.h"
+#include "multiinstanceactivity/test.h"
 
-//#include "loopactivity/test.h"
 //#include "multiinstanceactivity/test.h"
 
 // Ad-hoc subprocesses

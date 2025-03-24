@@ -446,8 +446,6 @@ std::cerr << "Standard" << std::endl;
       if( auto subprocess = activity->represents<BPMN::SubProcess>() ) {
         flatten(instanceId, subprocess, loopingEntry, loopingExit );
       }
-
-
     }
   }
   else {
@@ -456,7 +454,8 @@ std::cerr << "MultiInstance" << std::endl;
     // create vertices for multi-instance activity
     Vertex* previous = nullptr;
     for ( int i = 1; i <= n; i++ ) {
-      auto [ multiInstanceEntry, multiInstanceExit ] = createVertexPair(rootId, BPMNOS::to_number(baseName + std::to_string(i),STRING), loopIndices, activity, parent);
+      auto multiInstanceId = BPMNOS::to_number(baseName + std::to_string(i),STRING);
+      auto [ multiInstanceEntry, multiInstanceExit ] = createVertexPair(rootId, multiInstanceId, loopIndices, activity, parent);
       // every multi-instance entry vertex has an inflow from the main entry
       multiInstanceEntry.inflows.emplace_back(nullptr,entry);
       entry.outflows.emplace_back(nullptr,multiInstanceEntry);
@@ -474,7 +473,7 @@ std::cerr << "MultiInstance" << std::endl;
       previous = &multiInstanceExit;
 
       if( auto subprocess = activity->represents<BPMN::SubProcess>() ) {
-        flatten(instanceId, subprocess, multiInstanceEntry, multiInstanceExit );
+        flatten(multiInstanceId, subprocess, multiInstanceEntry, multiInstanceExit );
       }
     }
   }
