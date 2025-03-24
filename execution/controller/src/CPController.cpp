@@ -1357,9 +1357,11 @@ std::vector<CPController::AttributeVariables> CPController::createMergedStatus(c
       // determine whether merged variable is defined
       CP::Expression exists(false);
       for ( auto& [ _, attributeVariables] : inputs ) {
+        // check whether there is at least one input is defined 
         exists = exists || attributeVariables[attribute->index].defined;
       }
       CP::Expression allSame(true);
+      // check whether all defined inputs have the same value
       for ( size_t i = 0; i + 1 < inputs.size(); i++ ) {
         for ( size_t j = i + 1; j < inputs.size(); j++ ) {
           auto& someVariables = inputs[i].second;
@@ -1369,7 +1371,7 @@ std::vector<CPController::AttributeVariables> CPController::createMergedStatus(c
       }
       auto& defined = model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->reference() + "}," + attribute->id, exists && allSame);
 
-      // determine whether merged variable value
+      // determine merged variable value
       CP::Cases cases;
       for ( auto& [ active, attributeVariables] : inputs ) {
         cases.emplace_back( attributeVariables[attribute->index].defined, attributeVariables[attribute->index].value );
