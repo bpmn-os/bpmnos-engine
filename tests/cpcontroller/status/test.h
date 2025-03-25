@@ -15,7 +15,7 @@ SCENARIO( "Task with expresion operator", "[cpcontroller][status]" ) {
 
     WHEN( "The model is created" ) {
       Execution::GuidedEvaluator evaluator;
-std::cerr << "SeededGreedyController()" << std::endl;
+//std::cerr << "SeededGreedyController()" << std::endl;
       Execution::SeededGreedyController controller(scenario.get(), &evaluator);
       controller.setSeed( Execution::CPSeed::defaultSeed( controller.getVertices().size() ) );
 
@@ -24,7 +24,7 @@ std::cerr << "SeededGreedyController()" << std::endl;
       controller.connect(&engine);
       controller.subscribe(&engine); // only necessary to validate consistency of solution and identify errors
 
-std::cerr << "Model:\n" << controller.getModel().stringify() << std::endl;
+//std::cerr << "Model:\n" << controller.getModel().stringify() << std::endl;
 
       Execution::TimeWarp timeHandler;
       timeHandler.connect(&engine);

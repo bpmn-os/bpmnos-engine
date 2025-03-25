@@ -17,7 +17,7 @@ SCENARIO( "Task with expresion operator", "[cpcontroller][data]" ) {
 
     WHEN( "The model is created" ) {
       Execution::GuidedEvaluator evaluator;
-std::cerr << "SeededGreedyController()" << std::endl;
+//std::cerr << "SeededGreedyController()" << std::endl;
       Execution::SeededGreedyController controller(scenario.get(), &evaluator);
       controller.setSeed( Execution::CPSeed::defaultSeed( controller.getVertices().size() ) );
 
@@ -26,7 +26,7 @@ std::cerr << "SeededGreedyController()" << std::endl;
       controller.connect(&engine);
       controller.subscribe(&engine); // only necessary to validate consistency of solution and identify errors
 
-std::cerr << "Model:\n" << controller.getModel().stringify() << std::endl;
+//std::cerr << "Model:\n" << controller.getModel().stringify() << std::endl;
 
       Execution::TimeWarp timeHandler;
       timeHandler.connect(&engine);
@@ -43,29 +43,6 @@ std::cerr << "Model:\n" << controller.getModel().stringify() << std::endl;
         REQUIRE( solution.complete() ); // requires subscription of controller to engine
         REQUIRE( solution.errors().empty() ); // requires subscription of controller to engine
       }
-/*
-      THEN( "The dump of each entry of the token log is correct" ) {
-        auto activityLog = recorder.find(nlohmann::json{{"nodeId","Activity_1" }}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
-std::cerr << "Log:\n" << activityLog.dump() << std::endl;
-        REQUIRE( activityLog[0]["state"] == "ARRIVED" );
-        REQUIRE( activityLog[1]["state"] == "READY" );
-        REQUIRE( activityLog[2]["state"] == "ENTERED" );
-        REQUIRE( activityLog[2]["status"]["timestamp"] == 0.0);
-        REQUIRE( activityLog[3]["state"] == "BUSY" );
-        REQUIRE( activityLog[3]["status"]["timestamp"] == 1.0);
-        REQUIRE( activityLog[4]["state"] == "COMPLETED" );
-        REQUIRE( activityLog[4]["status"]["timestamp"] == 1.0);
-        REQUIRE( activityLog[5]["state"] == "EXITING" );
-        REQUIRE( activityLog[6]["state"] == "DEPARTED" );
-
-        REQUIRE( activityLog.back()["instanceId"] == "Instance_1");
-        REQUIRE( activityLog.back()["processId"] == "Process_1");
-        REQUIRE( activityLog.back()["state"] == "DEPARTED");
-        REQUIRE( activityLog.back()["data"]["instance"] == "Instance_1");
-        REQUIRE( activityLog.back()["status"]["timestamp"] == 1.0);
-      }
-*/      
-
     }
   }
 };
