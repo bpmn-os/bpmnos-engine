@@ -540,6 +540,9 @@ std::cerr << "constrainDataVariables" << std::endl;
       constrainDataVariables(vertex);
     }
   }  
+
+std::cerr << "constrainSequentialActivities" << std::endl;
+  constrainSequentialActivities();
   
 std::cerr << "createMessageVariables" << std::endl;
   createMessageVariables();
@@ -749,6 +752,20 @@ void CPController::constrainGlobalVariables() {
   }
 }
 
+void CPController::constrainSequentialActivities() {
+  for ( auto& [performer,sequentialActivities] : flattenedGraph.sequentialActivities ) {
+    for ( size_t i = 0; i + 1 < sequentialActivities.size(); i++ ) {
+      for ( size_t j = i + 1; j < sequentialActivities.size(); j++ ) {
+        auto& [entry1,exit1] = sequentialActivities[i];
+        auto& [entry2,exit2] = sequentialActivities[j];
+        model.addConstraint( 
+          ( position.at(&entry1) < position.at(&entry2)).implies( position.at(&exit1) < position.at(&entry2) )
+        );
+      }
+    }
+  }
+}
+
 void CPController::createStatus(const Vertex* vertex) {
 //std::cerr << "createStatus: " << vertex->reference() << std::endl;
   if ( vertex->type == Vertex::Type::ENTRY ) {
@@ -819,7 +836,29 @@ std::cerr << "createEntryStatus: " << vertex->reference() << std::endl;
     else if ( vertex->entry<BPMN::FlowNode>() ) {
       assert( vertex->inflows.size() == 1 );
       auto& [sequenceFlow,predecessor] = vertex->inflows.front();
-      variables = createUniquelyDeducedEntryStatus(vertex, extensionElements->attributeRegistry, statusFlow.at({&predecessor,vertex}) );
+      if ( sequenceFlow ) {   
+        variables = createUniquelyDeducedEntryStatus(vertex, extensionElements->attributeRegistry, statusFlow.at({&predecessor,vertex}) );
+      }
+      else {
+        assert( vertex->node->represents<BPMN::Activity>() );
+        assert( vertex->node->as<BPMN::Activity>()->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() );
+        variables = createUniquelyDeducedEntryStatus(vertex, extensionElements->attributeRegistry, status.at(&predecessor) );
+      }
+/*
+      auto& [sequenceFlow, predecessor] = vertex->inflows.front();
+      if ( sequenceFlow ) {   
+        // deduce visit from unique sequence flow
+        auto& deducedVisit = model.addVariable(CP::Variable::Type::BOOLEAN, "visit_{" + vertex->shortReference() + "}" , tokenFlow.at( std::make_pair(&predecessor, vertex) ) );
+        visit.emplace(vertex, deducedVisit );
+        visit.emplace(exit(vertex), deducedVisit );
+      }
+      else {
+        // deduce visit from unique predecessor
+        assert( vertex->node->represents<BPMN::Activity>() );
+        assert( vertex->node->as<BPMN::Activity>()->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() );
+
+*/
+
     }
   }
 
@@ -1676,11 +1715,24 @@ std::cerr << deducedVisit.stringify() << std::endl;
       }
     }
     else if ( vertex->inflows.size() == 1 ) {
-std::cerr << "HUHU3" << std::endl;      
-      // deduce visit from unique sequence flow
-      auto& deducedVisit = model.addVariable(CP::Variable::Type::BOOLEAN, "visit_{" + vertex->shortReference() + "}" , tokenFlow.at( std::make_pair(&vertex->inflows.front().second, vertex) ) );
-      visit.emplace(vertex, deducedVisit );
-      visit.emplace(exit(vertex), deducedVisit );
+std::cerr << "HUHU3" << std::endl;
+      auto& [sequenceFlow, predecessor] = vertex->inflows.front();
+      if ( sequenceFlow ) {   
+        // deduce visit from unique sequence flow
+        auto& deducedVisit = model.addVariable(CP::Variable::Type::BOOLEAN, "visit_{" + vertex->shortReference() + "}" , tokenFlow.at( std::make_pair(&predecessor, vertex) ) );
+        visit.emplace(vertex, deducedVisit );
+        visit.emplace(exit(vertex), deducedVisit );
+      }
+      else {
+        // deduce visit from unique predecessor
+        assert( vertex->node->represents<BPMN::Activity>() );
+        assert( vertex->node->as<BPMN::Activity>()->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() );
+
+        auto& deducedVisit = model.addVariable(CP::Variable::Type::BOOLEAN, "visit_{" + vertex->shortReference() + "}" , visit.at( &predecessor ) );
+        visit.emplace(vertex, deducedVisit );
+        visit.emplace(exit(vertex), deducedVisit );
+//        assert(!"Not yet implemented");
+      }
     }
 /*
     else if (

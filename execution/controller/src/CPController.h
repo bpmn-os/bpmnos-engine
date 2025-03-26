@@ -51,11 +51,11 @@ protected:
   const BPMNOS::Model::Scenario* scenario;
   Config config;
 //  std::vector< const BPMNOS::Model::Scenario::InstanceData* > instances;
+public:
   const FlattenedGraph flattenedGraph;
   CP::Model model;
-  LIMEX::Handle<CP::Expression,CP::Expression> limexHandle;
-public:
 protected:
+  LIMEX::Handle<CP::Expression,CP::Expression> limexHandle;
   void createCP(); /// Method creating the constraint program
   void createGlobalVariables();
   void createMessageVariables();
@@ -76,6 +76,7 @@ protected:
 
   void constrainGlobalVariables();
   void constrainDataVariables(const FlattenedGraph::Vertex* vertex);
+  void constrainSequentialActivities();
   
   struct AttributeVariables {
     const CP::Variable& defined;

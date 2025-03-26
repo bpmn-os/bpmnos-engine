@@ -24,10 +24,10 @@ assert(node);
   }
 }
 
-std::pair<const FlattenedGraph::Vertex&, const FlattenedGraph::Vertex&> FlattenedGraph::Vertex::performer() const {
+const FlattenedGraph::Vertex* FlattenedGraph::Vertex::performer() const {
   assert( node->represents<BPMN::Activity>() );
   assert( node->as<BPMN::Activity>()->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() );
-
+/*
   auto performer = node->as<BPMN::Activity>()->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>()->performer;
   const Vertex* entry = (type == Type::ENTRY ? this : this - 1);
   const Vertex* exit = (type == Type::EXIT ? this : this + 1);
@@ -38,7 +38,18 @@ std::pair<const FlattenedGraph::Vertex&, const FlattenedGraph::Vertex&> Flattene
     exit = &parentVertices.second;
   } while ( entry->node != performer );
 
-  return { *entry, *exit };
+  return entry;
+*/
+  auto adHocSubProcess = node->as<BPMN::Activity>()->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>();
+  assert( adHocSubProcess );
+  assert( parent.has_value() );
+  
+  auto vertex = &parent.value().first;
+  while (vertex->node && vertex->node != adHocSubProcess->performer) {
+    assert( vertex->parent.has_value() );
+    vertex = &vertex->parent.value().first;
+  }
+  return vertex;
 }
 
 size_t FlattenedGraph::Vertex::dataOwnerIndex( const BPMNOS::Model::Attribute* attribute ) const {
@@ -288,9 +299,22 @@ std::cerr << node->id << " has " << attributes.size() << " loop index attributes
     sequentialActivities.emplace(&entry,std::vector< std::pair<const Vertex&, const Vertex&> >());
   }
 
-  if ( node->represents<BPMN::Activity>() && extensionElements->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() ) {
-    auto performerVertices = entry.performer();
-    sequentialActivities.at( &performerVertices.first ).push_back( { entry, exit } );
+  if ( auto activity = node->represents<BPMN::Activity>();
+    activity && 
+    extensionElements->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>()
+  ) {
+    sequentialActivities.at( entry.performer() ).push_back( { entry, exit } );
+    // assume that adhoc subprocess only have activities w/o incoming sequence flow
+    if ( activity->incoming.empty() ) {
+      entry.inflows.emplace_back(nullptr,parent.value().first);
+      parent.value().first.outflows.emplace_back(nullptr,entry);
+    }
+/*
+    if ( activity->outgoing.empty() ) {
+      exit.outflows.emplace_back(nullptr,parent.value().second);
+      parent.value().second.inflows.emplace_back(nullptr,exit);
+    }
+*/
   }
 
   // populate lookup maps of data modifiers for data owner

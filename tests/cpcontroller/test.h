@@ -1,4 +1,4 @@
-
+/*
 #include "process/test.h"
 
 // Activities
@@ -15,39 +15,37 @@
 // Multi-instance activities
 #include "loopactivity/test.h"
 #include "multiinstanceactivity/test.h"
-
-//#include "multiinstanceactivity/test.h"
-
+*/
 // Ad-hoc subprocesses
-//#include "execution/adhocsubprocess/test.h" // TODO: (pos[entry1] < pos[entry2]).implies( pos[exit1] < pos[entry2] )
+#include "adhocsubprocess/test.h"
 
 /*
-#include "execution/subprocess/test.h"
-#include "execution/decisiontask/test.h"
-//#include "execution/request/test.h" // TODO: Check allocation id in content of request message
+#include "subprocess/test.h"
+#include "decisiontask/test.h"
+//#include "request/test.h" // TODO: Check allocation id in content of request message
 
 // Gateways
-#include "execution/parallelgateway/test.h"
-#include "execution/exclusivegateway/test.h"
+#include "parallelgateway/test.h"
+#include "exclusivegateway/test.h"
 
 // Event-based gateways
-#include "execution/eventbasedgateway/test.h"
+#include "eventbasedgateway/test.h"
 // Events
-#include "execution/timer/test.h"
-#include "execution/signal/test.h"
-#include "execution/condition/test.h"
-#include "execution/errorevent/test.h"
-#include "execution/escalationevent/test.h"
+#include "timer/test.h"
+#include "signal/test.h"
+#include "condition/test.h"
+#include "errorevent/test.h"
+#include "escalationevent/test.h"
 
 // Messages
-#include "execution/message/test.h"
+#include "message/test.h"
 // Boundary events
-#include "execution/boundaryevent/test.h"
+#include "boundaryevent/test.h"
 // Event subprocesses
-#include "execution/eventsubprocess/test.h"
+#include "eventsubprocess/test.h"
 // Compensations
-#include "execution/compensationactivity/test.h"
-#include "execution/compensationeventsubprocess/test.h"
+#include "compensationactivity/test.h"
+#include "compensationeventsubprocess/test.h"
 */
 
 /*

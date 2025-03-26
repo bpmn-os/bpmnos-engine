@@ -1,4 +1,5 @@
 #include "CPSeed.h"
+#include "model/bpmnos/src/SequentialAdHocSubProcess.h"
 #include <cassert>
 
 using namespace BPMNOS::Execution;
@@ -81,6 +82,31 @@ std::cerr << "[" << predecessor.reference() << " -> " << vertex->reference() << 
     if ( !vertices.contains(&predecessor) ) {
 std::cerr << "[" << predecessor.reference() << " -> " << vertex->reference() << "]";
       return false;
+    }
+  }
+
+  // check that no other sequential activity is currently conducted by the same performer
+  if ( vertex->type == Vertex::Type::ENTRY ) {
+    if ( auto activity = vertex->node->represents<BPMN::Activity>();
+      activity &&
+      activity->as<BPMN::Activity>()->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>()
+    ) {
+      auto performer = vertex->performer();
+      for ( auto& [somePerformer,someSequentialActivities] : controller->flattenedGraph.sequentialActivities ) {
+        if ( somePerformer != performer ) {
+          continue;
+        }
+        for ( auto& [someEntry,someExit] : someSequentialActivities ) {
+          if (
+            &someEntry != vertex &&
+            vertices.contains(&someEntry) && 
+            !vertices.contains(&someExit)
+          ) {
+            return false;
+          } 
+        }
+      }
+      
     }
   }
 

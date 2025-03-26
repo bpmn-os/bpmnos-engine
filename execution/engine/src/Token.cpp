@@ -1452,11 +1452,11 @@ void Token::sendMessage(size_t index) {
 } 
 
 Token* Token::getSequentialPerfomerToken() const {
-  auto activity = node->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>();
-  assert( activity );
+  auto adHocSubProcess = node->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>();
+  assert( adHocSubProcess );
 
   Token* sequentialPerfomerToken = owner->parentToken;
-  while (sequentialPerfomerToken->node && sequentialPerfomerToken->node != activity->performer) {
+  while (sequentialPerfomerToken->node && sequentialPerfomerToken->node != adHocSubProcess->performer) {
     sequentialPerfomerToken = sequentialPerfomerToken->owner->parentToken;
   }
   return sequentialPerfomerToken;
