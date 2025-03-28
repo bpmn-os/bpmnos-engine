@@ -562,9 +562,6 @@ std::cerr << "sequence flows: " << scope->sequenceFlows.size() << std::endl;
     // create unique flow from origin to destination
     Vertex& origin = vertexMap.at({instanceId,scopeEntry.loopIndices,sequenceFlow->source}).second;
     Vertex& destination = vertexMap.at({instanceId,scopeEntry.loopIndices,sequenceFlow->target}).first;
-    
-//std::cerr << sequenceFlow->id << ":" << origin.reference() << " -> " << destination.reference() << std::endl;
-    assert(origin.outflows.empty());
     origin.outflows.emplace_back(sequenceFlow.get(),destination);
     destination.inflows.emplace_back(sequenceFlow.get(),origin);
   }

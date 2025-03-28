@@ -105,8 +105,7 @@ std::cerr << "[" << predecessor.reference() << " -> " << vertex->reference() << 
             return false;
           } 
         }
-      }
-      
+      } 
     }
   }
 
