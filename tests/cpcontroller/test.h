@@ -19,17 +19,19 @@
 // Ad-hoc subprocesses
 #include "adhocsubprocess/test.h"
 
+// Gateways
+#include "parallelgateway/test.h"
+#include "exclusivegateway/test.h"
+
 /*
 #include "subprocess/test.h"
 #include "decisiontask/test.h"
 //#include "request/test.h" // TODO: Check allocation id in content of request message
 
-// Gateways
-#include "parallelgateway/test.h"
-#include "exclusivegateway/test.h"
 
 // Event-based gateways
 #include "eventbasedgateway/test.h"
+
 // Events
 #include "timer/test.h"
 #include "signal/test.h"

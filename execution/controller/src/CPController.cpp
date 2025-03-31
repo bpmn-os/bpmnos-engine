@@ -270,7 +270,10 @@ std::shared_ptr<Event> CPController::dispatchEvent(const SystemState* systemStat
   while ( !decisionQueue.empty() ) {
     auto& [ type, vertex ] = decisionQueue.front();
     try {
-      if ( flattenedGraph.dummies.contains(vertex) || !_solution->evaluate( visit.at( vertex ) ) ) {
+      if ( 
+        flattenedGraph.dummies.contains(vertex) || 
+        ( _solution->evaluate( visit.at( vertex ) ).has_value() && !_solution->evaluate( visit.at( vertex ) ).value() ) 
+      ) {
         // no decision to be made for vertex
 std::cerr << "Skip: " << vertex->reference() << std::endl;
         decisionQueue.pop();
@@ -288,7 +291,7 @@ std::cerr << "Skip: " << vertex->reference() << std::endl;
     return nullptr;
   }
   auto& [ type, vertex ] = decisionQueue.front();
-std::cerr << "CPController::dispatchEvent: " << vertex->reference() << std::endl;
+std::cerr << "CPController::dispatchEvent: " << vertex->reference() << " evaluated with " << _solution->evaluate( visit.at( vertex ) ).value_or(-999) << std::endl;
 
   auto getToken = [&vertex](const auto& pendingDecisions) -> Token* {
     for (const auto& [token_ptr, request_ptr] : pendingDecisions) {
@@ -1360,7 +1363,7 @@ std::vector<CPController::AttributeVariables> CPController::createAlternativeEnt
     for ( auto& [ active, attributeVariables] : alternatives ) {
       assert( attributeVariables.size() == attributeRegistry.statusAttributes.size() );
       defined = defined || attributeVariables[attribute->index].defined;
-      value = value + attributeVariables[attribute->index].value;
+      value = value + attributeVariables[attribute->index].defined * attributeVariables[attribute->index].value;
     }
     variables.emplace_back(
       model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->reference() + "}," + attribute->id, defined ), 
@@ -1382,7 +1385,7 @@ std::vector<CPController::AttributeVariables> CPController::createMergedStatus(c
       std::vector<CP::Expression> terms;
       assert( !inputs.empty() );
       for ( auto& [ active, attributeVariables] : inputs ) {
-        terms.emplace_back( attributeVariables[attribute->index].value );
+        terms.emplace_back( attributeVariables[attribute->index].defined * attributeVariables[attribute->index].value );
       }
       // entry of activity is the same as the maximum timestamp
       variables.emplace_back(
@@ -1816,7 +1819,6 @@ std::cerr << "createExitVariables" << std::endl;
         for ( auto& [sequenceFlow,target] : vertex->outflows ) {
           createSequenceFlowVariables( vertex, &target, sequenceFlow->extensionElements->as<BPMNOS::Model::Gatekeeper>() );
         }
-        assert(!"Not yet implemented");
         if( vertex->node->represents<BPMN::ExclusiveGateway>() ) {
           CP::Expression outflows(0);
           for ( auto& [sequenceFlow,target] : vertex->outflows ) {
@@ -1825,6 +1827,7 @@ std::cerr << "createExitVariables" << std::endl;
           model.addConstraint( outflows == visit.at(vertex) );
         }
       }
+//      assert(!"Not yet implemented");
     }
   }
 std::cerr << "Done(exitvariables)" << std::endl;
@@ -1834,7 +1837,7 @@ void CPController::createSequenceFlowVariables(const Vertex* source, const Verte
   if ( gatekeeper ) {
     CP::Expression gatekeeperCondition(true);
     for ( auto& condition : gatekeeper->conditions ) {
-      gatekeeperCondition = gatekeeperCondition && createExpression(source,condition->expression);
+      gatekeeperCondition = gatekeeperCondition && createExpression(&source->parent.value().first,condition->expression);
     }
     tokenFlow.emplace( 
       std::make_pair(source,target), 
@@ -1900,7 +1903,7 @@ std::cerr << status.at(vertex)[BPMNOS::Model::ExtensionElements::Index::Timestam
       // if a vertex is visited, its timestamp must not be before the predecessors timestamp
       // as all timestamps are non-negative and zero if not visited, no condition on a visit
       // of the predecessor is required
-      visit.at(vertex).implies(
+      ( visit.at(predecessor) && visit.at(vertex) ).implies(
         status.at(predecessor)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value
         <= status.at(vertex)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value
       )
