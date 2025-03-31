@@ -109,7 +109,7 @@ nlohmann::ordered_json FlattenedGraph::Vertex::jsonify() const {
 
 FlattenedGraph::FlattenedGraph(const BPMNOS::Model::Scenario* scenario) : scenario(scenario) {
   // get all known instances
-  auto instances = scenario->getKnownInstances(0);
+  auto instances = scenario->getKnownInstances( scenario->getInception() );
 std::cerr << "Instances: " << instances.size() << std::endl;
   for ( auto& instance : instances ) {
     addInstance( instance );
@@ -380,7 +380,7 @@ std::cerr << parameter->expression->expression << std::endl;
         if ( !attribute->isImmutable ) {
           throw std::runtime_error("FlattenedGraph: Loop parameter '" + parameter->name + "' for activity '" + activity->id +"' must be immutable" );
         }
-        auto value = scenario->getKnownValue(rootId, attribute, 0);
+        auto value = scenario->getKnownValue(rootId, attribute, scenario->getInception() );
         if ( !value.has_value() ) {
 std::cerr << "unknown value of '" << attribute->id << "'" << std::endl;
           // return nullopt because required attribute value is not given
@@ -396,7 +396,7 @@ std::cerr << "unknown value of '" << attribute->id << "'" << std::endl;
           throw std::runtime_error("FlattenedGraph: Loop parameter '" + parameter->name + "' for activity '" + activity->id +"' must be immutable" );
         }
         collectionValues.push_back( {} );
-        auto collection = scenario->getKnownValue(rootId, attribute, 0);
+        auto collection = scenario->getKnownValue(rootId, attribute, scenario->getInception() );
         if ( !collection.has_value() ) {
 std::cerr << "unknown collection value of '" << attribute->id << "'" << std::endl;
           // return nullopt because required collection is not given

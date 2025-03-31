@@ -39,7 +39,6 @@ SCENARIO( "Symmetric exclusivegateway gateways", "[cpcontroller][exclusivegatewa
         REQUIRE( solution.errors().empty() );
       }
     }
-/*
     WHEN( "The engine is started at time 2" ) {
       std::string csv =
         "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
@@ -75,8 +74,7 @@ SCENARIO( "Symmetric exclusivegateway gateways", "[cpcontroller][exclusivegatewa
 //        REQUIRE( solution.complete() );
         REQUIRE( solution.errors().empty() );
       }
-    }
-*/   
+    }  
   }
 };
 

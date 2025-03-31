@@ -667,7 +667,7 @@ void CPController::createDataVariables(const FlattenedGraph::Vertex* vertex) {
       model.addIndexedVariables(CP::Variable::Type::REAL, "value_{" + vertex->shortReference() + "}," + attribute->id )
     );
     // add variables holding initial values
-    auto given = scenario->getKnownValue(vertex->rootId, attribute.get(), 0);
+    auto given = scenario->getKnownValue(vertex->rootId, attribute.get(), scenario->getInception());
     if ( given.has_value() ) {
       // defined initial value
       variables.defined.emplace_back(visit.at(vertex));
@@ -872,7 +872,7 @@ std::cerr << "createEntryStatus: " << vertex->reference() << std::endl;
       auto attribute = extensionElements->attributeRegistry.statusAttributes[i];
 std::cerr << attribute->id << std::endl;
       // add variables holding given values
-      if ( auto given = scenario->getKnownValue(vertex->rootId, attribute, 0); given.has_value() ) {
+      if ( auto given = scenario->getKnownValue(vertex->rootId, attribute, scenario->getInception()); given.has_value() ) {
         // defined initial value
         variables.emplace_back(
           model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->reference() + "}," + attribute->id, visit.at(vertex) ), 
