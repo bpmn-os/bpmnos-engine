@@ -11,6 +11,7 @@
 #include "execution/engine/src/events/TerminationEvent.h"
 #include "dispatcher/ReadyHandler.h"
 #include "dispatcher/DeterministicTaskCompletion.h"
+#include "model/bpmnos/src/extensionElements/Gatekeeper.h"
 #include "model/utility/src/tuple_map.h"
 #include <cp.h>
 #include <unordered_map>
@@ -65,6 +66,7 @@ protected:
   void createVertexVariables(const Vertex* vertex);
   void createEntryVariables(const Vertex* vertex);
   void createExitVariables(const Vertex* vertex);
+  void createSequenceFlowVariables(const Vertex* source, const Vertex* target, const BPMNOS::Model::Gatekeeper* gatekeeper = nullptr);
 
   void createSequenceConstraints(const Vertex* vertex);
   void createRestrictions(const Vertex* vertex);

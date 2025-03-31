@@ -1,4 +1,4 @@
-/*
+
 SCENARIO( "Sequential adhoc subprocess", "[cpcontroller][adhocsubprocess]" ) {
   const std::string modelFile = "tests/execution/adhocsubprocess/AdHocSubProcess.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
@@ -42,7 +42,7 @@ SCENARIO( "Sequential adhoc subprocess", "[cpcontroller][adhocsubprocess]" ) {
     }
   }
 };
-*/
+
 SCENARIO( "Sequential adhoc subprocesses with common performer", "[cpcontroller][adhocsubprocess]" ) {
   const std::string modelFile = "tests/execution/adhocsubprocess/AdHocSubProcesses_with_common_performer.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );

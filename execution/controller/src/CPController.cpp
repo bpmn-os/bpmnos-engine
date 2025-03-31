@@ -1734,6 +1734,24 @@ std::cerr << "HUHU3" << std::endl;
 //        assert(!"Not yet implemented");
       }
     }
+    else if ( vertex->inflows.size() > 1 ) {
+//std::cerr << vertex->reference() << std::endl;
+      if( !vertex->node->represents<BPMN::Gateway>() ) {
+        throw std::runtime_error("CPController: converging gateways must be explicit");
+      }
+      else {
+        // deduce visit from incoming token flows
+        CP::Expression incomingToken(false);
+        for ( auto& [sequenceFlow, predecessor] : vertex->inflows ) {
+          incomingToken = incomingToken || tokenFlow.at({&predecessor,vertex});
+        }
+        auto& deducedVisit = model.addVariable(CP::Variable::Type::BOOLEAN, "visit_{" + vertex->shortReference() + "}" , incomingToken );
+        visit.emplace(vertex, deducedVisit );
+        visit.emplace(exit(vertex), deducedVisit );
+//std::cerr <<  deducedVisit.stringify() << std::endl;
+//        assert(!"Not yet implemented");
+      }
+    }
 /*
     else if (
       vertex->node->represents<BPMN::Activity>() && 
@@ -1777,47 +1795,88 @@ std::cerr << "createExitVariables" << std::endl;
 
     // flow variables
     if ( vertex->outflows.size() == 1 ) {
-      tokenFlow.emplace( 
-        std::make_pair(vertex,&vertex->outflows.front().second), 
-        model.addVariable(CP::Variable::Type::BOOLEAN, "tokenflow_{" + vertex->reference() + " → " + vertex->outflows.front().second.reference() + "}", visit.at(vertex) ) 
-      );
-      auto extensionElements = vertex->parent.value().first.node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
-      std::vector<AttributeVariables> variables;
-      variables.reserve( extensionElements->attributeRegistry.statusAttributes.size() );
-      for ( auto attribute : extensionElements->attributeRegistry.statusAttributes ) {
-//std::cerr << "statusAttribute: " << name << "/" << vertex->reference() << std::endl;
-        assert( tokenFlow.contains({vertex,&vertex->outflows.front().second}) );
-        assert( status.contains(vertex) );
-        // deduce variable
-        variables.emplace_back(
-          model.addVariable(CP::Variable::Type::BOOLEAN, "statusflow_defined_{" + vertex->reference() + " → " + vertex->outflows.front().second.reference() + "}," + attribute->id, 
-            CP::if_then_else( 
-              tokenFlow.at({vertex,&vertex->outflows.front().second}), 
-              status.at(vertex)[attribute->index].defined, 
-              false
-            )
-          ), 
-          model.addVariable(CP::Variable::Type::REAL, "statusflow_value_{" + vertex->reference() + " → " + vertex->outflows.front().second.reference() + "}," + attribute->id, 
-            CP::if_then_else( 
-              tokenFlow.at({vertex,&vertex->outflows.front().second}), 
-              status.at(vertex)[attribute->index].value, 
-              0.0
-            )
-          )
-        );
-      }      
-
-      statusFlow.emplace( 
-        std::make_pair(vertex,&vertex->outflows.front().second), 
-        std::move(variables)
-      );
+      createSequenceFlowVariables( vertex, &vertex->outflows.front().second );
     }
     else if ( vertex->outflows.size() > 1 ) {
-std::cerr << vertex->reference() << std::endl;
-      assert(!"Not yet implemented");
+//std::cerr << vertex->reference() << std::endl;
+      if( !vertex->node->represents<BPMN::Gateway>() ) {
+        throw std::runtime_error("CPController: diverging gateways must be explicit");
+      }
+      else if( vertex->node->represents<BPMN::EventBasedGateway>() || vertex->node->represents<BPMN::ComplexGateway>() ) {
+        assert(!"Not yet implemented");
+      }
+      else if( vertex->node->represents<BPMN::ParallelGateway>() ) {
+        // create unconditional outflow
+        for ( auto& [sequenceFlow,target] : vertex->outflows ) {
+          createSequenceFlowVariables( vertex, &target );
+        }
+      }
+      else {
+        // create conditional outflow
+        for ( auto& [sequenceFlow,target] : vertex->outflows ) {
+          createSequenceFlowVariables( vertex, &target, sequenceFlow->extensionElements->as<BPMNOS::Model::Gatekeeper>() );
+        }
+        assert(!"Not yet implemented");
+        if( vertex->node->represents<BPMN::ExclusiveGateway>() ) {
+          CP::Expression outflows(0);
+          for ( auto& [sequenceFlow,target] : vertex->outflows ) {
+            outflows = outflows + tokenFlow.at({vertex,&target});
+          }
+          model.addConstraint( outflows == visit.at(vertex) );
+        }
+      }
     }
   }
 std::cerr << "Done(exitvariables)" << std::endl;
+}
+
+void CPController::createSequenceFlowVariables(const Vertex* source, const Vertex* target, const BPMNOS::Model::Gatekeeper* gatekeeper) {
+  if ( gatekeeper ) {
+    CP::Expression gatekeeperCondition(true);
+    for ( auto& condition : gatekeeper->conditions ) {
+      gatekeeperCondition = gatekeeperCondition && createExpression(source,condition->expression);
+    }
+    tokenFlow.emplace( 
+      std::make_pair(source,target), 
+      model.addVariable(CP::Variable::Type::BOOLEAN, "tokenflow_{" + source->reference() + " → " + target->reference() + "}", visit.at(source) && gatekeeperCondition ) 
+    );
+  }
+  else {
+    tokenFlow.emplace( 
+      std::make_pair(source,target), 
+      model.addVariable(CP::Variable::Type::BOOLEAN, "tokenflow_{" + source->reference() + " → " + target->reference() + "}", visit.at(source) ) 
+    );
+  }
+  auto extensionElements = source->parent.value().first.node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+  std::vector<AttributeVariables> variables;
+  variables.reserve( extensionElements->attributeRegistry.statusAttributes.size() );
+  for ( auto attribute : extensionElements->attributeRegistry.statusAttributes ) {
+//std::cerr << "statusAttribute: " << name << "/" << source->reference() << std::endl;
+    assert( tokenFlow.contains({source,target}) );
+    assert( status.contains(source) );
+    // deduce variable
+    variables.emplace_back(
+      model.addVariable(CP::Variable::Type::BOOLEAN, "statusflow_defined_{" + source->reference() + " → " + target->reference() + "}," + attribute->id, 
+        CP::if_then_else( 
+          tokenFlow.at({source,target}), 
+          status.at(source)[attribute->index].defined, 
+          false
+        )
+      ), 
+      model.addVariable(CP::Variable::Type::REAL, "statusflow_value_{" + source->reference() + " → " + target->reference() + "}," + attribute->id, 
+        CP::if_then_else( 
+          tokenFlow.at({source,target}), 
+          status.at(source)[attribute->index].value, 
+          0.0
+        )
+      )
+    );
+  }      
+
+  statusFlow.emplace( 
+    std::make_pair(source,target), 
+    std::move(variables)
+  );
 }
 
 void CPController::createSequenceConstraints(const Vertex* vertex) {

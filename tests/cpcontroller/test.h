@@ -1,4 +1,4 @@
-/*
+
 #include "process/test.h"
 
 // Activities
@@ -15,7 +15,7 @@
 // Multi-instance activities
 #include "loopactivity/test.h"
 #include "multiinstanceactivity/test.h"
-*/
+
 // Ad-hoc subprocesses
 #include "adhocsubprocess/test.h"
 
