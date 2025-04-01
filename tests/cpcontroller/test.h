@@ -4,6 +4,7 @@
 // Activities
 #include "subprocess/test.h"
 #include "task/test.h"
+#include "decisiontask/test.h"
 
 // Status and Data
 #include "status/test.h"

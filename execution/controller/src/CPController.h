@@ -196,6 +196,7 @@ protected:
   std::optional< BPMN::Activity::LoopCharacteristics > getLoopCharacteristics(const Vertex* vertex) const;  
   std::optional< BPMNOS::number > getTimestamp( const Vertex* vertex ) const;
   void setTimestamp( const Vertex* vertex, BPMNOS::number timestamp );
+  void setLocalAttributeValue( const Vertex* vertex, size_t attributeIndex, BPMNOS::number value );
   std::pair< CP::Expression, CP::Expression > getAttributeVariables( const Vertex* vertex, const Model::Attribute* attribute);
 
   virtual std::shared_ptr<Event> createEntryEvent(const SystemState* systemState, Token* token, const Vertex* vertex); /// Method creating a choice event from CP solution

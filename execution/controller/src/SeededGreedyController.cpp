@@ -67,13 +67,23 @@ std::shared_ptr<Event> SeededGreedyController::createExitEvent(const SystemState
 }
 
 std::shared_ptr<Event> SeededGreedyController::createChoiceEvent(const SystemState* systemState, Token* token, const Vertex* vertex) {
-  // instant choice
-  setTimestamp(vertex,systemState->getTime());
+  // set timestamp of choice
+  setLocalAttributeValue(vertex,BPMNOS::Model::ExtensionElements::Index::Timestamp,systemState->getTime());
 
   auto best = choiceDispatcher->determineBestChoices(token->decisionRequest);
   if (!best) {
     // no feasible choices found
     return std::make_shared<ErrorEvent>(token);
+  }
+  
+  // apply choices 
+  auto decision = dynamic_cast<ChoiceDecision*>(best.get());
+  auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+  assert( extensionElements );
+  assert( extensionElements->choices.size() == decision->choices.size() );
+  for (size_t i = 0; i < extensionElements->choices.size(); i++) {
+    assert( decision->choices[i].has_value() );
+    setLocalAttributeValue(vertex,extensionElements->choices[i]->attribute->index,decision->choices[i].value());
   }
   
   return best;

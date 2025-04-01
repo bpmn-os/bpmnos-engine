@@ -400,6 +400,11 @@ void CPController::setTimestamp( const Vertex* vertex, BPMNOS::number timestamp 
   _solution->setVariableValue( status.at(vertex)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value, (double)timestamp );
 }
 
+void CPController::setLocalAttributeValue( const Vertex* vertex, size_t attributeIndex, BPMNOS::number value ) {
+  auto& initialStatus = std::get<0>(locals.at(vertex)[0]);
+  _solution->setVariableValue( initialStatus[attributeIndex].value, (double)value );
+}
+
 
 std::shared_ptr<Event> CPController::createEntryEvent(const SystemState* systemState, Token* token, const Vertex* vertex) {
   auto timestamp = getTimestamp(vertex);
@@ -1012,12 +1017,13 @@ std::cerr << "JOJO3" << std::endl;
   //std::vector<AttributeVariables> currentData = xxx.at(entryVertex);
   //std::vector<AttributeVariables> currentGlobal = xxx.at(entryVertex);
   
+/*
   if ( vertex->node->represents<BPMNOS::Model::DecisionTask>() ) {
     // choices are represented by unconstrained status (data/global) attributes
     // TODO
       assert(!"Not yet implemented");
   }
-
+*/
   if ( vertex->node->represents<BPMN::MessageCatchEvent>() ) {
     // receive message content (globals and data attributes must not be changed)
     if ( extensionElements->messageDefinitions.size() == 1 ) {
@@ -1051,11 +1057,12 @@ std::cerr << "JOJO3" << std::endl;
     // TODO
   }
 
+/*
   if ( vertex->node->represents<BPMN::Task>() ) {
     // apply operators
     // TODO
   }
-
+*/
   std::vector<AttributeVariables> variables;
   for ( auto attribute : extensionElements->attributeRegistry.statusAttributes ) {
     assert( attribute->index == variables.size() );
@@ -1141,12 +1148,14 @@ void CPController::createLocalAttributeVariables(const Vertex* vertex) {
 
   auto localAttributeVariables = [&](const auto& attributes) -> std::vector<AttributeVariables> {
     std::vector<AttributeVariables> variables;
-
+std::cerr << "Attributes: " << attributes.size() << std::endl;
     auto findChoice = [extensionElements](BPMNOS::Model::Attribute* attribute) -> BPMNOS::Model::Choice* {
+std::cerr << "choices: " << extensionElements->choices.size() << "/" << attribute->id << std::endl;
       auto it = std::find_if(
         extensionElements->choices.begin(),
         extensionElements->choices.end(),
         [&](const auto& choice) {
+std::cerr << "check: " << choice->attribute->id << std::endl;
           return choice->attribute == attribute;
         }
       ); 
@@ -1191,6 +1200,7 @@ void CPController::createLocalAttributeVariables(const Vertex* vertex) {
     };
 
     for ( auto attribute : attributes ) {
+std::cerr << "Attribute: " << attribute->id << std::endl;
       auto [defined,value] = initialVariables(attribute);
     
       if ( auto choice = findChoice(attribute) ) {
@@ -1206,11 +1216,39 @@ void CPController::createLocalAttributeVariables(const Vertex* vertex) {
           model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->shortReference() + ",0}," + attribute->id, visit.at(vertex) ), 
           model.addRealVariable("value_{" + vertex->shortReference() + ",0}," + attribute->id )
         );
-//        auto& variable = variables.back().value;
-        // TODO: 
+        auto& variable = variables.back().value;
+        auto timestamp = extensionElements->attributeRegistry.statusAttributes[BPMNOS::Model::ExtensionElements::Index::Timestamp];
+        if ( choice->dependencies.contains(timestamp) ) {
+          throw std::runtime_error("CPController: choices depending on the timestamp are not supported");
+        }
         // create constraints limiting the choice
-        // timestamp represents the time the choice is made
-        assert(!"Not yet implemented");
+        // ASSUMPTION: constraints on the choices must only depend on entry status, data, or globals.
+        // ASSUMPTION: only status attributes are allowed as choices
+        auto [ strictLB, strictUB ] = choice->strictness;
+        if ( choice->lowerBound.has_value() ) {
+          if ( strictLB ) {
+            model.addConstraint( visit.at(vertex).implies( variable > createExpression(entry(vertex),choice->lowerBound.value()) ) );
+          }
+          else {
+            model.addConstraint( visit.at(vertex).implies( variable >= createExpression(entry(vertex),choice->lowerBound.value()) ) );
+          }
+        }
+        if ( choice->upperBound.has_value() ) {
+          if ( strictUB ) {
+            model.addConstraint( visit.at(vertex).implies( variable < createExpression(entry(vertex),choice->upperBound.value()) ) );
+          }
+          else {
+            model.addConstraint( visit.at(vertex).implies( variable <= createExpression(entry(vertex),choice->upperBound.value()) ) );
+          }
+        }
+        if ( !choice->enumeration.empty() ) {
+          CP::Expression enumerationContainsVariable(false);
+          for ( auto expression : choice->enumeration ) {
+            enumerationContainsVariable = enumerationContainsVariable || ( variable == createExpression(entry(vertex),expression) );
+          }
+          model.addConstraint( visit.at(vertex).implies( enumerationContainsVariable ) );
+        }        
+//        assert(!"Not yet implemented");
       }
       else if ( auto content = findContent(attribute) ) {
         if ( 
@@ -1230,6 +1268,7 @@ void CPController::createLocalAttributeVariables(const Vertex* vertex) {
           attribute->index == BPMNOS::Model::ExtensionElements::Index::Timestamp &&
           ( vertex->exit<BPMN::ReceiveTask>() || vertex->exit<BPMN::SendTask>() || vertex->exit<BPMNOS::Model::DecisionTask>())
         ) {
+std::cerr << vertex->reference() << std::endl;        
           if ( vertex->exit<BPMN::ReceiveTask>() ) {
             // TODO: deduce timestamp from time of message delivery
             assert(!"Not yet implemented");
@@ -1240,8 +1279,13 @@ void CPController::createLocalAttributeVariables(const Vertex* vertex) {
           }
           else {
             assert( vertex->exit<BPMNOS::Model::DecisionTask>() );
-            // TODO: deduce timestamp from time of choice
-            assert(!"Not yet implemented");
+            // timestamp is implicitly determined as the time when the choice is made
+            variables.emplace_back(
+              model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->shortReference() + ",0}," + attribute->id, visit.at(vertex) ), 
+              model.addRealVariable("value_{" + vertex->shortReference() + ",0}," + attribute->id )
+            );
+            auto& timestamp = variables.back().value;
+            model.addConstraint( visit.at(vertex).implies( timestamp >= status.at(entry(vertex))[BPMNOS::Model::ExtensionElements::Index::Timestamp].value ) );
           }
         }
         else {
@@ -1252,6 +1296,7 @@ void CPController::createLocalAttributeVariables(const Vertex* vertex) {
           );
         }
       }
+std::cerr << "Attribute: " << attribute->id << " (done)" << std::endl;
     }
     
     return variables;

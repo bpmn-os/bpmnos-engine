@@ -39,7 +39,7 @@ SCENARIO( "Decision task with enumeration", "[execution][decisiontask]" ) {
     }
   }
 
-  GIVEN( "A single instance with x=-2" ) {
+  GIVEN( "A single instance with x=4" ) {
 
     std::string csv =
       "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
