@@ -1837,7 +1837,7 @@ void CPController::createSequenceFlowVariables(const Vertex* source, const Verte
   if ( gatekeeper ) {
     CP::Expression gatekeeperCondition(true);
     for ( auto& condition : gatekeeper->conditions ) {
-      gatekeeperCondition = gatekeeperCondition && createExpression(&source->parent.value().first,condition->expression);
+      gatekeeperCondition = gatekeeperCondition && createExpression(source,condition->expression);
     }
     tokenFlow.emplace( 
       std::make_pair(source,target), 
@@ -1957,10 +1957,12 @@ void CPController::createRestrictions(const Vertex* vertex) {
   }
 }
 
-// TODO: replace
 CP::Expression CPController::createExpression(const Vertex* vertex, const Model::Expression& expression) {
-  assert( vertex->node->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );
-  auto extensionElements = vertex->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+  auto extensionElements = vertex->node->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
+  if ( !extensionElements ) {
+    assert( vertex->node->represents<BPMN::FlowNode>()->parent );
+    extensionElements = vertex->node->as<BPMN::FlowNode>()->parent->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+  }
 
   auto compiled = LIMEX::Expression<CP::Expression,CP::Expression>(expression.expression, limexHandle);
   
