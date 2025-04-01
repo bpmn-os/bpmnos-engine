@@ -2,6 +2,7 @@
 #include "process/test.h"
 
 // Activities
+#include "subprocess/test.h"
 #include "task/test.h"
 
 // Status and Data
@@ -24,7 +25,6 @@
 #include "exclusivegateway/test.h"
 
 /*
-#include "subprocess/test.h"
 #include "decisiontask/test.h"
 //#include "request/test.h" // TODO: Check allocation id in content of request message
 
