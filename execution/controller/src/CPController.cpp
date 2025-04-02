@@ -2,6 +2,7 @@
 #include "model/bpmnos/src/DecisionTask.h"
 #include "model/bpmnos/src/SequentialAdHocSubProcess.h"
 #include "model/bpmnos/src/extensionElements/MessageDefinition.h"
+#include "model/bpmnos/src/extensionElements/Timer.h"
 #include "execution/engine/src/Engine.h"
 #include <limex_handle.h>
 #include <iostream>
@@ -964,7 +965,34 @@ std::cerr << "createExitStatus" << std::endl;
 
 std::cerr << vertex->reference() << std::endl;  
   const Vertex* entryVertex = entry(vertex);
-  if ( !extensionElements ) {
+  if ( vertex->node->represents<BPMN::TimerCatchEvent>() ) {
+std::cerr << "Timer: " << vertex->reference() << std::endl;
+    assert( vertex->node->extensionElements->represents<BPMNOS::Model::Timer>() );
+    auto trigger = createExpression(entry(vertex),*vertex->node->extensionElements->as<BPMNOS::Model::Timer>()->trigger->expression);
+    auto& entryStatus = status.at(entryVertex);
+    std::vector<AttributeVariables> variables;
+std::cerr << "timer loop" << std::endl;
+    extensionElements = vertex->parent.value().first.node->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
+    for ( auto attribute : extensionElements->attributeRegistry.statusAttributes ) {
+std::cerr << attribute->name << ": " << attribute->index << " == " <<  variables.size() << std::endl;
+//      assert( attribute->index == variables.size() );
+      if ( attribute->index == BPMNOS::Model::ExtensionElements::Index::Timestamp ) {
+        variables.emplace_back(
+          model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->reference() + "}," + attribute->id, entryStatus[attribute->index].defined ), 
+          model.addVariable(CP::Variable::Type::REAL, "value_{" + vertex->reference() + "}," + attribute->id, entryStatus[attribute->index].defined * CP::max( entryStatus[attribute->index].value, trigger ) )
+        );
+      }
+      else {
+        variables.emplace_back(
+          model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->reference() + "}," + attribute->id, entryStatus[attribute->index].defined ), 
+          model.addVariable(CP::Variable::Type::REAL, "value_{" + vertex->reference() + "}," + attribute->id, entryStatus[attribute->index].value )
+        );
+      }      
+    }
+    status.emplace( vertex, std::move(variables) );
+    return;
+  }
+  else if ( !extensionElements ) {
     // token just runs through the node and exit status is the same as entry status
     extensionElements = vertex->parent.value().first.node->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
 std::cerr << entryVertex->reference() << std::endl;  
