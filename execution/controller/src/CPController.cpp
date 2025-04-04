@@ -617,17 +617,20 @@ void CPController::createGlobalVariables() {
 }
 
 void CPController::createMessageFlowVariables() {
-  for ( auto recipient : vertices ) {
-    if ( recipient->exit<BPMN::MessageCatchEvent>() ) {
-      messageRecipients.push_back(recipient);
+  for ( auto vertex : vertices ) {
+    if ( vertex->exit<BPMN::MessageCatchEvent>() ) {
+      messageRecipients.push_back(vertex);
       CP::reference_vector<const CP::Variable> messages;
-      for ( Vertex& sender : recipient->senders ) {
+      for ( Vertex& sender : vertex->senders ) {
         assert( sender.entry<BPMN::MessageThrowEvent>() );
         // create binary decision variable for a message from sender to recipient
-        messages.emplace_back( model.addBinaryVariable("message_{" + sender.reference() + " → " + recipient->reference() + "}" ) );
+        messages.emplace_back( model.addBinaryVariable("message_{" + sender.reference() + " → " + vertex->reference() + "}" ) );
 //std::cerr << messages.back().get().stringify() << std::endl;
-        messageFlow.emplace( std::make_pair(&sender,recipient), messages.back() );
+        messageFlow.emplace( std::make_pair(&sender,vertex), messages.back() );
       }
+    }
+    if ( vertex->entry<BPMN::MessageThrowEvent>() ) {
+      messageSenders.push_back(vertex);
     }
   }
 }
@@ -635,13 +638,13 @@ void CPController::createMessageFlowVariables() {
 void CPController::createMessagingConstraints() {
   for ( auto recipient : messageRecipients ) {
     assert( recipient->exit<BPMN::MessageCatchEvent>() );
-    CP::Expression messagesReceived(0);
+    CP::Expression messagesDelivered(0);
 
     for ( Vertex& sender : recipient->senders ) {
       assert( sender.entry<BPMN::MessageThrowEvent>() );
 
       auto& message = messageFlow.at({&sender,recipient});
-      messagesReceived = messagesReceived + message;
+      messagesDelivered = messagesDelivered + message;
       
       model.addConstraint( message <= visit.at(recipient) );
       model.addConstraint( message <= visit.at(&sender) );
@@ -728,13 +731,54 @@ void CPController::createMessagingConstraints() {
         if ( !senderContent.contains(key) ) {
           throw std::runtime_error("CPController: illegal message flow from '" + sender.node->id + "' to '" + recipient->node->id  + "'");
         }
-        model.addConstraint( message.implies ( recipientContentVariables.defined ==  senderContent.at(key).defined ) );
-        model.addConstraint( message.implies ( recipientContentVariables.value ==  senderContent.at(key).value ) );      
+        model.addConstraint( message.implies ( recipientContentVariables.defined == senderContent.at(key).defined ) );
+        model.addConstraint( message.implies ( recipientContentVariables.value == senderContent.at(key).value ) );      
       }
     }
 
     // every visited message catch event must receive exactly one message
-    model.addConstraint( visit.at(recipient) == messagesReceived );
+    model.addConstraint( visit.at(recipient) == messagesDelivered );
+  }
+
+  for ( auto sender : messageSenders ) {
+    assert( sender->entry<BPMN::MessageThrowEvent>() );
+    CP::Expression messagesDelivered(0);
+
+    for ( Vertex& recipient : sender->recipients ) {
+      assert( recipient.exit<BPMN::MessageCatchEvent>() );
+      auto& message = messageFlow.at({sender,&recipient});
+      messagesDelivered = messagesDelivered + message;
+
+      if ( sender->entry<BPMN::SendTask>() ) {
+        if ( recipient.node->represents<BPMN::ReceiveTask>() || recipient.node->represents<BPMN::MessageStartEvent>() ) {
+          auto& localStatus = std::get<0>(locals.at(&recipient)[0]); // holds status just after message delivery         
+          model.addConstraint(
+            message.implies (
+              status.at(exit(sender))[BPMNOS::Model::ExtensionElements::Index::Timestamp].value
+              >=
+              localStatus[BPMNOS::Model::ExtensionElements::Index::Timestamp].value
+            )
+          );
+        }
+        else {
+          model.addConstraint(
+            message.implies (
+              status.at(exit(sender))[BPMNOS::Model::ExtensionElements::Index::Timestamp].value
+              >=
+              status.at(&recipient)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value
+            )
+          );
+        }
+      }
+    }
+    if ( sender->entry<BPMN::SendTask>() ) {
+      // a message thrown at a send task must be delivered to at exactly one recipient
+      model.addConstraint( visit.at(sender) == messagesDelivered );
+    }
+    else {
+      // a message thrown at other message throw events can be delivered to at most one recipient
+      model.addConstraint( visit.at(sender) >= messagesDelivered );
+    }
   }
 }
 

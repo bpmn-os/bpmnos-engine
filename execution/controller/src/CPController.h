@@ -150,7 +150,8 @@ protected:
   };
   
   std::vector<const Vertex*> vertices; /// Container of all vertices considered
-  std::vector<const Vertex*> messageRecipients; /// Container of all vertices catching a message
+  std::vector<const Vertex*> messageRecipients; /// Container of all (exit) vertices catching a message
+  std::vector<const Vertex*> messageSenders; /// Container of all (entry) vertices throwing a message
 
   std::unordered_map< const Vertex*, const CP::Variable& > position; /// Variables holding sequence positions for all vertices
   std::unordered_map< const Vertex*, const CP::Variable& > visit; /// Variables indicating whether the a token enters or leaves a vertex
