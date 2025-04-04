@@ -90,6 +90,7 @@ std::shared_ptr<Event> SeededGreedyController::createChoiceEvent(const SystemSta
 }
 
 std::shared_ptr<Event> SeededGreedyController::createMessageDeliveryEvent(const SystemState* systemState, Token* token, const Vertex* vertex) {
+std::cerr << "V" << std::endl;
   // instant message delivery
   setTimestamp(vertex,systemState->getTime());
   
@@ -109,6 +110,7 @@ std::shared_ptr<Event> SeededGreedyController::createMessageDeliveryEvent(const 
     }
   }
 
+std::cerr << "VV" << std::endl;
   // evaluate message candidates
   std::shared_ptr<MessageDeliveryDecision> best = nullptr;
   for ( auto& message : candidates ) {
@@ -121,6 +123,7 @@ std::shared_ptr<Event> SeededGreedyController::createMessageDeliveryEvent(const 
       best = decision;
     }
   }
+std::cerr << "VVV" << std::endl;
   
   if (!best) {
     // no message can be delivered
@@ -130,8 +133,12 @@ std::shared_ptr<Event> SeededGreedyController::createMessageDeliveryEvent(const 
   auto message = best->message.lock();
   assert( message );
   auto senderId = message->header[ BPMNOS::Model::MessageDefinition::Index::Sender ].value();
+  assert( flattenedGraph.vertexMap.contains({senderId,{},message->origin}) );
   auto& [senderEntry,senderExit] = flattenedGraph.vertexMap.at({senderId,{},message->origin}); // TODO: sender must not be within loop
+std::cerr << "VVVV" << std::endl;
   setMessageFlowVariableValue(&senderEntry,vertex);
+
+std::cerr << "VVVVV" << std::endl;
 /*
   auto& siblings = flattenedGraph.vertexMap.at(message->origin).at(message->header[ BPMNOS::Model::MessageDefinition::Index::Sender ].value());
 

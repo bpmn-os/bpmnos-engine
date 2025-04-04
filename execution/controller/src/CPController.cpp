@@ -54,10 +54,14 @@ void CPController::subscribe(Engine* engine) {
 }
 
 void CPController::setMessageFlowVariableValue( const Vertex* sender, const Vertex* recipient ) {
+std::cerr << "Sen:" << sender->reference() << std::endl;  
   for ( const Vertex& candidate : sender->recipients ) {
-    _solution->setVariableValue( messageFlow.at(std::make_pair(sender,&candidate)), (double)(&candidate == recipient) );
+std::cerr << "Rec:" << candidate.reference() << std::endl;  
+    assert( messageFlow.contains({sender,&candidate}) );
+    _solution->setVariableValue( messageFlow.at({sender,&candidate}), (double)(&candidate == recipient) );
   }
   for ( const Vertex& candidate : recipient->senders ) {
+    assert( messageFlow.contains({&candidate,recipient}) );
     _solution->setVariableValue( messageFlow.at({&candidate,recipient}), (double)(&candidate == sender) );
   }
 }
@@ -341,9 +345,15 @@ std::cerr << "pendingExitDecisions: " << !systemState->pendingExitDecisions.empt
     }
     case MessageDeliveryRequest:
     {
+std::cerr << "M" << std::endl;
       if ( auto token = getToken(systemState->pendingMessageDeliveryDecisions) ) {
+std::cerr << "MM: " << vertex->reference() << std::endl;
+std::cerr << token->jsonify() << std::endl;
+std::cerr << "?" << std::endl;
         event = createMessageDeliveryEvent( systemState, token, vertex );
+std::cerr << "!" << std::endl;
       }
+std::cerr << "MMM" << std::endl;
       // no event is create if decision is not yet requested
       break;
     }
@@ -390,6 +400,8 @@ const CP::Solution& CPController::getSolution() const {
 }
 
 std::optional< BPMNOS::number > CPController::getTimestamp( const Vertex* vertex ) const {
+  assert( status.contains(vertex) );
+  assert( status.at(vertex).size() > BPMNOS::Model::ExtensionElements::Index::Timestamp );
   auto timestamp = _solution->evaluate( status.at(vertex)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value );
   if ( timestamp ) {
     return (number)timestamp.value();
@@ -446,11 +458,14 @@ std::shared_ptr<Event> CPController::createChoiceEvent(const SystemState* system
 }
 
 std::shared_ptr<Event> CPController::createMessageDeliveryEvent(const SystemState* systemState, Token* token, const Vertex* vertex) {
+std::cerr << "#" << std::endl;
+
   auto timestamp = getTimestamp(vertex);
+std::cerr << timestamp.has_value() << std::endl;
   if ( !timestamp.has_value() || systemState->getTime() < timestamp.value() ) {
     return nullptr;
   }
-
+std::cerr << timestamp.value() << std::endl;
   auto& solution = getSolution();
   for ( auto& [participants,variable] : messageFlow ) {
     auto variableValue = solution.getVariableValue(variable);
@@ -531,6 +546,9 @@ void CPController::createCP() {
     position.emplace(vertices[i], sequence.variables[i]);
   } 
 
+std::cerr << "createMessageFlowVariables" << std::endl;
+  createMessageFlowVariables();
+
 std::cerr << "createGlobalVariables" << std::endl;
   createGlobalVariables();
 
@@ -553,8 +571,8 @@ std::cerr << "constrainDataVariables" << std::endl;
 std::cerr << "constrainSequentialActivities" << std::endl;
   constrainSequentialActivities();
   
-std::cerr << "createMessageVariables" << std::endl;
-  createMessageVariables();
+std::cerr << "createMessagingConstraints" << std::endl;
+  createMessagingConstraints();
 std::cerr << "Done" << std::endl;
 std::cerr << model.stringify() << std::endl;  
 }
@@ -598,22 +616,39 @@ void CPController::createGlobalVariables() {
   }
 }
 
-void CPController::createMessageVariables() {
+void CPController::createMessageFlowVariables() {
+  for ( auto recipient : vertices ) {
+    if ( recipient->exit<BPMN::MessageCatchEvent>() ) {
+      messageRecipients.push_back(recipient);
+      CP::reference_vector<const CP::Variable> messages;
+      for ( Vertex& sender : recipient->senders ) {
+        assert( sender.entry<BPMN::MessageThrowEvent>() );
+        // create binary decision variable for a message from sender to recipient
+        messages.emplace_back( model.addBinaryVariable("message_{" + sender.reference() + " → " + recipient->reference() + "}" ) );
+//std::cerr << messages.back().get().stringify() << std::endl;
+        messageFlow.emplace( std::make_pair(&sender,recipient), messages.back() );
+      }
+    }
+  }
+}
+
+void CPController::createMessagingConstraints() {
   for ( auto recipient : messageRecipients ) {
     assert( recipient->exit<BPMN::MessageCatchEvent>() );
-    CP::reference_vector<const CP::Variable> messages;
+    CP::Expression messagesReceived(0);
+
     for ( Vertex& sender : recipient->senders ) {
-      assert( sender.exit<BPMN::MessageThrowEvent>() );
-      // create binary decision variable for a message from sender to recipient
-      messages.emplace_back( model.addBinaryVariable("message_{" + sender.reference() + " → " + recipient->reference() + "}" ) );
-      const CP::Variable& message = messages.back();
-      messageFlow.emplace( std::make_pair(&sender,recipient), message );
+      assert( sender.entry<BPMN::MessageThrowEvent>() );
+
+      auto& message = messageFlow.at({&sender,recipient});
+      messagesReceived = messagesReceived + message;
       
       model.addConstraint( message <= visit.at(recipient) );
       model.addConstraint( message <= visit.at(&sender) );
       
       model.addConstraint( message.implies( position.at(&sender) <= position.at(recipient) ) );
-
+/*
+      // this should not be necessary as status variables are respectively deduced
       model.addConstraint(
         // if a message is sent from a sender to a recipient, the recipient's timestamp must not 
         // be before the sender's timestamp
@@ -622,7 +657,31 @@ void CPController::createMessageVariables() {
           <= status.at(recipient)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value
         )
       );
+*/
+      if ( sender.node->represents<BPMN::SendTask>() ) {
+        if ( recipient->node->represents<BPMN::ReceiveTask>() || recipient->node->represents<BPMN::MessageStartEvent>() ) {
+          auto& localStatus = std::get<0>(locals.at(recipient)[0]); // holds status just after message delivery         
+          model.addConstraint(
+            message.implies (
+              status.at(exit(&sender))[BPMNOS::Model::ExtensionElements::Index::Timestamp].value
+              ==
+              localStatus[BPMNOS::Model::ExtensionElements::Index::Timestamp].value
+            )
+          );
+        }
+        else {
+          model.addConstraint(
+            message.implies (
+              status.at(exit(&sender))[BPMNOS::Model::ExtensionElements::Index::Timestamp].value
+              ==
+              status.at(recipient)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value
+            )
+          );
+        }
+      }
 
+/*
+      // this should not be necessary
       /// ASSUMPTION: receive tasks are exited immediately after message is delivered
       if ( sender.node->represents<BPMN::SendTask>() ) {
         // if a message is sent from a send task to a recipient, the recipient's timestamp must 
@@ -644,24 +703,138 @@ void CPController::createMessageVariables() {
           );
         }
       }
+*/
+      // add message header constraints
+      assert( messageHeader.contains(entry(recipient)) );
+      assert( messageHeader.contains(&sender) );
+      auto& recipientHeader = messageHeader.at(entry(recipient));
+      auto& senderHeader = messageHeader.at(&sender);
+      for ( auto& [key, recipientHeaderVariables] : recipientHeader ) {
+        if ( !senderHeader.contains(key) ) {
+          throw std::runtime_error("CPController: illegal message flow from '" + sender.node->id + "' to '" + recipient->node->id  + "'");
+        }
+        model.addConstraint( 
+          ( message && recipientHeaderVariables.defined && senderHeader.at(key).defined ).implies (
+            recipientHeaderVariables.value == senderHeader.at(key).value 
+          ) 
+        );
+      }      
+      
+      
+      // add message content constraints
+      auto& recipientContent = messageContent.at(recipient);
+      auto& senderContent = messageContent.at(&sender);
+      for ( auto& [key, recipientContentVariables] : recipientContent ) {
+        if ( !senderContent.contains(key) ) {
+          throw std::runtime_error("CPController: illegal message flow from '" + sender.node->id + "' to '" + recipient->node->id  + "'");
+        }
+        model.addConstraint( message.implies ( recipientContentVariables.defined ==  senderContent.at(key).defined ) );
+        model.addConstraint( message.implies ( recipientContentVariables.value ==  senderContent.at(key).value ) );      
+      }
+    }
 
-      // TODO: add message header constraints
+    // every visited message catch event must receive exactly one message
+    model.addConstraint( visit.at(recipient) == messagesReceived );
+  }
+}
+
+void CPController::createMessageHeader(const Vertex* vertex) {
+  auto  extensionElements = vertex->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+  assert( extensionElements );
+  
+  if ( extensionElements->messageDefinitions.size() > 1 ) {
+    assert(!"Not yet implemented");
+  }
+
+  auto messageDefinition = extensionElements->messageDefinitions.size() == 1 ? extensionElements->messageDefinitions[0].get() : nullptr;
+  assert( messageDefinition );
+  auto& messageHeaderVariables = messageHeader[vertex];
+
+  for (size_t i = 0; i < messageDefinition->header.size(); i++ ) {
+    if ( i == BPMNOS::Model::MessageDefinition::Index::Name ) {
+      // skip message name
+      continue;
     }
-    CP::Expression sum;
-    for ( const CP::Variable& message : messages ) {
-      sum = sum + message;
+    auto& header = messageDefinition->header[i];
+std::cerr << "header: " << header << "/" << messageDefinition->parameterMap.contains(header) << std::endl;
+    if ( messageDefinition->parameterMap.contains(header) ) {
+      const BPMNOS::Model::Attribute* attribute = 
+        messageDefinition->parameterMap.at(header)->expression ? 
+        messageDefinition->parameterMap.at(header)->expression->isAttribute() :
+        nullptr
+      ;
+      if ( attribute ) {
+        auto [defined,value] = getAttributeVariables(vertex, attribute);
+        messageHeaderVariables.emplace( 
+          header, 
+          AttributeVariables{
+            model.addVariable(CP::Variable::Type::BOOLEAN, "header_defined_{" + vertex->shortReference() + "}," + header, defined ), 
+            model.addVariable(CP::Variable::Type::REAL, "header_value_{" + vertex->shortReference() + "}," + header, value )
+          }
+        );
+        continue;
+      }
+      
+      if ( messageDefinition->parameterMap.at(header)->expression ) {
+        auto headerValue = createExpression( vertex, *messageDefinition->parameterMap.at(header)->expression );
+        messageHeaderVariables.emplace( 
+          header, 
+          AttributeVariables{
+            model.addVariable(CP::Variable::Type::BOOLEAN, "header_defined_{" + vertex->shortReference() + "}," + header, visit.at(vertex) ), 
+            model.addVariable(CP::Variable::Type::REAL, "header_value_{" + vertex->shortReference() + "}," + header, visit.at(vertex) * headerValue )
+          }
+        );
+        continue;
+      }
     }
-    // every recipient that is visited receives a message
-    model.addConstraint( sum == visit.at(recipient) );
+    else {
+      messageHeaderVariables.emplace( 
+        header, 
+        AttributeVariables{
+          model.addVariable(CP::Variable::Type::BOOLEAN, "header_defined_{" + vertex->shortReference() + "}," + header, false ), 
+          model.addVariable(CP::Variable::Type::REAL, "header_value_{" + vertex->shortReference() + "}," + header, 0.0 )
+        }
+      );
+    }
   }
 }
 
 void CPController::createMessageContent(const Vertex* vertex) {
-  // TODO
-  // every visited recipient must receive a message
-  // message precedence constraints
-  
-  // message content
+  auto  extensionElements = vertex->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+
+  if ( extensionElements->messageDefinitions.size() > 1 ) {
+    assert(!"Not yet implemented");
+  }
+
+  auto messageDefinition = extensionElements->messageDefinitions.size() == 1 ? extensionElements->messageDefinitions[0].get() : nullptr;
+  assert( messageDefinition );
+  auto& messageContentVariables = messageContent[vertex];
+
+  if ( vertex->entry<BPMN::MessageThrowEvent>() ) {
+    // deduce message content variables from status
+    for (auto& [key,content] : messageDefinition->contentMap ) {
+      auto [defined,value] = getAttributeVariables(vertex, content->attribute);
+      messageContentVariables.emplace( 
+        content->key, 
+        AttributeVariables{
+          model.addVariable(CP::Variable::Type::BOOLEAN, "content_defined_{" + vertex->shortReference() + "}," + content->key, defined ), 
+          model.addVariable(CP::Variable::Type::REAL, "content_value_{" + vertex->shortReference() + "}," + content->key, value )
+        }
+      );
+    }
+  }
+  else {
+    // create variables for the message content (relevant constraints must be added separately)
+    for (auto& [key,content] : messageDefinition->contentMap ) {
+      messageContentVariables.emplace( 
+        content->key, 
+        AttributeVariables{
+          model.addBinaryVariable("content_defined_{" + vertex->shortReference() + "}," + content->key ), 
+          model.addRealVariable("content_value_{" + vertex->shortReference() + "}," + content->key )
+        }
+      );
+    }
+  }
 }
 
 void CPController::createDataVariables(const FlattenedGraph::Vertex* vertex) {
@@ -1053,31 +1226,58 @@ std::cerr << "JOJO3" << std::endl;
   }
 */
   if ( vertex->node->represents<BPMN::MessageCatchEvent>() ) {
-    // receive message content (globals and data attributes must not be changed)
-    if ( extensionElements->messageDefinitions.size() == 1 ) {
-      std::vector< std::tuple< std::string_view, size_t, AttributeVariables> > contentVariables;
-      auto& messageDefinition = extensionElements->messageDefinitions.front();
-      for (auto& [key,content] : messageDefinition->contentMap ) {
-        auto attribute = content->attribute;
-        
-        // create variables for the message content (relevant constraints must be added separately)
-        AttributeVariables attributeVariables = {
-          model.addBinaryVariable("content[" + content->key + "]_defined_{" + vertex->reference() + "}," + attribute->id ), 
-          model.addRealVariable("content[" + content->key + "]_value_{" + vertex->reference() + "}," + attribute->id )
-        };
+    assert( extensionElements );
 
-        // use message content variables in current status
-        currentStatus.at(attribute->index) = attributeVariables;
+    if ( extensionElements->messageDefinitions.size() > 1 ) {
+      assert(!"Not yet implemented");
+    }
 
-        contentVariables.emplace_back( content->key, attribute->index, std::move(attributeVariables) );
+    auto messageDefinition = extensionElements->messageDefinitions.size() == 1 ? extensionElements->messageDefinitions[0].get() : nullptr;
+    auto& messageContentVariables = messageContent.at(vertex);
+
+    // create exit status
+    std::vector<AttributeVariables> variables;
+    auto& entryStatus = status.at( entry(vertex) );
+    for ( auto attribute : extensionElements->attributeRegistry.statusAttributes ) {
+      if ( attribute->index == BPMNOS::Model::ExtensionElements::Index::Timestamp ) {
+        // deduce timestamp from time of message delivery
+        auto messageFlowVariables = messageFlow | std::ranges::views::filter([&](const auto& entry) {
+          return entry.first.second == vertex;
+        });
+
+        CP::Expression timestamp(0);
+        for (auto& [edge,messageFlowVariable] : messageFlowVariables) {
+          timestamp = timestamp + messageFlowVariable * status.at(edge.first)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value;
+        }
+
+        variables.emplace_back(
+          model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->reference() + "}," + attribute->id, visit.at(vertex) ), 
+          model.addVariable(CP::Variable::Type::REAL, "value_{" + vertex->reference() + "}," + attribute->id, CP::max( entryStatus[attribute->index].value, timestamp) )
+        );
       }
-
-      messageContent.emplace( vertex, std::move(contentVariables) );
+      else if ( auto content = findContent(messageDefinition, attribute) ) {
+        auto& [ defined, value ] = messageContentVariables.at(content->key);
+        if ( 
+          attribute->index == BPMNOS::Model::ExtensionElements::Index::Timestamp
+        ) {
+          throw std::runtime_error("CPController: timestamp must not be changed by message content");
+        }
+        // attribute set by received message content
+        variables.emplace_back(
+          model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->reference() + "}," + attribute->id, defined ), 
+          model.addVariable(CP::Variable::Type::REAL, "value_{" + vertex->reference() + "}," + attribute->id, value )
+        );
+      }
+      else {
+        auto& [ defined, value ] = entryStatus.at(attribute->index);
+        variables.emplace_back(
+          model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->reference() + "}," + attribute->id, defined ), 
+          model.addVariable(CP::Variable::Type::REAL, "value_{" + vertex->reference() + "}," + attribute->id, value )
+        );
+      }      
     }
-    else if ( extensionElements->messageDefinitions.size() > 1 ) {
-      // multi-instance receive task
-      assert(!"Not yet supported");
-    }
+    status.emplace( vertex, std::move(variables) );
+    return;
   }
   
   if ( vertex->node->represents<BPMN::MessageStartEvent>() ) {
@@ -1085,12 +1285,6 @@ std::cerr << "JOJO3" << std::endl;
     // TODO
   }
 
-/*
-  if ( vertex->node->represents<BPMN::Task>() ) {
-    // apply operators
-    // TODO
-  }
-*/
   std::vector<AttributeVariables> variables;
   for ( auto attribute : extensionElements->attributeRegistry.statusAttributes ) {
     assert( attribute->index == variables.size() );
@@ -1099,7 +1293,7 @@ std::cerr << "JOJO3" << std::endl;
       model.addVariable(CP::Variable::Type::REAL, "value_{" + vertex->reference() + "}," + attribute->id, currentStatus[attribute->index].value )
     );      
 
-    // ensure that attribute only has a value if vertex is visited and the attribute ifis defined
+    // ensure that attribute only has a value if vertex is visited and the attribute is defined
     assert( visit.contains(vertex) );
     model.addConstraint( variables[attribute->index].defined <= visit.at(vertex) );
     model.addConstraint( (!variables[attribute->index].defined).implies( variables[attribute->index].value == 0.0 ) );
@@ -1159,8 +1353,37 @@ CP::Expression CPController::createOperatorExpression( const Model::Expression& 
   return compiled.evaluate(variables,collectionVariables);
 }
 
+
+const BPMNOS::Model::Choice* CPController::findChoice(const std::vector< std::unique_ptr<BPMNOS::Model::Choice> >& choices, const BPMNOS::Model::Attribute* attribute) const {
+std::cerr << "choices: " << choices.size() << "/" << attribute->id << std::endl;
+  if ( choices.empty() ) return nullptr;
+  auto it = std::find_if(
+    choices.begin(),
+    choices.end(),
+    [&](const auto& choice) {
+std::cerr << "check: " << choice->attribute->id << std::endl;
+      return choice->attribute == attribute;
+    }
+  ); 
+  return ( it != choices.end() ? it->get() : nullptr );
+}
+
+const BPMNOS::Model::Content* CPController::findContent(const BPMNOS::Model::MessageDefinition* messageDefinition, const BPMNOS::Model::Attribute* attribute) const {
+  if ( !messageDefinition ) return nullptr;
+  auto it = std::find_if(
+    messageDefinition->contentMap.begin(),
+    messageDefinition->contentMap.end(),
+    [&](const auto& mapEntry) {
+      auto& [key, content] = mapEntry;
+      return content->attribute == attribute;
+    }
+  ); 
+  return ( it != messageDefinition->contentMap.end() ? it->second.get() : nullptr );
+}
+
+
 void CPController::createLocalAttributeVariables(const Vertex* vertex) {
-  assert( vertex->exit<BPMN::Task>() || vertex->exit<BPMN::MessageStartEvent>() );
+  assert( vertex->exit<BPMN::Task>() || vertex->exit<BPMN::TypedStartEvent>() );
 
   auto  extensionElements = 
     vertex->exit<BPMN::Task>() ?
@@ -1177,31 +1400,6 @@ void CPController::createLocalAttributeVariables(const Vertex* vertex) {
   auto localAttributeVariables = [&](const auto& attributes) -> std::vector<AttributeVariables> {
     std::vector<AttributeVariables> variables;
 std::cerr << "Attributes: " << attributes.size() << std::endl;
-    auto findChoice = [extensionElements](BPMNOS::Model::Attribute* attribute) -> BPMNOS::Model::Choice* {
-std::cerr << "choices: " << extensionElements->choices.size() << "/" << attribute->id << std::endl;
-      auto it = std::find_if(
-        extensionElements->choices.begin(),
-        extensionElements->choices.end(),
-        [&](const auto& choice) {
-std::cerr << "check: " << choice->attribute->id << std::endl;
-          return choice->attribute == attribute;
-        }
-      ); 
-      return ( it != extensionElements->choices.end() ? it->get() : nullptr );
-    };
-
-    auto findContent = [messageDefinition](BPMNOS::Model::Attribute* attribute) -> BPMNOS::Model::Content* {
-      if ( !messageDefinition ) return nullptr;
-      auto it = std::find_if(
-        messageDefinition->contentMap.begin(),
-        messageDefinition->contentMap.end(),
-        [&](const auto& mapEntry) {
-          auto& [key, content] = mapEntry;
-          return content->attribute == attribute;
-        }
-      ); 
-      return ( it != messageDefinition->contentMap.end() ? it->second.get() : nullptr );
-    };
 
     auto initialVariables = [&](BPMNOS::Model::Attribute* attribute) -> std::pair<CP::Expression,CP::Expression> {
       if ( attribute->category == BPMNOS::Model::Attribute::Category::STATUS ) {
@@ -1231,7 +1429,7 @@ std::cerr << "check: " << choice->attribute->id << std::endl;
 std::cerr << "Attribute: " << attribute->id << std::endl;
       auto [defined,value] = initialVariables(attribute);
     
-      if ( auto choice = findChoice(attribute) ) {
+      if ( auto choice = findChoice(extensionElements->choices, attribute) ) {
         if ( 
           attribute->category == BPMNOS::Model::Attribute::Category::STATUS &&
           attribute->index == BPMNOS::Model::ExtensionElements::Index::Timestamp
@@ -1278,23 +1476,44 @@ std::cerr << "Attribute: " << attribute->id << std::endl;
         }        
 //        assert(!"Not yet implemented");
       }
-      else if ( auto content = findContent(attribute) ) {
+      else if ( auto content = findContent(messageDefinition, attribute) ) {
         if ( 
           attribute->category == BPMNOS::Model::Attribute::Category::STATUS &&
           attribute->index == BPMNOS::Model::ExtensionElements::Index::Timestamp
         ) {
           throw std::runtime_error("CPController: timestamp must not be changed by message content");
         }
-        // TODO: 
-        // deduce attribute value from message content
-        // timestamp represents the time of the message delivery
-        assert(!"Not yet implemented");
+        // attribute set by received message content
+        variables.emplace_back(
+          model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->shortReference() + ",0}," + attribute->id, messageContent.at(vertex).at(content->key).defined ), 
+          model.addVariable(CP::Variable::Type::REAL, "value_{" + vertex->shortReference() + ",0}," + attribute->id, messageContent.at(vertex).at(content->key).value )
+        );
+      }
+      else if ( 
+          attribute->category == BPMNOS::Model::Attribute::Category::STATUS &&
+          attribute->index == BPMNOS::Model::ExtensionElements::Index::Timestamp &&
+          vertex->exit<BPMN::ReceiveTask>() 
+      ) {
+        // deduce timestamp from time of message delivery
+        auto messageFlowVariables = messageFlow | std::ranges::views::filter([&](const auto& entry) {
+          return entry.first.second == vertex;
+        });
+
+        CP::Expression timestamp(0);
+        for (auto& [edge,messageFlowVariable] : messageFlowVariables) {
+          timestamp = timestamp + messageFlowVariable * status.at(edge.first)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value;
+        }
+
+        variables.emplace_back(
+          model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->shortReference() + ",0}," + attribute->id, visit.at(vertex) ), 
+          model.addVariable(CP::Variable::Type::REAL, "value_{" + vertex->shortReference() + ",0}," + attribute->id,    CP::max( status.at(entry(vertex))[BPMNOS::Model::ExtensionElements::Index::Timestamp].value, timestamp ) )
+        );        
       }
       else {
         if ( 
           attribute->category == BPMNOS::Model::Attribute::Category::STATUS &&
           attribute->index == BPMNOS::Model::ExtensionElements::Index::Timestamp &&
-          ( vertex->exit<BPMN::ReceiveTask>() || vertex->exit<BPMN::SendTask>() || vertex->exit<BPMNOS::Model::DecisionTask>())
+          ( vertex->exit<BPMN::SendTask>() || vertex->exit<BPMNOS::Model::DecisionTask>())
         ) {
 std::cerr << vertex->reference() << std::endl;        
           if ( vertex->exit<BPMN::ReceiveTask>() ) {
@@ -1328,7 +1547,7 @@ std::cerr << "Attribute: " << attribute->id << " (done)" << std::endl;
     }
     
     return variables;
-  };
+  }; // end of lambda
   
   locals.emplace(
     vertex, 
@@ -1682,8 +1901,23 @@ std::cerr << "createDataVariables: " << vertex->reference() << std::endl;
     createDataVariables(vertex);
   }
 
+  if ( vertex->exit<BPMN::MessageCatchEvent>() ) {
+std::cerr << "createMessageContent" << std::endl;
+    createMessageContent(vertex);
+  }
+
 std::cerr << "createStatus" << std::endl;
   createStatus(vertex);
+
+  if ( vertex->entry<BPMN::MessageThrowEvent>() || vertex->entry<BPMN::MessageCatchEvent>() ) {
+std::cerr << "createMessageHeader" << std::endl;
+    createMessageHeader(vertex);
+  }
+  
+  if ( vertex->entry<BPMN::MessageThrowEvent>() ) {
+std::cerr << "createMessageContent" << std::endl;
+    createMessageContent(vertex);
+  }
 
   if ( vertex->type == Vertex::Type::EXIT ) {
     createExitVariables(vertex);
@@ -2112,595 +2346,4 @@ const FlattenedGraph::Vertex* CPController::exit(const Vertex* vertex) {
   return &flattenedGraph.vertexMap.at({vertex->instanceId,vertex->loopIndices,vertex->node}).second;
 }
 
-/*
-bool CPController::checkEntryDependencies(NodeReference reference) {
-  auto& [instance,node] = reference;
-  if ( auto startEvent = node->represents<BPMN::UntypedStartEvent>() ) {
-    if ( !entryStatus.contains({instance,startEvent->parent}) ) {
-      return false;
-    }
-  }
-  else if ( auto startEvent = node->represents<BPMN::TypedStartEvent>() ) {
-    if ( !entryStatus.contains({instance,startEvent->parent->as<BPMN::EventSubProcess>()->parent}) ) {
-      return false;
-    }
-    // TODO: check trigger dependencies?
-    if ( startEvent->isInterrupting ) {
-      throw std::runtime_error("CPController: unsupported interrupting start event '" + node->id + "'");
-    }
-    
-    if ( auto messageStartEvent = node->represents<BPMN::MessageStartEvent>() ) {
-      auto originCandidates = messageStartEvent->extensionElements->as<BPMNOS::Model::ExtensionElements>()->messageCandidates;
-      for ( auto candidate : originCandidates ) {
-        for ( auto originInstance : originInstances[candidate->as<BPMN::MessageThrowEvent>()] ) {
-          if ( !nodeVariables.contains({(size_t)originInstance,candidate}) ) {
-            return false;
-          }
-        }
-      }      
-    }
-    else {
-      throw std::runtime_error("CPController: unsupported start event type for '" + node->id + "'");
-    }
-  }
-  else if ( auto flowNode = node->represents<BPMN::FlowNode>() ) {
-    for ( const BPMN::SequenceFlow* sequenceFlow : flowNode->incoming ) {
-      if ( !sequenceFlowVariables.contains({instance,sequenceFlow}) ) {
-        return false;
-      }
-    }
-  }
-  else {
-    assert(!"Unexpected node reference");
-  }
-  return true;
-}
-
-bool CPController::checkExitDependencies(NodeReference reference) {
-  auto& [instance,node] = reference;
-  if ( node->represents<BPMN::SendTask>() ) {
-    // check all possible recipients
-  }
-  else if ( node->represents<BPMN::MessageCatchEvent>() ) {
-    // check all possible senders
-  }
-  else if ( auto scope = node->represents<BPMN::Scope>() ) {
-    // check that all exit variables of end flow nodes have been created
-    for ( auto endNode : scope->flowNodes | std::ranges::views::filter([](const BPMN::FlowNode* node) { return node->outgoing.empty(); }) ) {
-      if ( !exitStatus.contains({instance,endNode}) ) {
-        return false;
-      }
-    }
-  }
-
-  return true;
-}
-
-
-void CPController::addEntryVariables(NodeReference reference) {
-  auto& [instance,node] = reference;
-
-  auto extensionElements = node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
-  size_t newDataIndex = extensionElements->attributeRegistry.dataAttributes.size() - extensionElements->data.size();
-  createNodeTraversalVariables(reference);
-  
-  if ( auto scope = node->represents<BPMN::Scope>() ) {
-    // it is assumed that modified data states are only propagated upon entry and exit
-
-    // determine sequential activities of sequential performers
-    sequentialActivities[scope] = extensionElements->hasSequentialPerformer ? std::vector<const BPMN::Node* >() : scope->find_all(
-      [scope](const BPMN::Node* candidate) {
-        if ( auto activity = candidate->represents<BPMN::Activity>() ) {
-          if ( auto adhocSubprocess = activity->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() ) {
-            return adhocSubprocess->performer == scope;
-          } 
-        }
-        return false;
-      } 
-    );
-
-    for ( auto& attribute : extensionElements->data ) {
-      // store scope in which data attributes live
-      dataOwner[attribute.get()] = scope;
-    }
-  }
-
-  // determine set holding the scopes for which entry data state variables are required
-  for ( auto& [_,attribute] : extensionElements->attributeRegistry.dataAttributes ) {
-    if ( auto flowNode = node->represents<BPMN::FlowNode>();
-      flowNode && flowNode->parent != dataOwner.at(attribute)
-    ) {
-      auto scopeReference = ScopeReference{instance,dataOwner.at(attribute)};
-      if ( flowNode->incoming.empty() ) {
-        if ( auto activity = flowNode->parent->represents<BPMN::Activity>() ) {
-          if ( auto adhoc = activity->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>();
-           adhoc && adhoc->performer == dataOwner.at(attribute)
-          ) {
-            // flow node is start event of sequentially executed activity and data cannot be changed by any other activity
-            continue;
-          }
-        }
-        else {
-          if (!entryDataState[NodeReference{instance,flowNode->parent}].contains(scopeReference) ) {
-            // parent has no entry data state variable for attribute
-            continue;
-          }
-        }
-      }
-      else {
-        auto& predecessor = flowNode->incoming.front()->source;
-        if (!entryDataState[NodeReference{instance,predecessor}].contains(scopeReference) ) {
-          // predecessor has no entry data state variable for attribute
-          continue;
-        }
-      }
-    }
-    scopesOwningData[reference].insert(dataOwner.at(attribute));
-  }
-
-  createEntryDataStateVariables(reference);
- 
-  // create entry data and new data state variables
-  auto dataVariables = std::vector<AttributeVariables>();
-  for ( auto& [name,attribute] : extensionElements->attributeRegistry.dataAttributes ) {
-    assert( attribute->index == dataVariables.size() );
-    if ( attribute->index >= newDataIndex ) {
-      // create new entry data variable
-      auto value = scenario->getKnownValue(instance, attribute, 0); // get value known at time zero
-      if ( value.has_value() ) {
-        dataVariables.emplace_back(
-          model.addVariable(CP::Variable::Type::BOOLEAN, "defined^entry_{" + identifier(reference) + "," + name + "}", (double)true,(double)true ), 
-          model.addVariable(CP::Variable::Type::REAL, "value^entry_{" + identifier(reference) + "," + name + "}", (double)value.value(), (double)value.value()) 
-        );
-      }
-      else {
-        dataVariables.emplace_back(
-          model.addVariable(CP::Variable::Type::BOOLEAN, "defined^entry_{" + identifier(reference) + "," + name + "}", (double)false,(double)false ), 
-          model.addVariable(CP::Variable::Type::REAL, "value^entry_{" + identifier(reference) + "," + name + "}", 0.0, 0.0) 
-        );
-      }
-      // create initial data state variables
-      dataState[DataReference{instance,attribute}].emplace_back(
-        model.addVariable(CP::Variable::Type::BOOLEAN,std::string("defined^") + std::to_string(0) + "_{" + identifier(reference) + "}", dataVariables.back().defined ),
-        model.addVariable(CP::Variable::Type::BOOLEAN,std::string("value^") + std::to_string(0) + "_{" + identifier(reference) + "}", dataVariables.back().value )
-      );
-      // create subsequent data state variables
-      for ( size_t i = 1; i <= sequentialActivities[node->as<BPMN::Scope>()].size(); i++ ) {
-        dataState[DataReference{instance,attribute}].emplace_back(
-          model.addBinaryVariable(std::string("defined^") + std::to_string(i) + "_{" + identifier(reference) + "}"),
-          model.addBinaryVariable(std::string("value^") + std::to_string(i) + "_{" + identifier(reference) + "}")
-        );
-      }
-    }
-    else {
-      // deduce exisiting entry data variables
-      auto scopeReference = ScopeReference{instance,dataOwner.at(attribute)};
-      auto it = entryDataState[reference].find(scopeReference);
-      if ( it == entryDataState.at(reference).end() ) {
-        // deduce from parent or predecessor
-        if ( auto flowNode = node->represents<BPMN::FlowNode>() ) {
-          deduceEntryAttributeVariable(dataVariables, attribute, reference, entryData, exitData);
-        }
-      }
-      else {
-        auto& entryDataStateVariables = it->second;
-        CP::Cases defined_cases;
-        CP::Cases value_cases;
-        for ( size_t i = 0; i <= entryDataStateVariables.size(); i++ ) {
-          auto& [defined,value] = dataState[DataReference{instance,attribute}][i];
-          defined_cases.emplace_back( entryDataStateVariables[i], defined );
-          value_cases.emplace_back( entryDataStateVariables[i], value );
-        }
-        dataVariables.emplace_back(
-          model.addVariable(CP::Variable::Type::BOOLEAN, "defined^entry_[" + identifier(reference) + "," + name+ "}", CP::n_ary_if(defined_cases,0) ), 
-          model.addVariable(CP::Variable::Type::REAL, "value^entry_{" + identifier(reference) + "," + name+ "}", CP::n_ary_if(value_cases,0)) 
-        );
-      }
-    }
-  }
-  entryData.emplace( reference , std::move(dataVariables) );
-
-  // deduce exisiting entry status variables
-  auto statusVariables = std::vector<AttributeVariables>();
-  size_t newStatusIndex = extensionElements->attributeRegistry.statusAttributes.size() - extensionElements->attributes.size();
-  for ( auto& [name,attribute] : node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->attributeRegistry.statusAttributes ) {
-    assert( attribute->index == statusVariables.size() );
-    if ( attribute->index >= newStatusIndex ) {
-      // create new entry status variable
-      auto value = scenario->getKnownValue(instance, attribute, 0); // get value known at time zero
-      if ( value.has_value() ) {
-        statusVariables.emplace_back(
-          model.addVariable(CP::Variable::Type::BOOLEAN, "defined^entry_{" + identifier(reference) + "," + name + "}", (double)true,(double)true ), 
-          model.addVariable(CP::Variable::Type::REAL, "value^entry_{" + identifier(reference) + "," + name + "}", (double)value.value(), (double)value.value()) 
-        );
-      }
-      else {
-        statusVariables.emplace_back(
-          model.addVariable(CP::Variable::Type::BOOLEAN, "defined^entry_{" + identifier(reference) + "," + name + "}", (double)false,(double)false ), 
-          model.addVariable(CP::Variable::Type::REAL, "value^entry_{" + identifier(reference) + "," + name + "}", 0.0, 0.0) 
-        );
-      }
-    }
-    else {
-      // deduce exisiting entry status variables
-      if ( auto flowNode = node->represents<BPMN::FlowNode>() ) {
-        deduceEntryAttributeVariable(statusVariables, attribute, reference, entryStatus, exitStatus);
-//// BEGIN COMMENT
-        if ( flowNode->incoming.empty() ) {
-          statusVariables.emplace_back(
-            model.addVariable(CP::Variable::Type::BOOLEAN, "defined_entry_" + identifier(reference) + "_" + name, entryStatus.at(NodeReference{instance,flowNode->parent})[attribute->index].defined ), 
-            model.addVariable(CP::Variable::Type::REAL, "value_entry_" + identifier(reference) + "_" + name, entryStatus.at(NodeReference{instance,flowNode->parent})[attribute->index].value ) 
-          );
-        }
-        else if ( flowNode->incoming.size() == 1 ) {
-          auto& predecessor = flowNode->incoming.front()->source;
-          statusVariables.emplace_back(
-            model.addVariable(CP::Variable::Type::BOOLEAN, "defined_entry_" + identifier(reference) + "_" + name, exitStatus.at(NodeReference{instance,predecessor})[attribute->index].defined ), 
-            model.addVariable(CP::Variable::Type::REAL, "value_entry_" + identifier(reference) + "_" + name, exitStatus.at(NodeReference{instance,predecessor})[attribute->index].value ) 
-          );
-        }
-        else if ( node->represents<BPMN::ExclusiveGateway>() ) {
-          assert(!"Exclusive join not yet supported");
-        }
-        else {
-          assert(!"Non-exclusive join not yet supported");
-        }
-//// END COMMENT
-      }
-    }
-  }
-  entryStatus.emplace( reference , std::move(statusVariables) );
-}
-
-void CPController::deduceEntryAttributeVariable(std::vector<AttributeVariables>& attributeVariables, const BPMNOS::Model::Attribute* attribute, NodeReference reference, variable_map<NodeReference,  std::vector<AttributeVariables> >& entryAttributes, variable_map<NodeReference, std::vector<AttributeVariables> >& exitAttributes) {
-  auto& [instance,node] = reference;
-  auto flowNode = node->as<BPMN::FlowNode>();
-  
-  if ( flowNode->incoming.empty() ) {
-    // attribute values of start node is deduced from entry value of parent
-    attributeVariables.emplace_back(
-      model.addVariable(CP::Variable::Type::BOOLEAN, "defined^entry_{" + identifier(reference) + "," + attribute->name + "}", entryAttributes.at(NodeReference{instance,flowNode->parent})[attribute->index].defined ), 
-      model.addVariable(CP::Variable::Type::REAL, "value^entry_{" + identifier(reference) + "," + attribute->name + "}", entryAttributes.at(NodeReference{instance,flowNode->parent})[attribute->index].value ) 
-    );
-  }
-  else if ( flowNode->incoming.size() == 1 ) {
-    // attribute values of flow node with exactle one predecessor is deduced from exit value of predecessor
-    auto& predecessor = flowNode->incoming.front()->source;
-    attributeVariables.emplace_back(
-      model.addVariable(CP::Variable::Type::BOOLEAN, "defined^entry_{" + identifier(reference) + "," + attribute->name, exitAttributes.at(NodeReference{instance,predecessor})[attribute->index].defined ), 
-      model.addVariable(CP::Variable::Type::REAL, "value^entry_{" + identifier(reference) + "," + attribute->name + "}", exitAttributes.at(NodeReference{instance,predecessor})[attribute->index].value ) 
-    );
-  }
-  else if ( flowNode->represents<BPMN::ExclusiveGateway>() ) {
-    assert(!"Exclusive join not yet supported");
-  }
-  else {
-    assert(!"Non-exclusive join not yet supported");
-  }
-}
-
-
-void CPController::createNodeTraversalVariables(NodeReference reference) {
-  auto& [instance,node] = reference;
-   
-  // create node variables
-  if ( node->represents<BPMN::Process>() ) {
-    // process must be executed
-    nodeVariables.emplace(
-      NodeReference{instance, node},
-      model.addVariable(CP::Variable::Type::BOOLEAN, std::string("x_{") + identifier(reference) + "}", (double)true, (double)true)
-    );
-  }
-  else if ( auto startEvent = node->represents<BPMN::UntypedStartEvent>() ) {
-    // start event must be executed if parent is executed
-    nodeVariables.emplace(
-      NodeReference{instance, node},
-      model.addVariable(
-        CP::Variable::Type::BOOLEAN, 
-        std::string("x_{") + identifier(reference) + "}",
-        nodeVariables.at(NodeReference{instance,startEvent->parent})
-      )
-    );
-  }    
-  else if ( auto startEvent = node->represents<BPMN::TypedStartEvent>() ) {
-    if ( startEvent->isInterrupting ) {
-      throw std::runtime_error("CPController: unsupported interrupting start event '" + node->id + "'");
-    }
-    
-    if ( auto messageStartEvent = node->represents<BPMN::MessageStartEvent>() ) {
-      CP::OrExpression messageReceived;
-      auto originCandidates = messageStartEvent->extensionElements->as<BPMNOS::Model::ExtensionElements>()->messageCandidates;
-      for ( auto candidate : originCandidates ) {
-        for ( auto originInstance : originInstances[candidate->as<BPMN::MessageThrowEvent>()] ) {
-          messageReceived = messageReceived || messageFlowVariables.at(MessageCatchReference{instance,node->as<BPMN::MessageCatchEvent>()}).at(MessageThrowReference{(size_t)originInstance,candidate->as<BPMN::MessageThrowEvent>()});
-        }
-      }
-      nodeVariables.emplace(
-        NodeReference{instance, node},
-        model.addVariable(
-          CP::Variable::Type::BOOLEAN, 
-          std::string("x_{") + identifier(reference) +"}",
-          messageReceived
-        )
-      );
-    }
-    else {
-      throw std::runtime_error("CPController: unsupported start event type for '" + node->id + "'");
-    }
-  }
-  else if ( auto flowNode = node->represents<BPMN::FlowNode>() ) {
-    assert( flowNode->incoming.size() );
-    CP::OrExpression tokenArrives;
-    for (auto sequenceFlow : flowNode->incoming ) {
-      tokenArrives = tokenArrives || sequenceFlowVariables.at(SequenceFlowReference{instance,sequenceFlow});
-    }
-    nodeVariables.emplace(
-      NodeReference{instance, node},
-      model.addVariable(
-        CP::Variable::Type::BOOLEAN, 
-        std::string("x_{") + identifier(reference) + "}",
-        tokenArrives
-      )
-    );
-  }
-}
-
-
-void CPController::createEntryDataStateVariables(NodeReference reference) {
- // create entry data states
-  auto& [instance,node] = reference;
-//  auto extensionElements = node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
-
- 
-  // the entry data state is non-decreasing along sequence flows and subprocesses 
-  for ( auto scopeOwningData : scopesOwningData.at(reference) ) {
-    auto scopeReference = ScopeReference{instance,node->as<BPMN::Scope>()};
-    std::vector< std::reference_wrapper< const CP::Variable > > variables;
-    CP::LinearExpression sumVariables(0);
-    for ( size_t i = 0; i <= sequentialActivities[scopeOwningData].size(); i++ ) {
-      if ( scopeOwningData == node ) {
-        // use first entry data state
-        variables.emplace_back(
-          model.addVariable( CP::Variable::Type::BOOLEAN, std::string("y^{entry,") + std::to_string(i) + "," + scopeOwningData->id + "}_{" + identifier(reference) + "}", (double)(i == 0), (double)(i == 0) ) 
-        );
-      }
-      else {
-        if ( auto activity = node->represents<BPMN::Activity>() ) {
-          // for each activity, the entry data state is a decision (with constraints)
-          if ( activity->incoming.size() > 1 ) {
-            throw std::runtime_error("CPController: implicit join for activity '" + activity->id + "'");
-          }
-          else if ( activity->incoming.empty() && !activity->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() ) {
-            throw std::runtime_error("CPController: activitiy '" + activity->id + "' has no incoming sequence flow");
-          }
-          
-          if ( activity->incoming.size() == 1 ) {
-            if ( !activity->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() ) {
-              variables.emplace_back(
-                model.addBinaryVariable( std::string("y^{entry,") + std::to_string(i) + "," + scopeOwningData->id +  "}_{" + identifier(reference) + "}" ) 
-              );
-            }
-            // ensure that first i entry data states are smaller or equal first i exit data states of predecessor
-            auto& predecessor = activity->incoming.front()->source;
-            CP::LinearExpression sumFirstExitDataStatesOfPredecessor(0);
-            CP::LinearExpression sumFirstEntryDataStatesOfActivity(0);
-            for ( size_t j = 0; j <= i ; j++ ) {
-              sumFirstExitDataStatesOfPredecessor += exitDataState.at(NodeReference{instance,predecessor}).at(scopeReference)[j].get();
-              sumFirstEntryDataStatesOfActivity += variables[j].get();
-            }
-            model.addConstraint( sumFirstEntryDataStatesOfActivity <= sumFirstExitDataStatesOfPredecessor );
-          }
-          
-        }
-        else if ( auto startEvent = node->represents<BPMN::UntypedStartEvent>() ) {
-          // for each untyped start event, the entry data state must be the same as for its parent
-          auto& parentEntryDataState = entryDataState.at(NodeReference{instance,startEvent->parent}).at( scopeReference )[i].get();
-          variables.emplace_back(
-            model.addVariable( CP::Variable::Type::BOOLEAN, std::string("y^{entry,") + std::to_string(i) + "," + scopeOwningData->id + "}_{" + identifier(reference) + "}", parentEntryDataState ) 
-          );
-        }
-        else if ( auto flowNode = node->represents<BPMN::FlowNode>() ) {
-          assert( flowNode->incoming.size() );
-          assert(!node->represents<BPMN::Activity>());
-          
-          if ( flowNode->incoming.size() == 1 ) {
-            // entry data states must be the same as exit state of predecessor
-            auto& predecessor = flowNode->incoming.front()->source;
-            auto& predecessorExitDataState = exitDataState.at(NodeReference{instance,predecessor}).at( scopeReference )[i].get();
-            variables.emplace_back(
-              model.addVariable( CP::Variable::Type::BOOLEAN, std::string("y^{entry,") + std::to_string(i) + "," + scopeOwningData->id + "}_{" + identifier(reference) + "}", predecessorExitDataState ) 
-            );
-          }
-          else if ( node->represents<BPMN::ExclusiveGateway>() ) {
-            assert(!"Exclusive join not yet supported");
-          }
-          else {
-            assert(!"Non-exclusive join not yet supported");
-          }
-        }        
-      }
-      sumVariables += variables.back().get();
-    }
-    entryDataState[reference].emplace( scopeReference, std::move(variables) );
-
-    // if and only if the node is visited, exactly one of the variables must be true
-    model.addConstraint( sumVariables == nodeVariables.at(reference) );
-
-  }
-
-}
-
-void CPController::addChildren(ScopeReference reference) {
-  auto& [instance,scope] = reference;
-  if ( scope->startNodes.empty() ) {
-    // no flow nodes within scope
-    return;
-  }
-  else if ( scope->startNodes.size() > 1 ) {
-    throw std::runtime_error("CPController: multiple start nodes for scope '" + scope->id + "'");
-  }
-  pendingEntry.insert(NodeReference{instance,scope->startNodes.front()});
-
-  for ( auto eventSubProcess : scope->eventSubProcesses ) {
-    assert(!"Event-subprocesses not yet supported");
-  }
-
-}
-
-void CPController::addSuccessors(NodeReference reference) {
-  auto& [instance,node] = reference;
-  assert(node->represents<BPMN::FlowNode>());
-  auto flowNode = node->as<BPMN::FlowNode>();
-  if ( flowNode->outgoing.size() == 1 || node->represents<BPMN::ParallelGateway>() ) {
-    for ( auto sequenceFlow : flowNode->outgoing ) {
-      auto& successor = sequenceFlow->target;
-      // token traverses sequence flow when node is visited
-      sequenceFlowVariables.emplace(
-        SequenceFlowReference{instance, sequenceFlow},
-        model.addVariable(
-          CP::Variable::Type::BOOLEAN, 
-          std::string("x^sequence_{") + identifier(reference) + "," + successor->id + "}",
-          nodeVariables.at(reference)
-        )
-      );
-      pendingEntry.insert(NodeReference{instance,successor});
-    }
-  }
-  else if ( node->represents<BPMN::ExclusiveGateway>() || node->represents<BPMN::InclusiveGateway>() ) {
-    assert(!"Exclusive and inclusive fork not yet supported");
-  }
-  else if ( node->represents<BPMN::EventBasedGateway>() ) {
-    assert(!"Event-based gateways not yet supported");
-  }
-}
-
-void CPController::addExitVariables(NodeReference reference) {
-  auto& [instance,node] = reference;
-  auto extensionElements = node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
-  
-  createExitDataStateVariables(reference);
-
-  // create exit data variables
-  auto dataVariables = std::vector<AttributeVariables>();
-  for ( auto& [name,attribute] : extensionElements->attributeRegistry.dataAttributes ) {
-    auto scopeOwningData = dataOwner.at(attribute);
-    assert( attribute->index == dataVariables.size() );
-
-
-    auto scopeReference = ScopeReference{instance,dataOwner.at(attribute)};
-    auto it = exitDataState[reference].find(scopeReference);
-    if ( it != exitDataState.at(reference).end() ) {
-      auto& exitDataStateVariables = it->second;
-      CP::Cases defined_cases;
-      CP::Cases value_cases;
-      for ( size_t i = 0; i < exitDataStateVariables.size(); i++ ) {
-        auto& [defined,value] = dataState[DataReference{instance,attribute}][i];
-        defined_cases.emplace_back( exitDataStateVariables[i], defined );
-        value_cases.emplace_back( exitDataStateVariables[i], value );
-      }
-      dataVariables.emplace_back(
-        model.addVariable(CP::Variable::Type::BOOLEAN, "defined^exit_[" + identifier(reference) + "," + name+ "}", CP::n_ary_if(defined_cases,0) ), 
-        model.addVariable(CP::Variable::Type::REAL, "value^exit_{" + identifier(reference) + "," + name+ "}", CP::n_ary_if(value_cases,0)) 
-      );
-    }
-  }
-  exitData.emplace( reference , std::move(dataVariables) );
-
-  // create exit status variables
-  // TODO
-  auto statusVariables = std::vector<AttributeVariables>();
-  for ( auto& [name,attribute] : extensionElements->attributeRegistry.statusAttributes ) {
-    assert( attribute->index == statusVariables.size() );
-    if ( auto scope = node->represents<BPMN::Scope>() ) {
-      // create exit status variables
-      if ( scope->flowNodes.empty() ) {
-        // exit status is the same as entry status
-        statusVariables.emplace_back(
-          model.addVariable(CP::Variable::Type::BOOLEAN, "defined^exit_[" + identifier(reference) + "," + name+ "}", entryStatus.at(reference)[attribute->index].defined ), 
-          model.addVariable(CP::Variable::Type::REAL, "value^exit_{" + identifier(reference) + "," + name+ "}", entryStatus.at(reference)[attribute->index].value ) 
-        );
-      }
-      else {
-        // assume an exclusive end node
-      }
-    }
-    else if ( auto event = node->represents<BPMN::CatchEvent>() ) {
-    }
-    else if ( auto gateway = node->represents<BPMN::Gateway>();
-      gateway && gateway->incoming.size() > 1
-    ) {
-    }
-    else if ( auto task = node->represents<BPMN::Task>() ) {
-    }
-    else {
-    }
-  }
-}
-
-
-void CPController::createExitDataStateVariables(NodeReference reference) {
-  auto& [instance,node] = reference;
-  for ( auto scopeOwningData : scopesOwningData.at(reference) ) {
-    std::vector< std::reference_wrapper< const CP::Variable > > variables;
-    CP::LinearExpression sumVariables(0);
-    for ( size_t i = 0; i <= sequentialActivities[scopeOwningData].size(); i++ ) {
-      // TODO
-      if ( auto activity = node->represents<BPMN::Activity>() ) {
-        if ( auto adhoc = activity->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>();
-          adhoc && adhoc->performer == scopeOwningData 
-        ) {
-          // TODO: exit data state must be exactly one higher than entry data state of each child
-        }
-        else {
-          // for all other activities, the exit data state is a decision (with constraints)
-          variables.emplace_back(
-            model.addBinaryVariable( std::string("y^{exit_{") + std::to_string(i) + "," + scopeOwningData->id + "}_{" + identifier(reference) + "}" ) 
-          );
-
-          if ( auto scope = node->represents<BPMN::Scope>() ) {
-            constrainExitDataStateVariables(ScopeReference{instance,scope});
-          }
-        }
-      }
-      else if ( auto flowNode = node->represents<BPMN::CatchEvent>() ) {
-        // TODO: exit data state must be higher than exit data state of each child
-      }
-      else if ( auto process = node->represents<BPMN::Process>() ) {
-          // the exit data state is a decision (with constraints)
-          variables.emplace_back(
-            model.addBinaryVariable( std::string("y^{exit,") + std::to_string(i) + "," + scopeOwningData->id + "}_{" + identifier(reference) + "}" ) 
-          );
-          constrainExitDataStateVariables(ScopeReference{instance,process});
-      }
-      else {
-        // TODO: exit data state must be the same as entry data state
-      }
-      sumVariables += variables.back().get();
-
-      // ensure that first i exit data states are smaller or equal first i entry data states
-      CP::LinearExpression sumFirstEntryDataStates(0);
-      CP::LinearExpression sumFirstExitDataStates(0);
-      for ( size_t j = 0; j <= i ; j++ ) {
-        sumFirstEntryDataStates += entryDataState.at(reference).at(ScopeReference{instance,scopeOwningData})[j].get();
-        sumFirstExitDataStates += variables[j].get();
-      }
-      model.addConstraint( sumFirstExitDataStates <= sumFirstEntryDataStates );
-    }
-    exitDataState[reference].emplace( ScopeReference{instance,scopeOwningData}, std::move(variables) );
-    // if and only if the node is visited, exactly one of the variables must be true
-    model.addConstraint( sumVariables == nodeVariables.at(reference) );
-  }
-}
-
-void CPController::constrainExitDataStateVariables(ScopeReference reference) {
-  // TODO: exit data state of scope must be higher or equal than exit data state of each descendant
-}
-
-void CPController::createSequenceFlowTraversalVariables(SequenceFlowReference reference) {
-}
-*/
-
-///  TODO: ensure that the highest entry data state remains smaller than the sum of sequential activities beeing used 
-///  TODO: ensure that the highest exit data state remains smaller or equal than the sum of sequential activities beeing used 
-///  TODO: add constraint that the the sum of entry data state variables for each sequential activity and each data state is one
 

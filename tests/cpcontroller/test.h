@@ -1,4 +1,5 @@
-
+#include "message/test.h"
+/*
 #include "process/test.h"
 
 // Activities
@@ -28,6 +29,9 @@
 // Events
 #include "timer/test.h"
 
+// Messages
+#include "message/test.h"
+*/
 /*
 //#include "request/test.h" // TODO: Check allocation id in content of request message
 
@@ -42,8 +46,6 @@
 #include "errorevent/test.h"
 #include "escalationevent/test.h"
 
-// Messages
-#include "message/test.h"
 // Boundary events
 #include "boundaryevent/test.h"
 // Event subprocesses

@@ -12,6 +12,9 @@
 #include "dispatcher/ReadyHandler.h"
 #include "dispatcher/DeterministicTaskCompletion.h"
 #include "model/bpmnos/src/extensionElements/Gatekeeper.h"
+#include "model/bpmnos/src/extensionElements/Choice.h"
+#include "model/bpmnos/src/extensionElements/MessageDefinition.h"
+#include "model/bpmnos/src/extensionElements/Content.h"
 #include "model/utility/src/tuple_map.h"
 #include <cp.h>
 #include <unordered_map>
@@ -59,7 +62,9 @@ protected:
   LIMEX::Handle<CP::Expression,CP::Expression> limexHandle;
   void createCP(); /// Method creating the constraint program
   void createGlobalVariables();
-  void createMessageVariables();
+  void createMessageFlowVariables();
+  void createMessagingConstraints();
+  void createMessageHeader(const Vertex* vertex);
   void createMessageContent(const Vertex* vertex);
   std::vector< const Vertex* > getReachableVertices(const Vertex* initialVertex); /// Returns a topologically sorted vector of all vertices reachable from the given vertex
   void initializeVertices(const Vertex* initialVertex);
@@ -120,6 +125,9 @@ protected:
   CP::Expression createOperatorExpression( const Model::Expression& operator_, std::tuple< std::vector<AttributeVariables>, std::vector<AttributeVariables>, std::vector<AttributeVariables> >& localVariables );
   std::pair< CP::Expression, CP::Expression > getLocalAttributeVariables( const Model::Attribute* attribute, std::tuple< std::vector<AttributeVariables>, std::vector<AttributeVariables>, std::vector<AttributeVariables> >& localVariables );
 
+  const BPMNOS::Model::Choice* findChoice(const std::vector< std::unique_ptr<BPMNOS::Model::Choice> >& choices, const BPMNOS::Model::Attribute* attribute) const;
+
+  const BPMNOS::Model::Content* findContent(const BPMNOS::Model::MessageDefinition* messageDefinition, const BPMNOS::Model::Attribute* attribute) const;
   
   std::vector<CPController::AttributeVariables> createUniquelyDeducedEntryStatus(const Vertex* vertex, const BPMNOS::Model::AttributeRegistry& attributeRegistry, std::vector<AttributeVariables>& inheritedStatus);
   std::vector<AttributeVariables> createAlternativeEntryStatus(const Vertex* vertex, const BPMNOS::Model::AttributeRegistry& attributeRegistry, std::vector< std::pair<const CP::Variable&, std::vector<AttributeVariables>& > > alternatives);
@@ -127,26 +135,7 @@ protected:
   CP::Expression getLoopIndex(const Vertex* vertex);
   void createLoopEntryStatus(const Vertex* vertex);
   std::vector<CPController::AttributeVariables> createLoopExitStatus(const Vertex* vertex);
-  
-/*
-  std::unordered_map<const BPMN::MessageThrowEvent*, std::vector<BPMNOS::number> > originInstances; /// Map containing all instance identifiers for all message throw events
-
-  auto getReachableEndNodes( const BPMN::Scope* scope ) {
-    // Check if the given scope exists in the map
-    auto it = reachableFlowNodes.find(scope);
-    if (it == reachableFlowNodes.end()) {
-      assert(!"Unknown scope");
-    }
-
-    // Use ranges and views to filter nodes with empty outgoing vectors
-    auto reachableEndNodes = it->second | std::ranges::views::filter([](const BPMN::FlowNode* node) {
-        return node->outgoing.empty();
-    });
-
-    return reachableEndNodes;
-  };
-*/
-  
+    
   struct pair_hash {
     template <class T1, class T2>
     std::size_t operator () (const std::pair<T1,T2> &p) const {
@@ -161,7 +150,6 @@ protected:
   };
   
   std::vector<const Vertex*> vertices; /// Container of all vertices considered
-//  BPMNOS::tuple_map< std::tuple< const BPMN::Node*, const BPMNOS::number, const Vertex::Type>, const Vertex* > vertexMap; /// Map holding allowing to access vertices by their node, instanceId, and type
   std::vector<const Vertex*> messageRecipients; /// Container of all vertices catching a message
 
   std::unordered_map< const Vertex*, const CP::Variable& > position; /// Variables holding sequence positions for all vertices
@@ -169,6 +157,9 @@ protected:
 
   std::unordered_map< std::pair< const Vertex*, const Vertex* >, const CP::Variable&, pair_hash > tokenFlow; /// Variables indicating whether the a token flows from one vertex to another
   std::unordered_map< std::pair< const Vertex*, const Vertex* >, const CP::Variable&, pair_hash > messageFlow; /// Variables indicating whether the a token flows from one vertex to another
+
+  std::unordered_map< const Vertex*, std::unordered_map< std::string, AttributeVariables> > messageHeader; /// Variables representing the header of a message originating at a vertex
+  std::unordered_map< const Vertex*, std::unordered_map< std::string, AttributeVariables> > messageContent; /// Variables representing the content of a message originating at a vertex
 
   std::vector< IndexedAttributeVariables > globals; /// Variables representing global attributes after i-th modification
   std::unordered_map< const Vertex*, const CP::Variable& > globalIndex; /// Variables representing an index representing the state of the global attributes
@@ -181,9 +172,6 @@ protected:
 
 
   std::unordered_map< std::pair< const Vertex*, const Vertex* >, std::vector<AttributeVariables>, pair_hash > statusFlow; /// Variables representing status attributes flowing from one vertex to another
-
-  std::unordered_map< const Vertex*, std::vector< std::tuple< std::string_view, size_t, AttributeVariables> > > messageContent; /// Variables representing status attributes of a vertex
-
 
   std::queue< std::pair< RequestType, const Vertex* > > decisionQueue; /// The queue of decisions to be made
 public:
@@ -207,68 +195,6 @@ protected:
   const Vertex* entry(const Vertex* vertex);
   const Vertex* exit(const Vertex* vertex);
   std::unique_ptr<CP::Solution> _solution;
-/* 
-  std::unordered_map<const BPMNOS::Model::Attribute*, const BPMN::Scope* > dataOwner;/// Map allowing to look up the scope owning a data attribute
-  std::unordered_map<const BPMN::Scope*, std::vector<const BPMN::Node* > > sequentialActivities;/// Map allowing to look up the sequential activities that may change a data attribute (assumimng that intermediate changes are not propagated)
-  
-  using NodeReference = std::pair<size_t, const BPMN::Node*>;
-  using DataReference = std::pair<size_t, const BPMNOS::Model::Attribute*>;
-  using MessageCatchReference = std::pair<size_t, const BPMN::MessageCatchEvent*>;
-  using MessageThrowReference = std::pair<size_t, const BPMN::MessageThrowEvent*>;
-  using ScopeReference = std::pair<size_t, const BPMN::Scope*>;
-  using SequenceFlowReference = std::pair<size_t,const BPMN::SequenceFlow*>;
-
-  template <typename T>
-  std::string identifier(const std::pair<size_t, const T*>& reference) {
-    return BPMNOS::to_string(reference.first,STRING) + "," + reference.second->id;
-  }
-
-  template <typename ReferenceType, typename ValueType>
-  using variable_map = std::unordered_map<ReferenceType, ValueType, pair_hash>;
-
-
-  variable_map<NodeReference, const CP::Variable&> nodeVariables; 
-  variable_map<SequenceFlowReference, const CP::Variable&> sequenceFlowVariables; 
-  variable_map<MessageCatchReference, variable_map<MessageThrowReference, const CP::Variable&> > messageFlowVariables; 
-  
-  std::vector<AttributeVariables> globals; 
-  variable_map<DataReference, std::vector< AttributeVariables> > dataState; /// Variables representing data attributes after i-th activity of a sequential performer is conducted
-
-  variable_map<NodeReference, variable_map<ScopeReference, std::vector< std::reference_wrapper< const CP::Variable > > > > entryDataState; /// Binary variables indicating the data states upon entry
-  variable_map<NodeReference, variable_map<ScopeReference, std::vector< std::reference_wrapper< const CP::Variable > > > > exitDataState; /// Binary variables indicating the data states upon exit
-
-  variable_map<NodeReference, std::vector<AttributeVariables> > entryData; /// Variables representing data state upon entry to a node
-  variable_map<NodeReference, std::vector<AttributeVariables> > exitData;  /// Variables representing data state upon exit of a node
-
-  variable_map<NodeReference, std::vector<AttributeVariables> > entryStatus;
-  variable_map<NodeReference, std::vector<AttributeVariables> > exitStatus; 
-  
-  variable_map<NodeReference, std::vector< std::vector<AttributeVariables> > > interimData;  /// Variables representing data attributes after the i-th operator is applied
-  variable_map<NodeReference, std::vector< std::vector<AttributeVariables> > > interimStatus;  /// Variables representing data attributes after i-th operator is applied
-
-
-private:
-  std::unordered_map<NodeReference, std::set<const BPMN::Scope*>, pair_hash > scopesOwningData;
-  std::set<NodeReference> pendingEntry;
-  std::list<NodeReference> pendingExit;
-  void addChildren(ScopeReference reference);
-  void addSuccessors(NodeReference reference);
-
-  void addGlobalVariable( const BPMNOS::Model::Attribute* attribute, std::optional<BPMNOS::number> value );
-  
-  bool checkEntryDependencies(NodeReference reference);
-  bool checkExitDependencies(NodeReference reference);
-  
-  void addEntryVariables(NodeReference reference);  
-  void createNodeTraversalVariables(NodeReference reference); /// x_n
-  void createEntryDataStateVariables(NodeReference reference); /// y^entry_{n,s,i} where n is a node, s is a scope with data, and i is a non-negative index for the entry data state at n for data belonging to s 
-  void deduceEntryAttributeVariable(std::vector<AttributeVariables>& attributeVariables, const BPMNOS::Model::Attribute* attribute, NodeReference reference, variable_map<NodeReference, std::vector<AttributeVariables> >& entryAttributes, variable_map<NodeReference, std::vector<AttributeVariables> >& exitAttributes);
-
-  void addExitVariables(NodeReference reference);
-  void createExitDataStateVariables(NodeReference reference); /// y^exit_{n,s,i} where n is a node, s is a scope with data, and i is a non-negative index for the exit data state at n for data belonging to s 
-  void constrainExitDataStateVariables(ScopeReference reference); /// y^exit_{n,s,i} where n is a node, s is a scope with data, and i is a non-negative index for the exit data state at n for data belonging to s 
-//  void createSequenceFlowTraversalVariables(SequenceFlowReference reference);
-*/
 };
 
 } // namespace BPMNOS::Execution
