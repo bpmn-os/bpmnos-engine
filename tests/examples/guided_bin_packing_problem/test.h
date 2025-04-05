@@ -51,11 +51,11 @@ SCENARIO( "Guided bin packing problem", "[examples][bin_packing_problem]" ) {
       THEN( "Then Item3 is allocated before Item2 which is allocated before Item1" ) {
         auto decisionLog = recorder.find(nlohmann::json{{"decision","messagedelivery"}});
         REQUIRE( decisionLog.size() == 3 );
-        REQUIRE( decisionLog[0]["message"]["header"]["sender"] == "Item3" );
+        REQUIRE( decisionLog[0]["message"]["header"]["sender"] == std::to_string(stringRegistry("Item3")) );
         REQUIRE( decisionLog[0]["evaluation"] == 18);
-        REQUIRE( decisionLog[1]["message"]["header"]["sender"] == "Item2" );
+        REQUIRE( decisionLog[1]["message"]["header"]["sender"] == std::to_string(stringRegistry("Item2")) );
         REQUIRE( decisionLog[1]["evaluation"] == 3);
-        REQUIRE( decisionLog[2]["message"]["header"]["sender"] == "Item1" );
+        REQUIRE( decisionLog[2]["message"]["header"]["sender"] == std::to_string(stringRegistry("Item1")) );
         REQUIRE( decisionLog[2]["evaluation"] == 20);
       }
       THEN( "Then Item3 is allocated before Item2 which is allocated before Item1" ) {
