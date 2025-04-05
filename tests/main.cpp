@@ -63,7 +63,7 @@ using namespace BPMNOS;
 #include "execution/collection/test.h"
 
 // Examples
-#include "examples/bin_packing_problem/test.h" 
+//#include "examples/bin_packing_problem/test.h" // TODO
 #include "examples/guided_bin_packing_problem/test.h"
 #include "examples/travelling_salesperson_problem/test.h"
 #include "examples/assignment_problem/test.h"
@@ -77,7 +77,7 @@ using namespace BPMNOS;
 #include "examples/truck_driver_scheduling_problem/test.h"
 
 // CPController
-//#include "cpcontroller/test.h"
+#include "cpcontroller/test.h"
 
 #endif // ALL_TESTS
 

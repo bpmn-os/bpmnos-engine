@@ -1,5 +1,5 @@
-//#include "message/test.h"
-
+#include "message/test.h"
+/*
 #include "process/test.h"
 
 // Activities
@@ -31,7 +31,7 @@
 
 // Messages
 #include "message/test.h"
-
+*/
 /*
 //#include "request/test.h" // TODO: Check allocation id in content of request message
 

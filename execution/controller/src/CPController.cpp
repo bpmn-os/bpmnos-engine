@@ -1271,7 +1271,7 @@ std::cerr << attribute->name << ": " << attribute->index << " == " <<  variables
     std::vector<AttributeVariables> variables;
     for ( auto attribute : extensionElements->attributeRegistry.statusAttributes ) {
       auto& [ defined, value ] = localStatus.at(attribute->index);
-      if ( attribute->index == BPMNOS::Model::ExtensionElements::Index::Timestamp ) {
+      if ( attribute->index == BPMNOS::Model::ExtensionElements::Index::Timestamp && vertex->node->represents<BPMN::Task>() ) {
         // exit timestamp may be later than deduced timestamp
         variables.emplace_back(
           model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->reference() + "}," + attribute->id, visit.at(vertex) ), 
@@ -1320,29 +1320,11 @@ std::cerr << "JOJO3" << std::endl;
     auto& entryStatus = status.at( entry(vertex) );
     for ( auto attribute : extensionElements->attributeRegistry.statusAttributes ) {
       if ( attribute->index == BPMNOS::Model::ExtensionElements::Index::Timestamp ) {
-        // timestamp is to be decided satisfying constraints
+        // timestamp is implicitly determined as the time when the message is delivered
         variables.emplace_back(
           model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->reference() + "}," + attribute->id, visit.at(vertex) ), 
           model.addRealVariable("value_{" + vertex->reference() + "}," + attribute->id )
         );
-/*
-        // deduce timestamp from time of message delivery
-        auto messageFlowVariables = messageFlow | std::ranges::views::filter([&](const auto& entry) {
-          return entry.first.second == vertex;
-        });
-
-        CP::Expression timestamp(0);
-        for (auto& [edge,messageFlowVariable] : messageFlowVariables) {
-std::cerr << edge.first->reference() << std::endl;
-          assert( status.contains(edge.first) );
-          timestamp = timestamp + messageFlowVariable * status.at(edge.first)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value;
-        }
-
-        variables.emplace_back(
-          model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->reference() + "}," + attribute->id, visit.at(vertex) ), 
-          model.addVariable(CP::Variable::Type::REAL, "value_{" + vertex->reference() + "}," + attribute->id, CP::max( entryStatus[attribute->index].value, timestamp) )
-        );
-*/        
       }
       else if ( auto content = findContent(messageDefinition, attribute) ) {
         auto& [ defined, value ] = messageContentVariables.at(content->key);
@@ -1585,61 +1567,32 @@ std::cerr << "Attribute: " << attribute->id << std::endl;
           attribute->index == BPMNOS::Model::ExtensionElements::Index::Timestamp &&
           vertex->exit<BPMN::ReceiveTask>() 
       ) {
-        // timestamp is to be decided satisfying constraints
+        // timestamp is implicitly determined as the time when the message is delivered
         variables.emplace_back(
           model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->reference() + "}," + attribute->id, visit.at(vertex) ), 
           model.addRealVariable("value_{" + vertex->shortReference() + ",0}," + attribute->id )
         );
-/*
-        // deduce timestamp from time of message delivery
-        auto messageFlowVariables = messageFlow | std::ranges::views::filter([&](const auto& entry) {
-          return entry.first.second == vertex;
-        });
-
-        CP::Expression timestamp(0);
-        for (auto& [edge,messageFlowVariable] : messageFlowVariables) {
-          timestamp = timestamp + messageFlowVariable * status.at(edge.first)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value;
-        }
-
-        variables.emplace_back(
-          model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->shortReference() + ",0}," + attribute->id, visit.at(vertex) ), 
-          model.addVariable(CP::Variable::Type::REAL, "value_{" + vertex->shortReference() + ",0}," + attribute->id,    CP::max( status.at(entry(vertex))[BPMNOS::Model::ExtensionElements::Index::Timestamp].value, timestamp ) )
-        );        
-*/
       }
-      else {
-        if ( 
+      else if ( 
           attribute->category == BPMNOS::Model::Attribute::Category::STATUS &&
           attribute->index == BPMNOS::Model::ExtensionElements::Index::Timestamp &&
-          ( vertex->exit<BPMN::SendTask>() || vertex->exit<BPMNOS::Model::DecisionTask>())
-        ) {
-std::cerr << vertex->reference() << std::endl;        
-          if ( vertex->exit<BPMN::ReceiveTask>() ) {
-            // TODO: deduce timestamp from time of message delivery
-            assert(!"Not yet implemented");
-          }
-          else if ( vertex->exit<BPMN::SendTask>() ) {
-            // TODO: deduce timestamp from time of message delivery
-            assert(!"Not yet implemented");
-          }
-          else {
-            assert( vertex->exit<BPMNOS::Model::DecisionTask>() );
-            // timestamp is implicitly determined as the time when the choice is made
-            variables.emplace_back(
-              model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->shortReference() + ",0}," + attribute->id, visit.at(vertex) ), 
-              model.addRealVariable("value_{" + vertex->shortReference() + ",0}," + attribute->id )
-            );
-            auto& timestamp = variables.back().value;
-            model.addConstraint( visit.at(vertex).implies( timestamp >= status.at(entry(vertex))[BPMNOS::Model::ExtensionElements::Index::Timestamp].value ) );
-          }
-        }
-        else {
-          // all local attribute variables are deduced from initial variables upon entry
+          vertex->exit<BPMNOS::Model::DecisionTask>()
+      ) {
+          assert( vertex->exit<BPMNOS::Model::DecisionTask>() );
+          // timestamp is implicitly determined as the time when the choice is made
           variables.emplace_back(
-            model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->shortReference() + ",0}," + attribute->id, defined ), 
-            model.addVariable(CP::Variable::Type::REAL, "value_{" + vertex->shortReference() + ",0}," + attribute->id, value )
+            model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->shortReference() + ",0}," + attribute->id, visit.at(vertex) ), 
+            model.addRealVariable("value_{" + vertex->shortReference() + ",0}," + attribute->id )
           );
-        }
+          auto& timestamp = variables.back().value;
+          model.addConstraint( visit.at(vertex).implies( timestamp >= status.at(entry(vertex))[BPMNOS::Model::ExtensionElements::Index::Timestamp].value ) );
+      }
+      else {
+        // all local attribute variables are deduced from initial variables upon entry
+        variables.emplace_back(
+          model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->shortReference() + ",0}," + attribute->id, defined ), 
+          model.addVariable(CP::Variable::Type::REAL, "value_{" + vertex->shortReference() + ",0}," + attribute->id, value )
+        );
       }
 std::cerr << "Attribute: " << attribute->id << " (done)" << std::endl;
     }
