@@ -53,7 +53,7 @@ void CPController::subscribe(Engine* engine) {
   );
 }
 
-void CPController::setMessageFlowVariableValue( const Vertex* sender, const Vertex* recipient ) {
+void CPController::setMessageFlowVariableValues( const Vertex* sender, const Vertex* recipient ) {
 std::cerr << "Sen:" << sender->reference() << std::endl;  
   for ( const Vertex& candidate : sender->recipients ) {
 std::cerr << "Rec:" << candidate.reference() << std::endl;  
@@ -63,6 +63,21 @@ std::cerr << "Rec:" << candidate.reference() << std::endl;
   for ( const Vertex& candidate : recipient->senders ) {
     assert( messageFlow.contains({&candidate,recipient}) );
     _solution->setVariableValue( messageFlow.at({&candidate,recipient}), (double)(&candidate == sender) );
+  }
+  // set recipient content variables
+  auto& recipientContentMap = messageContent.at(recipient);
+  auto& senderContentMap = messageContent.at(sender);
+  for ( auto& [key, recipientContent ] : recipientContentMap ) {
+    assert( senderContentMap.contains(key) );
+    auto& senderContent = senderContentMap.at(key);
+    AttributeEvaluation evaluation(
+      _solution->evaluate( senderContent.defined ),
+      _solution->evaluate( senderContent.value )
+    );
+    if ( evaluation ) {
+      _solution->setVariableValue( recipientContent.defined, evaluation.defined() );
+      _solution->setVariableValue( recipientContent.value, evaluation.value() );
+    }
   }
 }
 
@@ -345,15 +360,9 @@ std::cerr << "pendingExitDecisions: " << !systemState->pendingExitDecisions.empt
     }
     case MessageDeliveryRequest:
     {
-std::cerr << "M" << std::endl;
       if ( auto token = getToken(systemState->pendingMessageDeliveryDecisions) ) {
-std::cerr << "MM: " << vertex->reference() << std::endl;
-std::cerr << token->jsonify() << std::endl;
-std::cerr << "?" << std::endl;
         event = createMessageDeliveryEvent( systemState, token, vertex );
-std::cerr << "!" << std::endl;
       }
-std::cerr << "MMM" << std::endl;
       // no event is create if decision is not yet requested
       break;
     }
@@ -800,6 +809,21 @@ void CPController::createMessageHeader(const Vertex* vertex) {
       continue;
     }
     auto& header = messageDefinition->header[i];
+    if ( 
+      ( i == BPMNOS::Model::MessageDefinition::Index::Sender && vertex->entry<BPMN::MessageThrowEvent>() ) ||
+      ( i == BPMNOS::Model::MessageDefinition::Index::Recipient && vertex->entry<BPMN::MessageCatchEvent>() )
+    ) {
+      // set sender or recipient instance
+      messageHeaderVariables.emplace( 
+        header, 
+        AttributeVariables{
+          model.addVariable(CP::Variable::Type::BOOLEAN, "header_defined_{" + vertex->shortReference() + "}," + header, true ), 
+          model.addVariable(CP::Variable::Type::REAL, "header_value_{" + vertex->shortReference() + "}," + header, (double)vertex->instanceId )
+        }
+      );
+      continue;
+    }
+
 std::cerr << "header: " << header << "/" << messageDefinition->parameterMap.contains(header) << std::endl;
     if ( messageDefinition->parameterMap.contains(header) ) {
       const BPMNOS::Model::Attribute* attribute = 

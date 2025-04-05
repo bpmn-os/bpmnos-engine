@@ -90,7 +90,6 @@ std::shared_ptr<Event> SeededGreedyController::createChoiceEvent(const SystemSta
 }
 
 std::shared_ptr<Event> SeededGreedyController::createMessageDeliveryEvent(const SystemState* systemState, Token* token, const Vertex* vertex) {
-std::cerr << "V" << std::endl;
   // instant message delivery
   setTimestamp(vertex,systemState->getTime());
   
@@ -110,7 +109,6 @@ std::cerr << "V" << std::endl;
     }
   }
 
-std::cerr << "VV" << std::endl;
   // evaluate message candidates
   std::shared_ptr<MessageDeliveryDecision> best = nullptr;
   for ( auto& message : candidates ) {
@@ -123,7 +121,6 @@ std::cerr << "VV" << std::endl;
       best = decision;
     }
   }
-std::cerr << "VVV" << std::endl;
   
   if (!best) {
     // no message can be delivered
@@ -135,21 +132,7 @@ std::cerr << "VVV" << std::endl;
   auto senderId = message->header[ BPMNOS::Model::MessageDefinition::Index::Sender ].value();
   assert( flattenedGraph.vertexMap.contains({senderId,{},message->origin}) );
   auto& [senderEntry,senderExit] = flattenedGraph.vertexMap.at({senderId,{},message->origin}); // TODO: sender must not be within loop
-std::cerr << "VVVV" << std::endl;
-  setMessageFlowVariableValue(&senderEntry,vertex);
-
-std::cerr << "VVVVV" << std::endl;
-/*
-  auto& siblings = flattenedGraph.vertexMap.at(message->origin).at(message->header[ BPMNOS::Model::MessageDefinition::Index::Sender ].value());
-
-
-  assert( flattenedGraph.vertexMap.contains(message->origin) );
-  assert( flattenedGraph.vertexMap.at(message->origin).contains(message->header[ BPMNOS::Model::MessageDefinition::Index::Sender ].value()) );
-  auto& siblings = flattenedGraph.vertexMap.at(message->origin).at(message->header[ BPMNOS::Model::MessageDefinition::Index::Sender ].value());
-  auto senderEntry = &siblings.front().get(); // TODO: Multi-instance/loop
-//  auto sender = vertexMap.at( std::make_tuple(message->origin, message->header[ BPMNOS::Model::MessageDefinition::Index::Sender ].value(), Vertex::Type::ENTRY) );
-  setMessageFlowVariableValue(senderEntry,vertex);
-*/
+  setMessageFlowVariableValues(&senderEntry,vertex);
   
   return best;
 }
