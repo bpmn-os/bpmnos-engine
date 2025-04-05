@@ -178,7 +178,7 @@ protected:
 public:
   virtual CP::Solution& createSolution(); /// Method creating a solution of the CP
   const CP::Solution& getSolution() const; /// Method providing access to the solution of the CP
-  void setMessageFlowVariableValues( const Vertex* sender, const Vertex* recipient );
+  void setMessageDeliveryVariableValues( const Vertex* sender, const Vertex* recipient, BPMNOS::number timestamp );
 protected:
   void createDecisionQueue(); /// Method creating the decision queue from CP
   const Vertex* getVertex( const Token* token ) const;

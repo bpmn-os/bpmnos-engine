@@ -36,19 +36,12 @@ CP::Solution& SeededGreedyController::createSolution() {
   return solution;
 }
 
-void SeededGreedyController::connect(Mediator* mediator) {
-  mediator->addSubscriber(this, 
-    Execution::Observable::Type::Message
-  );
-  
-  CPController::connect(mediator);
-}
-
 void SeededGreedyController::notice(const Observable* observable) {
   CPController::notice(observable);
   if ( observable->getObservableType() == Observable::Type::Message ) {
     auto message = static_cast<const Message*>(observable);
     if ( message->state == Message::State::CREATED ) {
+std::cerr << "Message created: " << message->jsonify() << std::endl;
       messages.emplace_back( message->weak_from_this() );
     }
   }
@@ -90,6 +83,7 @@ std::shared_ptr<Event> SeededGreedyController::createChoiceEvent(const SystemSta
 }
 
 std::shared_ptr<Event> SeededGreedyController::createMessageDeliveryEvent(const SystemState* systemState, Token* token, const Vertex* vertex) {
+std::cerr << "SeededGreedyController::createMessageDeliveryEvent" << std::endl;
   // instant message delivery
   setTimestamp(vertex,systemState->getTime());
   
@@ -98,13 +92,17 @@ std::shared_ptr<Event> SeededGreedyController::createMessageDeliveryEvent(const 
   auto recipientHeader = messageDefinition->getRecipientHeader(token->getAttributeRegistry(),token->status,*token->data,token->globals);
   auto senderCandidates = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->messageCandidates;
   std::list< std::shared_ptr<const Message> > candidates;
+std::cerr << "Messages: " << !messages.empty() << std::endl;
+std::cerr << "senderCandidate: " << senderCandidates.front()->id << std::endl;
   // determine candidate messages
   for ( auto& [ message_ptr ] : messages ) {
+std::cerr << "Message: " << message_ptr.lock()->jsonify() << "/" << message_ptr.lock()->origin->id << "/" << message_ptr.lock()->matches(recipientHeader) << std::endl;
     if( auto message = message_ptr.lock();
       message &&
       std::ranges::contains(senderCandidates, message->origin) &&
       message->matches(recipientHeader)
     ) {
+std::cerr << "Candidate: " << message->jsonify() << std::endl;
       candidates.emplace_back( message );
     }
   }
@@ -123,6 +121,7 @@ std::shared_ptr<Event> SeededGreedyController::createMessageDeliveryEvent(const 
   }
   
   if (!best) {
+assert(!"no message found");
     // no message can be delivered
     return std::make_shared<ErrorEvent>(token);
   }
@@ -132,7 +131,7 @@ std::shared_ptr<Event> SeededGreedyController::createMessageDeliveryEvent(const 
   auto senderId = message->header[ BPMNOS::Model::MessageDefinition::Index::Sender ].value();
   assert( flattenedGraph.vertexMap.contains({senderId,{},message->origin}) );
   auto& [senderEntry,senderExit] = flattenedGraph.vertexMap.at({senderId,{},message->origin}); // TODO: sender must not be within loop
-  setMessageFlowVariableValues(&senderEntry,vertex);
+  setMessageDeliveryVariableValues(&senderEntry,vertex,systemState->getTime());
   
   return best;
 }

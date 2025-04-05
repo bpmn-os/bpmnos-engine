@@ -53,7 +53,7 @@ void CPController::subscribe(Engine* engine) {
   );
 }
 
-void CPController::setMessageFlowVariableValues( const Vertex* sender, const Vertex* recipient ) {
+void CPController::setMessageDeliveryVariableValues( const Vertex* sender, const Vertex* recipient, BPMNOS::number timestamp ) {
 std::cerr << "Sen:" << sender->reference() << std::endl;  
   for ( const Vertex& candidate : sender->recipients ) {
 std::cerr << "Rec:" << candidate.reference() << std::endl;  
@@ -64,6 +64,14 @@ std::cerr << "Rec:" << candidate.reference() << std::endl;
     assert( messageFlow.contains({&candidate,recipient}) );
     _solution->setVariableValue( messageFlow.at({&candidate,recipient}), (double)(&candidate == sender) );
   }
+  // set message delivery time
+  if ( recipient->node->represents<BPMN::ReceiveTask>() || recipient->node->represents<BPMN::MessageStartEvent>() ) {
+assert(!"Not yet implemented");
+  }
+  else {
+    _solution->setVariableValue( status.at(recipient)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value, (double)timestamp );
+  }
+
   // set recipient content variables
   auto& recipientContentMap = messageContent.at(recipient);
   auto& senderContentMap = messageContent.at(sender);
@@ -352,6 +360,7 @@ std::cerr << "pendingExitDecisions: " << !systemState->pendingExitDecisions.empt
     }
     case ChoiceRequest:
     {
+std::cerr << "pendingChoiceDecisions: " << !systemState->pendingChoiceDecisions.empty() << std::endl;
       if ( auto token = getToken(systemState->pendingChoiceDecisions) ) {
         event = createChoiceEvent( systemState, token, vertex);
       }
@@ -360,6 +369,7 @@ std::cerr << "pendingExitDecisions: " << !systemState->pendingExitDecisions.empt
     }
     case MessageDeliveryRequest:
     {
+std::cerr << "pendingMessageDeliveryDecisions: " << !systemState->pendingMessageDeliveryDecisions.empty() << std::endl;
       if ( auto token = getToken(systemState->pendingMessageDeliveryDecisions) ) {
         event = createMessageDeliveryEvent( systemState, token, vertex );
       }
@@ -659,7 +669,7 @@ void CPController::createMessagingConstraints() {
       model.addConstraint( message <= visit.at(&sender) );
       
       model.addConstraint( message.implies( position.at(&sender) <= position.at(recipient) ) );
-/*
+
       // this should not be necessary as status variables are respectively deduced
       model.addConstraint(
         // if a message is sent from a sender to a recipient, the recipient's timestamp must not 
@@ -669,7 +679,7 @@ void CPController::createMessagingConstraints() {
           <= status.at(recipient)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value
         )
       );
-*/
+
       if ( sender.node->represents<BPMN::SendTask>() ) {
         if ( recipient->node->represents<BPMN::ReceiveTask>() || recipient->node->represents<BPMN::MessageStartEvent>() ) {
           auto& localStatus = std::get<0>(locals.at(recipient)[0]); // holds status just after message delivery         
@@ -1282,6 +1292,7 @@ std::cerr << attribute->name << ": " << attribute->index << " == " <<  variables
   }
 std::cerr << "JOJO3" << std::endl;  
   // copy entry status references
+  assert( status.contains(entryVertex) );
   std::vector<AttributeVariables> currentStatus = status.at(entryVertex);
   //std::vector<AttributeVariables> currentData = xxx.at(entryVertex);
   //std::vector<AttributeVariables> currentGlobal = xxx.at(entryVertex);
@@ -1301,6 +1312,7 @@ std::cerr << "JOJO3" << std::endl;
     }
 
     auto messageDefinition = extensionElements->messageDefinitions.size() == 1 ? extensionElements->messageDefinitions[0].get() : nullptr;
+    assert( messageContent.contains(vertex) ); 
     auto& messageContentVariables = messageContent.at(vertex);
 
     // create exit status
@@ -1308,6 +1320,12 @@ std::cerr << "JOJO3" << std::endl;
     auto& entryStatus = status.at( entry(vertex) );
     for ( auto attribute : extensionElements->attributeRegistry.statusAttributes ) {
       if ( attribute->index == BPMNOS::Model::ExtensionElements::Index::Timestamp ) {
+        // timestamp is to be decided satisfying constraints
+        variables.emplace_back(
+          model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->reference() + "}," + attribute->id, visit.at(vertex) ), 
+          model.addRealVariable("value_{" + vertex->reference() + "}," + attribute->id )
+        );
+/*
         // deduce timestamp from time of message delivery
         auto messageFlowVariables = messageFlow | std::ranges::views::filter([&](const auto& entry) {
           return entry.first.second == vertex;
@@ -1315,6 +1333,8 @@ std::cerr << "JOJO3" << std::endl;
 
         CP::Expression timestamp(0);
         for (auto& [edge,messageFlowVariable] : messageFlowVariables) {
+std::cerr << edge.first->reference() << std::endl;
+          assert( status.contains(edge.first) );
           timestamp = timestamp + messageFlowVariable * status.at(edge.first)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value;
         }
 
@@ -1322,6 +1342,7 @@ std::cerr << "JOJO3" << std::endl;
           model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->reference() + "}," + attribute->id, visit.at(vertex) ), 
           model.addVariable(CP::Variable::Type::REAL, "value_{" + vertex->reference() + "}," + attribute->id, CP::max( entryStatus[attribute->index].value, timestamp) )
         );
+*/        
       }
       else if ( auto content = findContent(messageDefinition, attribute) ) {
         auto& [ defined, value ] = messageContentVariables.at(content->key);
@@ -1345,8 +1366,10 @@ std::cerr << "JOJO3" << std::endl;
       }      
     }
     status.emplace( vertex, std::move(variables) );
+std::cerr << "JOJO4" << std::endl;  
     return;
   }
+std::cerr << "JOJO5" << std::endl;  
   
   if ( vertex->node->represents<BPMN::MessageStartEvent>() ) {
     // add entry restrictions of event-subprocess
@@ -1562,6 +1585,12 @@ std::cerr << "Attribute: " << attribute->id << std::endl;
           attribute->index == BPMNOS::Model::ExtensionElements::Index::Timestamp &&
           vertex->exit<BPMN::ReceiveTask>() 
       ) {
+        // timestamp is to be decided satisfying constraints
+        variables.emplace_back(
+          model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->reference() + "}," + attribute->id, visit.at(vertex) ), 
+          model.addRealVariable("value_{" + vertex->shortReference() + ",0}," + attribute->id )
+        );
+/*
         // deduce timestamp from time of message delivery
         auto messageFlowVariables = messageFlow | std::ranges::views::filter([&](const auto& entry) {
           return entry.first.second == vertex;
@@ -1576,6 +1605,7 @@ std::cerr << "Attribute: " << attribute->id << std::endl;
           model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->shortReference() + ",0}," + attribute->id, visit.at(vertex) ), 
           model.addVariable(CP::Variable::Type::REAL, "value_{" + vertex->shortReference() + ",0}," + attribute->id,    CP::max( status.at(entry(vertex))[BPMNOS::Model::ExtensionElements::Index::Timestamp].value, timestamp ) )
         );        
+*/
       }
       else {
         if ( 

@@ -16,7 +16,6 @@ namespace BPMNOS::Execution {
 class SeededGreedyController : public CPController {
 public:
   SeededGreedyController(const BPMNOS::Model::Scenario* scenario, Evaluator* evaluator);
-  void connect(Mediator* mediator);
   void notice(const Observable* observable) override;
   bool setSeed(const std::list<size_t>& seed);
   CP::Solution& createSolution() override; /// Method creating a solution of the CP
