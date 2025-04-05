@@ -58,7 +58,7 @@ nlohmann::ordered_json Message::jsonify() const {
       jsonObject["header"][headerName] = nullptr ;
     }
     else {
-      jsonObject["header"][headerName] = BPMNOS::to_string(header[i].value(),STRING);
+      jsonObject["header"][headerName] = BPMNOS::to_string(header[i].value(),DECIMAL);
     }
     ++i;
   }
