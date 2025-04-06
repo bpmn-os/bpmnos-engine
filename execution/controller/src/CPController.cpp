@@ -66,7 +66,7 @@ std::cerr << "Rec:" << candidate.reference() << std::endl;
   }
   // set message delivery time
   if ( recipient->node->represents<BPMN::ReceiveTask>() || recipient->node->represents<BPMN::MessageStartEvent>() ) {
-assert(!"Not yet implemented");
+    setLocalAttributeValue( recipient, BPMNOS::Model::ExtensionElements::Index::Timestamp, (double)timestamp );
   }
   else {
     _solution->setVariableValue( status.at(recipient)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value, (double)timestamp );
@@ -593,7 +593,7 @@ std::cerr << "constrainSequentialActivities" << std::endl;
 std::cerr << "createMessagingConstraints" << std::endl;
   createMessagingConstraints();
 std::cerr << "Done" << std::endl;
-std::cerr << model.stringify() << std::endl;  
+//std::cerr << model.stringify() << std::endl;  
 }
 
 void CPController::createGlobalVariables() {
@@ -668,7 +668,7 @@ void CPController::createMessagingConstraints() {
       model.addConstraint( message <= visit.at(recipient) );
       model.addConstraint( message <= visit.at(&sender) );
       
-      model.addConstraint( message.implies( position.at(&sender) <= position.at(recipient) ) );
+      model.addConstraint( message.implies( position.at(&sender) < position.at(recipient) ) );
 
       // this should not be necessary as status variables are respectively deduced
       model.addConstraint(
@@ -681,51 +681,21 @@ void CPController::createMessagingConstraints() {
       );
 
       if ( sender.node->represents<BPMN::SendTask>() ) {
-        if ( recipient->node->represents<BPMN::ReceiveTask>() || recipient->node->represents<BPMN::MessageStartEvent>() ) {
-          auto& localStatus = std::get<0>(locals.at(recipient)[0]); // holds status just after message delivery         
-          model.addConstraint(
-            message.implies (
-              status.at(exit(&sender))[BPMNOS::Model::ExtensionElements::Index::Timestamp].value
-              ==
-              localStatus[BPMNOS::Model::ExtensionElements::Index::Timestamp].value
-            )
-          );
-        }
-        else {
-          model.addConstraint(
-            message.implies (
-              status.at(exit(&sender))[BPMNOS::Model::ExtensionElements::Index::Timestamp].value
-              ==
-              status.at(recipient)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value
-            )
-          );
-        }
+        // exit at send task must be after message delivery
+        auto& recipientStatus = 
+          ( recipient->node->represents<BPMN::ReceiveTask>() || recipient->node->represents<BPMN::MessageStartEvent>() ) ?
+          std::get<0>(locals.at(recipient)[0]) : 
+          status.at(recipient)
+        ;          
+        model.addConstraint(
+          message.implies (
+            status.at(exit(&sender))[BPMNOS::Model::ExtensionElements::Index::Timestamp].value
+            >=
+            recipientStatus[BPMNOS::Model::ExtensionElements::Index::Timestamp].value
+          )
+        );
       }
 
-/*
-      // this should not be necessary
-      /// ASSUMPTION: receive tasks are exited immediately after message is delivered
-      if ( sender.node->represents<BPMN::SendTask>() ) {
-        // if a message is sent from a send task to a recipient, the recipient's timestamp must 
-        // be before the sender's exit timestamp
-        if ( config.instantExit ) {
-          model.addConstraint(
-            message.implies (
-              status.at(recipient)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value
-              == status.at(exit(&sender))[BPMNOS::Model::ExtensionElements::Index::Timestamp].value
-            )
-          );
-        }
-        else {
-          model.addConstraint(
-            message.implies (
-              status.at(recipient)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value
-              <= status.at(exit(&sender))[BPMNOS::Model::ExtensionElements::Index::Timestamp].value
-            )
-          );
-        }
-      }
-*/
       // add message header constraints
       assert( messageHeader.contains(entry(recipient)) );
       assert( messageHeader.contains(&sender) );
@@ -762,33 +732,10 @@ void CPController::createMessagingConstraints() {
   for ( auto sender : messageSenders ) {
     assert( sender->entry<BPMN::MessageThrowEvent>() );
     CP::Expression messagesDelivered(0);
-
     for ( Vertex& recipient : sender->recipients ) {
       assert( recipient.exit<BPMN::MessageCatchEvent>() );
       auto& message = messageFlow.at({sender,&recipient});
       messagesDelivered = messagesDelivered + message;
-
-      if ( sender->entry<BPMN::SendTask>() ) {
-        if ( recipient.node->represents<BPMN::ReceiveTask>() || recipient.node->represents<BPMN::MessageStartEvent>() ) {
-          auto& localStatus = std::get<0>(locals.at(&recipient)[0]); // holds status just after message delivery         
-          model.addConstraint(
-            message.implies (
-              status.at(exit(sender))[BPMNOS::Model::ExtensionElements::Index::Timestamp].value
-              >=
-              localStatus[BPMNOS::Model::ExtensionElements::Index::Timestamp].value
-            )
-          );
-        }
-        else {
-          model.addConstraint(
-            message.implies (
-              status.at(exit(sender))[BPMNOS::Model::ExtensionElements::Index::Timestamp].value
-              >=
-              status.at(&recipient)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value
-            )
-          );
-        }
-      }
     }
     if ( sender->entry<BPMN::SendTask>() ) {
       // a message thrown at a send task must be delivered to at exactly one recipient
@@ -1565,21 +1512,9 @@ std::cerr << "Attribute: " << attribute->id << std::endl;
       else if ( 
           attribute->category == BPMNOS::Model::Attribute::Category::STATUS &&
           attribute->index == BPMNOS::Model::ExtensionElements::Index::Timestamp &&
-          vertex->exit<BPMN::ReceiveTask>() 
+          ( vertex->exit<BPMN::MessageCatchEvent>() || vertex->exit<BPMNOS::Model::DecisionTask>() )
       ) {
-        // timestamp is implicitly determined as the time when the message is delivered
-        variables.emplace_back(
-          model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->reference() + "}," + attribute->id, visit.at(vertex) ), 
-          model.addRealVariable("value_{" + vertex->shortReference() + ",0}," + attribute->id )
-        );
-      }
-      else if ( 
-          attribute->category == BPMNOS::Model::Attribute::Category::STATUS &&
-          attribute->index == BPMNOS::Model::ExtensionElements::Index::Timestamp &&
-          vertex->exit<BPMNOS::Model::DecisionTask>()
-      ) {
-          assert( vertex->exit<BPMNOS::Model::DecisionTask>() );
-          // timestamp is implicitly determined as the time when the choice is made
+          // timestamp cannot be deduced as must be constrained
           variables.emplace_back(
             model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->shortReference() + ",0}," + attribute->id, visit.at(vertex) ), 
             model.addRealVariable("value_{" + vertex->shortReference() + ",0}," + attribute->id )
@@ -2250,22 +2185,31 @@ void CPController::createSequenceConstraints(const Vertex* vertex) {
     assert( status.contains(vertex) );
     assert( status.at(vertex).size() >= BPMNOS::Model::ExtensionElements::Index::Timestamp );
 
-    model.addConstraint( position.at(predecessor) + 1 <= position.at(vertex) );
+    model.addConstraint( position.at(predecessor) < position.at(vertex) );
 /*
 std::cerr << predecessor->reference() << " before " << vertex->reference()  << std::endl;  
 std::cerr << visit.at(vertex).stringify() << "\n implies \n";
 std::cerr << status.at(predecessor)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value.stringify() << "\n <= \n";
 std::cerr << status.at(vertex)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value.stringify() << std::endl;
-*/    
-    model.addConstraint(
-      // if a vertex is visited, its timestamp must not be before the predecessors timestamp
-      // as all timestamps are non-negative and zero if not visited, no condition on a visit
-      // of the predecessor is required
-      ( visit.at(predecessor) && visit.at(vertex) ).implies(
-        status.at(predecessor)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value
-        <= status.at(vertex)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value
-      )
-    );
+*/  
+    if ( predecessor->node == vertex->node ) {  
+      model.addConstraint(
+        // predecessor and vertex are at the same node
+        ( visit.at(vertex) ).implies(
+          status.at(predecessor)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value
+          <= status.at(vertex)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value
+        )
+      );
+    }
+    else {
+      model.addConstraint(
+        // predecessor and vertex are at different nodes
+        ( visit.at(predecessor) && visit.at(vertex) ).implies(
+          status.at(predecessor)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value
+          <= status.at(vertex)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value
+        )
+      );
+    }
 //std::cerr << model.getConstraints().back().stringify() << std::endl;
   };
 

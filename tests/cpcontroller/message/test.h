@@ -106,7 +106,7 @@ SCENARIO( "Message tasks", "[cpcontroller][message]" ) {
 
       Execution::GuidedEvaluator evaluator;
       Execution::SeededGreedyController controller(scenario.get(), &evaluator);
-      controller.setSeed( Execution::CPSeed::defaultSeed( controller.getVertices().size() ) );
+      controller.setSeed( {1,2,3,4,9,10,11,12,13,14,15,16,5,6,7,8} );
 
       auto& solution = controller.createSolution();
       Execution::Engine engine;
@@ -123,12 +123,10 @@ SCENARIO( "Message tasks", "[cpcontroller][message]" ) {
 //std::cerr << "Solution:\n" << solution.stringify() << std::endl;
 //std::cerr << "Errors:\n" << solution.errors() << std::endl;
       THEN( "The solution is complete and satisfies all constraints" ) {
-/*
         auto terminationLog = recorder.find(nlohmann::json{{"event","termination"}});
         REQUIRE( terminationLog.empty() );  
         REQUIRE( solution.complete() );
-*/
-        REQUIRE( !solution.errors().empty() );
+        REQUIRE( solution.errors().empty() );
       }
     }
   }
