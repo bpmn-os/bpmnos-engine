@@ -1,4 +1,5 @@
 #include "Attribute.h"
+#include "ExtensionElements.h"
 #include "model/utility/src/Keywords.h"
 #include "Parameter.h"
 #include "Expression.h"
@@ -16,7 +17,13 @@ Attribute::Attribute(XML::bpmnos::tAttribute* attribute, Attribute::Category cat
   , name(getName(attribute->name.value.value))
 {
 //std::cerr << "Attribute: " << name << std::endl;
-  attributeRegistry.add(this); 
+  attributeRegistry.add(this);
+  if ( id == Keyword::Timestamp && index != ExtensionElements::Index::Timestamp ) {
+    throw std::runtime_error("Attribute: timestamp must be first status attribute");
+  }
+  if ( id == Keyword::Instance && index != ExtensionElements::Index::Instance ) {
+    throw std::runtime_error("Attribute: instance must be first data attribute");
+  }
   if ( expression ) {
     // expression requires pointer to target attribute
     const_cast<Expression*>(expression.get())->target = std::make_optional<const Attribute*>(this);
