@@ -1016,13 +1016,8 @@ std::cerr << "createEntryStatus: " << vertex->reference() << std::endl;
   if ( vertex->parent.has_value() ) {
     auto scope = vertex->parent.value().first.node;
     auto extensionElements = scope->extensionElements->as<BPMNOS::Model::ExtensionElements>();
-    if ( vertex->entry<BPMN::UntypedStartEvent>() ) {
-      // TODO: start-event
-      assert( vertex->predecessors.size() == 1 ); // parent vertex is the only predecessors
-      variables = createUniquelyDeducedEntryStatus(vertex, extensionElements->attributeRegistry, status.at(&vertex->predecessors.front().get()) );
-    }
-    else if ( vertex->entry<BPMN::TypedStartEvent>() ) {
-      // TODO: start-event
+    if ( vertex->entry<BPMN::UntypedStartEvent>() || vertex->entry<BPMN::TypedStartEvent>() ) {
+      variables = createUniquelyDeducedEntryStatus(vertex, extensionElements->attributeRegistry, status.at(&vertex->parent.value().first) );
     }
     else if ( vertex->entry<BPMN::ExclusiveGateway>() && vertex->inflows.size() > 1 ) {
       std::vector< std::pair<const CP::Variable&, std::vector<AttributeVariables>& > > alternatives;
@@ -1056,21 +1051,6 @@ std::cerr << "createEntryStatus: " << vertex->reference() << std::endl;
         assert( vertex->node->as<BPMN::Activity>()->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() );
         variables = createUniquelyDeducedEntryStatus(vertex, extensionElements->attributeRegistry, status.at(&predecessor) );
       }
-/*
-      auto& [sequenceFlow, predecessor] = vertex->inflows.front();
-      if ( sequenceFlow ) {   
-        // deduce visit from unique sequence flow
-        auto& deducedVisit = model.addVariable(CP::Variable::Type::BOOLEAN, "visit_{" + vertex->shortReference() + "}" , tokenFlow.at( std::make_pair(&predecessor, vertex) ) );
-        visit.emplace(vertex, deducedVisit );
-        visit.emplace(exit(vertex), deducedVisit );
-      }
-      else {
-        // deduce visit from unique predecessor
-        assert( vertex->node->represents<BPMN::Activity>() );
-        assert( vertex->node->as<BPMN::Activity>()->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() );
-
-*/
-
     }
   }
 
@@ -1079,7 +1059,7 @@ std::cerr << "createEntryStatus: " << vertex->reference() << std::endl;
     variables.reserve(extensionElements->attributeRegistry.statusAttributes.size());
     for ( size_t i = variables.size(); i < extensionElements->attributeRegistry.statusAttributes.size(); i++) {
       auto attribute = extensionElements->attributeRegistry.statusAttributes[i];
-std::cerr << attribute->id << std::endl;
+std::cerr << "Add: " << attribute->id << std::endl;
       // add variables holding given values
       if ( auto given = scenario->getKnownValue(vertex->rootId, attribute, scenario->getInception()); given.has_value() ) {
         // defined initial value
