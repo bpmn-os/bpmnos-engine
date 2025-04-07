@@ -334,6 +334,19 @@ std::cerr << node->id << " has " << attributes.size() << " loop index attributes
       }
     }
   }
+
+  if ( auto typedStartEvent = node->represents<BPMN::TypedStartEvent>() ) {
+    extensionElements = typedStartEvent->parent->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+    for ( auto& operator_ : extensionElements->operators ) {
+      if ( operator_->attribute->category == BPMNOS::Model::Attribute::Category::DATA ) {
+        auto dataOwnerVertices = entry.dataOwner(operator_->attribute);
+        dataModifiers.at( &dataOwnerVertices.first ).push_back( { entry, exit } );
+      }
+      else if ( operator_->attribute->category == BPMNOS::Model::Attribute::Category::GLOBAL ) {
+        globalModifiers.push_back( { entry, exit } );
+      }
+    }
+  }
   
   return { entry, exit };
 }

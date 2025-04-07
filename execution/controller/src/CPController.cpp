@@ -98,6 +98,7 @@ const FlattenedGraph::Vertex* CPController::getVertex( const Token* token ) cons
     loopIndices.push_back( (size_t)token->status.at(attribute->index).value() );
   }
   auto instanceId = token->data->at(BPMNOS::Model::ExtensionElements::Index::Instance).get().value();
+std::cerr << stringRegistry[(size_t)instanceId] << "/" << node->id << "/" << token->jsonify() << std::endl;
   assert( flattenedGraph.vertexMap.contains({instanceId,loopIndices,node}) );
   auto& [entry,exit] = flattenedGraph.vertexMap.at({instanceId,loopIndices,node});
 
@@ -128,6 +129,10 @@ std::cerr << "Validate: " << token->jsonify() << std::endl;
   }
   if ( token->node && token->state != Token::State::ENTERED && token->state != Token::State::EXITING ) {
     // token at flow node, but with irrelevant state
+    return;
+  }
+  if ( token->node && token->state != Token::State::EXITING && token->node->represents<BPMN::TypedStartEvent>() ) {
+    // token at typed start event, but not triggered
     return;
   }
 
@@ -1208,7 +1213,7 @@ std::cerr << attribute->name << ": " << attribute->index << " == " <<  variables
     return;
   }
 
-  if ( vertex->exit<BPMN::Task>() || vertex->exit<BPMN::MessageStartEvent>() ) {
+  if ( vertex->exit<BPMN::Task>() || vertex->exit<BPMN::TypedStartEvent>() ) {
     // create local attribute variables considering all changes made before the token leves the node
     createLocalAttributeVariables(vertex);
     // use final attribute values to deduce exit status
@@ -1404,11 +1409,16 @@ const BPMNOS::Model::Content* CPController::findContent(const BPMNOS::Model::Mes
 
 void CPController::createLocalAttributeVariables(const Vertex* vertex) {
   assert( vertex->exit<BPMN::Task>() || vertex->exit<BPMN::TypedStartEvent>() );
-
+  
+  if ( auto typedStartEvent = vertex->node->represents<BPMN::TypedStartEvent>();
+    typedStartEvent && !typedStartEvent->represents<BPMN::MessageStartEvent>()
+  ) {
+    throw std::runtime_error("CPController: illegal typed start event");
+  }
   auto  extensionElements = 
     vertex->exit<BPMN::Task>() ?
     vertex->node->extensionElements->as<BPMNOS::Model::ExtensionElements>() :
-    vertex->parent.value().first.node->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
+    vertex->node->as<BPMN::TypedStartEvent>()->parent->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
   ;
 
   if ( extensionElements->messageDefinitions.size() > 1 ) {
@@ -1594,12 +1604,14 @@ std::cerr << "Attribute: " << attribute->id << " (done)" << std::endl;
 }
 
 std::vector<CPController::AttributeVariables> CPController::createUniquelyDeducedEntryStatus(const Vertex* vertex, const BPMNOS::Model::AttributeRegistry& attributeRegistry, std::vector<AttributeVariables>& inheritedStatus) {
+std::cerr << vertex->reference() << std::endl;
   assert( vertex->type == Vertex::Type::ENTRY );
   assert( !vertex->node->represents<BPMN::Process>() );
 
   std::vector<AttributeVariables> variables;
   variables.reserve( attributeRegistry.statusAttributes.size() );
   for ( auto attribute : attributeRegistry.statusAttributes ) {
+std::cerr << variables.size() << "/" << attribute->index << "/" << attribute->id << "/" << attributeRegistry.statusAttributes.size() << std::endl;
     assert( variables.size() == attribute->index );
     auto& [ defined, value ] = inheritedStatus.at(attribute->index);
     if ( auto activity = vertex->node->represents<BPMN::Activity>();
@@ -1959,8 +1971,27 @@ std::cerr << "HUHU1" << std::endl;
     visit.emplace(vertex, deducedVisit );
     visit.emplace(exit(vertex), deducedVisit );
   }
-  else if ( vertex->node->represents<BPMN::TypedStartEvent>() ) {
-    assert(!"Not yet implemented");
+  else if ( auto typedStartEvent = vertex->node->represents<BPMN::TypedStartEvent>() ) {
+    if ( 
+      !typedStartEvent->parent->represents<BPMN::EventSubProcess>() ||
+      typedStartEvent->isInterrupting ||
+      !typedStartEvent->represents<BPMN::MessageStartEvent>() 
+    ) {
+      throw std::runtime_error("CPController: typed start event '" + typedStartEvent->id + "' is not supported");
+    }
+    // deduce visit from incoming message flow
+    CP::Expression messageDelivered(false);
+    for ( Vertex& sender : exit(vertex)->senders ) {
+      assert( messageFlow.contains({&sender,exit(vertex)}) );
+      messageDelivered = messageDelivered || messageFlow.at({&sender,exit(vertex)});
+    }    
+    auto& deducedVisit = model.addVariable(CP::Variable::Type::BOOLEAN, "visit_{" + vertex->shortReference() + "}", messageDelivered );
+    visit.emplace(vertex, deducedVisit );
+    visit.emplace(exit(vertex), deducedVisit );
+    // event-subprocess may only be triggered if all predecessors are visited
+    for ( Vertex& predecessor : vertex->predecessors ) {
+      model.addConstraint( visit.at(vertex) <= visit.at(&predecessor) );
+    }
   }
   else if ( vertex->node->represents<BPMN::FlowNode>() ) {
 std::cerr << vertex->reference() << ": " <<  vertex->loopIndices.size()  << "/" << flattenedGraph.loopIndexAttributes.at(vertex->node).size() << std::endl;      

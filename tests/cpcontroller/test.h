@@ -1,4 +1,4 @@
-//#include "message/test.h"
+//#include "eventsubprocess/test.h"
 
 #include "process/test.h"
 
@@ -33,8 +33,7 @@
 #include "message/test.h"
 
 // Event subprocesses
-//#include "eventsubprocess/test.h"
-
+#include "eventsubprocess/test.h"
 
 /*
 //#include "request/test.h" // TODO: Check allocation id in content of request message
