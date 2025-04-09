@@ -41,7 +41,7 @@ void SeededGreedyController::notice(const Observable* observable) {
   if ( observable->getObservableType() == Observable::Type::Message ) {
     auto message = static_cast<const Message*>(observable);
     if ( message->state == Message::State::CREATED ) {
-std::cerr << "Message created: " << message->jsonify() << std::endl;
+//std::cerr << "Message created: " << message->jsonify() << std::endl;
       messages.emplace_back( message->weak_from_this() );
     }
   }
@@ -49,14 +49,24 @@ std::cerr << "Message created: " << message->jsonify() << std::endl;
 
 std::shared_ptr<Event> SeededGreedyController::createEntryEvent(const SystemState* systemState, const Token* token, const Vertex* vertex) {
   // instant entry
-  setTimestamp(vertex,systemState->getTime());
-  return CPController::createEntryEvent(systemState, token, vertex);
+  auto decision = std::make_shared<EntryDecision>(token, evaluator);
+  decision->evaluate();
+  if (  decision->evaluation.has_value() ) {
+    setTimestamp(vertex,systemState->getTime());
+    return decision;
+  }
+  return nullptr;
 }
 
 std::shared_ptr<Event> SeededGreedyController::createExitEvent(const SystemState* systemState, const Token* token, const Vertex* vertex) {
   // instant exit
-  setTimestamp(vertex,systemState->getTime());
-  return CPController::createExitEvent(systemState, token, vertex);
+  auto decision = std::make_shared<ExitDecision>(token, evaluator);
+  decision->evaluate();
+  if (  decision->evaluation.has_value() ) {
+    setTimestamp(vertex,systemState->getTime());
+    return decision;
+  }
+  return nullptr;
 }
 
 std::shared_ptr<Event> SeededGreedyController::createChoiceEvent(const SystemState* systemState, const Token* token, const Vertex* vertex) {
@@ -66,7 +76,8 @@ std::shared_ptr<Event> SeededGreedyController::createChoiceEvent(const SystemSta
   auto best = choiceDispatcher->determineBestChoices(token->decisionRequest);
   if (!best) {
     // no feasible choices found
-    return std::make_shared<ErrorEvent>(token);
+    return nullptr;
+    // return std::make_shared<ErrorEvent>(token);
   }
   
   // apply choices 
@@ -123,7 +134,8 @@ std::cerr << "Candidate: " << message->jsonify() << std::endl;
   if (!best) {
 assert(!"no message found");
     // no message can be delivered
-    return std::make_shared<ErrorEvent>(token);
+    return nullptr;
+//    return std::make_shared<ErrorEvent>(token);
   }
   
   auto message = best->message.lock();
