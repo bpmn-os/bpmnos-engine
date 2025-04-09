@@ -99,6 +99,9 @@ const FlattenedGraph::Vertex* CPController::getVertex( const Token* token ) cons
   }
   auto instanceId = token->data->at(BPMNOS::Model::ExtensionElements::Index::Instance).get().value();
 std::cerr << stringRegistry[(size_t)instanceId] << "/" << node->id << "/" << token->jsonify() << std::endl;
+  if( !flattenedGraph.vertexMap.contains({instanceId,loopIndices,node}) ) {
+    return nullptr;
+  }
   assert( flattenedGraph.vertexMap.contains({instanceId,loopIndices,node}) );
   auto& [entry,exit] = flattenedGraph.vertexMap.at({instanceId,loopIndices,node});
 
@@ -113,10 +116,51 @@ std::optional< BPMN::Activity::LoopCharacteristics> CPController::getLoopCharact
   return activity->loopCharacteristics;
 }
 
+
+std::list< const CPController::Vertex* >::iterator CPController::finalizeVertexPosition(const Vertex* vertex) {
+std::cerr << "Remove " << vertex->reference() << " from " << pendingVertices.size() << std::endl;
+  auto it = std::find(pendingVertices.begin(), pendingVertices.end(), vertex);
+  if( it != pendingVertices.end() ) {
+std::cerr << "Removed." << std::endl;
+    it = pendingVertices.erase(it);
+    processedVertices.push_back(vertex);
+    ++lastPosition; // TODO: replace with below
+//    _solution->setVariableValue( position.at(vertex), (double)++lastPosition);
+  }
+  return it;
+};
+
 void CPController::validate(const Token* token) {
   if ( terminationEvent ) {
     return;
   }
+
+  if ( token->state == Token::State::ENTERED ) {
+    if ( auto vertex = getVertex(token) ) {
+//std::cerr << "clear entry event: " << token->jsonify() << std::endl;
+      finalizeVertexPosition(vertex);
+      if ( 
+        vertex->entry<BPMN::UntypedStartEvent>() || 
+        vertex->entry<BPMN::Gateway>() || 
+        ( vertex->entry<BPMN::ThrowEvent>() && !vertex->entry<BPMN::SendTask>() ) 
+      ) {
+//std::cerr << "clear instantaneous exit: " << token->jsonify() << std::endl;
+        finalizeVertexPosition(exit(vertex));
+      }
+    }
+  }
+  else if ( 
+    ( !token->node && token->state == Token::State::DONE ) || // Process
+    ( token->node && token->state == Token::State::EXITING ) || // Activity
+    ( token->node && token->state == Token::State::COMPLETED && token->node->represents<BPMN::CatchEvent>() && !token->node->represents<BPMN::ReceiveTask>() )
+  ) { 
+    if ( auto vertex = getVertex(token) ) {
+//std::cerr << "clear exit event: " << vertex->reference() << std::endl;
+      finalizeVertexPosition(vertex);
+    }
+  }
+
+  
 std::cerr << "Validate: " << token->jsonify() << std::endl;    
 
   if ( token->state == Token::State::FAILED ) {
@@ -169,7 +213,7 @@ std::cerr << "Validate vertex " << vertex->reference() << std::endl;
         !evaluation.defined()  ||
         evaluation.value() != token->status[i].value()
       ) {
-std::cerr << "defined: " << (evaluation.defined() ? "true" : "false") << ", value: " << evaluation.value() << std::endl;
+//std::cerr << "defined: " << (evaluation.defined() ? "true" : "false") << ", value: " << evaluation.value() << std::endl;
         throw std::logic_error("CPController: '" + _solution->stringify(statusVariables[i].defined) + "' or '" + _solution->stringify(statusVariables[i].value) + "' inconsistent with " + token->jsonify().dump() );
       }
     }
@@ -183,7 +227,7 @@ std::cerr << "defined: " << (evaluation.defined() ? "true" : "false") << ", valu
         evaluation.defined()  ||
         evaluation.value() != 0.0
       ) {
-std::cerr << "defined: " << (evaluation.defined() ? "true" : "false") << ", value: " << evaluation.value() << std::endl;
+//std::cerr << "defined: " << (evaluation.defined() ? "true" : "false") << ", value: " << evaluation.value() << std::endl;
         throw std::logic_error("CPController: '" + _solution->stringify(statusVariables[i].defined) + "' or '" + _solution->stringify(statusVariables[i].value) + "' inconsistent with " + token->jsonify().dump());
       }
     }
@@ -222,7 +266,7 @@ std::cerr << "defined: " << (evaluation.defined() ? "true" : "false") << ", valu
           !evaluation.defined()  ||
           evaluation.value() != token->data->at(attribute->index).get().value()
         ) {
-std::cerr << "defined: " << (evaluation.defined() ? "true" : "false") << ", value: " << evaluation.value() << " != " << token->data->at(attribute->index).get().value() << std::endl;
+//std::cerr << "defined: " << (evaluation.defined() ? "true" : "false") << ", value: " << evaluation.value() << " != " << token->data->at(attribute->index).get().value() << std::endl;
           throw std::logic_error("CPController: '" + _solution->stringify(indexedAttributeVariables.defined[index]) + "' or '" + _solution->stringify(indexedAttributeVariables.defined[index]) + "' inconsistent with " + token->jsonify().dump());
         }
       }
@@ -236,7 +280,7 @@ std::cerr << "defined: " << (evaluation.defined() ? "true" : "false") << ", valu
           evaluation.defined()  ||
           evaluation.value() != 0.0
         ) {
-std::cerr << "defined: " << (evaluation.defined() ? "true" : "false") << ", value: " << evaluation.value() << " != " << token->data->at(attribute->index).get().value() << std::endl;
+//std::cerr << "defined: " << (evaluation.defined() ? "true" : "false") << ", value: " << evaluation.value() << " != " << token->data->at(attribute->index).get().value() << std::endl;
           throw std::logic_error("CPController: '" + _solution->stringify(indexedAttributeVariables.defined[index]) + "' or '" + _solution->stringify(indexedAttributeVariables.defined[index]) + "' inconsistent with " + token->jsonify().dump());
         }
       }
@@ -295,45 +339,23 @@ void CPController::notice(const Observable* observable) {
 }
 
 std::shared_ptr<Event> CPController::dispatchEvent(const SystemState* systemState) {
+//std::cerr << "dispatchEvent" << std::endl;
   if ( terminationEvent ) {
     return terminationEvent;
   }
-  
-  
-  while ( !decisionQueue.empty() ) {
-    auto& [ type, vertex ] = decisionQueue.front();
-    try {
-      if ( 
-        flattenedGraph.dummies.contains(vertex) || 
-        ( _solution->evaluate( visit.at( vertex ) ).has_value() && !_solution->evaluate( visit.at( vertex ) ).value() ) 
-      ) {
-        // no decision to be made for vertex
-std::cerr << "Skip: " << vertex->reference() << std::endl;
-        decisionQueue.pop();
-        continue;
-      }
-    }
-    catch(...) {
-      throw std::runtime_error("CPController: failed determining whether '" + vertex->reference() + "' is visited or not");
-    }
-    // exit while if decision is not skipped
-    break;
-  }
 
-  if ( decisionQueue.empty() ) {
-    return nullptr;
-  }
-  auto& [ type, vertex ] = decisionQueue.front();
-std::cerr << "CPController::dispatchEvent: " << vertex->reference() << " evaluated with " << _solution->evaluate( visit.at( vertex ) ).value_or(-999) << std::endl;
+  // when dispatchEvent is called all tokens have been advanced as much as possible
+  // non-decision vertices may only be pending if they are visited and must wait for 
+  // the respective event, e.g. timer event, completion event
 
-  auto getToken = [&vertex](const auto& pendingDecisions) -> Token* {
+  auto getRequest = [](const Vertex* vertex, const auto& pendingDecisions) -> DecisionRequest* {
     for (const auto& [token_ptr, request_ptr] : pendingDecisions) {
-      if (auto token = token_ptr.lock()) {
+      if (auto request = request_ptr.lock()) {
         if (
-          token->node == vertex->node &&
-          token->data->at(BPMNOS::Model::ExtensionElements::Index::Instance).get().value() == vertex->instanceId
+          request->token->node == vertex->node &&
+          request->token->data->at(BPMNOS::Model::ExtensionElements::Index::Instance).get().value() == vertex->instanceId
         ) {
-          return token.get();
+          return request.get();
         }
       }
     }
@@ -341,55 +363,94 @@ std::cerr << "CPController::dispatchEvent: " << vertex->reference() << " evaluat
   };
 
 
-  std::shared_ptr<Event> event = nullptr;
-  using enum RequestType;
-std::cerr << "type: " << (int)type << std::endl;
-  switch ( type ) {
-    case EntryRequest:
-    {
-std::cerr << "pendingEntryDecisions: " << !systemState->pendingEntryDecisions.empty() << std::endl;
-      if ( auto token = getToken(systemState->pendingEntryDecisions) ) {
-        event = createEntryEvent( systemState, token, vertex);
+  auto hasPendingPredecessor = [&](const Vertex* vertex) -> bool {
+    for ( auto& [_,predecessor] : vertex->inflows ) {
+      if ( !std::ranges::contains(processedVertices,&predecessor) ) {
+        assert( vertex != pendingVertices.front() );
+        return true;
       }
-      // no event is create if decision is not yet requested
-      break;
     }
-    case ExitRequest:
-    {
-std::cerr << "pendingExitDecisions: " << !systemState->pendingExitDecisions.empty() << std::endl;
-      if ( auto token = getToken(systemState->pendingExitDecisions) ) {
-        event = createExitEvent( systemState, token, vertex);
+    for ( Vertex& predecessor : vertex->predecessors ) {
+      if ( !std::ranges::contains(processedVertices,&predecessor) ) {
+        assert( vertex != pendingVertices.front() );
+        return true;
       }
-      // no event is create if decision is not yet requested
-      break;
     }
-    case ChoiceRequest:
-    {
-std::cerr << "pendingChoiceDecisions: " << !systemState->pendingChoiceDecisions.empty() << std::endl;
-      if ( auto token = getToken(systemState->pendingChoiceDecisions) ) {
-        event = createChoiceEvent( systemState, token, vertex);
+    return false;
+  };
+
+  auto hasRequest = [&](const Vertex* vertex) -> DecisionRequest* {
+    if ( vertex->type == Vertex::Type::ENTRY ) {
+      return getRequest(vertex,systemState->pendingEntryDecisions);
+    }
+    if (auto request = getRequest(vertex, systemState->pendingExitDecisions)) {
+      return request;
+    }
+    if (auto request = getRequest(vertex, systemState->pendingMessageDeliveryDecisions)) {
+      return request;
+    }
+    if (auto request = getRequest(vertex, systemState->pendingChoiceDecisions)) {
+      return request;
+    }
+    return nullptr;
+  };
+
+  auto createEvent = [&](const Vertex* vertex, DecisionRequest* request) -> std::shared_ptr<Event> {
+    std::shared_ptr<Event> event;
+    using enum RequestType;
+    if ( request->type == EntryRequest ) {
+      event = createEntryEvent( systemState, request->token, vertex);
+    }
+    else if ( request->type == ExitRequest ) {
+      event = createExitEvent( systemState, request->token, vertex);
+    }
+    else if ( request->type == MessageDeliveryRequest ) {
+      event = createMessageDeliveryEvent( systemState, request->token, vertex);
+    }
+    else if ( request->type == ChoiceRequest ) {
+      event = createChoiceEvent( systemState, request->token, vertex);
+    }
+    else {
+      assert(!"Unexpected request type");
+    }
+    return event;
+  };
+  
+  auto it = pendingVertices.begin();
+  while ( it != pendingVertices.end() ) {
+    auto vertex = *it;
+//std::cerr << vertex->reference() << std::endl;
+    if ( hasPendingPredecessor(vertex) ) {
+      // postpone vertex because a predecessor has not yet been processed
+      it++;
+      continue;
+    }
+    if ( 
+      flattenedGraph.dummies.contains(vertex) ||
+      ( _solution->evaluate( visit.at( vertex ) ).has_value() && !_solution->evaluate( visit.at( vertex ) ).value() )
+    ) {
+      // vertex is dummy or not visited
+      it = finalizeVertexPosition(vertex);
+    }
+    else if ( auto request = hasRequest(vertex) ) {
+      if ( auto event = createEvent(vertex,request) ) {
+        return event;
       }
-      // no event is create if decision is not yet requested
-      break;
-    }
-    case MessageDeliveryRequest:
-    {
-std::cerr << "pendingMessageDeliveryDecisions: " << !systemState->pendingMessageDeliveryDecisions.empty() << std::endl;
-      if ( auto token = getToken(systemState->pendingMessageDeliveryDecisions) ) {
-        event = createMessageDeliveryEvent( systemState, token, vertex );
+      else {
+        // postpone vertex because there is no feasible way to process
+        it++;
+        continue;
       }
-      // no event is create if decision is not yet requested
-      break;
     }
-    default:
-    {
-      throw std::logic_error("CPController: unsupported decision type");
-    } 
+    else {
+      // wait for request
+      return nullptr;
+    }
   }
-  if ( event ) {
-    decisionQueue.pop();
+  if ( !pendingVertices.empty() && it == pendingVertices.end() ) {
+    assert(!"Infeasible");
   }
-  return event;
+  return nullptr;
 }
 
 CP::Solution& CPController::createSolution() {
@@ -443,7 +504,7 @@ void CPController::setLocalAttributeValue( const Vertex* vertex, size_t attribut
 }
 
 
-std::shared_ptr<Event> CPController::createEntryEvent(const SystemState* systemState, Token* token, const Vertex* vertex) {
+std::shared_ptr<Event> CPController::createEntryEvent(const SystemState* systemState, const Token* token, const Vertex* vertex) {
   auto timestamp = getTimestamp(vertex);
   if ( !timestamp.has_value() || systemState->getTime() < timestamp.value() ) {
     return nullptr;
@@ -452,7 +513,7 @@ std::shared_ptr<Event> CPController::createEntryEvent(const SystemState* systemS
   return std::make_shared<EntryEvent>(token);
 }
 
-std::shared_ptr<Event> CPController::createExitEvent(const SystemState* systemState, Token* token, const Vertex* vertex) {
+std::shared_ptr<Event> CPController::createExitEvent(const SystemState* systemState, const Token* token, const Vertex* vertex) {
   auto timestamp = getTimestamp(vertex);
   if ( !timestamp.has_value() || systemState->getTime() < timestamp.value() ) {
     return nullptr;
@@ -460,7 +521,7 @@ std::shared_ptr<Event> CPController::createExitEvent(const SystemState* systemSt
   return std::make_shared<ExitEvent>(token);
 }
 
-std::shared_ptr<Event> CPController::createChoiceEvent(const SystemState* systemState, Token* token, const Vertex* vertex) {
+std::shared_ptr<Event> CPController::createChoiceEvent(const SystemState* systemState, const Token* token, const Vertex* vertex) {
   auto timestamp = getTimestamp(vertex);
   if ( !timestamp.has_value() || systemState->getTime() < timestamp.value() ) {
     return nullptr;
@@ -481,7 +542,7 @@ std::shared_ptr<Event> CPController::createChoiceEvent(const SystemState* system
   return std::make_shared<ChoiceEvent>(token,std::move(choices));
 }
 
-std::shared_ptr<Event> CPController::createMessageDeliveryEvent(const SystemState* systemState, Token* token, const Vertex* vertex) {
+std::shared_ptr<Event> CPController::createMessageDeliveryEvent(const SystemState* systemState, const Token* token, const Vertex* vertex) {
 std::cerr << "#" << std::endl;
 
   auto timestamp = getTimestamp(vertex);
@@ -511,9 +572,10 @@ std::cerr << timestamp.value() << std::endl;
   return nullptr;
 }
   
-void CPController::createDecisionQueue() {
+void CPController::initializeEventQueue() {
+  lastPosition = 0;
+  pendingVertices.clear();
   auto& solution = getSolution();
-  decisionQueue = std::queue< std::pair< RequestType, const Vertex* > >();
   
   // determine vertices sorted by sequence position
   std::vector<const Vertex *> sortedVertices( vertices.size() );
@@ -523,35 +585,13 @@ void CPController::createDecisionQueue() {
   for ( size_t i = 0; i < vertices.size(); i++) {
     auto position = solution.getVariableValue(sequence.variables[i]);
     assert( position );
-std::cerr << "position[" << i << "] = " << position.value() << ": " << vertices[i]->reference() << std::endl;
+std::cerr << position.value() << ". position: " << i << "/'" << vertices[i]->reference() << "'" << std::endl;
     sortedVertices[ (size_t)position.value() - 1 ] = vertices[i];
   }
-  
-  // now insert into decision sequence
-  for ( auto vertex : sortedVertices ) {
-    
-    if ( vertex->entry<BPMN::Activity>() ) {
-      // enqueue entry decision
-      decisionQueue.emplace(RequestType::EntryRequest, vertex);
-      continue;
-    }
 
-    if ( vertex->exit<BPMN::MessageCatchEvent>() ) {
-      // enqueue message delivery decision
-      // ASSUMPTION: receive tasks are exited immediately after message is delivered
-      decisionQueue.emplace(RequestType::MessageDeliveryRequest, vertex);
-    }
-
-    if ( vertex->exit<BPMNOS::Model::DecisionTask>() ) {
-      // enqueue choice decision
-      // ASSUMPTION: decision tasks are exited immediately after decision is made
-      decisionQueue.emplace(RequestType::ChoiceRequest, vertex);
-    }
-
-    if ( vertex->exit<BPMN::Activity>() ) {
-      // enqueue exit decision
-      decisionQueue.emplace(RequestType::ExitRequest, vertex);
-    }
+  for ( size_t i = 0; i < sortedVertices.size(); i++) {
+    pendingVertices.push_back( sortedVertices[i] );
+std::cerr << (i+1) << ". position: " << sortedVertices[i]->reference() << std::endl;
   }
 }
 

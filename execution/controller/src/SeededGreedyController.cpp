@@ -31,7 +31,7 @@ CP::Solution& SeededGreedyController::createSolution() {
     positions[ sequenceVariableValues[index]-1 ] = index + 1;
   }
   solution.setSequenceValues( sequence, positions );
-  createDecisionQueue();
+  initializeEventQueue();
   
   return solution;
 }
@@ -47,19 +47,19 @@ std::cerr << "Message created: " << message->jsonify() << std::endl;
   }
 }
 
-std::shared_ptr<Event> SeededGreedyController::createEntryEvent(const SystemState* systemState, Token* token, const Vertex* vertex) {
+std::shared_ptr<Event> SeededGreedyController::createEntryEvent(const SystemState* systemState, const Token* token, const Vertex* vertex) {
   // instant entry
   setTimestamp(vertex,systemState->getTime());
   return CPController::createEntryEvent(systemState, token, vertex);
 }
 
-std::shared_ptr<Event> SeededGreedyController::createExitEvent(const SystemState* systemState, Token* token, const Vertex* vertex) {
+std::shared_ptr<Event> SeededGreedyController::createExitEvent(const SystemState* systemState, const Token* token, const Vertex* vertex) {
   // instant exit
   setTimestamp(vertex,systemState->getTime());
   return CPController::createExitEvent(systemState, token, vertex);
 }
 
-std::shared_ptr<Event> SeededGreedyController::createChoiceEvent(const SystemState* systemState, Token* token, const Vertex* vertex) {
+std::shared_ptr<Event> SeededGreedyController::createChoiceEvent(const SystemState* systemState, const Token* token, const Vertex* vertex) {
   // set timestamp of choice
   setLocalAttributeValue(vertex,BPMNOS::Model::ExtensionElements::Index::Timestamp,systemState->getTime());
 
@@ -82,7 +82,7 @@ std::shared_ptr<Event> SeededGreedyController::createChoiceEvent(const SystemSta
   return best;
 }
 
-std::shared_ptr<Event> SeededGreedyController::createMessageDeliveryEvent(const SystemState* systemState, Token* token, const Vertex* vertex) {
+std::shared_ptr<Event> SeededGreedyController::createMessageDeliveryEvent(const SystemState* systemState, const Token* token, const Vertex* vertex) {
 std::cerr << "SeededGreedyController::createMessageDeliveryEvent" << std::endl;
   // instant message delivery
   setTimestamp(vertex,systemState->getTime());

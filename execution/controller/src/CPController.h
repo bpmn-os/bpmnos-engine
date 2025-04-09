@@ -174,13 +174,17 @@ protected:
 
   std::unordered_map< std::pair< const Vertex*, const Vertex* >, std::vector<AttributeVariables>, pair_hash > statusFlow; /// Variables representing status attributes flowing from one vertex to another
 
-  std::queue< std::pair< RequestType, const Vertex* > > decisionQueue; /// The queue of decisions to be made
+  std::list< const Vertex* > pendingVertices; /// The list of vertices to be processed
+  std::list< const Vertex* > processedVertices; /// The list of vertices already processed
+  std::list< const Vertex* >::iterator finalizeVertexPosition(const Vertex* vertex); /// Method finalizing the sequence position of a pending vertex and removing it from the list
+  size_t lastPosition;
 public:
   virtual CP::Solution& createSolution(); /// Method creating a solution of the CP
   const CP::Solution& getSolution() const; /// Method providing access to the solution of the CP
   void setMessageDeliveryVariableValues( const Vertex* sender, const Vertex* recipient, BPMNOS::number timestamp );
 protected:
-  void createDecisionQueue(); /// Method creating the decision queue from CP
+  void initializeEventQueue(); /// Method creating an initial sequence of vertices
+
   const Vertex* getVertex( const Token* token ) const;
   std::optional< BPMN::Activity::LoopCharacteristics > getLoopCharacteristics(const Vertex* vertex) const;  
   std::optional< BPMNOS::number > getTimestamp( const Vertex* vertex ) const;
@@ -188,10 +192,10 @@ protected:
   void setLocalAttributeValue( const Vertex* vertex, size_t attributeIndex, BPMNOS::number value );
   std::pair< CP::Expression, CP::Expression > getAttributeVariables( const Vertex* vertex, const Model::Attribute* attribute);
 
-  virtual std::shared_ptr<Event> createEntryEvent(const SystemState* systemState, Token* token, const Vertex* vertex); /// Method creating a choice event from CP solution
-  virtual std::shared_ptr<Event> createExitEvent(const SystemState* systemState, Token* token, const Vertex* vertex); /// Method creating a choice event from CP solution
-  virtual std::shared_ptr<Event> createChoiceEvent(const SystemState* systemState, Token* token, const Vertex* vertex); /// Method creating a choice event from CP solution
-  virtual std::shared_ptr<Event> createMessageDeliveryEvent(const SystemState* systemState, Token* token, const Vertex* vertex); /// Method creating a message delivery event from CP solution
+  virtual std::shared_ptr<Event> createEntryEvent(const SystemState* systemState, const Token* token, const Vertex* vertex); /// Method creating a choice event from CP solution
+  virtual std::shared_ptr<Event> createExitEvent(const SystemState* systemState, const Token* token, const Vertex* vertex); /// Method creating a choice event from CP solution
+  virtual std::shared_ptr<Event> createChoiceEvent(const SystemState* systemState, const Token* token, const Vertex* vertex); /// Method creating a choice event from CP solution
+  virtual std::shared_ptr<Event> createMessageDeliveryEvent(const SystemState* systemState, const Token* token, const Vertex* vertex); /// Method creating a message delivery event from CP solution
 
   const Vertex* entry(const Vertex* vertex);
   const Vertex* exit(const Vertex* vertex);
