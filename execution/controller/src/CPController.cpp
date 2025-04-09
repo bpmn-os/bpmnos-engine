@@ -448,7 +448,16 @@ std::shared_ptr<Event> CPController::dispatchEvent(const SystemState* systemStat
     }
   }
   if ( !pendingVertices.empty() && it == pendingVertices.end() ) {
-    assert(!"Infeasible");
+    // none of the pending decision requests is feasible, and the only
+    // way for one to become feasible would be by changing the timestamp.
+    // - entry request: we can assume a timer event to preceed
+    // - exit request: for a task we can assume that the duration of the activity
+    // to be set appropriately, for subprocesses we can assume a timer event
+    // to be used
+    // - choice request: we can assume that a feasible choice must always exist
+    // - message delivery request: we can assume that the feasibility of a message
+    // delivery is not time-dependent
+    return std::make_shared<TerminationEvent>();  
   }
   return nullptr;
 }
