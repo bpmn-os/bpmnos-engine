@@ -157,10 +157,16 @@ std::cerr << "finalizePredecessorPositions: " << vertex->reference() << std::end
 }
 
 void CPController::unvisited(const Vertex* vertex) {
-  auto& statusVariables = status.at(vertex);
-  for (size_t i = 0; i < statusVariables.size(); i++) {
-    _solution->setVariableValue( statusVariables[i].defined, false );
-    _solution->setVariableValue( statusVariables[i].value, 0.0 );
+  auto& timestamp = status.at(vertex)[BPMNOS::Model::ExtensionElements::Index::Timestamp];
+  _solution->setVariableValue( timestamp.value, 0.0 );
+
+  for ( const Vertex& candidate : vertex->recipients ) {
+    assert( messageFlow.contains({vertex,&candidate}) );
+    _solution->setVariableValue( messageFlow.at({vertex,&candidate}), (double)false );
+  }
+  for ( const Vertex& candidate : vertex->senders ) {
+    assert( messageFlow.contains({&candidate,vertex}) );
+    _solution->setVariableValue( messageFlow.at({&candidate,vertex}), (double)false );
   }
 }
 
