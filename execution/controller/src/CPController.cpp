@@ -118,53 +118,78 @@ std::optional< BPMN::Activity::LoopCharacteristics> CPController::getLoopCharact
 
 
 std::list< const CPController::Vertex* >::iterator CPController::finalizeVertexPosition(const Vertex* vertex) {
+//  assert( std::ranges::contains(pendingVertices,vertex) );
 std::cerr << "Remove " << vertex->reference() << " from " << pendingVertices.size() << std::endl;
   auto it = std::find(pendingVertices.begin(), pendingVertices.end(), vertex);
   if( it != pendingVertices.end() ) {
-std::cerr << "Removed." << std::endl;
+//std::cerr << "Removed." << std::endl;
     it = pendingVertices.erase(it);
     processedVertices.push_back(vertex);
-    ++lastPosition; // TODO: replace with below
-//    _solution->setVariableValue( position.at(vertex), (double)++lastPosition);
+    _solution->setVariableValue( position.at(vertex), (double)++lastPosition);
+std::cerr << "position(" << vertex->reference() << ") = " << lastPosition << std::endl;
   }
   return it;
 };
+
+void CPController::finalizePredecessorPositions(const Vertex* vertex) {
+std::cerr << "finalizePredecessorPositions: " << vertex->reference() << std::endl;
+  auto it = pendingVertices.begin();
+  assert( std::ranges::contains(pendingVertices,vertex) );
+  while ( *it != vertex ) {
+    assert( it != pendingVertices.end() );
+    auto other = *it;
+    if ( 
+      !hasPendingPredecessor(other) &&
+      (
+        flattenedGraph.dummies.contains(other) ||
+        ( _solution->evaluate( visit.at( other ) ).has_value() && !_solution->evaluate( visit.at( other ) ).value() )
+      )
+    ) {
+      it = finalizeVertexPosition( other ); 
+    }
+    else {
+      it++;
+    }
+  }
+}
 
 void CPController::validate(const Token* token) {
   if ( terminationEvent ) {
     return;
   }
 
+std::cerr << "Validate: " << token->jsonify() << std::endl;    
+
+  if ( token->state == Token::State::FAILED ) {
+    terminationEvent = std::make_shared<TerminationEvent>();
+  }
+
   if ( token->state == Token::State::ENTERED ) {
     if ( auto vertex = getVertex(token) ) {
-//std::cerr << "clear entry event: " << token->jsonify() << std::endl;
+std::cerr << "clear entry event: " << token->jsonify() << std::endl;
+      finalizePredecessorPositions(vertex);
       finalizeVertexPosition(vertex);
       if ( 
         vertex->entry<BPMN::UntypedStartEvent>() || 
         vertex->entry<BPMN::Gateway>() || 
         ( vertex->entry<BPMN::ThrowEvent>() && !vertex->entry<BPMN::SendTask>() ) 
       ) {
-//std::cerr << "clear instantaneous exit: " << token->jsonify() << std::endl;
+std::cerr << "clear instantaneous exit: " << token->jsonify() << std::endl;
+        finalizePredecessorPositions(exit(vertex));
         finalizeVertexPosition(exit(vertex));
       }
     }
   }
   else if ( 
     ( !token->node && token->state == Token::State::DONE ) || // Process
-    ( token->node && token->state == Token::State::EXITING ) || // Activity
+    ( token->node && token->state == Token::State::EXITING && !token->node->represents<BPMN::TypedStartEvent>() ) || // Activity
     ( token->node && token->state == Token::State::COMPLETED && token->node->represents<BPMN::CatchEvent>() && !token->node->represents<BPMN::ReceiveTask>() )
   ) { 
     if ( auto vertex = getVertex(token) ) {
-//std::cerr << "clear exit event: " << vertex->reference() << std::endl;
+std::cerr << "clear exit event: " << vertex->reference() << std::endl;
+      finalizePredecessorPositions(vertex);
       finalizeVertexPosition(vertex);
     }
-  }
-
-  
-std::cerr << "Validate: " << token->jsonify() << std::endl;    
-
-  if ( token->state == Token::State::FAILED ) {
-    terminationEvent = std::make_shared<TerminationEvent>();
   }
   
   if ( !token->node && token->state != Token::State::ENTERED && token->state != Token::State::DONE ) {
@@ -184,6 +209,7 @@ std::cerr << "Validate: " << token->jsonify() << std::endl;
 
 std::cerr << "Validate vertex " << vertex->reference() << std::endl;    
 //std::cerr << "Validate visit" << std::endl;    
+
   // check visit
   auto visitEvaluation = _solution->evaluate( visit.at(vertex) );
   if ( !visitEvaluation ) {
@@ -338,8 +364,25 @@ void CPController::notice(const Observable* observable) {
   }
 }
 
+bool CPController::hasPendingPredecessor(const Vertex* vertex) {
+  if ( vertex == pendingVertices.front() ) {
+    return false;
+  }
+  for ( auto& [_,predecessor] : vertex->inflows ) {
+    if ( !std::ranges::contains(processedVertices,&predecessor) ) {
+      return true;
+    }
+  }
+  for ( Vertex& predecessor : vertex->predecessors ) {
+    if ( !std::ranges::contains(processedVertices,&predecessor) ) {
+      return true;
+    }
+  }
+  return false;
+}
+
 std::shared_ptr<Event> CPController::dispatchEvent(const SystemState* systemState) {
-//std::cerr << "dispatchEvent" << std::endl;
+std::cerr << "dispatchEvent" << std::endl;
   if ( terminationEvent ) {
     return terminationEvent;
   }
@@ -360,23 +403,6 @@ std::shared_ptr<Event> CPController::dispatchEvent(const SystemState* systemStat
       }
     }
     return nullptr;
-  };
-
-
-  auto hasPendingPredecessor = [&](const Vertex* vertex) -> bool {
-    for ( auto& [_,predecessor] : vertex->inflows ) {
-      if ( !std::ranges::contains(processedVertices,&predecessor) ) {
-        assert( vertex != pendingVertices.front() );
-        return true;
-      }
-    }
-    for ( Vertex& predecessor : vertex->predecessors ) {
-      if ( !std::ranges::contains(processedVertices,&predecessor) ) {
-        assert( vertex != pendingVertices.front() );
-        return true;
-      }
-    }
-    return false;
   };
 
   auto hasRequest = [&](const Vertex* vertex) -> DecisionRequest* {
@@ -421,6 +447,7 @@ std::shared_ptr<Event> CPController::dispatchEvent(const SystemState* systemStat
     auto vertex = *it;
 //std::cerr << vertex->reference() << std::endl;
     if ( hasPendingPredecessor(vertex) ) {
+std::cerr << "Postpone (sequence): " << vertex->reference() << std::endl;
       // postpone vertex because a predecessor has not yet been processed
       it++;
       continue;
@@ -429,20 +456,34 @@ std::shared_ptr<Event> CPController::dispatchEvent(const SystemState* systemStat
       flattenedGraph.dummies.contains(vertex) ||
       ( _solution->evaluate( visit.at( vertex ) ).has_value() && !_solution->evaluate( visit.at( vertex ) ).value() )
     ) {
+std::cerr << "Skip: " << vertex->reference() << std::endl;
       // vertex is dummy or not visited
       it = finalizeVertexPosition(vertex);
     }
     else if ( auto request = hasRequest(vertex) ) {
       if ( auto event = createEvent(vertex,request) ) {
+std::cerr << "Event: " << vertex->reference() << std::endl;
         return event;
       }
+      else if ( vertex->exit<BPMN::MessageStartEvent>() ) {
+        // event-subprocess is not triggered or exit of start event is infeasible
+        it = finalizeVertexPosition(vertex);
+      }  
       else {
+std::cerr << "Postpone (infeasible): " << vertex->reference() << std::endl;
         // postpone vertex because there is no feasible way to process
         it++;
         continue;
       }
     }
     else {
+      if ( vertex->exit<BPMN::SendTask>() ) {
+std::cerr << "Postpone (send task): " << vertex->reference() << std::endl;
+        // postpone vertex because there is no feasible way to process
+        it++;
+        continue;
+      }
+std::cerr << "Wait: " << vertex->reference() << std::endl;
       // wait for request
       return nullptr;
     }

@@ -44,7 +44,7 @@ SCENARIO( "Simple messaging", "[cpcontroller][message]" ) {
     }
   }
 
-  GIVEN( "Two instances with illegal seed" ) {
+  GIVEN( "Two instances with default seed" ) {
 
     std::string csv =
       "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
@@ -78,7 +78,10 @@ SCENARIO( "Simple messaging", "[cpcontroller][message]" ) {
 //std::cerr << "Solution:\n" << solution.stringify() << std::endl;
 //std::cerr << "Errors:\n" << solution.errors() << std::endl;
       THEN( "The solution is complete and satisfies all constraints" ) {
-        REQUIRE( !solution.errors().empty() );
+        auto terminationLog = recorder.find(nlohmann::json{{"event","termination"}});
+        REQUIRE( terminationLog.empty() );  
+        REQUIRE( solution.complete() );
+        REQUIRE( solution.errors().empty() );
       }
     }
   }
@@ -97,7 +100,7 @@ SCENARIO( "Message tasks", "[cpcontroller][message]" ) {
       "Process_2, Instance_2,,\n"
     ;
 
-    WHEN( "The engine is started" ) {
+    WHEN( "The engine is started with a seed representing a feasible sequence" ) {
 
       Model::StaticDataProvider dataProvider(modelFile,csv);
       auto scenario = dataProvider.createScenario();
@@ -129,6 +132,40 @@ SCENARIO( "Message tasks", "[cpcontroller][message]" ) {
         REQUIRE( solution.errors().empty() );
       }
     }
+
+    WHEN( "The engine is started with the default seed" ) {
+
+      Model::StaticDataProvider dataProvider(modelFile,csv);
+      auto scenario = dataProvider.createScenario();
+ 
+      REQUIRE_NOTHROW( Execution::FlattenedGraph(scenario.get()) );
+
+      Execution::GuidedEvaluator evaluator;
+      Execution::SeededGreedyController controller(scenario.get(), &evaluator);
+      controller.setSeed( Execution::CPSeed::defaultSeed( controller.getVertices().size() ) );
+
+      auto& solution = controller.createSolution();
+      Execution::Engine engine;
+      controller.connect(&engine);
+      controller.subscribe(&engine); 
+      Execution::TimeWarp timeHandler;
+      timeHandler.connect(&engine);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
+      recorder.subscribe(&engine);
+      engine.run(scenario.get(),10);
+
+//std::cerr << "Model:\n" << controller.getModel().stringify() << std::endl;
+std::cerr << "Solution:\n" << solution.stringify() << std::endl;
+//std::cerr << "Errors:\n" << solution.errors() << std::endl;
+      THEN( "The solution is complete and satisfies all constraints" ) {
+        auto terminationLog = recorder.find(nlohmann::json{{"event","termination"}});
+        REQUIRE( terminationLog.empty() );  
+        REQUIRE( solution.complete() );
+        REQUIRE( solution.errors().empty() );
+      }
+    }
+
   }
 
 };

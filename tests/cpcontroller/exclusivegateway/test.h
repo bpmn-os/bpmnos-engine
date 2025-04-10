@@ -60,8 +60,8 @@ SCENARIO( "Symmetric exclusivegateway gateways", "[cpcontroller][exclusivegatewa
       controller.subscribe(&engine); 
       Execution::TimeWarp timeHandler;
       timeHandler.connect(&engine);
-      Execution::Recorder recorder;
-//      Execution::Recorder recorder(std::cerr);
+//      Execution::Recorder recorder;
+      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
       engine.run(scenario.get(),10);
 
