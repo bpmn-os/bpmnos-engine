@@ -138,18 +138,29 @@ std::cerr << "finalizePredecessorPositions: " << vertex->reference() << std::end
   while ( *it != vertex ) {
     assert( it != pendingVertices.end() );
     auto other = *it;
-    if ( 
-      !hasPendingPredecessor(other) &&
-      (
-        flattenedGraph.dummies.contains(other) ||
-        ( _solution->evaluate( visit.at( other ) ).has_value() && !_solution->evaluate( visit.at( other ) ).value() )
-      )
-    ) {
-      it = finalizeVertexPosition( other ); 
+    if ( !hasPendingPredecessor(other) ) {
+      if ( flattenedGraph.dummies.contains(other) ) {
+        it = finalizeVertexPosition( other ); 
+        continue;
+      }
+      else if ( 
+        _solution->evaluate( visit.at( other ) ).has_value() && 
+        !_solution->evaluate( visit.at( other ) ).value() 
+      ) {
+        unvisited(other);
+        it = finalizeVertexPosition( other ); 
+        continue;
+      }
     }
-    else {
-      it++;
-    }
+    it++;
+  }
+}
+
+void CPController::unvisited(const Vertex* vertex) {
+  auto& statusVariables = status.at(vertex);
+  for (size_t i = 0; i < statusVariables.size(); i++) {
+    _solution->setVariableValue( statusVariables[i].defined, false );
+    _solution->setVariableValue( statusVariables[i].value, 0.0 );
   }
 }
 
@@ -452,12 +463,18 @@ std::cerr << "Postpone (sequence): " << vertex->reference() << std::endl;
       it++;
       continue;
     }
-    if ( 
-      flattenedGraph.dummies.contains(vertex) ||
-      ( _solution->evaluate( visit.at( vertex ) ).has_value() && !_solution->evaluate( visit.at( vertex ) ).value() )
+    if ( flattenedGraph.dummies.contains(vertex) ) {
+      // vertex is dummy 
+//std::cerr << "Dummy: " << vertex->reference() << std::endl;
+      it = finalizeVertexPosition(vertex);
+    }
+    else if ( 
+      _solution->evaluate( visit.at( vertex ) ).has_value() && 
+      !_solution->evaluate( visit.at( vertex ) ).value()
     ) {
-std::cerr << "Skip: " << vertex->reference() << std::endl;
+//std::cerr << "Skip: " << vertex->reference() << std::endl;
       // vertex is dummy or not visited
+      unvisited(vertex);
       it = finalizeVertexPosition(vertex);
     }
     else if ( auto request = hasRequest(vertex) ) {

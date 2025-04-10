@@ -35,10 +35,11 @@ SCENARIO( "Symmetric exclusivegateway gateways", "[cpcontroller][exclusivegatewa
       THEN( "The solution is complete and satisfies all constraints" ) {
         auto terminationLog = recorder.find(nlohmann::json{{"event","termination"}});
         REQUIRE( terminationLog.empty() );
-//        REQUIRE( solution.complete() );
+        REQUIRE( solution.complete() );
         REQUIRE( solution.errors().empty() );
       }
     }
+
     WHEN( "The engine is started at time 2" ) {
       std::string csv =
         "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
@@ -60,8 +61,8 @@ SCENARIO( "Symmetric exclusivegateway gateways", "[cpcontroller][exclusivegatewa
       controller.subscribe(&engine); 
       Execution::TimeWarp timeHandler;
       timeHandler.connect(&engine);
-//      Execution::Recorder recorder;
-      Execution::Recorder recorder(std::cerr);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
       engine.run(scenario.get(),10);
 
@@ -71,7 +72,7 @@ SCENARIO( "Symmetric exclusivegateway gateways", "[cpcontroller][exclusivegatewa
       THEN( "The solution is complete and satisfies all constraints" ) {
         auto terminationLog = recorder.find(nlohmann::json{{"event","termination"}});
         REQUIRE( terminationLog.empty() );
-//        REQUIRE( solution.complete() );
+        REQUIRE( solution.complete() );
         REQUIRE( solution.errors().empty() );
       }
     }  

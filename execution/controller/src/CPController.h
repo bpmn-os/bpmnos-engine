@@ -177,6 +177,7 @@ protected:
   std::list< const Vertex* > pendingVertices; /// The list of vertices to be processed
   std::list< const Vertex* > processedVertices; /// The list of vertices already processed
   bool hasPendingPredecessor(const Vertex* vertex);
+  void unvisited(const Vertex* vertex);
   void finalizePredecessorPositions(const Vertex* vertex);
   std::list< const Vertex* >::iterator finalizeVertexPosition(const Vertex* vertex); /// Method finalizing the sequence position of a pending vertex and removing it from the list
   size_t lastPosition;
