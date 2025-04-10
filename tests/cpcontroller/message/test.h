@@ -156,7 +156,7 @@ SCENARIO( "Message tasks", "[cpcontroller][message]" ) {
       engine.run(scenario.get(),10);
 
 //std::cerr << "Model:\n" << controller.getModel().stringify() << std::endl;
-std::cerr << "Solution:\n" << solution.stringify() << std::endl;
+//std::cerr << "Solution:\n" << solution.stringify() << std::endl;
 //std::cerr << "Errors:\n" << solution.errors() << std::endl;
       THEN( "The solution is complete and satisfies all constraints" ) {
         auto terminationLog = recorder.find(nlohmann::json{{"event","termination"}});
