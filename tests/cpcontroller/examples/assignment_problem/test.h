@@ -1,15 +1,20 @@
-SCENARIO( "Travelling salesperson problem", "[cpcontroller][travelling_salesperson_problem]" ) {
-  const std::string modelFile = "examples/travelling_salesperson_problem/Travelling_salesperson_problem.bpmn";
-  const std::vector<std::string> folders = { "tests/examples/travelling_salesperson_problem" };
+SCENARIO( "Assignment problem", "[cpcontroller][assignment_problem]" ) {
+  const std::string modelFile = "examples/assignment_problem/Assignment_problem.bpmn";
+  const std::vector<std::string> folders = { "tests/examples/assignment_problem" };
   REQUIRE_NOTHROW( Model::Model(modelFile,folders) );
 
-  GIVEN( "A TSP with four locations" ) {
+  GIVEN( "Three clients and three servers" ) {
+
     WHEN( "The engine is started" ) {
 
     std::string csv =
       "PROCESS_ID; INSTANCE_ID; ATTRIBUTE_ID; VALUE\n"
-      "TravellingSalesperson_Process;Instance1;Origin;\"Hamburg\"\n"
-      "TravellingSalesperson_Process;Instance1;Locations;[\"Munich\",\"Berlin\",\"Cologne\"]\n"
+      "ClientProcess;Client1;;\n"
+      "ClientProcess;Client2;;\n"
+      "ClientProcess;Client3;;\n"
+      "ServerProcess;Server1;;\n"
+      "ServerProcess;Server2;;\n"
+      "ServerProcess;Server3;;\n"
     ;
 
       Model::StaticDataProvider dataProvider(modelFile,folders,csv);

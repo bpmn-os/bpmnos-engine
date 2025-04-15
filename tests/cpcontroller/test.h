@@ -1,8 +1,4 @@
-//#include "exclusivegateway/test.h"
-//#include "adhocsubprocess/test.h"
-//#include "examples/travelling_salesperson_problem/test.h"
-//#include "loopactivity/test.h"
-//#include "multiinstanceactivity/test.h"
+//#include "examples/assignment_problem/test.h"
 
 #include "process/test.h"
 
@@ -40,6 +36,7 @@
 #include "eventsubprocess/test.h"
 
 // Examples
+#include "examples/assignment_problem/test.h"
 #include "examples/travelling_salesperson_problem/test.h"
 
 
