@@ -1526,6 +1526,7 @@ const BPMNOS::Model::Content* CPController::findContent(const BPMNOS::Model::Mes
 
 
 void CPController::createLocalAttributeVariables(const Vertex* vertex) {
+//std::cerr << "createLocalAttributeVariables" << std::endl;
   assert( vertex->exit<BPMN::Task>() || vertex->exit<BPMN::TypedStartEvent>() );
   
   if ( auto typedStartEvent = vertex->node->represents<BPMN::TypedStartEvent>();
@@ -1543,11 +1544,15 @@ void CPController::createLocalAttributeVariables(const Vertex* vertex) {
     assert(!"Not yet implemented");
   }
 
-  auto messageDefinition = extensionElements->messageDefinitions.size() == 1 ? extensionElements->messageDefinitions[0].get() : nullptr;
+  auto messageDefinition = 
+    ( vertex->exit<BPMN::MessageCatchEvent>() && extensionElements->messageDefinitions.size() == 1 ) ? 
+    extensionElements->messageDefinitions[0].get() : 
+    nullptr
+  ;
 
   auto localAttributeVariables = [&](const auto& attributes) -> std::vector<AttributeVariables> {
     std::vector<AttributeVariables> variables;
-std::cerr << "Attributes: " << attributes.size() << std::endl;
+//std::cerr << "Attributes: " << attributes.size() << std::endl;
 
     auto initialVariables = [&](BPMNOS::Model::Attribute* attribute) -> std::pair<CP::Expression,CP::Expression> {
       if ( attribute->category == BPMNOS::Model::Attribute::Category::STATUS ) {
@@ -1574,7 +1579,7 @@ std::cerr << "Attributes: " << attributes.size() << std::endl;
     };
 
     for ( auto attribute : attributes ) {
-std::cerr << "Attribute: " << attribute->id << std::endl;
+//std::cerr << "Attribute: " << attribute->id << std::endl;
       auto [defined,value] = initialVariables(attribute);
     
       if ( auto choice = findChoice(extensionElements->choices, attribute) ) {
@@ -1625,12 +1630,15 @@ std::cerr << "Attribute: " << attribute->id << std::endl;
 //        assert(!"Not yet implemented");
       }
       else if ( auto content = findContent(messageDefinition, attribute) ) {
+//std::cerr << "Content: " << content->key << std::endl;
         if ( 
           attribute->category == BPMNOS::Model::Attribute::Category::STATUS &&
           attribute->index == BPMNOS::Model::ExtensionElements::Index::Timestamp
         ) {
           throw std::runtime_error("CPController: timestamp must not be changed by message content");
         }
+        assert(messageContent.contains(vertex));
+        assert(messageContent.at(vertex).contains(content->key));
         // attribute set by received message content
         variables.emplace_back(
           model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->shortReference() + ",0}," + attribute->id, messageContent.at(vertex).at(content->key).defined ), 
@@ -1657,7 +1665,7 @@ std::cerr << "Attribute: " << attribute->id << std::endl;
           model.addVariable(CP::Variable::Type::REAL, "value_{" + vertex->shortReference() + ",0}," + attribute->id, value )
         );
       }
-std::cerr << "Attribute: " << attribute->id << " (done)" << std::endl;
+//std::cerr << "Attribute: " << attribute->id << " (done)" << std::endl;
     }
     
     return variables;
