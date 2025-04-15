@@ -1154,11 +1154,9 @@ void CPController::createEntryStatus(const Vertex* vertex) {
 std::cerr << "createEntryStatus: " << vertex->reference() << std::endl;
   status.emplace( vertex, std::vector<AttributeVariables>() );  
   auto& variables = status.at(vertex);
+  auto loopCharacteristics = getLoopCharacteristics(vertex);
 
-  if ( auto loopCharacteristics = getLoopCharacteristics(vertex);
-    loopCharacteristics.has_value() &&
-    !flattenedGraph.dummies.contains(vertex)    
-  ) {
+  if ( loopCharacteristics.has_value() && !flattenedGraph.dummies.contains(vertex) ) {
     createLoopEntryStatus(vertex);
 /*
     if ( loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::Standard ) {
@@ -1214,10 +1212,16 @@ std::cerr << "createEntryStatus: " << vertex->reference() << std::endl;
     }
   }
 
-  if ( !flattenedGraph.dummies.contains(vertex) ) {   
-    // add new attributes if necessary
-    addAttributes(vertex,variables);
+  if ( 
+    flattenedGraph.dummies.contains(vertex) &&
+    loopCharacteristics.has_value() &&
+    loopCharacteristics.value() != BPMN::Activity::LoopCharacteristics::Standard
+  ) {
+    // for multi-instance activities, attributes are only added to vertices representing and instantiation 
+    return;
   }
+  // add new attributes where applicable
+  addAttributes(vertex,variables);
 }
 
 void CPController::createExitStatus(const Vertex* vertex) {
