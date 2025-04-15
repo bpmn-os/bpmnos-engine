@@ -3,7 +3,7 @@ SCENARIO( "Travelling salesperson problem", "[examples][travelling_salesperson_p
   const std::vector<std::string> folders = { "tests/examples/travelling_salesperson_problem" };
   REQUIRE_NOTHROW( Model::Model(modelFile,folders) );
 
-  GIVEN( "A TSP with four location" ) {
+  GIVEN( "A TSP with four locations" ) {
 
     std::string csv =
       "PROCESS_ID; INSTANCE_ID; ATTRIBUTE_ID; VALUE\n"

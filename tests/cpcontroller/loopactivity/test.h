@@ -28,10 +28,11 @@ SCENARIO( "Loop task", "[cpcontroller][loopactivity]" ) {
       recorder.subscribe(&engine);
       engine.run(scenario.get(),10);
       
-/*
-std::cerr << "Model:\n" << controller.getModel().stringify() << std::endl;
-std::cerr << "Solution:\n" << solution.stringify() << std::endl;
-*/
+
+//std::cerr << "Model:\n" << controller.getModel().stringify() << std::endl;
+//std::cerr << "Solution:\n" << solution.stringify() << std::endl;
+//std::cerr << "Errors:\n" << solution.errors() << std::endl;
+
       THEN( "The solution is complete and satisfies all constraints" ) {
         auto terminationLog = recorder.find(nlohmann::json{{"event","termination"}});
         REQUIRE( terminationLog.empty() );  
@@ -41,7 +42,6 @@ std::cerr << "Solution:\n" << solution.stringify() << std::endl;
     }
   }
 };
-
 
 SCENARIO( "Loop subprocess", "[cpcontroller][loopactivity]" ) {
   const std::string modelFile = "tests/execution/loopactivity/Loop_subprocess.bpmn";
@@ -73,10 +73,10 @@ SCENARIO( "Loop subprocess", "[cpcontroller][loopactivity]" ) {
       recorder.subscribe(&engine);
       engine.run(scenario.get(),10);
       
-/*
-std::cerr << "Model:\n" << controller.getModel().stringify() << std::endl;
-std::cerr << "Solution:\n" << solution.stringify() << std::endl;
-*/
+//std::cerr << "Model:\n" << controller.getModel().stringify() << std::endl;
+//std::cerr << "Solution:\n" << solution.stringify() << std::endl;
+//std::cerr << "Errors:\n" << solution.errors() << std::endl;
+
       THEN( "The solution is complete and satisfies all constraints" ) {
         auto terminationLog = recorder.find(nlohmann::json{{"event","termination"}});
         REQUIRE( terminationLog.empty() );  

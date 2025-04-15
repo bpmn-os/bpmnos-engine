@@ -119,6 +119,7 @@ protected:
   };
   
   void createStatus(const Vertex* vertex);
+  void addAttributes(const Vertex* vertex, std::vector<AttributeVariables>& variables, const BPMNOS::Model::Attribute* loopIndex = nullptr);
   void createEntryStatus(const Vertex* vertex);
   void createExitStatus(const Vertex* vertex);
   void createLocalAttributeVariables(const Vertex* vertex);

@@ -102,7 +102,7 @@ Token::~Token() {
         }
       }
 
-      // release perfomer when activity fails
+      // release performer when activity fails
       if ( state == State::READY && activity->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() ) {
         auto tokenAtSequentialPerformer = getSequentialPerfomerToken();
         if ( tokenAtSequentialPerformer && tokenAtSequentialPerformer->performing == this ) {
@@ -1004,13 +1004,11 @@ void Token::advanceToExiting() {
           return false;
         }
       }
-
       return true;
     }();
 
     if ( LOOP ) {
       awaitEntryEvent();
-//      advanceToEntered();
       return;
     }
   }
