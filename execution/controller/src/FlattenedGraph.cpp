@@ -304,17 +304,6 @@ std::cerr << node->id << " has " << attributes.size() << " loop index attributes
     extensionElements->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>()
   ) {
     sequentialActivities.at( entry.performer() ).push_back( { entry, exit } );
-    // assume that adhoc subprocess only have activities w/o incoming sequence flow
-    if ( activity->incoming.empty() ) {
-      entry.inflows.emplace_back(nullptr,parent.value().first);
-      parent.value().first.outflows.emplace_back(nullptr,entry);
-    }
-/*
-    if ( activity->outgoing.empty() ) {
-      exit.outflows.emplace_back(nullptr,parent.value().second);
-      parent.value().second.inflows.emplace_back(nullptr,exit);
-    }
-*/
   }
 
   // populate lookup maps of data modifiers for data owner
@@ -366,7 +355,7 @@ void FlattenedGraph::createLoopVertices(BPMNOS::number rootId, BPMNOS::number in
   dummies.insert( &entry );
   dummies.insert( &exit );
   assert( parent.has_value() );
-  
+    
   entry.predecessors.push_back( parent.value().first );
   exit.successors.push_back( parent.value().second ); 
   parent.value().first.successors.push_back( entry ); 
@@ -460,7 +449,7 @@ std::cerr << parameter->expression->expression << " = " << number(parameter->exp
 //  container.emplace_back( entry );
  
   if ( activity->loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::Standard ) {
-std::cerr << "Standard" << std::endl;
+//std::cerr << "Standard" << std::endl;
     // create vertices for loop activity
     Vertex* previous = &entry;
     loopIndices.push_back(0);
@@ -486,7 +475,7 @@ std::cerr << "Standard" << std::endl;
     }
   }
   else {
-std::cerr << "MultiInstance" << std::endl;
+//std::cerr << "MultiInstance" << std::endl;
    std::string baseName = BPMNOS::to_string(instanceId,STRING) + BPMNOS::Model::Scenario::delimiters[0] + activity->id + BPMNOS::Model::Scenario::delimiters[1] ;
     // create vertices for multi-instance activity
     Vertex* previous = nullptr;
@@ -546,6 +535,14 @@ std::cerr << "flatten: " << scope->id << std::endl;
     auto& [flowNodeEntry,flowNodeExit] = vertexMap.at({instanceId,scopeEntry.loopIndices,flowNode});
 
     if ( flowNode->represents<BPMN::UntypedStartEvent>() || flowNode->represents<BPMN::TypedStartEvent>() ) {
+      flowNodeEntry.inflows.emplace_back(nullptr,scopeEntry);
+      scopeEntry.outflows.emplace_back(nullptr,flowNodeEntry);
+    }
+
+    if ( flowNode->represents<BPMN::Activity>() && flowNode->incoming.empty() ) {
+      if( !flowNode->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() ) {
+        throw std::runtime_error("FlattenedGraph: only activities within adhoc subprocesses maybe without incoming sequence flow");
+      }
       flowNodeEntry.inflows.emplace_back(nullptr,scopeEntry);
       scopeEntry.outflows.emplace_back(nullptr,flowNodeEntry);
     }
