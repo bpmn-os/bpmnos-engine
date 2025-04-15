@@ -753,6 +753,7 @@ void CPController::createGlobalVariables() {
         value.emplace_back(); 
       }
     }
+    addToObjective( attribute, value[ value.size() -1 ] );
   }
 }
 
@@ -1027,6 +1028,7 @@ void CPController::createDataVariables(const FlattenedGraph::Vertex* vertex) {
         variables.value.emplace_back(); 
       }
     }
+    addToObjective( attribute.get(), variables.value[ variables.value.size() -1 ] );
     data.emplace( std::make_pair(vertex, attribute.get()), std::move(variables) ); 
   }
 }
@@ -1101,6 +1103,7 @@ void CPController::createStatus(const Vertex* vertex) {
   }
   else {
     createExitStatus(vertex);
+    addObjectiveCoefficients( vertex );
   }
 
   // TODO: sequential activity or multi-instance sequential activity
@@ -2484,6 +2487,31 @@ void CPController::createDataIndexVariables(const Vertex* vertex) {
   dataIndex.emplace( vertex, std::move(dataIndices) );
 }
 
+void CPController::addToObjective(const BPMNOS::Model::Attribute* attribute, const CP::Variable& variable) {
+  if ( attribute->weight != 0.0 ) {
+    model.setObjective( model.getObjective() + attribute->weight * variable );
+  }
+}
+
+void CPController::addObjectiveCoefficients(const Vertex* vertex) {
+  assert( vertex->type == Vertex::Type::EXIT );
+  auto loopCharacteristics = getLoopCharacteristics(vertex);
+  if ( 
+    flattenedGraph.dummies.contains(vertex) &&
+    loopCharacteristics.has_value() &&
+    loopCharacteristics.value() != BPMN::Activity::LoopCharacteristics::Standard
+  ) {
+    // for multi-instance activities, attributes are only added to vertices representing and instantiation 
+    return;
+  }
+
+  if ( auto extensionElements = vertex->node->extensionElements->represents<BPMNOS::Model::ExtensionElements>() ) {
+    for ( size_t i = extensionElements->attributeRegistry.statusAttributes.size() - extensionElements->attributes.size(); i < extensionElements->attributeRegistry.statusAttributes.size(); i++) {
+      auto attribute = extensionElements->attributeRegistry.statusAttributes[i]; 
+      addToObjective( attribute, status.at(vertex)[attribute->index].value );  
+    }
+  }
+}
 
 const FlattenedGraph::Vertex* CPController::entry(const Vertex* vertex) {
 /*

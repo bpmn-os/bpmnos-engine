@@ -40,6 +40,8 @@ std::cerr << "Errors:\n" << solution.errors() << std::endl;
         REQUIRE( terminationLog.empty() );
         REQUIRE( solution.complete() );
         REQUIRE( solution.errors().empty() );
+        REQUIRE( solution.getObjectiveValue().has_value() );
+        REQUIRE( solution.getObjectiveValue().value() == engine.getSystemState()->getObjective() );
       }
     }
   }

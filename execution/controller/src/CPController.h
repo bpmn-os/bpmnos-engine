@@ -105,6 +105,9 @@ protected:
     CP::IndexedVariables& value;
   };
 
+  void addToObjective(const BPMNOS::Model::Attribute* attribute, const CP::Variable& variable);
+  void addObjectiveCoefficients(const Vertex* vertex);
+
   struct AttributeEvaluation {
     AttributeEvaluation(std::expected< double, std::string > defined, std::expected< double, std::string > value) : _defined(defined), _value(value) {}
     inline bool defined() const { return (bool)_defined.value(); }
