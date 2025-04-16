@@ -8,6 +8,10 @@
 
 using namespace BPMNOS::Execution;
 
+/**********************
+** Vertex
+**********************/
+
 FlattenedGraph::Vertex::Vertex(FlattenedGraph* graph, BPMNOS::number rootId, BPMNOS::number instanceId,  std::vector< size_t > loopIndices, const BPMN::Node* node, Type type, std::optional< std::pair<Vertex&, Vertex&> > parent)
   : graph(graph)
   , index(graph->vertices.size())
@@ -106,11 +110,14 @@ nlohmann::ordered_json FlattenedGraph::Vertex::jsonify() const {
   return jsonObject;
 }
 
+/**********************
+** FlattenedGraph
+**********************/
 
 FlattenedGraph::FlattenedGraph(const BPMNOS::Model::Scenario* scenario) : scenario(scenario) {
   // get all known instances
   auto instances = scenario->getKnownInstances( scenario->getInception() );
-std::cerr << "Instances: " << instances.size() << std::endl;
+//std::cerr << "Instances: " << instances.size() << std::endl;
   for ( auto& instance : instances ) {
     addInstance( instance );
   }
@@ -125,7 +132,7 @@ nlohmann::ordered_json FlattenedGraph::jsonify() const {
 }
 
 void FlattenedGraph::addInstance( const BPMNOS::Model::Scenario::InstanceData* instance ) {
-std::cerr << "addInstance: " << instance->id << std::endl;
+//std::cerr << "Add instance: " << instance->id << std::endl;
   // create process vertices
   auto [ entry, exit ] = createVertexPair(instance->id, instance->id, {}, instance->process, std::nullopt);
   initialVertices.push_back(entry);
@@ -142,7 +149,8 @@ void FlattenedGraph::addNonInterruptingEventSubProcess( const BPMN::EventSubProc
   assert( eventSubProcess->startEvent->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );
   auto& candidates = eventSubProcess->startEvent->extensionElements->as<BPMNOS::Model::ExtensionElements>()->messageCandidates;
   for ( auto candidate : candidates ) {
-    for ( [[maybe_unused]] auto& _ : sendingVertices[candidate] ) {
+    if( sendingVertices.contains(candidate) ) {
+    for ( [[maybe_unused]] auto& _ : sendingVertices.at(candidate) ) {
       // create and flatten next event-subprocess
       counter++;
       BPMNOS::number id = 
@@ -162,10 +170,12 @@ void FlattenedGraph::addNonInterruptingEventSubProcess( const BPMN::EventSubProc
       }
       lastStart = &startExit;
     }
-  } 
+    }
+  }
 }
 
 void FlattenedGraph::addSender( const BPMN::MessageThrowEvent* messageThrowEvent, Vertex& senderEntry, Vertex& senderExit ) {
+//std::cerr << "Add sender: " << senderEntry.reference() << std::endl;
   // flatten event subprocesses if applicable
   assert( messageThrowEvent->extensionElements );
   assert( messageThrowEvent->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );
@@ -174,8 +184,16 @@ void FlattenedGraph::addSender( const BPMN::MessageThrowEvent* messageThrowEvent
     if (std::find(candidates.begin(), candidates.end(), eventSubProcess->startEvent) != candidates.end()) {
       // eventSubProcess may be triggered by message throw event, create and flatten next event-subprocess
       counter++;
+//std::cerr << "Add non-interrupting event-subprocess: " << eventSubProcess->id << "#" << counter << std::endl;
       BPMNOS::number id = BPMNOS::to_number( BPMNOS::to_string(parentEntry.instanceId,STRING) + BPMNOS::Model::Scenario::delimiters[0] + eventSubProcess->id + BPMNOS::Model::Scenario::delimiters[1] + std::to_string(counter),  STRING);
       flatten( id, eventSubProcess, parentEntry, parentExit );
+      // newly created vertices at start event must succeed previous vertices at start event
+      auto& [startEntry,startExit] = vertexMap.at({ id, parentEntry.loopIndices, eventSubProcess->startEvent });
+      if ( lastStart ) {
+        lastStart->successors.push_back(startEntry);
+        startEntry.predecessors.push_back(*lastStart);
+      }
+      lastStart = &startExit;
     }
   }
   
@@ -233,7 +251,7 @@ std::pair<FlattenedGraph::Vertex&, FlattenedGraph::Vertex&> FlattenedGraph::crea
   auto& entry = vertices.back();
   vertices.emplace_back(this, rootId, instanceId, loopIndices, node, Vertex::Type::EXIT, parent);
   auto& exit = vertices.back();
-
+//std::cerr << "Add vertex pair: " << entry.reference() << std::endl;
   if ( node->represents<BPMN::Scope>() ) {
     entry.successors.push_back(exit);
     exit.predecessors.push_back(entry);
@@ -266,7 +284,7 @@ std::pair<FlattenedGraph::Vertex&, FlattenedGraph::Vertex&> FlattenedGraph::crea
     ) {
       attributes.push_back( getLoopIndexAttribute(activity) );
     } 
-std::cerr << node->id << " has " << attributes.size() << " loop index attributes" << std::endl;
+//std::cerr << node->id << " has " << attributes.size() << " loop index attributes" << std::endl;
     loopIndexAttributes[node] = std::move(attributes);
   }
   
@@ -368,7 +386,7 @@ void FlattenedGraph::createLoopVertices(BPMNOS::number rootId, BPMNOS::number in
     if ( activity->loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::Standard ) {
       attributes.push_back( getLoopIndexAttribute(activity) );
     } 
-std::cerr << activity->id << " has " << attributes.size() << " loop index attributes" << std::endl;
+//std::cerr << activity->id << " has " << attributes.size() << " loop index attributes" << std::endl;
     loopIndexAttributes[activity] = std::move(attributes);
   }
   
@@ -504,12 +522,12 @@ std::cerr << parameter->expression->expression << " = " << number(parameter->exp
     }
   }
 
-std::cerr << "done" << std::endl;
+//std::cerr << "done" << std::endl;
 
 }
 
 void FlattenedGraph::flatten(BPMNOS::number instanceId, const BPMN::Scope* scope, Vertex& scopeEntry, Vertex& scopeExit) {
-std::cerr << "flatten: " << scope->id << std::endl;
+//std::cerr << "flatten: " << BPMNOS::to_string(instanceId,STRING) << "/" << scopeEntry.shortReference() << std::endl;
   std::pair<Vertex&, Vertex&> parent = {scopeEntry,scopeExit};
   
   if ( scope->flowNodes.empty() ) {
@@ -566,7 +584,7 @@ std::cerr << "flatten: " << scope->id << std::endl;
 
   }
 
-std::cerr << "sequence flows: " << scope->sequenceFlows.size() << std::endl;
+//std::cerr << "sequence flows: " << scope->sequenceFlows.size() << std::endl;
   // sequence flows
   for ( auto& sequenceFlow : scope->sequenceFlows ) {
     // create unique flow from origin to destination
