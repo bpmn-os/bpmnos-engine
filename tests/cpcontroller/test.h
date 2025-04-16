@@ -1,4 +1,5 @@
-//#include "examples/assignment_problem/test.h"
+//#include "eventbasedgateway/test.h"
+//#include "examples/knapsack_problem/test.h"
 
 #include "process/test.h"
 
@@ -26,6 +27,9 @@
 #include "parallelgateway/test.h"
 #include "exclusivegateway/test.h"
 
+// Event-based gateways
+#include "eventbasedgateway/test.h"
+
 // Events
 #include "timer/test.h"
 
@@ -38,14 +42,11 @@
 // Examples
 #include "examples/assignment_problem/test.h"
 #include "examples/travelling_salesperson_problem/test.h"
+#include "examples/knapsack_problem/test.h"
 
 
 /*
 //#include "request/test.h" // TODO: Check allocation id in content of request message
-
-
-// Event-based gateways
-#include "eventbasedgateway/test.h"
 
 // Events
 #include "signal/test.h"

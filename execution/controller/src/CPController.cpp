@@ -98,7 +98,7 @@ const FlattenedGraph::Vertex* CPController::getVertex( const Token* token ) cons
     loopIndices.push_back( (size_t)token->status.at(attribute->index).value() );
   }
   auto instanceId = token->data->at(BPMNOS::Model::ExtensionElements::Index::Instance).get().value();
-std::cerr << stringRegistry[(size_t)instanceId] << "/" << node->id << "/" << token->jsonify() << std::endl;
+//std::cerr << stringRegistry[(size_t)instanceId] << "/" << node->id << "/" << token->jsonify() << std::endl;
   if( !flattenedGraph.vertexMap.contains({instanceId,loopIndices,node}) ) {
     return nullptr;
   }
@@ -126,7 +126,8 @@ std::list< const CPController::Vertex* >::iterator CPController::finalizeVertexP
     it = pendingVertices.erase(it);
     processedVertices.push_back(vertex);
     _solution->setVariableValue( position.at(vertex), (double)++lastPosition);
-//std::cerr << "position(" << vertex->reference() << ") = " << lastPosition << std::endl;
+std::cerr << std::endl << "position(" << vertex->reference() << ") = " << lastPosition << std::endl;
+//std::cerr << "visit(" << vertex->shortReference() << ") = " << _solution->evaluate( visit.at(vertex) ).value_or(-1) << std::endl;
   }
   return it;
 };
@@ -160,13 +161,19 @@ void CPController::unvisited(const Vertex* vertex) {
   auto& timestamp = status.at(vertex)[BPMNOS::Model::ExtensionElements::Index::Timestamp];
   _solution->setVariableValue( timestamp.value, 0.0 );
 
-  for ( const Vertex& candidate : vertex->recipients ) {
-    assert( messageFlow.contains({vertex,&candidate}) );
-    _solution->setVariableValue( messageFlow.at({vertex,&candidate}), (double)false );
+  auto sender = (vertex->type == Vertex::Type::ENTRY) ? vertex : entry(vertex);
+  for ( const Vertex& candidate : sender->recipients ) {
+    assert( candidate.exit<BPMN::MessageCatchEvent>() );
+    assert( messageFlow.contains({sender,&candidate}) );
+    _solution->setVariableValue( messageFlow.at({sender,&candidate}), (double)false );
+    
   }
-  for ( const Vertex& candidate : vertex->senders ) {
-    assert( messageFlow.contains({&candidate,vertex}) );
-    _solution->setVariableValue( messageFlow.at({&candidate,vertex}), (double)false );
+
+  auto recipient = exit(sender);
+  for ( const Vertex& candidate : recipient->senders ) {
+    assert( candidate.entry<BPMN::MessageThrowEvent>() );
+    assert( messageFlow.contains({&candidate,recipient}) );
+    _solution->setVariableValue( messageFlow.at({&candidate,recipient}), (double)false );
   }
 }
 
@@ -175,7 +182,7 @@ void CPController::synchronizeSolution(const Token* token) {
     return;
   }
 
-std::cerr << "Validate: " << token->jsonify() << std::endl;    
+//std::cerr << "Validate: " << token->jsonify() << std::endl;    
 
   if ( token->state == Token::State::FAILED ) {
     terminationEvent = std::make_shared<TerminationEvent>();
@@ -183,7 +190,7 @@ std::cerr << "Validate: " << token->jsonify() << std::endl;
 
   if ( token->state == Token::State::ENTERED ) {
     if ( auto vertex = getVertex(token) ) {
-std::cerr << "clear entry event: " << token->jsonify() << std::endl;
+//std::cerr << "clear entry event: " << token->jsonify() << std::endl;
       finalizePredecessorPositions(vertex);
       finalizeVertexPosition(vertex);
       if ( 
@@ -191,7 +198,7 @@ std::cerr << "clear entry event: " << token->jsonify() << std::endl;
         vertex->entry<BPMN::Gateway>() || 
         ( vertex->entry<BPMN::ThrowEvent>() && !vertex->entry<BPMN::SendTask>() ) 
       ) {
-std::cerr << "clear instantaneous exit: " << token->jsonify() << std::endl;
+//std::cerr << "clear instantaneous exit: " << token->jsonify() << std::endl;
         finalizePredecessorPositions(exit(vertex));
         finalizeVertexPosition(exit(vertex));
       }
@@ -209,10 +216,10 @@ std::cerr << "clear instantaneous exit: " << token->jsonify() << std::endl;
         auto& gateway = entryVertex->inflows.front().second;
         for ( auto& [ _, target ] : gateway.outflows ) {
           _solution->setVariableValue( tokenFlow.at({&gateway,&target}), ( &target == entryVertex ) );
-std::cerr << "Token flow " << gateway.reference() << " to " << target.reference() << " = " << ( &target == entryVertex ) << std::endl;
+//std::cerr << "Token flow " << gateway.reference() << " to " << target.reference() << " = " << ( &target == entryVertex ) << std::endl;
         } 
       }
-std::cerr << "clear exit event: " << vertex->reference() << std::endl;
+//std::cerr << "clear exit event: " << vertex->reference() << std::endl;
       finalizePredecessorPositions(vertex);
       finalizeVertexPosition(vertex);
     }
@@ -233,8 +240,7 @@ std::cerr << "clear exit event: " << vertex->reference() << std::endl;
 
   auto vertex = getVertex(token);
 
-std::cerr << "Validate vertex " << vertex->reference() << std::endl;    
-//std::cerr << "Validate visit" << std::endl;    
+//std::cerr << "Validate vertex " << vertex->reference() << std::endl;    
 
   // check visit
   auto visitEvaluation = _solution->evaluate( visit.at(vertex) );
@@ -485,6 +491,7 @@ std::cerr << "Postpone (sequence): " << vertex->reference() << std::endl;
       // vertex is dummy 
 //std::cerr << "Dummy: " << vertex->reference() << std::endl;
       it = finalizeVertexPosition(vertex);
+      continue;
     }
     else if ( 
       _solution->evaluate( visit.at( vertex ) ).has_value() && 
@@ -494,6 +501,7 @@ std::cerr << "Postpone (sequence): " << vertex->reference() << std::endl;
       // vertex is dummy or not visited
       unvisited(vertex);
       it = finalizeVertexPosition(vertex);
+      continue;
     }
     else if ( auto request = hasRequest(vertex) ) {
       if ( auto event = createEvent(vertex,request) ) {
@@ -503,6 +511,7 @@ std::cerr << "Event: " << vertex->reference() << std::endl;
       else if ( vertex->exit<BPMN::MessageStartEvent>() ) {
         // event-subprocess is not triggered or exit of start event is infeasible
         it = finalizeVertexPosition(vertex);
+        continue;
       }  
       else {
 std::cerr << "Postpone (infeasible): " << vertex->reference() << std::endl;
@@ -518,7 +527,43 @@ std::cerr << "Postpone (send task): " << vertex->reference() << std::endl;
         it++;
         continue;
       }
-std::cerr << "Wait: " << vertex->reference() << std::endl;
+      else if ( vertex->entry<BPMN::MessageStartEvent>() ) {
+        auto predIt = std::find_if(
+          vertex->predecessors.begin(),
+          vertex->predecessors.end(),
+          [&](const Vertex& predecessor) {
+            return predecessor.node == vertex->node;
+          }
+        );
+        if ( predIt != vertex->predecessors.end() ) {
+          // event-subprocess can not be triggered because previous has not been triggered
+          Vertex& predecessor = *predIt;
+std::cerr << predecessor.reference() << " before " << vertex->reference() << "/" << _solution->evaluate( visit.at(&predecessor) ).value() << std::endl;
+          if ( auto evaluation = _solution->evaluate( visit.at(&predecessor) );
+            evaluation && !evaluation.value()
+          ) {
+std::cerr << "No message received" << std::endl;
+            unvisited(vertex);
+            it = finalizeVertexPosition(vertex);
+            continue;
+          }
+        }
+      }
+/*
+      else if ( vertex->exit<BPMN::MessageStartEvent>() ) {
+        if ( auto evaluation = _solution->evaluate( visit.at(vertex) );
+          evaluation && !evaluation.value()
+        ) {
+          for ( const Vertex& candidate : vertex->senders ) {
+            assert( messageFlow.contains({&candidate,entry(vertex)}) );
+            _solution->setVariableValue( messageFlow.at({&candidate,entry(vertex)}), (double)false );
+          }
+          it = finalizeVertexPosition(vertex);
+          continue;
+        }
+      }      
+*/
+std::cerr << "Wait: " << vertex->jsonify() << std::endl;
       // wait for request
       return nullptr;
     }
@@ -916,7 +961,7 @@ void CPController::createMessageHeader(const Vertex* vertex) {
       continue;
     }
 
-std::cerr << "header: " << header << "/" << messageDefinition->parameterMap.contains(header) << std::endl;
+//std::cerr << "header: " << header << "/" << messageDefinition->parameterMap.contains(header) << std::endl;
     if ( messageDefinition->parameterMap.contains(header) ) {
       const BPMNOS::Model::Attribute* attribute = 
         messageDefinition->parameterMap.at(header)->expression ? 
@@ -1157,7 +1202,7 @@ void CPController::addAttributes(const Vertex* vertex, std::vector<AttributeVari
     variables.reserve(extensionElements->attributeRegistry.statusAttributes.size());
     for ( size_t i = variables.size(); i < extensionElements->attributeRegistry.statusAttributes.size(); i++) {
       auto attribute = extensionElements->attributeRegistry.statusAttributes[i];
-std::cerr << "Add: " << attribute->id << std::endl;
+//std::cerr << "Add: " << attribute->id << std::endl;
       // add variables holding given values
       if ( auto given = scenario->getKnownValue(vertex->rootId, attribute, scenario->getInception()); given.has_value() ) {
         // defined initial value
@@ -1779,7 +1824,7 @@ std::cerr << vertex->reference() << std::endl;
   std::vector<AttributeVariables> variables;
   variables.reserve( attributeRegistry.statusAttributes.size() );
   for ( auto attribute : attributeRegistry.statusAttributes ) {
-std::cerr << variables.size() << "/" << attribute->index << "/" << attribute->id << "/" << attributeRegistry.statusAttributes.size() << std::endl;
+//std::cerr << variables.size() << "/" << attribute->index << "/" << attribute->id << "/" << attributeRegistry.statusAttributes.size() << std::endl;
     assert( variables.size() == attribute->index );
     auto& [ defined, value ] = inheritedStatus.at(attribute->index);
     if ( auto activity = vertex->node->represents<BPMN::Activity>();
@@ -1917,7 +1962,7 @@ std::cerr << "createLoopEntryStatus " << vertex->reference() << std::endl;
   auto& variables = status.at(vertex);
   auto& predecessor = vertex->inflows.front().second;
   auto& priorStatus = status.at(&predecessor);
-std::cerr << predecessor.reference() << "/" << priorStatus.size() << std::endl;
+//std::cerr << predecessor.reference() << "/" << priorStatus.size() << std::endl;
   auto extensionElements = vertex->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   const BPMNOS::Model::Attribute* loopIndex = 
     extensionElements->loopIndex.has_value() ? 
@@ -2168,12 +2213,12 @@ std::cerr << "HUHU1" << std::endl;
     }
   }
   else if ( vertex->node->represents<BPMN::FlowNode>() ) {
-std::cerr << vertex->reference() << ": " <<  vertex->loopIndices.size()  << "/" << flattenedGraph.loopIndexAttributes.at(vertex->node).size() << "/" << getLoopCharacteristics(vertex).has_value() << "/" << flattenedGraph.dummies.contains(vertex) << std::endl;      
+//std::cerr << vertex->reference() << ": " <<  vertex->loopIndices.size()  << "/" << flattenedGraph.loopIndexAttributes.at(vertex->node).size() << "/" << getLoopCharacteristics(vertex).has_value() << "/" << flattenedGraph.dummies.contains(vertex) << std::endl;      
     if ( auto loopCharacteristics = getLoopCharacteristics(vertex);
       loopCharacteristics.has_value() &&
       !flattenedGraph.dummies.contains(vertex)    
     ) {
-std::cerr << "Loop/MI" << std::endl;
+//std::cerr << "Loop/MI" << std::endl;
       if ( loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::Standard ) {
         // loop vertex
         auto predecessor = &vertex->inflows.front().second;
@@ -2182,7 +2227,7 @@ std::cerr << "Loop/MI" << std::endl;
           auto& deducedVisit = model.addVariable(CP::Variable::Type::BOOLEAN, "visit_{" + vertex->shortReference() + "}" , visit.at( predecessor ) );
           visit.emplace(vertex, deducedVisit );
           visit.emplace(exit(vertex), deducedVisit );
-std::cerr << deducedVisit.stringify() << std::endl;
+//std::cerr << deducedVisit.stringify() << std::endl;
         }
         else {
           auto extensionElements = vertex->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
@@ -2192,7 +2237,7 @@ std::cerr << deducedVisit.stringify() << std::endl;
             auto& deducedVisit = model.addVariable(CP::Variable::Type::BOOLEAN, "visit_{" + vertex->shortReference() + "}" , visit.at( predecessor ) && condition );
             visit.emplace(vertex, deducedVisit );
             visit.emplace(exit(vertex), deducedVisit );
-std::cerr << deducedVisit.stringify() << std::endl;
+//std::cerr << deducedVisit.stringify() << std::endl;
           }
           else {
             // no condition is given, vertex is visited if predecessor is visited
@@ -2204,7 +2249,7 @@ std::cerr << deducedVisit.stringify() << std::endl;
       }
       else {
         // multi-instance vertex
-std::cerr << "multi-instance vertex" << std::endl;
+//std::cerr << "multi-instance vertex" << std::endl;
         auto predecessor = &vertex->inflows.front().second;
         auto extensionElements = vertex->node->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
         assert( extensionElements->loopCardinality.has_value() );
@@ -2218,7 +2263,7 @@ std::cerr << "multi-instance vertex" << std::endl;
       }
     }
     else if ( vertex->inflows.size() == 1 ) {
-std::cerr << "SINGLE INFLOW" << std::endl;
+//std::cerr << "SINGLE INFLOW" << std::endl;
       auto& [sequenceFlow, predecessor] = vertex->inflows.front();
       if ( sequenceFlow ) {   
         // deduce visit from unique sequence flow
@@ -2284,7 +2329,7 @@ std::cerr << vertex->jsonify().dump() << std::endl;
     visit.emplace(exit(vertex), knownVisit );
   }
 
-std::cerr << "HUHU4" << std::endl;      
+//std::cerr << "HUHU4" << std::endl;      
 }
 
 void CPController::createExitVariables(const Vertex* vertex) {
