@@ -14,6 +14,10 @@ SeededGreedyController::SeededGreedyController(const BPMNOS::Model::Scenario* sc
 
 bool SeededGreedyController::setSeed(const std::list<size_t>& seed) {
   _seed = CPSeed(this,seed);
+std::cerr << "updated seed: ";
+for ( auto i : _seed.getSeed() ) std::cerr << i << ", ";
+std::cerr << std::endl;
+
   return ( _seed.coverage() == 1.0 );
 }
 

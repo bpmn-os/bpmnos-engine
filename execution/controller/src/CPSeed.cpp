@@ -18,22 +18,32 @@ std::list<size_t> CPSeed::defaultSeed(size_t length) {
   return values;
 }
 
-void CPSeed::initialize(std::list<size_t> seed) {
-std::cerr << "CPSeed: ";
-std::cerr << "given seed: ";
+std::list<size_t> CPSeed::defaultSeed(std::list<size_t> partialSeed, size_t length) {
+  auto seed = defaultSeed(length);
+  while ( !partialSeed.empty() ) {
+    seed.remove( partialSeed.back() );
+    seed.push_front( partialSeed.back() ); 
+    partialSeed.pop_back();
+  }
+std::cerr << "initial seed: ";
 for ( auto i : seed ) std::cerr << i << ", ";
 std::cerr << std::endl;
+//assert(!"HH");
+
+  return seed;
+}
+
+
+void CPSeed::initialize(std::list<size_t> seed) {
   assert( seed.size() == controller->getVertices().size() );
   assert( !controller->getModel().getSequences().empty() );
   assert( seed.size() == controller->getModel().getSequences().front().variables.size() );
 
   sequence.reserve( seed.size() );
   
-std::cerr << "resulting seed: ";
   auto it = seed.begin();
   while ( it != seed.end() ) {
     if ( addSequencePosition( *it ) ) {
-std::cerr << *it << " -> ";
       seed.erase(it);
       it = seed.begin();
       continue;
@@ -42,7 +52,6 @@ std::cerr << *it << " -> ";
       it++;
     }
   }
-std::cerr << std::endl;
 }
 
 double CPSeed::coverage() const {

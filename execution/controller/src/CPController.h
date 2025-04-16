@@ -45,7 +45,7 @@ public:
   void synchronizeSolution(const Token* token);
 //  std::vector< std::unique_ptr<EventDispatcher> > eventDispatchers;
   const CP::Model& getModel() const { return model; }
-  const std::vector<const Vertex*> getVertices() const { return vertices; }
+  const std::vector<const Vertex*>& getVertices() const { return vertices; }
 protected:
   ReadyHandler readyHandler;
   DeterministicTaskCompletion completionHandler;

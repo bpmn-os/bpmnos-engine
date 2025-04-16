@@ -178,6 +178,9 @@ void CPController::unvisited(const Vertex* vertex) {
       _solution->setVariableValue( messageFlow.at({&candidate,recipient}), (double)false );
     }
   }
+  
+  // TODO: set values for unvisited data modifier 
+  // TODO: set values for unvisited global modifier 
 }
 
 void CPController::synchronizeSolution(const Token* token) {
@@ -1265,15 +1268,30 @@ std::cerr << "createEntryStatus: " << vertex->reference() << std::endl;
   }
   
   if ( vertex->parent.has_value() ) {
-    auto scope = vertex->parent.value().first.node;
+    assert( vertex->node->represents<BPMN::FlowNode>() );
+    auto scope = vertex->node->as<BPMN::FlowNode>()->parent;
+    assert( scope );
     auto extensionElements = scope->extensionElements->as<BPMNOS::Model::ExtensionElements>();
-    if ( vertex->entry<BPMN::UntypedStartEvent>() || vertex->entry<BPMN::TypedStartEvent>() ) {
+    assert( extensionElements );
+    if ( vertex->entry<BPMN::UntypedStartEvent>() ) {
+      assert( vertex->parent.value().first.node == scope );
+      assert( status.contains(&vertex->parent.value().first) );
       variables = createUniquelyDeducedEntryStatus(vertex, extensionElements->attributeRegistry, status.at(&vertex->parent.value().first) );
+    }
+    else if ( vertex->entry<BPMN::TypedStartEvent>() ) {
+      assert( scope->represents<BPMN::EventSubProcess>() );
+      assert( vertex->parent.value().first.node == scope->as<BPMN::EventSubProcess>()->parent );
+      assert( status.contains(&vertex->parent.value().first) );
+      // use attribute registry of parent of event-subprocess scope
+      auto& attributeRegistry = scope->as<BPMN::EventSubProcess>()->parent->extensionElements->as<BPMNOS::Model::ExtensionElements>()->attributeRegistry;
+      variables = createUniquelyDeducedEntryStatus(vertex, attributeRegistry, status.at(&vertex->parent.value().first) );
+      // attributes defined for event-subprocess are added later
     }
     else if ( vertex->entry<BPMN::ExclusiveGateway>() && vertex->inflows.size() > 1 ) {
       std::vector< std::pair<const CP::Variable&, std::vector<AttributeVariables>& > > alternatives;
       for ( auto& [sequenceFlow,predecessor] : vertex->inflows ) {
         // add to alternatives
+        assert( statusFlow.contains({&predecessor,vertex}) );
         alternatives.emplace_back( tokenFlow.at({&predecessor,vertex}), statusFlow.at({&predecessor,vertex}) );
       }
       variables = createAlternativeEntryStatus(vertex, extensionElements->attributeRegistry, std::move(alternatives));
@@ -1295,11 +1313,13 @@ std::cerr << "createEntryStatus: " << vertex->reference() << std::endl;
       assert( vertex->inflows.size() == 1 );
       auto& [sequenceFlow,predecessor] = vertex->inflows.front();
       if ( sequenceFlow ) {   
+        assert( statusFlow.contains({&predecessor,vertex}) );
         variables = createUniquelyDeducedEntryStatus(vertex, extensionElements->attributeRegistry, statusFlow.at({&predecessor,vertex}) );
       }
       else {
         assert( vertex->node->represents<BPMN::Activity>() );
         assert( vertex->node->as<BPMN::Activity>()->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() );
+        assert( status.contains(&predecessor) ); 
         variables = createUniquelyDeducedEntryStatus(vertex, extensionElements->attributeRegistry, status.at(&predecessor) );
       }
     }
@@ -1377,15 +1397,15 @@ std::cerr << "createExitStatus" << std::endl;
 std::cerr << vertex->reference() << std::endl;  
   const Vertex* entryVertex = entry(vertex);
   if ( vertex->node->represents<BPMN::TimerCatchEvent>() ) {
-std::cerr << "Timer: " << vertex->reference() << std::endl;
+//std::cerr << "Timer: " << vertex->reference() << std::endl;
     assert( vertex->node->extensionElements->represents<BPMNOS::Model::Timer>() );
     auto trigger = createExpression(entry(vertex),*vertex->node->extensionElements->as<BPMNOS::Model::Timer>()->trigger->expression);
     auto& entryStatus = status.at(entryVertex);
     std::vector<AttributeVariables> variables;
-std::cerr << "timer loop" << std::endl;
+//std::cerr << "timer loop" << std::endl;
     extensionElements = vertex->parent.value().first.node->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
     for ( auto attribute : extensionElements->attributeRegistry.statusAttributes ) {
-std::cerr << attribute->name << ": " << attribute->index << " == " <<  variables.size() << std::endl;
+//std::cerr << attribute->name << ": " << attribute->index << " == " <<  variables.size() << std::endl;
 //      assert( attribute->index == variables.size() );
       if ( attribute->index == BPMNOS::Model::ExtensionElements::Index::Timestamp ) {
         variables.emplace_back(
@@ -1406,11 +1426,11 @@ std::cerr << attribute->name << ": " << attribute->index << " == " <<  variables
   else if ( !extensionElements ) {
     // token just runs through the node and exit status is the same as entry status
     extensionElements = vertex->parent.value().first.node->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
-std::cerr << entryVertex->reference() << std::endl;  
+//std::cerr << entryVertex->reference() << std::endl;  
     auto& entryStatus = status.at(entryVertex);
     std::vector<AttributeVariables> variables;
     for ( auto attribute : extensionElements->attributeRegistry.statusAttributes ) {
-std::cerr << attribute->name << ": " << attribute->index << " == " <<  variables.size() << std::endl;
+//std::cerr << attribute->name << ": " << attribute->index << " == " <<  variables.size() << std::endl;
 //      assert( attribute->index == variables.size() );
       variables.emplace_back(
         model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->reference() + "}," + attribute->id, entryStatus[attribute->index].defined ), 
@@ -1630,13 +1650,14 @@ void CPController::createLocalAttributeVariables(const Vertex* vertex) {
     vertex->node->as<BPMN::TypedStartEvent>()->parent->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
   ;
 
-  if ( extensionElements->messageDefinitions.size() > 1 ) {
+  auto& messageDefinitions = vertex->node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->messageDefinitions;
+  if ( messageDefinitions.size() > 1 ) {
     assert(!"Not yet implemented");
   }
 
   auto messageDefinition = 
-    ( vertex->exit<BPMN::MessageCatchEvent>() && extensionElements->messageDefinitions.size() == 1 ) ? 
-    extensionElements->messageDefinitions[0].get() : 
+    ( vertex->exit<BPMN::MessageCatchEvent>() && messageDefinitions.size() == 1 ) ? 
+    messageDefinitions[0].get() : 
     nullptr
   ;
 
@@ -2354,7 +2375,10 @@ std::cerr << "createExitVariables" << std::endl;
 
     // flow variables
     if ( vertex->outflows.size() == 1 ) {
-      createSequenceFlowVariables( vertex, &vertex->outflows.front().second );
+      auto& [sequenceFlow,target] = vertex->outflows.front();
+      if ( sequenceFlow ) {
+        createSequenceFlowVariables( vertex, &target );
+      }
     }
     else if ( vertex->outflows.size() > 1 ) {
 //std::cerr << vertex->reference() << std::endl;
@@ -2377,12 +2401,14 @@ std::cerr << "createExitVariables" << std::endl;
       else if( vertex->node->represents<BPMN::ParallelGateway>() ) {
         // create unconditional outflow
         for ( auto& [sequenceFlow,target] : vertex->outflows ) {
+          assert( sequenceFlow );
           createSequenceFlowVariables( vertex, &target );
         }
       }
       else {
         // create conditional outflow
         for ( auto& [sequenceFlow,target] : vertex->outflows ) {
+          assert( sequenceFlow );
           createSequenceFlowVariables( vertex, &target, sequenceFlow->extensionElements->as<BPMNOS::Model::Gatekeeper>() );
         }
         if( vertex->node->represents<BPMN::ExclusiveGateway>() ) {
@@ -2416,17 +2442,24 @@ void CPController::createSequenceFlowVariables(const Vertex* source, const Verte
       model.addVariable(CP::Variable::Type::BOOLEAN, "tokenflow_{" + source->reference() + " → " + target->reference() + "}", visit.at(source) ) 
     );
   }
+std::cerr << "tokenFlow: " << source->reference() << " to " << target->reference() << std::endl;
   createStatusFlowVariables(source,target);
 }
 
 void CPController::createStatusFlowVariables(const Vertex* source, const Vertex* target) {
-  auto extensionElements = source->parent.value().first.node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+std::cerr << "statusFlow: " << source->reference() << " to " << target->reference() << std::endl;
+  assert( source->node->represents<BPMN::FlowNode>() );
+  assert( source->node->as<BPMN::FlowNode>()->parent );
+  auto extensionElements = source->node->as<BPMN::FlowNode>()->parent->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+  assert( extensionElements );
   std::vector<AttributeVariables> variables;
   variables.reserve( extensionElements->attributeRegistry.statusAttributes.size() );
   for ( auto attribute : extensionElements->attributeRegistry.statusAttributes ) {
-//std::cerr << "statusAttribute: " << name << "/" << source->reference() << std::endl;
+std::cerr << "statusAttribute: " << attribute->id << "/" << source->reference() << std::endl;
     assert( tokenFlow.contains({source,target}) );
     assert( status.contains(source) );
+std::cerr << "indices: " << attribute->index << " < " << status.at(source).size() << std::endl;
+    assert( attribute->index < status.at(source).size() );
     // deduce variable
     variables.emplace_back(
       model.addVariable(CP::Variable::Type::BOOLEAN, "statusflow_defined_{" + source->reference() + " → " + target->reference() + "}," + attribute->id, 
