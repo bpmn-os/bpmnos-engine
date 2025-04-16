@@ -42,7 +42,7 @@ public:
   void connect(Mediator* mediator);
   void subscribe(Engine* engine);
   void notice(const Observable* observable) override;
-  void validate(const Token* token);
+  void synchronizeSolution(const Token* token);
 //  std::vector< std::unique_ptr<EventDispatcher> > eventDispatchers;
   const CP::Model& getModel() const { return model; }
   const std::vector<const Vertex*> getVertices() const { return vertices; }
@@ -72,6 +72,7 @@ protected:
   void createEntryVariables(const Vertex* vertex);
   void createExitVariables(const Vertex* vertex);
   void createSequenceFlowVariables(const Vertex* source, const Vertex* target, const BPMNOS::Model::Gatekeeper* gatekeeper = nullptr);
+  void createStatusFlowVariables(const Vertex* source, const Vertex* target);
 
   void createSequenceConstraints(const Vertex* vertex);
   void createRestrictions(const Vertex* vertex);
@@ -84,6 +85,7 @@ protected:
   void constrainGlobalVariables();
   void constrainDataVariables(const FlattenedGraph::Vertex* vertex);
   void constrainSequentialActivities();
+  void constrainEventBasedGateway(const FlattenedGraph::Vertex* gateway);
   
   struct AttributeVariables {
     const CP::Variable& defined;

@@ -119,20 +119,20 @@ std::optional< BPMN::Activity::LoopCharacteristics> CPController::getLoopCharact
 
 std::list< const CPController::Vertex* >::iterator CPController::finalizeVertexPosition(const Vertex* vertex) {
 //  assert( std::ranges::contains(pendingVertices,vertex) );
-std::cerr << "Remove " << vertex->reference() << " from " << pendingVertices.size() << std::endl;
+//std::cerr << "Remove " << vertex->reference() << " from " << pendingVertices.size() << std::endl;
   auto it = std::find(pendingVertices.begin(), pendingVertices.end(), vertex);
   if( it != pendingVertices.end() ) {
 //std::cerr << "Removed." << std::endl;
     it = pendingVertices.erase(it);
     processedVertices.push_back(vertex);
     _solution->setVariableValue( position.at(vertex), (double)++lastPosition);
-std::cerr << "position(" << vertex->reference() << ") = " << lastPosition << std::endl;
+//std::cerr << "position(" << vertex->reference() << ") = " << lastPosition << std::endl;
   }
   return it;
 };
 
 void CPController::finalizePredecessorPositions(const Vertex* vertex) {
-std::cerr << "finalizePredecessorPositions: " << vertex->reference() << std::endl;
+//std::cerr << "finalizePredecessorPositions: " << vertex->reference() << std::endl;
   auto it = pendingVertices.begin();
   assert( std::ranges::contains(pendingVertices,vertex) );
   while ( *it != vertex ) {
@@ -170,7 +170,7 @@ void CPController::unvisited(const Vertex* vertex) {
   }
 }
 
-void CPController::validate(const Token* token) {
+void CPController::synchronizeSolution(const Token* token) {
   if ( terminationEvent ) {
     return;
   }
@@ -203,12 +203,21 @@ std::cerr << "clear instantaneous exit: " << token->jsonify() << std::endl;
     ( token->node && token->state == Token::State::COMPLETED && token->node->represents<BPMN::CatchEvent>() && !token->node->represents<BPMN::ReceiveTask>() )
   ) { 
     if ( auto vertex = getVertex(token) ) {
+      auto entryVertex = entry(vertex);
+      if ( entryVertex->inflows.size() == 1 && entryVertex->inflows.front().second.node->represents<BPMN::EventBasedGateway>() ) {
+        assert( vertex->exit<BPMN::CatchEvent>() );
+        auto& gateway = entryVertex->inflows.front().second;
+        for ( auto& [ _, target ] : gateway.outflows ) {
+          _solution->setVariableValue( tokenFlow.at({&gateway,&target}), ( &target == entryVertex ) );
+std::cerr << "Token flow " << gateway.reference() << " to " << target.reference() << " = " << ( &target == entryVertex ) << std::endl;
+        } 
+      }
 std::cerr << "clear exit event: " << vertex->reference() << std::endl;
       finalizePredecessorPositions(vertex);
       finalizeVertexPosition(vertex);
     }
   }
-  
+
   if ( !token->node && token->state != Token::State::ENTERED && token->state != Token::State::DONE ) {
     // token at process, but with irrelevant state
     return;
@@ -380,7 +389,7 @@ void CPController::notice(const Observable* observable) {
   Controller::notice(observable);
   
   if( observable->getObservableType() ==  Execution::Observable::Type::Token ) {
-    validate( static_cast<const Token*>(observable) );
+    synchronizeSolution( static_cast<const Token*>(observable) );
   }
 }
 
@@ -701,10 +710,14 @@ std::cerr << "createVertexVariables:" << flattenedGraph.vertices.size() << std::
 std::cerr << "constrainGlobalVariables" << std::endl;
   constrainGlobalVariables();
 
-std::cerr << "constrainDataVariables" << std::endl;
   for ( auto vertex : vertices ) {
     if ( vertex->entry<BPMN::Scope>() ) {
+std::cerr << "constrainDataVariables " << vertex->reference() << std::endl;
       constrainDataVariables(vertex);
+    }
+    if ( vertex->exit<BPMN::EventBasedGateway>() ) {
+std::cerr << "constrainEventBasedGateway " << vertex->reference() << std::endl;
+      constrainEventBasedGateway(vertex);
     }
   }  
 
@@ -1078,6 +1091,35 @@ void CPController::constrainGlobalVariables() {
           ) 
         );
       }
+    }
+  }
+}
+
+void CPController::constrainEventBasedGateway(const FlattenedGraph::Vertex* gateway) {
+  assert( gateway->node->represents<BPMN::EventBasedGateway>() );
+  // ensure a single outflow and determine all timers
+  CP::Expression outflows(0);
+  std::vector<CP::Expression> timers;
+  for ( auto& [sequenceFlow,event] : gateway->outflows ) {
+    assert( event.node->represents<BPMN::CatchEvent>() );
+    outflows = outflows + tokenFlow.at({gateway,&event});
+    if ( event.node->represents<BPMN::TimerCatchEvent>() ) {
+      timers.push_back( createExpression(gateway,*event.node->extensionElements->as<BPMNOS::Model::Timer>()->trigger->expression) );
+    }
+  }
+  model.addConstraint( outflows == visit.at(gateway) );
+  
+  // make sure that triggered event does not succeed any timer
+  for ( auto& [sequenceFlow,event] : gateway->outflows ) {
+    for ( auto& timer : timers ) {
+      model.addConstraint( 
+        visit.at(&event).implies(
+          status.at(exit(&event))[BPMNOS::Model::ExtensionElements::Index::Timestamp].value 
+          <= 
+          timer
+//          CP::max(timer,status.at(entry(gateway))[BPMNOS::Model::ExtensionElements::Index::Timestamp].value)
+        ) 
+      );
     }
   }
 }
@@ -2271,8 +2313,18 @@ std::cerr << "createExitVariables" << std::endl;
       if( !vertex->node->represents<BPMN::Gateway>() ) {
         throw std::runtime_error("CPController: diverging gateways must be explicit");
       }
-      else if( vertex->node->represents<BPMN::EventBasedGateway>() || vertex->node->represents<BPMN::ComplexGateway>() ) {
-        assert(!"Not yet implemented");
+      else if( vertex->node->represents<BPMN::EventBasedGateway>() ) {
+        // create exclusive outflow
+        for ( auto& [sequenceFlow,target] : vertex->outflows ) {
+          tokenFlow.emplace( 
+            std::make_pair(vertex,&target), 
+            model.addBinaryVariable("tokenflow_{" + vertex->reference() + " → " + target.reference() + "}" ) 
+          );
+          createStatusFlowVariables(vertex,&target);
+        }
+      }
+      else if( vertex->node->represents<BPMN::ComplexGateway>() ) {
+        throw std::runtime_error("CPController: complex gateways are not supported");
       }
       else if( vertex->node->represents<BPMN::ParallelGateway>() ) {
         // create unconditional outflow
@@ -2316,6 +2368,10 @@ void CPController::createSequenceFlowVariables(const Vertex* source, const Verte
       model.addVariable(CP::Variable::Type::BOOLEAN, "tokenflow_{" + source->reference() + " → " + target->reference() + "}", visit.at(source) ) 
     );
   }
+  createStatusFlowVariables(source,target);
+}
+
+void CPController::createStatusFlowVariables(const Vertex* source, const Vertex* target) {
   auto extensionElements = source->parent.value().first.node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   std::vector<AttributeVariables> variables;
   variables.reserve( extensionElements->attributeRegistry.statusAttributes.size() );
