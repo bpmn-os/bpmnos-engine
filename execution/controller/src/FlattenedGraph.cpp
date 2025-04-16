@@ -331,27 +331,43 @@ std::pair<FlattenedGraph::Vertex&, FlattenedGraph::Vertex&> FlattenedGraph::crea
   }
 
   if ( node->represents<BPMN::Task>() ) {
+    std::unordered_set< const Vertex* > dataOwners;
+    bool modifiesGlobals = false;
     for ( auto& operator_ : extensionElements->operators ) {
       if ( operator_->attribute->category == BPMNOS::Model::Attribute::Category::DATA ) {
-        auto dataOwnerVertices = entry.dataOwner(operator_->attribute);
-        dataModifiers.at( &dataOwnerVertices.first ).push_back( { entry, exit } );
+        dataOwners.emplace( &entry.dataOwner(operator_->attribute).first );
       }
       else if ( operator_->attribute->category == BPMNOS::Model::Attribute::Category::GLOBAL ) {
-        globalModifiers.push_back( { entry, exit } );
+        modifiesGlobals = true;
       }
+    }
+    for ( auto dataOwner : dataOwners ) {
+      assert( dataModifiers.contains( dataOwner ) );
+      dataModifiers.at( dataOwner ).push_back( { entry, exit } );
+    }
+    if ( modifiesGlobals ) {
+      globalModifiers.push_back( { entry, exit } );
     }
   }
 
   if ( auto typedStartEvent = node->represents<BPMN::TypedStartEvent>() ) {
     extensionElements = typedStartEvent->parent->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+    std::unordered_set< const Vertex* > dataOwners;
+    bool modifiesGlobals = false;
     for ( auto& operator_ : extensionElements->operators ) {
       if ( operator_->attribute->category == BPMNOS::Model::Attribute::Category::DATA ) {
-        auto dataOwnerVertices = entry.dataOwner(operator_->attribute);
-        dataModifiers.at( &dataOwnerVertices.first ).push_back( { entry, exit } );
+        dataOwners.emplace( &entry.dataOwner(operator_->attribute).first );
       }
       else if ( operator_->attribute->category == BPMNOS::Model::Attribute::Category::GLOBAL ) {
-        globalModifiers.push_back( { entry, exit } );
+        modifiesGlobals = true;
       }
+    }
+    for ( auto dataOwner : dataOwners ) {
+      assert( dataModifiers.contains( dataOwner ) );
+      dataModifiers.at( dataOwner ).push_back( { entry, exit } );
+    }
+    if ( modifiesGlobals ) {
+      globalModifiers.push_back( { entry, exit } );
     }
   }
   

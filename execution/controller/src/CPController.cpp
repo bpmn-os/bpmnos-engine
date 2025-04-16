@@ -178,9 +178,6 @@ void CPController::unvisited(const Vertex* vertex) {
       _solution->setVariableValue( messageFlow.at({&candidate,recipient}), (double)false );
     }
   }
-  
-  // TODO: set values for unvisited data modifier 
-  // TODO: set values for unvisited global modifier 
 }
 
 void CPController::synchronizeSolution(const Token* token) {
@@ -1050,7 +1047,6 @@ void CPController::createMessageContent(const Vertex* vertex) {
 
 void CPController::createDataVariables(const FlattenedGraph::Vertex* vertex) {
   auto extensionElements = vertex->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
-
   for ( auto& attribute : extensionElements->data ) {
     IndexedAttributeVariables variables( 
       model.addIndexedVariables(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->shortReference() + "}," + attribute->id ),
@@ -2202,7 +2198,7 @@ std::pair< CP::Expression, CP::Expression > CPController::getAttributeVariables(
 }
 
 void CPController::createEntryVariables(const FlattenedGraph::Vertex* vertex) {
-std::cerr << "HUHU1" << std::endl;      
+std::cerr << "createEntryVariables" << vertex->reference() << std::endl;      
   // visit variable
   if ( vertex->node->represents<BPMN::UntypedStartEvent>() ) {
     assert( vertex->inflows.size() == 1 );
@@ -2619,8 +2615,7 @@ void CPController::createDataIndexVariables(const Vertex* vertex) {
   CP::reference_vector< const CP::Variable > dataIndices;
   dataIndices.reserve( vertex->dataOwners.size() );
   for ( Vertex& dataOwner : vertex->dataOwners ) {
-    assert( flattenedGraph.dataModifiers.contains(&dataOwner) ); 
-  
+    assert( flattenedGraph.dataModifiers.contains(&dataOwner) );   
     CP::Expression index;
     for ( auto& [modifierEntry, modifierExit] : flattenedGraph.dataModifiers.at(&dataOwner) ) {
       // create auxiliary variables indicating modifiers preceding the vertex

@@ -15,7 +15,6 @@ SCENARIO( "Knapsack problem", "[cpcontroller][knapsack_problem]" ) {
       "ItemProcess;Item3;Value;120\n"
     ;
     
-/*
     WHEN( "The engine is started with the default seed" ) {
 
       Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -33,8 +32,8 @@ SCENARIO( "Knapsack problem", "[cpcontroller][knapsack_problem]" ) {
       controller.subscribe(&engine); 
       Execution::TimeWarp timeHandler;
       timeHandler.connect(&engine);
-//      Execution::Recorder recorder;
-      Execution::Recorder recorder(std::cerr);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
       engine.run(scenario.get(),10);
 
@@ -50,7 +49,7 @@ SCENARIO( "Knapsack problem", "[cpcontroller][knapsack_problem]" ) {
 //        REQUIRE( solution.getObjectiveValue().value() == engine.getSystemState()->getObjective() );
       }
     }
-*/
+
     WHEN( "The engine is started with a suitable partial seed" ) {
 
       Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -68,14 +67,14 @@ SCENARIO( "Knapsack problem", "[cpcontroller][knapsack_problem]" ) {
       controller.subscribe(&engine); 
       Execution::TimeWarp timeHandler;
       timeHandler.connect(&engine);
-//      Execution::Recorder recorder;
-      Execution::Recorder recorder(std::cerr);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
       engine.run(scenario.get(),10);
 
-std::cerr << "Model:\n" << controller.getModel().stringify() << std::endl;
-std::cerr << "Solution:\n" << solution.stringify() << std::endl;
-std::cerr << "Errors:\n" << solution.errors() << std::endl;
+//std::cerr << "Model:\n" << controller.getModel().stringify() << std::endl;
+//std::cerr << "Solution:\n" << solution.stringify() << std::endl;
+//std::cerr << "Errors:\n" << solution.errors() << std::endl;
       THEN( "The solution is completes without errors" ) {
         auto terminationLog = recorder.find(nlohmann::json{{"event","termination"}});
         REQUIRE( terminationLog.empty() );
