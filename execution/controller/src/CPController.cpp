@@ -161,19 +161,22 @@ void CPController::unvisited(const Vertex* vertex) {
   auto& timestamp = status.at(vertex)[BPMNOS::Model::ExtensionElements::Index::Timestamp];
   _solution->setVariableValue( timestamp.value, 0.0 );
 
-  auto sender = (vertex->type == Vertex::Type::ENTRY) ? vertex : entry(vertex);
-  for ( const Vertex& candidate : sender->recipients ) {
-    assert( candidate.exit<BPMN::MessageCatchEvent>() );
-    assert( messageFlow.contains({sender,&candidate}) );
-    _solution->setVariableValue( messageFlow.at({sender,&candidate}), (double)false );
-    
+  if ( vertex->node->represents<BPMN::MessageThrowEvent>() ) {
+    auto sender = (vertex->type == Vertex::Type::ENTRY) ? vertex : entry(vertex);
+    for ( const Vertex& candidate : sender->recipients ) {
+      assert( candidate.exit<BPMN::MessageCatchEvent>() );
+      assert( messageFlow.contains({sender,&candidate}) );
+      _solution->setVariableValue( messageFlow.at({sender,&candidate}), (double)false );
+    }
   }
-
-  auto recipient = exit(sender);
-  for ( const Vertex& candidate : recipient->senders ) {
-    assert( candidate.entry<BPMN::MessageThrowEvent>() );
-    assert( messageFlow.contains({&candidate,recipient}) );
-    _solution->setVariableValue( messageFlow.at({&candidate,recipient}), (double)false );
+  
+  if ( vertex->node->represents<BPMN::MessageCatchEvent>() ) {
+    auto recipient = (vertex->type == Vertex::Type::EXIT) ? vertex : exit(vertex);
+    for ( const Vertex& candidate : recipient->senders ) {
+      assert( candidate.entry<BPMN::MessageThrowEvent>() );
+      assert( messageFlow.contains({&candidate,recipient}) );
+      _solution->setVariableValue( messageFlow.at({&candidate,recipient}), (double)false );
+    }
   }
 }
 
