@@ -372,7 +372,7 @@ bool ExtensionElements::fullScopeRestrictionsSatisfied(const BPMNOS::Values& sta
       return false;
     }
   }
-  return true;
+  return satisfiesInheritedRestrictions(status,data,globals);
 }
 
 template bool ExtensionElements::fullScopeRestrictionsSatisfied<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data, const BPMNOS::Values& globals) const;
