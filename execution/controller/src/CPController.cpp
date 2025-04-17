@@ -91,7 +91,9 @@ std::cerr << "Rec:" << candidate.reference() << std::endl;
 
 const FlattenedGraph::Vertex* CPController::getVertex( const Token* token ) const {
   auto node = token->node ? token->node->as<BPMN::Node>() : token->owner->process->as<BPMN::Node>();
-  assert( flattenedGraph.loopIndexAttributes.contains(node) );
+  if( !flattenedGraph.loopIndexAttributes.contains(node) ) {
+    return nullptr;    
+  }
   std::vector< size_t > loopIndices;
   for ( auto attribute : flattenedGraph.loopIndexAttributes.at(node)  ) {
     assert( token->status.at(attribute->index).has_value() );
