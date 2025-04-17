@@ -181,9 +181,22 @@ void CPController::unvisited(const Vertex* vertex) {
       assert( messageFlow.contains({&candidate,recipient}) );
       _solution->setVariableValue( messageFlow.at({&candidate,recipient}), (double)false );
     }
+    setLocalAttributeValue( recipient, BPMNOS::Model::ExtensionElements::Index::Timestamp, 0.0 );
     for ( auto& [_, contentVariables] : messageContent.at(recipient) ) {
       _solution->setVariableValue( contentVariables.defined, (double)false );
       _solution->setVariableValue( contentVariables.value, 0.0 );
+    }
+  }
+  if ( vertex->node->represents<BPMNOS::Model::DecisionTask>() ) {
+    auto exitVertex = (vertex->type == Vertex::Type::EXIT) ? vertex : exit(vertex);
+    setLocalAttributeValue( exitVertex, BPMNOS::Model::ExtensionElements::Index::Timestamp, 0.0 );
+    // set choice values to zero
+    auto  extensionElements = vertex->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+    for ( auto attribute : extensionElements->attributeRegistry.statusAttributes ) {
+      if ( findChoice(extensionElements->choices, attribute) ) {
+        // attribute set by choice
+        setLocalAttributeValue( exitVertex, attribute->index, 0.0 );
+      }
     }
   }
 }
