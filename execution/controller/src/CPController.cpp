@@ -330,8 +330,8 @@ std::cerr << "defined: " << (evaluation.defined() ? "true" : "false") << ", valu
           !evaluation.defined()  ||
           evaluation.value() != token->data->at(attribute->index).get().value()
         ) {
-//std::cerr << "defined: " << (evaluation.defined() ? "true" : "false") << ", value: " << evaluation.value() << " != " << token->data->at(attribute->index).get().value() << std::endl;
-          throw std::logic_error("CPController: '" + _solution->stringify(indexedAttributeVariables.defined[index]) + "' or '" + _solution->stringify(indexedAttributeVariables.defined[index]) + "' inconsistent with " + token->jsonify().dump());
+std::cerr << "defined: " << (evaluation.defined() ? "true" : "false") << ", value: " << evaluation.value() << " != " << token->data->at(attribute->index).get().value() << std::endl;
+          throw std::logic_error("CPController: '" + _solution->stringify(indexedAttributeVariables.defined[index]) + "' or '" + _solution->stringify(indexedAttributeVariables.value[index]) + "' inconsistent with " + token->jsonify().dump());
         }
       }
       else {
@@ -344,8 +344,8 @@ std::cerr << "defined: " << (evaluation.defined() ? "true" : "false") << ", valu
           evaluation.defined()  ||
           evaluation.value() != 0.0
         ) {
-//std::cerr << "defined: " << (evaluation.defined() ? "true" : "false") << ", value: " << evaluation.value() << " != " << token->data->at(attribute->index).get().value() << std::endl;
-          throw std::logic_error("CPController: '" + _solution->stringify(indexedAttributeVariables.defined[index]) + "' or '" + _solution->stringify(indexedAttributeVariables.defined[index]) + "' inconsistent with " + token->jsonify().dump());
+std::cerr << "defined: " << (evaluation.defined() ? "true" : "false") << ", value: " << evaluation.value() << " != " << token->data->at(attribute->index).get().value() << std::endl;
+          throw std::logic_error("CPController: '" + _solution->stringify(indexedAttributeVariables.defined[index]) + "' or '" + _solution->stringify(indexedAttributeVariables.value[index]) + "' inconsistent with " + token->jsonify().dump());
         }
       }
     }
@@ -375,7 +375,8 @@ std::cerr << "defined: " << (evaluation.defined() ? "true" : "false") << ", valu
         !evaluation.defined()  ||
         evaluation.value() != token->globals[attributeIndex].value()
       ) {
-        throw std::logic_error("CPController: '" + _solution->stringify(indexedAttributeVariables.defined[index]) + "' or '" + _solution->stringify(indexedAttributeVariables.defined[index]) + "' inconsistent with " + token->jsonify().dump());
+std::cerr << "defined: " << (evaluation.defined() ? "true" : "false") << ", value: " << evaluation.value() << " != " <<  token->globals[attributeIndex].value() << std::endl;
+        throw std::logic_error("CPController: '" + _solution->stringify(indexedAttributeVariables.defined[index]) + "' or '" + _solution->stringify(indexedAttributeVariables.value[index]) + "' inconsistent with " + token->jsonify().dump());
       }
     }
     else {
@@ -388,7 +389,8 @@ std::cerr << "defined: " << (evaluation.defined() ? "true" : "false") << ", valu
         evaluation.defined()  ||
         evaluation.value() != 0.0
       ) {
-        throw std::logic_error("CPController: '" + _solution->stringify(indexedAttributeVariables.defined[index]) + "' or '" + _solution->stringify(indexedAttributeVariables.defined[index]) + "' inconsistent with " + token->jsonify().dump());
+std::cerr << "defined: " << (evaluation.defined() ? "true" : "false") << ", value: " << evaluation.value() << " != " <<  token->globals[attributeIndex].value() << std::endl;
+        throw std::logic_error("CPController: '" + _solution->stringify(indexedAttributeVariables.defined[index]) + "' or '" + _solution->stringify(indexedAttributeVariables.value[index]) + "' inconsistent with " + token->jsonify().dump());
       }
     }
   }
@@ -1662,22 +1664,23 @@ void CPController::createLocalAttributeVariables(const Vertex* vertex) {
 //std::cerr << "Attributes: " << attributes.size() << std::endl;
 
     auto initialVariables = [&](BPMNOS::Model::Attribute* attribute) -> std::pair<CP::Expression,CP::Expression> {
+      auto entryVertex = entry(vertex);
       if ( attribute->category == BPMNOS::Model::Attribute::Category::STATUS ) {
         return std::make_pair<CP::Expression,CP::Expression>( 
-          status.at(entry(vertex))[attribute->index].defined, 
-          status.at(entry(vertex))[attribute->index].value
+          status.at(entryVertex)[attribute->index].defined, 
+          status.at(entryVertex)[attribute->index].value
         );
       }
       else if ( attribute->category == BPMNOS::Model::Attribute::Category::DATA ) {
-        auto& index = dataIndex.at(entry(vertex))[ entry(vertex)->dataOwnerIndex(attribute) ];
+        auto& index = dataIndex.at(entryVertex)[ entryVertex->dataOwnerIndex(attribute) ];
         return std::make_pair<CP::Expression,CP::Expression>( 
-          data.at( {&vertex->dataOwner(attribute).first, attribute } ).defined[ index ], 
-          data.at( {&vertex->dataOwner(attribute).first, attribute } ).value[ index ]
+          data.at( {&entryVertex->dataOwner(attribute).first, attribute } ).defined[ index ], 
+          data.at( {&entryVertex->dataOwner(attribute).first, attribute } ).value[ index ]
         );
       }
       else {
         assert( attribute->category == BPMNOS::Model::Attribute::Category::GLOBAL );
-        auto& index = globalIndex.at(vertex);
+        auto& index = globalIndex.at(entryVertex);
         return std::make_pair<CP::Expression,CP::Expression>( 
           globals[attribute->index].defined[ index ],
           globals[attribute->index].value[ index ] 
@@ -2605,7 +2608,7 @@ void CPController::createGlobalIndexVariable(const Vertex* vertex) {
   CP::Expression index;
   for ( auto& [modifierEntry, modifierExit] : flattenedGraph.globalModifiers ) {
     // create auxiliary variables indicating modifiers preceding the vertex
-    index = index + model.addVariable(CP::Variable::Type::BOOLEAN, "precedes_{" + modifierExit.reference() + " → " + vertex->reference() + "}", position.at(&modifierExit) <= position.at(vertex) );
+    index = index + model.addVariable(CP::Variable::Type::BOOLEAN, "weakly_precedes_{" + modifierExit.reference() + " → " + vertex->reference() + "}", position.at(&modifierExit) <= position.at(vertex) );
   }  
   globalIndex.emplace( vertex, model.addVariable(CP::Variable::Type::INTEGER, "globals_index_{" + vertex->reference() + "}", index ) );
 }
@@ -2619,7 +2622,7 @@ void CPController::createDataIndexVariables(const Vertex* vertex) {
     CP::Expression index;
     for ( auto& [modifierEntry, modifierExit] : flattenedGraph.dataModifiers.at(&dataOwner) ) {
       // create auxiliary variables indicating modifiers preceding the vertex
-      index = index + model.addVariable(CP::Variable::Type::BOOLEAN, "precedes_{" + modifierExit.reference() + " → " + vertex->reference() + "}", position.at(&modifierExit) <= position.at(vertex) );
+      index = index + model.addVariable(CP::Variable::Type::BOOLEAN, "weakly_precedes_{" + modifierExit.reference() + " → " + vertex->reference() + "}", position.at(&modifierExit) <= position.at(vertex) );
     }  
     // data index for data owner represents the number of modifiers exited according to the sequence positions
     dataIndices.emplace_back( model.addVariable(CP::Variable::Type::INTEGER, "data_index[" + dataOwner.node->id + "]_{" + vertex->reference() + "}", index ) );
