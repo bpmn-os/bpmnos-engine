@@ -66,10 +66,10 @@ StateMachine::StateMachine(const StateMachine* other)
 }
 
 StateMachine::~StateMachine() {
-//std::cerr << "~StateMachine(" << scope->id << "/" << this << " @ " << parentToken << ")" << std::endl;
+//std::cerr << "~StateMachine()" << std::endl;
   const_cast<SystemState*>(systemState)->tokensAwaitingGatewayActivation.erase(this);
   const_cast<SystemState*>(systemState)->tokenAwaitingCompensationEventSubProcess.erase(this);
-  if ( scope ) {
+  if ( !systemState->inbox.empty() && scope ) {
     unregisterRecipient();
   }
 }
@@ -428,7 +428,9 @@ void StateMachine::registerRecipient() {
 }
 
 void StateMachine::unregisterRecipient() {
-  if ( auto eventSubProcess = scope->represents<BPMN::EventSubProcess>();
+//std::cerr << "unregisterRecipient" << std::endl;
+  auto eventSubProcess = scope->represents<BPMN::EventSubProcess>();
+  if ( 
     !parentToken ||
     ( eventSubProcess && !eventSubProcess->startEvent->isInterrupting )
   ) {

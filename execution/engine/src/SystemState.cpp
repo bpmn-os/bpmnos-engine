@@ -15,6 +15,7 @@ SystemState::SystemState(const Engine* engine, const BPMNOS::Model::Scenario* sc
 
 SystemState::~SystemState() {
 //std::cerr << "~SystemState()" << std::endl;
+  inbox.clear();
 /*
   tokensAwaitingBoundaryEvent.clear();
   tokenAtAssociatedActivity.clear();
