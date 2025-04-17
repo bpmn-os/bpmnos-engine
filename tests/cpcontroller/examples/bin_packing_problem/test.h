@@ -1,21 +1,18 @@
-SCENARIO( "Knapsack problem", "[cpcontroller][knapsack_problem]" ) {
-  const std::string modelFile = "examples/knapsack_problem/Knapsack_problem.bpmn";
+SCENARIO( "Bin packing problem", "[cpcontroller][bin_packing_problem]" ) {
+  const std::string modelFile = "examples/bin_packing_problem/Bin_packing_problem.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
 
-  GIVEN( "One knapsack and three items" ) {
+  GIVEN( "One bins and one item" ) {
 
     std::string csv =
       "PROCESS_ID; INSTANCE_ID; ATTRIBUTE_ID; VALUE\n"
-      "KnapsackProcess;Knapsack1;Capacity;40\n"
-      "ItemProcess;Item1;Weight;20\n"
-      "ItemProcess;Item1;Value;100\n"
-      "ItemProcess;Item2;Weight;15\n"
-      "ItemProcess;Item2;Value;50\n"
-      "ItemProcess;Item3;Weight;22\n"
-      "ItemProcess;Item3;Value;120\n"
+      ";;Bins;1\n"
+      ";;Items;1\n"
+      "ItemProcess;Item1;Size;20.0\n"
+      "BinProcess;Bin1;Capacity;40.0\n"
     ;
-    
-    WHEN( "The engine is started with the default seed" ) {
+
+    WHEN( "The engine is started" ) {
 
       Model::StaticDataProvider dataProvider(modelFile,csv);
       auto scenario = dataProvider.createScenario();
@@ -26,42 +23,7 @@ SCENARIO( "Knapsack problem", "[cpcontroller][knapsack_problem]" ) {
       Execution::SeededGreedyController controller(scenario.get(), &evaluator);
       controller.setSeed( Execution::CPSeed::defaultSeed( controller.getVertices().size() ) );
 
-      [[maybe_unused]] auto& solution = controller.createSolution();
-      Execution::Engine engine;
-      controller.connect(&engine);
-      controller.subscribe(&engine); 
-      Execution::TimeWarp timeHandler;
-      timeHandler.connect(&engine);
-//      Execution::Recorder recorder;
-      Execution::Recorder recorder(std::cerr);
-      recorder.subscribe(&engine);
-      engine.run(scenario.get(),10);
-
-//std::cerr << "Model:\n" << controller.getModel().stringify() << std::endl;
-//std::cerr << "Solution:\n" << solution.stringify() << std::endl;
-//std::cerr << "Errors:\n" << solution.errors() << std::endl;
-      THEN( "The engine terminates prematurely" ) {
-        auto terminationLog = recorder.find(nlohmann::json{{"event","termination"}});
-        REQUIRE( !terminationLog.empty() );
-        REQUIRE( !solution.complete() );
-//        REQUIRE( solution.errors().empty() );
-//        REQUIRE( solution.getObjectiveValue().has_value() );
-//        REQUIRE( solution.getObjectiveValue().value() == engine.getSystemState()->getObjective() );
-      }
-    }
-/*
-    WHEN( "The engine is started with a suitable partial seed" ) {
-
-      Model::StaticDataProvider dataProvider(modelFile,csv);
-      auto scenario = dataProvider.createScenario();
- 
-//      REQUIRE_NOTHROW( Execution::FlattenedGraph(scenario.get()) );
-
-      Execution::GuidedEvaluator evaluator;
-      Execution::SeededGreedyController controller(scenario.get(), &evaluator);
-      controller.setSeed( Execution::CPSeed::defaultSeed( {63,64,65,66,79,80,81,82,95,96,97,98}, controller.getVertices().size() ) );
-
-      [[maybe_unused]] auto& solution = controller.createSolution();
+      auto& solution = controller.createSolution();
       Execution::Engine engine;
       controller.connect(&engine);
       controller.subscribe(&engine); 
@@ -70,57 +32,7 @@ SCENARIO( "Knapsack problem", "[cpcontroller][knapsack_problem]" ) {
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get(),10);
-
-//std::cerr << "Model:\n" << controller.getModel().stringify() << std::endl;
-//std::cerr << "Solution:\n" << solution.stringify() << std::endl;
-//std::cerr << "Errors:\n" << solution.errors() << std::endl;
-      THEN( "The solution is complete and satisfies all constraints" ) {
-        auto terminationLog = recorder.find(nlohmann::json{{"event","termination"}});
-        REQUIRE( terminationLog.empty() );
-        REQUIRE( solution.complete() );
-        REQUIRE( solution.errors().empty() );
-        REQUIRE( solution.getObjectiveValue().has_value() );
-        REQUIRE( solution.getObjectiveValue().value() == engine.getSystemState()->getObjective() );
-      }
-    }
-*/
-  }
-/*
-  GIVEN( "One knapsack and three items provided in a suitable order" ) {
-
-    std::string csv =
-      "PROCESS_ID; INSTANCE_ID; ATTRIBUTE_ID; VALUE\n"
-      "ItemProcess;Item1;Weight;20\n"
-      "ItemProcess;Item1;Value;100\n"
-      "ItemProcess;Item2;Weight;15\n"
-      "ItemProcess;Item2;Value;50\n"
-      "ItemProcess;Item3;Weight;22\n"
-      "ItemProcess;Item3;Value;120\n"
-      "KnapsackProcess;Knapsack1;Capacity;40\n"
-    ;
-    
-    WHEN( "The engine is started with the default seed" ) {
-
-      Model::StaticDataProvider dataProvider(modelFile,csv);
-      auto scenario = dataProvider.createScenario();
- 
-      REQUIRE_NOTHROW( Execution::FlattenedGraph(scenario.get()) );
-
-      Execution::GuidedEvaluator evaluator;
-      Execution::SeededGreedyController controller(scenario.get(), &evaluator);
-      controller.setSeed( Execution::CPSeed::defaultSeed( controller.getVertices().size() ) );
-
-      [[maybe_unused]] auto& solution = controller.createSolution();
-      Execution::Engine engine;
-      controller.connect(&engine);
-      controller.subscribe(&engine); 
-      Execution::TimeWarp timeHandler;
-      timeHandler.connect(&engine);
-      Execution::Recorder recorder;
-//      Execution::Recorder recorder(std::cerr);
-      recorder.subscribe(&engine);
-      engine.run(scenario.get(),10);
+      engine.run(scenario.get());
 
 //std::cerr << "Model:\n" << controller.getModel().stringify() << std::endl;
 //std::cerr << "Solution:\n" << solution.stringify() << std::endl;
@@ -135,7 +47,103 @@ SCENARIO( "Knapsack problem", "[cpcontroller][knapsack_problem]" ) {
       }
     }
   }
-*/
 
+  GIVEN( "Two bins and one item" ) {
+
+    std::string csv =
+      "PROCESS_ID; INSTANCE_ID; ATTRIBUTE_ID; VALUE\n"
+      ";;Bins;2\n"
+      ";;Items;1\n"
+      "ItemProcess;Item1;Size;20.0\n"
+      "BinProcess;Bin1;Capacity;40.0\n"
+      "BinProcess;Bin2;Capacity;40.0\n"
+    ;
+
+    WHEN( "The engine is started" ) {
+
+      Model::StaticDataProvider dataProvider(modelFile,csv);
+      auto scenario = dataProvider.createScenario();
+ 
+      REQUIRE_NOTHROW( Execution::FlattenedGraph(scenario.get()) );
+
+      Execution::GuidedEvaluator evaluator;
+      Execution::SeededGreedyController controller(scenario.get(), &evaluator);
+      controller.setSeed( Execution::CPSeed::defaultSeed( controller.getVertices().size() ) );
+
+      auto& solution = controller.createSolution();
+      Execution::Engine engine;
+      controller.connect(&engine);
+      controller.subscribe(&engine); 
+      Execution::TimeWarp timeHandler;
+      timeHandler.connect(&engine);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
+      recorder.subscribe(&engine);
+      engine.run(scenario.get());
+
+//std::cerr << "Model:\n" << controller.getModel().stringify() << std::endl;
+//std::cerr << "Solution:\n" << solution.stringify() << std::endl;
+//std::cerr << "Errors:\n" << solution.errors() << std::endl;
+      THEN( "The solution is complete and satisfies all constraints" ) {
+        auto terminationLog = recorder.find(nlohmann::json{{"event","termination"}});
+        REQUIRE( terminationLog.empty() );
+        REQUIRE( solution.complete() );
+        REQUIRE( solution.errors().empty() );
+        REQUIRE( solution.getObjectiveValue().has_value() );
+        REQUIRE( solution.getObjectiveValue().value() == engine.getSystemState()->getObjective() );
+      }
+    }
+  }
+
+
+  GIVEN( "Three bins and three items" ) {
+
+    std::string csv =
+      "PROCESS_ID; INSTANCE_ID; ATTRIBUTE_ID; VALUE\n"
+      ";;Bins;3\n"
+      ";;Items;3\n"
+      "ItemProcess;Item1;Size;20.0\n"
+      "ItemProcess;Item2;Size;15.0\n"
+      "ItemProcess;Item3;Size;22.0\n"
+      "BinProcess;Bin1;Capacity;40.0\n"
+      "BinProcess;Bin2;Capacity;40.0\n"
+      "BinProcess;Bin3;Capacity;40.0\n"
+    ;
+
+    WHEN( "The engine is started" ) {
+
+      Model::StaticDataProvider dataProvider(modelFile,csv);
+      auto scenario = dataProvider.createScenario();
+ 
+      REQUIRE_NOTHROW( Execution::FlattenedGraph(scenario.get()) );
+
+      Execution::GuidedEvaluator evaluator;
+      Execution::SeededGreedyController controller(scenario.get(), &evaluator);
+      controller.setSeed( Execution::CPSeed::defaultSeed( controller.getVertices().size() ) );
+
+      auto& solution = controller.createSolution();
+      Execution::Engine engine;
+      controller.connect(&engine);
+      controller.subscribe(&engine); 
+      Execution::TimeWarp timeHandler;
+      timeHandler.connect(&engine);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
+      recorder.subscribe(&engine);
+      engine.run(scenario.get());
+
+//std::cerr << "Model:\n" << controller.getModel().stringify() << std::endl;
+//std::cerr << "Solution:\n" << solution.stringify() << std::endl;
+//std::cerr << "Errors:\n" << solution.errors() << std::endl;
+      THEN( "The solution is complete and satisfies all constraints" ) {
+        auto terminationLog = recorder.find(nlohmann::json{{"event","termination"}});
+        REQUIRE( terminationLog.empty() );
+        REQUIRE( solution.complete() );
+        REQUIRE( solution.errors().empty() );
+        REQUIRE( solution.getObjectiveValue().has_value() );
+        REQUIRE( solution.getObjectiveValue().value() == engine.getSystemState()->getObjective() );
+      }
+    }
+  }
 };
 

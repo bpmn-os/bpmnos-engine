@@ -79,6 +79,12 @@ CP::Solution& CPSeed::createSolution() const {
 
 bool CPSeed::addSequencePosition(size_t index) {
   auto vertex = controller->getVertices().at(index-1); // sequence positions start at 1
+  if ( !sequence.empty() ) {
+    auto last = controller->getVertices().at( sequence.back() - 1 );
+    if ( last->entry<BPMN::TypedStartEvent>() && vertex != controller->exit(last) ) {
+      return false;
+    }
+  }
 
   // check that all predecessors are already in the sequence
   for ( auto& [ sequenceFlow, predecessor ] : vertex->inflows ) {

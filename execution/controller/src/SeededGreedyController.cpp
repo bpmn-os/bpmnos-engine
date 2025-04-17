@@ -139,7 +139,6 @@ std::cerr << "Candidate: " << message->jsonify() << std::endl;
     // no message can be delivered
     if ( token->node->represents<BPMN::MessageStartEvent>() ) {
       assert( vertex->exit<BPMN::MessageStartEvent>() );
-      unvisited(vertex); 
 std::cerr << "MessageStartEvent is not triggered: " << vertex->shortReference() << std::endl;
     }    
     return nullptr;

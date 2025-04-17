@@ -162,6 +162,8 @@ void CPController::finalizePredecessorPositions(const Vertex* vertex) {
 }
 
 void CPController::unvisited(const Vertex* vertex) {
+std::cerr << "unvisited " << vertex->reference() << std::endl;
+  assert( status.contains(vertex) );
   auto& timestamp = status.at(vertex)[BPMNOS::Model::ExtensionElements::Index::Timestamp];
   _solution->setVariableValue( timestamp.value, 0.0 );
 
@@ -181,12 +183,19 @@ void CPController::unvisited(const Vertex* vertex) {
       assert( messageFlow.contains({&candidate,recipient}) );
       _solution->setVariableValue( messageFlow.at({&candidate,recipient}), (double)false );
     }
-    setLocalAttributeValue( recipient, BPMNOS::Model::ExtensionElements::Index::Timestamp, 0.0 );
+
+    if ( locals.contains(vertex) ) {
+      // only receive tasks and message start events have locals
+      setLocalAttributeValue( recipient, BPMNOS::Model::ExtensionElements::Index::Timestamp, 0.0 );
+    }
+
+    assert( messageContent.contains(recipient) );
     for ( auto& [_, contentVariables] : messageContent.at(recipient) ) {
       _solution->setVariableValue( contentVariables.defined, (double)false );
       _solution->setVariableValue( contentVariables.value, 0.0 );
     }
   }
+
   if ( vertex->node->represents<BPMNOS::Model::DecisionTask>() ) {
     auto exitVertex = (vertex->type == Vertex::Type::EXIT) ? vertex : exit(vertex);
     setLocalAttributeValue( exitVertex, BPMNOS::Model::ExtensionElements::Index::Timestamp, 0.0 );
@@ -199,6 +208,7 @@ void CPController::unvisited(const Vertex* vertex) {
       }
     }
   }
+
 }
 
 void CPController::synchronizeSolution(const Token* token) {
@@ -214,6 +224,10 @@ void CPController::synchronizeSolution(const Token* token) {
 
   if ( token->state == Token::State::ENTERED ) {
     if ( auto vertex = getVertex(token) ) {
+      if ( vertex->entry<BPMN::TypedStartEvent>() ) {
+std::cerr << "ignore typed start event entry: " << token->jsonify() << std::endl;
+        return;
+      }
 //std::cerr << "clear entry event: " << token->jsonify() << std::endl;
       finalizePredecessorPositions(vertex);
       finalizeVertexPosition(vertex);
@@ -227,6 +241,19 @@ void CPController::synchronizeSolution(const Token* token) {
         finalizeVertexPosition(exit(vertex));
       }
     }
+  }
+  else if ( token->node && token->state == Token::State::COMPLETED && token->node->represents<BPMN::TypedStartEvent>() ) {
+    auto vertex = getVertex(token);
+    assert( vertex );
+    assert( vertex->exit<BPMN::TypedStartEvent>() );
+    finalizePredecessorPositions(entry(vertex));
+    finalizeVertexPosition(entry(vertex));
+    finalizeVertexPosition(vertex);
+//std::cerr << "SYNC: " << token->jsonify() << "/" << entry(vertex)->reference() << std::endl;
+    synchronizeData(token,entry(vertex));
+    synchronizeGlobals(token,entry(vertex));
+    // for typed start events data and globals remain unchanged upon completion
+    // operators are applied after completio
   }
   else if ( 
     ( !token->node && token->state == Token::State::DONE ) || // Process
@@ -243,9 +270,9 @@ void CPController::synchronizeSolution(const Token* token) {
 //std::cerr << "Token flow " << gateway.reference() << " to " << target.reference() << " = " << ( &target == entryVertex ) << std::endl;
         } 
       }
-//std::cerr << "clear exit event: " << vertex->reference() << std::endl;
       finalizePredecessorPositions(vertex);
       finalizeVertexPosition(vertex);
+std::cerr << "cleared exit event: " << vertex->reference() << std::endl;
     }
   }
 
@@ -261,7 +288,6 @@ void CPController::synchronizeSolution(const Token* token) {
     // token at typed start event, but not triggered
     return;
   }
-
   auto vertex = getVertex(token);
 
 //std::cerr << "Validate vertex " << vertex->reference() << std::endl;    
@@ -275,9 +301,13 @@ void CPController::synchronizeSolution(const Token* token) {
   else if ( visitEvaluation && visitEvaluation.value() != true ) {
     throw std::logic_error("CPController: vertex '" + vertex->reference() +"' not visited in solution");
   }
-    
-//std::cerr << "Validate status" << std::endl;    
-  // check status
+
+  synchronizeStatus(token,vertex);
+  synchronizeData(token,vertex);
+  synchronizeGlobals(token,vertex);  
+}
+
+void CPController::synchronizeStatus(const Token* token, const CPController::Vertex* vertex) {
   auto& statusVariables = status.at(vertex);
   assert( token->status.size() == statusVariables.size() );
   for (size_t i = 0; i < statusVariables.size(); i++) {
@@ -317,9 +347,9 @@ std::cerr << "defined: " << (evaluation.defined() ? "true" : "false") << ", valu
       }
     }
   }
+}
 
-//std::cerr << "Validate data" << std::endl;    
-  // check data
+void CPController::synchronizeData(const Token* token, const CPController::Vertex* vertex) {
   auto& dataIndices = dataIndex.at(vertex);
   assert( dataIndices.size() == vertex->dataOwners.size() );
   for ( size_t i = 0; i < dataIndices.size(); i++ ) {
@@ -371,9 +401,9 @@ std::cerr << "defined: " << (evaluation.defined() ? "true" : "false") << ", valu
       }
     }
   }
-    
-//std::cerr << "Validate globals" << std::endl;    
-  // check globals
+}
+
+void CPController::synchronizeGlobals(const Token* token, const CPController::Vertex* vertex) {
   auto indexEvaluation = _solution->evaluate( globalIndex.at(vertex) );
   if ( !indexEvaluation ) {
     throw std::logic_error("CPController: Unable to determine data index for '" + vertex->reference() + "\n'" + indexEvaluation.error());
@@ -381,6 +411,7 @@ std::cerr << "defined: " << (evaluation.defined() ? "true" : "false") << ", valu
   auto index = (size_t)indexEvaluation.value();
   for ( size_t attributeIndex = 0; attributeIndex < token->globals.size(); attributeIndex++ ) {
     IndexedAttributeVariables& indexedAttributeVariables = globals[attributeIndex];
+std::cerr << "Validate global " << indexedAttributeVariables.defined[index].stringify() << std::endl;    
     AttributeEvaluation evaluation(
       _solution->evaluate( indexedAttributeVariables.defined[index] ),
       _solution->evaluate( indexedAttributeVariables.value[index] )
@@ -422,6 +453,7 @@ void CPController::notice(const Observable* observable) {
   
   if( observable->getObservableType() ==  Execution::Observable::Type::Token ) {
     synchronizeSolution( static_cast<const Token*>(observable) );
+std::cerr << "synchronizedSolution" << std::endl;
   }
 }
 
@@ -430,6 +462,9 @@ bool CPController::hasPendingPredecessor(const Vertex* vertex) {
     return false;
   }
   for ( auto& [_,predecessor] : vertex->inflows ) {
+    if ( vertex == exit(&predecessor) && vertex->exit<BPMN::TypedStartEvent>()  ) {
+      continue;
+    }
     if ( !std::ranges::contains(processedVertices,&predecessor) ) {
       return true;
     }
@@ -513,7 +548,7 @@ std::cerr << "Postpone (sequence): " << vertex->reference() << std::endl;
       it++;
       continue;
     }
-    if ( flattenedGraph.dummies.contains(vertex) ) {
+    else if ( flattenedGraph.dummies.contains(vertex) ) {
       // vertex is dummy 
 //std::cerr << "Dummy: " << vertex->reference() << std::endl;
       it = finalizeVertexPosition(vertex);
@@ -529,13 +564,22 @@ std::cerr << "Postpone (sequence): " << vertex->reference() << std::endl;
       it = finalizeVertexPosition(vertex);
       continue;
     }
+    else if ( vertex->entry<BPMN::TypedStartEvent>() ) {
+      // ignore vertex because and proceed with exit
+      it++;
+      continue;
+    }
     else if ( auto request = hasRequest(vertex) ) {
+std::cerr << "Request: " << request->token->jsonify() << std::endl;
       if ( auto event = createEvent(vertex,request) ) {
 std::cerr << "Event: " << vertex->reference() << std::endl;
         return event;
       }
       else if ( vertex->exit<BPMN::MessageStartEvent>() ) {
         // event-subprocess is not triggered or exit of start event is infeasible
+        unvisited(entry(vertex));
+        finalizeVertexPosition(entry(vertex));
+        unvisited(vertex);
         it = finalizeVertexPosition(vertex);
         continue;
       }  
@@ -545,6 +589,11 @@ std::cerr << "Postpone (infeasible): " << vertex->reference() << std::endl;
         it++;
         continue;
       }
+    }
+    else if ( vertex->exit<BPMN::TypedStartEvent>() ) {
+      // ignore vertex because it has no request
+      it++;
+      continue;
     }
     else {
       if ( vertex->exit<BPMN::SendTask>() ) {
@@ -699,8 +748,6 @@ std::shared_ptr<Event> CPController::createChoiceEvent(const SystemState* system
 }
 
 std::shared_ptr<Event> CPController::createMessageDeliveryEvent(const SystemState* systemState, const Token* token, const Vertex* vertex) {
-std::cerr << "#" << std::endl;
-
   auto timestamp = getTimestamp(vertex);
 std::cerr << timestamp.has_value() << std::endl;
   if ( !timestamp.has_value() || systemState->getTime() < timestamp.value() ) {
@@ -1127,18 +1174,35 @@ void CPController::constrainDataVariables(const FlattenedGraph::Vertex* vertex) 
     auto& [localStatus,localData,localGlobals] = locals.at(&exit).back();
     for ( unsigned int i = 0; i < dataModifiers.size(); i++ ) {
       for ( auto& attribute : extensionElements->data ) {
-        auto& index = dataIndex.at(&entry)[ entry.dataOwnerIndex(attribute.get()) ];
-        // if data index at modifier entry equals i then the i+1-th data item equals the final data of the modifier
-        model.addConstraint( 
-          ( index == i ).implies( 
-            data.at({vertex,attribute.get()}).defined[i + 1] == localData[attribute->index].defined
-          ) 
-        );
-        model.addConstraint( 
-          ( index == i ).implies( 
-            data.at({vertex,attribute.get()}).value[i + 1] == localData[attribute->index].value
-          ) 
-        );
+        if ( entry.node->represents<BPMN::Task>() ) {
+          auto& index = dataIndex.at(&entry)[ entry.dataOwnerIndex(attribute.get()) ];
+          // if data index at modifier entry equals i then the i+1-th data item equals the final data of the modifier
+          model.addConstraint( 
+            ( index == i ).implies( 
+              data.at({vertex,attribute.get()}).defined[i + 1] == localData[attribute->index].defined
+            ) 
+          );
+          model.addConstraint( 
+            ( index == i ).implies( 
+              data.at({vertex,attribute.get()}).value[i + 1] == localData[attribute->index].value
+            ) 
+          );
+        }
+        else {
+          assert( entry.node->represents<BPMN::TypedStartEvent>() );
+          auto& index = dataIndex.at(&exit)[ exit.dataOwnerIndex(attribute.get()) ];
+          // if global index at modifier exit equals i then the i-th global item equals the final globals of the modifier
+          model.addConstraint( 
+            ( index == i ).implies( 
+              data.at({vertex,attribute.get()}).defined[i] == localData[attribute->index].defined
+            ) 
+          );
+          model.addConstraint( 
+            ( index == i ).implies( 
+              data.at({vertex,attribute.get()}).value[i] == localData[attribute->index].value
+            ) 
+          );
+        }
       }
     }
   }
@@ -1149,17 +1213,33 @@ void CPController::constrainGlobalVariables() {
     auto& [localStatus,localData,localGlobals] = locals.at(&exit).back();
     for ( unsigned int i = 0; i < flattenedGraph.globalModifiers.size(); i++ ) {
       for ( auto attribute : scenario->model->attributeRegistry.globalAttributes ) {
-        // if global index at modifier entry equals i then the i+1-th global item equals the final globals of the modifier
-        model.addConstraint( 
-          ( globalIndex.at(&entry) == i ).implies( 
-            globals[attribute->index].defined[i + 1] == localGlobals[attribute->index].defined
-          ) 
-        );
-        model.addConstraint( 
-          ( globalIndex.at(&entry) == i ).implies( 
-            globals[attribute->index].value[i + 1] == localGlobals[attribute->index].value
-          ) 
-        );
+        if ( entry.node->represents<BPMN::Task>() ) {
+          // if global index at modifier entry equals i then the i+1-th global item equals the final globals of the modifier
+          model.addConstraint( 
+            ( globalIndex.at(&entry) == i && visit.at(&entry) ).implies( 
+              globals[attribute->index].defined[i + 1] == localGlobals[attribute->index].defined
+            ) 
+          );
+          model.addConstraint( 
+            ( globalIndex.at(&entry) == i && visit.at(&entry) ).implies( 
+              globals[attribute->index].value[i + 1] == localGlobals[attribute->index].value
+            ) 
+          );
+        }
+        else {
+          assert( entry.node->represents<BPMN::TypedStartEvent>() );
+          // if global index at modifier exit equals i then the i-th global item equals the final globals of the modifier
+          model.addConstraint( 
+            ( globalIndex.at(&exit) == i && visit.at(&exit) ).implies( 
+              globals[attribute->index].defined[i] == localGlobals[attribute->index].defined
+            ) 
+          );
+          model.addConstraint( 
+            ( globalIndex.at(&exit) == i && visit.at(&exit) ).implies( 
+              globals[attribute->index].value[i] == localGlobals[attribute->index].value
+            ) 
+          );
+        }
       }
     }
   }
@@ -2514,8 +2594,12 @@ void CPController::createSequenceConstraints(const Vertex* vertex) {
     assert( status.at(predecessor).size() >= BPMNOS::Model::ExtensionElements::Index::Timestamp );
     assert( status.contains(vertex) );
     assert( status.at(vertex).size() >= BPMNOS::Model::ExtensionElements::Index::Timestamp );
-
-    model.addConstraint( position.at(predecessor) < position.at(vertex) );
+    if ( vertex->exit<BPMN::TypedStartEvent>() ) {
+      model.addConstraint( position.at(vertex) == position.at(entry(vertex)) + 1 );
+    }
+    else {
+      model.addConstraint( position.at(predecessor) < position.at(vertex) );
+    }
 /*
 std::cerr << predecessor->reference() << " before " << vertex->reference()  << std::endl;  
 std::cerr << visit.at(vertex).stringify() << "\n implies \n";

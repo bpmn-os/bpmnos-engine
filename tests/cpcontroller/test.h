@@ -1,4 +1,3 @@
-//#include "eventbasedgateway/test.h"
 //#include "examples/knapsack_problem/test.h"
 
 #include "process/test.h"
@@ -43,7 +42,7 @@
 #include "examples/assignment_problem/test.h"
 #include "examples/travelling_salesperson_problem/test.h"
 #include "examples/knapsack_problem/test.h"
-
+#include "examples/bin_packing_problem/test.h" 
 
 /*
 //#include "request/test.h" // TODO: Check allocation id in content of request message

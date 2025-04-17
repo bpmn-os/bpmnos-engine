@@ -43,6 +43,9 @@ public:
   void subscribe(Engine* engine);
   void notice(const Observable* observable) override;
   void synchronizeSolution(const Token* token);
+  void synchronizeStatus(const Token* token, const Vertex* vertex);
+  void synchronizeData(const Token* token, const Vertex* vertex);
+  void synchronizeGlobals(const Token* token, const Vertex* vertex);
 //  std::vector< std::unique_ptr<EventDispatcher> > eventDispatchers;
   const CP::Model& getModel() const { return model; }
   const std::vector<const Vertex*>& getVertices() const { return vertices; }
@@ -205,10 +208,10 @@ protected:
   virtual std::shared_ptr<Event> createExitEvent(const SystemState* systemState, const Token* token, const Vertex* vertex); /// Method creating a choice event from CP solution
   virtual std::shared_ptr<Event> createChoiceEvent(const SystemState* systemState, const Token* token, const Vertex* vertex); /// Method creating a choice event from CP solution
   virtual std::shared_ptr<Event> createMessageDeliveryEvent(const SystemState* systemState, const Token* token, const Vertex* vertex); /// Method creating a message delivery event from CP solution
-
+  std::unique_ptr<CP::Solution> _solution;
+public:
   const Vertex* entry(const Vertex* vertex);
   const Vertex* exit(const Vertex* vertex);
-  std::unique_ptr<CP::Solution> _solution;
 };
 
 } // namespace BPMNOS::Execution
