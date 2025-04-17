@@ -38,7 +38,7 @@ assert(!"No entry for event-subprocesses");
     // receive tasks and decision tasks require further decision before operators are applied
     extensionElements->applyOperators(status,data,globals);
   }
-  return true;
+  return extensionElements->fullScopeRestrictionsSatisfied(status,data,globals);
 }
 
 bool LocalEvaluator::updateValues(ExitDecision* decision, Values& status, Values& data, Values& globals) {
@@ -54,12 +54,7 @@ bool LocalEvaluator::updateValues(ExitDecision* decision, Values& status, Values
   auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   assert(extensionElements);
 
-  if ( !extensionElements->feasibleExit(status,data,globals) ) {
-    // exit would be infeasible
-    return false;
-  }
-
-  return true;
+  return extensionElements->feasibleExit(status,data,globals);
 }
 
 bool LocalEvaluator::updateValues(ChoiceDecision* decision, Values& status, Values& data, Values& globals) {
@@ -72,13 +67,8 @@ bool LocalEvaluator::updateValues(ChoiceDecision* decision, Values& status, Valu
   auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   assert(extensionElements);
   extensionElements->applyOperators(status,data,globals);
-  // TODO: do we want to check feasibility here?  
-  if ( !extensionElements->fullScopeRestrictionsSatisfied(status,data,globals) ) {
-    // exit would be infeasible
-    return false;
-  }
-
-  return true;
+  // feasibility of exit may become true later due to time advancing or data and globals being changed
+  return extensionElements->fullScopeRestrictionsSatisfied(status,data,globals);
 }
 
 bool LocalEvaluator::updateValues(MessageDeliveryDecision* decision, Values& status, Values& data, Values& globals) {
@@ -87,21 +77,30 @@ bool LocalEvaluator::updateValues(MessageDeliveryDecision* decision, Values& sta
   auto now = token->owner->systemState->getTime();
   if ( status[BPMNOS::Model::ExtensionElements::Index::Timestamp].value() < now ) {
     status[BPMNOS::Model::ExtensionElements::Index::Timestamp].value() = now;
-  } 
-  auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+  }
+  assert( token->node );
+  assert( token->node->parent );
+  auto extensionElements = 
+    token->node->represents<BPMN::MessageStartEvent>() ?
+    token->node->parent->extensionElements->as<BPMNOS::Model::ExtensionElements>() :
+    token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>()
+  ;
   assert(extensionElements);
   assert( dynamic_cast<const MessageDeliveryEvent*>(decision) );
   auto message = static_cast<const MessageDeliveryEvent*>(decision)->message.lock();
   message->apply(token->node,token->getAttributeRegistry(),status,data,globals);
   extensionElements->applyOperators(status,data,globals);
 
-  // TODO: do we want to check feasibility here?  
-  if ( !extensionElements->fullScopeRestrictionsSatisfied(status,data,globals) ) {
-    // exit would be infeasible
-    return false;
+  // check feasibility
+  if ( token->node->represents<BPMN::ReceiveTask>() ) {
+    return extensionElements->fullScopeRestrictionsSatisfied(status,data,globals);
   }
-
-  return true;
+  else if ( token->node->represents<BPMN::MessageStartEvent>() ) {
+    return extensionElements->feasibleEntry(status,data,globals);
+  }
+  else {
+    return extensionElements->satisfiesInheritedRestrictions(status,data,globals);
+  }
 }
 
 std::optional<double> LocalEvaluator::evaluate(EntryDecision* decision) {
