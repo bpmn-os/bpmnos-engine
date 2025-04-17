@@ -92,6 +92,8 @@ std::cerr << "Rec:" << candidate.reference() << std::endl;
 const FlattenedGraph::Vertex* CPController::getVertex( const Token* token ) const {
   auto node = token->node ? token->node->as<BPMN::Node>() : token->owner->process->as<BPMN::Node>();
   if( !flattenedGraph.loopIndexAttributes.contains(node) ) {
+    // unreachable typed start event
+    assert( node->represents<BPMN::TypedStartEvent>() );
     return nullptr;    
   }
   std::vector< size_t > loopIndices;
@@ -178,6 +180,10 @@ void CPController::unvisited(const Vertex* vertex) {
       assert( candidate.entry<BPMN::MessageThrowEvent>() );
       assert( messageFlow.contains({&candidate,recipient}) );
       _solution->setVariableValue( messageFlow.at({&candidate,recipient}), (double)false );
+    }
+    for ( auto& [_, contentVariables] : messageContent.at(recipient) ) {
+      _solution->setVariableValue( contentVariables.defined, (double)false );
+      _solution->setVariableValue( contentVariables.value, 0.0 );
     }
   }
 }
