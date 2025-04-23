@@ -104,7 +104,7 @@ Token::~Token() {
 
       // release performer when activity fails
       if ( state == State::READY && activity->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() ) {
-        auto tokenAtSequentialPerformer = getSequentialPerfomerToken();
+        auto tokenAtSequentialPerformer = getSequentialPerformerToken();
         if ( tokenAtSequentialPerformer && tokenAtSequentialPerformer->performing == this ) {
           releaseSequentialPerformer();
         }
@@ -1239,7 +1239,7 @@ void Token::awaitEntryEvent() {
 
   auto systemState = const_cast<SystemState*>(owner->systemState);
   if ( node->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() ) {
-    auto tokenAtSequentialPerformer = getSequentialPerfomerToken();
+    auto tokenAtSequentialPerformer = getSequentialPerformerToken();
 //std::cerr << "Token: " << tokenAtSequentialPerformer->jsonify() << "  pendingSequentialEntries add " << jsonify() << std::endl;
     tokenAtSequentialPerformer->pendingSequentialEntries.emplace_back(weak_from_this());
     
@@ -1449,7 +1449,7 @@ void Token::sendMessage(size_t index) {
 
 } 
 
-Token* Token::getSequentialPerfomerToken() const {
+Token* Token::getSequentialPerformerToken() const {
   auto adHocSubProcess = node->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>();
   assert( adHocSubProcess );
 
@@ -1461,7 +1461,7 @@ Token* Token::getSequentialPerfomerToken() const {
 }
 
 void Token::occupySequentialPerformer() {
-  auto tokenAtSequentialPerformer = getSequentialPerfomerToken();
+  auto tokenAtSequentialPerformer = getSequentialPerformerToken();
 //std::cerr << "Token::releaseSequentialPerformer " << std::endl;
   assert( !tokenAtSequentialPerformer->performing );
   tokenAtSequentialPerformer->pendingSequentialEntries.remove(this);
@@ -1483,7 +1483,7 @@ void Token::occupySequentialPerformer() {
 
 void Token::releaseSequentialPerformer() {
   auto systemState = const_cast<SystemState*>(owner->systemState);
-  auto tokenAtSequentialPerformer = getSequentialPerfomerToken();
+  auto tokenAtSequentialPerformer = getSequentialPerformerToken();
 //std::cerr << "Token::releaseSequentialPerformer " << std::endl;
   assert( tokenAtSequentialPerformer->performing );
   
