@@ -1,5 +1,5 @@
-//#include "examples/knapsack_problem/test.h"
-
+#include "examples/vehicle_routing_problem/test.h"
+/*
 #include "process/test.h"
 
 // Activities
@@ -43,6 +43,8 @@
 #include "examples/travelling_salesperson_problem/test.h"
 #include "examples/knapsack_problem/test.h"
 #include "examples/bin_packing_problem/test.h" 
+#include "examples/vehicle_routing_problem/test.h"
+*/
 
 /*
 //#include "request/test.h" // TODO: Check allocation id in content of request message

@@ -63,6 +63,8 @@ public:
   CP::Model model;
 protected:
   LIMEX::Handle<CP::Expression,CP::Expression> limexHandle;
+  std::unordered_map< const Vertex*, const Vertex* > performing; /// Map holding the entry vertex of a sequential activity performed by a sequential performer
+
   void createCP(); /// Method creating the constraint program
   void createGlobalVariables();
   void createMessageFlowVariables();

@@ -4,6 +4,7 @@
 #include "model/bpmnos/src/extensionElements/MessageDefinition.h"
 #include "model/bpmnos/src/extensionElements/Timer.h"
 #include "execution/engine/src/Engine.h"
+#include "execution/engine/src/SequentialPerformerUpdate.h"
 #include <limex_handle.h>
 #include <iostream>
 
@@ -455,6 +456,16 @@ void CPController::notice(const Observable* observable) {
     synchronizeSolution( static_cast<const Token*>(observable) );
 std::cerr << "synchronizedSolution" << std::endl;
   }
+  else if( observable->getObservableType() ==  Execution::Observable::Type::SequentialPerformerUpdate ) {
+    auto performerToken = static_cast<const SequentialPerformerUpdate*>(observable)->token;
+    if ( performerToken->performing ) {
+      performing[ entry(getVertex(performerToken)) ] = entry(getVertex(performerToken->performing));
+    }
+    else {
+      performing[ entry(getVertex(performerToken)) ] = nullptr;
+    }
+std::cerr << "SequentialPerformerUpdate: " << performerToken->jsonify() << (performerToken->performing ? " is busy" : " is idle") << std::endl;
+  }
 }
 
 bool CPController::hasPendingPredecessor(const Vertex* vertex) {
@@ -501,6 +512,15 @@ std::cerr << "dispatchEvent" << std::endl;
     return nullptr;
   };
 
+  auto waitingForSequentialPerformer = [&](const Vertex* vertex) -> bool {
+    assert( vertex->parent.has_value() );
+    assert( performing.contains(vertex->performer()) );
+    if ( auto other = performing.at(vertex->performer()) ) {
+      return other != entry(vertex);
+    }
+    return false;
+  };
+  
   auto hasRequest = [&](const Vertex* vertex) -> DecisionRequest* {
     if ( vertex->type == Vertex::Type::ENTRY ) {
       return getRequest(vertex,systemState->pendingEntryDecisions);
@@ -543,7 +563,7 @@ std::cerr << "dispatchEvent" << std::endl;
     auto vertex = *it;
 //std::cerr << vertex->reference() << std::endl;
     if ( hasPendingPredecessor(vertex) ) {
-std::cerr << "Postpone (sequence): " << vertex->reference() << std::endl;
+std::cerr << "Postpone (pending predecessor): " << vertex->reference() << std::endl;
       // postpone vertex because a predecessor has not yet been processed
       it++;
       continue;
@@ -565,7 +585,7 @@ std::cerr << "Postpone (sequence): " << vertex->reference() << std::endl;
       continue;
     }
     else if ( vertex->entry<BPMN::TypedStartEvent>() ) {
-      // ignore vertex because and proceed with exit
+      // ignore vertex and proceed with exit
       it++;
       continue;
     }
@@ -592,6 +612,16 @@ std::cerr << "Postpone (infeasible): " << vertex->reference() << std::endl;
     }
     else if ( vertex->exit<BPMN::TypedStartEvent>() ) {
       // ignore vertex because it has no request
+      it++;
+      continue;
+    }
+    else if ( 
+      vertex->node->represents<BPMN::Activity>() &&
+      vertex->node->as<BPMN::Activity>()->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() &&
+      waitingForSequentialPerformer( vertex ) 
+    ) {
+std::cerr << "Postpone (sequential activity): " << vertex->reference() << std::endl;
+      // ignore vertex at sequential activity because performer is busy with other activity
       it++;
       continue;
     }
