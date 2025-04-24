@@ -55,9 +55,9 @@ void CPController::subscribe(Engine* engine) {
 }
 
 void CPController::setMessageDeliveryVariableValues( const Vertex* sender, const Vertex* recipient, BPMNOS::number timestamp ) {
-std::cerr << "Sen:" << sender->reference() << std::endl;  
+//std::cerr << "Sen:" << sender->reference() << std::endl;  
   for ( const Vertex& candidate : sender->recipients ) {
-std::cerr << "Rec:" << candidate.reference() << std::endl;  
+//std::cerr << "Rec:" << candidate.reference() << std::endl;  
     assert( messageFlow.contains({sender,&candidate}) );
     _solution->setVariableValue( messageFlow.at({sender,&candidate}), (double)(&candidate == recipient) );
   }
@@ -91,6 +91,7 @@ std::cerr << "Rec:" << candidate.reference() << std::endl;
 }
 
 const FlattenedGraph::Vertex* CPController::getVertex( const Token* token ) const {
+//std::cerr << "getVertex(" << token->jsonify() << ")" << std::endl;
   auto node = token->node ? token->node->as<BPMN::Node>() : token->owner->process->as<BPMN::Node>();
   if( !flattenedGraph.loopIndexAttributes.contains(node) ) {
     // unreachable typed start event
@@ -153,7 +154,7 @@ std::cerr << std::endl << "position(" << vertex->reference() << ") = " << lastPo
 };
 
 void CPController::finalizePredecessorPositions(const Vertex* vertex) {
-//std::cerr << "finalizePredecessorPositions: " << vertex->reference() << std::endl;
+std::cerr << "finalizePredecessorPositions: " << vertex->reference() << std::endl;
   auto it = pendingVertices.begin();
   assert( std::ranges::contains(pendingVertices,vertex) );
   while ( *it != vertex ) {
@@ -164,9 +165,9 @@ void CPController::finalizePredecessorPositions(const Vertex* vertex) {
         it = finalizeVertexPosition( other ); 
         continue;
       }
-      else if ( 
-        _solution->evaluate( visit.at( other ) ).has_value() && 
-        !_solution->evaluate( visit.at( other ) ).value() 
+      assert(visit.contains(other));
+      auto evaluation = _solution->evaluate( visit.at( other ) );
+      if ( evaluation.has_value() && !evaluation.value() 
       ) {
         unvisited(other);
         it = finalizeVertexPosition( other ); 
@@ -175,10 +176,11 @@ void CPController::finalizePredecessorPositions(const Vertex* vertex) {
     }
     it++;
   }
+//std::cerr << "finalizedPredecessorPositions" << std::endl;
 }
 
 void CPController::unvisited(const Vertex* vertex) {
-std::cerr << "unvisited " << vertex->reference() << std::endl;
+//std::cerr << "unvisited " << vertex->reference() << std::endl;
   assert( status.contains(vertex) );
   auto& timestamp = status.at(vertex)[BPMNOS::Model::ExtensionElements::Index::Timestamp];
   _solution->setVariableValue( timestamp.value, 0.0 );
@@ -232,7 +234,7 @@ void CPController::synchronizeSolution(const Token* token) {
     return;
   }
 
-//std::cerr << "Validate: " << token->jsonify() << std::endl;    
+//std::cerr << "Finalize position(s): " << token->jsonify() << std::endl;    
 
   if ( token->state == Token::State::FAILED ) {
     terminationEvent = std::make_shared<TerminationEvent>();
@@ -241,10 +243,9 @@ void CPController::synchronizeSolution(const Token* token) {
   if ( token->state == Token::State::ENTERED ) {
     if ( auto vertex = getVertex(token) ) {
       if ( vertex->entry<BPMN::TypedStartEvent>() ) {
-std::cerr << "ignore typed start event entry: " << token->jsonify() << std::endl;
+//std::cerr << "ignore typed start event entry: " << token->jsonify() << std::endl;
         return;
       }
-//std::cerr << "clear entry event: " << token->jsonify() << std::endl;
       finalizePredecessorPositions(vertex);
       finalizeVertexPosition(vertex);
       if ( 
@@ -288,9 +289,10 @@ std::cerr << "ignore typed start event entry: " << token->jsonify() << std::endl
       }
       finalizePredecessorPositions(vertex);
       finalizeVertexPosition(vertex);
-std::cerr << "cleared exit event: " << vertex->reference() << std::endl;
+//std::cerr << "cleared exit event: " << vertex->reference() << std::endl;
     }
   }
+//std::cerr << "check state" << std::endl;    
 
   if ( !token->node && token->state != Token::State::ENTERED && token->state != Token::State::DONE ) {
     // token at process, but with irrelevant state
@@ -304,6 +306,7 @@ std::cerr << "cleared exit event: " << vertex->reference() << std::endl;
     // token at typed start event, but not triggered
     return;
   }
+
   auto vertex = getVertex(token);
 
 //std::cerr << "Validate vertex " << vertex->reference() << std::endl;    
@@ -343,10 +346,10 @@ void CPController::synchronizeStatus(const Token* token, const CPController::Ver
       ) {
 
 std::cerr << "defined: " << (evaluation.defined() ? "true" : "false") << ", value: " << evaluation.value() << std::endl;
-//std::cerr << statusVariables[i].defined.stringify() << std::endl;
-//std::cerr << statusVariables[i].value.stringify() << std::endl;
-//std::cerr << "Model: " << model.stringify() << std::endl;
-//std::cerr << "Solution: " <<  _solution->stringify() << std::endl;
+std::cerr << statusVariables[i].defined.stringify() << std::endl;
+std::cerr << statusVariables[i].value.stringify() << std::endl;
+std::cerr << "Model: " << model.stringify() << std::endl;
+std::cerr << "Solution: " <<  _solution->stringify() << std::endl;
         throw std::logic_error("CPController: '" + _solution->stringify(statusVariables[i].defined) + "' or '" + _solution->stringify(statusVariables[i].value) + "' inconsistent with " + token->jsonify().dump() );
       }
     }
@@ -421,22 +424,25 @@ void CPController::synchronizeGlobals(const Token* token, const CPController::Ve
 }
 
 void CPController::notice(const Observable* observable) {
+//std::cerr << "notice" << std::endl;
   Controller::notice(observable);
   
   if( observable->getObservableType() ==  Execution::Observable::Type::Token ) {
+//std::cerr << "synchronizeSolution" << std::endl;
     synchronizeSolution( static_cast<const Token*>(observable) );
-std::cerr << "synchronizedSolution" << std::endl;
+//std::cerr << "synchronizedSolution" << std::endl;
   }
   else if( observable->getObservableType() ==  Execution::Observable::Type::SequentialPerformerUpdate ) {
     auto performerToken = static_cast<const SequentialPerformerUpdate*>(observable)->token;
+//std::cerr << "SequentialPerformerUpdate: " << performerToken->jsonify() << (performerToken->performing ? " is busy" : " is idle") << std::endl;
     if ( performerToken->performing ) {
       performing[ entry(getVertex(performerToken)) ] = entry(getVertex(performerToken->performing));
     }
     else {
       performing[ entry(getVertex(performerToken)) ] = nullptr;
     }
-std::cerr << "SequentialPerformerUpdate: " << performerToken->jsonify() << (performerToken->performing ? " is busy" : " is idle") << std::endl;
   }
+//std::cerr << "noticed" << std::endl;
 }
 
 bool CPController::hasPendingPredecessor(const Vertex* vertex) {
@@ -460,7 +466,7 @@ bool CPController::hasPendingPredecessor(const Vertex* vertex) {
 }
 
 std::shared_ptr<Event> CPController::dispatchEvent(const SystemState* systemState) {
-std::cerr << "dispatchEvent" << std::endl;
+//std::cerr << "dispatchEvent" << std::endl;
   if ( terminationEvent ) {
     return terminationEvent;
   }
@@ -472,6 +478,7 @@ std::cerr << "dispatchEvent" << std::endl;
   auto getRequest = [](const Vertex* vertex, const auto& pendingDecisions) -> DecisionRequest* {
     for (const auto& [token_ptr, request_ptr] : pendingDecisions) {
       if (auto request = request_ptr.lock()) {
+//std::cerr << request->token->jsonify() << "/" << vertex->reference() << std::endl;
         if (
           request->token->node == vertex->node &&
           request->token->data->at(BPMNOS::Model::ExtensionElements::Index::Instance).get().value() == vertex->instanceId
@@ -2294,21 +2301,43 @@ std::pair< CP::Expression, CP::Expression > CPController::getAttributeVariables(
     );
   }
   else if ( attribute->category == Model::Attribute::Category::DATA ) {
+    if ( attribute->index == BPMNOS::Model::ExtensionElements::Index::Instance ) {
+      return std::make_pair<CP::Expression,CP::Expression>( 
+        true,
+        (double)vertex->instanceId
+      );
+    }
     assert( data.contains( {&vertex->dataOwner(attribute).first, attribute } ) );
-    auto& index = dataIndex.at(vertex)[ vertex->dataOwnerIndex(attribute) ];
-    return std::make_pair<CP::Expression,CP::Expression>( 
-      data.at( {&vertex->dataOwner(attribute).first, attribute } ).defined[ index ],
-      data.at( {&vertex->dataOwner(attribute).first, attribute } ).value[ index ]
-    );
+    if ( attribute->isImmutable ) {
+      return std::make_pair<CP::Expression,CP::Expression>( 
+        data.at( {&vertex->dataOwner(attribute).first, attribute } ).defined[ 0 ],
+        data.at( {&vertex->dataOwner(attribute).first, attribute } ).value[ 0 ]
+      );
+    }
+    else {
+      auto& index = dataIndex.at(vertex)[ vertex->dataOwnerIndex(attribute) ];
+      return std::make_pair<CP::Expression,CP::Expression>( 
+        data.at( {&vertex->dataOwner(attribute).first, attribute } ).defined[ index ],
+        data.at( {&vertex->dataOwner(attribute).first, attribute } ).value[ index ]
+      );
+    }
   }
   else {
     assert( attribute->category == Model::Attribute::Category::GLOBAL );
     assert( globals.size() > attribute->index );
-    auto& index = globalIndex.at(vertex);
-    return std::make_pair<CP::Expression,CP::Expression>( 
-      globals[attribute->index].defined[ index ],
-      globals[attribute->index].value[ index ] 
-    );
+    if ( attribute->isImmutable ) {
+      return std::make_pair<CP::Expression,CP::Expression>( 
+        globals[attribute->index].defined[ 0 ],
+        globals[attribute->index].value[ 0 ] 
+      );
+    }
+    else {
+      auto& index = globalIndex.at(vertex);
+      return std::make_pair<CP::Expression,CP::Expression>( 
+        globals[attribute->index].defined[ index ],
+        globals[attribute->index].value[ index ] 
+      );
+    }
   }
 }
 
