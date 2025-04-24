@@ -153,16 +153,14 @@ const BPMNOS::Model::AttributeRegistry& Token::getAttributeRegistry() const {
   return owner->parentToken->getAttributeRegistry();
 }
 
-void Token::setStatus(const BPMNOS::Values& other) {
-  assert( (int)BPMNOS::Model::ExtensionElements::Index::Instance == 0 );
-  size_t size = ( other.size() >= status.size() ? status.size() : other.size() );
-  std::copy(other.begin() + 1, other.begin() + (std::ptrdiff_t)size , status.begin()+1);
+BPMNOS::number Token::getInstanceId() const {
+  return (*data)[BPMNOS::Model::ExtensionElements::Index::Instance].get().value();
 }
 
 nlohmann::ordered_json Token::jsonify() const {
   nlohmann::ordered_json jsonObject;
   jsonObject["processId"] = owner->process->id;
-  jsonObject["instanceId"] = BPMNOS::to_string((*data)[BPMNOS::Model::ExtensionElements::Index::Instance].get().value(),STRING);
+  jsonObject["instanceId"] = BPMNOS::to_string(getInstanceId(),STRING);
   if ( node ) {
     jsonObject["nodeId"] = node->id;
   }

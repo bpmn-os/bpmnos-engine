@@ -214,12 +214,16 @@ void StateMachine::createMultiInstanceActivityTokens(Token* token) {
 
       // create child state machine with disambiguated instance identifier
       createChild( tokens.back().get(), scope, std::move(data.value()), BPMNOS::to_number(instanceId,BPMNOS::ValueType::STRING) );
+      // ensure that data is set appropriately
+      tokens.back()->data = &tokens.back()->owned->data;
+//std::cerr << "MI:" << instanceId << "/" << tokens.back()->jsonify() << std::endl;      
     }
     else {
       // create child fake state machine with disambiguated instance identifier
       createChild( tokens.back().get(), nullptr, {}, BPMNOS::to_number(instanceId,BPMNOS::ValueType::STRING) );
       // ensure that data is set appropriately
       tokens.back()->data = &tokens.back()->owned->data;
+//std::cerr << "Fake:" << tokens.back()->jsonify() << std::endl;      
     }       
     
     // update status of token copy
@@ -231,6 +235,7 @@ void StateMachine::createMultiInstanceActivityTokens(Token* token) {
       if ( !tokenCopy ) {
         // for sequential multi-instance activities only the first token awaits entry event
         tokens.back().get()->update(Token::State::READY);
+//std::cerr << "Token awaiting entry:" << tokens.back()->jsonify() << std::endl;
         tokens.back().get()->awaitEntryEvent();
       }
       else {
@@ -241,6 +246,7 @@ void StateMachine::createMultiInstanceActivityTokens(Token* token) {
     else if ( activity->loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::MultiInstanceParallel ) {
       // for parallel multi-instance activities all new tokens await entry event
       tokens.back().get()->update(Token::State::READY);
+//std::cerr << "Token awaiting entry:" << tokens.back()->jsonify() << std::endl;
       tokens.back().get()->awaitEntryEvent();
     }
 
@@ -654,7 +660,7 @@ void StateMachine::handleEscalation(Token* token) {
     // trigger event subprocess
     auto eventToken = it->get()->tokens.front().get();
 //std::cerr << "found event-subprocess catching escalation:" << eventToken << "/" << eventToken->owner << std::endl;
-    eventToken->setStatus(token->status);
+    eventToken->status = token->status;
     eventToken->advanceToCompleted();
 
     return;
@@ -668,7 +674,7 @@ void StateMachine::handleEscalation(Token* token) {
   ) {
     // handle failure at main token waiting for all instances
     auto mainToken = const_cast<SystemState*>(systemState)->tokenAtMultiInstanceActivity.at(token);
-    mainToken->setStatus(token->status);
+    mainToken->status = token->status;
     handleEscalation(mainToken);
     return;
   }
@@ -678,7 +684,7 @@ void StateMachine::handleEscalation(Token* token) {
     auto& tokensAwaitingBoundaryEvent = const_cast<SystemState*>(systemState)->tokensAwaitingBoundaryEvent[token];
     for ( auto eventToken : tokensAwaitingBoundaryEvent) {
       if ( eventToken->node->represents<BPMN::EscalationBoundaryEvent>() ) {
-        eventToken->setStatus(token->status);
+        eventToken->status = token->status;
         eventToken->advanceToCompleted();
         return;
       }
@@ -686,7 +692,7 @@ void StateMachine::handleEscalation(Token* token) {
   }
 
   // update status of parent token with that of current token
-  parentToken->setStatus(token->status);
+  parentToken->status = token->status;
   parentToken->update(parentToken->state);
 
 //std::cerr << "bubbble up escalation" << std::endl;
@@ -716,7 +722,7 @@ void StateMachine::handleFailure(Token* token) {
         // handle failure at main token waiting for all instances       
         auto mainToken = const_cast<SystemState*>(systemState)->tokenAtMultiInstanceActivity.at(token);
 //std::cerr << "handle failure at main token waiting for all instances "  << std::endl;
-        mainToken->setStatus(token->status);
+        mainToken->status = token->status;
         handleFailure(mainToken);
         return;
       }
@@ -728,7 +734,7 @@ void StateMachine::handleFailure(Token* token) {
     auto& tokensAwaitingBoundaryEvent = const_cast<SystemState*>(systemState)->tokensAwaitingBoundaryEvent[token];
     for ( auto eventToken : tokensAwaitingBoundaryEvent) {
       if ( eventToken->node->represents<BPMN::ErrorBoundaryEvent>() ) {
-        eventToken->setStatus(token->status);
+        eventToken->status = token->status;
         eventToken->advanceToCompleted();
         return;
       }
@@ -744,7 +750,7 @@ void StateMachine::handleFailure(Token* token) {
     // trigger event subprocess
     auto eventToken = it->get()->tokens.front().get();
     // update status of event token with that of current token
-    eventToken->setStatus(token->status);
+    eventToken->status = token->status;
     // remove all tokens
     clearObsoleteTokens();
     engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,eventToken), eventToken);
@@ -768,7 +774,7 @@ void StateMachine::handleFailure(Token* token) {
   // bubble up error
   
   // update status of parent token with that of current token
-  parentToken->setStatus(token->status);
+  parentToken->status = token->status;
   engine->commands.emplace_back(std::bind(&Token::advanceToFailed,parentToken), parentToken);
 }
 
@@ -827,7 +833,7 @@ void StateMachine::shutdown() {
   if ( parentToken &&
     !scope->extensionElements->as<BPMNOS::Model::ExtensionElements>()->hasSequentialPerformer
   ) {
-    parentToken->setStatus(mergedStatus);
+    parentToken->status = mergedStatus;
   }
   tokens.clear();
 

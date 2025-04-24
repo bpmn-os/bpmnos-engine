@@ -61,7 +61,6 @@ public:
   Token* performing; ///< Pointer to the activity token currently performed (only applies if node is a performer referenced by sequential ad-hoc subprocesses)
   auto_list< std::weak_ptr<Token> > pendingSequentialEntries; ///< List of tokens awaiting an activity entry (only applies if node is a performer referenced by sequential ad-hoc subprocesses)
   
-  void setStatus(const BPMNOS::Values& other); ///< Copies all elements except the instance id from `other` to `status`
 
   bool ready() const { return state == State::READY; };
   bool entered() const { return state == State::ENTERED; };
@@ -72,6 +71,7 @@ public:
   bool done() const { return state == State::DONE; };
   bool failed() const { return state == State::FAILED; };
 
+  BPMNOS::number getInstanceId() const;
   nlohmann::ordered_json jsonify() const;
 private:
   void occupySequentialPerformer();
