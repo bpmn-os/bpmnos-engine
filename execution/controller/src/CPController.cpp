@@ -343,8 +343,10 @@ void CPController::synchronizeStatus(const Token* token, const CPController::Ver
       ) {
 
 std::cerr << "defined: " << (evaluation.defined() ? "true" : "false") << ", value: " << evaluation.value() << std::endl;
-//std::cerr << statusVariables[i].defined.stringify() << std::endl;
-//std::cerr << statusVariables[i].value.stringify() << std::endl;
+std::cerr << statusVariables[i].defined.stringify() << std::endl;
+std::cerr << statusVariables[i].value.stringify() << std::endl;
+std::cerr << "Model: " << model.stringify() << std::endl;
+std::cerr << "Solution: " <<  _solution->stringify() << std::endl;
         throw std::logic_error("CPController: '" + _solution->stringify(statusVariables[i].defined) + "' or '" + _solution->stringify(statusVariables[i].value) + "' inconsistent with " + token->jsonify().dump() );
       }
     }
@@ -2065,11 +2067,21 @@ std::vector<CPController::AttributeVariables> CPController::createMergedStatus(c
       for ( auto& [ active, attributeVariables] : inputs ) {
         terms.emplace_back( attributeVariables[attribute->index].defined * attributeVariables[attribute->index].value );
       }
-      // entry of activity is the same as the maximum timestamp
-      variables.emplace_back(
-        model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->reference() + "}," + attribute->id, visit.at(vertex) ), 
-        model.addVariable(CP::Variable::Type::REAL, "value_{" + vertex->reference() + "}," + attribute->id, CP::if_then_else( visit.at(vertex), CP::max(terms), 0.0 ) )
-      );
+      if ( vertex->node->represents<BPMN::Activity>() && !flattenedGraph.dummies.contains(vertex) ) {
+        // timestamp of vertex must be at least the maximum timestamp of all inputs
+        variables.emplace_back(
+          model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->reference() + "}," + attribute->id, visit.at(vertex) ), 
+          model.addRealVariable("value_{" + vertex->reference() + "}," + attribute->id )
+        );
+        model.addConstraint( visit.at(vertex).implies( variables.back().value >= CP::max(terms) ) );
+      }
+      else {
+        // timestamp of vertex is the same as the maximum timestamp of all inputs
+        variables.emplace_back(
+          model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->reference() + "}," + attribute->id, visit.at(vertex) ), 
+          model.addVariable(CP::Variable::Type::REAL, "value_{" + vertex->reference() + "}," + attribute->id, CP::if_then_else( visit.at(vertex), CP::max(terms), 0.0 ) )
+        );
+      }
     }
     else {
       // deduce variable
