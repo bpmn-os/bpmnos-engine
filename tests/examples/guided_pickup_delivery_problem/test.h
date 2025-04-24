@@ -114,8 +114,8 @@ SCENARIO( "Guided pickup delivery problem", "[examples][pickup_delivery_problem]
     Execution::TimeWarp timeHandler;
     timeHandler.connect(&engine);
 
-//    Execution::Recorder recorder;
-    Execution::Recorder recorder(std::cerr);
+    Execution::Recorder recorder;
+//    Execution::Recorder recorder(std::cerr);
     recorder.subscribe(&engine);
 
     WHEN( "The engine is started with the greedy controller" ) {
