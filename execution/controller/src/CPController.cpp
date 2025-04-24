@@ -127,14 +127,29 @@ std::list< const CPController::Vertex* >::iterator CPController::finalizeVertexP
 //std::cerr << "Remove " << vertex->reference() << " from " << pendingVertices.size() << std::endl;
   auto it = std::find(pendingVertices.begin(), pendingVertices.end(), vertex);
   if( it != pendingVertices.end() ) {
+    lastPosition++;
 //std::cerr << "Removed." << std::endl;
     it = pendingVertices.erase(it);
     processedVertices.push_back(vertex);
-    _solution->setVariableValue( position.at(vertex), (double)++lastPosition);
+    auto vertexPosition = _solution->getVariableValue( position.at(vertex) ).value();
+    assert( vertexPosition >= (double)lastPosition );
+    if ( vertexPosition > (double)lastPosition ) {
+      // increment position of other vertices if necessary
+      for ( auto pendingVertex : pendingVertices ) {
+        auto pendingVertexPosition = _solution->getVariableValue( position.at(pendingVertex) ).value();
+        assert( pendingVertexPosition >= (double)lastPosition );
+        if ( pendingVertexPosition < vertexPosition ) {
+          _solution->setVariableValue( position.at(pendingVertex), (double)++pendingVertexPosition);
+        }
+      }
+      // change final position of vertex
+      _solution->setVariableValue( position.at(vertex), (double)lastPosition);
+    }
 std::cerr << std::endl << "position(" << vertex->reference() << ") = " << lastPosition << std::endl;
 //std::cerr << "visit(" << vertex->shortReference() << ") = " << _solution->evaluate( visit.at(vertex) ).value_or(-1) << std::endl;
   }
   return it;
+  
 };
 
 void CPController::finalizePredecessorPositions(const Vertex* vertex) {
@@ -353,6 +368,7 @@ std::cerr << "defined: " << (evaluation.defined() ? "true" : "false") << ", valu
 void CPController::synchronizeData(const Token* token, const CPController::Vertex* vertex) {
   auto& dataIndices = dataIndex.at(vertex);
   assert( dataIndices.size() == vertex->dataOwners.size() );
+  // iterate over the data indices for each data owner
   for ( size_t i = 0; i < dataIndices.size(); i++ ) {
     auto indexEvaluation = _solution->evaluate( dataIndices[i] );
     if ( !indexEvaluation ) {
@@ -361,6 +377,7 @@ void CPController::synchronizeData(const Token* token, const CPController::Verte
     auto index = (size_t)indexEvaluation.value();
     auto &ownerVertex = vertex->dataOwners[i].get();
     assert( ownerVertex.entry<BPMN::Scope>() );
+//std::cerr << "set data[" << ownerVertex.shortReference() << ", "<< index << "] for " << vertex->reference() << std::endl;
     auto scope = ownerVertex.node;
     auto extensionElements = scope->extensionElements->as<BPMNOS::Model::ExtensionElements>();
     for ( auto& attribute : extensionElements->data ) {
@@ -383,6 +400,10 @@ void CPController::synchronizeData(const Token* token, const CPController::Verte
           evaluation.value() != token->data->at(attribute->index).get().value()
         ) {
 std::cerr << "defined: " << (evaluation.defined() ? "true" : "false") << ", value: " << evaluation.value() << " != " << token->data->at(attribute->index).get().value() << std::endl;
+//std::cerr << indexedAttributeVariables.defined[index].stringify() << std::endl;
+//std::cerr << indexedAttributeVariables.value[index].stringify() << std::endl;
+//std::cerr << "Model: " << model.stringify() << std::endl;
+//std::cerr << "Solution: " <<  _solution->stringify() << std::endl;
           throw std::logic_error("CPController: '" + _solution->stringify(indexedAttributeVariables.defined[index]) + "' or '" + _solution->stringify(indexedAttributeVariables.value[index]) + "' inconsistent with " + token->jsonify().dump());
         }
       }
