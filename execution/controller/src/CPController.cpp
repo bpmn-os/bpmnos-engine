@@ -343,10 +343,10 @@ void CPController::synchronizeStatus(const Token* token, const CPController::Ver
       ) {
 
 std::cerr << "defined: " << (evaluation.defined() ? "true" : "false") << ", value: " << evaluation.value() << std::endl;
-std::cerr << statusVariables[i].defined.stringify() << std::endl;
-std::cerr << statusVariables[i].value.stringify() << std::endl;
-std::cerr << "Model: " << model.stringify() << std::endl;
-std::cerr << "Solution: " <<  _solution->stringify() << std::endl;
+//std::cerr << statusVariables[i].defined.stringify() << std::endl;
+//std::cerr << statusVariables[i].value.stringify() << std::endl;
+//std::cerr << "Model: " << model.stringify() << std::endl;
+//std::cerr << "Solution: " <<  _solution->stringify() << std::endl;
         throw std::logic_error("CPController: '" + _solution->stringify(statusVariables[i].defined) + "' or '" + _solution->stringify(statusVariables[i].value) + "' inconsistent with " + token->jsonify().dump() );
       }
     }
@@ -387,41 +387,14 @@ void CPController::synchronizeData(const Token* token, const CPController::Verte
         continue;
       }
       IndexedAttributeVariables& indexedAttributeVariables = data.at({&ownerVertex,attribute.get()});
-      AttributeEvaluation evaluation(
-        _solution->evaluate( indexedAttributeVariables.defined[index] ),
-        _solution->evaluate( indexedAttributeVariables.value[index] )
-      );
+      // override solution value (positions and indices may have changed)
       if ( token->data->at(attribute->index).get().has_value() ) {
-        if ( !evaluation ) {
-          // set solution value
-          _solution->setVariableValue( indexedAttributeVariables.defined[index], true );
-          _solution->setVariableValue( indexedAttributeVariables.value[index], (double)token->data->at(attribute->index).get().value() );
-        }
-        else if ( 
-          !evaluation.defined()  ||
-          evaluation.value() != token->data->at(attribute->index).get().value()
-        ) {
-std::cerr << "defined: " << (evaluation.defined() ? "true" : "false") << ", value: " << evaluation.value() << " != " << token->data->at(attribute->index).get().value() << std::endl;
-//std::cerr << indexedAttributeVariables.defined[index].stringify() << std::endl;
-//std::cerr << indexedAttributeVariables.value[index].stringify() << std::endl;
-//std::cerr << "Model: " << model.stringify() << std::endl;
-//std::cerr << "Solution: " <<  _solution->stringify() << std::endl;
-          throw std::logic_error("CPController: '" + _solution->stringify(indexedAttributeVariables.defined[index]) + "' or '" + _solution->stringify(indexedAttributeVariables.value[index]) + "' inconsistent with " + token->jsonify().dump());
-        }
+        _solution->setVariableValue( indexedAttributeVariables.defined[index], true );
+        _solution->setVariableValue( indexedAttributeVariables.value[index], (double)token->data->at(attribute->index).get().value() );
       }
       else {
-        if ( !evaluation ) {
-          // set solution value
-          _solution->setVariableValue( indexedAttributeVariables.defined[index], false );
-          _solution->setVariableValue( indexedAttributeVariables.value[index], 0.0 );
-        }
-        else if ( 
-          evaluation.defined()  ||
-          evaluation.value() != 0.0
-        ) {
-std::cerr << "defined: " << (evaluation.defined() ? "true" : "false") << ", value: " << evaluation.value() << " != " << token->data->at(attribute->index).get().value() << std::endl;
-          throw std::logic_error("CPController: '" + _solution->stringify(indexedAttributeVariables.defined[index]) + "' or '" + _solution->stringify(indexedAttributeVariables.value[index]) + "' inconsistent with " + token->jsonify().dump());
-        }
+        _solution->setVariableValue( indexedAttributeVariables.defined[index], false );
+        _solution->setVariableValue( indexedAttributeVariables.value[index], 0.0 );
       }
     }
   }
@@ -435,39 +408,14 @@ void CPController::synchronizeGlobals(const Token* token, const CPController::Ve
   auto index = (size_t)indexEvaluation.value();
   for ( size_t attributeIndex = 0; attributeIndex < token->globals.size(); attributeIndex++ ) {
     IndexedAttributeVariables& indexedAttributeVariables = globals[attributeIndex];
-std::cerr << "Validate global " << indexedAttributeVariables.defined[index].stringify() << std::endl;    
-    AttributeEvaluation evaluation(
-      _solution->evaluate( indexedAttributeVariables.defined[index] ),
-      _solution->evaluate( indexedAttributeVariables.value[index] )
-    );
-
+    // override solution value (positions and indices may have changed)
     if ( token->globals[attributeIndex].has_value() ) {
-      if ( !evaluation ) {
-        // set solution value
-        _solution->setVariableValue( indexedAttributeVariables.defined[index], true );
-        _solution->setVariableValue( indexedAttributeVariables.value[index], (double)token->globals[attributeIndex].value() );
-      }
-      else if ( 
-        !evaluation.defined()  ||
-        evaluation.value() != token->globals[attributeIndex].value()
-      ) {
-std::cerr << "defined: " << (evaluation.defined() ? "true" : "false") << ", value: " << evaluation.value() << " != " <<  token->globals[attributeIndex].value() << std::endl;
-        throw std::logic_error("CPController: '" + _solution->stringify(indexedAttributeVariables.defined[index]) + "' or '" + _solution->stringify(indexedAttributeVariables.value[index]) + "' inconsistent with " + token->jsonify().dump());
-      }
+      _solution->setVariableValue( indexedAttributeVariables.defined[index], true );
+      _solution->setVariableValue( indexedAttributeVariables.value[index], (double)token->globals[attributeIndex].value() );
     }
     else {
-      if ( !evaluation ) {
-        // set solution value
-        _solution->setVariableValue( indexedAttributeVariables.defined[index], false );
-        _solution->setVariableValue( indexedAttributeVariables.value[index], 0.0 );
-      }
-      else if ( 
-        evaluation.defined()  ||
-        evaluation.value() != 0.0
-      ) {
-std::cerr << "defined: " << (evaluation.defined() ? "true" : "false") << ", value: " << evaluation.value() << " != " <<  token->globals[attributeIndex].value() << std::endl;
-        throw std::logic_error("CPController: '" + _solution->stringify(indexedAttributeVariables.defined[index]) + "' or '" + _solution->stringify(indexedAttributeVariables.value[index]) + "' inconsistent with " + token->jsonify().dump());
-      }
+      _solution->setVariableValue( indexedAttributeVariables.defined[index], false );
+      _solution->setVariableValue( indexedAttributeVariables.value[index], 0.0 );
     }
   }
 }
