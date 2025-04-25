@@ -270,7 +270,7 @@ void CPController::synchronizeSolution(const Token* token) {
     synchronizeData(token,entry(vertex));
     synchronizeGlobals(token,entry(vertex));
     // for typed start events data and globals remain unchanged upon completion
-    // operators are applied after completio
+    // operators of event-subprocess are applied after completion
   }
   else if ( 
     ( !token->node && token->state == Token::State::DONE ) || // Process
@@ -588,10 +588,23 @@ std::cerr << "Postpone (infeasible): " << vertex->reference() << std::endl;
         continue;
       }
     }
+    else if ( vertex->exit<BPMN::MessageStartEvent>() ) {
+      // all predecessors are processed and there is no request
+      unvisited(entry(vertex));
+      finalizeVertexPosition(entry(vertex));
+      unvisited(vertex);
+      it = finalizeVertexPosition(vertex);
+      continue;
+    }
     else if ( vertex->exit<BPMN::TypedStartEvent>() ) {
-      // ignore vertex because it has no request
+      // wait for trigger
+std::cerr << "Wait: " << vertex->jsonify() << std::endl;
+      // wait for request
+      return nullptr;
+/*
       it++;
       continue;
+*/
     }
     else if ( 
       vertex->node->represents<BPMN::Activity>() &&
@@ -1979,11 +1992,24 @@ std::cerr << vertex->reference() << std::endl;
       model.addConstraint( visit.at(vertex).implies( timestamp >= value ) );
     }
     else if ( vertex->entry<BPMN::TypedStartEvent>() ) {
-      // deduce variable if visited
-      variables.emplace_back(
-        model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->reference() + "}," + attribute->id, visit.at(vertex) * defined ), 
-        model.addVariable(CP::Variable::Type::REAL, "value_{" + vertex->reference() + "}," + attribute->id, visit.at(vertex) * value )
-      );
+      if ( attribute->index == BPMNOS::Model::ExtensionElements::Index::Timestamp ) {
+        CP::Expression timestamp(0);
+        for ( Vertex& predecessor : vertex->predecessors ) {
+          timestamp = CP::max( timestamp, status.at(&predecessor)[attribute->index].value );
+        }
+        // deduce variable if visited
+        variables.emplace_back(
+          model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->reference() + "}," + attribute->id, visit.at(vertex) ), 
+          model.addVariable(CP::Variable::Type::REAL, "value_{" + vertex->reference() + "}," + attribute->id, visit.at(vertex) * timestamp )
+        );
+      }
+      else {
+        // deduce variable if visited
+        variables.emplace_back(
+          model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->reference() + "}," + attribute->id, visit.at(vertex) * defined ), 
+          model.addVariable(CP::Variable::Type::REAL, "value_{" + vertex->reference() + "}," + attribute->id, visit.at(vertex) * value )
+        );
+      }
     }
     else {
       // deduce variable
@@ -2671,12 +2697,13 @@ std::cerr << status.at(vertex)[BPMNOS::Model::ExtensionElements::Index::Timestam
     else {
       model.addConstraint(
         // predecessor and vertex are at different nodes
-        ( visit.at(predecessor) && visit.at(vertex) ).implies(
+        ( visit.at(predecessor) && visit.at(vertex) ).implies( 
           status.at(predecessor)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value
           <= status.at(vertex)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value
         )
       );
     }
+
 //std::cerr << model.getConstraints().back().stringify() << std::endl;
   };
 
