@@ -1182,22 +1182,9 @@ void CPController::constrainDataVariables(const FlattenedGraph::Vertex* vertex) 
     auto& [localStatus,localData,localGlobals] = locals.at(&exit).back();
     for ( unsigned int i = 0; i < dataModifiers.size(); i++ ) {
       for ( auto& attribute : extensionElements->data ) {
-        if ( entry.node->represents<BPMN::Task>() ) {
-          auto& index = dataIndex.at(&entry)[ entry.dataOwnerIndex(attribute.get()) ];
-          // if data index at modifier entry equals i then the i+1-th data item equals the final data of the modifier
-          model.addConstraint( 
-            ( index == i ).implies( 
-              data.at({vertex,attribute.get()}).defined[i + 1] == localData[attribute->index].defined
-            ) 
-          );
-          model.addConstraint( 
-            ( index == i ).implies( 
-              data.at({vertex,attribute.get()}).value[i + 1] == localData[attribute->index].value
-            ) 
-          );
-        }
-        else {
-          assert( entry.node->represents<BPMN::TypedStartEvent>() );
+        if ( entry.node->represents<BPMN::TypedStartEvent>() || entry.node->represents<BPMN::ReceiveTask>() || entry.node->represents<BPMNOS::Model::DecisionTask>() ) {
+          // operators are applied after message delivery or choice
+          // ASSUMPTION: exit decision immediately follows message delivery or choice
           auto& index = dataIndex.at(&exit)[ exit.dataOwnerIndex(attribute.get()) ];
           // if global index at modifier exit equals i then the i-th global item equals the final globals of the modifier
           model.addConstraint( 
@@ -1211,6 +1198,22 @@ void CPController::constrainDataVariables(const FlattenedGraph::Vertex* vertex) 
             ) 
           );
         }
+        else {
+          assert( entry.node->represents<BPMN::Task>() );
+          // operators are applied upon entry
+          auto& index = dataIndex.at(&entry)[ entry.dataOwnerIndex(attribute.get()) ];
+          // if data index at modifier entry equals i then the i+1-th data item equals the final data of the modifier
+          model.addConstraint( 
+            ( index == i ).implies( 
+              data.at({vertex,attribute.get()}).defined[i + 1] == localData[attribute->index].defined
+            ) 
+          );
+          model.addConstraint( 
+            ( index == i ).implies( 
+              data.at({vertex,attribute.get()}).value[i + 1] == localData[attribute->index].value
+            ) 
+          );
+        }
       }
     }
   }
@@ -1221,21 +1224,9 @@ void CPController::constrainGlobalVariables() {
     auto& [localStatus,localData,localGlobals] = locals.at(&exit).back();
     for ( unsigned int i = 0; i < flattenedGraph.globalModifiers.size(); i++ ) {
       for ( auto attribute : scenario->model->attributeRegistry.globalAttributes ) {
-        if ( entry.node->represents<BPMN::Task>() ) {
-          // if global index at modifier entry equals i then the i+1-th global item equals the final globals of the modifier
-          model.addConstraint( 
-            ( globalIndex.at(&entry) == i && visit.at(&entry) ).implies( 
-              globals[attribute->index].defined[i + 1] == localGlobals[attribute->index].defined
-            ) 
-          );
-          model.addConstraint( 
-            ( globalIndex.at(&entry) == i && visit.at(&entry) ).implies( 
-              globals[attribute->index].value[i + 1] == localGlobals[attribute->index].value
-            ) 
-          );
-        }
-        else {
-          assert( entry.node->represents<BPMN::TypedStartEvent>() );
+        if ( entry.node->represents<BPMN::TypedStartEvent>() || entry.node->represents<BPMN::ReceiveTask>() || entry.node->represents<BPMNOS::Model::DecisionTask>() ) {
+          // operators are applied after message delivery or choice
+          // ASSUMPTION: exit decision immediately follows message delivery or choice
           // if global index at modifier exit equals i then the i-th global item equals the final globals of the modifier
           model.addConstraint( 
             ( globalIndex.at(&exit) == i && visit.at(&exit) ).implies( 
@@ -1245,6 +1236,21 @@ void CPController::constrainGlobalVariables() {
           model.addConstraint( 
             ( globalIndex.at(&exit) == i && visit.at(&exit) ).implies( 
               globals[attribute->index].value[i] == localGlobals[attribute->index].value
+            ) 
+          );
+        }
+        else {
+          assert( entry.node->represents<BPMN::Task>() );
+          // operators are applied upon entry
+          // if global index at modifier entry equals i then the i+1-th global item equals the final globals of the modifier
+          model.addConstraint( 
+            ( globalIndex.at(&entry) == i && visit.at(&entry) ).implies( 
+              globals[attribute->index].defined[i + 1] == localGlobals[attribute->index].defined
+            ) 
+          );
+          model.addConstraint( 
+            ( globalIndex.at(&entry) == i && visit.at(&entry) ).implies( 
+              globals[attribute->index].value[i + 1] == localGlobals[attribute->index].value
             ) 
           );
         }
