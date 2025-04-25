@@ -75,7 +75,7 @@ std::shared_ptr<Event> SeededGreedyController::createExitEvent(const SystemState
 
 std::shared_ptr<Event> SeededGreedyController::createChoiceEvent(const SystemState* systemState, const Token* token, const Vertex* vertex) {
   // set timestamp of choice
-  setLocalAttributeValue(vertex,BPMNOS::Model::ExtensionElements::Index::Timestamp,systemState->getTime());
+  setLocalStatusValue(vertex,BPMNOS::Model::ExtensionElements::Index::Timestamp,systemState->getTime());
 
   auto best = choiceDispatcher->determineBestChoices(token->decisionRequest);
   if (!best) {
@@ -91,7 +91,7 @@ std::shared_ptr<Event> SeededGreedyController::createChoiceEvent(const SystemSta
   assert( extensionElements->choices.size() == decision->choices.size() );
   for (size_t i = 0; i < extensionElements->choices.size(); i++) {
     assert( decision->choices[i].has_value() );
-    setLocalAttributeValue(vertex,extensionElements->choices[i]->attribute->index,decision->choices[i].value());
+    setLocalStatusValue(vertex,extensionElements->choices[i]->attribute->index,decision->choices[i].value());
   }
   
   return best;

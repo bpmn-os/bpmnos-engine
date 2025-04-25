@@ -191,6 +191,7 @@ protected:
   void unvisited(const Vertex* vertex);
   void finalizePredecessorPositions(const Vertex* vertex);
   std::list< const Vertex* >::iterator finalizeVertexPosition(const Vertex* vertex); /// Method finalizing the sequence position of a pending vertex and removing it from the list
+  std::list< const Vertex* >::iterator finalizeUnvisitedTypedStartEvents(const Token* token, std::list< const Vertex* >::iterator it); /// Method finalizing the sequence position of a unvisited vertices belonging to typed start events
   size_t lastPosition;
 public:
   virtual CP::Solution& createSolution(); /// Method creating a solution of the CP
@@ -203,7 +204,7 @@ protected:
   std::optional< BPMN::Activity::LoopCharacteristics > getLoopCharacteristics(const Vertex* vertex) const;  
   std::optional< BPMNOS::number > getTimestamp( const Vertex* vertex ) const;
   void setTimestamp( const Vertex* vertex, BPMNOS::number timestamp );
-  void setLocalAttributeValue( const Vertex* vertex, size_t attributeIndex, BPMNOS::number value );
+  void setLocalStatusValue( const Vertex* vertex, size_t attributeIndex, BPMNOS::number value );
   std::pair< CP::Expression, CP::Expression > getAttributeVariables( const Vertex* vertex, const Model::Attribute* attribute);
 
   virtual std::shared_ptr<Event> createEntryEvent(const SystemState* systemState, const Token* token, const Vertex* vertex); /// Method creating a choice event from CP solution

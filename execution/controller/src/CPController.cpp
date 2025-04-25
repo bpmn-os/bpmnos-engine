@@ -67,7 +67,7 @@ void CPController::setMessageDeliveryVariableValues( const Vertex* sender, const
   }
   // set message delivery time
   if ( recipient->node->represents<BPMN::ReceiveTask>() || recipient->node->represents<BPMN::MessageStartEvent>() ) {
-    setLocalAttributeValue( recipient, BPMNOS::Model::ExtensionElements::Index::Timestamp, (double)timestamp );
+    setLocalStatusValue( recipient, BPMNOS::Model::ExtensionElements::Index::Timestamp, (double)timestamp );
   }
   else {
     _solution->setVariableValue( status.at(recipient)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value, (double)timestamp );
@@ -204,7 +204,7 @@ void CPController::unvisited(const Vertex* vertex) {
 
     if ( locals.contains(vertex) ) {
       // only receive tasks and message start events have locals
-      setLocalAttributeValue( recipient, BPMNOS::Model::ExtensionElements::Index::Timestamp, 0.0 );
+      setLocalStatusValue( recipient, BPMNOS::Model::ExtensionElements::Index::Timestamp, 0.0 );
     }
 
     assert( messageContent.contains(recipient) );
@@ -216,13 +216,13 @@ void CPController::unvisited(const Vertex* vertex) {
 
   if ( vertex->node->represents<BPMNOS::Model::DecisionTask>() ) {
     auto exitVertex = (vertex->type == Vertex::Type::EXIT) ? vertex : exit(vertex);
-    setLocalAttributeValue( exitVertex, BPMNOS::Model::ExtensionElements::Index::Timestamp, 0.0 );
+    setLocalStatusValue( exitVertex, BPMNOS::Model::ExtensionElements::Index::Timestamp, 0.0 );
     // set choice values to zero
     auto  extensionElements = vertex->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
     for ( auto attribute : extensionElements->attributeRegistry.statusAttributes ) {
       if ( findChoice(extensionElements->choices, attribute) ) {
         // attribute set by choice
-        setLocalAttributeValue( exitVertex, attribute->index, 0.0 );
+        setLocalStatusValue( exitVertex, attribute->index, 0.0 );
       }
     }
   }
@@ -465,6 +465,34 @@ bool CPController::hasPendingPredecessor(const Vertex* vertex) {
   return false;
 }
 
+std::list< const CPController::Vertex* >::iterator CPController::finalizeUnvisitedTypedStartEvents(const Token* token, std::list< const Vertex* >::iterator it) {
+  auto node = (*it)->node;
+  auto parentEntry = &(*it)->parent.value().first;
+
+  auto it2 = it;
+  // find first iterator to vertex at other node
+  it = std::find_if_not(it, pendingVertices.end(), [&](auto other) { 
+    return (node == other->node && parentEntry == &other->parent.value().first );
+  });
+
+  // finalize message start events that are not visited
+  while ( it2 != pendingVertices.end() ) {
+    if ( (*it2)->type == Vertex::Type::EXIT && node == (*it2)->node && parentEntry == &(*it2)->parent.value().first ) {
+std::cerr << "unvisit: " << (*it2)->shortReference() << std::endl;
+      unvisited(entry(*it2));
+      finalizeVertexPosition(entry(*it2));
+      synchronizeData(token,entry(*it2));
+      synchronizeGlobals(token,entry(*it2));
+      unvisited(*it2);
+      it2 = finalizeVertexPosition(*it2);
+    }
+    else {
+      it2++;
+    }
+  }
+  return it;
+}
+
 std::shared_ptr<Event> CPController::dispatchEvent(const SystemState* systemState) {
 //std::cerr << "dispatchEvent" << std::endl;
   if ( terminationEvent ) {
@@ -496,6 +524,18 @@ std::shared_ptr<Event> CPController::dispatchEvent(const SystemState* systemStat
     if ( auto other = performing.at(vertex->performer()) ) {
       return other != entry(vertex);
     }
+    return false;
+  };
+
+  auto hasPendingRecipient = [&](const Vertex* vertex) -> bool {
+    assert( vertex->exit<BPMN::SendTask>() );
+    for ( Vertex& recipient : entry(vertex)->recipients ) {
+      if ( _solution->getVariableValue( position.at(&recipient) ).value() > (double)lastPosition ) {
+std::cerr << "position(" << recipient.reference() << ") = " << _solution->getVariableValue( position.at(&recipient) ).value() << " > " << lastPosition << std::endl;
+        return true;
+      }
+    }
+std::cerr << vertex->reference() << " has no pending recipient " << entry(vertex)->recipients.size() << std::endl;
     return false;
   };
   
@@ -535,7 +575,7 @@ std::shared_ptr<Event> CPController::dispatchEvent(const SystemState* systemStat
     }
     return event;
   };
-  
+    
   auto it = pendingVertices.begin();
   while ( it != pendingVertices.end() ) {
     auto vertex = *it;
@@ -575,10 +615,7 @@ std::cerr << "Event: " << vertex->reference() << std::endl;
       }
       else if ( vertex->exit<BPMN::MessageStartEvent>() ) {
         // event-subprocess is not triggered or exit of start event is infeasible
-        unvisited(entry(vertex));
-        finalizeVertexPosition(entry(vertex));
-        unvisited(vertex);
-        it = finalizeVertexPosition(vertex);
+        it = finalizeUnvisitedTypedStartEvents(request->token,it);
         continue;
       }  
       else {
@@ -588,8 +625,22 @@ std::cerr << "Postpone (infeasible): " << vertex->reference() << std::endl;
         continue;
       }
     }
+    else  if ( vertex->exit<BPMN::SendTask>() ) {
+      if ( hasPendingRecipient(vertex) ) {
+std::cerr << "Postpone (send task): " << vertex->reference() << std::endl;
+        // postpone vertex because there is no feasible way to process
+        it++;
+        continue;
+      }
+      else {
+std::cerr << "Failed (send task): " << vertex->reference() << std::endl;
+        // terminate as no solution exists
+        return std::make_shared<TerminationEvent>();            
+      }
+    }
     else if ( vertex->exit<BPMN::MessageStartEvent>() ) {
       // all predecessors are processed and there is no request
+// TODO: do i need to sync data and globals?
       unvisited(entry(vertex));
       finalizeVertexPosition(entry(vertex));
       unvisited(vertex);
@@ -601,10 +652,6 @@ std::cerr << "Postpone (infeasible): " << vertex->reference() << std::endl;
 std::cerr << "Wait: " << vertex->jsonify() << std::endl;
       // wait for request
       return nullptr;
-/*
-      it++;
-      continue;
-*/
     }
     else if ( 
       vertex->node->represents<BPMN::Activity>() &&
@@ -617,48 +664,6 @@ std::cerr << "Postpone (sequential activity): " << vertex->reference() << std::e
       continue;
     }
     else {
-      if ( vertex->exit<BPMN::SendTask>() ) {
-std::cerr << "Postpone (send task): " << vertex->reference() << std::endl;
-        // postpone vertex because there is no feasible way to process
-        it++;
-        continue;
-      }
-      else if ( vertex->entry<BPMN::MessageStartEvent>() ) {
-        auto predIt = std::find_if(
-          vertex->predecessors.begin(),
-          vertex->predecessors.end(),
-          [&](const Vertex& predecessor) {
-            return predecessor.node == vertex->node;
-          }
-        );
-        if ( predIt != vertex->predecessors.end() ) {
-          // event-subprocess can not be triggered because previous has not been triggered
-          Vertex& predecessor = *predIt;
-std::cerr << predecessor.reference() << " before " << vertex->reference() << "/" << _solution->evaluate( visit.at(&predecessor) ).value() << std::endl;
-          if ( auto evaluation = _solution->evaluate( visit.at(&predecessor) );
-            evaluation && !evaluation.value()
-          ) {
-std::cerr << "No message received" << std::endl;
-            unvisited(vertex);
-            it = finalizeVertexPosition(vertex);
-            continue;
-          }
-        }
-      }
-/*
-      else if ( vertex->exit<BPMN::MessageStartEvent>() ) {
-        if ( auto evaluation = _solution->evaluate( visit.at(vertex) );
-          evaluation && !evaluation.value()
-        ) {
-          for ( const Vertex& candidate : vertex->senders ) {
-            assert( messageFlow.contains({&candidate,entry(vertex)}) );
-            _solution->setVariableValue( messageFlow.at({&candidate,entry(vertex)}), (double)false );
-          }
-          it = finalizeVertexPosition(vertex);
-          continue;
-        }
-      }      
-*/
 std::cerr << "Wait: " << vertex->jsonify() << std::endl;
       // wait for request
       return nullptr;
@@ -674,6 +679,7 @@ std::cerr << "Wait: " << vertex->jsonify() << std::endl;
     // - choice request: we can assume that a feasible choice must always exist
     // - message delivery request: we can assume that the feasibility of a message
     // delivery is not time-dependent
+std::cerr << "Terminate: " <<  pendingVertices.front()->reference() << std::endl;   
     return std::make_shared<TerminationEvent>();  
   }
   return nullptr;
@@ -724,7 +730,7 @@ void CPController::setTimestamp( const Vertex* vertex, BPMNOS::number timestamp 
   _solution->setVariableValue( status.at(vertex)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value, (double)timestamp );
 }
 
-void CPController::setLocalAttributeValue( const Vertex* vertex, size_t attributeIndex, BPMNOS::number value ) {
+void CPController::setLocalStatusValue( const Vertex* vertex, size_t attributeIndex, BPMNOS::number value ) {
   auto& initialStatus = std::get<0>(locals.at(vertex)[0]);
   _solution->setVariableValue( initialStatus[attributeIndex].value, (double)value );
 }
