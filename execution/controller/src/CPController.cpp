@@ -1978,6 +1978,13 @@ std::cerr << vertex->reference() << std::endl;
       auto& timestamp = variables.back().value;
       model.addConstraint( visit.at(vertex).implies( timestamp >= value ) );
     }
+    else if ( vertex->entry<BPMN::TypedStartEvent>() ) {
+      // deduce variable if visited
+      variables.emplace_back(
+        model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->reference() + "}," + attribute->id, visit.at(vertex) * defined ), 
+        model.addVariable(CP::Variable::Type::REAL, "value_{" + vertex->reference() + "}," + attribute->id, visit.at(vertex) * value )
+      );
+    }
     else {
       // deduce variable
       variables.emplace_back(
