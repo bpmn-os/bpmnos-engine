@@ -89,6 +89,8 @@ public:
   std::unordered_map<const Vertex*,  std::vector< std::pair<const Vertex&, const Vertex&> > > sequentialActivities; /// Container allowing to look up vertices of sequential activities given a pointer to the entry vertex of a performer  
   std::unordered_map<const Vertex*,  std::vector< std::pair<const Vertex&, const Vertex&> > > dataModifiers; /// Container allowing to look up vertices of tasks modifying data attributes given a pointer to the entry vertex of the node owning the data
   std::vector< std::pair<const Vertex&, const Vertex&> > globalModifiers; /// Container holding vertices of tasks modifying global attributes
+  bool modifiesData(const Vertex& vertex, const Vertex& dataOwner) const; /// Method returning true of the vertex modifies a data attribute of the given owner 
+  bool modifiesGlobals(const Vertex& vertex) const; /// Method returning true of the vertex modifies a global attribute
 };
 
 } // namespace BPMNOS::Execution

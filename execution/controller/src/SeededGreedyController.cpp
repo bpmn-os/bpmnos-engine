@@ -98,7 +98,7 @@ std::shared_ptr<Event> SeededGreedyController::createChoiceEvent(const SystemSta
 }
 
 std::shared_ptr<Event> SeededGreedyController::createMessageDeliveryEvent(const SystemState* systemState, const Token* token, const Vertex* vertex) {
-std::cerr << "SeededGreedyController::createMessageDeliveryEvent" << std::endl;
+//std::cerr << "SeededGreedyController::createMessageDeliveryEvent" << std::endl;
   // instant message delivery
   setTimestamp(vertex,systemState->getTime());
   
@@ -107,17 +107,17 @@ std::cerr << "SeededGreedyController::createMessageDeliveryEvent" << std::endl;
   auto recipientHeader = messageDefinition->getRecipientHeader(token->getAttributeRegistry(),token->status,*token->data,token->globals);
   auto senderCandidates = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->messageCandidates;
   std::list< std::shared_ptr<const Message> > candidates;
-std::cerr << "Messages: " << !messages.empty() << std::endl;
-std::cerr << "senderCandidate: " << senderCandidates.front()->id << std::endl;
+//std::cerr << "Messages: " << !messages.empty() << std::endl;
+//std::cerr << "senderCandidate: " << senderCandidates.front()->id << std::endl;
   // determine candidate messages
   for ( auto& [ message_ptr ] : messages ) {
-std::cerr << "Message: " << message_ptr.lock()->jsonify() << "/" << message_ptr.lock()->origin->id << "/" << message_ptr.lock()->matches(recipientHeader) << std::endl;
+//std::cerr << "Message: " << message_ptr.lock()->jsonify() << "/" << message_ptr.lock()->origin->id << "/" << message_ptr.lock()->matches(recipientHeader) << std::endl;
     if( auto message = message_ptr.lock();
       message &&
       std::ranges::contains(senderCandidates, message->origin) &&
       message->matches(recipientHeader)
     ) {
-std::cerr << "Candidate: " << message->jsonify() << std::endl;
+//std::cerr << "Candidate: " << message->jsonify() << std::endl;
       candidates.emplace_back( message );
     }
   }
@@ -139,7 +139,7 @@ std::cerr << "Candidate: " << message->jsonify() << std::endl;
     // no message can be delivered
     if ( token->node->represents<BPMN::MessageStartEvent>() ) {
       assert( vertex->exit<BPMN::MessageStartEvent>() );
-std::cerr << "MessageStartEvent is not triggered: " << vertex->shortReference() << std::endl;
+//std::cerr << "MessageStartEvent is not triggered: " << vertex->shortReference() << std::endl;
     }    
     return nullptr;
 //    return std::make_shared<ErrorEvent>(token);

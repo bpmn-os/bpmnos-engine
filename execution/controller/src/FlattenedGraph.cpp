@@ -409,7 +409,7 @@ void FlattenedGraph::createLoopVertices(BPMNOS::number rootId, BPMNOS::number in
   // lambda returning parameter value known at time zero
   auto getValue = [&](BPMNOS::Model::Parameter* parameter) -> std::optional<BPMNOS::number> {
     if ( parameter->expression ) {
-std::cerr << parameter->expression->expression << std::endl;
+//std::cerr << parameter->expression->expression << std::endl;
       // collect variable values
       std::vector< double > variableValues;
       for ( auto attribute : parameter->expression->variables ) {
@@ -418,7 +418,7 @@ std::cerr << parameter->expression->expression << std::endl;
         }
         auto value = scenario->getKnownValue(rootId, attribute, scenario->getInception() );
         if ( !value.has_value() ) {
-std::cerr << "unknown value of '" << attribute->id << "'" << std::endl;
+//std::cerr << "unknown value of '" << attribute->id << "'" << std::endl;
           // return nullopt because required attribute value is not given
           return std::nullopt;        
         }
@@ -434,7 +434,7 @@ std::cerr << "unknown value of '" << attribute->id << "'" << std::endl;
         collectionValues.push_back( {} );
         auto collection = scenario->getKnownValue(rootId, attribute, scenario->getInception() );
         if ( !collection.has_value() ) {
-std::cerr << "unknown collection value of '" << attribute->id << "'" << std::endl;
+//std::cerr << "unknown collection value of '" << attribute->id << "'" << std::endl;
           // return nullopt because required collection is not given
           return std::nullopt;
         }
@@ -443,7 +443,7 @@ std::cerr << "unknown collection value of '" << attribute->id << "'" << std::end
         }
       }
 
-std::cerr << parameter->expression->expression << " = " << number(parameter->expression->compiled.evaluate(variableValues,collectionValues)) << std::endl;
+//std::cerr << parameter->expression->expression << " = " << number(parameter->expression->compiled.evaluate(variableValues,collectionValues)) << std::endl;
       return number(parameter->expression->compiled.evaluate(variableValues,collectionValues));      
     }
 
@@ -641,5 +641,19 @@ void FlattenedGraph::flatten(BPMNOS::number instanceId, const BPMN::Scope* scope
       throw std::runtime_error("FlattenedGraph: Compensation activity '" + activity->id + "' is not yet supported");
     }
   } 
+}
+
+bool FlattenedGraph::modifiesData(const Vertex& vertex, const Vertex& dataOwner) const {
+  for ( auto& [entry,exit] : dataModifiers.at( &dataOwner ) ) {
+    if ( &vertex == &entry || &vertex == &exit ) return true; 
+  }
+  return false;
+}
+
+bool FlattenedGraph::modifiesGlobals(const Vertex& vertex) const {
+  for ( auto& [entry,exit] : globalModifiers ) {
+    if ( &vertex == &entry || &vertex == &exit ) return true; 
+  }
+  return false;
 }
 

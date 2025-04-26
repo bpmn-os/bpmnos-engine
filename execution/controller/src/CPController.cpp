@@ -122,14 +122,13 @@ std::optional< BPMN::Activity::LoopCharacteristics> CPController::getLoopCharact
   return activity->loopCharacteristics;
 }
 
-
 std::list< const CPController::Vertex* >::iterator CPController::finalizeVertexPosition(const Vertex* vertex) {
 //  assert( std::ranges::contains(pendingVertices,vertex) );
-//std::cerr << "Remove " << vertex->reference() << " from " << pendingVertices.size() << std::endl;
+//std::cerr << "finalizeVertexPosition " << vertex->reference() << std::endl;
   auto it = std::find(pendingVertices.begin(), pendingVertices.end(), vertex);
   if( it != pendingVertices.end() ) {
     lastPosition++;
-//std::cerr << "Removed." << std::endl;
+//std::cerr << "Removed " << vertex->reference() << " from " << pendingVertices.size() << std::endl;
     it = pendingVertices.erase(it);
     processedVertices.push_back(vertex);
     auto vertexPosition = _solution->getVariableValue( position.at(vertex) ).value();
@@ -146,7 +145,7 @@ std::list< const CPController::Vertex* >::iterator CPController::finalizeVertexP
       // change final position of vertex
       _solution->setVariableValue( position.at(vertex), (double)lastPosition);
     }
-std::cerr << std::endl << "position(" << vertex->reference() << ") = " << lastPosition << std::endl;
+std::cerr << "position(" << vertex->reference() << ") = " << lastPosition << std::endl;
 //std::cerr << "visit(" << vertex->shortReference() << ") = " << _solution->evaluate( visit.at(vertex) ).value_or(-1) << std::endl;
   }
   return it;
@@ -154,11 +153,10 @@ std::cerr << std::endl << "position(" << vertex->reference() << ") = " << lastPo
 };
 
 void CPController::finalizePredecessorPositions(const Vertex* vertex) {
-std::cerr << "finalizePredecessorPositions: " << vertex->reference() << std::endl;
+//std::cerr << "finalizePredecessorPositions: " << vertex->reference() << std::endl;
   auto it = pendingVertices.begin();
   assert( std::ranges::contains(pendingVertices,vertex) );
-  while ( *it != vertex ) {
-    assert( it != pendingVertices.end() );
+  while ( it != pendingVertices.end() && *it != vertex ) {
     auto other = *it;
     if ( !hasPendingPredecessor(other) ) {
       if ( flattenedGraph.dummies.contains(other) ) {
@@ -169,64 +167,178 @@ std::cerr << "finalizePredecessorPositions: " << vertex->reference() << std::end
       auto evaluation = _solution->evaluate( visit.at( other ) );
       if ( evaluation.has_value() && !evaluation.value() 
       ) {
-        unvisited(other);
-        it = finalizeVertexPosition( other ); 
+//std::cerr << "other: " << other->reference() << std::endl;
+        it = finalizeUnvisited( other ); 
         continue;
       }
     }
     it++;
   }
-//std::cerr << "finalizedPredecessorPositions" << std::endl;
+//std::cerr << "finalizedPredecessorPositions" << vertex->reference() << std::endl;
 }
 
-void CPController::unvisited(const Vertex* vertex) {
-//std::cerr << "unvisited " << vertex->reference() << std::endl;
-  assert( status.contains(vertex) );
-  auto& timestamp = status.at(vertex)[BPMNOS::Model::ExtensionElements::Index::Timestamp];
-  _solution->setVariableValue( timestamp.value, 0.0 );
-
-  if ( vertex->node->represents<BPMN::MessageThrowEvent>() ) {
-    auto sender = (vertex->type == Vertex::Type::ENTRY) ? vertex : entry(vertex);
-    for ( const Vertex& candidate : sender->recipients ) {
-      assert( candidate.exit<BPMN::MessageCatchEvent>() );
-      assert( messageFlow.contains({sender,&candidate}) );
-      _solution->setVariableValue( messageFlow.at({sender,&candidate}), (double)false );
+void CPController::finalizeUnvisitedChildren(const Vertex* vertex) {
+  assert( vertex == entry(vertex) );
+  std::list<const Vertex*> successors;
+  for ( Vertex& successor : vertex->successors ) {
+    if ( &successor == entry(&successor) ) {
+      successors.push_back(&successor);
     }
   }
+  auto it = successors.begin();
+  while ( it != successors.end() ) {
+    assert( std::ranges::contains(pendingVertices,*it) );
+    if ( !hasPendingPredecessor(*it) ) {
+      finalizeUnvisited( *it );
+      successors.erase(it);
+      it = successors.begin();
+    }
+    else {
+      it++;
+    }
+  }
+}
+
+std::list< const CPController::Vertex* >::iterator CPController::finalizeUnvisited(const Vertex* vertex) {
+  assert( vertex == entry(vertex) );
   
+  auto it = finalizeVertexPosition(vertex);
+  unvisitedEntry(vertex);
+  
+  if ( 
+    vertex->node->represents<BPMN::Task>() &&
+    !(vertex->node->represents<BPMN::TypedStartEvent>() || vertex->node->represents<BPMN::ReceiveTask>() || vertex->node->represents<BPMNOS::Model::DecisionTask>())
+  ) {
+    // if visited, operators may modify data and globals upon entry
+    // if unvisited, data and globals are not changed
+    for ( size_t i = 0; i < vertex->dataOwners.size(); i++ ) {
+      Vertex& dataOwner = vertex->dataOwners[i];
+      if ( flattenedGraph.modifiesData( *vertex, dataOwner ) ) {
+        auto index = (size_t)_solution->evaluate( dataIndex.at(vertex)[i] ).value();
+
+        auto extensionElements = dataOwner.node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+        assert( extensionElements );
+        for ( auto& attribute : extensionElements->data ) {
+          auto defined = _solution->evaluate( data.at({&dataOwner,attribute.get()}).defined[index] ).value();
+          auto value = _solution->evaluate( data.at({&dataOwner,attribute.get()}).value[index] ).value();
+          _solution->setVariableValue( data.at({&dataOwner,attribute.get()}).defined[index+1], defined );
+          _solution->setVariableValue( data.at({&dataOwner,attribute.get()}).value[index+1], value );
+        }
+      }
+    }
+    if ( flattenedGraph.modifiesGlobals( *vertex ) ) {
+      auto index = (size_t)_solution->evaluate( globalIndex.at(vertex) ).value();
+      for ( size_t attributeIndex = 0; attributeIndex < globals.size(); attributeIndex++ ) {
+        auto defined = _solution->evaluate( globals.at(attributeIndex).defined[index] ).value();
+        auto value = _solution->evaluate( globals.at(attributeIndex).value[index] ).value();
+        _solution->setVariableValue( globals.at(attributeIndex).defined[index+1], defined );
+        _solution->setVariableValue( globals.at(attributeIndex).value[index+1], value );
+      }
+    }
+  }
+
+  auto finalizeExit = [&]() {
+    if (vertex->node->represents<BPMN::Scope>()) {
+      finalizeUnvisitedChildren(entry(vertex));
+    }
+    finalizeVertexPosition(exit(vertex));
+  };
+
+  if ( it == pendingVertices.begin() ) { 
+    finalizeExit();
+    it = pendingVertices.begin(); // may have changed
+  }
+  else {
+    it--;
+    finalizeExit();
+    it++;
+  }
+
+
+  unvisitedExit(exit(vertex));
+
+  if ( vertex->node->represents<BPMN::TypedStartEvent>() || vertex->node->represents<BPMN::ReceiveTask>() || vertex->node->represents<BPMNOS::Model::DecisionTask>() ) {
+    // if visited, operators may modify data and globals upon exit
+    // if unvisited, data and globals are not changed
+    for ( size_t i = 0; i < vertex->dataOwners.size(); i++ ) {
+      Vertex& dataOwner = vertex->dataOwners[i];
+      if ( flattenedGraph.modifiesData( *vertex, dataOwner ) ) {
+        auto index = (size_t)_solution->evaluate( dataIndex.at(exit(vertex))[i] ).value();
+
+        auto extensionElements = dataOwner.node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+        assert( extensionElements );
+        for ( auto& attribute : extensionElements->data ) {
+          auto defined = _solution->evaluate( data.at({&dataOwner,attribute.get()}).defined[index-1] ).value();
+          auto value = _solution->evaluate( data.at({&dataOwner,attribute.get()}).value[index-1] ).value();
+          _solution->setVariableValue( data.at({&dataOwner,attribute.get()}).defined[index], defined );
+          _solution->setVariableValue( data.at({&dataOwner,attribute.get()}).value[index], value );
+        }
+      }
+    }
+    if ( flattenedGraph.modifiesGlobals( *vertex ) ) {
+      auto index = (size_t)_solution->evaluate( globalIndex.at(exit(vertex)) ).value();
+      for ( size_t attributeIndex = 0; attributeIndex < globals.size(); attributeIndex++ ) {
+        auto defined = _solution->evaluate( globals.at(attributeIndex).defined[index-1] ).value();
+        auto value = _solution->evaluate( globals.at(attributeIndex).value[index-1] ).value();
+        _solution->setVariableValue( globals.at(attributeIndex).defined[index], defined );
+        _solution->setVariableValue( globals.at(attributeIndex).value[index], value );
+      }
+    }
+  }
+  return it;
+}
+
+void CPController::unvisitedEntry(const Vertex* vertex) {
+//std::cerr << "unvisited " << vertex->reference() << std::endl;
+  assert( status.contains(vertex) );
+
+  _solution->setVariableValue( status.at(vertex)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value, 0.0 );
+
+  if ( vertex->node->represents<BPMN::MessageThrowEvent>() ) {
+    for ( const Vertex& candidate : vertex->recipients ) {
+      assert( candidate.exit<BPMN::MessageCatchEvent>() );
+      assert( messageFlow.contains({vertex,&candidate}) );
+      _solution->setVariableValue( messageFlow.at({vertex,&candidate}), (double)false );
+    }
+  }
+}
+
+void CPController::unvisitedExit(const Vertex* vertex) {
+//std::cerr << "unvisited " << vertex->reference() << std::endl;
+  assert( status.contains(vertex) );
+
+  _solution->setVariableValue( status.at(vertex)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value, 0.0 );
+
   if ( vertex->node->represents<BPMN::MessageCatchEvent>() ) {
-    auto recipient = (vertex->type == Vertex::Type::EXIT) ? vertex : exit(vertex);
-    for ( const Vertex& candidate : recipient->senders ) {
+    for ( const Vertex& candidate : vertex->senders ) {
       assert( candidate.entry<BPMN::MessageThrowEvent>() );
-      assert( messageFlow.contains({&candidate,recipient}) );
-      _solution->setVariableValue( messageFlow.at({&candidate,recipient}), (double)false );
+      assert( messageFlow.contains({&candidate,vertex}) );
+      _solution->setVariableValue( messageFlow.at({&candidate,vertex}), (double)false );
     }
 
     if ( locals.contains(vertex) ) {
       // only receive tasks and message start events have locals
-      setLocalStatusValue( recipient, BPMNOS::Model::ExtensionElements::Index::Timestamp, 0.0 );
+      setLocalStatusValue( vertex, BPMNOS::Model::ExtensionElements::Index::Timestamp, 0.0 );
     }
 
-    assert( messageContent.contains(recipient) );
-    for ( auto& [_, contentVariables] : messageContent.at(recipient) ) {
+    assert( messageContent.contains(vertex) );
+    for ( auto& [_, contentVariables] : messageContent.at(vertex) ) {
       _solution->setVariableValue( contentVariables.defined, (double)false );
       _solution->setVariableValue( contentVariables.value, 0.0 );
     }
   }
 
   if ( vertex->node->represents<BPMNOS::Model::DecisionTask>() ) {
-    auto exitVertex = (vertex->type == Vertex::Type::EXIT) ? vertex : exit(vertex);
-    setLocalStatusValue( exitVertex, BPMNOS::Model::ExtensionElements::Index::Timestamp, 0.0 );
+    setLocalStatusValue( vertex, BPMNOS::Model::ExtensionElements::Index::Timestamp, 0.0 );
     // set choice values to zero
     auto  extensionElements = vertex->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
     for ( auto attribute : extensionElements->attributeRegistry.statusAttributes ) {
       if ( findChoice(extensionElements->choices, attribute) ) {
         // attribute set by choice
-        setLocalStatusValue( exitVertex, attribute->index, 0.0 );
+        setLocalStatusValue( vertex, attribute->index, 0.0 );
       }
     }
   }
-
 }
 
 void CPController::synchronizeSolution(const Token* token) {
@@ -285,6 +397,9 @@ void CPController::synchronizeSolution(const Token* token) {
         for ( auto& [ _, target ] : gateway.outflows ) {
           _solution->setVariableValue( tokenFlow.at({&gateway,&target}), ( &target == entryVertex ) );
 //std::cerr << "Token flow " << gateway.reference() << " to " << target.reference() << " = " << ( &target == entryVertex ) << std::endl;
+          if ( &target != entryVertex ) {
+            finalizeUnvisited( &target );
+          }
         } 
       }
       finalizePredecessorPositions(vertex);
@@ -346,10 +461,10 @@ void CPController::synchronizeStatus(const Token* token, const CPController::Ver
       ) {
 
 std::cerr << "defined: " << (evaluation.defined() ? "true" : "false") << ", value: " << evaluation.value() << std::endl;
-std::cerr << statusVariables[i].defined.stringify() << std::endl;
-std::cerr << statusVariables[i].value.stringify() << std::endl;
-std::cerr << "Model: " << model.stringify() << std::endl;
-std::cerr << "Solution: " <<  _solution->stringify() << std::endl;
+//std::cerr << statusVariables[i].defined.stringify() << std::endl;
+//std::cerr << statusVariables[i].value.stringify() << std::endl;
+//std::cerr << "Model: " << model.stringify() << std::endl;
+//std::cerr << "Solution: " <<  _solution->stringify() << std::endl;
         throw std::logic_error("CPController: '" + _solution->stringify(statusVariables[i].defined) + "' or '" + _solution->stringify(statusVariables[i].value) + "' inconsistent with " + token->jsonify().dump() );
       }
     }
@@ -454,18 +569,20 @@ bool CPController::hasPendingPredecessor(const Vertex* vertex) {
       continue;
     }
     if ( !std::ranges::contains(processedVertices,&predecessor) ) {
+//std::cerr << predecessor.reference() << " precedes " << vertex->reference() << std::endl;
       return true;
     }
   }
   for ( Vertex& predecessor : vertex->predecessors ) {
     if ( !std::ranges::contains(processedVertices,&predecessor) ) {
+//std::cerr << predecessor.reference() << " precedes " << vertex->reference() << std::endl;
       return true;
     }
   }
   return false;
 }
 
-std::list< const CPController::Vertex* >::iterator CPController::finalizeUnvisitedTypedStartEvents(const Token* token, std::list< const Vertex* >::iterator it) {
+std::list< const CPController::Vertex* >::iterator CPController::finalizeUnvisitedTypedStartEvents(std::list< const Vertex* >::iterator it) {
   auto node = (*it)->node;
   auto parentEntry = &(*it)->parent.value().first;
 
@@ -478,13 +595,8 @@ std::list< const CPController::Vertex* >::iterator CPController::finalizeUnvisit
   // finalize message start events that are not visited
   while ( it2 != pendingVertices.end() ) {
     if ( (*it2)->type == Vertex::Type::EXIT && node == (*it2)->node && parentEntry == &(*it2)->parent.value().first ) {
-std::cerr << "unvisit: " << (*it2)->shortReference() << std::endl;
-      unvisited(entry(*it2));
-      finalizeVertexPosition(entry(*it2));
-      synchronizeData(token,entry(*it2));
-      synchronizeGlobals(token,entry(*it2));
-      unvisited(*it2);
-      it2 = finalizeVertexPosition(*it2);
+//std::cerr << "unvisit: " << (*it2)->shortReference() << std::endl;
+      it2 = finalizeUnvisited(entry(*it2));
     }
     else {
       it2++;
@@ -531,7 +643,7 @@ std::shared_ptr<Event> CPController::dispatchEvent(const SystemState* systemStat
     assert( vertex->exit<BPMN::SendTask>() );
     for ( Vertex& recipient : entry(vertex)->recipients ) {
       if ( _solution->getVariableValue( position.at(&recipient) ).value() > (double)lastPosition ) {
-std::cerr << "position(" << recipient.reference() << ") = " << _solution->getVariableValue( position.at(&recipient) ).value() << " > " << lastPosition << std::endl;
+//std::cerr << "recipient position(" << recipient.reference() << ") = " << _solution->getVariableValue( position.at(&recipient) ).value() << " > " << lastPosition << std::endl;
         return true;
       }
     }
@@ -581,7 +693,7 @@ std::cerr << vertex->reference() << " has no pending recipient " << entry(vertex
     auto vertex = *it;
 //std::cerr << vertex->reference() << std::endl;
     if ( hasPendingPredecessor(vertex) ) {
-std::cerr << "Postpone (pending predecessor): " << vertex->reference() << std::endl;
+//std::cerr << "Postpone (pending predecessor): " << vertex->reference() << std::endl;
       // postpone vertex because a predecessor has not yet been processed
       it++;
       continue;
@@ -598,8 +710,8 @@ std::cerr << "Postpone (pending predecessor): " << vertex->reference() << std::e
     ) {
 //std::cerr << "Skip: " << vertex->reference() << std::endl;
       // vertex is dummy or not visited
-      unvisited(vertex);
-      it = finalizeVertexPosition(vertex);
+//      it = finalizeUnvisited(entry(vertex));
+      it = finalizeUnvisited(vertex);
       continue;
     }
     else if ( vertex->entry<BPMN::TypedStartEvent>() ) {
@@ -608,18 +720,18 @@ std::cerr << "Postpone (pending predecessor): " << vertex->reference() << std::e
       continue;
     }
     else if ( auto request = hasRequest(vertex) ) {
-std::cerr << "Request: " << request->token->jsonify() << std::endl;
+//std::cerr << "Request: " << request->token->jsonify() << std::endl;
       if ( auto event = createEvent(vertex,request) ) {
-std::cerr << "Event: " << vertex->reference() << std::endl;
+//std::cerr << "Event: " << vertex->reference() << std::endl;
         return event;
       }
       else if ( vertex->exit<BPMN::MessageStartEvent>() ) {
         // event-subprocess is not triggered or exit of start event is infeasible
-        it = finalizeUnvisitedTypedStartEvents(request->token,it);
+        it = finalizeUnvisitedTypedStartEvents(it);
         continue;
       }  
       else {
-std::cerr << "Postpone (infeasible): " << vertex->reference() << std::endl;
+//std::cerr << "Postpone (infeasible): " << vertex->reference() << std::endl;
         // postpone vertex because there is no feasible way to process
         it++;
         continue;
@@ -627,29 +739,25 @@ std::cerr << "Postpone (infeasible): " << vertex->reference() << std::endl;
     }
     else  if ( vertex->exit<BPMN::SendTask>() ) {
       if ( hasPendingRecipient(vertex) ) {
-std::cerr << "Postpone (send task): " << vertex->reference() << std::endl;
+//std::cerr << "Postpone (send task): " << vertex->reference() << std::endl;
         // postpone vertex because there is no feasible way to process
         it++;
         continue;
       }
       else {
-std::cerr << "Failed (send task): " << vertex->reference() << std::endl;
+//std::cerr << "Failed (send task): " << vertex->reference() << std::endl;
         // terminate as no solution exists
         return std::make_shared<TerminationEvent>();            
       }
     }
     else if ( vertex->exit<BPMN::MessageStartEvent>() ) {
       // all predecessors are processed and there is no request
-// TODO: do i need to sync data and globals?
-      unvisited(entry(vertex));
-      finalizeVertexPosition(entry(vertex));
-      unvisited(vertex);
-      it = finalizeVertexPosition(vertex);
+      it = finalizeUnvisited(vertex);
       continue;
     }
     else if ( vertex->exit<BPMN::TypedStartEvent>() ) {
       // wait for trigger
-std::cerr << "Wait: " << vertex->jsonify() << std::endl;
+//std::cerr << "Wait: " << vertex->jsonify() << std::endl;
       // wait for request
       return nullptr;
     }
@@ -658,13 +766,13 @@ std::cerr << "Wait: " << vertex->jsonify() << std::endl;
       vertex->node->as<BPMN::Activity>()->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() &&
       waitingForSequentialPerformer( vertex ) 
     ) {
-std::cerr << "Postpone (sequential activity): " << vertex->reference() << std::endl;
+//std::cerr << "Postpone (sequential activity): " << vertex->reference() << std::endl;
       // ignore vertex at sequential activity because performer is busy with other activity
       it++;
       continue;
     }
     else {
-std::cerr << "Wait: " << vertex->jsonify() << std::endl;
+//std::cerr << "Wait: " << vertex->jsonify() << std::endl;
       // wait for request
       return nullptr;
     }
@@ -679,7 +787,7 @@ std::cerr << "Wait: " << vertex->jsonify() << std::endl;
     // - choice request: we can assume that a feasible choice must always exist
     // - message delivery request: we can assume that the feasibility of a message
     // delivery is not time-dependent
-std::cerr << "Terminate: " <<  pendingVertices.front()->reference() << std::endl;   
+//std::cerr << "Terminate: " <<  pendingVertices.front()->reference() << std::endl;   
     return std::make_shared<TerminationEvent>();  
   }
   return nullptr;
@@ -776,11 +884,11 @@ std::shared_ptr<Event> CPController::createChoiceEvent(const SystemState* system
 
 std::shared_ptr<Event> CPController::createMessageDeliveryEvent(const SystemState* systemState, const Token* token, const Vertex* vertex) {
   auto timestamp = getTimestamp(vertex);
-std::cerr << timestamp.has_value() << std::endl;
+//std::cerr << timestamp.has_value() << std::endl;
   if ( !timestamp.has_value() || systemState->getTime() < timestamp.value() ) {
     return nullptr;
   }
-std::cerr << timestamp.value() << std::endl;
+//std::cerr << timestamp.value() << std::endl;
   auto& solution = getSolution();
   for ( auto& [participants,variable] : messageFlow ) {
     auto variableValue = solution.getVariableValue(variable);
@@ -840,38 +948,38 @@ void CPController::createCP() {
     position.emplace(vertices[i], sequence.variables[i]);
   } 
 
-std::cerr << "createMessageFlowVariables" << std::endl;
+//std::cerr << "createMessageFlowVariables" << std::endl;
   createMessageFlowVariables();
 
-std::cerr << "createGlobalVariables" << std::endl;
+//std::cerr << "createGlobalVariables" << std::endl;
   createGlobalVariables();
 
-std::cerr << "createVertexVariables:" << flattenedGraph.vertices.size() << std::endl;
+//std::cerr << "createVertexVariables:" << flattenedGraph.vertices.size() << std::endl;
   // create vertex and message variables
   for ( auto vertex : vertices ) {
     createVertexVariables(vertex);
   }
 
-std::cerr << "constrainGlobalVariables" << std::endl;
+//std::cerr << "constrainGlobalVariables" << std::endl;
   constrainGlobalVariables();
 
   for ( auto vertex : vertices ) {
     if ( vertex->entry<BPMN::Scope>() ) {
-std::cerr << "constrainDataVariables " << vertex->reference() << std::endl;
+//std::cerr << "constrainDataVariables " << vertex->reference() << std::endl;
       constrainDataVariables(vertex);
     }
     if ( vertex->exit<BPMN::EventBasedGateway>() ) {
-std::cerr << "constrainEventBasedGateway " << vertex->reference() << std::endl;
+//std::cerr << "constrainEventBasedGateway " << vertex->reference() << std::endl;
       constrainEventBasedGateway(vertex);
     }
   }  
 
-std::cerr << "constrainSequentialActivities" << std::endl;
+//std::cerr << "constrainSequentialActivities" << std::endl;
   constrainSequentialActivities();
   
-std::cerr << "createMessagingConstraints" << std::endl;
+//std::cerr << "createMessagingConstraints" << std::endl;
   createMessagingConstraints();
-std::cerr << "Done" << std::endl;
+//std::cerr << "Done" << std::endl;
 //std::cerr << model.stringify() << std::endl;  
 }
 
@@ -1350,7 +1458,7 @@ void CPController::addAttributes(const Vertex* vertex, std::vector<AttributeVari
         );
       }
       else if ( attribute == loopIndex ) {
-std::cerr << ( loopIndex ? loopIndex->id : "XXX") << " - Loop index: " << getLoopIndex(vertex).stringify() << std::endl;
+//std::cerr << ( loopIndex ? loopIndex->id : "XXX") << " - Loop index: " << getLoopIndex(vertex).stringify() << std::endl;
         // set or increment loop index (initial value is assumed to be undefined, and therefore has a value of zero)
         variables.emplace_back(
           model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->reference() + "}," + attribute->id, visit.at(vertex) ), 
@@ -1379,7 +1487,7 @@ std::cerr << ( loopIndex ? loopIndex->id : "XXX") << " - Loop index: " << getLoo
 }
 
 void CPController::createEntryStatus(const Vertex* vertex) {
-std::cerr << "createEntryStatus: " << vertex->reference() << std::endl;
+//std::cerr << "createEntryStatus: " << vertex->reference() << std::endl;
   status.emplace( vertex, std::vector<AttributeVariables>() );  
   auto& variables = status.at(vertex);
   auto loopCharacteristics = getLoopCharacteristics(vertex);
@@ -1470,7 +1578,7 @@ std::cerr << "createEntryStatus: " << vertex->reference() << std::endl;
 }
 
 void CPController::createExitStatus(const Vertex* vertex) {
-std::cerr << "createExitStatus" << std::endl;
+//std::cerr << "createExitStatus" << std::endl;
   auto extensionElements = vertex->node->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
 
   if ( auto loopCharacteristics = getLoopCharacteristics(vertex);
@@ -1526,7 +1634,7 @@ std::cerr << "createExitStatus" << std::endl;
   // no scope or empty scope
 //  assert( !vertex->exit<BPMN::Scope>() || vertex->inflows.size() == 1 );
 
-std::cerr << vertex->reference() << std::endl;  
+//std::cerr << vertex->reference() << std::endl;  
   const Vertex* entryVertex = entry(vertex);
   if ( vertex->node->represents<BPMN::TimerCatchEvent>() ) {
 //std::cerr << "Timer: " << vertex->reference() << std::endl;
@@ -1602,7 +1710,7 @@ std::cerr << vertex->reference() << std::endl;
     status.emplace( vertex, std::move(variables) );
     return;
   }
-std::cerr << "JOJO3" << std::endl;  
+
   // copy entry status references
   assert( status.contains(entryVertex) );
   std::vector<AttributeVariables> currentStatus = status.at(entryVertex);
@@ -1660,10 +1768,8 @@ std::cerr << "JOJO3" << std::endl;
       }      
     }
     status.emplace( vertex, std::move(variables) );
-std::cerr << "JOJO4" << std::endl;  
     return;
   }
-std::cerr << "JOJO5" << std::endl;  
   
   if ( vertex->node->represents<BPMN::MessageStartEvent>() ) {
     // add entry restrictions of event-subprocess
@@ -1740,13 +1846,13 @@ CP::Expression CPController::createOperatorExpression( const Model::Expression& 
 
 
 const BPMNOS::Model::Choice* CPController::findChoice(const std::vector< std::unique_ptr<BPMNOS::Model::Choice> >& choices, const BPMNOS::Model::Attribute* attribute) const {
-std::cerr << "choices: " << choices.size() << "/" << attribute->id << std::endl;
+//std::cerr << "choices: " << choices.size() << "/" << attribute->id << std::endl;
   if ( choices.empty() ) return nullptr;
   auto it = std::find_if(
     choices.begin(),
     choices.end(),
     [&](const auto& choice) {
-std::cerr << "check: " << choice->attribute->id << std::endl;
+//std::cerr << "check: " << choice->attribute->id << std::endl;
       return choice->attribute == attribute;
     }
   ); 
@@ -1974,7 +2080,7 @@ void CPController::createLocalAttributeVariables(const Vertex* vertex) {
 }
 
 std::vector<CPController::AttributeVariables> CPController::createUniquelyDeducedEntryStatus(const Vertex* vertex, const BPMNOS::Model::AttributeRegistry& attributeRegistry, std::vector<AttributeVariables>& inheritedStatus) {
-std::cerr << vertex->reference() << std::endl;
+//std::cerr << vertex->reference() << std::endl;
   assert( vertex->type == Vertex::Type::ENTRY );
   assert( !vertex->node->represents<BPMN::Process>() );
 
@@ -2143,7 +2249,7 @@ CP::Expression CPController::getLoopIndex(const Vertex* vertex) {
 }
 
 void CPController::createLoopEntryStatus(const Vertex* vertex) {
-std::cerr << "createLoopEntryStatus " << vertex->reference() << std::endl;
+//std::cerr << "createLoopEntryStatus " << vertex->reference() << std::endl;
   assert( vertex->inflows.size() == 1 );
   assert( status.contains(vertex) );
   auto& variables = status.at(vertex);
@@ -2163,7 +2269,7 @@ std::cerr << "createLoopEntryStatus " << vertex->reference() << std::endl;
   for ( size_t index = 0; index < priorStatus.size(); index++ ) {
     auto attribute = extensionElements->attributeRegistry.statusAttributes[index];
     assert( variables.size() == attribute->index );
-std::cerr << attribute->id << std::endl;
+//std::cerr << attribute->id << std::endl;
     auto& [ defined, value ] = priorStatus.at(attribute->index);
     if ( vertex->node->represents<BPMN::Activity>() && attribute->index == BPMNOS::Model::ExtensionElements::Index::Timestamp ) {
       // entry of activity may be later than the deduced timestamp
@@ -2286,40 +2392,40 @@ void CPController::initializeVertices(const FlattenedGraph::Vertex* initialVerte
 }
 
 void CPController::createVertexVariables(const FlattenedGraph::Vertex* vertex) {
-std::cerr << "createVertexVariables: " << vertex->reference() << std::endl;
+//std::cerr << "createVertexVariables: " << vertex->reference() << std::endl;
   // make vertex retrievable from token information
 //  vertexMap[std::make_tuple(vertex->node,vertex->instanceId,vertex->type)] = vertex; // TODO: remove
   
-std::cerr << "createGlobalIndexVariable" << std::endl;
+//std::cerr << "createGlobalIndexVariable" << std::endl;
   createGlobalIndexVariable(vertex);
-std::cerr << "createDataIndexVariables" << std::endl;
+//std::cerr << "createDataIndexVariables" << std::endl;
   createDataIndexVariables(vertex);
   
   if ( vertex->type == Vertex::Type::ENTRY ) {
-std::cerr << "createEntryVariables" << std::endl;
+//std::cerr << "createEntryVariables" << std::endl;
     createEntryVariables(vertex);
   }
 
-std::cerr << "createDataVariables: " << vertex->reference() << std::endl;
+//std::cerr << "createDataVariables: " << vertex->reference() << std::endl;
   if ( vertex->entry<BPMN::Scope>() ) {
     createDataVariables(vertex);
   }
 
   if ( vertex->exit<BPMN::MessageCatchEvent>() ) {
-std::cerr << "createMessageContent" << std::endl;
+//std::cerr << "createMessageContent" << std::endl;
     createMessageContent(vertex);
   }
 
-std::cerr << "createStatus" << std::endl;
+//std::cerr << "createStatus" << std::endl;
   createStatus(vertex);
 
   if ( vertex->entry<BPMN::MessageThrowEvent>() || vertex->entry<BPMN::MessageCatchEvent>() ) {
-std::cerr << "createMessageHeader" << std::endl;
+//std::cerr << "createMessageHeader" << std::endl;
     createMessageHeader(vertex);
   }
   
   if ( vertex->entry<BPMN::MessageThrowEvent>() ) {
-std::cerr << "createMessageContent" << std::endl;
+//std::cerr << "createMessageContent" << std::endl;
     createMessageContent(vertex);
   }
 
@@ -2327,13 +2433,13 @@ std::cerr << "createMessageContent" << std::endl;
     createExitVariables(vertex);
   }
     
-std::cerr << "createSequenceConstraints" << std::endl;
+//std::cerr << "createSequenceConstraints" << std::endl;
   createSequenceConstraints(vertex);
 
-std::cerr << "createRestrictions" << std::endl;
+//std::cerr << "createRestrictions" << std::endl;
   createRestrictions(vertex);
 
-std::cerr << "Done(createVertexVariables)" << std::endl;
+//std::cerr << "Done(createVertexVariables)" << std::endl;
 }
 
 std::pair< CP::Expression, CP::Expression > CPController::getAttributeVariables( const Vertex* vertex, const Model::Attribute* attribute) {
@@ -2387,7 +2493,7 @@ std::pair< CP::Expression, CP::Expression > CPController::getAttributeVariables(
 }
 
 void CPController::createEntryVariables(const FlattenedGraph::Vertex* vertex) {
-std::cerr << "createEntryVariables" << vertex->reference() << std::endl;      
+//std::cerr << "createEntryVariables" << vertex->reference() << std::endl;      
   // visit variable
   if ( vertex->node->represents<BPMN::UntypedStartEvent>() ) {
     assert( vertex->inflows.size() == 1 );
@@ -2526,7 +2632,7 @@ std::cerr << "AdHoc child: " << vertex->jsonify().dump() << std::endl;
 */
     else {
       assert( vertex->inflows.empty() );
-std::cerr << vertex->jsonify().dump() << std::endl;
+//std::cerr << vertex->jsonify().dump() << std::endl;
       throw std::logic_error("CPController: Every vertex except process entry should have inflow!");
 //      assert(!"Not yet implemented");
     }
@@ -2537,12 +2643,10 @@ std::cerr << vertex->jsonify().dump() << std::endl;
     visit.emplace(vertex, knownVisit );
     visit.emplace(exit(vertex), knownVisit );
   }
-
-//std::cerr << "HUHU4" << std::endl;      
 }
 
 void CPController::createExitVariables(const Vertex* vertex) {
-std::cerr << "createExitVariables" << std::endl;
+//std::cerr << "createExitVariables" << std::endl;
   if ( vertex->node->represents<BPMN::FlowNode>() ) {
     if ( auto loopCharacteristics = getLoopCharacteristics(vertex);
       loopCharacteristics.has_value() &&
@@ -2607,7 +2711,7 @@ std::cerr << "createExitVariables" << std::endl;
 //      assert(!"Not yet implemented");
     }
   }
-std::cerr << "Done(exitvariables)" << std::endl;
+//std::cerr << "Done(exitvariables)" << std::endl;
 }
 
 void CPController::createSequenceFlowVariables(const Vertex* source, const Vertex* target, const BPMNOS::Model::Gatekeeper* gatekeeper) {
@@ -2627,12 +2731,12 @@ void CPController::createSequenceFlowVariables(const Vertex* source, const Verte
       model.addVariable(CP::Variable::Type::BOOLEAN, "tokenflow_{" + source->reference() + " → " + target->reference() + "}", visit.at(source) ) 
     );
   }
-std::cerr << "tokenFlow: " << source->reference() << " to " << target->reference() << std::endl;
+//std::cerr << "tokenFlow: " << source->reference() << " to " << target->reference() << std::endl;
   createStatusFlowVariables(source,target);
 }
 
 void CPController::createStatusFlowVariables(const Vertex* source, const Vertex* target) {
-std::cerr << "statusFlow: " << source->reference() << " to " << target->reference() << std::endl;
+//std::cerr << "statusFlow: " << source->reference() << " to " << target->reference() << std::endl;
   assert( source->node->represents<BPMN::FlowNode>() );
   assert( source->node->as<BPMN::FlowNode>()->parent );
   auto extensionElements = source->node->as<BPMN::FlowNode>()->parent->extensionElements->as<BPMNOS::Model::ExtensionElements>();
@@ -2640,10 +2744,10 @@ std::cerr << "statusFlow: " << source->reference() << " to " << target->referenc
   std::vector<AttributeVariables> variables;
   variables.reserve( extensionElements->attributeRegistry.statusAttributes.size() );
   for ( auto attribute : extensionElements->attributeRegistry.statusAttributes ) {
-std::cerr << "statusAttribute: " << attribute->id << "/" << source->reference() << std::endl;
+//std::cerr << "statusAttribute: " << attribute->id << "/" << source->reference() << std::endl;
     assert( tokenFlow.contains({source,target}) );
     assert( status.contains(source) );
-std::cerr << "indices: " << attribute->index << " < " << status.at(source).size() << std::endl;
+//std::cerr << "indices: " << attribute->index << " < " << status.at(source).size() << std::endl;
     assert( attribute->index < status.at(source).size() );
     // deduce variable
     variables.emplace_back(
@@ -2776,7 +2880,7 @@ CP::Expression CPController::createExpression(const Vertex* vertex, const Model:
     }
 
     auto [defined,value] = getAttributeVariables(vertex,attribute);
-std::cerr << value.stringify() << std::endl;
+//std::cerr << value.stringify() << std::endl;
     variables.push_back( value );
   }
   
@@ -2788,7 +2892,7 @@ std::cerr << value.stringify() << std::endl;
     }
 
     auto [defined,value] = getAttributeVariables(vertex,attribute);
-std::cerr << value.stringify() << std::endl;
+//std::cerr << value.stringify() << std::endl;
     collectionVariables.push_back( value );
   }
 

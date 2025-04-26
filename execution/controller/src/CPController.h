@@ -188,10 +188,13 @@ protected:
   std::list< const Vertex* > pendingVertices; /// The list of vertices to be processed
   std::list< const Vertex* > processedVertices; /// The list of vertices already processed
   bool hasPendingPredecessor(const Vertex* vertex);
-  void unvisited(const Vertex* vertex);
+  void unvisitedEntry(const Vertex* vertex);
+  void unvisitedExit(const Vertex* vertex);
   void finalizePredecessorPositions(const Vertex* vertex);
   std::list< const Vertex* >::iterator finalizeVertexPosition(const Vertex* vertex); /// Method finalizing the sequence position of a pending vertex and removing it from the list
-  std::list< const Vertex* >::iterator finalizeUnvisitedTypedStartEvents(const Token* token, std::list< const Vertex* >::iterator it); /// Method finalizing the sequence position of a unvisited vertices belonging to typed start events
+  std::list< const Vertex* >::iterator finalizeUnvisited(const Vertex* vertex);
+  void finalizeUnvisitedChildren(const Vertex* vertex);
+  std::list< const Vertex* >::iterator finalizeUnvisitedTypedStartEvents(std::list< const Vertex* >::iterator it); /// Method finalizing the sequence position of a unvisited vertices belonging to typed start events
   size_t lastPosition;
 public:
   virtual CP::Solution& createSolution(); /// Method creating a solution of the CP
