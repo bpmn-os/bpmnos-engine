@@ -28,11 +28,11 @@ SCENARIO( "Parallel multi instance task", "[cpcontroller][multiinstanceactivity]
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
       engine.run(scenario.get(),10);
-/*      
-std::cerr << "Model:\n" << controller.getModel().stringify() << std::endl;
-std::cerr << "Solution:\n" << solution.stringify() << std::endl;
-std::cerr << "Errors:\n" << solution.errors() << std::endl;
-*/
+
+//std::cerr << "Model:\n" << controller.getModel().stringify() << std::endl;
+//std::cerr << "Solution:\n" << solution.stringify() << std::endl;
+//std::cerr << "Errors:\n" << solution.errors() << std::endl;
+
       THEN( "The solution is complete and satisfies all constraints" ) {
         auto terminationLog = recorder.find(nlohmann::json{{"event","termination"}});
         REQUIRE( terminationLog.empty() );  
@@ -74,11 +74,10 @@ SCENARIO( "Sequential multi instance task", "[cpcontroller][multiinstanceactivit
       recorder.subscribe(&engine);
       engine.run(scenario.get(),10);
       
-/*
-std::cerr << "Model:\n" << controller.getModel().stringify() << std::endl;
-std::cerr << "Solution:\n" << solution.stringify() << std::endl;
-std::cerr << "Errors:\n" << solution.errors() << std::endl;
-*/
+//std::cerr << "Model:\n" << controller.getModel().stringify() << std::endl;
+//std::cerr << "Solution:\n" << solution.stringify() << std::endl;
+//std::cerr << "Errors:\n" << solution.errors() << std::endl;
+
       THEN( "The solution is complete and satisfies all constraints" ) {
         auto terminationLog = recorder.find(nlohmann::json{{"event","termination"}});
         REQUIRE( terminationLog.empty() );  

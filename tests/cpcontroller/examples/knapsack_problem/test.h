@@ -32,8 +32,8 @@ SCENARIO( "Knapsack problem", "[cpcontroller][knapsack_problem]" ) {
       controller.subscribe(&engine); 
       Execution::TimeWarp timeHandler;
       timeHandler.connect(&engine);
-//      Execution::Recorder recorder;
-      Execution::Recorder recorder(std::cerr);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
       engine.run(scenario.get(),10);
 
@@ -49,7 +49,7 @@ SCENARIO( "Knapsack problem", "[cpcontroller][knapsack_problem]" ) {
 //        REQUIRE( solution.getObjectiveValue().value() == engine.getSystemState()->getObjective() );
       }
     }
-/*
+
     WHEN( "The engine is started with a suitable partial seed" ) {
 
       Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -84,9 +84,8 @@ SCENARIO( "Knapsack problem", "[cpcontroller][knapsack_problem]" ) {
         REQUIRE( solution.getObjectiveValue().value() == engine.getSystemState()->getObjective() );
       }
     }
-*/
   }
-/*
+
   GIVEN( "One knapsack and three items provided in a suitable order" ) {
 
     std::string csv =
@@ -135,7 +134,6 @@ SCENARIO( "Knapsack problem", "[cpcontroller][knapsack_problem]" ) {
       }
     }
   }
-*/
 
 };
 
