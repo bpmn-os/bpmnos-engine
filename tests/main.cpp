@@ -9,7 +9,7 @@ using namespace BPMNOS;
 
 // Include all tests here
 
-//#define ALL_TESTS
+#define ALL_TESTS
 #ifdef ALL_TESTS
 
 /* Model */
@@ -77,7 +77,7 @@ using namespace BPMNOS;
 #include "examples/truck_driver_scheduling_problem/test.h"
 
 // CPController
-//#include "cpcontroller/test.h"
+#include "cpcontroller/test.h"
 
 #endif // ALL_TESTS
 
