@@ -96,7 +96,7 @@ protected:
 
   BPMNOS::number clockTick; ///< Timestep used to advance the current time by systemState.time += clockTick
   std::unique_ptr<SystemState> systemState;
-  std::unique_ptr<ConditionalEventObserver> conditionalEventObserver;
+  ConditionalEventObserver conditionalEventObserver;
   
   bool advance();
   bool terminated;

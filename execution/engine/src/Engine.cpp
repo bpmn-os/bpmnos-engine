@@ -15,6 +15,7 @@ using namespace BPMNOS::Execution;
 Engine::Engine()
 {
   clockTick = 1;
+  addSubscriber( &conditionalEventObserver, Observable::Type::DataUpdate);
 }
 
 Engine::~Engine()
@@ -38,11 +39,17 @@ void Engine::Command::execute() {
 
 BPMNOS::number Engine::run(const BPMNOS::Model::Scenario* scenario, BPMNOS::number timeout) {
   terminated = false;
-  
+  commands.clear();  
   // create initial system state
   systemState = std::make_unique<SystemState>(this, scenario);
+/*
+  if ( conditionalEventObserver ) {
+    removeSubscriber(conditionalEventObserver.get(), Observable::Type::DataUpdate);
+  } 
   conditionalEventObserver = std::make_unique<ConditionalEventObserver>(systemState.get());
   addSubscriber(conditionalEventObserver.get(), Observable::Type::DataUpdate);
+*/
+  conditionalEventObserver.connect( systemState.get() );
 
   // advance all tokens in system state
   while ( !terminated && advance() ) {

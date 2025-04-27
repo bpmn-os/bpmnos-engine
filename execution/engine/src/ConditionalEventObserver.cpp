@@ -7,10 +7,15 @@
 
 using namespace BPMNOS::Execution;
 
-ConditionalEventObserver::ConditionalEventObserver(SystemState* systemState) : systemState(systemState) {
+ConditionalEventObserver::ConditionalEventObserver() : systemState(nullptr) {
+}
+
+void ConditionalEventObserver::connect(SystemState* systemState) {
+  this->systemState = systemState;
 }
 
 void ConditionalEventObserver::notice(const Observable* observable) {
+  assert( systemState );
   assert( dynamic_cast<const DataUpdate*>(observable) );
   auto dataUpdate = static_cast<const DataUpdate*>(observable);
 

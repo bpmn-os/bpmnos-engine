@@ -13,7 +13,8 @@ class Token;
 
 class ConditionalEventObserver : public Observer {
 public:
-  ConditionalEventObserver(SystemState* systemState);
+  ConditionalEventObserver();
+  void connect(SystemState* systemState);
   void notice(const Observable* observable) override;
 protected:
   SystemState* systemState;
