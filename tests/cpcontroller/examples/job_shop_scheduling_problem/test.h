@@ -267,13 +267,14 @@ SCENARIO( "Job shop schedulng problem", "[cpcontroller][job_shop_scheduling_prob
 //std::cerr << "Errors:\n" << solution.errors() << std::endl;
       THEN( "The solution terminates because required message start event does not wait for message" ) {
         auto terminationLog = recorder.find(nlohmann::json{{"event","termination"}});
-        REQUIRE( !terminationLog.empty() );
-//        REQUIRE( solution.complete() );
-//        REQUIRE( solution.errors().empty() );
-//        REQUIRE( solution.getObjectiveValue().has_value() );
-//        REQUIRE( solution.getObjectiveValue().value() == engine.getSystemState()->getObjective() );
+        REQUIRE( terminationLog.empty() );
+        REQUIRE( solution.complete() );
+        REQUIRE( solution.errors().empty() );
+        REQUIRE( solution.getObjectiveValue().has_value() );
+        REQUIRE( solution.getObjectiveValue().value() == engine.getSystemState()->getObjective() );
       }
     }
   }
+
 };
 

@@ -82,6 +82,9 @@ using namespace BPMNOS;
 #endif // ALL_TESTS
 
 #ifndef ALL_TESTS
+//#include "examples/knapsack_problem/test.h"
+//#include "cpcontroller/examples/knapsack_problem/test.h"
+//#include "cpcontroller/examples/job_shop_scheduling_problem/test.h"
 #include "cpcontroller/test.h"
 #endif // ALL_TESTS
 
