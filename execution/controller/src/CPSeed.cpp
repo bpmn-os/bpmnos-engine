@@ -28,7 +28,6 @@ std::list<size_t> CPSeed::defaultSeed(std::list<size_t> partialSeed, size_t leng
 std::cerr << "initial seed: ";
 for ( auto i : seed ) std::cerr << i << ", ";
 std::cerr << std::endl;
-//assert(!"HH");
 
   return seed;
 }

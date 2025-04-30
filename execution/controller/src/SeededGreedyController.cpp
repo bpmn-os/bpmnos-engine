@@ -12,7 +12,20 @@ SeededGreedyController::SeededGreedyController(const BPMNOS::Model::Scenario* sc
   choiceDispatcher = std::make_unique<BestLimitedChoice>(evaluator);
 }
 
+bool SeededGreedyController::setSeed(CPSeed seed) {
+  initializeEventQueue();
+  messages.clear(); 
+  _seed = std::move(seed);
+std::cerr << "updated seed: ";
+for ( auto i : _seed.getSeed() ) std::cerr << i << ", ";
+std::cerr << std::endl;
+
+  return ( _seed.coverage() == 1.0 );
+}
+
 bool SeededGreedyController::setSeed(const std::list<size_t>& seed) {
+  lastPosition = 0;
+  terminationEvent.reset();
   _seed = CPSeed(this,seed);
 std::cerr << "updated seed: ";
 for ( auto i : _seed.getSeed() ) std::cerr << i << ", ";
@@ -41,6 +54,7 @@ CP::Solution& SeededGreedyController::createSolution() {
 }
 
 void SeededGreedyController::notice(const Observable* observable) {
+//std::cerr << "SeededGreedyController::notice" << std::endl;
   CPController::notice(observable);
   if ( observable->getObservableType() == Observable::Type::Message ) {
     auto message = static_cast<const Message*>(observable);
@@ -49,6 +63,7 @@ void SeededGreedyController::notice(const Observable* observable) {
       messages.emplace_back( message->weak_from_this() );
     }
   }
+//std::cerr << "SeededGreedyController::noticed" << std::endl;
 }
 
 std::shared_ptr<Event> SeededGreedyController::createEntryEvent(const SystemState* systemState, const Token* token, const Vertex* vertex) {
@@ -98,7 +113,7 @@ std::shared_ptr<Event> SeededGreedyController::createChoiceEvent(const SystemSta
 }
 
 std::shared_ptr<Event> SeededGreedyController::createMessageDeliveryEvent(const SystemState* systemState, const Token* token, const Vertex* vertex) {
-//std::cerr << "SeededGreedyController::createMessageDeliveryEvent" << std::endl;
+std::cerr << "SeededGreedyController::createMessageDeliveryEvent" << std::endl;
   // instant message delivery
   setTimestamp(vertex,systemState->getTime());
   

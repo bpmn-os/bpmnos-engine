@@ -17,6 +17,7 @@ class SeededGreedyController : public CPController {
 public:
   SeededGreedyController(const BPMNOS::Model::Scenario* scenario, Evaluator* evaluator);
   void notice(const Observable* observable) override;
+  bool setSeed(CPSeed seed);
   bool setSeed(const std::list<size_t>& seed);
   CP::Solution& createSolution() override; /// Method creating a solution of the CP
   std::shared_ptr<Event> createEntryEvent(const SystemState* systemState, const Token* token, const Vertex* vertex) override;
