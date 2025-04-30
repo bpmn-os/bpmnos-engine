@@ -113,7 +113,7 @@ std::shared_ptr<Event> SeededGreedyController::createChoiceEvent(const SystemSta
 }
 
 std::shared_ptr<Event> SeededGreedyController::createMessageDeliveryEvent(const SystemState* systemState, const Token* token, const Vertex* vertex) {
-std::cerr << "SeededGreedyController::createMessageDeliveryEvent" << std::endl;
+//std::cerr << "SeededGreedyController::createMessageDeliveryEvent" << std::endl;
   // instant message delivery
   setTimestamp(vertex,systemState->getTime());
   

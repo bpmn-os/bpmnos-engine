@@ -25,6 +25,8 @@
 
 namespace BPMNOS::Execution {
 
+class CPSeed;
+
 /**
  * @brief A controller dispatching decisions obtained from a solution of a constraint program
  */
@@ -91,6 +93,7 @@ protected:
   void constrainDataVariables(const FlattenedGraph::Vertex* vertex);
   void constrainSequentialActivities();
   void constrainEventBasedGateway(const FlattenedGraph::Vertex* gateway);
+  void constrainTypedStartEvent(const FlattenedGraph::Vertex* startEvent);
   
   struct AttributeVariables {
     const CP::Variable& defined;
@@ -187,10 +190,12 @@ protected:
 
   std::list< const Vertex* > pendingVertices; /// The list of vertices to be processed
   std::list< const Vertex* > processedVertices; /// The list of vertices already processed
-  bool hasPendingPredecessor(const Vertex* vertex);
+  bool hasPendingPredecessor(const Vertex* vertex) const;
+  bool hasPendingRecipient(const Vertex* vertex) const;
   void unvisitedEntry(const Vertex* vertex);
   void unvisitedExit(const Vertex* vertex);
   void finalizePredecessorPositions(const Vertex* vertex);
+  void fetchPendingPredecessors(std::unordered_set<const Vertex*>& predecessors, const Vertex* vertex) const;
   std::list< const Vertex* >::iterator finalizeVertexPosition(const Vertex* vertex); /// Method finalizing the sequence position of a pending vertex and removing it from the list
   std::list< const Vertex* >::iterator finalizeUnvisited(const Vertex* vertex);
   void finalizeUnvisitedChildren(const Vertex* vertex);
@@ -199,8 +204,8 @@ protected:
 public:
   virtual CP::Solution& createSolution(); /// Method creating a solution of the CP
   const CP::Solution& getSolution() const; /// Method providing access to the solution of the CP
+  std::vector<size_t> getSequence() const; /// Method providing the vertex sequence in the solution
   void setMessageDeliveryVariableValues( const Vertex* sender, const Vertex* recipient, BPMNOS::number timestamp );
-protected:
   void initializeEventQueue(); /// Method creating an initial sequence of vertices
 
   const Vertex* getVertex( const Token* token ) const;
@@ -216,8 +221,8 @@ protected:
   virtual std::shared_ptr<Event> createMessageDeliveryEvent(const SystemState* systemState, const Token* token, const Vertex* vertex); /// Method creating a message delivery event from CP solution
   std::unique_ptr<CP::Solution> _solution;
 public:
-  const Vertex* entry(const Vertex* vertex);
-  const Vertex* exit(const Vertex* vertex);
+  const Vertex* entry(const Vertex* vertex) const;
+  const Vertex* exit(const Vertex* vertex) const;
 };
 
 } // namespace BPMNOS::Execution

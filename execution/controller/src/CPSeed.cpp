@@ -88,13 +88,13 @@ bool CPSeed::addSequencePosition(size_t index) {
   // check that all predecessors are already in the sequence
   for ( auto& [ sequenceFlow, predecessor ] : vertex->inflows ) {
     if ( !vertices.contains(&predecessor) ) {
-std::cerr << "[" << predecessor.reference() << " -> " << vertex->reference() << "]";
+//std::cerr << "[" << predecessor.reference() << " -> " << vertex->reference() << "]";
       return false;
     }
   }
   for ( Vertex& predecessor : vertex->predecessors ) {
     if ( !vertices.contains(&predecessor) ) {
-std::cerr << "[" << predecessor.reference() << " -> " << vertex->reference() << "]";
+//std::cerr << "[" << predecessor.reference() << " -> " << vertex->reference() << "]";
       return false;
     }
   }
@@ -125,7 +125,7 @@ std::cerr << "[" << predecessor.reference() << " -> " << vertex->reference() << 
 
   vertices.insert(vertex);
   sequence.push_back(index);
-std::cerr << vertex->reference() << " -> ";
+//std::cerr << vertex->reference() << " -> ";
   return true;
 }
 
