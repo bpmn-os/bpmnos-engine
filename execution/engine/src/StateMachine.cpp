@@ -882,11 +882,6 @@ void StateMachine::attemptShutdown() {
     return;
   }
 
-  if ( nonInterruptingEventSubProcesses.size() ) {
-    // wait until last event subprocess is completed
-    return;
-  }
-
   for ( auto& token : tokens ) {
     if ( token->state != Token::State::DONE ) {
       return;
@@ -900,6 +895,11 @@ void StateMachine::attemptShutdown() {
     eventSubProcess->clearObsoleteTokens();
   }
   pendingEventSubProcesses.clear();
+
+  if ( nonInterruptingEventSubProcesses.size() ) {
+    // wait until last event subprocess is completed
+    return;
+  }
 
   auto engine = const_cast<Engine*>(systemState->engine);
 //std::cerr << "Shutdown with " << engine->commands.size() << " prior commands" << std::endl;
