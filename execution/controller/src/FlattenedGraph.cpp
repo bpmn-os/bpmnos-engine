@@ -150,26 +150,27 @@ void FlattenedGraph::addNonInterruptingEventSubProcess( const BPMN::EventSubProc
   auto& candidates = eventSubProcess->startEvent->extensionElements->as<BPMNOS::Model::ExtensionElements>()->messageCandidates;
   for ( auto candidate : candidates ) {
     if( sendingVertices.contains(candidate) ) {
-    for ( [[maybe_unused]] auto& _ : sendingVertices.at(candidate) ) {
-      // create and flatten next event-subprocess
-      counter++;
-      BPMNOS::number id = 
-        BPMNOS::to_number(
-          BPMNOS::to_string(parentEntry.instanceId,STRING) + 
-          BPMNOS::Model::Scenario::delimiters[0] + 
-          eventSubProcess->id + 
-          BPMNOS::Model::Scenario::delimiters[1] + 
-          std::to_string(counter)
-        , STRING);
-      flatten( id, eventSubProcess, parentEntry, parentExit );
-      // newly created vertices at start event must succeed previous vertices at start event
-      auto& [startEntry,startExit] = vertexMap.at({ id, parentEntry.loopIndices, eventSubProcess->startEvent });
-      if ( lastStart ) {
-        lastStart->successors.push_back(startEntry);
-        startEntry.predecessors.push_back(*lastStart);
+      for ( [[maybe_unused]] auto& _ : sendingVertices.at(candidate) ) {
+        // create and flatten next event-subprocess
+        counter++;
+        BPMNOS::number id = 
+          BPMNOS::to_number(
+            BPMNOS::to_string(parentEntry.instanceId,STRING) + 
+            BPMNOS::Model::Scenario::delimiters[0] + 
+            eventSubProcess->id + 
+            BPMNOS::Model::Scenario::delimiters[1] + 
+            std::to_string(counter)
+          , STRING)
+        ;
+        flatten( id, eventSubProcess, parentEntry, parentExit );
+        // newly created vertices at start event must succeed previous vertices at start event
+        auto& [startEntry,startExit] = vertexMap.at({ id, parentEntry.loopIndices, eventSubProcess->startEvent });
+        if ( lastStart ) {
+          lastStart->successors.push_back(startEntry);
+          startEntry.predecessors.push_back(*lastStart);
+        }
+        lastStart = &startExit;
       }
-      lastStart = &startExit;
-    }
     }
   }
 }
@@ -182,6 +183,7 @@ void FlattenedGraph::addSender( const BPMN::MessageThrowEvent* messageThrowEvent
   auto& candidates = messageThrowEvent->extensionElements->as<BPMNOS::Model::ExtensionElements>()->messageCandidates;
   for ( auto& [eventSubProcess, parentEntry, parentExit, counter, lastStart] : nonInterruptingEventSubProcesses ) {
     if (std::find(candidates.begin(), candidates.end(), eventSubProcess->startEvent) != candidates.end()) {
+      // TODO: check header
       // eventSubProcess may be triggered by message throw event, create and flatten next event-subprocess
       counter++;
 //std::cerr << "Add non-interrupting event-subprocess: " << eventSubProcess->id << "#" << counter << std::endl;
@@ -200,6 +202,7 @@ void FlattenedGraph::addSender( const BPMN::MessageThrowEvent* messageThrowEvent
   // set precedences for all recipients
   for ( auto candidate : candidates ) {
     for ( auto& [ recipientEntry, recipientExit] : receivingVertices[candidate] ) {
+      // TODO: check header
       senderEntry.recipients.push_back(recipientExit);
       recipientExit.senders.push_back(senderEntry);
       if ( messageThrowEvent->represents<BPMN::SendTask>() ) {
@@ -219,6 +222,7 @@ void FlattenedGraph::addRecipient( const BPMN::MessageCatchEvent* messageCatchEv
   auto& candidates = messageCatchEvent->extensionElements->as<BPMNOS::Model::ExtensionElements>()->messageCandidates;
   for ( auto candidate : candidates ) {
     for ( auto& [ senderEntry, senderExit] : sendingVertices[candidate] ) {
+      // TODO: check header
       senderEntry.recipients.push_back(recipientExit);
       recipientExit.senders.push_back(senderEntry);
       if ( candidate->represents<BPMN::SendTask>() ) {
