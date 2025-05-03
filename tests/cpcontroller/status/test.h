@@ -17,7 +17,7 @@ SCENARIO( "Task with expresion operator", "[cpcontroller][status]" ) {
       Execution::GuidedEvaluator evaluator;
 //std::cerr << "SeededGreedyController()" << std::endl;
       Execution::SeededGreedyController controller(scenario.get(), &evaluator);
-      controller.setSeed( Execution::CPSeed::defaultSeed( controller.getVertices().size() ) );
+//      controller.setSeed( Execution::CPSeed::defaultSeed( controller.getVertices().size() ) );
 
       auto& solution = controller.createSolution();
       Execution::Engine engine;

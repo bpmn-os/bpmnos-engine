@@ -16,7 +16,7 @@ SCENARIO( "Trivial executable subprocess", "[cpcontroller][subprocess]" ) {
 
       Execution::GuidedEvaluator evaluator;
       Execution::SeededGreedyController controller(scenario.get(), &evaluator);
-      controller.setSeed( Execution::CPSeed::defaultSeed( controller.getVertices().size() ) );
+//      controller.setSeed( Execution::CPSeed::defaultSeed( controller.getVertices().size() ) );
 
       auto& solution = controller.createSolution();
       Execution::Engine engine;
@@ -60,7 +60,7 @@ SCENARIO( "Constrained executable process", "[cpcontroller][subprocess]" ) {
 
       Execution::GuidedEvaluator evaluator;
       Execution::SeededGreedyController controller(scenario.get(), &evaluator);
-      controller.setSeed( Execution::CPSeed::defaultSeed( controller.getVertices().size() ) );
+//      controller.setSeed( Execution::CPSeed::defaultSeed( controller.getVertices().size() ) );
 
       auto& solution = controller.createSolution();
       Execution::Engine engine;
@@ -97,7 +97,7 @@ SCENARIO( "Constrained executable process", "[cpcontroller][subprocess]" ) {
 
       Execution::GuidedEvaluator evaluator;
       Execution::SeededGreedyController controller(scenario.get(), &evaluator);
-      controller.setSeed( Execution::CPSeed::defaultSeed( controller.getVertices().size() ) );
+//      controller.setSeed( Execution::CPSeed::defaultSeed( controller.getVertices().size() ) );
 
       auto& solution = controller.createSolution();
       Execution::Engine engine;
@@ -113,7 +113,7 @@ SCENARIO( "Constrained executable process", "[cpcontroller][subprocess]" ) {
 //std::cerr << "Model:\n" << controller.getModel().stringify() << std::endl;
 //std::cerr << "Solution:\n" << solution.stringify() << std::endl;
 //std::cerr << "Errors:\n" << solution.errors() << std::endl;
-      THEN( "The solution is is infeasible" ) {
+      THEN( "The solution is infeasible" ) {
         auto terminationLog = recorder.find(nlohmann::json{{"event","termination"}});
         REQUIRE( !terminationLog.empty() );
         REQUIRE( !solution.errors().empty() );

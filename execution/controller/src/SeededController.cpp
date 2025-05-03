@@ -1,5 +1,4 @@
 #include "SeededController.h"
-#include "CPSeed.h"
 #include "model/bpmnos/src/DecisionTask.h"
 #include "model/bpmnos/src/SequentialAdHocSubProcess.h"
 #include "model/bpmnos/src/extensionElements/MessageDefinition.h"
@@ -24,6 +23,12 @@ SeededController::SeededController(const BPMNOS::Model::Scenario* scenario, Conf
   std::iota(seed.begin(), seed.end(), 1);
 
   createSolution();
+
+  // initialize seed
+  seed.resize( flattenedGraph.vertices.size() );
+  std::iota(seed.begin(), seed.end(), 1);
+  lastPosition = 0;
+  initializePendingVertices();
 }
 
 void SeededController::connect(Mediator* mediator) {
@@ -40,7 +45,7 @@ void SeededController::subscribe(Engine* engine) {
 
 bool SeededController::setSeed(const std::list<size_t> initialSeed) {
   lastPosition = 0;
-  seed = CPSeed(this,initialSeed).getSeed();
+  seed = std::move(initialSeed);
   if ( seed.size() < model.getVertices().size() ) {
     return false;
   }

@@ -22,7 +22,7 @@ SCENARIO( "Vehicle routing problem", "[cpcontroller][vehicle_routing_problem]" )
 
       Execution::GuidedEvaluator evaluator;
       Execution::SeededGreedyController controller(scenario.get(), &evaluator);
-      controller.setSeed( Execution::CPSeed::defaultSeed( controller.getVertices().size() ) );
+//      controller.setSeed( Execution::CPSeed::defaultSeed( controller.getVertices().size() ) );
 
       auto& solution = controller.createSolution();
       Execution::Engine engine;
@@ -74,7 +74,7 @@ SCENARIO( "Vehicle routing problem", "[cpcontroller][vehicle_routing_problem]" )
 
       Execution::GuidedEvaluator evaluator;
       Execution::SeededGreedyController controller(scenario.get(), &evaluator);
-      controller.setSeed( Execution::CPSeed::defaultSeed( controller.getVertices().size() ) );
+//      controller.setSeed( Execution::CPSeed::defaultSeed( controller.getVertices().size() ) );
 
       auto& solution = controller.createSolution();
       Execution::Engine engine;
@@ -132,7 +132,7 @@ SCENARIO( "Vehicle routing problem", "[cpcontroller][vehicle_routing_problem]" )
 
       Execution::GuidedEvaluator evaluator;
       Execution::SeededGreedyController controller(scenario.get(), &evaluator);
-      controller.setSeed( Execution::CPSeed::defaultSeed( controller.getVertices().size() ) );
+//      controller.setSeed( Execution::CPSeed::defaultSeed( controller.getVertices().size() ) );
 
       auto& solution = controller.createSolution();
       Execution::Engine engine;

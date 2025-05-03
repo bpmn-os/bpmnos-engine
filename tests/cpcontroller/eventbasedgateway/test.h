@@ -17,7 +17,7 @@ SCENARIO( "Event-based gateway with two timer events", "[cpcontroller][eventbase
 
       Execution::GuidedEvaluator evaluator;
       Execution::SeededGreedyController controller(scenario.get(), &evaluator);
-      controller.setSeed( Execution::CPSeed::defaultSeed( controller.getVertices().size() ) );
+//      controller.setSeed( Execution::CPSeed::defaultSeed( controller.getVertices().size() ) );
 
       auto& solution = controller.createSolution();
       Execution::Engine engine;
@@ -55,7 +55,7 @@ SCENARIO( "Event-based gateway with two timer events", "[cpcontroller][eventbase
 
       Execution::GuidedEvaluator evaluator;
       Execution::SeededGreedyController controller(scenario.get(), &evaluator);
-      controller.setSeed( Execution::CPSeed::defaultSeed( controller.getVertices().size() ) );
+//      controller.setSeed( Execution::CPSeed::defaultSeed( controller.getVertices().size() ) );
 
       auto& solution = controller.createSolution();
       Execution::Engine engine;

@@ -28,7 +28,6 @@ list(APPEND controller_SOURCES
   CPModel.cpp
   CPSolution.cpp
   SeededController.cpp
-  CPSeed.cpp
   SeededGreedyController.cpp
 )
 
@@ -62,6 +61,5 @@ list(APPEND controller_HEADERS
   CPModel.h
   CPSolution.h
   SeededController.h
-  CPSeed.h
   SeededGreedyController.h
 )

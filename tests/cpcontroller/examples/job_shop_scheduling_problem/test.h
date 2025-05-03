@@ -17,7 +17,7 @@ SCENARIO( "Job shop schedulng problem", "[cpcontroller][job_shop_scheduling_prob
 
       Execution::GuidedEvaluator evaluator;
       Execution::SeededGreedyController controller(scenario.get(), &evaluator);
-      controller.setSeed( Execution::CPSeed::defaultSeed( controller.getVertices().size() ) );
+//      controller.setSeed( Execution::CPSeed::defaultSeed( controller.getVertices().size() ) );
 
       auto& solution = controller.createSolution();
       Execution::Engine engine;
@@ -61,7 +61,7 @@ SCENARIO( "Job shop schedulng problem", "[cpcontroller][job_shop_scheduling_prob
 
       Execution::GuidedEvaluator evaluator;
       Execution::SeededGreedyController controller(scenario.get(), &evaluator);
-      controller.setSeed( Execution::CPSeed::defaultSeed( controller.getVertices().size() ) );
+//      controller.setSeed( Execution::CPSeed::defaultSeed( controller.getVertices().size() ) );
 
       auto& solution = controller.createSolution();
       Execution::Engine engine;
@@ -107,7 +107,7 @@ SCENARIO( "Job shop schedulng problem", "[cpcontroller][job_shop_scheduling_prob
 
       Execution::GuidedEvaluator evaluator;
       Execution::SeededGreedyController controller(scenario.get(), &evaluator);
-      controller.setSeed( Execution::CPSeed::defaultSeed( controller.getVertices().size() ) );
+//      controller.setSeed( Execution::CPSeed::defaultSeed( controller.getVertices().size() ) );
 
       auto& solution = controller.createSolution();
       Execution::Engine engine;
@@ -152,7 +152,7 @@ SCENARIO( "Job shop schedulng problem", "[cpcontroller][job_shop_scheduling_prob
 
       Execution::GuidedEvaluator evaluator;
       Execution::SeededGreedyController controller(scenario.get(), &evaluator);
-      controller.setSeed( Execution::CPSeed::defaultSeed( controller.getVertices().size() ) );
+//      controller.setSeed( Execution::CPSeed::defaultSeed( controller.getVertices().size() ) );
 
       auto& solution = controller.createSolution();
       Execution::Engine engine;
@@ -199,7 +199,7 @@ SCENARIO( "Job shop schedulng problem", "[cpcontroller][job_shop_scheduling_prob
 
       Execution::GuidedEvaluator evaluator;
       Execution::SeededGreedyController controller(scenario.get(), &evaluator);
-      controller.setSeed( Execution::CPSeed::defaultSeed( controller.getVertices().size() ) );
+//      controller.setSeed( Execution::CPSeed::defaultSeed( controller.getVertices().size() ) );
 
       auto& solution = controller.createSolution();
       Execution::Engine engine;
@@ -249,7 +249,7 @@ SCENARIO( "Job shop schedulng problem", "[cpcontroller][job_shop_scheduling_prob
 
       Execution::GuidedEvaluator evaluator;
       Execution::SeededGreedyController controller(scenario.get(), &evaluator);
-      controller.setSeed( Execution::CPSeed::defaultSeed( controller.getVertices().size() ) );
+//      controller.setSeed( Execution::CPSeed::defaultSeed( controller.getVertices().size() ) );
 
       [[maybe_unused]] auto& solution = controller.createSolution();
       Execution::Engine engine;
