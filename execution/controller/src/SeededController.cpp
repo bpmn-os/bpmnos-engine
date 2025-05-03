@@ -1,0 +1,751 @@
+#include "SeededController.h"
+#include "CPSeed.h"
+#include "model/bpmnos/src/DecisionTask.h"
+#include "model/bpmnos/src/SequentialAdHocSubProcess.h"
+#include "model/bpmnos/src/extensionElements/MessageDefinition.h"
+#include "model/bpmnos/src/extensionElements/Timer.h"
+#include "execution/engine/src/Engine.h"
+#include "execution/engine/src/SequentialPerformerUpdate.h"
+#include <iostream>
+
+using namespace BPMNOS::Execution;
+
+SeededController::SeededController(const BPMNOS::Model::Scenario* scenario, Config config)
+ : scenario(scenario)
+ , config(std::move(config))
+ , flattenedGraph(FlattenedGraph(scenario))
+ , model(flattenedGraph)
+{
+//for (auto& vertex : flattenedGraph.vertices ) std::cerr << &vertex << std::endl;
+  // TODO: consider all vertices and ignore boundary and compensation events!!!
+
+  // initialize seed
+  seed.resize( flattenedGraph.vertices.size() );
+  std::iota(seed.begin(), seed.end(), 1);
+
+  createSolution();
+}
+
+void SeededController::connect(Mediator* mediator) {
+  readyHandler.connect(mediator);
+  completionHandler.connect(mediator);
+  Controller::connect(mediator);
+}
+
+void SeededController::subscribe(Engine* engine) {
+  engine->addSubscriber(this, 
+    Execution::Observable::Type::Token
+  );
+}
+
+bool SeededController::setSeed(const std::list<size_t> initialSeed) {
+  lastPosition = 0;
+  seed = CPSeed(this,initialSeed).getSeed();
+  if ( seed.size() < model.getVertices().size() ) {
+    return false;
+  }
+std::cerr << "updated seed: ";
+for ( auto i : seed ) std::cerr << i << ", ";
+std::cerr << std::endl;
+  initializePendingVertices();
+
+  return true;
+}
+
+
+const FlattenedGraph::Vertex* SeededController::getVertex( const Token* token ) const {
+//std::cerr << "getVertex(" << token->jsonify() << ")" << std::endl;
+  auto node = token->node ? token->node->as<BPMN::Node>() : token->owner->process->as<BPMN::Node>();
+  if( !flattenedGraph.loopIndexAttributes.contains(node) ) {
+    // unreachable typed start event
+    assert( node->represents<BPMN::TypedStartEvent>() );
+    return nullptr;    
+  }
+  std::vector< size_t > loopIndices;
+  for ( auto attribute : flattenedGraph.loopIndexAttributes.at(node)  ) {
+    assert( token->status.at(attribute->index).has_value() );
+    loopIndices.push_back( (size_t)token->status.at(attribute->index).value() );
+  }
+  auto instanceId = token->data->at(BPMNOS::Model::ExtensionElements::Index::Instance).get().value();
+//std::cerr << stringRegistry[(size_t)instanceId] << "/" << node->id << "/" << token->jsonify() << std::endl;
+  if( !flattenedGraph.vertexMap.contains({instanceId,loopIndices,node}) ) {
+    return nullptr;
+  }
+  assert( flattenedGraph.vertexMap.contains({instanceId,loopIndices,node}) );
+  auto& [entry,exit] = flattenedGraph.vertexMap.at({instanceId,loopIndices,node});
+  return (token->state == Token::State::ENTERED) ? &entry : &exit;
+}
+
+std::optional< BPMN::Activity::LoopCharacteristics> SeededController::getLoopCharacteristics(const Vertex* vertex) const {
+  auto activity = vertex->node->represents<BPMN::Activity>();
+  if ( !activity ) {
+    return std::nullopt;
+  }
+  return activity->loopCharacteristics;
+}
+
+std::list< const SeededController::Vertex* >::iterator SeededController::finalizeVertexPosition(const Vertex* vertex) {
+//  assert( std::ranges::contains(pendingVertices,vertex) );
+//std::cerr << "finalizeVertexPosition " << vertex->reference() << std::endl;
+  auto it = std::find(pendingVertices.begin(), pendingVertices.end(), vertex);
+  if( it != pendingVertices.end() ) {
+//std::cerr << "Removed " << vertex->reference() << " from " << pendingVertices.size() << std::endl;
+    it = pendingVertices.erase(it);
+    processedVertices.push_back(vertex);
+    // change position of vertex
+    _solution->setPosition( vertex, ++lastPosition);
+std::cerr << "position(" << vertex->reference() << ") = " << lastPosition << std::endl;
+//std::cerr << "visit(" << vertex->shortReference() << ") = " << _solution->evaluate( visit.at(vertex) ).value_or(-1) << std::endl;
+  }
+  return it;
+  
+};
+
+void SeededController::fetchPendingPredecessors(std::unordered_set<const Vertex*>& predecessors, const Vertex* vertex) const {
+  for ( auto& [_,predecessor] : vertex->inflows ) {
+//std::cerr << predecessor.reference() << "/" << predecessors.contains(&predecessor) << "/" << std::ranges::contains(pendingVertices,&predecessor) << std::endl;
+    if ( !predecessors.contains(&predecessor) && std::ranges::contains(pendingVertices,&predecessor) ) {
+//std::cerr << "Added " << predecessor.reference() << std::endl;
+      predecessors.emplace(&predecessor);
+      fetchPendingPredecessors(predecessors,&predecessor);
+    }
+  }
+  for ( Vertex& predecessor : vertex->predecessors ) {
+    if ( !predecessors.contains(&predecessor) && std::ranges::contains(pendingVertices,&predecessor) ) {
+//std::cerr << "Added " << predecessor.reference() << std::endl;
+      predecessors.emplace(&predecessor);
+      fetchPendingPredecessors(predecessors,&predecessor);
+    }
+  }
+}
+
+void SeededController::finalizePredecessorPositions(const Vertex* vertex) {
+  std::unordered_set<const Vertex*> pendingPredecessors;
+  fetchPendingPredecessors(pendingPredecessors,vertex);
+//std::cerr << "finalize " << pendingPredecessors.size() << " predecessor positions: " << vertex->reference() << std::endl;
+
+  auto it = pendingPredecessors.begin();
+  while ( it != pendingPredecessors.end() ) {
+    const Vertex* predecessor = *it;
+    if ( !std::ranges::contains(pendingVertices,predecessor) ) {
+      pendingPredecessors.erase(it);
+      it = pendingPredecessors.begin();
+      continue;
+    }
+//std::cerr << "other: " << predecessor->reference() << std::endl;
+    if ( !hasPendingPredecessor(predecessor) ) {
+      if ( flattenedGraph.dummies.contains(predecessor) ) {
+        assert( std::ranges::contains(pendingVertices,predecessor) );
+        finalizeVertexPosition( predecessor );
+      }
+      else if ( predecessor->type == Vertex::Type::ENTRY ) {
+        assert( std::ranges::contains(pendingVertices,predecessor) );
+        finalizeUnvisited( predecessor );
+      }
+      pendingPredecessors.erase(it);
+      it = pendingPredecessors.begin();
+    }
+    else {
+      it++;
+    }
+  }
+
+//std::cerr << "finalizedPredecessorPositions" << vertex->reference() << std::endl;
+}
+
+void SeededController::finalizeUnvisitedChildren(const Vertex* vertex) {
+  assert( vertex == entry(vertex) );
+  std::list<const Vertex*> successors;
+  for ( Vertex& successor : vertex->successors ) {
+    if ( &successor == entry(&successor) ) {
+      successors.push_back(&successor);
+    }
+  }
+  auto it = successors.begin();
+  while ( it != successors.end() ) {
+    assert( std::ranges::contains(pendingVertices,*it) );
+    if ( !hasPendingPredecessor(*it) ) {
+      finalizeUnvisited( *it );
+      successors.erase(it);
+      it = successors.begin();
+    }
+    else {
+      it++;
+    }
+  }
+}
+
+std::list< const SeededController::Vertex* >::iterator SeededController::finalizeUnvisited(const Vertex* vertex) {
+  assert( vertex == entry(vertex) );
+  
+  auto it = finalizeVertexPosition(vertex);
+  _solution->unvisitEntry(vertex);
+
+  auto finalizeExit = [&]() {
+    if (vertex->node->represents<BPMN::Scope>()) {
+      finalizeUnvisitedChildren(entry(vertex));
+    }
+    finalizeVertexPosition(exit(vertex));
+  };
+
+  if ( it == pendingVertices.begin() ) { 
+    finalizeExit();
+    it = pendingVertices.begin(); // may have changed
+  }
+  else {
+    it--;
+    finalizeExit();
+    it++;
+  }
+
+
+  _solution->unvisitExit(exit(vertex));
+
+  return it;
+}
+
+
+void SeededController::synchronizeSolution(const Token* token) {
+  if ( terminationEvent ) {
+    return;
+  }
+
+//std::cerr << "Finalize position(s): " << token->jsonify() << std::endl;    
+
+  if ( token->state == Token::State::FAILED ) {
+    terminationEvent = std::make_shared<TerminationEvent>();
+  }
+
+  if ( token->node && token->state == Token::State::WITHDRAWN && token->node->represents<BPMN::TypedStartEvent>() ) {
+    if ( auto vertex = getVertex(token) ) {
+//std::cerr << "clear withdrawn start event: " << vertex->reference() << std::endl;
+      finalizeUnvisited(entry(vertex));
+    }
+  }
+
+  if ( token->state == Token::State::ENTERED ) {
+    if ( auto vertex = getVertex(token) ) {
+      if ( vertex->entry<BPMN::TypedStartEvent>() ) {
+//std::cerr << "ignore typed start event entry: " << token->jsonify() << std::endl;
+        return;
+      }
+      finalizePredecessorPositions(vertex);
+      finalizeVertexPosition(vertex);
+      if ( 
+        vertex->entry<BPMN::UntypedStartEvent>() || 
+        vertex->entry<BPMN::Gateway>() || 
+        ( vertex->entry<BPMN::ThrowEvent>() && !vertex->entry<BPMN::SendTask>() ) 
+      ) {
+//std::cerr << "clear instantaneous exit: " << token->jsonify() << std::endl;
+        finalizePredecessorPositions(exit(vertex));
+        finalizeVertexPosition(exit(vertex));
+      }
+    }
+  }
+  else if ( token->node && token->state == Token::State::COMPLETED && token->node->represents<BPMN::TypedStartEvent>() ) {
+    auto vertex = getVertex(token);
+    assert( vertex );
+    assert( vertex->exit<BPMN::TypedStartEvent>() );
+    finalizePredecessorPositions(entry(vertex));
+    finalizeVertexPosition(entry(vertex));
+    finalizeVertexPosition(vertex);
+//std::cerr << "SYNC: " << token->jsonify() << "/" << entry(vertex)->reference() << std::endl;
+    _solution->synchronizeData(*token->data,entry(vertex));
+    _solution->synchronizeGlobals(token->globals,entry(vertex));
+    // for typed start events data and globals remain unchanged upon completion
+    // operators of event-subprocess are applied after completion
+  }
+  else if ( 
+    ( !token->node && token->state == Token::State::DONE ) || // Process
+    ( token->node && token->state == Token::State::EXITING && !token->node->represents<BPMN::TypedStartEvent>() ) || // Activity
+    ( token->node && token->state == Token::State::COMPLETED && token->node->represents<BPMN::CatchEvent>() && !token->node->represents<BPMN::ReceiveTask>() )
+  ) { 
+    if ( auto vertex = getVertex(token) ) {
+      auto entryVertex = entry(vertex);
+      if ( entryVertex->inflows.size() == 1 && entryVertex->inflows.front().second.node->represents<BPMN::EventBasedGateway>() ) {
+        assert( vertex->exit<BPMN::CatchEvent>() );
+        auto gateway = &entryVertex->inflows.front().second;
+        _solution->setTriggeredEvent( gateway, entryVertex );
+        for ( auto& [ _, target ] : gateway->outflows ) {
+//          _solution->setVariableValue( model.tokenFlow.at({&gateway,&target}), ( &target == entryVertex ) );
+//std::cerr << "Token flow " << gateway.reference() << " to " << target.reference() << " = " << ( &target == entryVertex ) << std::endl;
+          if ( &target != entryVertex ) {
+            finalizeUnvisited( &target );
+          }
+        } 
+      }
+      finalizePredecessorPositions(vertex);
+      finalizeVertexPosition(vertex);
+//std::cerr << "cleared exit event: " << vertex->reference() << std::endl;
+    }
+  }
+//std::cerr << "check state" << std::endl;    
+
+  if ( !token->node && token->state != Token::State::ENTERED && token->state != Token::State::DONE ) {
+    // token at process, but with irrelevant state
+    return;
+  }
+  if ( token->node && token->state != Token::State::ENTERED && token->state != Token::State::EXITING ) {
+    // token at flow node, but with irrelevant state
+    return;
+  }
+  if ( token->node && token->state != Token::State::EXITING && token->node->represents<BPMN::TypedStartEvent>() ) {
+    // token at typed start event, but not triggered
+    return;
+  }
+
+  auto vertex = getVertex(token);
+
+//std::cerr << "Validate vertex " << vertex->reference() << std::endl;    
+  _solution->visit(vertex);
+/*
+  // check visit
+  auto visitEvaluation = _solution->evaluate( model.visit.at(vertex) );
+  if ( !visitEvaluation ) {
+    // set solution value
+    _solution->setVariableValue( model.visit.at(vertex), true );
+  }
+  else if ( visitEvaluation && visitEvaluation.value() != true ) {
+    throw std::logic_error("SeededController: vertex '" + vertex->reference() +"' not visited in solution");
+  }
+*/
+  _solution->synchronizeStatus(token->status,vertex);
+  _solution->synchronizeData(*token->data,vertex);
+  _solution->synchronizeGlobals(token->globals,vertex);  
+}
+
+void SeededController::notice(const Observable* observable) {
+//std::cerr << "notice" << std::endl;
+  Controller::notice(observable);
+  
+  if( observable->getObservableType() ==  Execution::Observable::Type::Token ) {
+//std::cerr << "synchronizeSolution" << std::endl;
+    synchronizeSolution( static_cast<const Token*>(observable) );
+//std::cerr << "synchronizedSolution" << std::endl;
+  }
+  else if( observable->getObservableType() ==  Execution::Observable::Type::SequentialPerformerUpdate ) {
+    auto performerToken = static_cast<const SequentialPerformerUpdate*>(observable)->token;
+//std::cerr << "SequentialPerformerUpdate: " << performerToken->jsonify() << (performerToken->performing ? " is busy" : " is idle") << std::endl;
+    if ( performerToken->performing ) {
+      performing[ entry(getVertex(performerToken)) ] = entry(getVertex(performerToken->performing));
+    }
+    else {
+      performing[ entry(getVertex(performerToken)) ] = nullptr;
+    }
+  }
+//std::cerr << "noticed" << std::endl;
+}
+
+bool SeededController::hasPendingPredecessor(const Vertex* vertex) const {
+  if ( vertex == pendingVertices.front() ) {
+    return false;
+  }
+  for ( auto& [_,predecessor] : vertex->inflows ) {
+    if ( vertex == exit(&predecessor) && vertex->exit<BPMN::TypedStartEvent>()  ) {
+      continue;
+    }
+    if ( !std::ranges::contains(processedVertices,&predecessor) ) {
+//std::cerr << predecessor.reference() << " precedes " << vertex->reference() << std::endl;
+      return true;
+    }
+  }
+  for ( Vertex& predecessor : vertex->predecessors ) {
+    if ( !std::ranges::contains(processedVertices,&predecessor) ) {
+//std::cerr << predecessor.reference() << " precedes " << vertex->reference() << std::endl;
+      return true;
+    }
+  }
+  return false;
+}
+
+std::list< const SeededController::Vertex* >::iterator SeededController::finalizeUnvisitedTypedStartEvents(std::list< const Vertex* >::iterator it) {
+  auto node = (*it)->node;
+  auto parentEntry = &(*it)->parent.value().first;
+
+  auto it2 = it;
+  // find first iterator to vertex at other node
+  it = std::find_if_not(it, pendingVertices.end(), [&](auto other) { 
+    return (node == other->node && parentEntry == &other->parent.value().first );
+  });
+
+  // finalize message start events that are not visited
+  while ( it2 != pendingVertices.end() ) {
+    if ( (*it2)->type == Vertex::Type::EXIT && node == (*it2)->node && parentEntry == &(*it2)->parent.value().first ) {
+//std::cerr << "unvisit: " << (*it2)->shortReference() << std::endl;
+      it2 = finalizeUnvisited(entry(*it2));
+    }
+    else {
+      it2++;
+    }
+  }
+  return it;
+}
+
+bool SeededController::hasPendingRecipient(const Vertex* vertex) const {
+  assert( vertex->exit<BPMN::SendTask>() );
+  for ( Vertex& recipient : entry(vertex)->recipients ) {
+//    if ( _solution->getVariableValue( model.position.at(&recipient) ).value() > (double)lastPosition ) {
+    if ( _solution->getPosition( &recipient ) > lastPosition ) {
+//std::cerr << "recipient position(" << recipient.reference() << ") = " << _solution->getVariableValue( position.at(&recipient) ).value() << " > " << lastPosition << std::endl;
+      return true;
+    }
+  }
+//std::cerr << vertex->reference() << " has no pending recipient " << entry(vertex)->recipients.size() << std::endl;
+  return false;
+}
+
+std::shared_ptr<Event> SeededController::dispatchEvent(const SystemState* systemState) {
+//std::cerr << "dispatchEvent" << std::endl;
+  if ( terminationEvent ) {
+    return terminationEvent;
+  }
+
+  // when dispatchEvent is called all tokens have been advanced as much as possible
+  // non-decision vertices may only be pending if they are visited and must wait for 
+  // the respective event, e.g. timer event, completion event
+
+  auto getRequest = [](const Vertex* vertex, const auto& pendingDecisions) -> DecisionRequest* {
+    for (const auto& [token_ptr, request_ptr] : pendingDecisions) {
+      if (auto request = request_ptr.lock()) {
+//std::cerr << request->token->jsonify() << "/" << vertex->reference() << std::endl;
+        if (
+          request->token->node == vertex->node &&
+          request->token->data->at(BPMNOS::Model::ExtensionElements::Index::Instance).get().value() == vertex->instanceId
+        ) {
+          return request.get();
+        }
+      }
+    }
+    return nullptr;
+  };
+
+  auto waitingForSequentialPerformer = [&](const Vertex* vertex) -> bool {
+    assert( vertex->parent.has_value() );
+    assert( performing.contains(vertex->performer()) );
+    if ( auto other = performing.at(vertex->performer()) ) {
+      return other != entry(vertex);
+    }
+    return false;
+  };
+
+  auto hasRequest = [&](const Vertex* vertex) -> DecisionRequest* {
+    if ( vertex->type == Vertex::Type::ENTRY ) {
+      return getRequest(vertex,systemState->pendingEntryDecisions);
+    }
+    if (auto request = getRequest(vertex, systemState->pendingExitDecisions)) {
+      return request;
+    }
+    if (auto request = getRequest(vertex, systemState->pendingMessageDeliveryDecisions)) {
+      return request;
+    }
+    if (auto request = getRequest(vertex, systemState->pendingChoiceDecisions)) {
+      return request;
+    }
+    return nullptr;
+  };
+
+  auto createEvent = [&](const Vertex* vertex, DecisionRequest* request) -> std::shared_ptr<Event> {
+    std::shared_ptr<Event> event;
+    using enum RequestType;
+    if ( request->type == EntryRequest ) {
+      event = createEntryEvent( systemState, request->token, vertex);
+    }
+    else if ( request->type == ExitRequest ) {
+      event = createExitEvent( systemState, request->token, vertex);
+    }
+    else if ( request->type == MessageDeliveryRequest ) {
+      event = createMessageDeliveryEvent( systemState, request->token, vertex);
+    }
+    else if ( request->type == ChoiceRequest ) {
+      event = createChoiceEvent( systemState, request->token, vertex);
+    }
+    else {
+      assert(!"Unexpected request type");
+    }
+    return event;
+  };
+//std::cerr << pendingVertices.size() <<  " pending vertices" << std::endl;
+    
+  auto it = pendingVertices.begin();
+  while ( it != pendingVertices.end() ) {
+    auto vertex = *it;
+//std::cerr << "Pending: " << vertex->reference() << std::endl;
+    if ( hasPendingPredecessor(vertex) ) {
+//std::cerr << "Postpone (pending predecessor): " << vertex->reference() << std::endl;
+      // postpone vertex because a predecessor has not yet been processed
+      it++;
+      continue;
+    }
+    else if ( flattenedGraph.dummies.contains(vertex) ) {
+      // vertex is dummy 
+//std::cerr << "Dummy: " << vertex->reference() << std::endl;
+      it = finalizeVertexPosition(vertex);
+      continue;
+    }
+    else if ( vertex->entry<BPMN::TypedStartEvent>() ) {
+//std::cerr << "Ignore: " << vertex->reference() << std::endl;
+      // ignore vertex and proceed with exit
+      it++;
+      continue;
+    }
+    else if ( vertex->exit<BPMN::TypedStartEvent>() && hasPendingPredecessor(entry(vertex)) ) {
+//std::cerr << "Postpone (pending predecessor): " << vertex->reference() << std::endl;
+      // postpone vertex because a predecessor has not yet been processed
+      it++;
+      continue;
+    }
+    else if ( 
+      !vertex->exit<BPMN::TypedStartEvent>() &&
+      _solution->isUnvisited(vertex)
+//      _solution->evaluate( model.visit.at( vertex ) ).has_value() && 
+//      !_solution->evaluate( model.visit.at( vertex ) ).value()
+    ) {
+//std::cerr << "Unvisited: " << vertex->reference() << std::endl;
+      // vertex is dummy or not visited
+//      it = finalizeUnvisited(entry(vertex));
+      it = finalizeUnvisited(vertex);
+      continue;
+    }
+    else if ( auto request = hasRequest(vertex) ) {
+//std::cerr << "Request: " << request->token->jsonify() << std::endl;
+      if ( auto event = createEvent(vertex,request) ) {
+//std::cerr << "Event: " << vertex->reference() << std::endl;
+        return event;
+      }
+/*
+      else if ( vertex->exit<BPMN::MessageStartEvent>() ) {
+        // event-subprocess is not triggered or exit of start event is infeasible
+        it = finalizeUnvisitedTypedStartEvents(it);
+        continue;
+      }  
+*/
+      else {
+//std::cerr << "Postpone (infeasible): " << vertex->reference() << std::endl;
+        // postpone vertex because there is no feasible way to process
+        it++;
+        continue;
+      }
+    }
+    else  if ( vertex->exit<BPMN::SendTask>() ) {
+      if ( hasPendingRecipient(vertex) ) {
+//std::cerr << "Postpone (send task): " << vertex->reference() << std::endl;
+        // postpone vertex because there is no feasible way to process
+        it++;
+        continue;
+      }
+      else {
+//std::cerr << "Failed (send task): " << vertex->reference() << std::endl;
+        // ensure send task follows last position
+        finalizeVertexPosition( vertex );
+        --lastPosition; // 
+        // terminate as no solution exists
+        return std::make_shared<TerminationEvent>();            
+      }
+    }
+    else if ( vertex->exit<BPMN::MessageStartEvent>() ) {
+      // all there is no request
+//std::cerr << "Postpone (message start): " << vertex->reference() << std::endl;
+      // postpone vertex because a predecessor has not yet been processed
+      it++;
+      continue;
+    }
+    else if ( vertex->exit<BPMN::TypedStartEvent>() ) {
+      // wait for trigger
+//std::cerr << "Wait: " << vertex->jsonify() << std::endl;
+      return nullptr;
+    }
+    else if ( 
+      vertex->node->represents<BPMN::Activity>() &&
+      vertex->node->as<BPMN::Activity>()->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() &&
+      waitingForSequentialPerformer( vertex ) 
+    ) {
+//std::cerr << "Postpone (sequential activity): " << vertex->reference() << std::endl;
+      // ignore vertex at sequential activity because performer is busy with other activity
+      it++;
+      continue;
+    }
+    else {
+//std::cerr << "Wait: " << vertex->jsonify() << std::endl;
+      // wait for request
+      return nullptr;
+    }
+  }
+  if ( !pendingVertices.empty() && it == pendingVertices.end() ) {
+    // none of the pending decision requests is feasible, and the only
+    // way for one to become feasible would be by changing the timestamp.
+    // - entry request: we can assume a timer event to preceed
+    // - exit request: for a task we can assume that the duration of the activity
+    // to be set appropriately, for subprocesses we can assume a timer event
+    // to be used
+    // - choice request: we can assume that a feasible choice must always exist
+    // - message delivery request: we can assume that the feasibility of a message
+    // delivery is not time-dependent
+//std::cerr << "Terminate: " <<  pendingVertices.front()->reference() << std::endl;   
+    return std::make_shared<TerminationEvent>();  
+  }
+  return nullptr;
+}
+
+CPSolution& SeededController::createSolution() {
+//assert(!"!");
+  lastPosition = 0;
+  terminationEvent.reset();
+  _solution = std::make_unique<CPSolution>( model );
+  initializePendingVertices();
+/*
+  _solution = std::make_unique<CP::Solution>(model.getModel());
+  
+  // set collection evaluator
+  _solution->setCollectionEvaluator( 
+    [](double value) ->  std::expected< std::reference_wrapper<const std::vector<double> >, std::string >  {
+      if ( value < 0 || value >= (double)collectionRegistry.size() ) {
+        return std::unexpected("Unable to determine collection for index " + BPMNOS::to_string(value) );
+      }
+      return collectionRegistry[(size_t)value];
+    }
+  );
+
+  // add evaluators for lookup tables
+  for ( auto& lookupTable : scenario->model->lookupTables ) {
+    _solution->addEvaluator( 
+      lookupTable->name,
+      [&lookupTable](const std::vector<double>& operands) -> double {
+        return lookupTable->at(operands);
+      }
+    );
+  }
+*/
+  return *_solution.get();
+}
+
+const CPSolution& SeededController::getSolution() const {
+  assert( _solution );
+  return *_solution.get();
+}
+
+std::vector<size_t> SeededController::getSequence() const {
+  assert( _solution );
+
+  std::vector<size_t> sequence(model.getVertices().size());
+  for ( size_t i = 0; i < model.getVertices().size(); i++ ) {
+//    sequence[ (size_t)_solution->getVariableValue( model.position.at( model.vertices[i] ) ).value() -1 ] = i + 1;
+    sequence[ _solution->getPosition( model.getVertices()[i] ) -1 ] = i + 1;
+  }
+  
+  return sequence;
+}
+
+std::optional< BPMNOS::number > SeededController::getTimestamp( const Vertex* vertex ) const {
+  assert( model.status.contains(vertex) );
+  assert( model.status.at(vertex).size() > BPMNOS::Model::ExtensionElements::Index::Timestamp );
+//  auto timestamp = _solution->evaluate( model.status.at(vertex)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value );
+  auto timestamp = _solution->getTimestamp( vertex );
+  if ( timestamp ) {
+    return (number)timestamp.value();
+  }
+  return std::nullopt;
+}
+
+
+std::shared_ptr<Event> SeededController::createEntryEvent(const SystemState* systemState, const Token* token, const Vertex* vertex) {
+  auto timestamp = getTimestamp(vertex);
+  if ( !timestamp.has_value() || systemState->getTime() < timestamp.value() ) {
+    return nullptr;
+  }
+
+  return std::make_shared<EntryEvent>(token);
+}
+
+std::shared_ptr<Event> SeededController::createExitEvent(const SystemState* systemState, const Token* token, const Vertex* vertex) {
+  auto timestamp = getTimestamp(vertex);
+  if ( !timestamp.has_value() || systemState->getTime() < timestamp.value() ) {
+    return nullptr;
+  }
+  return std::make_shared<ExitEvent>(token);
+}
+
+std::shared_ptr<Event> SeededController::createChoiceEvent(const SystemState* systemState, const Token* token, const Vertex* vertex) {
+  auto timestamp = getTimestamp(vertex);
+  if ( !timestamp.has_value() || systemState->getTime() < timestamp.value() ) {
+    return nullptr;
+  }
+
+  auto& solution = getSolution();
+  auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+  BPMNOS::Values choices;
+  for ( auto& choice : extensionElements->choices ) {
+    assert( choice->attribute->category == BPMNOS::Model::Attribute::Category::STATUS );
+//    auto value = solution.getVariableValue( model.status.at(vertex)[choice->attribute->index].value );
+    auto value = solution.getStatusValue( vertex, choice->attribute->index );
+    if ( !value ) {
+      // no choice value provided
+      return nullptr;
+    }
+    choices.push_back( (number)value.value() );
+  }
+  return std::make_shared<ChoiceEvent>(token,std::move(choices));
+}
+
+std::shared_ptr<Event> SeededController::createMessageDeliveryEvent(const SystemState* systemState, const Token* token, const Vertex* vertex) {
+  auto timestamp = getTimestamp(vertex);
+//std::cerr << timestamp.has_value() << std::endl;
+  if ( !timestamp.has_value() || systemState->getTime() < timestamp.value() ) {
+    return nullptr;
+  }
+  
+  for ( Vertex& sender : vertex->senders ) {
+    if ( !_solution->messageFlows(&sender,vertex) ) {
+      continue;
+    }
+    // find message with header indicating that the sender is the sending vertex
+    for ( auto& [ message_ptr ] : systemState->outbox.at(sender.node->as<BPMN::FlowNode>()) ) {
+      if ( auto message = message_ptr.lock();
+        message &&
+        message->header[ BPMNOS::Model::MessageDefinition::Index::Sender ] == sender.instanceId
+      ) {
+        return std::make_shared<MessageDeliveryEvent>(token, message.get());
+      }
+    }
+  }
+
+  // message is not yet sent
+  return nullptr;
+}
+  
+void SeededController::initializePendingVertices() {
+//std::cerr << "initialize " << seed.size() << " pending vertices " << &model << std::endl;
+  lastPosition = 0;
+  terminationEvent.reset();
+  pendingVertices.clear();
+  processedVertices.clear();
+  performing.clear();
+  std::vector<double> positions(seed.size());
+  size_t position = 0;
+  for ( auto index : seed ) {
+    
+    pendingVertices.push_back( model.getVertices()[ index - 1 ] ); // seed indices start at 1
+//std::cerr << position+1 << ". position: " << index << "/'" << model.getVertices()[ index - 1 ]->reference() << "'" << std::endl;
+    positions[ index - 1 ] = (double)++position;
+  }
+  _solution->initializePositions(positions);
+}
+
+const FlattenedGraph::Vertex* SeededController::entry(const Vertex* vertex) const {
+/*
+  assert( vertex->type == Vertex::Type::EXIT );
+  return vertex - 1;
+*/
+  assert( flattenedGraph.vertexMap.contains({vertex->instanceId,vertex->loopIndices,vertex->node}));
+  return &flattenedGraph.vertexMap.at({vertex->instanceId,vertex->loopIndices,vertex->node}).first;
+}
+
+const FlattenedGraph::Vertex* SeededController::exit(const Vertex* vertex) const {
+/*
+  assert( vertex->type == Vertex::Type::ENTRY );
+  return vertex + 1;
+*/
+  assert( flattenedGraph.vertexMap.contains({vertex->instanceId,vertex->loopIndices,vertex->node}));
+  return &flattenedGraph.vertexMap.at({vertex->instanceId,vertex->loopIndices,vertex->node}).second;
+}
+
+

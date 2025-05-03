@@ -9,7 +9,7 @@ using namespace BPMNOS;
 
 // Include all tests here
 
-#define ALL_TESTS
+//#define ALL_TESTS
 #ifdef ALL_TESTS
 
 /* Model */
@@ -86,6 +86,9 @@ using namespace BPMNOS;
 //#include "cpcontroller/examples/knapsack_problem/test.h"
 //#include "cpcontroller/examples/job_shop_scheduling_problem/test.h"
 #include "cpcontroller/test.h"
+//#include "cpcontroller/data/test.h"
+//#include "cpcontroller/eventbasedgateway/test.h"
+//#include "cpcontroller/adhocsubprocess/test.h"
 #endif // ALL_TESTS
 
 

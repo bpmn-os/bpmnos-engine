@@ -5,7 +5,7 @@
 using namespace BPMNOS::Execution;
 using Vertex = FlattenedGraph::Vertex;
 
-CPSeed::CPSeed( CPController* controller, std::list<size_t> seed)
+CPSeed::CPSeed( SeededController* controller, std::list<size_t> seed)
   : controller(controller)
 {
   initialize( std::move(seed) );
@@ -32,11 +32,23 @@ std::cerr << std::endl;
   return seed;
 }
 
+double CPSeed::coverage() const {
+  return (double)sequence.size() / (double)controller->getVertices().size();
+}
+
+std::list<size_t> CPSeed::getSeed() const {
+  return std::list<size_t>(sequence.begin(), sequence.end());
+}
+
+std::vector<size_t> CPSeed::getSequence() const {
+  return sequence;
+}
+
 
 void CPSeed::initialize(std::list<size_t> seed) {
   assert( seed.size() == controller->getVertices().size() );
-  assert( !controller->getModel().getSequences().empty() );
-  assert( seed.size() == controller->getModel().getSequences().front().variables.size() );
+//  assert( !controller->getModel().getSequences().empty() );
+//  assert( seed.size() == controller->getModel().getSequences().front().variables.size() );
 
   sequence.reserve( seed.size() );
   
@@ -53,28 +65,6 @@ void CPSeed::initialize(std::list<size_t> seed) {
   }
 }
 
-double CPSeed::coverage() const {
-  return (double)sequence.size() / (double)controller->getVertices().size();
-}
-
-std::list<size_t> CPSeed::getSeed() const {
-  return std::list<size_t>(sequence.begin(), sequence.end());
-}
-
-std::vector<size_t> CPSeed::getSequence() const {
-  return sequence;
-}
-
-CP::Solution& CPSeed::createSolution() const {
-  if ( coverage() != 1.0 ) {
-    throw std::runtime_error("CPSeed: failed achieving full coverage");
-  }
-  auto& solution = controller->createSolution();
-  auto& sequenceVariable = controller->getModel().getSequences().front();
-  solution.setSequenceValues( sequenceVariable, sequence );
-
-  return solution;
-}
 
 bool CPSeed::addSequencePosition(size_t index) {
   auto vertex = controller->getVertices().at(index-1); // sequence positions start at 1

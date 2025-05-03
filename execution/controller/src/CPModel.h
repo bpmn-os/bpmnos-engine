@@ -1,16 +1,8 @@
-#ifndef BPMNOS_Execution_CPController_H
-#define BPMNOS_Execution_CPController_H
+#ifndef BPMNOS_Execution_CPModel_H
+#define BPMNOS_Execution_CPModel_H
 
 #include <bpmn++.h>
-#include "Controller.h"
-#include "Evaluator.h"
 #include "FlattenedGraph.h"
-#include "execution/engine/src/Mediator.h"
-#include "execution/engine/src/Observer.h"
-#include "execution/engine/src/EventDispatcher.h"
-#include "execution/engine/src/events/TerminationEvent.h"
-#include "dispatcher/ReadyHandler.h"
-#include "dispatcher/DeterministicTaskCompletion.h"
 #include "model/bpmnos/src/extensionElements/Gatekeeper.h"
 #include "model/bpmnos/src/extensionElements/Choice.h"
 #include "model/bpmnos/src/extensionElements/MessageDefinition.h"
@@ -21,8 +13,6 @@
 #include <utility>
 #include <memory>
 
-
-
 namespace BPMNOS::Execution {
 
 class CPSeed;
@@ -30,42 +20,28 @@ class CPSeed;
 /**
  * @brief A controller dispatching decisions obtained from a solution of a constraint program
  */
-class CPController : public Controller {
+class CPModel {
 public:
   using Vertex = FlattenedGraph::Vertex;
-  using RequestType = Observable::Type;
 
   struct Config {
     bool instantEntry = false;
     bool instantExit = false;
   };
   static Config default_config() { return {}; } // Work around for compiler bug see: https://stackoverflow.com/questions/53408962/try-to-understand-compiler-error-message-default-member-initializer-required-be/75691051#75691051
-  CPController(const BPMNOS::Model::Scenario* scenario, Config config = default_config());
-  void connect(Mediator* mediator);
-  void subscribe(Engine* engine);
-  void notice(const Observable* observable) override;
-  void synchronizeSolution(const Token* token);
-  void synchronizeStatus(const Token* token, const Vertex* vertex);
-  void synchronizeData(const Token* token, const Vertex* vertex);
-  void synchronizeGlobals(const Token* token, const Vertex* vertex);
-//  std::vector< std::unique_ptr<EventDispatcher> > eventDispatchers;
+  CPModel(const BPMNOS::Execution::FlattenedGraph& flattenedGraph, Config config = default_config());
+
   const CP::Model& getModel() const { return model; }
   const std::vector<const Vertex*>& getVertices() const { return vertices; }
 protected:
-  ReadyHandler readyHandler;
-  DeterministicTaskCompletion completionHandler;
-  Evaluator* evaluator;
-  std::shared_ptr<TerminationEvent> terminationEvent;
-  std::shared_ptr<Event> dispatchEvent(const SystemState* systemState);
-  const BPMNOS::Model::Scenario* scenario;
+  const BPMNOS::Model::Scenario& scenario;
   Config config;
 //  std::vector< const BPMNOS::Model::Scenario::InstanceData* > instances;
 public:
-  const FlattenedGraph flattenedGraph;
+  const FlattenedGraph& flattenedGraph;
   CP::Model model;
-protected:
+//protected:
   LIMEX::Handle<CP::Expression,CP::Expression> limexHandle;
-  std::unordered_map< const Vertex*, const Vertex* > performing; /// Map holding the entry vertex of a sequential activity performed by a sequential performer
 
   void createCP(); /// Method creating the constraint program
   void createGlobalVariables();
@@ -143,12 +119,12 @@ protected:
 
   const BPMNOS::Model::Content* findContent(const BPMNOS::Model::MessageDefinition* messageDefinition, const BPMNOS::Model::Attribute* attribute) const;
   
-  std::vector<CPController::AttributeVariables> createUniquelyDeducedEntryStatus(const Vertex* vertex, const BPMNOS::Model::AttributeRegistry& attributeRegistry, std::vector<AttributeVariables>& inheritedStatus);
+  std::vector<CPModel::AttributeVariables> createUniquelyDeducedEntryStatus(const Vertex* vertex, const BPMNOS::Model::AttributeRegistry& attributeRegistry, std::vector<AttributeVariables>& inheritedStatus);
   std::vector<AttributeVariables> createAlternativeEntryStatus(const Vertex* vertex, const BPMNOS::Model::AttributeRegistry& attributeRegistry, std::vector< std::pair<const CP::Variable&, std::vector<AttributeVariables>& > > alternatives);
   std::vector<AttributeVariables> createMergedStatus(const Vertex* vertex, const BPMNOS::Model::AttributeRegistry& attributeRegistry, std::vector< std::pair<const CP::Variable&, std::vector<AttributeVariables>& > > inputs);
   CP::Expression getLoopIndex(const Vertex* vertex);
   void createLoopEntryStatus(const Vertex* vertex);
-  std::vector<CPController::AttributeVariables> createLoopExitStatus(const Vertex* vertex);
+  std::vector<CPModel::AttributeVariables> createLoopExitStatus(const Vertex* vertex);
     
   struct pair_hash {
     template <class T1, class T2>
@@ -171,7 +147,7 @@ protected:
   std::unordered_map< const Vertex*, const CP::Variable& > visit; /// Variables indicating whether the a token enters or leaves a vertex
 
   std::unordered_map< std::pair< const Vertex*, const Vertex* >, const CP::Variable&, pair_hash > tokenFlow; /// Variables indicating whether the a token flows from one vertex to another
-  std::unordered_map< std::pair< const Vertex*, const Vertex* >, const CP::Variable&, pair_hash > messageFlow; /// Variables indicating whether the a token flows from one vertex to another
+  std::unordered_map< std::pair< const Vertex*, const Vertex* >, const CP::Variable&, pair_hash > messageFlow; /// Variables indicating whether a message is sent from one vertex to another
 
   std::unordered_map< const Vertex*, std::unordered_map< std::string, AttributeVariables> > messageHeader; /// Variables representing the header of a message originating at a vertex
   std::unordered_map< const Vertex*, std::unordered_map< std::string, AttributeVariables> > messageContent; /// Variables representing the content of a message originating at a vertex
@@ -188,44 +164,17 @@ protected:
 
   std::unordered_map< std::pair< const Vertex*, const Vertex* >, std::vector<AttributeVariables>, pair_hash > statusFlow; /// Variables representing status attributes flowing from one vertex to another
 
-  std::list< const Vertex* > pendingVertices; /// The list of vertices to be processed
-  std::list< const Vertex* > processedVertices; /// The list of vertices already processed
-  bool hasPendingPredecessor(const Vertex* vertex) const;
-  bool hasPendingRecipient(const Vertex* vertex) const;
-  void unvisitedEntry(const Vertex* vertex);
-  void unvisitedExit(const Vertex* vertex);
-  void finalizePredecessorPositions(const Vertex* vertex);
-  void fetchPendingPredecessors(std::unordered_set<const Vertex*>& predecessors, const Vertex* vertex) const;
-  std::list< const Vertex* >::iterator finalizeVertexPosition(const Vertex* vertex); /// Method finalizing the sequence position of a pending vertex and removing it from the list
-  std::list< const Vertex* >::iterator finalizeUnvisited(const Vertex* vertex);
-  void finalizeUnvisitedChildren(const Vertex* vertex);
-  std::list< const Vertex* >::iterator finalizeUnvisitedTypedStartEvents(std::list< const Vertex* >::iterator it); /// Method finalizing the sequence position of a unvisited vertices belonging to typed start events
-  size_t lastPosition;
-public:
-  virtual CP::Solution& createSolution(); /// Method creating a solution of the CP
-  const CP::Solution& getSolution() const; /// Method providing access to the solution of the CP
-  std::vector<size_t> getSequence() const; /// Method providing the vertex sequence in the solution
-  void setMessageDeliveryVariableValues( const Vertex* sender, const Vertex* recipient, BPMNOS::number timestamp );
-  void initializeEventQueue(); /// Method creating an initial sequence of vertices
+  const BPMNOS::Model::Scenario& getScenario() const; /// Method providing access to the scenario for the CP
 
-  const Vertex* getVertex( const Token* token ) const;
   std::optional< BPMN::Activity::LoopCharacteristics > getLoopCharacteristics(const Vertex* vertex) const;  
   std::optional< BPMNOS::number > getTimestamp( const Vertex* vertex ) const;
-  void setTimestamp( const Vertex* vertex, BPMNOS::number timestamp );
-  void setLocalStatusValue( const Vertex* vertex, size_t attributeIndex, BPMNOS::number value );
   std::pair< CP::Expression, CP::Expression > getAttributeVariables( const Vertex* vertex, const Model::Attribute* attribute);
 
-  virtual std::shared_ptr<Event> createEntryEvent(const SystemState* systemState, const Token* token, const Vertex* vertex); /// Method creating a choice event from CP solution
-  virtual std::shared_ptr<Event> createExitEvent(const SystemState* systemState, const Token* token, const Vertex* vertex); /// Method creating a choice event from CP solution
-  virtual std::shared_ptr<Event> createChoiceEvent(const SystemState* systemState, const Token* token, const Vertex* vertex); /// Method creating a choice event from CP solution
-  virtual std::shared_ptr<Event> createMessageDeliveryEvent(const SystemState* systemState, const Token* token, const Vertex* vertex); /// Method creating a message delivery event from CP solution
-  std::unique_ptr<CP::Solution> _solution;
-public:
   const Vertex* entry(const Vertex* vertex) const;
   const Vertex* exit(const Vertex* vertex) const;
 };
 
 } // namespace BPMNOS::Execution
 
-#endif // BPMNOS_Execution_CPController_H
+#endif // BPMNOS_Execution_CPModel_H
 

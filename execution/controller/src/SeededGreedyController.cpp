@@ -5,57 +5,15 @@
 using namespace BPMNOS::Execution;
 
 SeededGreedyController::SeededGreedyController(const BPMNOS::Model::Scenario* scenario, Evaluator* evaluator)
-  : CPController(scenario)
+  : SeededController(scenario)
   , evaluator(evaluator)
-  , _seed( CPSeed(this,CPSeed::defaultSeed(getVertices().size())) )
 {
   choiceDispatcher = std::make_unique<BestLimitedChoice>(evaluator);
 }
 
-bool SeededGreedyController::setSeed(CPSeed seed) {
-  initializeEventQueue();
-  messages.clear(); 
-  _seed = std::move(seed);
-std::cerr << "updated seed: ";
-for ( auto i : _seed.getSeed() ) std::cerr << i << ", ";
-std::cerr << std::endl;
-
-  return ( _seed.coverage() == 1.0 );
-}
-
-bool SeededGreedyController::setSeed(const std::list<size_t>& seed) {
-  lastPosition = 0;
-  terminationEvent.reset();
-  _seed = CPSeed(this,seed);
-std::cerr << "updated seed: ";
-for ( auto i : _seed.getSeed() ) std::cerr << i << ", ";
-std::cerr << std::endl;
-
-  return ( _seed.coverage() == 1.0 );
-}
-
-CP::Solution& SeededGreedyController::createSolution() {
-  auto& solution = CPController::createSolution();
-  auto& sequence = model.getSequences().front();
-  auto sequenceVariableValues = _seed.getSequence();
-
-  if( sequence.variables.size() != sequenceVariableValues.size() ) {
-    throw std::runtime_error("SeededGreedyController: illegal seed");
-  }
-
-  std::vector<size_t> positions(sequenceVariableValues.size());
-  for ( size_t index = 0; index < sequenceVariableValues.size(); index++ ) {
-    positions[ sequenceVariableValues[index]-1 ] = index + 1;
-  }
-  solution.setSequenceValues( sequence, positions );
-  initializeEventQueue();
-  
-  return solution;
-}
-
 void SeededGreedyController::notice(const Observable* observable) {
 //std::cerr << "SeededGreedyController::notice" << std::endl;
-  CPController::notice(observable);
+  SeededController::notice(observable);
   if ( observable->getObservableType() == Observable::Type::Message ) {
     auto message = static_cast<const Message*>(observable);
     if ( message->state == Message::State::CREATED ) {
@@ -71,7 +29,7 @@ std::shared_ptr<Event> SeededGreedyController::createEntryEvent(const SystemStat
   auto decision = std::make_shared<EntryDecision>(token, evaluator);
   decision->evaluate();
   if (  decision->evaluation.has_value() ) {
-    setTimestamp(vertex,systemState->getTime());
+    _solution->setTimestamp(vertex,systemState->getTime());
     return decision;
   }
   return nullptr;
@@ -82,7 +40,7 @@ std::shared_ptr<Event> SeededGreedyController::createExitEvent(const SystemState
   auto decision = std::make_shared<ExitDecision>(token, evaluator);
   decision->evaluate();
   if (  decision->evaluation.has_value() ) {
-    setTimestamp(vertex,systemState->getTime());
+    _solution->setTimestamp(vertex,systemState->getTime());
     return decision;
   }
   return nullptr;
@@ -90,7 +48,7 @@ std::shared_ptr<Event> SeededGreedyController::createExitEvent(const SystemState
 
 std::shared_ptr<Event> SeededGreedyController::createChoiceEvent(const SystemState* systemState, const Token* token, const Vertex* vertex) {
   // set timestamp of choice
-  setLocalStatusValue(vertex,BPMNOS::Model::ExtensionElements::Index::Timestamp,systemState->getTime());
+  _solution->setLocalStatusValue(vertex,BPMNOS::Model::ExtensionElements::Index::Timestamp,systemState->getTime());
 
   auto best = choiceDispatcher->determineBestChoices(token->decisionRequest);
   if (!best) {
@@ -106,7 +64,7 @@ std::shared_ptr<Event> SeededGreedyController::createChoiceEvent(const SystemSta
   assert( extensionElements->choices.size() == decision->choices.size() );
   for (size_t i = 0; i < extensionElements->choices.size(); i++) {
     assert( decision->choices[i].has_value() );
-    setLocalStatusValue(vertex,extensionElements->choices[i]->attribute->index,decision->choices[i].value());
+    _solution->setLocalStatusValue(vertex,extensionElements->choices[i]->attribute->index,decision->choices[i].value());
   }
   
   return best;
@@ -115,7 +73,7 @@ std::shared_ptr<Event> SeededGreedyController::createChoiceEvent(const SystemSta
 std::shared_ptr<Event> SeededGreedyController::createMessageDeliveryEvent(const SystemState* systemState, const Token* token, const Vertex* vertex) {
 //std::cerr << "SeededGreedyController::createMessageDeliveryEvent" << std::endl;
   // instant message delivery
-  setTimestamp(vertex,systemState->getTime());
+  _solution->setTimestamp(vertex,systemState->getTime());
   
   // obtain message candidates
   auto messageDefinition = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->getMessageDefinition(token->status);
@@ -165,7 +123,7 @@ std::shared_ptr<Event> SeededGreedyController::createMessageDeliveryEvent(const 
   auto senderId = message->header[ BPMNOS::Model::MessageDefinition::Index::Sender ].value();
   assert( flattenedGraph.vertexMap.contains({senderId,{},message->origin}) );
   auto& [senderEntry,senderExit] = flattenedGraph.vertexMap.at({senderId,{},message->origin}); // TODO: sender must not be within loop
-  setMessageDeliveryVariableValues(&senderEntry,vertex,systemState->getTime());
+  _solution->setMessageDeliveryVariableValues(&senderEntry,vertex,systemState->getTime());
   
   return best;
 }
