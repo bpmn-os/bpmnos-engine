@@ -454,15 +454,52 @@ std::shared_ptr<Event> SeededController::dispatchEvent(const SystemState* system
     using enum RequestType;
     if ( request->type == EntryRequest ) {
       event = createEntryEvent( systemState, request->token, vertex);
+      if ( event ) {
+        _solution->setTimestamp(vertex,systemState->getTime());
+      }
     }
     else if ( request->type == ExitRequest ) {
       event = createExitEvent( systemState, request->token, vertex);
+      if ( event ) {
+        _solution->setTimestamp(vertex,systemState->getTime());
+      }
     }
     else if ( request->type == MessageDeliveryRequest ) {
       event = createMessageDeliveryEvent( systemState, request->token, vertex);
+      if ( event ) {
+        // set timestamp of message delivery
+        if ( vertex->node->represents<BPMN::ReceiveTask>() ) {
+          _solution->setLocalStatusValue(vertex,BPMNOS::Model::ExtensionElements::Index::Timestamp,systemState->getTime());
+        }
+        else {
+          _solution->setTimestamp(vertex,systemState->getTime());
+        }
+        auto decision = dynamic_cast<MessageDeliveryDecision*>(event.get());
+  auto message = decision->message.lock();
+  assert( message );
+  auto senderId = message->header[ BPMNOS::Model::MessageDefinition::Index::Sender ].value();
+  assert( flattenedGraph.vertexMap.contains({senderId,{},message->origin}) );
+  auto& [senderEntry,senderExit] = flattenedGraph.vertexMap.at({senderId,{},message->origin}); // TODO: sender must not be within loop
+  _solution->setMessageDeliveryVariableValues(&senderEntry,vertex,systemState->getTime());
+
+      }
     }
     else if ( request->type == ChoiceRequest ) {
       event = createChoiceEvent( systemState, request->token, vertex);
+      if ( event ) {
+        // set timestamp of choice
+        _solution->setLocalStatusValue(vertex,BPMNOS::Model::ExtensionElements::Index::Timestamp,systemState->getTime());
+//        _solution->setTimestamp(vertex,systemState->getTime());
+        // apply choices 
+        auto decision = dynamic_cast<ChoiceDecision*>(event.get());
+        auto extensionElements = request->token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+        assert( extensionElements );
+        assert( extensionElements->choices.size() == decision->choices.size() );
+        for (size_t i = 0; i < extensionElements->choices.size(); i++) {
+          assert( decision->choices[i].has_value() );
+          _solution->setLocalStatusValue(vertex,extensionElements->choices[i]->attribute->index,decision->choices[i].value());
+        }
+      }
     }
     else {
       assert(!"Unexpected request type");

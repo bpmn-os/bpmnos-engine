@@ -2,8 +2,6 @@
 #define BPMNOS_Execution_SeededGreedyController_H
 
 #include <bpmn++.h>
-#include "CPModel.h"
-#include "CPSolution.h"
 #include "SeededController.h"
 #include "Evaluator.h"
 #include "execution/engine/src/Mediator.h"
