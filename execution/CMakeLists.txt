@@ -25,6 +25,9 @@ include("${PROJECT_SOURCE_DIR}/engine/CMakeLists.txt")
 # Get lists of all headers and sources of observers
 include("${PROJECT_SOURCE_DIR}/observer/CMakeLists.txt")
 
+# Get lists of all headers and sources of execution model
+include("${PROJECT_SOURCE_DIR}/model/CMakeLists.txt")
+
 # Get lists of all headers and sources of controllers
 include("${PROJECT_SOURCE_DIR}/controller/CMakeLists.txt")
 
@@ -47,13 +50,13 @@ file(MAKE_DIRECTORY "${CMAKE_SOURCE_DIR}/${LIB_DIR}")
 # Generate the single header file
 file(WRITE "${SINGLE_HEADER_PATH}" "// Automatically generated single header file\n")
 
-foreach(HEADER ${execution_utility_HEADERS} ${engine_HEADERS} ${observer_HEADERS} ${controller_HEADERS})
+foreach(HEADER ${execution_utility_HEADERS} ${engine_HEADERS} ${observer_HEADERS} ${executionmodel_HEADERS} ${controller_HEADERS})
   file(READ ${HEADER} HEADER_CONTENTS)
   string(REGEX REPLACE "#include \"[^\"]*\"\n" "" HEADER_CONTENTS "${HEADER_CONTENTS}")
   file(APPEND "${SINGLE_HEADER_PATH}" "${HEADER_CONTENTS}")
 endforeach()
 
-add_library(${PROJECT_NAME} STATIC ${execution_utility_SOURCES} ${engine_SOURCES} ${observer_SOURCES} ${controller_SOURCES})
+add_library(${PROJECT_NAME} STATIC ${execution_utility_SOURCES} ${engine_SOURCES} ${observer_SOURCES} ${executionmodel_SOURCES} ${controller_SOURCES})
 
 if (NDEBUG)
   target_compile_options(${PROJECT_NAME}

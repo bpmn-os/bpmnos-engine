@@ -24,9 +24,6 @@ list(APPEND controller_SOURCES
   dispatcher/greedy/BestLimitedChoice.cpp
   Controller.cpp
   GreedyController.cpp
-  FlattenedGraph.cpp
-  CPModel.cpp
-  CPSolution.cpp
   SeededController.cpp
   SeededGreedyController.cpp
 )
@@ -57,9 +54,6 @@ list(APPEND controller_HEADERS
   dispatcher/greedy/BestLimitedChoice.h
   Controller.h
   GreedyController.h
-  FlattenedGraph.h
-  CPModel.h
-  CPSolution.h
   SeededController.h
   SeededGreedyController.h
 )
