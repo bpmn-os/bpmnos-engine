@@ -1,4 +1,6 @@
 #include "FlattenedGraph.h"
+#include "execution/engine/src/Token.h"
+#include "execution/engine/src/StateMachine.h"
 #include "model/bpmnos/src/extensionElements/ExtensionElements.h"
 #include "model/bpmnos/src/SequentialAdHocSubProcess.h"
 #include "model/utility/src/Number.h"
@@ -659,5 +661,53 @@ bool FlattenedGraph::modifiesGlobals(const Vertex& vertex) const {
     if ( &vertex == &entry || &vertex == &exit ) return true; 
   }
   return false;
+}
+
+const FlattenedGraph::Vertex* FlattenedGraph::getVertex( const Token* token ) const {
+//std::cerr << "getVertex(" << token->jsonify() << ")" << std::endl;
+  auto node = token->node ? token->node->as<BPMN::Node>() : token->owner->process->as<BPMN::Node>();
+  if( !loopIndexAttributes.contains(node) ) {
+    // unreachable typed start event
+    assert( node->represents<BPMN::TypedStartEvent>() );
+    return nullptr;    
+  }
+  
+  // determine loop indices from token
+  std::vector< size_t > loopIndices;
+  for ( auto attribute : loopIndexAttributes.at(node)  ) {
+//std::cerr << attribute->id << std::endl;
+    if ( !token->status.at(attribute->index).has_value() ) {
+      // loop index has not yet been set
+      break;
+    }
+    loopIndices.push_back( (size_t)token->status.at(attribute->index).value() );
+  }
+  
+  auto instanceId = token->data->at(BPMNOS::Model::ExtensionElements::Index::Instance).get().value();
+//std::cerr << stringRegistry[(size_t)instanceId] << "/" << node->id << "/" << token->jsonify() << std::endl;
+  if( !vertexMap.contains({instanceId,loopIndices,node}) ) {
+    return nullptr;
+  }
+  assert( vertexMap.contains({instanceId,loopIndices,node}) );
+  auto& [entry,exit] = vertexMap.at({instanceId,loopIndices,node});
+  return (token->state == Token::State::ENTERED) ? &entry : &exit;
+}
+
+const FlattenedGraph::Vertex* FlattenedGraph::entry(const Vertex* vertex) const {
+/*
+  assert( vertex->type == Vertex::Type::EXIT );
+  return vertex - 1;
+*/
+  assert( vertexMap.contains({vertex->instanceId,vertex->loopIndices,vertex->node}));
+  return &vertexMap.at({vertex->instanceId,vertex->loopIndices,vertex->node}).first;
+}
+
+const FlattenedGraph::Vertex* FlattenedGraph::exit(const Vertex* vertex) const {
+/*
+  assert( vertex->type == Vertex::Type::ENTRY );
+  return vertex + 1;
+*/
+  assert( vertexMap.contains({vertex->instanceId,vertex->loopIndices,vertex->node}));
+  return &vertexMap.at({vertex->instanceId,vertex->loopIndices,vertex->node}).second;
 }
 

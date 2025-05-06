@@ -98,7 +98,6 @@ public:
   std::vector<size_t> getSequence() const; /// Method providing the vertex sequence in the solution
   void initializePendingVertices(); /// Method creating an initial sequence of vertices
 
-  const Vertex* getVertex( const Token* token ) const;
   std::optional< BPMN::Activity::LoopCharacteristics > getLoopCharacteristics(const Vertex* vertex) const;  
   std::optional< BPMNOS::number > getTimestamp( const Vertex* vertex ) const;
   std::pair< CP::Expression, CP::Expression > getAttributeVariables( const Vertex* vertex, const Model::Attribute* attribute);
@@ -109,8 +108,8 @@ public:
   virtual std::shared_ptr<Event> createMessageDeliveryEvent(const SystemState* systemState, const Token* token, const Vertex* vertex); /// Method creating a message delivery event from CP solution
   std::unique_ptr<CPSolution> _solution;
 public:
-  const Vertex* entry(const Vertex* vertex) const;
-  const Vertex* exit(const Vertex* vertex) const;
+  const Vertex* entry(const Vertex* vertex) const { return flattenedGraph.entry(vertex); };
+  const Vertex* exit(const Vertex* vertex) const { return flattenedGraph.exit(vertex); };
 };
 
 } // namespace BPMNOS::Execution

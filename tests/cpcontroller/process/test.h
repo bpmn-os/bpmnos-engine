@@ -20,12 +20,13 @@ SCENARIO( "Empty executable process", "[cpcontroller][process]" ) {
       Execution::SeededGreedyController controller(scenario.get(), &evaluator);
 //      controller.setSeed( Execution::CPSeed::defaultSeed( controller.getVertices().size() ) );
 
-      auto& solution = controller.createSolution();
       Execution::Engine engine;
       controller.connect(&engine);
       controller.subscribe(&engine);
       Execution::TimeWarp timeHandler;
       timeHandler.connect(&engine);
+      auto& solution = controller.createSolution();
+      solution.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
@@ -63,12 +64,13 @@ SCENARIO( "Trivial executable process", "[cpcontroller][process]" ) {
       Execution::SeededGreedyController controller(scenario.get(), &evaluator);
 //      controller.setSeed( Execution::CPSeed::defaultSeed( controller.getVertices().size() ) );
 
-      auto& solution = controller.createSolution();
       Execution::Engine engine;
       controller.connect(&engine);
       controller.subscribe(&engine);
       Execution::TimeWarp timeHandler;
       timeHandler.connect(&engine);
+      auto& solution = controller.createSolution();
+      solution.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
@@ -106,12 +108,13 @@ SCENARIO( "Simple executable process", "[cpcontroller][process]" ) {
       Execution::SeededGreedyController controller(scenario.get(), &evaluator);
 //      controller.setSeed( Execution::CPSeed::defaultSeed( controller.getVertices().size() ) );
 
-      auto& solution = controller.createSolution();
       Execution::Engine engine;
       controller.connect(&engine);
       controller.subscribe(&engine);
       Execution::TimeWarp timeHandler;
       timeHandler.connect(&engine);
+      auto& solution = controller.createSolution();
+      solution.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
@@ -145,12 +148,13 @@ SCENARIO( "Simple executable process", "[cpcontroller][process]" ) {
       Execution::SeededGreedyController controller(scenario.get(), &evaluator);
       controller.setSeed( {1,9,2,10,3,11,4,12,5,13,6,14,7,15,8,16} );
 
-      auto& solution = controller.createSolution();
       Execution::Engine engine;
       controller.connect(&engine);
       controller.subscribe(&engine);
       Execution::TimeWarp timeHandler;
       timeHandler.connect(&engine);
+      auto& solution = controller.createSolution();
+      solution.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
@@ -171,12 +175,13 @@ SCENARIO( "Simple executable process", "[cpcontroller][process]" ) {
       Execution::GuidedEvaluator evaluator;
       Execution::SeededGreedyController controller(scenario.get(), &evaluator);
 
-      auto& solution = controller.createSolution();
       Execution::Engine engine;
       controller.connect(&engine);
       controller.subscribe(&engine);
       Execution::TimeWarp timeHandler;
       timeHandler.connect(&engine);
+      auto& solution = controller.createSolution();
+      solution.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);

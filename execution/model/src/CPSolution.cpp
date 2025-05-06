@@ -35,17 +35,118 @@ CPSolution::CPSolution(const CPModel& cp)
   }
 }
 
+void CPSolution::subscribe(Engine* engine) {
+  engine->addSubscriber(this, 
+    Execution::Observable::Type::Event,
+    Execution::Observable::Type::Token
+  );
+}
+
+void CPSolution::unsubscribe(Engine* engine) {
+  engine->removeSubscriber(this, 
+    Execution::Observable::Type::Event,
+    Execution::Observable::Type::Token
+  );
+}
+
+void CPSolution::notice(const Observable* observable) {
+  if ( observable->getObservableType() == Execution::Observable::Type::Token ) {
+    synchronize( static_cast<const Token*>(observable) );
+  }
+  else {
+    assert( observable->getObservableType() == Execution::Observable::Type::Event );
+    synchronize( static_cast<const Event*>(observable) );
+  }
+}
+
+void CPSolution::synchronize(const Token* token) {
+  if ( token->state == Token::State::ENTERED ) {
+    // entry at node
+    // TODO: set position
+  }
+  else if ( token->node && token->state == Token::State::COMPLETED && token->node->represents<BPMN::TypedStartEvent>() ) {
+    // event-subprocess is triggered
+  }
+  else if ( token->node && token->state == Token::State::WITHDRAWN && token->node->represents<BPMN::TypedStartEvent>() ) {
+    // event-subprocess is not triggered
+  }
+  else if ( 
+    ( !token->node && token->state == Token::State::DONE ) || // Process
+    ( token->node && token->state == Token::State::EXITING && !token->node->represents<BPMN::TypedStartEvent>() ) || // Activity
+    ( token->node && token->state == Token::State::COMPLETED && token->node->represents<BPMN::CatchEvent>() && !token->node->represents<BPMN::ReceiveTask>() )
+  ) {
+    // exit of node
+    // TODO: set position
+  }
+}
+
+void CPSolution::synchronize(const Event* event) {
+  if ( dynamic_cast<const EntryEvent*>(event) ) {
+//std::cerr << "Entry: " << event->jsonify() << std::endl;
+    auto vertex = flattenedGraph.getVertex( event->token );
+    if ( !flattenedGraph.dummies.contains(vertex) ) {
+      auto timestamp = event->token->owner->systemState->getTime();
+      setTimestamp(vertex, timestamp );
+    }
+  }
+  else if ( dynamic_cast<const ExitEvent*>(event) ) {
+//std::cerr << "Exit: " << event->jsonify() << std::endl;
+    auto vertex = flattenedGraph.getVertex( event->token );
+    if ( !flattenedGraph.dummies.contains(vertex) ) {
+      auto timestamp = event->token->owner->systemState->getTime();
+      setTimestamp(vertex, timestamp );
+    }
+  }
+  else if ( auto messageDeliveryEvent = dynamic_cast<const MessageDeliveryEvent*>(event) ) {
+//std::cerr << "Message delivery: " << event->jsonify() << std::endl;
+    auto vertex = flattenedGraph.getVertex( event->token );
+    // set timestamp of message delivery
+    auto timestamp = event->token->owner->systemState->getTime();
+    if ( vertex->node->represents<BPMN::ReceiveTask>() ) {
+      setLocalStatusValue(vertex,BPMNOS::Model::ExtensionElements::Index::Timestamp,timestamp);
+    }
+    else {
+      setTimestamp(vertex,timestamp);
+    }
+    auto message = messageDeliveryEvent->message.lock();
+    assert( message );
+    auto senderId = message->header[ BPMNOS::Model::MessageDefinition::Index::Sender ].value();
+    assert( flattenedGraph.vertexMap.contains({senderId,{},message->origin}) );
+    // TODO: sender must not be within loop
+    auto& [senderEntry,senderExit] = flattenedGraph.vertexMap.at({senderId,{},message->origin}); 
+    setMessageDeliveryVariableValues(&senderEntry,vertex,timestamp);
+  }
+  else if ( auto choiceEvent = dynamic_cast<const ChoiceEvent*>(event) ) {
+//std::cerr << "Choice: " << event->jsonify() << std::endl;
+    auto vertex = flattenedGraph.getVertex( event->token );
+    // set timestamp of choice
+    auto timestamp = event->token->owner->systemState->getTime();
+    setLocalStatusValue(vertex,BPMNOS::Model::ExtensionElements::Index::Timestamp,timestamp);
+    // apply choices 
+    auto extensionElements = vertex->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+    assert( extensionElements );
+    assert( extensionElements->choices.size() == choiceEvent->choices.size() );
+    for (size_t i = 0; i < extensionElements->choices.size(); i++) {
+      assert( choiceEvent->choices[i].has_value() );
+      setLocalStatusValue(vertex,extensionElements->choices[i]->attribute->index,choiceEvent->choices[i].value());
+    }
+  }
+}
+
+
 
 void CPSolution::setMessageDeliveryVariableValues( const Vertex* sender, const Vertex* recipient, BPMNOS::number timestamp ) {
-//std::cerr << "Sen:" << sender->reference() << std::endl;  
+//std::cerr << "Sen:" << sender->jsonify() << std::endl;  
+//std::cerr << "Rec:" << recipient->jsonify() << std::endl;  
   for ( const Vertex& candidate : sender->recipients ) {
-//std::cerr << "Rec:" << candidate.reference() << std::endl;  
     assert( cp.messageFlow.contains({sender,&candidate}) );
+//std::cerr << "message_{" << sender->reference() << " -> " << candidate.reference() << "} := " << (&candidate == recipient) << std::endl; 
     _solution.setVariableValue( cp.messageFlow.at({sender,&candidate}), (double)(&candidate == recipient) );
   }
   for ( const Vertex& candidate : recipient->senders ) {
     assert( cp.messageFlow.contains({&candidate,recipient}) );
     _solution.setVariableValue( cp.messageFlow.at({&candidate,recipient}), (double)(&candidate == sender) );
+//std::cerr << "message_{" << candidate.reference() << " -> " << recipient->reference() << "} := " << (&candidate == sender) << std::endl; 
   }
   // set message delivery time
   if ( recipient->node->represents<BPMN::ReceiveTask>() || recipient->node->represents<BPMN::MessageStartEvent>() ) {
@@ -433,24 +534,4 @@ void CPSolution::setLocalStatusValue( const Vertex* vertex, size_t attributeInde
   auto& initialStatus = std::get<0>(cp.locals.at(vertex)[0]);
   _solution.setVariableValue( initialStatus[attributeIndex].value, (double)value );
 }
-
-
-const FlattenedGraph::Vertex* CPSolution::entry(const Vertex* vertex) const {
-/*
-  assert( vertex->type == Vertex::Type::EXIT );
-  return vertex - 1;
-*/
-  assert( flattenedGraph.vertexMap.contains({vertex->instanceId,vertex->loopIndices,vertex->node}));
-  return &flattenedGraph.vertexMap.at({vertex->instanceId,vertex->loopIndices,vertex->node}).first;
-}
-
-const FlattenedGraph::Vertex* CPSolution::exit(const Vertex* vertex) const {
-/*
-  assert( vertex->type == Vertex::Type::ENTRY );
-  return vertex + 1;
-*/
-  assert( flattenedGraph.vertexMap.contains({vertex->instanceId,vertex->loopIndices,vertex->node}));
-  return &flattenedGraph.vertexMap.at({vertex->instanceId,vertex->loopIndices,vertex->node}).second;
-}
-
 

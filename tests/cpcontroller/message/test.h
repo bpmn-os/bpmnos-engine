@@ -1,7 +1,6 @@
 SCENARIO( "Simple messaging", "[cpcontroller][message]" ) {
   const std::string modelFile = "tests/execution/message/Simple_messaging.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
-
   GIVEN( "Two instances starting at time 0" ) {
 
     std::string csv =
@@ -21,14 +20,15 @@ SCENARIO( "Simple messaging", "[cpcontroller][message]" ) {
       Execution::SeededGreedyController controller(scenario.get(), &evaluator);
 //      controller.setSeed( Execution::CPSeed::defaultSeed( controller.getVertices().size() ) );
 
-      auto& solution = controller.createSolution();
       Execution::Engine engine;
       controller.connect(&engine);
       controller.subscribe(&engine); 
       Execution::TimeWarp timeHandler;
       timeHandler.connect(&engine);
-      Execution::Recorder recorder;
-//      Execution::Recorder recorder(std::cerr);
+      auto& solution = controller.createSolution();
+      solution.subscribe(&engine);
+//      Execution::Recorder recorder;
+      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
       engine.run(scenario.get(),10);
 
@@ -63,12 +63,13 @@ SCENARIO( "Simple messaging", "[cpcontroller][message]" ) {
       Execution::SeededGreedyController controller(scenario.get(), &evaluator);
 //      controller.setSeed( Execution::CPSeed::defaultSeed( controller.getVertices().size() ) );
 
-      auto& solution = controller.createSolution();
       Execution::Engine engine;
       controller.connect(&engine);
       controller.subscribe(&engine); 
       Execution::TimeWarp timeHandler;
       timeHandler.connect(&engine);
+      auto& solution = controller.createSolution();
+      solution.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
@@ -85,8 +86,8 @@ SCENARIO( "Simple messaging", "[cpcontroller][message]" ) {
       }
     }
   }
-
 };
+
 
 SCENARIO( "Message tasks", "[cpcontroller][message]" ) {
   const std::string modelFile = "tests/execution/message/Message_tasks.bpmn";
@@ -111,12 +112,13 @@ SCENARIO( "Message tasks", "[cpcontroller][message]" ) {
       Execution::SeededGreedyController controller(scenario.get(), &evaluator);
       controller.setSeed( {1,2,3,4,9,10,11,12,13,14,15,16,5,6,7,8} );
 
-      auto& solution = controller.createSolution();
       Execution::Engine engine;
       controller.connect(&engine);
       controller.subscribe(&engine); 
       Execution::TimeWarp timeHandler;
       timeHandler.connect(&engine);
+      auto& solution = controller.createSolution();
+      solution.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
@@ -144,12 +146,13 @@ SCENARIO( "Message tasks", "[cpcontroller][message]" ) {
       Execution::SeededGreedyController controller(scenario.get(), &evaluator);
 //      controller.setSeed( Execution::CPSeed::defaultSeed( controller.getVertices().size() ) );
 
-      auto& solution = controller.createSolution();
       Execution::Engine engine;
       controller.connect(&engine);
       controller.subscribe(&engine); 
       Execution::TimeWarp timeHandler;
       timeHandler.connect(&engine);
+      auto& solution = controller.createSolution();
+      solution.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
@@ -169,4 +172,5 @@ SCENARIO( "Message tasks", "[cpcontroller][message]" ) {
   }
 
 };
+
 

@@ -57,30 +57,6 @@ std::cerr << std::endl;
   return true;
 }
 
-
-const FlattenedGraph::Vertex* SeededController::getVertex( const Token* token ) const {
-//std::cerr << "getVertex(" << token->jsonify() << ")" << std::endl;
-  auto node = token->node ? token->node->as<BPMN::Node>() : token->owner->process->as<BPMN::Node>();
-  if( !flattenedGraph.loopIndexAttributes.contains(node) ) {
-    // unreachable typed start event
-    assert( node->represents<BPMN::TypedStartEvent>() );
-    return nullptr;    
-  }
-  std::vector< size_t > loopIndices;
-  for ( auto attribute : flattenedGraph.loopIndexAttributes.at(node)  ) {
-    assert( token->status.at(attribute->index).has_value() );
-    loopIndices.push_back( (size_t)token->status.at(attribute->index).value() );
-  }
-  auto instanceId = token->data->at(BPMNOS::Model::ExtensionElements::Index::Instance).get().value();
-//std::cerr << stringRegistry[(size_t)instanceId] << "/" << node->id << "/" << token->jsonify() << std::endl;
-  if( !flattenedGraph.vertexMap.contains({instanceId,loopIndices,node}) ) {
-    return nullptr;
-  }
-  assert( flattenedGraph.vertexMap.contains({instanceId,loopIndices,node}) );
-  auto& [entry,exit] = flattenedGraph.vertexMap.at({instanceId,loopIndices,node});
-  return (token->state == Token::State::ENTERED) ? &entry : &exit;
-}
-
 std::optional< BPMN::Activity::LoopCharacteristics> SeededController::getLoopCharacteristics(const Vertex* vertex) const {
   auto activity = vertex->node->represents<BPMN::Activity>();
   if ( !activity ) {
@@ -222,14 +198,14 @@ void SeededController::synchronizeSolution(const Token* token) {
   }
 
   if ( token->node && token->state == Token::State::WITHDRAWN && token->node->represents<BPMN::TypedStartEvent>() ) {
-    if ( auto vertex = getVertex(token) ) {
+    if ( auto vertex = flattenedGraph.getVertex(token) ) {
 //std::cerr << "clear withdrawn start event: " << vertex->reference() << std::endl;
       finalizeUnvisited(entry(vertex));
     }
   }
 
   if ( token->state == Token::State::ENTERED ) {
-    if ( auto vertex = getVertex(token) ) {
+    if ( auto vertex = flattenedGraph.getVertex(token) ) {
       if ( vertex->entry<BPMN::TypedStartEvent>() ) {
 //std::cerr << "ignore typed start event entry: " << token->jsonify() << std::endl;
         return;
@@ -248,7 +224,7 @@ void SeededController::synchronizeSolution(const Token* token) {
     }
   }
   else if ( token->node && token->state == Token::State::COMPLETED && token->node->represents<BPMN::TypedStartEvent>() ) {
-    auto vertex = getVertex(token);
+    auto vertex = flattenedGraph.getVertex(token);
     assert( vertex );
     assert( vertex->exit<BPMN::TypedStartEvent>() );
     finalizePredecessorPositions(entry(vertex));
@@ -265,7 +241,7 @@ void SeededController::synchronizeSolution(const Token* token) {
     ( token->node && token->state == Token::State::EXITING && !token->node->represents<BPMN::TypedStartEvent>() ) || // Activity
     ( token->node && token->state == Token::State::COMPLETED && token->node->represents<BPMN::CatchEvent>() && !token->node->represents<BPMN::ReceiveTask>() )
   ) { 
-    if ( auto vertex = getVertex(token) ) {
+    if ( auto vertex = flattenedGraph.getVertex(token) ) {
       auto entryVertex = entry(vertex);
       if ( entryVertex->inflows.size() == 1 && entryVertex->inflows.front().second.node->represents<BPMN::EventBasedGateway>() ) {
         assert( vertex->exit<BPMN::CatchEvent>() );
@@ -299,21 +275,10 @@ void SeededController::synchronizeSolution(const Token* token) {
     return;
   }
 
-  auto vertex = getVertex(token);
+  auto vertex = flattenedGraph.getVertex(token);
 
 //std::cerr << "Validate vertex " << vertex->reference() << std::endl;    
   _solution->visit(vertex);
-/*
-  // check visit
-  auto visitEvaluation = _solution->evaluate( model.visit.at(vertex) );
-  if ( !visitEvaluation ) {
-    // set solution value
-    _solution->setVariableValue( model.visit.at(vertex), true );
-  }
-  else if ( visitEvaluation && visitEvaluation.value() != true ) {
-    throw std::logic_error("SeededController: vertex '" + vertex->reference() +"' not visited in solution");
-  }
-*/
   _solution->synchronizeStatus(token->status,vertex);
   _solution->synchronizeData(*token->data,vertex);
   _solution->synchronizeGlobals(token->globals,vertex);  
@@ -332,10 +297,10 @@ void SeededController::notice(const Observable* observable) {
     auto performerToken = static_cast<const SequentialPerformerUpdate*>(observable)->token;
 //std::cerr << "SequentialPerformerUpdate: " << performerToken->jsonify() << (performerToken->performing ? " is busy" : " is idle") << std::endl;
     if ( performerToken->performing ) {
-      performing[ entry(getVertex(performerToken)) ] = entry(getVertex(performerToken->performing));
+      performing[ entry(flattenedGraph.getVertex(performerToken)) ] = entry(flattenedGraph.getVertex(performerToken->performing));
     }
     else {
-      performing[ entry(getVertex(performerToken)) ] = nullptr;
+      performing[ entry(flattenedGraph.getVertex(performerToken)) ] = nullptr;
     }
   }
 //std::cerr << "noticed" << std::endl;
@@ -454,52 +419,15 @@ std::shared_ptr<Event> SeededController::dispatchEvent(const SystemState* system
     using enum RequestType;
     if ( request->type == EntryRequest ) {
       event = createEntryEvent( systemState, request->token, vertex);
-      if ( event ) {
-        _solution->setTimestamp(vertex,systemState->getTime());
-      }
     }
     else if ( request->type == ExitRequest ) {
       event = createExitEvent( systemState, request->token, vertex);
-      if ( event ) {
-        _solution->setTimestamp(vertex,systemState->getTime());
-      }
     }
     else if ( request->type == MessageDeliveryRequest ) {
       event = createMessageDeliveryEvent( systemState, request->token, vertex);
-      if ( event ) {
-        // set timestamp of message delivery
-        if ( vertex->node->represents<BPMN::ReceiveTask>() ) {
-          _solution->setLocalStatusValue(vertex,BPMNOS::Model::ExtensionElements::Index::Timestamp,systemState->getTime());
-        }
-        else {
-          _solution->setTimestamp(vertex,systemState->getTime());
-        }
-        auto decision = dynamic_cast<MessageDeliveryDecision*>(event.get());
-  auto message = decision->message.lock();
-  assert( message );
-  auto senderId = message->header[ BPMNOS::Model::MessageDefinition::Index::Sender ].value();
-  assert( flattenedGraph.vertexMap.contains({senderId,{},message->origin}) );
-  auto& [senderEntry,senderExit] = flattenedGraph.vertexMap.at({senderId,{},message->origin}); // TODO: sender must not be within loop
-  _solution->setMessageDeliveryVariableValues(&senderEntry,vertex,systemState->getTime());
-
-      }
     }
     else if ( request->type == ChoiceRequest ) {
       event = createChoiceEvent( systemState, request->token, vertex);
-      if ( event ) {
-        // set timestamp of choice
-        _solution->setLocalStatusValue(vertex,BPMNOS::Model::ExtensionElements::Index::Timestamp,systemState->getTime());
-//        _solution->setTimestamp(vertex,systemState->getTime());
-        // apply choices 
-        auto decision = dynamic_cast<ChoiceDecision*>(event.get());
-        auto extensionElements = request->token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
-        assert( extensionElements );
-        assert( extensionElements->choices.size() == decision->choices.size() );
-        for (size_t i = 0; i < extensionElements->choices.size(); i++) {
-          assert( decision->choices[i].has_value() );
-          _solution->setLocalStatusValue(vertex,extensionElements->choices[i]->attribute->index,decision->choices[i].value());
-        }
-      }
     }
     else {
       assert(!"Unexpected request type");
@@ -629,34 +557,11 @@ std::shared_ptr<Event> SeededController::dispatchEvent(const SystemState* system
 }
 
 CPSolution& SeededController::createSolution() {
-//assert(!"!");
   lastPosition = 0;
   terminationEvent.reset();
   _solution = std::make_unique<CPSolution>( model );
   initializePendingVertices();
-/*
-  _solution = std::make_unique<CP::Solution>(model.getModel());
-  
-  // set collection evaluator
-  _solution->setCollectionEvaluator( 
-    [](double value) ->  std::expected< std::reference_wrapper<const std::vector<double> >, std::string >  {
-      if ( value < 0 || value >= (double)collectionRegistry.size() ) {
-        return std::unexpected("Unable to determine collection for index " + BPMNOS::to_string(value) );
-      }
-      return collectionRegistry[(size_t)value];
-    }
-  );
 
-  // add evaluators for lookup tables
-  for ( auto& lookupTable : scenario->model->lookupTables ) {
-    _solution->addEvaluator( 
-      lookupTable->name,
-      [&lookupTable](const std::vector<double>& operands) -> double {
-        return lookupTable->at(operands);
-      }
-    );
-  }
-*/
   return *_solution.get();
 }
 
@@ -771,23 +676,3 @@ void SeededController::initializePendingVertices() {
   }
   _solution->initializePositions(positions);
 }
-
-const FlattenedGraph::Vertex* SeededController::entry(const Vertex* vertex) const {
-/*
-  assert( vertex->type == Vertex::Type::EXIT );
-  return vertex - 1;
-*/
-  assert( flattenedGraph.vertexMap.contains({vertex->instanceId,vertex->loopIndices,vertex->node}));
-  return &flattenedGraph.vertexMap.at({vertex->instanceId,vertex->loopIndices,vertex->node}).first;
-}
-
-const FlattenedGraph::Vertex* SeededController::exit(const Vertex* vertex) const {
-/*
-  assert( vertex->type == Vertex::Type::ENTRY );
-  return vertex + 1;
-*/
-  assert( flattenedGraph.vertexMap.contains({vertex->instanceId,vertex->loopIndices,vertex->node}));
-  return &flattenedGraph.vertexMap.at({vertex->instanceId,vertex->loopIndices,vertex->node}).second;
-}
-
-

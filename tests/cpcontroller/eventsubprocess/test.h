@@ -22,12 +22,13 @@ SCENARIO( "N-to-1 assignment", "[cpcontroller][eventsubprocess]" ) {
       Execution::SeededGreedyController controller(scenario.get(), &evaluator);
 //      controller.setSeed( Execution::CPSeed::defaultSeed( controller.getVertices().size() ) );
 
-      auto& solution = controller.createSolution();
       Execution::Engine engine;
       controller.connect(&engine);
       controller.subscribe(&engine); 
       Execution::TimeWarp timeHandler;
       timeHandler.connect(&engine);
+      auto& solution = controller.createSolution();
+      solution.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
@@ -65,12 +66,13 @@ SCENARIO( "N-to-1 assignment", "[cpcontroller][eventsubprocess]" ) {
       Execution::SeededGreedyController controller(scenario.get(), &evaluator);
       controller.setSeed( {1,2,3,4,5,6,7,8,9,10,11,12,13,14,16,15,17,19,22,20,23,25,27,18,21,24,26,28} );
 
-      auto& solution = controller.createSolution();
       Execution::Engine engine;
       controller.connect(&engine);
       controller.subscribe(&engine); 
       Execution::TimeWarp timeHandler;
       timeHandler.connect(&engine);
+      auto& solution = controller.createSolution();
+      solution.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
@@ -98,12 +100,13 @@ SCENARIO( "N-to-1 assignment", "[cpcontroller][eventsubprocess]" ) {
       Execution::SeededGreedyController controller(scenario.get(), &evaluator);
 //      controller.setSeed( Execution::CPSeed::defaultSeed( controller.getVertices().size() ) );
 
-      auto& solution = controller.createSolution();
       Execution::Engine engine;
       controller.connect(&engine);
       controller.subscribe(&engine); 
       Execution::TimeWarp timeHandler;
       timeHandler.connect(&engine);
+      auto& solution = controller.createSolution();
+      solution.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);

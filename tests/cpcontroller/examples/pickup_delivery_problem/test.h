@@ -26,12 +26,13 @@ SCENARIO( "Pickup delivery problem", "[cpcontroller][pickup_delivery_problem]" )
       Execution::SeededGreedyController controller(scenario.get(), &evaluator);
 //      controller.setSeed( Execution::CPSeed::defaultSeed( controller.getVertices().size() ) );
 
-      auto& solution = controller.createSolution();
       Execution::Engine engine;
       controller.connect(&engine);
       controller.subscribe(&engine); 
       Execution::TimeWarp timeHandler;
       timeHandler.connect(&engine);
+      auto& solution = controller.createSolution();
+      solution.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
@@ -84,12 +85,13 @@ SCENARIO( "Pickup delivery problem", "[cpcontroller][pickup_delivery_problem]" )
       Execution::SeededGreedyController controller(scenario.get(), &evaluator);
 //      controller.setSeed( Execution::CPSeed::defaultSeed( controller.getVertices().size() ) );
 
-      auto& solution = controller.createSolution();
       Execution::Engine engine;
       controller.connect(&engine);
       controller.subscribe(&engine); 
       Execution::TimeWarp timeHandler;
       timeHandler.connect(&engine);
+      auto& solution = controller.createSolution();
+      solution.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
@@ -153,12 +155,13 @@ SCENARIO( "Pickup delivery problem", "[cpcontroller][pickup_delivery_problem]" )
       Execution::SeededGreedyController controller(scenario.get(), &evaluator);
 //      controller.setSeed( Execution::CPSeed::defaultSeed( controller.getVertices().size() ) );
 
-      auto& solution = controller.createSolution();
       Execution::Engine engine;
       controller.connect(&engine);
       controller.subscribe(&engine); 
       Execution::TimeWarp timeHandler;
       timeHandler.connect(&engine);
+      auto& solution = controller.createSolution();
+      solution.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);

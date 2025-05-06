@@ -19,7 +19,6 @@ SCENARIO( "Task with expresion operator", "[cpcontroller][status]" ) {
       Execution::SeededGreedyController controller(scenario.get(), &evaluator);
 //      controller.setSeed( Execution::CPSeed::defaultSeed( controller.getVertices().size() ) );
 
-      auto& solution = controller.createSolution();
       Execution::Engine engine;
       controller.connect(&engine);
       controller.subscribe(&engine); // only necessary to validate consistency of solution and identify errors
@@ -28,6 +27,8 @@ SCENARIO( "Task with expresion operator", "[cpcontroller][status]" ) {
 
       Execution::TimeWarp timeHandler;
       timeHandler.connect(&engine);
+      auto& solution = controller.createSolution();
+      solution.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);

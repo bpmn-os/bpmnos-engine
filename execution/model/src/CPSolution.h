@@ -4,6 +4,8 @@
 #include <bpmn++.h>
 #include "FlattenedGraph.h"
 #include "CPModel.h"
+#include "execution/engine/src/Engine.h"
+#include "execution/engine/src/Observer.h"
 #include "model/bpmnos/src/extensionElements/Gatekeeper.h"
 #include "model/bpmnos/src/extensionElements/Choice.h"
 #include "model/bpmnos/src/extensionElements/MessageDefinition.h"
@@ -17,16 +19,19 @@
 
 namespace BPMNOS::Execution {
 
-class CPSeed;
-
 /**
- * @brief A controller dispatching decisions obtained from a solution of a constraint program
+ * @brief A solution of a constraint program
  */
-class CPSolution {
+class CPSolution : public Observer {
 public:
   using Vertex = FlattenedGraph::Vertex;
 
   CPSolution(const CPModel& cp);
+  void notice(const Observable* observable) override;
+  void subscribe(Engine* engine);
+  void unsubscribe(Engine* engine);
+  void synchronize(const Token* token);
+  void synchronize(const Event* event);
   const CPModel& cp;
   const FlattenedGraph& flattenedGraph;
   CP::Solution _solution;
@@ -63,11 +68,12 @@ public:
   std::pair< CP::Expression, CP::Expression > getAttributeVariables( const Vertex* vertex, const Model::Attribute* attribute);
 
 public:
-  const Vertex* entry(const Vertex* vertex) const;
-  const Vertex* exit(const Vertex* vertex) const;
+  const Vertex* entry(const Vertex* vertex) const { return flattenedGraph.entry(vertex); };
+  const Vertex* exit(const Vertex* vertex) const { return flattenedGraph.exit(vertex); };
   bool complete() const { return _solution.complete(); };
-  std::string errors() const { return _solution.errors(); };
   std::optional<double> getObjectiveValue() const { return _solution.getObjectiveValue(); };
+  std::string errors() const { return _solution.errors(); };
+  std::string stringify() const { return _solution.stringify(); };
 };
 
 } // namespace BPMNOS::Execution

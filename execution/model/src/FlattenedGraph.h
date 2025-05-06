@@ -14,6 +14,8 @@
 
 namespace BPMNOS::Execution {
 
+class Token;
+
 /**
  * @brief Represents a graph containing all BPMN nodes that may receive a token during execution of a scenario.
  *
@@ -91,6 +93,11 @@ public:
   std::vector< std::pair<const Vertex&, const Vertex&> > globalModifiers; /// Container holding vertices of tasks modifying global attributes
   bool modifiesData(const Vertex& vertex, const Vertex& dataOwner) const; /// Method returning true of the vertex modifies a data attribute of the given owner 
   bool modifiesGlobals(const Vertex& vertex) const; /// Method returning true of the vertex modifies a global attribute
+
+  const Vertex* getVertex( const Token* token ) const;
+
+  const Vertex* entry(const Vertex* vertex) const;
+  const Vertex* exit(const Vertex* vertex) const;
 };
 
 } // namespace BPMNOS::Execution

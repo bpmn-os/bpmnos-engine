@@ -84,11 +84,13 @@ using namespace BPMNOS;
 #ifndef ALL_TESTS
 //#include "examples/knapsack_problem/test.h"
 //#include "cpcontroller/examples/knapsack_problem/test.h"
+//#include "cpcontroller/examples/bin_packing_problem/test.h"
 //#include "cpcontroller/examples/job_shop_scheduling_problem/test.h"
 #include "cpcontroller/test.h"
 //#include "cpcontroller/data/test.h"
 //#include "cpcontroller/eventbasedgateway/test.h"
 //#include "cpcontroller/adhocsubprocess/test.h"
+//#include "cpcontroller/message/test.h"
 #endif // ALL_TESTS
 
 

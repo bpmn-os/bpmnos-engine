@@ -20,7 +20,6 @@ SCENARIO( "Linear expression", "[cpcontroller][expression]" ) {
       Execution::SeededGreedyController controller(scenario.get(), &evaluator);
 //      controller.setSeed( Execution::CPSeed::defaultSeed( controller.getVertices().size() ) );
 
-      auto& solution = controller.createSolution();
       Execution::Engine engine;
       controller.connect(&engine);
       controller.subscribe(&engine); // only necessary to validate consistency of solution and identify errors
@@ -29,6 +28,8 @@ SCENARIO( "Linear expression", "[cpcontroller][expression]" ) {
 
       Execution::TimeWarp timeHandler;
       timeHandler.connect(&engine);
+      auto& solution = controller.createSolution();
+      solution.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
@@ -69,7 +70,6 @@ SCENARIO( "Divide assignment", "[cpcontroller][expression]" ) {
       Execution::SeededGreedyController controller(scenario.get(), &evaluator);
 //      controller.setSeed( Execution::CPSeed::defaultSeed( controller.getVertices().size() ) );
 
-      auto& solution = controller.createSolution();
       Execution::Engine engine;
       controller.connect(&engine);
       controller.subscribe(&engine); // only necessary to validate consistency of solution and identify errors
@@ -78,6 +78,8 @@ SCENARIO( "Divide assignment", "[cpcontroller][expression]" ) {
 
       Execution::TimeWarp timeHandler;
       timeHandler.connect(&engine);
+      auto& solution = controller.createSolution();
+      solution.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
@@ -116,7 +118,6 @@ SCENARIO( "String expression", "[cpcontroller][expression]" ) {
       Execution::SeededGreedyController controller(scenario.get(), &evaluator);
 //      controller.setSeed( Execution::CPSeed::defaultSeed( controller.getVertices().size() ) );
 
-      auto& solution = controller.createSolution();
       Execution::Engine engine;
       controller.connect(&engine);
       controller.subscribe(&engine); // only necessary to validate consistency of solution and identify errors
@@ -125,6 +126,8 @@ SCENARIO( "String expression", "[cpcontroller][expression]" ) {
 
       Execution::TimeWarp timeHandler;
       timeHandler.connect(&engine);
+      auto& solution = controller.createSolution();
+      solution.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
@@ -164,7 +167,6 @@ SCENARIO( "Lookup table", "[cpcontroller][lookup]" ) {
       Execution::SeededGreedyController controller(scenario.get(), &evaluator);
 //      controller.setSeed( Execution::CPSeed::defaultSeed( controller.getVertices().size() ) );
 
-      auto& solution = controller.createSolution();
       Execution::Engine engine;
       controller.connect(&engine);
       controller.subscribe(&engine); // only necessary to validate consistency of solution and identify errors
@@ -173,6 +175,8 @@ SCENARIO( "Lookup table", "[cpcontroller][lookup]" ) {
 
       Execution::TimeWarp timeHandler;
       timeHandler.connect(&engine);
+      auto& solution = controller.createSolution();
+      solution.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
