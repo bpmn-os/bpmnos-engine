@@ -246,10 +246,7 @@ void SeededController::synchronizeSolution(const Token* token) {
       if ( entryVertex->inflows.size() == 1 && entryVertex->inflows.front().second.node->represents<BPMN::EventBasedGateway>() ) {
         assert( vertex->exit<BPMN::CatchEvent>() );
         auto gateway = &entryVertex->inflows.front().second;
-        _solution->setTriggeredEvent( gateway, entryVertex );
         for ( auto& [ _, target ] : gateway->outflows ) {
-//          _solution->setVariableValue( model.tokenFlow.at({&gateway,&target}), ( &target == entryVertex ) );
-//std::cerr << "Token flow " << gateway.reference() << " to " << target.reference() << " = " << ( &target == entryVertex ) << std::endl;
           if ( &target != entryVertex ) {
             finalizeUnvisited( &target );
           }

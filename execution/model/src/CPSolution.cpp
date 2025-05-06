@@ -76,7 +76,19 @@ void CPSolution::synchronize(const Token* token) {
     ( token->node && token->state == Token::State::COMPLETED && token->node->represents<BPMN::CatchEvent>() && !token->node->represents<BPMN::ReceiveTask>() )
   ) {
     // exit of node
+    auto vertex = flattenedGraph.getVertex( token );
+    assert( vertex );
     // TODO: set position
+
+    auto entryVertex = entry(vertex);
+    if ( 
+      entryVertex->inflows.size() == 1 && 
+      entryVertex->inflows.front().second.node->represents<BPMN::EventBasedGateway>()
+    ) {
+      assert( vertex->exit<BPMN::CatchEvent>() );
+      auto gateway = &entryVertex->inflows.front().second;
+      setTriggeredEvent( gateway, entryVertex );
+    }
   }
 }
 
