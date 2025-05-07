@@ -46,7 +46,7 @@ void SeededController::subscribe(Engine* engine) {
 bool SeededController::setSeed(const std::list<size_t> initialSeed) {
   lastPosition = 0;
   seed = std::move(initialSeed);
-  if ( seed.size() < model.getVertices().size() ) {
+  if ( seed.size() < flattenedGraph.vertices.size() ) {
     return false;
   }
 std::cerr << "updated seed: ";
@@ -585,10 +585,10 @@ std::vector<size_t> SeededController::getSequence() const {
   // TODO: remove dependency on solution
   assert( _solution );
 
-  std::vector<size_t> sequence(model.getVertices().size());
-  for ( size_t i = 0; i < model.getVertices().size(); i++ ) {
+  std::vector<size_t> sequence(flattenedGraph.vertices.size());
+  for ( size_t i = 0; i < flattenedGraph.vertices.size(); i++ ) {
 //    sequence[ (size_t)_solution->getVariableValue( model.position.at( model.vertices[i] ) ).value() -1 ] = i + 1;
-    sequence[ _solution->getPosition( model.getVertices()[i] ) -1 ] = i + 1;
+    sequence[ _solution->getPosition( &flattenedGraph.vertices[i] ) -1 ] = i + 1;
   }
   
   return sequence;
@@ -683,8 +683,8 @@ void SeededController::initializePendingVertices() {
   size_t position = 0;
   for ( auto index : seed ) {
     
-    pendingVertices.push_back( model.getVertices()[ index - 1 ] ); // seed indices start at 1
-//std::cerr << position+1 << ". position: " << index << "/'" << model.getVertices()[ index - 1 ]->reference() << "'" << std::endl;
+    pendingVertices.push_back( &flattenedGraph.vertices[ index - 1 ] ); // seed indices start at 1
+//std::cerr << position+1 << ". position: " << index << "/'" << flattenedGraph.vertices[ index - 1 ].reference() << "'" << std::endl;
     positions[ index - 1 ] = (double)++position;
   }
   _solution->initializePositions(positions);

@@ -470,9 +470,9 @@ const CP::Solution& CPSolution::getSolution() const {
 */
 
 std::vector<size_t> CPSolution::getSequence() const {
-  std::vector<size_t> sequence(cp.vertices.size());
-  for ( size_t i = 0; i < cp.vertices.size(); i++ ) {
-    sequence[ (size_t)_solution.getVariableValue( cp.position.at( cp.vertices[i] ) ).value() -1 ] = i + 1;
+  std::vector<size_t> sequence(flattenedGraph.vertices.size());
+  for ( size_t i = 0; i < flattenedGraph.vertices.size(); i++ ) {
+    sequence[ (size_t)_solution.getVariableValue( cp.position.at( &flattenedGraph.vertices[i] ) ).value() -1 ] = i + 1;
   }
   
   return sequence;
@@ -484,8 +484,7 @@ size_t CPSolution::getPosition(const Vertex* vertex) const {
 }
 
 void CPSolution::initializePositions(const std::vector<double>& positions) {
-  auto& vertices = cp.getVertices();
-  assert( positions.size() == vertices.size() );
+  assert( positions.size() == flattenedGraph.vertices.size() );
   assert( cp.getModel().getSequences().size() == 1 );
   auto& sequenceVariable = cp.getModel().getSequences().front();
   _solution.setSequenceValues( sequenceVariable, positions );
@@ -498,15 +497,15 @@ void CPSolution::setPosition(const Vertex* vertex, size_t position) {
 //std::cerr << "change position(" << vertex->reference() << ") from " <<  priorPosition << " to " << position << std::endl;
   assert( position <= priorPosition );
   if ( position < priorPosition ) {
-    for ( auto other : cp.getVertices() ) {
-      if ( other == vertex ) {
+    for ( auto& other : flattenedGraph.vertices ) {
+      if ( &other == vertex ) {
         continue;
       }
-      assert( _solution.getVariableValue( cp.position.at(other) ).has_value() );
-      auto otherPosition = (size_t)_solution.getVariableValue( cp.position.at(other) ).value();
+      assert( _solution.getVariableValue( cp.position.at(&other) ).has_value() );
+      auto otherPosition = (size_t)_solution.getVariableValue( cp.position.at(&other) ).value();
       if ( otherPosition >= position && otherPosition < priorPosition ) {
         // increment position of other vertex 
-        _solution.setVariableValue( cp.position.at(other), (double)++otherPosition );
+        _solution.setVariableValue( cp.position.at(&other), (double)++otherPosition );
       }
     }
   }

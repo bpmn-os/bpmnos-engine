@@ -66,6 +66,7 @@ public:
   };
 
   std::vector< std::reference_wrapper<Vertex> > initialVertices; /// Container holding entry vertices of all process instances
+  std::vector< const Vertex* > getSortedVertices() const; /// Returns a topologically sorted vector of all vertices reachable from the given vertex
   std::deque< Vertex > vertices; /// Container holding entry and exit vertices of each possible instantiation of a node
   std::unordered_set< const Vertex* > dummies; /// Container holding dummy vertices for loop & multi-instance activities
   

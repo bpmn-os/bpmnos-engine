@@ -51,18 +51,13 @@ std::optional< BPMN::Activity::LoopCharacteristics> CPModel::getLoopCharacterist
 
 
 void CPModel::createCP() {
-  vertices.reserve( flattenedGraph.vertices.size() );
-//std::cerr << "initializeVertices" << std::endl;
-  // determine relevant vertices of all process instances
-  for ( const Vertex& initialVertex : flattenedGraph.initialVertices ) {
-    initializeVertices(&initialVertex);
-  }
+  auto sortedVertices = flattenedGraph.getSortedVertices();
 
 //std::cerr << "create sequence position variables" << std::endl;
   // create sequence position variables for all vertices
-  auto& sequence = model.addSequence( "position", vertices.size() );
-  for ( size_t i = 0; i < vertices.size(); i++ ) {
-    position.emplace(vertices[i], sequence.variables[i]);
+  auto& sequence = model.addSequence( "position", sortedVertices.size() );
+  for ( size_t i = 0; i < sortedVertices.size(); i++ ) {
+    position.emplace(sortedVertices[i], sequence.variables[i]);
   } 
 
 //std::cerr << "createMessageFlowVariables" << std::endl;
@@ -71,16 +66,16 @@ void CPModel::createCP() {
 //std::cerr << "createGlobalVariables" << std::endl;
   createGlobalVariables();
 
-//std::cerr << "createVertexVariables:" << vertices.size() << std::endl;
+//std::cerr << "createVertexVariables:" << flattenedGraph.vertices.size() << std::endl;
   // create vertex and message variables
-  for ( auto vertex : vertices ) {
+  for ( auto vertex : sortedVertices ) {
     createVertexVariables(vertex);
   }
 
 //std::cerr << "constrainGlobalVariables" << std::endl;
   constrainGlobalVariables();
 
-  for ( auto vertex : vertices ) {
+  for ( auto vertex : sortedVertices ) {
     if ( vertex->entry<BPMN::Scope>() ) {
 //std::cerr << "constrainDataVariables " << vertex->reference() << std::endl;
       constrainDataVariables(vertex);
@@ -144,20 +139,20 @@ void CPModel::createGlobalVariables() {
 }
 
 void CPModel::createMessageFlowVariables() {
-  for ( auto vertex : vertices ) {
-    if ( vertex->exit<BPMN::MessageCatchEvent>() ) {
-      messageRecipients.push_back(vertex);
+  for ( auto& vertex : flattenedGraph.vertices ) {
+    if ( vertex.exit<BPMN::MessageCatchEvent>() ) {
+      messageRecipients.push_back(&vertex);
       CP::reference_vector<const CP::Variable> messages;
-      for ( Vertex& sender : vertex->senders ) {
+      for ( Vertex& sender : vertex.senders ) {
         assert( sender.entry<BPMN::MessageThrowEvent>() );
         // create binary decision variable for a message from sender to recipient
-        messages.emplace_back( model.addBinaryVariable("message_{" + sender.reference() + " → " + vertex->reference() + "}" ) );
+        messages.emplace_back( model.addBinaryVariable("message_{" + sender.reference() + " → " + vertex.reference() + "}" ) );
 //std::cerr << messages.back().get().stringify() << std::endl;
-        messageFlow.emplace( std::make_pair(&sender,vertex), messages.back() );
+        messageFlow.emplace( std::make_pair(&sender,&vertex), messages.back() );
       }
     }
-    if ( vertex->entry<BPMN::MessageThrowEvent>() ) {
-      messageSenders.push_back(vertex);
+    if ( vertex.entry<BPMN::MessageThrowEvent>() ) {
+      messageSenders.push_back(&vertex);
     }
   }
 }
@@ -733,7 +728,7 @@ void CPModel::createExitStatus(const Vertex* vertex) {
         }
       }
       if ( endVertices.empty() ) {
-        throw std::runtime_error("CPModel: unable to determine end nodes for  scope '" + vertex->node->id  + "'");
+        throw std::runtime_error("CPModel: unable to determine end nodes for scope '" + vertex->node->id  + "'");
       }
       return endVertices;
     };
@@ -1457,58 +1452,6 @@ std::vector<CPModel::AttributeVariables> CPModel::createLoopExitStatus(const Ver
   return variables;
 }
 
-
-std::vector< const FlattenedGraph::Vertex* > CPModel::getReachableVertices(const FlattenedGraph::Vertex* initialVertex) {
-  std::vector< const FlattenedGraph::Vertex* > reachableVertices;
-  std::unordered_map<const FlattenedGraph::Vertex*, size_t> inDegree;
-  
-  std::deque<const FlattenedGraph::Vertex*> queue;
-  queue.push_back(initialVertex);
-    
-  // determine vertices in topological order
-  while ( !queue.empty() ) {
-//std::cerr << "Queue " << queue.size() << std::endl;
-    const FlattenedGraph::Vertex* current = queue.front();
-    queue.pop_front();
-    reachableVertices.push_back(current);
-    inDegree.erase(current);
-    
-    for ( auto& [_,vertex] : current->outflows ) {
-      if ( !inDegree.contains(&vertex) ) {
-        // initialize in degree
-        inDegree[&vertex] = vertex.inflows.size() + vertex.predecessors.size();
-      }
-      // decrement in degree and add vertex to queue if zero
-      if ( --inDegree.at(&vertex) == 0 ) {
-        queue.push_back(&vertex);
-      }
-    }
-    for ( const FlattenedGraph::Vertex& vertex : current->successors ) {
-      if ( !inDegree.contains(&vertex) ) {
-        // initialize in degree
-        inDegree[&vertex] = vertex.inflows.size() + vertex.predecessors.size();
-      }
-//std::cerr << "Vertex " << vertex.reference() << " has inDegree " << inDegree.at(&vertex) << "/" << vertex.inflows.size() << "/" << vertex.predecessors.size() << std::endl;
-      // decrement in degree and add vertex to queue if zero
-      if ( --inDegree.at(&vertex) == 0 ) {
-        queue.push_back(&vertex);
-      }
-    }
-  }
-  
-  if ( inDegree.size() ) {
-    throw std::runtime_error("CPModel: cycle detected in '" + BPMNOS::to_string(initialVertex->rootId, STRING) + "'");
-  }
-//std::cerr << "reachableVertices:" << reachableVertices.size() << std::endl;
-  return reachableVertices;
-}
-
-void CPModel::initializeVertices(const FlattenedGraph::Vertex* initialVertex) {
-  for ( const Vertex* vertex : getReachableVertices(initialVertex) ) {
-    vertices.push_back(vertex);
-  }
-}
-
 void CPModel::createVertexVariables(const FlattenedGraph::Vertex* vertex) {
 //std::cerr << "createVertexVariables: " << vertex->reference() << std::endl;
  
@@ -2092,23 +2035,4 @@ void CPModel::addObjectiveCoefficients(const Vertex* vertex) {
     }
   }
 }
-
-const FlattenedGraph::Vertex* CPModel::entry(const Vertex* vertex) const {
-/*
-  assert( vertex->type == Vertex::Type::EXIT );
-  return vertex - 1;
-*/
-  assert( flattenedGraph.vertexMap.contains({vertex->instanceId,vertex->loopIndices,vertex->node}));
-  return &flattenedGraph.vertexMap.at({vertex->instanceId,vertex->loopIndices,vertex->node}).first;
-}
-
-const FlattenedGraph::Vertex* CPModel::exit(const Vertex* vertex) const {
-/*
-  assert( vertex->type == Vertex::Type::ENTRY );
-  return vertex + 1;
-*/
-  assert( flattenedGraph.vertexMap.contains({vertex->instanceId,vertex->loopIndices,vertex->node}));
-  return &flattenedGraph.vertexMap.at({vertex->instanceId,vertex->loopIndices,vertex->node}).second;
-}
-
 

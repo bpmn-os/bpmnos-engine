@@ -32,7 +32,7 @@ public:
   CPModel(const BPMNOS::Execution::FlattenedGraph& flattenedGraph, Config config = default_config());
 
   const CP::Model& getModel() const { return model; }
-  const std::vector<const Vertex*>& getVertices() const { return vertices; }
+//  const std::vector<const Vertex*>& getVertices() const { return vertices; }
 protected:
   const BPMNOS::Model::Scenario& scenario;
   Config config;
@@ -49,8 +49,6 @@ public:
   void createMessagingConstraints();
   void createMessageHeader(const Vertex* vertex);
   void createMessageContent(const Vertex* vertex);
-  std::vector< const Vertex* > getReachableVertices(const Vertex* initialVertex); /// Returns a topologically sorted vector of all vertices reachable from the given vertex
-  void initializeVertices(const Vertex* initialVertex);
   void createVertexVariables(const Vertex* vertex);
   void createEntryVariables(const Vertex* vertex);
   void createExitVariables(const Vertex* vertex);
@@ -139,7 +137,7 @@ public:
     }
   };
   
-  std::vector<const Vertex*> vertices; /// Container of all vertices considered
+//  std::vector<const Vertex*> vertices; /// Container of all vertices considered
   std::vector<const Vertex*> messageRecipients; /// Container of all (exit) vertices catching a message
   std::vector<const Vertex*> messageSenders; /// Container of all (entry) vertices throwing a message
 
@@ -170,8 +168,8 @@ public:
   std::optional< BPMNOS::number > getTimestamp( const Vertex* vertex ) const;
   std::pair< CP::Expression, CP::Expression > getAttributeVariables( const Vertex* vertex, const Model::Attribute* attribute);
 
-  const Vertex* entry(const Vertex* vertex) const;
-  const Vertex* exit(const Vertex* vertex) const;
+  const Vertex* entry(const Vertex* vertex) const { return flattenedGraph.entry(vertex); };
+  const Vertex* exit(const Vertex* vertex) const { return flattenedGraph.exit(vertex); };
 };
 
 } // namespace BPMNOS::Execution

@@ -46,8 +46,6 @@ public:
   void notice(const Observable* observable) override;
   void synchronizeSolution(const Token* token);
 
-//  const CP::Model& getModel() const { return model.getModel(); }
-  const std::vector<const Vertex*>& getVertices() const { return model.getVertices(); }
 protected:
   ReadyHandler readyHandler;
   DeterministicTaskCompletion completionHandler;
@@ -56,7 +54,6 @@ protected:
   std::shared_ptr<Event> dispatchEvent(const SystemState* systemState);
   const BPMNOS::Model::Scenario* scenario;
   Config config;
-//  std::vector< const BPMNOS::Model::Scenario::InstanceData* > instances;
 public:
   const FlattenedGraph flattenedGraph;
   const CPModel model;
@@ -97,7 +94,6 @@ public:
   void initializePendingVertices(); /// Method creating an initial sequence of vertices
 
   std::optional< BPMN::Activity::LoopCharacteristics > getLoopCharacteristics(const Vertex* vertex) const;
-  std::pair< CP::Expression, CP::Expression > getAttributeVariables( const Vertex* vertex, const Model::Attribute* attribute);
 
   virtual std::shared_ptr<Event> createEntryEvent(const SystemState* systemState, const Token* token, const Vertex* vertex) = 0; /// Method creating a choice event from CP solution
   virtual std::shared_ptr<Event> createExitEvent(const SystemState* systemState, const Token* token, const Vertex* vertex) = 0; /// Method creating a choice event from CP solution

@@ -619,7 +619,7 @@ void FlattenedGraph::flatten(BPMNOS::number instanceId, const BPMN::Scope* scope
   // boundary events
   for ( auto& flowNode : scope->flowNodes ) {
     if ( auto boundaryEvent = flowNode->represents<BPMN::BoundaryEvent>() ) {
-      throw std::runtime_error("FlattenedGraph: Boundary event '" + boundaryEvent->id + "' is not yet supported");
+      throw std::runtime_error("FlattenedGraph: Boundary event '" + boundaryEvent->id + "' is not supported");
     }    
   }
     
@@ -627,7 +627,8 @@ void FlattenedGraph::flatten(BPMNOS::number instanceId, const BPMN::Scope* scope
   for ( auto& eventSubProcess : scope->eventSubProcesses ) {
     if ( eventSubProcess->startEvent->isInterrupting ) {
       // interrupting event-subprocesses
-      flatten( instanceId, eventSubProcess, scopeEntry, scopeExit );
+      throw std::runtime_error("FlattenedGraph: Interrupting event-subprocess '" + eventSubProcess->id + "' is not supported");
+//      flatten( instanceId, eventSubProcess, scopeEntry, scopeExit );
     }
     else {
       // non-interrupting event-subprocesses
@@ -644,7 +645,7 @@ void FlattenedGraph::flatten(BPMNOS::number instanceId, const BPMN::Scope* scope
   for ( auto& flowNode : scope->flowNodes ) {
     auto activity = flowNode->represents<BPMN::Activity>();
     if ( activity && activity->isForCompensation ) {
-      throw std::runtime_error("FlattenedGraph: Compensation activity '" + activity->id + "' is not yet supported");
+      throw std::runtime_error("FlattenedGraph: Compensation activity '" + activity->id + "' is not supported");
     }
   } 
 }
@@ -661,6 +662,54 @@ bool FlattenedGraph::modifiesGlobals(const Vertex& vertex) const {
     if ( &vertex == &entry || &vertex == &exit ) return true; 
   }
   return false;
+}
+
+std::vector< const FlattenedGraph::Vertex* > FlattenedGraph::getSortedVertices() const {
+  std::vector< const Vertex* > sortedVertices;
+  sortedVertices.reserve( vertices.size() );
+  for ( Vertex& initialVertex : initialVertices ) {
+    std::unordered_map<const Vertex*, size_t> inDegree;
+  
+    std::deque<const Vertex*> queue;
+    queue.push_back(&initialVertex);
+    
+    // determine vertices in topological order
+    while ( !queue.empty() ) {
+//std::cerr << "Queue " << queue.size() << std::endl;
+      const Vertex* current = queue.front();
+      queue.pop_front();
+      sortedVertices.push_back(current);
+      inDegree.erase(current);
+    
+      for ( auto& [_,vertex] : current->outflows ) {
+        if ( !inDegree.contains(&vertex) ) {
+          // initialize in degree
+          inDegree[&vertex] = vertex.inflows.size() + vertex.predecessors.size();
+        }
+        // decrement in degree and add vertex to queue if zero
+        if ( --inDegree.at(&vertex) == 0 ) {
+          queue.push_back(&vertex);
+        }
+      }
+      for ( const FlattenedGraph::Vertex& vertex : current->successors ) {
+        if ( !inDegree.contains(&vertex) ) {
+          // initialize in degree
+          inDegree[&vertex] = vertex.inflows.size() + vertex.predecessors.size();
+        }
+//std::cerr << "Vertex " << vertex.reference() << " has inDegree " << inDegree.at(&vertex) << "/" << vertex.inflows.size() << "/" << vertex.predecessors.size() << std::endl;
+      // decrement in degree and add vertex to queue if zero
+        if ( --inDegree.at(&vertex) == 0 ) {
+          queue.push_back(&vertex);
+        }
+      }
+    }
+  
+    if ( inDegree.size() ) {
+      throw std::runtime_error("FlattenedGraph: cycle detected in '" + BPMNOS::to_string(initialVertex.rootId, STRING) + "'");
+    }
+  }
+//std::cerr << "sortedVertices:" << sortedVertices.size() << std::endl;
+  return sortedVertices;
 }
 
 const FlattenedGraph::Vertex* FlattenedGraph::getVertex( const Token* token ) const {
