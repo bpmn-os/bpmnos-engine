@@ -97,7 +97,6 @@ public:
   void initializePendingVertices(); /// Method creating an initial sequence of vertices
 
   std::optional< BPMN::Activity::LoopCharacteristics > getLoopCharacteristics(const Vertex* vertex) const;
-//  std::optional< BPMNOS::number > getTimestamp( const Vertex* vertex ) const;
   std::pair< CP::Expression, CP::Expression > getAttributeVariables( const Vertex* vertex, const Model::Attribute* attribute);
 
   virtual std::shared_ptr<Event> createEntryEvent(const SystemState* systemState, const Token* token, const Vertex* vertex) = 0; /// Method creating a choice event from CP solution

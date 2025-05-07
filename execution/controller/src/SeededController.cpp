@@ -237,6 +237,17 @@ void SeededController::synchronizeSolution(const Token* token) {
     // operators of event-subprocess are applied after completion
   }
   else if ( 
+    ( !token->node && token->state == Token::State::COMPLETED ) ||
+    ( token->node && token->node->represents<BPMN::Scope>() && token->state == Token::State::COMPLETED )
+  ) {
+//std::cerr << "Scope completed" << std::endl;
+    // Scope is completed, all pending predecessors are not visited
+    auto vertex = flattenedGraph.getVertex(token);
+    assert( vertex );
+    assert( vertex == exit(vertex) );
+    finalizePredecessorPositions(vertex);    
+  }
+  else if ( 
     ( !token->node && token->state == Token::State::DONE ) || // Process
     ( token->node && token->state == Token::State::EXITING && !token->node->represents<BPMN::TypedStartEvent>() ) || // Activity
     ( token->node && token->state == Token::State::COMPLETED && token->node->represents<BPMN::CatchEvent>() && !token->node->represents<BPMN::ReceiveTask>() )
@@ -459,31 +470,12 @@ std::shared_ptr<Event> SeededController::dispatchEvent(const SystemState* system
       it++;
       continue;
     }
-    else if ( 
-      !vertex->exit<BPMN::TypedStartEvent>() &&
-      _solution->isUnvisited(vertex)
-//      _solution->evaluate( model.visit.at( vertex ) ).has_value() && 
-//      !_solution->evaluate( model.visit.at( vertex ) ).value()
-    ) {
-//std::cerr << "Unvisited: " << vertex->reference() << std::endl;
-      // vertex is dummy or not visited
-//      it = finalizeUnvisited(entry(vertex));
-      it = finalizeUnvisited(vertex);
-      continue;
-    }
     else if ( auto request = hasRequest(vertex) ) {
 //std::cerr << "Request: " << request->token->jsonify() << std::endl;
       if ( auto event = createEvent(vertex,request) ) {
 //std::cerr << "Event: " << vertex->reference() << std::endl;
         return event;
       }
-/*
-      else if ( vertex->exit<BPMN::MessageStartEvent>() ) {
-        // event-subprocess is not triggered or exit of start event is infeasible
-        it = finalizeUnvisitedTypedStartEvents(it);
-        continue;
-      }  
-*/
       else {
 //std::cerr << "Postpone (infeasible): " << vertex->reference() << std::endl;
         // postpone vertex because there is no feasible way to process
@@ -514,6 +506,11 @@ std::shared_ptr<Event> SeededController::dispatchEvent(const SystemState* system
       it++;
       continue;
     }
+    else if ( vertex->entry<BPMN::Process>() ) {
+      // wait for process to start
+//std::cerr << "Wait: " << vertex->jsonify() << std::endl;
+      return nullptr;
+    }
     else if ( vertex->exit<BPMN::TypedStartEvent>() ) {
       // wait for trigger
 //std::cerr << "Wait: " << vertex->jsonify() << std::endl;
@@ -529,10 +526,29 @@ std::shared_ptr<Event> SeededController::dispatchEvent(const SystemState* system
       it++;
       continue;
     }
-    else {
+    else if ( 
+      vertex->exit<BPMN::Activity>() && 
+      !vertex->node->represents<BPMN::ReceiveTask>() && 
+      !vertex->node->represents<BPMNOS::Model::DecisionTask>() &&
+      !std::ranges::contains(pendingVertices,entry(vertex))
+    ) {
 //std::cerr << "Wait: " << vertex->jsonify() << std::endl;
-      // wait for request
+      // wait for activity to be completed
       return nullptr;
+    }
+    else if ( 
+      vertex->exit<BPMN::TimerCatchEvent>() && 
+      !vertex->node->represents<BPMN::TimerStartEvent>() && 
+      !std::ranges::contains(pendingVertices,entry(vertex))
+    ) {
+//std::cerr << "Wait: " << vertex->jsonify() << std::endl;
+      // wait for timer to be triggered
+      return nullptr;
+    }
+    else {
+      // postpone vertex because it has no predecessors, no request, and does not incur waiting
+      it++;
+      continue;
     }
   }
   if ( !pendingVertices.empty() && it == pendingVertices.end() ) {
@@ -545,7 +561,7 @@ std::shared_ptr<Event> SeededController::dispatchEvent(const SystemState* system
     // - choice request: we can assume that a feasible choice must always exist
     // - message delivery request: we can assume that the feasibility of a message
     // delivery is not time-dependent
-//std::cerr << "Terminate: " <<  pendingVertices.front()->reference() << std::endl;   
+//std::cerr << processedVertices.size() << "/" << pendingVertices.size()  << " - Terminate: " <<  pendingVertices.front()->reference() << std::endl;   
     return std::make_shared<TerminationEvent>();  
   }
   return nullptr;

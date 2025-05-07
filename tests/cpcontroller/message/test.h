@@ -27,8 +27,8 @@ SCENARIO( "Simple messaging", "[cpcontroller][message]" ) {
       timeHandler.connect(&engine);
       auto& solution = controller.createSolution();
       solution.subscribe(&engine);
-//      Execution::Recorder recorder;
-      Execution::Recorder recorder(std::cerr);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
       engine.run(scenario.get(),10);
 
