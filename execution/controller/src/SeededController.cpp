@@ -83,17 +83,17 @@ std::cerr << "position(" << vertex->reference() << "/" << (vertex->index+1) << "
 void SeededController::fetchPendingPredecessors(std::unordered_set<const Vertex*>& predecessors, const Vertex* vertex) const {
   for ( auto& [_,predecessor] : vertex->inflows ) {
 //std::cerr << predecessor.reference() << "/" << predecessors.contains(&predecessor) << "/" << std::ranges::contains(pendingVertices,&predecessor) << std::endl;
-    if ( !predecessors.contains(&predecessor) && std::ranges::contains(pendingVertices,&predecessor) ) {
+    if ( !predecessors.contains(predecessor) && std::ranges::contains(pendingVertices,predecessor) ) {
 //std::cerr << "Added " << predecessor.reference() << std::endl;
-      predecessors.emplace(&predecessor);
-      fetchPendingPredecessors(predecessors,&predecessor);
+      predecessors.emplace(predecessor);
+      fetchPendingPredecessors(predecessors,predecessor);
     }
   }
-  for ( Vertex& predecessor : vertex->predecessors ) {
-    if ( !predecessors.contains(&predecessor) && std::ranges::contains(pendingVertices,&predecessor) ) {
+  for ( auto predecessor : vertex->predecessors ) {
+    if ( !predecessors.contains(predecessor) && std::ranges::contains(pendingVertices,predecessor) ) {
 //std::cerr << "Added " << predecessor.reference() << std::endl;
-      predecessors.emplace(&predecessor);
-      fetchPendingPredecessors(predecessors,&predecessor);
+      predecessors.emplace(predecessor);
+      fetchPendingPredecessors(predecessors,predecessor);
     }
   }
 }
@@ -135,9 +135,9 @@ void SeededController::finalizePredecessorPositions(const Vertex* vertex) {
 void SeededController::finalizeUnvisitedChildren(const Vertex* vertex) {
   assert( vertex == entry(vertex) );
   std::list<const Vertex*> successors;
-  for ( Vertex& successor : vertex->successors ) {
-    if ( &successor == entry(&successor) ) {
-      successors.push_back(&successor);
+  for ( auto successor : vertex->successors ) {
+    if ( successor == entry(successor) ) {
+      successors.push_back(successor);
     }
   }
   auto it = successors.begin();
@@ -247,12 +247,12 @@ void SeededController::synchronizeSolution(const Token* token) {
   ) { 
     if ( auto vertex = flattenedGraph.getVertex(token) ) {
       auto entryVertex = entry(vertex);
-      if ( entryVertex->inflows.size() == 1 && entryVertex->inflows.front().second.node->represents<BPMN::EventBasedGateway>() ) {
+      if ( entryVertex->inflows.size() == 1 && entryVertex->inflows.front().second->node->represents<BPMN::EventBasedGateway>() ) {
         assert( vertex->exit<BPMN::CatchEvent>() );
-        auto gateway = &entryVertex->inflows.front().second;
+        auto gateway = entryVertex->inflows.front().second;
         for ( auto& [ _, target ] : gateway->outflows ) {
-          if ( &target != entryVertex ) {
-            finalizeUnvisited( &target );
+          if ( target != entryVertex ) {
+            finalizeUnvisited( target );
           }
         } 
       }
@@ -304,16 +304,16 @@ bool SeededController::hasPendingPredecessor(const Vertex* vertex) const {
     return false;
   }
   for ( auto& [_,predecessor] : vertex->inflows ) {
-    if ( vertex == exit(&predecessor) && vertex->exit<BPMN::TypedStartEvent>()  ) {
+    if ( vertex == exit(predecessor) && vertex->exit<BPMN::TypedStartEvent>()  ) {
       continue;
     }
-    if ( !std::ranges::contains(processedVertices,&predecessor) ) {
+    if ( !std::ranges::contains(processedVertices,predecessor) ) {
 //std::cerr << predecessor.reference() << " precedes " << vertex->reference() << std::endl;
       return true;
     }
   }
-  for ( Vertex& predecessor : vertex->predecessors ) {
-    if ( !std::ranges::contains(processedVertices,&predecessor) ) {
+  for ( auto predecessor : vertex->predecessors ) {
+    if ( !std::ranges::contains(processedVertices,predecessor) ) {
 //std::cerr << predecessor.reference() << " precedes " << vertex->reference() << std::endl;
       return true;
     }
@@ -323,17 +323,17 @@ bool SeededController::hasPendingPredecessor(const Vertex* vertex) const {
 
 std::list< const SeededController::Vertex* >::iterator SeededController::finalizeUnvisitedTypedStartEvents(std::list< const Vertex* >::iterator it) {
   auto node = (*it)->node;
-  auto parentEntry = &(*it)->parent.value().first;
+  auto parentEntry = (*it)->parent.value().first;
 
   auto it2 = it;
   // find first iterator to vertex at other node
   it = std::find_if_not(it, pendingVertices.end(), [&](auto other) { 
-    return (node == other->node && parentEntry == &other->parent.value().first );
+    return (node == other->node && parentEntry == other->parent.value().first );
   });
 
   // finalize message start events that are not visited
   while ( it2 != pendingVertices.end() ) {
-    if ( (*it2)->type == Vertex::Type::EXIT && node == (*it2)->node && parentEntry == &(*it2)->parent.value().first ) {
+    if ( (*it2)->type == Vertex::Type::EXIT && node == (*it2)->node && parentEntry == (*it2)->parent.value().first ) {
 //std::cerr << "unvisit: " << (*it2)->shortReference() << std::endl;
       it2 = finalizeUnvisited(entry(*it2));
     }
@@ -346,8 +346,8 @@ std::list< const SeededController::Vertex* >::iterator SeededController::finaliz
 
 bool SeededController::hasPendingRecipient(const Vertex* vertex) const {
   assert( vertex->exit<BPMN::SendTask>() );
-  for ( Vertex& recipient : entry(vertex)->recipients ) {
-    if ( std::ranges::contains(pendingVertices,&recipient) ) {
+  for ( auto recipient : entry(vertex)->recipients ) {
+    if ( std::ranges::contains(pendingVertices,recipient) ) {
       return true;
     }
   }
@@ -562,12 +562,12 @@ CPSolution& SeededController::createSolution() {
 }
 
 std::list<size_t> SeededController::getSequence() const {
-  // TODO: remove dependency on solution
   std::list<size_t> sequence;
+
   for ( auto vertex : processedVertices ) {
-    assert( vertex == &flattenedGraph.vertices[vertex->index] );
+    assert( vertex == flattenedGraph.vertices[vertex->index].get() );
     sequence.push_back( vertex->index + 1 );
-std::cerr << vertex->reference() << std::endl;
+//std::cerr << vertex->reference() << std::endl;
   }
 
   return sequence;
@@ -664,7 +664,7 @@ void SeededController::initializePendingVertices() {
   size_t position = 0;
   for ( auto index : seed ) {
     
-    pendingVertices.push_back( &flattenedGraph.vertices[ index - 1 ] ); // seed indices start at 1
+    pendingVertices.push_back( flattenedGraph.vertices[ index - 1 ].get() ); // seed indices start at 1
 //std::cerr << position+1 << ". position: " << index << "/'" << flattenedGraph.vertices[ index - 1 ].reference() << "'" << std::endl;
     positions[ index - 1 ] = (double)++position;
   }

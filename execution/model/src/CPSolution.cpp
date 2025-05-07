@@ -89,7 +89,7 @@ void CPSolution::synchronize(const Token* token) {
     
     if ( 
       !vertex->node->represents<BPMN::TypedStartEvent>() &&
-      !( vertex->node->represents<BPMN::CatchEvent>() && vertex->inflows.front().second.node->represents<BPMN::EventBasedGateway>() )
+      !( vertex->node->represents<BPMN::CatchEvent>() && vertex->inflows.front().second->node->represents<BPMN::EventBasedGateway>() )
     ) {
       _solution.setVariableValue( cp.visit.at(vertex), true );
       synchronizeStatus(token->status,vertex);
@@ -115,7 +115,7 @@ void CPSolution::synchronize(const Token* token) {
     ( token->node && token->state == Token::State::COMPLETED && token->node->represents<BPMN::CatchEvent>() && !token->node->represents<BPMN::ReceiveTask>() )
   ) {
     // exit of node
-    if ( vertex->node->represents<BPMN::CatchEvent>() && vertex->inflows.front().second.node->represents<BPMN::EventBasedGateway>() ) {
+    if ( vertex->node->represents<BPMN::CatchEvent>() && vertex->inflows.front().second->node->represents<BPMN::EventBasedGateway>() ) {
       _solution.setVariableValue( cp.visit.at(vertex), true );
     }
 
@@ -124,10 +124,10 @@ void CPSolution::synchronize(const Token* token) {
     auto entryVertex = entry(vertex);
     if ( 
       entryVertex->inflows.size() == 1 && 
-      entryVertex->inflows.front().second.node->represents<BPMN::EventBasedGateway>()
+      entryVertex->inflows.front().second->node->represents<BPMN::EventBasedGateway>()
     ) {
       assert( vertex->exit<BPMN::CatchEvent>() );
-      auto gateway = &entryVertex->inflows.front().second;
+      auto gateway = entryVertex->inflows.front().second;
       setTriggeredEvent( gateway, entryVertex );
     }
 
@@ -171,7 +171,7 @@ void CPSolution::synchronize(const Event* event) {
     assert( flattenedGraph.vertexMap.contains({senderId,{},message->origin}) );
     // TODO: sender must not be within loop
     auto& [senderEntry,senderExit] = flattenedGraph.vertexMap.at({senderId,{},message->origin}); 
-    setMessageDeliveryVariableValues(&senderEntry,vertex,timestamp);
+    setMessageDeliveryVariableValues(senderEntry,vertex,timestamp);
   }
   else if ( auto choiceEvent = dynamic_cast<const ChoiceEvent*>(event) ) {
 //std::cerr << "Choice: " << event->jsonify() << std::endl;
@@ -195,14 +195,14 @@ void CPSolution::synchronize(const Event* event) {
 void CPSolution::setMessageDeliveryVariableValues( const Vertex* sender, const Vertex* recipient, BPMNOS::number timestamp ) {
 //std::cerr << "Sen:" << sender->jsonify() << std::endl;  
 //std::cerr << "Rec:" << recipient->jsonify() << std::endl;  
-  for ( const Vertex& candidate : sender->recipients ) {
-    assert( cp.messageFlow.contains({sender,&candidate}) );
+  for ( auto candidate : sender->recipients ) {
+    assert( cp.messageFlow.contains({sender,candidate}) );
 //std::cerr << "message_{" << sender->reference() << " -> " << candidate.reference() << "} := " << (&candidate == recipient) << std::endl; 
-    _solution.setVariableValue( cp.messageFlow.at({sender,&candidate}), (double)(&candidate == recipient) );
+    _solution.setVariableValue( cp.messageFlow.at({sender,candidate}), (double)(candidate == recipient) );
   }
-  for ( const Vertex& candidate : recipient->senders ) {
-    assert( cp.messageFlow.contains({&candidate,recipient}) );
-    _solution.setVariableValue( cp.messageFlow.at({&candidate,recipient}), (double)(&candidate == sender) );
+  for ( auto candidate : recipient->senders ) {
+    assert( cp.messageFlow.contains({candidate,recipient}) );
+    _solution.setVariableValue( cp.messageFlow.at({candidate,recipient}), (double)(candidate == sender) );
 //std::cerr << "message_{" << candidate.reference() << " -> " << recipient->reference() << "} := " << (&candidate == sender) << std::endl; 
   }
   // set message delivery time
@@ -247,10 +247,10 @@ void CPSolution::unvisitEntry(const Vertex* vertex) {
   _solution.setVariableValue( cp.status.at(vertex)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value, 0.0 );
 
   if ( vertex->node->represents<BPMN::MessageThrowEvent>() ) {
-    for ( const Vertex& candidate : vertex->recipients ) {
-      assert( candidate.exit<BPMN::MessageCatchEvent>() );
-      assert( cp.messageFlow.contains({vertex,&candidate}) );
-      _solution.setVariableValue( cp.messageFlow.at({vertex,&candidate}), (double)false );
+    for ( auto candidate : vertex->recipients ) {
+      assert( candidate->exit<BPMN::MessageCatchEvent>() );
+      assert( cp.messageFlow.contains({vertex,candidate}) );
+      _solution.setVariableValue( cp.messageFlow.at({vertex,candidate}), (double)false );
     }
   }
 
@@ -261,21 +261,21 @@ void CPSolution::unvisitEntry(const Vertex* vertex) {
     // if visited, operators may modify data and globals upon entry
     // if unvisited, data and globals are not changed
     for ( size_t i = 0; i < vertex->dataOwners.size(); i++ ) {
-      Vertex& dataOwner = vertex->dataOwners[i];
-      if ( flattenedGraph.modifiesData( *vertex, dataOwner ) ) {
+      auto dataOwner = vertex->dataOwners[i];
+      if ( flattenedGraph.modifiesData(vertex,dataOwner) ) {
         auto index = (size_t)_solution.evaluate( cp.dataIndex.at(vertex)[i] ).value();
 
-        auto extensionElements = dataOwner.node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+        auto extensionElements = dataOwner->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
         assert( extensionElements );
         for ( auto& attribute : extensionElements->data ) {
-          auto defined = _solution.evaluate( cp.data.at({&dataOwner,attribute.get()}).defined[index] ).value();
-          auto value = _solution.evaluate( cp.data.at({&dataOwner,attribute.get()}).value[index] ).value();
-          _solution.setVariableValue( cp.data.at({&dataOwner,attribute.get()}).defined[index+1], defined );
-          _solution.setVariableValue( cp.data.at({&dataOwner,attribute.get()}).value[index+1], value );
+          auto defined = _solution.evaluate( cp.data.at({dataOwner,attribute.get()}).defined[index] ).value();
+          auto value = _solution.evaluate( cp.data.at({dataOwner,attribute.get()}).value[index] ).value();
+          _solution.setVariableValue( cp.data.at({dataOwner,attribute.get()}).defined[index+1], defined );
+          _solution.setVariableValue( cp.data.at({dataOwner,attribute.get()}).value[index+1], value );
         }
       }
     }
-    if ( flattenedGraph.modifiesGlobals( *vertex ) ) {
+    if ( flattenedGraph.modifiesGlobals(vertex) ) {
       auto index = (size_t)_solution.evaluate( cp.globalIndex.at(vertex) ).value();
       for ( size_t attributeIndex = 0; attributeIndex < cp.globals.size(); attributeIndex++ ) {
         auto defined = _solution.evaluate( cp.globals.at(attributeIndex).defined[index] ).value();
@@ -296,10 +296,10 @@ void CPSolution::unvisitExit(const Vertex* vertex) {
   _solution.setVariableValue( cp.status.at(vertex)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value, 0.0 );
 
   if ( vertex->node->represents<BPMN::MessageCatchEvent>() ) {
-    for ( const Vertex& candidate : vertex->senders ) {
-      assert( candidate.entry<BPMN::MessageThrowEvent>() );
-      assert( cp.messageFlow.contains({&candidate,vertex}) );
-      _solution.setVariableValue( cp.messageFlow.at({&candidate,vertex}), (double)false );
+    for ( auto candidate : vertex->senders ) {
+      assert( candidate->entry<BPMN::MessageThrowEvent>() );
+      assert( cp.messageFlow.contains({candidate,vertex}) );
+      _solution.setVariableValue( cp.messageFlow.at({candidate,vertex}), (double)false );
     }
 
     if ( cp.locals.contains(vertex) ) {
@@ -330,21 +330,21 @@ void CPSolution::unvisitExit(const Vertex* vertex) {
     // if visited, operators may modify data and globals upon exit
     // if unvisited, data and globals are not changed
     for ( size_t i = 0; i < vertex->dataOwners.size(); i++ ) {
-      Vertex& dataOwner = vertex->dataOwners[i];
-      if ( flattenedGraph.modifiesData( *vertex, dataOwner ) ) {
+      auto dataOwner = vertex->dataOwners[i];
+      if ( flattenedGraph.modifiesData(vertex,dataOwner) ) {
         auto index = (size_t)_solution.evaluate( cp.dataIndex.at(exit(vertex))[i] ).value();
 
-        auto extensionElements = dataOwner.node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+        auto extensionElements = dataOwner->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
         assert( extensionElements );
         for ( auto& attribute : extensionElements->data ) {
-          auto defined = _solution.evaluate( cp.data.at({&dataOwner,attribute.get()}).defined[index-1] ).value();
-          auto value = _solution.evaluate( cp.data.at({&dataOwner,attribute.get()}).value[index-1] ).value();
-          _solution.setVariableValue( cp.data.at({&dataOwner,attribute.get()}).defined[index], defined );
-          _solution.setVariableValue( cp.data.at({&dataOwner,attribute.get()}).value[index], value );
+          auto defined = _solution.evaluate( cp.data.at({dataOwner,attribute.get()}).defined[index-1] ).value();
+          auto value = _solution.evaluate( cp.data.at({dataOwner,attribute.get()}).value[index-1] ).value();
+          _solution.setVariableValue( cp.data.at({dataOwner,attribute.get()}).defined[index], defined );
+          _solution.setVariableValue( cp.data.at({dataOwner,attribute.get()}).value[index], value );
         }
       }
     }
-    if ( flattenedGraph.modifiesGlobals( *vertex ) ) {
+    if ( flattenedGraph.modifiesGlobals(vertex) ) {
       auto index = (size_t)_solution.evaluate( cp.globalIndex.at(exit(vertex)) ).value();
       for ( size_t attributeIndex = 0; attributeIndex < cp.globals.size(); attributeIndex++ ) {
         auto defined = _solution.evaluate( cp.globals.at(attributeIndex).defined[index-1] ).value();
@@ -445,16 +445,16 @@ std::cerr << dataIndices[i].stringify() << std::endl;
       throw std::logic_error("CPSolution: Unable to determine data index for '" + vertex->reference() + "\n'" + indexEvaluation.error());
     }
     auto index = (size_t)indexEvaluation.value();
-    auto &ownerVertex = vertex->dataOwners[i].get();
-    assert( ownerVertex.entry<BPMN::Scope>() );
+    auto ownerVertex = vertex->dataOwners[i];
+    assert( ownerVertex->entry<BPMN::Scope>() );
 //std::cerr << "set data[" << ownerVertex.shortReference() << ", "<< index << "] for " << vertex->reference() << std::endl;
-    auto scope = ownerVertex.node;
+    auto scope = ownerVertex->node;
     auto extensionElements = scope->extensionElements->as<BPMNOS::Model::ExtensionElements>();
     for ( auto& attribute : extensionElements->data ) {
       if ( attribute->index == BPMNOS::Model::ExtensionElements::Index::Instance ) {
         continue;
       }
-      auto& indexedAttributeVariables = cp.data.at({&ownerVertex,attribute.get()});
+      auto& indexedAttributeVariables = cp.data.at({ownerVertex,attribute.get()});
       // override solution value (positions and indices may have changed)
       if ( data[attribute->index].get().has_value() ) {
         _solution.setVariableValue( indexedAttributeVariables.defined[index], true );
@@ -498,7 +498,7 @@ const CP::Solution& CPSolution::getSolution() const {
 std::vector<size_t> CPSolution::getSequence() const {
   std::vector<size_t> sequence(flattenedGraph.vertices.size());
   for ( size_t i = 0; i < flattenedGraph.vertices.size(); i++ ) {
-    sequence[ (size_t)_solution.getVariableValue( cp.position.at( &flattenedGraph.vertices[i] ) ).value() -1 ] = i + 1;
+    sequence[ (size_t)_solution.getVariableValue( cp.position.at( flattenedGraph.vertices[i].get() ) ).value() -1 ] = i + 1;
   }
   
   return sequence;
@@ -524,14 +524,14 @@ void CPSolution::setPosition(const Vertex* vertex, size_t position) {
   assert( position <= priorPosition );
   if ( position < priorPosition ) {
     for ( auto& other : flattenedGraph.vertices ) {
-      if ( &other == vertex ) {
+      if ( other.get() == vertex ) {
         continue;
       }
-      assert( _solution.getVariableValue( cp.position.at(&other) ).has_value() );
-      auto otherPosition = (size_t)_solution.getVariableValue( cp.position.at(&other) ).value();
+      assert( _solution.getVariableValue( cp.position.at(other.get()) ).has_value() );
+      auto otherPosition = (size_t)_solution.getVariableValue( cp.position.at(other.get()) ).value();
       if ( otherPosition >= position && otherPosition < priorPosition ) {
         // increment position of other vertex 
-        _solution.setVariableValue( cp.position.at(&other), (double)++otherPosition );
+        _solution.setVariableValue( cp.position.at(other.get()), (double)++otherPosition );
       }
     }
   }
@@ -542,7 +542,7 @@ void CPSolution::setPosition(const Vertex* vertex, size_t position) {
 void CPSolution::finalizePosition(const Vertex* vertex) {
   setPosition(vertex, ++lastPosition);
   for ( auto& [_,other] : vertex->outflows ) {
-    auto isVisited = _solution.evaluate( cp.visit.at(&other) );
+    auto isVisited = _solution.evaluate( cp.visit.at(other) );
     if ( isVisited.has_value() && !isVisited.value() ) {
       // successor is not visited
     }
@@ -591,7 +591,7 @@ void CPSolution::setTriggeredEvent( const Vertex* gateway, const Vertex* event )
   assert( event->entry<BPMN::CatchEvent>() );
   assert( gateway->exit<BPMN::EventBasedGateway>() );
   for ( auto& [ _, target ] : gateway->outflows ) {
-    _solution.setVariableValue( cp.tokenFlow.at({gateway,&target}), ( &target == event ) );
+    _solution.setVariableValue( cp.tokenFlow.at({gateway,target}), ( target == event ) );
 //std::cerr << "Token flow " << gateway.reference() << " to " << target.reference() << " = " << ( &target == entryVertex ) << std::endl;
   } 
 }
