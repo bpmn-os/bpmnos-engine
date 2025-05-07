@@ -72,7 +72,8 @@ std::list< const SeededController::Vertex* >::iterator SeededController::finaliz
     processedVertices.push_back(vertex);
     // change position of vertex
     _solution->setPosition( vertex, ++lastPosition);
-std::cerr << "position(" << vertex->reference() << ") = " << lastPosition << std::endl;
+//std::cerr << "position(" << vertex->reference() << ") = " << lastPosition << std::endl;
+std::cerr << "position(" << vertex->reference() << "/" << (vertex->index+1) << ") = " << lastPosition << std::endl;
 //std::cerr << "visit(" << vertex->shortReference() << ") = " << _solution->evaluate( visit.at(vertex) ).value_or(-1) << std::endl;
   }
   return it;
@@ -560,21 +561,15 @@ CPSolution& SeededController::createSolution() {
   return *_solution.get();
 }
 
-const CPSolution& SeededController::getSolution() const {
-  assert( _solution );
-  return *_solution.get();
-}
-
-std::vector<size_t> SeededController::getSequence() const {
+std::list<size_t> SeededController::getSequence() const {
   // TODO: remove dependency on solution
-  assert( _solution );
-
-  std::vector<size_t> sequence(flattenedGraph.vertices.size());
-  for ( size_t i = 0; i < flattenedGraph.vertices.size(); i++ ) {
-//    sequence[ (size_t)_solution->getVariableValue( model.position.at( model.vertices[i] ) ).value() -1 ] = i + 1;
-    sequence[ _solution->getPosition( &flattenedGraph.vertices[i] ) -1 ] = i + 1;
+  std::list<size_t> sequence;
+  for ( auto vertex : processedVertices ) {
+    assert( vertex == &flattenedGraph.vertices[vertex->index] );
+    sequence.push_back( vertex->index + 1 );
+std::cerr << vertex->reference() << std::endl;
   }
-  
+
   return sequence;
 }
 

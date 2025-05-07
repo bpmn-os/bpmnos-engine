@@ -38,7 +38,6 @@ SCENARIO( "Knapsack problem", "[cpcontroller][knapsack_problem]" ) {
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
       engine.run(scenario.get(),10);
-
 //std::cerr << "Model:\n" << controller.getModel().stringify() << std::endl;
 //std::cerr << "Solution:\n" << solution.stringify() << std::endl;
 //std::cerr << "Errors:\n" << solution.errors() << std::endl;

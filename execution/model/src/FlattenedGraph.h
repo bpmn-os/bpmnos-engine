@@ -38,7 +38,7 @@ public:
     Vertex(Vertex&&) = delete;               // Non-movable
     Vertex& operator=(Vertex&&) = delete;    // Non-move-assignable
     FlattenedGraph* graph;
-    const size_t index;
+    const size_t index; // Zero-based index allowing to access the vertex
     const BPMNOS::number rootId;
     const BPMNOS::number instanceId;
     const std::vector< size_t > loopIndices; // Container holding all loop indices (if any)

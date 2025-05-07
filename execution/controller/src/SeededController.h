@@ -89,8 +89,7 @@ protected:
   size_t lastPosition;
 public:
   virtual CPSolution& createSolution(); /// Method creating a solution of the CP
-  const CPSolution& getSolution() const; /// Method providing access to the solution of the CP
-  std::vector<size_t> getSequence() const; /// Method providing the vertex sequence in the solution
+  std::list<size_t> getSequence() const; /// Method providing the vertex sequence in the solution
   void initializePendingVertices(); /// Method creating an initial sequence of vertices
 
   std::optional< BPMN::Activity::LoopCharacteristics > getLoopCharacteristics(const Vertex* vertex) const;
