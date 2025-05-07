@@ -275,7 +275,7 @@ void SeededController::synchronizeSolution(const Token* token) {
   auto vertex = flattenedGraph.getVertex(token);
 
 //std::cerr << "Validate vertex " << vertex->reference() << std::endl;    
-  _solution->visit(vertex);
+//  _solution->visit(vertex);
   _solution->synchronizeStatus(token->status,vertex);
   _solution->synchronizeData(*token->data,vertex);
   _solution->synchronizeGlobals(token->globals,vertex);  
@@ -351,9 +351,7 @@ std::list< const SeededController::Vertex* >::iterator SeededController::finaliz
 bool SeededController::hasPendingRecipient(const Vertex* vertex) const {
   assert( vertex->exit<BPMN::SendTask>() );
   for ( Vertex& recipient : entry(vertex)->recipients ) {
-//    if ( _solution->getVariableValue( model.position.at(&recipient) ).value() > (double)lastPosition ) {
-    if ( _solution->getPosition( &recipient ) > lastPosition ) {
-//std::cerr << "recipient position(" << recipient.reference() << ") = " << _solution->getVariableValue( position.at(&recipient) ).value() << " > " << lastPosition << std::endl;
+    if ( std::ranges::contains(pendingVertices,&recipient) ) {
       return true;
     }
   }
@@ -568,6 +566,7 @@ const CPSolution& SeededController::getSolution() const {
 }
 
 std::vector<size_t> SeededController::getSequence() const {
+  // TODO: remove dependency on solution
   assert( _solution );
 
   std::vector<size_t> sequence(model.getVertices().size());
@@ -579,6 +578,7 @@ std::vector<size_t> SeededController::getSequence() const {
   return sequence;
 }
 
+/*
 std::optional< BPMNOS::number > SeededController::getTimestamp( const Vertex* vertex ) const {
   assert( model.status.contains(vertex) );
   assert( model.status.at(vertex).size() > BPMNOS::Model::ExtensionElements::Index::Timestamp );
@@ -589,7 +589,6 @@ std::optional< BPMNOS::number > SeededController::getTimestamp( const Vertex* ve
   }
   return std::nullopt;
 }
-
 
 std::shared_ptr<Event> SeededController::createEntryEvent(const SystemState* systemState, const Token* token, const Vertex* vertex) {
   auto timestamp = getTimestamp(vertex);
@@ -655,7 +654,8 @@ std::shared_ptr<Event> SeededController::createMessageDeliveryEvent(const System
   // message is not yet sent
   return nullptr;
 }
-  
+*/
+
 void SeededController::initializePendingVertices() {
 //std::cerr << "initialize " << seed.size() << " pending vertices " << &model << std::endl;
   lastPosition = 0;

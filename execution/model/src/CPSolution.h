@@ -35,17 +35,19 @@ public:
   const CPModel& cp;
   const FlattenedGraph& flattenedGraph;
   CP::Solution _solution;
+  size_t lastPosition;
   const CP::Model& getModel() const { return cp.getModel(); }
   const CP::Solution& getSolution() const { return _solution; }
   
   void unvisitEntry(const Vertex* vertex);
   void unvisitExit(const Vertex* vertex);
 
+/*
   void visit(const Vertex* vertex);
   
   void visitEntry(const Vertex* vertex, double timestamp); /// Method setting the position, visit, and timestamp variable of a vertex
   void visitExit(const Vertex* vertex, double timestamp); /// Method setting the position, visit, and timestamp variable of a vertex
-
+*/
   void synchronizeStatus(const BPMNOS::Values& status, const Vertex* vertex);
   void synchronizeData(const BPMNOS::SharedValues& data, const Vertex* vertex);
   void synchronizeGlobals(const BPMNOS::Values& globals, const Vertex* vertex);
@@ -53,9 +55,11 @@ public:
   std::vector<size_t> getSequence() const; /// Method providing the vertex sequence in the solution
   size_t getPosition(const Vertex* vertex) const; 
   void initializePositions(const std::vector<double>& positions); 
-  void setPosition(const Vertex* vertex, size_t position); 
+  void setPosition(const Vertex* vertex, size_t position);
+  void finalizePosition(const Vertex* vertex);
   bool isVisited(const Vertex* vertex) const;
   bool isUnvisited(const Vertex* vertex) const;
+  
   void setTriggeredEvent( const Vertex* gateway, const Vertex* event );
   void setMessageDeliveryVariableValues( const Vertex* sender, const Vertex* recipient, BPMNOS::number timestamp );
   bool messageFlows( const Vertex* sender, const Vertex* recipient );

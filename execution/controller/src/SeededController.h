@@ -26,8 +26,6 @@
 
 namespace BPMNOS::Execution {
 
-class CPSeed;
-
 /**
  * @brief A controller dispatching decisions obtained from a solution of a constraint program
  */
@@ -98,14 +96,14 @@ public:
   std::vector<size_t> getSequence() const; /// Method providing the vertex sequence in the solution
   void initializePendingVertices(); /// Method creating an initial sequence of vertices
 
-  std::optional< BPMN::Activity::LoopCharacteristics > getLoopCharacteristics(const Vertex* vertex) const;  
-  std::optional< BPMNOS::number > getTimestamp( const Vertex* vertex ) const;
+  std::optional< BPMN::Activity::LoopCharacteristics > getLoopCharacteristics(const Vertex* vertex) const;
+//  std::optional< BPMNOS::number > getTimestamp( const Vertex* vertex ) const;
   std::pair< CP::Expression, CP::Expression > getAttributeVariables( const Vertex* vertex, const Model::Attribute* attribute);
 
-  virtual std::shared_ptr<Event> createEntryEvent(const SystemState* systemState, const Token* token, const Vertex* vertex); /// Method creating a choice event from CP solution
-  virtual std::shared_ptr<Event> createExitEvent(const SystemState* systemState, const Token* token, const Vertex* vertex); /// Method creating a choice event from CP solution
-  virtual std::shared_ptr<Event> createChoiceEvent(const SystemState* systemState, const Token* token, const Vertex* vertex); /// Method creating a choice event from CP solution
-  virtual std::shared_ptr<Event> createMessageDeliveryEvent(const SystemState* systemState, const Token* token, const Vertex* vertex); /// Method creating a message delivery event from CP solution
+  virtual std::shared_ptr<Event> createEntryEvent(const SystemState* systemState, const Token* token, const Vertex* vertex) = 0; /// Method creating a choice event from CP solution
+  virtual std::shared_ptr<Event> createExitEvent(const SystemState* systemState, const Token* token, const Vertex* vertex) = 0; /// Method creating a choice event from CP solution
+  virtual std::shared_ptr<Event> createChoiceEvent(const SystemState* systemState, const Token* token, const Vertex* vertex) = 0; /// Method creating a choice event from CP solution
+  virtual std::shared_ptr<Event> createMessageDeliveryEvent(const SystemState* systemState, const Token* token, const Vertex* vertex) = 0; /// Method creating a message delivery event from CP solution
   std::unique_ptr<CPSolution> _solution;
 public:
   const Vertex* entry(const Vertex* vertex) const { return flattenedGraph.entry(vertex); };

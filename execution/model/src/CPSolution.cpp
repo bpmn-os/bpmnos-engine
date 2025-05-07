@@ -13,6 +13,7 @@ CPSolution::CPSolution(const CPModel& cp)
  : cp(cp)
  , flattenedGraph( cp.flattenedGraph )
  , _solution( cp.getModel() )
+ , lastPosition(0)
 {
   // set collection evaluator
   _solution.setCollectionEvaluator( 
@@ -62,13 +63,26 @@ void CPSolution::notice(const Observable* observable) {
 void CPSolution::synchronize(const Token* token) {
   if ( token->state == Token::State::ENTERED ) {
     // entry at node
+    if ( auto vertex = flattenedGraph.getVertex(token);
+      vertex &&
+      !vertex->node->represents<BPMN::TypedStartEvent>() &&
+      !( vertex->node->represents<BPMN::CatchEvent>() && vertex->inflows.front().second.node->represents<BPMN::EventBasedGateway>() )
+    ) {
+      _solution.setVariableValue( cp.visit.at(vertex), true );
+    }
     // TODO: set position
   }
   else if ( token->node && token->state == Token::State::COMPLETED && token->node->represents<BPMN::TypedStartEvent>() ) {
+    auto vertex = flattenedGraph.getVertex(token);
+    assert( vertex );
     // event-subprocess is triggered
+    _solution.setVariableValue( cp.visit.at(vertex), true );
   }
   else if ( token->node && token->state == Token::State::WITHDRAWN && token->node->represents<BPMN::TypedStartEvent>() ) {
-    // event-subprocess is not triggered
+    if ( auto vertex = flattenedGraph.getVertex(token) ) {
+      // event-subprocess is not triggered
+      _solution.setVariableValue( cp.visit.at(vertex), false );
+    }
   }
   else if ( 
     ( !token->node && token->state == Token::State::DONE ) || // Process
@@ -78,6 +92,11 @@ void CPSolution::synchronize(const Token* token) {
     // exit of node
     auto vertex = flattenedGraph.getVertex( token );
     assert( vertex );
+    
+    if ( vertex->node->represents<BPMN::CatchEvent>() && vertex->inflows.front().second.node->represents<BPMN::EventBasedGateway>() ) {
+      _solution.setVariableValue( cp.visit.at(vertex), true );
+    }
+
     // TODO: set position
 
     auto entryVertex = entry(vertex);
@@ -311,6 +330,7 @@ void CPSolution::unvisitExit(const Vertex* vertex) {
   }
 }
 
+/*
 void CPSolution::visit(const Vertex* vertex) {
 //std::cerr << vertex->reference() << "/" << cp.visit.begin()->second.stringify() << std::endl;
 //std::cerr << vertex << "/" << cp.visit.begin()->first  << std::endl;
@@ -340,7 +360,7 @@ void CPSolution::visitExit(const Vertex* vertex, double timestamp) {
   assert( cp.status.contains(vertex) );
   _solution.setVariableValue( cp.status.at(vertex)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value, timestamp );
 }
-
+*/
 
 void CPSolution::synchronizeStatus(const BPMNOS::Values& status, const CPSolution::Vertex* vertex) {
   assert( cp.status.contains(vertex) );
@@ -492,6 +512,16 @@ void CPSolution::setPosition(const Vertex* vertex, size_t position) {
   }
   // change vertex position
   _solution.setVariableValue( cp.position.at(vertex), (double)position );
+}
+
+void CPSolution::finalizePosition(const Vertex* vertex) {
+  setPosition(vertex, ++lastPosition);
+  for ( auto& [_,other] : vertex->outflows ) {
+    auto isVisited = _solution.evaluate( cp.visit.at(&other) );
+    if ( isVisited.has_value() && !isVisited.value() ) {
+      // successor is not visited
+    }
+  }
 }
 
 bool CPSolution::isVisited(const Vertex* vertex) const {
