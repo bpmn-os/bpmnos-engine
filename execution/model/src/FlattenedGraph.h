@@ -2,7 +2,6 @@
 #define BPMNOS_Execution_FlattenedGraph_H
 
 #include <unordered_map>
-#include <deque>
 #include <vector>
 #include <list>
 #include <string>
@@ -35,7 +34,7 @@ public:
     Vertex() = delete; // Prevents default construction
     Vertex(const Vertex&) = delete;           // Non-copyable
     Vertex& operator=(const Vertex&) = delete; // Non-copy-assignable
-    Vertex(Vertex&&) = default;               // Movable to allow use in std::vector
+    Vertex(Vertex&&) = delete;               // Non-movable
     Vertex& operator=(Vertex&&) = delete;    // Non-move-assignable
     FlattenedGraph* graph;
     const size_t index; // Zero-based index allowing to access the vertex
@@ -49,8 +48,8 @@ public:
     std::vector< std::pair<const BPMN::SequenceFlow*, Vertex*> > outflows;     /// Container holding vertices connecting by an outgoing sequence flow, for loop activities the sequence flow may be a nullptr
     std::vector< Vertex* > predecessors; /// Container holding predecessors according to the execution logic (excl. sequence flows)
     std::vector< Vertex* > successors;   /// Container holding successors according to the execution logic (excl. sequence flows)
-    std::vector< Vertex* > senders;      /// Container holding all possible vertices sending a message (or the message delivery notfication for a SendTask)
-    std::vector< Vertex* > recipients;   /// Container holding all possible vertices receiving a message (or the message delivery notfication for a SendTask)
+    std::vector< Vertex* > senders;      /// Container holding all possible vertices sending a message (or the message delivery notification for a SendTask)
+    std::vector< Vertex* > recipients;   /// Container holding all possible vertices receiving a message (or the message delivery notification for a SendTask)
     std::vector< Vertex* > dataOwners;   /// Container holding all entry vertices of nodes owning at least one data attribute
     const Vertex* performer() const ; /// Returns the entry vertex of the performer of a sequential activity vertex
     size_t dataOwnerIndex( const BPMNOS::Model::Attribute* attribute ) const; /// Returns the index of the data owner of an attribute
@@ -91,8 +90,8 @@ public:
   std::unordered_map<const Vertex*,  std::vector< std::pair<const Vertex*, const Vertex*> > > sequentialActivities; /// Container allowing to look up vertices of sequential activities given a pointer to the entry vertex of a performer  
   std::unordered_map<const Vertex*,  std::vector< std::pair<const Vertex*, const Vertex*> > > dataModifiers; /// Container allowing to look up vertices of tasks modifying data attributes given a pointer to the entry vertex of the node owning the data
   std::vector< std::pair<const Vertex*, const Vertex*> > globalModifiers; /// Container holding vertices of tasks modifying global attributes
-  bool modifiesData(const Vertex* vertex, const Vertex* dataOwner) const; /// Method returning true of the vertex modifies a data attribute of the given owner 
-  bool modifiesGlobals(const Vertex* vertex) const; /// Method returning true of the vertex modifies a global attribute
+  bool modifiesData(const Vertex* vertex, const Vertex* dataOwner) const; /// Method returning true if the vertex modifies a data attribute of the given owner 
+  bool modifiesGlobals(const Vertex* vertex) const; /// Method returning true if the vertex modifies a global attribute
 
   const Vertex* getVertex( const Token* token ) const;
 
