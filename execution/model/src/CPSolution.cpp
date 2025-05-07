@@ -61,28 +61,53 @@ void CPSolution::notice(const Observable* observable) {
 }
 
 void CPSolution::synchronize(const Token* token) {
+  if (
+    token->state == Token::State::CREATED || 
+    token->state == Token::State::ARRIVED || 
+    token->state == Token::State::READY || 
+    token->state == Token::State::BUSY ||
+    token->state == Token::State::DEPARTED ||
+    token->state == Token::State::WAITING ||
+    token->state == Token::State::FAILING ||
+    token->state == Token::State::FAILED
+  ) {
+    return;
+  }
+  
+  auto vertex = flattenedGraph.getVertex(token);
+  if ( !vertex ) {
+    // a token may enter the start event of an event-subprocess that cannot be triggered
+    // such a token will be withdrawn and no vertex exists 
+    return;
+  }
+
   if ( token->state == Token::State::ENTERED ) {
     // entry at node
-    if ( auto vertex = flattenedGraph.getVertex(token);
-      vertex &&
+
+    // TODO: set position
+
+    
+    if ( 
       !vertex->node->represents<BPMN::TypedStartEvent>() &&
       !( vertex->node->represents<BPMN::CatchEvent>() && vertex->inflows.front().second.node->represents<BPMN::EventBasedGateway>() )
     ) {
       _solution.setVariableValue( cp.visit.at(vertex), true );
+      synchronizeStatus(token->status,vertex);
+      synchronizeData(*token->data,vertex);
+      synchronizeGlobals(token->globals,vertex);  
     }
-    // TODO: set position
   }
   else if ( token->node && token->state == Token::State::COMPLETED && token->node->represents<BPMN::TypedStartEvent>() ) {
-    auto vertex = flattenedGraph.getVertex(token);
-    assert( vertex );
     // event-subprocess is triggered
     _solution.setVariableValue( cp.visit.at(vertex), true );
+    // for typed start events data and globals remain unchanged upon completion
+    // operators of event-subprocess are applied after completion
+    synchronizeData(*token->data,entry(vertex));
+    synchronizeGlobals(token->globals,entry(vertex));
   }
   else if ( token->node && token->state == Token::State::WITHDRAWN && token->node->represents<BPMN::TypedStartEvent>() ) {
-    if ( auto vertex = flattenedGraph.getVertex(token) ) {
-      // event-subprocess is not triggered
-      _solution.setVariableValue( cp.visit.at(vertex), false );
-    }
+    // event-subprocess is not triggered
+    _solution.setVariableValue( cp.visit.at(vertex), false );
   }
   else if ( 
     ( !token->node && token->state == Token::State::DONE ) || // Process
@@ -90,9 +115,6 @@ void CPSolution::synchronize(const Token* token) {
     ( token->node && token->state == Token::State::COMPLETED && token->node->represents<BPMN::CatchEvent>() && !token->node->represents<BPMN::ReceiveTask>() )
   ) {
     // exit of node
-    auto vertex = flattenedGraph.getVertex( token );
-    assert( vertex );
-    
     if ( vertex->node->represents<BPMN::CatchEvent>() && vertex->inflows.front().second.node->represents<BPMN::EventBasedGateway>() ) {
       _solution.setVariableValue( cp.visit.at(vertex), true );
     }
@@ -108,6 +130,10 @@ void CPSolution::synchronize(const Token* token) {
       auto gateway = &entryVertex->inflows.front().second;
       setTriggeredEvent( gateway, entryVertex );
     }
+
+    synchronizeStatus(token->status,vertex);
+    synchronizeData(*token->data,vertex);
+    synchronizeGlobals(token->globals,vertex);  
   }
 }
 

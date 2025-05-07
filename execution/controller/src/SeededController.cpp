@@ -15,9 +15,6 @@ SeededController::SeededController(const BPMNOS::Model::Scenario* scenario, Conf
  , flattenedGraph(FlattenedGraph(scenario))
  , model(flattenedGraph)
 {
-//for (auto& vertex : flattenedGraph.vertices ) std::cerr << &vertex << std::endl;
-  // TODO: consider all vertices and ignore boundary and compensation events!!!
-
   // initialize seed
   seed.resize( flattenedGraph.vertices.size() );
   std::iota(seed.begin(), seed.end(), 1);
@@ -230,11 +227,6 @@ void SeededController::synchronizeSolution(const Token* token) {
     finalizePredecessorPositions(entry(vertex));
     finalizeVertexPosition(entry(vertex));
     finalizeVertexPosition(vertex);
-//std::cerr << "SYNC: " << token->jsonify() << "/" << entry(vertex)->reference() << std::endl;
-    _solution->synchronizeData(*token->data,entry(vertex));
-    _solution->synchronizeGlobals(token->globals,entry(vertex));
-    // for typed start events data and globals remain unchanged upon completion
-    // operators of event-subprocess are applied after completion
   }
   else if ( 
     ( !token->node && token->state == Token::State::COMPLETED ) ||
@@ -282,14 +274,6 @@ void SeededController::synchronizeSolution(const Token* token) {
     // token at typed start event, but not triggered
     return;
   }
-
-  auto vertex = flattenedGraph.getVertex(token);
-
-//std::cerr << "Validate vertex " << vertex->reference() << std::endl;    
-//  _solution->visit(vertex);
-  _solution->synchronizeStatus(token->status,vertex);
-  _solution->synchronizeData(*token->data,vertex);
-  _solution->synchronizeGlobals(token->globals,vertex);  
 }
 
 void SeededController::notice(const Observable* observable) {
@@ -605,6 +589,8 @@ std::optional< BPMNOS::number > SeededController::getTimestamp( const Vertex* ve
   }
   return std::nullopt;
 }
+
+// TODO: use below for a potential CPController
 
 std::shared_ptr<Event> SeededController::createEntryEvent(const SystemState* systemState, const Token* token, const Vertex* vertex) {
   auto timestamp = getTimestamp(vertex);
