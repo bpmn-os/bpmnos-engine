@@ -97,7 +97,6 @@ SCENARIO( "Bin packing problem", "[cpcontroller][bin_packing_problem]" ) {
     }
   }
 
-
   GIVEN( "Three bins and three items" ) {
 
     std::string csv =
@@ -128,12 +127,12 @@ SCENARIO( "Bin packing problem", "[cpcontroller][bin_packing_problem]" ) {
       controller.subscribe(&engine); 
       Execution::TimeWarp timeHandler;
       timeHandler.connect(&engine);
-      auto& solution = controller.createSolution();
-      solution.subscribe(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
-      solution.subscribe(&engine);
       recorder.subscribe(&engine);
+
+      auto& solution = controller.createSolution();
+      solution.subscribe(&engine);
       engine.run(scenario.get());
 
 //std::cerr << "Model:\n" << controller.getModel().stringify() << std::endl;

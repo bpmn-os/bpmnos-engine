@@ -54,14 +54,6 @@ std::cerr << std::endl;
   return true;
 }
 
-std::optional< BPMN::Activity::LoopCharacteristics> SeededController::getLoopCharacteristics(const Vertex* vertex) const {
-  auto activity = vertex->node->represents<BPMN::Activity>();
-  if ( !activity ) {
-    return std::nullopt;
-  }
-  return activity->loopCharacteristics;
-}
-
 std::list< const SeededController::Vertex* >::iterator SeededController::finalizeVertexPosition(const Vertex* vertex) {
 //  assert( std::ranges::contains(pendingVertices,vertex) );
 //std::cerr << "finalizeVertexPosition " << vertex->reference() << std::endl;
@@ -71,9 +63,9 @@ std::list< const SeededController::Vertex* >::iterator SeededController::finaliz
     it = pendingVertices.erase(it);
     processedVertices.push_back(vertex);
     // change position of vertex
-    _solution->setPosition( vertex, ++lastPosition);
+//TODO    _solution->setPosition( vertex, ++lastPosition);
 //std::cerr << "position(" << vertex->reference() << ") = " << lastPosition << std::endl;
-std::cerr << "position(" << vertex->reference() << "/" << (vertex->index+1) << ") = " << lastPosition << std::endl;
+//std::cerr << "-> position(" << vertex->reference() << "/" << (vertex->index+1) << ") = " << lastPosition << std::endl;
 //std::cerr << "visit(" << vertex->shortReference() << ") = " << _solution->evaluate( visit.at(vertex) ).value_or(-1) << std::endl;
   }
   return it;
@@ -158,7 +150,7 @@ std::list< const SeededController::Vertex* >::iterator SeededController::finaliz
   assert( vertex == entry(vertex) );
   
   auto it = finalizeVertexPosition(vertex);
-  _solution->unvisitEntry(vertex);
+//TODO  _solution->unvisitEntry(vertex);
 
   auto finalizeExit = [&]() {
     if (vertex->node->represents<BPMN::Scope>()) {
@@ -178,7 +170,7 @@ std::list< const SeededController::Vertex* >::iterator SeededController::finaliz
   }
 
 
-  _solution->unvisitExit(exit(vertex));
+//TODO  _solution->unvisitExit(exit(vertex));
 
   return it;
 }

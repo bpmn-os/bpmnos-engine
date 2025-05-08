@@ -34,9 +34,15 @@ CPSolution::CPSolution(const CPModel& cp)
       }
     );
   }
+  
+  std::vector<double> positions;
+  positions.resize( flattenedGraph.vertices.size() );
+  std::iota(positions.begin(), positions.end(), 1);
+  initializePositions(positions);
 }
 
 void CPSolution::subscribe(Engine* engine) {
+  lastPosition = 0;
   engine->addSubscriber(this, 
     Execution::Observable::Type::Event,
     Execution::Observable::Type::Token
@@ -81,23 +87,43 @@ void CPSolution::synchronize(const Token* token) {
     return;
   }
 
+//std::cerr << lastPosition << " - Synchronise: " << token->jsonify() << std::endl;
   if ( token->state == Token::State::ENTERED ) {
+    if ( 
+      vertex->node->represents<BPMN::TypedStartEvent>() ||
+      ( vertex->node->represents<BPMN::CatchEvent>() && vertex->inflows.front().second->node->represents<BPMN::EventBasedGateway>() )
+    ) {
+      // vertex enters a node that is either a typed start event or one alternative following an event-based gateway
+      // typed start event and alternatives following an event-based gateway are considered when triggered
+      return;
+    }
+
     // entry at node
 
-    // TODO: set position
+    // set position
+    finalizePosition( vertex );
 
     
+    _solution.setVariableValue( cp.visit.at(vertex), true );
+    synchronizeStatus(token->status,vertex);
+    synchronizeData(*token->data,vertex);
+    synchronizeGlobals(token->globals,vertex);  
+
     if ( 
-      !vertex->node->represents<BPMN::TypedStartEvent>() &&
-      !( vertex->node->represents<BPMN::CatchEvent>() && vertex->inflows.front().second->node->represents<BPMN::EventBasedGateway>() )
+      vertex->entry<BPMN::UntypedStartEvent>() || 
+      vertex->entry<BPMN::Gateway>() || 
+      ( vertex->entry<BPMN::ThrowEvent>() && !vertex->entry<BPMN::SendTask>() ) 
     ) {
-      _solution.setVariableValue( cp.visit.at(vertex), true );
-      synchronizeStatus(token->status,vertex);
-      synchronizeData(*token->data,vertex);
-      synchronizeGlobals(token->globals,vertex);  
+      // vertex is instantaneous
+//std::cerr << "clear instantaneous exit: " << token->jsonify() << std::endl;
+      finalizePosition(exit(vertex));
     }
   }
   else if ( token->node && token->state == Token::State::COMPLETED && token->node->represents<BPMN::TypedStartEvent>() ) {
+    // set position
+    finalizePosition( entry(vertex) );
+    finalizePosition( vertex );
+
     // event-subprocess is triggered
     _solution.setVariableValue( cp.visit.at(vertex), true );
     // for typed start events data and globals remain unchanged upon completion
@@ -107,19 +133,19 @@ void CPSolution::synchronize(const Token* token) {
   }
   else if ( token->node && token->state == Token::State::WITHDRAWN && token->node->represents<BPMN::TypedStartEvent>() ) {
     // event-subprocess is not triggered
-    _solution.setVariableValue( cp.visit.at(vertex), false );
+    setPosition( entry(vertex), ++lastPosition );
+    unvisitEntry( entry(vertex) );
+    setPosition( vertex, ++lastPosition );
+    unvisitExit( vertex );
+    finalizeUnvistedSubsequentPositions(vertex);
+//    _solution.setVariableValue( cp.visit.at(vertex), false );
   }
   else if ( 
     ( !token->node && token->state == Token::State::DONE ) || // Process
     ( token->node && token->state == Token::State::EXITING && !token->node->represents<BPMN::TypedStartEvent>() ) || // Activity
     ( token->node && token->state == Token::State::COMPLETED && token->node->represents<BPMN::CatchEvent>() && !token->node->represents<BPMN::ReceiveTask>() )
   ) {
-    // exit of node
-    if ( vertex->node->represents<BPMN::CatchEvent>() && vertex->inflows.front().second->node->represents<BPMN::EventBasedGateway>() ) {
-      _solution.setVariableValue( cp.visit.at(vertex), true );
-    }
 
-    // TODO: set position
 
     auto entryVertex = entry(vertex);
     if ( 
@@ -129,12 +155,25 @@ void CPSolution::synchronize(const Token* token) {
       assert( vertex->exit<BPMN::CatchEvent>() );
       auto gateway = entryVertex->inflows.front().second;
       setTriggeredEvent( gateway, entryVertex );
+      finalizePosition( entryVertex );
+      finalizePosition( vertex );
+      finalizeUnvistedSubsequentPositions(gateway);
+    }
+    else {
+      // set position
+      finalizePosition( vertex );
+    }
+    
+    // exit of node
+    if ( vertex->node->represents<BPMN::CatchEvent>() && vertex->inflows.front().second->node->represents<BPMN::EventBasedGateway>() ) {
+      _solution.setVariableValue( cp.visit.at(vertex), true );
     }
 
     synchronizeStatus(token->status,vertex);
     synchronizeData(*token->data,vertex);
     synchronizeGlobals(token->globals,vertex);  
   }
+//std::cerr << "#" << std::endl;
 }
 
 void CPSolution::synchronize(const Event* event) {
@@ -354,6 +393,20 @@ void CPSolution::unvisitExit(const Vertex* vertex) {
       }
     }
   }
+  
+   if ( vertex->node->represents<BPMN::TypedStartEvent>() ) {
+     // unvisit subsequent typed start events
+     for ( auto successor : vertex->successors ) {
+       if ( successor->node == vertex->node ) {
+         setPosition( successor, ++lastPosition );
+         unvisitEntry(successor);
+         setPosition( exit(successor), ++lastPosition );
+         unvisitExit(exit(successor));         
+         finalizeUnvistedSubsequentPositions(exit(successor));
+         break;
+       }
+     }
+   }
 }
 
 /*
@@ -517,6 +570,7 @@ void CPSolution::initializePositions(const std::vector<double>& positions) {
 }
 
 void CPSolution::setPosition(const Vertex* vertex, size_t position) {
+std::cerr << "position(" << vertex->reference() << ") = " << position << std::endl;
   assert( cp.position.contains( vertex ) );
   assert( _solution.getVariableValue( cp.position.at(vertex) ).has_value() );
   auto priorPosition = (size_t)_solution.getVariableValue( cp.position.at(vertex) ).value();
@@ -540,11 +594,88 @@ void CPSolution::setPosition(const Vertex* vertex, size_t position) {
 }
 
 void CPSolution::finalizePosition(const Vertex* vertex) {
+//std::cerr << "finalizePosition " << vertex->reference() << std::endl;
+  if ( vertex->type == Vertex::Type::ENTRY && getLoopCharacteristics(vertex) ) {
+    // finalize position of dummy for loop or multi-instance activity
+    for ( auto [_,other] : vertex->inflows ) {
+      if ( 
+        other->node == vertex->node && 
+        flattenedGraph.dummies.contains(other) &&
+        _solution.getVariableValue( cp.position.at(other) ).value() > (double)lastPosition
+      ) {
+        // finalize position of dummy entry
+        setPosition(other, ++lastPosition);
+        break;
+      }
+    }
+  }
+
   setPosition(vertex, ++lastPosition);
-  for ( auto& [_,other] : vertex->outflows ) {
+
+  if ( vertex->type == Vertex::Type::EXIT && getLoopCharacteristics(vertex) ) {
+    // finalize position of dummy for loop or multi-instance activity
+    for ( auto [_1,other] : vertex->outflows ) {
+      if ( 
+        other->node == vertex->node && 
+        flattenedGraph.dummies.contains(other) 
+      ) {
+        bool isLast = true;
+        for ( auto [_2,sibling] : other->inflows ) {
+          if ( _solution.getVariableValue( cp.position.at(sibling) ).value() > (double)lastPosition ) {
+            isLast = false;
+            break;
+          }
+        }
+        if ( isLast ) {     
+          // finalize position of dummy exit
+          setPosition(other, ++lastPosition);
+          break;
+        }
+      }
+    }
+  }
+  
+  finalizeUnvistedSubsequentPositions(vertex);
+}
+
+void CPSolution::finalizeUnvistedSubsequentPositions(const Vertex* vertex) {
+  for ( auto& [_1,other] : vertex->outflows ) {
     auto isVisited = _solution.evaluate( cp.visit.at(other) );
     if ( isVisited.has_value() && !isVisited.value() ) {
       // successor is not visited
+      bool hasPendingPredecessors = false;
+      for ( auto& [_2,predecessor] : other->inflows ) {
+        if ( _solution.getVariableValue( cp.position.at(predecessor) ).value() > (double)lastPosition ) {
+          hasPendingPredecessors = true;
+          break;
+        }
+      }
+      if ( hasPendingPredecessors ) {
+        continue;
+      }
+
+      for ( auto predecessor : other->predecessors ) {
+        if ( _solution.getVariableValue( cp.position.at(predecessor) ).value() > (double)lastPosition ) {
+          hasPendingPredecessors = true;
+          break;
+        }
+      }
+      
+      if ( hasPendingPredecessors ) {
+        continue;
+      }
+
+//std::cerr << "unvisited ";
+      setPosition(other, ++lastPosition);
+      if ( other->type == Vertex::Type::ENTRY ) {
+        assert( !_solution.getVariableValue( cp.visit.at(other) ).has_value() );
+        unvisitEntry(other);
+      }
+      else {
+        assert( other->node->represents<BPMN::TypedStartEvent>() || _solution.getVariableValue( cp.visit.at(other) ).has_value() );
+        unvisitExit(other);
+      }
+      finalizeUnvistedSubsequentPositions(other);
     }
   }
 }

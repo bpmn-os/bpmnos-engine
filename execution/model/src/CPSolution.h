@@ -57,6 +57,8 @@ public:
   void initializePositions(const std::vector<double>& positions); 
   void setPosition(const Vertex* vertex, size_t position);
   void finalizePosition(const Vertex* vertex);
+  void finalizeUnvistedSubsequentPositions(const Vertex* vertex);
+
   bool isVisited(const Vertex* vertex) const;
   bool isUnvisited(const Vertex* vertex) const;
   
