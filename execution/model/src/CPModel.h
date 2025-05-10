@@ -15,12 +15,13 @@
 
 namespace BPMNOS::Execution {
 
-class CPSeed;
+class CPSolution;
 
 /**
  * @brief A controller dispatching decisions obtained from a solution of a constraint program
  */
 class CPModel {
+friend class CPSolution;
 public:
   using Vertex = FlattenedGraph::Vertex;
 
@@ -29,18 +30,16 @@ public:
     bool instantExit = false;
   };
   static Config default_config() { return {}; } // Work around for compiler bug see: https://stackoverflow.com/questions/53408962/try-to-understand-compiler-error-message-default-member-initializer-required-be/75691051#75691051
-  CPModel(const BPMNOS::Execution::FlattenedGraph& flattenedGraph, Config config = default_config());
+  CPModel(const BPMNOS::Execution::FlattenedGraph* flattenedGraph, Config config = default_config());
 
   const CP::Model& getModel() const { return model; }
-//  const std::vector<const Vertex*>& getVertices() const { return vertices; }
+  const BPMNOS::Model::Scenario* scenario;
 protected:
-  const BPMNOS::Model::Scenario& scenario;
   Config config;
-//  std::vector< const BPMNOS::Model::Scenario::InstanceData* > instances;
 public:
-  const FlattenedGraph& flattenedGraph;
+  const FlattenedGraph* flattenedGraph;
+protected:
   CP::Model model;
-//protected:
   LIMEX::Handle<CP::Expression,CP::Expression> limexHandle;
 
   void createCP(); /// Method creating the constraint program
@@ -137,7 +136,6 @@ public:
     }
   };
   
-//  std::vector<const Vertex*> vertices; /// Container of all vertices considered
   std::vector<const Vertex*> messageRecipients; /// Container of all (exit) vertices catching a message
   std::vector<const Vertex*> messageSenders; /// Container of all (entry) vertices throwing a message
 
@@ -162,14 +160,14 @@ public:
 
   std::unordered_map< std::pair< const Vertex*, const Vertex* >, std::vector<AttributeVariables>, pair_hash > statusFlow; /// Variables representing status attributes flowing from one vertex to another
 
-  const BPMNOS::Model::Scenario& getScenario() const; /// Method providing access to the scenario for the CP
-
   std::optional< BPMN::Activity::LoopCharacteristics > getLoopCharacteristics(const Vertex* vertex) const;  
   std::optional< BPMNOS::number > getTimestamp( const Vertex* vertex ) const;
   std::pair< CP::Expression, CP::Expression > getAttributeVariables( const Vertex* vertex, const Model::Attribute* attribute);
+public:
+  std::string stringify() const { return model.stringify(); };
 
-  const Vertex* entry(const Vertex* vertex) const { return flattenedGraph.entry(vertex); };
-  const Vertex* exit(const Vertex* vertex) const { return flattenedGraph.exit(vertex); };
+  const Vertex* entry(const Vertex* vertex) const { return flattenedGraph->entry(vertex); };
+  const Vertex* exit(const Vertex* vertex) const { return flattenedGraph->exit(vertex); };
 };
 
 } // namespace BPMNOS::Execution

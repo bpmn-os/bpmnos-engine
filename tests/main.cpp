@@ -77,23 +77,23 @@ using namespace BPMNOS;
 #include "examples/truck_driver_scheduling_problem/test.h"
 
 // CPController
-#include "cpcontroller/test.h"
+#include "cp/test.h"
 
 #endif // ALL_TESTS
 
 #ifndef ALL_TESTS
 //#include "examples/knapsack_problem/test.h"
-//#include "cpcontroller/examples/knapsack_problem/test.h"
-//#include "cpcontroller/examples/bin_packing_problem/test.h"
-//#include "cpcontroller/examples/job_shop_scheduling_problem/test.h"
-#include "cpcontroller/test.h"
-//#include "cpcontroller/multiinstanceactivity/test.h"
-//#include "cpcontroller/loopactivity/test.h"
-//#include "cpcontroller/process/test.h"
-//#include "cpcontroller/exclusivegateway/test.h"
-//#include "cpcontroller/eventbasedgateway/test.h"
-//#include "cpcontroller/adhocsubprocess/test.h"
-//#include "cpcontroller/message/test.h"
+//#include "cp/examples/knapsack_problem/test.h"
+//#include "cp/examples/bin_packing_problem/test.h"
+//#include "cp/examples/job_shop_scheduling_problem/test.h"
+#include "cp/test.h"
+//#include "cp/multiinstanceactivity/test.h"
+//#include "cp/loopactivity/test.h"
+//#include "cp/process/test.h"
+//#include "cp/exclusivegateway/test.h"
+//#include "cp/eventbasedgateway/test.h"
+//#include "cp/adhocsubprocess/test.h"
+//#include "cp/message/test.h"
 #endif // ALL_TESTS
 
 

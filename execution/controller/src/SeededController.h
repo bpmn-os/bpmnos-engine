@@ -39,7 +39,7 @@ public:
     bool instantExit = false;
   };
   static Config default_config() { return {}; } // Work around for compiler bug see: https://stackoverflow.com/questions/53408962/try-to-understand-compiler-error-message-default-member-initializer-required-be/75691051#75691051
-  SeededController(const BPMNOS::Model::Scenario* scenario, Config config = default_config());
+  SeededController(const BPMNOS::Execution::FlattenedGraph* flattenedGraph, Config config = default_config());
   bool setSeed(const std::list<size_t> initialSeed);
   void connect(Mediator* mediator);
   void subscribe(Engine* engine);
@@ -52,15 +52,12 @@ protected:
   Evaluator* evaluator;
   std::shared_ptr<TerminationEvent> terminationEvent;
   std::shared_ptr<Event> dispatchEvent(const SystemState* systemState);
-  const BPMNOS::Model::Scenario* scenario;
   Config config;
 public:
-  const FlattenedGraph flattenedGraph;
-  const CPModel model;
+  const FlattenedGraph* flattenedGraph;
 protected:
   std::list<size_t> seed;
   std::unordered_map< const Vertex*, const Vertex* > performing; /// Map holding the entry vertex of a sequential activity performed by a sequential performer
-  
     
   struct pair_hash {
     template <class T1, class T2>
@@ -86,13 +83,9 @@ protected:
   std::list< const Vertex* >::iterator finalizeUnvisited(const Vertex* vertex);
   void finalizeUnvisitedChildren(const Vertex* vertex);
   std::list< const Vertex* >::iterator finalizeUnvisitedTypedStartEvents(std::list< const Vertex* >::iterator it); /// Method finalizing the sequence position of a unvisited vertices belonging to typed start events
-  size_t lastPosition;
 public:
-  virtual CPSolution& createSolution(); /// Method creating a solution of the CP
   std::list<size_t> getSequence() const; /// Method providing the vertex sequence in the solution
   void initializePendingVertices(); /// Method creating an initial sequence of vertices
-
-//  std::optional< BPMN::Activity::LoopCharacteristics > getLoopCharacteristics(const Vertex* vertex) const;
 
   virtual std::shared_ptr<Event> createEntryEvent(const SystemState* systemState, const Token* token, const Vertex* vertex) = 0; /// Method creating a choice event from CP solution
   virtual std::shared_ptr<Event> createExitEvent(const SystemState* systemState, const Token* token, const Vertex* vertex) = 0; /// Method creating a choice event from CP solution
@@ -100,8 +93,8 @@ public:
   virtual std::shared_ptr<Event> createMessageDeliveryEvent(const SystemState* systemState, const Token* token, const Vertex* vertex) = 0; /// Method creating a message delivery event from CP solution
   std::unique_ptr<CPSolution> _solution;
 public:
-  const Vertex* entry(const Vertex* vertex) const { return flattenedGraph.entry(vertex); };
-  const Vertex* exit(const Vertex* vertex) const { return flattenedGraph.exit(vertex); };
+  const Vertex* entry(const Vertex* vertex) const { return flattenedGraph->entry(vertex); };
+  const Vertex* exit(const Vertex* vertex) const { return flattenedGraph->exit(vertex); };
 };
 
 } // namespace BPMNOS::Execution

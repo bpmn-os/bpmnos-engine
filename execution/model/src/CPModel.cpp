@@ -9,15 +9,15 @@
 
 using namespace BPMNOS::Execution;
 
-CPModel::CPModel(const BPMNOS::Execution::FlattenedGraph& flattenedGraph, Config config)
- : scenario(flattenedGraph.scenario)
+CPModel::CPModel(const BPMNOS::Execution::FlattenedGraph* flattenedGraph, Config config)
+ : scenario(&flattenedGraph->scenario)
  , config(std::move(config))
  , flattenedGraph(flattenedGraph) 
  , model(CP::Model::ObjectiveSense::MAXIMIZE)
 {
-//std::cerr << "Flattened graph: " << flattenedGraph.jsonify().dump() << std::endl;
+//std::cerr << "Flattened graph: " << flattenedGraph->jsonify().dump() << std::endl;
   // add callables for lookup tables
-  for ( auto& lookupTable : scenario.model->lookupTables ) {
+  for ( auto& lookupTable : scenario->model->lookupTables ) {
     limexHandle.add(
       lookupTable->name, 
       [&lookupTable](const std::vector<CP::Expression>& args) -> CP::Expression
@@ -38,9 +38,6 @@ CPModel::CPModel(const BPMNOS::Execution::FlattenedGraph& flattenedGraph, Config
   createCP();
 }
 
-const BPMNOS::Model::Scenario& CPModel::getScenario() const {
-  return scenario;
-}
 std::optional< BPMN::Activity::LoopCharacteristics> CPModel::getLoopCharacteristics(const Vertex* vertex) const {
   auto activity = vertex->node->represents<BPMN::Activity>();
   if ( !activity ) {
@@ -51,7 +48,7 @@ std::optional< BPMN::Activity::LoopCharacteristics> CPModel::getLoopCharacterist
 
 
 void CPModel::createCP() {
-  auto sortedVertices = flattenedGraph.getSortedVertices();
+  auto sortedVertices = flattenedGraph->getSortedVertices();
 
 //std::cerr << "create sequence position variables" << std::endl;
   // create sequence position variables for all vertices
@@ -66,7 +63,7 @@ void CPModel::createCP() {
 //std::cerr << "createGlobalVariables" << std::endl;
   createGlobalVariables();
 
-//std::cerr << "createVertexVariables:" << flattenedGraph.vertices.size() << std::endl;
+//std::cerr << "createVertexVariables:" << flattenedGraph->vertices.size() << std::endl;
   // create vertex and message variables
   for ( auto vertex : sortedVertices ) {
     createVertexVariables(vertex);
@@ -99,7 +96,7 @@ void CPModel::createCP() {
 }
 
 void CPModel::createGlobalVariables() {
-  for ( auto attribute : scenario.model->attributeRegistry.globalAttributes ) {
+  for ( auto attribute : scenario->model->attributeRegistry.globalAttributes ) {
     assert( attribute->index == globals.size() ); // ensure that the order of attributes is correct
     globals.emplace_back(
       model.addIndexedVariables(CP::Variable::Type::BOOLEAN, "defined_" + attribute->id ), 
@@ -107,7 +104,7 @@ void CPModel::createGlobalVariables() {
     );
     auto& [defined,value] = globals.back();
     // add variables holding initial values
-    auto& initialValue = scenario.globals[attribute->index];
+    auto& initialValue = scenario->globals[attribute->index];
     if ( initialValue.has_value() ) {
       // defined initial value
       defined.emplace_back(true,true);
@@ -121,14 +118,14 @@ void CPModel::createGlobalVariables() {
     
     if ( attribute->isImmutable ) {
       // deduced variables
-      for ( [[maybe_unused]] auto _ : flattenedGraph.globalModifiers ) {
+      for ( [[maybe_unused]] auto _ : flattenedGraph->globalModifiers ) {
         // use initial value for all data states
         defined.emplace_back(defined[0]);
         value.emplace_back(value[0]); 
       }
     }
     else {
-      for ( [[maybe_unused]] auto _ : flattenedGraph.globalModifiers ) {
+      for ( [[maybe_unused]] auto _ : flattenedGraph->globalModifiers ) {
         // unconstrained variables for all data states
         defined.emplace_back();
         value.emplace_back(); 
@@ -139,7 +136,7 @@ void CPModel::createGlobalVariables() {
 }
 
 void CPModel::createMessageFlowVariables() {
-  for ( auto& vertex : flattenedGraph.vertices ) {
+  for ( auto& vertex : flattenedGraph->vertices ) {
     if ( vertex->exit<BPMN::MessageCatchEvent>() ) {
       messageRecipients.push_back(vertex.get());
       CP::reference_vector<const CP::Variable> messages;
@@ -373,7 +370,7 @@ void CPModel::createDataVariables(const FlattenedGraph::Vertex* vertex) {
       model.addIndexedVariables(CP::Variable::Type::REAL, "value_{" + vertex->shortReference() + "}," + attribute->id )
     );
     // add variables holding initial values
-    auto given = scenario.getKnownValue(vertex->rootId, attribute.get(), scenario.getInception());
+    auto given = scenario->getKnownValue(vertex->rootId, attribute.get(), scenario->getInception());
     if ( given.has_value() ) {
       // defined initial value
       variables.defined.emplace_back(visit.at(vertex));
@@ -392,17 +389,17 @@ void CPModel::createDataVariables(const FlattenedGraph::Vertex* vertex) {
       variables.value.emplace_back(0.0,0.0); 
     }
     
-    assert( flattenedGraph.dataModifiers.contains(vertex) );
+    assert( flattenedGraph->dataModifiers.contains(vertex) );
     if ( attribute->isImmutable ) {
       // deducible variables
-      for ( [[maybe_unused]] auto _ : flattenedGraph.dataModifiers.at(vertex) ) {
+      for ( [[maybe_unused]] auto _ : flattenedGraph->dataModifiers.at(vertex) ) {
         // use initial value for all data states
         variables.defined.emplace_back(variables.defined[0]);
         variables.value.emplace_back(variables.value[0]); 
       }
     }
     else {
-      for ( [[maybe_unused]] auto _ : flattenedGraph.dataModifiers.at(vertex) ) {
+      for ( [[maybe_unused]] auto _ : flattenedGraph->dataModifiers.at(vertex) ) {
         // unconstrained variables for all data states
         variables.defined.emplace_back();
         variables.value.emplace_back(); 
@@ -418,7 +415,7 @@ void CPModel::constrainDataVariables(const FlattenedGraph::Vertex* vertex) {
   if ( extensionElements->data.empty() ) return;
   
 //std::cerr << "modifiers of " << vertex->reference() << std::endl;
-  auto& dataModifiers = flattenedGraph.dataModifiers.at(vertex);
+  auto& dataModifiers = flattenedGraph->dataModifiers.at(vertex);
   for ( auto& [entry,exit] : dataModifiers ) {
 //std::cerr << "modifier: " << entry.reference() << std::endl;
     auto& [localStatus,localData,localGlobals] = locals.at(exit).back();
@@ -466,10 +463,10 @@ void CPModel::constrainDataVariables(const FlattenedGraph::Vertex* vertex) {
 }
 
 void CPModel::constrainGlobalVariables() {
-  for ( auto& [entry,exit] : flattenedGraph.globalModifiers ) {
+  for ( auto& [entry,exit] : flattenedGraph->globalModifiers ) {
     auto& [localStatus,localData,localGlobals] = locals.at(exit).back();
-    for ( unsigned int i = 0; i < flattenedGraph.globalModifiers.size(); i++ ) {
-      for ( auto attribute : scenario.model->attributeRegistry.globalAttributes ) {
+    for ( unsigned int i = 0; i < flattenedGraph->globalModifiers.size(); i++ ) {
+      for ( auto attribute : scenario->model->attributeRegistry.globalAttributes ) {
         if ( 
           entry->node->represents<BPMN::TypedStartEvent>() ||
           entry->node->represents<BPMN::ReceiveTask>() ||
@@ -539,7 +536,7 @@ void CPModel::constrainEventBasedGateway(const FlattenedGraph::Vertex* gateway) 
 }
 
 void CPModel::constrainSequentialActivities() {
-  for ( auto& [performer,sequentialActivities] : flattenedGraph.sequentialActivities ) {
+  for ( auto& [performer,sequentialActivities] : flattenedGraph->sequentialActivities ) {
     for ( size_t i = 0; i + 1 < sequentialActivities.size(); i++ ) {
       for ( size_t j = i + 1; j < sequentialActivities.size(); j++ ) {
         auto& [entry1,exit1] = sequentialActivities[i];
@@ -571,7 +568,7 @@ void CPModel::addAttributes(const Vertex* vertex, std::vector<AttributeVariables
       auto attribute = extensionElements->attributeRegistry.statusAttributes[i];
 //std::cerr << "Add: " << attribute->id << std::endl;
       // add variables holding given values
-      if ( auto given = scenario.getKnownValue(vertex->rootId, attribute, scenario.getInception()); given.has_value() ) {
+      if ( auto given = scenario->getKnownValue(vertex->rootId, attribute, scenario->getInception()); given.has_value() ) {
         // defined initial value
         variables.emplace_back(
           model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->reference() + "}," + attribute->id, visit.at(vertex) ), 
@@ -613,7 +610,7 @@ void CPModel::createEntryStatus(const Vertex* vertex) {
   auto& variables = status.at(vertex);
   auto loopCharacteristics = getLoopCharacteristics(vertex);
 
-  if ( loopCharacteristics.has_value() && !flattenedGraph.dummies.contains(vertex) ) {
+  if ( loopCharacteristics.has_value() && !flattenedGraph->dummies.contains(vertex) ) {
     createLoopEntryStatus(vertex);
 /*
     if ( loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::Standard ) {
@@ -687,7 +684,7 @@ void CPModel::createEntryStatus(const Vertex* vertex) {
   }
 
   if ( 
-    flattenedGraph.dummies.contains(vertex) &&
+    flattenedGraph->dummies.contains(vertex) &&
     loopCharacteristics.has_value() &&
     loopCharacteristics.value() != BPMN::Activity::LoopCharacteristics::Standard
   ) {
@@ -704,7 +701,7 @@ void CPModel::createExitStatus(const Vertex* vertex) {
 
   if ( auto loopCharacteristics = getLoopCharacteristics(vertex);
     loopCharacteristics.has_value() &&
-    flattenedGraph.dummies.contains(vertex)
+    flattenedGraph->dummies.contains(vertex)
   ) {
     if ( loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::Standard ) {
       // use final loop exit status
@@ -1294,7 +1291,7 @@ std::vector<CPModel::AttributeVariables> CPModel::createMergedStatus(const Verte
       for ( auto& [ active, attributeVariables] : inputs ) {
         terms.emplace_back( attributeVariables[attribute->index].defined * attributeVariables[attribute->index].value );
       }
-      if ( vertex->node->represents<BPMN::Activity>() && !flattenedGraph.dummies.contains(vertex) ) {
+      if ( vertex->node->represents<BPMN::Activity>() && !flattenedGraph->dummies.contains(vertex) ) {
         // timestamp of vertex must be at least the maximum timestamp of all inputs
         variables.emplace_back(
           model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->reference() + "}," + attribute->id, visit.at(vertex) ), 
@@ -1595,16 +1592,16 @@ void CPModel::createEntryVariables(const FlattenedGraph::Vertex* vertex) {
     }
   }
   else if ( vertex->node->represents<BPMN::FlowNode>() ) {
-//std::cerr << vertex->reference() << ": " <<  vertex->loopIndices.size()  << "/" << flattenedGraph.loopIndexAttributes.at(vertex->node).size() << "/" << getLoopCharacteristics(vertex).has_value() << "/" << flattenedGraph.dummies.contains(vertex) << std::endl;      
+//std::cerr << vertex->reference() << ": " <<  vertex->loopIndices.size()  << "/" << flattenedGraph->loopIndexAttributes.at(vertex->node).size() << "/" << getLoopCharacteristics(vertex).has_value() << "/" << flattenedGraph->dummies.contains(vertex) << std::endl;      
     if ( auto loopCharacteristics = getLoopCharacteristics(vertex);
       loopCharacteristics.has_value() &&
-      !flattenedGraph.dummies.contains(vertex)    
+      !flattenedGraph->dummies.contains(vertex)    
     ) {
 //std::cerr << "Loop/MI" << std::endl;
       if ( loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::Standard ) {
         // loop vertex
         auto predecessor = vertex->inflows.front().second;
-        if ( flattenedGraph.dummies.contains(predecessor) ) {
+        if ( flattenedGraph->dummies.contains(predecessor) ) {
           // first loop vertex
           auto& deducedVisit = model.addVariable(CP::Variable::Type::BOOLEAN, "visit_{" + vertex->shortReference() + "}" , visit.at( predecessor ) );
           visit.emplace(vertex, deducedVisit );
@@ -1705,7 +1702,7 @@ void CPModel::createExitVariables(const Vertex* vertex) {
       loopCharacteristics.has_value() &&
       loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::Standard
     ) {
-      if ( vertex->loopIndices.size() == flattenedGraph.loopIndexAttributes.at(vertex->node).size() ) {
+      if ( vertex->loopIndices.size() == flattenedGraph->loopIndexAttributes.at(vertex->node).size() ) {
         return;
       }
     }
@@ -1994,7 +1991,7 @@ CP::Expression CPModel::createExpression(const Vertex* vertex, const Model::Expr
 
 void CPModel::createGlobalIndexVariable(const Vertex* vertex) {
   CP::Expression index;
-  for ( auto& [modifierEntry, modifierExit] : flattenedGraph.globalModifiers ) {
+  for ( auto& [modifierEntry, modifierExit] : flattenedGraph->globalModifiers ) {
     // create auxiliary variables indicating modifiers preceding the vertex
     index = index + model.addVariable(CP::Variable::Type::BOOLEAN, "weakly_precedes_{" + modifierExit->reference() + " → " + vertex->reference() + "}", position.at(modifierExit) <= position.at(vertex) );
   }  
@@ -2006,9 +2003,9 @@ void CPModel::createDataIndexVariables(const Vertex* vertex) {
   CP::reference_vector< const CP::Variable > dataIndices;
   dataIndices.reserve( vertex->dataOwners.size() );
   for ( auto dataOwner : vertex->dataOwners ) {
-    assert( flattenedGraph.dataModifiers.contains(dataOwner) );   
+    assert( flattenedGraph->dataModifiers.contains(dataOwner) );   
     CP::Expression index;
-    for ( auto& [modifierEntry, modifierExit] : flattenedGraph.dataModifiers.at(dataOwner) ) {
+    for ( auto& [modifierEntry, modifierExit] : flattenedGraph->dataModifiers.at(dataOwner) ) {
       // create auxiliary variables indicating modifiers preceding the vertex
       index = index + model.addVariable(CP::Variable::Type::BOOLEAN, "weakly_precedes_{" + modifierExit->reference() + " → " + vertex->reference() + "}", position.at(modifierExit) <= position.at(vertex) );
     }  
@@ -2028,7 +2025,7 @@ void CPModel::addObjectiveCoefficients(const Vertex* vertex) {
   assert( vertex->type == Vertex::Type::EXIT );
   auto loopCharacteristics = getLoopCharacteristics(vertex);
   if ( 
-    flattenedGraph.dummies.contains(vertex) &&
+    flattenedGraph->dummies.contains(vertex) &&
     loopCharacteristics.has_value() &&
     loopCharacteristics.value() != BPMN::Activity::LoopCharacteristics::Standard
   ) {

@@ -14,7 +14,7 @@ namespace BPMNOS::Execution {
  */
 class SeededGreedyController : public SeededController {
 public:
-  SeededGreedyController(const BPMNOS::Model::Scenario* scenario, Evaluator* evaluator);
+  SeededGreedyController(const BPMNOS::Execution::FlattenedGraph* flattenedGraph, Evaluator* evaluator);
   void notice(const Observable* observable) override;
   std::shared_ptr<Event> createEntryEvent(const SystemState* systemState, const Token* token, const Vertex* vertex) override;
   std::shared_ptr<Event> createExitEvent(const SystemState* systemState, const Token* token, const Vertex* vertex) override;

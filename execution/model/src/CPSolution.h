@@ -26,28 +26,22 @@ class CPSolution : public Observer {
 public:
   using Vertex = FlattenedGraph::Vertex;
 
-  CPSolution(const CPModel& cp);
+  CPSolution(const CPModel* cp);
   void notice(const Observable* observable) override;
   void subscribe(Engine* engine);
   void unsubscribe(Engine* engine);
   void synchronize(const Token* token);
   void synchronize(const Event* event);
-  const CPModel& cp;
-  const FlattenedGraph& flattenedGraph;
+  const CPModel* cp;
+  const FlattenedGraph* flattenedGraph;
   CP::Solution _solution;
   size_t lastPosition;
-  const CP::Model& getModel() const { return cp.getModel(); }
+  const CP::Model& getModel() const { return cp->getModel(); }
   const CP::Solution& getSolution() const { return _solution; }
   
   void unvisitEntry(const Vertex* vertex);
   void unvisitExit(const Vertex* vertex);
 
-/*
-  void visit(const Vertex* vertex);
-  
-  void visitEntry(const Vertex* vertex, double timestamp); /// Method setting the position, visit, and timestamp variable of a vertex
-  void visitExit(const Vertex* vertex, double timestamp); /// Method setting the position, visit, and timestamp variable of a vertex
-*/
   void synchronizeStatus(const BPMNOS::Values& status, const Vertex* vertex);
   void synchronizeData(const BPMNOS::SharedValues& data, const Vertex* vertex);
   void synchronizeGlobals(const BPMNOS::Values& globals, const Vertex* vertex);
@@ -74,8 +68,8 @@ public:
   std::pair< CP::Expression, CP::Expression > getAttributeVariables( const Vertex* vertex, const Model::Attribute* attribute);
 
 public:
-  const Vertex* entry(const Vertex* vertex) const { return flattenedGraph.entry(vertex); };
-  const Vertex* exit(const Vertex* vertex) const { return flattenedGraph.exit(vertex); };
+  const Vertex* entry(const Vertex* vertex) const { return flattenedGraph->entry(vertex); };
+  const Vertex* exit(const Vertex* vertex) const { return flattenedGraph->exit(vertex); };
   bool complete() const { return _solution.complete(); };
   std::optional<double> getObjectiveValue() const { return _solution.getObjectiveValue(); };
   std::string errors() const { return _solution.errors(); };

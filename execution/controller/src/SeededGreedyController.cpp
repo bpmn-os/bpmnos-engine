@@ -4,8 +4,8 @@
 
 using namespace BPMNOS::Execution;
 
-SeededGreedyController::SeededGreedyController(const BPMNOS::Model::Scenario* scenario, Evaluator* evaluator)
-  : SeededController(scenario)
+SeededGreedyController::SeededGreedyController(const BPMNOS::Execution::FlattenedGraph* flattenedGraph, Evaluator* evaluator)
+  : SeededController(flattenedGraph)
   , evaluator(evaluator)
 {
   choiceDispatcher = std::make_unique<BestLimitedChoice>(evaluator);
@@ -24,7 +24,7 @@ void SeededGreedyController::notice(const Observable* observable) {
 //std::cerr << "SeededGreedyController::noticed" << std::endl;
 }
 
-std::shared_ptr<Event> SeededGreedyController::createEntryEvent(const SystemState* systemState, const Token* token, const Vertex* vertex) {
+std::shared_ptr<Event> SeededGreedyController::createEntryEvent([[maybe_unused]] const SystemState* systemState, const Token* token, [[maybe_unused]] const Vertex* vertex) {
   // instant entry
   auto decision = std::make_shared<EntryDecision>(token, evaluator);
   decision->evaluate();
@@ -34,7 +34,7 @@ std::shared_ptr<Event> SeededGreedyController::createEntryEvent(const SystemStat
   return nullptr;
 }
 
-std::shared_ptr<Event> SeededGreedyController::createExitEvent(const SystemState* systemState, const Token* token, const Vertex* vertex) {
+std::shared_ptr<Event> SeededGreedyController::createExitEvent([[maybe_unused]] const SystemState* systemState, const Token* token, [[maybe_unused]] const Vertex* vertex) {
   // instant exit
   auto decision = std::make_shared<ExitDecision>(token, evaluator);
   decision->evaluate();
@@ -44,7 +44,7 @@ std::shared_ptr<Event> SeededGreedyController::createExitEvent(const SystemState
   return nullptr;
 }
 
-std::shared_ptr<Event> SeededGreedyController::createChoiceEvent(const SystemState* systemState, const Token* token, const Vertex* vertex) {
+std::shared_ptr<Event> SeededGreedyController::createChoiceEvent([[maybe_unused]] const SystemState* systemState, const Token* token, [[maybe_unused]] const Vertex* vertex) {
   // instant choice
   auto best = choiceDispatcher->determineBestChoices(token->decisionRequest);
   if (!best) {
@@ -56,7 +56,7 @@ std::shared_ptr<Event> SeededGreedyController::createChoiceEvent(const SystemSta
   return best;
 }
 
-std::shared_ptr<Event> SeededGreedyController::createMessageDeliveryEvent(const SystemState* systemState, const Token* token, const Vertex* vertex) {
+std::shared_ptr<Event> SeededGreedyController::createMessageDeliveryEvent([[maybe_unused]] const SystemState* systemState, const Token* token, [[maybe_unused]] const Vertex* vertex) {
 //std::cerr << "SeededGreedyController::createMessageDeliveryEvent" << std::endl;
   // obtain message candidates
   auto messageDefinition = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->getMessageDefinition(token->status);

@@ -9,10 +9,10 @@
 
 using namespace BPMNOS::Execution;
 
-CPSolution::CPSolution(const CPModel& cp)
+CPSolution::CPSolution(const CPModel* cp)
  : cp(cp)
- , flattenedGraph( cp.flattenedGraph )
- , _solution( cp.getModel() )
+ , flattenedGraph( cp->flattenedGraph )
+ , _solution( cp->getModel() )
  , lastPosition(0)
 {
   // set collection evaluator
@@ -26,7 +26,7 @@ CPSolution::CPSolution(const CPModel& cp)
   );
 
   // add evaluators for lookup tables
-  for ( auto& lookupTable : cp.getScenario().model->lookupTables ) {
+  for ( auto& lookupTable : cp->scenario->model->lookupTables ) {
     _solution.addEvaluator( 
       lookupTable->name,
       [&lookupTable](const std::vector<double>& operands) -> double {
@@ -36,7 +36,7 @@ CPSolution::CPSolution(const CPModel& cp)
   }
   
   std::vector<double> positions;
-  positions.resize( flattenedGraph.vertices.size() );
+  positions.resize( flattenedGraph->vertices.size() );
   std::iota(positions.begin(), positions.end(), 1);
   initializePositions(positions);
 }
@@ -80,7 +80,7 @@ void CPSolution::synchronize(const Token* token) {
     return;
   }
   
-  auto vertex = flattenedGraph.getVertex(token);
+  auto vertex = flattenedGraph->getVertex(token);
   if ( !vertex ) {
     // a token may enter the start event of an event-subprocess that cannot be triggered
     // such a token will be withdrawn and no vertex exists 
@@ -104,7 +104,7 @@ void CPSolution::synchronize(const Token* token) {
     finalizePosition( vertex );
 
     
-    _solution.setVariableValue( cp.visit.at(vertex), true );
+    _solution.setVariableValue( cp->visit.at(vertex), true );
     synchronizeStatus(token->status,vertex);
     synchronizeData(*token->data,vertex);
     synchronizeGlobals(token->globals,vertex);  
@@ -125,7 +125,7 @@ void CPSolution::synchronize(const Token* token) {
     finalizePosition( vertex );
 
     // event-subprocess is triggered
-    _solution.setVariableValue( cp.visit.at(vertex), true );
+    _solution.setVariableValue( cp->visit.at(vertex), true );
     // for typed start events data and globals remain unchanged upon completion
     // operators of event-subprocess are applied after completion
     synchronizeData(*token->data,entry(vertex));
@@ -138,7 +138,7 @@ void CPSolution::synchronize(const Token* token) {
     setPosition( vertex, ++lastPosition );
     unvisitExit( vertex );
     finalizeUnvistedSubsequentPositions(vertex);
-//    _solution.setVariableValue( cp.visit.at(vertex), false );
+//    _solution.setVariableValue( cp->visit.at(vertex), false );
   }
   else if ( 
     ( !token->node && token->state == Token::State::DONE ) || // Process
@@ -166,7 +166,7 @@ void CPSolution::synchronize(const Token* token) {
     
     // exit of node
     if ( vertex->node->represents<BPMN::CatchEvent>() && vertex->inflows.front().second->node->represents<BPMN::EventBasedGateway>() ) {
-      _solution.setVariableValue( cp.visit.at(vertex), true );
+      _solution.setVariableValue( cp->visit.at(vertex), true );
     }
 
     synchronizeStatus(token->status,vertex);
@@ -179,23 +179,23 @@ void CPSolution::synchronize(const Token* token) {
 void CPSolution::synchronize(const Event* event) {
   if ( dynamic_cast<const EntryEvent*>(event) ) {
 //std::cerr << "Entry: " << event->jsonify() << std::endl;
-    auto vertex = flattenedGraph.getVertex( event->token );
-    if ( !flattenedGraph.dummies.contains(vertex) ) {
+    auto vertex = flattenedGraph->getVertex( event->token );
+    if ( !flattenedGraph->dummies.contains(vertex) ) {
       auto timestamp = event->token->owner->systemState->getTime();
       setTimestamp(vertex, timestamp );
     }
   }
   else if ( dynamic_cast<const ExitEvent*>(event) ) {
 //std::cerr << "Exit: " << event->jsonify() << std::endl;
-    auto vertex = flattenedGraph.getVertex( event->token );
-    if ( !flattenedGraph.dummies.contains(vertex) ) {
+    auto vertex = flattenedGraph->getVertex( event->token );
+    if ( !flattenedGraph->dummies.contains(vertex) ) {
       auto timestamp = event->token->owner->systemState->getTime();
       setTimestamp(vertex, timestamp );
     }
   }
   else if ( auto messageDeliveryEvent = dynamic_cast<const MessageDeliveryEvent*>(event) ) {
 //std::cerr << "Message delivery: " << event->jsonify() << std::endl;
-    auto vertex = flattenedGraph.getVertex( event->token );
+    auto vertex = flattenedGraph->getVertex( event->token );
     // set timestamp of message delivery
     auto timestamp = event->token->owner->systemState->getTime();
     if ( vertex->node->represents<BPMN::ReceiveTask>() ) {
@@ -207,14 +207,14 @@ void CPSolution::synchronize(const Event* event) {
     auto message = messageDeliveryEvent->message.lock();
     assert( message );
     auto senderId = message->header[ BPMNOS::Model::MessageDefinition::Index::Sender ].value();
-    assert( flattenedGraph.vertexMap.contains({senderId,{},message->origin}) );
+    assert( flattenedGraph->vertexMap.contains({senderId,{},message->origin}) );
     // TODO: sender must not be within loop
-    auto& [senderEntry,senderExit] = flattenedGraph.vertexMap.at({senderId,{},message->origin}); 
+    auto& [senderEntry,senderExit] = flattenedGraph->vertexMap.at({senderId,{},message->origin}); 
     setMessageDeliveryVariableValues(senderEntry,vertex,timestamp);
   }
   else if ( auto choiceEvent = dynamic_cast<const ChoiceEvent*>(event) ) {
 //std::cerr << "Choice: " << event->jsonify() << std::endl;
-    auto vertex = flattenedGraph.getVertex( event->token );
+    auto vertex = flattenedGraph->getVertex( event->token );
     // set timestamp of choice
     auto timestamp = event->token->owner->systemState->getTime();
     setLocalStatusValue(vertex,BPMNOS::Model::ExtensionElements::Index::Timestamp,timestamp);
@@ -235,13 +235,13 @@ void CPSolution::setMessageDeliveryVariableValues( const Vertex* sender, const V
 //std::cerr << "Sen:" << sender->jsonify() << std::endl;  
 //std::cerr << "Rec:" << recipient->jsonify() << std::endl;  
   for ( auto candidate : sender->recipients ) {
-    assert( cp.messageFlow.contains({sender,candidate}) );
+    assert( cp->messageFlow.contains({sender,candidate}) );
 //std::cerr << "message_{" << sender->reference() << " -> " << candidate.reference() << "} := " << (&candidate == recipient) << std::endl; 
-    _solution.setVariableValue( cp.messageFlow.at({sender,candidate}), (double)(candidate == recipient) );
+    _solution.setVariableValue( cp->messageFlow.at({sender,candidate}), (double)(candidate == recipient) );
   }
   for ( auto candidate : recipient->senders ) {
-    assert( cp.messageFlow.contains({candidate,recipient}) );
-    _solution.setVariableValue( cp.messageFlow.at({candidate,recipient}), (double)(candidate == sender) );
+    assert( cp->messageFlow.contains({candidate,recipient}) );
+    _solution.setVariableValue( cp->messageFlow.at({candidate,recipient}), (double)(candidate == sender) );
 //std::cerr << "message_{" << candidate.reference() << " -> " << recipient->reference() << "} := " << (&candidate == sender) << std::endl; 
   }
   // set message delivery time
@@ -249,12 +249,12 @@ void CPSolution::setMessageDeliveryVariableValues( const Vertex* sender, const V
     setLocalStatusValue( recipient, BPMNOS::Model::ExtensionElements::Index::Timestamp, (double)timestamp );
   }
   else {
-    _solution.setVariableValue( cp.status.at(recipient)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value, (double)timestamp );
+    _solution.setVariableValue( cp->status.at(recipient)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value, (double)timestamp );
   }
 
   // set recipient content variables
-  auto& recipientContentMap = cp.messageContent.at(recipient);
-  auto& senderContentMap = cp.messageContent.at(sender);
+  auto& recipientContentMap = cp->messageContent.at(recipient);
+  auto& senderContentMap = cp->messageContent.at(sender);
   for ( auto& [key, recipientContent ] : recipientContentMap ) {
     assert( senderContentMap.contains(key) );
     auto& senderContent = senderContentMap.at(key);
@@ -279,17 +279,17 @@ std::optional< BPMN::Activity::LoopCharacteristics> CPSolution::getLoopCharacter
 
 void CPSolution::unvisitEntry(const Vertex* vertex) {
 //std::cerr << "unvisited " << vertex->reference() << std::endl;
-//  _solution.setVariableValue( cp.position.at(vertex), (double)position );
-  assert( cp.visit.contains(vertex) );
-  _solution.setVariableValue( cp.visit.at(vertex), false);
-  assert( cp.status.contains(vertex) );
-  _solution.setVariableValue( cp.status.at(vertex)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value, 0.0 );
+//  _solution.setVariableValue( cp->position.at(vertex), (double)position );
+  assert( cp->visit.contains(vertex) );
+  _solution.setVariableValue( cp->visit.at(vertex), false);
+  assert( cp->status.contains(vertex) );
+  _solution.setVariableValue( cp->status.at(vertex)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value, 0.0 );
 
   if ( vertex->node->represents<BPMN::MessageThrowEvent>() ) {
     for ( auto candidate : vertex->recipients ) {
       assert( candidate->exit<BPMN::MessageCatchEvent>() );
-      assert( cp.messageFlow.contains({vertex,candidate}) );
-      _solution.setVariableValue( cp.messageFlow.at({vertex,candidate}), (double)false );
+      assert( cp->messageFlow.contains({vertex,candidate}) );
+      _solution.setVariableValue( cp->messageFlow.at({vertex,candidate}), (double)false );
     }
   }
 
@@ -301,26 +301,26 @@ void CPSolution::unvisitEntry(const Vertex* vertex) {
     // if unvisited, data and globals are not changed
     for ( size_t i = 0; i < vertex->dataOwners.size(); i++ ) {
       auto dataOwner = vertex->dataOwners[i];
-      if ( flattenedGraph.modifiesData(vertex,dataOwner) ) {
-        auto index = (size_t)_solution.evaluate( cp.dataIndex.at(vertex)[i] ).value();
+      if ( flattenedGraph->modifiesData(vertex,dataOwner) ) {
+        auto index = (size_t)_solution.evaluate( cp->dataIndex.at(vertex)[i] ).value();
 
         auto extensionElements = dataOwner->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
         assert( extensionElements );
         for ( auto& attribute : extensionElements->data ) {
-          auto defined = _solution.evaluate( cp.data.at({dataOwner,attribute.get()}).defined[index] ).value();
-          auto value = _solution.evaluate( cp.data.at({dataOwner,attribute.get()}).value[index] ).value();
-          _solution.setVariableValue( cp.data.at({dataOwner,attribute.get()}).defined[index+1], defined );
-          _solution.setVariableValue( cp.data.at({dataOwner,attribute.get()}).value[index+1], value );
+          auto defined = _solution.evaluate( cp->data.at({dataOwner,attribute.get()}).defined[index] ).value();
+          auto value = _solution.evaluate( cp->data.at({dataOwner,attribute.get()}).value[index] ).value();
+          _solution.setVariableValue( cp->data.at({dataOwner,attribute.get()}).defined[index+1], defined );
+          _solution.setVariableValue( cp->data.at({dataOwner,attribute.get()}).value[index+1], value );
         }
       }
     }
-    if ( flattenedGraph.modifiesGlobals(vertex) ) {
-      auto index = (size_t)_solution.evaluate( cp.globalIndex.at(vertex) ).value();
-      for ( size_t attributeIndex = 0; attributeIndex < cp.globals.size(); attributeIndex++ ) {
-        auto defined = _solution.evaluate( cp.globals.at(attributeIndex).defined[index] ).value();
-        auto value = _solution.evaluate( cp.globals.at(attributeIndex).value[index] ).value();
-        _solution.setVariableValue( cp.globals.at(attributeIndex).defined[index+1], defined );
-        _solution.setVariableValue( cp.globals.at(attributeIndex).value[index+1], value );
+    if ( flattenedGraph->modifiesGlobals(vertex) ) {
+      auto index = (size_t)_solution.evaluate( cp->globalIndex.at(vertex) ).value();
+      for ( size_t attributeIndex = 0; attributeIndex < cp->globals.size(); attributeIndex++ ) {
+        auto defined = _solution.evaluate( cp->globals.at(attributeIndex).defined[index] ).value();
+        auto value = _solution.evaluate( cp->globals.at(attributeIndex).value[index] ).value();
+        _solution.setVariableValue( cp->globals.at(attributeIndex).defined[index+1], defined );
+        _solution.setVariableValue( cp->globals.at(attributeIndex).value[index+1], value );
       }
     }
   }
@@ -328,26 +328,26 @@ void CPSolution::unvisitEntry(const Vertex* vertex) {
 
 void CPSolution::unvisitExit(const Vertex* vertex) {
 //std::cerr << "unvisited " << vertex->reference() << std::endl;
-  assert( cp.visit.contains(vertex) );
-//  _solution.setVariableValue( cp.position.at(vertex), (double)position );
-  _solution.setVariableValue( cp.visit.at(vertex), false);
-  assert( cp.status.contains(vertex) );
-  _solution.setVariableValue( cp.status.at(vertex)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value, 0.0 );
+  assert( cp->visit.contains(vertex) );
+//  _solution.setVariableValue( cp->position.at(vertex), (double)position );
+  _solution.setVariableValue( cp->visit.at(vertex), false);
+  assert( cp->status.contains(vertex) );
+  _solution.setVariableValue( cp->status.at(vertex)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value, 0.0 );
 
   if ( vertex->node->represents<BPMN::MessageCatchEvent>() ) {
     for ( auto candidate : vertex->senders ) {
       assert( candidate->entry<BPMN::MessageThrowEvent>() );
-      assert( cp.messageFlow.contains({candidate,vertex}) );
-      _solution.setVariableValue( cp.messageFlow.at({candidate,vertex}), (double)false );
+      assert( cp->messageFlow.contains({candidate,vertex}) );
+      _solution.setVariableValue( cp->messageFlow.at({candidate,vertex}), (double)false );
     }
 
-    if ( cp.locals.contains(vertex) ) {
+    if ( cp->locals.contains(vertex) ) {
       // only receive tasks and message start events have locals
       setLocalStatusValue( vertex, BPMNOS::Model::ExtensionElements::Index::Timestamp, 0.0 );
     }
 
-    assert( cp.messageContent.contains(vertex) );
-    for ( auto& [_, contentVariables] : cp.messageContent.at(vertex) ) {
+    assert( cp->messageContent.contains(vertex) );
+    for ( auto& [_, contentVariables] : cp->messageContent.at(vertex) ) {
       _solution.setVariableValue( contentVariables.defined, (double)false );
       _solution.setVariableValue( contentVariables.value, 0.0 );
     }
@@ -358,7 +358,7 @@ void CPSolution::unvisitExit(const Vertex* vertex) {
     // set choice values to zero
     auto  extensionElements = vertex->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
     for ( auto attribute : extensionElements->attributeRegistry.statusAttributes ) {
-      if ( cp.findChoice(extensionElements->choices, attribute) ) {
+      if ( cp->findChoice(extensionElements->choices, attribute) ) {
         // attribute set by choice
         setLocalStatusValue( vertex, attribute->index, 0.0 );
       }
@@ -370,26 +370,26 @@ void CPSolution::unvisitExit(const Vertex* vertex) {
     // if unvisited, data and globals are not changed
     for ( size_t i = 0; i < vertex->dataOwners.size(); i++ ) {
       auto dataOwner = vertex->dataOwners[i];
-      if ( flattenedGraph.modifiesData(vertex,dataOwner) ) {
-        auto index = (size_t)_solution.evaluate( cp.dataIndex.at(exit(vertex))[i] ).value();
+      if ( flattenedGraph->modifiesData(vertex,dataOwner) ) {
+        auto index = (size_t)_solution.evaluate( cp->dataIndex.at(exit(vertex))[i] ).value();
 
         auto extensionElements = dataOwner->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
         assert( extensionElements );
         for ( auto& attribute : extensionElements->data ) {
-          auto defined = _solution.evaluate( cp.data.at({dataOwner,attribute.get()}).defined[index-1] ).value();
-          auto value = _solution.evaluate( cp.data.at({dataOwner,attribute.get()}).value[index-1] ).value();
-          _solution.setVariableValue( cp.data.at({dataOwner,attribute.get()}).defined[index], defined );
-          _solution.setVariableValue( cp.data.at({dataOwner,attribute.get()}).value[index], value );
+          auto defined = _solution.evaluate( cp->data.at({dataOwner,attribute.get()}).defined[index-1] ).value();
+          auto value = _solution.evaluate( cp->data.at({dataOwner,attribute.get()}).value[index-1] ).value();
+          _solution.setVariableValue( cp->data.at({dataOwner,attribute.get()}).defined[index], defined );
+          _solution.setVariableValue( cp->data.at({dataOwner,attribute.get()}).value[index], value );
         }
       }
     }
-    if ( flattenedGraph.modifiesGlobals(vertex) ) {
-      auto index = (size_t)_solution.evaluate( cp.globalIndex.at(exit(vertex)) ).value();
-      for ( size_t attributeIndex = 0; attributeIndex < cp.globals.size(); attributeIndex++ ) {
-        auto defined = _solution.evaluate( cp.globals.at(attributeIndex).defined[index-1] ).value();
-        auto value = _solution.evaluate( cp.globals.at(attributeIndex).value[index-1] ).value();
-        _solution.setVariableValue( cp.globals.at(attributeIndex).defined[index], defined );
-        _solution.setVariableValue( cp.globals.at(attributeIndex).value[index], value );
+    if ( flattenedGraph->modifiesGlobals(vertex) ) {
+      auto index = (size_t)_solution.evaluate( cp->globalIndex.at(exit(vertex)) ).value();
+      for ( size_t attributeIndex = 0; attributeIndex < cp->globals.size(); attributeIndex++ ) {
+        auto defined = _solution.evaluate( cp->globals.at(attributeIndex).defined[index-1] ).value();
+        auto value = _solution.evaluate( cp->globals.at(attributeIndex).value[index-1] ).value();
+        _solution.setVariableValue( cp->globals.at(attributeIndex).defined[index], defined );
+        _solution.setVariableValue( cp->globals.at(attributeIndex).value[index], value );
       }
     }
   }
@@ -411,14 +411,14 @@ void CPSolution::unvisitExit(const Vertex* vertex) {
 
 /*
 void CPSolution::visit(const Vertex* vertex) {
-//std::cerr << vertex->reference() << "/" << cp.visit.begin()->second.stringify() << std::endl;
-//std::cerr << vertex << "/" << cp.visit.begin()->first  << std::endl;
+//std::cerr << vertex->reference() << "/" << cp->visit.begin()->second.stringify() << std::endl;
+//std::cerr << vertex << "/" << cp->visit.begin()->first  << std::endl;
   // check visit
-  assert( cp.visit.contains(vertex) );
-  auto visitEvaluation = _solution.evaluate( cp.visit.at(vertex) );
+  assert( cp->visit.contains(vertex) );
+  auto visitEvaluation = _solution.evaluate( cp->visit.at(vertex) );
   if ( !visitEvaluation ) {
     // set solution value
-    _solution.setVariableValue( cp.visit.at(vertex), true );
+    _solution.setVariableValue( cp->visit.at(vertex), true );
   }
   else if ( visitEvaluation && visitEvaluation.value() != true ) {
     throw std::logic_error("CPSolution: vertex '" + vertex->reference() +"' contradictingly visited in solution");
@@ -426,24 +426,24 @@ void CPSolution::visit(const Vertex* vertex) {
 }
 
 void CPSolution::visitEntry(const Vertex* vertex, double timestamp) {
-//  _solution.setVariableValue( cp.position.at(vertex), (double)position );
-  assert( cp.visit.contains(vertex) );
-  _solution.setVariableValue(cp.visit.at(vertex), true);
-  assert( cp.status.contains(vertex) );
-  _solution.setVariableValue( cp.status.at(vertex)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value, timestamp );
+//  _solution.setVariableValue( cp->position.at(vertex), (double)position );
+  assert( cp->visit.contains(vertex) );
+  _solution.setVariableValue(cp->visit.at(vertex), true);
+  assert( cp->status.contains(vertex) );
+  _solution.setVariableValue( cp->status.at(vertex)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value, timestamp );
 }
 
 void CPSolution::visitExit(const Vertex* vertex, double timestamp) {
-//  _solution.setVariableValue( cp.position.at(vertex), (double)position );
-//  _solution.setVariableValue(cp.visit.at(vertex), true);
-  assert( cp.status.contains(vertex) );
-  _solution.setVariableValue( cp.status.at(vertex)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value, timestamp );
+//  _solution.setVariableValue( cp->position.at(vertex), (double)position );
+//  _solution.setVariableValue(cp->visit.at(vertex), true);
+  assert( cp->status.contains(vertex) );
+  _solution.setVariableValue( cp->status.at(vertex)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value, timestamp );
 }
 */
 
 void CPSolution::synchronizeStatus(const BPMNOS::Values& status, const CPSolution::Vertex* vertex) {
-  assert( cp.status.contains(vertex) );
-  auto& statusVariables = cp.status.at(vertex);
+  assert( cp->status.contains(vertex) );
+  auto& statusVariables = cp->status.at(vertex);
   assert( status.size() == statusVariables.size() );
   for (size_t i = 0; i < statusVariables.size(); i++) {
     CPModel::AttributeEvaluation evaluation(
@@ -464,7 +464,7 @@ void CPSolution::synchronizeStatus(const BPMNOS::Values& status, const CPSolutio
 std::cerr << "defined: " << (evaluation.defined() ? "true" : "false") << ", value: " << evaluation.value() << std::endl;
 //std::cerr << statusVariables[i].defined.stringify() << std::endl;
 //std::cerr << statusVariables[i].value.stringify() << std::endl;
-//std::cerr << "Model: " << cp.stringify() << std::endl;
+//std::cerr << "Model: " << cp->stringify() << std::endl;
 //std::cerr << "Solution: " <<  _solution.stringify() << std::endl;
         throw std::logic_error("CPSolution: '" + _solution.stringify(statusVariables[i].defined) + "' or '" + _solution.stringify(statusVariables[i].value) + "' inconsistent with given status" );
       }
@@ -487,8 +487,8 @@ std::cerr << "defined: " << (evaluation.defined() ? "true" : "false") << ", valu
 }
 
 void CPSolution::synchronizeData(const BPMNOS::SharedValues& data, const CPSolution::Vertex* vertex) {
-  assert( cp.dataIndex.contains(vertex) );
-  auto& dataIndices = cp.dataIndex.at(vertex);
+  assert( cp->dataIndex.contains(vertex) );
+  auto& dataIndices = cp->dataIndex.at(vertex);
   assert( dataIndices.size() == vertex->dataOwners.size() );
   // iterate over the data indices for each data owner
   for ( size_t i = 0; i < dataIndices.size(); i++ ) {
@@ -507,7 +507,7 @@ std::cerr << dataIndices[i].stringify() << std::endl;
       if ( attribute->index == BPMNOS::Model::ExtensionElements::Index::Instance ) {
         continue;
       }
-      auto& indexedAttributeVariables = cp.data.at({ownerVertex,attribute.get()});
+      auto& indexedAttributeVariables = cp->data.at({ownerVertex,attribute.get()});
       // override solution value (positions and indices may have changed)
       if ( data[attribute->index].get().has_value() ) {
         _solution.setVariableValue( indexedAttributeVariables.defined[index], true );
@@ -522,14 +522,14 @@ std::cerr << dataIndices[i].stringify() << std::endl;
 }
 
 void CPSolution::synchronizeGlobals(const BPMNOS::Values& globals, const CPSolution::Vertex* vertex) {
-  assert( cp.globalIndex.contains(vertex) );
-  auto indexEvaluation = _solution.evaluate( cp.globalIndex.at(vertex) );
+  assert( cp->globalIndex.contains(vertex) );
+  auto indexEvaluation = _solution.evaluate( cp->globalIndex.at(vertex) );
   if ( !indexEvaluation ) {
     throw std::logic_error("CPSolution: Unable to determine global index for '" + vertex->reference() + "\n'" + indexEvaluation.error());
   }
   auto index = (size_t)indexEvaluation.value();
   for ( size_t attributeIndex = 0; attributeIndex < globals.size(); attributeIndex++ ) {
-    auto& indexedAttributeVariables = cp.globals[attributeIndex];
+    auto& indexedAttributeVariables = cp->globals[attributeIndex];
     // override solution value (positions and indices may have changed)
     if ( globals[attributeIndex].has_value() ) {
       _solution.setVariableValue( indexedAttributeVariables.defined[index], true );
@@ -549,48 +549,48 @@ const CP::Solution& CPSolution::getSolution() const {
 */
 
 std::vector<size_t> CPSolution::getSequence() const {
-  std::vector<size_t> sequence(flattenedGraph.vertices.size());
-  for ( size_t i = 0; i < flattenedGraph.vertices.size(); i++ ) {
-    sequence[ (size_t)_solution.getVariableValue( cp.position.at( flattenedGraph.vertices[i].get() ) ).value() -1 ] = i + 1;
+  std::vector<size_t> sequence(flattenedGraph->vertices.size());
+  for ( size_t i = 0; i < flattenedGraph->vertices.size(); i++ ) {
+    sequence[ (size_t)_solution.getVariableValue( cp->position.at( flattenedGraph->vertices[i].get() ) ).value() -1 ] = i + 1;
   }
   
   return sequence;
 }
 
 size_t CPSolution::getPosition(const Vertex* vertex) const {
-  assert( cp.position.contains( vertex ) );
-  return (size_t)_solution.getVariableValue( cp.position.at( vertex ) ).value_or(0);
+  assert( cp->position.contains( vertex ) );
+  return (size_t)_solution.getVariableValue( cp->position.at( vertex ) ).value_or(0);
 }
 
 void CPSolution::initializePositions(const std::vector<double>& positions) {
-  assert( positions.size() == flattenedGraph.vertices.size() );
-  assert( cp.getModel().getSequences().size() == 1 );
-  auto& sequenceVariable = cp.getModel().getSequences().front();
+  assert( positions.size() == flattenedGraph->vertices.size() );
+  assert( cp->getModel().getSequences().size() == 1 );
+  auto& sequenceVariable = cp->getModel().getSequences().front();
   _solution.setSequenceValues( sequenceVariable, positions );
 }
 
 void CPSolution::setPosition(const Vertex* vertex, size_t position) {
 std::cerr << "position(" << vertex->reference() << ") = " << position << std::endl;
-  assert( cp.position.contains( vertex ) );
-  assert( _solution.getVariableValue( cp.position.at(vertex) ).has_value() );
-  auto priorPosition = (size_t)_solution.getVariableValue( cp.position.at(vertex) ).value();
+  assert( cp->position.contains( vertex ) );
+  assert( _solution.getVariableValue( cp->position.at(vertex) ).has_value() );
+  auto priorPosition = (size_t)_solution.getVariableValue( cp->position.at(vertex) ).value();
 //std::cerr << "change position(" << vertex->reference() << ") from " <<  priorPosition << " to " << position << std::endl;
   assert( position <= priorPosition );
   if ( position < priorPosition ) {
-    for ( auto& other : flattenedGraph.vertices ) {
+    for ( auto& other : flattenedGraph->vertices ) {
       if ( other.get() == vertex ) {
         continue;
       }
-      assert( _solution.getVariableValue( cp.position.at(other.get()) ).has_value() );
-      auto otherPosition = (size_t)_solution.getVariableValue( cp.position.at(other.get()) ).value();
+      assert( _solution.getVariableValue( cp->position.at(other.get()) ).has_value() );
+      auto otherPosition = (size_t)_solution.getVariableValue( cp->position.at(other.get()) ).value();
       if ( otherPosition >= position && otherPosition < priorPosition ) {
         // increment position of other vertex 
-        _solution.setVariableValue( cp.position.at(other.get()), (double)++otherPosition );
+        _solution.setVariableValue( cp->position.at(other.get()), (double)++otherPosition );
       }
     }
   }
   // change vertex position
-  _solution.setVariableValue( cp.position.at(vertex), (double)position );
+  _solution.setVariableValue( cp->position.at(vertex), (double)position );
 }
 
 void CPSolution::finalizePosition(const Vertex* vertex) {
@@ -600,8 +600,8 @@ void CPSolution::finalizePosition(const Vertex* vertex) {
     for ( auto [_,other] : vertex->inflows ) {
       if ( 
         other->node == vertex->node && 
-        flattenedGraph.dummies.contains(other) &&
-        _solution.getVariableValue( cp.position.at(other) ).value() > (double)lastPosition
+        flattenedGraph->dummies.contains(other) &&
+        _solution.getVariableValue( cp->position.at(other) ).value() > (double)lastPosition
       ) {
         // finalize position of dummy entry
         setPosition(other, ++lastPosition);
@@ -617,11 +617,11 @@ void CPSolution::finalizePosition(const Vertex* vertex) {
     for ( auto [_1,other] : vertex->outflows ) {
       if ( 
         other->node == vertex->node && 
-        flattenedGraph.dummies.contains(other) 
+        flattenedGraph->dummies.contains(other) 
       ) {
         bool isLast = true;
         for ( auto [_2,sibling] : other->inflows ) {
-          if ( _solution.getVariableValue( cp.position.at(sibling) ).value() > (double)lastPosition ) {
+          if ( _solution.getVariableValue( cp->position.at(sibling) ).value() > (double)lastPosition ) {
             isLast = false;
             break;
           }
@@ -640,12 +640,12 @@ void CPSolution::finalizePosition(const Vertex* vertex) {
 
 void CPSolution::finalizeUnvistedSubsequentPositions(const Vertex* vertex) {
   for ( auto& [_1,other] : vertex->outflows ) {
-    auto isVisited = _solution.evaluate( cp.visit.at(other) );
+    auto isVisited = _solution.evaluate( cp->visit.at(other) );
     if ( isVisited.has_value() && !isVisited.value() ) {
       // successor is not visited
       bool hasPendingPredecessors = false;
       for ( auto& [_2,predecessor] : other->inflows ) {
-        if ( _solution.getVariableValue( cp.position.at(predecessor) ).value() > (double)lastPosition ) {
+        if ( _solution.getVariableValue( cp->position.at(predecessor) ).value() > (double)lastPosition ) {
           hasPendingPredecessors = true;
           break;
         }
@@ -655,7 +655,7 @@ void CPSolution::finalizeUnvistedSubsequentPositions(const Vertex* vertex) {
       }
 
       for ( auto predecessor : other->predecessors ) {
-        if ( _solution.getVariableValue( cp.position.at(predecessor) ).value() > (double)lastPosition ) {
+        if ( _solution.getVariableValue( cp->position.at(predecessor) ).value() > (double)lastPosition ) {
           hasPendingPredecessors = true;
           break;
         }
@@ -668,11 +668,11 @@ void CPSolution::finalizeUnvistedSubsequentPositions(const Vertex* vertex) {
 //std::cerr << "unvisited ";
       setPosition(other, ++lastPosition);
       if ( other->type == Vertex::Type::ENTRY ) {
-        assert( !_solution.getVariableValue( cp.visit.at(other) ).has_value() );
+        assert( !_solution.getVariableValue( cp->visit.at(other) ).has_value() );
         unvisitEntry(other);
       }
       else {
-        assert( other->node->represents<BPMN::TypedStartEvent>() || _solution.getVariableValue( cp.visit.at(other) ).has_value() );
+        assert( other->node->represents<BPMN::TypedStartEvent>() || _solution.getVariableValue( cp->visit.at(other) ).has_value() );
         unvisitExit(other);
       }
       finalizeUnvistedSubsequentPositions(other);
@@ -681,25 +681,25 @@ void CPSolution::finalizeUnvistedSubsequentPositions(const Vertex* vertex) {
 }
 
 bool CPSolution::isVisited(const Vertex* vertex) const {
-  assert( cp.visit.contains( vertex ) );
-  return _solution.evaluate( cp.visit.at( vertex ) ).value_or(false);
+  assert( cp->visit.contains( vertex ) );
+  return _solution.evaluate( cp->visit.at( vertex ) ).value_or(false);
 }
 
 bool CPSolution::isUnvisited(const Vertex* vertex) const {
-  assert( cp.visit.contains( vertex ) );
-  return !_solution.evaluate( cp.visit.at( vertex ) ).value_or(true);
+  assert( cp->visit.contains( vertex ) );
+  return !_solution.evaluate( cp->visit.at( vertex ) ).value_or(true);
 }
 
 bool CPSolution::messageFlows( const Vertex* sender, const Vertex* recipient ) {
-  assert( cp.messageFlow.contains( {sender,recipient} ) );
-  return _solution.evaluate( cp.messageFlow.at( {sender,recipient} ) ).value_or(false);
+  assert( cp->messageFlow.contains( {sender,recipient} ) );
+  return _solution.evaluate( cp->messageFlow.at( {sender,recipient} ) ).value_or(false);
 }
 
 
 std::optional< BPMNOS::number > CPSolution::getTimestamp( const Vertex* vertex ) const {
-  assert( cp.status.contains(vertex) );
-  assert( cp.status.at(vertex).size() > BPMNOS::Model::ExtensionElements::Index::Timestamp );
-  auto timestamp = _solution.evaluate( cp.status.at(vertex)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value );
+  assert( cp->status.contains(vertex) );
+  assert( cp->status.at(vertex).size() > BPMNOS::Model::ExtensionElements::Index::Timestamp );
+  auto timestamp = _solution.evaluate( cp->status.at(vertex)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value );
   if ( timestamp ) {
     return (number)timestamp.value();
   }
@@ -707,14 +707,14 @@ std::optional< BPMNOS::number > CPSolution::getTimestamp( const Vertex* vertex )
 }
 
 void CPSolution::setTimestamp( const Vertex* vertex, BPMNOS::number timestamp ) {
-  _solution.setVariableValue( cp.status.at(vertex)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value, (double)timestamp );
+  _solution.setVariableValue( cp->status.at(vertex)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value, (double)timestamp );
 }
 
 std::optional< BPMNOS::number > CPSolution::getStatusValue( const Vertex* vertex, size_t attributeIndex ) const {
-  if ( !_solution.evaluate( cp.status.at( vertex )[attributeIndex].defined ).has_value() ||  !_solution.evaluate( cp.status.at( vertex )[attributeIndex].defined ).value() ) {
+  if ( !_solution.evaluate( cp->status.at( vertex )[attributeIndex].defined ).has_value() ||  !_solution.evaluate( cp->status.at( vertex )[attributeIndex].defined ).value() ) {
     return std::nullopt;  
   }
-  return _solution.evaluate( cp.status.at(vertex)[attributeIndex].value ).value(); 
+  return _solution.evaluate( cp->status.at(vertex)[attributeIndex].value ).value(); 
 }
 
 void CPSolution::setTriggeredEvent( const Vertex* gateway, const Vertex* event ) {
@@ -722,14 +722,14 @@ void CPSolution::setTriggeredEvent( const Vertex* gateway, const Vertex* event )
   assert( event->entry<BPMN::CatchEvent>() );
   assert( gateway->exit<BPMN::EventBasedGateway>() );
   for ( auto& [ _, target ] : gateway->outflows ) {
-    _solution.setVariableValue( cp.tokenFlow.at({gateway,target}), ( target == event ) );
+    _solution.setVariableValue( cp->tokenFlow.at({gateway,target}), ( target == event ) );
 //std::cerr << "Token flow " << gateway.reference() << " to " << target.reference() << " = " << ( &target == entryVertex ) << std::endl;
   } 
 }
 
 
 void CPSolution::setLocalStatusValue( const Vertex* vertex, size_t attributeIndex, BPMNOS::number value ) {
-  auto& initialStatus = std::get<0>(cp.locals.at(vertex)[0]);
+  auto& initialStatus = std::get<0>(cp->locals.at(vertex)[0]);
   _solution.setVariableValue( initialStatus[attributeIndex].value, (double)value );
 }
 
