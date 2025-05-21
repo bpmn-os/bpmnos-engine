@@ -12,26 +12,50 @@ StringRegistry::StringRegistry() {
 
 std::string StringRegistry::operator[](size_t i) const {
   assert( i < registeredStrings.size() );
+  std::shared_lock read_lock(registryMutex);
   return registeredStrings[i];
 }
 
 size_t StringRegistry::operator()(const std::string& string) {
-  std::lock_guard<std::mutex> lock(registryMutex);
-
-  auto it = index.find(string);
-  if ( it == index.end() ) {
-    registeredStrings.push_back(string);
-    index[string] = index.size();
-    return registeredStrings.size()-1;
+  std::shared_lock read_lock(registryMutex);
+  if ( auto it = index.find(string);
+    it != index.end()
+  ) {
+    return it->second;
   }
-  return it->second;
+  read_lock.unlock();  
+
+  std::unique_lock write_lock(registryMutex);
+  auto [it, inserted] = index.try_emplace(string, index.size());
+
+  if ( !inserted ) {
+    assert( index.size() == registeredStrings.size() );
+    return it->second;
+  }
+
+  registeredStrings.push_back(string);
+  assert( index.size() == registeredStrings.size() );
+  return registeredStrings.size()-1;
+}
+
+size_t StringRegistry::size() const {
+  std::shared_lock read_lock(registryMutex);
+  return registeredStrings.size();
 }
 
 void StringRegistry::clear() {
-  registeredStrings.clear();
+  std::unique_lock write_lock(registryMutex);
+
   index.clear();
-  (*this)(Keyword::False);
-  (*this)(Keyword::True);  
+  registeredStrings.clear();
+  
+  index.emplace(Keyword::False,0);  
+  registeredStrings.push_back(Keyword::False);
+
+  index.emplace(Keyword::True,1); 
+  registeredStrings.push_back(Keyword::True);
+  
+  assert( index.size() == registeredStrings.size() );
 }
 
 // Create global registry

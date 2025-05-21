@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <mutex>
+#include <shared_mutex>
 #include "Number.h"
 #include "vector_map.h"
 
@@ -28,7 +29,7 @@ namespace BPMNOS {
   private:
     std::vector< std::vector<double> > registeredCollections;
     vector_map<std::vector<double>, size_t> index;
-    std::mutex registryMutex;
+    mutable std::shared_mutex registryMutex;
   public:
     // Prevent use of copy constructor and assignment operator as mutex is not copyable
     CollectionRegistry(const CollectionRegistry &) = delete;

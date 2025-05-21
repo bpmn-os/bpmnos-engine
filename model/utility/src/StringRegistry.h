@@ -5,6 +5,7 @@
 #include <vector>
 #include <unordered_map>
 #include <mutex>
+#include <shared_mutex>
 
 namespace BPMNOS {
 
@@ -22,11 +23,12 @@ namespace BPMNOS {
     std::string operator[](size_t i) const;
     /// Operator to register a string and return its index.
     size_t operator()(const std::string& string);
+    size_t size() const;
     void clear();
   private:
     std::vector<std::string> registeredStrings;
     std::unordered_map<std::string, size_t> index;
-    std::mutex registryMutex;
+    mutable std::shared_mutex registryMutex;
   public:
     // Prevent use of copy constructor and assignment operator as mutex is not copyable
     StringRegistry(const StringRegistry &) = delete;

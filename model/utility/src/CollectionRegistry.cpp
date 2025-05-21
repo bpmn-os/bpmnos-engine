@@ -11,30 +11,46 @@ CollectionRegistry::CollectionRegistry() {
 }
 
 const std::vector<double>&  CollectionRegistry::operator[](size_t i) const {
+  assert( i < registeredCollections.size() );
+  std::shared_lock read_lock(registryMutex);
   return registeredCollections[i];
 }
 
 size_t CollectionRegistry::operator()(const std::vector<double>& collection) {
-  std::lock_guard<std::mutex> lock(registryMutex);
-
-  auto it = index.find(collection);
-  if ( it == index.end() ) {
-//    Values values; // TODO: parse values    
-    registeredCollections.emplace_back(collection);
-    index[collection] = index.size();
-    return registeredCollections.size()-1;
+  std::shared_lock read_lock(registryMutex);
+  if ( auto it = index.find(collection);
+    it != index.end()
+  ) {
+    return it->second;
   }
-  return it->second;
+  read_lock.unlock();  
+
+  std::unique_lock write_lock(registryMutex);
+  auto [it, inserted] = index.try_emplace(collection, index.size());
+
+  if ( !inserted ) {
+    assert( index.size() == registeredCollections.size() );
+    return it->second;
+  }
+
+  registeredCollections.push_back(collection);
+  assert( index.size() == registeredCollections.size() );
+  return registeredCollections.size()-1;
 }
 
 size_t CollectionRegistry::size() const {
+  std::shared_lock read_lock(registryMutex);
   return registeredCollections.size();
 }
 
 void CollectionRegistry::clear() {
-  registeredCollections.clear();
+  std::unique_lock write_lock(registryMutex);
   index.clear();
-  (*this)(std::vector<double>());
+  registeredCollections.clear();
+
+  index.emplace(std::vector<double>(),0);  
+  registeredCollections.push_back(std::vector<double>());
+  assert( index.size() == registeredCollections.size() );
 }
 
 // Create global registry

@@ -114,6 +114,10 @@ public:
      return map.emplace(key,value);
    }
 
+   std::pair<iterator, bool> try_emplace(const Key& key, const Value& value) {
+     return map.try_emplace(key,value);
+   }
+
    void erase(iterator pos) {
      map.erase(pos);
    }

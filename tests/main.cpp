@@ -9,7 +9,7 @@ using namespace BPMNOS;
 
 // Include all tests here
 
-//#define ALL_TESTS
+#define ALL_TESTS
 #ifdef ALL_TESTS
 
 /* Model */
@@ -46,8 +46,10 @@ using namespace BPMNOS;
 #include "execution/message/test.h"
 // Boundary events
 #include "execution/boundaryevent/test.h"
+
 // Event subprocesses
 #include "execution/eventsubprocess/test.h"
+
 // Compensations
 #include "execution/compensationactivity/test.h"
 #include "execution/compensationeventsubprocess/test.h"
