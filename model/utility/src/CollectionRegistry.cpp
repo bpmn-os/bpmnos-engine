@@ -34,6 +34,7 @@ size_t CollectionRegistry::operator()(const std::vector<double>& collection) {
   }
 
   registeredCollections.push_back(collection);
+
   assert( index.size() == registeredCollections.size() );
   return registeredCollections.size()-1;
 }
@@ -50,6 +51,7 @@ void CollectionRegistry::clear() {
 
   index.emplace(std::vector<double>(),0);  
   registeredCollections.push_back(std::vector<double>());
+  
   assert( index.size() == registeredCollections.size() );
 }
 

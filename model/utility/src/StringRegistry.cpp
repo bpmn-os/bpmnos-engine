@@ -34,6 +34,7 @@ size_t StringRegistry::operator()(const std::string& string) {
   }
 
   registeredStrings.push_back(string);
+  
   assert( index.size() == registeredStrings.size() );
   return registeredStrings.size()-1;
 }
