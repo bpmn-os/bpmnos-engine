@@ -1,4 +1,4 @@
-SCENARIO( "Task with expresion operator", "[cpcontroller][status]" ) {
+SCENARIO( "Task with expresion operator", "[cp][status]" ) {
   const std::string modelFile = "tests/execution/status/Nested_activities.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
   GIVEN( "A single instance with no input values" ) {

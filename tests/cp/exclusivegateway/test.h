@@ -1,4 +1,4 @@
-SCENARIO( "Symmetric exclusivegateway gateways", "[cpcontroller][exclusivegateway]" ) {
+SCENARIO( "Symmetric exclusivegateway gateways", "[cp][exclusivegateway]" ) {
   const std::string modelFile = "tests/execution/exclusivegateway/Symmetric.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
   GIVEN( "A single instance" ) {

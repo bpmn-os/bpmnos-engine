@@ -1,4 +1,4 @@
-SCENARIO( "Task with expresion operator", "[cpcontroller][data]" ) {
+SCENARIO( "Task with expresion operator", "[cp][data]" ) {
   const std::string modelFile = "tests/execution/data/Data.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
   GIVEN( "A single instance with an input value" ) {

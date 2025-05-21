@@ -1,4 +1,4 @@
-SCENARIO( "Symmetric parallel gateways", "[cpcontroller][parallelgateway]" ) {
+SCENARIO( "Symmetric parallel gateways", "[cp][parallelgateway]" ) {
   const std::string modelFile = "tests/execution/parallelgateway/Symmetric.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
   GIVEN( "A single instance with no input values" ) {

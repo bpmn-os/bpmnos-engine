@@ -1,4 +1,4 @@
-SCENARIO( "Parallel multi instance task", "[cpcontroller][multiinstanceactivity]" ) {
+SCENARIO( "Parallel multi instance task", "[cp][multiinstanceactivity]" ) {
   const std::string modelFile = "tests/execution/multiinstanceactivity/Parallel_multi-instance_task.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
   GIVEN( "A single instance with no input values" ) {
@@ -47,7 +47,7 @@ SCENARIO( "Parallel multi instance task", "[cpcontroller][multiinstanceactivity]
   }
 };
 
-SCENARIO( "Sequential multi instance task", "[cpcontroller][multiinstanceactivity]" ) {
+SCENARIO( "Sequential multi instance task", "[cp][multiinstanceactivity]" ) {
   const std::string modelFile = "tests/execution/multiinstanceactivity/Sequential_multi-instance_task.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
   GIVEN( "A single instance with no input values" ) {

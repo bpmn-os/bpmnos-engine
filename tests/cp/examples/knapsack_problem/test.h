@@ -1,4 +1,4 @@
-SCENARIO( "Knapsack problem", "[cpcontroller][knapsack_problem]" ) {
+SCENARIO( "Knapsack problem", "[cp][knapsack_problem]" ) {
   const std::string modelFile = "examples/knapsack_problem/Knapsack_problem.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
 

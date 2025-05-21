@@ -1,4 +1,4 @@
-SCENARIO( "N-to-1 assignment", "[cpcontroller][eventsubprocess]" ) {
+SCENARIO( "N-to-1 assignment", "[cp][eventsubprocess]" ) {
   const std::string modelFile = "tests/execution/eventsubprocess/N-to-1-assignment.bpmn";
 
   REQUIRE_NOTHROW( Model::Model(modelFile) );

@@ -1,4 +1,4 @@
-SCENARIO( "Task with linear expression incrementing timestamp", "[cpcontroller][task]" ) {
+SCENARIO( "Task with linear expression incrementing timestamp", "[cp][task]" ) {
   const std::string modelFile = "tests/execution/task/Task_with_linear_expression.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
   GIVEN( "A single instance with no input values" ) {

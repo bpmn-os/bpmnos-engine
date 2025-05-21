@@ -1,6 +1,6 @@
 #include <sstream>
 
-SCENARIO( "Empty executable process", "[cpcontroller][process]" ) {
+SCENARIO( "Empty executable process", "[cp][process]" ) {
   const std::string modelFile = "tests/execution/process/Empty_executable_process.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
 
@@ -49,7 +49,7 @@ SCENARIO( "Empty executable process", "[cpcontroller][process]" ) {
   }
 };
 
-SCENARIO( "Trivial executable process", "[cpcontroller][process]" ) {
+SCENARIO( "Trivial executable process", "[cp][process]" ) {
   const std::string modelFile = "tests/execution/process/Trivial_executable_process.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
 
@@ -98,7 +98,7 @@ SCENARIO( "Trivial executable process", "[cpcontroller][process]" ) {
   }
 };
 
-SCENARIO( "Simple executable process", "[cpcontroller][process]" ) {
+SCENARIO( "Simple executable process", "[cp][process]" ) {
   const std::string modelFile = "tests/execution/process/Constrained_executable_process.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
 
