@@ -60,6 +60,7 @@ SCENARIO( "N-to-1 assignment", "[cp][eventsubprocess]" ) {
     ;
 
     WHEN( "The engine is started with a seed" ) {
+//stringRegistry.clear(); // TODO: check what happens!!!
 
       Model::StaticDataProvider dataProvider(modelFile,csv);
       auto scenario = dataProvider.createScenario();
@@ -100,6 +101,7 @@ SCENARIO( "N-to-1 assignment", "[cp][eventsubprocess]" ) {
     }
 
     WHEN( "The engine is started with default seed" ) {
+//stringRegistry.clear(); // TODO: check what happens!!!
 
       Model::StaticDataProvider dataProvider(modelFile,csv);
       auto scenario = dataProvider.createScenario();

@@ -23,8 +23,8 @@ Model::Model(const std::string filename, const std::vector<std::string> folders)
   , folders(std::move(folders))
   , attributeRegistry(limexHandle)
 {
-  stringRegistry.clear();
-  collectionRegistry.clear();
+//  stringRegistry.clear();
+//  collectionRegistry.clear();
   readBPMNFile(filename);
 }
 
