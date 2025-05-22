@@ -144,8 +144,8 @@ void FlattenedGraph::addInstance( const BPMNOS::Model::Scenario::InstanceData* i
 void FlattenedGraph::addNonInterruptingEventSubProcess( const BPMN::EventSubProcess* eventSubProcess, Vertex* parentEntry, Vertex* parentExit ) {
   nonInterruptingEventSubProcesses.emplace_back(eventSubProcess, parentEntry, parentExit, 0, nullptr);
   // iterate through all known trigger and flatten event-subprocess instantiations
-  auto counter = std::get<3>( nonInterruptingEventSubProcesses.back() );
-  auto lastStart = std::get<4>( nonInterruptingEventSubProcesses.back() );
+  auto& counter = std::get<3>( nonInterruptingEventSubProcesses.back() );
+  auto& lastStart = std::get<4>( nonInterruptingEventSubProcesses.back() );
   assert( eventSubProcess->startEvent->represents<BPMN::MessageStartEvent>() );
   assert( eventSubProcess->startEvent->extensionElements );
   assert( eventSubProcess->startEvent->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );

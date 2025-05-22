@@ -9,7 +9,7 @@ using namespace BPMNOS;
 
 // Include all tests here
 
-//#define ALL_TESTS
+#define ALL_TESTS
 #ifdef ALL_TESTS
 
 /* Model */
@@ -84,15 +84,11 @@ using namespace BPMNOS;
 #endif // ALL_TESTS
 
 #ifndef ALL_TESTS
-#include "execution/expression/test.h"
-#include "execution/signal/test.h"
-#include "cp/eventsubprocess/test.h"
-
 //#include "examples/knapsack_problem/test.h"
 //#include "cp/examples/knapsack_problem/test.h"
 //#include "cp/examples/bin_packing_problem/test.h"
 //#include "cp/examples/job_shop_scheduling_problem/test.h"
-//#include "cp/test.h"
+#include "cp/test.h"
 //#include "cp/multiinstanceactivity/test.h"
 //#include "cp/loopactivity/test.h"
 //#include "cp/process/test.h"
