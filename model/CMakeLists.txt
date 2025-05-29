@@ -7,10 +7,10 @@ set(CMAKE_CXX_STANDARD 23)
 
 # Set folder for the library to be created
 set(LIB_DIR "lib" CACHE STRING "Library directory")
-message("-- Library will be created in folder: ${CMAKE_SOURCE_DIR}/${LIB_DIR}")
+message("-- Library will be created in folder: ${PROJECT_SOURCE_DIR}/../${LIB_DIR}")
 
 # Set output directories
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/${LIB_DIR})
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/../${LIB_DIR})
 #set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR})
 
 # Get lists of all headers and sources of utilities
@@ -30,13 +30,13 @@ if (CCACHE_FOUND AND CCACHE_SUPPORT)
 endif()
 
 # Generate the single header file
-set(SINGLE_HEADER_PATH "${CMAKE_SOURCE_DIR}/${LIB_DIR}/${PROJECT_NAME}.h")
+set(SINGLE_HEADER_PATH "${PROJECT_SOURCE_DIR}/../${LIB_DIR}/${PROJECT_NAME}.h")
 message("-- Header location: ${SINGLE_HEADER_PATH}")
 
 message("-- Create single header file")
 
 # Create output directory for the library
-file(MAKE_DIRECTORY "${CMAKE_SOURCE_DIR}/${LIB_DIR}")
+file(MAKE_DIRECTORY "${PROJECT_SOURCE_DIR}/../${LIB_DIR}")
 
 # Generate the single header file
 file(WRITE "${SINGLE_HEADER_PATH}" "// Automatically generated single header file\n")
@@ -105,7 +105,6 @@ else()
     -pg # Profiling
   )
 endif()
-
 
 # Install the header files
 install(FILES ${SINGLE_HEADER_PATH} DESTINATION include)
