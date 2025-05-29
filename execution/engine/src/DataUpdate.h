@@ -4,7 +4,7 @@
 #include <vector>
 #include <cassert>
 #include "Observable.h"
-#include "model/bpmnos/src/extensionElements/Attribute.h" 
+#include "model/bpmnos/src/extensionElements/Attribute.h"
 
 namespace BPMNOS::Execution {
 
