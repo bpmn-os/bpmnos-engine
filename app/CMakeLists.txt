@@ -6,10 +6,10 @@ project(bpmnos-app)
 set(CMAKE_CXX_STANDARD 23)
 
 # Set the output directory for the binary
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/../bin)
 
 include_directories(
-  ${CMAKE_SOURCE_DIR}/lib
+  ${PROJECT_SOURCE_DIR}/../lib
 )
 
 # Add the executable

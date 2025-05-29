@@ -22,8 +22,10 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0")
 
 add_executable(run_tests EXCLUDE_FROM_ALL main.cpp)
 
+message("-- Include: ${PROJECT_SOURCE_DIR}/lib")
+
 include_directories(
-  ${CMAKE_SOURCE_DIR}/lib
+  ${PROJECT_SOURCE_DIR}/lib
 )
 
 if (NDEBUG)
@@ -85,10 +87,12 @@ target_link_libraries(run_tests
   Catch2::Catch2WithMain
 )
 
-# Create a script that can be used from build directory
-file(WRITE "${CMAKE_BINARY_DIR}/run_tests" "#!/bin/bash\n(cd ${PROJECT_SOURCE_DIR};${CMAKE_BINARY_DIR}/tests/run_tests $@)")
-execute_process(COMMAND chmod +x "${CMAKE_BINARY_DIR}/run_tests")
-message("-- Run tests: ./run_test [tags]")
+if (CMAKE_SOURCE_DIR STREQUAL PROJECT_SOURCE_DIR)
+  # Create a script that can be used from build directory
+  file(WRITE "${CMAKE_BINARY_DIR}/run_tests" "#!/bin/bash\n(cd ${PROJECT_SOURCE_DIR};${CMAKE_BINARY_DIR}/tests/run_tests $@)")
+  execute_process(COMMAND chmod +x "${CMAKE_BINARY_DIR}/run_tests")
+  message("-- Run tests: ./run_tests [tags]")
+endif()
 
 add_custom_target(
     tests

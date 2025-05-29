@@ -5,7 +5,7 @@ project(profiles)
 # Set folder for the library to be created
 message("-- Profiles will be created in folder: ${CMAKE_CURRENT_SOURCE_DIR}")
 
-set(EXAMPLES_DIR "${CMAKE_SOURCE_DIR}/examples")
+set(EXAMPLES_DIR "${PROJECT_SOURCE_DIR}/../examples")
 
 set(instances
   travelling_salesperson_problem/Travelling_salesperson_problem.bpmn
@@ -29,7 +29,7 @@ foreach(instance ${instances})
     COMMAND ${CMAKE_COMMAND} -E echo "-- Create profile for ${name}"
 #    COMMAND ${CMAKE_COMMAND} -E echo "./profile.sh -m ${EXAMPLES_DIR}/${instance} -d ${EXAMPLES_DIR}/${name}/instance.csv -p ${EXAMPLES_DIR}/${name} profile_${name}" 
     COMMAND ./profile.sh -m ${EXAMPLES_DIR}/${instance} -d ${EXAMPLES_DIR}/${name}/instance.csv -p ${EXAMPLES_DIR}/${name} profile_${name} 
-    COMMAND ${CMAKE_COMMAND} -E copy profile_${name}.svg  ${CMAKE_SOURCE_DIR}/docs/images/
+    COMMAND ${CMAKE_COMMAND} -E copy profile_${name}.svg  ${PROJECT_SOURCE_DIR}/../docs/images/
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
   )
 endforeach()
@@ -41,7 +41,7 @@ add_custom_command(
   COMMAND mkdir -p profiles
   COMMAND ${CMAKE_COMMAND} -E echo "# Code profiles" > profiles/main.md VERBATIM
   COMMAND ${CMAKE_COMMAND} -E echo "@page profiles Code profiles" >> profiles/main.md VERBATIM
-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/docs/md/
+  WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/../docs/md/
 )
 
 # Iterate over each instance and add link to profile
@@ -53,7 +53,7 @@ foreach(instance ${instances})
     TARGET profiles
     POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E echo "- @subpage profile_${name}" >> profiles/main.md
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/docs/md
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/../docs/md
   )
   add_custom_command(
     TARGET profiles
@@ -66,7 +66,7 @@ foreach(instance ${instances})
     COMMAND ${CMAKE_COMMAND} -E echo "# Instance" > profiles/instance_${name}.md VERBATIM
     COMMAND ${CMAKE_COMMAND} -E echo "@page instance_${name} Instance" >> profiles/instance_${name}.md VERBATIM
     COMMAND ${CMAKE_COMMAND} -E echo "@include ${name}/instance.csv" >> profiles/instance_${name}.md VERBATIM    
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/docs/md
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/../docs/md
   )
 endforeach()
 
