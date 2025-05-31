@@ -42,19 +42,35 @@ endif()
 set(SINGLE_HEADER_PATH "${PROJECT_SOURCE_DIR}/../${LIB_DIR}/${PROJECT_NAME}.h")
 message("-- Header location: ${SINGLE_HEADER_PATH}")
 
-message("-- Create single header file")
-
 # Create output directory for the library
 file(MAKE_DIRECTORY "${PROJECT_SOURCE_DIR}/../${LIB_DIR}")
 
-# Generate the single header file
-file(WRITE "${SINGLE_HEADER_PATH}" "// Automatically generated single header file\n")
+set(ALL_HEADERS
+  ${execution_utility_HEADERS}
+  ${engine_HEADERS}
+  ${observer_HEADERS}
+  ${executionmodel_HEADERS}
+  ${controller_HEADERS}
+)
+string(JOIN " " HEADERS_JOINED ${ALL_HEADERS})
+#message("-- Header files to be joined: ${HEADERS_JOINED}")
 
-foreach(HEADER ${execution_utility_HEADERS} ${engine_HEADERS} ${observer_HEADERS} ${executionmodel_HEADERS} ${controller_HEADERS})
-  file(READ ${HEADER} HEADER_CONTENTS)
-  string(REGEX REPLACE "#include \"[^\"]*\"\n" "" HEADER_CONTENTS "${HEADER_CONTENTS}")
-  file(APPEND "${SINGLE_HEADER_PATH}" "${HEADER_CONTENTS}")
-endforeach()
+# Add a custom command to generate the header
+add_custom_command(
+  OUTPUT "${SINGLE_HEADER_PATH}"
+  COMMAND ${CMAKE_COMMAND}
+    -DHEADERS="${HEADERS_JOINED}"
+    -DFILENAME=${PROJECT_NAME}.h
+    -P "${PROJECT_SOURCE_DIR}/../single-header.cmake"
+  DEPENDS ${ALL_HEADERS}
+  COMMENT "Generating single header: ${SINGLE_HEADER_PATH}"
+  VERBATIM
+)
+
+# Add a custom target that always ensures the header is generated
+add_custom_target(execution_header ALL
+  DEPENDS "${SINGLE_HEADER_PATH}"
+)
 
 add_library(${PROJECT_NAME} STATIC ${execution_utility_SOURCES} ${engine_SOURCES} ${observer_SOURCES} ${executionmodel_SOURCES} ${controller_SOURCES})
 
