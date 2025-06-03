@@ -7,7 +7,7 @@
 namespace BPMNOS::Execution {
 
 /**
- * @brief Class representing an evaluator that uses the guidance that may be provided.
+ * @brief Class using the guidance that may be provided to determine the reward of a decision.
  */
 class GuidedEvaluator : public LocalEvaluator {
 public:

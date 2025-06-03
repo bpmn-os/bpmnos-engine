@@ -7,7 +7,7 @@
 namespace BPMNOS::Execution {
 
 /**
- * @brief Represents an abstract base class for a pending LocalEvaluator
+ * @brief Class using local evaluations to determine the reward of a decision.
  */
 class LocalEvaluator : public Evaluator {
 public:
