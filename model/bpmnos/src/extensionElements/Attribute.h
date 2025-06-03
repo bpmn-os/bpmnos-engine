@@ -29,7 +29,7 @@ public:
 
   std::string& id;
   std::unique_ptr<const Expression> expression;
-  const std::string name; ///< Name of attribute and optial initial assignment.
+  const std::string name; ///< Name of attribute and optional initial assignment.
 
   ValueType type;
  
