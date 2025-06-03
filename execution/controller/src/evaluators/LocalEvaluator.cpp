@@ -121,7 +121,7 @@ std::optional<double> LocalEvaluator::evaluate(EntryDecision* decision) {
   }
   // return evaluation of entry
 //std::cerr << "Updated local evaluation: " << extensionElements->getObjective(status,data,globals) << std::endl;
-  return evaluation - extensionElements->getObjective(status,data,globals);
+  return extensionElements->getObjective(status,data,globals) - evaluation;
 }
 
 std::optional<double> LocalEvaluator::evaluate(ExitDecision* decision) {
@@ -161,7 +161,7 @@ std::optional<double> LocalEvaluator::evaluate(ChoiceDecision* decision) {
     return std::nullopt;
   }
 
-  return evaluation - extensionElements->getObjective(status,data,globals);
+  return extensionElements->getObjective(status,data,globals) - evaluation;
 }
 
 std::optional<double> LocalEvaluator::evaluate(MessageDeliveryDecision* decision) {
@@ -181,7 +181,7 @@ std::optional<double> LocalEvaluator::evaluate(MessageDeliveryDecision* decision
     return std::nullopt;
   }
 
-  return evaluation - extensionElements->getObjective(status,data,globals);
+  return extensionElements->getObjective(status,data,globals) - evaluation;
 }
 
 

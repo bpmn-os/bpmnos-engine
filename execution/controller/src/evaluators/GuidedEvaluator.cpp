@@ -111,11 +111,11 @@ std::optional<double> GuidedEvaluator::evaluate(EntryDecision* decision) {
 //std::cerr << "GuidedEvaluator: unguided evaluation " << extensionElements->getObjective(status,data,globals) << std::endl;
 
   if ( !extensionElements->entryGuidance ) {
-    return evaluation - extensionElements->getObjective(status,data,globals);
+    return extensionElements->getObjective(status,data,globals) - evaluation;
   }
   // return evaluation of entry
 //std::cerr << "GuidedEvaluator: guided evaluation " << extensionElements->entryGuidance.value()->getObjective(status,data,globals) << std::endl;
-  return evaluation - extensionElements->entryGuidance.value()->getObjective(status,data,globals);
+  return extensionElements->entryGuidance.value()->getObjective(status,data,globals) - evaluation;
 }
 
 std::optional<double> GuidedEvaluator::evaluate(ExitDecision* decision) {
@@ -136,10 +136,10 @@ std::optional<double> GuidedEvaluator::evaluate(ExitDecision* decision) {
   }
 
   if ( !extensionElements->exitGuidance ) {
-    return evaluation - extensionElements->getObjective(status,data,globals);
+    return extensionElements->getObjective(status,data,globals) - evaluation;
   }
 
-  return evaluation - extensionElements->exitGuidance.value()->getObjective(status,data,globals);
+  return extensionElements->exitGuidance.value()->getObjective(status,data,globals) - evaluation;
 }
 
 std::optional<double> GuidedEvaluator::evaluate(ChoiceDecision* decision) {
@@ -165,10 +165,10 @@ std::optional<double> GuidedEvaluator::evaluate(ChoiceDecision* decision) {
   }
 
   if ( !extensionElements->choiceGuidance ) {
-    return evaluation - extensionElements->getObjective(status,data,globals);
+    return extensionElements->getObjective(status,data,globals) - evaluation;
   }
 
-  return evaluation - extensionElements->choiceGuidance.value()->getObjective(status,data,globals);
+  return extensionElements->choiceGuidance.value()->getObjective(status,data,globals) - evaluation;
 }
 
 std::optional<double> GuidedEvaluator::evaluate(MessageDeliveryDecision* decision) {
@@ -193,11 +193,10 @@ std::optional<double> GuidedEvaluator::evaluate(MessageDeliveryDecision* decisio
 //std::cerr << "Local evaluation:\n" << extensionElements->getObjective(status,data,globals) << std::endl;
 
   if ( !extensionElements->messageDeliveryGuidance ) {
-    return evaluation - extensionElements->getObjective(status,data,globals);
+    return extensionElements->getObjective(status,data,globals) - evaluation;
   }
 //std::cerr << "Guided evaluation:\n" << extensionElements->messageDeliveryGuidance.value()->getObjective(status,data,globals) << std::endl;
-//if ( evaluation - extensionElements->messageDeliveryGuidance.value()->getObjective(status,data,globals) > 800 ) exit(0);
-  return evaluation - extensionElements->messageDeliveryGuidance.value()->getObjective(status,data,globals);
+  return extensionElements->messageDeliveryGuidance.value()->getObjective(status,data,globals) - evaluation;
 }
 
 

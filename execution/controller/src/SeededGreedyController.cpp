@@ -25,20 +25,20 @@ void SeededGreedyController::notice(const Observable* observable) {
 }
 
 std::shared_ptr<Event> SeededGreedyController::createEntryEvent([[maybe_unused]] const SystemState* systemState, const Token* token, [[maybe_unused]] const Vertex* vertex) {
-  // instant entry
+  // instant entry ( if feasible )
   auto decision = std::make_shared<EntryDecision>(token, evaluator);
-  decision->evaluate();
-  if (  decision->evaluation.has_value() ) {
+  auto reward = decision->evaluate();
+  if (  reward.has_value() ) {
     return decision;
   }
   return nullptr;
 }
 
 std::shared_ptr<Event> SeededGreedyController::createExitEvent([[maybe_unused]] const SystemState* systemState, const Token* token, [[maybe_unused]] const Vertex* vertex) {
-  // instant exit
+  // instant exit ( if feasible )
   auto decision = std::make_shared<ExitDecision>(token, evaluator);
-  decision->evaluate();
-  if (  decision->evaluation.has_value() ) {
+  auto reward = decision->evaluate();
+  if ( reward.has_value() ) {
     return decision;
   }
   return nullptr;
@@ -82,10 +82,10 @@ std::shared_ptr<Event> SeededGreedyController::createMessageDeliveryEvent([[mayb
   std::shared_ptr<MessageDeliveryDecision> best = nullptr;
   for ( auto& message : candidates ) {
     auto decision = std::make_shared<MessageDeliveryDecision>(token, message.get(), evaluator);
-    decision->evaluate();
+    auto reward = decision->evaluate();
     if ( 
-      decision->evaluation.has_value() &&
-      ( !best || best->evaluation.value() < decision->evaluation.value() )
+      reward.has_value() &&
+      ( !best || best->reward.value() < reward.value() )
     ) {
       best = decision;
     }

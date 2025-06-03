@@ -13,8 +13,8 @@ ChoiceDecision::ChoiceDecision(const Token* token, Values choices, Evaluator* ev
 }
 
 std::optional<double> ChoiceDecision::evaluate() {
-  evaluation = evaluator->evaluate(this);
-  return evaluation;
+  reward = evaluator->evaluate(this);
+  return reward;
 }
 
 nlohmann::ordered_json ChoiceDecision::jsonify() const {
@@ -55,8 +55,8 @@ nlohmann::ordered_json ChoiceDecision::jsonify() const {
     }
   }
 
-  if ( evaluation.has_value() ) {
-    jsonObject["evaluation"] = (double)evaluation.value();
+  if ( reward.has_value() ) {
+    jsonObject["reward"] = (double)reward.value();
   }
 
   return jsonObject;

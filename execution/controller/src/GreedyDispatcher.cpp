@@ -27,8 +27,9 @@ void GreedyDispatcher<WeakPtrs...>::connect(Mediator* mediator) {
 template <typename... WeakPtrs>
 void GreedyDispatcher<WeakPtrs...>::addEvaluation(WeakPtrs... weak_ptrs, std::shared_ptr<Decision> decision, std::optional<double> reward) {
 //std::cerr << reward.value_or(-999) << std::endl;  
+  // evaluatedDecisions are sorted in ascending order
   // decisions without reward are assumed to be infeasible
-  evaluatedDecisions.emplace( (reward.has_value() ? (double)reward.value() : std::numeric_limits<double>::max() ), weak_ptrs..., decision->weak_from_this());
+  evaluatedDecisions.emplace( (reward.has_value() ? -(double)reward.value() : std::numeric_limits<double>::max() ), weak_ptrs..., decision->weak_from_this());
 
 //std::cerr << "GreedyDispatcher: evaluated decision: " <<  decision->jsonify() << " with " << reward.value_or(-999) << std::endl; 
   assert ( decision );
@@ -65,13 +66,12 @@ std::shared_ptr<Event> GreedyDispatcher<WeakPtrs...>::dispatchEvent( [[maybe_unu
   }
 
   for ( auto& decisionTuple : decisionsWithoutEvaluation ) {
-//    std::apply([this](auto&&... args) { this->evaluate(std::forward<decltype(args)>(args)...); }, decisionTuple);
     std::apply([this,&decisionTuple](auto&&... args) {
       auto decision = std::get<std::shared_ptr<Decision>>(decisionTuple);
       assert(decision);
       // Call decision->evaluate() and add the evaluation
-      auto evaluation = decision->evaluate();
-      this->addEvaluation(std::forward<decltype(args)>(args)..., evaluation);
+      auto reward = decision->evaluate();
+      this->addEvaluation(std::forward<decltype(args)>(args)..., reward);
     }, decisionTuple);
   }
   decisionsWithoutEvaluation.clear();
@@ -110,7 +110,7 @@ void GreedyDispatcher<WeakPtrs...>::removeObsolete(const DataUpdate* update, aut
     auto& decisionTuple = *it;
     std::shared_ptr<Decision>& decision = std::get<sizeof...(WeakPtrs)>(decisionTuple);
     if ( intersect(update->attributes, decision->dataDependencies) ) {
-      decision->evaluation = std::nullopt;
+      decision->reward = std::nullopt;
       std::apply([&unevaluatedDecisions](auto&&... args) { unevaluatedDecisions.emplace_back(std::forward<decltype(args)>(args)...); }, decisionTuple);
       // remove evaluation
 //std::cerr << "GreedyDispatcher: Remove evaluation of decision: " <<  decision->jsonify() << std::endl; 
@@ -151,7 +151,7 @@ template <typename... WeakPtrs>
 void GreedyDispatcher<WeakPtrs...>::clockTick() {
   for ( auto& decisionTuple : timeDependentEvaluations ) {
     std::shared_ptr<Decision>& decision = std::get<sizeof...(WeakPtrs)>(decisionTuple);
-    decision->evaluation = std::nullopt;
+    decision->reward = std::nullopt;
     std::apply([this](auto&&... args) { this->decisionsWithoutEvaluation.emplace_back(std::forward<decltype(args)>(args)...); }, decisionTuple);
   }
 
@@ -160,7 +160,7 @@ void GreedyDispatcher<WeakPtrs...>::clockTick() {
   for ( auto& [ instance, evaluations ] : timeAndDataDependentEvaluations ) {
     for ( auto& decisionTuple : evaluations ) {
       std::shared_ptr<Decision>& decision = std::get<sizeof...(WeakPtrs)>(decisionTuple);
-      decision->evaluation = std::nullopt;
+      decision->reward = std::nullopt;
       std::apply([this](auto&&... args) { this->decisionsWithoutEvaluation.emplace_back(std::forward<decltype(args)>(args)...); }, decisionTuple);
     }
   }

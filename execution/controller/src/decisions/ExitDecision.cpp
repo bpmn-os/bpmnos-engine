@@ -13,8 +13,8 @@ ExitDecision::ExitDecision(const Token* token, Evaluator* evaluator)
 }
 
 std::optional<double> ExitDecision::evaluate() {
-  evaluation = evaluator->evaluate(this);
-  return evaluation;
+  reward = evaluator->evaluate(this);
+  return reward;
 }
 
 nlohmann::ordered_json ExitDecision::jsonify() const {
@@ -25,8 +25,8 @@ nlohmann::ordered_json ExitDecision::jsonify() const {
   jsonObject["instanceId"] = BPMNOS::to_string((*token->data)[BPMNOS::Model::ExtensionElements::Index::Instance].get().value(),STRING);
   jsonObject["nodeId"] = token->node->id;
 
-  if ( evaluation.has_value() ) {
-    jsonObject["evaluation"] = (double)evaluation.value();
+  if ( reward.has_value() ) {
+    jsonObject["reward"] = (double)reward.value();
   }
 
   return jsonObject;

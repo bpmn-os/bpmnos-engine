@@ -10,7 +10,7 @@
 namespace BPMNOS::Execution {
 
 /**
- * @brief Represents an abstract base class for a pending Evaluator
+ * @brief Represents an abstract base class for an evaluator determining feasibility and reward of a decision
  */
 class Evaluator {
 public:

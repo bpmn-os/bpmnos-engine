@@ -47,7 +47,7 @@ std::shared_ptr<Event> BestLimitedChoice::dispatchEvent( [[maybe_unused]] const 
     // forget previous decision and find new best decision for the request
     auto decision = determineBestChoices( request );
     if ( decision ) {
-      addEvaluation( token_ptr, request_ptr, std::move(decision), decision->evaluation );
+      addEvaluation( token_ptr, request_ptr, std::move(decision), decision->reward );
     }
   }
   decisionsWithoutEvaluation.clear();
@@ -82,8 +82,8 @@ std::shared_ptr<Decision> BestLimitedChoice::determineBestChoices(std::shared_pt
     auto decision = std::make_shared<ChoiceDecision>(token,choices,evaluator);
     decision->evaluate();
     if (
-      decision->evaluation.has_value() &&
-      ( !bestDecision || decision->evaluation.value() < bestDecision->evaluation.value() )
+      decision->reward.has_value() &&
+      ( !bestDecision || decision->reward.value() > bestDecision->reward.value() )
     ) {
       bestDecision = decision;
     }

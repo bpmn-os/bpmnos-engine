@@ -131,9 +131,9 @@ private:
   void setSignalContent(BPMNOS::VariedValueMap& sourceMap); // Applies content of signal
   
   void sendMessage( size_t index = 0 ); 
-
+public:
   Token* getSequentialPerformerToken() const; ///< Returns token at sequential performer for tokens at activities within sequential adhoc subprocesses
-
+private:
   void update(State newState); ///< Updates token state and timestamp before calling notify()
 
   void notify() const; ///< Inform all listeners about token update

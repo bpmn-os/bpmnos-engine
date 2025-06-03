@@ -18,6 +18,8 @@ list(APPEND controller_SOURCES
   dispatcher/naive/RandomChoice.cpp
   dispatcher/naive/MyopicDecisionTaskTerminator.cpp
   dispatcher/naive/MyopicMessageTaskTerminator.cpp
+  dispatcher/greedy/GreedyEntry.cpp
+  dispatcher/greedy/GreedyExit.cpp
   dispatcher/greedy/BestFirstEntry.cpp
   dispatcher/greedy/BestFirstExit.cpp
   dispatcher/greedy/BestMatchingMessageDelivery.cpp
@@ -48,6 +50,8 @@ list(APPEND controller_HEADERS
   dispatcher/naive/RandomChoice.h
   dispatcher/naive/MyopicDecisionTaskTerminator.h
   dispatcher/naive/MyopicMessageTaskTerminator.h
+  dispatcher/greedy/GreedyEntry.h
+  dispatcher/greedy/GreedyExit.h
   dispatcher/greedy/BestFirstEntry.h
   dispatcher/greedy/BestFirstExit.h
   dispatcher/greedy/BestMatchingMessageDelivery.h

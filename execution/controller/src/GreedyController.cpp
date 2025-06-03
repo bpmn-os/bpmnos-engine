@@ -1,20 +1,31 @@
 #include "GreedyController.h"
-//#include "dispatcher/greedy/BestFirstParallelEntry.h"
-//#include "dispatcher/greedy/BestFirstSequentialEntry.h"
+#include "dispatcher/greedy/GreedyEntry.h"
+#include "dispatcher/greedy/GreedyExit.h"
 #include "dispatcher/greedy/BestFirstEntry.h"
+#include "dispatcher/greedy/BestFirstExit.h"
 #include "dispatcher/greedy/BestLimitedChoice.h"
 #include "dispatcher/greedy/BestMatchingMessageDelivery.h"
-#include "dispatcher/greedy/BestFirstExit.h"
 #include <iostream>
 
 using namespace BPMNOS::Execution;
 
-GreedyController::GreedyController(Evaluator* evaluator)
+GreedyController::GreedyController(Evaluator* evaluator, Config config)
   : evaluator(evaluator)
+  , config(config)
 {
   // add event dispatcher
-  eventDispatchers.push_back( std::make_unique<BestFirstEntry>(evaluator) );
-  eventDispatchers.push_back( std::make_unique<BestFirstExit>(evaluator) );
+  if ( config.bestFirstEntry ) {
+    eventDispatchers.push_back( std::make_unique<BestFirstEntry>(evaluator) );
+  }
+  else {
+    eventDispatchers.push_back( std::make_unique<GreedyEntry>(evaluator) );
+  }
+  if ( config.bestFirstExit ) {
+    eventDispatchers.push_back( std::make_unique<BestFirstExit>(evaluator) );
+  }
+  else {
+    eventDispatchers.push_back( std::make_unique<GreedyExit>(evaluator) );
+  }
   eventDispatchers.push_back( std::make_unique<BestLimitedChoice>(evaluator) );
   eventDispatchers.push_back( std::make_unique<BestMatchingMessageDelivery>(evaluator) );
 }
@@ -31,13 +42,13 @@ std::shared_ptr<Event> GreedyController::dispatchEvent(const SystemState* system
   for ( auto& eventDispatcher : eventDispatchers ) {
     if ( auto event = eventDispatcher->dispatchEvent(systemState) ) {
       if (  auto decision = dynamic_pointer_cast<Decision>(event) ) {
-        if ( decision->evaluation.has_value() ) {
+        if ( decision->reward.has_value() ) {
           if ( !best ) {
             // first feasible decision is used as best
             best = decision;
           }
-          else if ( decision->evaluation.value() < best->evaluation.value() ) {
-            // decision has less costly evaluation than current best
+          else if ( decision->reward.value() > best->reward.value() ) {
+            // decision has better reward than current best
             best = decision;
           }
         }
