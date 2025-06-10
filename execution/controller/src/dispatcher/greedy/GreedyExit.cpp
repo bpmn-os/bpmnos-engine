@@ -42,9 +42,9 @@ std::shared_ptr<Event> GreedyExit::dispatchEvent( const SystemState* systemState
     assert(decision);
 
     // Call decision->evaluate() and add the evaluation
-    auto evaluation = decision->evaluate();
-    addEvaluation(token_ptr, request_ptr, decision, evaluation);
-    if (  evaluation.has_value() ) {
+    auto reward = decision->evaluate();
+    addEvaluation(token_ptr, request_ptr, decision, reward);
+    if (  reward.has_value() ) {
       return std::make_shared<ExitEvent>(decision->token);
     }
   }

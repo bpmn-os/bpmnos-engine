@@ -55,9 +55,10 @@ std::shared_ptr<Event> GreedyEntry::dispatchEvent( const SystemState* systemStat
     }
 
     // Call decision->evaluate() and add the evaluation
-    auto evaluation = decision->evaluate();
-    addEvaluation(token_ptr, request_ptr, decision, evaluation);
-    if (  evaluation.has_value() ) {
+    auto reward = decision->evaluate();
+std::cerr << "Regular: " << decision->jsonify() << std::endl;
+    addEvaluation(token_ptr, request_ptr, decision, reward);
+    if (  reward.has_value() ) {
       return std::make_shared<EntryEvent>(decision->token);
     }
   }
@@ -69,7 +70,7 @@ std::shared_ptr<Event> GreedyEntry::dispatchEvent( const SystemState* systemStat
     if ( auto event = event_ptr.lock();
       event && std::get<0>(decisionTuple) < std::numeric_limits<double>::max()
     ) {
-//std::cerr << "\nBest decision " << event->jsonify() << " evaluated with " << std::get<0>(decisionTuple) << std::endl;
+std::cerr << "\nBest (old) decision " << event->jsonify() << " evaluated with " << std::get<0>(decisionTuple) << std::endl;
       // Warning: event is dispatched even if it is no longer the best due to data updates since undeployed dispatch
       return event;
     }
@@ -84,8 +85,9 @@ std::shared_ptr<Event> GreedyEntry::dispatchEvent( const SystemState* systemStat
     assert( !performerToken->performing );
     for ( auto& [ token_ptr, request_ptr, decision ] : decisionTuples ) {
       // Call decision->evaluate() and add the evaluation
-      auto evaluation = decision->evaluate();
-      addEvaluation(token_ptr, request_ptr, decision, evaluation);
+      auto reward = decision->evaluate();
+std::cerr << "Exclusive: " << decision->jsonify() << std::endl;
+      addEvaluation(token_ptr, request_ptr, decision, reward);
     }
     for ( auto decisionTuple : evaluatedDecisions ) {
       constexpr std::size_t last = std::tuple_size<decltype(decisionTuple)>::value - 1;

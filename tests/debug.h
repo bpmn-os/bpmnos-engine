@@ -19,6 +19,7 @@ SCENARIO( "Guided knapsack problem", "[examples][knapsack_problem]" ) {
     Model::StaticDataProvider dataProvider(modelFile,csv);
     auto scenario = dataProvider.createScenario();
 
+/*
     WHEN( "The engine is started with the guided controller" ) {
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
@@ -55,7 +56,7 @@ SCENARIO( "Guided knapsack problem", "[examples][knapsack_problem]" ) {
         REQUIRE( (acceptanceLog[1]["instanceId"] == "Item2" || acceptanceLog[1]["instanceId"] == "Item3") );
       }
     }
-/*
+*/
     WHEN( "The engine is started with the guided controller and greedy decisions" ) {
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
@@ -64,7 +65,7 @@ SCENARIO( "Guided knapsack problem", "[examples][knapsack_problem]" ) {
       completionHandler.connect(&engine);
 
       Execution::GuidedEvaluator evaluator;
-      Execution::GreedyController controller(&evaluator, { .bestFirstEntry = false, .bestFirstExit = false });
+      Execution::GreedyController controller(&evaluator, { .bestFirstEntry = false, .bestFirstExit = true });
       controller.connect(&engine);
       
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;
@@ -72,7 +73,44 @@ SCENARIO( "Guided knapsack problem", "[examples][knapsack_problem]" ) {
       messageTaskTerminator.connect(&engine);
       timeHandler.connect(&engine);
 
-      Execution::Recorder recorder;
+//      Execution::Recorder recorder;
+      Execution::Recorder recorder(std::cerr); // TODO: FIND OUT WHY THIS PASSES AND BELOW FAILS
+      recorder.subscribe(&engine);
+      engine.run(scenario.get());
+      THEN( "Then the knapsack considers all items" ) {
+        auto failureLog = recorder.find(nlohmann::json{{"nodeId", "SendRequestTask"},{"state", "FAILED"}});
+        REQUIRE( failureLog.size() == 0 );
+      }
+      THEN( "Then the knapsack handles items with best value to weight ratio first" ) {
+        auto handleLog = recorder.find(nlohmann::json{{"nodeId", "HandleItemActivity"},{"state", "COMPLETED"}});
+        REQUIRE( handleLog[0]["status"]["item"] == "Item3" );
+        REQUIRE( handleLog[1]["status"]["item"] == "Item1" );
+        REQUIRE( handleLog[2]["status"]["item"] == "Item2" );
+      }
+      THEN( "Then the knapsack includes Item3 and Item2" ) {
+        auto acceptanceLog = recorder.find(nlohmann::json{{"nodeId", "ItemAccepted"},{"state", "ENTERED"}});
+        REQUIRE( (acceptanceLog[0]["instanceId"] == "Item2" || acceptanceLog[0]["instanceId"] == "Item3") );
+        REQUIRE( (acceptanceLog[1]["instanceId"] == "Item2" || acceptanceLog[1]["instanceId"] == "Item3") );
+      }
+    }
+
+    WHEN( "The engine is started with the guided controller and greedy decisions" ) {
+      Execution::Engine engine;
+      Execution::ReadyHandler readyHandler;
+      Execution::DeterministicTaskCompletion completionHandler;
+      readyHandler.connect(&engine);
+      completionHandler.connect(&engine);
+
+      Execution::GuidedEvaluator evaluator;
+      Execution::GreedyController controller(&evaluator, { .bestFirstEntry = false, .bestFirstExit = true });
+      controller.connect(&engine);
+      
+      Execution::MyopicMessageTaskTerminator messageTaskTerminator;
+      Execution::TimeWarp timeHandler;
+      messageTaskTerminator.connect(&engine);
+      timeHandler.connect(&engine);
+
+      Execution::Recorder recorder; // TODO: FIND OUT WHY THIS FAILS AND ABOVE PASSES
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
       engine.run(scenario.get());
@@ -92,6 +130,5 @@ SCENARIO( "Guided knapsack problem", "[examples][knapsack_problem]" ) {
         REQUIRE( (acceptanceLog[1]["instanceId"] == "Item2" || acceptanceLog[1]["instanceId"] == "Item3") );
       }
     }
-*/
   }
 }
