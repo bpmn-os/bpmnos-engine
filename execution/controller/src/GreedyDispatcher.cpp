@@ -110,10 +110,10 @@ void GreedyDispatcher<WeakPtrs...>::removeObsolete(const DataUpdate* update, aut
     auto& decisionTuple = *it;
     std::shared_ptr<Decision>& decision = std::get<sizeof...(WeakPtrs)>(decisionTuple);
     if ( intersect(update->attributes, decision->dataDependencies) ) {
+//std::cerr << "GreedyDispatcher: Remove evaluation of decision: " <<  decision->jsonify() << std::endl; 
       decision->reward = std::nullopt;
       std::apply([&unevaluatedDecisions](auto&&... args) { unevaluatedDecisions.emplace_back(std::forward<decltype(args)>(args)...); }, decisionTuple);
       // remove evaluation
-//std::cerr << "GreedyDispatcher: Remove evaluation of decision: " <<  decision->jsonify() << std::endl; 
       it = evaluation.erase(it);
     }
     else {

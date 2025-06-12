@@ -55,7 +55,7 @@ SCENARIO( "Guided knapsack problem", "[examples][knapsack_problem]" ) {
         REQUIRE( (acceptanceLog[1]["instanceId"] == "Item2" || acceptanceLog[1]["instanceId"] == "Item3") );
       }
     }
-/*
+
     WHEN( "The engine is started with the guided controller and greedy decisions" ) {
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
@@ -92,6 +92,5 @@ SCENARIO( "Guided knapsack problem", "[examples][knapsack_problem]" ) {
         REQUIRE( (acceptanceLog[1]["instanceId"] == "Item2" || acceptanceLog[1]["instanceId"] == "Item3") );
       }
     }
-*/
   }
 }
