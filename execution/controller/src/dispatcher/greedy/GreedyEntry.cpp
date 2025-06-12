@@ -64,7 +64,7 @@ std::shared_ptr<Event> GreedyEntry::dispatchEvent( const SystemState* systemStat
 
   // all remaining entry decisions without evaluation require sequential performer
   for (auto it = decisionsWithoutEvaluation.begin(); it != decisionsWithoutEvaluation.end(); ) {
-    auto [ token_ptr, request_ptr, decision  ] = std::move(*it);  // Move out the tuple to avoid dangling reference
+    auto [ token_ptr, request_ptr, decision  ] = *it;
     it = decisionsWithoutEvaluation.erase(it);
     assert(decision);
     if ( auto token = token_ptr.lock() ) {
