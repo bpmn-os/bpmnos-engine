@@ -18,6 +18,8 @@ public:
   void connect(Mediator* mediator) override;
   void notice(const Observable* observable) override;
   std::shared_ptr<Event> dispatchEvent( const SystemState* systemState ) override;
+protected:
+  auto_list< std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest>, std::shared_ptr<Decision> > unevaluatedSequentialEntries;
 };
 
 } // namespace BPMNOS::Execution

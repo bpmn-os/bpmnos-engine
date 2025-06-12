@@ -37,46 +37,32 @@ std::shared_ptr<Event> GreedyEntry::dispatchEvent( const SystemState* systemStat
     clockTick();
   }
 
-  std::unordered_map<const Token*, auto_list<std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest>, std::shared_ptr<Decision> > > sequentialActivityEntries;
-
   for (auto it = decisionsWithoutEvaluation.begin(); it != decisionsWithoutEvaluation.end(); ) {
-    auto [ token_ptr, request_ptr, decision  ] = *it;
+    auto [ token_ptr, request_ptr, decision  ] = std::move(*it);
+    it = decisionsWithoutEvaluation.erase(it);
     assert(decision);
-    if ( auto token = token_ptr.lock();
-      token &&
-      !token->node->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>()
-    ) {
+    auto token = token_ptr.lock();
+    assert( token );
+    assert( token->node->parent );
+    if ( token->node->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() ) {
+      // defer evaluation of decision
+      unevaluatedSequentialEntries.emplace_back(
+        std::move(token_ptr), std::move(request_ptr), std::move(decision)
+      );
+    }
+    else {
       // evaluation of decision is independent of others
       auto reward = decision->evaluate();
 //std::cerr << "Regular: " << decision->jsonify() << std::endl;
       addEvaluation(token_ptr, request_ptr, decision, reward);
-      it = decisionsWithoutEvaluation.erase(it);
 
       if (  reward.has_value() ) {
         // dispatch feasible decision 
         return std::make_shared<EntryEvent>(decision->token);
       }
     }
-    else {
-      ++it;
-    }
   }
 
-  // all remaining entry decisions without evaluation require sequential performer
-  for (auto it = decisionsWithoutEvaluation.begin(); it != decisionsWithoutEvaluation.end(); ) {
-    auto [ token_ptr, request_ptr, decision  ] = *it;
-    it = decisionsWithoutEvaluation.erase(it);
-    assert(decision);
-    if ( auto token = token_ptr.lock() ) {
-      assert( token->node->parent );
-      assert( token->node->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() );
-      // defer entry decision for sequential activities
-      auto tokenAtSequentialPerformer = token->getSequentialPerformerToken();
-//std::cerr << "Defer: " << token->jsonify() << "/" << sequentialActivityEntries[ tokenAtSequentialPerformer ].empty() << std::endl;
-      sequentialActivityEntries[ tokenAtSequentialPerformer ].emplace_back( token_ptr, request_ptr, decision );
-    }
-  }
-  
   // all evaluated decisions are infeasible unless a previously dispatched decision was not deployed
   for ( auto decisionTuple : evaluatedDecisions ) {
     constexpr std::size_t last = std::tuple_size<decltype(decisionTuple)>::value - 1;
@@ -89,10 +75,27 @@ std::shared_ptr<Event> GreedyEntry::dispatchEvent( const SystemState* systemStat
       return event;
     }
     else {
-      // best decision is infeasible, no need to inspect others
+      // best evalutated decision is infeasible, no need to inspect others
       break;
     }
   }
+
+  std::unordered_map<const Token*, auto_list<std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest>, std::shared_ptr<Decision> > > sequentialActivityEntries;
+
+  for (auto& [ token_ptr, request_ptr, decision  ] : unevaluatedSequentialEntries ) {
+    assert(decision);
+    auto token = token_ptr.lock();
+    assert( token );
+    assert( token->node->parent );
+    assert( token->node->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() );
+    // defer entry decision for sequential activities
+    auto tokenAtSequentialPerformer = token->getSequentialPerformerToken();
+//std::cerr << "Defer: " << token->jsonify() << "/" << sequentialActivityEntries[ tokenAtSequentialPerformer ].empty() << std::endl;
+    sequentialActivityEntries[tokenAtSequentialPerformer].emplace_back(
+      std::move(token_ptr), std::move(request_ptr), std::move(decision)
+    );
+  }
+  unevaluatedSequentialEntries.clear();
   
   // now find best activity to be entered for any sequential performer
   for ( auto& [ performerToken, decisionTuples ] : sequentialActivityEntries ) {
