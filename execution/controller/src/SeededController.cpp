@@ -534,7 +534,17 @@ std::list<size_t> SeededController::getSequence() const {
 //std::cerr << vertex->reference() << std::endl;
   }
 
+  for ( auto vertex : pendingVertices ) {
+    assert( vertex == flattenedGraph->vertices[vertex->index].get() );
+    sequence.push_back( vertex->index + 1 );
+//std::cerr << vertex->reference() << std::endl;
+  }
+
   return sequence;
+}
+
+size_t SeededController::getProgress() const {
+  return processedVertices.size();
 }
 
 void SeededController::initializePendingVertices() {
