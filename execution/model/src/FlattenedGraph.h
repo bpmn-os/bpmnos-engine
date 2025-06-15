@@ -23,7 +23,7 @@ class Token;
 class FlattenedGraph {
 public:
   FlattenedGraph(const BPMNOS::Model::Scenario* scenario);
-  const BPMNOS::Model::Scenario& scenario;
+  const BPMNOS::Model::Scenario* scenario;
   nlohmann::ordered_json jsonify() const;
   
   class Vertex {

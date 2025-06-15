@@ -10,7 +10,7 @@
 using namespace BPMNOS::Execution;
 
 CPModel::CPModel(const BPMNOS::Execution::FlattenedGraph* flattenedGraph, Config config)
- : scenario(&flattenedGraph->scenario)
+ : scenario(flattenedGraph->scenario)
  , config(std::move(config))
  , flattenedGraph(flattenedGraph) 
  , model(CP::Model::ObjectiveSense::MAXIMIZE)

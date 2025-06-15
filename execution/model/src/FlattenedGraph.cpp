@@ -116,9 +116,9 @@ nlohmann::ordered_json FlattenedGraph::Vertex::jsonify() const {
 ** FlattenedGraph
 **********************/
 
-FlattenedGraph::FlattenedGraph(const BPMNOS::Model::Scenario* scenario) : scenario(*scenario) {
+FlattenedGraph::FlattenedGraph(const BPMNOS::Model::Scenario* scenario) : scenario(scenario) {
   // get all known instances
-  auto instances = this->scenario.getKnownInstances( this->scenario.getInception() );
+  auto instances = scenario->getKnownInstances( scenario->getInception() );
 //std::cerr << "Instances: " << instances.size() << std::endl;
   for ( auto& instance : instances ) {
     addInstance( instance );
@@ -421,7 +421,7 @@ void FlattenedGraph::createLoopVertices(BPMNOS::number rootId, BPMNOS::number in
         if ( !attribute->isImmutable ) {
           throw std::runtime_error("FlattenedGraph: Loop parameter '" + parameter->name + "' for activity '" + activity->id +"' must be immutable" );
         }
-        auto value = scenario.getKnownValue(rootId, attribute, scenario.getInception() );
+        auto value = scenario->getKnownValue(rootId, attribute, scenario->getInception() );
         if ( !value.has_value() ) {
 //std::cerr << "unknown value of '" << attribute->id << "'" << std::endl;
           // return nullopt because required attribute value is not given
@@ -437,7 +437,7 @@ void FlattenedGraph::createLoopVertices(BPMNOS::number rootId, BPMNOS::number in
           throw std::runtime_error("FlattenedGraph: Loop parameter '" + parameter->name + "' for activity '" + activity->id +"' must be immutable" );
         }
         collectionValues.push_back( {} );
-        auto collection = scenario.getKnownValue(rootId, attribute, scenario.getInception() );
+        auto collection = scenario->getKnownValue(rootId, attribute, scenario->getInception() );
         if ( !collection.has_value() ) {
 //std::cerr << "unknown collection value of '" << attribute->id << "'" << std::endl;
           // return nullopt because required collection is not given
