@@ -1,3 +1,6 @@
+#ifndef BPMNOS_Model_getDelimiter_H
+#define BPMNOS_Model_getDelimiter_H
+
 #include <string>
 #include <fstream>
 
@@ -31,3 +34,5 @@ inline char getDelimiter(const std::string& instanceFileOrString, size_t lineBre
   }
   throw std::runtime_error("Unable to determine delimiter for " + instanceFileOrString);
 }
+
+#endif // BPMNOS_Model_getDelimiter_H
