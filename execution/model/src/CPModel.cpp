@@ -48,7 +48,7 @@ std::optional< BPMN::Activity::LoopCharacteristics> CPModel::getLoopCharacterist
 
 
 void CPModel::createCP() {
-  auto sortedVertices = flattenedGraph->getSortedVertices();
+  auto sortedVertices = flattenedGraph->sortVertices();
 
 //std::cerr << "create sequence position variables" << std::endl;
   // create sequence position variables for all vertices

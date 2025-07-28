@@ -663,7 +663,7 @@ bool FlattenedGraph::modifiesGlobals(const Vertex* vertex) const {
   return false;
 }
 
-std::vector< const FlattenedGraph::Vertex* > FlattenedGraph::getSortedVertices() const {
+std::vector< const FlattenedGraph::Vertex* > FlattenedGraph::sortVertices() const {
   std::vector< const Vertex* > sortedVertices;
   sortedVertices.reserve( vertices.size() );
   for ( auto initialVertex : initialVertices ) {

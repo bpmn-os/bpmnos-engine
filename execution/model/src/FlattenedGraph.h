@@ -64,7 +64,7 @@ public:
   };
 
   std::vector< const Vertex* > initialVertices; /// Container holding entry vertices of all process instances
-  std::vector< const Vertex* > getSortedVertices() const; /// Returns a topologically sorted vector of all vertices reachable from the given vertex
+  std::vector< const Vertex* > sortVertices() const; /// Returns a topologically sorted vector of all vertices reachable from the initial vertices
   std::vector< std::unique_ptr<Vertex> > vertices; /// Container holding entry and exit vertices of each possible instantiation of a node
   std::unordered_set< const Vertex* > dummies; /// Container holding dummy vertices for loop & multi-instance activities
   
