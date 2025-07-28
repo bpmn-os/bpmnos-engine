@@ -5,13 +5,14 @@ project(profiles)
 # Set folder for the library to be created
 message("-- Profiles will be created in folder: ${CMAKE_CURRENT_SOURCE_DIR}")
 
-set(EXAMPLES_DIR "${PROJECT_SOURCE_DIR}/../examples")
+get_filename_component(EXAMPLES_DIR "${PROJECT_SOURCE_DIR}/../examples" REALPATH)
+message("-- Profiles will be created from example folder: ${EXAMPLES_DIR}")
 
 set(instances
   travelling_salesperson_problem/Travelling_salesperson_problem.bpmn
   assignment_problem/Assignment_problem.bpmn
-  guided_knapsack_problem/Guided_knapsack_problem.bpmn
-  guided_bin_packing_problem/Guided_bin_packing_problem.bpmn
+  knapsack_problem/Knapsack_problem.bpmn
+  bin_packing_problem/Bin_packing_problem.bpmn
   job_shop_scheduling_problem/Job_shop_scheduling_problem.bpmn
 )
 
