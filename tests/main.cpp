@@ -84,7 +84,7 @@ using namespace BPMNOS;
 #endif // ALL_TESTS
 
 #ifndef ALL_TESTS
-#include "debug.h"
+//#include "debug.h"
 //#include "examples/knapsack_problem/test.h"
 //#include "cp/examples/knapsack_problem/test.h"
 //#include "cp/examples/bin_packing_problem/test.h"
@@ -94,7 +94,7 @@ using namespace BPMNOS;
 //#include "cp/loopactivity/test.h"
 //#include "cp/process/test.h"
 //#include "cp/exclusivegateway/test.h"
-//#include "cp/eventbasedgateway/test.h"
+#include "cp/eventbasedgateway/test.h"
 //#include "cp/adhocsubprocess/test.h"
 //#include "cp/message/test.h"
 #endif // ALL_TESTS

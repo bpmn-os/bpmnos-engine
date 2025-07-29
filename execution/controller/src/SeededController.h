@@ -83,6 +83,7 @@ protected:
   std::list< const Vertex* >::iterator finalizeUnvisited(const Vertex* vertex);
   void finalizeUnvisitedChildren(const Vertex* vertex);
   std::list< const Vertex* >::iterator finalizeUnvisitedTypedStartEvents(std::list< const Vertex* >::iterator it); /// Method finalizing the sequence position of a unvisited vertices belonging to typed start events
+  bool withdrawableEntry(const BPMN::Node* node) const; /// Method return true if a token entering a catch event node may be withdrawn
 public:
   std::list<size_t> getSequence() const; /// Method providing the vertex sequence in the solution
   size_t getProgress() const; /// Method returning the number of processed vertices

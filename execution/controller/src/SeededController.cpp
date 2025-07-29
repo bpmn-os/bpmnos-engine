@@ -49,12 +49,13 @@ std::list< const SeededController::Vertex* >::iterator SeededController::finaliz
 //  assert( std::ranges::contains(pendingVertices,vertex) );
 //std::cerr << "finalizeVertexPosition " << vertex->reference() << std::endl;
   auto it = std::find(pendingVertices.begin(), pendingVertices.end(), vertex);
-  if( it != pendingVertices.end() ) {
-//std::cerr << "Removed " << vertex->reference() << " from " << pendingVertices.size() << std::endl;
-    it = pendingVertices.erase(it);
-    processedVertices.push_back(vertex);
+  if( it == pendingVertices.end() ) {
+    return pendingVertices.end();
   }
-  return it;
+  
+//std::cerr << "Removed " << vertex->reference() << " from " << pendingVertices.size() << std::endl;
+  processedVertices.push_back(vertex);
+  return pendingVertices.erase(it);
   
 };
 
@@ -122,6 +123,7 @@ void SeededController::finalizeUnvisitedChildren(const Vertex* vertex) {
   while ( it != successors.end() ) {
     assert( std::ranges::contains(pendingVertices,*it) );
     if ( !hasPendingPredecessor(*it) ) {
+      assert( std::ranges::contains(pendingVertices,*it) );
       finalizeUnvisited( *it );
       successors.erase(it);
       it = successors.begin();
@@ -134,8 +136,8 @@ void SeededController::finalizeUnvisitedChildren(const Vertex* vertex) {
 
 std::list< const SeededController::Vertex* >::iterator SeededController::finalizeUnvisited(const Vertex* vertex) {
   assert( vertex == entry(vertex) );
-  
   auto it = finalizeVertexPosition(vertex);
+  assert( it != pendingVertices.end() );
 
   auto finalizeExit = [&]() {
     if (vertex->node->represents<BPMN::Scope>()) {
@@ -144,6 +146,7 @@ std::list< const SeededController::Vertex* >::iterator SeededController::finaliz
     finalizeVertexPosition(exit(vertex));
   };
 
+  
   if ( it == pendingVertices.begin() ) { 
     finalizeExit();
     it = pendingVertices.begin(); // may have changed
@@ -164,6 +167,10 @@ void SeededController::synchronizeSolution(const Token* token) {
   }
 
 //std::cerr << "Finalize position(s): " << token->jsonify() << std::endl;    
+  if ( token->state == Token::State::BUSY ) {
+//std::cerr << "ignore busy: " << token->jsonify() << std::endl;
+    return;
+  }
 
   if ( token->state == Token::State::FAILED ) {
     terminationEvent = std::make_shared<TerminationEvent>();
@@ -172,16 +179,18 @@ void SeededController::synchronizeSolution(const Token* token) {
   if ( token->node && token->state == Token::State::WITHDRAWN && token->node->represents<BPMN::TypedStartEvent>() ) {
     if ( auto vertex = flattenedGraph->getVertex(token) ) {
 //std::cerr << "clear withdrawn start event: " << vertex->reference() << std::endl;
+      assert( std::ranges::contains(pendingVertices,entry(vertex)) );
       finalizeUnvisited(entry(vertex));
     }
   }
 
   if ( token->state == Token::State::ENTERED ) {
-    if ( auto vertex = flattenedGraph->getVertex(token) ) {
-      if ( vertex->entry<BPMN::TypedStartEvent>() ) {
-//std::cerr << "ignore typed start event entry: " << token->jsonify() << std::endl;
+    if ( withdrawableEntry(token->node) ) {
+//std::cerr << "ignore withdrawable entry: " << token->jsonify() << std::endl;
         return;
-      }
+    }
+    
+    if ( auto vertex = flattenedGraph->getVertex(token) ) {     
       finalizePredecessorPositions(vertex);
       finalizeVertexPosition(vertex);
       if ( 
@@ -215,17 +224,36 @@ void SeededController::synchronizeSolution(const Token* token) {
     finalizePredecessorPositions(vertex);    
   }
   else if ( 
-    ( !token->node && token->state == Token::State::DONE ) || // Process
-    ( token->node && token->state == Token::State::EXITING && !token->node->represents<BPMN::TypedStartEvent>() ) || // Activity
-    ( token->node && token->state == Token::State::COMPLETED && token->node->represents<BPMN::CatchEvent>() && !token->node->represents<BPMN::ReceiveTask>() )
+    ( !token->node && token->state == Token::State::DONE ) // Process
+  ) {
+    auto vertex = flattenedGraph->getVertex(token);
+    assert( vertex );
+    finalizePredecessorPositions(vertex);
+    finalizeVertexPosition(vertex);
+  }
+  else if (
+    token->node &&
+    ( 
+      ( // Activity
+        token->state == Token::State::EXITING && 
+        !token->node->represents<BPMN::TypedStartEvent>() 
+      ) || 
+      ( 
+        token->state == Token::State::COMPLETED && 
+        token->node->represents<BPMN::CatchEvent>() && 
+        !token->node->represents<BPMN::ReceiveTask>() 
+      )
+    )
   ) { 
     if ( auto vertex = flattenedGraph->getVertex(token) ) {
-      auto entryVertex = entry(vertex);
-      if ( entryVertex->inflows.size() == 1 && entryVertex->inflows.front().second->node->represents<BPMN::EventBasedGateway>() ) {
+      if ( !token->node->incoming.empty() && token->node->incoming.front()->source->represents<BPMN::EventBasedGateway>() ) {
+        // unvisit all other events
+        auto entryVertex = entry(vertex);
         assert( vertex->exit<BPMN::CatchEvent>() );
         auto gateway = entryVertex->inflows.front().second;
         for ( auto& [ _, target ] : gateway->outflows ) {
           if ( target != entryVertex ) {
+            assert( std::ranges::contains(pendingVertices,target) );
             finalizeUnvisited( target );
           }
         } 
@@ -295,6 +323,20 @@ bool SeededController::hasPendingPredecessor(const Vertex* vertex) const {
   return false;
 }
 
+bool SeededController::withdrawableEntry(const BPMN::Node* node) const {
+  if ( !node ) return false;
+  
+  auto catchEvent = node->represents<BPMN::CatchEvent>();
+
+  return (
+    catchEvent && (
+      catchEvent->represents<BPMN::TypedStartEvent>() ||
+      ( !catchEvent->incoming.empty() && catchEvent->incoming.front()->source->represents<BPMN::EventBasedGateway>() )
+    )
+  );
+}
+
+
 std::list< const SeededController::Vertex* >::iterator SeededController::finalizeUnvisitedTypedStartEvents(std::list< const Vertex* >::iterator it) {
   auto node = (*it)->node;
   auto parentEntry = (*it)->parent.value().first;
@@ -309,6 +351,7 @@ std::list< const SeededController::Vertex* >::iterator SeededController::finaliz
   while ( it2 != pendingVertices.end() ) {
     if ( (*it2)->type == Vertex::Type::EXIT && node == (*it2)->node && parentEntry == (*it2)->parent.value().first ) {
 //std::cerr << "unvisit: " << (*it2)->shortReference() << std::endl;
+      assert( std::ranges::contains(pendingVertices,entry(*it2)) );
       it2 = finalizeUnvisited(entry(*it2));
     }
     else {
@@ -405,7 +448,14 @@ std::shared_ptr<Event> SeededController::dispatchEvent(const SystemState* system
   while ( it != pendingVertices.end() ) {
     auto vertex = *it;
 //std::cerr << "Pending: " << vertex->reference() << std::endl;
-    if ( hasPendingPredecessor(vertex) ) {
+    if ( 
+      !(
+        vertex->type == Vertex::Type::EXIT && 
+        withdrawableEntry( vertex->node ) && 
+        !hasPendingPredecessor(entry(vertex)) 
+      ) &&
+      hasPendingPredecessor(vertex) 
+    ) {
 //std::cerr << "Postpone (pending predecessor): " << vertex->reference() << std::endl;
       // postpone vertex because a predecessor has not yet been processed
       it++;
@@ -417,13 +467,20 @@ std::shared_ptr<Event> SeededController::dispatchEvent(const SystemState* system
       it = finalizeVertexPosition(vertex);
       continue;
     }
-    else if ( vertex->entry<BPMN::TypedStartEvent>() ) {
+    else if (
+      vertex->type == Vertex::Type::ENTRY && 
+      withdrawableEntry( vertex->node ) 
+    ) {
 //std::cerr << "Ignore: " << vertex->reference() << std::endl;
       // ignore vertex and proceed with exit
       it++;
       continue;
     }
-    else if ( vertex->exit<BPMN::TypedStartEvent>() && hasPendingPredecessor(entry(vertex)) ) {
+    else if ( 
+      vertex->type == Vertex::Type::EXIT && 
+      withdrawableEntry( vertex->node ) && 
+      hasPendingPredecessor(entry(vertex)) 
+    ) {
 //std::cerr << "Postpone (pending predecessor): " << vertex->reference() << std::endl;
       // postpone vertex because a predecessor has not yet been processed
       it++;
@@ -487,19 +544,18 @@ std::shared_ptr<Event> SeededController::dispatchEvent(const SystemState* system
     else if ( 
       vertex->exit<BPMN::Activity>() && 
       !vertex->node->represents<BPMN::ReceiveTask>() && 
-      !vertex->node->represents<BPMNOS::Model::DecisionTask>() &&
-      !std::ranges::contains(pendingVertices,entry(vertex))
+      !vertex->node->represents<BPMNOS::Model::DecisionTask>()
     ) {
-//std::cerr << "Wait: " << vertex->jsonify() << std::endl;
+      assert(!std::ranges::contains(pendingVertices,entry(vertex)));
+//std::cerr << "Wait for completion: " << vertex->jsonify() << std::endl;
       // wait for activity to be completed
       return nullptr;
     }
     else if ( 
       vertex->exit<BPMN::TimerCatchEvent>() && 
-      !vertex->node->represents<BPMN::TimerStartEvent>() && 
-      !std::ranges::contains(pendingVertices,entry(vertex))
+      !vertex->node->represents<BPMN::TimerStartEvent>()
     ) {
-//std::cerr << "Wait: " << vertex->jsonify() << std::endl;
+//std::cerr << "Wait for trigger: " << vertex->jsonify() << std::endl;
       // wait for timer to be triggered
       return nullptr;
     }
