@@ -9,6 +9,13 @@ else()
   message("-- Compiler optimizations turned off and address sanitizer used")
 endif()
 
+option(BUILD_TESTING "Build tests" ON)
+if (BUILD_TESTING)
+  message("-- Tests are turned on")
+else()
+  message("-- Tests are turned off")
+endif()
+
 include_directories("${PROJECT_SOURCE_DIR}/")
 
 # Set the C++ standard
@@ -101,7 +108,9 @@ include_directories(
 
 add_subdirectory(model)
 add_subdirectory(execution)
-add_subdirectory(tests)
+if(BUILD_TESTING)
+  add_subdirectory(tests)
+endif()
 add_subdirectory(app)
 add_subdirectory(docs)
 
