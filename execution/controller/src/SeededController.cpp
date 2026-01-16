@@ -37,9 +37,6 @@ bool SeededController::setSeed(const std::list<size_t> initialSeed) {
   if ( seed.size() < flattenedGraph->vertices.size() ) {
     return false;
   }
-std::cerr << "updated seed: ";
-for ( auto i : seed ) std::cerr << i << ", ";
-std::cerr << std::endl;
   initializePendingVertices();
 
   return true;
@@ -301,6 +298,42 @@ void SeededController::notice(const Observable* observable) {
 //std::cerr << "noticed" << std::endl;
 }
 
+void SeededController::initializePendingVertices() {
+//std::cerr << "initialize " << seed.size() << " pending vertices " << &model << std::endl;
+  terminationEvent.reset();
+  pendingVertices.clear();
+  processedVertices.clear();
+  performing.clear();
+  
+  std::list<Vertex*> vertices;
+  for ( auto index : seed ) {    
+    vertices.push_back( flattenedGraph->vertices[ index - 1 ].get() ); // seed indices start at 1
+  }
+  while ( vertices.size() ) {
+    for ( auto it = vertices.begin(); it != vertices.end(); it++ ) {
+      auto vertex = *it;
+      bool hasPendingPredecessor = false;
+      for ( auto& [_,predecessor] : vertex->inflows ) {
+        if ( !std::ranges::contains(pendingVertices,predecessor) ) {
+          hasPendingPredecessor = true;
+          break;
+        }
+      }
+      for ( auto predecessor : vertex->predecessors ) {
+        if ( !std::ranges::contains(pendingVertices,predecessor) ) {
+          hasPendingPredecessor = true;
+          break;
+        }
+      }
+      if ( !hasPendingPredecessor ) {
+        pendingVertices.push_back( vertex );
+        vertices.erase(it);
+        break;  
+      }
+    }
+  }
+}
+
 bool SeededController::hasPendingPredecessor(const Vertex* vertex) const {
   if ( vertex == pendingVertices.front() ) {
     return false;
@@ -449,12 +482,12 @@ std::shared_ptr<Event> SeededController::dispatchEvent(const SystemState* system
     auto vertex = *it;
 //std::cerr << "Pending: " << vertex->reference() << std::endl;
     if ( 
+      hasPendingPredecessor(vertex) &&
       !(
         vertex->type == Vertex::Type::EXIT && 
         withdrawableEntry( vertex->node ) && 
         !hasPendingPredecessor(entry(vertex)) 
-      ) &&
-      hasPendingPredecessor(vertex) 
+      )
     ) {
 //std::cerr << "Postpone (pending predecessor): " << vertex->reference() << std::endl;
       // postpone vertex because a predecessor has not yet been processed
@@ -603,18 +636,3 @@ size_t SeededController::getProgress() const {
   return processedVertices.size();
 }
 
-void SeededController::initializePendingVertices() {
-//std::cerr << "initialize " << seed.size() << " pending vertices " << &model << std::endl;
-  terminationEvent.reset();
-  pendingVertices.clear();
-  processedVertices.clear();
-  performing.clear();
-  std::vector<double> positions(seed.size());
-  size_t position = 0;
-  for ( auto index : seed ) {
-    
-    pendingVertices.push_back( flattenedGraph->vertices[ index - 1 ].get() ); // seed indices start at 1
-//std::cerr << position+1 << ". position: " << index << "/'" << flattenedGraph->vertices[ index - 1 ].reference() << "'" << std::endl;
-    positions[ index - 1 ] = (double)++position;
-  }
-}
