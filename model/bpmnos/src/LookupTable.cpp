@@ -24,8 +24,12 @@ BPMNOS::CSVReader LookupTable::openCsv(const std::string& filename, const std::v
     }
   }
 
-  // If the file is not found in any of the folders, throw an exception or handle the situation as needed.
-  throw std::runtime_error("LookupTable: CSV file '" + filename + "' not found");
+  // If the file is not found in any of the folders, throw an exception with all searched locations
+  std::string errorMsg = "LookupTable: CSV file '" + filename + "' not found in:\n" + std::filesystem::current_path().string();
+  for (const std::string& folder : folders) {
+    errorMsg += "\n" + folder;
+  }
+  throw std::runtime_error(errorMsg);
 }
 
 void LookupTable::createMap(const std::string& source, const std::vector<std::string>& folders) {
