@@ -27,7 +27,7 @@ BPMNOS::CSVReader LookupTable::openCsv(const std::string& filename, const std::v
   // If the file is not found in any of the folders, throw an exception with all searched locations
   std::string errorMsg = "LookupTable: CSV file '" + filename + "' not found in:\n" + std::filesystem::current_path().string();
   for (const std::string& folder : folders) {
-    errorMsg += "\n" + folder;
+    errorMsg += "\n" + std::filesystem::absolute(folder).string();
   }
   throw std::runtime_error(errorMsg);
 }
