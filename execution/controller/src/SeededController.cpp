@@ -616,6 +616,7 @@ std::shared_ptr<Event> SeededController::dispatchEvent(const SystemState* system
 
 std::vector<size_t> SeededController::getSequence() const {
   std::vector<size_t> sequence;
+  sequence.reserve(processedVertices.size() + pendingVertices.size());
 
   for ( auto vertex : processedVertices ) {
     assert( vertex == flattenedGraph->vertices[vertex->index].get() );
