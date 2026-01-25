@@ -14,7 +14,7 @@ namespace BPMNOS {
    * @brief Utility class for representing collections by numeric values.
    *
    * The CollectionRegistry class provides efficient access to the collection by index
-   * and retrieval of the index by the string representing the collection.
+   * and retrieval of the index by the values representing the collection.
    */
   struct CollectionRegistry {
     /// Constructor adds empty collection at index 0.
@@ -22,7 +22,7 @@ namespace BPMNOS {
 
     /// Operator providing access to a registered collections by index.
     const std::vector<double>& operator[](size_t i) const;
-    /// Operator to register a collection by its string representation and return its index.
+    /// Operator to register a collection by its values and return its index.
     size_t operator()(const std::vector<double>& collection);
     size_t size() const;
     void clear();
