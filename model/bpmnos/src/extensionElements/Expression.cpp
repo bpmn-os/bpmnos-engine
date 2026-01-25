@@ -150,8 +150,21 @@ std::optional<BPMNOS::number> Expression::execute(const BPMNOS::Values& status, 
       collectionValues.back().push_back( value );
     }
   }
-    
-  return number(compiled.evaluate(variableValues,collectionValues));
+
+  try {
+    return number(compiled.evaluate(variableValues,collectionValues));
+  }
+  catch (const std::runtime_error& e) {
+    std::string arguments;
+    for ( auto attribute : variables ) {
+      if (attribute != variables.front()) arguments += ", ";
+      arguments += attribute->name + " = ";
+      auto value = attributeRegistry.getValue(attribute,status,data,globals);
+      assert( value.has_value() );
+      arguments += BPMNOS::to_string(value.value(),attribute->type);
+    }
+    throw std::runtime_error(std::format("Expression: failed to evaluate '{}' with {}\n{}", expression, arguments, e.what()));
+  }
 }
 
 template std::optional<BPMNOS::number> Expression::execute<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data, const BPMNOS::Values& globals) const;

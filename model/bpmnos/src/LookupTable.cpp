@@ -36,17 +36,18 @@ void LookupTable::createMap(const std::string& source, const std::vector<std::st
   BPMNOS::CSVReader reader = openCsv(source,folders);
   CSVReader::Table table = reader.read();
   if ( table.empty() ) {
-    throw std::runtime_error("LookupTable: table '" + source + "' is empty");
+    throw std::runtime_error(std::format("LookupTable: table '{}' with source '{}' is empty", name, source));
   }
   // populate lookup map
-  for (auto& row : table | std::views::drop(1)) {   // assume a single header line
+  for (size_t j = 1; j < table.size(); j++) {   // assume a single header line at index 0
+    auto& row = table[j];
     std::vector< double > inputs;
     size_t columns = row.size();
-    
+
     for ( size_t i = 0; i < columns - 1; i++ ) {
       auto& cell = row[i];
       if ( !std::holds_alternative<BPMNOS::number>(cell) ) {
-        throw std::runtime_error("LookupTable: illegal input in table '" + source + "'");
+        throw std::runtime_error(std::format("LookupTable: illegal input in table '{}' at row {}, column {}", name, j, i));
       }
 //std::cerr << (double)std::get<BPMNOS::number>(cell) << ", ";
       inputs.push_back( (double)std::get<BPMNOS::number>(cell) );
@@ -54,7 +55,7 @@ void LookupTable::createMap(const std::string& source, const std::vector<std::st
     auto& cell = row[columns - 1];
     if ( !std::holds_alternative<BPMNOS::number>(cell) ) {
       std::visit([](auto&& value) { std::cerr <<  "Value: " << value << " "; }, cell);
-      throw std::runtime_error("LookupTable: illegal output in table '" + source + "'");
+      throw std::runtime_error(std::format("LookupTable: illegal output in table '{}' at row {}, column {}", name, j, columns - 1));
     }
 //std::cerr << "-> " << (double)std::get<BPMNOS::number>(cell) << std::endl;
     auto result = (double)std::get<BPMNOS::number>(cell);
@@ -67,5 +68,5 @@ double LookupTable::at( const std::vector< double >& keys ) const {
   if ( it != lookupMap.end() ) {
     return it->second;
   }
-  throw std::runtime_error("LookupTable: keys not found in table.");
+  throw std::runtime_error(std::format("LookupTable: keys not found in table '{}'", name));
 }
