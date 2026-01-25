@@ -40,7 +40,7 @@ public:
   };
   static Config default_config() { return {}; } // Work around for compiler bug see: https://stackoverflow.com/questions/53408962/try-to-understand-compiler-error-message-default-member-initializer-required-be/75691051#75691051
   SeededController(const BPMNOS::Execution::FlattenedGraph* flattenedGraph, Config config = default_config());
-  bool setSeed(const std::list<size_t> initialSeed);
+  bool setSeed(const std::vector<size_t> initialSeed);
   void connect(Mediator* mediator);
   void subscribe(Engine* engine);
   void notice(const Observable* observable) override;
@@ -56,7 +56,7 @@ protected:
 public:
   const FlattenedGraph* flattenedGraph;
 protected:
-  std::list<size_t> seed;
+  std::vector<size_t> seed;
   std::unordered_map< const Vertex*, const Vertex* > performing; /// Map holding the entry vertex of a sequential activity performed by a sequential performer
     
   struct pair_hash {
@@ -85,7 +85,7 @@ protected:
   std::list< const Vertex* >::iterator finalizeUnvisitedTypedStartEvents(std::list< const Vertex* >::iterator it); /// Method finalizing the sequence position of a unvisited vertices belonging to typed start events
   bool withdrawableEntry(const BPMN::Node* node) const; /// Method return true if a token entering a catch event node may be withdrawn
 public:
-  std::list<size_t> getSequence() const; /// Method providing the vertex sequence in the solution
+  std::vector<size_t> getSequence() const; /// Method providing the vertex sequence in the solution
   size_t getProgress() const; /// Method returning the number of processed vertices
   void initializePendingVertices(); /// Method creating an initial sequence of vertices
 

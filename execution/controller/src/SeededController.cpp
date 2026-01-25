@@ -32,7 +32,7 @@ void SeededController::subscribe(Engine* engine) {
   );
 }
 
-bool SeededController::setSeed(const std::list<size_t> initialSeed) {
+bool SeededController::setSeed(const std::vector<size_t> initialSeed) {
   seed = std::move(initialSeed);
   if ( seed.size() < flattenedGraph->vertices.size() ) {
     return false;
@@ -614,8 +614,8 @@ std::shared_ptr<Event> SeededController::dispatchEvent(const SystemState* system
   return nullptr;
 }
 
-std::list<size_t> SeededController::getSequence() const {
-  std::list<size_t> sequence;
+std::vector<size_t> SeededController::getSequence() const {
+  std::vector<size_t> sequence;
 
   for ( auto vertex : processedVertices ) {
     assert( vertex == flattenedGraph->vertices[vertex->index].get() );
