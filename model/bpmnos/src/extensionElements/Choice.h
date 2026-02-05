@@ -24,9 +24,8 @@ public:
   XML::bpmnos::tDecision* element;
   const AttributeRegistry& attributeRegistry;
   Attribute* attribute;
-  std::pair<bool,bool> strictness; // pair of boolans indicating whether lower and upper bound are strict or not
-  std::optional< Expression > lowerBound;
-  std::optional< Expression > upperBound;
+  std::optional< std::pair<Expression,bool> > lowerBound; // lower bound and flag indicating strict inequality
+  std::optional< std::pair<Expression,bool> > upperBound; // upper bound and flag indicating strict inequality
   std::optional< Expression > multipleOf;
   std::vector< Expression > enumeration;
   std::set<const Attribute*> dependencies; // set of attribute used as input to lower bound, upper bound, or enumeration

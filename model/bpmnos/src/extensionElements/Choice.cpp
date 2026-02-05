@@ -30,7 +30,7 @@ Choice::Choice(XML::bpmnos::tDecision* decision, const AttributeRegistry& attrib
       }
       
       // discretizer is assumed to be provided following the bounds, separated by comma
-      auto pos   = input.rfind(',');
+      auto pos = input.rfind(',');
       if ( pos == std::string::npos ) {
         throw std::runtime_error("Choice: illegal condition '" + input + "'");
       }
@@ -39,7 +39,7 @@ Choice::Choice(XML::bpmnos::tDecision* decision, const AttributeRegistry& attrib
         strutil::trim_copy(input.substr(pos + 1))
       };
     }();
-    
+
     parseBounds(bounds);
 
     if ( !discretizer.empty() ) {
@@ -92,18 +92,21 @@ void Choice::parseBounds(const std::string& input) {
   // check bounds
   auto conditions = strutil::split(input,'<');
   if ( conditions.size() == 3 ) {
+    bool strictLB = false;
     // condition has two inequalities
     if ( conditions[1][0] == '=' ) {
       // inequality, remove '=' and trim
       conditions[1].erase(0, 1);
-      strictness.first = false;
     }
     else {
       // strict inequality
-      strictness.first = true;
+      strictLB = true;
     }
-    lowerBound.emplace( strutil::trim_copy(conditions[0]), attributeRegistry);
-    for ( auto dependency : lowerBound.value().inputs ) {
+    lowerBound.emplace(std::piecewise_construct,
+      std::forward_as_tuple(strutil::trim_copy(conditions[0]), attributeRegistry),
+      std::forward_as_tuple(strictLB)
+    );
+    for ( auto dependency : lowerBound.value().first.inputs ) {
       dependencies.insert(dependency);
     }
     
@@ -114,18 +117,21 @@ void Choice::parseBounds(const std::string& input) {
     }
     attribute = attributeRegistry[ attributeName ];
     
+    bool strictUB = false;
     if ( conditions[2][0] == '=' ) {
       // inequality, remove '=' and trim
       conditions[2].erase(0, 1);
-      strictness.second = false;
     }
     else {
       // strict inequality
-      strictness.second = true;
+      strictUB = true;
     }
 
-    upperBound.emplace( strutil::trim_copy(conditions[2]), attributeRegistry);
-    for ( auto dependency : upperBound.value().inputs ) {
+    upperBound.emplace(std::piecewise_construct,
+      std::forward_as_tuple(strutil::trim_copy(conditions[2]), attributeRegistry),
+      std::forward_as_tuple(strictUB)
+    );
+    for ( auto dependency : upperBound.value().first.inputs ) {
       dependencies.insert(dependency);
     }
 
@@ -133,11 +139,6 @@ void Choice::parseBounds(const std::string& input) {
   else {
     // unbounded
     throw std::runtime_error("Choice: condition '" + input + "' is unbounded");
-/*
-    attributeName = strutil::trim_copy(input);
-    lowerBound.emplace("false", attributeRegistry);
-    upperBound.emplace("true", attributeRegistry);
-*/
   }
 }
 
@@ -158,15 +159,19 @@ template <typename DataType>
 std::pair<BPMNOS::number,BPMNOS::number> Choice::getBounds(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const {
   assert( attribute->type != STRING );
   assert( lowerBound.has_value() );  
-  assert( upperBound.has_value() );  
-  BPMNOS::number min = lowerBound.value().execute(status,data,globals).value_or(std::numeric_limits<BPMNOS::number>::min());
-  if ( strictness.first ) {
+  assert( upperBound.has_value() );
+  auto& [LB,strictLB] = lowerBound.value();   
+  BPMNOS::number min =  LB.execute(status,data,globals).value_or(std::numeric_limits<BPMNOS::number>::lowest());
+  if ( strictLB ) {
     min += BPMNOS_NUMBER_PRECISION;
   }
-  BPMNOS::number max = upperBound.value().execute(status,data,globals).value_or(std::numeric_limits<BPMNOS::number>::max());
-  if ( strictness.second ) {
+
+  auto& [UB,strictUB] = upperBound.value();   
+  BPMNOS::number max = UB.execute(status,data,globals).value_or(std::numeric_limits<BPMNOS::number>::max());
+  if ( strictUB ) {
     max -= BPMNOS_NUMBER_PRECISION;
   }
+
   if ( attribute->type != DECIMAL ) {
     min = std::ceil((double)min);
     max = std::floor((double)max);

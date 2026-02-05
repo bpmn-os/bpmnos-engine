@@ -1071,21 +1071,22 @@ void CPModel::createLocalAttributeVariables(const Vertex* vertex) {
         // create constraints limiting the choice
         // ASSUMPTION: constraints on the choices must only depend on entry status, data, or globals.
         // ASSUMPTION: only status attributes are allowed as choices
-        auto [ strictLB, strictUB ] = choice->strictness;
         if ( choice->lowerBound.has_value() ) {
+          auto& [LB,strictLB] = choice->lowerBound.value();   
           if ( strictLB ) {
-            model.addConstraint( visit.at(vertex).implies( variable > createExpression(entry(vertex),choice->lowerBound.value()) ) );
+            model.addConstraint( visit.at(vertex).implies( variable > createExpression(entry(vertex),LB) ) );
           }
           else {
-            model.addConstraint( visit.at(vertex).implies( variable >= createExpression(entry(vertex),choice->lowerBound.value()) ) );
+            model.addConstraint( visit.at(vertex).implies( variable >= createExpression(entry(vertex),LB) ) );
           }
         }
         if ( choice->upperBound.has_value() ) {
+          auto& [UB,strictUB] = choice->upperBound.value();   
           if ( strictUB ) {
-            model.addConstraint( visit.at(vertex).implies( variable < createExpression(entry(vertex),choice->upperBound.value()) ) );
+            model.addConstraint( visit.at(vertex).implies( variable < createExpression(entry(vertex),UB) ) );
           }
           else {
-            model.addConstraint( visit.at(vertex).implies( variable <= createExpression(entry(vertex),choice->upperBound.value()) ) );
+            model.addConstraint( visit.at(vertex).implies( variable <= createExpression(entry(vertex),UB) ) );
           }
         }
         if ( !choice->enumeration.empty() ) {
