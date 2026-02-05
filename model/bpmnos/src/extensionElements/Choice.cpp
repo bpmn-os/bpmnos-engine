@@ -186,15 +186,28 @@ template std::pair<BPMNOS::number,BPMNOS::number>  Choice::getBounds<BPMNOS::Sha
 
 template <typename DataType>
 std::vector<BPMNOS::number> Choice::getEnumeration(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const {
-  assert( enumeration.size() );  
+  assert( !enumeration.empty() || multipleOf );  
   std::vector<BPMNOS::number> allowedValues;
-  for ( auto& alternative : enumeration ) {
-    auto allowedValue = alternative->execute(status,data,globals);
-    if ( allowedValue.has_value() ) {
-      allowedValues.push_back( allowedValue.value() );
+  if ( !enumeration.empty() ) {
+    for ( auto& alternative : enumeration ) {
+      auto allowedValue = alternative->execute(status,data,globals);
+      if ( allowedValue.has_value() ) {
+        allowedValues.push_back( allowedValue.value() );
+      }
     }
   }
-
+  else {
+    auto [LB, UB] = getBounds(status, data, globals);
+    auto discretizer = multipleOf->execute(status, data, globals);
+    if ( !discretizer.has_value() ) {
+      throw std::runtime_error("Choice: cannot determine discretizer for '" + multipleOf->expression + "'");
+    }
+    BPMNOS::number DELTA = std::abs((double)discretizer.value());
+    for ( BPMNOS::number value = (double)DELTA * std::ceil((double)LB / (double)DELTA); value <= UB; value += DELTA ) {
+      allowedValues.push_back(value);
+    }
+  }
+  
   return allowedValues;
 }
 

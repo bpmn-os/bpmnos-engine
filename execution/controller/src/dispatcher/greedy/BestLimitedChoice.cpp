@@ -109,7 +109,7 @@ void BestLimitedChoice::determineAlternatives( std::vector<BPMNOS::Values>& alte
     }
   };
     
-  if ( !choice->enumeration.empty() ) {
+  if ( !choice->enumeration.empty() || choice->multipleOf ) {
     // iterate through all given alternatives
     for (auto value : choice->getEnumeration(status,data,globals) ) {
       choose(value);

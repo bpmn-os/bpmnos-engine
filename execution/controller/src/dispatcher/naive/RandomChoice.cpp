@@ -30,7 +30,7 @@ std::shared_ptr<Event> RandomChoice::dispatchEvent( const SystemState* systemSta
       auto globals = token->globals;
       for ( auto& choice : extensionElements->choices ) {
         // make random choice
-        if ( !choice->enumeration.empty() ) {
+        if ( !choice->enumeration.empty() || choice->multipleOf ) {
           auto values = choice->getEnumeration(status,data,globals);
           if ( values.size() ) {
             std::uniform_int_distribution<> random_distribution(0,(int)values.size()-1);

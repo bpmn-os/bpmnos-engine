@@ -1089,6 +1089,10 @@ void CPModel::createLocalAttributeVariables(const Vertex* vertex) {
             model.addConstraint( visit.at(vertex).implies( variable <= createExpression(entry(vertex),*UB) ) );
           }
         }
+        if ( choice->multipleOf ) {
+          auto& discretizer = model.addIntegerVariable("discretizer_{" + vertex->reference() + "}"  + attribute->id);
+          model.addConstraint( visit.at(vertex).implies( variable == discretizer * createExpression(entry(vertex),*choice->multipleOf) ) );          
+        }
         if ( !choice->enumeration.empty() ) {
           CP::Expression enumerationContainsVariable(false);
           for ( auto& expression : choice->enumeration ) {
