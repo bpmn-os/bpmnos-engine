@@ -18,9 +18,33 @@ Choice::Choice(XML::bpmnos::tDecision* decision, const AttributeRegistry& attrib
   if ( strutil::contains(input," in ") ) {
     parseEnumeration(input);
   }
-  else {
+  else if ( !strutil::contains(input,"<") ) {
+    throw std::runtime_error("Choice: no enumeration or bounds given in '" + input + "'");
+  }
+  else {  
     strutil::replace_all( input, "|", " divides ");
-    parseBounds(input);
+    auto [bounds,discretizer] = [&input]() -> std::pair<std::string, std::string> {
+      if ( !strutil::contains(input," divides ") ) {
+        // no discretizer provided
+        return { input, "" };
+      }
+      
+      // discretizer is assumed to be provided following the bounds, separated by comma
+      auto pos   = input.rfind(',');
+      if ( pos == std::string::npos ) {
+        throw std::runtime_error("Choice: illegal condition '" + input + "'");
+      }
+      return { 
+        strutil::trim_copy(input.substr(0, pos)), 
+        strutil::trim_copy(input.substr(pos + 1))
+      };
+    }();
+    
+    parseBounds(bounds);
+
+    if ( !discretizer.empty() ) {
+      parseDiscretizer(discretizer);
+    }
   }
     
   if ( attribute->type == STRING && enumeration.empty() ) {
@@ -114,6 +138,18 @@ void Choice::parseBounds(const std::string& input) {
     lowerBound.emplace("false", attributeRegistry);
     upperBound.emplace("true", attributeRegistry);
 */
+  }
+}
+
+void Choice::parseDiscretizer(const std::string& input) {
+  auto parts = strutil::split(input," divides ");
+  std::string attributeName = strutil::trim_copy(parts[1]);
+  if ( attribute->name != attributeName ) {
+    throw std::runtime_error("Choice: inconsistent attribute name '" + attributeName + "' in '" + input + "'");
+  }
+  multipleOf.emplace( strutil::trim_copy(parts[0]), attributeRegistry);
+  for ( auto dependency : multipleOf.value().inputs ) {
+    dependencies.insert(dependency);
   }
 }
 

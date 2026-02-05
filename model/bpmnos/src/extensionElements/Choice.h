@@ -27,6 +27,7 @@ public:
   std::pair<bool,bool> strictness; // pair of boolans indicating whether lower and upper bound are strict or not
   std::optional< Expression > lowerBound;
   std::optional< Expression > upperBound;
+  std::optional< Expression > multipleOf;
   std::vector< Expression > enumeration;
   std::set<const Attribute*> dependencies; // set of attribute used as input to lower bound, upper bound, or enumeration
 
@@ -38,6 +39,7 @@ public:
 private:
   void parseEnumeration(const std::string& input);
   void parseBounds(const std::string& input);
+  void parseDiscretizer(const std::string& input);
 };
 
 } // namespace BPMNOS::Model
