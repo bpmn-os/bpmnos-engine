@@ -24,10 +24,10 @@ public:
   XML::bpmnos::tDecision* element;
   const AttributeRegistry& attributeRegistry;
   Attribute* attribute;
-  std::optional< std::pair<Expression,bool> > lowerBound; // lower bound and flag indicating strict inequality
-  std::optional< std::pair<Expression,bool> > upperBound; // upper bound and flag indicating strict inequality
-  std::optional< Expression > multipleOf;
-  std::vector< Expression > enumeration;
+  std::optional< std::pair<std::unique_ptr<Expression>,bool> > lowerBound; // lower bound and flag indicating strict inequality
+  std::optional< std::pair<std::unique_ptr<Expression>,bool> > upperBound; // upper bound and flag indicating strict inequality
+  std::unique_ptr<Expression> multipleOf;
+  std::vector< std::unique_ptr<Expression> > enumeration;
   std::set<const Attribute*> dependencies; // set of attribute used as input to lower bound, upper bound, or enumeration
 
   template <typename DataType>

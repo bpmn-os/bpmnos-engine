@@ -1074,25 +1074,25 @@ void CPModel::createLocalAttributeVariables(const Vertex* vertex) {
         if ( choice->lowerBound.has_value() ) {
           auto& [LB,strictLB] = choice->lowerBound.value();   
           if ( strictLB ) {
-            model.addConstraint( visit.at(vertex).implies( variable > createExpression(entry(vertex),LB) ) );
+            model.addConstraint( visit.at(vertex).implies( variable > createExpression(entry(vertex),*LB) ) );
           }
           else {
-            model.addConstraint( visit.at(vertex).implies( variable >= createExpression(entry(vertex),LB) ) );
+            model.addConstraint( visit.at(vertex).implies( variable >= createExpression(entry(vertex),*LB) ) );
           }
         }
         if ( choice->upperBound.has_value() ) {
           auto& [UB,strictUB] = choice->upperBound.value();   
           if ( strictUB ) {
-            model.addConstraint( visit.at(vertex).implies( variable < createExpression(entry(vertex),UB) ) );
+            model.addConstraint( visit.at(vertex).implies( variable < createExpression(entry(vertex),*UB) ) );
           }
           else {
-            model.addConstraint( visit.at(vertex).implies( variable <= createExpression(entry(vertex),UB) ) );
+            model.addConstraint( visit.at(vertex).implies( variable <= createExpression(entry(vertex),*UB) ) );
           }
         }
         if ( !choice->enumeration.empty() ) {
           CP::Expression enumerationContainsVariable(false);
-          for ( auto expression : choice->enumeration ) {
-            enumerationContainsVariable = enumerationContainsVariable || ( variable == createExpression(entry(vertex),expression) );
+          for ( auto& expression : choice->enumeration ) {
+            enumerationContainsVariable = enumerationContainsVariable || ( variable == createExpression(entry(vertex),*expression) );
           }
           model.addConstraint( visit.at(vertex).implies( enumerationContainsVariable ) );
         }        

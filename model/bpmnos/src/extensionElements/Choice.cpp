@@ -74,8 +74,8 @@ void Choice::parseEnumeration(const std::string& input) {
   if ( (rhs.front() == '[' && rhs.back() == ']') || (rhs.front() == '{' && rhs.back() == '}') ) {
     auto alternatives = strutil::split( encodeCollection( rhs.substr(1, rhs.size()-2) ), ',' );
     for ( auto& alternative : alternatives ) {
-      enumeration.emplace_back( strutil::trim_copy(alternative), attributeRegistry);
-      for ( auto dependency : enumeration.back().inputs ) {
+      enumeration.emplace_back( std::make_unique<Expression>(strutil::trim_copy(alternative), attributeRegistry) );
+      for ( auto dependency : enumeration.back()->inputs ) {
         dependencies.insert(dependency);
       }
     }
@@ -102,11 +102,11 @@ void Choice::parseBounds(const std::string& input) {
       // strict inequality
       strictLB = true;
     }
-    lowerBound.emplace(std::piecewise_construct,
-      std::forward_as_tuple(strutil::trim_copy(conditions[0]), attributeRegistry),
-      std::forward_as_tuple(strictLB)
+    lowerBound.emplace(
+      std::make_unique<Expression>(strutil::trim_copy(conditions[0]), attributeRegistry),
+      strictLB
     );
-    for ( auto dependency : lowerBound.value().first.inputs ) {
+    for ( auto dependency : lowerBound.value().first->inputs ) {
       dependencies.insert(dependency);
     }
     
@@ -127,11 +127,11 @@ void Choice::parseBounds(const std::string& input) {
       strictUB = true;
     }
 
-    upperBound.emplace(std::piecewise_construct,
-      std::forward_as_tuple(strutil::trim_copy(conditions[2]), attributeRegistry),
-      std::forward_as_tuple(strictUB)
+    upperBound.emplace(
+      std::make_unique<Expression>(strutil::trim_copy(conditions[2]), attributeRegistry),
+      strictUB
     );
-    for ( auto dependency : upperBound.value().first.inputs ) {
+    for ( auto dependency : upperBound.value().first->inputs ) {
       dependencies.insert(dependency);
     }
 
@@ -148,8 +148,8 @@ void Choice::parseDiscretizer(const std::string& input) {
   if ( attribute->name != attributeName ) {
     throw std::runtime_error("Choice: inconsistent attribute name '" + attributeName + "' in '" + input + "'");
   }
-  multipleOf.emplace( strutil::trim_copy(parts[0]), attributeRegistry);
-  for ( auto dependency : multipleOf.value().inputs ) {
+  multipleOf = std::make_unique<Expression>(strutil::trim_copy(parts[0]), attributeRegistry);
+  for ( auto dependency : multipleOf->inputs ) {
     dependencies.insert(dependency);
   }
 }
@@ -161,13 +161,13 @@ std::pair<BPMNOS::number,BPMNOS::number> Choice::getBounds(const BPMNOS::Values&
   assert( lowerBound.has_value() );  
   assert( upperBound.has_value() );
   auto& [LB,strictLB] = lowerBound.value();   
-  BPMNOS::number min =  LB.execute(status,data,globals).value_or(std::numeric_limits<BPMNOS::number>::lowest());
+  BPMNOS::number min =  LB->execute(status,data,globals).value_or(std::numeric_limits<BPMNOS::number>::lowest());
   if ( strictLB ) {
     min += BPMNOS_NUMBER_PRECISION;
   }
 
   auto& [UB,strictUB] = upperBound.value();   
-  BPMNOS::number max = UB.execute(status,data,globals).value_or(std::numeric_limits<BPMNOS::number>::max());
+  BPMNOS::number max = UB->execute(status,data,globals).value_or(std::numeric_limits<BPMNOS::number>::max());
   if ( strictUB ) {
     max -= BPMNOS_NUMBER_PRECISION;
   }
@@ -189,7 +189,7 @@ std::vector<BPMNOS::number> Choice::getEnumeration(const BPMNOS::Values& status,
   assert( enumeration.size() );  
   std::vector<BPMNOS::number> allowedValues;
   for ( auto& alternative : enumeration ) {
-    auto allowedValue = alternative.execute(status,data,globals);
+    auto allowedValue = alternative->execute(status,data,globals);
     if ( allowedValue.has_value() ) {
       allowedValues.push_back( allowedValue.value() );
     }
