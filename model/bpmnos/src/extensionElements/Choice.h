@@ -35,6 +35,9 @@ public:
 
   template <typename DataType>
   std::vector<BPMNOS::number> getEnumeration(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const; ///< Returns the allowed values the attribute may take.
+private:
+  void parseEnumeration(const std::string& input);
+  void parseBounds(const std::string& input);
 };
 
 } // namespace BPMNOS::Model
