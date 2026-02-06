@@ -1,4 +1,4 @@
-#include "BestLimitedChoice.h"
+#include "BestEnumeratedChoice.h"
 #include "execution/engine/src/Mediator.h"
 #include "model/bpmnos/src/DecisionTask.h"
 #include "model/bpmnos/src/extensionElements/Attribute.h"
@@ -8,12 +8,12 @@
 
 using namespace BPMNOS::Execution;
 
-BestLimitedChoice::BestLimitedChoice(Evaluator* evaluator)
+BestEnumeratedChoice::BestEnumeratedChoice(Evaluator* evaluator)
   : GreedyDispatcher(evaluator)
 {
 }
 
-void BestLimitedChoice::connect(Mediator* mediator) {
+void BestEnumeratedChoice::connect(Mediator* mediator) {
   mediator->addSubscriber(this, 
     Execution::Observable::Type::ChoiceRequest
   );
@@ -21,7 +21,7 @@ void BestLimitedChoice::connect(Mediator* mediator) {
 }
 
 
-void BestLimitedChoice::notice(const Observable* observable) {
+void BestEnumeratedChoice::notice(const Observable* observable) {
   if ( observable->getObservableType() == Observable::Type::ChoiceRequest ) {
     assert( dynamic_cast<const DecisionRequest*>(observable) );
     auto request = static_cast<const DecisionRequest*>(observable);
@@ -34,8 +34,8 @@ void BestLimitedChoice::notice(const Observable* observable) {
   }
 }
 
-std::shared_ptr<Event> BestLimitedChoice::dispatchEvent( [[maybe_unused]] const SystemState* systemState ) {
-//std::cout << "BestLimitedChoice::dispatchEvent" << std::endl;
+std::shared_ptr<Event> BestEnumeratedChoice::dispatchEvent( [[maybe_unused]] const SystemState* systemState ) {
+//std::cout << "BestEnumeratedChoice::dispatchEvent" << std::endl;
   if ( systemState->currentTime > timestamp ) {
     timestamp = systemState->currentTime;
     clockTick();
@@ -61,7 +61,7 @@ std::shared_ptr<Event> BestLimitedChoice::dispatchEvent( [[maybe_unused]] const 
   return nullptr;
 }
 
-std::shared_ptr<Decision> BestLimitedChoice::determineBestChoices(std::shared_ptr<const DecisionRequest> request) {
+std::shared_ptr<Decision> BestEnumeratedChoice::determineBestChoices(std::shared_ptr<const DecisionRequest> request) {
   auto token = request->token;
   assert( token->node );
   assert( token->node->represents<BPMNOS::Model::DecisionTask>() );
@@ -94,7 +94,7 @@ std::shared_ptr<Decision> BestLimitedChoice::determineBestChoices(std::shared_pt
 }
 
 
-void BestLimitedChoice::determineAlternatives( std::vector<BPMNOS::Values>& alternatives, const BPMNOS::Model::ExtensionElements* extensionElements, BPMNOS::Values& status,  BPMNOS::Values& data, BPMNOS::Values& globals, BPMNOS::Values& choices, size_t index ) {
+void BestEnumeratedChoice::determineAlternatives( std::vector<BPMNOS::Values>& alternatives, const BPMNOS::Model::ExtensionElements* extensionElements, BPMNOS::Values& status,  BPMNOS::Values& data, BPMNOS::Values& globals, BPMNOS::Values& choices, size_t index ) {
   assert(index < choices.size());
   auto& choice = extensionElements->choices[index];
   

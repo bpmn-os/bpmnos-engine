@@ -1,5 +1,5 @@
-#ifndef BPMNOS_Execution_BestLimitedChoice_H
-#define BPMNOS_Execution_BestLimitedChoice_H
+#ifndef BPMNOS_Execution_BestEnumeratedChoice_H
+#define BPMNOS_Execution_BestEnumeratedChoice_H
 
 #include <bpmn++.h>
 #include "execution/engine/src/EventDispatcher.h"
@@ -11,12 +11,12 @@ namespace BPMNOS::Execution {
 /**
  * @brief Class creating a choice decision for a token at a decision task.
  *
- * The BestLimitedChoice dispatcher creates a the best evaluated choice considering
+ * The BestEnumeratedChoice dispatcher creates a the best evaluated choice considering
  * enumerated values and the boundaries for each choice.
  */
-class BestLimitedChoice : public GreedyDispatcher< std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest> > {
+class BestEnumeratedChoice : public GreedyDispatcher< std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest> > {
 public:
-  BestLimitedChoice(Evaluator* evaluator);
+  BestEnumeratedChoice(Evaluator* evaluator);
   void connect(Mediator* mediator) override;
   void notice(const Observable* observable) override;
   std::shared_ptr<Event> dispatchEvent( const SystemState* systemState ) override;
@@ -27,5 +27,5 @@ private:
 
 } // namespace BPMNOS::Execution
 
-#endif // BPMNOS_Execution_BestLimitedChoice_H
+#endif // BPMNOS_Execution_BestEnumeratedChoice_H
 

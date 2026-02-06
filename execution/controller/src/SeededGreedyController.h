@@ -5,7 +5,7 @@
 #include "SeededController.h"
 #include "Evaluator.h"
 #include "execution/engine/src/Mediator.h"
-#include "dispatcher/greedy/BestLimitedChoice.h"
+#include "dispatcher/greedy/BestEnumeratedChoice.h"
 
 namespace BPMNOS::Execution {
 
@@ -22,7 +22,7 @@ public:
   std::shared_ptr<Event> createMessageDeliveryEvent(const SystemState* systemState, const Token* token, const Vertex* vertex) override;
 protected:
   auto_list< std::weak_ptr<const Message> > messages;
-  std::unique_ptr<BestLimitedChoice> choiceDispatcher;
+  std::unique_ptr<BestEnumeratedChoice> choiceDispatcher;
   Evaluator* evaluator;
 };
 

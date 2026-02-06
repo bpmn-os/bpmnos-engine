@@ -8,7 +8,7 @@ SeededGreedyController::SeededGreedyController(const BPMNOS::Execution::Flattene
   : SeededController(flattenedGraph)
   , evaluator(evaluator)
 {
-  choiceDispatcher = std::make_unique<BestLimitedChoice>(evaluator);
+  choiceDispatcher = std::make_unique<BestEnumeratedChoice>(evaluator);
 }
 
 void SeededGreedyController::notice(const Observable* observable) {

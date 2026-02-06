@@ -18,7 +18,7 @@ SCENARIO( "Decision task with enumeration", "[execution][decisiontask]" ) {
       Execution::DeterministicTaskCompletion completionHandler;
       Execution::InstantExit exitHandler;
       Execution::LocalEvaluator evaluator;
-      Execution::BestLimitedChoice choiceHandler(&evaluator);
+      Execution::BestEnumeratedChoice choiceHandler(&evaluator);
       Execution::TimeWarp timeHandler;
       readyHandler.connect(&engine);
       entryHandler.connect(&engine);
@@ -56,7 +56,7 @@ SCENARIO( "Decision task with enumeration", "[execution][decisiontask]" ) {
       Execution::DeterministicTaskCompletion completionHandler;
       Execution::InstantExit exitHandler;
       Execution::LocalEvaluator evaluator;
-      Execution::BestLimitedChoice choiceHandler(&evaluator);
+      Execution::BestEnumeratedChoice choiceHandler(&evaluator);
       Execution::TimeWarp timeHandler;
       readyHandler.connect(&engine);
       entryHandler.connect(&engine);
@@ -98,7 +98,7 @@ SCENARIO( "Decision task with bounds", "[execution][decisiontask]" ) {
       Execution::DeterministicTaskCompletion completionHandler;
       Execution::InstantExit exitHandler;
       Execution::LocalEvaluator evaluator;
-      Execution::BestLimitedChoice choiceHandler(&evaluator);
+      Execution::BestEnumeratedChoice choiceHandler(&evaluator);
       Execution::TimeWarp timeHandler;
       readyHandler.connect(&engine);
       entryHandler.connect(&engine);

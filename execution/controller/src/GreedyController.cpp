@@ -3,7 +3,7 @@
 #include "dispatcher/greedy/GreedyExit.h"
 #include "dispatcher/greedy/BestFirstEntry.h"
 #include "dispatcher/greedy/BestFirstExit.h"
-#include "dispatcher/greedy/BestLimitedChoice.h"
+#include "dispatcher/greedy/BestEnumeratedChoice.h"
 #include "dispatcher/greedy/BestMatchingMessageDelivery.h"
 #include <iostream>
 
@@ -26,7 +26,7 @@ GreedyController::GreedyController(Evaluator* evaluator, Config config)
   else {
     eventDispatchers.push_back( std::make_unique<GreedyExit>(evaluator) );
   }
-  eventDispatchers.push_back( std::make_unique<BestLimitedChoice>(evaluator) );
+  eventDispatchers.push_back( std::make_unique<BestEnumeratedChoice>(evaluator) );
   eventDispatchers.push_back( std::make_unique<BestMatchingMessageDelivery>(evaluator) );
 }
 
