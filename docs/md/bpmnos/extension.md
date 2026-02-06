@@ -48,7 +48,7 @@ Data attributes can be defined for a @ref XML::bpmn::tDataObject "data object el
 
 Data attributes are similar to global attributes, however, they only exist within the @ref BPMN::Scope "scope" cotaining the @ref BPMN::DataObject "data object".
 
-@note Modifying data attribute values may lead to race conditions. However, when data attributes are only modified through activities within @ref BPMNS::Model::SequentialAdHocSubProcess "ad-hoc subprocesses with sequential ordering" and the respective performer garantees sequential execution of all activties modifying a data attribute value, race conditions can be prevented. 
+@note Modifying data attribute values may lead to race conditions. However, when data attributes are only modified through activities within @ref BPMNOS::Model::SequentialAdHocSubProcess "ad-hoc subprocesses with sequential ordering" and the respective performer garantees sequential execution of all activties modifying a data attribute value, race conditions can be prevented. 
 
 ### Status attributes
 

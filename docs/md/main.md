@@ -11,8 +11,8 @@ The framework is composed of the components illustrated above:
 
 - **Model provider**: The model provider reads a @ref BPMNOS::Model::Model "BPMN model" containing extension elements required for optimisation and simulation.
 - **Data provider**: The data provider creates instances of the processes with respective instance data. It creates a @ref BPMNOS::Model::Scenario "scenario" that can be run by the execution engine.
-- **Execution engine**: The execution engine maintains a @ref BPMNOS::Execution::SystemState "system state" containing @ref BPMNOS::Execution::StateMachine "state machines" for each BPMN element with a @ref BPMN::Scope "scope" and all @ref BPMNOS::Execution::Token "tokens" within the scope. It automatically advances all tokens as far as possible and waits for the dispatch of @ref BPMNOS::Execution::Event "events" and @ref BPMNOS::Execution::Decisions "decisions" made by the controller.
-- **Controller**: The controller is responsible for making all necessary @ref BPMNOS::Execution::Decisions "decisions" during process execution.
+- **Execution engine**: The execution engine maintains a @ref BPMNOS::Execution::SystemState "system state" containing @ref BPMNOS::Execution::StateMachine "state machines" for each BPMN element with a @ref BPMN::Scope "scope" and all @ref BPMNOS::Execution::Token "tokens" within the scope. It automatically advances all tokens as far as possible and waits for the dispatch of @ref BPMNOS::Execution::Event "events" and @ref BPMNOS::Execution::Decision "decisions" made by the controller.
+- **Controller**: The controller is responsible for making all necessary @ref BPMNOS::Execution::Decision "decisions" during process execution.
 - **Observer**: Observers can connect to the execution engine to monitor changes in the execution.
 
 

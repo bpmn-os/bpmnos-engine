@@ -36,7 +36,9 @@ public:
    * the provided filename. If the file is not found in the current working directory, 
    * the function looks for the file in the list of folders provided in the folders parameter. 
    *
-   * @param filename The name of the CSV file to read the data from.
+   * @param name The name of the lookup table.
+   * @param source The name of the CSV file to read the data from.
+   * @param folders The folder names in which lookup tables can be found.
    */
   LookupTable(const std::string& name, const std::string& source, const std::vector<std::string>& folders);
   const std::string name;

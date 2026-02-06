@@ -12,11 +12,8 @@ namespace BPMNOS::Execution {
  *
  * The RandomChoice dispatcher creates a the random choice considering the
  * boundaries for a numeric decision or any enumerated value for a string decision.
- * The boundaries and enumeration values are deduced from the attribute type 
- * and restrictions of type @ref BPMNOS::Model::LinearExpression or @ref BPMNOS::Model::Enumeration.
- * limits imply an empty domain, an error event is created. It is assumed that the existence
- * of a feasible choice does not depend on the timestamp for any moment after entry
- * of the decision task and until the decision is made.
+ * It is assumed that the existence of a feasible choice does not depend on the timestamp
+ * for any moment after entry of the decision task and until the decision is made.
  */
 class RandomChoice : public EventDispatcher {
 public:

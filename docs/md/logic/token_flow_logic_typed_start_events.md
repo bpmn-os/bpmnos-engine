@@ -5,7 +5,7 @@ The state of a token at a typed start event is immediately advanced from @ref BP
 If the token is at a @ref BPMN::MessageStartEvent "message start event", the @ref BPMNOS::Model::Content "message content" is used to update the @ref BPMNOS::Execution::Token::status "status" of the token. Thereafter, the @ref BPMNOS::Model::ExtensionElements::operators "operators" of the respective event-subprocess are applied.
 
 After the start event is triggered, the state is advanced @ref BPMNOS::Execution::Token::State::COMPLETED "COMPLETED".
-If the respective @ref BPMN:EventSubProcess "event-subprocesses" is interrupting, all other tokens within the scope of the event-subrocess are withdrawn.
+If the respective @ref BPMN::EventSubProcess "event-subprocesses" is interrupting, all other tokens within the scope of the event-subrocess are withdrawn.
 Otherwise, a new token is created allowing the event-subprocess to be triggered again.
 
 After completion, the entry scope restrictions of the event-subprocess are checked.
@@ -38,5 +38,5 @@ stateDiagram-v2
 
 
 
-@attention @ref BPMN::TypedStartEvent "Typed start events" are only supported for @ref BPMN:EventSubProcess "event-subprocesses".
+@attention @ref BPMN::TypedStartEvent "Typed start events" are only supported for @ref BPMN::EventSubProcess "event-subprocesses".
 @note Operators for event-subprocesses must be instantaneous, i.e. they must not change the timestamp.

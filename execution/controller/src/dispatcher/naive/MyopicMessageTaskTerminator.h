@@ -11,7 +11,7 @@ namespace BPMNOS::Execution {
 /**
  * @brief Class creating an error event for a token at a message task if the message can not be delivered.
  *
- * The MyopicMessageTaskTerminator terminates a @ref BPMN:ReceiveTask or a @ref BPMN:SendTask with an error if
+ * The MyopicMessageTaskTerminator terminates a @ref BPMN::ReceiveTask or a @ref BPMN::SendTask with an error if
  * the respective message cannot be delivered. It only raises an error if all tokens have advanced as far as possible,
  * i.e., if all pending decisions except for message delivery decisions are made, and if no task waits for a 
  * @ref BPMNOS::Execution::ReadyEvent or a @ref BPMNOS::Execution::CompletionEvent, and if no @ref BPMN::TimerCatchEvent

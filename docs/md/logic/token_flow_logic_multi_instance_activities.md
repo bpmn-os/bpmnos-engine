@@ -31,7 +31,6 @@ If a @ref BPMNOS::Model::ExtensionElements::loopCardinality "loop cardinalty par
 If the token is at a multi-instance @ref BPMN::SendTask "send task" or @ref BPMN::ReceiveTask  "receive task", a token copy is created for each @ref BPMNOS::Model::ExtensionElements::messageDefinitions "message definition".
 
 If a @ref BPMNOS::Model::ExtensionElements::loopIndex "loop index parameter" is provided, the respective attribute of the *i* th token copy receives the value *i*.
-Moreover, for each @ref BPMNOS::Model::Attribute "attribute" for which a @ref BPMNOS::Model::Attribute::collection "collection" is provided, the *i* th token copy receives the value of the *i* th element in the collection.
 
 Depending on whether the multi-instance activity is parallel or sequential, each token copy is advanced in parallel or sequential fashion.
 These tokens change their states as described in @ref token_flow_logic_subprocesses or @ref token_flow_logic_tasks except that the @ref BPMNOS::Execution::Token::State::ARRIVED "ARRIVED", @ref  BPMNOS::Execution::Token::State::DEPARTED "DEPARTED", and @ref BPMNOS::Execution::Token::State::DONE "DONE" states are skipped.

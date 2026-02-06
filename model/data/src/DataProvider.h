@@ -26,6 +26,7 @@ public:
    * @brief Constructor for DataProvider.
    *
    * @param modelFile The file path to the BPMN model file.
+   * @param folders The folder names in which lookup tables can be found.
    */
   DataProvider(const std::string& modelFile, const std::vector<std::string>& folders);
   virtual ~DataProvider() = 0;
