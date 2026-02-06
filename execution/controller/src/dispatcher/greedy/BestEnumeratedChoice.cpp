@@ -65,18 +65,12 @@ std::shared_ptr<Decision> BestEnumeratedChoice::determineBestChoices(std::shared
   auto token = request->token;
   assert( token->node );
   assert( token->node->represents<BPMNOS::Model::DecisionTask>() );
+  auto decisionTask = token->node->as<BPMNOS::Model::DecisionTask>();
   assert( token->node->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );
   auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   assert( extensionElements->choices.size() );
 
-  BPMNOS::Values status = token->status;
-  BPMNOS::Values data = *token->data;
-  BPMNOS::Values globals = token->globals;
-  std::vector< BPMNOS::Values > alternativeChoices;
-  BPMNOS::Values tmp;
-  tmp.resize(extensionElements->choices.size());
-  determineAlternatives( alternativeChoices, extensionElements, status, data, globals, tmp );
-  
+  std::vector< BPMNOS::Values > alternativeChoices = decisionTask->enumerateAlternatives(token->status, *token->data, token->globals);
   std::shared_ptr<Decision> bestDecision = nullptr;
   for ( auto& choices : alternativeChoices ) {
     auto decision = std::make_shared<ChoiceDecision>(token,choices,evaluator);
@@ -93,36 +87,3 @@ std::shared_ptr<Decision> BestEnumeratedChoice::determineBestChoices(std::shared
   return bestDecision;
 }
 
-
-void BestEnumeratedChoice::determineAlternatives( std::vector<BPMNOS::Values>& alternatives, const BPMNOS::Model::ExtensionElements* extensionElements, BPMNOS::Values& status,  BPMNOS::Values& data, BPMNOS::Values& globals, BPMNOS::Values& choices, size_t index ) {
-  assert(index < choices.size());
-  auto& choice = extensionElements->choices[index];
-  
-  auto choose = [&](BPMNOS::number value) -> void {
-    choices[index] = value;
-    choice->attributeRegistry.setValue(choice->attribute, status, data, globals, choices[index]);
-    if ( index + 1 == choices.size() ) {
-      alternatives.push_back(choices);
-    }
-    else {
-      determineAlternatives(alternatives, extensionElements, status, data, globals, choices, index + 1);
-    }
-  };
-    
-  if ( !choice->enumeration.empty() || choice->multipleOf ) {
-    // iterate through all given alternatives
-    for (auto value : choice->getEnumeration(status,data,globals) ) {
-      choose(value);
-    } 
-  }
-  else if ( choice->lowerBound.has_value() && choice->upperBound.has_value() ) {
-    auto [min,max] = choice->getBounds(status,data,globals);
-    if ( min == max ) {
-      choose(min);
-    }
-    else if ( min < max ) {
-      choose(min);
-      choose(max);
-    }
-  }
-}
