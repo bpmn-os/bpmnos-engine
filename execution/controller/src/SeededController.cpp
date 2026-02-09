@@ -5,7 +5,7 @@
 #include "model/bpmnos/src/extensionElements/Timer.h"
 #include "execution/engine/src/Engine.h"
 #include "execution/engine/src/SequentialPerformerUpdate.h"
-#include <iostream>
+//#include <iostream>
 
 using namespace BPMNOS::Execution;
 

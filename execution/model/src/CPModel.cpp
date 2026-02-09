@@ -4,7 +4,7 @@
 #include "model/bpmnos/src/extensionElements/ExtensionElements.h"
 #include "model/bpmnos/src/extensionElements/MessageDefinition.h"
 #include "model/bpmnos/src/extensionElements/Timer.h"
-#include <limex_handle.h>
+#include <cp/limex_handle.h>
 #include <iostream>
 
 using namespace BPMNOS::Execution;

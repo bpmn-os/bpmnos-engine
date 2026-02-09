@@ -101,9 +101,13 @@ FetchContent_Declare(
 FetchContent_GetProperties(cp)
 FetchContent_MakeAvailable(cp)
 
+# Create alias for cp includes (so we can use <cp/cp.h>)
+file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/include)
+file(CREATE_LINK ${cp_SOURCE_DIR} ${CMAKE_BINARY_DIR}/include/cp SYMBOLIC)
+
 include_directories(
   SYSTEM
-  ${cp_SOURCE_DIR}
+  ${CMAKE_BINARY_DIR}/include
 )
 
 add_subdirectory(model)

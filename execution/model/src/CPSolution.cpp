@@ -461,7 +461,7 @@ void CPSolution::synchronizeStatus(const BPMNOS::Values& status, const CPSolutio
         evaluation.value() != status[i].value()
       ) {
 
-std::cerr << "defined: " << (evaluation.defined() ? "true" : "false") << ", value: " << evaluation.value() << std::endl;
+//std::cerr << "defined: " << (evaluation.defined() ? "true" : "false") << ", value: " << evaluation.value() << std::endl;
 //std::cerr << statusVariables[i].defined.stringify() << std::endl;
 //std::cerr << statusVariables[i].value.stringify() << std::endl;
 //std::cerr << "Model: " << cp->stringify() << std::endl;
@@ -479,7 +479,7 @@ std::cerr << "defined: " << (evaluation.defined() ? "true" : "false") << ", valu
         evaluation.defined()  ||
         evaluation.value() != 0.0
       ) {
-std::cerr << "defined: " << (evaluation.defined() ? "true" : "false") << ", value: " << evaluation.value() << std::endl;
+//std::cerr << "defined: " << (evaluation.defined() ? "true" : "false") << ", value: " << evaluation.value() << std::endl;
         throw std::logic_error("CPSolution: '" + _solution.stringify(statusVariables[i].defined) + "' or '" + _solution.stringify(statusVariables[i].value) + "' inconsistent with given status" );
       }
     }
@@ -570,7 +570,7 @@ void CPSolution::initializePositions(const std::vector<double>& positions) {
 }
 
 void CPSolution::setPosition(const Vertex* vertex, size_t position) {
-std::cerr << "position(" << vertex->reference() << ") = " << position << std::endl;
+//std::cerr << "position(" << vertex->reference() << ") = " << position << std::endl;
   assert( cp->position.contains( vertex ) );
   assert( _solution.getVariableValue( cp->position.at(vertex) ).has_value() );
   auto priorPosition = (size_t)_solution.getVariableValue( cp->position.at(vertex) ).value();

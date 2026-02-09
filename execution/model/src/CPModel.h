@@ -8,7 +8,7 @@
 #include "model/bpmnos/src/extensionElements/MessageDefinition.h"
 #include "model/bpmnos/src/extensionElements/Content.h"
 #include "model/utility/src/tuple_map.h"
-#include <cp.h>
+#include <cp/cp.h>
 #include <unordered_map>
 #include <utility>
 #include <memory>

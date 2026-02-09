@@ -1,6 +1,6 @@
 #include "SeededGreedyController.h"
 #include "execution/engine/src/events/ErrorEvent.h"
-#include <iostream>
+//#include <iostream>
 
 using namespace BPMNOS::Execution;
 
