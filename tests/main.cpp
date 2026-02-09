@@ -79,7 +79,7 @@ using namespace BPMNOS;
 #include "examples/truck_driver_scheduling_problem/test.h"
 
 // CPController
-#include "cp/test.h"
+#include "cpmodel/test.h"
 
 #endif // ALL_TESTS
 
