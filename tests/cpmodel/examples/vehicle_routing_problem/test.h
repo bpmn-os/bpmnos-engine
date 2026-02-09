@@ -1,4 +1,4 @@
-SCENARIO( "Vehicle routing problem", "[cp][vehicle_routing_problem]" ) {
+SCENARIO( "Vehicle routing problem", "[cpmodel][vehicle_routing_problem]" ) {
   const std::string modelFile = "examples/vehicle_routing_problem/Vehicle_routing_problem.bpmn";
   const std::vector<std::string> folders = { "tests/examples/vehicle_routing_problem" };
   REQUIRE_NOTHROW( Model::Model(modelFile,folders) );

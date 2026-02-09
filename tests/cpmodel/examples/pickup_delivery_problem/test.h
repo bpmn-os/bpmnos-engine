@@ -1,4 +1,4 @@
-SCENARIO( "Pickup delivery problem", "[cp][pickup_delivery_problem]" ) {
+SCENARIO( "Pickup delivery problem", "[cpmodel][pickup_delivery_problem]" ) {
   const std::string modelFile = "examples/pickup_delivery_problem/Pickup_delivery_problem.bpmn";
   const std::vector<std::string> folders = { "tests/examples/pickup_delivery_problem" };
 

@@ -1,5 +1,5 @@
 
-SCENARIO( "Sequential adhoc subprocess", "[cp][adhocsubprocess]" ) {
+SCENARIO( "Sequential adhoc subprocess", "[cpmodel][adhocsubprocess]" ) {
   const std::string modelFile = "tests/execution/adhocsubprocess/AdHocSubProcess.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
   GIVEN( "A single instance with no input values" ) {
@@ -48,7 +48,7 @@ SCENARIO( "Sequential adhoc subprocess", "[cp][adhocsubprocess]" ) {
   }
 };
 
-SCENARIO( "Sequential adhoc subprocesses with common performer", "[cp][adhocsubprocess]" ) {
+SCENARIO( "Sequential adhoc subprocesses with common performer", "[cpmodel][adhocsubprocess]" ) {
   const std::string modelFile = "tests/execution/adhocsubprocess/AdHocSubProcesses_with_common_performer.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
   GIVEN( "A single instance with no input values" ) {

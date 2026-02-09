@@ -1,4 +1,4 @@
-SCENARIO( "Trivial executable subprocess", "[cp][subprocess]" ) {
+SCENARIO( "Trivial executable subprocess", "[cpmodel][subprocess]" ) {
   const std::string modelFile = "tests/execution/subprocess/Trivial_executable_subprocess.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
   GIVEN( "A single instance with no input values" ) {
@@ -47,7 +47,7 @@ SCENARIO( "Trivial executable subprocess", "[cp][subprocess]" ) {
   }
 };
 
-SCENARIO( "Constrained executable process", "[cp][subprocess]" ) {
+SCENARIO( "Constrained executable process", "[cpmodel][subprocess]" ) {
   const std::string modelFile = "tests/execution/subprocess/Constrained_executable_subprocess.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
   GIVEN( "A single instance with no input values" ) {

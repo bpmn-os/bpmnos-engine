@@ -1,4 +1,4 @@
-SCENARIO( "Decision task with enumeration", "[cp][decisiontask]" ) {
+SCENARIO( "Decision task with enumeration", "[cpmodel][decisiontask]" ) {
   const std::string modelFile = "tests/execution/decisiontask/DecisionTask_with_enumeration.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
   GIVEN( "A single instance with x=-2" ) {
@@ -49,7 +49,7 @@ SCENARIO( "Decision task with enumeration", "[cp][decisiontask]" ) {
 };
 
 
-SCENARIO( "Decision task with bounds", "[cp][decisiontask]" ) {
+SCENARIO( "Decision task with bounds", "[cpmodel][decisiontask]" ) {
   const std::string modelFile = "tests/execution/decisiontask/DecisionTask_with_bounds.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
   GIVEN( "A single instance with no input values" ) {

@@ -1,4 +1,4 @@
-SCENARIO( "Simple process with timer", "[cp][timer]" ) {
+SCENARIO( "Simple process with timer", "[cpmodel][timer]" ) {
   const std::string modelFile = "tests/execution/timer/Timer.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
   GIVEN( "A single instance" ) {

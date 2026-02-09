@@ -1,4 +1,4 @@
-SCENARIO( "Linear expression", "[cp][expression]" ) {
+SCENARIO( "Linear expression", "[cpmodel][expression]" ) {
   const std::string modelFile = "tests/execution/expression/linearExpression.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
 
@@ -49,7 +49,7 @@ SCENARIO( "Linear expression", "[cp][expression]" ) {
   }
 };
 
-SCENARIO( "Divide assignment", "[cp][expression]" ) {
+SCENARIO( "Divide assignment", "[cpmodel][expression]" ) {
   const std::string modelFile = "tests/execution/expression/divideAssignment.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
 
@@ -101,7 +101,7 @@ SCENARIO( "Divide assignment", "[cp][expression]" ) {
   }
 };
 
-SCENARIO( "String expression", "[cp][expression]" ) {
+SCENARIO( "String expression", "[cpmodel][expression]" ) {
   const std::string modelFile = "tests/execution/expression/stringExpression.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
 
@@ -151,7 +151,7 @@ SCENARIO( "String expression", "[cp][expression]" ) {
   }
 };
 
-SCENARIO( "Lookup table", "[cp][lookup]" ) {
+SCENARIO( "Lookup table", "[cpmodel][lookup]" ) {
   const std::string modelFile = "tests/execution/expression/lookupTable.bpmn";
   const std::vector<std::string> folders = { "tests/execution/expression" };
   REQUIRE_NOTHROW( Model::Model(modelFile,folders) );

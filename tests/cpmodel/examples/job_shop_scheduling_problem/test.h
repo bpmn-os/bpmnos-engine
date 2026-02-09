@@ -1,4 +1,4 @@
-SCENARIO( "Job shop schedulng problem", "[cp][job_shop_scheduling_problem]" ) {
+SCENARIO( "Job shop schedulng problem", "[cpmodel][job_shop_scheduling_problem]" ) {
   const std::string modelFile = "examples/job_shop_scheduling_problem/Job_shop_scheduling_problem.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
 

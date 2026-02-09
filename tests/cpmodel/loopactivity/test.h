@@ -1,4 +1,4 @@
-SCENARIO( "Loop task", "[cp][loopactivity]" ) {
+SCENARIO( "Loop task", "[cpmodel][loopactivity]" ) {
   const std::string modelFile = "tests/execution/loopactivity/Loop_task.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
   GIVEN( "A single instance with no input values" ) {
@@ -46,7 +46,7 @@ SCENARIO( "Loop task", "[cp][loopactivity]" ) {
   }
 };
 
-SCENARIO( "Loop subprocess", "[cp][loopactivity]" ) {
+SCENARIO( "Loop subprocess", "[cpmodel][loopactivity]" ) {
   const std::string modelFile = "tests/execution/loopactivity/Loop_subprocess.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
   GIVEN( "A single instance with no input values" ) {

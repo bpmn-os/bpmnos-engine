@@ -1,4 +1,4 @@
-SCENARIO( "Event-based gateway with two timer events", "[cp][eventbasedgateway]" ) {
+SCENARIO( "Event-based gateway with two timer events", "[cpmodel][eventbasedgateway]" ) {
   const std::string modelFile = "tests/execution/eventbasedgateway/Two_timer_events.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
   GIVEN( "A single instance" ) {

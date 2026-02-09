@@ -1,4 +1,4 @@
-SCENARIO( "A simple process with subprocess and task", "[cp][collection]" ) {
+SCENARIO( "A simple process with subprocess and task", "[cpmodel][collection]" ) {
   const std::string modelFile = "tests/execution/collection/Collection.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
   GIVEN( "A single instance" ) {

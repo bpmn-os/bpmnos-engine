@@ -1,4 +1,4 @@
-SCENARIO( "Simple messaging", "[cp][message]" ) {
+SCENARIO( "Simple messaging", "[cpmodel][message]" ) {
   const std::string modelFile = "tests/execution/message/Simple_messaging.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
   GIVEN( "Two instances starting at time 0" ) {
@@ -97,7 +97,7 @@ SCENARIO( "Simple messaging", "[cp][message]" ) {
 };
 
 
-SCENARIO( "Message tasks", "[cp][message]" ) {
+SCENARIO( "Message tasks", "[cpmodel][message]" ) {
   const std::string modelFile = "tests/execution/message/Message_tasks.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
 
