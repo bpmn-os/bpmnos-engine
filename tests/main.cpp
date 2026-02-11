@@ -85,6 +85,8 @@ using namespace BPMNOS;
 #endif // ALL_TESTS
 
 #ifndef ALL_TESTS
+//#include "cpmodel/test.h"
+#include "cpsolver/test.h"
 //#include "debug.h"
 //#include "examples/knapsack_problem/test.h"
 //#include "cp/examples/knapsack_problem/test.h"
@@ -95,11 +97,10 @@ using namespace BPMNOS;
 //#include "cp/loopactivity/test.h"
 //#include "cp/process/test.h"
 //#include "cp/exclusivegateway/test.h"
-#include "cp/eventbasedgateway/test.h"
+//#include "cp/eventbasedgateway/test.h"
 //#include "cp/adhocsubprocess/test.h"
 //#include "cp/message/test.h"
 #endif // ALL_TESTS
-
 
 #include <regex>
 // Playground
@@ -121,7 +122,6 @@ std::cerr << "Load BPMNOS model" << std::endl;
   BPMNOS::Model::Model model(modelFile);
 std::cerr << "BPMNOS model did not throw" << std::endl;
 }
-
 
 /*
 TEST_CASE("My Test Case") {

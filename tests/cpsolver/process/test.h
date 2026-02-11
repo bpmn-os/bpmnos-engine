@@ -16,9 +16,9 @@ SCENARIO( "Empty executable process - SCIP solver", "[cpsolver][process]" ) {
       Execution::CPModel constraintProgramm( &flattenedGraph );
 
       // Solve with SCIP
-      const auto& cpModel = constraintProgramm.getModel();
-      CP::SCIPSolver solver(cpModel);
-      auto result = solver.solve(cpModel);
+      const auto& model = constraintProgramm.getModel();
+      CP::SCIPSolver solver(model);
+      auto result = solver.solve(model);
 
       THEN( "A feasible solution is found" ) {
         REQUIRE( result.has_value() );
@@ -49,9 +49,9 @@ SCENARIO( "Trivial executable process - SCIP solver", "[cpsolver][process]" ) {
       Execution::CPModel constraintProgramm( &flattenedGraph );
 
       // Solve with SCIP
-      const auto& cpModel = constraintProgramm.getModel();
-      CP::SCIPSolver solver(cpModel);
-      auto result = solver.solve(cpModel);
+      const auto& model = constraintProgramm.getModel();
+      CP::SCIPSolver solver(model);
+      auto result = solver.solve(model);
 
       THEN( "A feasible solution is found" ) {
         REQUIRE( result.has_value() );
@@ -82,15 +82,21 @@ SCENARIO( "Simple executable process - SCIP solver", "[cpsolver][process]" ) {
       Execution::CPModel constraintProgramm( &flattenedGraph );
 
       // Solve with SCIP
-      const auto& cpModel = constraintProgramm.getModel();
-      CP::SCIPSolver solver(cpModel);
-      auto result = solver.solve(cpModel);
+      const auto& model = constraintProgramm.getModel();
+      CP::SCIPSolver solver(model);
+      auto result = solver.solve(model);
 
       THEN( "A feasible solution is found" ) {
         REQUIRE( result.has_value() );
 
         auto& solution = result.value();
         REQUIRE( solution.complete() );
+if ( solution.errors().size() ) {
+  std::cerr << solution.errors() << std::endl;
+  std::cerr << model.stringify() << std::endl;
+  std::cerr << solution.stringify() << std::endl;
+}
+        
         REQUIRE( solution.errors().empty() );
       }
     }
@@ -111,9 +117,9 @@ SCENARIO( "Simple executable process - SCIP solver", "[cpsolver][process]" ) {
       Execution::CPModel constraintProgramm( &flattenedGraph );
 
       // Solve with SCIP
-      const auto& cpModel = constraintProgramm.getModel();
-      CP::SCIPSolver solver(cpModel);
-      auto result = solver.solve(cpModel);
+      const auto& model = constraintProgramm.getModel();
+      CP::SCIPSolver solver(model);
+      auto result = solver.solve(model);
 
       THEN( "A feasible solution is found" ) {
         REQUIRE( result.has_value() );
@@ -124,4 +130,6 @@ SCENARIO( "Simple executable process - SCIP solver", "[cpsolver][process]" ) {
       }
     }
   }
+
 };
+
