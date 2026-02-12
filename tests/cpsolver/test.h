@@ -4,45 +4,43 @@
 #include <cp/solver.h>
 #include <cp/scip/scip_adapter.h>
 
-//#include "examples/job_shop_scheduling_problem/test.h"
-
 #include "process/test.h"
 
 // Activities
-//#include "subprocess/test.h"
-//#include "task/test.h"
-//#include "decisiontask/test.h"
+#include "subprocess/test.h"
+#include "task/test.h"
+#include "decisiontask/test.h"
 
 // Status and Data
-//#include "status/test.h"
-//#include "data/test.h"
-//#include "collection/test.h"
+#include "status/test.h"
+#include "data/test.h"
+#include "collection/test.h"
 
 // Expression
-//#include "expression/test.h"
+#include "expression/test.h"
 
 // Multi-instance activities
-//#include "loopactivity/test.h"
-//#include "multiinstanceactivity/test.h"
+#include "loopactivity/test.h"
+#include "multiinstanceactivity/test.h"
 
 // Ad-hoc subprocesses
-//#include "adhocsubprocess/test.h"
+#include "adhocsubprocess/test.h"
 
 // Gateways
-//#include "parallelgateway/test.h"
-//#include "exclusivegateway/test.h"
+#include "parallelgateway/test.h"
+#include "exclusivegateway/test.h"
 
 // Event-based gateways
 //#include "eventbasedgateway/test.h"
 
 // Events
-//#include "timer/test.h"
+#include "timer/test.h"
 
 // Messages
-//#include "message/test.h"
+#include "message/test.h"
 
 // Event subprocesses
-//#include "eventsubprocess/test.h"
+#include "eventsubprocess/test.h"
 
 // Examples
 //#include "examples/assignment_problem/test.h"

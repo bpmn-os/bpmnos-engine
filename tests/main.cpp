@@ -9,7 +9,7 @@ using namespace BPMNOS;
 
 // Include all tests here
 
-#define ALL_TESTS
+//#define ALL_TESTS
 #ifdef ALL_TESTS
 
 /* Model */
@@ -85,8 +85,54 @@ using namespace BPMNOS;
 #endif // ALL_TESTS
 
 #ifndef ALL_TESTS
+#include <cp/cp.h>
+#include <cp/solver.h>
+#include <cp/scip/scip_adapter.h>
+
+SCENARIO( "Parallel multi instance task - SCIP solver", "[cpsolver][multiinstanceactivity]" ) {
+  const std::string modelFile = "tests/execution/multiinstanceactivity/Parallel_multi-instance_task.bpmn";
+  REQUIRE_NOTHROW( Model::Model(modelFile) );
+
+  GIVEN( "A single instance with no input values" ) {
+    WHEN( "SCIP solver is used" ) {
+      std::string csv =
+        "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
+        "Process_1, Instance_1,,\n"
+      ;
+
+      Model::StaticDataProvider dataProvider(modelFile,csv);
+      auto scenario = dataProvider.createScenario();
+
+      Execution::FlattenedGraph flattenedGraph( scenario.get() );
+      Execution::CPModel constraintProgramm( &flattenedGraph );
+
+      // Solve with SCIP
+      const auto& model = constraintProgramm.getModel();
+      CP::SCIPSolver solver(model);
+      auto result = solver.solve(model);
+
+      THEN( "A feasible solution is found" ) {
+        REQUIRE( result.has_value() );
+
+        auto& solution = result.value();
+
+        // Debug: print errors
+        const auto& errors = solution.errors();
+        if (!errors.empty()) {
+          std::cerr << "Errors found: " << errors << std::endl;
+        }
+
+        REQUIRE( solution.complete() );
+        REQUIRE( solution.errors().empty() );
+        REQUIRE( solution.getStatus() == CP::Solution::Status::OPTIMAL );
+      }
+    }
+  }
+};
+
+
 //#include "cpmodel/test.h"
-#include "cpsolver/test.h"
+//#include "cpsolver/test.h"
 //#include "debug.h"
 //#include "examples/knapsack_problem/test.h"
 //#include "cp/examples/knapsack_problem/test.h"

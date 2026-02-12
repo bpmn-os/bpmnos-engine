@@ -44,6 +44,7 @@ SCENARIO( "Empty executable process", "[cpmodel][process]" ) {
         REQUIRE( terminationLog.empty() );  
         REQUIRE( solution.complete() );
         REQUIRE( solution.errors().empty() );
+        REQUIRE( solution.getStatus() == CP::Solution::Status::UNKNOWN );
       }
     }
   }
@@ -93,6 +94,7 @@ SCENARIO( "Trivial executable process", "[cpmodel][process]" ) {
         REQUIRE( terminationLog.empty() );  
         REQUIRE( solution.complete() ); 
         REQUIRE( solution.errors().empty() ); 
+        REQUIRE( solution.getStatus() == CP::Solution::Status::UNKNOWN );
       }
     }
   }
@@ -142,6 +144,7 @@ SCENARIO( "Simple executable process", "[cpmodel][process]" ) {
         REQUIRE( terminationLog.empty() );  
         REQUIRE( solution.complete() ); 
         REQUIRE( solution.errors().empty() );
+        REQUIRE( solution.getStatus() == CP::Solution::Status::UNKNOWN );
       }
     }
   }
@@ -192,6 +195,7 @@ SCENARIO( "Simple executable process", "[cpmodel][process]" ) {
         REQUIRE( terminationLog.empty() );  
         REQUIRE( solution.complete() ); 
         REQUIRE( solution.errors().empty() );
+        REQUIRE( solution.getStatus() == CP::Solution::Status::UNKNOWN );
       }
     }
 

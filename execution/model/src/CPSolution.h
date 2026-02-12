@@ -72,6 +72,7 @@ public:
   const Vertex* exit(const Vertex* vertex) const { return flattenedGraph->exit(vertex); };
   bool complete() const { return _solution.complete(); };
   std::optional<double> getObjectiveValue() const { return _solution.getObjectiveValue(); };
+  CP::Solution::Status getStatus() const { return _solution.getStatus(); };
   std::string errors() const { return _solution.errors(); };
   std::string stringify() const { return _solution.stringify(); };
 };

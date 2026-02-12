@@ -15,16 +15,6 @@ CPSolution::CPSolution(const CPModel* cp)
  , _solution( cp->getModel() )
  , lastPosition(0)
 {
-  // set collection evaluator
-  _solution.setCollectionEvaluator( 
-    [](double value) ->  std::expected< std::reference_wrapper<const std::vector<double> >, std::string >  {
-      if ( value < 0 || value >= (double)collectionRegistry.size() ) {
-        return std::unexpected("Unable to determine collection for index " + BPMNOS::to_string(value) );
-      }
-      return collectionRegistry[(size_t)value];
-    }
-  );
-
   // add evaluators for lookup tables
   for ( auto& lookupTable : cp->scenario->model->lookupTables ) {
     _solution.addEvaluator( 

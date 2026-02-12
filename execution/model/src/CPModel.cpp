@@ -12,10 +12,20 @@ using namespace BPMNOS::Execution;
 CPModel::CPModel(const BPMNOS::Execution::FlattenedGraph* flattenedGraph, Config config)
  : scenario(flattenedGraph->scenario)
  , config(std::move(config))
- , flattenedGraph(flattenedGraph) 
+ , flattenedGraph(flattenedGraph)
  , model(CP::Model::ObjectiveSense::MAXIMIZE)
 {
 //std::cerr << "Flattened graph: " << flattenedGraph->jsonify().dump() << std::endl;
+  // Set collection lookup on model
+  model.setCollectionLookup(
+    [](double value) -> std::expected<std::vector<double>, std::string> {
+      if ( value < 0 || value >= (double)collectionRegistry.size() ) {
+        return std::unexpected("Unable to determine collection for index " + BPMNOS::to_string(value));
+      }
+      return collectionRegistry[(size_t)value];
+    }
+  );
+
   // add callables for lookup tables
   for ( auto& lookupTable : scenario->model->lookupTables ) {
     limexHandle.add(

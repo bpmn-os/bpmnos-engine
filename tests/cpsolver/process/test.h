@@ -26,6 +26,7 @@ SCENARIO( "Empty executable process - SCIP solver", "[cpsolver][process]" ) {
         auto& solution = result.value();
         REQUIRE( solution.complete() );
         REQUIRE( solution.errors().empty() );
+        REQUIRE( solution.getStatus() == CP::Solution::Status::OPTIMAL );
       }
     }
   }
@@ -59,6 +60,7 @@ SCENARIO( "Trivial executable process - SCIP solver", "[cpsolver][process]" ) {
         auto& solution = result.value();
         REQUIRE( solution.complete() );
         REQUIRE( solution.errors().empty() );
+        REQUIRE( solution.getStatus() == CP::Solution::Status::OPTIMAL );
       }
     }
   }
@@ -98,6 +100,7 @@ if ( solution.errors().size() ) {
 }
         
         REQUIRE( solution.errors().empty() );
+        REQUIRE( solution.getStatus() == CP::Solution::Status::OPTIMAL );
       }
     }
   }
@@ -127,6 +130,7 @@ if ( solution.errors().size() ) {
         auto& solution = result.value();
         REQUIRE( solution.complete() );
         REQUIRE( solution.errors().empty() );
+        REQUIRE( solution.getStatus() == CP::Solution::Status::OPTIMAL );
       }
     }
   }
