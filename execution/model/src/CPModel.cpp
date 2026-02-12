@@ -568,6 +568,14 @@ void CPModel::createStatus(const Vertex* vertex) {
     createExitStatus(vertex);
     addObjectiveCoefficients( vertex );
   }
+
+  // Add constraints for all status variables: defined <= visit and !defined implies value == 0
+  assert( visit.contains(vertex) );
+  assert( status.contains(vertex) );
+  for ( auto& attributeVars : status.at(vertex) ) {
+    model.addConstraint( attributeVars.defined <= visit.at(vertex) );
+    model.addConstraint( (!attributeVars.defined).implies( attributeVars.value == 0.0 ) );
+  }
 }
 
 void CPModel::addAttributes(const Vertex* vertex, std::vector<AttributeVariables>& variables, const BPMNOS::Model::Attribute* loopIndex) {
@@ -911,11 +919,6 @@ void CPModel::createExitStatus(const Vertex* vertex) {
       model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->reference() + "}," + attribute->id, currentStatus[attribute->index].defined ), 
       model.addVariable(CP::Variable::Type::REAL, "value_{" + vertex->reference() + "}," + attribute->id, currentStatus[attribute->index].value )
     );      
-
-    // ensure that attribute only has a value if vertex is visited and the attribute is defined
-    assert( visit.contains(vertex) );
-    model.addConstraint( variables[attribute->index].defined <= visit.at(vertex) );
-    model.addConstraint( (!variables[attribute->index].defined).implies( variables[attribute->index].value == 0.0 ) );
   }
 
   status.emplace( vertex, std::move(variables) );
