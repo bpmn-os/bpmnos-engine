@@ -23,7 +23,8 @@ CPModel::CPModel(const BPMNOS::Execution::FlattenedGraph* flattenedGraph, Config
         return std::unexpected("Unable to determine collection for index " + BPMNOS::to_string(value));
       }
       return collectionRegistry[(size_t)value];
-    }
+    },
+    collectionRegistry.size()
   );
 
   // add callables for lookup tables

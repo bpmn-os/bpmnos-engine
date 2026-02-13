@@ -115,16 +115,18 @@ SCENARIO( "Parallel multi instance task - SCIP solver", "[cpsolver][multiinstanc
         REQUIRE( result.has_value() );
 
         auto& solution = result.value();
+        REQUIRE( solution.getStatus() == CP::Solution::Status::OPTIMAL );
 
         // Debug: print errors
         const auto& errors = solution.errors();
         if (!errors.empty()) {
           std::cerr << "Errors found: " << errors << std::endl;
+          std::cerr << "Solution: " << solution.stringify() << std::endl;
+          std::cerr << "Model: " << model.stringify() << std::endl;
         }
 
         REQUIRE( solution.complete() );
         REQUIRE( solution.errors().empty() );
-        REQUIRE( solution.getStatus() == CP::Solution::Status::OPTIMAL );
       }
     }
   }
