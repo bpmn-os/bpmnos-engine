@@ -87,40 +87,13 @@ target_link_libraries(run_tests
   Catch2::Catch2WithMain
 )
 
-# Link CP-SCIP solver if available from engine build
-find_library(CP_SCIP_LIB NAMES cp-scip PATHS ${CMAKE_BINARY_DIR}/_deps/cp-build/scip NO_DEFAULT_PATH)
-if(CP_SCIP_LIB)
-  message("-- Found CP-SCIP library: ${CP_SCIP_LIB}")
-
-  # Find SCIP library from engine build
-  find_library(SCIP_LIB NAMES scip PATHS ${CMAKE_BINARY_DIR}/_deps/scip-build/lib NO_DEFAULT_PATH)
-  if(SCIP_LIB)
-    message("-- Found SCIP library: ${SCIP_LIB}")
-  else()
-    message(WARNING "-- SCIP library not found")
-  endif()
-
-  # Find SCIP includes from engine build
-  set(SCIP_SRC_INCLUDE_DIR "${CMAKE_BINARY_DIR}/_deps/scip-src/scip/src")
-  set(SCIP_BUILD_INCLUDE_DIR "${CMAKE_BINARY_DIR}/_deps/scip-build/scip")
-  set(SOPLEX_SRC_INCLUDE_DIR "${CMAKE_BINARY_DIR}/_deps/scip-src/soplex/src")
-  set(SOPLEX_BUILD_INCLUDE_DIR "${CMAKE_BINARY_DIR}/_deps/scip-build/soplex")
-  if(EXISTS ${SCIP_SRC_INCLUDE_DIR} AND EXISTS ${SCIP_BUILD_INCLUDE_DIR})
-    message("-- Found SCIP source includes: ${SCIP_SRC_INCLUDE_DIR}")
-    message("-- Found SCIP build includes: ${SCIP_BUILD_INCLUDE_DIR}")
-    target_include_directories(run_tests PRIVATE
-      ${SCIP_SRC_INCLUDE_DIR}
-      ${SCIP_BUILD_INCLUDE_DIR}
-      ${SOPLEX_SRC_INCLUDE_DIR}
-      ${SOPLEX_BUILD_INCLUDE_DIR})
-  else()
-    message(WARNING "-- SCIP includes not found")
-  endif()
-
-  target_link_libraries(run_tests PRIVATE ${CP_SCIP_LIB} ${SCIP_LIB})
+# Link CP-SCIP solver if available
+if(TARGET cp-scip)
+  message("-- Linking to cp-scip target")
+  target_link_libraries(run_tests PRIVATE cp-scip)
   target_compile_definitions(run_tests PRIVATE USE_SCIP_SOLVER)
 else()
-  message("-- CP-SCIP library not found, cpsolver tests will be disabled")
+  message("-- CP-SCIP target not found, cpsolver tests will be disabled")
 endif()
 
 if (CMAKE_SOURCE_DIR STREQUAL PROJECT_SOURCE_DIR)

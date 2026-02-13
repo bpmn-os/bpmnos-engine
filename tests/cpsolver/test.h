@@ -40,7 +40,7 @@
 #include "message/test.h"
 
 // Event subprocesses
-#include "eventsubprocess/test.h"
+//#include "eventsubprocess/test.h"
 
 // Examples
 //#include "examples/assignment_problem/test.h"
