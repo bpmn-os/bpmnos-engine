@@ -31,7 +31,7 @@
 #include "exclusivegateway/test.h"
 
 // Event-based gateways
-//#include "eventbasedgateway/test.h"
+#include "eventbasedgateway/test.h"
 
 // Events
 #include "timer/test.h"

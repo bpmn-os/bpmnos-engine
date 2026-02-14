@@ -89,44 +89,98 @@ using namespace BPMNOS;
 #include <cp/solver.h>
 #include <cp/scip/scip_adapter.h>
 
-SCENARIO( "Parallel multi instance task - SCIP solver", "[cpsolver][multiinstanceactivity]" ) {
-  const std::string modelFile = "tests/execution/multiinstanceactivity/Parallel_multi-instance_task.bpmn";
+SCENARIO( "Event-based gateway with two timer events - SCIP solver", "[cpsolver][eventbasedgateway]" ) {
+  const std::string modelFile = "tests/execution/eventbasedgateway/Two_timer_events.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
+  GIVEN( "A single instance" ) {
 
-  GIVEN( "A single instance with no input values" ) {
-    WHEN( "SCIP solver is used" ) {
+    WHEN( "Timer 1 triggers after Timer 2" ) {
       std::string csv =
         "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-        "Process_1, Instance_1,,\n"
+        "Process_1, Instance_1,Trigger1,3\n"
+        "Process_1, Instance_1,Trigger2,2\n"
       ;
 
       Model::StaticDataProvider dataProvider(modelFile,csv);
       auto scenario = dataProvider.createScenario();
 
+      // First, run through execution engine to get feasible solution
       Execution::FlattenedGraph flattenedGraph( scenario.get() );
-      Execution::CPModel constraintProgramm( &flattenedGraph );
+      Execution::GuidedEvaluator evaluator;
+      Execution::SeededGreedyController controller( &flattenedGraph, &evaluator );
 
-      // Solve with SCIP
+      Execution::Engine engine;
+      controller.connect( &engine );
+      controller.subscribe( &engine );
+      Execution::TimeWarp timeHandler;
+      timeHandler.connect( &engine );
+
+      Execution::CPModel constraintProgramm( &flattenedGraph );
+      Execution::CPSolution cpSolution( &constraintProgramm );
+      cpSolution.subscribe( &engine );
+
+      engine.run(scenario.get());
+
+      std::cerr << "=== Feasible CP Solution ===" << std::endl;
+      std::cerr << cpSolution.stringify() << std::endl;
+      std::cerr << "Errors: " << cpSolution.errors() << std::endl;
+      std::cerr << "Complete: " << cpSolution.complete() << std::endl;
+
+      // Now try SCIP solver
       const auto& model = constraintProgramm.getModel();
       CP::SCIPSolver solver(model);
+
+      // Get SCIP problem for inspection
+      SCIP* scip = solver.getScip();
+/*
+
+
+      // Fix position variables to simplify the problem
+      std::vector<std::pair<int, double>> positionFixes = {
+        {0, 1}, {1, 2}, {2, 3}, {3, 4}, {4, 5}, {5, 8},
+        {6, 6}, {7, 9}, {8, 7}, {9, 10}, {10, 12}, {11, 11},
+        {12, 13}, {13, 14}
+      };
+
+      for (const auto& [idx, val] : positionFixes) {
+        std::string varName = "position[" + std::to_string(idx) + "]";
+        SCIP_VAR* var = SCIPfindVar(scip, varName.c_str());
+        if (var) {
+          SCIPchgVarLb(scip, var, val);
+          SCIPchgVarUb(scip, var, val);
+          std::cerr << "Fixed " << varName << " = " << val << std::endl;
+        } else {
+          std::cerr << "Variable " << varName << " not found" << std::endl;
+        }
+      }
+
+      SCIPwriteOrigProblem(scip, "debug_problem.cip", "cip", FALSE);
+      std::cerr << "Saved SCIP problem to debug_problem.cip" << std::endl;
+*/
+      // Enable presolving to trigger the bug
+      SCIPsetIntParam(scip, "presolving/maxrounds", 2);
+      SCIPsetIntParam(scip, "display/verblevel", 5);
+
       auto result = solver.solve(model);
 
-      THEN( "A feasible solution is found" ) {
+      // Save transformed/presolved problem
+//      SCIPwriteTransProblem(scip, "debug_presolved.cip", "cip", FALSE);
+//      std::cerr << "Saved presolved problem to debug_presolved.cip" << std::endl;
+
+      // Print SCIP status
+      SCIP_STATUS status = SCIPgetStatus(scip);
+      std::cerr << "SCIP status: " << status << std::endl;
+      if (!result.has_value()) {
+        std::cerr << "No SCIP solution: " << result.error() << std::endl;
+
+        // Try to check the feasible solution against SCIP constraints
+        std::cerr << "\n=== Checking CP solution against SCIP model ===" << std::endl;
+        const auto& cpSol = cpSolution.getSolution();
+        std::cerr << "CP Solution errors: " << cpSol.errors() << std::endl;
+      }
+
+      THEN( "An optimal solution is found" ) {
         REQUIRE( result.has_value() );
-
-        auto& solution = result.value();
-        REQUIRE( solution.getStatus() == CP::Solution::Status::OPTIMAL );
-
-        // Debug: print errors
-        const auto& errors = solution.errors();
-        if (!errors.empty()) {
-          std::cerr << "Errors found: " << errors << std::endl;
-          std::cerr << "Solution: " << solution.stringify() << std::endl;
-          std::cerr << "Model: " << model.stringify() << std::endl;
-        }
-
-        REQUIRE( solution.complete() );
-        REQUIRE( solution.errors().empty() );
       }
     }
   }

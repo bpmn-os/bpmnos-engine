@@ -25,9 +25,15 @@ SCENARIO( "Event-based gateway with two timer events - SCIP solver", "[cpsolver]
         REQUIRE( result.has_value() );
 
         auto& solution = result.value();
-        REQUIRE( solution.complete() );
-        REQUIRE( solution.errors().empty() );
         REQUIRE( solution.getStatus() == CP::Solution::Status::OPTIMAL );
+
+        REQUIRE( solution.complete() );
+if ( !solution.errors().empty() ) {
+  std::cerr << solution.errors() << std::endl;
+  std::cerr << solution.stringify() << std::endl;
+  std::cerr << model.stringify() << std::endl;
+}
+        REQUIRE( solution.errors().empty() );
       }
     }
 
@@ -47,15 +53,20 @@ SCENARIO( "Event-based gateway with two timer events - SCIP solver", "[cpsolver]
       // Solve with SCIP
       const auto& model = constraintProgramm.getModel();
       CP::SCIPSolver solver(model);
+
+      SCIP* scip = solver.getScip();
+      SCIPsetIntParam(scip, "presolving/maxrounds", 2);
+      WARN("SCIP presolve maxrounds set to 2, https://github.com/scipopt/scip/issues/190"); 
+      
       auto result = solver.solve(model);
 
       THEN( "An optimal solution is found" ) {
         REQUIRE( result.has_value() );
 
         auto& solution = result.value();
+        REQUIRE( solution.getStatus() == CP::Solution::Status::OPTIMAL );
         REQUIRE( solution.complete() );
         REQUIRE( solution.errors().empty() );
-        REQUIRE( solution.getStatus() == CP::Solution::Status::OPTIMAL );
       }
     }
   }
