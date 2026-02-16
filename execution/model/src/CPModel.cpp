@@ -118,28 +118,28 @@ void CPModel::createGlobalVariables() {
     auto& initialValue = scenario->globals[attribute->index];
     if ( initialValue.has_value() ) {
       // defined initial value
-      defined.emplace_back(true,true);
-      value.emplace_back((double)initialValue.value(),(double)initialValue.value()); 
+      model.addIndexedVariable(defined, true, true);
+      model.addIndexedVariable(value, (double)initialValue.value(), (double)initialValue.value());
     }
     else {
       // undefined initial value
-      defined.emplace_back(false,false);
-      value.emplace_back(0.0,0.0); 
+      model.addIndexedVariable(defined, false, false);
+      model.addIndexedVariable(value, 0.0, 0.0);
     }
-    
+
     if ( attribute->isImmutable ) {
       // deduced variables
       for ( [[maybe_unused]] auto _ : flattenedGraph->globalModifiers ) {
         // use initial value for all data states
-        defined.emplace_back(defined[0]);
-        value.emplace_back(value[0]); 
+        model.addIndexedVariable(defined, defined[0]);
+        model.addIndexedVariable(value, value[0]);
       }
     }
     else {
       for ( [[maybe_unused]] auto _ : flattenedGraph->globalModifiers ) {
         // unconstrained variables for all data states
-        defined.emplace_back();
-        value.emplace_back(); 
+        model.addIndexedVariable(defined);
+        model.addIndexedVariable(value);
       }
     }
     addToObjective( attribute, value[ value.size() -1 ] );
@@ -384,36 +384,36 @@ void CPModel::createDataVariables(const FlattenedGraph::Vertex* vertex) {
     auto given = scenario->getKnownValue(vertex->rootId, attribute.get(), scenario->getInception());
     if ( given.has_value() ) {
       // defined initial value
-      variables.defined.emplace_back(visit.at(vertex));
-      variables.value.emplace_back(CP::if_then_else( visit.at(vertex), (double)given.value(), 0.0)); 
+      model.addIndexedVariable(variables.defined, visit.at(vertex));
+      model.addIndexedVariable(variables.value, CP::if_then_else( visit.at(vertex), (double)given.value(), 0.0));
     }
     else if ( attribute->expression ) {
       // initial assignment
-      assert( attribute->expression->type == Model::Expression::Type::ASSIGN ); 
+      assert( attribute->expression->type == Model::Expression::Type::ASSIGN );
       CP::Expression assignment = createExpression( vertex, *attribute->expression );
-      variables.defined.emplace_back(visit.at(vertex));
-      variables.value.emplace_back(CP::if_then_else( visit.at(vertex), assignment, 0.0)); 
+      model.addIndexedVariable(variables.defined, visit.at(vertex));
+      model.addIndexedVariable(variables.value, CP::if_then_else( visit.at(vertex), assignment, 0.0));
     }
     else {
       // undefined initial value
-      variables.defined.emplace_back(false,false);
-      variables.value.emplace_back(0.0,0.0); 
+      model.addIndexedVariable(variables.defined, false, false);
+      model.addIndexedVariable(variables.value, 0.0, 0.0);
     }
-    
+
     assert( flattenedGraph->dataModifiers.contains(vertex) );
     if ( attribute->isImmutable ) {
       // deducible variables
       for ( [[maybe_unused]] auto _ : flattenedGraph->dataModifiers.at(vertex) ) {
         // use initial value for all data states
-        variables.defined.emplace_back(variables.defined[0]);
-        variables.value.emplace_back(variables.value[0]); 
+        model.addIndexedVariable(variables.defined, variables.defined[0]);
+        model.addIndexedVariable(variables.value, variables.value[0]);
       }
     }
     else {
       for ( [[maybe_unused]] auto _ : flattenedGraph->dataModifiers.at(vertex) ) {
         // unconstrained variables for all data states
-        variables.defined.emplace_back();
-        variables.value.emplace_back(); 
+        model.addIndexedVariable(variables.defined);
+        model.addIndexedVariable(variables.value);
       }
     }
     addToObjective( attribute.get(), variables.value[ variables.value.size() -1 ] );
