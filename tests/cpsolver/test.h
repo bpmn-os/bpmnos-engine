@@ -1,4 +1,8 @@
-#ifdef USE_SCIP_SOLVER
+#ifndef USE_SCIP_SOLVER
+SCENARIO( "SCIP solver", "[cpsolver]" ) {
+  WARN("SCIP solver not tested");
+}
+#else
 
 #include <cp/cp.h>
 #include <cp/solver.h>
@@ -40,7 +44,7 @@
 #include "message/test.h"
 
 // Event subprocesses
-//#include "eventsubprocess/test.h"
+#include "eventsubprocess/test.h"
 
 // Examples
 //#include "examples/assignment_problem/test.h"

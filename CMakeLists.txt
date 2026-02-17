@@ -98,6 +98,9 @@ FetchContent_Declare(
         GIT_TAG main
 )
 
+# Enable SCIP solver adapter
+set(USE_SCIP ON CACHE BOOL "Build SCIP solver adapter" FORCE)
+
 FetchContent_GetProperties(cp)
 FetchContent_MakeAvailable(cp)
 

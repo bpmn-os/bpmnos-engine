@@ -28,9 +28,10 @@ SCENARIO( "N-to-1 assignment - SCIP solver", "[cpsolver][eventsubprocess]" ) {
         REQUIRE( result.has_value() );
 
         auto& solution = result.value();
+        REQUIRE( solution.getStatus() == CP::Solution::Status::OPTIMAL );
+
         REQUIRE( solution.complete() );
         REQUIRE( solution.errors().empty() );
-        REQUIRE( solution.getStatus() == CP::Solution::Status::OPTIMAL );
       }
     }
   }
@@ -60,9 +61,10 @@ SCENARIO( "N-to-1 assignment - SCIP solver", "[cpsolver][eventsubprocess]" ) {
         REQUIRE( result.has_value() );
 
         auto& solution = result.value();
+        REQUIRE( solution.getStatus() == CP::Solution::Status::OPTIMAL );
+
         REQUIRE( solution.complete() );
         REQUIRE( solution.errors().empty() );
-        REQUIRE( solution.getStatus() == CP::Solution::Status::OPTIMAL );
       }
     }
   }

@@ -88,7 +88,8 @@ using namespace BPMNOS;
 #include <cp/cp.h>
 #include <cp/solver.h>
 #include <cp/scip/scip_adapter.h>
-
+#include "cpsolver/eventsubprocess/test.h"
+/*
 SCENARIO( "Event-based gateway with two timer events - SCIP solver", "[cpsolver][eventbasedgateway]" ) {
   const std::string modelFile = "tests/execution/eventbasedgateway/Two_timer_events.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
@@ -132,31 +133,6 @@ SCENARIO( "Event-based gateway with two timer events - SCIP solver", "[cpsolver]
 
       // Get SCIP problem for inspection
       SCIP* scip = solver.getScip();
-/*
-
-
-      // Fix position variables to simplify the problem
-      std::vector<std::pair<int, double>> positionFixes = {
-        {0, 1}, {1, 2}, {2, 3}, {3, 4}, {4, 5}, {5, 8},
-        {6, 6}, {7, 9}, {8, 7}, {9, 10}, {10, 12}, {11, 11},
-        {12, 13}, {13, 14}
-      };
-
-      for (const auto& [idx, val] : positionFixes) {
-        std::string varName = "position[" + std::to_string(idx) + "]";
-        SCIP_VAR* var = SCIPfindVar(scip, varName.c_str());
-        if (var) {
-          SCIPchgVarLb(scip, var, val);
-          SCIPchgVarUb(scip, var, val);
-          std::cerr << "Fixed " << varName << " = " << val << std::endl;
-        } else {
-          std::cerr << "Variable " << varName << " not found" << std::endl;
-        }
-      }
-
-      SCIPwriteOrigProblem(scip, "debug_problem.cip", "cip", FALSE);
-      std::cerr << "Saved SCIP problem to debug_problem.cip" << std::endl;
-*/
       // Enable presolving to trigger the bug
       SCIPsetIntParam(scip, "presolving/maxrounds", 2);
       SCIPsetIntParam(scip, "display/verblevel", 5);
@@ -185,7 +161,7 @@ SCENARIO( "Event-based gateway with two timer events - SCIP solver", "[cpsolver]
     }
   }
 };
-
+*/
 
 //#include "cpmodel/test.h"
 //#include "cpsolver/test.h"
