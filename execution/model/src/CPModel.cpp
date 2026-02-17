@@ -16,13 +16,10 @@ CPModel::CPModel(const BPMNOS::Execution::FlattenedGraph* flattenedGraph, Config
  , model(CP::Model::ObjectiveSense::MAXIMIZE)
 {
 //std::cerr << "Flattened graph: " << flattenedGraph->jsonify().dump() << std::endl;
-  // Set collection lookup on model
+  // Set collection lookup on model (caller responsible for bounds)
   model.setCollectionLookup(
-    [](double value) -> std::expected<std::vector<double>, std::string> {
-      if ( value < 0 || value >= (double)collectionRegistry.size() ) {
-        return std::unexpected("Unable to determine collection for index " + BPMNOS::to_string(value));
-      }
-      return collectionRegistry[(size_t)value];
+    [](size_t key) -> const std::vector<double>& {
+      return collectionRegistry[key];
     },
     collectionRegistry.size()
   );
