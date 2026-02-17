@@ -101,6 +101,9 @@ FetchContent_Declare(
 # Enable SCIP solver adapter
 set(USE_SCIP ON CACHE BOOL "Build SCIP solver adapter" FORCE)
 
+# Enable Hexaly solver adapter (requires Hexaly installation)
+# set(USE_HEXALY ON CACHE BOOL "Build Hexaly solver adapter" FORCE)
+
 FetchContent_GetProperties(cp)
 FetchContent_MakeAvailable(cp)
 

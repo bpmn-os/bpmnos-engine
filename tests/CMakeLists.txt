@@ -93,7 +93,16 @@ if(TARGET cp-scip)
   target_link_libraries(run_tests PRIVATE cp-scip)
   target_compile_definitions(run_tests PRIVATE USE_SCIP_SOLVER)
 else()
-  message("-- CP-SCIP target not found, cpsolver tests will be disabled")
+  message("-- CP-SCIP target not found, scipsolver tests will be disabled")
+endif()
+
+# Link CP-Hexaly solver if available
+if(TARGET cp-hexaly)
+  message("-- Linking to cp-hexaly target")
+  target_link_libraries(run_tests PRIVATE cp-hexaly)
+  target_compile_definitions(run_tests PRIVATE USE_HEXALY_SOLVER)
+else()
+  message("-- CP-Hexaly target not found, hexalysolver tests will be disabled")
 endif()
 
 if (CMAKE_SOURCE_DIR STREQUAL PROJECT_SOURCE_DIR)
