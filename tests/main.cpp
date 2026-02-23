@@ -81,6 +81,7 @@ using namespace BPMNOS;
 // CPController
 #include "cpmodel/test.h"
 #include "cpsolver/test.h"
+#include "cpcontroller/test.h"
 
 #endif // ALL_TESTS
 
@@ -88,7 +89,8 @@ using namespace BPMNOS;
 #include <cp/cp.h>
 #include <cp/solver.h>
 #include <cp/scip/scip_adapter.h>
-#include "cpsolver/eventsubprocess/test.h"
+#include "cpcontroller/test.h"
+//#include "cpsolver/eventsubprocess/test.h"
 /*
 SCENARIO( "Event-based gateway with two timer events - SCIP solver", "[cpsolver][eventbasedgateway]" ) {
   const std::string modelFile = "tests/execution/eventbasedgateway/Two_timer_events.bpmn";

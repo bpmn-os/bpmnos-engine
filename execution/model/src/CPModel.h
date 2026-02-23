@@ -22,6 +22,7 @@ class CPSolution;
  */
 class CPModel {
 friend class CPSolutionObserver;
+friend class CPController;
 public:
   using Vertex = FlattenedGraph::Vertex;
 
