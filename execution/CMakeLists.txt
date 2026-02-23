@@ -48,8 +48,8 @@ file(MAKE_DIRECTORY "${PROJECT_SOURCE_DIR}/../${LIB_DIR}")
 set(ALL_HEADERS
   ${execution_utility_HEADERS}
   ${engine_HEADERS}
-  ${observer_HEADERS}
   ${executionmodel_HEADERS}
+  ${observer_HEADERS}
   ${controller_HEADERS}
 )
 string(JOIN " " HEADERS_JOINED ${ALL_HEADERS})
@@ -72,7 +72,7 @@ add_custom_target(execution_header ALL
   DEPENDS "${SINGLE_HEADER_PATH}"
 )
 
-add_library(${PROJECT_NAME} STATIC ${execution_utility_SOURCES} ${engine_SOURCES} ${observer_SOURCES} ${executionmodel_SOURCES} ${controller_SOURCES})
+add_library(${PROJECT_NAME} STATIC ${execution_utility_SOURCES} ${engine_SOURCES} ${executionmodel_SOURCES} ${observer_SOURCES} ${controller_SOURCES})
 
 if (NDEBUG)
   target_compile_options(${PROJECT_NAME}

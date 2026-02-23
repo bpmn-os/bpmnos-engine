@@ -1,4 +1,4 @@
-#include "CPSolution.h"
+#include "CPSolutionObserver.h"
 #include "model/bpmnos/src/DecisionTask.h"
 #include "model/bpmnos/src/SequentialAdHocSubProcess.h"
 #include "model/bpmnos/src/extensionElements/MessageDefinition.h"
@@ -9,7 +9,7 @@
 
 using namespace BPMNOS::Execution;
 
-CPSolution::CPSolution(const CPModel* cp)
+CPSolutionObserver::CPSolutionObserver(const CPModel* cp)
  : cp(cp)
  , flattenedGraph( cp->flattenedGraph )
  , _solution( cp->getModel() )
@@ -31,7 +31,7 @@ CPSolution::CPSolution(const CPModel* cp)
   initializePositions(positions);
 }
 
-void CPSolution::subscribe(Engine* engine) {
+void CPSolutionObserver::subscribe(Engine* engine) {
   lastPosition = 0;
   engine->addSubscriber(this, 
     Execution::Observable::Type::Event,
@@ -39,14 +39,14 @@ void CPSolution::subscribe(Engine* engine) {
   );
 }
 
-void CPSolution::unsubscribe(Engine* engine) {
+void CPSolutionObserver::unsubscribe(Engine* engine) {
   engine->removeSubscriber(this, 
     Execution::Observable::Type::Event,
     Execution::Observable::Type::Token
   );
 }
 
-void CPSolution::notice(const Observable* observable) {
+void CPSolutionObserver::notice(const Observable* observable) {
   if ( observable->getObservableType() == Execution::Observable::Type::Token ) {
     synchronize( static_cast<const Token*>(observable) );
   }
@@ -56,7 +56,7 @@ void CPSolution::notice(const Observable* observable) {
   }
 }
 
-void CPSolution::synchronize(const Token* token) {
+void CPSolutionObserver::synchronize(const Token* token) {
   if (
     token->state == Token::State::CREATED || 
     token->state == Token::State::ARRIVED || 
@@ -166,7 +166,7 @@ void CPSolution::synchronize(const Token* token) {
 //std::cerr << "#" << std::endl;
 }
 
-void CPSolution::synchronize(const Event* event) {
+void CPSolutionObserver::synchronize(const Event* event) {
   if ( dynamic_cast<const EntryEvent*>(event) ) {
 //std::cerr << "Entry: " << event->jsonify() << std::endl;
     auto vertex = flattenedGraph->getVertex( event->token );
@@ -221,7 +221,7 @@ void CPSolution::synchronize(const Event* event) {
 
 
 
-void CPSolution::setMessageDeliveryVariableValues( const Vertex* sender, const Vertex* recipient, BPMNOS::number timestamp ) {
+void CPSolutionObserver::setMessageDeliveryVariableValues( const Vertex* sender, const Vertex* recipient, BPMNOS::number timestamp ) {
 //std::cerr << "Sen:" << sender->jsonify() << std::endl;  
 //std::cerr << "Rec:" << recipient->jsonify() << std::endl;  
   for ( auto candidate : sender->recipients ) {
@@ -259,7 +259,7 @@ void CPSolution::setMessageDeliveryVariableValues( const Vertex* sender, const V
   }
 }
 
-std::optional< BPMN::Activity::LoopCharacteristics> CPSolution::getLoopCharacteristics(const Vertex* vertex) const {
+std::optional< BPMN::Activity::LoopCharacteristics> CPSolutionObserver::getLoopCharacteristics(const Vertex* vertex) const {
   auto activity = vertex->node->represents<BPMN::Activity>();
   if ( !activity ) {
     return std::nullopt;
@@ -267,7 +267,7 @@ std::optional< BPMN::Activity::LoopCharacteristics> CPSolution::getLoopCharacter
   return activity->loopCharacteristics;
 }
 
-void CPSolution::unvisitEntry(const Vertex* vertex) {
+void CPSolutionObserver::unvisitEntry(const Vertex* vertex) {
 //std::cerr << "unvisited " << vertex->reference() << std::endl;
 //  _solution.setVariableValue( cp->position.at(vertex), (double)position );
   assert( cp->visit.contains(vertex) );
@@ -316,7 +316,7 @@ void CPSolution::unvisitEntry(const Vertex* vertex) {
   }
 }
 
-void CPSolution::unvisitExit(const Vertex* vertex) {
+void CPSolutionObserver::unvisitExit(const Vertex* vertex) {
 //std::cerr << "unvisited " << vertex->reference() << std::endl;
   assert( cp->visit.contains(vertex) );
 //  _solution.setVariableValue( cp->position.at(vertex), (double)position );
@@ -400,7 +400,7 @@ void CPSolution::unvisitExit(const Vertex* vertex) {
 }
 
 /*
-void CPSolution::visit(const Vertex* vertex) {
+void CPSolutionObserver::visit(const Vertex* vertex) {
 //std::cerr << vertex->reference() << "/" << cp->visit.begin()->second.stringify() << std::endl;
 //std::cerr << vertex << "/" << cp->visit.begin()->first  << std::endl;
   // check visit
@@ -411,11 +411,11 @@ void CPSolution::visit(const Vertex* vertex) {
     _solution.setVariableValue( cp->visit.at(vertex), true );
   }
   else if ( visitEvaluation && visitEvaluation.value() != true ) {
-    throw std::logic_error("CPSolution: vertex '" + vertex->reference() +"' contradictingly visited in solution");
+    throw std::logic_error("CPSolutionObserver: vertex '" + vertex->reference() +"' contradictingly visited in solution");
   }
 }
 
-void CPSolution::visitEntry(const Vertex* vertex, double timestamp) {
+void CPSolutionObserver::visitEntry(const Vertex* vertex, double timestamp) {
 //  _solution.setVariableValue( cp->position.at(vertex), (double)position );
   assert( cp->visit.contains(vertex) );
   _solution.setVariableValue(cp->visit.at(vertex), true);
@@ -423,7 +423,7 @@ void CPSolution::visitEntry(const Vertex* vertex, double timestamp) {
   _solution.setVariableValue( cp->status.at(vertex)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value, timestamp );
 }
 
-void CPSolution::visitExit(const Vertex* vertex, double timestamp) {
+void CPSolutionObserver::visitExit(const Vertex* vertex, double timestamp) {
 //  _solution.setVariableValue( cp->position.at(vertex), (double)position );
 //  _solution.setVariableValue(cp->visit.at(vertex), true);
   assert( cp->status.contains(vertex) );
@@ -431,7 +431,7 @@ void CPSolution::visitExit(const Vertex* vertex, double timestamp) {
 }
 */
 
-void CPSolution::synchronizeStatus(const BPMNOS::Values& status, const CPSolution::Vertex* vertex) {
+void CPSolutionObserver::synchronizeStatus(const BPMNOS::Values& status, const CPSolutionObserver::Vertex* vertex) {
   assert( cp->status.contains(vertex) );
   auto& statusVariables = cp->status.at(vertex);
   assert( status.size() == statusVariables.size() );
@@ -456,7 +456,7 @@ void CPSolution::synchronizeStatus(const BPMNOS::Values& status, const CPSolutio
 //std::cerr << statusVariables[i].value.stringify() << std::endl;
 //std::cerr << "Model: " << cp->stringify() << std::endl;
 //std::cerr << "Solution: " <<  _solution.stringify() << std::endl;
-        throw std::logic_error("CPSolution: '" + _solution.stringify(statusVariables[i].defined) + "' or '" + _solution.stringify(statusVariables[i].value) + "' inconsistent with given status" );
+        throw std::logic_error("CPSolutionObserver: '" + _solution.stringify(statusVariables[i].defined) + "' or '" + _solution.stringify(statusVariables[i].value) + "' inconsistent with given status" );
       }
     }
     else {
@@ -470,13 +470,13 @@ void CPSolution::synchronizeStatus(const BPMNOS::Values& status, const CPSolutio
         evaluation.value() != 0.0
       ) {
 //std::cerr << "defined: " << (evaluation.defined() ? "true" : "false") << ", value: " << evaluation.value() << std::endl;
-        throw std::logic_error("CPSolution: '" + _solution.stringify(statusVariables[i].defined) + "' or '" + _solution.stringify(statusVariables[i].value) + "' inconsistent with given status" );
+        throw std::logic_error("CPSolutionObserver: '" + _solution.stringify(statusVariables[i].defined) + "' or '" + _solution.stringify(statusVariables[i].value) + "' inconsistent with given status" );
       }
     }
   }
 }
 
-void CPSolution::synchronizeData(const BPMNOS::SharedValues& data, const CPSolution::Vertex* vertex) {
+void CPSolutionObserver::synchronizeData(const BPMNOS::SharedValues& data, const CPSolutionObserver::Vertex* vertex) {
   assert( cp->dataIndex.contains(vertex) );
   auto& dataIndices = cp->dataIndex.at(vertex);
   assert( dataIndices.size() == vertex->dataOwners.size() );
@@ -485,7 +485,7 @@ void CPSolution::synchronizeData(const BPMNOS::SharedValues& data, const CPSolut
     auto indexEvaluation = _solution.evaluate( dataIndices[i] );
     if ( !indexEvaluation ) {
 std::cerr << dataIndices[i].stringify() << std::endl;
-      throw std::logic_error("CPSolution: Unable to determine data index for '" + vertex->reference() + "\n'" + indexEvaluation.error());
+      throw std::logic_error("CPSolutionObserver: Unable to determine data index for '" + vertex->reference() + "\n'" + indexEvaluation.error());
     }
     auto index = (size_t)indexEvaluation.value();
     auto ownerVertex = vertex->dataOwners[i];
@@ -511,11 +511,11 @@ std::cerr << dataIndices[i].stringify() << std::endl;
   }
 }
 
-void CPSolution::synchronizeGlobals(const BPMNOS::Values& globals, const CPSolution::Vertex* vertex) {
+void CPSolutionObserver::synchronizeGlobals(const BPMNOS::Values& globals, const CPSolutionObserver::Vertex* vertex) {
   assert( cp->globalIndex.contains(vertex) );
   auto indexEvaluation = _solution.evaluate( cp->globalIndex.at(vertex) );
   if ( !indexEvaluation ) {
-    throw std::logic_error("CPSolution: Unable to determine global index for '" + vertex->reference() + "\n'" + indexEvaluation.error());
+    throw std::logic_error("CPSolutionObserver: Unable to determine global index for '" + vertex->reference() + "\n'" + indexEvaluation.error());
   }
   auto index = (size_t)indexEvaluation.value();
   for ( size_t attributeIndex = 0; attributeIndex < globals.size(); attributeIndex++ ) {
@@ -533,12 +533,12 @@ void CPSolution::synchronizeGlobals(const BPMNOS::Values& globals, const CPSolut
 }
 
 /*
-const CP::Solution& CPSolution::getSolution() const {
+const CP::Solution& CPSolutionObserver::getSolution() const {
   return _solution;
 }
 */
 
-std::vector<size_t> CPSolution::getSequence() const {
+std::vector<size_t> CPSolutionObserver::getSequence() const {
   std::vector<size_t> sequence(flattenedGraph->vertices.size());
   for ( size_t i = 0; i < flattenedGraph->vertices.size(); i++ ) {
     sequence[ (size_t)_solution.getVariableValue( cp->position.at( flattenedGraph->vertices[i].get() ) ).value() -1 ] = i + 1;
@@ -547,19 +547,19 @@ std::vector<size_t> CPSolution::getSequence() const {
   return sequence;
 }
 
-size_t CPSolution::getPosition(const Vertex* vertex) const {
+size_t CPSolutionObserver::getPosition(const Vertex* vertex) const {
   assert( cp->position.contains( vertex ) );
   return (size_t)_solution.getVariableValue( cp->position.at( vertex ) ).value_or(0);
 }
 
-void CPSolution::initializePositions(const std::vector<double>& positions) {
+void CPSolutionObserver::initializePositions(const std::vector<double>& positions) {
   assert( positions.size() == flattenedGraph->vertices.size() );
   assert( cp->getModel().getSequences().size() == 1 );
   auto& sequenceVariable = cp->getModel().getSequences().front();
   _solution.setSequenceValues( sequenceVariable, positions );
 }
 
-void CPSolution::setPosition(const Vertex* vertex, size_t position) {
+void CPSolutionObserver::setPosition(const Vertex* vertex, size_t position) {
 //std::cerr << "position(" << vertex->reference() << ") = " << position << std::endl;
   assert( cp->position.contains( vertex ) );
   assert( _solution.getVariableValue( cp->position.at(vertex) ).has_value() );
@@ -583,7 +583,7 @@ void CPSolution::setPosition(const Vertex* vertex, size_t position) {
   _solution.setVariableValue( cp->position.at(vertex), (double)position );
 }
 
-void CPSolution::finalizePosition(const Vertex* vertex) {
+void CPSolutionObserver::finalizePosition(const Vertex* vertex) {
 //std::cerr << "finalizePosition " << vertex->reference() << std::endl;
   if ( vertex->type == Vertex::Type::ENTRY && getLoopCharacteristics(vertex) ) {
     // finalize position of dummy for loop or multi-instance activity
@@ -628,7 +628,7 @@ void CPSolution::finalizePosition(const Vertex* vertex) {
   finalizeUnvistedSubsequentPositions(vertex);
 }
 
-void CPSolution::finalizeUnvistedSubsequentPositions(const Vertex* vertex) {
+void CPSolutionObserver::finalizeUnvistedSubsequentPositions(const Vertex* vertex) {
   for ( auto& [_1,other] : vertex->outflows ) {
     auto isVisited = _solution.evaluate( cp->visit.at(other) );
     if ( isVisited.has_value() && !isVisited.value() ) {
@@ -670,23 +670,23 @@ void CPSolution::finalizeUnvistedSubsequentPositions(const Vertex* vertex) {
   }
 }
 
-bool CPSolution::isVisited(const Vertex* vertex) const {
+bool CPSolutionObserver::isVisited(const Vertex* vertex) const {
   assert( cp->visit.contains( vertex ) );
   return _solution.evaluate( cp->visit.at( vertex ) ).value_or(false);
 }
 
-bool CPSolution::isUnvisited(const Vertex* vertex) const {
+bool CPSolutionObserver::isUnvisited(const Vertex* vertex) const {
   assert( cp->visit.contains( vertex ) );
   return !_solution.evaluate( cp->visit.at( vertex ) ).value_or(true);
 }
 
-bool CPSolution::messageFlows( const Vertex* sender, const Vertex* recipient ) {
+bool CPSolutionObserver::messageFlows( const Vertex* sender, const Vertex* recipient ) {
   assert( cp->messageFlow.contains( {sender,recipient} ) );
   return _solution.evaluate( cp->messageFlow.at( {sender,recipient} ) ).value_or(false);
 }
 
 
-std::optional< BPMNOS::number > CPSolution::getTimestamp( const Vertex* vertex ) const {
+std::optional< BPMNOS::number > CPSolutionObserver::getTimestamp( const Vertex* vertex ) const {
   assert( cp->status.contains(vertex) );
   assert( cp->status.at(vertex).size() > BPMNOS::Model::ExtensionElements::Index::Timestamp );
   auto timestamp = _solution.evaluate( cp->status.at(vertex)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value );
@@ -696,18 +696,18 @@ std::optional< BPMNOS::number > CPSolution::getTimestamp( const Vertex* vertex )
   return std::nullopt;
 }
 
-void CPSolution::setTimestamp( const Vertex* vertex, BPMNOS::number timestamp ) {
+void CPSolutionObserver::setTimestamp( const Vertex* vertex, BPMNOS::number timestamp ) {
   _solution.setVariableValue( cp->status.at(vertex)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value, (double)timestamp );
 }
 
-std::optional< BPMNOS::number > CPSolution::getStatusValue( const Vertex* vertex, size_t attributeIndex ) const {
+std::optional< BPMNOS::number > CPSolutionObserver::getStatusValue( const Vertex* vertex, size_t attributeIndex ) const {
   if ( !_solution.evaluate( cp->status.at( vertex )[attributeIndex].defined ).has_value() ||  !_solution.evaluate( cp->status.at( vertex )[attributeIndex].defined ).value() ) {
     return std::nullopt;  
   }
   return _solution.evaluate( cp->status.at(vertex)[attributeIndex].value ).value(); 
 }
 
-void CPSolution::setTriggeredEvent( const Vertex* gateway, const Vertex* event ) {
+void CPSolutionObserver::setTriggeredEvent( const Vertex* gateway, const Vertex* event ) {
 //std::cerr << gateway->reference() << "/" << event->reference() << std::endl;
   assert( event->entry<BPMN::CatchEvent>() );
   assert( gateway->exit<BPMN::EventBasedGateway>() );
@@ -718,7 +718,7 @@ void CPSolution::setTriggeredEvent( const Vertex* gateway, const Vertex* event )
 }
 
 
-void CPSolution::setLocalStatusValue( const Vertex* vertex, size_t attributeIndex, BPMNOS::number value ) {
+void CPSolutionObserver::setLocalStatusValue( const Vertex* vertex, size_t attributeIndex, BPMNOS::number value ) {
   auto& initialStatus = std::get<0>(cp->locals.at(vertex)[0]);
   _solution.setVariableValue( initialStatus[attributeIndex].value, (double)value );
 }

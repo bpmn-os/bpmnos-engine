@@ -21,7 +21,7 @@ class CPSolution;
  * @brief A controller dispatching decisions obtained from a solution of a constraint program
  */
 class CPModel {
-friend class CPSolution;
+friend class CPSolutionObserver;
 public:
   using Vertex = FlattenedGraph::Vertex;
 

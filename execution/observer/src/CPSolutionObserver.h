@@ -1,9 +1,9 @@
-#ifndef BPMNOS_Execution_CPSolution_H
-#define BPMNOS_Execution_CPSolution_H
+#ifndef BPMNOS_Execution_CPSolutionObserver_H
+#define BPMNOS_Execution_CPSolutionObserver_H
 
 #include <bpmn++.h>
-#include "FlattenedGraph.h"
-#include "CPModel.h"
+#include "execution/model/src/FlattenedGraph.h"
+#include "execution/model/src/CPModel.h"
 #include "execution/engine/src/Engine.h"
 #include "execution/engine/src/Observer.h"
 #include "model/bpmnos/src/extensionElements/Gatekeeper.h"
@@ -16,17 +16,16 @@
 #include <memory>
 
 
-
 namespace BPMNOS::Execution {
 
 /**
- * @brief A solution of a constraint program
+ * @brief An observer creating a solution of a constraint program matching process execution
  */
-class CPSolution : public Observer {
+class CPSolutionObserver : public Observer {
 public:
   using Vertex = FlattenedGraph::Vertex;
 
-  CPSolution(const CPModel* cp);
+  CPSolutionObserver(const CPModel* cp);
   void notice(const Observable* observable) override;
   void subscribe(Engine* engine);
   void unsubscribe(Engine* engine);
@@ -79,5 +78,5 @@ public:
 
 } // namespace BPMNOS::Execution
 
-#endif // BPMNOS_Execution_CPSolution_H
+#endif // BPMNOS_Execution_CPSolutionObserver_H
 

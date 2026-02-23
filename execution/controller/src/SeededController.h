@@ -10,7 +10,7 @@
 #include "execution/engine/src/events/TerminationEvent.h"
 #include "execution/model/src/FlattenedGraph.h"
 #include "execution/model/src/CPModel.h"
-#include "execution/model/src/CPSolution.h"
+#include "execution/observer/src/CPSolutionObserver.h"
 #include "dispatcher/ReadyHandler.h"
 #include "dispatcher/DeterministicTaskCompletion.h"
 #include "model/bpmnos/src/extensionElements/Gatekeeper.h"
@@ -93,7 +93,7 @@ public:
   virtual std::shared_ptr<Event> createExitEvent(const SystemState* systemState, const Token* token, const Vertex* vertex) = 0; /// Method creating a choice event from CP solution
   virtual std::shared_ptr<Event> createChoiceEvent(const SystemState* systemState, const Token* token, const Vertex* vertex) = 0; /// Method creating a choice event from CP solution
   virtual std::shared_ptr<Event> createMessageDeliveryEvent(const SystemState* systemState, const Token* token, const Vertex* vertex) = 0; /// Method creating a message delivery event from CP solution
-  std::unique_ptr<CPSolution> _solution;
+  std::unique_ptr<CPSolutionObserver> solutionObserver;
 public:
   const Vertex* entry(const Vertex* vertex) const { return flattenedGraph->entry(vertex); };
   const Vertex* exit(const Vertex* vertex) const { return flattenedGraph->exit(vertex); };

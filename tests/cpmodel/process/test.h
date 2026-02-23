@@ -30,7 +30,7 @@ SCENARIO( "Empty executable process", "[cpmodel][process]" ) {
       recorder.subscribe( &engine );
 
       Execution::CPModel constraintProgramm( &flattenedGraph );
-      Execution::CPSolution solution( &constraintProgramm );
+      Execution::CPSolutionObserver solution( &constraintProgramm );
       solution.subscribe( &engine );
 
       engine.run(scenario.get());
@@ -80,7 +80,7 @@ SCENARIO( "Trivial executable process", "[cpmodel][process]" ) {
       recorder.subscribe( &engine );
 
       Execution::CPModel constraintProgramm( &flattenedGraph );
-      Execution::CPSolution solution( &constraintProgramm );
+      Execution::CPSolutionObserver solution( &constraintProgramm );
       solution.subscribe( &engine );
 
       engine.run(scenario.get());
@@ -130,7 +130,7 @@ SCENARIO( "Simple executable process", "[cpmodel][process]" ) {
       recorder.subscribe( &engine );
 
       Execution::CPModel constraintProgramm( &flattenedGraph );
-      Execution::CPSolution solution( &constraintProgramm );
+      Execution::CPSolutionObserver solution( &constraintProgramm );
       solution.subscribe( &engine );
 
       engine.run(scenario.get());
@@ -177,7 +177,7 @@ SCENARIO( "Simple executable process", "[cpmodel][process]" ) {
       recorder.subscribe( &engine );
 
       Execution::CPModel constraintProgramm( &flattenedGraph );
-      Execution::CPSolution solution( &constraintProgramm );
+      Execution::CPSolutionObserver solution( &constraintProgramm );
       solution.subscribe( &engine );
 
       engine.run(scenario.get());
@@ -214,7 +214,7 @@ SCENARIO( "Simple executable process", "[cpmodel][process]" ) {
       recorder.subscribe( &engine );
 
       Execution::CPModel constraintProgramm( &flattenedGraph );
-      Execution::CPSolution solution( &constraintProgramm );
+      Execution::CPSolutionObserver solution( &constraintProgramm );
       solution.subscribe( &engine );
 
       engine.run(scenario.get());

@@ -29,7 +29,7 @@ SCENARIO( "Decision task with enumeration", "[cpmodel][decisiontask]" ) {
       recorder.subscribe( &engine );
 
       Execution::CPModel constraintProgramm( &flattenedGraph );
-      Execution::CPSolution solution( &constraintProgramm );
+      Execution::CPSolutionObserver solution( &constraintProgramm );
       solution.subscribe( &engine );
 
       engine.run(scenario.get());
@@ -79,7 +79,7 @@ SCENARIO( "Decision task with bounds", "[cpmodel][decisiontask]" ) {
       recorder.subscribe( &engine );
 
       Execution::CPModel constraintProgramm( &flattenedGraph );
-      Execution::CPSolution solution( &constraintProgramm );
+      Execution::CPSolutionObserver solution( &constraintProgramm );
       solution.subscribe( &engine );
 
       engine.run(scenario.get());

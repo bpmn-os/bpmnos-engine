@@ -28,7 +28,7 @@ SCENARIO( "Parallel multi instance task", "[cpmodel][multiinstanceactivity]" ) {
       recorder.subscribe( &engine );
 
       Execution::CPModel constraintProgramm( &flattenedGraph );
-      Execution::CPSolution solution( &constraintProgramm );
+      Execution::CPSolutionObserver solution( &constraintProgramm );
       solution.subscribe( &engine );
 
       engine.run(scenario.get());
@@ -77,7 +77,7 @@ SCENARIO( "Sequential multi instance task", "[cpmodel][multiinstanceactivity]" )
       recorder.subscribe( &engine );
 
       Execution::CPModel constraintProgramm( &flattenedGraph );
-      Execution::CPSolution solution( &constraintProgramm );
+      Execution::CPSolutionObserver solution( &constraintProgramm );
       solution.subscribe( &engine );
 
       engine.run(scenario.get());

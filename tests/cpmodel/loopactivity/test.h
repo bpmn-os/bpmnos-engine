@@ -27,7 +27,7 @@ SCENARIO( "Loop task", "[cpmodel][loopactivity]" ) {
       recorder.subscribe( &engine );
 
       Execution::CPModel constraintProgramm( &flattenedGraph );
-      Execution::CPSolution solution( &constraintProgramm );
+      Execution::CPSolutionObserver solution( &constraintProgramm );
       solution.subscribe( &engine );
 
       engine.run(scenario.get());
@@ -75,7 +75,7 @@ SCENARIO( "Loop subprocess", "[cpmodel][loopactivity]" ) {
       recorder.subscribe( &engine );
 
       Execution::CPModel constraintProgramm( &flattenedGraph );
-      Execution::CPSolution solution( &constraintProgramm );
+      Execution::CPSolutionObserver solution( &constraintProgramm );
       solution.subscribe( &engine );
 
       engine.run(scenario.get());

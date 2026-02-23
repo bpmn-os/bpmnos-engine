@@ -29,7 +29,7 @@ SCENARIO( "Event-based gateway with two timer events", "[cpmodel][eventbasedgate
       recorder.subscribe( &engine );
 
       Execution::CPModel constraintProgramm( &flattenedGraph );
-      Execution::CPSolution solution( &constraintProgramm );
+      Execution::CPSolutionObserver solution( &constraintProgramm );
       solution.subscribe( &engine );
 
       engine.run(scenario.get());
@@ -72,7 +72,7 @@ SCENARIO( "Event-based gateway with two timer events", "[cpmodel][eventbasedgate
       recorder.subscribe( &engine );
 
       Execution::CPModel constraintProgramm( &flattenedGraph );
-      Execution::CPSolution solution( &constraintProgramm );
+      Execution::CPSolutionObserver solution( &constraintProgramm );
       solution.subscribe( &engine );
 
       engine.run(scenario.get());

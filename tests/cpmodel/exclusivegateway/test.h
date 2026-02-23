@@ -28,7 +28,7 @@ SCENARIO( "Symmetric exclusivegateway gateways", "[cpmodel][exclusivegateway]" )
       recorder.subscribe( &engine );
 
       Execution::CPModel constraintProgramm( &flattenedGraph );
-      Execution::CPSolution solution( &constraintProgramm );
+      Execution::CPSolutionObserver solution( &constraintProgramm );
       solution.subscribe( &engine );
 
       engine.run(scenario.get());
@@ -70,7 +70,7 @@ SCENARIO( "Symmetric exclusivegateway gateways", "[cpmodel][exclusivegateway]" )
       recorder.subscribe( &engine );
 
       Execution::CPModel constraintProgramm( &flattenedGraph );
-      Execution::CPSolution solution( &constraintProgramm );
+      Execution::CPSolutionObserver solution( &constraintProgramm );
       solution.subscribe( &engine );
 
       engine.run(scenario.get());
