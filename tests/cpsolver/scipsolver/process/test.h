@@ -94,9 +94,9 @@ SCENARIO( "Simple executable process - SCIP solver", "[scipsolver][process]" ) {
         auto& solution = result.value();
         REQUIRE( solution.complete() );
 if ( solution.errors().size() ) {
-  std::cerr << solution.errors() << std::endl;
-  std::cerr << model.stringify() << std::endl;
-  std::cerr << solution.stringify() << std::endl;
+  std::cerr << "ERRORS: " << solution.errors() << std::endl;
+  std::cerr << "MODEL: " << model.stringify() << std::endl;
+  std::cerr << "SOLUTION: " << solution.stringify() << std::endl;
 }
         
         REQUIRE( solution.errors().empty() );

@@ -25,6 +25,8 @@ SCENARIO( "Decision task with enumeration - Hexaly solver", "[hexalysolver][deci
         REQUIRE( result.has_value() );
 
         auto& solution = result.value();
+        REQUIRE( solution.getStatus() == CP::Solution::Status::OPTIMAL );
+
         REQUIRE( solution.complete() );
 if ( !solution.errors().empty() ) {
   std::cerr << "ERRORS: " << solution.errors() << std::endl;
@@ -32,7 +34,6 @@ if ( !solution.errors().empty() ) {
   std::cerr << "SOLUTION: " << solution.stringify() << std::endl;
 }
         REQUIRE( solution.errors().empty() );
-        REQUIRE( solution.getStatus() == CP::Solution::Status::OPTIMAL );
       }
     }
   }
@@ -66,6 +67,8 @@ SCENARIO( "Decision task with bounds - Hexaly solver", "[hexalysolver][decisiont
         REQUIRE( result.has_value() );
 
         auto& solution = result.value();
+        REQUIRE( solution.getStatus() == CP::Solution::Status::OPTIMAL );
+
         REQUIRE( solution.complete() );
 if ( !solution.errors().empty() ) {
   std::cerr << "ERRORS: " << solution.errors() << std::endl;
@@ -73,7 +76,6 @@ if ( !solution.errors().empty() ) {
   std::cerr << "SOLUTION: " << solution.stringify() << std::endl;
 }
         REQUIRE( solution.errors().empty() );
-        REQUIRE( solution.getStatus() == CP::Solution::Status::OPTIMAL );
       }
     }
   }

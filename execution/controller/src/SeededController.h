@@ -9,8 +9,6 @@
 #include "execution/engine/src/EventDispatcher.h"
 #include "execution/engine/src/events/TerminationEvent.h"
 #include "execution/model/src/FlattenedGraph.h"
-#include "execution/model/src/CPModel.h"
-#include "execution/observer/src/CPSolutionObserver.h"
 #include "dispatcher/ReadyHandler.h"
 #include "dispatcher/DeterministicTaskCompletion.h"
 #include "model/bpmnos/src/extensionElements/Gatekeeper.h"
@@ -27,7 +25,7 @@
 namespace BPMNOS::Execution {
 
 /**
- * @brief A controller dispatching decisions obtained from a solution of a constraint program
+ * @brief A controller dispatching decisions in the order derived from a given seed
  */
 class SeededController : public Controller {
 public:
@@ -89,11 +87,10 @@ public:
   size_t getProgress() const; /// Method returning the number of processed vertices
   void initializePendingVertices(); /// Method creating an initial sequence of vertices
 
-  virtual std::shared_ptr<Event> createEntryEvent(const SystemState* systemState, const Token* token, const Vertex* vertex) = 0; /// Method creating a choice event from CP solution
-  virtual std::shared_ptr<Event> createExitEvent(const SystemState* systemState, const Token* token, const Vertex* vertex) = 0; /// Method creating a choice event from CP solution
-  virtual std::shared_ptr<Event> createChoiceEvent(const SystemState* systemState, const Token* token, const Vertex* vertex) = 0; /// Method creating a choice event from CP solution
-  virtual std::shared_ptr<Event> createMessageDeliveryEvent(const SystemState* systemState, const Token* token, const Vertex* vertex) = 0; /// Method creating a message delivery event from CP solution
-  std::unique_ptr<CPSolutionObserver> solutionObserver;
+  virtual std::shared_ptr<Event> createEntryEvent(const SystemState* systemState, const Token* token, const Vertex* vertex) = 0; /// Method creating a choice event
+  virtual std::shared_ptr<Event> createExitEvent(const SystemState* systemState, const Token* token, const Vertex* vertex) = 0; /// Method creating a choice event
+  virtual std::shared_ptr<Event> createChoiceEvent(const SystemState* systemState, const Token* token, const Vertex* vertex) = 0; /// Method creating a choice event
+  virtual std::shared_ptr<Event> createMessageDeliveryEvent(const SystemState* systemState, const Token* token, const Vertex* vertex) = 0; /// Method creating a message delivery event
 public:
   const Vertex* entry(const Vertex* vertex) const { return flattenedGraph->entry(vertex); };
   const Vertex* exit(const Vertex* vertex) const { return flattenedGraph->exit(vertex); };

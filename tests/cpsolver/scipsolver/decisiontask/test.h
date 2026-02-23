@@ -17,17 +17,23 @@ SCENARIO( "Decision task with enumeration - SCIP solver", "[scipsolver][decision
       Execution::CPModel constraintProgramm( &flattenedGraph );
 
       // Solve with SCIP
-      const auto& cpModel = constraintProgramm.getModel();
-      CP::SCIPSolver solver(cpModel);
-      auto result = solver.solve(cpModel);
+      const auto& model = constraintProgramm.getModel();
+      CP::SCIPSolver solver(model);
+      auto result = solver.solve(model);
 
       THEN( "An optimal solution is found" ) {
         REQUIRE( result.has_value() );
 
         auto& solution = result.value();
-        REQUIRE( solution.complete() );
-        REQUIRE( solution.errors().empty() );
         REQUIRE( solution.getStatus() == CP::Solution::Status::OPTIMAL );
+
+        REQUIRE( solution.complete() );
+if ( !solution.errors().empty() ) {
+  std::cerr << "ERRORS: " << solution.errors() << std::endl;
+  std::cerr << "MODEL: " << model.stringify() << std::endl;
+  std::cerr << "SOLUTION: " << solution.stringify() << std::endl;
+}
+        REQUIRE( solution.errors().empty() );
       }
     }
   }
@@ -53,17 +59,18 @@ SCENARIO( "Decision task with bounds - SCIP solver", "[scipsolver][decisiontask]
       Execution::CPModel constraintProgramm( &flattenedGraph );
 
       // Solve with SCIP
-      const auto& cpModel = constraintProgramm.getModel();
-      CP::SCIPSolver solver(cpModel);
-      auto result = solver.solve(cpModel);
+      const auto& model = constraintProgramm.getModel();
+      CP::SCIPSolver solver(model);
+      auto result = solver.solve(model);
 
       THEN( "An optimal solution is found" ) {
         REQUIRE( result.has_value() );
 
         auto& solution = result.value();
+        REQUIRE( solution.getStatus() == CP::Solution::Status::OPTIMAL );
+
         REQUIRE( solution.complete() );
         REQUIRE( solution.errors().empty() );
-        REQUIRE( solution.getStatus() == CP::Solution::Status::OPTIMAL );
       }
     }
   }
