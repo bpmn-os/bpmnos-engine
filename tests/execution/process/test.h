@@ -244,8 +244,7 @@ SCENARIO( "Constrained executable process", "[execution][process]" ) {
         REQUIRE( activityLog[2]["state"] == "ENTERED" );
         REQUIRE( activityLog[3]["state"] == "BUSY" );
         REQUIRE( activityLog[4]["state"] == "COMPLETED" );
-        REQUIRE( activityLog[5]["state"] == "EXITING" );
-        REQUIRE( activityLog[6]["state"] == "FAILED" );
+        REQUIRE( activityLog[5]["state"] == "FAILED" );
       }
     }
   }

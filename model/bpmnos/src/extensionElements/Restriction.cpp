@@ -15,6 +15,9 @@ Restriction::Restriction(XML::bpmnos::tRestriction* restriction, const Attribute
     if ( restriction->scope->get().value.value == "entry" ) {
       scope = Scope::ENTRY;
     }
+    else if ( restriction->scope->get().value.value == "completion" ) {
+      scope = Scope::COMPLETION;
+    }
     else if ( restriction->scope->get().value.value == "exit" ) {
       scope = Scope::EXIT;
     }

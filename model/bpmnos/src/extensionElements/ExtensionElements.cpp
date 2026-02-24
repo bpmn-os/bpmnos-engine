@@ -99,19 +99,28 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const
         catch ( const std::exception& error ) {
           throw std::runtime_error("ExtensionElements: illegal restriction '" + (std::string)restriction.id.value + "'.\n" + error.what());
         }
-        // add entry and exit dependencies
+        // add dependencies
         for ( auto input : restrictions.back()->expression.inputs ) {
-          if ( restrictions.back()->scope != Restriction::Scope::EXIT ) {
+          if ( restrictions.back()->scope == Restriction::Scope::ENTRY ) {
             entryDependencies.insert(input);
           }
-          if ( restrictions.back()->scope != Restriction::Scope::ENTRY ) {
+          else if ( restrictions.back()->scope == Restriction::Scope::COMPLETION ) {
+            completionDependencies.insert(input);
+          }
+          else if ( restrictions.back()->scope == Restriction::Scope::EXIT ) {
+            exitDependencies.insert(input);
+          }
+          else {
+            // Restriction::Scope::FULL
+            entryDependencies.insert(input);
+            completionDependencies.insert(input);
             exitDependencies.insert(input);
           }
         }
       }
     }
 
-    // recursively determine entry and exit dependencies
+    // recursively determine dependencies
     auto ancestor = parent;
     while ( ancestor ) {
       if ( auto extensionElements = ancestor->extensionElements->represents<BPMNOS::Model::ExtensionElements>() ) {
@@ -119,6 +128,7 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const
           for ( auto input : restriction->expression.inputs ) {
             if ( restriction->scope == Restriction::Scope::FULL ) {
               entryDependencies.insert(input);
+              completionDependencies.insert(input);
               exitDependencies.insert(input);
             }
           }
@@ -301,7 +311,10 @@ const MessageDefinition* ExtensionElements::getMessageDefinition(const BPMNOS::V
 template <typename DataType>
 bool ExtensionElements::feasibleEntry(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const {
   for ( auto& restriction : restrictions ) {
-    if ( restriction->scope != Restriction::Scope::EXIT && !restriction->isSatisfied(status,data,globals) ) {
+    if (
+      ( restriction->scope == Restriction::Scope::ENTRY || restriction->scope == Restriction::Scope::FULL )
+      && !restriction->isSatisfied(status,data,globals)
+    ) {
       return false;
     }
   }
@@ -312,9 +325,28 @@ template bool ExtensionElements::feasibleEntry<BPMNOS::Values>(const BPMNOS::Val
 template bool ExtensionElements::feasibleEntry<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data, const BPMNOS::Values& globals) const;
 
 template <typename DataType>
+bool ExtensionElements::feasibleCompletion(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const {
+  for ( auto& restriction : restrictions ) {
+    if (
+      ( restriction->scope == Restriction::Scope::COMPLETION || restriction->scope == Restriction::Scope::FULL )
+      && !restriction->isSatisfied(status,data,globals)
+    ) {
+      return false;
+    }
+  }
+  return satisfiesInheritedRestrictions(status,data,globals);
+}
+
+template bool ExtensionElements::feasibleCompletion<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data, const BPMNOS::Values& globals) const;
+template bool ExtensionElements::feasibleCompletion<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data, const BPMNOS::Values& globals) const;
+
+template <typename DataType>
 bool ExtensionElements::feasibleExit(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const {
   for ( auto& restriction : restrictions ) {
-    if ( restriction->scope != Restriction::Scope::ENTRY && !restriction->isSatisfied(status,data,globals) ) {
+    if (
+      ( restriction->scope == Restriction::Scope::EXIT || restriction->scope == Restriction::Scope::FULL )
+      && !restriction->isSatisfied(status,data,globals)
+    ) {
       return false;
     }
   }

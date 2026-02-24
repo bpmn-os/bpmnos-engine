@@ -287,6 +287,17 @@ bool Token::entryIsFeasible() const {
   return node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->feasibleEntry(status,*data,globals);
 }
 
+bool Token::completionIsFeasible() const {
+  if ( !node ) {
+//std::cerr << stateName[(int)state] << "/" << owner->scope->id <<std::endl;
+    assert( owner->process->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );
+    return owner->process->extensionElements->as<BPMNOS::Model::ExtensionElements>()->feasibleCompletion(status,*data,globals);
+  }
+
+  assert( node->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );
+  return node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->feasibleCompletion(status,*data,globals);
+}
+
 bool Token::exitIsFeasible() const {
   if ( !node ) {
 //std::cerr << stateName[(int)state] << "/" << owner->scope->id <<std::endl;
@@ -756,7 +767,7 @@ void Token::advanceToCompleted() {
 
 //std::cerr << "check restrictions" << std::endl;
   // check restrictions
-    if ( !exitIsFeasible() ) {
+    if ( !completionIsFeasible() ) {
 //std::cerr << "infeasible: " << jsonify().dump() <<  std::endl;
       engine->commands.emplace_back(std::bind(&Token::advanceToFailed,this), this);
       return;
@@ -774,7 +785,7 @@ void Token::advanceToCompleted() {
 //std::cerr << activity->id << " is for compensation: " << activity->isForCompensation << std::endl;
       if ( activity->isForCompensation ) {
         // final state for compensation activity reached
-        if ( !exitIsFeasible() ) {
+        if ( !completionIsFeasible() ) {
           engine->commands.emplace_back(std::bind(&Token::advanceToFailed,this), this);
           return;
         }
@@ -786,6 +797,11 @@ void Token::advanceToCompleted() {
         const_cast<SystemState*>(owner->systemState)->contributionsToObjective += node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->getContributionToObjective(status,*data,globals);
       }
       else {
+        // check restrictions
+        if ( !completionIsFeasible() ) {
+          engine->commands.emplace_back(std::bind(&Token::advanceToFailed,this), this);
+          return;
+        }
         awaitExitEvent();
       }
       return;
@@ -878,7 +894,8 @@ std::cerr << "Context: " << context << " at " << context->scope->id << " has " <
       // check entry scope restrictions of event-subprocess
 //std::cerr << "check entry scope restrictions of event-subprocess" << std::endl;
       assert( node->parent->represents<BPMN::EventSubProcess>()->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );
-      auto extensionElements = node->parent->represents<BPMN::EventSubProcess>()->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+      auto eventSubProcess = node->parent;
+      auto extensionElements = eventSubProcess->represents<BPMN::EventSubProcess>()->extensionElements->as<BPMNOS::Model::ExtensionElements>();
       if ( !extensionElements->feasibleEntry(status,*data,globals) ) {
         engine->commands.emplace_back(std::bind(&Token::advanceToFailed,this), this);
       }

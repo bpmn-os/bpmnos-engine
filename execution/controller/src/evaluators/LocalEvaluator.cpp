@@ -67,8 +67,7 @@ bool LocalEvaluator::updateValues(ChoiceDecision* decision, Values& status, Valu
   auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   assert(extensionElements);
   extensionElements->applyOperators(status,data,globals);
-  // feasibility of exit may become true later due to time advancing or data and globals being changed
-  return extensionElements->fullScopeRestrictionsSatisfied(status,data,globals);
+  return extensionElements->feasibleCompletion(status,data,globals);
 }
 
 bool LocalEvaluator::updateValues(MessageDeliveryDecision* decision, Values& status, Values& data, Values& globals) {
@@ -93,7 +92,7 @@ bool LocalEvaluator::updateValues(MessageDeliveryDecision* decision, Values& sta
 
   // check feasibility
   if ( token->node->represents<BPMN::ReceiveTask>() ) {
-    return extensionElements->fullScopeRestrictionsSatisfied(status,data,globals);
+    return extensionElements->feasibleCompletion(status,data,globals);
   }
   else if ( token->node->represents<BPMN::MessageStartEvent>() ) {
     return extensionElements->feasibleEntry(status,data,globals);
@@ -206,7 +205,6 @@ std::set<const BPMNOS::Model::Attribute*> LocalEvaluator::getDependencies(EntryD
     !token->node->represents<BPMNOS::Model::DecisionTask>()
   ) {
     dependencies.insert(extensionElements->operatorDependencies.begin(), extensionElements->operatorDependencies.end());
-//    dependencies.insert(extensionElements->exitDependencies.begin(), extensionElements->exitDependencies.end());
   }
   return dependencies;
 }
@@ -228,7 +226,10 @@ std::set<const BPMNOS::Model::Attribute*> LocalEvaluator::getDependencies(Choice
   auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   assert(extensionElements);
 
+
   std::set<const BPMNOS::Model::Attribute*> dependencies = extensionElements->operatorDependencies;
+
+  dependencies.insert(extensionElements->completionDependencies.begin(), extensionElements->completionDependencies.end());
 
   // add expression dependencies
   for ( auto& choice : extensionElements->choices ) {
@@ -242,9 +243,19 @@ std::set<const BPMNOS::Model::Attribute*> LocalEvaluator::getDependencies(Messag
   std::set<const BPMNOS::Model::Attribute*> dependencies;
   auto token = decision->token;
 
+/* 
+  // THIS SHOULD NOT BE NEEDED
   if ( token->node->represents<BPMN::SendTask>() ) {
     auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
     assert(extensionElements);
+    dependencies.insert(extensionElements->completionDependencies.begin(), extensionElements->completionDependencies.end());
+    dependencies.insert(extensionElements->operatorDependencies.begin(), extensionElements->operatorDependencies.end());
+  }
+*/
+  if ( token->node->represents<BPMN::ReceiveTask>() ) {
+    auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+    assert(extensionElements);
+    dependencies.insert(extensionElements->completionDependencies.begin(), extensionElements->completionDependencies.end());
     dependencies.insert(extensionElements->operatorDependencies.begin(), extensionElements->operatorDependencies.end());
   }
   else if ( token->node->represents<BPMN::MessageStartEvent>() ) {

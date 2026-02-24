@@ -38,9 +38,10 @@ public:
   std::vector< std::unique_ptr<Choice> > choices;
 
   std::set<const Attribute*> entryDependencies; ///< Set containing all input attributes influencing the entry feasibility.
+  std::set<const Attribute*> completionDependencies; ///< Set containing all input attributes influencing completion feasibility.
   std::set<const Attribute*> exitDependencies; ///< Set containing all input attributes influencing the exit feasibility.
   std::set<const Attribute*> operatorDependencies; ///< Set containing all input attributes influencing the result of applying all operators.
-  std::set<const Attribute*> choiceDependencies; ///< Set containing all input attributes influencing the result of making choices.
+  std::set<const Attribute*> choiceDependencies; ///< Set containing all input attributes influencing the allowed alternatives when making choices.
 
   std::vector< std::unique_ptr<Attribute> > data;  ///< Vector containing data attributes declared for data objects within the node's scope.
 
@@ -63,6 +64,9 @@ public:
 
   template <typename DataType>
   bool feasibleEntry(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const;
+
+  template <typename DataType>
+  bool feasibleCompletion(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const;
   
   template <typename DataType>
   bool feasibleExit(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const;

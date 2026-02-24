@@ -8,7 +8,7 @@ After the start event is triggered, the state is advanced @ref BPMNOS::Execution
 If the respective @ref BPMN::EventSubProcess "event-subprocesses" is interrupting, all other tokens within the scope of the event-subrocess are withdrawn.
 Otherwise, a new token is created allowing the event-subprocess to be triggered again.
 
-After completion, the entry scope restrictions of the event-subprocess are checked.
+After completion, the entry scope restrictions of the @ref BPMN::EventSubProcess are checked.
 If the restrictions are violated, the state is changed to @ref BPMNOS::Execution::Token::State::FAILED "FAILED".
 Otherwise, the operators of the event-subprocess are applied and the state is changed to @ref BPMNOS::Execution::Token::State::EXITING "EXITING".
 Then, the full scope restrictions of the context are validated and either a failure is raised or the token state is changed to @ref BPMNOS::Execution::Token::State::DEPARTED "DEPARTED" or @ref BPMNOS::Execution::Token::State::DONE "DONE".
@@ -33,9 +33,6 @@ stateDiagram-v2
     DONE --> [*]
     FAILED --> [*]
 </pre>
-
-
-
 
 
 @attention @ref BPMN::TypedStartEvent "Typed start events" are only supported for @ref BPMN::EventSubProcess "event-subprocesses".

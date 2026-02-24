@@ -78,6 +78,7 @@ private:
   void releaseSequentialPerformer();
 
   bool entryIsFeasible() const; ///< Check restrictions within current and ancestor scopes
+  bool completionIsFeasible() const; ///< Check restrictions within current and ancestor scopes
   bool exitIsFeasible() const; ///< Check restrictions within current and ancestor scopes
 //  bool satisfiesInheritedRestrictions() const; ///< Check restrictions within ancestor scopes
 

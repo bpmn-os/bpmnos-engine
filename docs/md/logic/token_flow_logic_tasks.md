@@ -27,7 +27,9 @@ stateDiagram-v2
     feasibleEntry --> FAILED: [infeasible]
     BUSY --> COMPLETED: completion event
     BUSY --> FAILED: failure
-    COMPLETED --> EXITING: exit event
+    COMPLETED --> feasibleCompletion
+    feasibleCompletion --> EXITING: [feasible] exit event
+    feasibleCompletion --> FAILED: [infeasible]
     EXITING --> feasibleExit
     feasibleExit --> departure: [feasible]
     note left of departure
@@ -63,10 +65,7 @@ If any of the @ref BPMNOS::Model::ExtensionElements::restrictions "restrictions"
 Otherwise, the @ref BPMNOS::Execution::Token::state "token state" is updated to @ref BPMNOS::Execution::Token::State::BUSY "BUSY".
 
 
-
-
 ## BUSY
-
 
 For a task which is not a @ref BPMN::SendTask  "send task", @ref BPMN::ReceiveTask  "receive task" or @ref BPMNOS::Model::DecisionTask "decision task",
  the @ref BPMNOS::Model::ExtensionElements::operators "operators" are applied to update the @ref BPMNOS::Execution::Token::status "status" of the token.
@@ -88,10 +87,11 @@ Otherwise, the @ref BPMNOS::Execution::Token::state "token state" is directly up
 
 When a token at a task with a @ref BPMN::CompensateBoundaryEvent "compensate boundary event" reaches  @ref BPMNOS::Execution::Token::State::COMPLETED "COMPLETED" state, a token is created at this boundary event.
 
-A token in  @ref BPMNOS::Execution::Token::State::COMPLETED "COMPLETED" state waits for an @ref BPMNOS::Execution::ExitEvent "exit event" indicating that a decision is made to leave the activity. 
+After completion, feasibility of the @ref BPMNOS::Execution::Token::status "token status" is validated.
+If any of the @ref BPMNOS::Model::ExtensionElements::restrictions "restrictions" is violated,  the @ref BPMNOS::Execution::Token::state "token state" is updated to @ref BPMNOS::Execution::Token::State::FAILED "FAILED".
+
+Otherwise, the token in  @ref BPMNOS::Execution::Token::State::COMPLETED "COMPLETED" state waits for an @ref BPMNOS::Execution::ExitEvent "exit event" indicating that a decision is made to leave the activity. 
 When the event occurs the token state is updated to  @ref BPMNOS::Execution::Token::State::EXITING "EXITING".
-
-
 
 ## EXITING
 Feasibility of the @ref BPMNOS::Execution::Token::status "token status" is validated.

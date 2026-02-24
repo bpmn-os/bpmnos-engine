@@ -22,7 +22,7 @@ public:
   std::string& id;
   const Expression expression;
 
-  enum class Scope { ENTRY, EXIT, FULL };
+  enum class Scope { ENTRY, COMPLETION, EXIT, FULL };
   Scope scope;
 
 /**

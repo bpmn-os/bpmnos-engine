@@ -24,10 +24,12 @@ stateDiagram-v2
     READY --> ENTERED: entry event
     ENTERED --> feasibleEntry
     feasibleEntry --> BUSY: [feasible]
-    feasibleEntry --> FAILED: [infeasible]
+    feasibleEntry --> FAILING: [infeasible]
     BUSY --> COMPLETED
     BUSY --> FAILING: failure
-    COMPLETED --> EXITING: exit event
+    COMPLETED --> feasibleCompletion
+    feasibleCompletion --> EXITING: [feasible] exit event
+    feasibleCompletion --> FAILING: [infeasible]
     EXITING --> feasibleExit
     feasibleExit --> departure: [feasible]
     note left of departure
@@ -93,19 +95,19 @@ All tokens within the scope of the process (excluding those created for compensa
 
 When all tokens within the scope of the (ad-hoc) subprocess have reached @ref BPMNOS::Execution::Token::State::DONE "DONE" state and no event subprocess is running, the @ref BPMNOS::Execution::Token::status "status" of the (ad-hoc) subprocess token is updated with the merged status of all these tokens within the scope. All child tokens are disposed  (including those at start events of  @ref BPMN::EventSubProcess "event subprocesses") before the @ref BPMNOS::Execution::Token::state "state" of the (ad-hoc) subprocess token is updated to @ref BPMNOS::Execution::Token::State::COMPLETED "COMPLETED".
 
-An (ad-hoc) subprocess also completes if
- an @ref BPMN::EventSubProcess "event subprocess" with a @ref BPMN::TypedStartEvent "start event" that is @ref BPMN::TypedStartEvent::isInterrupting "interrupting" completes successfully.
+An (ad-hoc) subprocess also completes if an @ref BPMN::EventSubProcess "event subprocess" with a @ref BPMN::TypedStartEvent "start event" that is @ref BPMN::TypedStartEvent::isInterrupting "interrupting" completes successfully.
  In such a case, the @ref BPMNOS::Execution::Token::status "token status" of the (ad-hoc) subprocess is analogously updated with the merged status of all tokens in @ref BPMNOS::Execution::Token::State::DONE "DONE" state within the scope of the interrupting event subprocess. All of these tokens are disposed before the @ref BPMNOS::Execution::Token::state "state" of the (ad-hoc) subprocess token is updated to @ref BPMNOS::Execution::Token::State::COMPLETED "COMPLETED".
-
 
 ## COMPLETED
 
 When a token at the (ad-hoc) subprocess with an @ref BPMN::EventSubProcess "event subprocess" with a @ref BPMN::CompensateStartEvent "compensate start event" reaches  @ref BPMNOS::Execution::Token::State::COMPLETED "COMPLETED" state, a token is created at this start event.
 If the (ad-hoc) subprocess has a @ref BPMN::CompensateBoundaryEvent "compensate boundary event", a token is created at this boundary event.
 
-A token in  @ref BPMNOS::Execution::Token::State::COMPLETED "COMPLETED" state waits for an @ref BPMNOS::Execution::ExitEvent "exit event" indicating that a decision is made to leave the activity.
-When the event occurs the token state is updated to  @ref BPMNOS::Execution::Token::State::EXITING "EXITING".
+After completion, feasibility of the @ref BPMNOS::Execution::Token::status "token status" is validated.
+If any of the @ref BPMNOS::Model::ExtensionElements::restrictions "restrictions" is violated,  the @ref BPMNOS::Execution::Token::state "token state" is updated to @ref BPMNOS::Execution::Token::State::FAILING "FAILING".
 
+Otherwise, the token in  @ref BPMNOS::Execution::Token::State::COMPLETED "COMPLETED" state waits for an @ref BPMNOS::Execution::ExitEvent "exit event" indicating that a decision is made to leave the activity.
+When the event occurs, the token state is updated to  @ref BPMNOS::Execution::Token::State::EXITING "EXITING".
 
 ## EXITING
 Feasibility of the @ref BPMNOS::Execution::Token::status "token status" is validated.

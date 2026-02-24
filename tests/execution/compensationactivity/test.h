@@ -328,7 +328,7 @@ SCENARIO( "Multi instance compensation", "[execution][compensation][multiinstanc
         REQUIRE( failureLog.size() == 1 ); // Second exit triggers error
 
         auto exitLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "EXITING"}});
-        REQUIRE( exitLog.size() == 2 ); // Failure of second exit triggers compensation
+        REQUIRE( exitLog.size() == 1 ); // Failure of second completion triggers compensation before exit
 
         auto compensationLog = recorder.find(nlohmann::json{{"nodeId","CompensateBoundaryEvent_1"},{"state", "COMPLETED"}});
         REQUIRE( compensationLog.size() == 2 );

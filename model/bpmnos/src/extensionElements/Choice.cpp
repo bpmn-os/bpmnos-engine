@@ -200,7 +200,12 @@ std::vector<BPMNOS::number> Choice::getEnumeration(const BPMNOS::Values& status,
     auto [LB, UB] = getBounds(status, data, globals);
     auto discretizer = multipleOf->execute(status, data, globals);
     if ( !discretizer.has_value() ) {
-      throw std::runtime_error("Choice: cannot determine discretizer for '" + multipleOf->expression + "'");
+      if ( attribute->type == BPMNOS::ValueType::BOOLEAN || attribute->type == BPMNOS::ValueType::INTEGER ) {
+        discretizer = 1;
+      }
+      else {
+        throw std::runtime_error("Choice: cannot determine discretizer for '" + multipleOf->expression + "'");
+      }
     }
     BPMNOS::number DELTA = std::abs((double)discretizer.value());
     for ( BPMNOS::number value = (double)DELTA * std::ceil((double)LB / (double)DELTA); value <= UB; value += DELTA ) {

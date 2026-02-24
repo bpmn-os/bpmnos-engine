@@ -236,8 +236,7 @@ SCENARIO( "Constrained executable process", "[execution][subprocess]" ) {
         REQUIRE( taskLog[2]["state"] == "ENTERED" );
         REQUIRE( taskLog[3]["state"] == "BUSY" );
         REQUIRE( taskLog[4]["state"] == "COMPLETED" );
-        REQUIRE( taskLog[5]["state"] == "EXITING" );
-        REQUIRE( taskLog[6]["state"] == "FAILED" );
+        REQUIRE( taskLog[5]["state"] == "FAILED" );
 
       }
     }
