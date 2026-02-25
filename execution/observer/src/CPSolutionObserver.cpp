@@ -116,8 +116,7 @@ void CPSolutionObserver::synchronize(const Token* token) {
 
     // event-subprocess is triggered
     _solution.setVariableValue( cp->visit.at(vertex), true );
-    // for typed start events data and globals remain unchanged upon completion
-    // operators of event-subprocess are applied after completion
+    // for typed start events, operators of event-subprocess are applied before completion
     synchronizeData(*token->data,entry(vertex));
     synchronizeGlobals(token->globals,entry(vertex));
   }
