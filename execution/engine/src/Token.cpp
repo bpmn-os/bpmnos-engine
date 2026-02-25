@@ -735,13 +735,33 @@ void Token::advanceToCompleted() {
   
   if ( node ) {
     // operators of send task, receive task, and decision task are applied on completion
-    if ( 
+    if (
       node->represents<BPMN::ReceiveTask>() ||
-      node->represents<BPMNOS::Model::DecisionTask>() 
+      node->represents<BPMNOS::Model::DecisionTask>()
     ) {
       if ( auto extensionElements = node->extensionElements->represents<BPMNOS::Model::ExtensionElements>() ) {
         if ( !extensionElements->isInstantaneous ) {
           throw std::runtime_error("Token: Operators for task '" + node->id + "' attempt to modify timestamp");
+        }
+        extensionElements->applyOperators(status,*data,globals);
+        // notify about data update
+        if ( extensionElements->dataUpdate.global ) {
+          owner->systemState->engine->notify( DataUpdate( extensionElements->dataUpdate.attributes ) );
+        }
+        else {
+          owner->systemState->engine->notify( DataUpdate( owner->root->instance.value(), extensionElements->dataUpdate.attributes ) );
+        }
+      }
+    }
+    // operators of event subprocesses are applied on completion of typed start event
+    else if ( node->represents<BPMN::TypedStartEvent>() ) {
+      auto eventSubProcess = node->parent->represents<BPMN::EventSubProcess>();
+      if ( !eventSubProcess ) {
+        throw std::runtime_error("Token: typed start event must belong to event subprocess");
+      }
+      if ( auto extensionElements = eventSubProcess->extensionElements->represents<BPMNOS::Model::ExtensionElements>() ) {
+        if ( !extensionElements->isInstantaneous ) {
+          throw std::runtime_error("Token: Operators for event-subprocess '" + eventSubProcess->id + "' attempt to modify timestamp");
         }
         extensionElements->applyOperators(status,*data,globals);
         // notify about data update
@@ -899,8 +919,11 @@ std::cerr << "Context: " << context << " at " << context->scope->id << " has " <
       if ( !extensionElements->feasibleEntry(status,*data,globals) ) {
         engine->commands.emplace_back(std::bind(&Token::advanceToFailed,this), this);
       }
+      else if ( node->outgoing.empty() ) {
+        engine->commands.emplace_back(std::bind(&Token::advanceToDone,this), this);
+      }
       else {
-        engine->commands.emplace_back(std::bind(&Token::advanceToExiting,this), this);
+        advanceToDeparting();
       }
       return;
     }
@@ -931,49 +954,8 @@ void Token::advanceToExiting() {
     throw std::runtime_error("Token: exit timestamp at node '" + node->id + "' is larger than current time");
   }
 
-  if ( node && node->represents<BPMN::TypedStartEvent>() ) {
-    // attribute values of event subprocesses are computed when exiting typed start event  
-    auto eventSubProcess = node->parent->represents<BPMN::EventSubProcess>();
-    if ( !eventSubProcess ) {
-      throw std::runtime_error("Token: typed start event must belong to event subprocess");
-    }
-    if ( auto extensionElements = owner->scope->extensionElements->represents<BPMNOS::Model::ExtensionElements>() ) {
-      if ( !extensionElements->isInstantaneous ) {
-        throw std::runtime_error("Token: Operators for event-subprocess '" + node->parent->id + "' attempt to modify timestamp");
-      }
-      // update status
-      status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = owner->systemState->currentTime;
-      extensionElements->applyOperators(status,*data,globals);
-
-      // notify about data update
-      if ( extensionElements->dataUpdate.global ) {
-        owner->systemState->engine->notify( DataUpdate( extensionElements->dataUpdate.attributes ) );
-      }
-      else {
-        owner->systemState->engine->notify( DataUpdate( owner->root->instance.value(), extensionElements->dataUpdate.attributes ) );
-      }
-    }
-  }
-  
   update(State::EXITING);
 
-  if ( node && node->represents<BPMN::TypedStartEvent>() ) {
-    // check full scope restrictions of event-subprocess
-    auto eventSubProcess = node->parent->represents<BPMN::EventSubProcess>();
-    assert(eventSubProcess);
-//std::cerr << "check full scope restrictions of event-subprocess" << std::endl;
-    if ( !eventSubProcess->extensionElements->as<BPMNOS::Model::ExtensionElements>()->fullScopeRestrictionsSatisfied(status,*data,globals) ) {
-      engine->commands.emplace_back(std::bind(&Token::advanceToFailed,this), this);
-    }
-    else if ( node->outgoing.empty() ) {
-      engine->commands.emplace_back(std::bind(&Token::advanceToDone,this), this);
-    }
-    else {
-      advanceToDeparting();
-    }
-    return;
-  }
-  
   // check restrictions
   if ( !exitIsFeasible() ) {
     engine->commands.emplace_back(std::bind(&Token::advanceToFailed,this), this);

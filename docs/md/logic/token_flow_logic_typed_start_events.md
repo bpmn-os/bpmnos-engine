@@ -2,31 +2,26 @@
 @page token_flow_logic_typed_start_events Typed start events
 
 The state of a token at a typed start event is immediately advanced from @ref BPMNOS::Execution::Token::State::ENTERED "ENTERED" to @ref BPMNOS::Execution::Token::State::BUSY "BUSY" and awaits the trigger.
-If the token is at a @ref BPMN::MessageStartEvent "message start event", the @ref BPMNOS::Model::Content "message content" is used to update the @ref BPMNOS::Execution::Token::status "status" of the token. Thereafter, the @ref BPMNOS::Model::ExtensionElements::operators "operators" of the respective event-subprocess are applied.
+If the token is at a @ref BPMN::MessageStartEvent "message start event", the @ref BPMNOS::Model::Content "message content" is used to update the @ref BPMNOS::Execution::Token::status "status" of the token.
 
-After the start event is triggered, the state is advanced @ref BPMNOS::Execution::Token::State::COMPLETED "COMPLETED".
-If the respective @ref BPMN::EventSubProcess "event-subprocesses" is interrupting, all other tokens within the scope of the event-subrocess are withdrawn.
+After the start event is triggered, the @ref BPMNOS::Model::ExtensionElements::operators "operators" of the respective event-subprocess are applied and the state is advanced to @ref BPMNOS::Execution::Token::State::COMPLETED "COMPLETED".
+If the respective @ref BPMN::EventSubProcess "event-subprocesses" is interrupting, all other tokens within the scope of the event-subprocess are withdrawn.
 Otherwise, a new token is created allowing the event-subprocess to be triggered again.
 
 After completion, the entry scope restrictions of the @ref BPMN::EventSubProcess are checked.
 If the restrictions are violated, the state is changed to @ref BPMNOS::Execution::Token::State::FAILED "FAILED".
-Otherwise, the operators of the event-subprocess are applied and the state is changed to @ref BPMNOS::Execution::Token::State::EXITING "EXITING".
-Then, the full scope restrictions of the context are validated and either a failure is raised or the token state is changed to @ref BPMNOS::Execution::Token::State::DEPARTED "DEPARTED" or @ref BPMNOS::Execution::Token::State::DONE "DONE".
+Otherwise, the token state is changed to @ref BPMNOS::Execution::Token::State::DEPARTED "DEPARTED" or @ref BPMNOS::Execution::Token::State::DONE "DONE".
 
 <pre class="mermaid">
 stateDiagram-v2
     state feasibleEntry <<choice>>
-    state feasibleExit <<choice>>
     state departure <<choice>>
     [*] --> ENTERED
     ENTERED --> BUSY
     BUSY --> COMPLETED: trigger
     COMPLETED --> feasibleEntry
-    feasibleEntry --> EXITING: [feasible]
+    feasibleEntry --> departure: [feasible]
     feasibleEntry --> FAILED: [infeasible]
-    EXITING --> feasibleExit
-    feasibleExit --> departure: [feasible]
-    feasibleExit --> FAILED: [infeasible]
     departure --> DEPARTED: [outgoing sequence flow]
     departure --> DONE: [no outgoing sequence flow]
     DEPARTED --> [*]

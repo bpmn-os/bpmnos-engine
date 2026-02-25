@@ -270,7 +270,7 @@ void SeededController::synchronizeSolution(const Token* token) {
     // token at flow node, but with irrelevant state
     return;
   }
-  if ( token->node && token->state != Token::State::EXITING && token->node->represents<BPMN::TypedStartEvent>() ) {
+  if ( token->node && token->state != Token::State::COMPLETED && token->node->represents<BPMN::TypedStartEvent>() ) {
     // token at typed start event, but not triggered
     return;
   }
