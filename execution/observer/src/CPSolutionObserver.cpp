@@ -117,8 +117,8 @@ void CPSolutionObserver::synchronize(const Token* token) {
     // event-subprocess is triggered
     _solution.setVariableValue( cp->visit.at(vertex), true );
     // for typed start events, operators of event-subprocess are applied before completion
-    synchronizeData(*token->data,entry(vertex));
-    synchronizeGlobals(token->globals,entry(vertex));
+    synchronizeData(*token->data,vertex);
+    synchronizeGlobals(token->globals,vertex);
   }
   else if ( token->node && token->state == Token::State::WITHDRAWN && token->node->represents<BPMN::TypedStartEvent>() ) {
     // event-subprocess is not triggered

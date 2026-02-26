@@ -15,6 +15,12 @@ CPModel::CPModel(const BPMNOS::Execution::FlattenedGraph* flattenedGraph, Config
  , flattenedGraph(flattenedGraph)
  , model(CP::Model::ObjectiveSense::MAXIMIZE)
 {
+  if ( this->config.instantEntry ) {
+    throw std::runtime_error("CPModel: instant entry is not supported");
+  }
+  if ( !this->config.instantExit ) {
+    throw std::runtime_error("CPModel: non-instant exit is not supported");
+  }
 //std::cerr << "Flattened graph: " << flattenedGraph->jsonify().dump() << std::endl;
   // Set collection lookup on model (caller responsible for bounds)
   model.setCollectionLookup(
@@ -1938,7 +1944,8 @@ void CPModel::createRestrictions(const Vertex* vertex) {
   
   for ( auto& restriction : extensionElements->restrictions ) {
     if ( 
-      ( vertex->type == Vertex::Type::ENTRY && restriction->scope != Model::Restriction::Scope::EXIT ) ||
+      restriction->scope == Model::Restriction::Scope::FULL ||
+      ( vertex->type == Vertex::Type::ENTRY && restriction->scope == Model::Restriction::Scope::ENTRY ) ||
       ( vertex->type == Vertex::Type::EXIT && restriction->scope != Model::Restriction::Scope::ENTRY )
     ) {
       // create constraints

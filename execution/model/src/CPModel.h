@@ -27,8 +27,8 @@ public:
   using Vertex = FlattenedGraph::Vertex;
 
   struct Config {
-    bool instantEntry = false;
-    bool instantExit = false;
+    bool instantEntry = false; // instant entry is not supported
+    bool instantExit = true; // non-instant exit is not supported
   };
   static Config default_config() { return {}; } // Work around for compiler bug see: https://stackoverflow.com/questions/53408962/try-to-understand-compiler-error-message-default-member-initializer-required-be/75691051#75691051
   CPModel(const BPMNOS::Execution::FlattenedGraph* flattenedGraph, Config config = default_config());

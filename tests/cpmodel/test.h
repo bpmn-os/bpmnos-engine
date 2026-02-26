@@ -36,6 +36,7 @@
 // Event subprocesses
 #include "eventsubprocess/test.h"
 
+/*
 // Examples
 #include "examples/assignment_problem/test.h"
 #include "examples/travelling_salesperson_problem/test.h"
@@ -45,7 +46,7 @@
 #include "examples/pickup_delivery_problem/test.h"
 #include "examples/job_shop_scheduling_problem/test.h"
 //#include "examples/truck_driver_scheduling_problem/test.h"
-
+*/
 
 /*
 //#include "request/test.h" // TODO: Check allocation id in content of request message
@@ -61,20 +62,5 @@
 // Compensations
 #include "compensationactivity/test.h"
 #include "compensationeventsubprocess/test.h"
-*/
-
-/*
-// Examples
-#include "examples/bin_packing_problem/test.h" 
-#include "examples/guided_bin_packing_problem/test.h"
-#include "examples/assignment_problem/test.h"
-#include "examples/job_shop_scheduling_problem/test.h"
-#include "examples/knapsack_problem/test.h"
-#include "examples/guided_knapsack_problem/test.h"
-#include "examples/vehicle_routing_problem/test.h"
-#include "examples/guided_vehicle_routing_problem/test.h"
-#include "examples/pickup_delivery_problem/test.h"
-//#include "examples/guided_pickup_delivery_problem/test.h" // TODO
-#include "examples/truck_driver_scheduling_problem/test.h"
 */
 
