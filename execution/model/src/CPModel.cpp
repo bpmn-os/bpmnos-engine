@@ -1,4 +1,5 @@
 #include "CPModel.h"
+#include "model/utility/src/encode_quoted_strings.h"
 #include "model/bpmnos/src/DecisionTask.h"
 #include "model/bpmnos/src/SequentialAdHocSubProcess.h"
 #include "model/bpmnos/src/extensionElements/ExtensionElements.h"
@@ -952,7 +953,7 @@ std::pair< CP::Expression, CP::Expression > CPModel::getLocalAttributeVariables(
 }
 
 CP::Expression CPModel::createOperatorExpression( const Model::Expression& operator_, std::tuple< std::vector<AttributeVariables>, std::vector<AttributeVariables>, std::vector<AttributeVariables> >& localVariables ) {
-  auto compiled = LIMEX::Expression<CP::Expression,CP::Expression>(operator_.expression, limexHandle);
+  auto compiled = LIMEX::Expression<CP::Expression,CP::Expression>(encodeQuotedStrings(operator_.expression), limexHandle);
   
   std::vector<CP::Expression> variables;
   for ( auto& variableName : compiled.getVariables() ) {
@@ -1983,7 +1984,7 @@ CP::Expression CPModel::createExpression(const Vertex* vertex, const Model::Expr
     extensionElements = vertex->node->as<BPMN::FlowNode>()->parent->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   }
 
-  auto compiled = LIMEX::Expression<CP::Expression,CP::Expression>(expression.expression, limexHandle);
+  auto compiled = LIMEX::Expression<CP::Expression,CP::Expression>(encodeQuotedStrings(expression.expression), limexHandle);
   
   std::vector<CP::Expression> variables;
   for ( auto& variableName : compiled.getVariables() ) {
