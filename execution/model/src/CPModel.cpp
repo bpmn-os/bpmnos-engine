@@ -19,6 +19,9 @@ CPModel::CPModel(const BPMNOS::Execution::FlattenedGraph* flattenedGraph, Config
   if ( this->config.instantEntry ) {
     throw std::runtime_error("CPModel: instant entry is not supported");
   }
+  if ( !this->config.instantChoices ) {
+    throw std::runtime_error("CPModel: non-instant choices are not supported");
+  }
   if ( !this->config.instantExit ) {
     throw std::runtime_error("CPModel: non-instant exit is not supported");
   }
@@ -1082,10 +1085,6 @@ void CPModel::createLocalAttributeVariables(const Vertex* vertex) {
           model.addRealVariable("value_{" + vertex->shortReference() + ",0}," + attribute->id )
         );
         auto& variable = variables.back().value;
-        auto timestamp = extensionElements->attributeRegistry.statusAttributes[BPMNOS::Model::ExtensionElements::Index::Timestamp];
-        if ( choice->dependencies.contains(timestamp) ) {
-          throw std::runtime_error("CPModel: choices depending on the timestamp are not supported");
-        }
         // create constraints limiting the choice
         // ASSUMPTION: constraints on the choices must only depend on entry status, data, or globals.
         // ASSUMPTION: only status attributes are allowed as choices
@@ -1108,8 +1107,13 @@ void CPModel::createLocalAttributeVariables(const Vertex* vertex) {
           }
         }
         if ( choice->multipleOf ) {
-          auto& discretizer = model.addIntegerVariable("discretizer_{" + vertex->reference() + "}"  + attribute->id);
-          model.addConstraint( visit.at(vertex).implies( variable == discretizer * createExpression(entry(vertex),*choice->multipleOf) ) );          
+          discretizerMap.emplace(
+            std::make_pair(vertex, attribute),
+            model.addIntegerVariable("discretizer_{" + vertex->reference() + "},"  + attribute->id)
+          );
+          auto& discretizer = discretizerMap.at({vertex, attribute});
+          model.addConstraint( (!visit.at(vertex)).implies( discretizer == 0.0 ) );
+          model.addConstraint( visit.at(vertex).implies( variable == discretizer * createExpression(entry(vertex),*choice->multipleOf) ) );
         }
         if ( !choice->enumeration.empty() ) {
           CP::Expression enumerationContainsVariable(false);
@@ -1136,12 +1140,12 @@ void CPModel::createLocalAttributeVariables(const Vertex* vertex) {
           model.addVariable(CP::Variable::Type::REAL, "value_{" + vertex->shortReference() + ",0}," + attribute->id, messageContent.at(vertex).at(content->key).value )
         );
       }
-      else if ( 
+      else if (
           attribute->category == BPMNOS::Model::Attribute::Category::STATUS &&
           attribute->index == BPMNOS::Model::ExtensionElements::Index::Timestamp &&
-          ( vertex->exit<BPMN::MessageCatchEvent>() || vertex->exit<BPMNOS::Model::DecisionTask>() )
+          vertex->exit<BPMN::MessageCatchEvent>()
       ) {
-          // timestamp cannot be deduced as must be constrained
+          // timestamp cannot be deduced and must be constrained
           variables.emplace_back(
             model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->shortReference() + ",0}," + attribute->id, visit.at(vertex) ), 
             model.addRealVariable("value_{" + vertex->shortReference() + ",0}," + attribute->id )
