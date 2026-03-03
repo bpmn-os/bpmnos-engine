@@ -1401,7 +1401,7 @@ void CPModel::createLoopEntryStatus(const Vertex* vertex) {
   auto& variables = status.at(vertex);
   auto predecessor = vertex->inflows.front().second;
   auto& priorStatus = status.at(predecessor);
-//std::cerr << predecessor.reference() << "/" << priorStatus.size() << std::endl;
+//std::cerr << predecessor->reference() << "/" << priorStatus.size() << std::endl;
   auto extensionElements = vertex->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   const BPMNOS::Model::Attribute* loopIndex = 
     extensionElements->loopIndex.has_value() ? 
@@ -1409,12 +1409,16 @@ void CPModel::createLoopEntryStatus(const Vertex* vertex) {
     nullptr
   ;
 
+  
   // deduce status for loop visit 
   variables.reserve( extensionElements->attributeRegistry.statusAttributes.size() );
   
   for ( size_t index = 0; index < priorStatus.size(); index++ ) {
     auto attribute = extensionElements->attributeRegistry.statusAttributes[index];
     assert( variables.size() == attribute->index );
+    // check if attribute is owned by loop activity
+    bool ownedByLoop = (index >= extensionElements->attributeRegistry.statusAttributes.size() - extensionElements->attributes.size());
+
 //std::cerr << attribute->id << std::endl;
     auto& [ defined, value ] = priorStatus.at(attribute->index);
     if ( vertex->node->represents<BPMN::Activity>() && attribute->index == BPMNOS::Model::ExtensionElements::Index::Timestamp ) {
@@ -1426,14 +1430,14 @@ void CPModel::createLoopEntryStatus(const Vertex* vertex) {
       auto& timestamp = variables.back().value;
       model.addConstraint( visit.at(vertex).implies( timestamp >= value ) );
     }
-    else if ( attribute == loopIndex ) {
+    else if ( ownedByLoop && attribute == loopIndex ) {
       // set or increment loop index (initial value is assumed to be undefined, and therefore has a value of zero)
       variables.emplace_back(
         model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->reference() + "}," + attribute->id, visit.at(vertex) ), 
         model.addVariable(CP::Variable::Type::REAL,"value_{" + vertex->reference() + "}," + attribute->id, CP::if_then_else( visit.at(vertex), getLoopIndex(vertex), 0 ) )
       );
     }
-    else if ( attribute->expression ) {
+    else if ( ownedByLoop && attribute->expression ) { 
       // initial assignment
       assert( attribute->expression->type == Model::Expression::Type::ASSIGN ); 
       CP::Expression assignment = createExpression( vertex, *attribute->expression );
