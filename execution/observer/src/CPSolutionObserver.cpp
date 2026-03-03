@@ -440,12 +440,12 @@ void CPSolutionObserver::synchronizeStatus(const BPMNOS::Values& status, const C
         evaluation.value() != status[i].value()
       ) {
 
-//std::cerr << "defined: " << (evaluation.defined() ? "true" : "false") << ", value: " << evaluation.value() << std::endl;
-//std::cerr << statusVariables[i].defined.stringify() << std::endl;
-//std::cerr << statusVariables[i].value.stringify() << std::endl;
+std::cerr << "status[" << i << "].defined: " << (evaluation.defined() ? "true" : "false") << ", value: " << evaluation.value() << std::endl;
+std::cerr << statusVariables[i].defined.stringify() << std::endl;
+std::cerr << statusVariables[i].value.stringify() << std::endl;
 //std::cerr << "Model: " << cp->stringify() << std::endl;
 //std::cerr << "Solution: " <<  _solution.stringify() << std::endl;
-        throw std::logic_error("CPSolutionObserver: '" + _solution.stringify(statusVariables[i].defined) + "' or '" + _solution.stringify(statusVariables[i].value) + "' inconsistent with given status" );
+        throw std::logic_error("CPSolutionObserver: inconsistent status '" + _solution.stringify(statusVariables[i].defined) + "' (observed as 'true') or '" + _solution.stringify(statusVariables[i].value) + "' (observed as '" + std::to_string((double)status[i].value_or(0)) + "')" );
       }
     }
     else {
@@ -459,7 +459,7 @@ void CPSolutionObserver::synchronizeStatus(const BPMNOS::Values& status, const C
         evaluation.value() != 0.0
       ) {
 //std::cerr << "defined: " << (evaluation.defined() ? "true" : "false") << ", value: " << evaluation.value() << std::endl;
-        throw std::logic_error("CPSolutionObserver: '" + _solution.stringify(statusVariables[i].defined) + "' or '" + _solution.stringify(statusVariables[i].value) + "' inconsistent with given status" );
+        throw std::logic_error("CPSolutionObserver: inconsistent status '" + _solution.stringify(statusVariables[i].defined) + "' (observed as 'false') or '" + _solution.stringify(statusVariables[i].value) + "' (observed as '0.0')" );
       }
     }
   }
