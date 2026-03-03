@@ -81,8 +81,8 @@ using namespace BPMNOS;
 
 // CPController
 #include "cpmodel/test.h"
-//TODO: #include "cpsolver/test.h"
-//TODO: #include "cpcontroller/test.h"
+#include "cpsolver/test.h"
+#include "cpcontroller/test.h"
 
 #endif // ALL_TESTS
 
