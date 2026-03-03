@@ -27,6 +27,7 @@ SCENARIO( "Truck driver scheduling problem", "[cpmodel][truck_driver_scheduling_
       Execution::TimeWarp timeHandler;
       timeHandler.connect( &engine );
       Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
       recorder.subscribe( &engine );
 
       Execution::CPModel constraintProgramm( &flattenedGraph );

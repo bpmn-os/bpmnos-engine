@@ -44,7 +44,7 @@
 #include "examples/vehicle_routing_problem/test.h"
 #include "examples/pickup_delivery_problem/test.h"
 #include "examples/job_shop_scheduling_problem/test.h"
-//#include "examples/truck_driver_scheduling_problem/test.h"
+#include "examples/truck_driver_scheduling_problem/test.h"
 
 /*
 //#include "request/test.h" // TODO: Check allocation id in content of request message

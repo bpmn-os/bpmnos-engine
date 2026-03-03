@@ -57,6 +57,7 @@ void CPSolutionObserver::notice(const Observable* observable) {
 }
 
 void CPSolutionObserver::synchronize(const Token* token) {
+//std::cerr << "Token: " << token->jsonify() << std::endl;
   if (
     token->state == Token::State::CREATED || 
     token->state == Token::State::ARRIVED || 
@@ -93,20 +94,22 @@ void CPSolutionObserver::synchronize(const Token* token) {
     // set position
     finalizePosition( vertex );
 
-    
+    // set visit, status, data, globals
     _solution.setVariableValue( cp->visit.at(vertex), true );
     synchronizeStatus(token->status,vertex);
     synchronizeData(*token->data,vertex);
-    synchronizeGlobals(token->globals,vertex);  
+    synchronizeGlobals(token->globals,vertex);
 
-    if ( 
-      vertex->entry<BPMN::UntypedStartEvent>() || 
-      vertex->entry<BPMN::Gateway>() || 
-      ( vertex->entry<BPMN::ThrowEvent>() && !vertex->entry<BPMN::SendTask>() ) 
+    if (
+      vertex->entry<BPMN::UntypedStartEvent>() ||
+      vertex->entry<BPMN::Gateway>() ||
+      ( vertex->entry<BPMN::ThrowEvent>() && !vertex->entry<BPMN::SendTask>() )
     ) {
       // vertex is instantaneous
 //std::cerr << "clear instantaneous exit: " << token->jsonify() << std::endl;
       finalizePosition(exit(vertex));
+      // finalize unvisited subsequent positions
+      finalizeUnvisitedSubsequentPositions(exit(vertex));
     }
   }
   else if ( token->node && token->state == Token::State::COMPLETED && token->node->represents<BPMN::TypedStartEvent>() ) {
@@ -119,6 +122,8 @@ void CPSolutionObserver::synchronize(const Token* token) {
     // for typed start events, operators of event-subprocess are applied before completion
     synchronizeData(*token->data,vertex);
     synchronizeGlobals(token->globals,vertex);
+
+    finalizeUnvisitedSubsequentPositions(vertex);
   }
   else if ( token->node && token->state == Token::State::WITHDRAWN && token->node->represents<BPMN::TypedStartEvent>() ) {
     // event-subprocess is not triggered
@@ -126,19 +131,18 @@ void CPSolutionObserver::synchronize(const Token* token) {
     unvisitEntry( entry(vertex) );
     setPosition( vertex, ++lastPosition );
     unvisitExit( vertex );
-    finalizeUnvistedSubsequentPositions(vertex);
+    finalizeUnvisitedSubsequentPositions(vertex);
 //    _solution.setVariableValue( cp->visit.at(vertex), false );
   }
-  else if ( 
+  else if (
     ( !token->node && token->state == Token::State::DONE ) || // Process
     ( token->node && token->state == Token::State::EXITING && !token->node->represents<BPMN::TypedStartEvent>() ) || // Activity
     ( token->node && token->state == Token::State::COMPLETED && token->node->represents<BPMN::CatchEvent>() && !token->node->represents<BPMN::ReceiveTask>() )
   ) {
 
-
     auto entryVertex = entry(vertex);
-    if ( 
-      entryVertex->inflows.size() == 1 && 
+    if (
+      entryVertex->inflows.size() == 1 &&
       entryVertex->inflows.front().second->node->represents<BPMN::EventBasedGateway>()
     ) {
       assert( vertex->exit<BPMN::CatchEvent>() );
@@ -146,26 +150,32 @@ void CPSolutionObserver::synchronize(const Token* token) {
       setTriggeredEvent( gateway, entryVertex );
       finalizePosition( entryVertex );
       finalizePosition( vertex );
-      finalizeUnvistedSubsequentPositions(gateway);
+
+      // exit of node
+      _solution.setVariableValue( cp->visit.at(vertex), true );
+
+      synchronizeStatus(token->status,vertex);
+      synchronizeData(*token->data,vertex);
+      synchronizeGlobals(token->globals,vertex);
+
+      finalizeUnvisitedSubsequentPositions(gateway);
     }
     else {
       // set position
       finalizePosition( vertex );
-    }
-    
-    // exit of node
-    if ( vertex->node->represents<BPMN::CatchEvent>() && vertex->inflows.front().second->node->represents<BPMN::EventBasedGateway>() ) {
-      _solution.setVariableValue( cp->visit.at(vertex), true );
-    }
 
-    synchronizeStatus(token->status,vertex);
-    synchronizeData(*token->data,vertex);
-    synchronizeGlobals(token->globals,vertex);  
+      synchronizeStatus(token->status,vertex);
+      synchronizeData(*token->data,vertex);
+      synchronizeGlobals(token->globals,vertex);
+
+      finalizeUnvisitedSubsequentPositions(vertex);
+    }
   }
-//std::cerr << "#" << std::endl;
+//std::cerr << "#Token" << std::endl;
 }
 
 void CPSolutionObserver::synchronize(const Event* event) {
+//std::cerr << "Event: " << event->jsonify() << std::endl;
   if ( dynamic_cast<const EntryEvent*>(event) ) {
 //std::cerr << "Entry: " << event->jsonify() << std::endl;
     auto vertex = flattenedGraph->getVertex( event->token );
@@ -207,15 +217,26 @@ void CPSolutionObserver::synchronize(const Event* event) {
     // set timestamp of choice
     auto timestamp = event->token->owner->systemState->getTime();
     setLocalStatusValue(vertex,BPMNOS::Model::ExtensionElements::Index::Timestamp,timestamp);
-    // apply choices 
+    // apply choices
     auto extensionElements = vertex->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
     assert( extensionElements );
     assert( extensionElements->choices.size() == choiceEvent->choices.size() );
     for (size_t i = 0; i < extensionElements->choices.size(); i++) {
       assert( choiceEvent->choices[i].has_value() );
-      setLocalStatusValue(vertex,extensionElements->choices[i]->attribute->index,choiceEvent->choices[i].value());
+      auto choice = extensionElements->choices[i].get();
+      auto choiceValue = choiceEvent->choices[i].value();
+      setLocalStatusValue(vertex, choice->attribute->index, choiceValue);
+      // set discretizer if multipleOf constraint exists
+      if ( choice->multipleOf && cp->discretizerMap.contains({vertex, choice->attribute}) ) {
+        auto multipleOf = choice->multipleOf->execute(event->token->status, *event->token->data, event->token->globals);
+        if ( !multipleOf.has_value() ) {
+          throw std::logic_error("CPSolutionObserver: Unable to evaluate multipleOf for choice '" + choice->attribute->id + "'");
+        }
+        _solution.setVariableValue( cp->discretizerMap.at({vertex, choice->attribute}), (double)(choiceValue / multipleOf.value()) );
+      }
     }
   }
+//std::cerr << "#Event" << std::endl;
 }
 
 
@@ -282,9 +303,9 @@ void CPSolutionObserver::unvisitEntry(const Vertex* vertex) {
     }
   }
 
-  if ( 
+  if (
     vertex->node->represents<BPMN::Task>() &&
-    !(vertex->node->represents<BPMN::TypedStartEvent>() || vertex->node->represents<BPMN::ReceiveTask>() || vertex->node->represents<BPMNOS::Model::DecisionTask>())
+    !(vertex->node->represents<BPMN::TypedStartEvent>() || vertex->node->represents<BPMN::ReceiveTask>())
   ) {
     // if visited, operators may modify data and globals upon entry
     // if unvisited, data and globals are not changed
@@ -343,18 +364,19 @@ void CPSolutionObserver::unvisitExit(const Vertex* vertex) {
   }
 
   if ( vertex->node->represents<BPMNOS::Model::DecisionTask>() ) {
-    setLocalStatusValue( vertex, BPMNOS::Model::ExtensionElements::Index::Timestamp, 0.0 );
-    // set choice values to zero
-    auto  extensionElements = vertex->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
-    for ( auto attribute : extensionElements->attributeRegistry.statusAttributes ) {
-      if ( cp->findChoice(extensionElements->choices, attribute) ) {
-        // attribute set by choice
-        setLocalStatusValue( vertex, attribute->index, 0.0 );
+    // instant choices: timestamp is deduced from entry, only reset choice values and discretizers
+    auto extensionElements = vertex->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+    for ( auto& choice : extensionElements->choices ) {
+      // reset choice value
+      setLocalStatusValue( vertex, choice->attribute->index, 0.0 );
+      // reset discretizer if multipleOf constraint exists
+      if ( choice->multipleOf && cp->discretizerMap.contains({vertex, choice->attribute}) ) {
+        _solution.setVariableValue( cp->discretizerMap.at({vertex, choice->attribute}), 0.0 );
       }
     }
   }
 
-  if ( vertex->node->represents<BPMN::TypedStartEvent>() || vertex->node->represents<BPMN::ReceiveTask>() || vertex->node->represents<BPMNOS::Model::DecisionTask>() ) {
+  if ( vertex->node->represents<BPMN::TypedStartEvent>() || vertex->node->represents<BPMN::ReceiveTask>() ) {
     // if visited, operators may modify data and globals upon exit
     // if unvisited, data and globals are not changed
     for ( size_t i = 0; i < vertex->dataOwners.size(); i++ ) {
@@ -391,44 +413,12 @@ void CPSolutionObserver::unvisitExit(const Vertex* vertex) {
          unvisitEntry(successor);
          setPosition( exit(successor), ++lastPosition );
          unvisitExit(exit(successor));         
-         finalizeUnvistedSubsequentPositions(exit(successor));
+         finalizeUnvisitedSubsequentPositions(exit(successor));
          break;
        }
      }
    }
 }
-
-/*
-void CPSolutionObserver::visit(const Vertex* vertex) {
-//std::cerr << vertex->reference() << "/" << cp->visit.begin()->second.stringify() << std::endl;
-//std::cerr << vertex << "/" << cp->visit.begin()->first  << std::endl;
-  // check visit
-  assert( cp->visit.contains(vertex) );
-  auto visitEvaluation = _solution.evaluate( cp->visit.at(vertex) );
-  if ( !visitEvaluation ) {
-    // set solution value
-    _solution.setVariableValue( cp->visit.at(vertex), true );
-  }
-  else if ( visitEvaluation && visitEvaluation.value() != true ) {
-    throw std::logic_error("CPSolutionObserver: vertex '" + vertex->reference() +"' contradictingly visited in solution");
-  }
-}
-
-void CPSolutionObserver::visitEntry(const Vertex* vertex, double timestamp) {
-//  _solution.setVariableValue( cp->position.at(vertex), (double)position );
-  assert( cp->visit.contains(vertex) );
-  _solution.setVariableValue(cp->visit.at(vertex), true);
-  assert( cp->status.contains(vertex) );
-  _solution.setVariableValue( cp->status.at(vertex)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value, timestamp );
-}
-
-void CPSolutionObserver::visitExit(const Vertex* vertex, double timestamp) {
-//  _solution.setVariableValue( cp->position.at(vertex), (double)position );
-//  _solution.setVariableValue(cp->visit.at(vertex), true);
-  assert( cp->status.contains(vertex) );
-  _solution.setVariableValue( cp->status.at(vertex)[BPMNOS::Model::ExtensionElements::Index::Timestamp].value, timestamp );
-}
-*/
 
 void CPSolutionObserver::synchronizeStatus(const BPMNOS::Values& status, const CPSolutionObserver::Vertex* vertex) {
   assert( cp->status.contains(vertex) );
@@ -559,11 +549,10 @@ void CPSolutionObserver::initializePositions(const std::vector<double>& position
 }
 
 void CPSolutionObserver::setPosition(const Vertex* vertex, size_t position) {
-//std::cerr << "position(" << vertex->reference() << ") = " << position << std::endl;
+//std::cerr << "position(" << cp->indexMap.at(vertex) << ":" << vertex->reference() << ") = " << position << " / " << _solution.evaluate(cp->visit.at(vertex)).value_or(-1) << std::endl;
   assert( cp->position.contains( vertex ) );
   assert( _solution.getVariableValue( cp->position.at(vertex) ).has_value() );
   auto priorPosition = (size_t)_solution.getVariableValue( cp->position.at(vertex) ).value();
-//std::cerr << "change position(" << vertex->reference() << ") from " <<  priorPosition << " to " << position << std::endl;
   assert( position <= priorPosition );
   if ( position < priorPosition ) {
     for ( auto& other : flattenedGraph->vertices ) {
@@ -580,6 +569,7 @@ void CPSolutionObserver::setPosition(const Vertex* vertex, size_t position) {
   }
   // change vertex position
   _solution.setVariableValue( cp->position.at(vertex), (double)position );
+//std::cerr << "changed position(" << vertex->reference() << ") from " <<  priorPosition << " to " << position << std::endl;
 }
 
 void CPSolutionObserver::finalizePosition(const Vertex* vertex) {
@@ -615,7 +605,7 @@ void CPSolutionObserver::finalizePosition(const Vertex* vertex) {
             break;
           }
         }
-        if ( isLast ) {     
+        if ( isLast ) {
           // finalize position of dummy exit
           setPosition(other, ++lastPosition);
           break;
@@ -623,28 +613,32 @@ void CPSolutionObserver::finalizePosition(const Vertex* vertex) {
       }
     }
   }
-  
-  finalizeUnvistedSubsequentPositions(vertex);
 }
 
-void CPSolutionObserver::finalizeUnvistedSubsequentPositions(const Vertex* vertex) {
+void CPSolutionObserver::finalizeUnvisitedSubsequentPositions(const Vertex* vertex) {
   for ( auto& [_1,other] : vertex->outflows ) {
     auto isVisited = _solution.evaluate( cp->visit.at(other) );
     if ( isVisited.has_value() && !isVisited.value() ) {
       // successor is not visited
-      bool hasPendingPredecessors = false;
-      for ( auto& [_2,predecessor] : other->inflows ) {
-        if ( _solution.getVariableValue( cp->position.at(predecessor) ).value() > (double)lastPosition ) {
-          hasPendingPredecessors = true;
+      bool canBeFinalized = true;
+      for ( auto& [_2, predecessor] : other->inflows ) {
+        if ( predecessor != vertex && !markedFlows.contains({predecessor,other}) ) {
+//std::cerr << "Unmarked flow from: " << predecessor->reference() << std::endl;
+          canBeFinalized = false;
           break;
         }
       }
-      if ( hasPendingPredecessors ) {
+
+      markedFlows.insert({vertex,other});
+//std::cerr << "Cannot finalize: " << other->reference() << std::endl;
+      if ( !canBeFinalized ) {
         continue;
       }
-
+      
+      bool hasPendingPredecessors = false;
       for ( auto predecessor : other->predecessors ) {
         if ( _solution.getVariableValue( cp->position.at(predecessor) ).value() > (double)lastPosition ) {
+//std::cerr << "hasPendingPredecessor: " << other->reference() << std::endl;
           hasPendingPredecessors = true;
           break;
         }
@@ -654,8 +648,9 @@ void CPSolutionObserver::finalizeUnvistedSubsequentPositions(const Vertex* verte
         continue;
       }
 
-//std::cerr << "unvisited ";
-      setPosition(other, ++lastPosition);
+      finalizePosition(other);
+//std::cerr << "finalized: " << other->reference() << " position=" << lastPosition << " visited=false" << std::endl;
+
       if ( other->type == Vertex::Type::ENTRY ) {
         assert( !_solution.getVariableValue( cp->visit.at(other) ).has_value() );
         unvisitEntry(other);
@@ -664,7 +659,7 @@ void CPSolutionObserver::finalizeUnvistedSubsequentPositions(const Vertex* verte
         assert( other->node->represents<BPMN::TypedStartEvent>() || _solution.getVariableValue( cp->visit.at(other) ).has_value() );
         unvisitExit(other);
       }
-      finalizeUnvistedSubsequentPositions(other);
+      finalizeUnvisitedSubsequentPositions(other);
     }
   }
 }

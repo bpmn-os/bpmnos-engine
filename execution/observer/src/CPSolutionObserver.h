@@ -50,7 +50,7 @@ public:
   void initializePositions(const std::vector<double>& positions); 
   void setPosition(const Vertex* vertex, size_t position);
   void finalizePosition(const Vertex* vertex);
-  void finalizeUnvistedSubsequentPositions(const Vertex* vertex);
+  void finalizeUnvisitedSubsequentPositions(const Vertex* vertex);
 
   bool isVisited(const Vertex* vertex) const;
   bool isUnvisited(const Vertex* vertex) const;
@@ -74,6 +74,8 @@ public:
   CP::Solution::Status getStatus() const { return _solution.getStatus(); };
   std::string errors() const { return _solution.errors(); };
   std::string stringify() const { return _solution.stringify(); };
+protected:
+  std::set<std::pair<const Vertex*, const Vertex*>> markedFlows; /// Set of flows that have been tracked and no longer need to be cosnidered
 };
 
 } // namespace BPMNOS::Execution

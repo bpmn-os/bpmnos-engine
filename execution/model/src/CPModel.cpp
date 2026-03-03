@@ -66,13 +66,14 @@ std::optional< BPMN::Activity::LoopCharacteristics> CPModel::getLoopCharacterist
 
 
 void CPModel::createCP() {
-  auto sortedVertices = flattenedGraph->sortVertices();
+  vertices = flattenedGraph->sortVertices();
 
 //std::cerr << "create sequence position variables" << std::endl;
   // create sequence position variables for all vertices
-  auto& sequence = model.addSequence( "position", sortedVertices.size() );
-  for ( size_t i = 0; i < sortedVertices.size(); i++ ) {
-    position.emplace(sortedVertices[i], sequence.variables[i]);
+  auto& sequence = model.addSequence( "position", vertices.size() );
+  for ( size_t i = 0; i < vertices.size(); i++ ) {
+    position.emplace(vertices[i], sequence.variables[i]);
+    indexMap.emplace(vertices[i], i);
   } 
 
 //std::cerr << "createMessageFlowVariables" << std::endl;
@@ -83,14 +84,14 @@ void CPModel::createCP() {
 
 //std::cerr << "createVertexVariables:" << flattenedGraph->vertices.size() << std::endl;
   // create vertex and message variables
-  for ( auto vertex : sortedVertices ) {
+  for ( auto vertex : vertices ) {
     createVertexVariables(vertex);
   }
 
 //std::cerr << "constrainGlobalVariables" << std::endl;
   constrainGlobalVariables();
 
-  for ( auto vertex : sortedVertices ) {
+  for ( auto vertex : vertices ) {
     if ( vertex->entry<BPMN::Scope>() ) {
 //std::cerr << "constrainDataVariables " << vertex->reference() << std::endl;
       constrainDataVariables(vertex);

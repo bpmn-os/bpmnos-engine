@@ -40,6 +40,8 @@ protected:
   Config config;
 public:
   const FlattenedGraph* flattenedGraph;
+  std::vector<const Vertex*> vertices; /// Vertices sorted for CP model
+  std::unordered_map< const Vertex*, size_t > indexMap; /// Index in sortedVertices for each vertex
 protected:
   CP::Model model;
   LIMEX::Handle<CP::Expression,CP::Expression> limexHandle;
