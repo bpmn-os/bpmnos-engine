@@ -1,4 +1,5 @@
 #include "CPModel.h"
+#include "model/utility/src/encode_quoted_strings.h"
 #include "model/bpmnos/src/DecisionTask.h"
 #include "model/bpmnos/src/SequentialAdHocSubProcess.h"
 #include "model/bpmnos/src/extensionElements/ExtensionElements.h"
@@ -15,6 +16,15 @@ CPModel::CPModel(const BPMNOS::Execution::FlattenedGraph* flattenedGraph, Config
  , flattenedGraph(flattenedGraph)
  , model(CP::Model::ObjectiveSense::MAXIMIZE)
 {
+  if ( this->config.instantEntry ) {
+    throw std::runtime_error("CPModel: instant entry is not supported");
+  }
+  if ( !this->config.instantChoices ) {
+    throw std::runtime_error("CPModel: non-instant choices are not supported");
+  }
+  if ( !this->config.instantExit ) {
+    throw std::runtime_error("CPModel: non-instant exit is not supported");
+  }
 //std::cerr << "Flattened graph: " << flattenedGraph->jsonify().dump() << std::endl;
   // Set collection lookup on model (caller responsible for bounds)
   model.setCollectionLookup(
@@ -56,13 +66,14 @@ std::optional< BPMN::Activity::LoopCharacteristics> CPModel::getLoopCharacterist
 
 
 void CPModel::createCP() {
-  auto sortedVertices = flattenedGraph->sortVertices();
+  vertices = flattenedGraph->sortVertices();
 
 //std::cerr << "create sequence position variables" << std::endl;
   // create sequence position variables for all vertices
-  auto& sequence = model.addSequence( "position", sortedVertices.size() );
-  for ( size_t i = 0; i < sortedVertices.size(); i++ ) {
-    position.emplace(sortedVertices[i], sequence.variables[i]);
+  auto& sequence = model.addSequence( "position", vertices.size() );
+  for ( size_t i = 0; i < vertices.size(); i++ ) {
+    position.emplace(vertices[i], sequence.variables[i]);
+    indexMap.emplace(vertices[i], i);
   } 
 
 //std::cerr << "createMessageFlowVariables" << std::endl;
@@ -73,14 +84,14 @@ void CPModel::createCP() {
 
 //std::cerr << "createVertexVariables:" << flattenedGraph->vertices.size() << std::endl;
   // create vertex and message variables
-  for ( auto vertex : sortedVertices ) {
+  for ( auto vertex : vertices ) {
     createVertexVariables(vertex);
   }
 
 //std::cerr << "constrainGlobalVariables" << std::endl;
   constrainGlobalVariables();
 
-  for ( auto vertex : sortedVertices ) {
+  for ( auto vertex : vertices ) {
     if ( vertex->entry<BPMN::Scope>() ) {
 //std::cerr << "constrainDataVariables " << vertex->reference() << std::endl;
       constrainDataVariables(vertex);
@@ -946,7 +957,7 @@ std::pair< CP::Expression, CP::Expression > CPModel::getLocalAttributeVariables(
 }
 
 CP::Expression CPModel::createOperatorExpression( const Model::Expression& operator_, std::tuple< std::vector<AttributeVariables>, std::vector<AttributeVariables>, std::vector<AttributeVariables> >& localVariables ) {
-  auto compiled = LIMEX::Expression<CP::Expression,CP::Expression>(operator_.expression, limexHandle);
+  auto compiled = LIMEX::Expression<CP::Expression,CP::Expression>(encodeQuotedStrings(operator_.expression), limexHandle);
   
   std::vector<CP::Expression> variables;
   for ( auto& variableName : compiled.getVariables() ) {
@@ -1075,10 +1086,6 @@ void CPModel::createLocalAttributeVariables(const Vertex* vertex) {
           model.addRealVariable("value_{" + vertex->shortReference() + ",0}," + attribute->id )
         );
         auto& variable = variables.back().value;
-        auto timestamp = extensionElements->attributeRegistry.statusAttributes[BPMNOS::Model::ExtensionElements::Index::Timestamp];
-        if ( choice->dependencies.contains(timestamp) ) {
-          throw std::runtime_error("CPModel: choices depending on the timestamp are not supported");
-        }
         // create constraints limiting the choice
         // ASSUMPTION: constraints on the choices must only depend on entry status, data, or globals.
         // ASSUMPTION: only status attributes are allowed as choices
@@ -1101,8 +1108,13 @@ void CPModel::createLocalAttributeVariables(const Vertex* vertex) {
           }
         }
         if ( choice->multipleOf ) {
-          auto& discretizer = model.addIntegerVariable("discretizer_{" + vertex->reference() + "}"  + attribute->id);
-          model.addConstraint( visit.at(vertex).implies( variable == discretizer * createExpression(entry(vertex),*choice->multipleOf) ) );          
+          discretizerMap.emplace(
+            std::make_pair(vertex, attribute),
+            model.addIntegerVariable("discretizer_{" + vertex->reference() + "},"  + attribute->id)
+          );
+          auto& discretizer = discretizerMap.at({vertex, attribute});
+          model.addConstraint( (!visit.at(vertex)).implies( discretizer == 0.0 ) );
+          model.addConstraint( visit.at(vertex).implies( variable == discretizer * createExpression(entry(vertex),*choice->multipleOf) ) );
         }
         if ( !choice->enumeration.empty() ) {
           CP::Expression enumerationContainsVariable(false);
@@ -1129,12 +1141,12 @@ void CPModel::createLocalAttributeVariables(const Vertex* vertex) {
           model.addVariable(CP::Variable::Type::REAL, "value_{" + vertex->shortReference() + ",0}," + attribute->id, messageContent.at(vertex).at(content->key).value )
         );
       }
-      else if ( 
+      else if (
           attribute->category == BPMNOS::Model::Attribute::Category::STATUS &&
           attribute->index == BPMNOS::Model::ExtensionElements::Index::Timestamp &&
-          ( vertex->exit<BPMN::MessageCatchEvent>() || vertex->exit<BPMNOS::Model::DecisionTask>() )
+          vertex->exit<BPMN::MessageCatchEvent>()
       ) {
-          // timestamp cannot be deduced as must be constrained
+          // timestamp cannot be deduced and must be constrained
           variables.emplace_back(
             model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->shortReference() + ",0}," + attribute->id, visit.at(vertex) ), 
             model.addRealVariable("value_{" + vertex->shortReference() + ",0}," + attribute->id )
@@ -1389,7 +1401,7 @@ void CPModel::createLoopEntryStatus(const Vertex* vertex) {
   auto& variables = status.at(vertex);
   auto predecessor = vertex->inflows.front().second;
   auto& priorStatus = status.at(predecessor);
-//std::cerr << predecessor.reference() << "/" << priorStatus.size() << std::endl;
+//std::cerr << predecessor->reference() << "/" << priorStatus.size() << std::endl;
   auto extensionElements = vertex->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   const BPMNOS::Model::Attribute* loopIndex = 
     extensionElements->loopIndex.has_value() ? 
@@ -1397,12 +1409,16 @@ void CPModel::createLoopEntryStatus(const Vertex* vertex) {
     nullptr
   ;
 
+  
   // deduce status for loop visit 
   variables.reserve( extensionElements->attributeRegistry.statusAttributes.size() );
   
   for ( size_t index = 0; index < priorStatus.size(); index++ ) {
     auto attribute = extensionElements->attributeRegistry.statusAttributes[index];
     assert( variables.size() == attribute->index );
+    // check if attribute is owned by loop activity
+    bool ownedByLoop = (index >= extensionElements->attributeRegistry.statusAttributes.size() - extensionElements->attributes.size());
+
 //std::cerr << attribute->id << std::endl;
     auto& [ defined, value ] = priorStatus.at(attribute->index);
     if ( vertex->node->represents<BPMN::Activity>() && attribute->index == BPMNOS::Model::ExtensionElements::Index::Timestamp ) {
@@ -1414,14 +1430,14 @@ void CPModel::createLoopEntryStatus(const Vertex* vertex) {
       auto& timestamp = variables.back().value;
       model.addConstraint( visit.at(vertex).implies( timestamp >= value ) );
     }
-    else if ( attribute == loopIndex ) {
+    else if ( ownedByLoop && attribute == loopIndex ) {
       // set or increment loop index (initial value is assumed to be undefined, and therefore has a value of zero)
       variables.emplace_back(
         model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->reference() + "}," + attribute->id, visit.at(vertex) ), 
         model.addVariable(CP::Variable::Type::REAL,"value_{" + vertex->reference() + "}," + attribute->id, CP::if_then_else( visit.at(vertex), getLoopIndex(vertex), 0 ) )
       );
     }
-    else if ( attribute->expression ) {
+    else if ( ownedByLoop && attribute->expression ) { 
       // initial assignment
       assert( attribute->expression->type == Model::Expression::Type::ASSIGN ); 
       CP::Expression assignment = createExpression( vertex, *attribute->expression );
@@ -1938,7 +1954,8 @@ void CPModel::createRestrictions(const Vertex* vertex) {
   
   for ( auto& restriction : extensionElements->restrictions ) {
     if ( 
-      ( vertex->type == Vertex::Type::ENTRY && restriction->scope != Model::Restriction::Scope::EXIT ) ||
+      restriction->scope == Model::Restriction::Scope::FULL ||
+      ( vertex->type == Vertex::Type::ENTRY && restriction->scope == Model::Restriction::Scope::ENTRY ) ||
       ( vertex->type == Vertex::Type::EXIT && restriction->scope != Model::Restriction::Scope::ENTRY )
     ) {
       // create constraints
@@ -1976,7 +1993,7 @@ CP::Expression CPModel::createExpression(const Vertex* vertex, const Model::Expr
     extensionElements = vertex->node->as<BPMN::FlowNode>()->parent->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   }
 
-  auto compiled = LIMEX::Expression<CP::Expression,CP::Expression>(expression.expression, limexHandle);
+  auto compiled = LIMEX::Expression<CP::Expression,CP::Expression>(encodeQuotedStrings(expression.expression), limexHandle);
   
   std::vector<CP::Expression> variables;
   for ( auto& variableName : compiled.getVariables() ) {

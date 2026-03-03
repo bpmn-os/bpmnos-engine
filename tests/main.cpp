@@ -80,7 +80,7 @@ using namespace BPMNOS;
 //#include "examples/guided_pickup_delivery_problem/test.h"
 
 // CPController
-//TODO: #include "cpmodel/test.h"
+#include "cpmodel/test.h"
 //TODO: #include "cpsolver/test.h"
 //TODO: #include "cpcontroller/test.h"
 

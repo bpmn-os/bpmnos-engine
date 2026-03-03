@@ -27,8 +27,9 @@ public:
   using Vertex = FlattenedGraph::Vertex;
 
   struct Config {
-    bool instantEntry = false;
-    bool instantExit = false;
+    bool instantEntry = false; // instant entry is not supported
+    bool instantChoices = true; // non-instant choices are not supported
+    bool instantExit = true; // non-instant exit is not supported
   };
   static Config default_config() { return {}; } // Work around for compiler bug see: https://stackoverflow.com/questions/53408962/try-to-understand-compiler-error-message-default-member-initializer-required-be/75691051#75691051
   CPModel(const BPMNOS::Execution::FlattenedGraph* flattenedGraph, Config config = default_config());
@@ -39,6 +40,8 @@ protected:
   Config config;
 public:
   const FlattenedGraph* flattenedGraph;
+  std::vector<const Vertex*> vertices; /// Vertices sorted for CP model
+  std::unordered_map< const Vertex*, size_t > indexMap; /// Index in sortedVertices for each vertex
 protected:
   CP::Model model;
   LIMEX::Handle<CP::Expression,CP::Expression> limexHandle;
@@ -158,6 +161,7 @@ protected:
   std::unordered_map< const Vertex*, std::vector<AttributeVariables> > status; /// Variables representing status attributes of a vertex
   std::unordered_map< const Vertex*, std::vector< std::tuple< std::vector<AttributeVariables>, std::vector<AttributeVariables>, std::vector<AttributeVariables> > > > locals; /// Variables representing status, data, globals attributes of a vertex after the i-th operator
 
+  std::unordered_map< std::pair< const Vertex*, const Model::Attribute*>, const CP::Variable&, pair_hash > discretizerMap; /// Variables representing discretizers for choices with multipleOf constraint
 
   std::unordered_map< std::pair< const Vertex*, const Vertex* >, std::vector<AttributeVariables>, pair_hash > statusFlow; /// Variables representing status attributes flowing from one vertex to another
 
