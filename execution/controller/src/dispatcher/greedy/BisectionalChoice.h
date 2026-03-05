@@ -52,8 +52,8 @@ private:
 
   // Search functions for different boundary conditions
   void findBetweenFeasibleAndFeasible(Candidate left, Candidate right);
-  void findBetweenFeasibleAndInfeasible(Candidate feasible, size_t infeasibleindex);
-  void findBetweenInfeasibleAndFeasible(size_t infeasibleindex, Candidate feasible);
+  void findBetweenFeasibleAndInfeasible(Candidate feasible, size_t infeasibleIndex);
+  void findBetweenInfeasibleAndFeasible(size_t infeasibleIndex, Candidate feasible);
 };
 
 } // namespace BPMNOS::Execution
