@@ -103,20 +103,20 @@ std::shared_ptr<Decision> BisectionalChoice::determineBestChoices(std::shared_pt
   }
 }
 
-BisectionalChoice::Candidate BisectionalChoice::evaluate(size_t idx) {
-std::cerr << "Evaluate " << idx << ": " << values[idx] << std::endl;
-  auto decision = std::make_shared<ChoiceDecision>(token, Values{ values[idx] }, evaluator);
+BisectionalChoice::Candidate BisectionalChoice::evaluate(size_t index) {
+//std::cerr << "Evaluate " << index << ": " << values[index] << std::endl;
+  auto decision = std::make_shared<ChoiceDecision>(token, Values{ values[index] }, evaluator);
   decision->evaluate();
-  return { idx, decision };
+  return { index, decision };
 }
 
-std::tuple<size_t, BisectionalChoice::Candidate, size_t> BisectionalChoice::findFeasible(size_t lo, size_t hi) {
+std::tuple<size_t, BisectionalChoice::Candidate, size_t> BisectionalChoice::findFeasible(size_t first, size_t last) {
   const size_t npos = std::numeric_limits<size_t>::max();
-  if ( lo > hi ) return { npos, { npos, nullptr }, npos };
+  if ( first > last ) return { npos, { npos, nullptr }, npos };
 
   // BFS on intervals to find any feasible
   std::queue<std::pair<size_t, size_t>> intervals;
-  intervals.push({lo, hi});
+  intervals.push({first, last});
 
   while ( !intervals.empty() ) {
     auto [l, r] = intervals.front();
@@ -126,8 +126,8 @@ std::tuple<size_t, BisectionalChoice::Candidate, size_t> BisectionalChoice::find
     auto candidate = evaluate(mid);
     if ( candidate.isFeasible() ) {
       // Found feasible - return with nearest known infeasible bounds
-      size_t nearestLeft = (mid > lo) ? l : npos;
-      size_t nearestRight = (mid < hi) ? r : npos;
+      size_t nearestLeft = (mid > first) ? l : npos;
+      size_t nearestRight = (mid < last) ? r : npos;
       return { nearestLeft, candidate, nearestRight };
     }
 
@@ -140,9 +140,9 @@ std::tuple<size_t, BisectionalChoice::Candidate, size_t> BisectionalChoice::find
 }
 
 void BisectionalChoice::findBetweenFeasibleAndFeasible(Candidate left, Candidate right) {
-  if ( right.idx <= left.idx + 1 ) return;
+  if ( right.index <= left.index + 1 ) return;
 
-  size_t mid = left.idx + (right.idx - left.idx) / 2;
+  size_t mid = left.index + (right.index - left.index) / 2;
   auto candidate = evaluate(mid);
 
   if ( !candidate.isFeasible() ) {
@@ -169,14 +169,14 @@ void BisectionalChoice::findBetweenFeasibleAndFeasible(Candidate left, Candidate
   }
 }
 
-void BisectionalChoice::findBetweenFeasibleAndInfeasible(Candidate feasible, size_t infeasibleIdx) {
-  while ( infeasibleIdx > feasible.idx + 1 ) {
-    size_t mid = feasible.idx + (infeasibleIdx - feasible.idx + 1) / 2;
+void BisectionalChoice::findBetweenFeasibleAndInfeasible(Candidate feasible, size_t infeasibleIndex) {
+  while ( infeasibleIndex > feasible.index + 1 ) {
+    size_t mid = feasible.index + (infeasibleIndex - feasible.index + 1) / 2;
     auto candidate = evaluate(mid);
 
     if ( !candidate.isFeasible() ) {
       // Still infeasible - narrow right boundary
-      infeasibleIdx = mid;
+      infeasibleIndex = mid;
     } 
     else if ( candidate.reward() <= best.reward() ) {
       // Feasible but worse - done (past peak)
@@ -190,14 +190,14 @@ void BisectionalChoice::findBetweenFeasibleAndInfeasible(Candidate feasible, siz
   }
 }
 
-void BisectionalChoice::findBetweenInfeasibleAndFeasible(size_t infeasibleIdx, Candidate feasible) {
-  while ( feasible.idx > infeasibleIdx + 1 ) {
-    size_t mid = infeasibleIdx + (feasible.idx - infeasibleIdx) / 2;
+void BisectionalChoice::findBetweenInfeasibleAndFeasible(size_t infeasibleIndex, Candidate feasible) {
+  while ( feasible.index > infeasibleIndex + 1 ) {
+    size_t mid = infeasibleIndex + (feasible.index - infeasibleIndex) / 2;
     auto candidate = evaluate(mid);
 
     if ( !candidate.isFeasible() ) {
       // Still infeasible - narrow left boundary
-      infeasibleIdx = mid;
+      infeasibleIndex = mid;
     }
     else if ( candidate.reward() <= best.reward() ) {
       // Feasible but worse - done (past peak)
@@ -267,7 +267,7 @@ std::shared_ptr<Decision> BisectionalChoice::discreteBisection(std::shared_ptr<c
     }
   }
 
-std::cerr << "Best " << best.idx << std::endl;
+//std::cerr << "Best " << best.index << std::endl;
   return best.decision;
 }
 

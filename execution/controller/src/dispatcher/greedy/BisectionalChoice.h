@@ -32,7 +32,7 @@ private:
 
   // Helper types
   struct Candidate {
-    size_t idx;
+    size_t index;
     std::shared_ptr<ChoiceDecision> decision;
 
     bool isFeasible() const { return decision && decision->reward.has_value(); }
@@ -45,15 +45,15 @@ private:
   Candidate best;
 
   // Helper methods for discreteBisection
-  Candidate evaluate(size_t idx);
+  Candidate evaluate(size_t index);
 
   // Find any feasible solution using BFS, returns (leftInfeasible, candidate, rightInfeasible)
-  std::tuple<size_t, Candidate, size_t> findFeasible(size_t lo, size_t hi);
+  std::tuple<size_t, Candidate, size_t> findFeasible(size_t first, size_t last);
 
   // Search functions for different boundary conditions
   void findBetweenFeasibleAndFeasible(Candidate left, Candidate right);
-  void findBetweenFeasibleAndInfeasible(Candidate feasible, size_t infeasibleIdx);
-  void findBetweenInfeasibleAndFeasible(size_t infeasibleIdx, Candidate feasible);
+  void findBetweenFeasibleAndInfeasible(Candidate feasible, size_t infeasibleindex);
+  void findBetweenInfeasibleAndFeasible(size_t infeasibleindex, Candidate feasible);
 };
 
 } // namespace BPMNOS::Execution
