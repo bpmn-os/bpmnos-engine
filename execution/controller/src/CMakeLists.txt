@@ -24,6 +24,7 @@ list(APPEND controller_SOURCES
   dispatcher/greedy/BestFirstExit.cpp
   dispatcher/greedy/BestMatchingMessageDelivery.cpp
   dispatcher/greedy/BestEnumeratedChoice.cpp
+  dispatcher/greedy/BisectionalChoice.cpp
   Controller.cpp
   GreedyController.cpp
   SeededController.cpp
@@ -57,6 +58,7 @@ list(APPEND controller_HEADERS
   dispatcher/greedy/BestFirstExit.h
   dispatcher/greedy/BestMatchingMessageDelivery.h
   dispatcher/greedy/BestEnumeratedChoice.h
+  dispatcher/greedy/BisectionalChoice.h
   Controller.h
   GreedyController.h
   SeededController.h
