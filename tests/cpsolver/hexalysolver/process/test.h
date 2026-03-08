@@ -18,20 +18,19 @@ SCENARIO( "Empty executable process - Hexaly solver", "[hexalysolver][process]" 
       // Solve with Hexaly
       const auto& model = constraintProgramm.getModel();
       CP::HexalySolver solver(model);
-      auto result = solver.solve(model);
+      auto result = solver.solve();
 
       THEN( "An optimal solution is found" ) {
-        REQUIRE( result.has_value() );
+        REQUIRE( result.status == CP::Solver::Result::SOLUTION::OPTIMAL );
 
-        auto& solution = result.value();
-        REQUIRE( solution.complete() );
-if ( !solution.errors().empty() ) {
-  std::cerr << "ERRORS: " << solution.errors() << std::endl;
+        auto solution = solver.getSolution();
+        REQUIRE( solution->complete() );
+if ( !solution->errors().empty() ) {
+  std::cerr << "ERRORS: " << solution->errors() << std::endl;
   std::cerr << "MODEL: " << model.stringify() << std::endl;
-  std::cerr << "SOLUTION: " << solution.stringify() << std::endl;
+  std::cerr << "SOLUTION: " << solution->stringify() << std::endl;
 }
-        REQUIRE( solution.errors().empty() );
-        REQUIRE( solution.getStatus() == CP::Solution::Status::OPTIMAL );
+        REQUIRE( solution->errors().empty() );
       }
     }
   }
@@ -57,20 +56,19 @@ SCENARIO( "Trivial executable process - Hexaly solver", "[hexalysolver][process]
       // Solve with Hexaly
       const auto& model = constraintProgramm.getModel();
       CP::HexalySolver solver(model);
-      auto result = solver.solve(model);
+      auto result = solver.solve();
 
       THEN( "An optimal solution is found" ) {
-        REQUIRE( result.has_value() );
+        REQUIRE( result.status == CP::Solver::Result::SOLUTION::OPTIMAL );
 
-        auto& solution = result.value();
-        REQUIRE( solution.complete() );
-if ( !solution.errors().empty() ) {
-  std::cerr << "ERRORS: " << solution.errors() << std::endl;
+        auto solution = solver.getSolution();
+        REQUIRE( solution->complete() );
+if ( !solution->errors().empty() ) {
+  std::cerr << "ERRORS: " << solution->errors() << std::endl;
   std::cerr << "MODEL: " << model.stringify() << std::endl;
-  std::cerr << "SOLUTION: " << solution.stringify() << std::endl;
+  std::cerr << "SOLUTION: " << solution->stringify() << std::endl;
 }
-        REQUIRE( solution.errors().empty() );
-        REQUIRE( solution.getStatus() == CP::Solution::Status::OPTIMAL );
+        REQUIRE( solution->errors().empty() );
       }
     }
   }
@@ -96,26 +94,25 @@ SCENARIO( "Simple executable process - Hexaly solver", "[hexalysolver][process]"
       // Solve with Hexaly
       const auto& model = constraintProgramm.getModel();
       CP::HexalySolver solver(model);
-      auto result = solver.solve(model);
+      auto result = solver.solve();
 
       THEN( "An optimal solution is found" ) {
-        REQUIRE( result.has_value() );
+        REQUIRE( result.status == CP::Solver::Result::SOLUTION::OPTIMAL );
 
-        auto& solution = result.value();
-        REQUIRE( solution.complete() );
-if ( solution.errors().size() ) {
-  std::cerr << solution.errors() << std::endl;
+        auto solution = solver.getSolution();
+        REQUIRE( solution->complete() );
+if ( solution->errors().size() ) {
+  std::cerr << solution->errors() << std::endl;
   std::cerr << model.stringify() << std::endl;
-  std::cerr << solution.stringify() << std::endl;
+  std::cerr << solution->stringify() << std::endl;
 }
-        
-if ( !solution.errors().empty() ) {
-  std::cerr << "ERRORS: " << solution.errors() << std::endl;
+
+if ( !solution->errors().empty() ) {
+  std::cerr << "ERRORS: " << solution->errors() << std::endl;
   std::cerr << "MODEL: " << model.stringify() << std::endl;
-  std::cerr << "SOLUTION: " << solution.stringify() << std::endl;
+  std::cerr << "SOLUTION: " << solution->stringify() << std::endl;
 }
-        REQUIRE( solution.errors().empty() );
-        REQUIRE( solution.getStatus() == CP::Solution::Status::OPTIMAL );
+        REQUIRE( solution->errors().empty() );
       }
     }
   }
@@ -137,20 +134,19 @@ if ( !solution.errors().empty() ) {
       // Solve with Hexaly
       const auto& model = constraintProgramm.getModel();
       CP::HexalySolver solver(model);
-      auto result = solver.solve(model);
+      auto result = solver.solve();
 
       THEN( "An optimal solution is found" ) {
-        REQUIRE( result.has_value() );
+        REQUIRE( result.status == CP::Solver::Result::SOLUTION::OPTIMAL );
 
-        auto& solution = result.value();
-        REQUIRE( solution.complete() );
-if ( !solution.errors().empty() ) {
-  std::cerr << "ERRORS: " << solution.errors() << std::endl;
+        auto solution = solver.getSolution();
+        REQUIRE( solution->complete() );
+if ( !solution->errors().empty() ) {
+  std::cerr << "ERRORS: " << solution->errors() << std::endl;
   std::cerr << "MODEL: " << model.stringify() << std::endl;
-  std::cerr << "SOLUTION: " << solution.stringify() << std::endl;
+  std::cerr << "SOLUTION: " << solution->stringify() << std::endl;
 }
-        REQUIRE( solution.errors().empty() );
-        REQUIRE( solution.getStatus() == CP::Solution::Status::OPTIMAL );
+        REQUIRE( solution->errors().empty() );
       }
     }
   }

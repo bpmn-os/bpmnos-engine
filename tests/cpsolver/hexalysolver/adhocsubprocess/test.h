@@ -18,20 +18,19 @@ SCENARIO( "Sequential adhoc subprocess - Hexaly solver", "[hexalysolver][adhocsu
       // Solve with Hexaly
       const auto& model = constraintProgramm.getModel();
       CP::HexalySolver solver(model);
-      auto result = solver.solve(model);
+      auto result = solver.solve();
 
       THEN( "An optimal solution is found" ) {
-        REQUIRE( result.has_value() );
+        REQUIRE( result.status == CP::Solver::Result::SOLUTION::OPTIMAL );
 
-        auto& solution = result.value();
-        REQUIRE( solution.complete() );
-if ( !solution.errors().empty() ) {
-  std::cerr << "ERRORS: " << solution.errors() << std::endl;
+        auto solution = solver.getSolution();
+        REQUIRE( solution->complete() );
+if ( !solution->errors().empty() ) {
+  std::cerr << "ERRORS: " << solution->errors() << std::endl;
   std::cerr << "MODEL: " << model.stringify() << std::endl;
-  std::cerr << "SOLUTION: " << solution.stringify() << std::endl;
+  std::cerr << "SOLUTION: " << solution->stringify() << std::endl;
 }
-        REQUIRE( solution.errors().empty() );
-        REQUIRE( solution.getStatus() == CP::Solution::Status::OPTIMAL );
+        REQUIRE( solution->errors().empty() );
       }
     }
   }
@@ -57,20 +56,19 @@ SCENARIO( "Sequential adhoc subprocesses with common performer - Hexaly solver",
       // Solve with Hexaly
       const auto& model = constraintProgramm.getModel();
       CP::HexalySolver solver(model);
-      auto result = solver.solve(model);
+      auto result = solver.solve();
 
       THEN( "An optimal solution is found" ) {
-        REQUIRE( result.has_value() );
+        REQUIRE( result.status == CP::Solver::Result::SOLUTION::OPTIMAL );
 
-        auto& solution = result.value();
-        REQUIRE( solution.complete() );
-if ( !solution.errors().empty() ) {
-  std::cerr << "ERRORS: " << solution.errors() << std::endl;
+        auto solution = solver.getSolution();
+        REQUIRE( solution->complete() );
+if ( !solution->errors().empty() ) {
+  std::cerr << "ERRORS: " << solution->errors() << std::endl;
   std::cerr << "MODEL: " << model.stringify() << std::endl;
-  std::cerr << "SOLUTION: " << solution.stringify() << std::endl;
+  std::cerr << "SOLUTION: " << solution->stringify() << std::endl;
 }
-        REQUIRE( solution.errors().empty() );
-        REQUIRE( solution.getStatus() == CP::Solution::Status::OPTIMAL );
+        REQUIRE( solution->errors().empty() );
       }
     }
   }

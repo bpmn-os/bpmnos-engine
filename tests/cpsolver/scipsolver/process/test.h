@@ -18,15 +18,14 @@ SCENARIO( "Empty executable process - SCIP solver", "[scipsolver][process]" ) {
       // Solve with SCIP
       const auto& model = constraintProgramm.getModel();
       CP::SCIPSolver solver(model);
-      auto result = solver.solve(model);
+      auto result = solver.solve();
 
       THEN( "An optimal solution is found" ) {
-        REQUIRE( result.has_value() );
+        REQUIRE( result.status == CP::Solver::Result::SOLUTION::OPTIMAL );
 
-        auto& solution = result.value();
-        REQUIRE( solution.complete() );
-        REQUIRE( solution.errors().empty() );
-        REQUIRE( solution.getStatus() == CP::Solution::Status::OPTIMAL );
+        auto solution = solver.getSolution();
+        REQUIRE( solution->complete() );
+        REQUIRE( solution->errors().empty() );
       }
     }
   }
@@ -52,15 +51,14 @@ SCENARIO( "Trivial executable process - SCIP solver", "[scipsolver][process]" ) 
       // Solve with SCIP
       const auto& model = constraintProgramm.getModel();
       CP::SCIPSolver solver(model);
-      auto result = solver.solve(model);
+      auto result = solver.solve();
 
       THEN( "An optimal solution is found" ) {
-        REQUIRE( result.has_value() );
+        REQUIRE( result.status == CP::Solver::Result::SOLUTION::OPTIMAL );
 
-        auto& solution = result.value();
-        REQUIRE( solution.complete() );
-        REQUIRE( solution.errors().empty() );
-        REQUIRE( solution.getStatus() == CP::Solution::Status::OPTIMAL );
+        auto solution = solver.getSolution();
+        REQUIRE( solution->complete() );
+        REQUIRE( solution->errors().empty() );
       }
     }
   }
@@ -86,21 +84,20 @@ SCENARIO( "Simple executable process - SCIP solver", "[scipsolver][process]" ) {
       // Solve with SCIP
       const auto& model = constraintProgramm.getModel();
       CP::SCIPSolver solver(model);
-      auto result = solver.solve(model);
+      auto result = solver.solve();
 
       THEN( "An optimal solution is found" ) {
-        REQUIRE( result.has_value() );
+        REQUIRE( result.status == CP::Solver::Result::SOLUTION::OPTIMAL );
 
-        auto& solution = result.value();
-        REQUIRE( solution.complete() );
-if ( solution.errors().size() ) {
-  std::cerr << "ERRORS: " << solution.errors() << std::endl;
+        auto solution = solver.getSolution();
+        REQUIRE( solution->complete() );
+if ( solution->errors().size() ) {
+  std::cerr << "ERRORS: " << solution->errors() << std::endl;
   std::cerr << "MODEL: " << model.stringify() << std::endl;
-  std::cerr << "SOLUTION: " << solution.stringify() << std::endl;
+  std::cerr << "SOLUTION: " << solution->stringify() << std::endl;
 }
-        
-        REQUIRE( solution.errors().empty() );
-        REQUIRE( solution.getStatus() == CP::Solution::Status::OPTIMAL );
+
+        REQUIRE( solution->errors().empty() );
       }
     }
   }
@@ -122,15 +119,14 @@ if ( solution.errors().size() ) {
       // Solve with SCIP
       const auto& model = constraintProgramm.getModel();
       CP::SCIPSolver solver(model);
-      auto result = solver.solve(model);
+      auto result = solver.solve();
 
       THEN( "An optimal solution is found" ) {
-        REQUIRE( result.has_value() );
+        REQUIRE( result.status == CP::Solver::Result::SOLUTION::OPTIMAL );
 
-        auto& solution = result.value();
-        REQUIRE( solution.complete() );
-        REQUIRE( solution.errors().empty() );
-        REQUIRE( solution.getStatus() == CP::Solution::Status::OPTIMAL );
+        auto solution = solver.getSolution();
+        REQUIRE( solution->complete() );
+        REQUIRE( solution->errors().empty() );
       }
     }
   }

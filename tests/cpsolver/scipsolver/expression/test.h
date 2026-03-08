@@ -19,15 +19,14 @@ SCENARIO( "Linear expression - SCIP solver", "[scipsolver][expression]" ) {
       // Solve with SCIP
       const auto& model = constraintProgramm.getModel();
       CP::SCIPSolver solver(model);
-      auto result = solver.solve(model);
+      auto result = solver.solve();
 
       THEN( "An optimal solution is found" ) {
-        REQUIRE( result.has_value() );
+        REQUIRE( result.status == CP::Solver::Result::SOLUTION::OPTIMAL );
 
-        auto& solution = result.value();
-        REQUIRE( solution.complete() );
-        REQUIRE( solution.errors().empty() );
-        REQUIRE( solution.getStatus() == CP::Solution::Status::OPTIMAL );
+        auto solution = solver.getSolution();
+        REQUIRE( solution->complete() );
+        REQUIRE( solution->errors().empty() );
       }
     }
   }

@@ -19,21 +19,20 @@ SCENARIO( "Event-based gateway with two timer events - SCIP solver", "[scipsolve
       // Solve with SCIP
       const auto& model = constraintProgramm.getModel();
       CP::SCIPSolver solver(model);
-      auto result = solver.solve(model);
+      auto result = solver.solve();
 
       THEN( "An optimal solution is found" ) {
-        REQUIRE( result.has_value() );
+        REQUIRE( result.status == CP::Solver::Result::SOLUTION::OPTIMAL );
 
-        auto& solution = result.value();
-        REQUIRE( solution.getStatus() == CP::Solution::Status::OPTIMAL );
+        auto solution = solver.getSolution();
 
-        REQUIRE( solution.complete() );
-if ( !solution.errors().empty() ) {
-  std::cerr << solution.errors() << std::endl;
-  std::cerr << solution.stringify() << std::endl;
+        REQUIRE( solution->complete() );
+if ( !solution->errors().empty() ) {
+  std::cerr << solution->errors() << std::endl;
+  std::cerr << solution->stringify() << std::endl;
   std::cerr << model.stringify() << std::endl;
 }
-        REQUIRE( solution.errors().empty() );
+        REQUIRE( solution->errors().empty() );
       }
     }
 
@@ -58,15 +57,14 @@ if ( !solution.errors().empty() ) {
       SCIPsetIntParam(scip, "presolving/maxrounds", 2);
       WARN("SCIP presolve maxrounds set to 2, https://github.com/scipopt/scip/issues/190"); 
       
-      auto result = solver.solve(model);
+      auto result = solver.solve();
 
       THEN( "An optimal solution is found" ) {
-        REQUIRE( result.has_value() );
+        REQUIRE( result.status == CP::Solver::Result::SOLUTION::OPTIMAL );
 
-        auto& solution = result.value();
-        REQUIRE( solution.getStatus() == CP::Solution::Status::OPTIMAL );
-        REQUIRE( solution.complete() );
-        REQUIRE( solution.errors().empty() );
+        auto solution = solver.getSolution();
+        REQUIRE( solution->complete() );
+        REQUIRE( solution->errors().empty() );
       }
     }
   }

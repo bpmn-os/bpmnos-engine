@@ -165,7 +165,7 @@ SCENARIO( "Event-based gateway with two timer events - SCIP solver", "[cpsolver]
       SCIPsetIntParam(scip, "presolving/maxrounds", 2);
       SCIPsetIntParam(scip, "display/verblevel", 5);
 
-      auto result = solver.solve(model);
+      auto result = solver.solve();
 
       // Save transformed/presolved problem
 //      SCIPwriteTransProblem(scip, "debug_presolved.cip", "cip", FALSE);
@@ -174,8 +174,8 @@ SCENARIO( "Event-based gateway with two timer events - SCIP solver", "[cpsolver]
       // Print SCIP status
       SCIP_STATUS status = SCIPgetStatus(scip);
       std::cerr << "SCIP status: " << status << std::endl;
-      if (!result.has_value()) {
-        std::cerr << "No SCIP solution: " << result.error() << std::endl;
+      if (result.status == CP::Solver::Result::SOLUTION::NONE) {
+        std::cerr << "No SCIP solution: " << result.info << std::endl;
 
         // Try to check the feasible solution against SCIP constraints
         std::cerr << "\n=== Checking CP solution against SCIP model ===" << std::endl;
@@ -184,7 +184,7 @@ SCENARIO( "Event-based gateway with two timer events - SCIP solver", "[cpsolver]
       }
 
       THEN( "An optimal solution is found" ) {
-        REQUIRE( result.has_value() );
+        REQUIRE( result.status == CP::Solver::Result::SOLUTION::OPTIMAL );
       }
     }
   }

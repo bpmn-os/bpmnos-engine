@@ -18,20 +18,19 @@ SCENARIO( "Trivial executable subprocess - Hexaly solver", "[hexalysolver][subpr
       // Solve with Hexaly
       const auto& model = constraintProgramm.getModel();
       CP::HexalySolver solver(model);
-      auto result = solver.solve(model);
+      auto result = solver.solve();
 
       THEN( "An optimal solution is found" ) {
-        REQUIRE( result.has_value() );
+        REQUIRE( result.status == CP::Solver::Result::SOLUTION::OPTIMAL );
 
-        auto& solution = result.value();
-        REQUIRE( solution.complete() );
-if ( !solution.errors().empty() ) {
-  std::cerr << "ERRORS: " << solution.errors() << std::endl;
+        auto solution = solver.getSolution();
+        REQUIRE( solution->complete() );
+if ( !solution->errors().empty() ) {
+  std::cerr << "ERRORS: " << solution->errors() << std::endl;
   std::cerr << "MODEL: " << model.stringify() << std::endl;
-  std::cerr << "SOLUTION: " << solution.stringify() << std::endl;
+  std::cerr << "SOLUTION: " << solution->stringify() << std::endl;
 }
-        REQUIRE( solution.errors().empty() );
-        REQUIRE( solution.getStatus() == CP::Solution::Status::OPTIMAL );
+        REQUIRE( solution->errors().empty() );
       }
     }
   }
@@ -58,20 +57,19 @@ SCENARIO( "Constrained executable subprocess - Hexaly solver", "[hexalysolver][s
       // Solve with Hexaly
       const auto& model = constraintProgramm.getModel();
       CP::HexalySolver solver(model);
-      auto result = solver.solve(model);
+      auto result = solver.solve();
 
       THEN( "An optimal solution is found" ) {
-        REQUIRE( result.has_value() );
+        REQUIRE( result.status == CP::Solver::Result::SOLUTION::OPTIMAL );
 
-        auto& solution = result.value();
-        REQUIRE( solution.complete() );
-if ( !solution.errors().empty() ) {
-  std::cerr << "ERRORS: " << solution.errors() << std::endl;
+        auto solution = solver.getSolution();
+        REQUIRE( solution->complete() );
+if ( !solution->errors().empty() ) {
+  std::cerr << "ERRORS: " << solution->errors() << std::endl;
   std::cerr << "MODEL: " << model.stringify() << std::endl;
-  std::cerr << "SOLUTION: " << solution.stringify() << std::endl;
+  std::cerr << "SOLUTION: " << solution->stringify() << std::endl;
 }
-        REQUIRE( solution.errors().empty() );
-        REQUIRE( solution.getStatus() == CP::Solution::Status::OPTIMAL );
+        REQUIRE( solution->errors().empty() );
       }
     }
 
@@ -90,10 +88,11 @@ if ( !solution.errors().empty() ) {
       // Solve with Hexaly - use time limit since Hexaly can't prove infeasibility
       const auto& model = constraintProgramm.getModel();
       CP::HexalySolver solver(model);
-      auto result = solver.solve(model, 5.0);  // 5 second timeout
+      auto result = solver.solve(5.0);  // 5 second timeout
 
-      THEN( "The problem is infeasible (no solution found)" ) {
-        REQUIRE( !result.has_value() );
+      THEN( "No solution found" ) {
+        REQUIRE( result.status == CP::Solver::Result::SOLUTION::NONE );
+        REQUIRE( (result.problem == CP::Solver::Result::PROBLEM::INFEASIBLE || result.problem == CP::Solver::Result::PROBLEM::UNKNOWN) );
       }
     }
   }

@@ -41,10 +41,9 @@ SCENARIO( "Empty executable process", "[cpmodel][process]" ) {
 
       THEN( "The solution is complete and satisfies all constraints" ) {
         auto terminationLog = recorder.find(nlohmann::json{{"event","termination"}});
-        REQUIRE( terminationLog.empty() );  
+        REQUIRE( terminationLog.empty() );
         REQUIRE( solution.complete() );
         REQUIRE( solution.errors().empty() );
-        REQUIRE( solution.getStatus() == CP::Solution::Status::UNKNOWN );
       }
     }
   }
@@ -91,10 +90,9 @@ SCENARIO( "Trivial executable process", "[cpmodel][process]" ) {
 
       THEN( "The solution is complete and satisfies all constraints" ) {
         auto terminationLog = recorder.find(nlohmann::json{{"event","termination"}});
-        REQUIRE( terminationLog.empty() );  
-        REQUIRE( solution.complete() ); 
-        REQUIRE( solution.errors().empty() ); 
-        REQUIRE( solution.getStatus() == CP::Solution::Status::UNKNOWN );
+        REQUIRE( terminationLog.empty() );
+        REQUIRE( solution.complete() );
+        REQUIRE( solution.errors().empty() );
       }
     }
   }
@@ -141,10 +139,9 @@ SCENARIO( "Simple executable process", "[cpmodel][process]" ) {
 
       THEN( "The solution is complete and satisfies all constraints" ) {
         auto terminationLog = recorder.find(nlohmann::json{{"event","termination"}});
-        REQUIRE( terminationLog.empty() );  
-        REQUIRE( solution.complete() ); 
+        REQUIRE( terminationLog.empty() );
+        REQUIRE( solution.complete() );
         REQUIRE( solution.errors().empty() );
-        REQUIRE( solution.getStatus() == CP::Solution::Status::UNKNOWN );
       }
     }
   }
@@ -192,10 +189,9 @@ SCENARIO( "Simple executable process", "[cpmodel][process]" ) {
 //std::cerr << "Errors: " << solution.errors() << std::endl;
       THEN( "The solution is complete and satisfies all constraints" ) {
         auto terminationLog = recorder.find(nlohmann::json{{"event","termination"}});
-        REQUIRE( terminationLog.empty() );  
-        REQUIRE( solution.complete() ); 
+        REQUIRE( terminationLog.empty() );
+        REQUIRE( solution.complete() );
         REQUIRE( solution.errors().empty() );
-        REQUIRE( solution.getStatus() == CP::Solution::Status::UNKNOWN );
       }
     }
 

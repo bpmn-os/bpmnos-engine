@@ -18,22 +18,21 @@ SCENARIO( "Parallel multi instance task - SCIP solver", "[scipsolver][multiinsta
       // Solve with SCIP
       const auto& model = constraintProgramm.getModel();
       CP::SCIPSolver solver(model);
-      auto result = solver.solve(model);
+      auto result = solver.solve();
 
       THEN( "An optimal solution is found" ) {
-        REQUIRE( result.has_value() );
+        REQUIRE( result.status == CP::Solver::Result::SOLUTION::OPTIMAL );
 
-        auto& solution = result.value();
+        auto solution = solver.getSolution();
 
         // Debug: print errors
-        const auto& errors = solution.errors();
+        const auto& errors = solution->errors();
         if (!errors.empty()) {
           std::cerr << "Errors found: " << errors << std::endl;
         }
 
-        REQUIRE( solution.complete() );
-        REQUIRE( solution.errors().empty() );
-        REQUIRE( solution.getStatus() == CP::Solution::Status::OPTIMAL );
+        REQUIRE( solution->complete() );
+        REQUIRE( solution->errors().empty() );
       }
     }
   }
@@ -60,19 +59,18 @@ SCENARIO( "Sequential multi instance task - SCIP solver", "[scipsolver][multiins
       // Solve with SCIP
       const auto& model = constraintProgramm.getModel();
       CP::SCIPSolver solver(model);
-      auto result = solver.solve(model);
+      auto result = solver.solve();
 
       THEN( "An optimal solution is found" ) {
-        REQUIRE( result.has_value() );
+        REQUIRE( result.status == CP::Solver::Result::SOLUTION::OPTIMAL );
 
-        auto& solution = result.value();
+        auto solution = solver.getSolution();
 
         // Debug: print errors
-        const auto& errors = solution.errors();
+        [[maybe_unused]] const auto& errors = solution->errors();
 
-        REQUIRE( solution.complete() );
-        REQUIRE( solution.errors().empty() );
-        REQUIRE( solution.getStatus() == CP::Solution::Status::OPTIMAL );
+        REQUIRE( solution->complete() );
+        REQUIRE( solution->errors().empty() );
       }
     }
   }
