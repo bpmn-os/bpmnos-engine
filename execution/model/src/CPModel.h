@@ -1,6 +1,8 @@
 #ifndef BPMNOS_Execution_CPModel_H
 #define BPMNOS_Execution_CPModel_H
 
+#ifdef USE_CP
+
 #include <bpmn++.h>
 #include "FlattenedGraph.h"
 #include "model/bpmnos/src/extensionElements/Gatekeeper.h"
@@ -176,6 +178,8 @@ public:
 };
 
 } // namespace BPMNOS::Execution
+
+#endif // USE_CP
 
 #endif // BPMNOS_Execution_CPModel_H
 

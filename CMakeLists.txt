@@ -16,6 +16,13 @@ else()
   message("-- Tests are turned off")
 endif()
 
+option(USE_CP "Build constraint programming components (CPModel, CPSolutionObserver, CPController)" ON)
+if (USE_CP)
+  message("-- Constraint programming components are turned on")
+else()
+  message("-- Constraint programming components are turned off")
+endif()
+
 include_directories("${PROJECT_SOURCE_DIR}/")
 
 # Set the C++ standard
@@ -91,30 +98,32 @@ include_directories(
   ${strutil_SOURCE_DIR} 
 )
 
-# CP
-FetchContent_Declare(
-        cp
-        GIT_REPOSITORY https://github.com/bpmn-os/cp.git
-        GIT_TAG main
-)
+# CP (constraint programming library)
+if(USE_CP)
+  FetchContent_Declare(
+          cp
+          GIT_REPOSITORY https://github.com/bpmn-os/cp.git
+          GIT_TAG main
+  )
 
-# Enable SCIP solver adapter
-set(USE_SCIP ON CACHE BOOL "Build SCIP solver adapter" FORCE)
+  # Enable SCIP solver adapter
+  set(USE_SCIP ON CACHE BOOL "Build SCIP solver adapter" FORCE)
 
-# Enable Hexaly solver adapter (requires Hexaly installation)
-# set(USE_HEXALY ON CACHE BOOL "Build Hexaly solver adapter" FORCE)
+  # Enable Hexaly solver adapter (requires Hexaly installation)
+  # set(USE_HEXALY ON CACHE BOOL "Build Hexaly solver adapter" FORCE)
 
-FetchContent_GetProperties(cp)
-FetchContent_MakeAvailable(cp)
+  FetchContent_GetProperties(cp)
+  FetchContent_MakeAvailable(cp)
 
-# Create alias for cp includes (so we can use <cp/cp.h>)
-file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/include)
-file(CREATE_LINK ${cp_SOURCE_DIR} ${CMAKE_BINARY_DIR}/include/cp SYMBOLIC)
+  # Create alias for cp includes (so we can use <cp/cp.h>)
+  file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/include)
+  file(CREATE_LINK ${cp_SOURCE_DIR} ${CMAKE_BINARY_DIR}/include/cp SYMBOLIC)
 
-include_directories(
-  SYSTEM
-  ${CMAKE_BINARY_DIR}/include
-)
+  include_directories(
+    SYSTEM
+    ${CMAKE_BINARY_DIR}/include
+  )
+endif()
 
 add_subdirectory(model)
 add_subdirectory(execution)

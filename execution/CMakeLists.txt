@@ -74,6 +74,12 @@ add_custom_target(execution_header ALL
 
 add_library(${PROJECT_NAME} STATIC ${execution_utility_SOURCES} ${engine_SOURCES} ${executionmodel_SOURCES} ${observer_SOURCES} ${controller_SOURCES})
 
+# Link CP library and add compile definition when USE_CP is enabled
+if(USE_CP)
+  target_link_libraries(${PROJECT_NAME} PUBLIC cp)
+  target_compile_definitions(${PROJECT_NAME} PUBLIC USE_CP)
+endif()
+
 if (NDEBUG)
   target_compile_options(${PROJECT_NAME}
     PRIVATE

@@ -1,6 +1,8 @@
 #ifndef BPMNOS_Execution_CPSolutionObserver_H
 #define BPMNOS_Execution_CPSolutionObserver_H
 
+#ifdef USE_CP
+
 #include <bpmn++.h>
 #include "execution/model/src/FlattenedGraph.h"
 #include "execution/model/src/CPModel.h"
@@ -78,6 +80,8 @@ protected:
 };
 
 } // namespace BPMNOS::Execution
+
+#endif // USE_CP
 
 #endif // BPMNOS_Execution_CPSolutionObserver_H
 

@@ -1,3 +1,5 @@
+#ifdef USE_CP
+
 #include "CPController.h"
 #include "execution/engine/src/events/EntryEvent.h"
 #include "execution/engine/src/events/ExitEvent.h"
@@ -135,3 +137,5 @@ std::shared_ptr<Event> CPController::createMessageDeliveryEvent([[maybe_unused]]
   // Message not yet available
   return nullptr;
 }
+
+#endif // USE_CP

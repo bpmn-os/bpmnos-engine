@@ -32,6 +32,11 @@ CATCH_REGISTER_LISTENER(ProgressListener)
 
 using namespace BPMNOS;
 
+#ifdef USE_CP
+//#include "cpsolver/hexalysolver/examples/truck_driver_scheduling_problem/test.h"
+//#include "cpsolver/scipsolver/examples/truck_driver_scheduling_problem/test.h"
+#endif // USE_CP
+
 // Include all tests here
 #define ALL_TESTS
 #ifdef ALL_TESTS
@@ -104,19 +109,23 @@ using namespace BPMNOS;
 //#include "examples/guided_vehicle_routing_problem/test.h" 
 //#include "examples/guided_pickup_delivery_problem/test.h"
 
+#ifdef USE_CP
 // CPController
 #include "cpmodel/test.h"
 #include "cpsolver/test.h"
 #include "cpcontroller/test.h"
+#endif // USE_CP
 
 #endif // ALL_TESTS
 
 #ifndef ALL_TESTS
+#ifdef USE_CP
 #include <cp/cp.h>
 #include <cp/solver.h>
 #include <cp/scip/scip_adapter.h>
 //#include "cpcontroller/test.h"
 //#include "cpsolver/eventsubprocess/test.h"
+#endif // USE_CP
 /*
 SCENARIO( "Event-based gateway with two timer events - SCIP solver", "[cpsolver][eventbasedgateway]" ) {
   const std::string modelFile = "tests/execution/eventbasedgateway/Two_timer_events.bpmn";

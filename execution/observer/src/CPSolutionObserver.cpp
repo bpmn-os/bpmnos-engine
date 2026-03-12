@@ -1,3 +1,5 @@
+#ifdef USE_CP
+
 #include "CPSolutionObserver.h"
 #include "model/bpmnos/src/DecisionTask.h"
 #include "model/bpmnos/src/SequentialAdHocSubProcess.h"
@@ -716,4 +718,6 @@ void CPSolutionObserver::setLocalStatusValue( const Vertex* vertex, size_t attri
   auto& initialStatus = std::get<0>(cp->locals.at(vertex)[0]);
   _solution.setVariableValue( initialStatus[attributeIndex].value, (double)value );
 }
+
+#endif // USE_CP
 

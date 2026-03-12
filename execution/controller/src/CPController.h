@@ -1,6 +1,8 @@
 #ifndef BPMNOS_Execution_CPController_H
 #define BPMNOS_Execution_CPController_H
 
+#ifdef USE_CP
+
 #include <bpmn++.h>
 #include "SeededController.h"
 #include "execution/engine/src/Mediator.h"
@@ -39,6 +41,8 @@ private:
 };
 
 } // namespace BPMNOS::Execution
+
+#endif // USE_CP
 
 #endif // BPMNOS_Execution_CPController_H
 

@@ -1,3 +1,5 @@
+#ifdef USE_CP
+
 #include "CPModel.h"
 #include "model/utility/src/encode_quoted_strings.h"
 #include "model/bpmnos/src/DecisionTask.h"
@@ -2068,9 +2070,11 @@ void CPModel::addObjectiveCoefficients(const Vertex* vertex) {
 
   if ( auto extensionElements = vertex->node->extensionElements->represents<BPMNOS::Model::ExtensionElements>() ) {
     for ( size_t i = extensionElements->attributeRegistry.statusAttributes.size() - extensionElements->attributes.size(); i < extensionElements->attributeRegistry.statusAttributes.size(); i++) {
-      auto attribute = extensionElements->attributeRegistry.statusAttributes[i]; 
-      addToObjective( attribute, status.at(vertex)[attribute->index].value );  
+      auto attribute = extensionElements->attributeRegistry.statusAttributes[i];
+      addToObjective( attribute, status.at(vertex)[attribute->index].value );
     }
   }
 }
+
+#endif // USE_CP
 
