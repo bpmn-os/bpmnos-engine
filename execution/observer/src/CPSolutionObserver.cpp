@@ -224,9 +224,8 @@ void CPSolutionObserver::synchronize(const Event* event) {
     assert( extensionElements );
     assert( extensionElements->choices.size() == choiceEvent->choices.size() );
     for (size_t i = 0; i < extensionElements->choices.size(); i++) {
-      assert( choiceEvent->choices[i].has_value() );
       auto choice = extensionElements->choices[i].get();
-      auto choiceValue = choiceEvent->choices[i].value();
+      auto choiceValue = choiceEvent->choices[i];
       setLocalStatusValue(vertex, choice->attribute->index, choiceValue);
       // set discretizer if multipleOf constraint exists
       if ( choice->multipleOf && cp->discretizerMap.contains({vertex, choice->attribute}) ) {

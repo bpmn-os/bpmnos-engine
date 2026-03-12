@@ -26,7 +26,7 @@ void BestEnumeratedChoice::notice(const Observable* observable) {
     assert( dynamic_cast<const DecisionRequest*>(observable) );
     auto request = static_cast<const DecisionRequest*>(observable);
     // create pseudo decision
-    auto decision = std::make_shared<ChoiceDecision>(request->token, Values(), evaluator);
+    auto decision = std::make_shared<ChoiceDecision>(request->token, std::vector<number>{}, evaluator);
     decisionsWithoutEvaluation.emplace_back( request->token->weak_from_this(), request->weak_from_this(), decision );
   }
   else {
@@ -70,10 +70,10 @@ std::shared_ptr<Decision> BestEnumeratedChoice::determineBestChoices(std::shared
   auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   assert( extensionElements->choices.size() );
 
-  std::vector< BPMNOS::Values > alternativeChoices = decisionTask->enumerateAlternatives(token->status, *token->data, token->globals);
+  auto alternativeChoices = decisionTask->enumerateAlternatives(token->status, *token->data, token->globals);
   std::shared_ptr<Decision> bestDecision = nullptr;
   for ( auto& choices : alternativeChoices ) {
-    auto decision = std::make_shared<ChoiceDecision>(token,choices,evaluator);
+    auto decision = std::make_shared<ChoiceDecision>(token, std::move(choices), evaluator);
     decision->evaluate();
     if (
       decision->reward.has_value() &&

@@ -92,7 +92,7 @@ std::shared_ptr<Event> CPController::createChoiceEvent([[maybe_unused]] const Sy
   auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
 
   // Extract choice values from CP solution status variables
-  Values choices;
+  std::vector<number> choices;
   choices.reserve(extensionElements->choices.size());
 
   auto& statusVars = constraintProgramm.status.at(vertex);

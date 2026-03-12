@@ -3,9 +3,9 @@
 
 using namespace BPMNOS::Execution;
 
-ChoiceEvent::ChoiceEvent(const Token* token, Values choices)
+ChoiceEvent::ChoiceEvent(const Token* token, std::vector<number> choices)
   : Event(token)
-  , choices(choices)
+  , choices(std::move(choices))
 {
 }
 
@@ -25,27 +25,24 @@ nlohmann::ordered_json ChoiceEvent::jsonify() const {
   auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   for (size_t i = 0; i < extensionElements->choices.size(); i++) {
     auto attribute = extensionElements->choices[i]->attribute;
-    if ( !choices[i].has_value() ) {
-      jsonObject["choices"][attribute->name] = nullptr ;
-    }
-    else if ( attribute->type == BOOLEAN) {
-      bool value = (bool)choices[i].value();
+    if ( attribute->type == BOOLEAN) {
+      bool value = (bool)choices[i];
       jsonObject["choices"][attribute->name] = value ;
     }
     else if ( attribute->type == INTEGER) {
-      int value = (int)choices[i].value();
+      int value = (int)choices[i];
       jsonObject["choices"][attribute->name] = value ;
     }
     else if ( attribute->type == DECIMAL) {
-      double value = (double)choices[i].value();
+      double value = (double)choices[i];
       jsonObject["choices"][attribute->name] = value ;
     }
     else if ( attribute->type == STRING) {
-      std::string value = BPMNOS::to_string(choices[i].value(),attribute->type);
+      std::string value = BPMNOS::to_string(choices[i],attribute->type);
       jsonObject["choices"][attribute->name] = value ;
     }
     else if ( attribute->type == COLLECTION) {
-      std::string value = BPMNOS::to_string(choices[i].value(),attribute->type);
+      std::string value = BPMNOS::to_string(choices[i],attribute->type);
       jsonObject["choices"][attribute->name] = value ;
     }
   }

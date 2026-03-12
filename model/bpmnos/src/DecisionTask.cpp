@@ -12,7 +12,7 @@ DecisionTask::DecisionTask(XML::bpmn::tTask* task, BPMN::Scope* parent)
 }
 
 template <typename DataType>
-std::vector<BPMNOS::Values> DecisionTask::enumerateAlternatives(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const {
+std::vector<std::vector<BPMNOS::number>> DecisionTask::enumerateAlternatives(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const {
   assert(extensionElements->represents<ExtensionElements>());
   auto extensionElements = this->extensionElements->as<ExtensionElements>();
   assert(!extensionElements->choices.empty());
@@ -20,26 +20,25 @@ std::vector<BPMNOS::Values> DecisionTask::enumerateAlternatives(const BPMNOS::Va
   BPMNOS::Values statusCopy = status;
   BPMNOS::Values dataCopy = data;
   BPMNOS::Values globalsCopy = globals;
-  std::vector<BPMNOS::Values> alternativeChoices;
-  BPMNOS::Values tmp;
-  tmp.resize(extensionElements->choices.size());
+  std::vector<std::vector<BPMNOS::number>> alternativeChoices;
+  std::vector<BPMNOS::number> tmp(extensionElements->choices.size());
   determineAlternatives(alternativeChoices, extensionElements, statusCopy, dataCopy, globalsCopy, tmp, 0);
 
   return alternativeChoices;
 }
 
-template std::vector<BPMNOS::Values> DecisionTask::enumerateAlternatives<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data, const BPMNOS::Values& globals) const;
+template std::vector<std::vector<BPMNOS::number>> DecisionTask::enumerateAlternatives<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data, const BPMNOS::Values& globals) const;
 
-template std::vector<BPMNOS::Values> DecisionTask::enumerateAlternatives<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data, const BPMNOS::Values& globals) const;
+template std::vector<std::vector<BPMNOS::number>> DecisionTask::enumerateAlternatives<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data, const BPMNOS::Values& globals) const;
 
 
 void DecisionTask::determineAlternatives(
-  std::vector<BPMNOS::Values>& alternatives,
+  std::vector<std::vector<BPMNOS::number>>& alternatives,
   const ExtensionElements* extensionElements,
   BPMNOS::Values& status,
   BPMNOS::Values& data,
   BPMNOS::Values& globals,
-  BPMNOS::Values& choices,
+  std::vector<number>& choices,
   size_t index
 ) {
   assert(index < choices.size());
@@ -47,7 +46,7 @@ void DecisionTask::determineAlternatives(
 
   auto choose = [&](number value) -> void {
     choices[index] = value;
-    choice->attributeRegistry.setValue(choice->attribute, status, data, globals, choices[index]);
+    choice->attributeRegistry.setValue(choice->attribute, status, data, globals, value);
     if ( index + 1 == choices.size() ) {
       alternatives.push_back(choices);
     }

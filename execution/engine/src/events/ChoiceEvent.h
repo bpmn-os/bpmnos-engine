@@ -13,9 +13,9 @@ namespace BPMNOS::Execution {
  * Transition from State::BUSY to State::COMPLETED
  */
 struct ChoiceEvent : virtual Event {
-  ChoiceEvent(const Token* token, Values choices);
+  ChoiceEvent(const Token* token, std::vector<number> choices);
   void processBy(Engine* engine) const;
-  Values choices; // attribute values in order of the choices to be made
+  std::vector<number> choices; // attribute values in order of the choices to be made
 
   nlohmann::ordered_json jsonify() const override;
 };

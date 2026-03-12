@@ -31,7 +31,7 @@ void BisectionalChoice::notice(const Observable* observable) {
     assert( dynamic_cast<const DecisionRequest*>(observable) );
     auto request = static_cast<const DecisionRequest*>(observable);
     // create pseudo decision
-    auto decision = std::make_shared<ChoiceDecision>(request->token, Values(), evaluator);
+    auto decision = std::make_shared<ChoiceDecision>(request->token, std::vector<number>{}, evaluator);
     decisionsWithoutEvaluation.emplace_back( request->token->weak_from_this(), request->weak_from_this(), decision );
   }
   else {
@@ -105,7 +105,7 @@ std::shared_ptr<Decision> BisectionalChoice::determineBestChoices(std::shared_pt
 
 BisectionalChoice::Candidate BisectionalChoice::evaluate(size_t index) {
 //std::cerr << "Evaluate " << index << ": " << values[index] << std::endl;
-  auto decision = std::make_shared<ChoiceDecision>(token, Values{ values[index] }, evaluator);
+  auto decision = std::make_shared<ChoiceDecision>(token, std::vector<number>{ values[index] }, evaluator);
   decision->evaluate();
   return { index, decision };
 }

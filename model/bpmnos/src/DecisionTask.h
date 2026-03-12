@@ -20,16 +20,16 @@ public:
   DecisionTask(XML::bpmn::tTask* task, BPMN::Scope* parent);
 
   template <typename DataType>
-  std::vector<BPMNOS::Values> enumerateAlternatives(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const;
+  std::vector<std::vector<number>> enumerateAlternatives(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const;
 
 private:
   static void determineAlternatives(
-    std::vector<BPMNOS::Values>& alternatives,
+    std::vector<std::vector<number>>& alternatives,
     const ExtensionElements* extensionElements,
     BPMNOS::Values& status,
     BPMNOS::Values& data,
     BPMNOS::Values& globals,
-    BPMNOS::Values& choices,
+    std::vector<number>& choices,
     size_t index
   );
 };
