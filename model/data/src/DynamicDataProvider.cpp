@@ -1,12 +1,14 @@
 #include "DynamicDataProvider.h"
-#include "LegacyScenario.h"
+#include "DynamicScenario.h"
 #include "model/utility/src/Keywords.h"
 #include "model/utility/src/Number.h"
+#include "model/utility/src/Value.h"
+#include "model/utility/src/getDelimiter.h"
+#include "model/bpmnos/src/extensionElements/Expression.h"
 #include "model/bpmnos/src/extensionElements/ExtensionElements.h"
 #include <unordered_map>
 #include <algorithm>
 #include <ranges>
-
 
 using namespace BPMNOS::Model;
 
@@ -19,129 +21,234 @@ DynamicDataProvider::DynamicDataProvider(const std::string& modelFile, const std
   : DataProvider(modelFile,folders)
   , reader( CSVReader(instanceFileOrString) )
 {
+  for ( auto& [ attributeId, attribute ] : attributes[nullptr] ) {
+    if ( attribute->expression ) {
+      if ( attribute->expression->compiled.getVariables().size() || attribute->expression->compiled.getCollections().size() ) {
+        throw std::runtime_error("DynamicDataProvider: initial value of global attribute '" + attribute->id + "' must not be derived from other attributes");
+      }
+      globalValueMap[ attribute ] = attribute->expression->compiled.evaluate();
+    }
+  }
   earliestInstantiation = std::numeric_limits<BPMNOS::number>::max();
   latestInstantiation = std::numeric_limits<BPMNOS::number>::min();
   readInstances();
+  
 }
 
 void DynamicDataProvider::readInstances() {
-  enum {PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE, DISCLOSURE};
-
   CSVReader::Table table = reader.read();
   if ( table.empty() ) {
     throw std::runtime_error("DynamicDataProvider: table '" + reader.instanceFileOrString + "' is empty");
   }
 
+  if ( table.size() < 2 ) {
+    throw std::runtime_error("DynamicDataProvider: table must have at least a header and one data row");
+  }
+
+  size_t columnCount = table[0].size();
+  if ( columnCount != 4 ) {
+    throw std::runtime_error("DynamicDataProvider: expected 4 columns (INSTANCE_ID, NODE_ID, INITIALIZATION, DISCLOSURE), got " + std::to_string(columnCount));
+  }
+
+  // Parse table with format: INSTANCE_ID, NODE_ID, INITIALIZATION, DISCLOSURE
+  enum {INSTANCE_ID, NODE_ID, INITIALIZATION, DISCLOSURE};
+
   for (auto &row : table | std::views::drop(1)) {   // assume a single header line
     if ( row.empty() ) {
       continue;
     }
-    if ( row.size() != 5 ) {
+    if ( row.size() != 4 ) {
       throw std::runtime_error("DynamicDataProvider: illegal number of cells");
     }
-/*
-    std::string processId = row[PROCESS_ID].get();
-    // find process with respective identifier
-    auto processIt = std::find_if(
-      model->processes.begin(),
-      model->processes.end(),
-      [&processId](const std::unique_ptr<BPMN::Process>& process) { return process->id == processId;}
-    );
-    if ( processIt == model->processes.end() ) {
-      throw std::runtime_error("DynamicDataProvider: model has no process '" + processId + "'");
+
+    // Get instance ID (may be empty for globals)
+    if ( !std::holds_alternative<std::string>(row.at(INSTANCE_ID)) ) {
+      throw std::runtime_error("DynamicDataProvider: illegal instance id");
     }
+    std::string instanceIdStr = std::get<std::string>(row.at(INSTANCE_ID));
 
-    // TODO: populate globalValueMap!!!
-    auto process = processIt->get();
-
-    auto instanceId = (long unsigned int)BPMNOS::to_number( row[INSTANCE_ID].get(), STRING );
-    // find instance with respective identifier
-    if ( !instances.contains(instanceId) ) {
-      // row has first entry for instance, create new entry in data
-      instances[instanceId] = DynamicInstanceData({process,instanceId,{},{}});
+    // Get node ID (may be empty for globals)
+    if ( !std::holds_alternative<std::string>(row.at(NODE_ID)) ) {
+      throw std::runtime_error("DynamicDataProvider: illegal node id");
     }
+    std::string nodeId = std::get<std::string>(row.at(NODE_ID));
 
-    auto& instance = instances[instanceId];
-    auto instanceAtribute = attributes[process][Keyword::Instance];
-    if ( auto it = instance.data.find( instanceAtribute );
-         it == instance.data.end()
-    ) {
-      // instance attribute is assumed to be known, even if instantiation is disclosed later
-      instance.data[ instanceAtribute ] = { { std::numeric_limits<BPMNOS::number>::min(), instanceId } };
+    // Get initialization expression
+    if ( !std::holds_alternative<std::string>(row.at(INITIALIZATION)) ) {
+      throw std::runtime_error("DynamicDataProvider: illegal initialization");
     }
+    std::string initialization = std::get<std::string>(row.at(INITIALIZATION));
 
-    std::string attributeId = row[ATTRIBUTE_ID].get();
-
-    if ( attributeId == "" ) {
-      // no attribute provided in this row
-      continue;
+    // Get disclosure expression
+    if ( !std::holds_alternative<std::string>(row.at(DISCLOSURE)) ) {
+      throw std::runtime_error("DynamicDataProvider: illegal disclosure");
     }
+    std::string disclosureStr = std::get<std::string>(row.at(DISCLOSURE));
 
-    if ( !attributes[process].contains(attributeId) ) {
-      throw std::runtime_error("DynamicDataProvider: process '" + processId + "' has no node with attribute '" + attributeId + "'");
-    }
-
-    auto attribute = attributes[process][attributeId];
-    BPMNOS::number disclosure = BPMNOS::to_number(row[DISCLOSURE].get(),INTEGER);
-    BPMNOS::number value = BPMNOS::to_number(row[VALUE].get(),attribute->type);
-    auto &attributeData = instance.data[ attribute ];
-    if ( attributeData.size() && attributeData.back().first >= disclosure ) {
-      throw std::runtime_error("DynamicDataProvider: disclosures of attribute values must be provided in strictly increasing order");
-    }
-    instance.data[ attribute ].push_back({ disclosure, value });
-
-    if ( attribute->index == BPMNOS::Model::ExtensionElements::Index::Timestamp ) {
-      if ( instance.instantiation.size() && instance.instantiation.back().first >= disclosure ) {
-        throw std::runtime_error("DynamicDataProvider: disclosures of timestamp values must be provided in strictly increasing order");
+    if ( instanceIdStr.empty() && nodeId.empty() ) {
+      // Global attribute
+      if ( initialization.empty() ) {
+        continue;
       }
-      if ( instance.instantiation.size() && instance.instantiation.back().first >= instance.instantiation.back().second ) {
-        throw std::runtime_error("DynamicDataProvider: disclosures of anticipated timestamps must be strictly smaller than the timestamp value");
+      auto [attributeName, value] = parseInitialization(initialization);
+      // Find global attribute by name
+      const Attribute* attribute = nullptr;
+      for ( auto& [id, attr] : attributes[nullptr] ) {
+        if ( attr->name == attributeName ) {
+          attribute = attr;
+          break;
+        }
       }
-      instance.instantiation.push_back({ disclosure, value });
+      if ( !attribute ) {
+        throw std::runtime_error("DynamicDataProvider: unknown global attribute '" + attributeName + "'");
+      }
+      globalValueMap[attribute] = value;
     }
-*/
+    else if ( instanceIdStr.empty() ) {
+      throw std::runtime_error("DynamicDataProvider: instance id required when node id is provided");
+    }
+    else {
+      auto instanceId = (size_t)BPMNOS::to_number(instanceIdStr, STRING);
+
+      // Find the node
+      BPMN::Node* node = findNode(nodeId);
+
+      // First occurrence of instance must have node = process
+      if ( !instances.contains(instanceId) ) {
+        // Check that node is a process
+        if ( !node->represents<BPMN::Process>() ) {
+          throw std::runtime_error("DynamicDataProvider: first row for instance '" + instanceIdStr + "' must reference a process node, got '" + nodeId + "'");
+        }
+        auto process = dynamic_cast<BPMN::Process*>(node);
+        instances[instanceId] = DynamicInstanceData({process, instanceId, std::numeric_limits<BPMNOS::number>::max(), {}, {}});
+      }
+
+      // If no initialization, just create instance (already done above)
+      if ( initialization.empty() ) {
+        continue;
+      }
+
+      auto& instance = instances[instanceId];
+      auto [attributeName, value] = parseInitialization(initialization);
+
+      // Look up attribute in the node's extension elements
+      auto extensionElements = node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+      if ( !extensionElements->attributeRegistry.contains(attributeName) ) {
+        throw std::runtime_error("DynamicDataProvider: node '" + nodeId + "' has no attribute '" + attributeName + "'");
+      }
+
+      auto attribute = extensionElements->attributeRegistry[attributeName];
+      if ( attribute->expression ) {
+        throw std::runtime_error("DynamicDataProvider: value of attribute '" + attributeName + "' is initialized by expression and must not be provided explicitly");
+      }
+
+      instance.data[attribute] = value;
+
+      // Parse and store disclosure time
+      if ( !disclosureStr.empty() ) {
+        LIMEX::Expression<double> disclosureExpr(disclosureStr, model->limexHandle);
+        if ( !disclosureExpr.getVariables().empty() || !disclosureExpr.getCollections().empty() ) {
+          throw std::runtime_error("DynamicDataProvider: disclosure expression must not reference variables, got '" + disclosureStr + "'");
+        }
+        instance.disclosure[attribute] = disclosureExpr.evaluate();
+      }
+      else {
+        // Default: disclosed at time 0 (immediately known)
+        instance.disclosure[attribute] = 0;
+      }
+    }
   }
-  for (auto& [id, instance] : instances) {
-    auto& instantiation = instance.instantiation.back().second;
 
-    if ( earliestInstantiation > instantiation ) {
-      earliestInstantiation = instantiation;
+  for (auto& [id, instance] : instances) {
+    // ensure that default attributes are available
+    ensureDefaultValue(instance, Keyword::Instance, id);
+    ensureDefaultValue(instance, Keyword::Timestamp);
+    // set time of instantiation
+    instance.instantiation = instance.data.at( attributes[instance.process][Keyword::Timestamp] );
+
+    if ( earliestInstantiation > instance.instantiation ) {
+      earliestInstantiation = instance.instantiation;
     }
-    if ( latestInstantiation < instantiation ) {
-      latestInstantiation = instantiation;
+    if ( latestInstantiation < instance.instantiation ) {
+      latestInstantiation = instance.instantiation;
+    }
+  }
+}
+
+std::pair<std::string, BPMNOS::number> DynamicDataProvider::parseInitialization(const std::string& initialization) const {
+  // Parse "attributeName := expression"
+  auto pos = initialization.find(":=");
+  if ( pos == std::string::npos ) {
+    throw std::runtime_error("DynamicDataProvider: initialization must be in format 'attribute := expression', got '" + initialization + "'");
+  }
+
+  std::string attributeName = initialization.substr(0, pos);
+  std::string expression = initialization.substr(pos + 2);
+
+  // Trim whitespace
+  auto trimStart = attributeName.find_first_not_of(" \t");
+  auto trimEnd = attributeName.find_last_not_of(" \t");
+  if ( trimStart == std::string::npos ) {
+    throw std::runtime_error("DynamicDataProvider: empty attribute name in initialization '" + initialization + "'");
+  }
+  attributeName = attributeName.substr(trimStart, trimEnd - trimStart + 1);
+
+  trimStart = expression.find_first_not_of(" \t");
+  trimEnd = expression.find_last_not_of(" \t");
+  if ( trimStart == std::string::npos ) {
+    throw std::runtime_error("DynamicDataProvider: empty expression in initialization '" + initialization + "'");
+  }
+  expression = expression.substr(trimStart, trimEnd - trimStart + 1);
+
+  // Evaluate expression using LIMEX
+  LIMEX::Expression<double> compiled(expression, model->limexHandle);
+  if ( !compiled.getVariables().empty() || !compiled.getCollections().empty() ) {
+    throw std::runtime_error("DynamicDataProvider: initialization expression must not reference variables, got '" + expression + "'");
+  }
+  BPMNOS::number value = compiled.evaluate();
+
+  return {attributeName, value};
+}
+
+void DynamicDataProvider::ensureDefaultValue(DynamicInstanceData& instance, const std::string attributeId, std::optional<BPMNOS::number> value) {
+  assert( attributes.contains(instance.process) );
+  auto it1 = attributes.at(instance.process).find(attributeId);
+  if ( it1 == attributes.at(instance.process).end() ) {
+    throw std::runtime_error("DynamicDataProvider: unable to find required attribute '" + attributeId + "' for process '" + instance.process->id + "'");
+  }
+  auto attribute = it1->second;
+  if ( auto it2 = instance.data.find( attribute );
+    it2 == instance.data.end()
+  ) {
+    if ( attribute->expression ) {
+      throw std::runtime_error("DynamicDataProvider: initial value of default attribute '" + attribute->id + "' must not be  provided by expression");
+    }
+    
+    // set attribute value if available
+    if ( value.has_value() ) {
+      instance.data[ attribute ] = value.value();
+    }
+    else if ( attributeId == BPMNOS::Keyword::Timestamp ) {
+      // use 0 as fallback 
+      instance.data[ attribute ] = 0;
+    }
+    else {
+      throw std::runtime_error("DynamicDataProvider: attribute '" + attribute->id + "' has no default value");
     }
   }
 }
 
 std::unique_ptr<Scenario> DynamicDataProvider::createScenario([[maybe_unused]] unsigned int scenarioId) {
-  std::unique_ptr<Scenario> scenario = std::make_unique<LegacyScenario>(model.get(), earliestInstantiation, latestInstantiation, attributes, globalValueMap);
+  auto scenario = std::make_unique<DynamicScenario>(model.get(), earliestInstantiation, latestInstantiation, globalValueMap);
   for ( auto& [id, instance] : instances ) {
-    if ( instance.instantiation.size() ) {
-      // instances become known at last disclosure of the instantiation
-      auto& [instantiationDisclosure, instantiationTime] = instance.instantiation.back();
-      scenario->addInstance(instance.process, id, { {}, {{instantiationDisclosure, instantiationTime}} });
-      for ( auto& [disclosure, value] : instance.instantiation ) {
-        scenario->addAnticipation( scenario->getInstantiationData(id), {disclosure, value} );
-      }
+    auto& timestampAttribute = attributes[instance.process][Keyword::Timestamp];
+    auto instantiationTime = instance.data[timestampAttribute];
+    scenario->addInstance(instance.process, id, instantiationTime);
+    for ( auto& [attribute, value] : instance.data ) {
+      scenario->setValue(id, attribute, value);
     }
-
-    for ( auto& [attribute, data] : instance.data ) {
-      for ( auto& [disclosure, value] : data ) {
-        // add anticipation of attribute value
-        scenario->addAnticipation( scenario->getAttributeData(id, attribute), {disclosure, value} );
-      }
-
-      if ( data.size() ) {
-        // use last given attribute data as realization
-        auto& [disclosure, value] = data.back();
-        scenario->setRealization( scenario->getAttributeData(id, attribute), {disclosure, value} );
-      }
-      else {
-        // no attribute data given, use default value as realization at time
-// TODO
-//        scenario->setRealization( scenario->getAttributeData(id, attribute), {earliestInstantiation, attribute->value} );
-      }
-
+    for ( auto& [attribute, disclosureTime] : instance.disclosure ) {
+      scenario->setDisclosure(id, attribute, disclosureTime);
     }
   }
   return scenario;

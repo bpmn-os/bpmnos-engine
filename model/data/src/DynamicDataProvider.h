@@ -3,6 +3,7 @@
 
 #include "DataProvider.h"
 #include "model/utility/src/CSVReader.h"
+#include <vector>
 
 namespace BPMNOS::Model {
 
@@ -29,8 +30,6 @@ public:
    * @param instanceFileOrString The file path to the instance data file or a string containing the data.
    */
   DynamicDataProvider(const std::string& modelFile, const std::vector<std::string>& folders, const std::string& instanceFileOrString);
-  
-  
   ~DynamicDataProvider() override = default;
   std::unique_ptr<Scenario> createScenario(unsigned int scenarioId = 0) override;
 protected:
@@ -39,14 +38,18 @@ protected:
 
   struct DynamicInstanceData {
     const BPMN::Process* process;
-    BPMNOS::number instanceId;
-    std::vector< std::pair<BPMNOS::number,BPMNOS::number> > instantiation; ///< Instantiation data consisting of disclosure-value pairs
-    std::unordered_map< const Attribute*, std::vector< std::pair<BPMNOS::number,BPMNOS::number> > > data; ///< Map of attribute data consisting of disclosure-value pairs
+    BPMNOS::number id;
+    BPMNOS::number instantiation;
+    std::unordered_map< const Attribute*, BPMNOS::number > data;
+    std::unordered_map< const Attribute*, BPMNOS::number > disclosure; ///< Time when each attribute value is revealed
   };
   std::unordered_map< long unsigned int, DynamicInstanceData > instances;
   std::unordered_map< const Attribute*, BPMNOS::number > globalValueMap;
   BPMNOS::number earliestInstantiation;
   BPMNOS::number latestInstantiation;
+
+  void ensureDefaultValue(DynamicInstanceData& instance, const std::string attributeId, std::optional<BPMNOS::number> value = std::nullopt);
+  std::pair<std::string, BPMNOS::number> parseInitialization(const std::string& initialization) const;
 };
 
 } // namespace BPMNOS::Model
