@@ -9,6 +9,9 @@
 #include <unordered_map>
 #include <algorithm>
 #include <ranges>
+#include <set>
+#include <sstream>
+#include <fstream>
 
 using namespace BPMNOS::Model;
 
@@ -156,6 +159,10 @@ void StaticDataProvider::readInstancesOldFormat(const CSVReader::Table& table) {
       globalValueMap[attribute] = std::get<BPMNOS::number>(row.at(VALUE));
     }
   }
+
+  // Offer migration to new format
+  std::string newFormat = convertToNewFormat(table);
+  promptMigration(newFormat);
 }
 
 void StaticDataProvider::readInstancesNewFormat(const CSVReader::Table& table) {
@@ -274,13 +281,185 @@ std::pair<std::string, BPMNOS::number> StaticDataProvider::parseInitialization(c
   return {attributeName, value};
 }
 
-std::string StaticDataProvider::convertToNewFormat(const CSVReader::Table& table) const {
-  // TODO: implement conversion from old to new format
-  return "";
+std::string StaticDataProvider::convertToNewFormat([[maybe_unused]] const CSVReader::Table& table) const {
+  enum {PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE};
+
+  std::ostringstream output;
+  output << "INSTANCE_ID; NODE_ID; INITIALIZATION\n";
+
+  // Read raw input to preserve original values (avoid encoding issues)
+  std::unique_ptr<std::istream> input;
+  if ( reader.instanceFileOrString.contains("\n") ) {
+    input = std::make_unique<std::istringstream>(reader.instanceFileOrString);
+  }
+  else {
+    input = std::make_unique<std::ifstream>(reader.instanceFileOrString);
+  }
+
+  // Track which instances we've seen (to output process ID on first occurrence)
+  std::set<std::string> seenInstances;
+
+  std::string line;
+  char delimiter = ',';
+  size_t inputLineCount = 0;
+  size_t outputLineCount = 0;
+
+  // Read header line to detect delimiter
+  if ( std::getline(*input, line) ) {
+    if ( line.find(';') != std::string::npos ) delimiter = ';';
+    else if ( line.find('\t') != std::string::npos ) delimiter = '\t';
+    inputLineCount++;
+    outputLineCount++; // Header line
+  }
+
+  while ( std::getline(*input, line) ) {
+    inputLineCount++;
+
+    // Trim and skip empty lines
+    auto trimStart = line.find_first_not_of(" \t\r\n");
+    if ( trimStart == std::string::npos ) {
+      outputLineCount++; // Empty line still counts
+      output << "\n";
+      continue;
+    }
+    line = line.substr(trimStart);
+    auto trimEnd = line.find_last_not_of(" \t\r\n");
+    line = line.substr(0, trimEnd + 1);
+
+    // Split by delimiter
+    std::vector<std::string> cells;
+    std::string cell;
+
+    std::istringstream lineStream(line);
+    while ( std::getline(lineStream, cell, delimiter) ) {
+      // Trim cell
+      auto start = cell.find_first_not_of(" \t");
+      auto end = cell.find_last_not_of(" \t");
+      if ( start != std::string::npos ) {
+        cell = cell.substr(start, end - start + 1);
+      }
+      else {
+        cell = "";
+      }
+      cells.push_back(cell);
+    }
+    // Handle trailing empty cells
+    while ( cells.size() < 4 ) {
+      cells.push_back("");
+    }
+
+    if ( cells.size() != 4 ) {
+      continue;
+    }
+
+    std::string processId = cells[PROCESS_ID];
+    std::string instanceIdStr = cells[INSTANCE_ID];
+    std::string attributeId = cells[ATTRIBUTE_ID];
+    std::string valueStr = cells[VALUE];
+
+    if ( processId.empty() ) {
+      // Global attribute - look up name
+      if ( attributeId.empty() ) {
+        output << "\n";
+        outputLineCount++;
+        continue;
+      }
+      std::string attributeName = attributeId;
+      if ( attributes.contains(nullptr) && attributes.at(nullptr).contains(attributeId) ) {
+        attributeName = attributes.at(nullptr).at(attributeId)->name;
+      }
+      output << "; ; " << attributeName << " := " << valueStr << "\n";
+      outputLineCount++;
+    }
+    else {
+      // Instance attribute - find process and look up attribute name
+      auto processIt = std::find_if(
+        model->processes.begin(),
+        model->processes.end(),
+        [&processId](const std::unique_ptr<BPMN::Process>& process) { return process->id == processId; }
+      );
+
+      std::string nodeId;
+      if ( seenInstances.find(instanceIdStr) == seenInstances.end() ) {
+        // First occurrence - use process ID as node ID
+        nodeId = processId;
+        seenInstances.insert(instanceIdStr);
+      }
+      // For subsequent rows, we still need to specify the process as node
+      // since old format doesn't have node-level granularity
+      else {
+        nodeId = processId;
+      }
+
+      if ( attributeId.empty() ) {
+        // No attribute, just output instance/node
+        output << instanceIdStr << "; " << nodeId << ";\n";
+      }
+      else {
+        std::string attributeName = attributeId;
+        if ( processIt != model->processes.end() ) {
+          auto process = processIt->get();
+          if ( attributes.contains(process) && attributes.at(process).contains(attributeId) ) {
+            attributeName = attributes.at(process).at(attributeId)->name;
+          }
+        }
+        output << instanceIdStr << "; " << nodeId << "; " << attributeName << " := " << valueStr << "\n";
+      }
+      outputLineCount++;
+    }
+  }
+
+  assert( inputLineCount == outputLineCount && "Line count mismatch in format conversion" );
+  return output.str();
 }
 
 void StaticDataProvider::promptMigration(const std::string& newFormatContent) const {
-  // TODO: implement migration prompt
+  // Check if input is a file (no newline in instanceFileOrString)
+  if ( reader.instanceFileOrString.contains("\n") ) {
+    // Input is a string, can't write back
+    std::cerr << "\n========== ORIGINAL STRING ==========\n";
+    std::cerr << reader.instanceFileOrString;
+    std::cerr << "\n========== CONVERTED TO NEW FORMAT ==========\n";
+    std::cerr << newFormatContent;
+    std::cerr << "==============================================\n\n";
+    return;
+  }
+
+  // Read original file content
+  std::ifstream originalFile(reader.instanceFileOrString);
+  if ( !originalFile.is_open() ) {
+    std::cerr << "Could not read original file for migration.\n";
+    return;
+  }
+  std::ostringstream originalContent;
+  originalContent << originalFile.rdbuf();
+  originalFile.close();
+
+  // Show both formats
+  std::cerr << "\n========== ORIGINAL FILE: " << reader.instanceFileOrString << " ==========\n";
+  std::cerr << originalContent.str();
+  std::cerr << "\n========== CONVERTED TO NEW FORMAT ==========\n";
+  std::cerr << newFormatContent;
+  std::cerr << "==============================================\n\n";
+
+  // Prompt user
+  std::cerr << "Would you like to update '" << reader.instanceFileOrString << "' to the new format? [y/N]: ";
+  std::string response;
+  std::getline(std::cin, response);
+
+  if ( response == "y" || response == "Y" || response == "yes" || response == "Yes" ) {
+    std::ofstream outputFile(reader.instanceFileOrString);
+    if ( !outputFile.is_open() ) {
+      std::cerr << "ERROR: Could not write to file '" << reader.instanceFileOrString << "'\n";
+      return;
+    }
+    outputFile << newFormatContent;
+    outputFile.close();
+    std::cerr << "File updated successfully.\n";
+  }
+  else {
+    std::cerr << "File not updated.\n";
+  }
 }
 
 void StaticDataProvider::ensureDefaultValue(StaticInstanceData& instance, const std::string attributeId, std::optional<BPMNOS::number> value) {
