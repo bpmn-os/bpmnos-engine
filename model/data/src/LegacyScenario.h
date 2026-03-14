@@ -21,8 +21,6 @@ public:
    */
   LegacyScenario(const LegacyScenario& other);
 
-  const Model* getModel() const override;
-
   BPMNOS::number getEarliestInstantiationTime() const override;
   bool isCompleted(const BPMNOS::number currentTime) const override;
 

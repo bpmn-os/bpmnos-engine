@@ -23,10 +23,6 @@ void StaticScenario::setValue(const BPMNOS::number instanceId, const Attribute* 
   instances[(size_t)instanceId].values[attribute] = value;
 }
 
-const Model* StaticScenario::getModel() const {
-  return model;
-}
-
 BPMNOS::number StaticScenario::getEarliestInstantiationTime() const {
   return earliestInstantiationTime;
 }

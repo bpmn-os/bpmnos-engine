@@ -45,10 +45,6 @@ void LegacyScenario::setValue(const BPMNOS::number instanceId, const Attribute* 
   instanceData.values[attribute] = value;
 }
 
-const Model* LegacyScenario::getModel() const {
-  return model;
-}
-
 BPMNOS::number LegacyScenario::getEarliestInstantiationTime() const {
   return earliestInstantiationTime;
 }

@@ -33,7 +33,7 @@ public:
   /**
    * @brief Method returning the model.
    */
-  virtual const Model* getModel() const = 0;
+  const Model* getModel() const { return model; }
 
   /**
    * @brief Method returning the time of the earliest instantiation.

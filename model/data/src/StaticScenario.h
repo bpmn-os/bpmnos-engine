@@ -15,8 +15,6 @@ class StaticScenario : public Scenario {
 public:
   StaticScenario(const Model* model, BPMNOS::number earliestInstantiationTime, BPMNOS::number latestInstantiationTime, const std::unordered_map< const Attribute*, BPMNOS::number >& globalValueMap);
 
-  const Model* getModel() const override;
-
   BPMNOS::number getEarliestInstantiationTime() const override;
   bool isCompleted(const BPMNOS::number currentTime) const override;
 
