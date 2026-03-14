@@ -15,11 +15,11 @@ public:
   /**
    * @brief Constructor for LegacyScenario.
    */
-  LegacyScenario(const Model* model, BPMNOS::number inception, BPMNOS::number completion, const DataInput& attributes, const std::unordered_map< const Attribute*, BPMNOS::number >& globalValueMap, unsigned int index = 0);
+  LegacyScenario(const Model* model, BPMNOS::number inception, BPMNOS::number completion, const DataInput& attributes, const std::unordered_map< const Attribute*, BPMNOS::number >& globalValueMap);
   /**
    * @brief Copy constructor for LegacyScenario.
    */
-  LegacyScenario(const LegacyScenario& other, unsigned int index);
+  LegacyScenario(const LegacyScenario& other);
 
   const Model* getModel() const override;
 

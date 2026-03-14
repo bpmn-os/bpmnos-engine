@@ -120,7 +120,6 @@ public:
 
   BPMNOS::Values globals;
   const Model* model;  ///< Pointer to the BPMN model.
-  unsigned int index;
 };
 
 } // namespace BPMNOS::Model

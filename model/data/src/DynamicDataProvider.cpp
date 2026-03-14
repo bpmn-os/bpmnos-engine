@@ -113,8 +113,8 @@ void DynamicDataProvider::readInstances() {
   }
 }
 
-std::unique_ptr<Scenario> DynamicDataProvider::createScenario(unsigned int scenarioId) {
-  std::unique_ptr<Scenario> scenario = std::make_unique<LegacyScenario>(model.get(), earliestInstantiation, latestInstantiation, attributes, globalValueMap, scenarioId);
+std::unique_ptr<Scenario> DynamicDataProvider::createScenario([[maybe_unused]] unsigned int scenarioId) {
+  std::unique_ptr<Scenario> scenario = std::make_unique<LegacyScenario>(model.get(), earliestInstantiation, latestInstantiation, attributes, globalValueMap);
   for ( auto& [id, instance] : instances ) {
     if ( instance.instantiation.size() ) {
       // instances become known at last disclosure of the instantiation

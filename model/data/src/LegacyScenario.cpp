@@ -6,12 +6,11 @@
 
 using namespace BPMNOS::Model;
 
-LegacyScenario::LegacyScenario(const Model* model, BPMNOS::number inception, BPMNOS::number completion, const DataInput& attributes, const std::unordered_map< const Attribute*, BPMNOS::number >& globalValueMap, unsigned int index)
+LegacyScenario::LegacyScenario(const Model* model, BPMNOS::number inception, BPMNOS::number completion, const DataInput& attributes, const std::unordered_map< const Attribute*, BPMNOS::number >& globalValueMap)
   : attributes(attributes)
   , inception(inception)
   , completion(completion)
 {
-  this->index = index;
   this->model = model;
   globals.resize(model->attributes.size());
   for ( auto& [ attribute, value ] : globalValueMap ) {
@@ -19,12 +18,11 @@ LegacyScenario::LegacyScenario(const Model* model, BPMNOS::number inception, BPM
   }
 }
 
-LegacyScenario::LegacyScenario(const LegacyScenario& other, unsigned int index)
+LegacyScenario::LegacyScenario(const LegacyScenario& other)
   : attributes(other.attributes)
   , inception(other.inception)
   , completion(other.completion)
 {
-  this->index = index;
   this->model = other.model;
   // Implement deep copy logic for the 'instances' map and its elements
   for (auto& [identifier, instance] : other.instances) {
