@@ -1,4 +1,5 @@
 #include "StaticDataProvider.h"
+#include "LegacyScenario.h"
 #include "model/utility/src/Keywords.h"
 #include "model/utility/src/Number.h"
 #include "model/utility/src/Value.h"
@@ -166,7 +167,7 @@ void StaticDataProvider::ensureDefaultValue(StaticInstanceData& instance, const 
 }
 
 std::unique_ptr<Scenario> StaticDataProvider::createScenario(unsigned int scenarioId) {
-  std::unique_ptr<Scenario> scenario = std::make_unique<Scenario>(model.get(), earliestInstantiation, latestInstantiation, attributes, globalValueMap, scenarioId);
+  std::unique_ptr<Scenario> scenario = std::make_unique<LegacyScenario>(model.get(), earliestInstantiation, latestInstantiation, attributes, globalValueMap, scenarioId);
   for ( auto& [id, instance] : instances ) {
     auto& timestampAttribute = attributes[instance.process][Keyword::Timestamp];
     auto& instantiation = instance.data[timestampAttribute];

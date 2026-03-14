@@ -1,4 +1,4 @@
-#include "Scenario.h"
+#include "LegacyScenario.h"
 #include "model/utility/src/Keywords.h"
 #include "model/utility/src/StringRegistry.h"
 #include "model/bpmnos/src/extensionElements/ExtensionElements.h"
@@ -6,26 +6,26 @@
 
 using namespace BPMNOS::Model;
 
-Scenario::Scenario(const Model* model, BPMNOS::number inception, BPMNOS::number completion, const DataInput& attributes, const std::unordered_map< const Attribute*, BPMNOS::number >& globalValueMap, unsigned int index)
-  : index(index)
-  , model(model)
-  , attributes(attributes)
+LegacyScenario::LegacyScenario(const Model* model, BPMNOS::number inception, BPMNOS::number completion, const DataInput& attributes, const std::unordered_map< const Attribute*, BPMNOS::number >& globalValueMap, unsigned int index)
+  : attributes(attributes)
   , inception(inception)
   , completion(completion)
 {
+  this->index = index;
+  this->model = model;
   globals.resize(model->attributes.size());
   for ( auto& [ attribute, value ] : globalValueMap ) {
     globals[attribute->index] = value;
   }
 }
 
-Scenario::Scenario(const Scenario& other, unsigned int index)
-  : index(index)
-  , model(other.model)
-  , attributes(other.attributes)
+LegacyScenario::LegacyScenario(const LegacyScenario& other, unsigned int index)
+  : attributes(other.attributes)
   , inception(other.inception)
   , completion(other.completion)
 {
+  this->index = index;
+  this->model = other.model;
   // Implement deep copy logic for the 'instances' map and its elements
   for (auto& [identifier, instance] : other.instances) {
     std::unordered_map< const Attribute*, Data > data;
@@ -36,7 +36,7 @@ Scenario::Scenario(const Scenario& other, unsigned int index)
   }
 }
 
-void Scenario::addInstance(const BPMN::Process* process, const BPMNOS::number instanceId, Scenario::Data instantiation ) {
+void LegacyScenario::addInstance(const BPMN::Process* process, const BPMNOS::number instanceId, Scenario::Data instantiation ) {
   // add instance
   instances[(long unsigned int)instanceId] = {process,(long unsigned int)instanceId,instantiation,{}};
   auto& instanceData = instances[(long unsigned int)instanceId];
@@ -48,7 +48,7 @@ void Scenario::addInstance(const BPMN::Process* process, const BPMNOS::number in
 
 }
 
-void Scenario::removeAnticipatedInstance(const BPMNOS::number instanceId) {
+void LegacyScenario::removeAnticipatedInstance(const BPMNOS::number instanceId) {
   auto& instanceData = instances[(long unsigned int)instanceId];
   if ( instanceData.instantiation.realization ) {
     throw std::runtime_error("Scenario: illegal removal of instance '" + BPMNOS::to_string(instanceId,STRING) + "'with known realization");
@@ -56,31 +56,31 @@ void Scenario::removeAnticipatedInstance(const BPMNOS::number instanceId) {
   instances.erase((long unsigned int)instanceId);
 }
 
-void Scenario::addAnticipation( Scenario::Data& data, Scenario::Disclosure anticipation ) {
+void LegacyScenario::addAnticipation( Scenario::Data& data, Scenario::Disclosure anticipation ) {
   if ( data.anticipations.size() && data.anticipations.back().disclosure >= anticipation.disclosure ) {
     throw std::runtime_error("Scenario: disclosures must be provided in strictly increasing order");
   }
   data.anticipations.push_back(anticipation);
 }
 
-void Scenario::setRealization( Scenario::Data& data, Scenario::Disclosure realization ) {
+void LegacyScenario::setRealization( Scenario::Data& data, Scenario::Disclosure realization ) {
   data.realization = realization;
 }
 
-const Model* Scenario::getModel() const {
+const Model* LegacyScenario::getModel() const {
   return model;
 }
 
-BPMNOS::number Scenario::getInception() const {
+BPMNOS::number LegacyScenario::getInception() const {
   return inception;
 }
 
-bool Scenario::isCompleted(const BPMNOS::number currentTime) const {
+bool LegacyScenario::isCompleted(const BPMNOS::number currentTime) const {
   return currentTime > completion;
 }
 
 
-std::vector< const Scenario::InstanceData* > Scenario::getCreatedInstances(const BPMNOS::number currentTime) const {
+std::vector< const Scenario::InstanceData* > LegacyScenario::getCreatedInstances(const BPMNOS::number currentTime) const {
   std::vector< const Scenario::InstanceData* > knownInstances;
 
   for ( auto& [id, instance] : instances ) {
@@ -94,7 +94,7 @@ std::vector< const Scenario::InstanceData* > Scenario::getCreatedInstances(const
   return knownInstances;
 }
 
-std::vector< const Scenario::InstanceData* > Scenario::getKnownInstances(const BPMNOS::number currentTime) const {
+std::vector< const Scenario::InstanceData* > LegacyScenario::getKnownInstances(const BPMNOS::number currentTime) const {
   std::vector< const Scenario::InstanceData* > knownInstances;
 
   for ( auto& [id, instance] : instances ) {
@@ -107,7 +107,7 @@ std::vector< const Scenario::InstanceData* > Scenario::getKnownInstances(const B
   return knownInstances;
 }
 
-std::vector< const Scenario::InstanceData* > Scenario::getAnticipatedInstances(const BPMNOS::number currentTime) const {
+std::vector< const Scenario::InstanceData* > LegacyScenario::getAnticipatedInstances(const BPMNOS::number currentTime) const {
   std::vector< const Scenario::InstanceData* > anticipatedInstances;
 
   for ( auto& [id, instance] : instances ) {
@@ -126,7 +126,7 @@ std::vector< const Scenario::InstanceData* > Scenario::getAnticipatedInstances(c
   return anticipatedInstances;
 }
 
-std::vector< std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values> > Scenario::getCurrentInstantiations(const BPMNOS::number currentTime) const {
+std::vector< std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values> > LegacyScenario::getCurrentInstantiations(const BPMNOS::number currentTime) const {
   std::vector< std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values> > instantiations;
 
   for ( auto& [id, instance] : instances ) {
@@ -140,7 +140,7 @@ std::vector< std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values> > 
   return instantiations;
 }
 
-std::vector< std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values> > Scenario::getAnticipatedInstantiations(const BPMNOS::number currentTime, const BPMNOS::number assumedTime) const {
+std::vector< std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values> > LegacyScenario::getAnticipatedInstantiations(const BPMNOS::number currentTime, const BPMNOS::number assumedTime) const {
   std::vector< std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values> > instantiations;
 
   for ( auto& [id, instance] : instances ) {
@@ -163,7 +163,7 @@ std::vector< std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values> > 
   return instantiations;
 }
 
-BPMNOS::Values Scenario::getKnownInitialStatus(const Scenario::InstanceData* instance, const BPMNOS::number currentTime) const {
+BPMNOS::Values LegacyScenario::getKnownInitialStatus(const Scenario::InstanceData* instance, const BPMNOS::number currentTime) const {
   BPMNOS::Values initalStatus;
   for ( auto& attribute : instance->process->extensionElements->as<const BPMNOS::Model::ExtensionElements>()->attributes ) {
     assert( instance->data.contains(attribute.get()) );
@@ -177,7 +177,7 @@ BPMNOS::Values Scenario::getKnownInitialStatus(const Scenario::InstanceData* ins
   return initalStatus;
 }
 
-BPMNOS::Values Scenario::getKnownInitialData(const Scenario::InstanceData* instance, const BPMNOS::number currentTime) const {
+BPMNOS::Values LegacyScenario::getKnownInitialData(const Scenario::InstanceData* instance, const BPMNOS::number currentTime) const {
   BPMNOS::Values initalData;
   for ( auto& attribute : instance->process->extensionElements->as<const BPMNOS::Model::ExtensionElements>()->data ) {
     assert( instance->data.contains(attribute.get()) );
@@ -191,7 +191,7 @@ BPMNOS::Values Scenario::getKnownInitialData(const Scenario::InstanceData* insta
   return initalData;
 }
 
-std::optional<BPMNOS::number> Scenario::getKnownValue(const Scenario::InstanceData* instance, const BPMNOS::Model::Attribute* attribute, const BPMNOS::number currentTime) const {
+std::optional<BPMNOS::number> LegacyScenario::getKnownValue(const Scenario::InstanceData* instance, const BPMNOS::Model::Attribute* attribute, const BPMNOS::number currentTime) const {
   if ( attribute->expression && attribute->expression->type == Expression::Type::ASSIGN ) {
     // value is obtained by an assignment
     // collect variable values
@@ -248,13 +248,13 @@ std::optional<BPMNOS::number> Scenario::getKnownValue(const Scenario::InstanceDa
   return std::nullopt;
 }
 
-std::optional<BPMNOS::number> Scenario::getKnownValue(const BPMNOS::number instanceId, const BPMNOS::Model::Attribute* attribute, const BPMNOS::number currentTime) const {
+std::optional<BPMNOS::number> LegacyScenario::getKnownValue(const BPMNOS::number instanceId, const BPMNOS::Model::Attribute* attribute, const BPMNOS::number currentTime) const {
   auto& instanceData = instances.at((size_t)instanceId);
   return getKnownValue(&instanceData,attribute,currentTime);
 }
 
 
-std::optional<BPMNOS::Values> Scenario::getKnownValues(const BPMNOS::number instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const {
+std::optional<BPMNOS::Values> LegacyScenario::getKnownValues(const BPMNOS::number instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const {
   auto& instanceData = instances.at((size_t)instanceId);
 
   Values values;
@@ -267,7 +267,7 @@ std::optional<BPMNOS::Values> Scenario::getKnownValues(const BPMNOS::number inst
 }
 
 
-std::optional<BPMNOS::Values> Scenario::getKnownData(const BPMNOS::number instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const {
+std::optional<BPMNOS::Values> LegacyScenario::getKnownData(const BPMNOS::number instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const {
   auto& instanceData = instances.at((size_t)instanceId);
 
   Values values;
@@ -279,7 +279,7 @@ std::optional<BPMNOS::Values> Scenario::getKnownData(const BPMNOS::number instan
   return values;
 }
 
-std::optional<BPMNOS::number> Scenario::getAnticipatedValue(const Scenario::InstanceData* instance, const BPMNOS::Model::Attribute* attribute, const BPMNOS::number currentTime) const {
+std::optional<BPMNOS::number> LegacyScenario::getAnticipatedValue(const Scenario::InstanceData* instance, const BPMNOS::Model::Attribute* attribute, const BPMNOS::number currentTime) const {
   if ( attribute->expression && attribute->expression->type == Expression::Type::ASSIGN ) {
     // value is obtained by an assignment
     // collect variable values
@@ -332,12 +332,12 @@ std::optional<BPMNOS::number> Scenario::getAnticipatedValue(const Scenario::Inst
   return std::nullopt;
 }
 
-std::optional<BPMNOS::number> Scenario::getAnticipatedValue(const BPMNOS::number instanceId, const BPMNOS::Model::Attribute* attribute, const BPMNOS::number currentTime) const {
+std::optional<BPMNOS::number> LegacyScenario::getAnticipatedValue(const BPMNOS::number instanceId, const BPMNOS::Model::Attribute* attribute, const BPMNOS::number currentTime) const {
   auto& instanceData = instances.at((size_t)instanceId);
   return getAnticipatedValue(&instanceData,attribute,currentTime);
 }
 
-BPMNOS::Values Scenario::getAnticipatedInitialStatus(const Scenario::InstanceData* instance, const BPMNOS::number currentTime) const {
+BPMNOS::Values LegacyScenario::getAnticipatedInitialStatus(const Scenario::InstanceData* instance, const BPMNOS::number currentTime) const {
   BPMNOS::Values initalStatus;
   for ( auto& attribute : instance->process->extensionElements->as<const BPMNOS::Model::ExtensionElements>()->attributes ) {
     assert( instance->data.contains(attribute.get()) );
@@ -346,7 +346,7 @@ BPMNOS::Values Scenario::getAnticipatedInitialStatus(const Scenario::InstanceDat
   return initalStatus;
 }
 
-BPMNOS::Values Scenario::getAnticipatedInitialData(const Scenario::InstanceData* instance, const BPMNOS::number currentTime) const {
+BPMNOS::Values LegacyScenario::getAnticipatedInitialData(const Scenario::InstanceData* instance, const BPMNOS::number currentTime) const {
   BPMNOS::Values initalData;
   for ( auto& attribute : instance->process->extensionElements->as<const BPMNOS::Model::ExtensionElements>()->data ) {
     assert( instance->data.contains(attribute.get()) );
@@ -356,7 +356,7 @@ BPMNOS::Values Scenario::getAnticipatedInitialData(const Scenario::InstanceData*
 }
 
 
-BPMNOS::Values Scenario::getAnticipatedValues(const BPMNOS::number instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const {
+BPMNOS::Values LegacyScenario::getAnticipatedValues(const BPMNOS::number instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const {
   auto& instanceData = instances.at((size_t)instanceId);
 
 
@@ -368,7 +368,7 @@ BPMNOS::Values Scenario::getAnticipatedValues(const BPMNOS::number instanceId, c
   return values;
 }
 
-BPMNOS::Values Scenario::getAnticipatedData(const BPMNOS::number instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const {
+BPMNOS::Values LegacyScenario::getAnticipatedData(const BPMNOS::number instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const {
   auto& instanceData = instances.at((size_t)instanceId);
 
   Values values;
@@ -378,7 +378,7 @@ BPMNOS::Values Scenario::getAnticipatedData(const BPMNOS::number instanceId, con
   return values;
 }
 
-const Scenario::Disclosure& Scenario::getLatestDisclosure(const std::vector<Scenario::Disclosure>& data, const BPMNOS::number currentTime) const {
+const Scenario::Disclosure& LegacyScenario::getLatestDisclosure(const std::vector<Scenario::Disclosure>& data, const BPMNOS::number currentTime) const {
   // find the first element with a disclosure time larger than the given time
   auto it = std::upper_bound(data.begin(), data.end(), currentTime,
     [](BPMNOS::number t, const Disclosure& element) -> bool { return (element.disclosure > t); }
@@ -392,12 +392,12 @@ const Scenario::Disclosure& Scenario::getLatestDisclosure(const std::vector<Scen
 }
 
 
-Scenario::Data& Scenario::getInstantiationData(const BPMNOS::number instanceId) {
+Scenario::Data& LegacyScenario::getInstantiationData(const BPMNOS::number instanceId) {
   auto& instanceData = instances[(size_t)instanceId];
   return instanceData.instantiation;
 }
 
-Scenario::Data& Scenario::getAttributeData(const BPMNOS::number instanceId, const Attribute* attribute) {
+Scenario::Data& LegacyScenario::getAttributeData(const BPMNOS::number instanceId, const Attribute* attribute) {
   auto& instanceData = instances[(size_t)instanceId];
   return instanceData.data[attribute];
 }

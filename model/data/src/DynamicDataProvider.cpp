@@ -1,4 +1,5 @@
 #include "DynamicDataProvider.h"
+#include "LegacyScenario.h"
 #include "model/utility/src/Keywords.h"
 #include "model/utility/src/Number.h"
 #include "model/bpmnos/src/extensionElements/ExtensionElements.h"
@@ -113,7 +114,7 @@ void DynamicDataProvider::readInstances() {
 }
 
 std::unique_ptr<Scenario> DynamicDataProvider::createScenario(unsigned int scenarioId) {
-  std::unique_ptr<Scenario> scenario = std::make_unique<Scenario>(model.get(), earliestInstantiation, latestInstantiation, attributes, globalValueMap, scenarioId);
+  std::unique_ptr<Scenario> scenario = std::make_unique<LegacyScenario>(model.get(), earliestInstantiation, latestInstantiation, attributes, globalValueMap, scenarioId);
   for ( auto& [id, instance] : instances ) {
     if ( instance.instantiation.size() ) {
       // instances become known at last disclosure of the instantiation

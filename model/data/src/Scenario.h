@@ -15,7 +15,7 @@ namespace BPMNOS::Model {
 typedef std::unordered_map< const BPMN::Process*, std::unordered_map< std::string, const Attribute* > > DataInput;
 
 /**
- * @brief The Scenario class holds data for all BPMN instances.
+ * @brief Abstract base class for scenarios holding data for all BPMN instances.
  */
 class Scenario {
 public:
@@ -36,19 +36,7 @@ public:
     std::unordered_map< const Attribute*, Data > data; ///< Data regarding attribute values.
   };
 
-
-  /**
-   * @brief Constructor for Scenario.
-   */
-  Scenario(const Model* model, BPMNOS::number inception, BPMNOS::number completion, const DataInput& attributes, const std::unordered_map< const Attribute*, BPMNOS::number >& globalValueMap, unsigned int index = 0);
-  /**
-   * @brief Copy constructor for Scenario.
-   */
-  Scenario(const Scenario& other, unsigned int index);
-
-  const Model* getModel() const;
-
-  unsigned int index;
+  virtual ~Scenario() = default;
 
   static constexpr char delimiters[] = {'^','#'}; ///< Delimiters used for disambiguation of identifiers of non-interrupting event subprocesses and multi-instance activities
 
@@ -58,134 +46,128 @@ public:
   virtual void update() {};
 
   /**
-   * @brief Method returning the time of the earliest instantiation.
+   * @brief Method returning the model.
    */
-  BPMNOS::number getInception() const;
+  virtual const Model* getModel() const = 0;
 
   /**
-   * @brief Method updating the completion time.
+   * @brief Method returning the time of the earliest instantiation.
    */
-  void updateCompletion(const BPMNOS::number time);
+  virtual BPMNOS::number getInception() const = 0;
 
   /**
    * @brief Method returning true if the currentTime exceeds the completion time.
    */
-  bool isCompleted(const BPMNOS::number currentTime) const;
+  virtual bool isCompleted(const BPMNOS::number currentTime) const = 0;
 
   /**
    * @brief Method returning a vector of all instances that are known to be instantiated at the given time.
    */
-  std::vector< std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values> > getCurrentInstantiations(const BPMNOS::number currentTime) const;
+  virtual std::vector< std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values> > getCurrentInstantiations(const BPMNOS::number currentTime) const = 0;
 
   /**
    * @brief Method returning a vector of all instances that are anticipated to be instantiated at the assumed time.
    */
-  std::vector< std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values> > getAnticipatedInstantiations(const BPMNOS::number currentTime, const BPMNOS::number assumedTime) const;
+  virtual std::vector< std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values> > getAnticipatedInstantiations(const BPMNOS::number currentTime, const BPMNOS::number assumedTime) const = 0;
 
   /**
    * @brief Method returning a vector of all instances that have been created until the given time.
    */
-  std::vector< const InstanceData* > getCreatedInstances(const BPMNOS::number currentTime) const;
+  virtual std::vector< const InstanceData* > getCreatedInstances(const BPMNOS::number currentTime) const = 0;
 
   /**
    * @brief Method returning a vector of all instances that have been created or are known for sure until the given time.
    */
-  std::vector< const InstanceData* > getKnownInstances(const BPMNOS::number currentTime) const;
+  virtual std::vector< const InstanceData* > getKnownInstances(const BPMNOS::number currentTime) const = 0;
 
   /**
    * @brief Method returning a vector of all instances that are anticipated and not known for sure at the given time.
    */
-  std::vector< const InstanceData* > getAnticipatedInstances(const BPMNOS::number currentTime) const;
+  virtual std::vector< const InstanceData* > getAnticipatedInstances(const BPMNOS::number currentTime) const = 0;
 
   /**
    * @brief Method returning a known value of an attribute.
    *
    * If the attribute value is not yet known, the method returns std::nullopt.
    */
-  std::optional<BPMNOS::number> getKnownValue(const Scenario::InstanceData* instance, const BPMNOS::Model::Attribute* attribute, const BPMNOS::number currentTime) const;
+  virtual std::optional<BPMNOS::number> getKnownValue(const Scenario::InstanceData* instance, const BPMNOS::Model::Attribute* attribute, const BPMNOS::number currentTime) const = 0;
 
   /**
    * @brief Method returning a known value of an attribute.
    *
    * If the attribute value is not yet known, the method returns std::nullopt.
    */
-  std::optional<BPMNOS::number> getKnownValue(const BPMNOS::number instanceId, const BPMNOS::Model::Attribute* attribute, const BPMNOS::number currentTime) const;
+  virtual std::optional<BPMNOS::number> getKnownValue(const BPMNOS::number instanceId, const BPMNOS::Model::Attribute* attribute, const BPMNOS::number currentTime) const = 0;
 
   /**
    * @brief Method returning the initial status of a known instantiation at the given time.
    */
-  Values getKnownInitialStatus(const InstanceData*, const BPMNOS::number time) const;
+  virtual Values getKnownInitialStatus(const InstanceData*, const BPMNOS::number time) const = 0;
 
   /**
    * @brief Method returning the initial data attributes of a known instantiation at the given time.
    */
-  Values getKnownInitialData(const InstanceData*, const BPMNOS::number time) const;
+  virtual Values getKnownInitialData(const InstanceData*, const BPMNOS::number time) const = 0;
 
   /**
    * @brief Method returning disclosed value of an attribute.
    *
    * If no attribute value is yet disclosed, the method returns std::nullopt.
    */
-  std::optional<BPMNOS::number> getAnticipatedValue(const Scenario::InstanceData* instance, const BPMNOS::Model::Attribute* attribute, const BPMNOS::number currentTime) const;
+  virtual std::optional<BPMNOS::number> getAnticipatedValue(const Scenario::InstanceData* instance, const BPMNOS::Model::Attribute* attribute, const BPMNOS::number currentTime) const = 0;
 
   /**
    * @brief Method returning disclosed value of an attribute.
    *
    * If no attribute value is yet disclosed, the method returns std::nullopt.
    */
-  std::optional<BPMNOS::number> getAnticipatedValue(const BPMNOS::number instanceId, const BPMNOS::Model::Attribute* attribute, const BPMNOS::number currentTime) const;
+  virtual std::optional<BPMNOS::number> getAnticipatedValue(const BPMNOS::number instanceId, const BPMNOS::Model::Attribute* attribute, const BPMNOS::number currentTime) const = 0;
 
   /**
    * @brief Method returning the initial status of an anticipated instantiation at the given time.
    */
-  BPMNOS::Values getAnticipatedInitialStatus(const InstanceData*, const BPMNOS::number currentTime) const;
+  virtual BPMNOS::Values getAnticipatedInitialStatus(const InstanceData*, const BPMNOS::number currentTime) const = 0;
 
   /**
    * @brief Method returning the initial data attributes of an anticipated instantiation at the given time.
    */
-  BPMNOS::Values getAnticipatedInitialData(const InstanceData*, const BPMNOS::number currentTime) const;
+  virtual BPMNOS::Values getAnticipatedInitialData(const InstanceData*, const BPMNOS::number currentTime) const = 0;
 
   /**
    * @brief Method returning all known values of new attributes.
    *
    * If at least one attribute value is not yet known, the method returns std::nullopt.
    */
-  std::optional<BPMNOS::Values> getKnownValues(const BPMNOS::number instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const;
+  virtual std::optional<BPMNOS::Values> getKnownValues(const BPMNOS::number instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const = 0;
 
   /**
    * @brief Method returning all known values of new attributes.
    *
    * If at least one attribute value is not yet known, the method returns std::nullopt.
    */
-  std::optional<BPMNOS::Values> getKnownData(const BPMNOS::number instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const;
-
-
-  /**
-   * @brief Method returning the disclosed values of new attributes.
-   */
-  BPMNOS::Values getAnticipatedValues(const BPMNOS::number instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const;
+  virtual std::optional<BPMNOS::Values> getKnownData(const BPMNOS::number instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const = 0;
 
   /**
    * @brief Method returning the disclosed values of new attributes.
    */
-  BPMNOS::Values getAnticipatedData(const BPMNOS::number instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const;
+  virtual BPMNOS::Values getAnticipatedValues(const BPMNOS::number instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const = 0;
 
-  void addInstance(const BPMN::Process* process, const BPMNOS::number instanceId, Data instantiation);
-  void removeAnticipatedInstance(const BPMNOS::number instanceId);
+  /**
+   * @brief Method returning the disclosed values of new attributes.
+   */
+  virtual BPMNOS::Values getAnticipatedData(const BPMNOS::number instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const = 0;
 
-  Data& getInstantiationData(const BPMNOS::number instanceId);
-  Data& getAttributeData(const BPMNOS::number instanceId, const Attribute* attribute);
-  void addAnticipation( Data& data, Disclosure anticipation );
-  void setRealization( Data& data, Disclosure realization );
-  
+  virtual void addInstance(const BPMN::Process* process, const BPMNOS::number instanceId, Data instantiation) = 0;
+  virtual void removeAnticipatedInstance(const BPMNOS::number instanceId) = 0;
+
+  virtual Data& getInstantiationData(const BPMNOS::number instanceId) = 0;
+  virtual Data& getAttributeData(const BPMNOS::number instanceId, const Attribute* attribute) = 0;
+  virtual void addAnticipation( Data& data, Disclosure anticipation ) = 0;
+  virtual void setRealization( Data& data, Disclosure realization ) = 0;
+
   BPMNOS::Values globals;
   const Model* model;  ///< Pointer to the BPMN model.
-protected:
-  const DataInput& attributes; ///< Map holding all attributes in the model with keys being the process and attribute id
-  std::unordered_map<size_t, InstanceData > instances; ///< Map of instances with key being the instance id.
-  const Scenario::Disclosure& getLatestDisclosure(const std::vector<Scenario::Disclosure>& data, const BPMNOS::number currentTime) const;
-  BPMNOS::number inception; ///< Time earliest time in execution.
-  BPMNOS::number completion; ///< The latest time in execution at which an instantiation can happen.
+  unsigned int index;
 };
 
 } // namespace BPMNOS::Model
