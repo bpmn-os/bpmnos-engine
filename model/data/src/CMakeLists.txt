@@ -1,4 +1,5 @@
 list(APPEND data_SOURCES
+  StaticScenario.cpp
   LegacyScenario.cpp
   DataProvider.cpp
   StaticDataProvider.cpp
@@ -7,6 +8,7 @@ list(APPEND data_SOURCES
 
 list(APPEND data_HEADERS
   Scenario.h
+  StaticScenario.h
   LegacyScenario.h
   DataProvider.h
   StaticDataProvider.h
