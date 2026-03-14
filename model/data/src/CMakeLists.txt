@@ -2,7 +2,7 @@ list(APPEND data_SOURCES
   LegacyScenario.cpp
   DataProvider.cpp
   StaticDataProvider.cpp
-  DynamicDataProvider.cpp
+  # DynamicDataProvider.cpp
 )
 
 list(APPEND data_HEADERS
@@ -10,5 +10,5 @@ list(APPEND data_HEADERS
   LegacyScenario.h
   DataProvider.h
   StaticDataProvider.h
-  DynamicDataProvider.h
+  # DynamicDataProvider.h
 )

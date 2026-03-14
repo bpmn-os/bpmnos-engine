@@ -66,11 +66,6 @@ public:
   virtual std::vector< std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values> > getCurrentInstantiations(const BPMNOS::number currentTime) const = 0;
 
   /**
-   * @brief Method returning a vector of all instances that are anticipated to be instantiated at the assumed time.
-   */
-  virtual std::vector< std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values> > getAnticipatedInstantiations(const BPMNOS::number currentTime, const BPMNOS::number assumedTime) const = 0;
-
-  /**
    * @brief Method returning a vector of all instances that have been created until the given time.
    */
   virtual std::vector< const InstanceData* > getCreatedInstances(const BPMNOS::number currentTime) const = 0;
@@ -79,11 +74,6 @@ public:
    * @brief Method returning a vector of all instances that have been created or are known for sure until the given time.
    */
   virtual std::vector< const InstanceData* > getKnownInstances(const BPMNOS::number currentTime) const = 0;
-
-  /**
-   * @brief Method returning a vector of all instances that are anticipated and not known for sure at the given time.
-   */
-  virtual std::vector< const InstanceData* > getAnticipatedInstances(const BPMNOS::number currentTime) const = 0;
 
   /**
    * @brief Method returning a known value of an attribute.
@@ -110,30 +100,6 @@ public:
   virtual Values getKnownInitialData(const InstanceData*, const BPMNOS::number time) const = 0;
 
   /**
-   * @brief Method returning disclosed value of an attribute.
-   *
-   * If no attribute value is yet disclosed, the method returns std::nullopt.
-   */
-  virtual std::optional<BPMNOS::number> getAnticipatedValue(const Scenario::InstanceData* instance, const BPMNOS::Model::Attribute* attribute, const BPMNOS::number currentTime) const = 0;
-
-  /**
-   * @brief Method returning disclosed value of an attribute.
-   *
-   * If no attribute value is yet disclosed, the method returns std::nullopt.
-   */
-  virtual std::optional<BPMNOS::number> getAnticipatedValue(const BPMNOS::number instanceId, const BPMNOS::Model::Attribute* attribute, const BPMNOS::number currentTime) const = 0;
-
-  /**
-   * @brief Method returning the initial status of an anticipated instantiation at the given time.
-   */
-  virtual BPMNOS::Values getAnticipatedInitialStatus(const InstanceData*, const BPMNOS::number currentTime) const = 0;
-
-  /**
-   * @brief Method returning the initial data attributes of an anticipated instantiation at the given time.
-   */
-  virtual BPMNOS::Values getAnticipatedInitialData(const InstanceData*, const BPMNOS::number currentTime) const = 0;
-
-  /**
    * @brief Method returning all known values of new attributes.
    *
    * If at least one attribute value is not yet known, the method returns std::nullopt.
@@ -147,22 +113,9 @@ public:
    */
   virtual std::optional<BPMNOS::Values> getKnownData(const BPMNOS::number instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const = 0;
 
-  /**
-   * @brief Method returning the disclosed values of new attributes.
-   */
-  virtual BPMNOS::Values getAnticipatedValues(const BPMNOS::number instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const = 0;
-
-  /**
-   * @brief Method returning the disclosed values of new attributes.
-   */
-  virtual BPMNOS::Values getAnticipatedData(const BPMNOS::number instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const = 0;
-
   virtual void addInstance(const BPMN::Process* process, const BPMNOS::number instanceId, Data instantiation) = 0;
-  virtual void removeAnticipatedInstance(const BPMNOS::number instanceId) = 0;
-
   virtual Data& getInstantiationData(const BPMNOS::number instanceId) = 0;
   virtual Data& getAttributeData(const BPMNOS::number instanceId, const Attribute* attribute) = 0;
-  virtual void addAnticipation( Data& data, Disclosure anticipation ) = 0;
   virtual void setRealization( Data& data, Disclosure realization ) = 0;
 
   BPMNOS::Values globals;

@@ -37,12 +37,7 @@ public:
   BPMNOS::number currentTime;
 
   /**
-   * @brief Timestamp holding the point in time that the simulation is in (this could be a future point in time).
-   */
-  std::optional<BPMNOS::number> assumedTime;
-
-  /**
-   * @brief Function returning the assumed time time if available or the current time otherwise.
+   * @brief Function returning the current time.
    */
   BPMNOS::number getTime() const;
 

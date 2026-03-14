@@ -75,17 +75,6 @@ StateMachine::~StateMachine() {
 }
 
 BPMNOS::Values StateMachine::getData(const BPMN::Scope* scope) {
-/*
-  if ( systemState->assumedTime ) {
-    return systemState->scenario->getAnticipatedData(token->node, token->status, systemState->currentTime );
-  }
-  else {
-    auto values = systemState->scenario->getKnownData(token->node, token->status, systemState->currentTime );
-    if ( values ) {
-      return values.value();
-    }
-  }
-*/
   throw std::runtime_error("StateMachine: data is not yet known for scope '" + scope->id + "'");
 }
 
@@ -489,12 +478,6 @@ void StateMachine::run(Values status) {
       if ( auto startEvent = token->node->represents<BPMN::TypedStartEvent>() ) {
         // get new attribute values
         auto values = systemState->getStatusAttributes( root, token->node->parent );
-/*
-        std::optional<BPMNOS::Values> values = ( systemState->assumedTime.has_value() ?
-          systemState->scenario->getAnticipatedValues(token->node->parent, token->status, systemState->currentTime ) :
-          systemState->scenario->getKnownValues(token->node->parent, token->status, systemState->currentTime )
-        );
-*/    
         if ( !values.has_value() ) {
           throw std::runtime_error("StateMachine: status of event subprocess '" + token->node->parent->id + "' not known at initialization");
         }
