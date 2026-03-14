@@ -5,9 +5,9 @@ SCENARIO( "Two processes with signal", "[execution][signal]" ) {
 
     WHEN( "The engine is started with one emitter before one recipient" ) {
       std::string csv =
-        "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-        "Process_1, Instance_1,Timestamp,0\n"
-        "Process_2, Instance_2,Timestamp,1\n"
+        "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+        "Instance_1; Process_1; timestamp := 0\n"
+        "Instance_2; Process_2; timestamp := 1\n"
       ;
 
       Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -36,9 +36,9 @@ SCENARIO( "Two processes with signal", "[execution][signal]" ) {
 
     WHEN( "The engine is started with one emitter after one recipient" ) {
       std::string csv =
-        "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-        "Process_1, Instance_1,Timestamp,1\n"
-        "Process_2, Instance_2,Timestamp,0\n"
+        "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+        "Instance_1; Process_1; timestamp := 1\n"
+        "Instance_2; Process_2; timestamp := 0\n"
       ;
 
       Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -68,10 +68,10 @@ SCENARIO( "Two processes with signal", "[execution][signal]" ) {
 
     WHEN( "The engine is started with one emitter after two recipients" ) {
       std::string csv =
-        "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-        "Process_1, Instance_1,Timestamp,1\n"
-        "Process_2, Instance_2,Timestamp,0\n"
-        "Process_2, Instance_3,Timestamp,0\n"
+        "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+        "Instance_1; Process_1; timestamp := 1\n"
+        "Instance_2; Process_2; timestamp := 0\n"
+        "Instance_3; Process_2; timestamp := 0\n"
       ;
 
       Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -102,11 +102,11 @@ SCENARIO( "Two processes with signal", "[execution][signal]" ) {
 
     WHEN( "The engine is started with two emitters after two recipients" ) {
       std::string csv =
-        "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-        "Process_1, Instance_0,Timestamp,1\n"
-        "Process_1, Instance_1,Timestamp,1\n"
-        "Process_2, Instance_2,Timestamp,0\n"
-        "Process_2, Instance_3,Timestamp,0\n"
+        "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+        "Instance_0; Process_1; timestamp := 1\n"
+        "Instance_1; Process_1; timestamp := 1\n"
+        "Instance_2; Process_2; timestamp := 0\n"
+        "Instance_3; Process_2; timestamp := 0\n"
       ;
 
       Model::StaticDataProvider dataProvider(modelFile,csv);

@@ -4,8 +4,8 @@ SCENARIO( "CPController with simple process with timer", "[cpcontroller][timer]"
 
   GIVEN( "A single instance with a given trigger" ) {
     std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-      "Process_1, Instance_1,Trigger,10\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1; trigger := 10\n"
     ;
 
     Model::StaticDataProvider dataProvider(modelFile,csv);

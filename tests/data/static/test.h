@@ -3,8 +3,8 @@ SCENARIO( "Trivial executable process", "[data][static]" ) {
   REQUIRE_NOTHROW( Model::Model(modelFile) );
   GIVEN( "A single instance with no input values" ) {
     std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-      "Process_1, Instance_1,,\n";
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1;\n";
 
     WHEN( "The instance is loaded" ) {
       Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -43,8 +43,8 @@ SCENARIO( "Trivial executable process", "[data][static]" ) {
   }
   GIVEN( "A single instance with timestamp input" ) {
     std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-      "Process_1, Instance_1,Timestamp,42\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1; timestamp := 42\n"
     ;
 
     WHEN( "The instance is loaded" ) {
@@ -106,10 +106,10 @@ SCENARIO( "Trivial executable process", "[data][static]" ) {
   }
   GIVEN( "Two instances, one with instance and timestamp input" ) {
     std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-      "Process_1, Instance_1,,\n"
-      "Process_1, Instance_1,Timestamp,42\n"
-      "Process_1, Instance_2,,\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1;\n"
+      "Instance_1; Process_1; timestamp := 42\n"
+      "Instance_2; Process_1;\n"
     ;
 
     WHEN( "The instance is loaded" ) {

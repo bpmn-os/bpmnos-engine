@@ -5,8 +5,8 @@ SCENARIO( "Symmetric parallel gateways", "[cpmodel][parallelgateway]" ) {
 
     WHEN( "The engine is started" ) {
       std::string csv =
-        "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-        "Process_1, Instance_1,,\n"
+        "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+        "Instance_1; Process_1;\n"
       ;
 
       Model::StaticDataProvider dataProvider(modelFile,csv);

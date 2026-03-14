@@ -5,9 +5,9 @@ SCENARIO( "CPController with travelling salesperson problem", "[cpcontroller][tr
 
   GIVEN( "A TSP with four locations" ) {
     std::string csv =
-      "PROCESS_ID; INSTANCE_ID; ATTRIBUTE_ID; VALUE\n"
-      "TravellingSalesperson_Process;Instance1;Origin;\"Hamburg\"\n"
-      "TravellingSalesperson_Process;Instance1;Locations;[\"Munich\",\"Berlin\",\"Cologne\"]\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance1; TravellingSalesperson_Process; origin := \"Hamburg\"\n"
+      "Instance1; TravellingSalesperson_Process; locations := [\"Munich\",\"Berlin\",\"Cologne\"]\n"
     ;
 
     Model::StaticDataProvider dataProvider(modelFile,folders,csv);

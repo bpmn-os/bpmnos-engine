@@ -5,9 +5,9 @@ SCENARIO( "Event-based gateway with two timer events - Hexaly solver", "[hexalys
 
     WHEN( "Timer 1 triggers before Timer 2" ) {
       std::string csv =
-        "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-        "Process_1, Instance_1,Trigger1,1\n"
-        "Process_1, Instance_1,Trigger2,2\n"
+        "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+        "Instance_1; Process_1; trigger1 := 1\n"
+        "Instance_1; Process_1; trigger2 := 2\n"
       ;
 
       Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -38,9 +38,9 @@ if ( !solution->errors().empty() ) {
 
     WHEN( "Timer 1 triggers after Timer 2" ) {
       std::string csv =
-        "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-        "Process_1, Instance_1,Trigger1,3\n"
-        "Process_1, Instance_1,Trigger2,2\n"
+        "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+        "Instance_1; Process_1; trigger1 := 3\n"
+        "Instance_1; Process_1; trigger2 := 2\n"
       ;
 
       Model::StaticDataProvider dataProvider(modelFile,csv);

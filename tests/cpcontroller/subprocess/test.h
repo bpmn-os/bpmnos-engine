@@ -4,8 +4,8 @@ SCENARIO( "CPController with trivial executable subprocess", "[cpcontroller][sub
 
   GIVEN( "A single instance with no input values" ) {
     std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-      "Process_1, Instance_1,,\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1;\n"
     ;
 
     Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -58,8 +58,8 @@ SCENARIO( "CPController with constrained executable subprocess", "[cpcontroller]
 
   GIVEN( "A single instance started at time 0" ) {
     std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-      "Process_1, Instance_1,Timestamp,0\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1; timestamp := 0\n"
     ;
 
     Model::StaticDataProvider dataProvider(modelFile,csv);

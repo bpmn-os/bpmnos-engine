@@ -4,9 +4,9 @@ SCENARIO( "Linear expression - Hexaly solver", "[hexalysolver][expression]" ) {
 
   GIVEN( "A trivial instance with assignment expression z := 3*x + 5*y" ) {
     std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-      "Process_1, Instance_1,X,8\n"
-      "Process_1, Instance_1,Y,15\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1; x := 8\n"
+      "Instance_1; Process_1; y := 15\n"
     ;
 
     WHEN( "Hexaly solver is used" ) {

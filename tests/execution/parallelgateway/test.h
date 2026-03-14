@@ -4,8 +4,8 @@ SCENARIO( "Parallel fork", "[execution][parallelgateway]" ) {
   GIVEN( "A single instance with no input values" ) {
 
     std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-      "Process_1, Instance_1,,\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1;\n"
     ;
 
     Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -78,8 +78,8 @@ SCENARIO( "Symmetric parallel gateways", "[execution][parallelgateway]" ) {
   GIVEN( "A single instance with no input values" ) {
 
     std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-      "Process_1, Instance_1,,\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1;\n"
     ;
 
     Model::StaticDataProvider dataProvider(modelFile,csv);

@@ -200,10 +200,17 @@ void StaticDataProvider::readInstancesNewFormat(const CSVReader::Table& table) {
         continue;
       }
       auto [attributeName, value] = parseInitialization(initialization);
-      if ( !attributes[nullptr].contains(attributeName) ) {
+      // Find global attribute by name
+      const Attribute* attribute = nullptr;
+      for ( auto& [id, attr] : attributes[nullptr] ) {
+        if ( attr->name == attributeName ) {
+          attribute = attr;
+          break;
+        }
+      }
+      if ( !attribute ) {
         throw std::runtime_error("StaticDataProvider: unknown global attribute '" + attributeName + "'");
       }
-      auto attribute = attributes[nullptr][attributeName];
       globalValueMap[attribute] = value;
     }
     else if ( instanceIdStr.empty() ) {

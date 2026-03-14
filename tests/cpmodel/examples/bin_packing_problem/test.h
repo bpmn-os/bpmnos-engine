@@ -5,11 +5,11 @@ SCENARIO( "Bin packing problem", "[cpmodel][bin_packing_problem]" ) {
   GIVEN( "One bins and one item" ) {
 
     std::string csv =
-      "PROCESS_ID; INSTANCE_ID; ATTRIBUTE_ID; VALUE\n"
-      ";;Bins;1\n"
-      ";;Items;1\n"
-      "ItemProcess;Item1;Size;20.0\n"
-      "BinProcess;Bin1;Capacity;40.0\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "; ; bins := 1\n"
+      "; ; items := 1\n"
+      "Item1; ItemProcess; size := 20.0\n"
+      "Bin1; BinProcess; capacity := 40.0\n"
     ;
 
     WHEN( "The engine is started" ) {
@@ -56,12 +56,12 @@ SCENARIO( "Bin packing problem", "[cpmodel][bin_packing_problem]" ) {
   GIVEN( "Two bins and one item" ) {
 
     std::string csv =
-      "PROCESS_ID; INSTANCE_ID; ATTRIBUTE_ID; VALUE\n"
-      ";;Bins;2\n"
-      ";;Items;1\n"
-      "ItemProcess;Item1;Size;20.0\n"
-      "BinProcess;Bin1;Capacity;40.0\n"
-      "BinProcess;Bin2;Capacity;40.0\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "; ; bins := 2\n"
+      "; ; items := 1\n"
+      "Item1; ItemProcess; size := 20.0\n"
+      "Bin1; BinProcess; capacity := 40.0\n"
+      "Bin2; BinProcess; capacity := 40.0\n"
     ;
 
     WHEN( "The engine is started" ) {
@@ -108,15 +108,15 @@ SCENARIO( "Bin packing problem", "[cpmodel][bin_packing_problem]" ) {
   GIVEN( "Three bins and three items" ) {
 
     std::string csv =
-      "PROCESS_ID; INSTANCE_ID; ATTRIBUTE_ID; VALUE\n"
-      ";;Bins;3\n"
-      ";;Items;3\n"
-      "ItemProcess;Item1;Size;20.0\n"
-      "ItemProcess;Item2;Size;15.0\n"
-      "ItemProcess;Item3;Size;22.0\n"
-      "BinProcess;Bin1;Capacity;40.0\n"
-      "BinProcess;Bin2;Capacity;40.0\n"
-      "BinProcess;Bin3;Capacity;40.0\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "; ; bins := 3\n"
+      "; ; items := 3\n"
+      "Item1; ItemProcess; size := 20.0\n"
+      "Item2; ItemProcess; size := 15.0\n"
+      "Item3; ItemProcess; size := 22.0\n"
+      "Bin1; BinProcess; capacity := 40.0\n"
+      "Bin2; BinProcess; capacity := 40.0\n"
+      "Bin3; BinProcess; capacity := 40.0\n"
     ;
 
     WHEN( "The engine is started" ) {

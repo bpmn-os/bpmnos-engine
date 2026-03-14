@@ -5,9 +5,9 @@ SCENARIO( "Event-based gateway with two timer events", "[execution][eventbasedga
 
     WHEN( "Timer 1 triggers before Timer 2" ) {
       std::string csv =
-        "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-        "Process_1, Instance_1,Trigger1,1\n"
-        "Process_1, Instance_1,Trigger2,2\n"
+        "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+        "Instance_1; Process_1; trigger1 := 1\n"
+        "Instance_1; Process_1; trigger2 := 2\n"
       ;
 
       Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -41,9 +41,9 @@ SCENARIO( "Event-based gateway with two timer events", "[execution][eventbasedga
 
     WHEN( "Timer 2 triggers before Timer 1" ) {
       std::string csv =
-        "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-        "Process_1, Instance_1,Trigger1,2\n"
-        "Process_1, Instance_1,Trigger2,1\n"
+        "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+        "Instance_1; Process_1; trigger1 := 2\n"
+        "Instance_1; Process_1; trigger2 := 1\n"
       ;
 
       Model::StaticDataProvider dataProvider(modelFile,csv);

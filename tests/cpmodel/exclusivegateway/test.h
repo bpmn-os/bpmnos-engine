@@ -5,8 +5,8 @@ SCENARIO( "Symmetric exclusivegateway gateways", "[cpmodel][exclusivegateway]" )
 
     WHEN( "The engine is started starting at time 0" ) {
       std::string csv =
-        "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-        "Process_1, Instance_1,Timestamp,0\n"
+        "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+        "Instance_1; Process_1; timestamp := 0\n"
       ;
 
       Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -47,8 +47,8 @@ SCENARIO( "Symmetric exclusivegateway gateways", "[cpmodel][exclusivegateway]" )
 
     WHEN( "The engine is started at time 2" ) {
       std::string csv =
-        "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-        "Process_1, Instance_1,Timestamp,2\n"
+        "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+        "Instance_1; Process_1; timestamp := 2\n"
       ;
 
       Model::StaticDataProvider dataProvider(modelFile,csv);

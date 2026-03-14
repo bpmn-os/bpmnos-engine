@@ -5,9 +5,9 @@ SCENARIO( "Linear expression", "[execution][expression]" ) {
   GIVEN( "A trivial instance with assignment expression z := 3*x + 5*y" ) {
 
     std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-        "Process_1, Instance_1,X,8\n"
-        "Process_1, Instance_1,Y,15\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+        "Instance_1; Process_1; x := 8\n"
+        "Instance_1; Process_1; y := 15\n"
     ;
 
     Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -54,10 +54,10 @@ SCENARIO( "Divide assignment", "[execution][expression]" ) {
   GIVEN( "A trivial instance with divide assignment expression z /= 3*x + 5*y" ) {
 
     std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-        "Process_1, Instance_1,X,5\n"
-        "Process_1, Instance_1,Y,3\n"
-        "Process_1, Instance_1,Z,45\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+        "Instance_1; Process_1; x := 5\n"
+        "Instance_1; Process_1; y := 3\n"
+        "Instance_1; Process_1; z := 45\n"
     ;
 
     Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -115,9 +115,9 @@ SCENARIO( "String expression", "[execution][expression]" ) {
   GIVEN( "An expression result := name in {\"Peter\", example, \"Mary\"}" ) {
     WHEN( "The expression is executed with name = \"Mary\" and example = \"Paul\"" ) {
       std::string csv =
-        "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-        "Process_1, Instance_1,Name,\"Joe\"\n"
-        "Process_1, Instance_1,Example,\"Paul\"\n"
+        "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+        "Instance_1; Process_1; name := \"Joe\"\n"
+        "Instance_1; Process_1; example := \"Paul\"\n"
       ;
 
       Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -155,9 +155,9 @@ SCENARIO( "String expression", "[execution][expression]" ) {
     }
     WHEN( "The expression is executed with name = \"Mary\" and example = \"Paul\"" ) {
       std::string csv =
-        "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-        "Process_1, Instance_1,Name,\"Mary\"\n"
-        "Process_1, Instance_1,Example,\"Paul\"\n"
+        "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+        "Instance_1; Process_1; name := \"Mary\"\n"
+        "Instance_1; Process_1; example := \"Paul\"\n"
       ;
 
       Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -204,8 +204,8 @@ SCENARIO( "Lookup table", "[execution][lookup]" ) {
   GIVEN( "A trivial instance without parameters" ) {
 
     std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-        "Process_1, Instance_1,,\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+        "Instance_1; Process_1;\n"
     ;
 
     Model::StaticDataProvider dataProvider(modelFile,folders,csv);

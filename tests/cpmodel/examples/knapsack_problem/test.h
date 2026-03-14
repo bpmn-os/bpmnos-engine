@@ -5,15 +5,15 @@ SCENARIO( "Knapsack problem", "[cpmodel][knapsack_problem]" ) {
   GIVEN( "One knapsack and three items" ) {
 
     std::string csv =
-      "PROCESS_ID; INSTANCE_ID; ATTRIBUTE_ID; VALUE\n"
-      "KnapsackProcess;Knapsack1;Items;3\n"
-      "KnapsackProcess;Knapsack1;Capacity;40\n"
-      "ItemProcess;Item1;Weight;20\n"
-      "ItemProcess;Item1;Value;100\n"
-      "ItemProcess;Item2;Weight;15\n"
-      "ItemProcess;Item2;Value;50\n"
-      "ItemProcess;Item3;Weight;22\n"
-      "ItemProcess;Item3;Value;120\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Knapsack1; KnapsackProcess; items := 3\n"
+      "Knapsack1; KnapsackProcess; capacity := 40\n"
+      "Item1; ItemProcess; weight := 20\n"
+      "Item1; ItemProcess; value := 100\n"
+      "Item2; ItemProcess; weight := 15\n"
+      "Item2; ItemProcess; value := 50\n"
+      "Item3; ItemProcess; weight := 22\n"
+      "Item3; ItemProcess; value := 120\n"
     ;
     
     WHEN( "The engine is started with the default seed" ) {

@@ -6,9 +6,9 @@ SCENARIO( "N-to-1 assignment - SCIP solver", "[scipsolver][eventsubprocess]" ) {
   GIVEN( "A 1-1 assignment" ) {
 
     std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-      "Process_2, Instance_1,,\n"
-      "Process_1, Instance_0,Expected,1\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_2;\n"
+      "Instance_0; Process_1; expected := 1\n"
     ;
 
     WHEN( "SCIP solver is used" ) {
@@ -38,10 +38,10 @@ SCENARIO( "N-to-1 assignment - SCIP solver", "[scipsolver][eventsubprocess]" ) {
   GIVEN( "A 2-1 assignment" ) {
 
     std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-      "Process_2, Instance_1,,\n"
-      "Process_2, Instance_2,,\n"
-      "Process_1, Instance_3,Expected,2\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_2;\n"
+      "Instance_2; Process_2;\n"
+      "Instance_3; Process_1; expected := 2\n"
     ;
 
     WHEN( "SCIP solver is used" ) {

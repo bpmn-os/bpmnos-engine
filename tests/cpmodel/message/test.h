@@ -4,9 +4,9 @@ SCENARIO( "Simple messaging", "[cpmodel][message]" ) {
   GIVEN( "Two instances starting at time 0" ) {
 
     std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-      "Process_1, Instance_1,Timestamp,0\n"
-      "Process_2, Instance_2,Timestamp,0\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1; timestamp := 0\n"
+      "Instance_2; Process_2; timestamp := 0\n"
     ;
 
     WHEN( "The engine is started" ) {
@@ -51,9 +51,9 @@ SCENARIO( "Simple messaging", "[cpmodel][message]" ) {
   GIVEN( "Two instances with default seed" ) {
 
     std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-      "Process_2, Instance_2,Timestamp,0\n"
-      "Process_1, Instance_1,Timestamp,0\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_2; Process_2; timestamp := 0\n"
+      "Instance_1; Process_1; timestamp := 0\n"
     ;
 
     WHEN( "The engine is started" ) {
@@ -104,9 +104,9 @@ SCENARIO( "Message tasks", "[cpmodel][message]" ) {
   GIVEN( "Two instances without input" ) {
 
     std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-      "Process_1, Instance_1,,\n"
-      "Process_2, Instance_2,,\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1;\n"
+      "Instance_2; Process_2;\n"
     ;
 
     WHEN( "The engine is started with a seed representing a feasible sequence" ) {

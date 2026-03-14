@@ -5,15 +5,15 @@ SCENARIO( "Bin packing problem", "[examples][bin_packing_problem]" ) {
   GIVEN( "Three bins and three items" ) {
 
     std::string csv =
-      "PROCESS_ID; INSTANCE_ID; ATTRIBUTE_ID; VALUE\n"
-      ";;Bins;3\n"
-      ";;Items;3\n"
-      "BinProcess;Bin1;Capacity;40.0\n"
-      "BinProcess;Bin2;Capacity;40.0\n"
-      "BinProcess;Bin3;Capacity;40.0\n"
-      "ItemProcess;Item1;Size;20.0\n"
-      "ItemProcess;Item2;Size;15.0\n"
-      "ItemProcess;Item3;Size;22.0\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "; ; bins := 3\n"
+      "; ; items := 3\n"
+      "Bin1; BinProcess; capacity := 40.0\n"
+      "Bin2; BinProcess; capacity := 40.0\n"
+      "Bin3; BinProcess; capacity := 40.0\n"
+      "Item1; ItemProcess; size := 20.0\n"
+      "Item2; ItemProcess; size := 15.0\n"
+      "Item3; ItemProcess; size := 22.0\n"
     ;
 
     Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -69,17 +69,17 @@ SCENARIO( "Bin packing problem", "[examples][bin_packing_problem]" ) {
   GIVEN( "Four bins and four items" ) {
 
     std::string csv =
-      "PROCESS_ID; INSTANCE_ID; ATTRIBUTE_ID; VALUE\n"
-      ";;Bins;4\n"
-      ";;Items;4\n"
-      "BinProcess;Bin1;Capacity;100.0\n"
-      "BinProcess;Bin2;Capacity;100.0\n"
-      "BinProcess;Bin3;Capacity;100.0\n"
-      "BinProcess;Bin4;Capacity;100.0\n"
-      "ItemProcess;Item1;Size;36.6\n"
-      "ItemProcess;Item2;Size;26.8\n"
-      "ItemProcess;Item3;Size;36.6\n"
-      "ItemProcess;Item4;Size;43.0\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "; ; bins := 4\n"
+      "; ; items := 4\n"
+      "Bin1; BinProcess; capacity := 100.0\n"
+      "Bin2; BinProcess; capacity := 100.0\n"
+      "Bin3; BinProcess; capacity := 100.0\n"
+      "Bin4; BinProcess; capacity := 100.0\n"
+      "Item1; ItemProcess; size := 36.6\n"
+      "Item2; ItemProcess; size := 26.8\n"
+      "Item3; ItemProcess; size := 36.6\n"
+      "Item4; ItemProcess; size := 43.0\n"
     ;
 
     Model::StaticDataProvider dataProvider(modelFile,csv);

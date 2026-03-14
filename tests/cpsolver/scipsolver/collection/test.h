@@ -4,8 +4,8 @@ SCENARIO( "A simple process with subprocess and task - SCIP solver", "[scipsolve
 
   GIVEN( "A single instance" ) {
     std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-      "Process_1, Instance_1,,\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1;\n"
     ;
 
     WHEN( "SCIP solver is used" ) {

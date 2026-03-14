@@ -4,8 +4,8 @@ SCENARIO( "Empty executable process - SCIP solver", "[scipsolver][process]" ) {
 
   GIVEN( "A single instance with no input values" ) {
     std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-      "Process_1, Instance_1,,\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1;\n"
     ;
 
     WHEN( "SCIP solver is used" ) {
@@ -37,8 +37,8 @@ SCENARIO( "Trivial executable process - SCIP solver", "[scipsolver][process]" ) 
 
   GIVEN( "A single instance with no input values" ) {
     std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-      "Process_1, Instance_1,,\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1;\n"
     ;
 
     WHEN( "SCIP solver is used" ) {
@@ -70,8 +70,8 @@ SCENARIO( "Simple executable process - SCIP solver", "[scipsolver][process]" ) {
 
   GIVEN( "A single instance with no input values" ) {
     std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-      "Process_1, Instance_1,,\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1;\n"
     ;
 
     WHEN( "SCIP solver is used" ) {
@@ -104,9 +104,9 @@ if ( solution->errors().size() ) {
 
   GIVEN( "Two instances with no input values" ) {
     std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-      "Process_1, Instance_1,,\n"
-      "Process_1, Instance_2,,\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1;\n"
+      "Instance_2; Process_1;\n"
     ;
 
     WHEN( "SCIP solver is used" ) {

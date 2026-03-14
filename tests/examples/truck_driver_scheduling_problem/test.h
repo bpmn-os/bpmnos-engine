@@ -5,11 +5,11 @@ SCENARIO( "Truck driver scheduling problem", "[examples][truck_driver_scheduling
   GIVEN( "Two short trips without waiting" ) {
 
     std::string csv =
-      "PROCESS_ID; INSTANCE_ID; ATTRIBUTE_ID; VALUE\n"
-      "TruckDriverProcess;Driver1;TravelTimes;[90,90]\n"
-      "TruckDriverProcess;Driver1;ServiceTimes;[30,30]\n"
-      "TruckDriverProcess;Driver1;EarliestVisits;[0,0]\n"
-      "TruckDriverProcess;Driver1;LatestVisits;[1440,1440]\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Driver1; TruckDriverProcess; travel_times := [90,90]\n"
+      "Driver1; TruckDriverProcess; service_times := [30,30]\n"
+      "Driver1; TruckDriverProcess; earliest_visits := [0,0]\n"
+      "Driver1; TruckDriverProcess; latest_visits := [1440,1440]\n"
     ;
 
     Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -51,11 +51,11 @@ SCENARIO( "Truck driver scheduling problem", "[examples][truck_driver_scheduling
   GIVEN( "One longer trip with waiting" ) {
 
     std::string csv =
-      "PROCESS_ID; INSTANCE_ID; ATTRIBUTE_ID; VALUE\n"
-      "TruckDriverProcess;Driver1;TravelTimes;[500]\n"
-      "TruckDriverProcess;Driver1;ServiceTimes;[30]\n"
-      "TruckDriverProcess;Driver1;EarliestVisits;[900]\n"
-      "TruckDriverProcess;Driver1;LatestVisits;[1440]\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Driver1; TruckDriverProcess; travel_times := [500]\n"
+      "Driver1; TruckDriverProcess; service_times := [30]\n"
+      "Driver1; TruckDriverProcess; earliest_visits := [900]\n"
+      "Driver1; TruckDriverProcess; latest_visits := [1440]\n"
     ;
 
     Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -96,11 +96,11 @@ SCENARIO( "Truck driver scheduling problem", "[examples][truck_driver_scheduling
   GIVEN( "Multiple trips with alternative solutions" ) {
 
     std::string csv =
-      "PROCESS_ID; INSTANCE_ID; ATTRIBUTE_ID; VALUE\n"
-      "TruckDriverProcess;Driver1;TravelTimes;[360,360]\n"  // Two 6h trips
-      "TruckDriverProcess;Driver1;ServiceTimes;[30,30]\n"    // Two ½h services
-      "TruckDriverProcess;Driver1;EarliestVisits;[600,900]\n"
-      "TruckDriverProcess;Driver1;LatestVisits;[1800,1800]\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Driver1; TruckDriverProcess; travel_times := [360,360]\n"  // Two 6h trips
+      "Driver1; TruckDriverProcess; service_times := [30,30]\n"    // Two ½h services
+      "Driver1; TruckDriverProcess; earliest_visits := [600,900]\n"
+      "Driver1; TruckDriverProcess; latest_visits := [1800,1800]\n"
     ;
     // T_MAX_DRIVING_SINCE_REST: 11h
     // T_MAX_ELAPSED_SINCE_REST: 14h

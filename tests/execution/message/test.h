@@ -5,9 +5,9 @@ SCENARIO( "Simple messaging", "[execution][message]" ) {
   GIVEN( "Two instances starting at time 0" ) {
 
     std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-      "Process_1, Instance_1,Timestamp,0\n"
-      "Process_2, Instance_2,Timestamp,0\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1; timestamp := 0\n"
+      "Instance_2; Process_2; timestamp := 0\n"
     ;
 
     Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -41,9 +41,9 @@ SCENARIO( "Simple messaging", "[execution][message]" ) {
   GIVEN( "Two instances with mismatching id's starting at time 0" ) {
 
     std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-      "Process_1, Instance_1,Timestamp,0\n"
-      "Process_2, Instance_X,Timestamp,0\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1; timestamp := 0\n"
+      "Instance_X; Process_2; timestamp := 0\n"
     ;
 
     Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -78,9 +78,9 @@ SCENARIO( "Simple messaging", "[execution][message]" ) {
   GIVEN( "Two instances with mismatching parameters" ) {
 
     std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-      "Process_1, Instance_1,Timestamp,0\n"
-      "Process_2, Instance_2,Timestamp,1\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1; timestamp := 0\n"
+      "Instance_2; Process_2; timestamp := 1\n"
     ;
 
     Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -115,10 +115,10 @@ SCENARIO( "Simple messaging", "[execution][message]" ) {
   GIVEN( "Three instances" ) {
 
     std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-      "Process_1, Instance_1,Timestamp,0\n"
-      "Process_2, Instance_X,Timestamp,0\n"
-      "Process_2, Instance_2,Timestamp,0\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1; timestamp := 0\n"
+      "Instance_X; Process_2; timestamp := 0\n"
+      "Instance_2; Process_2; timestamp := 0\n"
     ;
 
     Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -160,9 +160,9 @@ SCENARIO( "Message tasks", "[execution][message]" ) {
   GIVEN( "Two instances without input" ) {
 
     std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-      "Process_1, Instance_1,,\n"
-      "Process_2, Instance_2,,\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1;\n"
+      "Instance_2; Process_2;\n"
     ;
 
     Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -198,8 +198,8 @@ SCENARIO( "Message tasks", "[execution][message]" ) {
   GIVEN( "Throwing instance without recipient" ) {
 
     std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-      "Process_1, Instance_1,,\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1;\n"
     ;
 
     Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -234,8 +234,8 @@ SCENARIO( "Message tasks", "[execution][message]" ) {
   GIVEN( "Catching instance without sender" ) {
 
     std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-      "Process_2, Instance_2,,\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_2; Process_2;\n"
     ;
 
     Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -270,9 +270,9 @@ SCENARIO( "Message tasks", "[execution][message]" ) {
   GIVEN( "Throwing instance waiting for recipient" ) {
 
     std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-      "Process_1, Instance_1,Timestamp,0\n"
-      "Process_2, Instance_2,Timestamp,1\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1; timestamp := 0\n"
+      "Instance_2; Process_2; timestamp := 1\n"
     ;
 
     Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -316,9 +316,9 @@ SCENARIO( "Message tasks with timer", "[execution][message]" ) {
   GIVEN( "Two instances without input" ) {
 
     std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-      "Process_1, Instance_1,,\n"
-      "Process_2, Instance_2,,\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1;\n"
+      "Instance_2; Process_2;\n"
     ;
 
     Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -354,8 +354,8 @@ SCENARIO( "Message tasks with timer", "[execution][message]" ) {
   GIVEN( "Throwing instance without recipient" ) {
 
     std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-      "Process_1, Instance_1,,\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1;\n"
     ;
 
     Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -390,8 +390,8 @@ SCENARIO( "Message tasks with timer", "[execution][message]" ) {
   GIVEN( "Catching instance without sender" ) {
 
     std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-      "Process_2, Instance_2,,\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_2; Process_2;\n"
     ;
 
     Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -426,9 +426,9 @@ SCENARIO( "Message tasks with timer", "[execution][message]" ) {
   GIVEN( "Throwing instance waiting for recipient" ) {
 
     std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-      "Process_1, Instance_1,Timestamp,0\n"
-      "Process_2, Instance_2,Timestamp,1\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1; timestamp := 0\n"
+      "Instance_2; Process_2; timestamp := 1\n"
     ;
 
     Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -474,10 +474,10 @@ SCENARIO( "Multi-instance send task", "[execution][message]" ) {
   GIVEN( "One sender with two recipients" ) {
 
     std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-      "Process_1, Instance_1,,\n"
-      "Process_2, Instance_2,,\n"
-      "Process_2, Instance_3,,\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1;\n"
+      "Instance_2; Process_2;\n"
+      "Instance_3; Process_2;\n"
     ;
 
     Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -512,9 +512,9 @@ SCENARIO( "Multi-instance send task", "[execution][message]" ) {
   GIVEN( "One sender with one recipient" ) {
 
     std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-      "Process_1, Instance_1,,\n"
-      "Process_2, Instance_2,,\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1;\n"
+      "Instance_2; Process_2;\n"
     ;
 
     Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -555,10 +555,10 @@ SCENARIO( "Multi-instance receive task", "[execution][message]" ) {
   GIVEN( "One sender with two recipients" ) {
 
     std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-      "Process_1, Instance_1,,\n"
-      "Process_2, Instance_2,,\n"
-      "Process_2, Instance_3,,\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1;\n"
+      "Instance_2; Process_2;\n"
+      "Instance_3; Process_2;\n"
     ;
 
     Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -593,9 +593,9 @@ SCENARIO( "Multi-instance receive task", "[execution][message]" ) {
   GIVEN( "One sender with one recipient" ) {
 
     std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-      "Process_1, Instance_1,,\n"
-      "Process_2, Instance_2,,\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1;\n"
+      "Instance_2; Process_2;\n"
     ;
 
     Model::StaticDataProvider dataProvider(modelFile,csv);

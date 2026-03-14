@@ -5,11 +5,11 @@ SCENARIO( "Truck driver scheduling problem", "[cpmodel][truck_driver_scheduling_
   GIVEN( "Two short trips without waiting" ) {
 
     std::string csv =
-      "PROCESS_ID; INSTANCE_ID; ATTRIBUTE_ID; VALUE\n"
-      "TruckDriverProcess;Driver1;TravelTimes;[90,90]\n"
-      "TruckDriverProcess;Driver1;ServiceTimes;[30,30]\n"
-      "TruckDriverProcess;Driver1;EarliestVisits;[0,0]\n"
-      "TruckDriverProcess;Driver1;LatestVisits;[1440,1440]\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Driver1; TruckDriverProcess; travel_times := [90,90]\n"
+      "Driver1; TruckDriverProcess; service_times := [30,30]\n"
+      "Driver1; TruckDriverProcess; earliest_visits := [0,0]\n"
+      "Driver1; TruckDriverProcess; latest_visits := [1440,1440]\n"
     ;
     WHEN( "The engine is started" ) {
       Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -50,11 +50,11 @@ SCENARIO( "Truck driver scheduling problem", "[cpmodel][truck_driver_scheduling_
   GIVEN( "One longer trip with waiting" ) {
 
     std::string csv =
-      "PROCESS_ID; INSTANCE_ID; ATTRIBUTE_ID; VALUE\n"
-      "TruckDriverProcess;Driver1;TravelTimes;[500]\n"
-      "TruckDriverProcess;Driver1;ServiceTimes;[30]\n"
-      "TruckDriverProcess;Driver1;EarliestVisits;[900]\n"
-      "TruckDriverProcess;Driver1;LatestVisits;[1440]\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Driver1; TruckDriverProcess; travel_times := [500]\n"
+      "Driver1; TruckDriverProcess; service_times := [30]\n"
+      "Driver1; TruckDriverProcess; earliest_visits := [900]\n"
+      "Driver1; TruckDriverProcess; latest_visits := [1440]\n"
     ;
     WHEN( "The engine is started" ) {
       Model::StaticDataProvider dataProvider(modelFile,csv);

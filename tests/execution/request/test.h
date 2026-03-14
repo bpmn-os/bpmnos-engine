@@ -5,9 +5,9 @@ SCENARIO( "A simple request", "[execution][request]" ) {
 
     WHEN( "The engine is started with one request and one recipient" ) {
       std::string csv =
-        "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-        "Process_1, Instance_1,Timestamp,0\n"
-        "Process_2, Instance_2,Timestamp,1\n"
+        "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+        "Instance_1; Process_1; timestamp := 0\n"
+        "Instance_2; Process_2; timestamp := 1\n"
       ;
 
       Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -47,9 +47,9 @@ SCENARIO( "A revoked request", "[execution][request]" ) {
 
     WHEN( "The engine is started with one request and one recipient" ) {
       std::string csv =
-        "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-        "Process_1, Instance_1,Timestamp,0\n"
-        "Process_2, Instance_2,Timestamp,1\n"
+        "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+        "Instance_1; Process_1; timestamp := 0\n"
+        "Instance_2; Process_2; timestamp := 1\n"
       ;
 
       Model::StaticDataProvider dataProvider(modelFile,csv);

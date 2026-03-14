@@ -4,8 +4,8 @@ SCENARIO( "Compensate throw event without compensations", "[execution][compensat
   GIVEN( "A single instance with no input values" ) {
 
     std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-      "Process_1, Instance_1,,\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1;\n"
     ;
 
     Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -48,8 +48,8 @@ SCENARIO( "Task with unused compensation task", "[execution][compensation]" ) {
   GIVEN( "A single instance with no input values" ) {
 
     std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-      "Process_1, Instance_1,,\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1;\n"
     ;
 
     Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -97,8 +97,8 @@ SCENARIO( "Task with compensation task", "[execution][compensation]" ) {
   GIVEN( "A single instance with no input values" ) {
 
     std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-      "Process_1, Instance_1,,\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1;\n"
     ;
 
     Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -145,8 +145,8 @@ SCENARIO( "Task with compensation triggered by error", "[execution][compensation
   GIVEN( "A single instance with no input values" ) {
 
     std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-      "Process_1, Instance_1,,\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1;\n"
     ;
 
     Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -195,8 +195,8 @@ SCENARIO( "Task with compensation subprocess", "[execution][compensation]" ) {
   GIVEN( "A single instance with no input values" ) {
 
     std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-      "Process_1, Instance_1,,\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1;\n"
     ;
 
     Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -243,8 +243,8 @@ SCENARIO( "Named task with compensation task", "[execution][compensation]" ) {
   GIVEN( "A single instance with no input values" ) {
 
     std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-      "Process_1, Instance_1,,\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1;\n"
     ;
 
     Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -291,8 +291,8 @@ SCENARIO( "Multi instance compensation", "[execution][compensation][multiinstanc
   GIVEN( "A single instance with no input values" ) {
 
     std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-      "Process_1, Instance_1,,\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1;\n"
     ;
 
     Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -353,8 +353,8 @@ SCENARIO( "Compensation of  multi instance activity", "[execution][compensation]
   GIVEN( "A single instance with no input values" ) {
 
     std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-      "Process_1, Instance_1,,\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1;\n"
     ;
 
     Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -389,8 +389,8 @@ SCENARIO( "Failing compensations of  multi instance activity", "[execution][comp
   GIVEN( "A single instance with no input values" ) {
 
     std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-      "Process_1, Instance_1,,\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1;\n"
     ;
 
     Model::StaticDataProvider dataProvider(modelFile,csv);

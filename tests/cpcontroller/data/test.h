@@ -4,8 +4,8 @@ SCENARIO( "CPController with task with data expression operator", "[cpcontroller
 
   GIVEN( "A single instance with an input value" ) {
     std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-      "Process_1, Instance_1,DataAttribute_1,8\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1; data1 := 8\n"
     ;
 
     Model::StaticDataProvider dataProvider(modelFile,csv);

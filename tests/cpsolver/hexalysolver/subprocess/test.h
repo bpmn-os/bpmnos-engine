@@ -4,8 +4,8 @@ SCENARIO( "Trivial executable subprocess - Hexaly solver", "[hexalysolver][subpr
 
   GIVEN( "A single instance with no input values" ) {
     std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-      "Process_1, Instance_1,,\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1;\n"
     ;
 
     WHEN( "Hexaly solver is used" ) {
@@ -44,8 +44,8 @@ SCENARIO( "Constrained executable subprocess - Hexaly solver", "[hexalysolver][s
 
     WHEN( "The engine is started at time 0" ) {
       std::string csv =
-        "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-        "Process_1, Instance_1,Timestamp,0\n"
+        "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+        "Instance_1; Process_1; timestamp := 0\n"
       ;
 
       Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -75,8 +75,8 @@ if ( !solution->errors().empty() ) {
 
     WHEN( "The engine is started at time 2" ) {
       std::string csv =
-        "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-        "Process_1, Instance_1,Timestamp,2\n"
+        "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+        "Instance_1; Process_1; timestamp := 2\n"
       ;
 
       Model::StaticDataProvider dataProvider(modelFile,csv);

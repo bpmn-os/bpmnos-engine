@@ -5,8 +5,8 @@ SCENARIO( "Condition on data attribute", "[execution][condition]" ) {
 
     WHEN( "The engine is started with an undefined condition attribute" ) {
       std::string csv =
-        "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-        "Process_1, Instance_1,,\n"
+        "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+        "Instance_1; Process_1;\n"
       ;
 
       Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -37,8 +37,8 @@ SCENARIO( "Condition on data attribute", "[execution][condition]" ) {
 
     WHEN( "The engine is started with a false condition attribute" ) {
       std::string csv =
-        "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-        "Process_1, Instance_1,Condition,false\n"
+        "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+        "Instance_1; Process_1; condition := false\n"
       ;
 
       Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -69,8 +69,8 @@ SCENARIO( "Condition on data attribute", "[execution][condition]" ) {
 
     WHEN( "The engine is started with a true condition attribute" ) {
       std::string csv =
-        "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-        "Process_1, Instance_1,Condition,true\n"
+        "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+        "Instance_1; Process_1; condition := true\n"
       ;
 
       Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -107,9 +107,9 @@ SCENARIO( "Condition on global attribute", "[execution][condition]" ) {
   GIVEN( "Both instances" ) {
     WHEN( "The engine is started with an undefined condition attribute" ) {
       std::string csv =
-        "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-        "Process_1, Instance_1,,\n"
-        "Process_2, Instance_2,,\n"
+        "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+        "Instance_1; Process_1;\n"
+        "Instance_2; Process_2;\n"
       ;
 
       Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -140,10 +140,10 @@ SCENARIO( "Condition on global attribute", "[execution][condition]" ) {
 
     WHEN( "The engine is started with a false condition attribute" ) {
       std::string csv =
-        "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-        ",,Condition,false\n"
-        "Process_1, Instance_1,,\n"
-        "Process_2, Instance_2,,\n"
+        "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+        "; ; condition := false\n"
+        "Instance_1; Process_1;\n"
+        "Instance_2; Process_2;\n"
       ;
 
       Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -174,10 +174,10 @@ SCENARIO( "Condition on global attribute", "[execution][condition]" ) {
 
     WHEN( "The engine is started with a true condition attribute" ) {
       std::string csv =
-        "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-        ",,Condition,true\n"
-        "Process_1, Instance_1,,\n"
-        "Process_2, Instance_2,,\n"
+        "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+        "; ; condition := true\n"
+        "Instance_1; Process_1;\n"
+        "Instance_2; Process_2;\n"
       ;
 
       Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -213,9 +213,9 @@ SCENARIO( "Condition on global attribute", "[execution][condition]" ) {
 
     WHEN( "The engine is started with a false condition attribute" ) {
       std::string csv =
-        "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-        ",,Condition,false\n"
-        "Process_2, Instance_1,,\n"
+        "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+        "; ; condition := false\n"
+        "Instance_1; Process_2;\n"
       ;
 
       Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -244,9 +244,9 @@ SCENARIO( "Condition on global attribute", "[execution][condition]" ) {
 
     WHEN( "The engine is started with a true condition attribute" ) {
       std::string csv =
-        "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-        ",,Condition,true\n"
-        "Process_2, Instance_1,,\n"
+        "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+        "; ; condition := true\n"
+        "Instance_1; Process_2;\n"
       ;
 
       Model::StaticDataProvider dataProvider(modelFile,csv);

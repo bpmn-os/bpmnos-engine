@@ -5,13 +5,13 @@ SCENARIO( "CPController with assignment problem", "[cpcontroller][assignment_pro
 
   GIVEN( "Three clients and three servers" ) {
     std::string csv =
-      "PROCESS_ID; INSTANCE_ID; ATTRIBUTE_ID; VALUE\n"
-      "ClientProcess;Client1;;\n"
-      "ClientProcess;Client2;;\n"
-      "ClientProcess;Client3;;\n"
-      "ServerProcess;Server1;;\n"
-      "ServerProcess;Server2;;\n"
-      "ServerProcess;Server3;;\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Client1; ClientProcess;\n"
+      "Client2; ClientProcess;\n"
+      "Client3; ClientProcess;\n"
+      "Server1; ServerProcess;\n"
+      "Server2; ServerProcess;\n"
+      "Server3; ServerProcess;\n"
     ;
 
     Model::StaticDataProvider dataProvider(modelFile,folders,csv);

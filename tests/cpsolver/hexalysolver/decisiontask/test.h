@@ -4,8 +4,9 @@ SCENARIO( "Decision task with enumeration - Hexaly solver", "[hexalysolver][deci
   GIVEN( "A single instance with x=-2" ) {
 
     std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-      "Process_1, Instance_1,X,-2\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1;\n"
+      "Instance_1; Activity_1; x := -2\n"
     ;
 
     WHEN( "Hexaly solver is used" ) {
@@ -45,8 +46,8 @@ SCENARIO( "Decision task with bounds - Hexaly solver", "[hexalysolver][decisiont
   GIVEN( "A single instance with no input values" ) {
 
     std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-      "Process_1, Instance_1,,\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1;\n"
     ;
 
     WHEN( "Hexaly solver is used" ) {

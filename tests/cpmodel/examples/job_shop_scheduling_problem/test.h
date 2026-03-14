@@ -5,8 +5,8 @@ SCENARIO( "Job shop schedulng problem", "[cpmodel][job_shop_scheduling_problem]"
   GIVEN( "One machine and no orders" ) {
 
     std::string csv =
-      "PROCESS_ID; INSTANCE_ID; ATTRIBUTE_ID; VALUE\n"
-      "MachineProcess;Machine1;Jobs;0\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Machine1; MachineProcess; jobs := 0\n"
     ;
 
     WHEN( "The engine is started" ) {
@@ -52,10 +52,10 @@ SCENARIO( "Job shop schedulng problem", "[cpmodel][job_shop_scheduling_problem]"
   GIVEN( "One machine and one order" ) {
 
     std::string csv =
-      "PROCESS_ID; INSTANCE_ID; ATTRIBUTE_ID; VALUE\n"
-      "OrderProcess;Order1;Machines;[\"Machine1\"]\n"
-      "OrderProcess;Order1;Durations;[3]\n"
-      "MachineProcess;Machine1;Jobs;1\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Order1; OrderProcess; machines := [\"Machine1\"]\n"
+      "Order1; OrderProcess; durations := [3]\n"
+      "Machine1; MachineProcess; jobs := 1\n"
     ;
 
     WHEN( "The engine is started" ) {
@@ -101,12 +101,12 @@ SCENARIO( "Job shop schedulng problem", "[cpmodel][job_shop_scheduling_problem]"
   GIVEN( "One machine and two orders" ) {
 
     std::string csv =
-      "PROCESS_ID; INSTANCE_ID; ATTRIBUTE_ID; VALUE\n"
-      "OrderProcess;Order1;Machines;[\"Machine1\"]\n"
-      "OrderProcess;Order1;Durations;[3]\n"
-      "OrderProcess;Order2;Machines;[\"Machine1\"]\n"
-      "OrderProcess;Order2;Durations;[2]\n"
-      "MachineProcess;Machine1;Jobs;2\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Order1; OrderProcess; machines := [\"Machine1\"]\n"
+      "Order1; OrderProcess; durations := [3]\n"
+      "Order2; OrderProcess; machines := [\"Machine1\"]\n"
+      "Order2; OrderProcess; durations := [2]\n"
+      "Machine1; MachineProcess; jobs := 2\n"
     ;
 
     WHEN( "The engine is started" ) {
@@ -152,11 +152,11 @@ SCENARIO( "Job shop schedulng problem", "[cpmodel][job_shop_scheduling_problem]"
   GIVEN( "Two machines and one order" ) {
 
     std::string csv =
-      "PROCESS_ID; INSTANCE_ID; ATTRIBUTE_ID; VALUE\n"
-      "OrderProcess;Order1;Machines;[\"Machine1\",\"Machine2\"]\n"
-      "OrderProcess;Order1;Durations;[3,2]\n"
-      "MachineProcess;Machine1;Jobs;1\n"
-      "MachineProcess;Machine2;Jobs;1\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Order1; OrderProcess; machines := [\"Machine1\",\"Machine2\"]\n"
+      "Order1; OrderProcess; durations := [3,2]\n"
+      "Machine1; MachineProcess; jobs := 1\n"
+      "Machine2; MachineProcess; jobs := 1\n"
     ;
 
     WHEN( "The engine is started" ) {
@@ -202,13 +202,13 @@ SCENARIO( "Job shop schedulng problem", "[cpmodel][job_shop_scheduling_problem]"
   GIVEN( "Two machines and two orders" ) {
 
     std::string csv =
-      "PROCESS_ID; INSTANCE_ID; ATTRIBUTE_ID; VALUE\n"
-      "OrderProcess;Order1;Machines;[\"Machine1\",\"Machine2\"]\n"
-      "OrderProcess;Order1;Durations;[3,2]\n"
-      "OrderProcess;Order2;Machines;[\"Machine1\",\"Machine2\"]\n"
-      "OrderProcess;Order2;Durations;[1,4]\n"
-      "MachineProcess;Machine1;Jobs;2\n"
-      "MachineProcess;Machine2;Jobs;2\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Order1; OrderProcess; machines := [\"Machine1\",\"Machine2\"]\n"
+      "Order1; OrderProcess; durations := [3,2]\n"
+      "Order2; OrderProcess; machines := [\"Machine1\",\"Machine2\"]\n"
+      "Order2; OrderProcess; durations := [1,4]\n"
+      "Machine1; MachineProcess; jobs := 2\n"
+      "Machine2; MachineProcess; jobs := 2\n"
     ;
 
     WHEN( "The engine is started" ) {
@@ -254,16 +254,16 @@ SCENARIO( "Job shop schedulng problem", "[cpmodel][job_shop_scheduling_problem]"
   GIVEN( "Three machines and three orders" ) {
 
     std::string csv =
-      "PROCESS_ID; INSTANCE_ID; ATTRIBUTE_ID; VALUE\n"
-      "OrderProcess;Order1;Machines;[\"Machine1\",\"Machine2\",\"Machine3\"]\n"
-      "OrderProcess;Order1;Durations;[3,2,2]\n"
-      "OrderProcess;Order2;Machines;[\"Machine1\",\"Machine3\",\"Machine2\"]\n"
-      "OrderProcess;Order2;Durations;[2,1,4]\n"
-      "OrderProcess;Order3;Machines;[\"Machine2\",\"Machine3\"]\n"
-      "OrderProcess;Order3;Durations;[4,3]\n"
-      "MachineProcess;Machine1;Jobs;2\n"
-      "MachineProcess;Machine2;Jobs;3\n"
-      "MachineProcess;Machine3;Jobs;3\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Order1; OrderProcess; machines := [\"Machine1\",\"Machine2\",\"Machine3\"]\n"
+      "Order1; OrderProcess; durations := [3,2,2]\n"
+      "Order2; OrderProcess; machines := [\"Machine1\",\"Machine3\",\"Machine2\"]\n"
+      "Order2; OrderProcess; durations := [2,1,4]\n"
+      "Order3; OrderProcess; machines := [\"Machine2\",\"Machine3\"]\n"
+      "Order3; OrderProcess; durations := [4,3]\n"
+      "Machine1; MachineProcess; jobs := 2\n"
+      "Machine2; MachineProcess; jobs := 3\n"
+      "Machine3; MachineProcess; jobs := 3\n"
     ;
 
     WHEN( "The engine is started with default seed" ) {

@@ -4,8 +4,8 @@ SCENARIO( "Caught error end event", "[execution][eventsubprocess]" ) {
   GIVEN( "A single instance with no input values" ) {
 
     std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-      "Process_1, Instance_1,,\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1;\n"
     ;
 
     Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -61,8 +61,8 @@ SCENARIO( "Interrupting escalation", "[execution][eventsubprocess]" ) {
   GIVEN( "A single instance with no input values" ) {
 
     std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-      "Process_1, Instance_1,,\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1;\n"
     ;
 
     Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -127,8 +127,8 @@ SCENARIO( "Non-interrupting escalation", "[execution][eventsubprocess]" ) {
   GIVEN( "A single instance with no input values" ) {
 
     std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-      "Process_1, Instance_1,,\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1;\n"
     ;
 
     Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -197,8 +197,8 @@ SCENARIO( "Caught and rethrown error", "[execution][eventsubprocess]" ) {
   GIVEN( "A single instance with no input values" ) {
 
     std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-      "Process_1, Instance_1,,\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1;\n"
     ;
 
     Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -257,8 +257,8 @@ SCENARIO( "Non-interrupting escalation throwing error", "[execution][eventsubpro
   GIVEN( "A single instance with no input values" ) {
 
     std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-      "Process_1, Instance_1,,\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1;\n"
     ;
 
     Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -312,8 +312,8 @@ SCENARIO( "Interrupting escalation throwing error", "[execution][eventsubprocess
   GIVEN( "A single instance with no input values" ) {
 
     std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-      "Process_1, Instance_1,,\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1;\n"
     ;
 
     Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -394,9 +394,9 @@ SCENARIO( "N-to-1 assignment", "[execution][eventsubprocess]" ) {
   GIVEN( "A 1-1 assignment" ) {
 
     std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-      "Process_1, Instance_0,Expected,1\n"
-      "Process_2, Instance_1,,\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_0; Process_1; expected := 1\n"
+      "Instance_1; Process_2;\n"
     ;
 
     Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -415,10 +415,10 @@ SCENARIO( "N-to-1 assignment", "[execution][eventsubprocess]" ) {
   GIVEN( "A 2-1 assignment" ) {
 
     std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-      "Process_1, Instance_0,Expected,2\n"
-      "Process_2, Instance_1,,\n"
-      "Process_2, Instance_2,,\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_0; Process_1; expected := 2\n"
+      "Instance_1; Process_2;\n"
+      "Instance_2; Process_2;\n"
     ;
 
     Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -437,10 +437,10 @@ SCENARIO( "N-to-1 assignment", "[execution][eventsubprocess]" ) {
   GIVEN( "An unbalanced assignment" ) {
 
     std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-      "Process_1, Instance_0,Expected,1\n"
-      "Process_2, Instance_1,,\n"
-      "Process_2, Instance_2,,\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_0; Process_1; expected := 1\n"
+      "Instance_1; Process_2;\n"
+      "Instance_2; Process_2;\n"
     ;
 
     Model::StaticDataProvider dataProvider(modelFile,csv);

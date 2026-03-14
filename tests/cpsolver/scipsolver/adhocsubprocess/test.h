@@ -5,8 +5,8 @@ SCENARIO( "Sequential adhoc subprocess - SCIP solver", "[scipsolver][adhocsubpro
   GIVEN( "A single instance with no input values" ) {
     WHEN( "SCIP solver is used" ) {
       std::string csv =
-        "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-        "Process_1, Instance_1,,\n"
+        "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+        "Instance_1; Process_1;\n"
       ;
 
       Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -38,8 +38,8 @@ SCENARIO( "Sequential adhoc subprocesses with common performer - SCIP solver", "
   GIVEN( "A single instance with no input values" ) {
     WHEN( "SCIP solver is used" ) {
       std::string csv =
-        "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-        "Process_1, Instance_1,,\n"
+        "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+        "Instance_1; Process_1;\n"
       ;
 
       Model::StaticDataProvider dataProvider(modelFile,csv);

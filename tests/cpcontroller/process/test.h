@@ -4,8 +4,8 @@ SCENARIO( "CPController with empty executable process", "[cpcontroller][process]
 
   GIVEN( "A single instance with no input values" ) {
     std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-      "Process_1, Instance_1,,\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1;\n"
     ;
 
     Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -61,8 +61,8 @@ SCENARIO( "CPController with trivial executable process", "[cpcontroller][proces
 
   GIVEN( "A single instance with no input values" ) {
     std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-      "Process_1, Instance_1,,\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1;\n"
     ;
 
     Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -118,8 +118,8 @@ SCENARIO( "CPController with simple executable process", "[cpcontroller][process
 
   GIVEN( "A single instance with no input values" ) {
     std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-      "Process_1, Instance_1,,\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1;\n"
     ;
 
     Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -170,9 +170,9 @@ SCENARIO( "CPController with simple executable process", "[cpcontroller][process
 
   GIVEN( "Two instances with no input values" ) {
     std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE\n"
-      "Process_1, Instance_1,,\n"
-      "Process_1, Instance_2,,\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1;\n"
+      "Instance_2; Process_1;\n"
     ;
 
     Model::StaticDataProvider dataProvider(modelFile,csv);
