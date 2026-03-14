@@ -12,6 +12,7 @@ list(APPEND controller_SOURCES
   dispatcher/Metronome.cpp
   dispatcher/ReadyHandler.cpp
   dispatcher/DeterministicTaskCompletion.cpp
+  dispatcher/StochasticTaskCompletion.cpp
   dispatcher/naive/InstantEntry.cpp
   dispatcher/naive/InstantExit.cpp
   dispatcher/naive/FirstMatchingMessageDelivery.cpp
@@ -46,6 +47,7 @@ list(APPEND controller_HEADERS
   dispatcher/Metronome.h
   dispatcher/ReadyHandler.h
   dispatcher/DeterministicTaskCompletion.h
+  dispatcher/StochasticTaskCompletion.h
   dispatcher/naive/InstantEntry.h
   dispatcher/naive/InstantExit.h
   dispatcher/naive/FirstMatchingMessageDelivery.h

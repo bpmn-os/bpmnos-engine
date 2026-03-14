@@ -7,7 +7,7 @@
 namespace BPMNOS::Execution {
 
 /**
- * @brief Class dispatching a ready event when the required data is available a token at an activity.
+ * @brief Class dispatching a ready event when the required data is available for a token at an activity.
  */
 class ReadyHandler : public EventDispatcher {
 public:
