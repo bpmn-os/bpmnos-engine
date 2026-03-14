@@ -70,3 +70,16 @@ DataProvider::~DataProvider() {}
 const Model& DataProvider::getModel() const {
   return *model;
 }
+
+BPMN::Node* DataProvider::findNode(const std::string& nodeId) const {
+  for (auto& process : model->processes) {
+    if (process->id == nodeId) {
+      return process.get();
+    }
+    auto* node = process->find([&nodeId](BPMN::Node* n) { return n->id == nodeId; });
+    if (node) {
+      return node;
+    }
+  }
+  throw std::runtime_error("DataProvider: node '" + nodeId + "' not found in model");
+}

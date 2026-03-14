@@ -37,7 +37,9 @@ public:
 protected:
   std::unique_ptr<Model> model;  ///< Pointer to the BPMN model.
 
-  DataInput attributes; ///< Map holding all attributes in the model with keys being the process (or nullptr for global attributes) and attribute id 
+  DataInput attributes; ///< Map holding all attributes in the model with keys being the process (or nullptr for global attributes) and attribute id. TODO: Remove when old CSV format support is removed.
+
+  BPMN::Node* findNode(const std::string& nodeId) const;
 };
 
 } // namespace BPMNOS::Model
