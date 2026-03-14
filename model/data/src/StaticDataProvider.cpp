@@ -170,10 +170,10 @@ std::unique_ptr<Scenario> StaticDataProvider::createScenario([[maybe_unused]] un
   std::unique_ptr<Scenario> scenario = std::make_unique<LegacyScenario>(model.get(), earliestInstantiation, latestInstantiation, attributes, globalValueMap);
   for ( auto& [id, instance] : instances ) {
     auto& timestampAttribute = attributes[instance.process][Keyword::Timestamp];
-    auto& instantiation = instance.data[timestampAttribute];
-    scenario->addInstance(instance.process, id, { {}, {{earliestInstantiation, instantiation}} }); // all instances are known at time of the earliest instantiation, but instantiations may occur later
+    auto instantiationTime = instance.data[timestampAttribute];
+    scenario->addInstance(instance.process, id, instantiationTime);
     for ( auto& [attribute, value] : instance.data ) {
-      scenario->setRealization( scenario->getAttributeData(id, attribute), {earliestInstantiation, value} ); // all attribute values are known at time of the earliest instantiation
+      scenario->setValue(id, attribute, value);
     }
   }
   return scenario;

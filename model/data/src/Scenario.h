@@ -19,21 +19,11 @@ typedef std::unordered_map< const BPMN::Process*, std::unordered_map< std::strin
  */
 class Scenario {
 public:
-  struct Disclosure {
-    BPMNOS::number disclosure; ///< Time at which the value is disclosed.
-    std::optional<BPMNOS::number> value; ///< Value that the attribute takes at the time of disclosed.
-  };
-
-  struct Data {
-    std::vector<Disclosure> anticipations;
-    std::optional<Disclosure> realization;
-  };
-
   struct InstanceData {
     const BPMN::Process* process;
     size_t id; ///< Instance identifier.
-    Data instantiation; ///< Data regarding the time of instantiation.
-    std::unordered_map< const Attribute*, Data > data; ///< Data regarding attribute values.
+    BPMNOS::number instantiationTime; ///< Time at which the instance is instantiated.
+    std::unordered_map< const Attribute*, std::optional<BPMNOS::number> > values; ///< Attribute values.
   };
 
   virtual ~Scenario() = default;
@@ -113,10 +103,8 @@ public:
    */
   virtual std::optional<BPMNOS::Values> getKnownData(const BPMNOS::number instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const = 0;
 
-  virtual void addInstance(const BPMN::Process* process, const BPMNOS::number instanceId, Data instantiation) = 0;
-  virtual Data& getInstantiationData(const BPMNOS::number instanceId) = 0;
-  virtual Data& getAttributeData(const BPMNOS::number instanceId, const Attribute* attribute) = 0;
-  virtual void setRealization( Data& data, Disclosure realization ) = 0;
+  virtual void addInstance(const BPMN::Process* process, const BPMNOS::number instanceId, BPMNOS::number instantiationTime) = 0;
+  virtual void setValue(const BPMNOS::number instanceId, const Attribute* attribute, std::optional<BPMNOS::number> value) = 0;
 
   BPMNOS::Values globals;
   const Model* model;  ///< Pointer to the BPMN model.
