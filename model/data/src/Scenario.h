@@ -31,11 +31,6 @@ public:
   static constexpr char delimiters[] = {'^','#'}; ///< Delimiters used for disambiguation of identifiers of non-interrupting event subprocesses and multi-instance activities
 
   /**
-   * @brief Virtual method allowing derived scenarios to update their data.
-   */
-  virtual void update() {};
-
-  /**
    * @brief Method returning the model.
    */
   virtual const Model* getModel() const = 0;
@@ -102,9 +97,6 @@ public:
    * If at least one attribute value is not yet known, the method returns std::nullopt.
    */
   virtual std::optional<BPMNOS::Values> getKnownData(const BPMNOS::number instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const = 0;
-
-  virtual void addInstance(const BPMN::Process* process, const BPMNOS::number instanceId, BPMNOS::number instantiationTime) = 0;
-  virtual void setValue(const BPMNOS::number instanceId, const Attribute* attribute, std::optional<BPMNOS::number> value) = 0;
 
   BPMNOS::Values globals;
   const Model* model;  ///< Pointer to the BPMN model.

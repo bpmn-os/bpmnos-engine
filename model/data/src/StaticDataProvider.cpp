@@ -167,7 +167,7 @@ void StaticDataProvider::ensureDefaultValue(StaticInstanceData& instance, const 
 }
 
 std::unique_ptr<Scenario> StaticDataProvider::createScenario([[maybe_unused]] unsigned int scenarioId) {
-  std::unique_ptr<Scenario> scenario = std::make_unique<LegacyScenario>(model.get(), earliestInstantiation, latestInstantiation, attributes, globalValueMap);
+  auto scenario = std::make_unique<LegacyScenario>(model.get(), earliestInstantiation, latestInstantiation, attributes, globalValueMap);
   for ( auto& [id, instance] : instances ) {
     auto& timestampAttribute = attributes[instance.process][Keyword::Timestamp];
     auto instantiationTime = instance.data[timestampAttribute];

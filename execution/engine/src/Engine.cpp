@@ -71,9 +71,6 @@ BPMNOS::number Engine::run(const BPMNOS::Model::Scenario* scenario, BPMNOS::numb
 }
 
 bool Engine::advance() {
-  // make sure new data is added to system state
-  const_cast<BPMNOS::Model::Scenario*>(systemState->scenario)->update();
-
   // add all new instances and advance tokens
   addInstances();
   // it is assumed that at least one clock tick or termination event is processed to ensure that
