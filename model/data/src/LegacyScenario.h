@@ -23,7 +23,7 @@ public:
 
   const Model* getModel() const override;
 
-  BPMNOS::number getInception() const override;
+  BPMNOS::number getEarliestInstantiationTime() const override;
   bool isCompleted(const BPMNOS::number currentTime) const override;
 
   std::vector< std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values> > getCurrentInstantiations(const BPMNOS::number currentTime) const override;

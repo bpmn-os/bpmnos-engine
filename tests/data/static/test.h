@@ -52,7 +52,7 @@ SCENARIO( "Trivial executable process", "[data][static]" ) {
 
       auto scenario = dataProvider.createScenario();
       THEN( "There earliest instantiation is at time 42" ) {
-        REQUIRE( scenario->getInception() == 42 );
+        REQUIRE( scenario->getEarliestInstantiationTime() == 42 );
       }
       THEN( "The scenario is incomplete at time 42" ) {
         REQUIRE( scenario->isCompleted(42) == false );
@@ -117,7 +117,7 @@ SCENARIO( "Trivial executable process", "[data][static]" ) {
 
       auto scenario = dataProvider.createScenario();
       THEN( "There earliest instantiation is at time 0" ) {
-        REQUIRE( scenario->getInception() == 0 );
+        REQUIRE( scenario->getEarliestInstantiationTime() == 0 );
       }
       THEN( "The scenario is incomplete at time 0" ) {
         REQUIRE( scenario->isCompleted(0) == false );

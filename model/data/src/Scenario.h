@@ -53,7 +53,7 @@ public:
   /**
    * @brief Method returning the time of the earliest instantiation.
    */
-  virtual BPMNOS::number getInception() const = 0;
+  virtual BPMNOS::number getEarliestInstantiationTime() const = 0;
 
   /**
    * @brief Method returning true if the currentTime exceeds the completion time.

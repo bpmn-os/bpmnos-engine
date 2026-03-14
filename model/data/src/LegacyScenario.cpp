@@ -71,7 +71,7 @@ const Model* LegacyScenario::getModel() const {
   return model;
 }
 
-BPMNOS::number LegacyScenario::getInception() const {
+BPMNOS::number LegacyScenario::getEarliestInstantiationTime() const {
   return inception;
 }
 
