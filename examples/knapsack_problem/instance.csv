@@ -1,203 +1,203 @@
-PROCESS_ID; INSTANCE_ID; ATTRIBUTE_ID; VALUE
-KnapsackProcess;Knapsack1;Items;100
-KnapsackProcess;Knapsack1;Capacity;995.0
-ItemProcess;Item1;Value;94.0
-ItemProcess;Item1;Weight;485.0
-ItemProcess;Item2;Value;506.0
-ItemProcess;Item2;Weight;326.0
-ItemProcess;Item3;Value;416.0
-ItemProcess;Item3;Weight;248.0
-ItemProcess;Item4;Value;992.0
-ItemProcess;Item4;Weight;421.0
-ItemProcess;Item5;Value;649.0
-ItemProcess;Item5;Weight;322.0
-ItemProcess;Item6;Value;237.0
-ItemProcess;Item6;Weight;795.0
-ItemProcess;Item7;Value;457.0
-ItemProcess;Item7;Weight;43.0
-ItemProcess;Item8;Value;815.0
-ItemProcess;Item8;Weight;845.0
-ItemProcess;Item9;Value;446.0
-ItemProcess;Item9;Weight;955.0
-ItemProcess;Item10;Value;422.0
-ItemProcess;Item10;Weight;252.0
-ItemProcess;Item11;Value;791.0
-ItemProcess;Item11;Weight;9.0
-ItemProcess;Item12;Value;359.0
-ItemProcess;Item12;Weight;901.0
-ItemProcess;Item13;Value;667.0
-ItemProcess;Item13;Weight;122.0
-ItemProcess;Item14;Value;598.0
-ItemProcess;Item14;Weight;94.0
-ItemProcess;Item15;Value;7.0
-ItemProcess;Item15;Weight;738.0
-ItemProcess;Item16;Value;544.0
-ItemProcess;Item16;Weight;574.0
-ItemProcess;Item17;Value;334.0
-ItemProcess;Item17;Weight;715.0
-ItemProcess;Item18;Value;766.0
-ItemProcess;Item18;Weight;882.0
-ItemProcess;Item19;Value;994.0
-ItemProcess;Item19;Weight;367.0
-ItemProcess;Item20;Value;893.0
-ItemProcess;Item20;Weight;984.0
-ItemProcess;Item21;Value;633.0
-ItemProcess;Item21;Weight;299.0
-ItemProcess;Item22;Value;131.0
-ItemProcess;Item22;Weight;433.0
-ItemProcess;Item23;Value;428.0
-ItemProcess;Item23;Weight;682.0
-ItemProcess;Item24;Value;700.0
-ItemProcess;Item24;Weight;72.0
-ItemProcess;Item25;Value;617.0
-ItemProcess;Item25;Weight;874.0
-ItemProcess;Item26;Value;874.0
-ItemProcess;Item26;Weight;138.0
-ItemProcess;Item27;Value;720.0
-ItemProcess;Item27;Weight;856.0
-ItemProcess;Item28;Value;419.0
-ItemProcess;Item28;Weight;145.0
-ItemProcess;Item29;Value;794.0
-ItemProcess;Item29;Weight;995.0
-ItemProcess;Item30;Value;196.0
-ItemProcess;Item30;Weight;529.0
-ItemProcess;Item31;Value;997.0
-ItemProcess;Item31;Weight;199.0
-ItemProcess;Item32;Value;116.0
-ItemProcess;Item32;Weight;277.0
-ItemProcess;Item33;Value;908.0
-ItemProcess;Item33;Weight;97.0
-ItemProcess;Item34;Value;539.0
-ItemProcess;Item34;Weight;719.0
-ItemProcess;Item35;Value;707.0
-ItemProcess;Item35;Weight;242.0
-ItemProcess;Item36;Value;569.0
-ItemProcess;Item36;Weight;107.0
-ItemProcess;Item37;Value;537.0
-ItemProcess;Item37;Weight;122.0
-ItemProcess;Item38;Value;931.0
-ItemProcess;Item38;Weight;70.0
-ItemProcess;Item39;Value;726.0
-ItemProcess;Item39;Weight;98.0
-ItemProcess;Item40;Value;487.0
-ItemProcess;Item40;Weight;600.0
-ItemProcess;Item41;Value;772.0
-ItemProcess;Item41;Weight;645.0
-ItemProcess;Item42;Value;513.0
-ItemProcess;Item42;Weight;267.0
-ItemProcess;Item43;Value;81.0
-ItemProcess;Item43;Weight;972.0
-ItemProcess;Item44;Value;943.0
-ItemProcess;Item44;Weight;895.0
-ItemProcess;Item45;Value;58.0
-ItemProcess;Item45;Weight;213.0
-ItemProcess;Item46;Value;303.0
-ItemProcess;Item46;Weight;748.0
-ItemProcess;Item47;Value;764.0
-ItemProcess;Item47;Weight;487.0
-ItemProcess;Item48;Value;536.0
-ItemProcess;Item48;Weight;923.0
-ItemProcess;Item49;Value;724.0
-ItemProcess;Item49;Weight;29.0
-ItemProcess;Item50;Value;789.0
-ItemProcess;Item50;Weight;674.0
-ItemProcess;Item51;Value;479.0
-ItemProcess;Item51;Weight;540.0
-ItemProcess;Item52;Value;142.0
-ItemProcess;Item52;Weight;554.0
-ItemProcess;Item53;Value;339.0
-ItemProcess;Item53;Weight;467.0
-ItemProcess;Item54;Value;641.0
-ItemProcess;Item54;Weight;46.0
-ItemProcess;Item55;Value;196.0
-ItemProcess;Item55;Weight;710.0
-ItemProcess;Item56;Value;494.0
-ItemProcess;Item56;Weight;553.0
-ItemProcess;Item57;Value;66.0
-ItemProcess;Item57;Weight;191.0
-ItemProcess;Item58;Value;824.0
-ItemProcess;Item58;Weight;724.0
-ItemProcess;Item59;Value;208.0
-ItemProcess;Item59;Weight;730.0
-ItemProcess;Item60;Value;711.0
-ItemProcess;Item60;Weight;988.0
-ItemProcess;Item61;Value;800.0
-ItemProcess;Item61;Weight;90.0
-ItemProcess;Item62;Value;314.0
-ItemProcess;Item62;Weight;340.0
-ItemProcess;Item63;Value;289.0
-ItemProcess;Item63;Weight;549.0
-ItemProcess;Item64;Value;401.0
-ItemProcess;Item64;Weight;196.0
-ItemProcess;Item65;Value;466.0
-ItemProcess;Item65;Weight;865.0
-ItemProcess;Item66;Value;689.0
-ItemProcess;Item66;Weight;678.0
-ItemProcess;Item67;Value;833.0
-ItemProcess;Item67;Weight;570.0
-ItemProcess;Item68;Value;225.0
-ItemProcess;Item68;Weight;936.0
-ItemProcess;Item69;Value;244.0
-ItemProcess;Item69;Weight;722.0
-ItemProcess;Item70;Value;849.0
-ItemProcess;Item70;Weight;651.0
-ItemProcess;Item71;Value;113.0
-ItemProcess;Item71;Weight;123.0
-ItemProcess;Item72;Value;379.0
-ItemProcess;Item72;Weight;431.0
-ItemProcess;Item73;Value;361.0
-ItemProcess;Item73;Weight;508.0
-ItemProcess;Item74;Value;65.0
-ItemProcess;Item74;Weight;585.0
-ItemProcess;Item75;Value;486.0
-ItemProcess;Item75;Weight;853.0
-ItemProcess;Item76;Value;686.0
-ItemProcess;Item76;Weight;642.0
-ItemProcess;Item77;Value;286.0
-ItemProcess;Item77;Weight;992.0
-ItemProcess;Item78;Value;889.0
-ItemProcess;Item78;Weight;725.0
-ItemProcess;Item79;Value;24.0
-ItemProcess;Item79;Weight;286.0
-ItemProcess;Item80;Value;491.0
-ItemProcess;Item80;Weight;812.0
-ItemProcess;Item81;Value;891.0
-ItemProcess;Item81;Weight;859.0
-ItemProcess;Item82;Value;90.0
-ItemProcess;Item82;Weight;663.0
-ItemProcess;Item83;Value;181.0
-ItemProcess;Item83;Weight;88.0
-ItemProcess;Item84;Value;214.0
-ItemProcess;Item84;Weight;179.0
-ItemProcess;Item85;Value;17.0
-ItemProcess;Item85;Weight;187.0
-ItemProcess;Item86;Value;472.0
-ItemProcess;Item86;Weight;619.0
-ItemProcess;Item87;Value;418.0
-ItemProcess;Item87;Weight;261.0
-ItemProcess;Item88;Value;419.0
-ItemProcess;Item88;Weight;846.0
-ItemProcess;Item89;Value;356.0
-ItemProcess;Item89;Weight;192.0
-ItemProcess;Item90;Value;682.0
-ItemProcess;Item90;Weight;261.0
-ItemProcess;Item91;Value;306.0
-ItemProcess;Item91;Weight;514.0
-ItemProcess;Item92;Value;201.0
-ItemProcess;Item92;Weight;886.0
-ItemProcess;Item93;Value;385.0
-ItemProcess;Item93;Weight;530.0
-ItemProcess;Item94;Value;952.0
-ItemProcess;Item94;Weight;849.0
-ItemProcess;Item95;Value;500.0
-ItemProcess;Item95;Weight;294.0
-ItemProcess;Item96;Value;194.0
-ItemProcess;Item96;Weight;799.0
-ItemProcess;Item97;Value;737.0
-ItemProcess;Item97;Weight;391.0
-ItemProcess;Item98;Value;324.0
-ItemProcess;Item98;Weight;330.0
-ItemProcess;Item99;Value;992.0
-ItemProcess;Item99;Weight;298.0
-ItemProcess;Item100;Value;224.0
-ItemProcess;Item100;Weight;790.0
+INSTANCE_ID; NODE_ID; INITIALIZATION
+Knapsack1; KnapsackProcess; items := 100
+Knapsack1; KnapsackProcess; capacity := 995.0
+Item1; ItemProcess; value := 94.0
+Item1; ItemProcess; weight := 485.0
+Item2; ItemProcess; value := 506.0
+Item2; ItemProcess; weight := 326.0
+Item3; ItemProcess; value := 416.0
+Item3; ItemProcess; weight := 248.0
+Item4; ItemProcess; value := 992.0
+Item4; ItemProcess; weight := 421.0
+Item5; ItemProcess; value := 649.0
+Item5; ItemProcess; weight := 322.0
+Item6; ItemProcess; value := 237.0
+Item6; ItemProcess; weight := 795.0
+Item7; ItemProcess; value := 457.0
+Item7; ItemProcess; weight := 43.0
+Item8; ItemProcess; value := 815.0
+Item8; ItemProcess; weight := 845.0
+Item9; ItemProcess; value := 446.0
+Item9; ItemProcess; weight := 955.0
+Item10; ItemProcess; value := 422.0
+Item10; ItemProcess; weight := 252.0
+Item11; ItemProcess; value := 791.0
+Item11; ItemProcess; weight := 9.0
+Item12; ItemProcess; value := 359.0
+Item12; ItemProcess; weight := 901.0
+Item13; ItemProcess; value := 667.0
+Item13; ItemProcess; weight := 122.0
+Item14; ItemProcess; value := 598.0
+Item14; ItemProcess; weight := 94.0
+Item15; ItemProcess; value := 7.0
+Item15; ItemProcess; weight := 738.0
+Item16; ItemProcess; value := 544.0
+Item16; ItemProcess; weight := 574.0
+Item17; ItemProcess; value := 334.0
+Item17; ItemProcess; weight := 715.0
+Item18; ItemProcess; value := 766.0
+Item18; ItemProcess; weight := 882.0
+Item19; ItemProcess; value := 994.0
+Item19; ItemProcess; weight := 367.0
+Item20; ItemProcess; value := 893.0
+Item20; ItemProcess; weight := 984.0
+Item21; ItemProcess; value := 633.0
+Item21; ItemProcess; weight := 299.0
+Item22; ItemProcess; value := 131.0
+Item22; ItemProcess; weight := 433.0
+Item23; ItemProcess; value := 428.0
+Item23; ItemProcess; weight := 682.0
+Item24; ItemProcess; value := 700.0
+Item24; ItemProcess; weight := 72.0
+Item25; ItemProcess; value := 617.0
+Item25; ItemProcess; weight := 874.0
+Item26; ItemProcess; value := 874.0
+Item26; ItemProcess; weight := 138.0
+Item27; ItemProcess; value := 720.0
+Item27; ItemProcess; weight := 856.0
+Item28; ItemProcess; value := 419.0
+Item28; ItemProcess; weight := 145.0
+Item29; ItemProcess; value := 794.0
+Item29; ItemProcess; weight := 995.0
+Item30; ItemProcess; value := 196.0
+Item30; ItemProcess; weight := 529.0
+Item31; ItemProcess; value := 997.0
+Item31; ItemProcess; weight := 199.0
+Item32; ItemProcess; value := 116.0
+Item32; ItemProcess; weight := 277.0
+Item33; ItemProcess; value := 908.0
+Item33; ItemProcess; weight := 97.0
+Item34; ItemProcess; value := 539.0
+Item34; ItemProcess; weight := 719.0
+Item35; ItemProcess; value := 707.0
+Item35; ItemProcess; weight := 242.0
+Item36; ItemProcess; value := 569.0
+Item36; ItemProcess; weight := 107.0
+Item37; ItemProcess; value := 537.0
+Item37; ItemProcess; weight := 122.0
+Item38; ItemProcess; value := 931.0
+Item38; ItemProcess; weight := 70.0
+Item39; ItemProcess; value := 726.0
+Item39; ItemProcess; weight := 98.0
+Item40; ItemProcess; value := 487.0
+Item40; ItemProcess; weight := 600.0
+Item41; ItemProcess; value := 772.0
+Item41; ItemProcess; weight := 645.0
+Item42; ItemProcess; value := 513.0
+Item42; ItemProcess; weight := 267.0
+Item43; ItemProcess; value := 81.0
+Item43; ItemProcess; weight := 972.0
+Item44; ItemProcess; value := 943.0
+Item44; ItemProcess; weight := 895.0
+Item45; ItemProcess; value := 58.0
+Item45; ItemProcess; weight := 213.0
+Item46; ItemProcess; value := 303.0
+Item46; ItemProcess; weight := 748.0
+Item47; ItemProcess; value := 764.0
+Item47; ItemProcess; weight := 487.0
+Item48; ItemProcess; value := 536.0
+Item48; ItemProcess; weight := 923.0
+Item49; ItemProcess; value := 724.0
+Item49; ItemProcess; weight := 29.0
+Item50; ItemProcess; value := 789.0
+Item50; ItemProcess; weight := 674.0
+Item51; ItemProcess; value := 479.0
+Item51; ItemProcess; weight := 540.0
+Item52; ItemProcess; value := 142.0
+Item52; ItemProcess; weight := 554.0
+Item53; ItemProcess; value := 339.0
+Item53; ItemProcess; weight := 467.0
+Item54; ItemProcess; value := 641.0
+Item54; ItemProcess; weight := 46.0
+Item55; ItemProcess; value := 196.0
+Item55; ItemProcess; weight := 710.0
+Item56; ItemProcess; value := 494.0
+Item56; ItemProcess; weight := 553.0
+Item57; ItemProcess; value := 66.0
+Item57; ItemProcess; weight := 191.0
+Item58; ItemProcess; value := 824.0
+Item58; ItemProcess; weight := 724.0
+Item59; ItemProcess; value := 208.0
+Item59; ItemProcess; weight := 730.0
+Item60; ItemProcess; value := 711.0
+Item60; ItemProcess; weight := 988.0
+Item61; ItemProcess; value := 800.0
+Item61; ItemProcess; weight := 90.0
+Item62; ItemProcess; value := 314.0
+Item62; ItemProcess; weight := 340.0
+Item63; ItemProcess; value := 289.0
+Item63; ItemProcess; weight := 549.0
+Item64; ItemProcess; value := 401.0
+Item64; ItemProcess; weight := 196.0
+Item65; ItemProcess; value := 466.0
+Item65; ItemProcess; weight := 865.0
+Item66; ItemProcess; value := 689.0
+Item66; ItemProcess; weight := 678.0
+Item67; ItemProcess; value := 833.0
+Item67; ItemProcess; weight := 570.0
+Item68; ItemProcess; value := 225.0
+Item68; ItemProcess; weight := 936.0
+Item69; ItemProcess; value := 244.0
+Item69; ItemProcess; weight := 722.0
+Item70; ItemProcess; value := 849.0
+Item70; ItemProcess; weight := 651.0
+Item71; ItemProcess; value := 113.0
+Item71; ItemProcess; weight := 123.0
+Item72; ItemProcess; value := 379.0
+Item72; ItemProcess; weight := 431.0
+Item73; ItemProcess; value := 361.0
+Item73; ItemProcess; weight := 508.0
+Item74; ItemProcess; value := 65.0
+Item74; ItemProcess; weight := 585.0
+Item75; ItemProcess; value := 486.0
+Item75; ItemProcess; weight := 853.0
+Item76; ItemProcess; value := 686.0
+Item76; ItemProcess; weight := 642.0
+Item77; ItemProcess; value := 286.0
+Item77; ItemProcess; weight := 992.0
+Item78; ItemProcess; value := 889.0
+Item78; ItemProcess; weight := 725.0
+Item79; ItemProcess; value := 24.0
+Item79; ItemProcess; weight := 286.0
+Item80; ItemProcess; value := 491.0
+Item80; ItemProcess; weight := 812.0
+Item81; ItemProcess; value := 891.0
+Item81; ItemProcess; weight := 859.0
+Item82; ItemProcess; value := 90.0
+Item82; ItemProcess; weight := 663.0
+Item83; ItemProcess; value := 181.0
+Item83; ItemProcess; weight := 88.0
+Item84; ItemProcess; value := 214.0
+Item84; ItemProcess; weight := 179.0
+Item85; ItemProcess; value := 17.0
+Item85; ItemProcess; weight := 187.0
+Item86; ItemProcess; value := 472.0
+Item86; ItemProcess; weight := 619.0
+Item87; ItemProcess; value := 418.0
+Item87; ItemProcess; weight := 261.0
+Item88; ItemProcess; value := 419.0
+Item88; ItemProcess; weight := 846.0
+Item89; ItemProcess; value := 356.0
+Item89; ItemProcess; weight := 192.0
+Item90; ItemProcess; value := 682.0
+Item90; ItemProcess; weight := 261.0
+Item91; ItemProcess; value := 306.0
+Item91; ItemProcess; weight := 514.0
+Item92; ItemProcess; value := 201.0
+Item92; ItemProcess; weight := 886.0
+Item93; ItemProcess; value := 385.0
+Item93; ItemProcess; weight := 530.0
+Item94; ItemProcess; value := 952.0
+Item94; ItemProcess; weight := 849.0
+Item95; ItemProcess; value := 500.0
+Item95; ItemProcess; weight := 294.0
+Item96; ItemProcess; value := 194.0
+Item96; ItemProcess; weight := 799.0
+Item97; ItemProcess; value := 737.0
+Item97; ItemProcess; weight := 391.0
+Item98; ItemProcess; value := 324.0
+Item98; ItemProcess; weight := 330.0
+Item99; ItemProcess; value := 992.0
+Item99; ItemProcess; weight := 298.0
+Item100; ItemProcess; value := 224.0
+Item100; ItemProcess; weight := 790.0

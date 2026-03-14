@@ -1,123 +1,123 @@
-PROCESS_ID; INSTANCE_ID; ATTRIBUTE_ID; VALUE
-;;Bins;60
-;;Items;60
-BinProcess;Bin1;Capacity;100.0
-BinProcess;Bin2;Capacity;100.0
-BinProcess;Bin3;Capacity;100.0
-BinProcess;Bin4;Capacity;100.0
-BinProcess;Bin5;Capacity;100.0
-BinProcess;Bin6;Capacity;100.0
-BinProcess;Bin7;Capacity;100.0
-BinProcess;Bin8;Capacity;100.0
-BinProcess;Bin9;Capacity;100.0
-BinProcess;Bin10;Capacity;100.0
-BinProcess;Bin11;Capacity;100.0
-BinProcess;Bin12;Capacity;100.0
-BinProcess;Bin13;Capacity;100.0
-BinProcess;Bin14;Capacity;100.0
-BinProcess;Bin15;Capacity;100.0
-BinProcess;Bin16;Capacity;100.0
-BinProcess;Bin17;Capacity;100.0
-BinProcess;Bin18;Capacity;100.0
-BinProcess;Bin19;Capacity;100.0
-BinProcess;Bin20;Capacity;100.0
-BinProcess;Bin21;Capacity;100.0
-BinProcess;Bin22;Capacity;100.0
-BinProcess;Bin23;Capacity;100.0
-BinProcess;Bin24;Capacity;100.0
-BinProcess;Bin25;Capacity;100.0
-BinProcess;Bin26;Capacity;100.0
-BinProcess;Bin27;Capacity;100.0
-BinProcess;Bin28;Capacity;100.0
-BinProcess;Bin29;Capacity;100.0
-BinProcess;Bin30;Capacity;100.0
-BinProcess;Bin31;Capacity;100.0
-BinProcess;Bin32;Capacity;100.0
-BinProcess;Bin33;Capacity;100.0
-BinProcess;Bin34;Capacity;100.0
-BinProcess;Bin35;Capacity;100.0
-BinProcess;Bin36;Capacity;100.0
-BinProcess;Bin37;Capacity;100.0
-BinProcess;Bin38;Capacity;100.0
-BinProcess;Bin39;Capacity;100.0
-BinProcess;Bin40;Capacity;100.0
-BinProcess;Bin41;Capacity;100.0
-BinProcess;Bin42;Capacity;100.0
-BinProcess;Bin43;Capacity;100.0
-BinProcess;Bin44;Capacity;100.0
-BinProcess;Bin45;Capacity;100.0
-BinProcess;Bin46;Capacity;100.0
-BinProcess;Bin47;Capacity;100.0
-BinProcess;Bin48;Capacity;100.0
-BinProcess;Bin49;Capacity;100.0
-BinProcess;Bin50;Capacity;100.0
-BinProcess;Bin51;Capacity;100.0
-BinProcess;Bin52;Capacity;100.0
-BinProcess;Bin53;Capacity;100.0
-BinProcess;Bin54;Capacity;100.0
-BinProcess;Bin55;Capacity;100.0
-BinProcess;Bin56;Capacity;100.0
-BinProcess;Bin57;Capacity;100.0
-BinProcess;Bin58;Capacity;100.0
-BinProcess;Bin59;Capacity;100.0
-BinProcess;Bin60;Capacity;100.0
-ItemProcess;Item1;Size;36.6
-ItemProcess;Item2;Size;26.8
-ItemProcess;Item3;Size;36.6
-ItemProcess;Item4;Size;43.0
-ItemProcess;Item5;Size;26.3
-ItemProcess;Item6;Size;30.7
-ItemProcess;Item7;Size;41.4
-ItemProcess;Item8;Size;28.7
-ItemProcess;Item9;Size;29.9
-ItemProcess;Item10;Size;49.5
-ItemProcess;Item11;Size;25.1
-ItemProcess;Item12;Size;25.4
-ItemProcess;Item13;Size;47.4
-ItemProcess;Item14;Size;25.2
-ItemProcess;Item15;Size;27.4
-ItemProcess;Item16;Size;37.0
-ItemProcess;Item17;Size;26.9
-ItemProcess;Item18;Size;36.1
-ItemProcess;Item19;Size;47.3
-ItemProcess;Item20;Size;25.2
-ItemProcess;Item21;Size;27.5
-ItemProcess;Item22;Size;47.2
-ItemProcess;Item23;Size;25.9
-ItemProcess;Item24;Size;26.9
-ItemProcess;Item25;Size;44.4
-ItemProcess;Item26;Size;25.8
-ItemProcess;Item27;Size;29.8
-ItemProcess;Item28;Size;43.9
-ItemProcess;Item29;Size;27.3
-ItemProcess;Item30;Size;28.8
-ItemProcess;Item31;Size;44.5
-ItemProcess;Item32;Size;27.2
-ItemProcess;Item33;Size;28.3
-ItemProcess;Item34;Size;41.9
-ItemProcess;Item35;Size;26.1
-ItemProcess;Item36;Size;32.0
-ItemProcess;Item37;Size;36.3
-ItemProcess;Item38;Size;27.1
-ItemProcess;Item39;Size;36.6
-ItemProcess;Item40;Size;35.5
-ItemProcess;Item41;Size;27.3
-ItemProcess;Item42;Size;37.2
-ItemProcess;Item43;Size;46.6
-ItemProcess;Item44;Size;26.2
-ItemProcess;Item45;Size;27.2
-ItemProcess;Item46;Size;35.7
-ItemProcess;Item47;Size;29.2
-ItemProcess;Item48;Size;35.1
-ItemProcess;Item49;Size;39.5
-ItemProcess;Item50;Size;25.5
-ItemProcess;Item51;Size;35.0
-ItemProcess;Item52;Size;35.0
-ItemProcess;Item53;Size;30.3
-ItemProcess;Item54;Size;34.7
-ItemProcess;Item55;Size;45.0
-ItemProcess;Item56;Size;25.2
-ItemProcess;Item57;Size;29.8
-ItemProcess;Item58;Size;41.0
-ItemProcess;Item59;Size;27.5
-ItemProcess;Item60;Size;31.5
+INSTANCE_ID; NODE_ID; INITIALIZATION
+; ; bins := 60
+; ; items := 60
+Bin1; BinProcess; capacity := 100.0
+Bin2; BinProcess; capacity := 100.0
+Bin3; BinProcess; capacity := 100.0
+Bin4; BinProcess; capacity := 100.0
+Bin5; BinProcess; capacity := 100.0
+Bin6; BinProcess; capacity := 100.0
+Bin7; BinProcess; capacity := 100.0
+Bin8; BinProcess; capacity := 100.0
+Bin9; BinProcess; capacity := 100.0
+Bin10; BinProcess; capacity := 100.0
+Bin11; BinProcess; capacity := 100.0
+Bin12; BinProcess; capacity := 100.0
+Bin13; BinProcess; capacity := 100.0
+Bin14; BinProcess; capacity := 100.0
+Bin15; BinProcess; capacity := 100.0
+Bin16; BinProcess; capacity := 100.0
+Bin17; BinProcess; capacity := 100.0
+Bin18; BinProcess; capacity := 100.0
+Bin19; BinProcess; capacity := 100.0
+Bin20; BinProcess; capacity := 100.0
+Bin21; BinProcess; capacity := 100.0
+Bin22; BinProcess; capacity := 100.0
+Bin23; BinProcess; capacity := 100.0
+Bin24; BinProcess; capacity := 100.0
+Bin25; BinProcess; capacity := 100.0
+Bin26; BinProcess; capacity := 100.0
+Bin27; BinProcess; capacity := 100.0
+Bin28; BinProcess; capacity := 100.0
+Bin29; BinProcess; capacity := 100.0
+Bin30; BinProcess; capacity := 100.0
+Bin31; BinProcess; capacity := 100.0
+Bin32; BinProcess; capacity := 100.0
+Bin33; BinProcess; capacity := 100.0
+Bin34; BinProcess; capacity := 100.0
+Bin35; BinProcess; capacity := 100.0
+Bin36; BinProcess; capacity := 100.0
+Bin37; BinProcess; capacity := 100.0
+Bin38; BinProcess; capacity := 100.0
+Bin39; BinProcess; capacity := 100.0
+Bin40; BinProcess; capacity := 100.0
+Bin41; BinProcess; capacity := 100.0
+Bin42; BinProcess; capacity := 100.0
+Bin43; BinProcess; capacity := 100.0
+Bin44; BinProcess; capacity := 100.0
+Bin45; BinProcess; capacity := 100.0
+Bin46; BinProcess; capacity := 100.0
+Bin47; BinProcess; capacity := 100.0
+Bin48; BinProcess; capacity := 100.0
+Bin49; BinProcess; capacity := 100.0
+Bin50; BinProcess; capacity := 100.0
+Bin51; BinProcess; capacity := 100.0
+Bin52; BinProcess; capacity := 100.0
+Bin53; BinProcess; capacity := 100.0
+Bin54; BinProcess; capacity := 100.0
+Bin55; BinProcess; capacity := 100.0
+Bin56; BinProcess; capacity := 100.0
+Bin57; BinProcess; capacity := 100.0
+Bin58; BinProcess; capacity := 100.0
+Bin59; BinProcess; capacity := 100.0
+Bin60; BinProcess; capacity := 100.0
+Item1; ItemProcess; size := 36.6
+Item2; ItemProcess; size := 26.8
+Item3; ItemProcess; size := 36.6
+Item4; ItemProcess; size := 43.0
+Item5; ItemProcess; size := 26.3
+Item6; ItemProcess; size := 30.7
+Item7; ItemProcess; size := 41.4
+Item8; ItemProcess; size := 28.7
+Item9; ItemProcess; size := 29.9
+Item10; ItemProcess; size := 49.5
+Item11; ItemProcess; size := 25.1
+Item12; ItemProcess; size := 25.4
+Item13; ItemProcess; size := 47.4
+Item14; ItemProcess; size := 25.2
+Item15; ItemProcess; size := 27.4
+Item16; ItemProcess; size := 37.0
+Item17; ItemProcess; size := 26.9
+Item18; ItemProcess; size := 36.1
+Item19; ItemProcess; size := 47.3
+Item20; ItemProcess; size := 25.2
+Item21; ItemProcess; size := 27.5
+Item22; ItemProcess; size := 47.2
+Item23; ItemProcess; size := 25.9
+Item24; ItemProcess; size := 26.9
+Item25; ItemProcess; size := 44.4
+Item26; ItemProcess; size := 25.8
+Item27; ItemProcess; size := 29.8
+Item28; ItemProcess; size := 43.9
+Item29; ItemProcess; size := 27.3
+Item30; ItemProcess; size := 28.8
+Item31; ItemProcess; size := 44.5
+Item32; ItemProcess; size := 27.2
+Item33; ItemProcess; size := 28.3
+Item34; ItemProcess; size := 41.9
+Item35; ItemProcess; size := 26.1
+Item36; ItemProcess; size := 32.0
+Item37; ItemProcess; size := 36.3
+Item38; ItemProcess; size := 27.1
+Item39; ItemProcess; size := 36.6
+Item40; ItemProcess; size := 35.5
+Item41; ItemProcess; size := 27.3
+Item42; ItemProcess; size := 37.2
+Item43; ItemProcess; size := 46.6
+Item44; ItemProcess; size := 26.2
+Item45; ItemProcess; size := 27.2
+Item46; ItemProcess; size := 35.7
+Item47; ItemProcess; size := 29.2
+Item48; ItemProcess; size := 35.1
+Item49; ItemProcess; size := 39.5
+Item50; ItemProcess; size := 25.5
+Item51; ItemProcess; size := 35.0
+Item52; ItemProcess; size := 35.0
+Item53; ItemProcess; size := 30.3
+Item54; ItemProcess; size := 34.7
+Item55; ItemProcess; size := 45.0
+Item56; ItemProcess; size := 25.2
+Item57; ItemProcess; size := 29.8
+Item58; ItemProcess; size := 41.0
+Item59; ItemProcess; size := 27.5
+Item60; ItemProcess; size := 31.5
