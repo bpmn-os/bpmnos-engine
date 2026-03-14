@@ -194,15 +194,12 @@ void StaticDataProvider::readInstancesNewFormat(const CSVReader::Table& table) {
     }
     std::string initialization = std::get<std::string>(row.at(INITIALIZATION));
 
-    if ( initialization.empty() ) {
-      continue;
-    }
-
-    // Parse "attr := expr" to get attribute name and value
-    auto [attributeName, value] = parseInitialization(initialization);
-
     if ( instanceIdStr.empty() && nodeId.empty() ) {
       // Global attribute
+      if ( initialization.empty() ) {
+        continue;
+      }
+      auto [attributeName, value] = parseInitialization(initialization);
       if ( !attributes[nullptr].contains(attributeName) ) {
         throw std::runtime_error("StaticDataProvider: unknown global attribute '" + attributeName + "'");
       }
@@ -228,7 +225,13 @@ void StaticDataProvider::readInstancesNewFormat(const CSVReader::Table& table) {
         instances[instanceId] = StaticInstanceData({process, instanceId, std::numeric_limits<BPMNOS::number>::max(), {}});
       }
 
+      // If no initialization, just create instance (already done above)
+      if ( initialization.empty() ) {
+        continue;
+      }
+
       auto& instance = instances[instanceId];
+      auto [attributeName, value] = parseInitialization(initialization);
 
       // Look up attribute in the node's extension elements
       auto extensionElements = node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
