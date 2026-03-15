@@ -62,11 +62,17 @@ INSTANCE_ID; NODE_ID; INITIALIZATION
 
 ### Expressions
 
-Initialization expressions can include arithmetic operations and references to other attributes:
+Initialization expressions can include arithmetic operations and references to global attributes:
 
 ```plaintext
-Instance_1; Process_1; duration := baseTime + processingRate * quantity
+INSTANCE_ID; NODE_ID; INITIALIZATION
+; ; baseTime := 10
+; ; processingRate := 2
+Instance_1; Process_1; timestamp := 0
+Instance_1; Process_1; duration := baseTime + processingRate * 5
 ```
+
+**Note:** INITIALIZATION expressions can only reference global attributes, not status or data attributes from the same or parent scope.
 
 Values provided for `string` attributes must be quoted, values provided for `boolean` attributes must be `true` or `false`, and values provided for `collection` attributes must be embraced in square brackets.
 
@@ -114,9 +120,10 @@ INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE
 ```plaintext
 INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE
 ; ; maxTime := 100;
+; ; baseDuration := 3;
 Instance_1; Process_1; timestamp := 0;
 Instance_1; Process_1; priority := 5; 10
-Instance_1; Activity_1; duration := 3 + priority; 15
+Instance_1; Activity_1; duration := baseDuration + 2; 15
 Instance_2; Process_1; timestamp := 5;
 Instance_2; Process_1; priority := 3; 20
 ```
@@ -129,9 +136,11 @@ Instance_2; Process_1; priority := 3; 20
 
 2. **Process instantiation**: A process instance is not instantiated until all of its process-level data is disclosed. If a process has `timestamp := 5` but process data has disclosure time 10, the instance will be instantiated at time 10 (not 5), and the timestamp status attribute will be updated accordingly.
 
-3. **Deferred evaluation**: Initialization expressions are compiled at parse time but evaluated at disclosure time. This allows expressions to reference attributes that are disclosed earlier.
+3. **Deferred evaluation**: Initialization expressions are compiled at parse time but evaluated at disclosure time.
 
 4. **Ordering requirement**: Rows must be ordered such that parent scope disclosures appear before child scope disclosures. For example, process attributes must be disclosed before subprocess attributes for the same instance.
+
+5. **Global attributes only**: INITIALIZATION and DISCLOSURE expressions can only reference global attributes, not status or data attributes.
 
 ### Global Attributes
 
@@ -197,10 +206,13 @@ The following random functions can be used in expressions:
 
 ```plaintext
 INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE; COMPLETION
+; ; basePriority := 5; ;
 Instance_1; Process_1; timestamp := 0; ;
-Instance_1; Process_1; priority := uniform(1,10); 5;
+Instance_1; Process_1; priority := uniform(1, basePriority * 2); 5;
 Instance_1; Activity_1; duration := normal(10,2); ; timestamp := timestamp + duration
 ```
+
+**Note:** INITIALIZATION and DISCLOSURE expressions can only reference global attributes. COMPLETION expressions can reference any attribute (status, data, global) because they are evaluated at runtime with full context.
 
 ### Reproducibility
 

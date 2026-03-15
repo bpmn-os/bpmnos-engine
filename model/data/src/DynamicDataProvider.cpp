@@ -99,12 +99,12 @@ void DynamicDataProvider::readInstances() {
       if ( initialization.empty() ) {
         continue;
       }
-      auto [attributeName, expressionStr] = parseInitialization(initialization);
+      auto [attributeName, expressionString] = parseInitialization(initialization);
       // Find global attribute by name
       const Attribute* attribute = nullptr;
-      for ( auto& [id, attr] : attributes[nullptr] ) {
-        if ( attr->name == attributeName ) {
-          attribute = attr;
+      for ( auto& [id, globalAttribute] : attributes[nullptr] ) {
+        if ( globalAttribute->name == attributeName ) {
+          attribute = globalAttribute;
           break;
         }
       }
@@ -113,11 +113,11 @@ void DynamicDataProvider::readInstances() {
       }
       // Build globals vector from current globalValueMap
       Values globals(model->attributes.size());
-      for ( auto& [attr, value] : globalValueMap ) {
-        globals[attr->index] = value;
+      for ( auto& [globalAttribute, value] : globalValueMap ) {
+        globals[globalAttribute->index] = value;
       }
       // Compile and evaluate using Expression
-      Expression expression(expressionStr, model->attributeRegistry);
+      Expression expression(expressionString, model->attributeRegistry);
       auto value = expression.execute(Values{}, Values{}, globals);
       if ( !value.has_value() ) {
         throw std::runtime_error("DynamicDataProvider: failed to evaluate global '" + attributeName + "'");
@@ -151,7 +151,7 @@ void DynamicDataProvider::readInstances() {
       }
 
       auto& instance = instances[instanceId];
-      auto [attributeName, expressionStr] = parseInitialization(initialization);
+      auto [attributeName, expressionString] = parseInitialization(initialization);
 
       // Look up attribute in the node's extension elements
       auto extensionElements = node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
@@ -175,11 +175,11 @@ void DynamicDataProvider::readInstances() {
 
       if ( disclosureTime == 0 ) {
         // Immediate disclosure: evaluate now and store value
-        instance.data[attribute] = evaluateExpression(expressionStr);
+        instance.data[attribute] = evaluateExpression(expressionString);
       }
       else {
         // Deferred disclosure: compile expression for later evaluation
-        auto expression = std::make_unique<Expression>(expressionStr, extensionElements->attributeRegistry);
+        auto expression = std::make_unique<Expression>(expressionString, model->attributeRegistry);
         deferredInitializations[instanceId].push_back({
           attribute,
           disclosureTime,
@@ -239,12 +239,23 @@ std::pair<std::string, std::string> DynamicDataProvider::parseInitialization(con
   return {attributeName, expression};
 }
 
-BPMNOS::number DynamicDataProvider::evaluateExpression(const std::string& expression) const {
-  LIMEX::Expression<double> compiled(expression, model->limexHandle);
-  if ( !compiled.getVariables().empty() || !compiled.getCollections().empty() ) {
-    throw std::runtime_error("DynamicDataProvider: expression must not reference variables, got '" + expression + "'");
+BPMNOS::number DynamicDataProvider::evaluateExpression(const std::string& expressionString) const {
+  Values globals(model->attributes.size());
+  for (auto& [attribute, value] : globalValueMap) {
+    globals[attribute->index] = value;
   }
-  return compiled.evaluate();
+  Expression expression(expressionString, model->attributeRegistry);
+  for (auto* attribute : expression.variables) {
+    if (attribute->category != Attribute::Category::GLOBAL) {
+      throw std::runtime_error("DynamicDataProvider: expression '" + expressionString +
+                               "' references non-global attribute '" + attribute->name + "'");
+    }
+  }
+  auto value = expression.execute(Values{}, Values{}, globals);
+  if (!value.has_value()) {
+    throw std::runtime_error("DynamicDataProvider: failed to evaluate expression '" + expressionString + "'");
+  }
+  return value.value();
 }
 
 BPMNOS::number DynamicDataProvider::getEffectiveDisclosure(size_t instanceId, const BPMN::Node* node, BPMNOS::number ownDisclosure) {

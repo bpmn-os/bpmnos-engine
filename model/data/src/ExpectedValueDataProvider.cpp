@@ -33,16 +33,16 @@ void ExpectedValueDataProvider::initializeExpectedValueHandle() {
   expectedValueFactory.registerFunctions(expectedValueHandle);
 }
 
-BPMNOS::number ExpectedValueDataProvider::evaluateExpression(const std::string& expressionString, const AttributeRegistry& attributeRegistry) const {
+BPMNOS::number ExpectedValueDataProvider::evaluateExpression(const std::string& expressionString) const {
   Values globals(model->attributes.size());
   for (auto& [attribute, value] : globalValueMap) {
     globals[attribute->index] = value;
   }
-  Expression expression(expectedValueHandle, expressionString, attributeRegistry);
+  Expression expression(expectedValueHandle, expressionString, model->attributeRegistry);
   for (auto* attribute : expression.variables) {
-    if (!attributeRegistry.contains(attribute)) {
+    if (attribute->category != Attribute::Category::GLOBAL) {
       throw std::runtime_error("ExpectedValueDataProvider: expression '" + expressionString +
-                               "' references attribute '" + attribute->name + "' which is not available");
+                               "' references non-global attribute '" + attribute->name + "'");
     }
   }
   auto value = expression.execute(Values{}, Values{}, globals);
@@ -122,12 +122,12 @@ void ExpectedValueDataProvider::readInstancesExtendedFormat(const CSVReader::Tab
     if (instanceIdStr.empty() && nodeId.empty()) {
       // Global attribute
       if (initialization.empty()) continue;
-      auto [attributeName, expressionStr] = parseInitialization(initialization);
+      auto [attributeName, expressionString] = parseInitialization(initialization);
 
       const Attribute* attribute = nullptr;
-      for (auto& [id, attr] : attributes[nullptr]) {
-        if (attr->name == attributeName) {
-          attribute = attr;
+      for (auto& [id, globalAttribute] : attributes[nullptr]) {
+        if (globalAttribute->name == attributeName) {
+          attribute = globalAttribute;
           break;
         }
       }
@@ -136,10 +136,10 @@ void ExpectedValueDataProvider::readInstancesExtendedFormat(const CSVReader::Tab
       }
 
       Values globals(model->attributes.size());
-      for (auto& [attr, value] : globalValueMap) {
-        globals[attr->index] = value;
+      for (auto& [globalAttribute, value] : globalValueMap) {
+        globals[globalAttribute->index] = value;
       }
-      Expression expression(expectedValueHandle, expressionStr, model->attributeRegistry);
+      Expression expression(expectedValueHandle, expressionString, model->attributeRegistry);
       auto value = expression.execute(Values{}, Values{}, globals);
       if (!value.has_value()) {
         throw std::runtime_error("ExpectedValueDataProvider: failed to evaluate global '" + attributeName + "'");
@@ -166,7 +166,7 @@ void ExpectedValueDataProvider::readInstancesExtendedFormat(const CSVReader::Tab
 
       // Process initialization
       if (!initialization.empty()) {
-        auto [attributeName, expressionStr] = parseInitialization(initialization);
+        auto [attributeName, expressionString] = parseInitialization(initialization);
         auto extensionElements = node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
         if (!extensionElements->attributeRegistry.contains(attributeName)) {
           throw std::runtime_error("ExpectedValueDataProvider: node '" + nodeId + "' has no attribute '" + attributeName + "'");
@@ -175,7 +175,7 @@ void ExpectedValueDataProvider::readInstancesExtendedFormat(const CSVReader::Tab
         if (attribute->expression) {
           throw std::runtime_error("ExpectedValueDataProvider: attribute '" + attributeName + "' is initialized by expression");
         }
-        instance.data[attribute] = evaluateExpression(expressionStr, extensionElements->attributeRegistry);
+        instance.data[attribute] = evaluateExpression(expressionString);
       }
     }
   }

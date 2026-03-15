@@ -33,7 +33,7 @@ protected:
   void readInstancesExtendedFormat(const CSVReader::Table& table, size_t columnCount);
 
   /// Override to use expectedValueHandle instead of model->limexHandle
-  BPMNOS::number evaluateExpression(const std::string& expression, const AttributeRegistry& attributeRegistry) const override;
+  BPMNOS::number evaluateExpression(const std::string& expression) const override;
 
   void initializeExpectedValueHandle();
 

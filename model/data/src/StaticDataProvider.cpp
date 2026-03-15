@@ -208,12 +208,12 @@ void StaticDataProvider::readInstancesNewFormat(const CSVReader::Table& table) {
       if ( initialization.empty() ) {
         continue;
       }
-      auto [attributeName, expressionStr] = parseInitialization(initialization);
+      auto [attributeName, expressionString] = parseInitialization(initialization);
       // Find global attribute by name
       const Attribute* attribute = nullptr;
-      for ( auto& [id, attr] : attributes[nullptr] ) {
-        if ( attr->name == attributeName ) {
-          attribute = attr;
+      for ( auto& [id, globalAttribute] : attributes[nullptr] ) {
+        if ( globalAttribute->name == attributeName ) {
+          attribute = globalAttribute;
           break;
         }
       }
@@ -222,11 +222,11 @@ void StaticDataProvider::readInstancesNewFormat(const CSVReader::Table& table) {
       }
       // Build globals vector from current globalValueMap
       Values globals(model->attributes.size());
-      for ( auto& [attr, value] : globalValueMap ) {
-        globals[attr->index] = value;
+      for ( auto& [globalAttribute, value] : globalValueMap ) {
+        globals[globalAttribute->index] = value;
       }
       // Compile and evaluate using Expression
-      Expression expression(expressionStr, model->attributeRegistry);
+      Expression expression(expressionString, model->attributeRegistry);
       auto value = expression.execute(Values{}, Values{}, globals);
       if ( !value.has_value() ) {
         throw std::runtime_error("StaticDataProvider: failed to evaluate global '" + attributeName + "'");
@@ -258,7 +258,7 @@ void StaticDataProvider::readInstancesNewFormat(const CSVReader::Table& table) {
       }
 
       auto& instance = instances[instanceId];
-      auto [attributeName, expressionStr] = parseInitialization(initialization);
+      auto [attributeName, expressionString] = parseInitialization(initialization);
 
       // Look up attribute in the node's extension elements
       auto extensionElements = node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
@@ -271,7 +271,7 @@ void StaticDataProvider::readInstancesNewFormat(const CSVReader::Table& table) {
         throw std::runtime_error("StaticDataProvider: value of attribute '" + attributeName + "' is initialized by expression and must not be provided explicitly");
       }
 
-      instance.data[attribute] = evaluateExpression(expressionStr);
+      instance.data[attribute] = evaluateExpression(expressionString);
     }
   }
 }
@@ -304,12 +304,23 @@ std::pair<std::string, std::string> StaticDataProvider::parseInitialization(cons
   return {attributeName, expression};
 }
 
-BPMNOS::number StaticDataProvider::evaluateExpression(const std::string& expression) const {
-  LIMEX::Expression<double> compiled(expression, model->limexHandle);
-  if ( !compiled.getVariables().empty() || !compiled.getCollections().empty() ) {
-    throw std::runtime_error("StaticDataProvider: expression must not reference variables, got '" + expression + "'");
+BPMNOS::number StaticDataProvider::evaluateExpression(const std::string& expressionString) const {
+  Values globals(model->attributes.size());
+  for (auto& [attribute, value] : globalValueMap) {
+    globals[attribute->index] = value;
   }
-  return compiled.evaluate();
+  Expression expression(expressionString, model->attributeRegistry);
+  for (auto* attribute : expression.variables) {
+    if (attribute->category != Attribute::Category::GLOBAL) {
+      throw std::runtime_error("StaticDataProvider: expression '" + expressionString +
+                               "' references non-global attribute '" + attribute->name + "'");
+    }
+  }
+  auto value = expression.execute(Values{}, Values{}, globals);
+  if (!value.has_value()) {
+    throw std::runtime_error("StaticDataProvider: failed to evaluate expression '" + expressionString + "'");
+  }
+  return value.value();
 }
 
 std::string StaticDataProvider::convertToNewFormat([[maybe_unused]] const CSVReader::Table& table) const {
