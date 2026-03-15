@@ -17,23 +17,58 @@ int main() {
 }
 ```
 
-The model is stored in the file `diagram.bpmn` and the data is provided in the file `scenario.csv`. Below is an example showing the structure of the data file.
+### CSV Format
+
+The static data provider uses a CSV file with three columns:
 
 ```plaintext
-PROCESS_ID; INSTANCE_ID; ATTRIBUTE_ID; VALUE
-MachineProcess;Machine1;Jobs;2
-MachineProcess;Machine2;Jobs;3
-MachineProcess;Machine3;Jobs;3
-OrderProcess;Order1;Machines;["Machine1","Machine2","Machine3"]
-OrderProcess;Order1;Durations;[3,2,2]
-OrderProcess;Order2;Machines;["Machine1","Machine3","Machine2"]
-OrderProcess;Order2;Durations;[2,1,4]
-OrderProcess;Order3;Machines;["Machine2","Machine3"]
-OrderProcess;Order3;Durations;[4,3]
+INSTANCE_ID, NODE_ID, INITIALIZATION
 ```
 
-The data file must begin with a header `PROCESS_ID; INSTANCE_ID; ATTRIBUTE_ID; VALUE`. Then each of the subsequent lines contains attribute values for a specific process instance.
-Values provided for `string` attributes must be quoted, values provided for `boolean` attributes must be `true` or `false`,  and values provided for `collection` attributes must be embraced in square brackets.
+- **INSTANCE_ID**: The instance identifier (numeric). Leave empty for global attributes.
+- **NODE_ID**: The BPMN node ID (process, activity, subprocess, etc.). Leave empty for global attributes.
+- **INITIALIZATION**: An assignment expression in the format `attribute := expression`.
+
+### Example
+
+```plaintext
+INSTANCE_ID, NODE_ID, INITIALIZATION
+, , Items := 3
+, , Bins := 3
+1, BinProcess, timestamp := 0
+1, BinProcess, Capacity := 40
+2, BinProcess, timestamp := 0
+2, BinProcess, Capacity := 40
+3, BinProcess, timestamp := 0
+3, BinProcess, Capacity := 40
+4, ItemProcess, timestamp := 0
+4, ItemProcess, Size := 20
+5, ItemProcess, timestamp := 0
+5, ItemProcess, Size := 15
+6, ItemProcess, timestamp := 0
+6, ItemProcess, Size := 22
+```
+
+The first row for each instance must reference the process node. Subsequent rows may reference other nodes (activities, subprocesses) within that process.
+
+### Global Attributes
+
+Global attributes are specified with empty INSTANCE_ID and NODE_ID:
+
+```plaintext
+INSTANCE_ID, NODE_ID, INITIALIZATION
+, , GlobalParam := 100
+```
+
+### Expressions
+
+Initialization expressions can include arithmetic operations and references to other attributes:
+
+```plaintext
+1, Process, duration := baseTime + processingRate * quantity
+```
+
+Values provided for `string` attributes must be quoted, values provided for `boolean` attributes must be `true` or `false`, and values provided for `collection` attributes must be embraced in square brackets.
 
 Alternatively, the instance data may be provided by a string as shown in below example.
 
@@ -43,15 +78,13 @@ Alternatively, the instance data may be provided by a string as shown in below e
 
 int main() {
   std::string csv =
-    "PROCESS_ID; INSTANCE_ID; ATTRIBUTE_ID; VALUE\n"
-    ";;Items;3\n" // value of global attribute is provided without process and instance id
-    ";;Bins;3\n"  // value of global attribute is provided without process and instance id
-    "BinProcess;Bin1;Capacity;40\n"
-    "BinProcess;Bin2;Capacity;40\n"
-    "BinProcess;Bin3;Capacity;40\n"
-    "ItemProcess;Item1;Size;20\n"
-    "ItemProcess;Item2;Size;15\n"
-    "ItemProcess;Item3;Size;22\n"
+    "INSTANCE_ID, NODE_ID, INITIALIZATION\n"
+    ", , Items := 3\n"
+    ", , Bins := 3\n"
+    "1, BinProcess, timestamp := 0\n"
+    "1, BinProcess, Capacity := 40\n"
+    "2, BinProcess, timestamp := 0\n"
+    "2, BinProcess, Capacity := 40\n"
   ;
 
   BPMNOS::Model::StaticDataProvider dataProvider("examples/bin_packing_problem/Guided_bin_packing_problem.bpmn",csv);
@@ -59,10 +92,71 @@ int main() {
 }
 ```
 
-
-
 ## Dynamic data provider
-@bug The implementation of the @ref BPMNOS::Model::DynamicDataProvider is not yet completed.
+
+The @ref BPMNOS::Model::DynamicDataProvider "dynamic data provider" supports scenarios where attribute values may be disclosed at different points in time. This is useful for modeling situations with uncertain or gradually revealed information.
+
+### CSV Format
+
+The dynamic data provider uses a CSV file with four columns:
+
+```plaintext
+INSTANCE_ID, NODE_ID, INITIALIZATION, DISCLOSURE
+```
+
+- **INSTANCE_ID**: The instance identifier (numeric). Leave empty for global attributes.
+- **NODE_ID**: The BPMN node ID (process, activity, subprocess, etc.). Leave empty for global attributes.
+- **INITIALIZATION**: An assignment expression in the format `attribute := expression`.
+- **DISCLOSURE**: The time at which this attribute value becomes known (constant expression). Leave empty for immediate disclosure (time 0).
+
+### Example
+
+```plaintext
+INSTANCE_ID, NODE_ID, INITIALIZATION, DISCLOSURE
+, , MaxTime := 100,
+1, Process, timestamp := 0,
+1, Process, priority := 5, 10
+1, Activity, duration := 3 + priority, 15
+2, Process, timestamp := 5,
+2, Process, priority := 3, 20
+```
+
+### Disclosure Rules
+
+1. **Effective disclosure time**: The effective disclosure time for a node's data is the maximum of:
+   - The node's own disclosure time
+   - The parent scope's effective disclosure time
+
+2. **Process instantiation**: A process instance is not instantiated until all of its process-level data is disclosed. If a process has `timestamp := 5` but process data has disclosure time 10, the instance will be instantiated at time 10 (not 5), and the timestamp status attribute will be updated accordingly.
+
+3. **Deferred evaluation**: Initialization expressions are compiled at parse time but evaluated at disclosure time. This allows expressions to reference attributes that are disclosed earlier.
+
+4. **Ordering requirement**: Rows must be ordered such that parent scope disclosures appear before child scope disclosures. For example, process attributes must be disclosed before subprocess attributes for the same instance.
+
+### Global Attributes
+
+Global attributes are specified with empty INSTANCE_ID and NODE_ID:
+
+```plaintext
+INSTANCE_ID, NODE_ID, INITIALIZATION, DISCLOSURE
+, , GlobalParam := 100,
+```
+
+Global attributes must not have a disclosure time (must be immediately available).
+
+### Usage
+
+```cpp
+#include <bpmnos-model.h>
+
+int main() {
+  BPMNOS::Model::DynamicDataProvider dataProvider("diagram.bpmn", "scenario.csv");
+  auto scenario = dataProvider.createScenario();
+
+  // During simulation, call revealData() to evaluate deferred initializations
+  // scenario->revealData(currentTime);
+}
+```
 
 ## Stochastic data provider
 @note Currently, there is no implementation for a stochastic data provider.
