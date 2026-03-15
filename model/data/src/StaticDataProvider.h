@@ -39,8 +39,6 @@ protected:
 
   std::unique_ptr<CSVReader> reader;
   void readInstances();
-  void readInstancesOldFormat(const CSVReader::Table& table);
-  void readInstancesNewFormat(const CSVReader::Table& table);
 
   struct StaticInstanceData {
     const BPMN::Process* process;
@@ -56,8 +54,6 @@ protected:
   void ensureDefaultValue(StaticInstanceData& instance, const std::string attributeId, std::optional<BPMNOS::number> value = std::nullopt);
   std::pair<std::string, std::string> parseInitialization(const std::string& initialization) const;
   virtual BPMNOS::number evaluateExpression(const std::string& expression) const;
-  std::string convertToNewFormat(const CSVReader::Table& table) const;
-  void promptMigration(const std::string& newFormatContent) const;
 };
 
 } // namespace BPMNOS::Model

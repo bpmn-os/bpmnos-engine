@@ -62,12 +62,10 @@ void ExpectedValueDataProvider::readInstances() {
   }
 
   size_t columnCount = table[0].size();
-  if (columnCount == 3) {
-    // Standard static format - delegate to base
-    readInstancesNewFormat(table);
-  }
-  else if (columnCount == 4 || columnCount == 6) {
-    // Extended format with DISCLOSURE (4) or DISCLOSURE/ARRIVAL/COMPLETION (6)
+  if (columnCount == 3 || columnCount == 4 || columnCount == 6) {
+    // 3-column: INSTANCE_ID, NODE_ID, INITIALIZATION
+    // 4-column: + DISCLOSURE (ignored)
+    // 6-column: + ARRIVAL, COMPLETION (ignored)
     readInstancesExtendedFormat(table, columnCount);
   }
   else {
@@ -90,12 +88,13 @@ void ExpectedValueDataProvider::readInstances() {
 }
 
 void ExpectedValueDataProvider::readInstancesExtendedFormat(const CSVReader::Table& table, size_t columnCount) {
-  // Column indices: INSTANCE_ID(0), NODE_ID(1), INITIALIZATION(2), DISCLOSURE(3), [ARRIVAL(4), COMPLETION(5)]
+  // Column indices: INSTANCE_ID(0), NODE_ID(1), INITIALIZATION(2), [DISCLOSURE(3)], [ARRIVAL(4), COMPLETION(5)]
+  // For 3-column format, only first 3 columns exist
   enum { INSTANCE_ID, NODE_ID, INITIALIZATION, DISCLOSURE, ARRIVAL, COMPLETION };
 
   for (auto& row : table | std::views::drop(1)) {
     if (row.empty()) continue;
-    if (row.size() != columnCount) {
+    if (row.size() < 3 || row.size() != columnCount) {
       throw std::runtime_error("ExpectedValueDataProvider: inconsistent column count");
     }
 
