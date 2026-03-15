@@ -23,10 +23,21 @@ DynamicDataProvider::DynamicDataProvider(const std::string& modelFile, const std
 {
   for ( auto& [ attributeId, attribute ] : attributes[nullptr] ) {
     if ( attribute->expression ) {
-      if ( attribute->expression->compiled.getVariables().size() || attribute->expression->compiled.getCollections().size() ) {
-        throw std::runtime_error("DynamicDataProvider: initial value of global attribute '" + attribute->id + "' must not be derived from other attributes");
+      std::vector<double> variableValues;
+      for ( auto input : attribute->expression->variables ) {
+        if ( !globalValueMap.contains(input) ) {
+          throw std::runtime_error("DynamicDataProvider: global attribute '" + attribute->id + "' references undefined global '" + input->id + "'");
+        }
+        variableValues.push_back( (double)globalValueMap.at(input) );
       }
-      globalValueMap[ attribute ] = attribute->expression->compiled.evaluate();
+      std::vector<std::vector<double>> collectionValues;
+      for ( auto input : attribute->expression->collections ) {
+        if ( !globalValueMap.contains(input) ) {
+          throw std::runtime_error("DynamicDataProvider: global attribute '" + attribute->id + "' references undefined global collection '" + input->id + "'");
+        }
+        collectionValues.push_back( collectionRegistry[(size_t)globalValueMap.at(input)] );
+      }
+      globalValueMap[ attribute ] = number(attribute->expression->compiled.evaluate(variableValues, collectionValues));
     }
   }
   earliestInstantiation = std::numeric_limits<BPMNOS::number>::max();
@@ -87,10 +98,13 @@ void DynamicDataProvider::readInstances() {
 
     if ( instanceIdStr.empty() && nodeId.empty() ) {
       // Global attribute
+      if ( !disclosureStr.empty() ) {
+        throw std::runtime_error("DynamicDataProvider: global attributes must not have disclosure expression");
+      }
       if ( initialization.empty() ) {
         continue;
       }
-      auto [attributeName, value] = parseInitialization(initialization);
+      auto [attributeName, expressionStr] = parseInitialization(initialization);
       // Find global attribute by name
       const Attribute* attribute = nullptr;
       for ( auto& [id, attr] : attributes[nullptr] ) {
@@ -102,7 +116,18 @@ void DynamicDataProvider::readInstances() {
       if ( !attribute ) {
         throw std::runtime_error("DynamicDataProvider: unknown global attribute '" + attributeName + "'");
       }
-      globalValueMap[attribute] = value;
+      // Build globals vector from current globalValueMap
+      Values globals(model->attributes.size());
+      for ( auto& [attr, value] : globalValueMap ) {
+        globals[attr->index] = value;
+      }
+      // Compile and evaluate using Expression
+      Expression expression(expressionStr, model->attributeRegistry);
+      auto value = expression.execute(Values{}, Values{}, globals);
+      if ( !value.has_value() ) {
+        throw std::runtime_error("DynamicDataProvider: failed to evaluate global '" + attributeName + "'");
+      }
+      globalValueMap[attribute] = value.value();
     }
     else if ( instanceIdStr.empty() ) {
       throw std::runtime_error("DynamicDataProvider: instance id required when node id is provided");
@@ -129,7 +154,7 @@ void DynamicDataProvider::readInstances() {
       }
 
       auto& instance = instances[instanceId];
-      auto [attributeName, value] = parseInitialization(initialization);
+      auto [attributeName, expressionStr] = parseInitialization(initialization);
 
       // Look up attribute in the node's extension elements
       auto extensionElements = node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
@@ -142,19 +167,29 @@ void DynamicDataProvider::readInstances() {
         throw std::runtime_error("DynamicDataProvider: value of attribute '" + attributeName + "' is initialized by expression and must not be provided explicitly");
       }
 
-      instance.data[attribute] = value;
-
-      // Parse and store disclosure time
+      // Parse disclosure time (must be constant)
+      BPMNOS::number ownDisclosure = 0;
       if ( !disclosureStr.empty() ) {
-        LIMEX::Expression<double> disclosureExpr(disclosureStr, model->limexHandle);
-        if ( !disclosureExpr.getVariables().empty() || !disclosureExpr.getCollections().empty() ) {
-          throw std::runtime_error("DynamicDataProvider: disclosure expression must not reference variables, got '" + disclosureStr + "'");
-        }
-        instance.disclosure[attribute] = disclosureExpr.evaluate();
+        ownDisclosure = evaluateExpression(disclosureStr);
+      }
+
+      // Compute effective disclosure = max(own, parent_scope_disclosure)
+      BPMNOS::number disclosureTime = getEffectiveDisclosure(instanceId, node, ownDisclosure);
+
+      if ( disclosureTime == 0 ) {
+        // Immediate disclosure: evaluate now and store value
+        instance.data[attribute] = evaluateExpression(expressionStr);
+        instance.disclosure[attribute] = 0;
       }
       else {
-        // Default: disclosed at time 0 (immediately known)
-        instance.disclosure[attribute] = 0;
+        // Deferred disclosure: compile expression for later evaluation
+        auto expression = std::make_unique<Expression>(expressionStr, extensionElements->attributeRegistry);
+        deferredInitializations[instanceId].push_back({
+          attribute,
+          disclosureTime,
+          std::move(expression)
+        });
+        instance.disclosure[attribute] = disclosureTime;
       }
     }
   }
@@ -175,7 +210,7 @@ void DynamicDataProvider::readInstances() {
   }
 }
 
-std::pair<std::string, BPMNOS::number> DynamicDataProvider::parseInitialization(const std::string& initialization) const {
+std::pair<std::string, std::string> DynamicDataProvider::parseInitialization(const std::string& initialization) const {
   // Parse "attributeName := expression"
   auto pos = initialization.find(":=");
   if ( pos == std::string::npos ) {
@@ -200,14 +235,37 @@ std::pair<std::string, BPMNOS::number> DynamicDataProvider::parseInitialization(
   }
   expression = expression.substr(trimStart, trimEnd - trimStart + 1);
 
-  // Evaluate expression using LIMEX
+  return {attributeName, expression};
+}
+
+BPMNOS::number DynamicDataProvider::evaluateExpression(const std::string& expression) const {
   LIMEX::Expression<double> compiled(expression, model->limexHandle);
   if ( !compiled.getVariables().empty() || !compiled.getCollections().empty() ) {
-    throw std::runtime_error("DynamicDataProvider: initialization expression must not reference variables, got '" + expression + "'");
+    throw std::runtime_error("DynamicDataProvider: expression must not reference variables, got '" + expression + "'");
   }
-  BPMNOS::number value = compiled.evaluate();
+  return compiled.evaluate();
+}
 
-  return {attributeName, value};
+BPMNOS::number DynamicDataProvider::getEffectiveDisclosure(size_t instanceId, const BPMN::Node* node, BPMNOS::number ownDisclosure) {
+  BPMNOS::number effectiveDisclosure = ownDisclosure;
+
+  // Check parent scope's disclosure time
+  if ( auto childNode = node->represents<BPMN::ChildNode>() ) {
+    auto parentNode = childNode->parent;
+    if ( scopeDisclosure[instanceId].contains(parentNode) ) {
+      effectiveDisclosure = std::max(effectiveDisclosure, scopeDisclosure[instanceId][parentNode]);
+    }
+  }
+
+  // Update this scope's disclosure time (track maximum seen for this scope)
+  if ( !scopeDisclosure[instanceId].contains(node) ) {
+    scopeDisclosure[instanceId][node] = effectiveDisclosure;
+  }
+  else {
+    scopeDisclosure[instanceId][node] = std::max(scopeDisclosure[instanceId][node], effectiveDisclosure);
+  }
+
+  return effectiveDisclosure;
 }
 
 void DynamicDataProvider::ensureDefaultValue(DynamicInstanceData& instance, const std::string attributeId, std::optional<BPMNOS::number> value) {
@@ -251,5 +309,17 @@ std::unique_ptr<Scenario> DynamicDataProvider::createScenario([[maybe_unused]] u
       scenario->setDisclosure(id, attribute, disclosureTime);
     }
   }
+  // Add deferred initializations
+  for ( auto& [instanceId, pendings] : deferredInitializations ) {
+    for ( auto& pending : pendings ) {
+      scenario->addPendingDisclosure(instanceId, {
+        pending.attribute,
+        pending.disclosureTime,
+        std::move(pending.expression)
+      });
+    }
+  }
+  // Reveal data disclosed at time 0
+  scenario->revealData(0);
   return scenario;
 }

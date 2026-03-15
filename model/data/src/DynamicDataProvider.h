@@ -1,11 +1,26 @@
 #ifndef BPMNOS_Model_DynamicDataProvider_H
 #define BPMNOS_Model_DynamicDataProvider_H
 
+#include <bpmn++.h>
 #include "DataProvider.h"
 #include "model/utility/src/CSVReader.h"
+#include "model/bpmnos/src/extensionElements/Expression.h"
+#include <memory>
 #include <vector>
 
 namespace BPMNOS::Model {
+
+/**
+ * @brief Structure representing a deferred initialization.
+ *
+ * Stores information needed to evaluate an initialization expression
+ * at disclosure time rather than at parse time.
+ */
+struct DeferredInitialization {
+  const Attribute* attribute;              ///< The attribute to initialize
+  BPMNOS::number disclosureTime;           ///< Effective disclosure time (max of own, parent)
+  std::unique_ptr<Expression> expression;  ///< Compiled expression to evaluate at disclosure time
+};
 
 /**
  * @brief Class representing a data provider for dynamic BPMN instance data.
@@ -45,11 +60,15 @@ protected:
   };
   std::unordered_map< long unsigned int, DynamicInstanceData > instances;
   std::unordered_map< const Attribute*, BPMNOS::number > globalValueMap;
+  std::unordered_map< size_t, std::vector<DeferredInitialization> > deferredInitializations; ///< Instance ID -> deferred inits
+  std::unordered_map< size_t, std::unordered_map<const BPMN::Node*, BPMNOS::number> > scopeDisclosure; ///< Instance ID -> Node -> effective disclosure time
   BPMNOS::number earliestInstantiation;
   BPMNOS::number latestInstantiation;
 
   void ensureDefaultValue(DynamicInstanceData& instance, const std::string attributeId, std::optional<BPMNOS::number> value = std::nullopt);
-  std::pair<std::string, BPMNOS::number> parseInitialization(const std::string& initialization) const;
+  std::pair<std::string, std::string> parseInitialization(const std::string& initialization) const;
+  BPMNOS::number evaluateExpression(const std::string& expression) const;
+  BPMNOS::number getEffectiveDisclosure(size_t instanceId, const BPMN::Node* node, BPMNOS::number ownDisclosure);
 };
 
 } // namespace BPMNOS::Model

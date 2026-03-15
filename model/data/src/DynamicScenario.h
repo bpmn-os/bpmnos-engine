@@ -1,9 +1,25 @@
 #ifndef BPMNOS_Model_DynamicScenario_H
 #define BPMNOS_Model_DynamicScenario_H
 
+#include <bpmn++.h>
 #include "Scenario.h"
+#include "model/bpmnos/src/extensionElements/Expression.h"
+#include <memory>
+#include <set>
 
 namespace BPMNOS::Model {
+
+/**
+ * @brief Structure representing a pending disclosure.
+ *
+ * Stores information needed to evaluate an initialization expression
+ * when disclosure time is reached.
+ */
+struct PendingDisclosure {
+  const Attribute* attribute;              ///< The attribute to initialize
+  BPMNOS::number disclosureTime;           ///< Time when this attribute is disclosed
+  std::unique_ptr<Expression> expression;  ///< Compiled expression to evaluate at disclosure time
+};
 
 /**
  * @brief A scenario implementation where data may be revealed over time.
@@ -11,7 +27,11 @@ namespace BPMNOS::Model {
  * DynamicScenario supports cases where instance data and attribute
  * values become known at different points in time.
  */
+class DynamicDataProvider;
+
 class DynamicScenario : public Scenario {
+  friend class DynamicDataProvider;
+
 public:
   DynamicScenario(const Model* model, BPMNOS::number earliestInstantiationTime, BPMNOS::number latestInstantiationTime, const std::unordered_map< const Attribute*, BPMNOS::number >& globalValueMap);
 
@@ -32,13 +52,18 @@ public:
   std::optional<BPMNOS::Values> getKnownValues(const BPMNOS::number instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const override;
   std::optional<BPMNOS::Values> getKnownData(const BPMNOS::number instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const override;
 
+  void revealData(BPMNOS::number currentTime) const;
+
+protected:
   void addInstance(const BPMN::Process* process, const BPMNOS::number instanceId, BPMNOS::number instantiationTime);
   void setValue(const BPMNOS::number instanceId, const Attribute* attribute, std::optional<BPMNOS::number> value);
   void setDisclosure(const BPMNOS::number instanceId, const Attribute* attribute, BPMNOS::number disclosureTime);
+  void addPendingDisclosure(const BPMNOS::number instanceId, PendingDisclosure&& pending);
 
-protected:
-  std::unordered_map<size_t, InstanceData> instances;
+  mutable std::unordered_map<size_t, InstanceData> instances;
   std::unordered_map<size_t, std::unordered_map<const Attribute*, BPMNOS::number>> disclosureTimes; ///< When each attribute value is revealed
+  mutable std::unordered_map<size_t, std::vector<PendingDisclosure>> pendingDisclosures; ///< Instance ID -> pending disclosures
+  mutable std::set<std::pair<size_t, const Attribute*>> disclosedAttributes; ///< Track which attributes have been disclosed
   BPMNOS::number earliestInstantiationTime;
   BPMNOS::number latestInstantiationTime;
 };

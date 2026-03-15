@@ -149,3 +149,51 @@ std::optional<BPMNOS::Values> DynamicScenario::getKnownData(const BPMNOS::number
   }
   return result;
 }
+
+void DynamicScenario::addPendingDisclosure(const BPMNOS::number instanceId, PendingDisclosure&& pending) {
+  pendingDisclosures[(size_t)instanceId].push_back(std::move(pending));
+}
+
+void DynamicScenario::revealData(BPMNOS::number currentTime) const {
+  for ( auto& [instanceId, pendings] : pendingDisclosures ) {
+    auto& instance = instances.at(instanceId);
+
+    // Build status and data vectors for expression evaluation
+    Values status;
+    for ( auto& attribute : instance.process->extensionElements->as<const ExtensionElements>()->attributes ) {
+      if ( instance.values.contains(attribute.get()) ) {
+        status.push_back(instance.values.at(attribute.get()));
+      }
+      else {
+        status.push_back(std::nullopt);
+      }
+    }
+
+    Values data;
+    for ( auto& attribute : instance.process->extensionElements->as<const ExtensionElements>()->data ) {
+      if ( instance.values.contains(attribute.get()) ) {
+        data.push_back(instance.values.at(attribute.get()));
+      }
+      else {
+        data.push_back(std::nullopt);
+      }
+    }
+
+    // Process pending disclosures that are due
+    auto it = pendings.begin();
+    while ( it != pendings.end() ) {
+      if ( currentTime >= it->disclosureTime ) {
+        // Evaluate expression using existing Expression::execute
+        auto value = it->expression->execute(status, data, globals);
+        instance.values[it->attribute] = value;
+        disclosedAttributes.insert({instanceId, it->attribute});
+
+        // Remove from pending
+        it = pendings.erase(it);
+      }
+      else {
+        ++it;
+      }
+    }
+  }
+}
