@@ -54,6 +54,7 @@ namespace BPMNOS {
 
   struct Values : std::vector<std::optional<number>> {
     Values() = default;
+    Values(size_t size) : std::vector<std::optional<number>>(size) {}
     Values(std::initializer_list<std::optional<number>> init) : std::vector<std::optional<number>>(init) {}
     Values(const SharedValues& values);
   };
