@@ -23,21 +23,16 @@ DynamicDataProvider::DynamicDataProvider(const std::string& modelFile, const std
 {
   for ( auto& [ attributeId, attribute ] : attributes[nullptr] ) {
     if ( attribute->expression ) {
-      std::vector<double> variableValues;
-      for ( auto input : attribute->expression->variables ) {
-        if ( !globalValueMap.contains(input) ) {
-          throw std::runtime_error("DynamicDataProvider: global attribute '" + attribute->id + "' references undefined global '" + input->id + "'");
-        }
-        variableValues.push_back( (double)globalValueMap.at(input) );
+      // Build globals vector from current globalValueMap
+      Values globals(model->attributes.size());
+      for ( auto& [attr, value] : globalValueMap ) {
+        globals[attr->index] = value;
       }
-      std::vector<std::vector<double>> collectionValues;
-      for ( auto input : attribute->expression->collections ) {
-        if ( !globalValueMap.contains(input) ) {
-          throw std::runtime_error("DynamicDataProvider: global attribute '" + attribute->id + "' references undefined global collection '" + input->id + "'");
-        }
-        collectionValues.push_back( collectionRegistry[(size_t)globalValueMap.at(input)] );
+      auto value = attribute->expression->execute(Values{}, Values{}, globals);
+      if ( !value.has_value() ) {
+        throw std::runtime_error("DynamicDataProvider: failed to evaluate global attribute '" + attribute->id + "'");
       }
-      globalValueMap[ attribute ] = number(attribute->expression->compiled.evaluate(variableValues, collectionValues));
+      globalValueMap[ attribute ] = value.value();
     }
   }
   earliestInstantiation = std::numeric_limits<BPMNOS::number>::max();
