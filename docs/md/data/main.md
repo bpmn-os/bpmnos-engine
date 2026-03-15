@@ -25,7 +25,7 @@ The static data provider uses a CSV file with three columns:
 INSTANCE_ID, NODE_ID, INITIALIZATION
 ```
 
-- **INSTANCE_ID**: The instance identifier (numeric). Leave empty for global attributes.
+- **INSTANCE_ID**: The instance identifier (string). Leave empty for global attributes.
 - **NODE_ID**: The BPMN node ID (process, activity, subprocess, etc.). Leave empty for global attributes.
 - **INITIALIZATION**: An assignment expression in the format `attribute := expression`.
 
@@ -33,20 +33,20 @@ INSTANCE_ID, NODE_ID, INITIALIZATION
 
 ```plaintext
 INSTANCE_ID, NODE_ID, INITIALIZATION
-, , Items := 3
-, , Bins := 3
-1, BinProcess, timestamp := 0
-1, BinProcess, Capacity := 40
-2, BinProcess, timestamp := 0
-2, BinProcess, Capacity := 40
-3, BinProcess, timestamp := 0
-3, BinProcess, Capacity := 40
-4, ItemProcess, timestamp := 0
-4, ItemProcess, Size := 20
-5, ItemProcess, timestamp := 0
-5, ItemProcess, Size := 15
-6, ItemProcess, timestamp := 0
-6, ItemProcess, Size := 22
+, , items := 3
+, , bins := 3
+Instance_1, BinProcess, timestamp := 0
+Instance_1, BinProcess, capacity := 40
+Instance_2, BinProcess, timestamp := 0
+Instance_2, BinProcess, capacity := 40
+Instance_3, BinProcess, timestamp := 0
+Instance_3, BinProcess, capacity := 40
+Instance_4, ItemProcess, timestamp := 0
+Instance_4, ItemProcess, size := 20
+Instance_5, ItemProcess, timestamp := 0
+Instance_5, ItemProcess, size := 15
+Instance_6, ItemProcess, timestamp := 0
+Instance_6, ItemProcess, size := 22
 ```
 
 The first row for each instance must reference the process node. Subsequent rows may reference other nodes (activities, subprocesses) within that process.
@@ -57,7 +57,7 @@ Global attributes are specified with empty INSTANCE_ID and NODE_ID:
 
 ```plaintext
 INSTANCE_ID, NODE_ID, INITIALIZATION
-, , GlobalParam := 100
+, , globalParam := 100
 ```
 
 ### Expressions
@@ -65,7 +65,7 @@ INSTANCE_ID, NODE_ID, INITIALIZATION
 Initialization expressions can include arithmetic operations and references to other attributes:
 
 ```plaintext
-1, Process, duration := baseTime + processingRate * quantity
+Instance_1, Process_1, duration := baseTime + processingRate * quantity
 ```
 
 Values provided for `string` attributes must be quoted, values provided for `boolean` attributes must be `true` or `false`, and values provided for `collection` attributes must be embraced in square brackets.
@@ -79,12 +79,12 @@ Alternatively, the instance data may be provided by a string as shown in below e
 int main() {
   std::string csv =
     "INSTANCE_ID, NODE_ID, INITIALIZATION\n"
-    ", , Items := 3\n"
-    ", , Bins := 3\n"
-    "1, BinProcess, timestamp := 0\n"
-    "1, BinProcess, Capacity := 40\n"
-    "2, BinProcess, timestamp := 0\n"
-    "2, BinProcess, Capacity := 40\n"
+    ", , items := 3\n"
+    ", , bins := 3\n"
+    "Instance_1, BinProcess, timestamp := 0\n"
+    "Instance_1, BinProcess, capacity := 40\n"
+    "Instance_2, BinProcess, timestamp := 0\n"
+    "Instance_2, BinProcess, capacity := 40\n"
   ;
 
   BPMNOS::Model::StaticDataProvider dataProvider("examples/bin_packing_problem/Guided_bin_packing_problem.bpmn",csv);
@@ -104,7 +104,7 @@ The dynamic data provider uses a CSV file with four columns:
 INSTANCE_ID, NODE_ID, INITIALIZATION, DISCLOSURE
 ```
 
-- **INSTANCE_ID**: The instance identifier (numeric). Leave empty for global attributes.
+- **INSTANCE_ID**: The instance identifier (string). Leave empty for global attributes.
 - **NODE_ID**: The BPMN node ID (process, activity, subprocess, etc.). Leave empty for global attributes.
 - **INITIALIZATION**: An assignment expression in the format `attribute := expression`.
 - **DISCLOSURE**: The time at which this attribute value becomes known (constant expression). Leave empty for immediate disclosure (time 0).
@@ -113,12 +113,12 @@ INSTANCE_ID, NODE_ID, INITIALIZATION, DISCLOSURE
 
 ```plaintext
 INSTANCE_ID, NODE_ID, INITIALIZATION, DISCLOSURE
-, , MaxTime := 100,
-1, Process, timestamp := 0,
-1, Process, priority := 5, 10
-1, Activity, duration := 3 + priority, 15
-2, Process, timestamp := 5,
-2, Process, priority := 3, 20
+, , maxTime := 100,
+Instance_1, Process_1, timestamp := 0,
+Instance_1, Process,_1 priority := 5, 10
+Instance_1, Activity_1, duration := 3 + priority, 15
+Instance_2, Process_1, timestamp := 5,
+Instance_2, Process_1, priority := 3, 20
 ```
 
 ### Disclosure Rules
@@ -139,7 +139,7 @@ Global attributes are specified with empty INSTANCE_ID and NODE_ID:
 
 ```plaintext
 INSTANCE_ID, NODE_ID, INITIALIZATION, DISCLOSURE
-, , GlobalParam := 100,
+, , globalParam := 100,
 ```
 
 Global attributes must not have a disclosure time (must be immediately available).
@@ -170,7 +170,7 @@ The stochastic data provider uses a CSV file with up to five columns:
 INSTANCE_ID, NODE_ID, INITIALIZATION, DISCLOSURE, COMPLETION
 ```
 
-- **INSTANCE_ID**: The instance identifier (numeric). Leave empty for global attributes.
+- **INSTANCE_ID**: The instance identifier (string). Leave empty for global attributes.
 - **NODE_ID**: The BPMN node ID (process, activity, subprocess, etc.). Leave empty for global attributes.
 - **INITIALIZATION**: An assignment expression in the format `attribute := expression`. May contain random functions.
 - **DISCLOSURE**: The time at which this attribute value becomes known. Leave empty for immediate disclosure.
@@ -197,9 +197,9 @@ The following random functions can be used in expressions:
 
 ```plaintext
 INSTANCE_ID, NODE_ID, INITIALIZATION, DISCLOSURE, COMPLETION
-1, Process, timestamp := 0, ,
-1, Process, priority := uniform(1,10), 5,
-1, Task_A, duration := normal(10,2), , timestamp := timestamp + duration
+Instance_1, Process_1, timestamp := 0, ,
+Instance_1, Process_1, priority := uniform(1,10), 5,
+Instance_1, Activity_1, duration := normal(10,2), , timestamp := timestamp + duration
 ```
 
 ### Reproducibility
