@@ -22,7 +22,7 @@ int main() {
 The static data provider uses a CSV file with three columns:
 
 ```plaintext
-INSTANCE_ID, NODE_ID, INITIALIZATION
+INSTANCE_ID; NODE_ID; INITIALIZATION
 ```
 
 - **INSTANCE_ID**: The instance identifier (string). Leave empty for global attributes.
@@ -32,21 +32,21 @@ INSTANCE_ID, NODE_ID, INITIALIZATION
 ### Example
 
 ```plaintext
-INSTANCE_ID, NODE_ID, INITIALIZATION
-, , items := 3
-, , bins := 3
-Instance_1, BinProcess, timestamp := 0
-Instance_1, BinProcess, capacity := 40
-Instance_2, BinProcess, timestamp := 0
-Instance_2, BinProcess, capacity := 40
-Instance_3, BinProcess, timestamp := 0
-Instance_3, BinProcess, capacity := 40
-Instance_4, ItemProcess, timestamp := 0
-Instance_4, ItemProcess, size := 20
-Instance_5, ItemProcess, timestamp := 0
-Instance_5, ItemProcess, size := 15
-Instance_6, ItemProcess, timestamp := 0
-Instance_6, ItemProcess, size := 22
+INSTANCE_ID; NODE_ID; INITIALIZATION
+; ; items := 3
+; ; bins := 3
+Instance_1; BinProcess; timestamp := 0
+Instance_1; BinProcess; capacity := 40
+Instance_2; BinProcess; timestamp := 0
+Instance_2; BinProcess; capacity := 40
+Instance_3; BinProcess; timestamp := 0
+Instance_3; BinProcess; capacity := 40
+Instance_4; ItemProcess; timestamp := 0
+Instance_4; ItemProcess; size := 20
+Instance_5; ItemProcess; timestamp := 0
+Instance_5; ItemProcess; size := 15
+Instance_6; ItemProcess; timestamp := 0
+Instance_6; ItemProcess; size := 22
 ```
 
 The first row for each instance must reference the process node. Subsequent rows may reference other nodes (activities, subprocesses) within that process.
@@ -56,8 +56,8 @@ The first row for each instance must reference the process node. Subsequent rows
 Global attributes are specified with empty INSTANCE_ID and NODE_ID:
 
 ```plaintext
-INSTANCE_ID, NODE_ID, INITIALIZATION
-, , globalParam := 100
+INSTANCE_ID; NODE_ID; INITIALIZATION
+; ; globalParam := 100
 ```
 
 ### Expressions
@@ -65,7 +65,7 @@ INSTANCE_ID, NODE_ID, INITIALIZATION
 Initialization expressions can include arithmetic operations and references to other attributes:
 
 ```plaintext
-Instance_1, Process_1, duration := baseTime + processingRate * quantity
+Instance_1; Process_1; duration := baseTime + processingRate * quantity
 ```
 
 Values provided for `string` attributes must be quoted, values provided for `boolean` attributes must be `true` or `false`, and values provided for `collection` attributes must be embraced in square brackets.
@@ -78,13 +78,13 @@ Alternatively, the instance data may be provided by a string as shown in below e
 
 int main() {
   std::string csv =
-    "INSTANCE_ID, NODE_ID, INITIALIZATION\n"
-    ", , items := 3\n"
-    ", , bins := 3\n"
-    "Instance_1, BinProcess, timestamp := 0\n"
-    "Instance_1, BinProcess, capacity := 40\n"
-    "Instance_2, BinProcess, timestamp := 0\n"
-    "Instance_2, BinProcess, capacity := 40\n"
+    "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+    "; ; items := 3\n"
+    "; ; bins := 3\n"
+    "Instance_1; BinProcess; timestamp := 0\n"
+    "Instance_1; BinProcess; capacity := 40\n"
+    "Instance_2; BinProcess; timestamp := 0\n"
+    "Instance_2; BinProcess; capacity := 40\n"
   ;
 
   BPMNOS::Model::StaticDataProvider dataProvider("examples/bin_packing_problem/Guided_bin_packing_problem.bpmn",csv);
@@ -101,7 +101,7 @@ The @ref BPMNOS::Model::DynamicDataProvider "dynamic data provider" supports sce
 The dynamic data provider uses a CSV file with four columns:
 
 ```plaintext
-INSTANCE_ID, NODE_ID, INITIALIZATION, DISCLOSURE
+INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE
 ```
 
 - **INSTANCE_ID**: The instance identifier (string). Leave empty for global attributes.
@@ -112,13 +112,13 @@ INSTANCE_ID, NODE_ID, INITIALIZATION, DISCLOSURE
 ### Example
 
 ```plaintext
-INSTANCE_ID, NODE_ID, INITIALIZATION, DISCLOSURE
-, , maxTime := 100,
-Instance_1, Process_1, timestamp := 0,
-Instance_1, Process,_1 priority := 5, 10
-Instance_1, Activity_1, duration := 3 + priority, 15
-Instance_2, Process_1, timestamp := 5,
-Instance_2, Process_1, priority := 3, 20
+INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE
+; ; maxTime := 100;
+Instance_1; Process_1; timestamp := 0;
+Instance_1; Process_1; priority := 5; 10
+Instance_1; Activity_1; duration := 3 + priority; 15
+Instance_2; Process_1; timestamp := 5;
+Instance_2; Process_1; priority := 3; 20
 ```
 
 ### Disclosure Rules
@@ -138,8 +138,8 @@ Instance_2, Process_1, priority := 3, 20
 Global attributes are specified with empty INSTANCE_ID and NODE_ID:
 
 ```plaintext
-INSTANCE_ID, NODE_ID, INITIALIZATION, DISCLOSURE
-, , globalParam := 100,
+INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE
+; ; globalParam := 100;
 ```
 
 Global attributes must not have a disclosure time (must be immediately available).
@@ -167,7 +167,7 @@ The @ref BPMNOS::Model::StochasticDataProvider "stochastic data provider" extend
 The stochastic data provider uses a CSV file with up to five columns:
 
 ```plaintext
-INSTANCE_ID, NODE_ID, INITIALIZATION, DISCLOSURE, COMPLETION
+INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE; COMPLETION
 ```
 
 - **INSTANCE_ID**: The instance identifier (string). Leave empty for global attributes.
@@ -196,10 +196,10 @@ The following random functions can be used in expressions:
 ### Example
 
 ```plaintext
-INSTANCE_ID, NODE_ID, INITIALIZATION, DISCLOSURE, COMPLETION
-Instance_1, Process_1, timestamp := 0, ,
-Instance_1, Process_1, priority := uniform(1,10), 5,
-Instance_1, Activity_1, duration := normal(10,2), , timestamp := timestamp + duration
+INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE; COMPLETION
+Instance_1; Process_1; timestamp := 0; ;
+Instance_1; Process_1; priority := uniform(1,10); 5;
+Instance_1; Activity_1; duration := normal(10,2); ; timestamp := timestamp + duration
 ```
 
 ### Reproducibility
@@ -224,7 +224,7 @@ int main() {
 ### Downward Compatibility
 
 StochasticDataProvider is downward compatible with all CSV formats:
-- 3-column (Static): INSTANCE_ID, NODE_ID, INITIALIZATION
+- 3-column (Static): INSTANCE_ID; NODE_ID; INITIALIZATION
 - 4-column (Dynamic): + DISCLOSURE
 - 5-column (Stochastic): + COMPLETION
 
