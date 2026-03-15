@@ -26,10 +26,21 @@ StaticDataProvider::StaticDataProvider(const std::string& modelFile, const std::
 {
   for ( auto& [ attributeId, attribute ] : attributes[nullptr] ) {
     if ( attribute->expression ) {
-      if ( attribute->expression->compiled.getVariables().size() || attribute->expression->compiled.getCollections().size() ) {
-        throw std::runtime_error("StaticDataProvider: initial value of global attribute '" + attribute->id + "' must not be derived from other attributes");
+      std::vector<double> variableValues;
+      for ( auto input : attribute->expression->variables ) {
+        if ( !globalValueMap.contains(input) ) {
+          throw std::runtime_error("StaticDataProvider: global attribute '" + attribute->id + "' references undefined global '" + input->id + "'");
+        }
+        variableValues.push_back( (double)globalValueMap.at(input) );
       }
-      globalValueMap[ attribute ] = attribute->expression->compiled.evaluate();
+      std::vector<std::vector<double>> collectionValues;
+      for ( auto input : attribute->expression->collections ) {
+        if ( !globalValueMap.contains(input) ) {
+          throw std::runtime_error("StaticDataProvider: global attribute '" + attribute->id + "' references undefined global collection '" + input->id + "'");
+        }
+        collectionValues.push_back( collectionRegistry[(size_t)globalValueMap.at(input)] );
+      }
+      globalValueMap[ attribute ] = number(attribute->expression->compiled.evaluate(variableValues, collectionValues));
     }
   }
   earliestInstantiation = std::numeric_limits<BPMNOS::number>::max();
@@ -199,7 +210,7 @@ void StaticDataProvider::readInstancesNewFormat(const CSVReader::Table& table) {
       if ( initialization.empty() ) {
         continue;
       }
-      auto [attributeName, value] = parseInitialization(initialization);
+      auto [attributeName, expressionStr] = parseInitialization(initialization);
       // Find global attribute by name
       const Attribute* attribute = nullptr;
       for ( auto& [id, attr] : attributes[nullptr] ) {
@@ -211,7 +222,18 @@ void StaticDataProvider::readInstancesNewFormat(const CSVReader::Table& table) {
       if ( !attribute ) {
         throw std::runtime_error("StaticDataProvider: unknown global attribute '" + attributeName + "'");
       }
-      globalValueMap[attribute] = value;
+      // Build globals vector from current globalValueMap
+      Values globals(model->attributes.size());
+      for ( auto& [attr, value] : globalValueMap ) {
+        globals[attr->index] = value;
+      }
+      // Compile and evaluate using Expression
+      Expression expression(expressionStr, model->attributeRegistry);
+      auto value = expression.execute(Values{}, Values{}, globals);
+      if ( !value.has_value() ) {
+        throw std::runtime_error("StaticDataProvider: failed to evaluate global '" + attributeName + "'");
+      }
+      globalValueMap[attribute] = value.value();
     }
     else if ( instanceIdStr.empty() ) {
       throw std::runtime_error("StaticDataProvider: instance id required when node id is provided");
@@ -238,7 +260,7 @@ void StaticDataProvider::readInstancesNewFormat(const CSVReader::Table& table) {
       }
 
       auto& instance = instances[instanceId];
-      auto [attributeName, value] = parseInitialization(initialization);
+      auto [attributeName, expressionStr] = parseInitialization(initialization);
 
       // Look up attribute in the node's extension elements
       auto extensionElements = node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
@@ -251,12 +273,12 @@ void StaticDataProvider::readInstancesNewFormat(const CSVReader::Table& table) {
         throw std::runtime_error("StaticDataProvider: value of attribute '" + attributeName + "' is initialized by expression and must not be provided explicitly");
       }
 
-      instance.data[attribute] = value;
+      instance.data[attribute] = evaluateExpression(expressionStr);
     }
   }
 }
 
-std::pair<std::string, BPMNOS::number> StaticDataProvider::parseInitialization(const std::string& initialization) const {
+std::pair<std::string, std::string> StaticDataProvider::parseInitialization(const std::string& initialization) const {
   // Parse "attributeName := expression"
   auto pos = initialization.find(":=");
   if ( pos == std::string::npos ) {
@@ -281,14 +303,15 @@ std::pair<std::string, BPMNOS::number> StaticDataProvider::parseInitialization(c
   }
   expression = expression.substr(trimStart, trimEnd - trimStart + 1);
 
-  // Evaluate expression using LIMEX
+  return {attributeName, expression};
+}
+
+BPMNOS::number StaticDataProvider::evaluateExpression(const std::string& expression) const {
   LIMEX::Expression<double> compiled(expression, model->limexHandle);
   if ( !compiled.getVariables().empty() || !compiled.getCollections().empty() ) {
-    throw std::runtime_error("StaticDataProvider: initialization expression must not reference variables, got '" + expression + "'");
+    throw std::runtime_error("StaticDataProvider: expression must not reference variables, got '" + expression + "'");
   }
-  BPMNOS::number value = compiled.evaluate();
-
-  return {attributeName, value};
+  return compiled.evaluate();
 }
 
 std::string StaticDataProvider::convertToNewFormat([[maybe_unused]] const CSVReader::Table& table) const {

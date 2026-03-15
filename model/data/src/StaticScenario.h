@@ -5,6 +5,8 @@
 
 namespace BPMNOS::Model {
 
+class StaticDataProvider;
+
 /**
  * @brief A scenario implementation where all data is known from the start.
  *
@@ -12,6 +14,8 @@ namespace BPMNOS::Model {
  * values are known at time 0. The currentTime parameter is ignored in query methods.
  */
 class StaticScenario : public Scenario {
+  friend class StaticDataProvider;
+
 public:
   StaticScenario(const Model* model, BPMNOS::number earliestInstantiationTime, BPMNOS::number latestInstantiationTime, const std::unordered_map< const Attribute*, BPMNOS::number >& globalValueMap);
 
@@ -32,10 +36,10 @@ public:
   std::optional<BPMNOS::Values> getKnownValues(const BPMNOS::number instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const override;
   std::optional<BPMNOS::Values> getKnownData(const BPMNOS::number instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const override;
 
+protected:
   void addInstance(const BPMN::Process* process, const BPMNOS::number instanceId, BPMNOS::number instantiationTime);
   void setValue(const BPMNOS::number instanceId, const Attribute* attribute, std::optional<BPMNOS::number> value);
 
-protected:
   std::unordered_map<size_t, InstanceData> instances;
   BPMNOS::number earliestInstantiationTime;
   BPMNOS::number latestInstantiationTime;

@@ -50,7 +50,8 @@ protected:
   BPMNOS::number latestInstantiation;
 
   void ensureDefaultValue(StaticInstanceData& instance, const std::string attributeId, std::optional<BPMNOS::number> value = std::nullopt);
-  std::pair<std::string, BPMNOS::number> parseInitialization(const std::string& initialization) const;
+  std::pair<std::string, std::string> parseInitialization(const std::string& initialization) const;
+  BPMNOS::number evaluateExpression(const std::string& expression) const;
   std::string convertToNewFormat(const CSVReader::Table& table) const;
   void promptMigration(const std::string& newFormatContent) const;
 };
