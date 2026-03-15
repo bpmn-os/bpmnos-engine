@@ -159,7 +159,74 @@ int main() {
 ```
 
 ## Stochastic data provider
-@note Currently, there is no implementation for a stochastic data provider.
+
+The @ref BPMNOS::Model::StochasticDataProvider "stochastic data provider" extends dynamic scenarios with support for random functions and stochastic task completion.
+
+### CSV Format
+
+The stochastic data provider uses a CSV file with up to five columns:
+
+```plaintext
+INSTANCE_ID, NODE_ID, INITIALIZATION, DISCLOSURE, COMPLETION
+```
+
+- **INSTANCE_ID**: The instance identifier (numeric). Leave empty for global attributes.
+- **NODE_ID**: The BPMN node ID (process, activity, subprocess, etc.). Leave empty for global attributes.
+- **INITIALIZATION**: An assignment expression in the format `attribute := expression`. May contain random functions.
+- **DISCLOSURE**: The time at which this attribute value becomes known. Leave empty for immediate disclosure.
+- **COMPLETION**: Expression evaluated when a task completes. Only valid for Task nodes (not SendTask, ReceiveTask, DecisionTask).
+
+### Random Functions
+
+The following random functions can be used in expressions:
+
+| Function | Parameters | Description |
+|----------|------------|-------------|
+| `uniform(min, max)` | min, max | Uniform real distribution |
+| `uniform_int(min, max)` | min, max | Uniform integer distribution |
+| `normal(mean, stddev)` | mean, stddev | Normal/Gaussian distribution |
+| `exponential(rate)` | rate (λ) | Exponential distribution |
+| `poisson(mean)` | mean (λ) | Poisson distribution |
+| `bernoulli(p)` | probability | Bernoulli (0 or 1) |
+| `binomial(n, p)` | trials, probability | Binomial distribution |
+| `gamma(shape, scale)` | α, β | Gamma distribution |
+| `lognormal(logscale, shape)` | m, s | Log-normal distribution |
+| `geometric(p)` | probability | Geometric distribution |
+
+### Example
+
+```plaintext
+INSTANCE_ID, NODE_ID, INITIALIZATION, DISCLOSURE, COMPLETION
+1, Process, timestamp := 0, ,
+1, Process, priority := uniform(1,10), 5,
+1, Task_A, duration := normal(10,2), , timestamp := timestamp + duration
+```
+
+### Reproducibility
+
+Each (instance, node) pair has its own random number generator seeded from the scenario seed combined with the instance ID and node ID hash. This ensures:
+- Reproducible results given the same seed
+- Independence between different instances/nodes
+- Different values for loop iterations (RNG advances)
+
+### Usage
+
+```cpp
+#include <bpmnos-model.h>
+
+int main() {
+  unsigned int seed = 42;
+  BPMNOS::Model::StochasticDataProvider dataProvider("diagram.bpmn", "scenario.csv", seed);
+  auto scenario = dataProvider.createScenario();
+}
+```
+
+### Downward Compatibility
+
+StochasticDataProvider is downward compatible with all CSV formats:
+- 3-column (Static): INSTANCE_ID, NODE_ID, INITIALIZATION
+- 4-column (Dynamic): + DISCLOSURE
+- 5-column (Stochastic): + COMPLETION
 
 ## Real-life monitor
 
