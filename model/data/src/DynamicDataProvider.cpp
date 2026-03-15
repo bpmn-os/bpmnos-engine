@@ -141,6 +141,8 @@ void DynamicDataProvider::readInstances() {
         }
         auto process = dynamic_cast<BPMN::Process*>(node);
         instances[instanceId] = DynamicInstanceData({process, instanceId, std::numeric_limits<BPMNOS::number>::max(), {}});
+        // Initialize process disclosure to 0 (may be updated later if process attributes have disclosure)
+        disclosure[instanceId][process] = 0;
       }
 
       // If no initialization, just create instance (already done above)
