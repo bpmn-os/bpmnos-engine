@@ -243,7 +243,7 @@ INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE; COMPLETION
 ### Behavior
 
 - **DISCLOSURE**: Ignored. All values are disclosed at time 0.
-- **COMPLETION**: Evaluated using expected values when tasks complete.
+- **COMPLETION**: Ignored. Operators can be used to compute expected values during execution.
 - **Random functions**: Return expected values instead of sampling.
 
 ### Expected Values
@@ -266,7 +266,7 @@ INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE; COMPLETION
 ```plaintext
 INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE; COMPLETION
 Instance_1; Process_1; timestamp := 0; ;
-Instance_1; Activity_1; duration := uniform(8, 12); ; timestamp := timestamp + duration
+Instance_1; Activity_1; duration := uniform(8, 12); ;
 ```
 
 With expected values, `duration` will be `(8 + 12) / 2 = 10`.

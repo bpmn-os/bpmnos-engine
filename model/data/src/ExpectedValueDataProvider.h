@@ -4,11 +4,8 @@
 #include "StaticDataProvider.h"
 #include "model/utility/src/ExpectedValueFactory.h"
 #include "model/bpmnos/src/extensionElements/Expression.h"
-#include <map>
 
 namespace BPMNOS::Model {
-
-class ExpectedValueScenario;
 
 /**
  * @brief Data provider that accepts stochastic CSV format but uses expected values.
@@ -20,8 +17,8 @@ class ExpectedValueScenario;
  *
  * Behavior:
  * - DISCLOSURE column is ignored (all values disclosed at time 0)
- * - COMPLETION expressions are evaluated using expected values when tasks complete
- * - Random functions return expected values instead of sampling
+ * - COMPLETION column is ignored (operators can be used to compute expected values during execution)
+ * - Random functions in INITIALIZATION return expected values instead of sampling
  */
 class ExpectedValueDataProvider : public StaticDataProvider {
 public:
@@ -34,19 +31,14 @@ public:
 protected:
   void readInstances();
   void readInstancesExtendedFormat(const CSVReader::Table& table, size_t columnCount);
-  BPMNOS::number evaluateExpressionWithExpectedValues(const std::string& expression) const;
+
+  /// Override to use expectedValueHandle instead of model->limexHandle
+  BPMNOS::number evaluateExpression(const std::string& expression, const AttributeRegistry& attributeRegistry) const override;
+
+  void initializeExpectedValueHandle();
 
   ExpectedValueFactory expectedValueFactory;
-  mutable LIMEX::Handle<double> expectedValueHandle;
-  bool expectedValueHandleInitialized = false;
-  void initializeExpectedValueHandle() const;
-
-  /// Stored completion expressions: instanceId -> node -> list of (attribute, expression)
-  struct CompletionExprData {
-    const Attribute* attribute;
-    std::string expressionStr;
-  };
-  std::map<size_t, std::map<const BPMN::Node*, std::vector<CompletionExprData>>> completionExpressions;
+  LIMEX::Handle<double> expectedValueHandle;
 };
 
 } // namespace BPMNOS::Model

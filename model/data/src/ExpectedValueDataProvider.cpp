@@ -14,11 +14,42 @@ ExpectedValueDataProvider::ExpectedValueDataProvider(const std::string& modelFil
 ExpectedValueDataProvider::ExpectedValueDataProvider(const std::string& modelFile, const std::vector<std::string>& folders, const std::string& instanceFileOrString)
   : StaticDataProvider(modelFile, folders)
 {
-  // Register expected value functions on the model's limexHandle
-  expectedValueFactory.registerFunctions(model->limexHandle);
+  initializeExpectedValueHandle();
 
   reader = std::make_unique<CSVReader>(instanceFileOrString);
   readInstances();
+}
+
+void ExpectedValueDataProvider::initializeExpectedValueHandle() {
+  // Copy lookup tables from model
+  for (auto& lookupTable : model->lookupTables) {
+    auto* table = lookupTable.get();
+    expectedValueHandle.add(table->name, [table](const std::vector<double>& args) {
+      return table->at(args);
+    });
+  }
+
+  // Register expected value functions
+  expectedValueFactory.registerFunctions(expectedValueHandle);
+}
+
+BPMNOS::number ExpectedValueDataProvider::evaluateExpression(const std::string& expressionString, const AttributeRegistry& attributeRegistry) const {
+  Values globals(model->attributes.size());
+  for (auto& [attribute, value] : globalValueMap) {
+    globals[attribute->index] = value;
+  }
+  Expression expression(expectedValueHandle, expressionString, attributeRegistry);
+  for (auto* attribute : expression.variables) {
+    if (!attributeRegistry.contains(attribute)) {
+      throw std::runtime_error("ExpectedValueDataProvider: expression '" + expressionString +
+                               "' references attribute '" + attribute->name + "' which is not available");
+    }
+  }
+  auto value = expression.execute(Values{}, Values{}, globals);
+  if (!value.has_value()) {
+    throw std::runtime_error("ExpectedValueDataProvider: failed to evaluate expression '" + expressionString + "'");
+  }
+  return value.value();
 }
 
 void ExpectedValueDataProvider::readInstances() {
@@ -86,15 +117,7 @@ void ExpectedValueDataProvider::readInstancesExtendedFormat(const CSVReader::Tab
     std::string initialization = std::get<std::string>(row.at(INITIALIZATION));
 
     // DISCLOSURE column is ignored (index 3) - all data disclosed at time 0
-
-    // Get completion expression if present (5-column format)
-    std::string completionStr;
-    if (columnCount == 5) {
-      if (!std::holds_alternative<std::string>(row.at(COMPLETION))) {
-        throw std::runtime_error("ExpectedValueDataProvider: illegal completion");
-      }
-      completionStr = std::get<std::string>(row.at(COMPLETION));
-    }
+    // COMPLETION column is ignored (index 4) - operators can be used to compute expected values during execution
 
     if (instanceIdStr.empty() && nodeId.empty()) {
       // Global attribute
@@ -116,7 +139,7 @@ void ExpectedValueDataProvider::readInstancesExtendedFormat(const CSVReader::Tab
       for (auto& [attr, value] : globalValueMap) {
         globals[attr->index] = value;
       }
-      Expression expression(expressionStr, model->attributeRegistry);
+      Expression expression(expectedValueHandle, expressionStr, model->attributeRegistry);
       auto value = expression.execute(Values{}, Values{}, globals);
       if (!value.has_value()) {
         throw std::runtime_error("ExpectedValueDataProvider: failed to evaluate global '" + attributeName + "'");
@@ -152,40 +175,14 @@ void ExpectedValueDataProvider::readInstancesExtendedFormat(const CSVReader::Tab
         if (attribute->expression) {
           throw std::runtime_error("ExpectedValueDataProvider: attribute '" + attributeName + "' is initialized by expression");
         }
-        instance.data[attribute] = evaluateExpression(expressionStr);
-      }
-
-      // Process completion expression
-      if (!completionStr.empty()) {
-        auto [attributeName, expressionStr] = parseInitialization(completionStr);
-        auto extensionElements = node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
-        if (!extensionElements->attributeRegistry.contains(attributeName)) {
-          throw std::runtime_error("ExpectedValueDataProvider: node '" + nodeId + "' has no attribute '" + attributeName + "'");
-        }
-        auto attribute = extensionElements->attributeRegistry[attributeName];
-        completionExpressions[instanceId][node].push_back({attribute, expressionStr});
+        instance.data[attribute] = evaluateExpression(expressionStr, extensionElements->attributeRegistry);
       }
     }
   }
 }
 
-void ExpectedValueDataProvider::initializeExpectedValueHandle() const {
-  if (!expectedValueHandleInitialized) {
-    const_cast<ExpectedValueFactory&>(expectedValueFactory).registerFunctions(expectedValueHandle);
-    const_cast<bool&>(expectedValueHandleInitialized) = true;
-  }
-}
-
-BPMNOS::number ExpectedValueDataProvider::evaluateExpressionWithExpectedValues(const std::string& expression) const {
-  initializeExpectedValueHandle();
-  LIMEX::Expression<double> compiled(expression, expectedValueHandle);
-  if (!compiled.getVariables().empty() || !compiled.getCollections().empty()) {
-    throw std::runtime_error("ExpectedValueDataProvider: expression must not reference variables");
-  }
-  return compiled.evaluate();
-}
-
 std::unique_ptr<Scenario> ExpectedValueDataProvider::createScenario([[maybe_unused]] unsigned int scenarioId) {
+  // ExpectedValueScenario is identical to StaticScenario - just returns pre-computed values
   auto scenario = std::make_unique<ExpectedValueScenario>(model.get(), earliestInstantiation, latestInstantiation, globalValueMap);
 
   // Add instances
@@ -195,16 +192,6 @@ std::unique_ptr<Scenario> ExpectedValueDataProvider::createScenario([[maybe_unus
     scenario->addInstance(instance.process, id, instantiationTime);
     for (auto& [attribute, value] : instance.data) {
       scenario->setValue(id, attribute, value);
-    }
-  }
-
-  // Add completion expressions
-  for (auto& [instanceId, nodeMap] : completionExpressions) {
-    for (auto& [node, exprList] : nodeMap) {
-      for (auto& exprData : exprList) {
-        auto expression = std::make_unique<Expression>(exprData.expressionStr, model->attributeRegistry);
-        scenario->addCompletionExpression(instanceId, node, {exprData.attribute, std::move(expression)});
-      }
     }
   }
 
