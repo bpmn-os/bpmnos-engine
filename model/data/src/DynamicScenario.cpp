@@ -58,7 +58,19 @@ std::vector< std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values> > 
   std::vector< std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values> > result;
   for ( auto& [id, instance] : instances ) {
     if ( instance.instantiationTime == currentTime ) {
-      result.push_back({instance.process, getKnownInitialStatus(&instance, currentTime), getKnownInitialData(&instance, currentTime)});
+      // Check if all process attributes are disclosed
+      bool allDisclosed = true;
+      if ( disclosureTimes.contains(instance.id) ) {
+        for ( auto& [attribute, disclosureTime] : disclosureTimes.at(instance.id) ) {
+          if ( currentTime < disclosureTime ) {
+            allDisclosed = false;
+            break;
+          }
+        }
+      }
+      if ( allDisclosed ) {
+        result.push_back({instance.process, getKnownInitialStatus(&instance, currentTime), getKnownInitialData(&instance, currentTime)});
+      }
     }
   }
   return result;
@@ -136,6 +148,11 @@ std::optional<BPMNOS::Values> DynamicScenario::getKnownValues(const BPMNOS::numb
   auto& instance = instances.at((size_t)instanceId);
   Values result;
   for ( auto& attribute : node->extensionElements->as<const BPMNOS::Model::ExtensionElements>()->attributes ) {
+    if ( disclosureTimes.contains(instance.id) && disclosureTimes.at(instance.id).contains(attribute.get()) ) {
+      if ( currentTime < disclosureTimes.at(instance.id).at(attribute.get()) ) {
+        return std::nullopt;
+      }
+    }
     result.push_back( getKnownValue(&instance, attribute.get(), currentTime) );
   }
   return result;
@@ -145,6 +162,11 @@ std::optional<BPMNOS::Values> DynamicScenario::getKnownData(const BPMNOS::number
   auto& instance = instances.at((size_t)instanceId);
   Values result;
   for ( auto& attribute : node->extensionElements->as<const BPMNOS::Model::ExtensionElements>()->data ) {
+    if ( disclosureTimes.contains(instance.id) && disclosureTimes.at(instance.id).contains(attribute.get()) ) {
+      if ( currentTime < disclosureTimes.at(instance.id).at(attribute.get()) ) {
+        return std::nullopt;
+      }
+    }
     result.push_back( getKnownValue(&instance, attribute.get(), currentTime) );
   }
   return result;

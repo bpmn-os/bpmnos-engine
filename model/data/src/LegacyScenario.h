@@ -32,9 +32,6 @@ public:
   std::optional<BPMNOS::number> getKnownValue(const Scenario::InstanceData* instance, const BPMNOS::Model::Attribute* attribute, const BPMNOS::number currentTime) const override;
   std::optional<BPMNOS::number> getKnownValue(const BPMNOS::number instanceId, const BPMNOS::Model::Attribute* attribute, const BPMNOS::number currentTime) const override;
 
-  Values getKnownInitialStatus(const InstanceData*, const BPMNOS::number time) const override;
-  Values getKnownInitialData(const InstanceData*, const BPMNOS::number time) const override;
-
   std::optional<BPMNOS::Values> getKnownValues(const BPMNOS::number instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const override;
   std::optional<BPMNOS::Values> getKnownData(const BPMNOS::number instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const override;
 
@@ -42,6 +39,9 @@ public:
   void setValue(const BPMNOS::number instanceId, const Attribute* attribute, std::optional<BPMNOS::number> value);
 
 protected:
+  Values getKnownInitialStatus(const InstanceData*, const BPMNOS::number time) const override;
+  Values getKnownInitialData(const InstanceData*, const BPMNOS::number time) const override;
+
   const DataInput& attributes; ///< Map holding all attributes in the model with keys being the process and attribute id
   std::unordered_map<size_t, InstanceData> instances; ///< Map of instances with key being the instance id.
   BPMNOS::number earliestInstantiationTime; ///< Earliest time in execution.

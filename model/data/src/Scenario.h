@@ -75,16 +75,6 @@ public:
   virtual std::optional<BPMNOS::number> getKnownValue(const BPMNOS::number instanceId, const BPMNOS::Model::Attribute* attribute, const BPMNOS::number currentTime) const = 0;
 
   /**
-   * @brief Method returning the initial status of a known instantiation at the given time.
-   */
-  virtual Values getKnownInitialStatus(const InstanceData*, const BPMNOS::number time) const = 0;
-
-  /**
-   * @brief Method returning the initial data attributes of a known instantiation at the given time.
-   */
-  virtual Values getKnownInitialData(const InstanceData*, const BPMNOS::number time) const = 0;
-
-  /**
    * @brief Method returning all known values of new attributes.
    *
    * If at least one attribute value is not yet known, the method returns std::nullopt.
@@ -100,6 +90,21 @@ public:
 
   BPMNOS::Values globals;
   const Model* model;  ///< Pointer to the BPMN model.
+
+protected:
+  /**
+   * @brief Method returning the initial status attributes for process instantiation.
+   *
+   * Used internally by getCurrentInstantiations to get process-level status attributes.
+   */
+  virtual Values getKnownInitialStatus(const InstanceData*, const BPMNOS::number time) const = 0;
+
+  /**
+   * @brief Method returning the initial data attributes for process instantiation.
+   *
+   * Used internally by getCurrentInstantiations to get process-level data attributes.
+   */
+  virtual Values getKnownInitialData(const InstanceData*, const BPMNOS::number time) const = 0;
 };
 
 } // namespace BPMNOS::Model
