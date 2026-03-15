@@ -56,12 +56,11 @@ protected:
     BPMNOS::number id;
     BPMNOS::number instantiation;
     std::unordered_map< const Attribute*, BPMNOS::number > data;
-    std::unordered_map< const Attribute*, BPMNOS::number > disclosure; ///< Time when each attribute value is revealed
   };
   std::unordered_map< long unsigned int, DynamicInstanceData > instances;
   std::unordered_map< const Attribute*, BPMNOS::number > globalValueMap;
   std::unordered_map< size_t, std::vector<DeferredInitialization> > deferredInitializations; ///< Instance ID -> deferred inits
-  std::unordered_map< size_t, std::unordered_map<const BPMN::Node*, BPMNOS::number> > scopeDisclosure; ///< Instance ID -> Node -> effective disclosure time
+  std::unordered_map< size_t, std::unordered_map<const BPMN::Node*, BPMNOS::number> > disclosure; ///< Instance ID -> Node -> time when node's data is disclosed
   BPMNOS::number earliestInstantiation;
   BPMNOS::number latestInstantiation;
 

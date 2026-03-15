@@ -23,8 +23,8 @@ void DynamicScenario::setValue(const BPMNOS::number instanceId, const Attribute*
   instances[(size_t)instanceId].values[attribute] = value;
 }
 
-void DynamicScenario::setDisclosure(const BPMNOS::number instanceId, const Attribute* attribute, BPMNOS::number disclosureTime) {
-  disclosureTimes[(size_t)instanceId][attribute] = disclosureTime;
+void DynamicScenario::setDisclosure(const BPMNOS::number instanceId, const BPMN::Node* node, BPMNOS::number disclosureTime) {
+  disclosure[(size_t)instanceId][node] = disclosureTime;
 }
 
 BPMNOS::number DynamicScenario::getEarliestInstantiationTime() const {
@@ -58,19 +58,13 @@ std::vector< std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values> > 
   std::vector< std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values> > result;
   for ( auto& [id, instance] : instances ) {
     if ( instance.instantiationTime == currentTime ) {
-      // Check if all process attributes are disclosed
-      bool allDisclosed = true;
-      if ( disclosureTimes.contains(instance.id) ) {
-        for ( auto& [attribute, disclosureTime] : disclosureTimes.at(instance.id) ) {
-          if ( currentTime < disclosureTime ) {
-            allDisclosed = false;
-            break;
-          }
+      // Check if process data is disclosed
+      if ( disclosure.contains(instance.id) && disclosure.at(instance.id).contains(instance.process) ) {
+        if ( currentTime < disclosure.at(instance.id).at(instance.process) ) {
+          continue; // Process data not yet disclosed
         }
       }
-      if ( allDisclosed ) {
-        result.push_back({instance.process, getKnownInitialStatus(&instance, currentTime), getKnownInitialData(&instance, currentTime)});
-      }
+      result.push_back({instance.process, getKnownInitialStatus(&instance, currentTime), getKnownInitialData(&instance, currentTime)});
     }
   }
   return result;
@@ -92,14 +86,8 @@ BPMNOS::Values DynamicScenario::getKnownInitialData(const Scenario::InstanceData
   return result;
 }
 
-std::optional<BPMNOS::number> DynamicScenario::getKnownValue(const Scenario::InstanceData* instance, const BPMNOS::Model::Attribute* attribute, const BPMNOS::number currentTime) const {
-  // Check if attribute value has been disclosed yet
-  if ( disclosureTimes.contains(instance->id) && disclosureTimes.at(instance->id).contains(attribute) ) {
-    if ( currentTime < disclosureTimes.at(instance->id).at(attribute) ) {
-      return std::nullopt; // Not yet disclosed
-    }
-  }
-
+std::optional<BPMNOS::number> DynamicScenario::getKnownValue(const Scenario::InstanceData* instance, const BPMNOS::Model::Attribute* attribute, [[maybe_unused]] const BPMNOS::number currentTime) const {
+  // Node-level disclosure is checked by caller (getCurrentInstantiations, getKnownValues, getKnownData)
   if ( attribute->expression && attribute->expression->type == Expression::Type::ASSIGN ) {
     // Value is computed from an expression
     std::vector<double> variableValues;
@@ -146,13 +134,14 @@ std::optional<BPMNOS::number> DynamicScenario::getKnownValue(const BPMNOS::numbe
 
 std::optional<BPMNOS::Values> DynamicScenario::getKnownValues(const BPMNOS::number instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const {
   auto& instance = instances.at((size_t)instanceId);
+  // Check if node data is disclosed
+  if ( disclosure.contains(instance.id) && disclosure.at(instance.id).contains(node) ) {
+    if ( currentTime < disclosure.at(instance.id).at(node) ) {
+      return std::nullopt;
+    }
+  }
   Values result;
   for ( auto& attribute : node->extensionElements->as<const BPMNOS::Model::ExtensionElements>()->attributes ) {
-    if ( disclosureTimes.contains(instance.id) && disclosureTimes.at(instance.id).contains(attribute.get()) ) {
-      if ( currentTime < disclosureTimes.at(instance.id).at(attribute.get()) ) {
-        return std::nullopt;
-      }
-    }
     result.push_back( getKnownValue(&instance, attribute.get(), currentTime) );
   }
   return result;
@@ -160,13 +149,14 @@ std::optional<BPMNOS::Values> DynamicScenario::getKnownValues(const BPMNOS::numb
 
 std::optional<BPMNOS::Values> DynamicScenario::getKnownData(const BPMNOS::number instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const {
   auto& instance = instances.at((size_t)instanceId);
+  // Check if node data is disclosed
+  if ( disclosure.contains(instance.id) && disclosure.at(instance.id).contains(node) ) {
+    if ( currentTime < disclosure.at(instance.id).at(node) ) {
+      return std::nullopt;
+    }
+  }
   Values result;
   for ( auto& attribute : node->extensionElements->as<const BPMNOS::Model::ExtensionElements>()->data ) {
-    if ( disclosureTimes.contains(instance.id) && disclosureTimes.at(instance.id).contains(attribute.get()) ) {
-      if ( currentTime < disclosureTimes.at(instance.id).at(attribute.get()) ) {
-        return std::nullopt;
-      }
-    }
     result.push_back( getKnownValue(&instance, attribute.get(), currentTime) );
   }
   return result;

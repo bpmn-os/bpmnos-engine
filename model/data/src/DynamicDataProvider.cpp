@@ -145,7 +145,7 @@ void DynamicDataProvider::readInstances() {
           throw std::runtime_error("DynamicDataProvider: first row for instance '" + instanceIdStr + "' must reference a process node, got '" + nodeId + "'");
         }
         auto process = dynamic_cast<BPMN::Process*>(node);
-        instances[instanceId] = DynamicInstanceData({process, instanceId, std::numeric_limits<BPMNOS::number>::max(), {}, {}});
+        instances[instanceId] = DynamicInstanceData({process, instanceId, std::numeric_limits<BPMNOS::number>::max(), {}});
       }
 
       // If no initialization, just create instance (already done above)
@@ -179,7 +179,6 @@ void DynamicDataProvider::readInstances() {
       if ( disclosureTime == 0 ) {
         // Immediate disclosure: evaluate now and store value
         instance.data[attribute] = evaluateExpression(expressionStr);
-        instance.disclosure[attribute] = 0;
       }
       else {
         // Deferred disclosure: compile expression for later evaluation
@@ -189,7 +188,6 @@ void DynamicDataProvider::readInstances() {
           disclosureTime,
           std::move(expression)
         });
-        instance.disclosure[attribute] = disclosureTime;
       }
     }
   }
@@ -252,17 +250,18 @@ BPMNOS::number DynamicDataProvider::getEffectiveDisclosure(size_t instanceId, co
   // Check parent scope's disclosure time
   if ( auto childNode = node->represents<BPMN::ChildNode>() ) {
     auto parentNode = childNode->parent;
-    if ( scopeDisclosure[instanceId].contains(parentNode) ) {
-      effectiveDisclosure = std::max(effectiveDisclosure, scopeDisclosure[instanceId][parentNode]);
+    if ( !disclosure[instanceId].contains(parentNode) ) {
+      throw std::runtime_error("DynamicDataProvider: disclosure for '" + node->id + "' given before parent '" + parentNode->id + "'");
     }
+    effectiveDisclosure = std::max(effectiveDisclosure, disclosure[instanceId][parentNode]);
   }
 
   // Update this scope's disclosure time (track maximum seen for this scope)
-  if ( !scopeDisclosure[instanceId].contains(node) ) {
-    scopeDisclosure[instanceId][node] = effectiveDisclosure;
+  if ( !disclosure[instanceId].contains(node) ) {
+    disclosure[instanceId][node] = effectiveDisclosure;
   }
   else {
-    scopeDisclosure[instanceId][node] = std::max(scopeDisclosure[instanceId][node], effectiveDisclosure);
+    disclosure[instanceId][node] = std::max(disclosure[instanceId][node], effectiveDisclosure);
   }
 
   return effectiveDisclosure;
@@ -305,8 +304,11 @@ std::unique_ptr<Scenario> DynamicDataProvider::createScenario([[maybe_unused]] u
     for ( auto& [attribute, value] : instance.data ) {
       scenario->setValue(id, attribute, value);
     }
-    for ( auto& [attribute, disclosureTime] : instance.disclosure ) {
-      scenario->setDisclosure(id, attribute, disclosureTime);
+  }
+  // Set node disclosure times (effective disclosure = max of own and parent scope)
+  for ( auto& [instanceId, nodes] : disclosure ) {
+    for ( auto& [node, disclosureTime] : nodes ) {
+      scenario->setDisclosure(instanceId, node, disclosureTime);
     }
   }
   // Add deferred initializations

@@ -57,11 +57,11 @@ protected:
 
   void addInstance(const BPMN::Process* process, const BPMNOS::number instanceId, BPMNOS::number instantiationTime);
   void setValue(const BPMNOS::number instanceId, const Attribute* attribute, std::optional<BPMNOS::number> value);
-  void setDisclosure(const BPMNOS::number instanceId, const Attribute* attribute, BPMNOS::number disclosureTime);
+  void setDisclosure(const BPMNOS::number instanceId, const BPMN::Node* node, BPMNOS::number disclosureTime);
   void addPendingDisclosure(const BPMNOS::number instanceId, PendingDisclosure&& pending);
 
   mutable std::unordered_map<size_t, InstanceData> instances;
-  std::unordered_map<size_t, std::unordered_map<const Attribute*, BPMNOS::number>> disclosureTimes; ///< When each attribute value is revealed
+  std::unordered_map<size_t, std::unordered_map<const BPMN::Node*, BPMNOS::number>> disclosure; ///< Instance ID -> Node -> time when node's data is disclosed
   mutable std::unordered_map<size_t, std::vector<PendingDisclosure>> pendingDisclosures; ///< Instance ID -> pending disclosures
   mutable std::set<std::pair<size_t, const Attribute*>> disclosedAttributes; ///< Track which attributes have been disclosed
   BPMNOS::number earliestInstantiationTime;
