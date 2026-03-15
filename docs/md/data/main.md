@@ -290,7 +290,7 @@ INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE; ARRIVAL; COMPLETION
 | Function | Expected Value |
 |----------|----------------|
 | `uniform(a, b)` | (a + b) / 2 |
-| `uniform_int(a, b)` | trunc((a + b) / 2) |
+| `uniform_int(a, b)` | (a + b) / 2 |
 | `normal(mean, stddev)` | mean |
 | `exponential(rate)` | 1 / rate |
 | `poisson(mean)` | mean |

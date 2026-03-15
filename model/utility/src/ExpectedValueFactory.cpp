@@ -20,13 +20,13 @@ void ExpectedValueFactory::registerFunctions(LIMEX::Handle<double>& handle) {
     });
   }
 
-  // uniform_int(min, max) - Expected value: trunc((min + max) / 2)
+  // uniform_int(min, max) - Expected value: (min + max) / 2
   if (!nameExists("uniform_int")) {
     handle.add("uniform_int", [](const std::vector<double>& args) -> double {
       if (args.size() != 2) {
         throw std::runtime_error("uniform_int requires 2 arguments: min, max");
       }
-      return std::trunc((args[0] + args[1]) / 2.0);
+      return (args[0] + args[1]) / 2.0;
     });
   }
 

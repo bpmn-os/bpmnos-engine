@@ -14,7 +14,7 @@ namespace BPMNOS {
  *
  * Expected values:
  * - uniform(a, b): (a + b) / 2
- * - uniform_int(a, b): trunc((a + b) / 2)
+ * - uniform_int(a, b): (a + b) / 2
  * - normal(mean, stddev): mean
  * - exponential(rate): 1 / rate
  * - poisson(mean): mean
