@@ -14,13 +14,11 @@ SCENARIO( "Decision task with enumeration", "[execution][decisiontask]" ) {
 
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine;
-      Execution::ReadyHandler readyHandler;
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
       Execution::LocalEvaluator evaluator;
       Execution::BestEnumeratedChoice choiceHandler(&evaluator);
       Execution::TimeWarp timeHandler;
-      readyHandler.connect(&engine);
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
       choiceHandler.connect(&engine);
@@ -51,13 +49,11 @@ SCENARIO( "Decision task with enumeration", "[execution][decisiontask]" ) {
 
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine;
-      Execution::ReadyHandler readyHandler;
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
       Execution::LocalEvaluator evaluator;
       Execution::BestEnumeratedChoice choiceHandler(&evaluator);
       Execution::TimeWarp timeHandler;
-      readyHandler.connect(&engine);
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
       choiceHandler.connect(&engine);
@@ -91,13 +87,11 @@ SCENARIO( "Decision task with bounds", "[execution][decisiontask]" ) {
 
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine;
-      Execution::ReadyHandler readyHandler;
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
       Execution::LocalEvaluator evaluator;
       Execution::BestEnumeratedChoice choiceHandler(&evaluator);
       Execution::TimeWarp timeHandler;
-      readyHandler.connect(&engine);
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
       choiceHandler.connect(&engine);

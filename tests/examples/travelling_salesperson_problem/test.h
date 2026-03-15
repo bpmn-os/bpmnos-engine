@@ -16,7 +16,6 @@ SCENARIO( "Travelling salesperson problem", "[examples][travelling_salesperson_p
 
     WHEN( "The engine is started with a first-come-first-serve policy" ) {
       Execution::Engine engine;
-      Execution::ReadyHandler readyHandler;
       Execution::InstantEntry entryHandler;
 //      Execution::FirstComeFirstServedSequentialEntry sequentialEntryHandler;
       Execution::FirstMatchingMessageDelivery messageHandler;
@@ -25,7 +24,6 @@ SCENARIO( "Travelling salesperson problem", "[examples][travelling_salesperson_p
       Execution::TimeWarp timeHandler;
 //      sequentialEntryHandler.connect(&engine);
       messageHandler.connect(&engine);
-      readyHandler.connect(&engine);
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
       messageTaskTerminator.connect(&engine);
@@ -48,7 +46,6 @@ SCENARIO( "Travelling salesperson problem", "[examples][travelling_salesperson_p
       Execution::Engine engine;
       Execution::LocalEvaluator evaluator;
       
-      Execution::ReadyHandler readyHandler;
 //      Execution::InstantEntry entryHandler;
       Execution::BestFirstEntry entryHandler(&evaluator);
       Execution::FirstMatchingMessageDelivery messageHandler;
@@ -56,7 +53,6 @@ SCENARIO( "Travelling salesperson problem", "[examples][travelling_salesperson_p
       Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
       
-      readyHandler.connect(&engine);
       
 //      sequentialEntryHandler.connect(&engine);
       messageHandler.connect(&engine);
@@ -80,8 +76,6 @@ SCENARIO( "Travelling salesperson problem", "[examples][travelling_salesperson_p
 
     WHEN( "The engine is started with the greedy controller" ) {
       Execution::Engine engine;
-      Execution::ReadyHandler readyHandler;
-      readyHandler.connect(&engine);
 
       Execution::LocalEvaluator evaluator;
       Execution::GreedyController controller(&evaluator);

@@ -13,11 +13,9 @@ SCENARIO( "Symmetric exclusive gateways", "[execution][exclusivegateway]" ) {
 
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine;
-      Execution::ReadyHandler readyHandler;
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
-      readyHandler.connect(&engine);
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
       timeHandler.connect(&engine);
@@ -67,11 +65,9 @@ SCENARIO( "Symmetric exclusive gateways", "[execution][exclusivegateway]" ) {
 
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine;
-      Execution::ReadyHandler readyHandler;
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
-      readyHandler.connect(&engine);
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
       timeHandler.connect(&engine);
@@ -121,11 +117,9 @@ SCENARIO( "Symmetric exclusive gateways", "[execution][exclusivegateway]" ) {
 
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine;
-      Execution::ReadyHandler readyHandler;
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
-      readyHandler.connect(&engine);
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
       timeHandler.connect(&engine);

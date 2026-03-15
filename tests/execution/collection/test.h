@@ -13,11 +13,9 @@ SCENARIO( "A simple process with subprocess and task", "[collection][process]" )
 
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine;
-      Execution::ReadyHandler readyHandler;
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
-      readyHandler.connect(&engine);
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
       timeHandler.connect(&engine);

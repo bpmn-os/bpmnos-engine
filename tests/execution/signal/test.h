@@ -14,11 +14,9 @@ SCENARIO( "Two processes with signal", "[execution][signal]" ) {
       auto scenario = dataProvider.createScenario();
 
       Execution::Engine engine;
-      Execution::ReadyHandler readyHandler;
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
-      readyHandler.connect(&engine);
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
       timeHandler.connect(&engine);
@@ -43,11 +41,9 @@ SCENARIO( "Two processes with signal", "[execution][signal]" ) {
       auto scenario = dataProvider.createScenario();
 
       Execution::Engine engine;
-      Execution::ReadyHandler readyHandler;
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
-      readyHandler.connect(&engine);
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
       timeHandler.connect(&engine);
@@ -74,11 +70,9 @@ SCENARIO( "Two processes with signal", "[execution][signal]" ) {
       auto scenario = dataProvider.createScenario();
 
       Execution::Engine engine;
-      Execution::ReadyHandler readyHandler;
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
-      readyHandler.connect(&engine);
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
       timeHandler.connect(&engine);
@@ -107,11 +101,9 @@ SCENARIO( "Two processes with signal", "[execution][signal]" ) {
       auto scenario = dataProvider.createScenario();
 
       Execution::Engine engine;
-      Execution::ReadyHandler readyHandler;
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
-      readyHandler.connect(&engine);
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
       timeHandler.connect(&engine);

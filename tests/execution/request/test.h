@@ -14,12 +14,10 @@ SCENARIO( "A simple request", "[execution][request]" ) {
       auto scenario = dataProvider.createScenario();
 
       Execution::Engine engine;
-      Execution::ReadyHandler readyHandler;
       Execution::InstantEntry entryHandler;
       Execution::FirstMatchingMessageDelivery messageHandler;
       Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
-      readyHandler.connect(&engine);
       entryHandler.connect(&engine);
       messageHandler.connect(&engine);
       exitHandler.connect(&engine);
@@ -54,12 +52,10 @@ SCENARIO( "A revoked request", "[execution][request]" ) {
       auto scenario = dataProvider.createScenario();
 
       Execution::Engine engine;
-      Execution::ReadyHandler readyHandler;
       Execution::InstantEntry entryHandler;
       Execution::FirstMatchingMessageDelivery messageHandler;
       Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
-      readyHandler.connect(&engine);
       entryHandler.connect(&engine);
       messageHandler.connect(&engine);
       exitHandler.connect(&engine);

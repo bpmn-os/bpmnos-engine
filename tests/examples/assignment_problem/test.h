@@ -16,14 +16,12 @@ SCENARIO( "Assignment problem", "[examples][assignment_problem]" ) {
 
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine;
-      Execution::ReadyHandler readyHandler;
       Execution::InstantEntry entryHandler;
       Execution::FirstMatchingMessageDelivery messageHandler;
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;
       Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
       messageHandler.connect(&engine);
-      readyHandler.connect(&engine);
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
       messageTaskTerminator.connect(&engine);
@@ -56,14 +54,12 @@ SCENARIO( "Assignment problem", "[examples][assignment_problem]" ) {
 
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine;
-      Execution::ReadyHandler readyHandler;
       Execution::InstantEntry entryHandler;
       Execution::FirstMatchingMessageDelivery messageHandler;
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;
       Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
       messageHandler.connect(&engine);
-      readyHandler.connect(&engine);
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
       messageTaskTerminator.connect(&engine);
@@ -92,8 +88,6 @@ SCENARIO( "Assignment problem", "[examples][assignment_problem]" ) {
 
     WHEN( "The engine is started with the greedy controller" ) {
       Execution::Engine engine;
-      Execution::ReadyHandler readyHandler;
-      readyHandler.connect(&engine);
 
       Execution::LocalEvaluator evaluator;
       Execution::GreedyController controller(&evaluator);
@@ -141,14 +135,12 @@ SCENARIO( "Assignment problem", "[examples][assignment_problem]" ) {
 
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine;
-      Execution::ReadyHandler readyHandler;
       Execution::InstantEntry entryHandler;
       Execution::FirstMatchingMessageDelivery messageHandler;
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;
       Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
       messageHandler.connect(&engine);
-      readyHandler.connect(&engine);
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
       messageTaskTerminator.connect(&engine);
@@ -181,14 +173,12 @@ SCENARIO( "Assignment problem", "[examples][assignment_problem]" ) {
 
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine;
-      Execution::ReadyHandler readyHandler;
       Execution::InstantEntry entryHandler;
       Execution::FirstMatchingMessageDelivery messageHandler;
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;
       Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
       messageHandler.connect(&engine);
-      readyHandler.connect(&engine);
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
       messageTaskTerminator.connect(&engine);

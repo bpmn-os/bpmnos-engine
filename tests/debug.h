@@ -24,8 +24,6 @@ SCENARIO( "Guided knapsack problem", "[examples][knapsack_problem]" ) {
 
     WHEN( "The engine is started with the guided controller and greedy decisions" ) {
       Execution::Engine engine1;
-      Execution::ReadyHandler readyHandler1;
-      readyHandler1.connect(&engine1);
       completionHandler1.connect(&engine1);
 
       Execution::GuidedEvaluator evaluator1;
@@ -61,8 +59,6 @@ SCENARIO( "Guided knapsack problem", "[examples][knapsack_problem]" ) {
 
     WHEN( "The engine is started with the guided controller and greedy decisions" ) {
       Execution::Engine engine2;
-      Execution::ReadyHandler readyHandler2;
-      readyHandler2.connect(&engine2);
       completionHandler2.connect(&engine2);
 
       Execution::GuidedEvaluator evaluator2;

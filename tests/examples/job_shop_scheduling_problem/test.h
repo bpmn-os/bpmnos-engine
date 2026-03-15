@@ -22,8 +22,6 @@ SCENARIO( "Job shop schedulng problem", "[examples][job_shop_scheduling_problem]
 
     WHEN( "The engine is started with the guided controller" ) {
       Execution::Engine engine;
-      Execution::ReadyHandler readyHandler;
-      readyHandler.connect(&engine);
 
       Execution::GuidedEvaluator evaluator;
       Execution::GreedyController controller(&evaluator);

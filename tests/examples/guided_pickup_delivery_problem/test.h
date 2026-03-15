@@ -30,8 +30,6 @@ SCENARIO( "Guided pickup delivery problem", "[examples][pickup_delivery_problem]
     auto scenario = dataProvider.createScenario();
 
     Execution::Engine engine;
-    Execution::ReadyHandler readyHandler;
-    readyHandler.connect(&engine);
 
     Execution::GuidedEvaluator evaluator;
     Execution::GreedyController controller(&evaluator);
@@ -98,8 +96,6 @@ SCENARIO( "Guided pickup delivery problem", "[examples][pickup_delivery_problem]
     auto scenario = dataProvider.createScenario();
 
     Execution::Engine engine;
-    Execution::ReadyHandler readyHandler;
-    readyHandler.connect(&engine);
 
     Execution::GuidedEvaluator evaluator;
     Execution::GreedyController controller(&evaluator);
@@ -170,8 +166,6 @@ SCENARIO( "Guided pickup delivery problem", "[examples][pickup_delivery_problem]
     auto scenario = dataProvider.createScenario();
 
     Execution::Engine engine;
-    Execution::ReadyHandler readyHandler;
-    readyHandler.connect(&engine);
 
     Execution::GuidedEvaluator evaluator;
     Execution::GreedyController controller(&evaluator);

@@ -21,7 +21,6 @@ SCENARIO( "Knapsack problem", "[examples][knapsack_problem]" ) {
 
     WHEN( "The engine is started with naive dispatcher" ) {
       Execution::Engine engine;
-      Execution::ReadyHandler readyHandler;
       Execution::InstantEntry parallelEntryHandler;
 //      Execution::FirstComeFirstServedSequentialEntry sequentialEntryHandler;
       Execution::FirstMatchingMessageDelivery messageHandler;
@@ -29,7 +28,6 @@ SCENARIO( "Knapsack problem", "[examples][knapsack_problem]" ) {
       Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
       messageHandler.connect(&engine);
-      readyHandler.connect(&engine);
       parallelEntryHandler.connect(&engine);
 //      sequentialEntryHandler.connect(&engine);
       exitHandler.connect(&engine);
