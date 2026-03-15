@@ -22,9 +22,7 @@ SCENARIO( "Bin packing problem", "[examples][bin_packing_problem]" ) {
     WHEN( "The engine is started with the guided controller" ) {
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
-      Execution::DeterministicTaskCompletion completionHandler;
       readyHandler.connect(&engine);
-      completionHandler.connect(&engine);
 
       Execution::GuidedEvaluator evaluator;
       Execution::GreedyController controller(&evaluator);
@@ -88,9 +86,7 @@ SCENARIO( "Bin packing problem", "[examples][bin_packing_problem]" ) {
     WHEN( "The engine is started with the guided controller" ) {
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
-      Execution::DeterministicTaskCompletion completionHandler;
       readyHandler.connect(&engine);
-      completionHandler.connect(&engine);
 
       Execution::GuidedEvaluator evaluator;
       Execution::GreedyController controller(&evaluator);

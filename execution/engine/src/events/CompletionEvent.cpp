@@ -3,9 +3,9 @@
 
 using namespace BPMNOS::Execution;
 
-CompletionEvent::CompletionEvent(const Token* token,  std::optional<Values> updatedStatus)
+CompletionEvent::CompletionEvent(const Token* token, Values status)
   : Event(token)
-  , updatedStatus(updatedStatus)
+  , status(std::move(status))
 {
 }
 

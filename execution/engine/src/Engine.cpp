@@ -15,7 +15,9 @@ using namespace BPMNOS::Execution;
 Engine::Engine()
 {
   clockTick = 1;
-  addSubscriber( &conditionalEventObserver, Observable::Type::DataUpdate);
+  addSubscriber(&conditionalEventObserver, Observable::Type::DataUpdate);
+  addSubscriber(&scenarioUpdater, Observable::Type::Event, Observable::Type::Token);
+  subscribe(&taskCompletionHandler);
 }
 
 Engine::~Engine()
@@ -186,12 +188,9 @@ void Engine::process(const ChoiceEvent* event) {
 void Engine::process(const CompletionEvent* event) {
 //std::cerr << "CompletionEvent " << event.token->node->id << std::endl;
   Token* token = const_cast<Token*>(event->token);
-  token->status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = systemState->currentTime;
   systemState->tokensAwaitingCompletionEvent.remove(token);
   // update token status
-  if ( event->updatedStatus.has_value() ) {
-    token->status = std::move( event->updatedStatus.value() );
-  }
+  token->status = std::move(event->status);
 
   commands.emplace_back(std::bind(&Token::advanceToCompleted,token), token);
 }

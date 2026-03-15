@@ -15,7 +15,6 @@ SCENARIO( "Parallel fork", "[execution][parallelgateway]" ) {
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
       Execution::InstantEntry entryHandler;
-      Execution::DeterministicTaskCompletion completionHandler;
       Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
       timeHandler.connect(&engine);
@@ -89,12 +88,10 @@ SCENARIO( "Symmetric parallel gateways", "[execution][parallelgateway]" ) {
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
       Execution::InstantEntry entryHandler;
-      Execution::DeterministicTaskCompletion completionHandler;
       Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
       readyHandler.connect(&engine);
       entryHandler.connect(&engine);
-      completionHandler.connect(&engine);
       exitHandler.connect(&engine);
       timeHandler.connect(&engine);
       Execution::Recorder recorder;

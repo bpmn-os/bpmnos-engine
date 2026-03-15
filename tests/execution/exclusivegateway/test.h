@@ -15,12 +15,10 @@ SCENARIO( "Symmetric exclusive gateways", "[execution][exclusivegateway]" ) {
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
       Execution::InstantEntry entryHandler;
-      Execution::DeterministicTaskCompletion completionHandler;
       Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
       readyHandler.connect(&engine);
       entryHandler.connect(&engine);
-      completionHandler.connect(&engine);
       exitHandler.connect(&engine);
       timeHandler.connect(&engine);
       Execution::Recorder recorder;
@@ -71,12 +69,10 @@ SCENARIO( "Symmetric exclusive gateways", "[execution][exclusivegateway]" ) {
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
       Execution::InstantEntry entryHandler;
-      Execution::DeterministicTaskCompletion completionHandler;
       Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
       readyHandler.connect(&engine);
       entryHandler.connect(&engine);
-      completionHandler.connect(&engine);
       exitHandler.connect(&engine);
       timeHandler.connect(&engine);
       Execution::Recorder recorder;
@@ -127,12 +123,10 @@ SCENARIO( "Symmetric exclusive gateways", "[execution][exclusivegateway]" ) {
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
       Execution::InstantEntry entryHandler;
-      Execution::DeterministicTaskCompletion completionHandler;
       Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
       readyHandler.connect(&engine);
       entryHandler.connect(&engine);
-      completionHandler.connect(&engine);
       exitHandler.connect(&engine);
       timeHandler.connect(&engine);
       Execution::Recorder recorder;

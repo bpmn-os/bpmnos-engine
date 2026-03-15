@@ -3,6 +3,7 @@
 
 #include <string>
 #include <memory>
+#include <map>
 #include <unordered_map>
 #include <bpmn++.h>
 #include "model/utility/src/Number.h"
@@ -88,7 +89,42 @@ public:
    */
   virtual std::optional<BPMNOS::Values> getKnownData(const BPMNOS::number instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const = 0;
 
+  /**
+   * @brief Store the completion status when a task enters BUSY state.
+   *
+   * @param instanceId The instance identifier.
+   * @param task The task node entering BUSY state.
+   * @param status The predicted completion status values.
+   */
+  virtual void setTaskCompletionStatus(
+    const BPMNOS::number instanceId,
+    const BPMN::Node* task,
+    BPMNOS::Values status
+  ) const {
+    taskCompletionStatus[{(size_t)instanceId, task}] = std::move(status);
+  }
+
+  /**
+   * @brief Get the completion status for a task.
+   *
+   * For deterministic scenarios, returns the value stored by setTaskCompletionStatus().
+   * For stochastic scenarios, evaluates COMPLETION expressions and returns updated status.
+   *
+   * @param instanceId The instance identifier.
+   * @param task The task node that is completing.
+   * @return Completion status values.
+   */
+  virtual BPMNOS::Values getTaskCompletionStatus(
+    const BPMNOS::number instanceId,
+    const BPMN::Node* task
+  ) const {
+    return taskCompletionStatus.at({(size_t)instanceId, task});
+  }
+
   BPMNOS::Values globals;
+
+  /// Stored completion status per (instanceId, task)
+  mutable std::map<std::pair<size_t, const BPMN::Node*>, BPMNOS::Values> taskCompletionStatus;
   const Model* model;  ///< Pointer to the BPMN model.
 
 protected:

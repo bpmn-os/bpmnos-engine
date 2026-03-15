@@ -22,7 +22,6 @@ SeededController::SeededController(const BPMNOS::Execution::FlattenedGraph* flat
 
 void SeededController::connect(Mediator* mediator) {
   readyHandler.connect(mediator);
-  completionHandler.connect(mediator);
   Controller::connect(mediator);
 }
 

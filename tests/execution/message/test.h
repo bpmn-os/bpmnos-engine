@@ -17,14 +17,12 @@ SCENARIO( "Simple messaging", "[execution][message]" ) {
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
       Execution::InstantEntry entryHandler;
-      Execution::DeterministicTaskCompletion completionHandler;
       Execution::FirstMatchingMessageDelivery messageHandler;
       Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
       messageHandler.connect(&engine);
       readyHandler.connect(&engine);
       entryHandler.connect(&engine);
-      completionHandler.connect(&engine);
       exitHandler.connect(&engine);
       timeHandler.connect(&engine);
       Execution::Recorder recorder;
@@ -53,14 +51,12 @@ SCENARIO( "Simple messaging", "[execution][message]" ) {
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
       Execution::InstantEntry entryHandler;
-      Execution::DeterministicTaskCompletion completionHandler;
       Execution::FirstMatchingMessageDelivery messageHandler;
       Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
       messageHandler.connect(&engine);
       readyHandler.connect(&engine);
       entryHandler.connect(&engine);
-      completionHandler.connect(&engine);
       exitHandler.connect(&engine);
       timeHandler.connect(&engine);
       Execution::Recorder recorder;
@@ -90,14 +86,12 @@ SCENARIO( "Simple messaging", "[execution][message]" ) {
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
       Execution::InstantEntry entryHandler;
-      Execution::DeterministicTaskCompletion completionHandler;
       Execution::FirstMatchingMessageDelivery messageHandler;
       Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
       messageHandler.connect(&engine);
       readyHandler.connect(&engine);
       entryHandler.connect(&engine);
-      completionHandler.connect(&engine);
       exitHandler.connect(&engine);
       timeHandler.connect(&engine);
       Execution::Recorder recorder;
@@ -128,7 +122,6 @@ SCENARIO( "Simple messaging", "[execution][message]" ) {
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
       Execution::InstantEntry entryHandler;
-      Execution::DeterministicTaskCompletion completionHandler;
       Execution::FirstMatchingMessageDelivery messageHandler;
       Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
@@ -137,7 +130,6 @@ SCENARIO( "Simple messaging", "[execution][message]" ) {
       messageHandler.connect(&engine);
       readyHandler.connect(&engine);
       entryHandler.connect(&engine);
-      completionHandler.connect(&engine);
       exitHandler.connect(&engine);
       timeHandler.connect(&engine);
       recorder.subscribe(&engine);
@@ -172,7 +164,6 @@ SCENARIO( "Message tasks", "[execution][message]" ) {
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
       Execution::InstantEntry entryHandler;
-      Execution::DeterministicTaskCompletion completionHandler;
       Execution::FirstMatchingMessageDelivery messageHandler;
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;
       Execution::InstantExit exitHandler;
@@ -180,7 +171,6 @@ SCENARIO( "Message tasks", "[execution][message]" ) {
       messageHandler.connect(&engine);
       readyHandler.connect(&engine);
       entryHandler.connect(&engine);
-      completionHandler.connect(&engine);
       exitHandler.connect(&engine);
       messageTaskTerminator.connect(&engine);
       timeHandler.connect(&engine);
@@ -209,7 +199,6 @@ SCENARIO( "Message tasks", "[execution][message]" ) {
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
       Execution::InstantEntry entryHandler;
-      Execution::DeterministicTaskCompletion completionHandler;
       Execution::FirstMatchingMessageDelivery messageHandler;
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;
       Execution::InstantExit exitHandler;
@@ -217,7 +206,6 @@ SCENARIO( "Message tasks", "[execution][message]" ) {
       messageHandler.connect(&engine);
       readyHandler.connect(&engine);
       entryHandler.connect(&engine);
-      completionHandler.connect(&engine);
       exitHandler.connect(&engine);
       messageTaskTerminator.connect(&engine);
       timeHandler.connect(&engine);
@@ -245,7 +233,6 @@ SCENARIO( "Message tasks", "[execution][message]" ) {
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
       Execution::InstantEntry entryHandler;
-      Execution::DeterministicTaskCompletion completionHandler;
       Execution::FirstMatchingMessageDelivery messageHandler;
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;
       Execution::InstantExit exitHandler;
@@ -253,7 +240,6 @@ SCENARIO( "Message tasks", "[execution][message]" ) {
       messageHandler.connect(&engine);
       readyHandler.connect(&engine);
       entryHandler.connect(&engine);
-      completionHandler.connect(&engine);
       exitHandler.connect(&engine);
       messageTaskTerminator.connect(&engine);
       timeHandler.connect(&engine);
@@ -282,7 +268,6 @@ SCENARIO( "Message tasks", "[execution][message]" ) {
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
       Execution::InstantEntry entryHandler;
-      Execution::DeterministicTaskCompletion completionHandler;
       Execution::FirstMatchingMessageDelivery messageHandler;
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;
       Execution::InstantExit exitHandler;
@@ -290,7 +275,6 @@ SCENARIO( "Message tasks", "[execution][message]" ) {
       messageHandler.connect(&engine);
       readyHandler.connect(&engine);
       entryHandler.connect(&engine);
-      completionHandler.connect(&engine);
       exitHandler.connect(&engine);
       messageTaskTerminator.connect(&engine);
       timeHandler.connect(&engine);
@@ -328,7 +312,6 @@ SCENARIO( "Message tasks with timer", "[execution][message]" ) {
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
       Execution::InstantEntry entryHandler;
-      Execution::DeterministicTaskCompletion completionHandler;
       Execution::FirstMatchingMessageDelivery messageHandler;
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;
       Execution::InstantExit exitHandler;
@@ -336,7 +319,6 @@ SCENARIO( "Message tasks with timer", "[execution][message]" ) {
       messageHandler.connect(&engine);
       readyHandler.connect(&engine);
       entryHandler.connect(&engine);
-      completionHandler.connect(&engine);
       exitHandler.connect(&engine);
       messageTaskTerminator.connect(&engine);
       timeHandler.connect(&engine);
@@ -365,7 +347,6 @@ SCENARIO( "Message tasks with timer", "[execution][message]" ) {
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
       Execution::InstantEntry entryHandler;
-      Execution::DeterministicTaskCompletion completionHandler;
       Execution::FirstMatchingMessageDelivery messageHandler;
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;
       Execution::InstantExit exitHandler;
@@ -373,7 +354,6 @@ SCENARIO( "Message tasks with timer", "[execution][message]" ) {
       messageHandler.connect(&engine);
       readyHandler.connect(&engine);
       entryHandler.connect(&engine);
-      completionHandler.connect(&engine);
       exitHandler.connect(&engine);
       messageTaskTerminator.connect(&engine);
       timeHandler.connect(&engine);
@@ -401,7 +381,6 @@ SCENARIO( "Message tasks with timer", "[execution][message]" ) {
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
       Execution::InstantEntry entryHandler;
-      Execution::DeterministicTaskCompletion completionHandler;
       Execution::FirstMatchingMessageDelivery messageHandler;
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;
       Execution::InstantExit exitHandler;
@@ -409,7 +388,6 @@ SCENARIO( "Message tasks with timer", "[execution][message]" ) {
       messageHandler.connect(&engine);
       readyHandler.connect(&engine);
       entryHandler.connect(&engine);
-      completionHandler.connect(&engine);
       exitHandler.connect(&engine);
       messageTaskTerminator.connect(&engine);
       timeHandler.connect(&engine);
@@ -438,7 +416,6 @@ SCENARIO( "Message tasks with timer", "[execution][message]" ) {
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
       Execution::InstantEntry entryHandler;
-      Execution::DeterministicTaskCompletion completionHandler;
       Execution::FirstMatchingMessageDelivery messageHandler;
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;
       Execution::InstantExit exitHandler;
@@ -446,7 +423,6 @@ SCENARIO( "Message tasks with timer", "[execution][message]" ) {
       messageHandler.connect(&engine);
       readyHandler.connect(&engine);
       entryHandler.connect(&engine);
-      completionHandler.connect(&engine);
       exitHandler.connect(&engine);
       messageTaskTerminator.connect(&engine);
       timeHandler.connect(&engine);
@@ -487,14 +463,12 @@ SCENARIO( "Multi-instance send task", "[execution][message]" ) {
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
       Execution::InstantEntry entryHandler;
-      Execution::DeterministicTaskCompletion completionHandler;
       Execution::FirstMatchingMessageDelivery messageHandler;
       Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
       messageHandler.connect(&engine);
       readyHandler.connect(&engine);
       entryHandler.connect(&engine);
-      completionHandler.connect(&engine);
       exitHandler.connect(&engine);
       timeHandler.connect(&engine);
       Execution::Recorder recorder;
@@ -524,14 +498,12 @@ SCENARIO( "Multi-instance send task", "[execution][message]" ) {
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
       Execution::InstantEntry entryHandler;
-      Execution::DeterministicTaskCompletion completionHandler;
       Execution::FirstMatchingMessageDelivery messageHandler;
       Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
       messageHandler.connect(&engine);
       readyHandler.connect(&engine);
       entryHandler.connect(&engine);
-      completionHandler.connect(&engine);
       exitHandler.connect(&engine);
       timeHandler.connect(&engine);
       Execution::Recorder recorder;
@@ -568,14 +540,12 @@ SCENARIO( "Multi-instance receive task", "[execution][message]" ) {
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
       Execution::InstantEntry entryHandler;
-      Execution::DeterministicTaskCompletion completionHandler;
       Execution::FirstMatchingMessageDelivery messageHandler;
       Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
       messageHandler.connect(&engine);
       readyHandler.connect(&engine);
       entryHandler.connect(&engine);
-      completionHandler.connect(&engine);
       exitHandler.connect(&engine);
       timeHandler.connect(&engine);
       Execution::Recorder recorder;
@@ -605,14 +575,12 @@ SCENARIO( "Multi-instance receive task", "[execution][message]" ) {
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
       Execution::InstantEntry entryHandler;
-      Execution::DeterministicTaskCompletion completionHandler;
       Execution::FirstMatchingMessageDelivery messageHandler;
       Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
       messageHandler.connect(&engine);
       readyHandler.connect(&engine);
       entryHandler.connect(&engine);
-      completionHandler.connect(&engine);
       exitHandler.connect(&engine);
       timeHandler.connect(&engine);
       Execution::Recorder recorder;

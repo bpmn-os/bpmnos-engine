@@ -17,12 +17,18 @@ namespace BPMNOS::Model {
 class Expression {
 public:
   enum class Type { ASSIGN, UNASSIGN, IS_NULL, IS_NOT_NULL, OTHER };
-  Expression(const std::string expression, const AttributeRegistry& attributeRegistry, bool newTarget = false);
+  /// Construct expression using attributeRegistry's limexHandle
+  Expression(const std::string expression, const AttributeRegistry& attributeRegistry,
+             bool newTarget = false);
+  /// Construct expression using a custom LIMEX handle (for stochastic expressions)
+  Expression(const LIMEX::Handle<double>& handle, const std::string expression,
+             const AttributeRegistry& attributeRegistry, bool newTarget = false);
   Expression(const Expression&) = delete;
   Expression(Expression&&) = delete;
   Expression& operator=(const Expression&) = delete;
   Expression& operator=(Expression&&) = delete;
   const AttributeRegistry& attributeRegistry;
+  const LIMEX::Handle<double>& handle;
   const std::string expression;
   const LIMEX::Expression<double> compiled;
   const Type type;

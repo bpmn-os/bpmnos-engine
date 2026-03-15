@@ -18,7 +18,6 @@ SCENARIO( "Travelling salesperson problem", "[examples][travelling_salesperson_p
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
       Execution::InstantEntry entryHandler;
-      Execution::DeterministicTaskCompletion completionHandler;
 //      Execution::FirstComeFirstServedSequentialEntry sequentialEntryHandler;
       Execution::FirstMatchingMessageDelivery messageHandler;
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;
@@ -28,7 +27,6 @@ SCENARIO( "Travelling salesperson problem", "[examples][travelling_salesperson_p
       messageHandler.connect(&engine);
       readyHandler.connect(&engine);
       entryHandler.connect(&engine);
-      completionHandler.connect(&engine);
       exitHandler.connect(&engine);
       messageTaskTerminator.connect(&engine);
       timeHandler.connect(&engine);
@@ -52,7 +50,6 @@ SCENARIO( "Travelling salesperson problem", "[examples][travelling_salesperson_p
       
       Execution::ReadyHandler readyHandler;
 //      Execution::InstantEntry entryHandler;
-      Execution::DeterministicTaskCompletion completionHandler;
       Execution::BestFirstEntry entryHandler(&evaluator);
       Execution::FirstMatchingMessageDelivery messageHandler;
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;
@@ -60,7 +57,6 @@ SCENARIO( "Travelling salesperson problem", "[examples][travelling_salesperson_p
       Execution::TimeWarp timeHandler;
       
       readyHandler.connect(&engine);
-      completionHandler.connect(&engine);
       
 //      sequentialEntryHandler.connect(&engine);
       messageHandler.connect(&engine);
@@ -85,9 +81,7 @@ SCENARIO( "Travelling salesperson problem", "[examples][travelling_salesperson_p
     WHEN( "The engine is started with the greedy controller" ) {
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
-      Execution::DeterministicTaskCompletion completionHandler;
       readyHandler.connect(&engine);
-      completionHandler.connect(&engine);
 
       Execution::LocalEvaluator evaluator;
       Execution::GreedyController controller(&evaluator);

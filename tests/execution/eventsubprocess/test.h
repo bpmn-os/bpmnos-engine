@@ -15,12 +15,10 @@ SCENARIO( "Caught error end event", "[execution][eventsubprocess]" ) {
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
       Execution::InstantEntry entryHandler;
-      Execution::DeterministicTaskCompletion completionHandler;
       Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
       readyHandler.connect(&engine);
       entryHandler.connect(&engine);
-      completionHandler.connect(&engine);
       exitHandler.connect(&engine);
       timeHandler.connect(&engine);
       Execution::Recorder recorder;
@@ -72,12 +70,10 @@ SCENARIO( "Interrupting escalation", "[execution][eventsubprocess]" ) {
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
       Execution::InstantEntry entryHandler;
-      Execution::DeterministicTaskCompletion completionHandler;
       Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
       readyHandler.connect(&engine);
       entryHandler.connect(&engine);
-      completionHandler.connect(&engine);
       exitHandler.connect(&engine);
       timeHandler.connect(&engine);
       Execution::Recorder recorder;
@@ -138,12 +134,10 @@ SCENARIO( "Non-interrupting escalation", "[execution][eventsubprocess]" ) {
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
       Execution::InstantEntry entryHandler;
-      Execution::DeterministicTaskCompletion completionHandler;
       Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
       readyHandler.connect(&engine);
       entryHandler.connect(&engine);
-      completionHandler.connect(&engine);
       exitHandler.connect(&engine);
       timeHandler.connect(&engine);
       Execution::Recorder recorder;
@@ -208,12 +202,10 @@ SCENARIO( "Caught and rethrown error", "[execution][eventsubprocess]" ) {
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
       Execution::InstantEntry entryHandler;
-      Execution::DeterministicTaskCompletion completionHandler;
       Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
       readyHandler.connect(&engine);
       entryHandler.connect(&engine);
-      completionHandler.connect(&engine);
       exitHandler.connect(&engine);
       timeHandler.connect(&engine);
       Execution::Recorder recorder;
@@ -268,12 +260,10 @@ SCENARIO( "Non-interrupting escalation throwing error", "[execution][eventsubpro
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
       Execution::InstantEntry entryHandler;
-      Execution::DeterministicTaskCompletion completionHandler;
       Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
       readyHandler.connect(&engine);
       entryHandler.connect(&engine);
-      completionHandler.connect(&engine);
       exitHandler.connect(&engine);
       timeHandler.connect(&engine);
       Execution::Recorder recorder;
@@ -323,12 +313,10 @@ SCENARIO( "Interrupting escalation throwing error", "[execution][eventsubprocess
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
       Execution::InstantEntry entryHandler;
-      Execution::DeterministicTaskCompletion completionHandler;
       Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
       readyHandler.connect(&engine);
       entryHandler.connect(&engine);
-      completionHandler.connect(&engine);
       exitHandler.connect(&engine);
       timeHandler.connect(&engine);
       Execution::Recorder recorder;
@@ -374,9 +362,7 @@ SCENARIO( "N-to-1 assignment", "[execution][eventsubprocess]" ) {
 
   Execution::Engine engine;
   Execution::ReadyHandler readyHandler;
-  Execution::DeterministicTaskCompletion completionHandler;
   readyHandler.connect(&engine);
-  completionHandler.connect(&engine);
 
   Execution::GuidedEvaluator evaluator;
   Execution::GreedyController controller(&evaluator);

@@ -31,9 +31,7 @@ SCENARIO( "Pickup delivery problem", "[examples][pickup_delivery_problem]" ) {
 
     Execution::Engine engine;
     Execution::ReadyHandler readyHandler;
-    Execution::DeterministicTaskCompletion completionHandler;
     readyHandler.connect(&engine);
-    completionHandler.connect(&engine);
 
     Execution::LocalEvaluator evaluator;
     Execution::GreedyController controller(&evaluator);
@@ -102,9 +100,7 @@ SCENARIO( "Pickup delivery problem", "[examples][pickup_delivery_problem]" ) {
 
     Execution::Engine engine;
     Execution::ReadyHandler readyHandler;
-    Execution::DeterministicTaskCompletion completionHandler;
     readyHandler.connect(&engine);
-    completionHandler.connect(&engine);
 
     Execution::LocalEvaluator evaluator;
     Execution::GreedyController controller(&evaluator);

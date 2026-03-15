@@ -18,7 +18,6 @@ SCENARIO( "Assignment problem", "[examples][assignment_problem]" ) {
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
       Execution::InstantEntry entryHandler;
-      Execution::DeterministicTaskCompletion completionHandler;
       Execution::FirstMatchingMessageDelivery messageHandler;
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;
       Execution::InstantExit exitHandler;
@@ -26,7 +25,6 @@ SCENARIO( "Assignment problem", "[examples][assignment_problem]" ) {
       messageHandler.connect(&engine);
       readyHandler.connect(&engine);
       entryHandler.connect(&engine);
-      completionHandler.connect(&engine);
       exitHandler.connect(&engine);
       messageTaskTerminator.connect(&engine);
       timeHandler.connect(&engine);
@@ -60,7 +58,6 @@ SCENARIO( "Assignment problem", "[examples][assignment_problem]" ) {
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
       Execution::InstantEntry entryHandler;
-      Execution::DeterministicTaskCompletion completionHandler;
       Execution::FirstMatchingMessageDelivery messageHandler;
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;
       Execution::InstantExit exitHandler;
@@ -68,7 +65,6 @@ SCENARIO( "Assignment problem", "[examples][assignment_problem]" ) {
       messageHandler.connect(&engine);
       readyHandler.connect(&engine);
       entryHandler.connect(&engine);
-      completionHandler.connect(&engine);
       exitHandler.connect(&engine);
       messageTaskTerminator.connect(&engine);
       timeHandler.connect(&engine);
@@ -97,9 +93,7 @@ SCENARIO( "Assignment problem", "[examples][assignment_problem]" ) {
     WHEN( "The engine is started with the greedy controller" ) {
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
-      Execution::DeterministicTaskCompletion completionHandler;
       readyHandler.connect(&engine);
-      completionHandler.connect(&engine);
 
       Execution::LocalEvaluator evaluator;
       Execution::GreedyController controller(&evaluator);
@@ -149,7 +143,6 @@ SCENARIO( "Assignment problem", "[examples][assignment_problem]" ) {
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
       Execution::InstantEntry entryHandler;
-      Execution::DeterministicTaskCompletion completionHandler;
       Execution::FirstMatchingMessageDelivery messageHandler;
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;
       Execution::InstantExit exitHandler;
@@ -157,7 +150,6 @@ SCENARIO( "Assignment problem", "[examples][assignment_problem]" ) {
       messageHandler.connect(&engine);
       readyHandler.connect(&engine);
       entryHandler.connect(&engine);
-      completionHandler.connect(&engine);
       exitHandler.connect(&engine);
       messageTaskTerminator.connect(&engine);
       timeHandler.connect(&engine);
@@ -191,7 +183,6 @@ SCENARIO( "Assignment problem", "[examples][assignment_problem]" ) {
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
       Execution::InstantEntry entryHandler;
-      Execution::DeterministicTaskCompletion completionHandler;
       Execution::FirstMatchingMessageDelivery messageHandler;
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;
       Execution::InstantExit exitHandler;
@@ -199,7 +190,6 @@ SCENARIO( "Assignment problem", "[examples][assignment_problem]" ) {
       messageHandler.connect(&engine);
       readyHandler.connect(&engine);
       entryHandler.connect(&engine);
-      completionHandler.connect(&engine);
       exitHandler.connect(&engine);
       messageTaskTerminator.connect(&engine);
       timeHandler.connect(&engine);

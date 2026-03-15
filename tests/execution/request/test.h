@@ -16,13 +16,11 @@ SCENARIO( "A simple request", "[execution][request]" ) {
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
       Execution::InstantEntry entryHandler;
-      Execution::DeterministicTaskCompletion completionHandler;
       Execution::FirstMatchingMessageDelivery messageHandler;
       Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
       readyHandler.connect(&engine);
       entryHandler.connect(&engine);
-      completionHandler.connect(&engine);
       messageHandler.connect(&engine);
       exitHandler.connect(&engine);
       timeHandler.connect(&engine);
@@ -58,13 +56,11 @@ SCENARIO( "A revoked request", "[execution][request]" ) {
       Execution::Engine engine;
       Execution::ReadyHandler readyHandler;
       Execution::InstantEntry entryHandler;
-      Execution::DeterministicTaskCompletion completionHandler;
       Execution::FirstMatchingMessageDelivery messageHandler;
       Execution::InstantExit exitHandler;
       Execution::TimeWarp timeHandler;
       readyHandler.connect(&engine);
       entryHandler.connect(&engine);
-      completionHandler.connect(&engine);
       messageHandler.connect(&engine);
       exitHandler.connect(&engine);
       timeHandler.connect(&engine);

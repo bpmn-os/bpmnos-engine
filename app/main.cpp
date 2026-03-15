@@ -76,9 +76,7 @@ int main(int argc, char* argv[]) {
 
   BPMNOS::Execution::Engine engine;
   BPMNOS::Execution::ReadyHandler readyHandler;
-  BPMNOS::Execution::DeterministicTaskCompletion completionHandler;
   readyHandler.connect(&engine);
-  completionHandler.connect(&engine);
 
   BPMNOS::Execution::GuidedEvaluator evaluator;
   BPMNOS::Execution::GreedyController controller(&evaluator);

@@ -7,7 +7,14 @@
 using namespace BPMNOS::Model;
 
 Expression::Expression(std::string expression, const AttributeRegistry& attributeRegistry, bool newTarget)
+  : Expression(attributeRegistry.limexHandle, expression, attributeRegistry, newTarget)
+{
+}
+
+Expression::Expression(const LIMEX::Handle<double>& handle, std::string expression,
+                       const AttributeRegistry& attributeRegistry, bool newTarget)
   : attributeRegistry(attributeRegistry)
+  , handle(handle)
   , expression(expression)
   , compiled(getExpression(expression))
   , type(getType())
@@ -20,7 +27,7 @@ Expression::Expression(std::string expression, const AttributeRegistry& attribut
       target = attributeRegistry[ name.value() ];
     }
   }
-  
+
   for ( auto& name : compiled.getVariables() ) {
     if ( name != BPMNOS::Keyword::Undefined ) {
       auto attribute = attributeRegistry[ name ];
@@ -40,7 +47,7 @@ Expression::Expression(std::string expression, const AttributeRegistry& attribut
 
 LIMEX::Expression<double> Expression::getExpression(const std::string& input) const {
   try {
-    return LIMEX::Expression<double>(encodeQuotedStrings(input), attributeRegistry.limexHandle);
+    return LIMEX::Expression<double>(encodeQuotedStrings(input), handle);
   }
   catch ( const std::exception& error ) {
     throw std::runtime_error("Expression: illegal expression '" + input + "'.\n" + error.what());

@@ -3,6 +3,8 @@ list(APPEND engine_SOURCES
   Message.cpp
   Token.cpp
   ConditionalEventObserver.cpp
+  ScenarioUpdater.cpp
+  TaskCompletionHandler.cpp
   Event.cpp
   events/TerminationEvent.cpp
   events/ClockTickEvent.cpp
@@ -47,5 +49,7 @@ list(APPEND engine_HEADERS
   EventDispatcher.h
   EventListener.h
   Mediator.h
+  ScenarioUpdater.h
+  TaskCompletionHandler.h
   Engine.h
 )
