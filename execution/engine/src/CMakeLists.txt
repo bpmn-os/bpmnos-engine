@@ -4,6 +4,7 @@ list(APPEND engine_SOURCES
   Token.cpp
   ConditionalEventObserver.cpp
   ScenarioUpdater.cpp
+  ReadyHandler.cpp
   TaskCompletionHandler.cpp
   Event.cpp
   events/TerminationEvent.cpp
@@ -50,6 +51,7 @@ list(APPEND engine_HEADERS
   EventListener.h
   Mediator.h
   ScenarioUpdater.h
+  ReadyHandler.h
   TaskCompletionHandler.h
   Engine.h
 )

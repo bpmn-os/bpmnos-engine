@@ -1,5 +1,5 @@
 #include "ReadyHandler.h"
-#include "execution/engine/src/events/ReadyEvent.h"
+#include "events/ReadyEvent.h"
 #include <cassert>
 
 using namespace BPMNOS::Execution;

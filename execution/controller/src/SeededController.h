@@ -9,7 +9,6 @@
 #include "execution/engine/src/EventDispatcher.h"
 #include "execution/engine/src/events/TerminationEvent.h"
 #include "execution/model/src/FlattenedGraph.h"
-#include "dispatcher/ReadyHandler.h"
 #include "model/bpmnos/src/extensionElements/Gatekeeper.h"
 #include "model/bpmnos/src/extensionElements/Choice.h"
 #include "model/bpmnos/src/extensionElements/MessageDefinition.h"
@@ -44,7 +43,6 @@ public:
   void synchronizeSolution(const Token* token);
 
 protected:
-  ReadyHandler readyHandler;
   Evaluator* evaluator;
   std::shared_ptr<TerminationEvent> terminationEvent;
   std::shared_ptr<Event> dispatchEvent(const SystemState* systemState);

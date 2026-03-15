@@ -2,7 +2,7 @@
 #define BPMNOS_Execution_ReadyHandler_H
 
 #include <bpmn++.h>
-#include "execution/engine/src/EventDispatcher.h"
+#include "EventDispatcher.h"
 
 namespace BPMNOS::Execution {
 

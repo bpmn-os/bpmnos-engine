@@ -10,7 +10,6 @@ list(APPEND controller_SOURCES
   GreedyDispatcher.cpp
   dispatcher/TimeWarp.cpp
   dispatcher/Metronome.cpp
-  dispatcher/ReadyHandler.cpp
   dispatcher/naive/InstantEntry.cpp
   dispatcher/naive/InstantExit.cpp
   dispatcher/naive/FirstMatchingMessageDelivery.cpp
@@ -43,7 +42,6 @@ list(APPEND controller_HEADERS
   GreedyDispatcher.h
   dispatcher/TimeWarp.h
   dispatcher/Metronome.h
-  dispatcher/ReadyHandler.h
   dispatcher/naive/InstantEntry.h
   dispatcher/naive/InstantExit.h
   dispatcher/naive/FirstMatchingMessageDelivery.h

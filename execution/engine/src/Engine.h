@@ -20,6 +20,7 @@
 #include "SystemState.h"
 #include "ConditionalEventObserver.h"
 #include "ScenarioUpdater.h"
+#include "ReadyHandler.h"
 #include "TaskCompletionHandler.h"
 
 namespace BPMNOS::Execution {
@@ -100,6 +101,7 @@ protected:
   std::unique_ptr<SystemState> systemState;
   ConditionalEventObserver conditionalEventObserver;
   ScenarioUpdater scenarioUpdater;
+  ReadyHandler readyHandler;
   TaskCompletionHandler taskCompletionHandler;
   
   bool advance();

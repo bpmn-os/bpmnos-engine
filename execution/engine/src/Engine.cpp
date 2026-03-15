@@ -17,6 +17,7 @@ Engine::Engine()
   clockTick = 1;
   addSubscriber(&conditionalEventObserver, Observable::Type::DataUpdate);
   addSubscriber(&scenarioUpdater, Observable::Type::Event, Observable::Type::Token);
+  subscribe(&readyHandler);
   subscribe(&taskCompletionHandler);
 }
 
