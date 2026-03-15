@@ -9,7 +9,6 @@ The engine internally handles:
 
 Below is an example using
 a @ref BPMNOS::Model::StaticDataProvider "static data provider" to obtain a scenario,
-a @ref BPMNOS::Execution::ReadyHandler "ready handler", to provide activity-related information,
 a @ref BPMNOS::Execution::TimeWarp "time warp handler", to trigger the advancement of the simulation time,
 and a @ref BPMNOS::Execution::GreedyController "greedy controller" using a @ref BPMNOS::Execution::GuidedEvaluator "guided evaluator".
 
@@ -24,10 +23,6 @@ int main() {
 
   // initialize execution engine
   BPMNOS::Execution::Engine engine;
-
-  // initialize and connect BPMNOS::Execution::EventDispatcher for BPMNOS::Execution::ReadyEvent
-  BPMNOS::Execution::ReadyHandler readyHandler;
-  readyHandler.connect(&engine);
 
   // initialize and connect BPMNOS::Execution::EventDispatcher for BPMNOS::Execution::ClockTickEvent
   BPMNOS::Execution::TimeWarp timeHandler;
