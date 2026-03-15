@@ -49,6 +49,48 @@ void StochasticScenario::addCompletionExpression(const BPMNOS::number instanceId
   completionExpressions[(size_t)instanceId][task].push_back(std::move(expr));
 }
 
+void StochasticScenario::addArrivalExpression(const BPMNOS::number instanceId,
+                                               const BPMN::Node* node,
+                                               ArrivalExpression&& expr) {
+  arrivalExpressions[(size_t)instanceId][node].push_back(std::move(expr));
+}
+
+void StochasticScenario::initializeArrivalData(
+    BPMNOS::number instanceId,
+    const BPMN::Node* node,
+    const Values& status,
+    const Values& data,
+    const Values& globals) const {
+  size_t id = (size_t)instanceId;
+
+  // Check if we have arrival expressions for this (instance, node)
+  if (!arrivalExpressions.contains(id) ||
+      !arrivalExpressions.at(id).contains(node)) {
+    return;
+  }
+
+  auto& nodeArrivalExpressions = arrivalExpressions.at(id).at(node);
+
+  // Set RNG context for random functions
+  auto& randomGenerator = getRng(id, node);
+  if (randomFactory) {
+    randomFactory->setCurrentRng(&randomGenerator);
+  }
+
+  // Evaluate arrival expressions and store values
+  for (auto& arrivalExpression : nodeArrivalExpressions) {
+    auto value = arrivalExpression.expression->execute(status, data, globals);
+    if (value.has_value() && arrivalExpression.attribute) {
+      instances.at(id).values[arrivalExpression.attribute] = value.value();
+    }
+  }
+
+  // Clear RNG context
+  if (randomFactory) {
+    randomFactory->setCurrentRng(nullptr);
+  }
+}
+
 std::mt19937& StochasticScenario::getRng(size_t instanceId, const BPMN::Node* node) const {
   auto key = std::make_pair(instanceId, node);
   if (!rngs.contains(key)) {
@@ -274,47 +316,13 @@ void StochasticScenario::revealData(BPMNOS::number currentTime) const {
   for (auto& [instanceId, pendings] : pendingDisclosures) {
     auto& instance = instances.at(instanceId);
 
-    // Build status and data vectors for expression evaluation
-    Values status;
-    for (auto& attribute : instance.process->extensionElements->as<const ExtensionElements>()->attributes) {
-      if (instance.values.contains(attribute.get())) {
-        status.push_back(instance.values.at(attribute.get()));
-      }
-      else {
-        status.push_back(std::nullopt);
-      }
-    }
-
-    Values data;
-    for (auto& attribute : instance.process->extensionElements->as<const ExtensionElements>()->data) {
-      if (instance.values.contains(attribute.get())) {
-        data.push_back(instance.values.at(attribute.get()));
-      }
-      else {
-        data.push_back(std::nullopt);
-      }
-    }
-
     // Process pending disclosures that are due
     auto it = pendings.begin();
     while (it != pendings.end()) {
       if (currentTime >= it->disclosureTime) {
-        // Set RNG context for random functions (use process as node for disclosure)
-        auto& randomGenerator = getRng(instanceId, instance.process);
-        if (randomFactory) {
-          randomFactory->setCurrentRng(&randomGenerator);
-        }
-
-        // Evaluate expression
-        auto value = it->expression->execute(status, data, globals);
-        instance.values[it->attribute] = value;
+        // Reveal pre-computed value
+        instance.values[it->attribute] = it->value;
         disclosedAttributes.insert({instanceId, it->attribute});
-
-        // Clear RNG context
-        if (randomFactory) {
-          randomFactory->setCurrentRng(nullptr);
-        }
-
         it = pendings.erase(it);
       }
       else {

@@ -66,12 +66,12 @@ void ExpectedValueDataProvider::readInstances() {
     // Standard static format - delegate to base
     readInstancesNewFormat(table);
   }
-  else if (columnCount == 4 || columnCount == 5) {
-    // Extended format with DISCLOSURE and/or COMPLETION
+  else if (columnCount == 4 || columnCount == 6) {
+    // Extended format with DISCLOSURE (4) or DISCLOSURE/ARRIVAL/COMPLETION (6)
     readInstancesExtendedFormat(table, columnCount);
   }
   else {
-    throw std::runtime_error("ExpectedValueDataProvider: expected 3, 4, or 5 columns, got " + std::to_string(columnCount));
+    throw std::runtime_error("ExpectedValueDataProvider: expected 3, 4, or 6 columns, got " + std::to_string(columnCount));
   }
 
   // Finalize instances
@@ -90,7 +90,8 @@ void ExpectedValueDataProvider::readInstances() {
 }
 
 void ExpectedValueDataProvider::readInstancesExtendedFormat(const CSVReader::Table& table, size_t columnCount) {
-  enum { INSTANCE_ID, NODE_ID, INITIALIZATION, DISCLOSURE, COMPLETION };
+  // Column indices: INSTANCE_ID(0), NODE_ID(1), INITIALIZATION(2), DISCLOSURE(3), [ARRIVAL(4), COMPLETION(5)]
+  enum { INSTANCE_ID, NODE_ID, INITIALIZATION, DISCLOSURE, ARRIVAL, COMPLETION };
 
   for (auto& row : table | std::views::drop(1)) {
     if (row.empty()) continue;
@@ -102,7 +103,7 @@ void ExpectedValueDataProvider::readInstancesExtendedFormat(const CSVReader::Tab
     if (!std::holds_alternative<std::string>(row.at(INSTANCE_ID))) {
       throw std::runtime_error("ExpectedValueDataProvider: illegal instance id");
     }
-    std::string instanceIdStr = std::get<std::string>(row.at(INSTANCE_ID));
+    std::string instanceIdentifier = std::get<std::string>(row.at(INSTANCE_ID));
 
     // Get node ID
     if (!std::holds_alternative<std::string>(row.at(NODE_ID))) {
@@ -117,9 +118,10 @@ void ExpectedValueDataProvider::readInstancesExtendedFormat(const CSVReader::Tab
     std::string initialization = std::get<std::string>(row.at(INITIALIZATION));
 
     // DISCLOSURE column is ignored (index 3) - all data disclosed at time 0
-    // COMPLETION column is ignored (index 4) - operators can be used to compute expected values during execution
+    // ARRIVAL column is ignored (index 4) - not applicable for expected value computation
+    // COMPLETION column is ignored (index 5) - operators can be used to compute expected values
 
-    if (instanceIdStr.empty() && nodeId.empty()) {
+    if (instanceIdentifier.empty() && nodeId.empty()) {
       // Global attribute
       if (initialization.empty()) continue;
       auto [attributeName, expressionString] = parseInitialization(initialization);
@@ -146,11 +148,11 @@ void ExpectedValueDataProvider::readInstancesExtendedFormat(const CSVReader::Tab
       }
       globalValueMap[attribute] = value.value();
     }
-    else if (instanceIdStr.empty()) {
+    else if (instanceIdentifier.empty()) {
       throw std::runtime_error("ExpectedValueDataProvider: instance id required when node id is provided");
     }
     else {
-      auto instanceId = (size_t)BPMNOS::to_number(instanceIdStr, STRING);
+      auto instanceId = (size_t)BPMNOS::to_number(instanceIdentifier, STRING);
       BPMN::Node* node = findNode(nodeId);
 
       // First occurrence must be a process

@@ -71,12 +71,12 @@ void StochasticDataProvider::readInstances() {
   }
 
   columnCount = table[0].size();
-  if (columnCount < 3 || columnCount > 5) {
-    throw std::runtime_error("StochasticDataProvider: expected 3-5 columns, got " + std::to_string(columnCount));
+  if (columnCount != 3 && columnCount != 4 && columnCount != 6) {
+    throw std::runtime_error("StochasticDataProvider: expected 3, 4, or 6 columns, got " + std::to_string(columnCount));
   }
 
   // Column indices
-  enum { INSTANCE_ID, NODE_ID, INITIALIZATION, DISCLOSURE, COMPLETION };
+  enum { INSTANCE_ID, NODE_ID, INITIALIZATION, DISCLOSURE, ARRIVAL, COMPLETION };
 
   for (auto& row : table | std::views::drop(1)) {
     if (row.empty()) {
@@ -90,7 +90,7 @@ void StochasticDataProvider::readInstances() {
     if (!std::holds_alternative<std::string>(row.at(INSTANCE_ID))) {
       throw std::runtime_error("StochasticDataProvider: illegal instance id");
     }
-    std::string instanceIdStr = std::get<std::string>(row.at(INSTANCE_ID));
+    std::string instanceIdentifier = std::get<std::string>(row.at(INSTANCE_ID));
 
     // Get node ID
     if (!std::holds_alternative<std::string>(row.at(NODE_ID))) {
@@ -105,29 +105,41 @@ void StochasticDataProvider::readInstances() {
     std::string initialization = std::get<std::string>(row.at(INITIALIZATION));
 
     // Get disclosure (if 4+ columns)
-    std::string disclosureStr;
+    std::string disclosureExpression;
     if (columnCount >= 4) {
       if (!std::holds_alternative<std::string>(row.at(DISCLOSURE))) {
         throw std::runtime_error("StochasticDataProvider: illegal disclosure");
       }
-      disclosureStr = std::get<std::string>(row.at(DISCLOSURE));
+      disclosureExpression = std::get<std::string>(row.at(DISCLOSURE));
     }
 
-    // Get completion (if 5 columns)
-    std::string completionStr;
-    if (columnCount >= 5) {
+    // Get arrival (if 6 columns)
+    std::string arrivalExpression;
+    if (columnCount == 6) {
+      if (!std::holds_alternative<std::string>(row.at(ARRIVAL))) {
+        throw std::runtime_error("StochasticDataProvider: illegal arrival");
+      }
+      arrivalExpression = std::get<std::string>(row.at(ARRIVAL));
+    }
+
+    // Get completion (if 6 columns)
+    std::string completionExpression;
+    if (columnCount == 6) {
       if (!std::holds_alternative<std::string>(row.at(COMPLETION))) {
         throw std::runtime_error("StochasticDataProvider: illegal completion");
       }
-      completionStr = std::get<std::string>(row.at(COMPLETION));
+      completionExpression = std::get<std::string>(row.at(COMPLETION));
     }
 
     // Handle global attributes
-    if (instanceIdStr.empty() && nodeId.empty()) {
-      if (!disclosureStr.empty()) {
+    if (instanceIdentifier.empty() && nodeId.empty()) {
+      if (!disclosureExpression.empty()) {
         throw std::runtime_error("StochasticDataProvider: global attributes must not have disclosure");
       }
-      if (!completionStr.empty()) {
+      if (!arrivalExpression.empty()) {
+        throw std::runtime_error("StochasticDataProvider: global attributes must not have arrival");
+      }
+      if (!completionExpression.empty()) {
         throw std::runtime_error("StochasticDataProvider: global attributes must not have completion");
       }
       if (initialization.empty()) {
@@ -158,17 +170,17 @@ void StochasticDataProvider::readInstances() {
       }
       globalValueMap[attribute] = value.value();
     }
-    else if (instanceIdStr.empty()) {
+    else if (instanceIdentifier.empty()) {
       throw std::runtime_error("StochasticDataProvider: instance id required when node id is provided");
     }
     else {
-      auto instanceId = (size_t)BPMNOS::to_number(instanceIdStr, STRING);
+      auto instanceId = (size_t)BPMNOS::to_number(instanceIdentifier, STRING);
       BPMN::Node* node = findNode(nodeId);
 
       // First occurrence of instance must have node = process
       if (!instances.contains(instanceId)) {
         if (!node->represents<BPMN::Process>()) {
-          throw std::runtime_error("StochasticDataProvider: first row for instance '" + instanceIdStr +
+          throw std::runtime_error("StochasticDataProvider: first row for instance '" + instanceIdentifier +
                                    "' must reference a process node, got '" + nodeId + "'");
         }
         auto process = dynamic_cast<BPMN::Process*>(node);
@@ -180,7 +192,7 @@ void StochasticDataProvider::readInstances() {
       auto& instance = instances[instanceId];
 
       // Handle COMPLETION expression (only valid for Tasks, not SendTask/ReceiveTask/DecisionTask)
-      if (!completionStr.empty()) {
+      if (!completionExpression.empty()) {
         if (!node->represents<BPMN::Task>() ||
             node->represents<BPMN::SendTask>() ||
             node->represents<BPMN::ReceiveTask>() ||
@@ -189,7 +201,7 @@ void StochasticDataProvider::readInstances() {
                                    nodeId + "'");
         }
 
-        auto [attributeName, expressionString] = parseInitialization(completionStr);
+        auto [attributeName, expressionString] = parseInitialization(completionExpression);
         auto extensionElements = node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
         if (!extensionElements->attributeRegistry.contains(attributeName)) {
           throw std::runtime_error("StochasticDataProvider: node '" + nodeId +
@@ -200,6 +212,45 @@ void StochasticDataProvider::readInstances() {
         auto expression = std::make_unique<Expression>(stochasticHandle, expressionString,
                                                        extensionElements->attributeRegistry);
         completionExpressions[instanceId][node].push_back({attribute, std::move(expression)});
+      }
+
+      // Handle ARRIVAL expression (valid for all Activity types)
+      if (!arrivalExpression.empty()) {
+        if (!node->represents<BPMN::Activity>()) {
+          throw std::runtime_error("StochasticDataProvider: ARRIVAL only valid for Activity nodes, not '" +
+                                   nodeId + "'");
+        }
+
+        auto [attributeName, expressionString] = parseInitialization(arrivalExpression);
+        auto extensionElements = node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+        if (!extensionElements->attributeRegistry.contains(attributeName)) {
+          throw std::runtime_error("StochasticDataProvider: node '" + nodeId +
+                                   "' has no attribute '" + attributeName + "'");
+        }
+
+        auto attribute = extensionElements->attributeRegistry[attributeName];
+        if (attribute->expression) {
+          throw std::runtime_error("StochasticDataProvider: attribute '" + attributeName +
+                                   "' has model expression and cannot use ARRIVAL");
+        }
+
+        // Check mutual exclusivity with INITIALIZATION
+        if (instance.data.contains(attribute)) {
+          throw std::runtime_error("StochasticDataProvider: attribute '" + attributeName +
+                                   "' cannot use both ARRIVAL and INITIALIZATION");
+        }
+        if (pendingDisclosures.contains(instanceId)) {
+          for (auto& pending : pendingDisclosures.at(instanceId)) {
+            if (pending.attribute == attribute) {
+              throw std::runtime_error("StochasticDataProvider: attribute '" + attributeName +
+                                       "' cannot use both ARRIVAL and INITIALIZATION");
+            }
+          }
+        }
+
+        auto expression = std::make_unique<Expression>(stochasticHandle, expressionString,
+                                                       extensionElements->attributeRegistry);
+        arrivalExpressions[instanceId][node].push_back({attribute, std::move(expression)});
       }
 
       // Handle INITIALIZATION
@@ -220,23 +271,34 @@ void StochasticDataProvider::readInstances() {
                                  "' is initialized by expression and must not be provided explicitly");
       }
 
+      // Check mutual exclusivity with ARRIVAL
+      if (arrivalExpressions.contains(instanceId) && arrivalExpressions.at(instanceId).contains(node)) {
+        for (auto& arrival : arrivalExpressions.at(instanceId).at(node)) {
+          if (arrival.attribute == attribute) {
+            throw std::runtime_error("StochasticDataProvider: attribute '" + attributeName +
+                                     "' cannot use both INITIALIZATION and ARRIVAL");
+          }
+        }
+      }
+
       // Parse disclosure time
       BPMNOS::number ownDisclosure = 0;
-      if (!disclosureStr.empty()) {
-        ownDisclosure = evaluateExpression(disclosureStr);
+      if (!disclosureExpression.empty()) {
+        ownDisclosure = evaluateExpression(disclosureExpression);
       }
 
       BPMNOS::number disclosureTime = getEffectiveDisclosure(instanceId, node, ownDisclosure);
 
+      // Evaluate expression at parse time (globals only)
+      BPMNOS::number value = evaluateExpression(expressionString);
+
       if (disclosureTime == 0) {
-        // Immediate disclosure: evaluate now
-        instance.data[attribute] = evaluateExpression(expressionString);
+        // Immediate disclosure: store value directly
+        instance.data[attribute] = value;
       }
       else {
-        // Deferred disclosure: store expression for later evaluation
-        auto expression = std::make_unique<Expression>(stochasticHandle, expressionString,
-                                                       model->attributeRegistry);
-        pendingDisclosures[instanceId].push_back({attribute, disclosureTime, std::move(expression)});
+        // Deferred disclosure: store pre-computed value for later reveal
+        pendingDisclosures[instanceId].push_back({attribute, disclosureTime, value});
       }
     }
   }
@@ -384,14 +446,10 @@ std::unique_ptr<Scenario> StochasticDataProvider::createScenario(unsigned int sc
     }
   }
 
-  // Add pending disclosures
+  // Add pending disclosures (pre-computed values)
   for (auto& [instanceId, pendings] : pendingDisclosures) {
     for (auto& pending : pendings) {
-      // Need to copy the expression since scenario takes ownership
-      auto expression = std::make_unique<Expression>(stochasticHandle, pending.expression->expression,
-                                                     pending.expression->attributeRegistry);
-      scenario->addPendingDisclosure(instanceId, {pending.attribute, pending.disclosureTime,
-                                                   std::move(expression)});
+      scenario->addPendingDisclosure(instanceId, {pending.attribute, pending.disclosureTime, pending.value});
     }
   }
 
@@ -403,6 +461,18 @@ std::unique_ptr<Scenario> StochasticDataProvider::createScenario(unsigned int sc
                                                        sourceExpression.expression->expression,
                                                        sourceExpression.expression->attributeRegistry);
         scenario->addCompletionExpression(instanceId, task, {sourceExpression.attribute, std::move(expression)});
+      }
+    }
+  }
+
+  // Add arrival expressions
+  for (auto& [instanceId, nodes] : arrivalExpressions) {
+    for (auto& [node, expressions] : nodes) {
+      for (auto& sourceExpression : expressions) {
+        auto expression = std::make_unique<Expression>(stochasticHandle,
+                                                       sourceExpression.expression->expression,
+                                                       sourceExpression.expression->attributeRegistry);
+        scenario->addArrivalExpression(instanceId, node, {sourceExpression.attribute, std::move(expression)});
       }
     }
   }

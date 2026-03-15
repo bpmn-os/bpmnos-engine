@@ -19,7 +19,7 @@ namespace BPMNOS::Model {
  * StochasticDataProvider supports:
  * - 3-column format (INSTANCE_ID, NODE_ID, INITIALIZATION) - static behavior
  * - 4-column format (+ DISCLOSURE) - dynamic behavior
- * - 5-column format (+ COMPLETION) - stochastic behavior
+ * - 6-column format (+ ARRIVAL, COMPLETION) - stochastic behavior
  *
  * Has its own LIMEX handle with lookup tables from Model plus random functions.
  */
@@ -62,6 +62,9 @@ protected:
 
   /// Pending disclosures with expressions to evaluate at disclosure time
   std::unordered_map<size_t, std::vector<StochasticPendingDisclosure>> pendingDisclosures;
+
+  /// Arrival expressions per (instance, node)
+  std::unordered_map<size_t, std::unordered_map<const BPMN::Node*, std::vector<ArrivalExpression>>> arrivalExpressions;
 
   /// Completion expressions per (instance, node)
   std::unordered_map<size_t, std::unordered_map<const BPMN::Node*, std::vector<CompletionExpression>>> completionExpressions;

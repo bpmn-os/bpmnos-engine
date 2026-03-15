@@ -136,7 +136,7 @@ Instance_2; Process_1; priority := 3; 20
 
 2. **Process instantiation**: A process instance is not instantiated until all of its process-level data is disclosed. If a process has `timestamp := 5` but process data has disclosure time 10, the instance will be instantiated at time 10 (not 5), and the timestamp status attribute will be updated accordingly.
 
-3. **Deferred evaluation**: Initialization expressions are compiled at parse time but evaluated at disclosure time.
+3. **Parse-time evaluation**: Initialization expressions are evaluated at parse time (not disclosure time). The computed value is stored and revealed when the disclosure time is reached. This ensures deterministic scenario construction.
 
 4. **Ordering requirement**: Rows must be ordered such that parent scope disclosures appear before child scope disclosures. For example, process attributes must be disclosed before subprocess attributes for the same instance.
 
@@ -169,21 +169,22 @@ int main() {
 
 ## Stochastic data provider
 
-The @ref BPMNOS::Model::StochasticDataProvider "stochastic data provider" extends dynamic scenarios with support for random functions and stochastic task completion.
+The @ref BPMNOS::Model::StochasticDataProvider "stochastic data provider" extends dynamic scenarios with support for random functions, stochastic arrival initialization, and stochastic task completion.
 
 ### CSV Format
 
-The stochastic data provider uses a CSV file with up to five columns:
+The stochastic data provider uses a CSV file with up to six columns:
 
 ```plaintext
-INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE; COMPLETION
+INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE; ARRIVAL; COMPLETION
 ```
 
 - **INSTANCE_ID**: The instance identifier (string). Leave empty for global attributes.
 - **NODE_ID**: The BPMN node ID (process, activity, subprocess, etc.). Leave empty for global attributes.
-- **INITIALIZATION**: An assignment expression in the format `attribute := expression`. May contain random functions.
+- **INITIALIZATION**: An assignment expression in the format `attribute := expression`. Evaluated at parse time. May contain random functions but can only reference global attributes.
 - **DISCLOSURE**: The time at which this attribute value becomes known. Leave empty for immediate disclosure.
-- **COMPLETION**: Expression evaluated when a task completes. Only valid for Task nodes (not SendTask, ReceiveTask, DecisionTask).
+- **ARRIVAL**: Expression evaluated when a token arrives at an activity (Task, SubProcess, CallActivity). Evaluated at runtime with full context (status, data, globals).
+- **COMPLETION**: Expression evaluated when a task completes. Only valid for Task nodes (not SendTask, ReceiveTask, DecisionTask). Evaluated at runtime with full context.
 
 ### Random Functions
 
@@ -205,14 +206,37 @@ The following random functions can be used in expressions:
 ### Example
 
 ```plaintext
-INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE; COMPLETION
-; ; basePriority := 5; ;
-Instance_1; Process_1; timestamp := 0; ;
-Instance_1; Process_1; priority := uniform(1, basePriority * 2); 5;
-Instance_1; Activity_1; duration := normal(10,2); ; timestamp := timestamp + duration
+INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE; ARRIVAL; COMPLETION
+; ; basePriority := 5; ; ;
+Instance_1; Process_1; timestamp := 0; ; ;
+Instance_1; Process_1; priority := uniform(1, basePriority * 2); 5; ;
+Instance_1; Activity_1; duration := normal(10,2); ; ; timestamp := timestamp + duration
+Instance_1; SubProcess_1; ; ; localVar := parentValue * 2;
 ```
 
-**Note:** INITIALIZATION and DISCLOSURE expressions can only reference global attributes. COMPLETION expressions can reference any attribute (status, data, global) because they are evaluated at runtime with full context.
+### Expression Evaluation
+
+| Column | When Evaluated | Context Available |
+|--------|----------------|-------------------|
+| INITIALIZATION | Parse time | Global attributes only |
+| DISCLOSURE | Parse time | Global attributes only |
+| ARRIVAL | Runtime (token arrival) | Status, Data, Globals |
+| COMPLETION | Runtime (task completion) | Status, Data, Globals |
+
+**INITIALIZATION and DISCLOSURE** expressions are evaluated at parse time and can only reference global attributes. This ensures deterministic scenario construction.
+
+**ARRIVAL** expressions are evaluated when a token arrives at an activity (enters ARRIVED or CREATED state). They have access to the parent scope's status and data attributes, plus global attributes. This is useful for initializing activity-local attributes based on runtime state.
+
+**COMPLETION** expressions are evaluated when a task enters BUSY state. They have full access to status, data, and global attributes.
+
+### Mutual Exclusivity
+
+An attribute can be initialized by exactly one of:
+- INITIALIZATION expression (parse-time, globals only)
+- ARRIVAL expression (runtime, full context)
+- Model expression (defined in BPMN model)
+
+If multiple sources attempt to initialize the same attribute, an error is thrown.
 
 ### Reproducibility
 
@@ -235,10 +259,12 @@ int main() {
 
 ### Downward Compatibility
 
-StochasticDataProvider is downward compatible with all CSV formats:
+StochasticDataProvider is downward compatible with the following CSV formats:
 - 3-column (Static): INSTANCE_ID; NODE_ID; INITIALIZATION
 - 4-column (Dynamic): + DISCLOSURE
-- 5-column (Stochastic): + COMPLETION
+- 6-column (Stochastic): + ARRIVAL; COMPLETION
+
+Note: There is no 5-column format. Use 6 columns with empty ARRIVAL or COMPLETION as needed.
 
 ## Expected value data provider
 
@@ -246,15 +272,16 @@ The @ref BPMNOS::Model::ExpectedValueDataProvider "expected value data provider"
 
 ### CSV Format
 
-The expected value data provider accepts CSV files with 3, 4, or 5 columns:
+The expected value data provider accepts CSV files with 3, 4, or 6 columns:
 
 ```plaintext
-INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE; COMPLETION
+INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE; ARRIVAL; COMPLETION
 ```
 
 ### Behavior
 
 - **DISCLOSURE**: Ignored. All values are disclosed at time 0.
+- **ARRIVAL**: Ignored. Not applicable for expected value computation.
 - **COMPLETION**: Ignored. Operators can be used to compute expected values during execution.
 - **Random functions**: Return expected values instead of sampling.
 
@@ -276,9 +303,9 @@ INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE; COMPLETION
 ### Example
 
 ```plaintext
-INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE; COMPLETION
-Instance_1; Process_1; timestamp := 0; ;
-Instance_1; Activity_1; duration := uniform(8, 12); ;
+INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE; ARRIVAL; COMPLETION
+Instance_1; Process_1; timestamp := 0; ; ;
+Instance_1; Activity_1; duration := uniform(8, 12); ; ;
 ```
 
 With expected values, `duration` will be `(8 + 12) / 2 = 10`.

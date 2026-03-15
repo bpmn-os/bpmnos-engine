@@ -15,13 +15,23 @@ namespace BPMNOS::Model {
 /**
  * @brief Structure representing a pending disclosure.
  *
- * Stores information needed to evaluate an initialization expression
- * when disclosure time is reached.
+ * Stores a pre-computed value to be revealed at disclosure time.
+ * The value is computed at parse time using only global attributes.
  */
 struct StochasticPendingDisclosure {
+  const Attribute* attribute;     ///< The attribute to initialize
+  BPMNOS::number disclosureTime;  ///< Time when this attribute is disclosed
+  BPMNOS::number value;           ///< Pre-computed value to reveal at disclosure time
+};
+
+/**
+ * @brief Structure representing an arrival expression.
+ *
+ * Stores the compiled expression to evaluate when a token arrives at an activity.
+ */
+struct ArrivalExpression {
   const Attribute* attribute;              ///< The attribute to initialize
-  BPMNOS::number disclosureTime;           ///< Time when this attribute is disclosed
-  std::unique_ptr<Expression> expression;  ///< Compiled expression to evaluate at disclosure time
+  std::unique_ptr<Expression> expression;  ///< Compiled expression to evaluate at arrival time
 };
 
 /**
@@ -84,6 +94,21 @@ public:
 
   void revealData(BPMNOS::number currentTime) const;
 
+  /**
+   * @brief Initialize arrival data when a token arrives at an activity.
+   *
+   * Evaluates ARRIVAL expressions using the parent scope's context and stores
+   * the computed values. Called by ScenarioUpdater when token enters ARRIVED
+   * or CREATED state at an Activity.
+   */
+  void initializeArrivalData(
+    BPMNOS::number instanceId,
+    const BPMN::Node* node,
+    const Values& status,
+    const Values& data,
+    const Values& globals
+  ) const override;
+
 protected:
   Values getKnownInitialStatus(const InstanceData*, const BPMNOS::number time) const override;
   Values getKnownInitialData(const InstanceData*, const BPMNOS::number time) const override;
@@ -93,6 +118,7 @@ protected:
   void setDisclosure(const BPMNOS::number instanceId, const BPMN::Node* node, BPMNOS::number disclosureTime);
   void addPendingDisclosure(const BPMNOS::number instanceId, StochasticPendingDisclosure&& pending);
   void addCompletionExpression(const BPMNOS::number instanceId, const BPMN::Node* task, CompletionExpression&& expr);
+  void addArrivalExpression(const BPMNOS::number instanceId, const BPMN::Node* node, ArrivalExpression&& expr);
 
   /// Get or create RNG for (instance, node) pair
   std::mt19937& getRng(size_t instanceId, const BPMN::Node* node) const;
@@ -101,6 +127,9 @@ protected:
   std::unordered_map<size_t, std::unordered_map<const BPMN::Node*, BPMNOS::number>> disclosure; ///< Instance ID -> Node -> disclosure time
   mutable std::unordered_map<size_t, std::vector<StochasticPendingDisclosure>> pendingDisclosures; ///< Instance ID -> pending disclosures
   mutable std::set<std::pair<size_t, const Attribute*>> disclosedAttributes; ///< Track which attributes have been disclosed
+
+  /// Arrival expressions per (instance, node)
+  std::unordered_map<size_t, std::unordered_map<const BPMN::Node*, std::vector<ArrivalExpression>>> arrivalExpressions;
 
   /// Completion expressions per (instance, node)
   std::unordered_map<size_t, std::unordered_map<const BPMN::Node*, std::vector<CompletionExpression>>> completionExpressions;

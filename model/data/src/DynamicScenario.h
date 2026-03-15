@@ -12,13 +12,13 @@ namespace BPMNOS::Model {
 /**
  * @brief Structure representing a pending disclosure.
  *
- * Stores information needed to evaluate an initialization expression
- * when disclosure time is reached.
+ * Stores a pre-computed value to be revealed at disclosure time.
+ * The value is computed at parse time using only global attributes.
  */
 struct PendingDisclosure {
-  const Attribute* attribute;              ///< The attribute to initialize
-  BPMNOS::number disclosureTime;           ///< Time when this attribute is disclosed
-  std::unique_ptr<Expression> expression;  ///< Compiled expression to evaluate at disclosure time
+  const Attribute* attribute;     ///< The attribute to initialize
+  BPMNOS::number disclosureTime;  ///< Time when this attribute is disclosed
+  BPMNOS::number value;           ///< Pre-computed value to reveal at disclosure time
 };
 
 /**

@@ -173,18 +173,16 @@ void DynamicDataProvider::readInstances() {
       // Compute effective disclosure = max(own, parent_scope_disclosure)
       BPMNOS::number disclosureTime = getEffectiveDisclosure(instanceId, node, ownDisclosure);
 
-      if ( disclosureTime == 0 ) {
-        // Immediate disclosure: evaluate now and store value
-        instance.data[attribute] = evaluateExpression(expressionString);
+      // Evaluate expression at parse time (globals only)
+      BPMNOS::number value = evaluateExpression(expressionString);
+
+      if (disclosureTime == 0) {
+        // Immediate disclosure: store value directly
+        instance.data[attribute] = value;
       }
       else {
-        // Deferred disclosure: compile expression for later evaluation
-        auto expression = std::make_unique<Expression>(expressionString, model->attributeRegistry);
-        deferredInitializations[instanceId].push_back({
-          attribute,
-          disclosureTime,
-          std::move(expression)
-        });
+        // Deferred disclosure: store pre-computed value for later reveal
+        deferredInitializations[instanceId].push_back({attribute, disclosureTime, value});
       }
     }
   }
@@ -325,14 +323,10 @@ std::unique_ptr<Scenario> DynamicDataProvider::createScenario([[maybe_unused]] u
       scenario->setDisclosure(instanceId, node, disclosureTime);
     }
   }
-  // Add deferred initializations
-  for ( auto& [instanceId, pendings] : deferredInitializations ) {
-    for ( auto& pending : pendings ) {
-      scenario->addPendingDisclosure(instanceId, {
-        pending.attribute,
-        pending.disclosureTime,
-        std::move(pending.expression)
-      });
+  // Add deferred initializations (pre-computed values)
+  for (auto& [instanceId, pendings] : deferredInitializations) {
+    for (auto& pending : pendings) {
+      scenario->addPendingDisclosure(instanceId, {pending.attribute, pending.disclosureTime, pending.value});
     }
   }
   // Reveal data disclosed at time 0

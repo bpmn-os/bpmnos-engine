@@ -121,6 +121,26 @@ public:
     return taskCompletionStatus.at({(size_t)instanceId, task});
   }
 
+  /**
+   * @brief Initialize arrival data when a token arrives at an activity.
+   *
+   * Evaluates ARRIVAL expressions using the parent scope's context.
+   * Default implementation does nothing - only StochasticScenario evaluates ARRIVAL.
+   *
+   * @param instanceId The instance identifier.
+   * @param node The activity node being entered.
+   * @param status Parent scope's status attributes.
+   * @param data Parent scope's data attributes.
+   * @param globals Global attributes.
+   */
+  virtual void initializeArrivalData(
+    [[maybe_unused]] BPMNOS::number instanceId,
+    [[maybe_unused]] const BPMN::Node* node,
+    [[maybe_unused]] const Values& status,
+    [[maybe_unused]] const Values& data,
+    [[maybe_unused]] const Values& globals
+  ) const {}
+
   BPMNOS::Values globals;
 
   /// Stored completion status per (instanceId, task)

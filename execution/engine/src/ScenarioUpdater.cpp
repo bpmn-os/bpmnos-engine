@@ -32,24 +32,38 @@ void ScenarioUpdater::notice(const Observable* observable) {
     return;
   }
 
-  // Handle Token BUSY - set task completion status
+  // Handle Token state changes
   if (observable->getObservableType() == Observable::Type::Token) {
     auto token = static_cast<const Token*>(observable);
 
-    if (!token->node ||
-        !token->node->represents<BPMN::Task>() ||
-        token->state != Token::State::BUSY) {
+    if (!token->node) {
       return;
     }
 
-    // Exclude SendTask, ReceiveTask, DecisionTask
-    if (token->node->represents<BPMN::SendTask>() ||
-        token->node->represents<BPMN::ReceiveTask>() ||
-        token->node->represents<BPMNOS::Model::DecisionTask>()) {
-      return;
+    // Handle ARRIVED/CREATED at Activity - initialize arrival data
+    if (token->node->represents<BPMN::Activity>() &&
+        (token->state == Token::State::ARRIVED || token->state == Token::State::CREATED)) {
+      auto instanceId = token->getInstanceId();
+      Values data;
+      if (token->data) {
+        data = *token->data;
+      }
+      token->owner->systemState->scenario->initializeArrivalData(
+        instanceId, token->node, token->status, data, token->globals);
     }
 
-    auto instanceId = token->getInstanceId();
-    token->owner->systemState->scenario->setTaskCompletionStatus(instanceId, token->node, token->status);
+    // Handle BUSY at Task - set task completion status
+    if (token->node->represents<BPMN::Task>() &&
+        token->state == Token::State::BUSY) {
+      // Exclude SendTask, ReceiveTask, DecisionTask
+      if (token->node->represents<BPMN::SendTask>() ||
+          token->node->represents<BPMN::ReceiveTask>() ||
+          token->node->represents<BPMNOS::Model::DecisionTask>()) {
+        return;
+      }
+
+      auto instanceId = token->getInstanceId();
+      token->owner->systemState->scenario->setTaskCompletionStatus(instanceId, token->node, token->status);
+    }
   }
 }

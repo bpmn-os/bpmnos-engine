@@ -11,7 +11,8 @@ class Engine;
  * @brief Observer that updates scenario state during execution.
  *
  * - On ClockTick: calls scenario->revealData() for deferred disclosure
- * - On Token BUSY: calls scenario->setTaskCompletionStatus() for tasks
+ * - On Token ARRIVED/CREATED at Activity: calls scenario->initializeArrivalData()
+ * - On Token BUSY at Task: calls scenario->setTaskCompletionStatus()
  *
  * Works with Static, Dynamic, and Stochastic scenarios.
  */

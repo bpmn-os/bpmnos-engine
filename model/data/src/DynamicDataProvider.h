@@ -13,13 +13,13 @@ namespace BPMNOS::Model {
 /**
  * @brief Structure representing a deferred initialization.
  *
- * Stores information needed to evaluate an initialization expression
- * at disclosure time rather than at parse time.
+ * Stores a pre-computed value to be revealed at disclosure time.
+ * The value is computed at parse time using only global attributes.
  */
 struct DeferredInitialization {
-  const Attribute* attribute;              ///< The attribute to initialize
-  BPMNOS::number disclosureTime;           ///< Effective disclosure time (max of own, parent)
-  std::unique_ptr<Expression> expression;  ///< Compiled expression to evaluate at disclosure time
+  const Attribute* attribute;     ///< The attribute to initialize
+  BPMNOS::number disclosureTime;  ///< Effective disclosure time (max of own, parent)
+  BPMNOS::number value;           ///< Pre-computed value to reveal at disclosure time
 };
 
 /**
