@@ -7,6 +7,7 @@
 #include "model/bpmnos/src/extensionElements/ExtensionElements.h"
 #include "model/bpmnos/src/extensionElements/MessageDefinition.h"
 #include "model/bpmnos/src/extensionElements/Timer.h"
+#include "model/data/src/StaticScenario.h"
 #include <cp/limex_handle.h>
 #include <iostream>
 
@@ -18,6 +19,9 @@ CPModel::CPModel(const BPMNOS::Execution::FlattenedGraph* flattenedGraph, Config
  , flattenedGraph(flattenedGraph)
  , model(CP::Model::ObjectiveSense::MAXIMIZE)
 {
+  if ( !dynamic_cast<const BPMNOS::Model::StaticScenario*>(scenario) ) {
+    throw std::runtime_error("CPModel: scenario must be static");
+  }
   if ( this->config.instantEntry ) {
     throw std::runtime_error("CPModel: instant entry is not supported");
   }
