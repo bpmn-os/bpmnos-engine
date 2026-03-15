@@ -20,13 +20,11 @@ StaticDataProvider::StaticDataProvider(const std::string& modelFile, const std::
 {
 }
 
-StaticDataProvider::StaticDataProvider(const std::string& modelFile, const std::vector<std::string>& folders, const std::string& instanceFileOrString)
-  : DataProvider(modelFile,folders)
-  , reader( CSVReader(instanceFileOrString) )
+StaticDataProvider::StaticDataProvider(const std::string& modelFile, const std::vector<std::string>& folders)
+  : DataProvider(modelFile, folders)
 {
   for ( auto& [ attributeId, attribute ] : attributes[nullptr] ) {
     if ( attribute->expression ) {
-      // Build globals vector from current globalValueMap
       Values globals(model->attributes.size());
       for ( auto& [attr, value] : globalValueMap ) {
         globals[attr->index] = value;
@@ -40,14 +38,19 @@ StaticDataProvider::StaticDataProvider(const std::string& modelFile, const std::
   }
   earliestInstantiation = std::numeric_limits<BPMNOS::number>::max();
   latestInstantiation = std::numeric_limits<BPMNOS::number>::min();
+}
+
+StaticDataProvider::StaticDataProvider(const std::string& modelFile, const std::vector<std::string>& folders, const std::string& instanceFileOrString)
+  : StaticDataProvider(modelFile, folders)
+{
+  reader = std::make_unique<CSVReader>(instanceFileOrString);
   readInstances();
-  
 }
 
 void StaticDataProvider::readInstances() {
-  CSVReader::Table table = reader.read();
+  CSVReader::Table table = reader->read();
   if ( table.empty() ) {
-    throw std::runtime_error("StaticDataProvider: table '" + reader.instanceFileOrString + "' is empty");
+    throw std::runtime_error("StaticDataProvider: table '" + reader->instanceFileOrString + "' is empty");
   }
 
   // Detect format by column count of first data row
@@ -317,11 +320,11 @@ std::string StaticDataProvider::convertToNewFormat([[maybe_unused]] const CSVRea
 
   // Read raw input to preserve original values (avoid encoding issues)
   std::unique_ptr<std::istream> input;
-  if ( reader.instanceFileOrString.contains("\n") ) {
-    input = std::make_unique<std::istringstream>(reader.instanceFileOrString);
+  if ( reader->instanceFileOrString.contains("\n") ) {
+    input = std::make_unique<std::istringstream>(reader->instanceFileOrString);
   }
   else {
-    input = std::make_unique<std::ifstream>(reader.instanceFileOrString);
+    input = std::make_unique<std::ifstream>(reader->instanceFileOrString);
   }
 
   // Track which instances we've seen (to output process ID on first occurrence)
@@ -443,10 +446,10 @@ std::string StaticDataProvider::convertToNewFormat([[maybe_unused]] const CSVRea
 
 void StaticDataProvider::promptMigration(const std::string& newFormatContent) const {
   // Check if input is a file (no newline in instanceFileOrString)
-  if ( reader.instanceFileOrString.contains("\n") ) {
+  if ( reader->instanceFileOrString.contains("\n") ) {
     // Input is a string, can't write back
     std::cerr << "\n========== ORIGINAL STRING ==========\n";
-    std::cerr << reader.instanceFileOrString;
+    std::cerr << reader->instanceFileOrString;
     std::cerr << "\n========== CONVERTED TO NEW FORMAT ==========\n";
     std::cerr << newFormatContent;
     std::cerr << "==============================================\n\n";
@@ -454,7 +457,7 @@ void StaticDataProvider::promptMigration(const std::string& newFormatContent) co
   }
 
   // Read original file content
-  std::ifstream originalFile(reader.instanceFileOrString);
+  std::ifstream originalFile(reader->instanceFileOrString);
   if ( !originalFile.is_open() ) {
     std::cerr << "Could not read original file for migration.\n";
     return;
@@ -464,21 +467,21 @@ void StaticDataProvider::promptMigration(const std::string& newFormatContent) co
   originalFile.close();
 
   // Show both formats
-  std::cerr << "\n========== ORIGINAL FILE: " << reader.instanceFileOrString << " ==========\n";
+  std::cerr << "\n========== ORIGINAL FILE: " << reader->instanceFileOrString << " ==========\n";
   std::cerr << originalContent.str();
   std::cerr << "\n========== CONVERTED TO NEW FORMAT ==========\n";
   std::cerr << newFormatContent;
   std::cerr << "==============================================\n\n";
 
   // Prompt user
-  std::cerr << "Would you like to update '" << reader.instanceFileOrString << "' to the new format? [y/N]: ";
+  std::cerr << "Would you like to update '" << reader->instanceFileOrString << "' to the new format? [y/N]: ";
   std::string response;
   std::getline(std::cin, response);
 
   if ( response == "y" || response == "Y" || response == "yes" || response == "Yes" ) {
-    std::ofstream outputFile(reader.instanceFileOrString);
+    std::ofstream outputFile(reader->instanceFileOrString);
     if ( !outputFile.is_open() ) {
-      std::cerr << "ERROR: Could not write to file '" << reader.instanceFileOrString << "'\n";
+      std::cerr << "ERROR: Could not write to file '" << reader->instanceFileOrString << "'\n";
       return;
     }
     outputFile << newFormatContent;

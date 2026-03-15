@@ -3,6 +3,7 @@
 
 #include "DataProvider.h"
 #include "model/utility/src/CSVReader.h"
+#include <memory>
 #include <vector>
 
 namespace BPMNOS::Model {
@@ -33,7 +34,10 @@ public:
   ~StaticDataProvider() override = default;
   std::unique_ptr<Scenario> createScenario(unsigned int scenarioId = 0) override;
 protected:
-  CSVReader reader;
+  /// Protected constructor that skips readInstances() - for derived classes
+  StaticDataProvider(const std::string& modelFile, const std::vector<std::string>& folders);
+
+  std::unique_ptr<CSVReader> reader;
   void readInstances();
   void readInstancesOldFormat(const CSVReader::Table& table);
   void readInstancesNewFormat(const CSVReader::Table& table);

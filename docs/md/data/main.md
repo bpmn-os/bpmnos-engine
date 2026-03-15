@@ -228,6 +228,60 @@ StochasticDataProvider is downward compatible with all CSV formats:
 - 4-column (Dynamic): + DISCLOSURE
 - 5-column (Stochastic): + COMPLETION
 
+## Expected value data provider
+
+The @ref BPMNOS::Model::ExpectedValueDataProvider "expected value data provider" accepts dynamic and stochastic CSV formats but uses expected values instead of random sampling. All data is disclosed at time 0, regardless of the DISCLOSURE column values.
+
+### CSV Format
+
+The expected value data provider accepts CSV files with 3, 4, or 5 columns:
+
+```plaintext
+INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE; COMPLETION
+```
+
+### Behavior
+
+- **DISCLOSURE**: Ignored. All values are disclosed at time 0.
+- **COMPLETION**: Evaluated using expected values when tasks complete.
+- **Random functions**: Return expected values instead of sampling.
+
+### Expected Values
+
+| Function | Expected Value |
+|----------|----------------|
+| `uniform(a, b)` | (a + b) / 2 |
+| `uniform_int(a, b)` | trunc((a + b) / 2) |
+| `normal(mean, stddev)` | mean |
+| `exponential(rate)` | 1 / rate |
+| `poisson(mean)` | mean |
+| `bernoulli(p)` | p |
+| `binomial(n, p)` | n * p |
+| `gamma(shape, scale)` | shape * scale |
+| `lognormal(logscale, shape)` | exp(logscale + shape² / 2) |
+| `geometric(p)` | (1 - p) / p |
+
+### Example
+
+```plaintext
+INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE; COMPLETION
+Instance_1; Process_1; timestamp := 0; ;
+Instance_1; Activity_1; duration := uniform(8, 12); ; timestamp := timestamp + duration
+```
+
+With expected values, `duration` will be `(8 + 12) / 2 = 10`.
+
+### Usage
+
+```cpp
+#include <bpmnos-model.h>
+
+int main() {
+  BPMNOS::Model::ExpectedValueDataProvider dataProvider("diagram.bpmn", "scenario.csv");
+  auto scenario = dataProvider.createScenario();
+}
+```
+
 ## Real-life monitor
 
 @note Currently, there is no implementation for a real-life monitor.
