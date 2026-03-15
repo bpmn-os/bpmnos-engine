@@ -6,16 +6,20 @@
 
 namespace BPMNOS::Execution {
 
+class SystemState;
+
 /**
  * @brief Represents an event that increments the current time.
  *
- * This event contains a pointer to the process model and a unique instance identifier.
+ * This event contains a pointer to the system state for observers to access.
  */
 struct ClockTickEvent : Event {
-  ClockTickEvent();
+  ClockTickEvent(const SystemState* systemState);
   void processBy(Engine* engine) const override;
 
   nlohmann::ordered_json jsonify() const override;
+
+  const SystemState* systemState;
 };
 
 } // namespace BPMNOS::Execution

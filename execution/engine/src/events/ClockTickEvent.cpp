@@ -3,8 +3,9 @@
 
 using namespace BPMNOS::Execution;
 
-ClockTickEvent::ClockTickEvent()
+ClockTickEvent::ClockTickEvent(const SystemState* systemState)
   : Event(nullptr)
+  , systemState(systemState)
 {
 }
 
