@@ -25,6 +25,7 @@ public:
   std::unordered_map< std::string, Attribute*> globalMap;
   Attribute* operator[](const std::string& name) const;
   bool contains(const std::string& name) const;
+  bool contains(const Attribute* attribute) const;
 
   std::optional<BPMNOS::number> getValue(const Attribute* attribute, const Values& status, const Values& data, const Values& globals) const;
   std::optional<BPMNOS::number> getValue(const Attribute* attribute, const Values& status, const SharedValues& data, const Values& globals) const;

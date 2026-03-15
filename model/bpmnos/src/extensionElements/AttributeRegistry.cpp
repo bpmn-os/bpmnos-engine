@@ -55,6 +55,21 @@ bool AttributeRegistry::contains(const std::string& name) const {
   return statusMap.contains(name) || dataMap.contains(name) || globalMap.contains(name);
 }
 
+bool AttributeRegistry::contains(const Attribute* attribute) const {
+  if (attribute->category == Attribute::Category::STATUS) {
+    return attribute->index < statusAttributes.size() &&
+           statusAttributes[attribute->index] == attribute;
+  }
+  else if (attribute->category == Attribute::Category::DATA) {
+    return attribute->index < dataAttributes.size() &&
+           dataAttributes[attribute->index] == attribute;
+  }
+  else /* if (attribute->category == Attribute::Category::GLOBAL) */ {
+    return attribute->index < globalAttributes.size() &&
+           globalAttributes[attribute->index] == attribute;
+  }
+}
+
 
 std::optional<BPMNOS::number> AttributeRegistry::getValue(const Attribute* attribute, const Values& status, const Values& data, const Values& globals) const {
   if ( attribute->category == Attribute::Category::STATUS ) {
