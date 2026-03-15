@@ -57,14 +57,20 @@ std::vector< const Scenario::InstanceData* > DynamicScenario::getKnownInstances(
 std::vector< std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values> > DynamicScenario::getCurrentInstantiations(const BPMNOS::number currentTime) const {
   std::vector< std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values> > result;
   for ( auto& [id, instance] : instances ) {
-    if ( instance.instantiationTime == currentTime ) {
-      // Check if process data is disclosed
-      if ( disclosure.contains(instance.id) && disclosure.at(instance.id).contains(instance.process) ) {
-        if ( currentTime < disclosure.at(instance.id).at(instance.process) ) {
-          continue; // Process data not yet disclosed
-        }
+    // Effective instantiation time is max(instantiationTime, processDisclosure).
+    // If process data disclosure is later than instantiation time, instantiation is delayed
+    // until all process data is disclosed.
+    BPMNOS::number effectiveInstantiationTime = instance.instantiationTime;
+    if ( disclosure.contains(instance.id) && disclosure.at(instance.id).contains(instance.process) ) {
+      effectiveInstantiationTime = std::max(effectiveInstantiationTime, disclosure.at(instance.id).at(instance.process));
+    }
+    if ( effectiveInstantiationTime == currentTime ) {
+      auto status = getKnownInitialStatus(&instance, currentTime);
+      // If instantiation was delayed due to disclosure, update timestamp to reflect actual instantiation time
+      if ( effectiveInstantiationTime > instance.instantiationTime ) {
+        status[ExtensionElements::Index::Timestamp] = currentTime;
       }
-      result.push_back({instance.process, getKnownInitialStatus(&instance, currentTime), getKnownInitialData(&instance, currentTime)});
+      result.push_back({instance.process, std::move(status), getKnownInitialData(&instance, currentTime)});
     }
   }
   return result;
