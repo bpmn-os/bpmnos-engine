@@ -199,11 +199,17 @@ void DynamicDataProvider::readInstances() {
     // set time of instantiation
     instance.instantiation = instance.data.at( attributes[instance.process][Keyword::Timestamp] );
 
-    if ( earliestInstantiation > instance.instantiation ) {
-      earliestInstantiation = instance.instantiation;
+    // Effective instantiation time is max(instantiation, processDisclosure)
+    BPMNOS::number effectiveInstantiation = instance.instantiation;
+    if ( disclosure.contains(id) && disclosure.at(id).contains(instance.process) ) {
+      effectiveInstantiation = std::max(effectiveInstantiation, disclosure.at(id).at(instance.process));
     }
-    if ( latestInstantiation < instance.instantiation ) {
-      latestInstantiation = instance.instantiation;
+
+    if ( earliestInstantiation > effectiveInstantiation ) {
+      earliestInstantiation = effectiveInstantiation;
+    }
+    if ( latestInstantiation < effectiveInstantiation ) {
+      latestInstantiation = effectiveInstantiation;
     }
   }
 }
