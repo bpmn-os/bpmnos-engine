@@ -82,30 +82,7 @@ void DynamicDataProvider::readInstances() {
       if ( initializationString.empty() ) {
         continue;
       }
-      auto [attributeName, expressionString] = DataProvider::parseInitialization(initializationString);
-      // Find global attribute by name
-      const Attribute* attribute = nullptr;
-      for ( auto& [id, globalAttribute] : attributes[nullptr] ) {
-        if ( globalAttribute->name == attributeName ) {
-          attribute = globalAttribute;
-          break;
-        }
-      }
-      if ( !attribute ) {
-        throw std::runtime_error("DynamicDataProvider: unknown global attribute '" + attributeName + "'");
-      }
-      // Build globals vector from current globalValueMap
-      Values globals(model->attributes.size());
-      for ( auto& [globalAttribute, value] : globalValueMap ) {
-        globals[globalAttribute->index] = value;
-      }
-      // Compile and evaluate using Expression
-      Expression expression(expressionString, model->attributeRegistry);
-      auto value = expression.execute(Values{}, Values{}, globals);
-      if ( !value.has_value() ) {
-        throw std::runtime_error("DynamicDataProvider: failed to evaluate global '" + attributeName + "'");
-      }
-      globalValueMap[attribute] = value.value();
+      evaluateGlobal(initializationString);
     }
     else if ( instanceIdentifier.empty() ) {
       throw std::runtime_error("DynamicDataProvider: instance id required when node id is provided");
@@ -130,34 +107,27 @@ void DynamicDataProvider::readInstances() {
 
       // If no initialization, just create instance (already done above)
       if ( initializationString.empty() ) {
+        if ( !disclosureString.empty() ) {
+          throw std::runtime_error("DynamicDataProvider: DISCLOSURE requires INITIALIZATION in the same row");
+        }
         continue;
       }
 
       auto& instance = instances[instanceId];
-      auto [attributeName, expressionString] = DataProvider::parseInitialization(initializationString);
+      auto [attribute, expressionString] = lookupAttribute(node, initializationString);
 
-      // Look up attribute in the node's extension elements
-      auto extensionElements = node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
-      if ( !extensionElements->attributeRegistry.contains(attributeName) ) {
-        throw std::runtime_error("DynamicDataProvider: node '" + nodeId + "' has no attribute '" + attributeName + "'");
-      }
+      // Evaluate INITIALIZATION expression first (so DISCLOSURE can reference it)
+      BPMNOS::number value = evaluateExpression(instanceId, node, expressionString);
+      parseTimeEvaluatedValues[instanceId][attribute] = value;
 
-      auto attribute = extensionElements->attributeRegistry[attributeName];
-      if ( attribute->expression ) {
-        throw std::runtime_error("DynamicDataProvider: value of attribute '" + attributeName + "' is initialized by expression and must not be provided explicitly");
-      }
-
-      // Parse disclosure time (must be constant)
+      // Parse disclosure time (can reference the just-initialized attribute)
       BPMNOS::number ownDisclosure = 0;
       if ( !disclosureString.empty() ) {
-        ownDisclosure = evaluateExpression(disclosureString);
+        ownDisclosure = evaluateExpression(instanceId, node, disclosureString);
       }
 
       // Compute effective disclosure = max(own, parent_scope_disclosure)
       BPMNOS::number disclosureTime = getEffectiveDisclosure(instanceId, node, ownDisclosure);
-
-      // Evaluate expression at parse time (globals only)
-      BPMNOS::number value = evaluateExpression(expressionString);
 
       if (disclosureTime == 0) {
         // Immediate disclosure: store value directly

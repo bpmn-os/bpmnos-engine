@@ -85,6 +85,70 @@ BPMN::Node* DataProvider::findNode(const std::string& nodeId) const {
   throw std::runtime_error("DataProvider: node '" + nodeId + "' not found in model");
 }
 
+void DataProvider::evaluateGlobal(const std::string& initializationString,
+                                   const LIMEX::Handle<double>& handle) {
+  auto [attributeName, expressionString] = parseInitialization(initializationString);
+
+  // Find global attribute by name
+  const Attribute* attribute = nullptr;
+  for (auto& [id, globalAttribute] : attributes[nullptr]) {
+    if (globalAttribute->name == attributeName) {
+      attribute = globalAttribute;
+      break;
+    }
+  }
+  if (!attribute) {
+    throw std::runtime_error("DataProvider: unknown global attribute '" + attributeName + "'");
+  }
+  if (attribute->expression) {
+    throw std::runtime_error("DataProvider: global attribute '" + attributeName +
+                             "' is initialized by model expression and must not be provided explicitly");
+  }
+
+  // Build globals vector from current globalValueMap
+  Values globals(model->attributes.size());
+  for (auto& [globalAttribute, value] : globalValueMap) {
+    globals[globalAttribute->index] = value;
+  }
+
+  // Compile and evaluate expression
+  Expression expression(handle, expressionString, model->attributeRegistry);
+
+  // Validate all referenced globals are already evaluated
+  for (auto* referencedAttribute : expression.variables) {
+    if (!globalValueMap.contains(referencedAttribute)) {
+      throw std::runtime_error("DataProvider: global '" + attributeName +
+                               "' references unevaluated global '" + referencedAttribute->name + "'");
+    }
+  }
+
+  auto value = expression.execute(Values{}, Values{}, globals);
+  if (!value.has_value()) {
+    throw std::runtime_error("DataProvider: failed to evaluate global '" + attributeName + "'");
+  }
+  globalValueMap[attribute] = value.value();
+}
+
+std::pair<const Attribute*, std::string> DataProvider::lookupAttribute(
+    const BPMN::Node* node,
+    const std::string& initializationString) const {
+  auto [attributeName, expressionString] = parseInitialization(initializationString);
+
+  auto extensionElements = node->extensionElements->as<ExtensionElements>();
+  if (!extensionElements->attributeRegistry.contains(attributeName)) {
+    throw std::runtime_error("DataProvider: node '" + node->id +
+                             "' has no attribute '" + attributeName + "'");
+  }
+
+  auto attribute = extensionElements->attributeRegistry[attributeName];
+  if (attribute->expression) {
+    throw std::runtime_error("DataProvider: attribute '" + attributeName +
+                             "' is initialized by model expression and must not be provided explicitly");
+  }
+
+  return {attribute, expressionString};
+}
+
 std::pair<std::string, std::string> DataProvider::parseInitialization(
     const std::string& initialization) {
   auto position = initialization.find(":=");
@@ -132,6 +196,64 @@ BPMNOS::number DataProvider::evaluateExpression(
   }
 
   auto value = expression.execute(Values{}, Values{}, globals);
+  if (!value.has_value()) {
+    throw std::runtime_error("DataProvider: failed to evaluate expression '" + expressionString + "'");
+  }
+  return value.value();
+}
+
+BPMNOS::number DataProvider::evaluateExpression(
+    size_t instanceId,
+    const BPMN::Node* node,
+    const std::string& expressionString,
+    const LIMEX::Handle<double>& handle) const {
+
+  auto extensionElements = node->extensionElements->as<ExtensionElements>();
+
+  // Build context from parse-time evaluated values for this instance
+  Values status(extensionElements->attributeRegistry.statusAttributes.size());
+  Values data(extensionElements->attributeRegistry.dataAttributes.size());
+  Values globals(model->attributes.size());
+
+  // Populate globals from globalValueMap
+  for (auto& [attribute, attributeValue] : globalValueMap) {
+    globals[attribute->index] = attributeValue;
+  }
+
+  // Populate status/data from this instance's parse-time evaluated values
+  if (parseTimeEvaluatedValues.contains(instanceId)) {
+    for (auto& [attribute, attributeValue] : parseTimeEvaluatedValues.at(instanceId)) {
+      if (attribute->category == Attribute::Category::STATUS) {
+        status[attribute->index] = attributeValue;
+      }
+      else if (attribute->category == Attribute::Category::DATA) {
+        data[attribute->index] = attributeValue;
+      }
+    }
+  }
+
+  // Compile expression using node's attributeRegistry
+  Expression expression(handle, expressionString, extensionElements->attributeRegistry);
+
+  // Validate all referenced attributes are available
+  for (auto* attribute : expression.variables) {
+    if (attribute->category == Attribute::Category::GLOBAL) {
+      if (!globalValueMap.contains(attribute)) {
+        throw std::runtime_error("DataProvider: expression '" + expressionString +
+                                 "' references unevaluated global attribute '" + attribute->name + "'");
+      }
+    }
+    else {
+      // Status or data attribute - must be in this instance's parse-time evaluated values
+      if (!parseTimeEvaluatedValues.contains(instanceId) ||
+          !parseTimeEvaluatedValues.at(instanceId).contains(attribute)) {
+        throw std::runtime_error("DataProvider: expression '" + expressionString +
+                                 "' references unevaluated attribute '" + attribute->name + "'");
+      }
+    }
+  }
+
+  auto value = expression.execute(status, data, globals);
   if (!value.has_value()) {
     throw std::runtime_error("DataProvider: failed to evaluate expression '" + expressionString + "'");
   }

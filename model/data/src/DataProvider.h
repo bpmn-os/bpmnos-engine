@@ -57,6 +57,40 @@ protected:
       const std::string& initialization);
 
   /**
+   * @brief Look up an attribute from an initialization string.
+   *
+   * Parses the initialization, finds the attribute in the node's attributeRegistry,
+   * and validates it doesn't have a model expression.
+   *
+   * @param node The node whose attributeRegistry to search.
+   * @param initializationString The initialization in "attribute := expression" format.
+   * @return A pair containing the attribute pointer and the expression string.
+   */
+  std::pair<const Attribute*, std::string> lookupAttribute(
+      const BPMN::Node* node,
+      const std::string& initializationString) const;
+
+  /**
+   * @brief Evaluate a global attribute initialization from CSV.
+   *
+   * Parses the initialization string, finds the global attribute, validates it
+   * doesn't have a model expression, evaluates the expression, and stores the
+   * result in globalValueMap.
+   *
+   * @param initializationString The initialization in "attribute := expression" format.
+   * @param handle The LIMEX handle to use for expression compilation.
+   */
+  void evaluateGlobal(const std::string& initializationString,
+                      const LIMEX::Handle<double>& handle);
+
+  /**
+   * @brief Evaluate a global attribute initialization using the default handle.
+   */
+  virtual void evaluateGlobal(const std::string& initializationString) {
+    evaluateGlobal(initializationString, model->limexHandle);
+  }
+
+  /**
    * @brief Evaluate an expression using the provided LIMEX handle.
    *
    * @param expressionString The expression to evaluate.
@@ -99,6 +133,45 @@ protected:
 
   /// Latest instantiation time across all instances.
   BPMNOS::number latestInstantiation = std::numeric_limits<BPMNOS::number>::min();
+
+  /// Per-instance tracking of parse-time evaluated attributes.
+  /// Key: instanceId, Value: map of attribute -> evaluated value.
+  /// Used to allow CSV expressions to reference previously-evaluated attributes.
+  std::unordered_map<size_t, std::unordered_map<const Attribute*, BPMNOS::number>> parseTimeEvaluatedValues;
+
+  /**
+   * @brief Evaluate an expression in the context of a specific instance.
+   *
+   * This method allows CSV expressions to reference:
+   * - Global attributes (if already evaluated)
+   * - Status/data attributes from the same instance (if previously parse-time evaluated)
+   *
+   * @param instanceId The instance ID for context lookup.
+   * @param node The node whose attributeRegistry to use for compilation.
+   * @param expressionString The expression to evaluate.
+   * @param handle The LIMEX handle to use for compilation.
+   * @return The evaluated numeric value.
+   */
+  BPMNOS::number evaluateExpression(
+      size_t instanceId,
+      const BPMN::Node* node,
+      const std::string& expressionString,
+      const LIMEX::Handle<double>& handle) const;
+
+  /**
+   * @brief Evaluate an expression for an instance using the default handle.
+   *
+   * @param instanceId The instance ID for context lookup.
+   * @param node The node whose attributeRegistry to use.
+   * @param expressionString The expression to evaluate.
+   * @return The evaluated numeric value.
+   */
+  virtual BPMNOS::number evaluateExpression(
+      size_t instanceId,
+      const BPMN::Node* node,
+      const std::string& expressionString) const {
+    return evaluateExpression(instanceId, node, expressionString, model->limexHandle);
+  }
 };
 
 template<typename InstanceData>

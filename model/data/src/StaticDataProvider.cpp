@@ -80,30 +80,7 @@ void StaticDataProvider::readInstances() {
       if (initializationString.empty()) {
         continue;
       }
-      auto [attributeName, expressionString] = DataProvider::parseInitialization(initializationString);
-      // Find global attribute by name
-      const Attribute* attribute = nullptr;
-      for (auto& [id, globalAttribute] : attributes[nullptr]) {
-        if (globalAttribute->name == attributeName) {
-          attribute = globalAttribute;
-          break;
-        }
-      }
-      if (!attribute) {
-        throw std::runtime_error("StaticDataProvider: unknown global attribute '" + attributeName + "'");
-      }
-      // Build globals vector from current globalValueMap
-      Values globals(model->attributes.size());
-      for (auto& [globalAttribute, value] : globalValueMap) {
-        globals[globalAttribute->index] = value;
-      }
-      // Compile and evaluate using Expression
-      Expression expression(expressionString, model->attributeRegistry);
-      auto value = expression.execute(Values{}, Values{}, globals);
-      if (!value.has_value()) {
-        throw std::runtime_error("StaticDataProvider: failed to evaluate global '" + attributeName + "'");
-      }
-      globalValueMap[attribute] = value.value();
+      evaluateGlobal(initializationString);
     }
     else if (instanceIdentifier.empty()) {
       throw std::runtime_error("StaticDataProvider: instance id required when node id is provided");
@@ -130,20 +107,11 @@ void StaticDataProvider::readInstances() {
       }
 
       auto& instance = instances[instanceId];
-      auto [attributeName, expressionString] = DataProvider::parseInitialization(initializationString);
+      auto [attribute, expressionString] = lookupAttribute(node, initializationString);
 
-      // Look up attribute in the node's extension elements
-      auto extensionElements = node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
-      if (!extensionElements->attributeRegistry.contains(attributeName)) {
-        throw std::runtime_error("StaticDataProvider: node '" + nodeId + "' has no attribute '" + attributeName + "'");
-      }
-
-      auto attribute = extensionElements->attributeRegistry[attributeName];
-      if (attribute->expression) {
-        throw std::runtime_error("StaticDataProvider: value of attribute '" + attributeName + "' is initialized by expression and must not be provided explicitly");
-      }
-
-      instance.data[attribute] = evaluateExpression(expressionString);
+      BPMNOS::number value = evaluateExpression(instanceId, node, expressionString);
+      instance.data[attribute] = value;
+      parseTimeEvaluatedValues[instanceId][attribute] = value;
     }
   }
 

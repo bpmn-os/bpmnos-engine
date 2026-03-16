@@ -127,30 +127,7 @@ void StochasticDataProvider::readInstances() {
       if (initializationString.empty()) {
         continue;
       }
-
-      auto [attributeName, expressionString] = DataProvider::parseInitialization(initializationString);
-      const Attribute* attribute = nullptr;
-      for (auto& [id, globalAttribute] : attributes[nullptr]) {
-        if (globalAttribute->name == attributeName) {
-          attribute = globalAttribute;
-          break;
-        }
-      }
-      if (!attribute) {
-        throw std::runtime_error("StochasticDataProvider: unknown global attribute '" + attributeName + "'");
-      }
-
-      Values globals(model->attributes.size());
-      for (auto& [globalAttribute, globalValue] : globalValueMap) {
-        globals[globalAttribute->index] = globalValue;
-      }
-
-      Expression expression(stochasticHandle, expressionString, model->attributeRegistry);
-      auto value = expression.execute(Values{}, Values{}, globals);
-      if (!value.has_value()) {
-        throw std::runtime_error("StochasticDataProvider: failed to evaluate global '" + attributeName + "'");
-      }
-      globalValueMap[attribute] = value.value();
+      evaluateGlobal(initializationString);
     }
     else if (instanceIdentifier.empty()) {
       throw std::runtime_error("StochasticDataProvider: instance id required when node id is provided");
@@ -237,42 +214,35 @@ void StochasticDataProvider::readInstances() {
 
       // Handle INITIALIZATION
       if (initializationString.empty()) {
+        if (!disclosureExpression.empty()) {
+          throw std::runtime_error("StochasticDataProvider: DISCLOSURE requires INITIALIZATION in the same row");
+        }
         continue;
       }
 
-      auto [attributeName, expressionString] = DataProvider::parseInitialization(initializationString);
-      auto extensionElements = node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
-      if (!extensionElements->attributeRegistry.contains(attributeName)) {
-        throw std::runtime_error("StochasticDataProvider: node '" + nodeId +
-                                 "' has no attribute '" + attributeName + "'");
-      }
-
-      auto attribute = extensionElements->attributeRegistry[attributeName];
-      if (attribute->expression) {
-        throw std::runtime_error("StochasticDataProvider: value of attribute '" + attributeName +
-                                 "' is initialized by expression and must not be provided explicitly");
-      }
+      auto [attribute, expressionString] = lookupAttribute(node, initializationString);
 
       // Check mutual exclusivity with ARRIVAL
       if (arrivalExpressions.contains(instanceId) && arrivalExpressions.at(instanceId).contains(node)) {
         for (auto& arrival : arrivalExpressions.at(instanceId).at(node)) {
           if (arrival.attribute == attribute) {
-            throw std::runtime_error("StochasticDataProvider: attribute '" + attributeName +
+            throw std::runtime_error("StochasticDataProvider: attribute '" + attribute->name +
                                      "' cannot use both INITIALIZATION and ARRIVAL");
           }
         }
       }
 
-      // Parse disclosure time
+      // Evaluate INITIALIZATION expression first (so DISCLOSURE can reference it)
+      BPMNOS::number value = evaluateExpression(instanceId, node, expressionString);
+      parseTimeEvaluatedValues[instanceId][attribute] = value;
+
+      // Parse disclosure time (can reference the just-initialized attribute)
       BPMNOS::number ownDisclosure = 0;
       if (!disclosureExpression.empty()) {
-        ownDisclosure = evaluateExpression(disclosureExpression);
+        ownDisclosure = evaluateExpression(instanceId, node, disclosureExpression);
       }
 
       BPMNOS::number disclosureTime = getEffectiveDisclosure(instanceId, node, ownDisclosure);
-
-      // Evaluate expression at parse time (globals only)
-      BPMNOS::number value = evaluateExpression(expressionString);
 
       if (disclosureTime == 0) {
         // Immediate disclosure: store value directly
@@ -307,6 +277,17 @@ void StochasticDataProvider::readInstances() {
 
 BPMNOS::number StochasticDataProvider::evaluateExpression(const std::string& expressionString) const {
   return DataProvider::evaluateExpression(expressionString, stochasticHandle);
+}
+
+void StochasticDataProvider::evaluateGlobal(const std::string& initializationString) {
+  DataProvider::evaluateGlobal(initializationString, stochasticHandle);
+}
+
+BPMNOS::number StochasticDataProvider::evaluateExpression(
+    size_t instanceId,
+    const BPMN::Node* node,
+    const std::string& expressionString) const {
+  return DataProvider::evaluateExpression(instanceId, node, expressionString, stochasticHandle);
 }
 
 BPMNOS::number StochasticDataProvider::getEffectiveDisclosure(size_t instanceId, const BPMN::Node* node,
