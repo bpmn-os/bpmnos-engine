@@ -109,7 +109,7 @@ void StaticDataProvider::readInstances() {
       auto& instance = instances[instanceId];
       auto [attribute, expressionString] = lookupAttribute(node, initializationString);
 
-      BPMNOS::number value = evaluateExpression(instanceId, node, expressionString);
+      BPMNOS::number value = evaluateExpression(instanceId, node, expressionString, attribute->type);
       instance.data[attribute] = value;
       parseTimeEvaluatedValues[instanceId][attribute] = value;
     }

@@ -73,7 +73,8 @@ protected:
 
   BPMNOS::number evaluateExpression(const std::string& expressionString) const override;
   BPMNOS::number evaluateExpression(size_t instanceId, const BPMN::Node* node,
-                                     const std::string& expressionString) const override;
+                                     const std::string& expressionString,
+                                     ValueType type) const override;
   void evaluateGlobal(const std::string& initializationString) override;
   BPMNOS::number getEffectiveDisclosure(size_t instanceId, const BPMN::Node* node, BPMNOS::number ownDisclosure);
 };

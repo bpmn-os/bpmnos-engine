@@ -36,7 +36,8 @@ protected:
   /// Override to use expectedValueHandle instead of model->limexHandle
   BPMNOS::number evaluateExpression(const std::string& expression) const override;
   BPMNOS::number evaluateExpression(size_t instanceId, const BPMN::Node* node,
-                                     const std::string& expressionString) const override;
+                                     const std::string& expressionString,
+                                     ValueType type) const override;
   void evaluateGlobal(const std::string& initializationString) override;
 
   void initializeExpectedValueHandle();

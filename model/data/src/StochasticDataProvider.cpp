@@ -233,13 +233,13 @@ void StochasticDataProvider::readInstances() {
       }
 
       // Evaluate INITIALIZATION expression first (so DISCLOSURE can reference it)
-      BPMNOS::number value = evaluateExpression(instanceId, node, expressionString);
+      BPMNOS::number value = evaluateExpression(instanceId, node, expressionString, attribute->type);
       parseTimeEvaluatedValues[instanceId][attribute] = value;
 
       // Parse disclosure time (can reference the just-initialized attribute)
       BPMNOS::number ownDisclosure = 0;
       if (!disclosureExpression.empty()) {
-        ownDisclosure = evaluateExpression(instanceId, node, disclosureExpression);
+        ownDisclosure = evaluateExpression(instanceId, node, disclosureExpression, DECIMAL);
       }
 
       BPMNOS::number disclosureTime = getEffectiveDisclosure(instanceId, node, ownDisclosure);
@@ -286,8 +286,9 @@ void StochasticDataProvider::evaluateGlobal(const std::string& initializationStr
 BPMNOS::number StochasticDataProvider::evaluateExpression(
     size_t instanceId,
     const BPMN::Node* node,
-    const std::string& expressionString) const {
-  return DataProvider::evaluateExpression(instanceId, node, expressionString, stochasticHandle);
+    const std::string& expressionString,
+    ValueType type) const {
+  return DataProvider::evaluateExpression(instanceId, node, expressionString, type, stochasticHandle);
 }
 
 BPMNOS::number StochasticDataProvider::getEffectiveDisclosure(size_t instanceId, const BPMN::Node* node,

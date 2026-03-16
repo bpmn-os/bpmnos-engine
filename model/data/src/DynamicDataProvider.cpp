@@ -117,13 +117,13 @@ void DynamicDataProvider::readInstances() {
       auto [attribute, expressionString] = lookupAttribute(node, initializationString);
 
       // Evaluate INITIALIZATION expression first (so DISCLOSURE can reference it)
-      BPMNOS::number value = evaluateExpression(instanceId, node, expressionString);
+      BPMNOS::number value = evaluateExpression(instanceId, node, expressionString, attribute->type);
       parseTimeEvaluatedValues[instanceId][attribute] = value;
 
       // Parse disclosure time (can reference the just-initialized attribute)
       BPMNOS::number ownDisclosure = 0;
       if ( !disclosureString.empty() ) {
-        ownDisclosure = evaluateExpression(instanceId, node, disclosureString);
+        ownDisclosure = evaluateExpression(instanceId, node, disclosureString, DECIMAL);
       }
 
       // Compute effective disclosure = max(own, parent_scope_disclosure)

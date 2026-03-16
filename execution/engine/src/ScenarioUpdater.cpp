@@ -35,35 +35,39 @@ void ScenarioUpdater::notice(const Observable* observable) {
   // Handle Token state changes
   if (observable->getObservableType() == Observable::Type::Token) {
     auto token = static_cast<const Token*>(observable);
+    auto scenario = token->owner->systemState->scenario;
 
     if (!token->node) {
       return;
     }
 
-    // Handle ARRIVED/CREATED at Activity - initialize arrival data
-    if (token->node->represents<BPMN::Activity>() &&
-        (token->state == Token::State::ARRIVED || token->state == Token::State::CREATED)) {
+    // Handle ARRIVED/CREATED at Activity - notify scenario of arrival
+    if (
+      token->node->represents<BPMN::Activity>() &&
+      (token->state == Token::State::ARRIVED || token->state == Token::State::CREATED)
+    ) {
       auto instanceId = token->getInstanceId();
-      Values data;
-      if (token->data) {
-        data = *token->data;
-      }
-      token->owner->systemState->scenario->initializeArrivalData(
-        instanceId, token->node, token->status, data, token->globals);
+      assert(token->data);
+      scenario->noticeActivityArrival(instanceId, token->node, token->status, *token->data, token->globals);
     }
 
-    // Handle BUSY at Task - set task completion status
-    if (token->node->represents<BPMN::Task>() &&
-        token->state == Token::State::BUSY) {
+    // Handle BUSY at Task - notify scenario of running task
+    if (
+      token->node->represents<BPMN::Task>() &&
+      token->state == Token::State::BUSY
+    ) {
       // Exclude SendTask, ReceiveTask, DecisionTask
-      if (token->node->represents<BPMN::SendTask>() ||
-          token->node->represents<BPMN::ReceiveTask>() ||
-          token->node->represents<BPMNOS::Model::DecisionTask>()) {
+      if (
+        token->node->represents<BPMN::SendTask>() ||
+        token->node->represents<BPMN::ReceiveTask>() ||
+        token->node->represents<BPMNOS::Model::DecisionTask>()
+      ) {
         return;
       }
 
       auto instanceId = token->getInstanceId();
-      token->owner->systemState->scenario->setTaskCompletionStatus(instanceId, token->node, token->status);
+      assert(token->data);
+      scenario->noticeRunningTask(instanceId, token->node, token->status, *token->data, token->globals);
     }
   }
 }

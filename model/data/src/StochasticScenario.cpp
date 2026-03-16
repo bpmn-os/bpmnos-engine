@@ -19,43 +19,54 @@ StochasticScenario::StochasticScenario(
 {
 }
 
-void StochasticScenario::addInstance(const BPMN::Process* process, const BPMNOS::number instanceId,
-                                      BPMNOS::number instantiationTime) {
+void StochasticScenario::addInstance(const BPMN::Process* process, const BPMNOS::number instanceId, BPMNOS::number instantiationTime) {
   instances[(size_t)instanceId] = {process, (size_t)instanceId, instantiationTime, {}};
 }
 
-void StochasticScenario::setValue(const BPMNOS::number instanceId, const Attribute* attribute,
-                                   std::optional<BPMNOS::number> value) {
+void StochasticScenario::setValue(const BPMNOS::number instanceId, const Attribute* attribute, std::optional<BPMNOS::number> value) {
   instances[(size_t)instanceId].values[attribute] = value;
 }
 
-void StochasticScenario::setDisclosure(const BPMNOS::number instanceId, const BPMN::Node* node,
-                                        BPMNOS::number disclosureTime) {
+void StochasticScenario::setDisclosure(const BPMNOS::number instanceId, const BPMN::Node* node, BPMNOS::number disclosureTime) {
   disclosure[(size_t)instanceId][node] = disclosureTime;
 }
 
-void StochasticScenario::addPendingDisclosure(const BPMNOS::number instanceId,
-                                               StochasticPendingDisclosure&& pending) {
+void StochasticScenario::addPendingDisclosure(const BPMNOS::number instanceId, StochasticPendingDisclosure&& pending) {
   pendingDisclosures[(size_t)instanceId].push_back(std::move(pending));
 }
 
-void StochasticScenario::addCompletionExpression(const BPMNOS::number instanceId,
-                                                  const BPMN::Node* task,
-                                                  CompletionExpression&& expr) {
+void StochasticScenario::addCompletionExpression(const BPMNOS::number instanceId, const BPMN::Node* task, CompletionExpression&& expr) {
   completionExpressions[(size_t)instanceId][task].push_back(std::move(expr));
 }
 
-void StochasticScenario::addArrivalExpression(const BPMNOS::number instanceId,
-                                               const BPMN::Node* node,
-                                               ArrivalExpression&& expr) {
+void StochasticScenario::addArrivalExpression(const BPMNOS::number instanceId, const BPMN::Node* node, ArrivalExpression&& expr) {
   arrivalExpressions[(size_t)instanceId][node].push_back(std::move(expr));
 }
 
-void StochasticScenario::initializeArrivalData(
+void StochasticScenario::noticeActivityArrival(
     BPMNOS::number instanceId,
     const BPMN::Node* node,
     const Values& status,
     const Values& data,
+    const Values& globals) const {
+  initializeActivityData(instanceId, node, status, data, globals);
+}
+
+void StochasticScenario::noticeActivityArrival(
+    BPMNOS::number instanceId,
+    const BPMN::Node* node,
+    const Values& status,
+    const SharedValues& data,
+    const Values& globals) const {
+  initializeActivityData(instanceId, node, status, data, globals);
+}
+
+template<typename DataType>
+void StochasticScenario::initializeActivityData(
+    BPMNOS::number instanceId,
+    const BPMN::Node* node,
+    const Values& status,
+    const DataType& data,
     const Values& globals) const {
   size_t id = (size_t)instanceId;
 
@@ -77,7 +88,20 @@ void StochasticScenario::initializeArrivalData(
   for (auto& arrivalExpression : nodeArrivalExpressions) {
     auto value = arrivalExpression.expression->execute(status, data, globals);
     if (value.has_value() && arrivalExpression.attribute) {
-      instances.at(id).values[arrivalExpression.attribute] = value.value();
+      // Apply type conversion
+      BPMNOS::number convertedValue;
+      switch (arrivalExpression.attribute->type) {
+        case ValueType::INTEGER:
+          convertedValue = BPMNOS::number((int)value.value());
+          break;
+        case ValueType::BOOLEAN:
+          convertedValue = BPMNOS::number(value.value() != 0 ? 1 : 0);
+          break;
+        default:
+          convertedValue = value.value();
+          break;
+      }
+      instances.at(id).values[arrivalExpression.attribute] = convertedValue;
     }
   }
 
@@ -106,8 +130,7 @@ bool StochasticScenario::isCompleted(const BPMNOS::number currentTime) const {
   return currentTime > latestInstantiationTime;
 }
 
-std::vector<const Scenario::InstanceData*> StochasticScenario::getCreatedInstances(
-    const BPMNOS::number currentTime) const {
+std::vector<const Scenario::InstanceData*> StochasticScenario::getCreatedInstances(const BPMNOS::number currentTime) const {
   std::vector<const Scenario::InstanceData*> result;
   for (auto& [id, instance] : instances) {
     if (instance.instantiationTime <= currentTime) {
@@ -117,8 +140,7 @@ std::vector<const Scenario::InstanceData*> StochasticScenario::getCreatedInstanc
   return result;
 }
 
-std::vector<const Scenario::InstanceData*> StochasticScenario::getKnownInstances(
-    [[maybe_unused]] const BPMNOS::number currentTime) const {
+std::vector<const Scenario::InstanceData*> StochasticScenario::getKnownInstances([[maybe_unused]] const BPMNOS::number currentTime) const {
   std::vector<const Scenario::InstanceData*> result;
   for (auto& [id, instance] : instances) {
     result.push_back(&instance);
@@ -126,14 +148,12 @@ std::vector<const Scenario::InstanceData*> StochasticScenario::getKnownInstances
   return result;
 }
 
-std::vector<std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values>>
-StochasticScenario::getCurrentInstantiations(const BPMNOS::number currentTime) const {
+std::vector<std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values>> StochasticScenario::getCurrentInstantiations(const BPMNOS::number currentTime) const {
   std::vector<std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values>> result;
   for (auto& [id, instance] : instances) {
     BPMNOS::number effectiveInstantiationTime = instance.instantiationTime;
     if (disclosure.contains(instance.id) && disclosure.at(instance.id).contains(instance.process)) {
-      effectiveInstantiationTime = std::max(effectiveInstantiationTime,
-                                             disclosure.at(instance.id).at(instance.process));
+      effectiveInstantiationTime = std::max( effectiveInstantiationTime,                                             disclosure.at(instance.id).at(instance.process) );
     }
     if (effectiveInstantiationTime == currentTime) {
       auto status = getKnownInitialStatus(&instance, currentTime);
@@ -146,8 +166,7 @@ StochasticScenario::getCurrentInstantiations(const BPMNOS::number currentTime) c
   return result;
 }
 
-BPMNOS::Values StochasticScenario::getKnownInitialStatus(const Scenario::InstanceData* instance,
-                                                          const BPMNOS::number currentTime) const {
+BPMNOS::Values StochasticScenario::getKnownInitialStatus(const Scenario::InstanceData* instance, const BPMNOS::number currentTime) const {
   BPMNOS::Values result;
   for (auto& attribute : instance->process->extensionElements->as<const ExtensionElements>()->attributes) {
     result.push_back(getKnownValue(instance, attribute.get(), currentTime));
@@ -155,8 +174,7 @@ BPMNOS::Values StochasticScenario::getKnownInitialStatus(const Scenario::Instanc
   return result;
 }
 
-BPMNOS::Values StochasticScenario::getKnownInitialData(const Scenario::InstanceData* instance,
-                                                        const BPMNOS::number currentTime) const {
+BPMNOS::Values StochasticScenario::getKnownInitialData(const Scenario::InstanceData* instance, const BPMNOS::number currentTime) const {
   BPMNOS::Values result;
   for (auto& attribute : instance->process->extensionElements->as<const ExtensionElements>()->data) {
     result.push_back(getKnownValue(instance, attribute.get(), currentTime));
@@ -164,10 +182,7 @@ BPMNOS::Values StochasticScenario::getKnownInitialData(const Scenario::InstanceD
   return result;
 }
 
-std::optional<BPMNOS::number> StochasticScenario::getKnownValue(
-    const Scenario::InstanceData* instance,
-    const BPMNOS::Model::Attribute* attribute,
-    [[maybe_unused]] const BPMNOS::number currentTime) const {
+std::optional<BPMNOS::number> StochasticScenario::getKnownValue( const Scenario::InstanceData* instance, const BPMNOS::Model::Attribute* attribute, [[maybe_unused]] const BPMNOS::number currentTime) const {
   if (attribute->expression && attribute->expression->type == Expression::Type::ASSIGN) {
     std::vector<double> variableValues;
     for (auto input : attribute->expression->variables) {
@@ -206,17 +221,11 @@ std::optional<BPMNOS::number> StochasticScenario::getKnownValue(
   return std::nullopt;
 }
 
-std::optional<BPMNOS::number> StochasticScenario::getKnownValue(
-    const BPMNOS::number instanceId,
-    const BPMNOS::Model::Attribute* attribute,
-    const BPMNOS::number currentTime) const {
+std::optional<BPMNOS::number> StochasticScenario::getKnownValue(const BPMNOS::number instanceId, const BPMNOS::Model::Attribute* attribute, const BPMNOS::number currentTime) const {
   return getKnownValue(&instances.at((size_t)instanceId), attribute, currentTime);
 }
 
-std::optional<BPMNOS::Values> StochasticScenario::getKnownValues(
-    const BPMNOS::number instanceId,
-    const BPMN::Node* node,
-    const BPMNOS::number currentTime) const {
+std::optional<BPMNOS::Values> StochasticScenario::getKnownValues(const BPMNOS::number instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const {
   auto& instance = instances.at((size_t)instanceId);
   if (disclosure.contains(instance.id) && disclosure.at(instance.id).contains(node)) {
     if (currentTime < disclosure.at(instance.id).at(node)) {
@@ -230,10 +239,7 @@ std::optional<BPMNOS::Values> StochasticScenario::getKnownValues(
   return result;
 }
 
-std::optional<BPMNOS::Values> StochasticScenario::getKnownData(
-    const BPMNOS::number instanceId,
-    const BPMN::Node* node,
-    const BPMNOS::number currentTime) const {
+std::optional<BPMNOS::Values> StochasticScenario::getKnownData(const BPMNOS::number instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const {
   auto& instance = instances.at((size_t)instanceId);
   if (disclosure.contains(instance.id) && disclosure.at(instance.id).contains(node)) {
     if (currentTime < disclosure.at(instance.id).at(node)) {
@@ -247,12 +253,20 @@ std::optional<BPMNOS::Values> StochasticScenario::getKnownData(
   return result;
 }
 
-void StochasticScenario::setTaskCompletionStatus(
-    const BPMNOS::number instanceId,
-    const BPMN::Node* task,
-    BPMNOS::Values status) const {
+void StochasticScenario::noticeRunningTask(BPMNOS::number instanceId, const BPMN::Node* task, const Values& status, const Values& data, const Values& globals) const {
+  setTaskCompletionStatus(instanceId, task, status, data, globals);
+}
+
+void StochasticScenario::noticeRunningTask(
+BPMNOS::number instanceId, const BPMN::Node* task, const Values& status, const SharedValues& data, const Values& globals) const {
+  setTaskCompletionStatus(instanceId, task, status, data, globals);
+}
+
+template<typename DataType>
+void StochasticScenario::setTaskCompletionStatus(BPMNOS::number instanceId, const BPMN::Node* task, const Values& status, const DataType& data, const Values& globals) const {
 
   size_t id = (size_t)instanceId;
+  Values modifiedStatus = status;
 
   // Check if we have completion expressions for this (instance, task)
   if (completionExpressions.contains(id) &&
@@ -261,20 +275,8 @@ void StochasticScenario::setTaskCompletionStatus(
 
     auto& taskCompletionExpressions = completionExpressions.at(id).at(task);
 
-    // Get the task's extension elements for data
+    // Get the task's extension elements
     auto extensionElements = task->extensionElements->as<const ExtensionElements>();
-
-    // Build data values from instance
-    auto& instance = instances.at(id);
-    Values data;
-    for (auto& attribute : extensionElements->data) {
-      if (instance.values.contains(attribute.get())) {
-        data.push_back(instance.values.at(attribute.get()));
-      }
-      else {
-        data.push_back(std::nullopt);
-      }
-    }
 
     // Set RNG context for random functions
     auto& randomGenerator = getRng(id, task);
@@ -284,13 +286,26 @@ void StochasticScenario::setTaskCompletionStatus(
 
     // Evaluate completion expressions and update status
     for (auto& completionExpression : taskCompletionExpressions) {
-      auto value = completionExpression.expression->execute(status, data, globals);
+      auto value = completionExpression.expression->execute(modifiedStatus, data, globals);
       if (value.has_value() && completionExpression.attribute) {
+        // Apply type conversion
+        BPMNOS::number convertedValue;
+        switch (completionExpression.attribute->type) {
+          case ValueType::INTEGER:
+            convertedValue = BPMNOS::number((int)value.value());
+            break;
+          case ValueType::BOOLEAN:
+            convertedValue = BPMNOS::number(value.value() != 0 ? 1 : 0);
+            break;
+          default:
+            convertedValue = value.value();
+            break;
+        }
         // Find attribute index in status
         size_t index = 0;
         for (auto& attribute : extensionElements->attributes) {
           if (attribute.get() == completionExpression.attribute) {
-            status[index] = value;
+            modifiedStatus[index] = convertedValue;
             break;
           }
           ++index;
@@ -305,7 +320,7 @@ void StochasticScenario::setTaskCompletionStatus(
   }
 
   // Store the (possibly modified) status
-  taskCompletionStatus[{id, task}] = std::move(status);
+  taskCompletionStatus[{id, task}] = std::move(modifiedStatus);
 }
 
 void StochasticScenario::revealData(BPMNOS::number currentTime) const {

@@ -149,13 +149,15 @@ protected:
    * @param instanceId The instance ID for context lookup.
    * @param node The node whose attributeRegistry to use for compilation.
    * @param expressionString The expression to evaluate.
+   * @param type The target value type for conversion.
    * @param handle The LIMEX handle to use for compilation.
-   * @return The evaluated numeric value.
+   * @return The evaluated and type-converted numeric value.
    */
   BPMNOS::number evaluateExpression(
       size_t instanceId,
       const BPMN::Node* node,
       const std::string& expressionString,
+      ValueType type,
       const LIMEX::Handle<double>& handle) const;
 
   /**
@@ -164,13 +166,15 @@ protected:
    * @param instanceId The instance ID for context lookup.
    * @param node The node whose attributeRegistry to use.
    * @param expressionString The expression to evaluate.
-   * @return The evaluated numeric value.
+   * @param type The target value type for conversion.
+   * @return The evaluated and type-converted numeric value.
    */
   virtual BPMNOS::number evaluateExpression(
       size_t instanceId,
       const BPMN::Node* node,
-      const std::string& expressionString) const {
-    return evaluateExpression(instanceId, node, expressionString, model->limexHandle);
+      const std::string& expressionString,
+      ValueType type) const {
+    return evaluateExpression(instanceId, node, expressionString, type, model->limexHandle);
   }
 };
 

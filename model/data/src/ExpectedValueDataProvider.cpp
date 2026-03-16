@@ -40,8 +40,9 @@ BPMNOS::number ExpectedValueDataProvider::evaluateExpression(const std::string& 
 BPMNOS::number ExpectedValueDataProvider::evaluateExpression(
     size_t instanceId,
     const BPMN::Node* node,
-    const std::string& expressionString) const {
-  return DataProvider::evaluateExpression(instanceId, node, expressionString, expectedValueHandle);
+    const std::string& expressionString,
+    ValueType type) const {
+  return DataProvider::evaluateExpression(instanceId, node, expressionString, type, expectedValueHandle);
 }
 
 void ExpectedValueDataProvider::evaluateGlobal(const std::string& initializationString) {
@@ -142,7 +143,7 @@ void ExpectedValueDataProvider::readInstancesExtendedFormat(const CSVReader::Tab
       // Process initialization
       if (!initialization.empty()) {
         auto [attribute, expressionString] = lookupAttribute(node, initialization);
-        BPMNOS::number value = evaluateExpression(instanceId, node, expressionString);
+        BPMNOS::number value = evaluateExpression(instanceId, node, expressionString, attribute->type);
         instance.data[attribute] = value;
         parseTimeEvaluatedValues[instanceId][attribute] = value;
       }

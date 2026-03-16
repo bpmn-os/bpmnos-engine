@@ -90,42 +90,7 @@ public:
   virtual std::optional<BPMNOS::Values> getKnownData(const BPMNOS::number instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const = 0;
 
   /**
-   * @brief Store the completion status when a task enters BUSY state.
-   *
-   * @param instanceId The instance identifier.
-   * @param task The task node entering BUSY state.
-   * @param status The predicted completion status values.
-   */
-  virtual void setTaskCompletionStatus(
-    const BPMNOS::number instanceId,
-    const BPMN::Node* task,
-    BPMNOS::Values status
-  ) const {
-    taskCompletionStatus[{(size_t)instanceId, task}] = std::move(status);
-  }
-
-  /**
-   * @brief Get the completion status for a task.
-   *
-   * For deterministic scenarios, returns the value stored by setTaskCompletionStatus().
-   * For stochastic scenarios, evaluates COMPLETION expressions and returns updated status.
-   *
-   * @param instanceId The instance identifier.
-   * @param task The task node that is completing.
-   * @return Completion status values.
-   */
-  virtual BPMNOS::Values getTaskCompletionStatus(
-    const BPMNOS::number instanceId,
-    const BPMN::Node* task
-  ) const {
-    return taskCompletionStatus.at({(size_t)instanceId, task});
-  }
-
-  /**
-   * @brief Initialize arrival data when a token arrives at an activity.
-   *
-   * Evaluates ARRIVAL expressions using the parent scope's context.
-   * Default implementation does nothing - only StochasticScenario evaluates ARRIVAL.
+   * @brief Make scenario aware of a token arriving at an activity, can be used to evaluate initial status and data at activity.
    *
    * @param instanceId The instance identifier.
    * @param node The activity node being entered.
@@ -133,13 +98,66 @@ public:
    * @param data Parent scope's data attributes.
    * @param globals Global attributes.
    */
-  virtual void initializeArrivalData(
+  virtual void noticeActivityArrival(
     [[maybe_unused]] BPMNOS::number instanceId,
     [[maybe_unused]] const BPMN::Node* node,
     [[maybe_unused]] const Values& status,
     [[maybe_unused]] const Values& data,
     [[maybe_unused]] const Values& globals
   ) const {}
+
+  /// @brief Overload accepting SharedValues for data.
+  virtual void noticeActivityArrival(
+    [[maybe_unused]] BPMNOS::number instanceId,
+    [[maybe_unused]] const BPMN::Node* node,
+    [[maybe_unused]] const Values& status,
+    [[maybe_unused]] const SharedValues& data,
+    [[maybe_unused]] const Values& globals
+  ) const {}
+
+  /**
+   * @brief Make scenario aware of a running task, can be used to evaluate completion status.
+   *
+   * @param instanceId The instance identifier.
+   * @param task The task node entering BUSY state.
+   * @param status The current status values.
+   * @param data The current data values.
+   * @param globals Global attributes.
+   */
+  virtual void noticeRunningTask(
+    BPMNOS::number instanceId,
+    const BPMN::Node* task,
+    const Values& status,
+    [[maybe_unused]] const Values& data,
+    [[maybe_unused]] const Values& globals
+  ) const {
+    taskCompletionStatus[{(size_t)instanceId, task}] = status;
+  }
+
+  /// @brief Overload accepting SharedValues for data.
+  virtual void noticeRunningTask(
+    BPMNOS::number instanceId,
+    const BPMN::Node* task,
+    const Values& status,
+    [[maybe_unused]] const SharedValues& data,
+    [[maybe_unused]] const Values& globals
+  ) const {
+    taskCompletionStatus[{(size_t)instanceId, task}] = status;
+  }
+
+  /**
+   * @brief Get the completion status for a task.
+   *
+   * @param instanceId The instance identifier.
+   * @param task The task node that is completing.
+   * @return Completion status values.
+   */
+  virtual BPMNOS::Values getTaskCompletionStatus(
+    BPMNOS::number instanceId,
+    const BPMN::Node* task
+  ) const {
+    return taskCompletionStatus.at({(size_t)instanceId, task});
+  }
 
   const Model* model;  ///< Pointer to the BPMN model.
   BPMNOS::Values globals;

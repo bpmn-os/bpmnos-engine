@@ -126,7 +126,21 @@ void DataProvider::evaluateGlobal(const std::string& initializationString,
   if (!value.has_value()) {
     throw std::runtime_error("DataProvider: failed to evaluate global '" + attributeName + "'");
   }
-  globalValueMap[attribute] = value.value();
+
+  // Apply type conversion
+  BPMNOS::number convertedValue;
+  switch (attribute->type) {
+    case ValueType::INTEGER:
+      convertedValue = BPMNOS::number((int)value.value());
+      break;
+    case ValueType::BOOLEAN:
+      convertedValue = BPMNOS::number(value.value() != 0 ? 1 : 0);
+      break;
+    default:
+      convertedValue = value.value();
+      break;
+  }
+  globalValueMap[attribute] = convertedValue;
 }
 
 std::pair<const Attribute*, std::string> DataProvider::lookupAttribute(
@@ -206,6 +220,7 @@ BPMNOS::number DataProvider::evaluateExpression(
     size_t instanceId,
     const BPMN::Node* node,
     const std::string& expressionString,
+    ValueType type,
     const LIMEX::Handle<double>& handle) const {
 
   auto extensionElements = node->extensionElements->as<ExtensionElements>();
@@ -257,5 +272,14 @@ BPMNOS::number DataProvider::evaluateExpression(
   if (!value.has_value()) {
     throw std::runtime_error("DataProvider: failed to evaluate expression '" + expressionString + "'");
   }
-  return value.value();
+
+  // Apply type conversion
+  switch (type) {
+    case ValueType::INTEGER:
+      return BPMNOS::number((int)value.value());
+    case ValueType::BOOLEAN:
+      return BPMNOS::number(value.value() != 0 ? 1 : 0);
+    default:
+      return value.value();
+  }
 }
