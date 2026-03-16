@@ -26,24 +26,6 @@ StochasticDataProvider::StochasticDataProvider(const std::string& modelFile,
   , columnCount(0)
 {
   initializeStochasticHandle();
-
-  // Evaluate global attributes
-  for (auto& [attributeId, attribute] : attributes[nullptr]) {
-    if (attribute->expression) {
-      Values globals(model->attributes.size());
-      for (auto& [globalAttribute, globalValue] : globalValueMap) {
-        globals[globalAttribute->index] = globalValue;
-      }
-      auto value = attribute->expression->execute(Values{}, Values{}, globals);
-      if (!value.has_value()) {
-        throw std::runtime_error("StochasticDataProvider: failed to evaluate global attribute '" + attribute->id + "'");
-      }
-      globalValueMap[attribute] = value.value();
-    }
-  }
-
-  earliestInstantiation = std::numeric_limits<BPMNOS::number>::max();
-  latestInstantiation = std::numeric_limits<BPMNOS::number>::min();
   readInstances();
 }
 
@@ -102,7 +84,7 @@ void StochasticDataProvider::readInstances() {
     if (!std::holds_alternative<std::string>(row.at(INITIALIZATION))) {
       throw std::runtime_error("StochasticDataProvider: illegal initialization");
     }
-    std::string initialization = std::get<std::string>(row.at(INITIALIZATION));
+    std::string initializationString = std::get<std::string>(row.at(INITIALIZATION));
 
     // Get disclosure (if 4+ columns)
     std::string disclosureExpression;
@@ -142,11 +124,11 @@ void StochasticDataProvider::readInstances() {
       if (!completionExpression.empty()) {
         throw std::runtime_error("StochasticDataProvider: global attributes must not have completion");
       }
-      if (initialization.empty()) {
+      if (initializationString.empty()) {
         continue;
       }
 
-      auto [attributeName, expressionString] = parseInitialization(initialization);
+      auto [attributeName, expressionString] = DataProvider::parseInitialization(initializationString);
       const Attribute* attribute = nullptr;
       for (auto& [id, globalAttribute] : attributes[nullptr]) {
         if (globalAttribute->name == attributeName) {
@@ -201,7 +183,7 @@ void StochasticDataProvider::readInstances() {
                                    nodeId + "'");
         }
 
-        auto [attributeName, expressionString] = parseInitialization(completionExpression);
+        auto [attributeName, expressionString] = DataProvider::parseInitialization(completionExpression);
         auto extensionElements = node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
         if (!extensionElements->attributeRegistry.contains(attributeName)) {
           throw std::runtime_error("StochasticDataProvider: node '" + nodeId +
@@ -221,7 +203,7 @@ void StochasticDataProvider::readInstances() {
                                    nodeId + "'");
         }
 
-        auto [attributeName, expressionString] = parseInitialization(arrivalExpression);
+        auto [attributeName, expressionString] = DataProvider::parseInitialization(arrivalExpression);
         auto extensionElements = node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
         if (!extensionElements->attributeRegistry.contains(attributeName)) {
           throw std::runtime_error("StochasticDataProvider: node '" + nodeId +
@@ -254,11 +236,11 @@ void StochasticDataProvider::readInstances() {
       }
 
       // Handle INITIALIZATION
-      if (initialization.empty()) {
+      if (initializationString.empty()) {
         continue;
       }
 
-      auto [attributeName, expressionString] = parseInitialization(initialization);
+      auto [attributeName, expressionString] = DataProvider::parseInitialization(initializationString);
       auto extensionElements = node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
       if (!extensionElements->attributeRegistry.contains(attributeName)) {
         throw std::runtime_error("StochasticDataProvider: node '" + nodeId +
@@ -323,51 +305,8 @@ void StochasticDataProvider::readInstances() {
   }
 }
 
-std::pair<std::string, std::string> StochasticDataProvider::parseInitialization(
-    const std::string& initialization) const {
-  auto pos = initialization.find(":=");
-  if (pos == std::string::npos) {
-    throw std::runtime_error("StochasticDataProvider: initialization must be 'attribute := expression', got '" +
-                             initialization + "'");
-  }
-
-  std::string attributeName = initialization.substr(0, pos);
-  std::string expression = initialization.substr(pos + 2);
-
-  auto trimStart = attributeName.find_first_not_of(" \t");
-  auto trimEnd = attributeName.find_last_not_of(" \t");
-  if (trimStart == std::string::npos) {
-    throw std::runtime_error("StochasticDataProvider: empty attribute name in '" + initialization + "'");
-  }
-  attributeName = attributeName.substr(trimStart, trimEnd - trimStart + 1);
-
-  trimStart = expression.find_first_not_of(" \t");
-  trimEnd = expression.find_last_not_of(" \t");
-  if (trimStart == std::string::npos) {
-    throw std::runtime_error("StochasticDataProvider: empty expression in '" + initialization + "'");
-  }
-  expression = expression.substr(trimStart, trimEnd - trimStart + 1);
-
-  return {attributeName, expression};
-}
-
 BPMNOS::number StochasticDataProvider::evaluateExpression(const std::string& expressionString) const {
-  Values globals(model->attributes.size());
-  for (auto& [attribute, value] : globalValueMap) {
-    globals[attribute->index] = value;
-  }
-  Expression expression(stochasticHandle, expressionString, model->attributeRegistry);
-  for (auto* attribute : expression.variables) {
-    if (attribute->category != Attribute::Category::GLOBAL) {
-      throw std::runtime_error("StochasticDataProvider: expression '" + expressionString +
-                               "' references non-global attribute '" + attribute->name + "'");
-    }
-  }
-  auto value = expression.execute(Values{}, Values{}, globals);
-  if (!value.has_value()) {
-    throw std::runtime_error("StochasticDataProvider: failed to evaluate expression '" + expressionString + "'");
-  }
-  return value.value();
+  return DataProvider::evaluateExpression(expressionString, stochasticHandle);
 }
 
 BPMNOS::number StochasticDataProvider::getEffectiveDisclosure(size_t instanceId, const BPMN::Node* node,
@@ -391,35 +330,6 @@ BPMNOS::number StochasticDataProvider::getEffectiveDisclosure(size_t instanceId,
   }
 
   return effectiveDisclosure;
-}
-
-void StochasticDataProvider::ensureDefaultValue(StochasticInstanceData& instance,
-                                                 const std::string attributeId,
-                                                 std::optional<BPMNOS::number> value) {
-  assert(attributes.contains(instance.process));
-  auto it1 = attributes.at(instance.process).find(attributeId);
-  if (it1 == attributes.at(instance.process).end()) {
-    throw std::runtime_error("StochasticDataProvider: unable to find required attribute '" +
-                             attributeId + "' for process '" + instance.process->id + "'");
-  }
-
-  auto attribute = it1->second;
-  if (auto it2 = instance.data.find(attribute); it2 == instance.data.end()) {
-    if (attribute->expression) {
-      throw std::runtime_error("StochasticDataProvider: initial value of default attribute '" +
-                               attribute->id + "' must not be provided by expression");
-    }
-
-    if (value.has_value()) {
-      instance.data[attribute] = value.value();
-    }
-    else if (attributeId == BPMNOS::Keyword::Timestamp) {
-      instance.data[attribute] = 0;
-    }
-    else {
-      throw std::runtime_error("StochasticDataProvider: attribute '" + attribute->id + "' has no default value");
-    }
-  }
 }
 
 std::unique_ptr<Scenario> StochasticDataProvider::createScenario(unsigned int scenarioId) {

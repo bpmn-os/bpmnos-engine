@@ -34,22 +34,7 @@ void ExpectedValueDataProvider::initializeExpectedValueHandle() {
 }
 
 BPMNOS::number ExpectedValueDataProvider::evaluateExpression(const std::string& expressionString) const {
-  Values globals(model->attributes.size());
-  for (auto& [attribute, value] : globalValueMap) {
-    globals[attribute->index] = value;
-  }
-  Expression expression(expectedValueHandle, expressionString, model->attributeRegistry);
-  for (auto* attribute : expression.variables) {
-    if (attribute->category != Attribute::Category::GLOBAL) {
-      throw std::runtime_error("ExpectedValueDataProvider: expression '" + expressionString +
-                               "' references non-global attribute '" + attribute->name + "'");
-    }
-  }
-  auto value = expression.execute(Values{}, Values{}, globals);
-  if (!value.has_value()) {
-    throw std::runtime_error("ExpectedValueDataProvider: failed to evaluate expression '" + expressionString + "'");
-  }
-  return value.value();
+  return DataProvider::evaluateExpression(expressionString, expectedValueHandle);
 }
 
 void ExpectedValueDataProvider::readInstances() {

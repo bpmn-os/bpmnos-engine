@@ -47,13 +47,6 @@ protected:
     std::unordered_map< const Attribute*, BPMNOS::number > data;
   };
   std::unordered_map< long unsigned int, StaticInstanceData > instances;
-  std::unordered_map< const Attribute*, BPMNOS::number > globalValueMap;
-  BPMNOS::number earliestInstantiation;
-  BPMNOS::number latestInstantiation;
-
-  void ensureDefaultValue(StaticInstanceData& instance, const std::string attributeId, std::optional<BPMNOS::number> value = std::nullopt);
-  std::pair<std::string, std::string> parseInitialization(const std::string& initialization) const;
-  virtual BPMNOS::number evaluateExpression(const std::string& expression) const;
 };
 
 } // namespace BPMNOS::Model

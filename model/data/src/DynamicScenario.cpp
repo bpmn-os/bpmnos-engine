@@ -5,14 +5,10 @@
 using namespace BPMNOS::Model;
 
 DynamicScenario::DynamicScenario(const Model* model, BPMNOS::number earliestInstantiationTime, BPMNOS::number latestInstantiationTime, const std::unordered_map< const Attribute*, BPMNOS::number >& globalValueMap)
-  : earliestInstantiationTime(earliestInstantiationTime)
+  : Scenario(model, globalValueMap)
+  , earliestInstantiationTime(earliestInstantiationTime)
   , latestInstantiationTime(latestInstantiationTime)
 {
-  this->model = model;
-  globals.resize(model->attributes.size());
-  for ( auto& [attribute, value] : globalValueMap ) {
-    globals[attribute->index] = value;
-  }
 }
 
 void DynamicScenario::addInstance(const BPMN::Process* process, const BPMNOS::number instanceId, BPMNOS::number instantiationTime) {

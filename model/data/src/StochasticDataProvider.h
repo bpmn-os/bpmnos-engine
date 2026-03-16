@@ -58,7 +58,6 @@ protected:
   };
 
   std::unordered_map<long unsigned int, StochasticInstanceData> instances;
-  std::unordered_map<const Attribute*, BPMNOS::number> globalValueMap;
 
   /// Pending disclosures with expressions to evaluate at disclosure time
   std::unordered_map<size_t, std::vector<StochasticPendingDisclosure>> pendingDisclosures;
@@ -72,13 +71,7 @@ protected:
   /// Node disclosure times
   std::unordered_map<size_t, std::unordered_map<const BPMN::Node*, BPMNOS::number>> disclosure;
 
-  BPMNOS::number earliestInstantiation;
-  BPMNOS::number latestInstantiation;
-
-  void ensureDefaultValue(StochasticInstanceData& instance, const std::string attributeId,
-                          std::optional<BPMNOS::number> value = std::nullopt);
-  std::pair<std::string, std::string> parseInitialization(const std::string& initialization) const;
-  BPMNOS::number evaluateExpression(const std::string& expression) const;
+  BPMNOS::number evaluateExpression(const std::string& expressionString) const override;
   BPMNOS::number getEffectiveDisclosure(size_t instanceId, const BPMN::Node* node, BPMNOS::number ownDisclosure);
 };
 

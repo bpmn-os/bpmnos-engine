@@ -1,5 +1,6 @@
 #include "DataProvider.h"
 #include "model/bpmnos/src/extensionElements/ExtensionElements.h"
+#include "model/bpmnos/src/extensionElements/Expression.h"
 
 using namespace BPMNOS::Model;
 
@@ -82,4 +83,57 @@ BPMN::Node* DataProvider::findNode(const std::string& nodeId) const {
     }
   }
   throw std::runtime_error("DataProvider: node '" + nodeId + "' not found in model");
+}
+
+std::pair<std::string, std::string> DataProvider::parseInitialization(
+    const std::string& initialization) {
+  auto position = initialization.find(":=");
+  if (position == std::string::npos) {
+    throw std::runtime_error("DataProvider: initialization must be in format 'attribute := expression', got '" + initialization + "'");
+  }
+
+  std::string attributeName = initialization.substr(0, position);
+  std::string expression = initialization.substr(position + 2);
+
+  // Trim whitespace from attribute name
+  auto trimStart = attributeName.find_first_not_of(" \t");
+  auto trimEnd = attributeName.find_last_not_of(" \t");
+  if (trimStart == std::string::npos) {
+    throw std::runtime_error("DataProvider: empty attribute name in initialization '" + initialization + "'");
+  }
+  attributeName = attributeName.substr(trimStart, trimEnd - trimStart + 1);
+
+  // Trim whitespace from expression
+  trimStart = expression.find_first_not_of(" \t");
+  trimEnd = expression.find_last_not_of(" \t");
+  if (trimStart == std::string::npos) {
+    throw std::runtime_error("DataProvider: empty expression in initialization '" + initialization + "'");
+  }
+  expression = expression.substr(trimStart, trimEnd - trimStart + 1);
+
+  return {attributeName, expression};
+}
+
+BPMNOS::number DataProvider::evaluateExpression(
+    const std::string& expressionString,
+    const LIMEX::Handle<double>& handle) const {
+  Values globals(model->attributes.size());
+  for (auto& [attribute, value] : globalValueMap) {
+    globals[attribute->index] = value;
+  }
+
+  Expression expression(handle, expressionString, model->attributeRegistry);
+
+  for (auto* attribute : expression.variables) {
+    if (attribute->category != Attribute::Category::GLOBAL) {
+      throw std::runtime_error("DataProvider: expression '" + expressionString +
+                               "' references non-global attribute '" + attribute->name + "'");
+    }
+  }
+
+  auto value = expression.execute(Values{}, Values{}, globals);
+  if (!value.has_value()) {
+    throw std::runtime_error("DataProvider: failed to evaluate expression '" + expressionString + "'");
+  }
+  return value.value();
 }

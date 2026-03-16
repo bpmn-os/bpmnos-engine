@@ -1,4 +1,5 @@
 list(APPEND data_SOURCES
+  Scenario.cpp
   StaticScenario.cpp
   ExpectedValueScenario.cpp
   DynamicScenario.cpp

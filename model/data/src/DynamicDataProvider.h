@@ -58,15 +58,9 @@ protected:
     std::unordered_map< const Attribute*, BPMNOS::number > data;
   };
   std::unordered_map< long unsigned int, DynamicInstanceData > instances;
-  std::unordered_map< const Attribute*, BPMNOS::number > globalValueMap;
   std::unordered_map< size_t, std::vector<DeferredInitialization> > deferredInitializations; ///< Instance ID -> deferred inits
   std::unordered_map< size_t, std::unordered_map<const BPMN::Node*, BPMNOS::number> > disclosure; ///< Instance ID -> Node -> time when node's data is disclosed
-  BPMNOS::number earliestInstantiation;
-  BPMNOS::number latestInstantiation;
 
-  void ensureDefaultValue(DynamicInstanceData& instance, const std::string attributeId, std::optional<BPMNOS::number> value = std::nullopt);
-  std::pair<std::string, std::string> parseInitialization(const std::string& initialization) const;
-  BPMNOS::number evaluateExpression(const std::string& expression) const;
   BPMNOS::number getEffectiveDisclosure(size_t instanceId, const BPMN::Node* node, BPMNOS::number ownDisclosure);
 };
 

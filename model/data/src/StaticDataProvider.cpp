@@ -23,21 +23,6 @@ StaticDataProvider::StaticDataProvider(const std::string& modelFile, const std::
 StaticDataProvider::StaticDataProvider(const std::string& modelFile, const std::vector<std::string>& folders)
   : DataProvider(modelFile, folders)
 {
-  for ( auto& [ attributeId, attribute ] : attributes[nullptr] ) {
-    if ( attribute->expression ) {
-      Values globals(model->attributes.size());
-      for ( auto& [attr, value] : globalValueMap ) {
-        globals[attr->index] = value;
-      }
-      auto value = attribute->expression->execute(Values{}, Values{}, globals);
-      if ( !value.has_value() ) {
-        throw std::runtime_error("StaticDataProvider: failed to evaluate global attribute '" + attribute->id + "'");
-      }
-      globalValueMap[ attribute ] = value.value();
-    }
-  }
-  earliestInstantiation = std::numeric_limits<BPMNOS::number>::max();
-  latestInstantiation = std::numeric_limits<BPMNOS::number>::min();
 }
 
 StaticDataProvider::StaticDataProvider(const std::string& modelFile, const std::vector<std::string>& folders, const std::string& instanceFileOrString)
@@ -88,14 +73,14 @@ void StaticDataProvider::readInstances() {
     if (!std::holds_alternative<std::string>(row.at(INITIALIZATION))) {
       throw std::runtime_error("StaticDataProvider: illegal initialization");
     }
-    std::string initialization = std::get<std::string>(row.at(INITIALIZATION));
+    std::string initializationString = std::get<std::string>(row.at(INITIALIZATION));
 
     if (instanceIdentifier.empty() && nodeId.empty()) {
       // Global attribute
-      if (initialization.empty()) {
+      if (initializationString.empty()) {
         continue;
       }
-      auto [attributeName, expressionString] = parseInitialization(initialization);
+      auto [attributeName, expressionString] = DataProvider::parseInitialization(initializationString);
       // Find global attribute by name
       const Attribute* attribute = nullptr;
       for (auto& [id, globalAttribute] : attributes[nullptr]) {
@@ -140,12 +125,12 @@ void StaticDataProvider::readInstances() {
       }
 
       // If no initialization, just create instance (already done above)
-      if (initialization.empty()) {
+      if (initializationString.empty()) {
         continue;
       }
 
       auto& instance = instances[instanceId];
-      auto [attributeName, expressionString] = parseInitialization(initialization);
+      auto [attributeName, expressionString] = DataProvider::parseInitialization(initializationString);
 
       // Look up attribute in the node's extension elements
       auto extensionElements = node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
@@ -174,81 +159,6 @@ void StaticDataProvider::readInstances() {
     }
     if ( latestInstantiation < instance.instantiation ) {
       latestInstantiation = instance.instantiation;
-    }
-  }
-}
-
-std::pair<std::string, std::string> StaticDataProvider::parseInitialization(const std::string& initialization) const {
-  // Parse "attributeName := expression"
-  auto pos = initialization.find(":=");
-  if ( pos == std::string::npos ) {
-    throw std::runtime_error("StaticDataProvider: initialization must be in format 'attribute := expression', got '" + initialization + "'");
-  }
-
-  std::string attributeName = initialization.substr(0, pos);
-  std::string expression = initialization.substr(pos + 2);
-
-  // Trim whitespace
-  auto trimStart = attributeName.find_first_not_of(" \t");
-  auto trimEnd = attributeName.find_last_not_of(" \t");
-  if ( trimStart == std::string::npos ) {
-    throw std::runtime_error("StaticDataProvider: empty attribute name in initialization '" + initialization + "'");
-  }
-  attributeName = attributeName.substr(trimStart, trimEnd - trimStart + 1);
-
-  trimStart = expression.find_first_not_of(" \t");
-  trimEnd = expression.find_last_not_of(" \t");
-  if ( trimStart == std::string::npos ) {
-    throw std::runtime_error("StaticDataProvider: empty expression in initialization '" + initialization + "'");
-  }
-  expression = expression.substr(trimStart, trimEnd - trimStart + 1);
-
-  return {attributeName, expression};
-}
-
-BPMNOS::number StaticDataProvider::evaluateExpression(const std::string& expressionString) const {
-  Values globals(model->attributes.size());
-  for (auto& [attribute, value] : globalValueMap) {
-    globals[attribute->index] = value;
-  }
-  Expression expression(expressionString, model->attributeRegistry);
-  for (auto* attribute : expression.variables) {
-    if (attribute->category != Attribute::Category::GLOBAL) {
-      throw std::runtime_error("StaticDataProvider: expression '" + expressionString +
-                               "' references non-global attribute '" + attribute->name + "'");
-    }
-  }
-  auto value = expression.execute(Values{}, Values{}, globals);
-  if (!value.has_value()) {
-    throw std::runtime_error("StaticDataProvider: failed to evaluate expression '" + expressionString + "'");
-  }
-  return value.value();
-}
-
-void StaticDataProvider::ensureDefaultValue(StaticInstanceData& instance, const std::string attributeId, std::optional<BPMNOS::number> value) {
-  assert( attributes.contains(instance.process) );
-  auto it1 = attributes.at(instance.process).find(attributeId);
-  if ( it1 == attributes.at(instance.process).end() ) {
-    throw std::runtime_error("StaticDataProvider: unable to find required attribute '" + attributeId + "' for process '" + instance.process->id + "'");
-  }
-  auto attribute = it1->second;
-  if ( auto it2 = instance.data.find( attribute );
-    it2 == instance.data.end()
-  ) {
-    if ( attribute->expression ) {
-      throw std::runtime_error("StaticDataProvider: initial value of default attribute '" + attribute->id + "' must not be  provided by expression");
-    }
-    
-    // set attribute value if available
-    if ( value.has_value() ) {
-      instance.data[ attribute ] = value.value();
-    }
-    else if ( attributeId == BPMNOS::Keyword::Timestamp ) {
-      // use 0 as fallback 
-      instance.data[ attribute ] = 0;
-    }
-    else {
-      throw std::runtime_error("StaticDataProvider: attribute '" + attribute->id + "' has no default value");
     }
   }
 }

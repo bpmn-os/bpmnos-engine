@@ -12,15 +12,11 @@ StochasticScenario::StochasticScenario(
   const std::unordered_map<const Attribute*, BPMNOS::number>& globalValueMap,
   unsigned int seed
 )
-  : scenarioSeed(seed)
+  : Scenario(model, globalValueMap)
+  , scenarioSeed(seed)
   , earliestInstantiationTime(earliestInstantiationTime)
   , latestInstantiationTime(latestInstantiationTime)
 {
-  this->model = model;
-  globals.resize(model->attributes.size());
-  for (auto& [attribute, value] : globalValueMap) {
-    globals[attribute->index] = value;
-  }
 }
 
 void StochasticScenario::addInstance(const BPMN::Process* process, const BPMNOS::number instanceId,

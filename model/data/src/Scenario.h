@@ -141,13 +141,19 @@ public:
     [[maybe_unused]] const Values& globals
   ) const {}
 
+  const Model* model;  ///< Pointer to the BPMN model.
   BPMNOS::Values globals;
 
   /// Stored completion status per (instanceId, task)
   mutable std::map<std::pair<size_t, const BPMN::Node*>, BPMNOS::Values> taskCompletionStatus;
-  const Model* model;  ///< Pointer to the BPMN model.
 
 protected:
+  /// Constructor that initializes model and globals from CSV-provided values.
+  Scenario(const Model* model, const std::unordered_map<const Attribute*, BPMNOS::number>& globalValueMap);
+
+  /// Evaluate global attributes (CSV-provided + model expressions).
+  Values evaluateGlobals(const std::unordered_map<const Attribute*, BPMNOS::number>& globalValueMap);
+
   /**
    * @brief Method returning the initial status attributes for process instantiation.
    *
