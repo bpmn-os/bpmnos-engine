@@ -62,7 +62,7 @@ INSTANCE_ID; NODE_ID; INITIALIZATION
 
 ### Expressions
 
-Initialization expressions can include arithmetic operations and references to global attributes:
+Initialization expressions can include arithmetic operations and references to previously evaluated attributes:
 
 ```plaintext
 INSTANCE_ID; NODE_ID; INITIALIZATION
@@ -70,6 +70,7 @@ INSTANCE_ID; NODE_ID; INITIALIZATION
 ; ; processingRate := 2
 Instance_1; Process_1; timestamp := 0
 Instance_1; Process_1; duration := baseTime + processingRate * 5
+Instance_1; Process_1; endTime := timestamp + duration
 ```
 
 **Note:** INITIALIZATION expressions can reference any attributes previously parse-time evaluated in earlier CSV rows (globals or instance attributes). Referenced attributes must be available in the node's attributeRegistry. Row order determines which attributes are available for reference.
