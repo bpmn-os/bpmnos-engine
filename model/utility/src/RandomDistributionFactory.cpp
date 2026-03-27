@@ -1,4 +1,5 @@
 #include "RandomDistributionFactory.h"
+#include "CollectionRegistry.h"
 #include <exception>
 #include <algorithm>
 
@@ -229,6 +230,56 @@ void RandomDistributionFactory::registerFunctions(LIMEX::Handle<double>& handle)
       }
       std::geometric_distribution<int> dist(args[0]);
       return static_cast<double>(dist(*currentRng));
+    });
+  }
+
+  // triangular(min, mode, max) - Triangular distribution
+  if (!nameExists("triangular")) {
+    handle.add("triangular", [this](const std::vector<double>& args) -> double {
+      if (args.size() != 3) {
+        throw std::runtime_error("triangular requires 3 arguments: min, mode, max");
+      }
+      if (!currentRng) {
+        throw std::runtime_error("triangular: no RNG context set");
+      }
+      double a = args[0];  // min
+      double c = args[1];  // mode
+      double b = args[2];  // max
+
+      std::uniform_real_distribution<double> uniform(0.0, 1.0);
+      double u = uniform(*currentRng);
+      double fc = (c - a) / (b - a);
+
+      if (u < fc) {
+        return a + std::sqrt(u * (b - a) * (c - a));
+      } else {
+        return b - std::sqrt((1.0 - u) * (b - a) * (b - c));
+      }
+    });
+  }
+
+  // discrete(values, probabilities) - Discrete distribution over arbitrary values
+  // Arguments are collection indices (from encodeCollection preprocessing)
+  if (!nameExists("discrete")) {
+    handle.add("discrete", [this](const std::vector<double>& args) -> double {
+      if (args.size() != 2) {
+        throw std::runtime_error("discrete requires 2 arguments: values collection, probabilities collection");
+      }
+      if (!currentRng) {
+        throw std::runtime_error("discrete: no RNG context set");
+      }
+      size_t valuesIndex = static_cast<size_t>(args[0]);
+      size_t probsIndex = static_cast<size_t>(args[1]);
+
+      const auto& values = collectionRegistry[valuesIndex];
+      const auto& probs = collectionRegistry[probsIndex];
+
+      if (values.size() != probs.size()) {
+        throw std::runtime_error("discrete: values and probabilities must have the same size");
+      }
+
+      std::discrete_distribution<size_t> dist(probs.begin(), probs.end());
+      return values[dist(*currentRng)];
     });
   }
 }

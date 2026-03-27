@@ -44,6 +44,8 @@ public:
    * - gamma(shape, scale): Gamma distribution
    * - lognormal(logscale, shape): Log-normal distribution
    * - geometric(p): Geometric distribution
+   * - triangular(min, mode, max): Triangular distribution
+   * - discrete(values, probabilities): Discrete distribution over arbitrary collections
    */
   void registerFunctions(LIMEX::Handle<double>& handle);
 

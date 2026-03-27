@@ -23,6 +23,8 @@ namespace BPMNOS {
  * - gamma(shape, scale): shape * scale
  * - lognormal(logscale, shape): exp(logscale + shape^2 / 2)
  * - geometric(p): (1 - p) / p
+ * - triangular(min, mode, max): (min + mode + max) / 3
+ * - discrete(values, probs): value with highest probability (mode)
  */
 class ExpectedValueFactory {
 public:

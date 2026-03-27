@@ -1,4 +1,5 @@
 #include "ExpectedValueFactory.h"
+#include "CollectionRegistry.h"
 #include <stdexcept>
 #include <algorithm>
 
@@ -107,6 +108,41 @@ void ExpectedValueFactory::registerFunctions(LIMEX::Handle<double>& handle) {
         throw std::runtime_error("geometric requires 1 argument: probability");
       }
       return (1.0 - args[0]) / args[0];
+    });
+  }
+
+  // triangular(min, mode, max) - Expected value: (min + mode + max) / 3
+  if (!nameExists("triangular")) {
+    handle.add("triangular", [](const std::vector<double>& args) -> double {
+      if (args.size() != 3) {
+        throw std::runtime_error("triangular requires 3 arguments: min, mode, max");
+      }
+      return (args[0] + args[1] + args[2]) / 3.0;
+    });
+  }
+
+  // discrete(values, probabilities) - Mode: value with highest probability
+  if (!nameExists("discrete")) {
+    handle.add("discrete", [](const std::vector<double>& args) -> double {
+      if (args.size() != 2) {
+        throw std::runtime_error("discrete requires 2 arguments: values collection, probabilities collection");
+      }
+      size_t valuesIndex = static_cast<size_t>(args[0]);
+      size_t probsIndex = static_cast<size_t>(args[1]);
+
+      const auto& values = collectionRegistry[valuesIndex];
+      const auto& probs = collectionRegistry[probsIndex];
+
+      if (values.size() != probs.size()) {
+        throw std::runtime_error("discrete: values and probabilities must have the same size");
+      }
+      if (values.empty()) {
+        throw std::runtime_error("discrete: collections must not be empty");
+      }
+
+      auto maxIt = std::max_element(probs.begin(), probs.end());
+      auto maxIndex = static_cast<size_t>(std::distance(probs.begin(), maxIt));
+      return values[maxIndex];
     });
   }
 }
