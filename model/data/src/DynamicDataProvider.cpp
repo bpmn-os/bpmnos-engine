@@ -19,7 +19,7 @@ DynamicDataProvider::DynamicDataProvider(const std::string& modelFile, const std
 
 DynamicDataProvider::DynamicDataProvider(const std::string& modelFile, const std::vector<std::string>& folders, const std::string& instanceFileOrString)
   : DataProvider(modelFile,folders)
-  , reader( CSVReader(instanceFileOrString) )
+  , reader( CSVReader(instanceFileOrString, ";") )
 {
   readInstances();
 }

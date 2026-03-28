@@ -16,9 +16,10 @@ public:
   using Row = std::vector< std::variant< std::string, BPMNOS::number > >;
   using Table = std::vector<Row>;
 
-  explicit CSVReader(const std::string& instanceFileOrString);
+  explicit CSVReader(const std::string& instanceFileOrString, const std::string& delimiters = ",;\t");
   Table read();
   const std::string instanceFileOrString;
+  const std::string delimiters;
 };
 
 } // namespace BPMNOS::Model

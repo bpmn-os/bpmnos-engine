@@ -21,11 +21,14 @@ StochasticDataProvider::StochasticDataProvider(const std::string& modelFile,
                                                const std::string& instanceFileOrString,
                                                unsigned int seed)
   : DataProvider(modelFile, folders)
-  , reader(CSVReader(instanceFileOrString))
+  , reader(CSVReader(instanceFileOrString, ";"))
   , seed(seed)
   , columnCount(0)
 {
   initializeStochasticHandle();
+  // Set up RNG for parse-time evaluation of random expressions
+  std::mt19937 parseTimeRng(seed);
+  randomFactory.setCurrentRng(&parseTimeRng);
   readInstances();
 }
 
@@ -191,9 +194,9 @@ void StochasticDataProvider::readInstances() {
         if (instance.data.contains(attribute)) {
           throw std::runtime_error("StochasticDataProvider: conflicting initialization and arrival expression given for attribute '" + attributeName + "'");
         }
-        if (pendingDisclosures.contains(instanceId)) {
-          for (auto& pending : pendingDisclosures.at(instanceId)) {
-            if (pending.attribute == attribute) {
+        if (deferredAttributes.contains(instanceId)) {
+          for (auto& deferred : deferredAttributes.at(instanceId)) {
+            if (deferred.attribute == attribute) {
               throw std::runtime_error("StochasticDataProvider: conflicting initialization and arrival expression given for attribute '" + attributeName + "'");
             }
           }
@@ -223,25 +226,16 @@ void StochasticDataProvider::readInstances() {
         }
       }
 
-      // Evaluate INITIALIZATION expression first (so DISCLOSURE can reference it)
-      BPMNOS::number value = evaluateExpression(instanceId, node, expressionString, attribute->type);
-      parseTimeEvaluatedValues[instanceId][attribute] = value;
-
-      // Parse disclosure time (can reference the just-initialized attribute)
-      BPMNOS::number ownDisclosure = 0;
-      if (!disclosureExpression.empty()) {
-        ownDisclosure = evaluateExpression(instanceId, node, disclosureExpression, DECIMAL);
-      }
-
-      BPMNOS::number disclosureTime = getEffectiveDisclosure(instanceId, node, ownDisclosure);
-
-      if (disclosureTime == 0) {
-        // Immediate disclosure: store value directly
+      if (disclosureExpression.empty()) {
+        // Immediate disclosure: evaluate and store value directly
+        BPMNOS::number value = evaluateExpression(instanceId, node, expressionString, attribute->type);
+        parseTimeEvaluatedValues[instanceId][attribute] = value;
         instance.data[attribute] = value;
+        getEffectiveDisclosure(instanceId, node, 0);  // Update node disclosure tracking
       }
       else {
-        // Deferred disclosure: store pre-computed value for later reveal
-        pendingDisclosures[instanceId].push_back({attribute, disclosureTime, value});
+        // Deferred disclosure: store expressions for per-scenario evaluation
+        deferredAttributes[instanceId].push_back({attribute, node, expressionString, disclosureExpression});
       }
     }
   }
@@ -309,8 +303,9 @@ std::unique_ptr<Scenario> StochasticDataProvider::createScenario(unsigned int sc
                                                         latestInstantiation, globalValueMap,
                                                         seed + scenarioId);
 
-  // Set the random factory reference
+  // Set references for expression evaluation
   scenario->randomFactory = &randomFactory;
+  scenario->stochasticHandle = &stochasticHandle;
 
   for (auto& [id, instance] : instances) {
     auto& timestampAttribute = attributes[instance.process][Keyword::Timestamp];
@@ -321,17 +316,19 @@ std::unique_ptr<Scenario> StochasticDataProvider::createScenario(unsigned int sc
     }
   }
 
-  // Set node disclosure times
+  // Set node disclosure times (from immediate disclosures)
   for (auto& [instanceId, nodes] : disclosure) {
     for (auto& [node, disclosureTime] : nodes) {
       scenario->setDisclosure(instanceId, node, disclosureTime);
     }
   }
 
-  // Add pending disclosures (pre-computed values)
-  for (auto& [instanceId, pendings] : pendingDisclosures) {
-    for (auto& pending : pendings) {
-      scenario->addPendingDisclosure(instanceId, {pending.attribute, pending.disclosureTime, pending.value});
+  // Add deferred disclosures (to be evaluated per-scenario)
+  for (auto& [instanceId, deferreds] : deferredAttributes) {
+    for (auto& deferred : deferreds) {
+      scenario->addDeferredDisclosure(instanceId, {deferred.attribute, deferred.node,
+                                                    deferred.initializationExpression,
+                                                    deferred.disclosureExpression});
     }
   }
 
@@ -362,6 +359,9 @@ std::unique_ptr<Scenario> StochasticDataProvider::createScenario(unsigned int sc
       }
     }
   }
+
+  // Evaluate deferred disclosures with scenario-specific RNG
+  scenario->evaluateDeferredDisclosures();
 
   // Reveal data disclosed at time 0
   scenario->revealData(0);

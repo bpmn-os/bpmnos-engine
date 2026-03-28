@@ -43,6 +43,81 @@ void StochasticScenario::addArrivalExpression(const BPMNOS::number instanceId, c
   arrivalExpressions[(size_t)instanceId][node].push_back(std::move(expr));
 }
 
+void StochasticScenario::addDeferredDisclosure(const BPMNOS::number instanceId, DeferredDisclosure&& deferred) {
+  deferredDisclosures[(size_t)instanceId].push_back(std::move(deferred));
+}
+
+void StochasticScenario::evaluateDeferredDisclosures() {
+  if (!stochasticHandle || !randomFactory) {
+    return;
+  }
+
+  for (auto& [instanceId, deferreds] : deferredDisclosures) {
+    auto& instance = instances.at(instanceId);
+
+    for (auto& deferred : deferreds) {
+      // Set RNG context for this (instance, node)
+      auto& rng = getRng(instanceId, deferred.node);
+      randomFactory->setCurrentRng(&rng);
+
+      // Build status/data vectors from instance values
+      auto extensionElements = deferred.node->extensionElements->as<const ExtensionElements>();
+      Values status, data;
+      for (auto& attr : extensionElements->attributes) {
+        status.push_back(instance.values.contains(attr.get()) ? instance.values.at(attr.get()) : std::nullopt);
+      }
+      for (auto& attr : extensionElements->data) {
+        data.push_back(instance.values.contains(attr.get()) ? instance.values.at(attr.get()) : std::nullopt);
+      }
+
+      // Evaluate initialization expression
+      Expression initializationExpression(*stochasticHandle, deferred.initializationExpression, extensionElements->attributeRegistry);
+      BPMNOS::number value = initializationExpression.execute(status, data, globals).value_or(0);
+
+      // Apply type conversion
+      switch (deferred.attribute->type) {
+        case ValueType::INTEGER:
+          value = BPMNOS::number((int)value);
+          break;
+        case ValueType::BOOLEAN:
+          value = BPMNOS::number(value != 0 ? 1 : 0);
+          break;
+        default:
+          break;
+      }
+
+      // Evaluate disclosure expression
+      Expression disclosureExpression(*stochasticHandle, deferred.disclosureExpression, extensionElements->attributeRegistry);
+      BPMNOS::number ownDisclosure = disclosureExpression.execute(status, data, globals).value_or(0);
+
+      // Compute effective disclosure (max with parent scope)
+      BPMNOS::number effectiveDisclosure = ownDisclosure;
+      if (auto childNode = deferred.node->represents<BPMN::ChildNode>()) {
+        auto parentNode = childNode->parent;
+        if (disclosure.contains(instanceId) && disclosure.at(instanceId).contains(parentNode)) {
+          effectiveDisclosure = std::max(effectiveDisclosure, disclosure.at(instanceId).at(parentNode));
+        }
+      }
+
+      // Update node disclosure time
+      if (!disclosure[instanceId].contains(deferred.node)) {
+        disclosure[instanceId][deferred.node] = effectiveDisclosure;
+      } else {
+        disclosure[instanceId][deferred.node] = std::max(disclosure[instanceId][deferred.node], effectiveDisclosure);
+      }
+
+      // Add as pending disclosure
+      pendingDisclosures[instanceId].push_back({deferred.attribute, effectiveDisclosure, value});
+    }
+  }
+
+  // Clear RNG context
+  randomFactory->setCurrentRng(nullptr);
+
+  // Clear deferred disclosures (they've been processed)
+  deferredDisclosures.clear();
+}
+
 void StochasticScenario::noticeActivityArrival(
     BPMNOS::number instanceId,
     const BPMN::Node* node,
@@ -140,10 +215,17 @@ std::vector<const Scenario::InstanceData*> StochasticScenario::getCreatedInstanc
   return result;
 }
 
-std::vector<const Scenario::InstanceData*> StochasticScenario::getKnownInstances([[maybe_unused]] const BPMNOS::number currentTime) const {
+std::vector<const Scenario::InstanceData*> StochasticScenario::getKnownInstances(const BPMNOS::number currentTime) const {
   std::vector<const Scenario::InstanceData*> result;
   for (auto& [id, instance] : instances) {
-    result.push_back(&instance);
+    // Instance is known when process disclosure time is reached
+    BPMNOS::number processDisclosure = 0;
+    if (disclosure.contains(instance.id) && disclosure.at(instance.id).contains(instance.process)) {
+      processDisclosure = disclosure.at(instance.id).at(instance.process);
+    }
+    if (currentTime >= processDisclosure) {
+      result.push_back(&instance);
+    }
   }
   return result;
 }

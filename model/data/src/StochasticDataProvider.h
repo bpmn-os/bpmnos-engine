@@ -57,10 +57,18 @@ protected:
     std::unordered_map<const Attribute*, BPMNOS::number> data;
   };
 
+  /// Deferred attribute with expressions to evaluate per-scenario
+  struct DeferredAttribute {
+    const Attribute* attribute;
+    const BPMN::Node* node;
+    std::string initializationExpression;
+    std::string disclosureExpression;
+  };
+
   std::unordered_map<long unsigned int, StochasticInstanceData> instances;
 
-  /// Pending disclosures with expressions to evaluate at disclosure time
-  std::unordered_map<size_t, std::vector<StochasticPendingDisclosure>> pendingDisclosures;
+  /// Deferred attributes (evaluated per-scenario)
+  std::unordered_map<size_t, std::vector<DeferredAttribute>> deferredAttributes;
 
   /// Arrival expressions per (instance, node)
   std::unordered_map<size_t, std::unordered_map<const BPMN::Node*, std::vector<ArrivalExpression>>> arrivalExpressions;

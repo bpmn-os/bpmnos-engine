@@ -28,7 +28,7 @@ StaticDataProvider::StaticDataProvider(const std::string& modelFile, const std::
 StaticDataProvider::StaticDataProvider(const std::string& modelFile, const std::vector<std::string>& folders, const std::string& instanceFileOrString)
   : StaticDataProvider(modelFile, folders)
 {
-  reader = std::make_unique<CSVReader>(instanceFileOrString);
+  reader = std::make_unique<CSVReader>(instanceFileOrString, ";");
   readInstances();
 }
 

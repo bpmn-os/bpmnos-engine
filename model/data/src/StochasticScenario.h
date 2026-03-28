@@ -45,6 +45,18 @@ struct CompletionExpression {
 };
 
 /**
+ * @brief Structure representing a deferred disclosure.
+ *
+ * Stores expression strings to be evaluated per-scenario for independent sampling.
+ */
+struct DeferredDisclosure {
+  const Attribute* attribute;           ///< The attribute to initialize
+  const BPMN::Node* node;               ///< The node scope
+  std::string initializationExpression; ///< Expression to compute value
+  std::string disclosureExpression;     ///< Expression to compute disclosure time
+};
+
+/**
  * @brief A scenario implementation supporting stochastic behavior.
  *
  * StochasticScenario supports:
@@ -159,6 +171,10 @@ protected:
   void addPendingDisclosure(const BPMNOS::number instanceId, StochasticPendingDisclosure&& pending);
   void addCompletionExpression(const BPMNOS::number instanceId, const BPMN::Node* task, CompletionExpression&& expr);
   void addArrivalExpression(const BPMNOS::number instanceId, const BPMN::Node* node, ArrivalExpression&& expr);
+  void addDeferredDisclosure(const BPMNOS::number instanceId, DeferredDisclosure&& deferred);
+
+  /// Evaluate all deferred disclosures using scenario-specific RNG
+  void evaluateDeferredDisclosures();
 
   /// Get or create RNG for (instance, node) pair
   std::mt19937& getRng(size_t instanceId, const BPMN::Node* node) const;
@@ -174,6 +190,9 @@ protected:
   /// Completion expressions per (instance, node)
   std::unordered_map<size_t, std::unordered_map<const BPMN::Node*, std::vector<CompletionExpression>>> completionExpressions;
 
+  /// Deferred disclosures per instance (evaluated per-scenario)
+  std::unordered_map<size_t, std::vector<DeferredDisclosure>> deferredDisclosures;
+
   /// Per (instance, node) RNG for reproducibility
   mutable std::map<std::pair<size_t, const BPMN::Node*>, std::mt19937> rngs;
 
@@ -183,6 +202,9 @@ protected:
 
   /// RandomDistributionFactory for expression evaluation (set by provider)
   mutable RandomDistributionFactory* randomFactory = nullptr;
+
+  /// Stochastic LIMEX handle for expression evaluation (set by provider)
+  const LIMEX::Handle<double>* stochasticHandle = nullptr;
 };
 
 } // namespace BPMNOS::Model

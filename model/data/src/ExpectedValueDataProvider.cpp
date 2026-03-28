@@ -16,7 +16,7 @@ ExpectedValueDataProvider::ExpectedValueDataProvider(const std::string& modelFil
 {
   initializeExpectedValueHandle();
 
-  reader = std::make_unique<CSVReader>(instanceFileOrString);
+  reader = std::make_unique<CSVReader>(instanceFileOrString, ";");
   readInstances();
 }
 

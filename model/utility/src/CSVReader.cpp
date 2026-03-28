@@ -7,8 +7,9 @@
 
 using namespace BPMNOS;
 
-CSVReader::CSVReader(const std::string& instanceFileOrString)
+CSVReader::CSVReader(const std::string& instanceFileOrString, const std::string& delimiters)
   : instanceFileOrString(instanceFileOrString)
+  , delimiters(delimiters)
 {
 }
 
@@ -36,7 +37,7 @@ CSVReader::Table CSVReader::read() {
     strutil::trim(line);
 //std::cerr << "Line: " << line << std::endl;
     if ( line.empty() ) continue; // skip empty lines
-    auto cells = strutil::split_any( line, ",;\t" );
+    auto cells = strutil::split_any( line, delimiters );
     Row row;
     for ( auto cell : cells ) {
       strutil::trim(cell);
