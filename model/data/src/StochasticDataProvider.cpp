@@ -139,8 +139,7 @@ void StochasticDataProvider::readInstances() {
       // First occurrence of instance must have node = process
       if (!instances.contains(instanceId)) {
         if (!node->represents<BPMN::Process>()) {
-          throw std::runtime_error("StochasticDataProvider: first row for instance '" + instanceIdentifier +
-                                   "' must reference a process node, got '" + nodeId + "'");
+          throw std::runtime_error("StochasticDataProvider: '" + nodeId + "' is not a process (first row for instance '" + instanceIdentifier + "' must reference a process)");
         }
         auto process = dynamic_cast<BPMN::Process*>(node);
         instances[instanceId] = StochasticInstanceData{process, instanceId,
@@ -156,15 +155,13 @@ void StochasticDataProvider::readInstances() {
             node->represents<BPMN::SendTask>() ||
             node->represents<BPMN::ReceiveTask>() ||
             node->represents<DecisionTask>()) {
-          throw std::runtime_error("StochasticDataProvider: COMPLETION only valid for Task nodes, not '" +
-                                   nodeId + "'");
+          throw std::runtime_error("StochasticDataProvider: '" + nodeId + "' is not a task (completion expressions are only allowedfor tasks)");
         }
 
         auto [attributeName, expressionString] = DataProvider::parseInitialization(completionExpression);
         auto extensionElements = node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
         if (!extensionElements->attributeRegistry.contains(attributeName)) {
-          throw std::runtime_error("StochasticDataProvider: node '" + nodeId +
-                                   "' has no attribute '" + attributeName + "'");
+          throw std::runtime_error("StochasticDataProvider: node '" + nodeId + "' has no attribute '" + attributeName + "'");
         }
 
         auto attribute = extensionElements->attributeRegistry[attributeName];
@@ -176,33 +173,28 @@ void StochasticDataProvider::readInstances() {
       // Handle ARRIVAL expression (valid for all Activity types)
       if (!arrivalExpression.empty()) {
         if (!node->represents<BPMN::Activity>()) {
-          throw std::runtime_error("StochasticDataProvider: ARRIVAL only valid for Activity nodes, not '" +
-                                   nodeId + "'");
+          throw std::runtime_error("StochasticDataProvider: '" + nodeId + "' is not an activity (arrival expressions are only allowed for activities)");
         }
 
         auto [attributeName, expressionString] = DataProvider::parseInitialization(arrivalExpression);
         auto extensionElements = node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
         if (!extensionElements->attributeRegistry.contains(attributeName)) {
-          throw std::runtime_error("StochasticDataProvider: node '" + nodeId +
-                                   "' has no attribute '" + attributeName + "'");
+          throw std::runtime_error("StochasticDataProvider: node '" + nodeId + "' has no attribute '" + attributeName + "'");
         }
 
         auto attribute = extensionElements->attributeRegistry[attributeName];
         if (attribute->expression) {
-          throw std::runtime_error("StochasticDataProvider: attribute '" + attributeName +
-                                   "' has model expression and cannot use ARRIVAL");
+          throw std::runtime_error("StochasticDataProvider: illegal arrival expression for attribute '" + attributeName + "' (value is set by model expression)");
         }
 
         // Check mutual exclusivity with INITIALIZATION
         if (instance.data.contains(attribute)) {
-          throw std::runtime_error("StochasticDataProvider: attribute '" + attributeName +
-                                   "' cannot use both ARRIVAL and INITIALIZATION");
+          throw std::runtime_error("StochasticDataProvider: conflicting initialization and arrival expression given for attribute '" + attributeName + "'");
         }
         if (pendingDisclosures.contains(instanceId)) {
           for (auto& pending : pendingDisclosures.at(instanceId)) {
             if (pending.attribute == attribute) {
-              throw std::runtime_error("StochasticDataProvider: attribute '" + attributeName +
-                                       "' cannot use both ARRIVAL and INITIALIZATION");
+              throw std::runtime_error("StochasticDataProvider: conflicting initialization and arrival expression given for attribute '" + attributeName + "'");
             }
           }
         }
@@ -215,7 +207,7 @@ void StochasticDataProvider::readInstances() {
       // Handle INITIALIZATION
       if (initializationString.empty()) {
         if (!disclosureExpression.empty()) {
-          throw std::runtime_error("StochasticDataProvider: DISCLOSURE requires INITIALIZATION in the same row");
+          throw std::runtime_error("StochasticDataProvider: disclosure expression requires initialization expression in the same row");
         }
         continue;
       }
@@ -226,8 +218,7 @@ void StochasticDataProvider::readInstances() {
       if (arrivalExpressions.contains(instanceId) && arrivalExpressions.at(instanceId).contains(node)) {
         for (auto& arrival : arrivalExpressions.at(instanceId).at(node)) {
           if (arrival.attribute == attribute) {
-            throw std::runtime_error("StochasticDataProvider: attribute '" + attribute->name +
-                                     "' cannot use both INITIALIZATION and ARRIVAL");
+            throw std::runtime_error("StochasticDataProvider: conflicting initialization and arrival expression given for attribute '" + attribute->name + "'");
           }
         }
       }
@@ -298,8 +289,7 @@ BPMNOS::number StochasticDataProvider::getEffectiveDisclosure(size_t instanceId,
   if (auto childNode = node->represents<BPMN::ChildNode>()) {
     auto parentNode = childNode->parent;
     if (!disclosure[instanceId].contains(parentNode)) {
-      throw std::runtime_error("StochasticDataProvider: disclosure for '" + node->id +
-                               "' given before parent '" + parentNode->id + "'");
+      throw std::runtime_error("StochasticDataProvider: disclosure for '" + node->id + "' given before parent '" + parentNode->id + "'");
     }
     effectiveDisclosure = std::max(effectiveDisclosure, disclosure[instanceId][parentNode]);
   }
@@ -349,9 +339,11 @@ std::unique_ptr<Scenario> StochasticDataProvider::createScenario(unsigned int sc
   for (auto& [instanceId, tasks] : completionExpressions) {
     for (auto& [task, expressions] : tasks) {
       for (auto& sourceExpression : expressions) {
-        auto expression = std::make_unique<Expression>(stochasticHandle,
-                                                       sourceExpression.expression->expression,
-                                                       sourceExpression.expression->attributeRegistry);
+        auto expression = std::make_unique<Expression>(
+          stochasticHandle,
+          sourceExpression.expression->expression,
+          sourceExpression.expression->attributeRegistry
+        );
         scenario->addCompletionExpression(instanceId, task, {sourceExpression.attribute, std::move(expression)});
       }
     }
@@ -361,9 +353,11 @@ std::unique_ptr<Scenario> StochasticDataProvider::createScenario(unsigned int sc
   for (auto& [instanceId, nodes] : arrivalExpressions) {
     for (auto& [node, expressions] : nodes) {
       for (auto& sourceExpression : expressions) {
-        auto expression = std::make_unique<Expression>(stochasticHandle,
-                                                       sourceExpression.expression->expression,
-                                                       sourceExpression.expression->attributeRegistry);
+        auto expression = std::make_unique<Expression>(
+          stochasticHandle,
+          sourceExpression.expression->expression,
+          sourceExpression.expression->attributeRegistry
+        );
         scenario->addArrivalExpression(instanceId, node, {sourceExpression.attribute, std::move(expression)});
       }
     }
