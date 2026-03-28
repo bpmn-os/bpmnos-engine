@@ -68,11 +68,12 @@ void DynamicDataProvider::readInstances() {
     }
     std::string initializationString = std::get<std::string>(row.at(INITIALIZATION));
 
-    // Get disclosure expression
-    if ( !std::holds_alternative<std::string>(row.at(DISCLOSURE)) ) {
-      throw std::runtime_error("DynamicDataProvider: illegal disclosure");
-    }
-    std::string disclosureString = std::get<std::string>(row.at(DISCLOSURE));
+    // Get disclosure expression (may be string or number)
+    std::string disclosureString = 
+      ( std::holds_alternative<std::string>(row.at(DISCLOSURE)) ) ?
+      std::get<std::string>(row.at(DISCLOSURE)) :
+      std::to_string((double)std::get<BPMNOS::number>(row.at(DISCLOSURE)))
+    ;
 
     if ( instanceIdentifier.empty() && nodeId.empty() ) {
       // Global attribute

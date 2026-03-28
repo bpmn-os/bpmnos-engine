@@ -41,11 +41,17 @@ std::vector< const Scenario::InstanceData* > DynamicScenario::getCreatedInstance
   return result;
 }
 
-std::vector< const Scenario::InstanceData* > DynamicScenario::getKnownInstances([[maybe_unused]] const BPMNOS::number currentTime) const {
-  // All instances are known from the start
+std::vector< const Scenario::InstanceData* > DynamicScenario::getKnownInstances(const BPMNOS::number currentTime) const {
   std::vector< const Scenario::InstanceData* > result;
   for ( auto& [id, instance] : instances ) {
-    result.push_back(&instance);
+    // Instance is known when process disclosure time is reached
+    BPMNOS::number processDisclosure = 0;
+    if ( disclosure.contains(instance.id) && disclosure.at(instance.id).contains(instance.process) ) {
+      processDisclosure = disclosure.at(instance.id).at(instance.process);
+    }
+    if ( currentTime >= processDisclosure ) {
+      result.push_back(&instance);
+    }
   }
   return result;
 }
@@ -125,6 +131,14 @@ std::optional<BPMNOS::number> DynamicScenario::getKnownValue(const Scenario::Ins
     // Return stored value directly
     if ( instance->values.contains(attribute) ) {
       return instance->values.at(attribute);
+    }
+    // Check pending disclosures
+    if ( pendingDisclosures.contains(instance->id) ) {
+      for ( auto& pending : pendingDisclosures.at(instance->id) ) {
+        if ( pending.attribute == attribute && currentTime >= pending.disclosureTime ) {
+          return pending.value;
+        }
+      }
     }
   }
   return std::nullopt;

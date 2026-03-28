@@ -1,87 +1,68 @@
-// Tests commented out - anticipation methods removed from abstract Scenario interface
-// To re-enable, cast scenario to LegacyScenario* to access anticipation methods
-#if 0
-SCENARIO( "Trivial executable process", "[data][dynamic]" ) {
+SCENARIO( "Dynamic data provider", "[data][dynamic]" ) {
   const std::string modelFile = "tests/data/dynamic/Executable_process.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
-  GIVEN( "A single instance with dynamically disclosed timestamp" ) {
+
+  GIVEN( "An instance with instantiation after disclosure time" ) {
     std::string csv =
-      "PROCESS_ID, INSTANCE_ID, ATTRIBUTE_ID, VALUE, DISCLOSURE\n"
-      "Process_1, Instance_1,Timestamp,35,15\n"
-      "Process_1, Instance_1,Timestamp,42,35\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE\n"
+      "Instance_1; Process_1; timestamp := 15; 5\n"
+      "Instance_1; Process_1; x := 1; 10\n"
+      "Instance_1; Activity_1; data := 5; 15\n"
+      "Instance_1; Activity_1; y := 2; 20\n"
     ;
 
-    WHEN( "The instance is loaded" ) {
-      Model::DynamicDataProvider dataProvider(modelFile,csv);
+    WHEN( "The scenario is created" ) {
+      Model::DynamicDataProvider dataProvider(modelFile, csv);
       auto scenario = dataProvider.createScenario();
 
-      THEN( "There is no instance created by time 0" ) {
-        auto instances = scenario->getCreatedInstances(0);
+      THEN( "Instance is not known before disclosure time of x" ) {
+        auto instances = scenario->getKnownInstances(5);
         REQUIRE( instances.size() == 0 );
       }
-      THEN( "There is no instance created by time 35" ) {
-        auto instances = scenario->getCreatedInstances(35);
-        REQUIRE( instances.size() == 0 );
-      }
-      THEN( "Exactly one instantiation is created by time 42" ) {
-        auto instances = scenario->getCreatedInstances(42);
+      THEN( "Instance is known at disclosure time of x" ) {
+        auto instances = scenario->getKnownInstances(10);
         REQUIRE( instances.size() == 1 );
       }
-      THEN( "No instantiation is known to occur at time 35" ) {
-        auto instantiations = scenario->getCurrentInstantiations(35);
-        REQUIRE( instantiations.size() == 0 );
-      }
-      THEN( "Exactly one instantiation is known to occur at time 42" ) {
-        auto instantiations = scenario->getCurrentInstantiations(42);
-        REQUIRE( instantiations.size() == 1 );
-      }
-      THEN( "At time 0 no instantiation is anticipated to occur at time 35" ) {
-        auto instantiations = scenario->getAnticipatedInstantiations(0,35);
-        REQUIRE( instantiations.size() == 0 );
-      }
-      THEN( "At time 15 one instantiation is anticipated to occur at time 35" ) {
-        auto instantiations = scenario->getAnticipatedInstantiations(15,35);
-        REQUIRE( instantiations.size() == 1 );
-      }
-      THEN( "At time 35 no instantiation is anticipated to occur at time 35" ) {
-        auto instantiations = scenario->getAnticipatedInstantiations(35,35);
-        REQUIRE( instantiations.size() == 0 );
-      }
-      THEN( "At time 35 one instantiation is anticipated to occur at time 42" ) {
-        auto instantiations = scenario->getAnticipatedInstantiations(35,42);
-        REQUIRE( instantiations.size() == 1 );
-      }
-      THEN( "There is no instance known by time 0" ) {
-        auto instances = scenario->getKnownInstances(0);
-        REQUIRE( instances.size() == 0 );
-      }
-      THEN( "There is exactly one instance known by time 35" ) {
-        auto instances = scenario->getKnownInstances(35);
+      THEN( "data and y are not known before its disclosure time" ) {
+        auto instances = scenario->getKnownInstances(10);
         REQUIRE( instances.size() == 1 );
+        auto instance = instances[0];
+        auto& process = scenario->getModel()->processes[0];
+        auto activity = process->find([](BPMN::Node* n) { return n->id == "Activity_1"; });
+        REQUIRE( activity != nullptr );
+        
+        auto data = scenario->getKnownData(instance->id, activity, 10);
+        REQUIRE( !data.has_value() );
+        auto status = scenario->getKnownValues(instance->id, activity, 10);
+        REQUIRE( !status.has_value() );
       }
-      THEN( "There is no instance anticipated at time 0" ) {
-        auto instances = scenario->getAnticipatedInstances(0);
-        REQUIRE( instances.size() == 0 );
-      }
-      THEN( "There is exactly one instance anticipated at time 15" ) {
-        auto instances = scenario->getAnticipatedInstances(15);
+      THEN( "data is not disclosed before y" ) {
+        auto instances = scenario->getKnownInstances(10);
         REQUIRE( instances.size() == 1 );
+        auto instance = instances[0];
+        auto& process = scenario->getModel()->processes[0];
+        auto activity = process->find([](BPMN::Node* n) { return n->id == "Activity_1"; });
+        REQUIRE( activity != nullptr );
+
+        auto data = scenario->getKnownData(instance->id, activity, 15);
+        REQUIRE( !data.has_value() );
+        auto status = scenario->getKnownValues(instance->id, activity, 15);
+        REQUIRE( !status.has_value() );
       }
-      THEN( "There is no unknown instance anticipated at time 35" ) {
-        auto instances = scenario->getAnticipatedInstances(35);
-        REQUIRE( instances.size() == 0 );
-      }
-      THEN( "At time 42 the instantiation data is known" ) {
-        std::string instanceId = "Instance_1";
-        BPMNOS::number timestamp = 42;
-        auto instantiations = scenario->getCurrentInstantiations(timestamp);
-        auto& [process,status,data] = instantiations.front();
-        REQUIRE( status.size() == 1 );
-        REQUIRE( data.size() == 1 );
-        REQUIRE( data[Model::ExtensionElements::Index::Instance].value() == BPMNOS::to_number(instanceId,STRING) );
-        REQUIRE( status[Model::ExtensionElements::Index::Timestamp].value() == timestamp );
+      THEN( "data and y are disclosed eventually" ) {
+        auto instances = scenario->getKnownInstances(10);
+        REQUIRE( instances.size() == 1 );
+        auto instance = instances[0];
+        auto& process = scenario->getModel()->processes[0];
+        auto activity = process->find([](BPMN::Node* n) { return n->id == "Activity_1"; });
+        REQUIRE( activity != nullptr );
+
+        auto data = scenario->getKnownData(instance->id, activity, 20);
+        REQUIRE( data.has_value() );
+        auto status = scenario->getKnownValues(instance->id, activity, 20);
+        REQUIRE( status.has_value() );
       }
     }
   }
+
 }
-#endif
