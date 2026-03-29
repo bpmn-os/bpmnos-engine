@@ -145,6 +145,9 @@ void StochasticScenario::initializeActivityData(
     const Values& globals) const {
   size_t id = (size_t)instanceId;
 
+  // Store parent status for getActivityReadyStatus
+  activityArrivalStatus[{id, node}] = status;
+
   // Check if we have arrival expressions for this (instance, node)
   if (!arrivalExpressions.contains(id) ||
       !arrivalExpressions.at(id).contains(node)) {
@@ -423,4 +426,39 @@ void StochasticScenario::revealData(BPMNOS::number currentTime) const {
       }
     }
   }
+}
+
+std::optional<BPMNOS::Values> StochasticScenario::getActivityReadyStatus(
+  BPMNOS::number instanceId,
+  const BPMN::Node* activity,
+  BPMNOS::number currentTime
+) const {
+  size_t id = (size_t)instanceId;
+
+  // Check if node data is disclosed
+  if (disclosure.contains(id) && disclosure.at(id).contains(activity)) {
+    if (currentTime < disclosure.at(id).at(activity)) {
+      return std::nullopt;
+    }
+  }
+
+  // Get stored arrival status (parent's status)
+  auto key = std::make_pair(id, activity);
+  if (!activityArrivalStatus.contains(key)) {
+    return std::nullopt;
+  }
+
+  auto& instance = instances.at(id);
+  auto extensionElements = activity->extensionElements->as<const ExtensionElements>();
+  auto& statusAttributes = extensionElements->attributeRegistry.statusAttributes;
+
+  // Start with parent's status
+  Values result = activityArrivalStatus.at(key);
+
+  // Add node's own attributes (those beyond parent's status)
+  for (size_t i = result.size(); i < statusAttributes.size(); ++i) {
+    result.push_back(getKnownValue(&instance, statusAttributes[i], currentTime));
+  }
+
+  return result;
 }

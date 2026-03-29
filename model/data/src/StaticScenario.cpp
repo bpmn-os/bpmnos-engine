@@ -134,3 +134,50 @@ std::optional<BPMNOS::Values> StaticScenario::getKnownData(const BPMNOS::number 
   }
   return result;
 }
+
+void StaticScenario::noticeActivityArrival(
+    BPMNOS::number instanceId,
+    const BPMN::Node* node,
+    const Values& status,
+    [[maybe_unused]] const Values& data,
+    [[maybe_unused]] const Values& globals) const {
+  // Store parent status for getActivityReadyStatus
+  activityArrivalStatus[{(size_t)instanceId, node}] = status;
+}
+
+void StaticScenario::noticeActivityArrival(
+    BPMNOS::number instanceId,
+    const BPMN::Node* node,
+    const Values& status,
+    [[maybe_unused]] const SharedValues& data,
+    [[maybe_unused]] const Values& globals) const {
+  // Store parent status for getActivityReadyStatus
+  activityArrivalStatus[{(size_t)instanceId, node}] = status;
+}
+
+std::optional<BPMNOS::Values> StaticScenario::getActivityReadyStatus(
+  BPMNOS::number instanceId,
+  const BPMN::Node* activity,
+  [[maybe_unused]] BPMNOS::number currentTime
+) const {
+  // For static scenarios, all data is known from start - no disclosure checking needed.
+  // Get stored arrival status (parent's status) and extend with node's own attributes.
+  auto key = std::make_pair((size_t)instanceId, activity);
+  if (!activityArrivalStatus.contains(key)) {
+    return std::nullopt;
+  }
+
+  auto& instance = instances.at((size_t)instanceId);
+  auto extensionElements = activity->extensionElements->as<const BPMNOS::Model::ExtensionElements>();
+  auto& statusAttributes = extensionElements->attributeRegistry.statusAttributes;
+
+  // Start with parent's status
+  Values result = activityArrivalStatus.at(key);
+
+  // Add node's own attributes (those beyond parent's status)
+  for (size_t i = result.size(); i < statusAttributes.size(); ++i) {
+    result.push_back(getKnownValue(&instance, statusAttributes[i], currentTime));
+  }
+
+  return result;
+}

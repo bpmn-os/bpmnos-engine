@@ -38,6 +38,7 @@ using namespace BPMNOS;
 #endif // USE_CP
 
 // Include all tests here
+//#include "data/stochastic/test.h"
 #define ALL_TESTS
 #ifdef ALL_TESTS
 
@@ -45,7 +46,8 @@ using namespace BPMNOS;
 #include "model/parser/test.h"
 /* Data provider */
 #include "data/static/test.h"
-//#include "data/dynamic/test.h"
+#include "data/dynamic/test.h"
+//#include "data/stochastic/test.h"
 /* Execution engine */
 // Process
 #include "execution/process/test.h"

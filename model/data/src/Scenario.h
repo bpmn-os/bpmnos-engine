@@ -159,11 +159,33 @@ public:
     return taskCompletionStatus.at({(size_t)instanceId, task});
   }
 
+  /**
+   * @brief Get the ready status for an activity.
+   *
+   * Checks if all node's own attributes are disclosed at currentTime.
+   * If yes, combines stored parent status (from noticeActivityArrival) with
+   * node's own attributes to return full status.
+   * If no, returns std::nullopt.
+   *
+   * @param instanceId The instance identifier.
+   * @param activity The activity node.
+   * @param currentTime The current time for disclosure check.
+   * @return Full status values if ready, std::nullopt otherwise.
+   */
+  virtual std::optional<BPMNOS::Values> getActivityReadyStatus(
+    BPMNOS::number instanceId,
+    const BPMN::Node* activity,
+    BPMNOS::number currentTime
+  ) const = 0;
+
   const Model* model;  ///< Pointer to the BPMN model.
   BPMNOS::Values globals;
 
   /// Stored completion status per (instanceId, task)
   mutable std::map<std::pair<size_t, const BPMN::Node*>, BPMNOS::Values> taskCompletionStatus;
+
+  /// Stored arrival status per (instanceId, activity) from noticeActivityArrival
+  mutable std::map<std::pair<size_t, const BPMN::Node*>, BPMNOS::Values> activityArrivalStatus;
 
 protected:
   /// Constructor that initializes model and globals from CSV-provided values.

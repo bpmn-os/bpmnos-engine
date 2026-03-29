@@ -190,18 +190,6 @@ void StochasticDataProvider::readInstances() {
           throw std::runtime_error("StochasticDataProvider: illegal arrival expression for attribute '" + attributeName + "' (value is set by model expression)");
         }
 
-        // Check mutual exclusivity with INITIALIZATION
-        if (instance.data.contains(attribute)) {
-          throw std::runtime_error("StochasticDataProvider: conflicting initialization and arrival expression given for attribute '" + attributeName + "'");
-        }
-        if (deferredAttributes.contains(instanceId)) {
-          for (auto& deferred : deferredAttributes.at(instanceId)) {
-            if (deferred.attribute == attribute) {
-              throw std::runtime_error("StochasticDataProvider: conflicting initialization and arrival expression given for attribute '" + attributeName + "'");
-            }
-          }
-        }
-
         auto expression = std::make_unique<Expression>(stochasticHandle, expressionString,
                                                        extensionElements->attributeRegistry);
         arrivalExpressions[instanceId][node].push_back({attribute, std::move(expression)});
@@ -216,15 +204,6 @@ void StochasticDataProvider::readInstances() {
       }
 
       auto [attribute, expressionString] = lookupAttribute(node, initializationString);
-
-      // Check mutual exclusivity with ARRIVAL
-      if (arrivalExpressions.contains(instanceId) && arrivalExpressions.at(instanceId).contains(node)) {
-        for (auto& arrival : arrivalExpressions.at(instanceId).at(node)) {
-          if (arrival.attribute == attribute) {
-            throw std::runtime_error("StochasticDataProvider: conflicting initialization and arrival expression given for attribute '" + attribute->name + "'");
-          }
-        }
-      }
 
       if (disclosureExpression.empty()) {
         // Immediate disclosure: evaluate and store value directly

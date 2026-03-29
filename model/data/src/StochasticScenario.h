@@ -92,6 +92,12 @@ public:
   std::optional<BPMNOS::Values> getKnownValues(const BPMNOS::number instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const override;
   std::optional<BPMNOS::Values> getKnownData(const BPMNOS::number instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const override;
 
+  std::optional<BPMNOS::Values> getActivityReadyStatus(
+    BPMNOS::number instanceId,
+    const BPMN::Node* activity,
+    BPMNOS::number currentTime
+  ) const override;
+
   /**
    * @brief Make scenario aware of a token arriving at an activity.
    *

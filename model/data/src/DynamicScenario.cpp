@@ -182,6 +182,26 @@ void DynamicScenario::addPendingDisclosure(const BPMNOS::number instanceId, Pend
   pendingDisclosures[(size_t)instanceId].push_back(std::move(pending));
 }
 
+void DynamicScenario::noticeActivityArrival(
+    BPMNOS::number instanceId,
+    const BPMN::Node* node,
+    const Values& status,
+    [[maybe_unused]] const Values& data,
+    [[maybe_unused]] const Values& globals) const {
+  // Store parent status for getActivityReadyStatus
+  activityArrivalStatus[{(size_t)instanceId, node}] = status;
+}
+
+void DynamicScenario::noticeActivityArrival(
+    BPMNOS::number instanceId,
+    const BPMN::Node* node,
+    const Values& status,
+    [[maybe_unused]] const SharedValues& data,
+    [[maybe_unused]] const Values& globals) const {
+  // Store parent status for getActivityReadyStatus
+  activityArrivalStatus[{(size_t)instanceId, node}] = status;
+}
+
 void DynamicScenario::revealData(BPMNOS::number currentTime) const {
   for (auto& [instanceId, pendings] : pendingDisclosures) {
     auto& instance = instances.at(instanceId);
@@ -200,4 +220,39 @@ void DynamicScenario::revealData(BPMNOS::number currentTime) const {
       }
     }
   }
+}
+
+std::optional<BPMNOS::Values> DynamicScenario::getActivityReadyStatus(
+  BPMNOS::number instanceId,
+  const BPMN::Node* activity,
+  BPMNOS::number currentTime
+) const {
+  size_t id = (size_t)instanceId;
+
+  // Check if node data is disclosed
+  if (disclosure.contains(id) && disclosure.at(id).contains(activity)) {
+    if (currentTime < disclosure.at(id).at(activity)) {
+      return std::nullopt;
+    }
+  }
+
+  // Get stored arrival status (parent's status)
+  auto key = std::make_pair(id, activity);
+  if (!activityArrivalStatus.contains(key)) {
+    return std::nullopt;
+  }
+
+  auto& instance = instances.at(id);
+  auto extensionElements = activity->extensionElements->as<const BPMNOS::Model::ExtensionElements>();
+  auto& statusAttributes = extensionElements->attributeRegistry.statusAttributes;
+
+  // Start with parent's status
+  Values result = activityArrivalStatus.at(key);
+
+  // Add node's own attributes (those beyond parent's status)
+  for (size_t i = result.size(); i < statusAttributes.size(); ++i) {
+    result.push_back(getKnownValue(&instance, statusAttributes[i], currentTime));
+  }
+
+  return result;
 }
