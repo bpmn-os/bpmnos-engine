@@ -3,7 +3,6 @@
 When a compensation is triggered, a token at a compensation activity immediatley  enters the respective compensation activity  and receives @ref BPMNOS::Execution::Token::State::ENTERED "ENTERED" state. It changes its state according to the reduced state diagram below and as described in @ref token_flow_logic_subprocesses or @ref token_flow_logic_tasks. Feasibility is checked directly after @ref BPMNOS::Execution::Token::State::COMPLETED "COMPLETED" state without waiting for an exit decision. When a token has feasibly completed, the token is disposed without further.
 Otherwise, a failure is raised.
  
-@htmlonly
 <pre class="mermaid">
 stateDiagram-v2
     state feasibleEntry <<choice>>
@@ -19,7 +18,6 @@ stateDiagram-v2
     feasibleCompletion --> FAILED: [infeasible]
     FAILED --> [*]
 </pre>
-@endhtmlonly
 
 
 @note A compensation activity can not be compensated.

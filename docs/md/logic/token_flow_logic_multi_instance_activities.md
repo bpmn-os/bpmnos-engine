@@ -2,7 +2,6 @@
 
 A token at an activity with a multi-instance marker changes its state as follows:
 
-@htmlonly
 <pre class="mermaid">
 stateDiagram-v2
     state departure <<choice>>
@@ -18,7 +17,6 @@ stateDiagram-v2
     DONE --> [*]
     FAILED --> [*]
 </pre>
-@endhtmlonly
 
 
 ## ARRIVED / CREATED

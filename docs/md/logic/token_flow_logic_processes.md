@@ -6,7 +6,6 @@ Upon instantiation, a @ref BPMNOS::Execution::Token "token" is created which res
 
 A token at a process element changes its state as follows:
 
-@htmlonly
 <pre class="mermaid">
 stateDiagram-v2
     state feasibleEntry <<choice>>
@@ -24,7 +23,6 @@ stateDiagram-v2
     FAILING --> FAILED
     FAILED --> [*]
 </pre>
-@endhtmlonly
 
 
 ## Token creation

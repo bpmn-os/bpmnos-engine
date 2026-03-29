@@ -10,7 +10,6 @@ The token flow logic for activities depends on whether the multi-instance marker
 
 A token at a task changes its state as follows:
 
-@htmlonly
 <pre class="mermaid">
 stateDiagram-v2
     state feasibleEntry <<choice>>
@@ -44,7 +43,6 @@ stateDiagram-v2
     DONE --> [*]
     FAILED --> [*]
 </pre>
-@endhtmlonly
 
 
 ## ARRIVED / CREATED
