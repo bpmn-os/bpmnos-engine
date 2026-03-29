@@ -12,6 +12,7 @@ After completion, the entry scope restrictions of the @ref BPMN::EventSubProcess
 If the restrictions are violated, the state is changed to @ref BPMNOS::Execution::Token::State::FAILED "FAILED".
 Otherwise, the token state is changed to @ref BPMNOS::Execution::Token::State::DEPARTED "DEPARTED" or @ref BPMNOS::Execution::Token::State::DONE "DONE".
 
+@htmlonly
 <pre class="mermaid">
 stateDiagram-v2
     state feasibleEntry <<choice>>
@@ -28,6 +29,7 @@ stateDiagram-v2
     DONE --> [*]
     FAILED --> [*]
 </pre>
+@endhtmlonly
 
 
 @attention @ref BPMN::TypedStartEvent "Typed start events" are only supported for @ref BPMN::EventSubProcess "event-subprocesses".

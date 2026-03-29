@@ -46,6 +46,9 @@ GENERATE_LATEX        = NO
 QUIET                 = YES
 WARN_IF_UNDOCUMENTED  = NO
 
+# Link to external bpmn++ documentation
+TAGFILES              = $(BPMNPP_DOCS_PATH)/bpmnpp.tag=https://bpmn-os.github.io/bpmnpp/
+
 UML_LOOK              = YES
 COLLABORATION_GRAPH   = NO
 INCLUDE_GRAPH         = NO

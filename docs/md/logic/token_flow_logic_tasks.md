@@ -10,6 +10,7 @@ The token flow logic for activities depends on whether the multi-instance marker
 
 A token at a task changes its state as follows:
 
+@htmlonly
 <pre class="mermaid">
 stateDiagram-v2
     state feasibleEntry <<choice>>
@@ -18,7 +19,7 @@ stateDiagram-v2
     [*] --> ARRIVED/CREATED
     note left of ARRIVED/CREATED
       For multi-instance activity copies,
-      the @ref BPMNOS::Execution::Token::State::ARRIVED "ARRIVED" / @ref BPMNOS::Execution::Token::State::CREATED "CREATED" state is skipped
+      the ARRIVED / CREATED state is skipped
     end note
     ARRIVED/CREATED --> READY: ready event
     READY --> ENTERED: entry event
@@ -33,8 +34,8 @@ stateDiagram-v2
     EXITING --> feasibleExit
     feasibleExit --> departure: [feasible]
     note left of departure
-      In case of @ref XML::bpmn::tStandardLoopCharacteristics  "loop activities", the token may return to @ref BPMNOS::Execution::Token::State::ENTERED "ENTERED" state
-      after receipt of the respective @ref BPMNOS::Execution::EntryEvent "entry event".
+      In case of loop activities, the token may return to ENTERED state
+      after receipt of the respective entry event.
     end note
     feasibleExit --> FAILED: [infeasible]
     departure --> DEPARTED: [outgoing sequence flow]
@@ -43,6 +44,7 @@ stateDiagram-v2
     DONE --> [*]
     FAILED --> [*]
 </pre>
+@endhtmlonly
 
 
 ## ARRIVED / CREATED

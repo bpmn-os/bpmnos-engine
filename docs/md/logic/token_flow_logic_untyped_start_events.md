@@ -5,6 +5,7 @@ The state of a token at an untyped start event is immediately advanced to @ref B
 After entry, a token is created for the @ref BPMN::TypedStartEvent "start event" of each @ref BPMN::EventSubProcess "event-subprocess" within the same @ref BPMN::Scope "scope".
 Then, The state of the token is advanced to @ref BPMNOS::Execution::Token::State::DEPARTED "DEPARTED" or @ref BPMNOS::Execution::Token::State::DONE "DONE".
 
+@htmlonly
 <pre class="mermaid">
 stateDiagram-v2
     state departure <<choice>>
@@ -15,5 +16,6 @@ stateDiagram-v2
     DEPARTED --> [*]
     DONE --> [*]
 </pre>
+@endhtmlonly
 
 @note Operators are applied and feasibility is checked for the token at the respective (sub)process before the token enters the start event.

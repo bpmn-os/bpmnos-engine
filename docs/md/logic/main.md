@@ -32,6 +32,5 @@ The token flow logic depends on the node type and is described in below sections
   - @subpage token_flow_logic_intermediate_catching_events
   - @subpage token_flow_logic_throwing_events
 
-.
 @note All tokens can be @ref  BPMNOS::Execution::Token::State::WITHDRAWN "withdrawn" at any time, e.g., when the respective state machine terminates.
 

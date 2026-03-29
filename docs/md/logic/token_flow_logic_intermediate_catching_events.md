@@ -8,6 +8,7 @@ After the event is triggered, the state is advanced @ref BPMNOS::Execution::Toke
 Then, the token state is changed to @ref BPMNOS::Execution::Token::State::DEPARTED "DEPARTED" or @ref BPMNOS::Execution::Token::State::DONE "DONE".
 
 
+@htmlonly
 <pre class="mermaid">
 stateDiagram-v2
     state departure <<choice>>
@@ -21,3 +22,4 @@ stateDiagram-v2
     DEPARTED --> [*]
     DONE --> [*]
 </pre>
+@endhtmlonly
