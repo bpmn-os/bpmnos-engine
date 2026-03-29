@@ -8,6 +8,7 @@ namespace BPMNOS::Execution {
 
 class Observer {
 public:
+  virtual ~Observer() = default;
   virtual void notice(const Observable* observable) = 0;
 };
 

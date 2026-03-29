@@ -169,14 +169,13 @@ std::optional<BPMNOS::Values> StaticScenario::getActivityReadyStatus(
 
   auto& instance = instances.at((size_t)instanceId);
   auto extensionElements = activity->extensionElements->as<const BPMNOS::Model::ExtensionElements>();
-  auto& statusAttributes = extensionElements->attributeRegistry.statusAttributes;
 
   // Start with parent's status
   Values result = activityArrivalStatus.at(key);
 
-  // Add node's own attributes (those beyond parent's status)
-  for (size_t i = result.size(); i < statusAttributes.size(); ++i) {
-    result.push_back(getKnownValue(&instance, statusAttributes[i], currentTime));
+  // Add node's own attributes (same approach as getKnownValues)
+  for (auto& attribute : extensionElements->attributes) {
+    result.push_back(getKnownValue(&instance, attribute.get(), currentTime));
   }
 
   return result;

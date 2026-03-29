@@ -17,7 +17,7 @@ Engine::Engine()
   clockTick = 1;
   addSubscriber(&conditionalEventObserver, Observable::Type::DataUpdate);
   addSubscriber(&scenarioUpdater, Observable::Type::Event, Observable::Type::Token);
-  subscribe(&readyHandler);
+  readyHandler.connect(this);
   subscribe(&taskCompletionHandler);
 }
 
@@ -136,16 +136,17 @@ void Engine::deleteInstance(StateMachine* instance) {
 }
 
 void Engine::process(const ReadyEvent* event) {
-//std::cerr << "ReadyEvent " << event.token->node->id << std::endl;
   Token* token = const_cast<Token*>(event->token);
-  token->status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = systemState->currentTime;
   systemState->tokensAwaitingReadyEvent.remove(token);
 
   token->sequenceFlow = nullptr;
-  token->status.insert(token->status.end(), event->statusAttributes.begin(), event->statusAttributes.end());
+  auto& status = const_cast<ReadyEvent*>(event)->statusAttributes;
+  token->status = std::move(status);
+  token->status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = systemState->currentTime;
 
   if ( auto scope = token->node->represents<BPMN::Scope>() ) {
-    const_cast<StateMachine*>(token->owner)->createChild(token, scope, event->dataAttributes);
+    auto& data = const_cast<ReadyEvent*>(event)->dataAttributes;
+    const_cast<StateMachine*>(token->owner)->createChild(token, scope, std::move(data));
   }
   commands.emplace_back(std::bind(&Token::advanceToReady,token), token);
 }

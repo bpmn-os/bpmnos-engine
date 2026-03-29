@@ -46,7 +46,7 @@ void ScenarioUpdater::notice(const Observable* observable) {
       token->node->represents<BPMN::Activity>() &&
       (token->state == Token::State::ARRIVED || token->state == Token::State::CREATED)
     ) {
-      auto instanceId = token->getInstanceId();
+      auto instanceId = token->owner->root->instance.value();
       assert(token->data);
       scenario->noticeActivityArrival(instanceId, token->node, token->status, *token->data, token->globals);
     }

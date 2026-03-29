@@ -319,6 +319,7 @@ void Token::advanceFromCreated() {
 
   // token is at a node
   if ( node->represents<BPMN::Activity>() ) {
+    notify();
     awaitReadyEvent();
   }
   else {
@@ -565,7 +566,6 @@ void Token::advanceToBusy() {
         throw std::runtime_error("Token: timestamp at node '" + node->id + "' is deleted");
       }
       if ( node->represents<BPMN::SendTask>() && status[BPMNOS::Model::ExtensionElements::Index::Timestamp].value() != now) {
-std::cerr << status[BPMNOS::Model::ExtensionElements::Index::Timestamp].value() << " != " << now << std::endl;
         throw std::runtime_error("Token: Operators for task '" + node->id + "' attempt to modify timestamp");
       }
       // notify about data update
