@@ -18,7 +18,7 @@ Engine::Engine()
   addSubscriber(&conditionalEventObserver, Observable::Type::DataUpdate);
   addSubscriber(&scenarioUpdater, Observable::Type::Event, Observable::Type::Token);
   readyHandler.connect(this);
-  subscribe(&taskCompletionHandler);
+  taskCompletionHandler.connect(this);
 }
 
 Engine::~Engine()

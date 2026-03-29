@@ -704,13 +704,8 @@ void Token::advanceToBusy() {
       // wait for delivery
       return;
     }
-    if ( status[BPMNOS::Model::ExtensionElements::Index::Timestamp] > owner->systemState->getTime() ) { 
-      awaitTaskCompletionEvent();
-      return;
-    }
-
-    auto engine = const_cast<Engine*>(owner->systemState->engine);
-    engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,this), this);
+    awaitTaskCompletionEvent();
+    return;
   }
 }
 

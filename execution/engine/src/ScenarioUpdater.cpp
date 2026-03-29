@@ -65,7 +65,7 @@ void ScenarioUpdater::notice(const Observable* observable) {
         return;
       }
 
-      auto instanceId = token->getInstanceId();
+      auto instanceId = token->owner->root->instance.value();
       assert(token->data);
       scenario->noticeRunningTask(instanceId, token->node, token->status, *token->data, token->globals);
     }
