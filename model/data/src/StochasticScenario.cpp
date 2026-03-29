@@ -144,49 +144,56 @@ void StochasticScenario::initializeActivityData(
     const DataType& data,
     const Values& globals) const {
   size_t id = (size_t)instanceId;
+  auto key = std::make_pair(id, node);
+  auto& instance = instances.at(id);
+  auto extensionElements = node->extensionElements->as<const ExtensionElements>();
 
-  // Store parent status for getActivityReadyStatus
-  activityArrivalStatus[{id, node}] = status;
-
-  // Check if we have arrival expressions for this (instance, node)
-  if (!arrivalExpressions.contains(id) ||
-      !arrivalExpressions.at(id).contains(node)) {
-    return;
+  // Build full status: parent status + node's own attributes
+  Values fullStatus = status;
+  for (auto& attribute : extensionElements->attributes) {
+    fullStatus.push_back(getKnownValue(&instance, attribute.get(), 0));
   }
 
-  auto& nodeArrivalExpressions = arrivalExpressions.at(id).at(node);
+  // Apply arrival expressions if any
+  if (arrivalExpressions.contains(id) && arrivalExpressions.at(id).contains(node)) {
+    auto& nodeArrivalExpressions = arrivalExpressions.at(id).at(node);
 
-  // Set RNG context for random functions
-  auto& randomGenerator = getRng(id, node);
-  if (randomFactory) {
-    randomFactory->setCurrentRng(&randomGenerator);
-  }
+    // Set RNG context for random functions
+    auto& randomGenerator = getRng(id, node);
+    if (randomFactory) {
+      randomFactory->setCurrentRng(&randomGenerator);
+    }
 
-  // Evaluate arrival expressions and store values
-  for (auto& arrivalExpression : nodeArrivalExpressions) {
-    auto value = arrivalExpression.expression->execute(status, data, globals);
-    if (value.has_value() && arrivalExpression.attribute) {
-      // Apply type conversion
-      BPMNOS::number convertedValue;
-      switch (arrivalExpression.attribute->type) {
-        case ValueType::INTEGER:
-          convertedValue = BPMNOS::number((int)value.value());
-          break;
-        case ValueType::BOOLEAN:
-          convertedValue = BPMNOS::number(value.value() != 0 ? 1 : 0);
-          break;
-        default:
-          convertedValue = value.value();
-          break;
+    // Evaluate arrival expressions and apply to full status
+    for (auto& arrivalExpression : nodeArrivalExpressions) {
+      auto value = arrivalExpression.expression->execute(fullStatus, data, globals);
+      if (value.has_value() && arrivalExpression.attribute) {
+        // Apply type conversion
+        BPMNOS::number convertedValue;
+        switch (arrivalExpression.attribute->type) {
+          case ValueType::INTEGER:
+            convertedValue = BPMNOS::number((int)value.value());
+            break;
+          case ValueType::BOOLEAN:
+            convertedValue = BPMNOS::number(value.value() != 0 ? 1 : 0);
+            break;
+          default:
+            convertedValue = value.value();
+            break;
+        }
+        // Update full status at attribute's index
+        fullStatus[arrivalExpression.attribute->index] = convertedValue;
       }
-      instances.at(id).values[arrivalExpression.attribute] = convertedValue;
+    }
+
+    // Clear RNG context
+    if (randomFactory) {
+      randomFactory->setCurrentRng(nullptr);
     }
   }
 
-  // Clear RNG context
-  if (randomFactory) {
-    randomFactory->setCurrentRng(nullptr);
-  }
+  // Store the full computed status
+  activityArrivalStatus[key] = std::move(fullStatus);
 }
 
 std::mt19937& StochasticScenario::getRng(size_t instanceId, const BPMN::Node* node) const {
@@ -360,9 +367,6 @@ void StochasticScenario::setTaskCompletionStatus(BPMNOS::number instanceId, cons
 
     auto& taskCompletionExpressions = completionExpressions.at(id).at(task);
 
-    // Get the task's extension elements
-    auto extensionElements = task->extensionElements->as<const ExtensionElements>();
-
     // Set RNG context for random functions
     auto& randomGenerator = getRng(id, task);
     if (randomFactory) {
@@ -386,15 +390,8 @@ void StochasticScenario::setTaskCompletionStatus(BPMNOS::number instanceId, cons
             convertedValue = value.value();
             break;
         }
-        // Find attribute index in status
-        size_t index = 0;
-        for (auto& attribute : extensionElements->attributes) {
-          if (attribute.get() == completionExpression.attribute) {
-            modifiedStatus[index] = convertedValue;
-            break;
-          }
-          ++index;
-        }
+        // Update status at attribute's index
+        modifiedStatus[completionExpression.attribute->index] = convertedValue;
       }
     }
 
@@ -442,22 +439,11 @@ std::optional<BPMNOS::Values> StochasticScenario::getActivityReadyStatus(
     }
   }
 
-  // Get stored arrival status (parent's status)
+  // Return stored arrival status
   auto key = std::make_pair(id, activity);
   if (!activityArrivalStatus.contains(key)) {
     return std::nullopt;
   }
 
-  auto& instance = instances.at(id);
-  auto extensionElements = activity->extensionElements->as<const ExtensionElements>();
-
-  // Start with parent's status
-  Values result = activityArrivalStatus.at(key);
-
-  // Add node's own attributes (same approach as getKnownValues)
-  for (auto& attribute : extensionElements->attributes) {
-    result.push_back(getKnownValue(&instance, attribute.get(), currentTime));
-  }
-
-  return result;
+  return activityArrivalStatus.at(key);
 }
