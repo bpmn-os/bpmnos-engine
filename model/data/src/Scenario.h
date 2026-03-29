@@ -148,16 +148,19 @@ public:
   /**
    * @brief Get the completion status for a task.
    *
+   * Checks if currentTime >= completion timestamp. If yes, returns the
+   * stored completion status. If no, returns std::nullopt.
+   *
    * @param instanceId The instance identifier.
    * @param task The task node that is completing.
-   * @return Completion status values.
+   * @param currentTime The current time for completion check.
+   * @return Completion status values if completed, std::nullopt otherwise.
    */
-  virtual BPMNOS::Values getTaskCompletionStatus(
+  virtual std::optional<BPMNOS::Values> getTaskCompletionStatus(
     BPMNOS::number instanceId,
-    const BPMN::Node* task
-  ) const {
-    return taskCompletionStatus.at({(size_t)instanceId, task});
-  }
+    const BPMN::Node* task,
+    BPMNOS::number currentTime
+  ) const;
 
   /**
    * @brief Get the ready status for an activity.

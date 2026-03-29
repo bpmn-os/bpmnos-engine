@@ -31,3 +31,18 @@ BPMNOS::Values Scenario::evaluateGlobals(const std::unordered_map<const Attribut
 
   return result;
 }
+
+std::optional<BPMNOS::Values> Scenario::getTaskCompletionStatus(
+    BPMNOS::number instanceId,
+    const BPMN::Node* task,
+    BPMNOS::number currentTime) const {
+  auto key = std::make_pair((size_t)instanceId, task);
+  if (!taskCompletionStatus.contains(key)) {
+    return std::nullopt;
+  }
+  auto& status = taskCompletionStatus.at(key);
+  if (currentTime >= status[ExtensionElements::Index::Timestamp]) {
+    return status;
+  }
+  return std::nullopt;
+}
