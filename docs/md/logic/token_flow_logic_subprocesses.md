@@ -3,8 +3,8 @@
 
 The token flow logic for activities depends on whether the multi-instance marker for the activity is set or not and whether the activity is for compensation or not.
 
-- @subpage token_flow_logic_multi_instance_activities "Multi-instance activities"
-- @subpage token_flow_logic_compensation_activities "Compensation activities"
+- @ref token_flow_logic_multi_instance_activities "Multi-instance activities"
+- @ref token_flow_logic_compensation_activities "Compensation activities"
 
 # Subprocesses and ad-hoc subprocesses (excluding multi-instance and compensation activities)
 
@@ -15,12 +15,12 @@ stateDiagram-v2
     state feasibleEntry <<choice>>
     state feasibleExit <<choice>>
     state departure <<choice>>
-    [*] --> ARRIVED
-    note left of ARRIVED
-      If an activity does not have any incoming sequence flows,
-      the @ref BPMNOS::Execution::Token::State::ARRIVED "ARRIVED" state is skipped
+    [*] --> ARRIVED/CREATED
+    note left of ARRIVED/CREATED
+      For multi-instance activity copies,
+      the @ref BPMNOS::Execution::Token::State::ARRIVED "ARRIVED" / @ref BPMNOS::Execution::Token::State::CREATED "CREATED" state is skipped
     end note
-    ARRIVED --> READY: ready event
+    ARRIVED/CREATED --> READY: ready event
     READY --> ENTERED: entry event
     ENTERED --> feasibleEntry
     feasibleEntry --> BUSY: [feasible]
@@ -46,9 +46,11 @@ stateDiagram-v2
 </pre>
 
 
-## ARRIVED
+## ARRIVED / CREATED
 
-A token in  @ref BPMNOS::Execution::Token::State::ARRIVED "ARRIVED" state waits for a @ref BPMNOS::Execution::ReadyEvent "ready event" indicating that all relevant data has become known. When the event occurs the token state is updated to  @ref BPMNOS::Execution::Token::State::READY "READY".
+A token enters @ref BPMNOS::Execution::Token::State::ARRIVED "ARRIVED" state when it arrives via an incoming sequence flow, or @ref BPMNOS::Execution::Token::State::CREATED "CREATED" state when the activity has no incoming sequence flows (e.g., activities in ad-hoc subprocesses).
+
+In either state, the token waits for a @ref BPMNOS::Execution::ReadyEvent "ready event" indicating that all relevant data has become known. When the event occurs the token state is updated to @ref BPMNOS::Execution::Token::State::READY "READY".
 
 
 ## READY

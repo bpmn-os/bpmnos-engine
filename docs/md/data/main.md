@@ -234,14 +234,24 @@ Instance_1; SubProcess_1; ; ; localVar := parentValue * 2;
 
 **COMPLETION** expressions are evaluated when a task enters BUSY state. They have full access to status, data, and global attributes.
 
-### Mutual Exclusivity
+### Attribute Initialization and Modification
 
-An attribute can be initialized by exactly one of:
-- INITIALIZATION expression (parse-time, globals only)
-- ARRIVAL expression (runtime, full context)
-- Model expression (defined in BPMN model)
+**Initialization (mutually exclusive with model expressions)**:
+An attribute's initial value can come from:
+- INITIALIZATION expression (parse-time)
+- Model expression (defined in BPMN)
 
-If multiple sources attempt to initialize the same attribute, an error is thrown.
+If both attempt to initialize the same attribute, an error is thrown.
+
+**Runtime Modification**:
+- ARRIVAL expressions can override INITIALIZATION values at runtime
+- ARRIVAL expressions cannot override model expressions
+- COMPLETION expressions can modify any status attribute, including those with model expressions (model expressions run at ready time, COMPLETION runs later)
+
+Both ARRIVAL and COMPLETION modifications are local to the activity/task scope and do not affect parent scope values.
+
+**Limitation - Event Subprocesses**:
+CSV-provided ARRIVAL and COMPLETION expressions for event subprocesses are disallowed unless they produce deterministic (equal) values for all triggerings. Use model expressions for event subprocess behavior that may vary between triggerings.
 
 ### Reproducibility
 

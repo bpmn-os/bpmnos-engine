@@ -1,10 +1,10 @@
 # Tasks
 @page token_flow_logic_tasks Tasks
 
-The token flow logic for activities depends on whether the multi-instance marker for the activity is set or not and whether the activity is for compensation or not. 
+The token flow logic for activities depends on whether the multi-instance marker for the activity is set or not and whether the activity is for compensation or not.
 
-- @subpage token_flow_logic_multi_instance_activities "Multi-instance activities"
-- @subpage token_flow_logic_compensation_activities "Compensation activities"
+- @ref token_flow_logic_multi_instance_activities "Multi-instance activities"
+- @ref token_flow_logic_compensation_activities "Compensation activities"
 
 # Tasks (excluding multi-instance and compensation activities)
 
@@ -15,12 +15,12 @@ stateDiagram-v2
     state feasibleEntry <<choice>>
     state feasibleExit <<choice>>
     state departure <<choice>>
-    [*] --> ARRIVED
-    note left of ARRIVED
-      If an activity does not have any incoming sequence flows,
-      the @ref BPMNOS::Execution::Token::State::ARRIVED "ARRIVED" state is skipped 
+    [*] --> ARRIVED/CREATED
+    note left of ARRIVED/CREATED
+      For multi-instance activity copies,
+      the @ref BPMNOS::Execution::Token::State::ARRIVED "ARRIVED" / @ref BPMNOS::Execution::Token::State::CREATED "CREATED" state is skipped
     end note
-    ARRIVED --> READY: ready event
+    ARRIVED/CREATED --> READY: ready event
     READY --> ENTERED: entry event
     ENTERED --> feasibleEntry
     feasibleEntry --> BUSY: [feasible]
@@ -45,9 +45,11 @@ stateDiagram-v2
 </pre>
 
 
-## ARRIVED
+## ARRIVED / CREATED
 
-A token in  @ref BPMNOS::Execution::Token::State::ARRIVED "ARRIVED" state waits for a @ref BPMNOS::Execution::ReadyEvent "ready event" indicating that all relevant data has become known. When the event occurs the token state is updated to  @ref BPMNOS::Execution::Token::State::READY "READY".
+A token enters @ref BPMNOS::Execution::Token::State::ARRIVED "ARRIVED" state when it arrives via an incoming sequence flow, or @ref BPMNOS::Execution::Token::State::CREATED "CREATED" state when the activity has no incoming sequence flows (e.g., activities in ad-hoc subprocesses).
+
+In either state, the token waits for a @ref BPMNOS::Execution::ReadyEvent "ready event" indicating that all relevant data has become known. When the event occurs the token state is updated to @ref BPMNOS::Execution::Token::State::READY "READY".
 
 
 ## READY
@@ -76,8 +78,7 @@ A token at a @ref BPMN::ReceiveTask  "receive task" waits for a @ref BPMNOS::Exe
 
 A token at a @ref BPMNOS::Model::DecisionTask  "decision task" waits for a @ref BPMNOS::Execution::ChoiceEvent "choice" to be made. When the choice is made, the @ref BPMNOS::Execution::Token::status "status" of the token is updated accordingly. Thereafter, the @ref BPMNOS::Model::ExtensionElements::operators "operators" are applied and  the @ref BPMNOS::Execution::Token::state "token state" is updated to @ref BPMNOS::Execution::Token::State::COMPLETED "COMPLETED".
 
-If any other task increments the timestamp, the token waits for a @ref BPMNOS::Execution::CompletionEvent "completion event" before the state is changed to @ref BPMNOS::Execution::Token::State::COMPLETED "COMPLETED" state.
-Otherwise, the @ref BPMNOS::Execution::Token::state "token state" is directly updated to @ref BPMNOS::Execution::Token::State::COMPLETED "COMPLETED".
+For any other task, the token waits for a @ref BPMNOS::Execution::CompletionEvent "completion event" before the state is changed to @ref BPMNOS::Execution::Token::State::COMPLETED "COMPLETED" state.
 
 @attention Operators for @ref BPMN::SendTask "send tasks", @ref BPMN::ReceiveTask  "receive tasks", and  @ref BPMNOS::Model::DecisionTask "decision tasks" must be instantaneous, i.e., they must not change the timestamp. For @ref BPMN::SendTask "send tasks" operatores are applied **before** the message is sent, for @ref BPMN::ReceiveTask  "receive tasks" they are applied **after** the message is received, and for @ref BPMNOS::Model::DecisionTask "decision tasks" they are applied **after** the choices have been made, respectively.
 @par

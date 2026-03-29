@@ -5,12 +5,8 @@ A token at an activity with a multi-instance marker changes its state as follows
 <pre class="mermaid">
 stateDiagram-v2
     state departure <<choice>>
-    [*] --> ARRIVED
-    note left of ARRIVED
-      If an activity does not have any incoming sequence flows,
-      the @ref BPMNOS::Execution::Token::State::ARRIVED "ARRIVED" state is skipped 
-    end note
-    ARRIVED --> WAITING: ready event
+    [*] --> ARRIVED/CREATED
+    ARRIVED/CREATED --> WAITING: ready event
     WAITING --> departure
     WAITING --> FAILING
     WAITING --> FAILED
@@ -23,9 +19,11 @@ stateDiagram-v2
 </pre>
 
 
-## ARRIVED
+## ARRIVED / CREATED
 
-A token in  @ref BPMNOS::Execution::Token::State::ARRIVED "ARRIVED" state waits for a @ref BPMNOS::Execution::ReadyEvent "ready event" indicating that all relevant data has become known. When the event occurs, the token state is updated to  @ref BPMNOS::Execution::Token::State::WAITING "WAITING" after token copies for each activity instance are created as described below.
+A token enters @ref BPMNOS::Execution::Token::State::ARRIVED "ARRIVED" state when it arrives via an incoming sequence flow, or @ref BPMNOS::Execution::Token::State::CREATED "CREATED" state when the activity has no incoming sequence flows (e.g., activities in ad-hoc subprocesses).
+
+In either state, the token waits for a @ref BPMNOS::Execution::ReadyEvent "ready event" indicating that all relevant data has become known. When the event occurs, the token state is updated to @ref BPMNOS::Execution::Token::State::WAITING "WAITING" after token copies for each activity instance are created as described below.
 
 If a @ref BPMNOS::Model::ExtensionElements::loopCardinality "loop cardinalty parameter" is provided, the respective number of token copies is created.
 If the token is at a multi-instance @ref BPMN::SendTask "send task" or @ref BPMN::ReceiveTask  "receive task", a token copy is created for each @ref BPMNOS::Model::ExtensionElements::messageDefinitions "message definition".
@@ -33,7 +31,7 @@ If the token is at a multi-instance @ref BPMN::SendTask "send task" or @ref BPMN
 If a @ref BPMNOS::Model::ExtensionElements::loopIndex "loop index parameter" is provided, the respective attribute of the *i* th token copy receives the value *i*.
 
 Depending on whether the multi-instance activity is parallel or sequential, each token copy is advanced in parallel or sequential fashion.
-These tokens change their states as described in @ref token_flow_logic_subprocesses or @ref token_flow_logic_tasks except that the @ref BPMNOS::Execution::Token::State::ARRIVED "ARRIVED", @ref  BPMNOS::Execution::Token::State::DEPARTED "DEPARTED", and @ref BPMNOS::Execution::Token::State::DONE "DONE" states are skipped.
+These tokens change their states as described in @ref token_flow_logic_subprocesses or @ref token_flow_logic_tasks except that the @ref BPMNOS::Execution::Token::State::ARRIVED "ARRIVED" / @ref BPMNOS::Execution::Token::State::CREATED "CREATED", @ref BPMNOS::Execution::Token::State::DEPARTED "DEPARTED", and @ref BPMNOS::Execution::Token::State::DONE "DONE" states are skipped.
 
 
 
