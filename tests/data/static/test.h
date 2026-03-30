@@ -69,7 +69,7 @@ SCENARIO( "Trivial executable process", "[data][static]" ) {
         REQUIRE( anticipatedInstances.size() == 1 );
       }
       THEN( "There is exactly one instance known at time 42" ) {
-        auto anticipatedInstances = scenario->getKnownInstances(42);
+        auto anticipatedInstances = scenario->getInstances(42);
         REQUIRE( anticipatedInstances.size() == 1 );
       }
       THEN( "Exactly one instantiation is known to occur at time 42" ) {
@@ -81,7 +81,7 @@ SCENARIO( "Trivial executable process", "[data][static]" ) {
         REQUIRE( instantiations.size() == 0 );
       }
       THEN( "The model data is correct" ) {
-        auto instances = scenario->getKnownInstances(0);
+        auto instances = scenario->getInstances(0);
         for ( auto& instance : instances ) {
           auto extensionElements = instance->process->extensionElements->represents<Model::ExtensionElements>();
           REQUIRE( extensionElements->attributes.size() == 1 );
@@ -137,7 +137,7 @@ SCENARIO( "Trivial executable process", "[data][static]" ) {
         REQUIRE( anticipatedInstances.size() == 2 );
       }
       THEN( "There are exactly two instances known at time 0" ) {
-        auto anticipatedInstances = scenario->getKnownInstances(0);
+        auto anticipatedInstances = scenario->getInstances(0);
         REQUIRE( anticipatedInstances.size() == 2 );
       }
       THEN( "Exactly one instantiation is known to occur at time 42" ) {

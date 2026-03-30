@@ -395,7 +395,7 @@ void CPModel::createDataVariables(const FlattenedGraph::Vertex* vertex) {
       model.addIndexedVariables(CP::Variable::Type::REAL, "value_{" + vertex->shortReference() + "}," + attribute->id )
     );
     // add variables holding initial values
-    auto given = scenario->getKnownValue(vertex->rootId, attribute.get(), scenario->getEarliestInstantiationTime());
+    auto given = scenario->getValue(vertex->rootId, attribute.get(), scenario->getEarliestInstantiationTime());
     if ( given.has_value() ) {
       // defined initial value
       model.addIndexedVariable(variables.defined, visit.at(vertex));
@@ -601,7 +601,7 @@ void CPModel::addAttributes(const Vertex* vertex, std::vector<AttributeVariables
       auto attribute = extensionElements->attributeRegistry.statusAttributes[i];
 //std::cerr << "Add: " << attribute->id << std::endl;
       // add variables holding given values
-      if ( auto given = scenario->getKnownValue(vertex->rootId, attribute, scenario->getEarliestInstantiationTime()); given.has_value() ) {
+      if ( auto given = scenario->getValue(vertex->rootId, attribute, scenario->getEarliestInstantiationTime()); given.has_value() ) {
         // defined initial value
         variables.emplace_back(
           model.addVariable(CP::Variable::Type::BOOLEAN, "defined_{" + vertex->reference() + "}," + attribute->id, visit.at(vertex) ), 

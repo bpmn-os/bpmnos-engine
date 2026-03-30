@@ -47,7 +47,7 @@ public:
   virtual bool isCompleted(const BPMNOS::number currentTime) const = 0;
 
   /**
-   * @brief Method returning a vector of all instances that are known to be instantiated at the given time.
+   * @brief Method returning a vector of all instances that are to be instantiated at the given time.
    */
   virtual std::vector< std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values> > getCurrentInstantiations(const BPMNOS::number currentTime) const = 0;
 
@@ -57,37 +57,37 @@ public:
   virtual std::vector< const InstanceData* > getCreatedInstances(const BPMNOS::number currentTime) const = 0;
 
   /**
-   * @brief Method returning a vector of all instances that have been created or are known for sure until the given time.
+   * @brief Method returning a vector of all instances that have been created or are known until the given time.
    */
-  virtual std::vector< const InstanceData* > getKnownInstances(const BPMNOS::number currentTime) const = 0;
+  virtual std::vector< const InstanceData* > getInstances(const BPMNOS::number currentTime) const = 0;
 
   /**
-   * @brief Method returning a known value of an attribute.
+   * @brief Method returning a value of an attribute.
    *
    * If the attribute value is not yet known, the method returns std::nullopt.
    */
-  virtual std::optional<BPMNOS::number> getKnownValue(const Scenario::InstanceData* instance, const BPMNOS::Model::Attribute* attribute, const BPMNOS::number currentTime) const = 0;
+  virtual std::optional<BPMNOS::number> getValue(const Scenario::InstanceData* instance, const BPMNOS::Model::Attribute* attribute, const BPMNOS::number currentTime) const = 0;
 
   /**
-   * @brief Method returning a known value of an attribute.
+   * @brief Method returning a value of an attribute.
    *
    * If the attribute value is not yet known, the method returns std::nullopt.
    */
-  virtual std::optional<BPMNOS::number> getKnownValue(const BPMNOS::number instanceId, const BPMNOS::Model::Attribute* attribute, const BPMNOS::number currentTime) const = 0;
+  virtual std::optional<BPMNOS::number> getValue(const BPMNOS::number instanceId, const BPMNOS::Model::Attribute* attribute, const BPMNOS::number currentTime) const = 0;
 
   /**
-   * @brief Method returning all known values of new attributes.
+   * @brief Method returning values for all new status attributes.
    *
    * If at least one attribute value is not yet known, the method returns std::nullopt.
    */
-  virtual std::optional<BPMNOS::Values> getKnownValues(const BPMNOS::number instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const = 0;
+  virtual std::optional<BPMNOS::Values> getStatus(const BPMNOS::number instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const = 0;
 
   /**
-   * @brief Method returning all known values of new attributes.
+   * @brief Method returning values for all new data attributes.
    *
    * If at least one attribute value is not yet known, the method returns std::nullopt.
    */
-  virtual std::optional<BPMNOS::Values> getKnownData(const BPMNOS::number instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const = 0;
+  virtual std::optional<BPMNOS::Values> getData(const BPMNOS::number instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const = 0;
 
   /**
    * @brief Make scenario aware of a token arriving at an activity, can be used to evaluate initial status and data at activity.

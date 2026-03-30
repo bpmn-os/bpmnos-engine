@@ -41,7 +41,7 @@ std::vector< const Scenario::InstanceData* > DynamicScenario::getCreatedInstance
   return result;
 }
 
-std::vector< const Scenario::InstanceData* > DynamicScenario::getKnownInstances(const BPMNOS::number currentTime) const {
+std::vector< const Scenario::InstanceData* > DynamicScenario::getInstances(const BPMNOS::number currentTime) const {
   std::vector< const Scenario::InstanceData* > result;
   for ( auto& [id, instance] : instances ) {
     // Instance is known when process disclosure time is reached
@@ -81,7 +81,7 @@ std::vector< std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values> > 
 BPMNOS::Values DynamicScenario::getKnownInitialStatus(const Scenario::InstanceData* instance, const BPMNOS::number currentTime) const {
   BPMNOS::Values result;
   for ( auto& attribute : instance->process->extensionElements->as<const BPMNOS::Model::ExtensionElements>()->attributes ) {
-    result.push_back( getKnownValue(instance, attribute.get(), currentTime) );
+    result.push_back( getValue(instance, attribute.get(), currentTime) );
   }
   return result;
 }
@@ -89,13 +89,13 @@ BPMNOS::Values DynamicScenario::getKnownInitialStatus(const Scenario::InstanceDa
 BPMNOS::Values DynamicScenario::getKnownInitialData(const Scenario::InstanceData* instance, const BPMNOS::number currentTime) const {
   BPMNOS::Values result;
   for ( auto& attribute : instance->process->extensionElements->as<const BPMNOS::Model::ExtensionElements>()->data ) {
-    result.push_back( getKnownValue(instance, attribute.get(), currentTime) );
+    result.push_back( getValue(instance, attribute.get(), currentTime) );
   }
   return result;
 }
 
-std::optional<BPMNOS::number> DynamicScenario::getKnownValue(const Scenario::InstanceData* instance, const BPMNOS::Model::Attribute* attribute, [[maybe_unused]] const BPMNOS::number currentTime) const {
-  // Node-level disclosure is checked by caller (getCurrentInstantiations, getKnownValues, getKnownData)
+std::optional<BPMNOS::number> DynamicScenario::getValue(const Scenario::InstanceData* instance, const BPMNOS::Model::Attribute* attribute, [[maybe_unused]] const BPMNOS::number currentTime) const {
+  // Node-level disclosure is checked by caller (getCurrentInstantiations, getStatus, getData)
   if ( attribute->expression && attribute->expression->type == Expression::Type::ASSIGN ) {
     // Value is computed from an expression
     std::vector<double> variableValues;
@@ -103,7 +103,7 @@ std::optional<BPMNOS::number> DynamicScenario::getKnownValue(const Scenario::Ins
       if ( !input->isImmutable ) {
         return std::nullopt;
       }
-      auto value = getKnownValue(instance, input, currentTime);
+      auto value = getValue(instance, input, currentTime);
       if ( !value.has_value() ) {
         return std::nullopt;
       }
@@ -116,7 +116,7 @@ std::optional<BPMNOS::number> DynamicScenario::getKnownValue(const Scenario::Ins
         return std::nullopt;
       }
       collectionValues.push_back( {} );
-      auto collection = getKnownValue(instance, input, currentTime);
+      auto collection = getValue(instance, input, currentTime);
       if ( !collection.has_value() ) {
         return std::nullopt;
       }
@@ -144,11 +144,11 @@ std::optional<BPMNOS::number> DynamicScenario::getKnownValue(const Scenario::Ins
   return std::nullopt;
 }
 
-std::optional<BPMNOS::number> DynamicScenario::getKnownValue(const BPMNOS::number instanceId, const BPMNOS::Model::Attribute* attribute, const BPMNOS::number currentTime) const {
-  return getKnownValue(&instances.at((size_t)instanceId), attribute, currentTime);
+std::optional<BPMNOS::number> DynamicScenario::getValue(const BPMNOS::number instanceId, const BPMNOS::Model::Attribute* attribute, const BPMNOS::number currentTime) const {
+  return getValue(&instances.at((size_t)instanceId), attribute, currentTime);
 }
 
-std::optional<BPMNOS::Values> DynamicScenario::getKnownValues(const BPMNOS::number instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const {
+std::optional<BPMNOS::Values> DynamicScenario::getStatus(const BPMNOS::number instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const {
   auto& instance = instances.at((size_t)instanceId);
   // Check if node data is disclosed
   if ( disclosure.contains(instance.id) && disclosure.at(instance.id).contains(node) ) {
@@ -158,12 +158,12 @@ std::optional<BPMNOS::Values> DynamicScenario::getKnownValues(const BPMNOS::numb
   }
   Values result;
   for ( auto& attribute : node->extensionElements->as<const BPMNOS::Model::ExtensionElements>()->attributes ) {
-    result.push_back( getKnownValue(&instance, attribute.get(), currentTime) );
+    result.push_back( getValue(&instance, attribute.get(), currentTime) );
   }
   return result;
 }
 
-std::optional<BPMNOS::Values> DynamicScenario::getKnownData(const BPMNOS::number instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const {
+std::optional<BPMNOS::Values> DynamicScenario::getData(const BPMNOS::number instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const {
   auto& instance = instances.at((size_t)instanceId);
   // Check if node data is disclosed
   if ( disclosure.contains(instance.id) && disclosure.at(instance.id).contains(node) ) {
@@ -173,7 +173,7 @@ std::optional<BPMNOS::Values> DynamicScenario::getKnownData(const BPMNOS::number
   }
   Values result;
   for ( auto& attribute : node->extensionElements->as<const BPMNOS::Model::ExtensionElements>()->data ) {
-    result.push_back( getKnownValue(&instance, attribute.get(), currentTime) );
+    result.push_back( getValue(&instance, attribute.get(), currentTime) );
   }
   return result;
 }
@@ -248,9 +248,9 @@ std::optional<BPMNOS::Values> DynamicScenario::getActivityReadyStatus(
   // Start with parent's status
   Values result = activityArrivalStatus.at(key);
 
-  // Add node's own attributes (same approach as getKnownValues)
+  // Add node's own attributes (same approach as getStatus)
   for (auto& attribute : extensionElements->attributes) {
-    result.push_back(getKnownValue(&instance, attribute.get(), currentTime));
+    result.push_back(getValue(&instance, attribute.get(), currentTime));
   }
 
   return result;

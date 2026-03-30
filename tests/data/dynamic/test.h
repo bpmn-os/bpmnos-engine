@@ -16,50 +16,50 @@ SCENARIO( "Dynamic data provider", "[data][dynamic]" ) {
       auto scenario = dataProvider.createScenario();
 
       THEN( "Instance is not known before disclosure time of x" ) {
-        auto instances = scenario->getKnownInstances(5);
+        auto instances = scenario->getInstances(5);
         REQUIRE( instances.size() == 0 );
       }
       THEN( "Instance is known at disclosure time of x" ) {
-        auto instances = scenario->getKnownInstances(10);
+        auto instances = scenario->getInstances(10);
         REQUIRE( instances.size() == 1 );
       }
       THEN( "data and y are not known before its disclosure time" ) {
-        auto instances = scenario->getKnownInstances(10);
+        auto instances = scenario->getInstances(10);
         REQUIRE( instances.size() == 1 );
         auto instance = instances[0];
         auto& process = scenario->getModel()->processes[0];
         auto activity = process->find([](BPMN::Node* n) { return n->id == "Activity_1"; });
         REQUIRE( activity != nullptr );
         
-        auto data = scenario->getKnownData(instance->id, activity, 10);
+        auto data = scenario->getData(instance->id, activity, 10);
         REQUIRE( !data.has_value() );
-        auto status = scenario->getKnownValues(instance->id, activity, 10);
+        auto status = scenario->getStatus(instance->id, activity, 10);
         REQUIRE( !status.has_value() );
       }
       THEN( "data is not disclosed before y" ) {
-        auto instances = scenario->getKnownInstances(10);
+        auto instances = scenario->getInstances(10);
         REQUIRE( instances.size() == 1 );
         auto instance = instances[0];
         auto& process = scenario->getModel()->processes[0];
         auto activity = process->find([](BPMN::Node* n) { return n->id == "Activity_1"; });
         REQUIRE( activity != nullptr );
 
-        auto data = scenario->getKnownData(instance->id, activity, 15);
+        auto data = scenario->getData(instance->id, activity, 15);
         REQUIRE( !data.has_value() );
-        auto status = scenario->getKnownValues(instance->id, activity, 15);
+        auto status = scenario->getStatus(instance->id, activity, 15);
         REQUIRE( !status.has_value() );
       }
       THEN( "data and y are disclosed eventually" ) {
-        auto instances = scenario->getKnownInstances(10);
+        auto instances = scenario->getInstances(10);
         REQUIRE( instances.size() == 1 );
         auto instance = instances[0];
         auto& process = scenario->getModel()->processes[0];
         auto activity = process->find([](BPMN::Node* n) { return n->id == "Activity_1"; });
         REQUIRE( activity != nullptr );
 
-        auto data = scenario->getKnownData(instance->id, activity, 20);
+        auto data = scenario->getData(instance->id, activity, 20);
         REQUIRE( data.has_value() );
-        auto status = scenario->getKnownValues(instance->id, activity, 20);
+        auto status = scenario->getStatus(instance->id, activity, 20);
         REQUIRE( status.has_value() );
       }
     }

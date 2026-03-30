@@ -55,11 +55,11 @@ std::vector< std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values> > 
 }
 
 std::optional<BPMNOS::Values> SystemState::getStatusAttributes(const StateMachine* root, const BPMN::Node* node) const {
-  return scenario->getKnownValues(root->instance.value(), node, currentTime);
+  return scenario->getStatus(root->instance.value(), node, currentTime);
 }
 
 std::optional<BPMNOS::Values> SystemState::getDataAttributes(const StateMachine* root, const BPMN::Node* node) const {
-  return scenario->getKnownData(root->instance.value(), node, currentTime);
+  return scenario->getData(root->instance.value(), node, currentTime);
 }
 
 void SystemState::incrementTimeBy(BPMNOS::number duration) {

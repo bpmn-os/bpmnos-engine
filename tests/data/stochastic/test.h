@@ -16,50 +16,50 @@ SCENARIO( "Stochastic data provider", "[data][stochastic]" ) {
       auto scenario = dataProvider.createScenario();
 
       THEN( "Instance is not known before disclosure time of x" ) {
-        auto instances = scenario->getKnownInstances(5);
+        auto instances = scenario->getInstances(5);
         REQUIRE( instances.size() == 0 );
       }
       THEN( "Instance is known at disclosure time of x" ) {
-        auto instances = scenario->getKnownInstances(10);
+        auto instances = scenario->getInstances(10);
         REQUIRE( instances.size() == 1 );
       }
       THEN( "data and y are not known before its disclosure time" ) {
-        auto instances = scenario->getKnownInstances(10);
+        auto instances = scenario->getInstances(10);
         REQUIRE( instances.size() == 1 );
         auto instance = instances[0];
         auto& process = scenario->getModel()->processes[0];
         auto activity = process->find([](BPMN::Node* n) { return n->id == "Activity_1"; });
         REQUIRE( activity != nullptr );
         
-        auto data = scenario->getKnownData(instance->id, activity, 10);
+        auto data = scenario->getData(instance->id, activity, 10);
         REQUIRE( !data.has_value() );
-        auto status = scenario->getKnownValues(instance->id, activity, 10);
+        auto status = scenario->getStatus(instance->id, activity, 10);
         REQUIRE( !status.has_value() );
       }
       THEN( "data is not disclosed before y" ) {
-        auto instances = scenario->getKnownInstances(10);
+        auto instances = scenario->getInstances(10);
         REQUIRE( instances.size() == 1 );
         auto instance = instances[0];
         auto& process = scenario->getModel()->processes[0];
         auto activity = process->find([](BPMN::Node* n) { return n->id == "Activity_1"; });
         REQUIRE( activity != nullptr );
 
-        auto data = scenario->getKnownData(instance->id, activity, 15);
+        auto data = scenario->getData(instance->id, activity, 15);
         REQUIRE( !data.has_value() );
-        auto status = scenario->getKnownValues(instance->id, activity, 15);
+        auto status = scenario->getStatus(instance->id, activity, 15);
         REQUIRE( !status.has_value() );
       }
       THEN( "data and y are disclosed eventually" ) {
-        auto instances = scenario->getKnownInstances(10);
+        auto instances = scenario->getInstances(10);
         REQUIRE( instances.size() == 1 );
         auto instance = instances[0];
         auto& process = scenario->getModel()->processes[0];
         auto activity = process->find([](BPMN::Node* n) { return n->id == "Activity_1"; });
         REQUIRE( activity != nullptr );
 
-        auto data = scenario->getKnownData(instance->id, activity, 20);
+        auto data = scenario->getData(instance->id, activity, 20);
         REQUIRE( data.has_value() );
-        auto status = scenario->getKnownValues(instance->id, activity, 20);
+        auto status = scenario->getStatus(instance->id, activity, 20);
         REQUIRE( status.has_value() );
       }
     }
@@ -79,7 +79,7 @@ SCENARIO( "Stochastic data provider", "[data][stochastic]" ) {
       Model::StochasticDataProvider dataProvider(modelFile, csv);
       auto scenario = dataProvider.createScenario();
 
-      auto instances = scenario->getKnownInstances(0);
+      auto instances = scenario->getInstances(0);
       REQUIRE( instances.size() == 1 );
       auto instance = instances[0];
       auto& process = scenario->getModel()->processes[0];
@@ -87,11 +87,11 @@ SCENARIO( "Stochastic data provider", "[data][stochastic]" ) {
       REQUIRE( activity != nullptr );
 
       THEN( "x and y have initial values before noticeActivityArrival" ) {
-        auto processStatus = scenario->getKnownValues(instance->id, instance->process, 0);
+        auto processStatus = scenario->getStatus(instance->id, instance->process, 0);
         REQUIRE( processStatus.has_value() );
         REQUIRE( processStatus->at(1).value() == 1 );  // x = 1
 
-        auto activityStatus = scenario->getKnownValues(instance->id, activity, 0);
+        auto activityStatus = scenario->getStatus(instance->id, activity, 0);
         REQUIRE( activityStatus.has_value() );
         REQUIRE( activityStatus->at(0).value() == 2 );  // y = 2
       }
@@ -104,8 +104,8 @@ SCENARIO( "Stochastic data provider", "[data][stochastic]" ) {
 
         scenario->noticeActivityArrival(instance->id, activity, status, data, globals);
 
-        // Process x stays unchanged (getKnownValues returns disclosed values)
-        auto processStatus = scenario->getKnownValues(instance->id, instance->process, 0);
+        // Process x stays unchanged (getStatus returns disclosed values)
+        auto processStatus = scenario->getStatus(instance->id, instance->process, 0);
         REQUIRE( processStatus.has_value() );
         REQUIRE( processStatus->at(1).value() == 1 );  // x = 1 (unchanged)
 
@@ -135,8 +135,8 @@ SCENARIO( "Stochastic data provider", "[data][stochastic]" ) {
       auto scenario1 = dataProvider.createScenario(0);
       auto scenario2 = dataProvider.createScenario(0);
 
-      auto instances1 = scenario1->getKnownInstances(0);
-      auto instances2 = scenario2->getKnownInstances(0);
+      auto instances1 = scenario1->getInstances(0);
+      auto instances2 = scenario2->getInstances(0);
       REQUIRE( instances1.size() == 1 );
       REQUIRE( instances2.size() == 1 );
 
@@ -168,8 +168,8 @@ SCENARIO( "Stochastic data provider", "[data][stochastic]" ) {
       auto scenario1 = dataProvider.createScenario(0);
       auto scenario2 = dataProvider.createScenario(1);  // different scenarioId = different seed
 
-      auto instances1 = scenario1->getKnownInstances(0);
-      auto instances2 = scenario2->getKnownInstances(0);
+      auto instances1 = scenario1->getInstances(0);
+      auto instances2 = scenario2->getInstances(0);
 
       auto instance1 = instances1[0];
       auto instance2 = instances2[0];
@@ -215,7 +215,7 @@ SCENARIO( "Stochastic data provider", "[data][stochastic]" ) {
       Model::StochasticDataProvider dataProvider(modelFile, csv);
       auto scenario = dataProvider.createScenario();
 
-      auto instances = scenario->getKnownInstances(0);
+      auto instances = scenario->getInstances(0);
       REQUIRE( instances.size() == 1 );
       auto instance = instances[0];
 
@@ -249,7 +249,7 @@ SCENARIO( "Stochastic data provider", "[data][stochastic]" ) {
       }
 
       THEN( "Process x remains unchanged" ) {
-        auto processStatus = scenario->getKnownValues(instance->id, instance->process, 0);
+        auto processStatus = scenario->getStatus(instance->id, instance->process, 0);
         REQUIRE( processStatus.has_value() );
         REQUIRE( processStatus->at(1).value() == 1 );  // x = 1 (unchanged)
       }
