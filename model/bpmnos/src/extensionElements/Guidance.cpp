@@ -105,23 +105,22 @@ template BPMNOS::number Guidance::getObjective<BPMNOS::Values>(const BPMNOS::Val
 //template BPMNOS::number Guidance::getObjective<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data, const BPMNOS::Values& globals) const;
 
 template <typename DataType>
-bool Guidance::restrictionsSatisfied(const BPMN::FlowNode* node, const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const {
+bool Guidance::restrictionsSatisfied(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const {
   for ( auto& restriction : restrictions ) {
     if ( !restriction->isSatisfied(status,data,globals) ) {
       return false;
     }
   }
   
-  // TODO: do we need to check node restrictions?
   return true;
 }
 
-template bool Guidance::restrictionsSatisfied<BPMNOS::Values>(const BPMN::FlowNode* node, const BPMNOS::Values& status, const BPMNOS::Values& data, const BPMNOS::Values& globals) const;
+template bool Guidance::restrictionsSatisfied<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data, const BPMNOS::Values& globals) const;
 //template bool Guidance::restrictionsSatisfied<BPMNOS::SharedValues>(const BPMN::FlowNode* node, const BPMNOS::Values& status, const BPMNOS::SharedValues& data, const BPMNOS::Values& globals) const;
 
 
 template <typename DataType>
-void Guidance::apply(const Scenario* scenario, BPMNOS::number currentTime, const BPMNOS::number instanceId, const BPMN::FlowNode* node, BPMNOS::Values& status, DataType& data, BPMNOS::Values& globals) const {
+void Guidance::apply(const Scenario* scenario, BPMNOS::number currentTime, const BPMNOS::number instanceId, BPMNOS::Values& status, DataType& data, BPMNOS::Values& globals) const {
 
   for ( auto& attribute : attributes ) {
     status.push_back( scenario->getValue(instanceId, attribute.get(), currentTime ) );
@@ -137,6 +136,6 @@ void Guidance::apply(const Scenario* scenario, BPMNOS::number currentTime, const
   }
 }
 
-template void Guidance::apply<BPMNOS::Values>(const Scenario* scenario, BPMNOS::number currentTime, const BPMNOS::number instanceId, const BPMN::FlowNode* node, BPMNOS::Values& status, BPMNOS::Values& data, BPMNOS::Values& globals) const;
+template void Guidance::apply<BPMNOS::Values>(const Scenario* scenario, BPMNOS::number currentTime, const BPMNOS::number instanceId, BPMNOS::Values& status, BPMNOS::Values& data, BPMNOS::Values& globals) const;
 //template void Guidance::apply<BPMNOS::SharedValues>(const Scenario* scenario, BPMNOS::number currentTime, const BPMNOS::number instanceId, const BPMN::FlowNode* node, BPMNOS::Values& status, BPMNOS::SharedValues& data, BPMNOS::Values& globals) const;
 

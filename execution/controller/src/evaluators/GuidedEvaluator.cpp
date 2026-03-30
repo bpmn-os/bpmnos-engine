@@ -23,10 +23,10 @@ bool GuidedEvaluator::updateValues(EntryDecision* decision, Values& status, Valu
   // apply guidance
   auto guidance = extensionElements->entryGuidance.value().get();
   auto systemState = decision->token->owner->systemState;
-  guidance->apply(systemState->scenario, systemState->currentTime, decision->token->owner->root->instance.value(), decision->token->node, status, data, globals);
+  guidance->apply(systemState->scenario, systemState->currentTime, decision->token->owner->root->instance.value(), status, data, globals);
 //std::cerr << "GuidedEvaluator: guidance " << guidance->restrictionsSatisfied(decision->token->node,status,data,globals) << ": " << decision->token->node->id << std::endl;
 
-  return guidance->restrictionsSatisfied(decision->token->node,status,data,globals);
+  return guidance->restrictionsSatisfied(status,data,globals);
 }
 
 bool GuidedEvaluator::updateValues(ExitDecision* decision, Values& status, Values& data, Values& globals) {
@@ -45,9 +45,9 @@ bool GuidedEvaluator::updateValues(ExitDecision* decision, Values& status, Value
   // apply guidance
   auto guidance = extensionElements->exitGuidance.value().get();
   auto systemState = decision->token->owner->systemState;
-  guidance->apply(systemState->scenario, systemState->currentTime, decision->token->owner->root->instance.value(), decision->token->node, status, data, globals);
+  guidance->apply(systemState->scenario, systemState->currentTime, decision->token->owner->root->instance.value(), status, data, globals);
 
-  return guidance->restrictionsSatisfied(decision->token->node,status,data,globals);
+  return guidance->restrictionsSatisfied(status,data,globals);
 }
 
 
@@ -65,9 +65,9 @@ bool GuidedEvaluator::updateValues(ChoiceDecision* decision, Values& status, Val
   // apply guidance
   auto guidance = extensionElements->choiceGuidance.value().get();
   auto systemState = decision->token->owner->systemState;
-  guidance->apply(systemState->scenario, systemState->currentTime, decision->token->owner->root->instance.value(), decision->token->node, status, data, globals);
+  guidance->apply(systemState->scenario, systemState->currentTime, decision->token->owner->root->instance.value(), status, data, globals);
 
-  return guidance->restrictionsSatisfied(decision->token->node,status,data,globals);
+  return guidance->restrictionsSatisfied(status,data,globals);
 }
 
 
@@ -85,9 +85,9 @@ bool GuidedEvaluator::updateValues(MessageDeliveryDecision* decision, Values& st
   // apply guidance
   auto guidance = extensionElements->messageDeliveryGuidance.value().get();
   auto systemState = decision->token->owner->systemState;
-  guidance->apply(systemState->scenario, systemState->currentTime, decision->token->owner->root->instance.value(), decision->token->node, status, data, globals);
+  guidance->apply(systemState->scenario, systemState->currentTime, decision->token->owner->root->instance.value(), status, data, globals);
 
-  return guidance->restrictionsSatisfied(decision->token->node,status,data,globals);
+  return guidance->restrictionsSatisfied(status,data,globals);
 }
 
 std::optional<double> GuidedEvaluator::evaluate(EntryDecision* decision) {
