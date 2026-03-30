@@ -102,15 +102,6 @@ public:
     [[maybe_unused]] BPMNOS::number instanceId,
     [[maybe_unused]] const BPMN::Node* node,
     [[maybe_unused]] const Values& status,
-    [[maybe_unused]] const Values& data,
-    [[maybe_unused]] const Values& globals
-  ) const {}
-
-  /// @brief Overload accepting SharedValues for data.
-  virtual void noticeActivityArrival(
-    [[maybe_unused]] BPMNOS::number instanceId,
-    [[maybe_unused]] const BPMN::Node* node,
-    [[maybe_unused]] const Values& status,
     [[maybe_unused]] const SharedValues& data,
     [[maybe_unused]] const Values& globals
   ) const {}
@@ -124,26 +115,12 @@ public:
    * @param data The current data values.
    * @param globals Global attributes.
    */
-  virtual void noticeRunningTask(
-    BPMNOS::number instanceId,
-    const BPMN::Node* task,
-    const Values& status,
-    [[maybe_unused]] const Values& data,
-    [[maybe_unused]] const Values& globals
-  ) const {
+  virtual void noticeRunningTask(BPMNOS::number instanceId, const BPMN::Node* task, const Values& status, [[maybe_unused]] const SharedValues& data, [[maybe_unused]] const Values& globals ) const {
     taskCompletionStatus[{(size_t)instanceId, task}] = status;
   }
 
-  /// @brief Overload accepting SharedValues for data.
-  virtual void noticeRunningTask(
-    BPMNOS::number instanceId,
-    const BPMN::Node* task,
-    const Values& status,
-    [[maybe_unused]] const SharedValues& data,
-    [[maybe_unused]] const Values& globals
-  ) const {
-    taskCompletionStatus[{(size_t)instanceId, task}] = status;
-  }
+  /// @brief Get the completion status for a SendTask, ReceiveTask, and Decisiontask.
+  BPMNOS::Values getTaskCompletionStatus(BPMNOS::number instanceId, const BPMN::Node* task, const Values& status, const SharedValues& data, const Values& globals) const;
 
   /**
    * @brief Get the completion status for a task.
@@ -156,11 +133,7 @@ public:
    * @param currentTime The current time for completion check.
    * @return Completion status values if completed, std::nullopt otherwise.
    */
-  virtual std::optional<BPMNOS::Values> getTaskCompletionStatus(
-    BPMNOS::number instanceId,
-    const BPMN::Node* task,
-    BPMNOS::number currentTime
-  ) const;
+  virtual std::optional<BPMNOS::Values> getTaskCompletionStatus(BPMNOS::number instanceId, const BPMN::Node* task, BPMNOS::number currentTime) const;
 
   /**
    * @brief Get the ready status for an activity.
@@ -175,20 +148,10 @@ public:
    * @param currentTime The current time for disclosure check.
    * @return Full status values if ready, std::nullopt otherwise.
    */
-  virtual std::optional<BPMNOS::Values> getActivityReadyStatus(
-    BPMNOS::number instanceId,
-    const BPMN::Node* activity,
-    BPMNOS::number currentTime
-  ) const = 0;
+  virtual std::optional<BPMNOS::Values> getActivityReadyStatus(BPMNOS::number instanceId, const BPMN::Node* activity, BPMNOS::number currentTime) const = 0;
 
   const Model* model;  ///< Pointer to the BPMN model.
   BPMNOS::Values globals;
-
-  /// Stored completion status per (instanceId, task)
-  mutable std::map<std::pair<size_t, const BPMN::Node*>, BPMNOS::Values> taskCompletionStatus;
-
-  /// Stored arrival status per (instanceId, activity) from noticeActivityArrival
-  mutable std::map<std::pair<size_t, const BPMN::Node*>, BPMNOS::Values> activityArrivalStatus;
 
 protected:
   /// Constructor that initializes model and globals from CSV-provided values.
@@ -210,6 +173,14 @@ protected:
    * Used internally by getCurrentInstantiations to get process-level data attributes.
    */
   virtual Values getKnownInitialData(const InstanceData*, const BPMNOS::number time) const = 0;
+
+
+  /// Stored completion status per (instanceId, task)
+  mutable std::map<std::pair<size_t, const BPMN::Node*>, BPMNOS::Values> taskCompletionStatus;
+
+  /// Stored arrival status per (instanceId, activity) from noticeActivityArrival
+  mutable std::map<std::pair<size_t, const BPMN::Node*>, BPMNOS::Values> activityArrivalStatus;
+
 };
 
 } // namespace BPMNOS::Model

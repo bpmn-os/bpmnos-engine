@@ -92,11 +92,7 @@ public:
   std::optional<BPMNOS::Values> getStatus(const BPMNOS::number instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const override;
   std::optional<BPMNOS::Values> getData(const BPMNOS::number instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const override;
 
-  std::optional<BPMNOS::Values> getActivityReadyStatus(
-    BPMNOS::number instanceId,
-    const BPMN::Node* activity,
-    BPMNOS::number currentTime
-  ) const override;
+  std::optional<BPMNOS::Values> getActivityReadyStatus(BPMNOS::number instanceId, const BPMN::Node* activity, BPMNOS::number currentTime) const override;
 
   /**
    * @brief Make scenario aware of a token arriving at an activity.
@@ -104,22 +100,7 @@ public:
    * Evaluates ARRIVAL expressions using the parent scope's context and stores
    * the computed values.
    */
-  void noticeActivityArrival(
-    BPMNOS::number instanceId,
-    const BPMN::Node* node,
-    const Values& status,
-    const Values& data,
-    const Values& globals
-  ) const override;
-
-  /// @brief Overload accepting SharedValues for data.
-  void noticeActivityArrival(
-    BPMNOS::number instanceId,
-    const BPMN::Node* node,
-    const Values& status,
-    const SharedValues& data,
-    const Values& globals
-  ) const override;
+  void noticeActivityArrival( BPMNOS::number instanceId, const BPMN::Node* node, const Values& status, const SharedValues& data, const Values& globals ) const override;
 
   /**
    * @brief Make scenario aware of a task entering BUSY state.
@@ -127,45 +108,14 @@ public:
    * Evaluates COMPLETION expressions immediately and stores the final result.
    * Uses per-(instance, node) RNG for reproducibility.
    */
-  void noticeRunningTask(
-    BPMNOS::number instanceId,
-    const BPMN::Node* task,
-    const Values& status,
-    const Values& data,
-    const Values& globals
-  ) const override;
-
-  /// @brief Overload accepting SharedValues for data.
-  void noticeRunningTask(
-    BPMNOS::number instanceId,
-    const BPMN::Node* task,
-    const Values& status,
-    const SharedValues& data,
-    const Values& globals
-  ) const override;
+  void noticeRunningTask(BPMNOS::number instanceId, const BPMN::Node* task, const Values& status, const SharedValues& data,     const Values& globals) const override;
 
   void revealData(BPMNOS::number currentTime) const;
 
 private:
-  /// Template implementation for noticeActivityArrival
-  template<typename DataType>
-  void initializeActivityData(
-    BPMNOS::number instanceId,
-    const BPMN::Node* node,
-    const Values& status,
-    const DataType& data,
-    const Values& globals
-  ) const;
+  void initializeActivityData(BPMNOS::number instanceId, const BPMN::Node* node, const Values& status, const SharedValues& data, const Values& globals) const;
 
-  /// Template implementation for noticeRunningTask
-  template<typename DataType>
-  void setTaskCompletionStatus(
-    BPMNOS::number instanceId,
-    const BPMN::Node* task,
-    const Values& status,
-    const DataType& data,
-    const Values& globals
-  ) const;
+  void setTaskCompletionStatus(BPMNOS::number instanceId, const BPMN::Node* task, const Values& status, const SharedValues& data, const Values& globals) const;
 
 protected:
   Values getKnownInitialStatus(const InstanceData*, const BPMNOS::number time) const override;

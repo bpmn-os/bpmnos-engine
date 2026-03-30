@@ -62,6 +62,7 @@ void ScenarioUpdater::notice(const Observable* observable) {
         token->node->represents<BPMN::ReceiveTask>() ||
         token->node->represents<BPMNOS::Model::DecisionTask>()
       ) {
+        // completion status is determined by Engine
         return;
       }
 

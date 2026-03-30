@@ -118,31 +118,11 @@ void StochasticScenario::evaluateDeferredDisclosures() {
   deferredDisclosures.clear();
 }
 
-void StochasticScenario::noticeActivityArrival(
-    BPMNOS::number instanceId,
-    const BPMN::Node* node,
-    const Values& status,
-    const Values& data,
-    const Values& globals) const {
+void StochasticScenario::noticeActivityArrival(BPMNOS::number instanceId, const BPMN::Node* node, const Values& status, const SharedValues& data, const Values& globals) const {
   initializeActivityData(instanceId, node, status, data, globals);
 }
 
-void StochasticScenario::noticeActivityArrival(
-    BPMNOS::number instanceId,
-    const BPMN::Node* node,
-    const Values& status,
-    const SharedValues& data,
-    const Values& globals) const {
-  initializeActivityData(instanceId, node, status, data, globals);
-}
-
-template<typename DataType>
-void StochasticScenario::initializeActivityData(
-    BPMNOS::number instanceId,
-    const BPMN::Node* node,
-    const Values& status,
-    const DataType& data,
-    const Values& globals) const {
+void StochasticScenario::initializeActivityData(BPMNOS::number instanceId, const BPMN::Node* node, const Values& status, const SharedValues& data, const Values& globals) const {
   size_t id = (size_t)instanceId;
   auto key = std::make_pair(id, node);
   auto& instance = instances.at(id);
@@ -345,17 +325,11 @@ std::optional<BPMNOS::Values> StochasticScenario::getData(const BPMNOS::number i
   return result;
 }
 
-void StochasticScenario::noticeRunningTask(BPMNOS::number instanceId, const BPMN::Node* task, const Values& status, const Values& data, const Values& globals) const {
+void StochasticScenario::noticeRunningTask(BPMNOS::number instanceId, const BPMN::Node* task, const Values& status, const SharedValues& data, const Values& globals) const {
   setTaskCompletionStatus(instanceId, task, status, data, globals);
 }
 
-void StochasticScenario::noticeRunningTask(
-BPMNOS::number instanceId, const BPMN::Node* task, const Values& status, const SharedValues& data, const Values& globals) const {
-  setTaskCompletionStatus(instanceId, task, status, data, globals);
-}
-
-template<typename DataType>
-void StochasticScenario::setTaskCompletionStatus(BPMNOS::number instanceId, const BPMN::Node* task, const Values& status, const DataType& data, const Values& globals) const {
+void StochasticScenario::setTaskCompletionStatus(BPMNOS::number instanceId, const BPMN::Node* task, const Values& status, const SharedValues& data, const Values& globals) const {
 
   size_t id = (size_t)instanceId;
   Values modifiedStatus = status;
@@ -425,11 +399,7 @@ void StochasticScenario::revealData(BPMNOS::number currentTime) const {
   }
 }
 
-std::optional<BPMNOS::Values> StochasticScenario::getActivityReadyStatus(
-  BPMNOS::number instanceId,
-  const BPMN::Node* activity,
-  BPMNOS::number currentTime
-) const {
+std::optional<BPMNOS::Values> StochasticScenario::getActivityReadyStatus(BPMNOS::number instanceId, const BPMN::Node* activity, BPMNOS::number currentTime) const {
   size_t id = (size_t)instanceId;
 
   // Check if node data is disclosed

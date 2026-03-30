@@ -186,16 +186,6 @@ void DynamicScenario::noticeActivityArrival(
     BPMNOS::number instanceId,
     const BPMN::Node* node,
     const Values& status,
-    [[maybe_unused]] const Values& data,
-    [[maybe_unused]] const Values& globals) const {
-  // Store parent status for getActivityReadyStatus
-  activityArrivalStatus[{(size_t)instanceId, node}] = status;
-}
-
-void DynamicScenario::noticeActivityArrival(
-    BPMNOS::number instanceId,
-    const BPMN::Node* node,
-    const Values& status,
     [[maybe_unused]] const SharedValues& data,
     [[maybe_unused]] const Values& globals) const {
   // Store parent status for getActivityReadyStatus

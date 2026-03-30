@@ -32,6 +32,15 @@ BPMNOS::Values Scenario::evaluateGlobals(const std::unordered_map<const Attribut
   return result;
 }
 
+BPMNOS::Values Scenario::getTaskCompletionStatus(BPMNOS::number instanceId, const BPMN::Node* task, const Values& status, const SharedValues& data, const Values& globals) const {
+  noticeRunningTask(instanceId,task,status,data,globals);
+  Values& completionStatus = taskCompletionStatus[{(size_t)instanceId, task}];
+  if ( status[ExtensionElements::Index::Timestamp] != completionStatus[ExtensionElements::Index::Timestamp] ) {
+    throw std::runtime_error("Scenario: illegal change of completion time for node '" + task->id + "'");
+  }
+  return completionStatus;
+}
+
 std::optional<BPMNOS::Values> Scenario::getTaskCompletionStatus(
     BPMNOS::number instanceId,
     const BPMN::Node* task,
