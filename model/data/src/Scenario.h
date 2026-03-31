@@ -90,7 +90,7 @@ public:
   virtual std::optional<BPMNOS::Values> getData(const BPMNOS::number instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const = 0;
 
   /**
-   * @brief Make scenario aware of a token arriving at an activity, can be used to evaluate initial status and data at activity.
+   * @brief Make scenario aware of a an activity for which the ready status must be determined.
    *
    * @param instanceId The instance identifier.
    * @param node The activity node being entered.
@@ -107,7 +107,7 @@ public:
   ) const {}
 
   /**
-   * @brief Make scenario aware of a running task, can be used to evaluate completion status.
+   * @brief Make scenario aware of a task for which the completion status must be determined.
    *
    * @param instanceId The instance identifier.
    * @param task The task node entering BUSY state.
