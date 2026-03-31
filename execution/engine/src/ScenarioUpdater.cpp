@@ -48,7 +48,7 @@ void ScenarioUpdater::notice(const Observable* observable) {
     ) {
       auto instanceId = token->owner->root->instance.value();
       assert(token->data);
-      scenario->noticeActivityArrival(instanceId, token->node, token->status, *token->data, token->globals);
+      scenario->noticeReadyPending(instanceId, token->node, token->status, *token->data, token->globals);
     }
 
     // Handle BUSY at Task - notify scenario of running task
@@ -68,7 +68,7 @@ void ScenarioUpdater::notice(const Observable* observable) {
 
       auto instanceId = token->owner->root->instance.value();
       assert(token->data);
-      scenario->noticeRunningTask(instanceId, token->node, token->status, *token->data, token->globals);
+      scenario->noticeCompletionPending(instanceId, token->node, token->status, *token->data, token->globals);
     }
   }
 }

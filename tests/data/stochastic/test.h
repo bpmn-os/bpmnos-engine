@@ -4,7 +4,7 @@ SCENARIO( "Stochastic data provider", "[data][stochastic]" ) {
 
   GIVEN( "An instance with instantiation after disclosure time" ) {
     std::string csv =
-      "INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE; ARRIVAL; COMPLETION\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE; READY; COMPLETION\n"
       "Instance_1; Process_1; timestamp := 15; triangular(5,5,5);;\n"
       "Instance_1; Process_1; x := 1; triangular(10,10,10);;\n"
       "Instance_1; Activity_1; data := 5; triangular(15,15,15);;\n"
@@ -65,9 +65,9 @@ SCENARIO( "Stochastic data provider", "[data][stochastic]" ) {
     }
   }
 
-  GIVEN( "An instance with ARRIVAL expressions changing x and y" ) {
+  GIVEN( "An instance with READY expressions changing x and y" ) {
     std::string csv =
-      "INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE; ARRIVAL; COMPLETION\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE; READY; COMPLETION\n"
       "Instance_1; Process_1; timestamp := 0;;;\n"
       "Instance_1; Process_1; x := 1;;;\n"
       "Instance_1; Activity_1; y := 2;;;\n"
@@ -86,7 +86,7 @@ SCENARIO( "Stochastic data provider", "[data][stochastic]" ) {
       auto activity = process->find([](BPMN::Node* n) { return n->id == "Activity_1"; });
       REQUIRE( activity != nullptr );
 
-      THEN( "x and y have initial values before noticeActivityArrival" ) {
+      THEN( "x and y have initial values before noticeReadyPending" ) {
         auto processStatus = scenario->getStatus(instance->id, instance->process, 0);
         REQUIRE( processStatus.has_value() );
         REQUIRE( processStatus->at(1).value() == 1 );  // x = 1
@@ -96,13 +96,13 @@ SCENARIO( "Stochastic data provider", "[data][stochastic]" ) {
         REQUIRE( activityStatus->at(0).value() == 2 );  // y = 2
       }
 
-      THEN( "y is updated and x becomes local copy after noticeActivityArrival" ) {
+      THEN( "y is updated and x becomes local copy after noticeReadyPending" ) {
         // Parent status passed to activity (timestamp=0, x=1)
         Values status = {0, 1};
         Values data = {};
         Values globals = {};
 
-        scenario->noticeActivityArrival(instance->id, activity, status, data, globals);
+        scenario->noticeReadyPending(instance->id, activity, status, data, globals);
 
         // Process x stays unchanged (getStatus returns disclosed values)
         auto processStatus = scenario->getStatus(instance->id, instance->process, 0);
@@ -120,9 +120,9 @@ SCENARIO( "Stochastic data provider", "[data][stochastic]" ) {
     }
   }
 
-  GIVEN( "An instance with random ARRIVAL expressions" ) {
+  GIVEN( "An instance with random READY expressions" ) {
     std::string csv =
-      "INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE; ARRIVAL; COMPLETION\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE; READY; COMPLETION\n"
       "Instance_1; Process_1; timestamp := 0;;;\n"
       "Instance_1; Process_1; x := 1;;;\n"
       "Instance_1; Activity_1; y := 2;;;\n"
@@ -149,8 +149,8 @@ SCENARIO( "Stochastic data provider", "[data][stochastic]" ) {
       Values data = {};
       Values globals = {};
 
-      scenario1->noticeActivityArrival(instance1->id, activity, status, data, globals);
-      scenario2->noticeActivityArrival(instance2->id, activity, status, data, globals);
+      scenario1->noticeReadyPending(instance1->id, activity, status, data, globals);
+      scenario2->noticeReadyPending(instance2->id, activity, status, data, globals);
 
       THEN( "Both scenarios produce identical arrival status" ) {
         auto activityStatus1 = scenario1->getActivityReadyStatus(instance1->id, activity, 0);
@@ -180,10 +180,10 @@ SCENARIO( "Stochastic data provider", "[data][stochastic]" ) {
       Values data = {};
       Values globals = {};
 
-      scenario1->noticeActivityArrival(instance1->id, activity, status, data, globals);
-      scenario2->noticeActivityArrival(instance2->id, activity, status, data, globals);
+      scenario1->noticeReadyPending(instance1->id, activity, status, data, globals);
+      scenario2->noticeReadyPending(instance2->id, activity, status, data, globals);
 
-      THEN( "Scenarios produce different arrival status" ) {
+      THEN( "Scenarios produce different ready status" ) {
         auto activityStatus1 = scenario1->getActivityReadyStatus(instance1->id, activity, 0);
         auto activityStatus2 = scenario2->getActivityReadyStatus(instance2->id, activity, 0);
 
@@ -199,7 +199,7 @@ SCENARIO( "Stochastic data provider", "[data][stochastic]" ) {
 
   GIVEN( "A task with COMPLETION expressions changing x, y, z, w" ) {
     std::string csv =
-      "INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE; ARRIVAL; COMPLETION\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE; READY; COMPLETION\n"
       "Instance_1; Process_1; timestamp := 0;;;\n"
       "Instance_1; Process_1; x := 1;;;\n"
       "Instance_1; Activity_1; y := 2;;;\n"
@@ -230,7 +230,7 @@ SCENARIO( "Stochastic data provider", "[data][stochastic]" ) {
       Values data = {};
       Values globals = {};
 
-      scenario->noticeRunningTask(instance->id, task, status, data, globals);
+      scenario->noticeCompletionPending(instance->id, task, status, data, globals);
 
       THEN( "All status values are modified by completion expressions" ) {
         auto completionStatus = scenario->getTaskCompletionStatus(instance->id, task, 100);

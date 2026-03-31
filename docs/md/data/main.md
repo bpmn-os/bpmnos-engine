@@ -177,14 +177,14 @@ The @ref BPMNOS::Model::StochasticDataProvider "stochastic data provider" extend
 The stochastic data provider uses a CSV file with up to six columns:
 
 ```plaintext
-INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE; ARRIVAL; COMPLETION
+INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE; READY; COMPLETION
 ```
 
 - **INSTANCE_ID**: The instance identifier (string). Leave empty for global attributes.
 - **NODE_ID**: The BPMN node ID (process, activity, subprocess, etc.). Leave empty for global attributes.
 - **INITIALIZATION**: An assignment expression in the format `attribute := expression`. Evaluated at parse time. May contain random functions and can reference any attributes previously parse-time evaluated in earlier CSV rows.
 - **DISCLOSURE**: The time at which this attribute value becomes known. Leave empty for immediate disclosure.
-- **ARRIVAL**: Expression evaluated when a token arrives at an activity (Task, SubProcess, CallActivity). Evaluated at runtime with full context (status, data, globals).
+- **READY**: Expression evaluated when a token arrives at an activity (Task, SubProcess, CallActivity). Evaluated at runtime with full context (status, data, globals).
 - **COMPLETION**: Expression evaluated when a task completes. Only valid for Task nodes (not SendTask, ReceiveTask, DecisionTask). Evaluated at runtime with full context.
 
 ### Random Functions
@@ -207,7 +207,7 @@ The following random functions can be used in expressions:
 ### Example
 
 ```plaintext
-INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE; ARRIVAL; COMPLETION
+INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE; READY; COMPLETION
 ; ; basePriority := 5; ; ;
 Instance_1; Process_1; timestamp := 0; ; ;
 Instance_1; Process_1; priority := uniform(1, basePriority * 2); 5; ;
@@ -221,7 +221,7 @@ Instance_1; SubProcess_1; ; ; localVar := parentValue * 2;
 |--------|----------------|-------------------|
 | INITIALIZATION | Parse time | Previously evaluated attributes (same instance) |
 | DISCLOSURE | Parse time | Previously evaluated attributes + INITIALIZATION from same row |
-| ARRIVAL | Runtime (token arrival) | Status, Data, Globals |
+| READY | Runtime (token arrival) | Status, Data, Globals |
 | COMPLETION | Runtime (task completion) | Status, Data, Globals |
 
 **INITIALIZATION** expressions are evaluated at parse time. They can reference any attributes previously parse-time evaluated in earlier rows (globals or instance attributes).
@@ -230,7 +230,7 @@ Instance_1; SubProcess_1; ; ; localVar := parentValue * 2;
 
 **Row order matters**: Attributes initialized in earlier CSV rows become available for reference in later rows. Instance 1's attributes cannot be referenced from Instance 2's expressions.
 
-**ARRIVAL** expressions are evaluated when a token arrives at an activity (enters ARRIVED or CREATED state). They have access to the parent scope's status and data attributes, plus global attributes. This is useful for initializing activity-local attributes based on runtime state.
+**READY** expressions are evaluated when a token arrives at an activity (enters ARRIVED or CREATED state). They have access to the parent scope's status and data attributes, plus global attributes. This is useful for initializing activity-local attributes based on runtime state.
 
 **COMPLETION** expressions are evaluated when a task enters BUSY state. They have full access to status, data, and global attributes.
 
@@ -244,14 +244,14 @@ An attribute's initial value can come from:
 If both attempt to initialize the same attribute, an error is thrown.
 
 **Runtime Modification**:
-- ARRIVAL expressions can override INITIALIZATION values at runtime
-- ARRIVAL expressions cannot override model expressions
+- READY expressions can override INITIALIZATION values at runtime
+- READY expressions cannot override model expressions
 - COMPLETION expressions can modify any status attribute, including those with model expressions (model expressions run at ready time, COMPLETION runs later)
 
-Both ARRIVAL and COMPLETION modifications are local to the activity/task scope and do not affect parent scope values.
+Both READY and COMPLETION modifications are local to the activity/task scope and do not affect parent scope values.
 
 **Limitation - Event Subprocesses**:
-CSV-provided ARRIVAL and COMPLETION expressions for event subprocesses are disallowed unless they produce deterministic (equal) values for all triggerings. Use model expressions for event subprocess behavior that may vary between triggerings.
+CSV-provided READY and COMPLETION expressions for event subprocesses are disallowed unless they produce deterministic (equal) values for all triggerings. Use model expressions for event subprocess behavior that may vary between triggerings.
 
 ### Reproducibility
 
@@ -277,9 +277,9 @@ int main() {
 StochasticDataProvider is downward compatible with the following CSV formats:
 - 3-column (Static): INSTANCE_ID; NODE_ID; INITIALIZATION
 - 4-column (Dynamic): + DISCLOSURE
-- 6-column (Stochastic): + ARRIVAL; COMPLETION
+- 6-column (Stochastic): + READY; COMPLETION
 
-Note: There is no 5-column format. Use 6 columns with empty ARRIVAL or COMPLETION as needed.
+Note: There is no 5-column format. Use 6 columns with empty READY or COMPLETION as needed.
 
 ## Expected value data provider
 
@@ -290,13 +290,13 @@ The @ref BPMNOS::Model::ExpectedValueDataProvider "expected value data provider"
 The expected value data provider accepts CSV files with 3, 4, or 6 columns:
 
 ```plaintext
-INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE; ARRIVAL; COMPLETION
+INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE; READY; COMPLETION
 ```
 
 ### Behavior
 
 - **DISCLOSURE**: Ignored. All values are disclosed at time 0.
-- **ARRIVAL**: Ignored. Not applicable for expected value computation.
+- **READY**: Ignored. Not applicable for expected value computation.
 - **COMPLETION**: Ignored. Operators can be used to compute expected values during execution.
 - **Random functions**: Return expected values instead of sampling.
 
@@ -318,7 +318,7 @@ INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE; ARRIVAL; COMPLETION
 ### Example
 
 ```plaintext
-INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE; ARRIVAL; COMPLETION
+INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE; READY; COMPLETION
 Instance_1; Process_1; timestamp := 0; ; ;
 Instance_1; Activity_1; duration := uniform(8, 12); ; ;
 ```

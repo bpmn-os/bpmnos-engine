@@ -36,7 +36,7 @@ public:
   std::optional<BPMNOS::Values> getActivityReadyStatus(BPMNOS::number instanceId, const BPMN::Node* activity, BPMNOS::number currentTime) const override;
 
 
-  void noticeActivityArrival( BPMNOS::number instanceId, const BPMN::Node* node, const Values& status, const SharedValues& data, const Values& globals ) const override;
+  void noticeReadyPending( BPMNOS::number instanceId, const BPMN::Node* node, const Values& status, const SharedValues& data, const Values& globals ) const override;
 
 protected:
   Values getKnownInitialStatus(const InstanceData*, const BPMNOS::number time) const override;

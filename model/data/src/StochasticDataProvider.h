@@ -70,11 +70,11 @@ protected:
   /// Deferred attributes (evaluated per-scenario)
   std::unordered_map<size_t, std::vector<DeferredAttribute>> deferredAttributes;
 
-  /// Arrival expressions per (instance, node)
-  std::unordered_map<size_t, std::unordered_map<const BPMN::Node*, std::vector<ArrivalExpression>>> arrivalExpressions;
+  /// Ready expressions per (instance, node)
+  std::unordered_map<size_t, std::unordered_map<const BPMN::Node*, std::vector<std::unique_ptr<Expression>>>> readyExpressions;
 
   /// Completion expressions per (instance, node)
-  std::unordered_map<size_t, std::unordered_map<const BPMN::Node*, std::vector<CompletionExpression>>> completionExpressions;
+  std::unordered_map<size_t, std::unordered_map<const BPMN::Node*, std::vector<std::unique_ptr<Expression>>>> completionExpressions;
 
   /// Node disclosure times
   std::unordered_map<size_t, std::unordered_map<const BPMN::Node*, BPMNOS::number>> disclosure;

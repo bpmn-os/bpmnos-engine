@@ -13,11 +13,11 @@ namespace BPMNOS::Model {
  * ExpectedValueDataProvider accepts CSV files with 3, 4, or 6 columns:
  * - 3-column: INSTANCE_ID; NODE_ID; INITIALIZATION
  * - 4-column: INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE
- * - 6-column: INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE; ARRIVAL; COMPLETION
+ * - 6-column: INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE; READY; COMPLETION
  *
  * Behavior:
  * - DISCLOSURE column is ignored (all values disclosed at time 0)
- * - ARRIVAL column is ignored (not applicable for expected value computation)
+ * - READY column is ignored (not applicable for expected value computation)
  * - COMPLETION column is ignored (operators can be used to compute expected values)
  * - Random functions in INITIALIZATION return expected values instead of sampling
  */

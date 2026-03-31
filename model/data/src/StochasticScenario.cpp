@@ -35,12 +35,12 @@ void StochasticScenario::addPendingDisclosure(const BPMNOS::number instanceId, S
   pendingDisclosures[(size_t)instanceId].push_back(std::move(pending));
 }
 
-void StochasticScenario::addCompletionExpression(const BPMNOS::number instanceId, const BPMN::Node* task, CompletionExpression&& expr) {
-  completionExpressions[(size_t)instanceId][task].push_back(std::move(expr));
+void StochasticScenario::addCompletionExpression(const BPMNOS::number instanceId, const BPMN::Node* task, std::unique_ptr<Expression> expression) {
+  completionExpressions[(size_t)instanceId][task].push_back(std::move(expression));
 }
 
-void StochasticScenario::addArrivalExpression(const BPMNOS::number instanceId, const BPMN::Node* node, ArrivalExpression&& expr) {
-  arrivalExpressions[(size_t)instanceId][node].push_back(std::move(expr));
+void StochasticScenario::addReadyExpression(const BPMNOS::number instanceId, const BPMN::Node* node, std::unique_ptr<Expression> expression) {
+  readyExpressions[(size_t)instanceId][node].push_back(std::move(expression));
 }
 
 void StochasticScenario::addDeferredDisclosure(const BPMNOS::number instanceId, DeferredDisclosure&& deferred) {
@@ -118,7 +118,7 @@ void StochasticScenario::evaluateDeferredDisclosures() {
   deferredDisclosures.clear();
 }
 
-void StochasticScenario::noticeActivityArrival(BPMNOS::number instanceId, const BPMN::Node* node, const Values& status, const SharedValues& data, const Values& globals) const {
+void StochasticScenario::noticeReadyPending(BPMNOS::number instanceId, const BPMN::Node* node, const Values& status, const SharedValues& data, const Values& globals) const {
   initializeActivityData(instanceId, node, status, data, globals);
 }
 
@@ -134,23 +134,21 @@ void StochasticScenario::initializeActivityData(BPMNOS::number instanceId, const
     fullStatus.push_back(getValue(&instance, attribute.get(), 0));
   }
 
-  // Apply arrival expressions if any
-  if (arrivalExpressions.contains(id) && arrivalExpressions.at(id).contains(node)) {
-    auto& nodeArrivalExpressions = arrivalExpressions.at(id).at(node);
-
+  // Apply ready expressions if any
+  if (readyExpressions.contains(id) && readyExpressions.at(id).contains(node)) {
     // Set RNG context for random functions
     auto& randomGenerator = getRng(id, node);
     if (randomFactory) {
       randomFactory->setCurrentRng(&randomGenerator);
     }
 
-    // Evaluate arrival expressions and apply to full status
-    for (auto& arrivalExpression : nodeArrivalExpressions) {
-      auto value = arrivalExpression.expression->execute(fullStatus, data, globals);
-      if (value.has_value() && arrivalExpression.attribute) {
+    // Evaluate ready expressions and apply to full status
+    for (auto& expression : readyExpressions.at(id).at(node)) {
+      auto value = expression->execute(fullStatus, data, globals);
+      if (value.has_value() && expression->target) {
         // Apply type conversion
         BPMNOS::number convertedValue;
-        switch (arrivalExpression.attribute->type) {
+        switch (expression->target.value()->type) {
           case ValueType::INTEGER:
             convertedValue = BPMNOS::number((int)value.value());
             break;
@@ -162,7 +160,7 @@ void StochasticScenario::initializeActivityData(BPMNOS::number instanceId, const
             break;
         }
         // Update full status at attribute's index
-        fullStatus[arrivalExpression.attribute->index] = convertedValue;
+        fullStatus[expression->target.value()->index] = convertedValue;
       }
     }
 
@@ -325,7 +323,7 @@ std::optional<BPMNOS::Values> StochasticScenario::getData(const BPMNOS::number i
   return result;
 }
 
-void StochasticScenario::noticeRunningTask(BPMNOS::number instanceId, const BPMN::Node* task, const Values& status, const SharedValues& data, const Values& globals) const {
+void StochasticScenario::noticeCompletionPending(BPMNOS::number instanceId, const BPMN::Node* task, const Values& status, const SharedValues& data, const Values& globals) const {
   setTaskCompletionStatus(instanceId, task, status, data, globals);
 }
 
@@ -348,12 +346,12 @@ void StochasticScenario::setTaskCompletionStatus(BPMNOS::number instanceId, cons
     }
 
     // Evaluate completion expressions and update status
-    for (auto& completionExpression : taskCompletionExpressions) {
-      auto value = completionExpression.expression->execute(modifiedStatus, data, globals);
-      if (value.has_value() && completionExpression.attribute) {
+    for (auto& expression : taskCompletionExpressions) {
+      auto value = expression->execute(modifiedStatus, data, globals);
+      if (value.has_value() && expression->target) {
         // Apply type conversion
         BPMNOS::number convertedValue;
-        switch (completionExpression.attribute->type) {
+        switch (expression->target.value()->type) {
           case ValueType::INTEGER:
             convertedValue = BPMNOS::number((int)value.value());
             break;
@@ -365,7 +363,7 @@ void StochasticScenario::setTaskCompletionStatus(BPMNOS::number instanceId, cons
             break;
         }
         // Update status at attribute's index
-        modifiedStatus[completionExpression.attribute->index] = convertedValue;
+        modifiedStatus[expression->target.value()->index] = convertedValue;
       }
     }
 
@@ -409,7 +407,7 @@ std::optional<BPMNOS::Values> StochasticScenario::getActivityReadyStatus(BPMNOS:
     }
   }
 
-  // Return stored arrival status
+  // Return stored ready status
   auto key = std::make_pair(id, activity);
   if (!activityArrivalStatus.contains(key)) {
     return std::nullopt;

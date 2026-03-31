@@ -182,7 +182,7 @@ void DynamicScenario::addPendingDisclosure(const BPMNOS::number instanceId, Pend
   pendingDisclosures[(size_t)instanceId].push_back(std::move(pending));
 }
 
-void DynamicScenario::noticeActivityArrival(
+void DynamicScenario::noticeReadyPending(
     BPMNOS::number instanceId,
     const BPMN::Node* node,
     const Values& status,

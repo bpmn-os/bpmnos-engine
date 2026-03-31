@@ -61,7 +61,7 @@ void StochasticDataProvider::readInstances() {
   }
 
   // Column indices
-  enum { INSTANCE_ID, NODE_ID, INITIALIZATION, DISCLOSURE, ARRIVAL, COMPLETION };
+  enum { INSTANCE_ID, NODE_ID, INITIALIZATION, DISCLOSURE, READY, COMPLETION };
 
   for (auto& row : table | std::views::drop(1)) {
     if (row.empty()) {
@@ -98,13 +98,13 @@ void StochasticDataProvider::readInstances() {
       disclosureExpression = std::get<std::string>(row.at(DISCLOSURE));
     }
 
-    // Get arrival (if 6 columns)
-    std::string arrivalExpression;
+    // Get ready (if 6 columns)
+    std::string readyExpression;
     if (columnCount == 6) {
-      if (!std::holds_alternative<std::string>(row.at(ARRIVAL))) {
-        throw std::runtime_error("StochasticDataProvider: illegal arrival");
+      if (!std::holds_alternative<std::string>(row.at(READY))) {
+        throw std::runtime_error("StochasticDataProvider: illegal ready");
       }
-      arrivalExpression = std::get<std::string>(row.at(ARRIVAL));
+      readyExpression = std::get<std::string>(row.at(READY));
     }
 
     // Get completion (if 6 columns)
@@ -121,8 +121,8 @@ void StochasticDataProvider::readInstances() {
       if (!disclosureExpression.empty()) {
         throw std::runtime_error("StochasticDataProvider: global attributes must not have disclosure");
       }
-      if (!arrivalExpression.empty()) {
-        throw std::runtime_error("StochasticDataProvider: global attributes must not have arrival");
+      if (!readyExpression.empty()) {
+        throw std::runtime_error("StochasticDataProvider: global attributes must not have ready");
       }
       if (!completionExpression.empty()) {
         throw std::runtime_error("StochasticDataProvider: global attributes must not have completion");
@@ -167,19 +167,18 @@ void StochasticDataProvider::readInstances() {
           throw std::runtime_error("StochasticDataProvider: node '" + nodeId + "' has no attribute '" + attributeName + "'");
         }
 
-        auto attribute = extensionElements->attributeRegistry[attributeName];
-        auto expression = std::make_unique<Expression>(stochasticHandle, expressionString,
+        auto expression = std::make_unique<Expression>(stochasticHandle, completionExpression,
                                                        extensionElements->attributeRegistry);
-        completionExpressions[instanceId][node].push_back({attribute, std::move(expression)});
+        completionExpressions[instanceId][node].push_back(std::move(expression));
       }
 
-      // Handle ARRIVAL expression (valid for all Activity types)
-      if (!arrivalExpression.empty()) {
+      // Handle READY expression (valid for all Activity types)
+      if (!readyExpression.empty()) {
         if (!node->represents<BPMN::Activity>()) {
-          throw std::runtime_error("StochasticDataProvider: '" + nodeId + "' is not an activity (arrival expressions are only allowed for activities)");
+          throw std::runtime_error("StochasticDataProvider: '" + nodeId + "' is not an activity (ready expressions are only allowed for activities)");
         }
 
-        auto [attributeName, expressionString] = DataProvider::parseInitialization(arrivalExpression);
+        auto [attributeName, expressionString] = DataProvider::parseInitialization(readyExpression);
         auto extensionElements = node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
         if (!extensionElements->attributeRegistry.contains(attributeName)) {
           throw std::runtime_error("StochasticDataProvider: node '" + nodeId + "' has no attribute '" + attributeName + "'");
@@ -187,12 +186,12 @@ void StochasticDataProvider::readInstances() {
 
         auto attribute = extensionElements->attributeRegistry[attributeName];
         if (attribute->expression) {
-          throw std::runtime_error("StochasticDataProvider: illegal arrival expression for attribute '" + attributeName + "' (value is set by model expression)");
+          throw std::runtime_error("StochasticDataProvider: illegal ready expression for attribute '" + attributeName + "' (value is set by model expression)");
         }
 
-        auto expression = std::make_unique<Expression>(stochasticHandle, expressionString,
+        auto expression = std::make_unique<Expression>(stochasticHandle, readyExpression,
                                                        extensionElements->attributeRegistry);
-        arrivalExpressions[instanceId][node].push_back({attribute, std::move(expression)});
+        readyExpressions[instanceId][node].push_back(std::move(expression));
       }
 
       // Handle INITIALIZATION
@@ -317,24 +316,24 @@ std::unique_ptr<Scenario> StochasticDataProvider::createScenario(unsigned int sc
       for (auto& sourceExpression : expressions) {
         auto expression = std::make_unique<Expression>(
           stochasticHandle,
-          sourceExpression.expression->expression,
-          sourceExpression.expression->attributeRegistry
+          sourceExpression->expression,
+          sourceExpression->attributeRegistry
         );
-        scenario->addCompletionExpression(instanceId, task, {sourceExpression.attribute, std::move(expression)});
+        scenario->addCompletionExpression(instanceId, task, std::move(expression));
       }
     }
   }
 
-  // Add arrival expressions
-  for (auto& [instanceId, nodes] : arrivalExpressions) {
+  // Add ready expressions
+  for (auto& [instanceId, nodes] : readyExpressions) {
     for (auto& [node, expressions] : nodes) {
       for (auto& sourceExpression : expressions) {
         auto expression = std::make_unique<Expression>(
           stochasticHandle,
-          sourceExpression.expression->expression,
-          sourceExpression.expression->attributeRegistry
+          sourceExpression->expression,
+          sourceExpression->attributeRegistry
         );
-        scenario->addArrivalExpression(instanceId, node, {sourceExpression.attribute, std::move(expression)});
+        scenario->addReadyExpression(instanceId, node, std::move(expression));
       }
     }
   }

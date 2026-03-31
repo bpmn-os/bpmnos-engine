@@ -25,26 +25,6 @@ struct StochasticPendingDisclosure {
 };
 
 /**
- * @brief Structure representing an arrival expression.
- *
- * Stores the compiled expression to evaluate when a token arrives at an activity.
- */
-struct ArrivalExpression {
-  const Attribute* attribute;              ///< The attribute to initialize
-  std::unique_ptr<Expression> expression;  ///< Compiled expression to evaluate at arrival time
-};
-
-/**
- * @brief Structure representing a completion expression.
- *
- * Stores the compiled expression to evaluate when a task completes.
- */
-struct CompletionExpression {
-  const Attribute* attribute;              ///< The attribute to update
-  std::unique_ptr<Expression> expression;  ///< Compiled expression to evaluate at completion time
-};
-
-/**
  * @brief Structure representing a deferred disclosure.
  *
  * Stores expression strings to be evaluated per-scenario for independent sampling.
@@ -97,10 +77,10 @@ public:
   /**
    * @brief Make scenario aware of a token arriving at an activity.
    *
-   * Evaluates ARRIVAL expressions using the parent scope's context and stores
+   * Evaluates READY expressions using the parent scope's context and stores
    * the computed values.
    */
-  void noticeActivityArrival( BPMNOS::number instanceId, const BPMN::Node* node, const Values& status, const SharedValues& data, const Values& globals ) const override;
+  void noticeReadyPending( BPMNOS::number instanceId, const BPMN::Node* node, const Values& status, const SharedValues& data, const Values& globals ) const override;
 
   /**
    * @brief Make scenario aware of a task entering BUSY state.
@@ -108,7 +88,7 @@ public:
    * Evaluates COMPLETION expressions immediately and stores the final result.
    * Uses per-(instance, node) RNG for reproducibility.
    */
-  void noticeRunningTask(BPMNOS::number instanceId, const BPMN::Node* task, const Values& status, const SharedValues& data,     const Values& globals) const override;
+  void noticeCompletionPending(BPMNOS::number instanceId, const BPMN::Node* task, const Values& status, const SharedValues& data,     const Values& globals) const override;
 
   void revealData(BPMNOS::number currentTime) const;
 
@@ -125,8 +105,8 @@ protected:
   void setValue(const BPMNOS::number instanceId, const Attribute* attribute, std::optional<BPMNOS::number> value);
   void setDisclosure(const BPMNOS::number instanceId, const BPMN::Node* node, BPMNOS::number disclosureTime);
   void addPendingDisclosure(const BPMNOS::number instanceId, StochasticPendingDisclosure&& pending);
-  void addCompletionExpression(const BPMNOS::number instanceId, const BPMN::Node* task, CompletionExpression&& expr);
-  void addArrivalExpression(const BPMNOS::number instanceId, const BPMN::Node* node, ArrivalExpression&& expr);
+  void addCompletionExpression(const BPMNOS::number instanceId, const BPMN::Node* task, std::unique_ptr<Expression> expression);
+  void addReadyExpression(const BPMNOS::number instanceId, const BPMN::Node* node, std::unique_ptr<Expression> expression);
   void addDeferredDisclosure(const BPMNOS::number instanceId, DeferredDisclosure&& deferred);
 
   /// Evaluate all deferred disclosures using scenario-specific RNG
@@ -140,11 +120,11 @@ protected:
   mutable std::unordered_map<size_t, std::vector<StochasticPendingDisclosure>> pendingDisclosures; ///< Instance ID -> pending disclosures
   mutable std::set<std::pair<size_t, const Attribute*>> disclosedAttributes; ///< Track which attributes have been disclosed
 
-  /// Arrival expressions per (instance, node)
-  std::unordered_map<size_t, std::unordered_map<const BPMN::Node*, std::vector<ArrivalExpression>>> arrivalExpressions;
+  /// Ready expressions per (instance, node)
+  std::unordered_map<size_t, std::unordered_map<const BPMN::Node*, std::vector<std::unique_ptr<Expression>>>> readyExpressions;
 
   /// Completion expressions per (instance, node)
-  std::unordered_map<size_t, std::unordered_map<const BPMN::Node*, std::vector<CompletionExpression>>> completionExpressions;
+  std::unordered_map<size_t, std::unordered_map<const BPMN::Node*, std::vector<std::unique_ptr<Expression>>>> completionExpressions;
 
   /// Deferred disclosures per instance (evaluated per-scenario)
   std::unordered_map<size_t, std::vector<DeferredDisclosure>> deferredDisclosures;

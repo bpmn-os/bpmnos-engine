@@ -62,7 +62,7 @@ void ExpectedValueDataProvider::readInstances() {
   if (columnCount == 3 || columnCount == 4 || columnCount == 6) {
     // 3-column: INSTANCE_ID, NODE_ID, INITIALIZATION
     // 4-column: + DISCLOSURE (ignored)
-    // 6-column: + ARRIVAL, COMPLETION (ignored)
+    // 6-column: + READY, COMPLETION (ignored)
     readInstancesExtendedFormat(table, columnCount);
   }
   else {
@@ -85,9 +85,9 @@ void ExpectedValueDataProvider::readInstances() {
 }
 
 void ExpectedValueDataProvider::readInstancesExtendedFormat(const CSVReader::Table& table, size_t columnCount) {
-  // Column indices: INSTANCE_ID(0), NODE_ID(1), INITIALIZATION(2), [DISCLOSURE(3)], [ARRIVAL(4), COMPLETION(5)]
+  // Column indices: INSTANCE_ID(0), NODE_ID(1), INITIALIZATION(2), [DISCLOSURE(3)], [READY(4), COMPLETION(5)]
   // For 3-column format, only first 3 columns exist
-  enum { INSTANCE_ID, NODE_ID, INITIALIZATION, DISCLOSURE, ARRIVAL, COMPLETION };
+  enum { INSTANCE_ID, NODE_ID, INITIALIZATION, DISCLOSURE, READY, COMPLETION };
 
   for (auto& row : table | std::views::drop(1)) {
     if (row.empty()) continue;
@@ -114,7 +114,7 @@ void ExpectedValueDataProvider::readInstancesExtendedFormat(const CSVReader::Tab
     std::string initialization = std::get<std::string>(row.at(INITIALIZATION));
 
     // DISCLOSURE column is ignored (index 3) - all data disclosed at time 0
-    // ARRIVAL column is ignored (index 4) - not applicable for expected value computation
+    // READY column is ignored (index 4) - not applicable for expected value computation
     // COMPLETION column is ignored (index 5) - operators can be used to compute expected values
 
     if (instanceIdentifier.empty() && nodeId.empty()) {

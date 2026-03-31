@@ -98,7 +98,7 @@ public:
    * @param data Parent scope's data attributes.
    * @param globals Global attributes.
    */
-  virtual void noticeActivityArrival(
+  virtual void noticeReadyPending(
     [[maybe_unused]] BPMNOS::number instanceId,
     [[maybe_unused]] const BPMN::Node* node,
     [[maybe_unused]] const Values& status,
@@ -115,7 +115,7 @@ public:
    * @param data The current data values.
    * @param globals Global attributes.
    */
-  virtual void noticeRunningTask(BPMNOS::number instanceId, const BPMN::Node* task, const Values& status, [[maybe_unused]] const SharedValues& data, [[maybe_unused]] const Values& globals ) const {
+  virtual void noticeCompletionPending(BPMNOS::number instanceId, const BPMN::Node* task, const Values& status, [[maybe_unused]] const SharedValues& data, [[maybe_unused]] const Values& globals ) const {
     taskCompletionStatus[{(size_t)instanceId, task}] = status;
   }
 

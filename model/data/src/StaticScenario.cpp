@@ -135,7 +135,7 @@ std::optional<BPMNOS::Values> StaticScenario::getData(const BPMNOS::number insta
   return result;
 }
 
-void StaticScenario::noticeActivityArrival(
+void StaticScenario::noticeReadyPending(
     BPMNOS::number instanceId,
     const BPMN::Node* node,
     const Values& status,
