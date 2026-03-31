@@ -746,7 +746,15 @@ void Token::advanceToCompleted() {
         else {
           owner->systemState->engine->notify( DataUpdate( owner->root->instance.value(), extensionElements->dataUpdate.attributes ) );
         }
+        // get final task completion status
+        auto scenario = owner->systemState->scenario;
+        status = scenario->getTaskCompletionStatus(owner->root->instance.value(),node,status,*data,globals);
       }
+    }
+    else if ( node->represents<BPMN::SendTask>() ) {
+      // get final task completion status
+      auto scenario = owner->systemState->scenario;
+      status = scenario->getTaskCompletionStatus(owner->root->instance.value(),node,status,*data,globals);
     }
     // operators of event subprocesses are applied on completion of typed start event
     else if ( node->represents<BPMN::TypedStartEvent>() ) {

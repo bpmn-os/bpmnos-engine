@@ -184,9 +184,6 @@ void Engine::process(const ChoiceEvent* event) {
     extensionElements->attributeRegistry.setValue( extensionElements->choices[i]->attribute, token->status, *token->data, token->globals, event->choices[i] );
   }
 
-  // get final task completion status
-  auto scenario = token->owner->systemState->scenario;
-  token->status = scenario->getTaskCompletionStatus(token->owner->root->instance.value(),token->node,token->status,*token->data,token->globals);
   commands.emplace_back(std::bind(&Token::advanceToCompleted,token), token);
 }
 
@@ -216,22 +213,12 @@ void Engine::process(const MessageDeliveryEvent* event) {
   notify(message);
   
   erase_ptr<Message>(systemState->messages,message);
-  auto scenario = token->owner->systemState->scenario;
 
   if ( message->waitingToken ) {
-    auto waitingToken = message->waitingToken;
     // send task is completed
     systemState->messageAwaitingDelivery.erase( message->waitingToken );
-    // get final task completion status
-    waitingToken->status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = systemState->currentTime;
-    waitingToken->status = scenario->getTaskCompletionStatus(waitingToken->owner->root->instance.value(),waitingToken->node,waitingToken->status,*waitingToken->data,token->globals);
     commands.emplace_back(std::bind(&Token::advanceToCompleted,message->waitingToken), message->waitingToken);
-  }
-  
-  if ( token->node->represents<BPMN::ReceiveTask>() ) {
-    //get final task completion status
-    token->status = scenario->getTaskCompletionStatus(token->owner->root->instance.value(),token->node,token->status,*token->data,token->globals);
-  }
+  }  
   commands.emplace_back(std::bind(&Token::advanceToCompleted,token), token);
 }
 

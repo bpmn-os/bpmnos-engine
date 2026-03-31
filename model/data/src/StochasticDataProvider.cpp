@@ -152,16 +152,20 @@ void StochasticDataProvider::readInstances() {
 
       auto& instance = instances[instanceId];
 
-      // Handle COMPLETION expression (only valid for Tasks, not SendTask/ReceiveTask/DecisionTask)
+      // Handle COMPLETION expression (valid for all Task types)
       if (!completionExpression.empty()) {
-        if (!node->represents<BPMN::Task>() ||
-            node->represents<BPMN::SendTask>() ||
-            node->represents<BPMN::ReceiveTask>() ||
-            node->represents<DecisionTask>()) {
-          throw std::runtime_error("StochasticDataProvider: '" + nodeId + "' is not a task (completion expressions are only allowedfor tasks)");
+        if (!node->represents<BPMN::Task>()) {
+          throw std::runtime_error("StochasticDataProvider: completion expressions are not allowed for node '" + nodeId + "'");
         }
 
         auto [attributeName, expressionString] = DataProvider::parseInitialization(completionExpression);
+        // For SendTask, ReceiveTask, DecisionTask: timestamp must not be modified (completion time is event-driven)
+        if (attributeName == Keyword::Timestamp &&
+            (node->represents<BPMN::SendTask>() ||
+             node->represents<BPMN::ReceiveTask>() ||
+             node->represents<DecisionTask>())) {
+          throw std::runtime_error("StochasticDataProvider: completion expression must not modify timestamp for '" + nodeId + "'");
+        }
         auto extensionElements = node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
         if (!extensionElements->attributeRegistry.contains(attributeName)) {
           throw std::runtime_error("StochasticDataProvider: node '" + nodeId + "' has no attribute '" + attributeName + "'");

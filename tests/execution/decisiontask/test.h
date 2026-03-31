@@ -108,4 +108,45 @@ SCENARIO( "Decision task with bounds", "[execution][decisiontask]" ) {
       }
     }
   }
+
+  GIVEN( "A stochastic instance with init, disclosure, ready, and completion" ) {
+
+    std::string csv =
+      "INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE; READY; COMPLETION\n"
+      "Instance_1; Process_1;;;;\n"
+      "Instance_1; Activity_1; square := triangular(0,0,0); triangular(5,5,5); square := triangular(2,2,2); square := 2 * choice\n"
+    ;
+
+    Model::StochasticDataProvider dataProvider(modelFile,csv);
+    auto scenario = dataProvider.createScenario();
+
+    WHEN( "The engine is started with a recorder" ) {
+      Execution::Engine engine;
+      Execution::InstantEntry entryHandler;
+      Execution::InstantExit exitHandler;
+      Execution::LocalEvaluator evaluator;
+      Execution::BestEnumeratedChoice choiceHandler(&evaluator);
+      Execution::TimeWarp timeHandler;
+      entryHandler.connect(&engine);
+      exitHandler.connect(&engine);
+      choiceHandler.connect(&engine);
+      timeHandler.connect(&engine);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
+      recorder.subscribe(&engine);
+
+      engine.run(scenario.get());
+
+      THEN( "The ready expression is applied" ) {
+        auto activityLog = recorder.find(nlohmann::json{{"nodeId","Activity_1" },{"state","READY"}});
+        REQUIRE( activityLog[0]["status"]["timestamp"] == 5 );
+        REQUIRE( activityLog[0]["status"]["square"] == 2 );
+      }
+      THEN( "The completion expression is applied" ) {
+        auto activityLog = recorder.find(nlohmann::json{{"nodeId","Activity_1" },{"state","COMPLETED"}});
+        REQUIRE( activityLog[0]["status"]["choice"] == -1 );
+        REQUIRE( activityLog[0]["status"]["square"] == -2 );
+      }
+    }
+  }
 }
