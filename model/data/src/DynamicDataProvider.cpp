@@ -144,9 +144,21 @@ void DynamicDataProvider::readInstances() {
   for (auto& [id, instance] : instances) {
     // ensure that default attributes are available
     ensureDefaultValue(instance, Keyword::Instance, id);
+
+    // If timestamp was deferred, use the deferred value for instantiation
+    auto timestampAttribute = attributes[instance.process][Keyword::Timestamp];
+    if (deferredInitializations.contains(id)) {
+      for (auto& pending : deferredInitializations[id]) {
+        if (pending.attribute == timestampAttribute) {
+          instance.data[timestampAttribute] = pending.value;
+          break;
+        }
+      }
+    }
+
     ensureDefaultValue(instance, Keyword::Timestamp);
     // set time of instantiation
-    instance.instantiation = instance.data.at( attributes[instance.process][Keyword::Timestamp] );
+    instance.instantiation = instance.data.at(timestampAttribute);
 
     // Effective instantiation time is max(instantiation, processDisclosure)
     BPMNOS::number effectiveInstantiation = instance.instantiation;

@@ -83,11 +83,11 @@ SCENARIO( "Trivial executable process", "[execution][process]" ) {
 SCENARIO( "Simple executable process", "[execution][process]" ) {
   const std::string modelFile = "tests/execution/process/Simple_executable_process.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
-  GIVEN( "A single instance with no input values" ) {
+  GIVEN( "A static instance with timestamp initialization" ) {
 
     std::string csv =
       "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
-      "Instance_1; Process_1;\n"
+      "Instance_1; Process_1; timestamp := 5\n"
     ;
 
     Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -112,6 +112,7 @@ SCENARIO( "Simple executable process", "[execution][process]" ) {
       THEN( "The dump of each entry of the recorder log is correct" ) {
         auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr }, {"event",nullptr },{"decision",nullptr }});
         REQUIRE( processLog[0]["state"] == "ENTERED" );
+        REQUIRE( processLog[0]["status"]["timestamp"] == 5.0);
         REQUIRE( processLog[1]["state"] == "BUSY" );
         REQUIRE( processLog[2]["state"] == "COMPLETED" );
         REQUIRE( processLog[3]["state"] == "DONE" );
@@ -133,6 +134,98 @@ SCENARIO( "Simple executable process", "[execution][process]" ) {
         REQUIRE( endLog[0]["state"] == "ARRIVED" );
         REQUIRE( endLog[1]["state"] == "ENTERED" );
         REQUIRE( endLog[2]["state"] == "DONE" );
+      }
+    }
+  }
+  
+  GIVEN( "A dynamic instance with deferred timestamp disclosure" ) {
+
+    std::string csv =
+      "INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE\n"
+      "Instance_1; Process_1; timestamp := 10; 5\n"
+    ;
+
+    Model::DynamicDataProvider dataProvider(modelFile,csv);
+    auto scenario = dataProvider.createScenario();
+
+    WHEN( "The engine is started" ) {
+      Execution::Engine engine;
+      Execution::InstantEntry entryHandler;
+      Execution::InstantExit exitHandler;
+      Execution::TimeWarp timeHandler;
+      entryHandler.connect(&engine);
+      exitHandler.connect(&engine);
+      timeHandler.connect(&engine);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
+      recorder.subscribe(&engine);
+      engine.run(scenario.get());
+      THEN( "The start is deferred correctly" ) {
+        auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr }, {"event",nullptr },{"decision",nullptr }});
+        REQUIRE( processLog[0]["state"] == "ENTERED" );
+        REQUIRE( processLog[0]["status"]["timestamp"] == 10.0);
+      }
+    }
+  }
+
+  GIVEN( "A stochastic instance with deferred timestamp disclosure" ) {
+
+    std::string csv =
+      "INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE\n"
+      "Instance_1; Process_1; timestamp := triangular(10,10,10); triangular(5,5,5)\n"
+    ;
+
+    Model::StochasticDataProvider dataProvider(modelFile,csv);
+    auto scenario = dataProvider.createScenario();
+
+    WHEN( "The engine is started" ) {
+      Execution::Engine engine;
+      Execution::InstantEntry entryHandler;
+      Execution::InstantExit exitHandler;
+      Execution::TimeWarp timeHandler;
+      entryHandler.connect(&engine);
+      exitHandler.connect(&engine);
+      timeHandler.connect(&engine);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
+      recorder.subscribe(&engine);
+      engine.run(scenario.get());
+      
+      THEN( "The start is deferred correctly" ) {
+        auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr }, {"event",nullptr },{"decision",nullptr }});
+        REQUIRE( processLog[0]["state"] == "ENTERED" );
+        REQUIRE( processLog[0]["status"]["timestamp"] == 10.0);
+      }
+    }
+  }
+
+  GIVEN( "A expected value instance with deferred timestamp disclosure" ) {
+
+    std::string csv =
+      "INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE\n"
+      "Instance_1; Process_1; timestamp := triangular(10,10,10); triangular(5,5,5)\n"
+    ;
+
+    Model::ExpectedValueDataProvider dataProvider(modelFile,csv);
+    auto scenario = dataProvider.createScenario();
+
+    WHEN( "The engine is started" ) {
+      Execution::Engine engine;
+      Execution::InstantEntry entryHandler;
+      Execution::InstantExit exitHandler;
+      Execution::TimeWarp timeHandler;
+      entryHandler.connect(&engine);
+      exitHandler.connect(&engine);
+      timeHandler.connect(&engine);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
+      recorder.subscribe(&engine);
+      engine.run(scenario.get());
+      
+      THEN( "The start is deferred correctly" ) {
+        auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr }, {"event",nullptr },{"decision",nullptr }});
+        REQUIRE( processLog[0]["state"] == "ENTERED" );
+        REQUIRE( processLog[0]["status"]["timestamp"] == 10.0);
       }
     }
   }

@@ -49,4 +49,101 @@ SCENARIO( "Task with linear expression incrementing timestamp", "[execution][tas
       }
     }
   }
+
+  GIVEN( "A stochastic instance with ready and completion expression" ) {
+
+    std::string csv =
+      "INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE; READY; COMPLETION\n"
+      "Instance_1; Process_1;;;;\n"
+      "Instance_1; Activity_1;;; timestamp := triangular(5,5,5); timestamp := triangular(10,10,10)\n"
+    ;
+    Model::StochasticDataProvider dataProvider(modelFile,csv);
+    auto scenario = dataProvider.createScenario();
+      Execution::Engine engine;
+      Execution::InstantEntry entryHandler;
+      Execution::InstantExit exitHandler;
+      Execution::TimeWarp timeHandler;
+      entryHandler.connect(&engine);
+      exitHandler.connect(&engine);
+      timeHandler.connect(&engine);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
+      recorder.subscribe(&engine);
+      engine.run(scenario.get());
+      auto tokenLog = recorder.find(nlohmann::json{}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
+      THEN( "The token log has exactly 16 entries" ) {
+        REQUIRE( tokenLog.size() == 16 );
+      }
+      THEN( "The dump of each entry of the token log is correct" ) {
+        auto activityLog = recorder.find(nlohmann::json{{"nodeId","Activity_1" }}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
+        REQUIRE( activityLog[0]["state"] == "ARRIVED" );
+        REQUIRE( activityLog[0]["status"]["timestamp"] == 0.0);
+        REQUIRE( activityLog[1]["state"] == "READY" );
+        REQUIRE( activityLog[1]["status"]["timestamp"] == 5.0);
+        REQUIRE( activityLog[2]["state"] == "ENTERED" );
+        REQUIRE( activityLog[2]["status"]["timestamp"] == 5.0);
+        REQUIRE( activityLog[3]["state"] == "BUSY" );
+        REQUIRE( activityLog[3]["status"]["timestamp"] == 6.0);
+        REQUIRE( activityLog[4]["state"] == "COMPLETED" );
+        REQUIRE( activityLog[4]["status"]["timestamp"] == 10.0);
+        REQUIRE( activityLog[5]["state"] == "EXITING" );
+        REQUIRE( activityLog[6]["state"] == "DEPARTED" );
+
+        REQUIRE( activityLog.back()["instanceId"] == "Instance_1");
+        REQUIRE( activityLog.back()["processId"] == "Process_1");
+        REQUIRE( activityLog.back()["state"] == "DEPARTED");
+        REQUIRE( activityLog.back()["data"]["instance"] == "Instance_1");
+        REQUIRE( activityLog.back()["status"]["timestamp"] == 10.0);
+      }
+
+  }
+
+  GIVEN( "A expected value instance with ready and completion expression" ) {
+
+    std::string csv =
+      "INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE; READY; COMPLETION\n"
+      "Instance_1; Process_1;;;;\n"
+      "Instance_1; Activity_1;;; timestamp := triangular(5,5,5); timestamp := triangular(10,10,10)\n"
+    ;
+    Model::ExpectedValueDataProvider dataProvider(modelFile,csv);
+    auto scenario = dataProvider.createScenario();
+      Execution::Engine engine;
+      Execution::InstantEntry entryHandler;
+      Execution::InstantExit exitHandler;
+      Execution::TimeWarp timeHandler;
+      entryHandler.connect(&engine);
+      exitHandler.connect(&engine);
+      timeHandler.connect(&engine);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
+      recorder.subscribe(&engine);
+      engine.run(scenario.get());
+      auto tokenLog = recorder.find(nlohmann::json{}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
+      THEN( "The token log has exactly 16 entries" ) {
+        REQUIRE( tokenLog.size() == 16 );
+      }
+      THEN( "The dump of each entry of the token log is correct" ) {
+        auto activityLog = recorder.find(nlohmann::json{{"nodeId","Activity_1" }}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
+        REQUIRE( activityLog[0]["state"] == "ARRIVED" );
+        REQUIRE( activityLog[0]["status"]["timestamp"] == 0.0);
+        REQUIRE( activityLog[1]["state"] == "READY" );
+        REQUIRE( activityLog[1]["status"]["timestamp"] == 0.0);
+        REQUIRE( activityLog[2]["state"] == "ENTERED" );
+        REQUIRE( activityLog[2]["status"]["timestamp"] == 0.0);
+        REQUIRE( activityLog[3]["state"] == "BUSY" );
+        REQUIRE( activityLog[3]["status"]["timestamp"] == 1.0);
+        REQUIRE( activityLog[4]["state"] == "COMPLETED" );
+        REQUIRE( activityLog[4]["status"]["timestamp"] == 1.0);
+        REQUIRE( activityLog[5]["state"] == "EXITING" );
+        REQUIRE( activityLog[6]["state"] == "DEPARTED" );
+
+        REQUIRE( activityLog.back()["instanceId"] == "Instance_1");
+        REQUIRE( activityLog.back()["processId"] == "Process_1");
+        REQUIRE( activityLog.back()["state"] == "DEPARTED");
+        REQUIRE( activityLog.back()["data"]["instance"] == "Instance_1");
+        REQUIRE( activityLog.back()["status"]["timestamp"] == 1.0);
+      }
+
+  }
+
 }

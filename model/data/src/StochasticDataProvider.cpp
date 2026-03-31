@@ -199,21 +199,21 @@ void StochasticDataProvider::readInstances() {
         if (!disclosureExpression.empty()) {
           throw std::runtime_error("StochasticDataProvider: disclosure expression requires initialization expression in the same row");
         }
-        continue;
-      }
-
-      auto [attribute, expressionString] = lookupAttribute(node, initializationString);
-
-      if (disclosureExpression.empty()) {
-        // Immediate disclosure: evaluate and store value directly
-        BPMNOS::number value = evaluateExpression(instanceId, node, expressionString, attribute->type);
-        parseTimeEvaluatedValues[instanceId][attribute] = value;
-        instance.data[attribute] = value;
-        getEffectiveDisclosure(instanceId, node, 0);  // Update node disclosure tracking
       }
       else {
-        // Deferred disclosure: store expressions for per-scenario evaluation
-        deferredAttributes[instanceId].push_back({attribute, node, expressionString, disclosureExpression});
+        auto [attribute, expressionString] = lookupAttribute(node, initializationString);
+
+        if (disclosureExpression.empty()) {
+          // Immediate disclosure: evaluate and store value directly
+          BPMNOS::number value = evaluateExpression(instanceId, node, expressionString, attribute->type);
+          parseTimeEvaluatedValues[instanceId][attribute] = value;
+          instance.data[attribute] = value;
+          getEffectiveDisclosure(instanceId, node, 0);  // Update node disclosure tracking
+        }
+        else {
+          // Deferred disclosure: store expressions for per-scenario evaluation
+          deferredAttributes[instanceId].push_back({attribute, node, expressionString, disclosureExpression});
+        }
       }
     }
   }
@@ -221,8 +221,21 @@ void StochasticDataProvider::readInstances() {
   // Finalize instances
   for (auto& [id, instance] : instances) {
     ensureDefaultValue(instance, Keyword::Instance, id);
+
+    // If timestamp was deferred, evaluate and use the deferred value for instantiation
+    auto timestampAttribute = attributes[instance.process][Keyword::Timestamp];
+    if (deferredAttributes.contains(id)) {
+      for (auto& deferred : deferredAttributes[id]) {
+        if (deferred.attribute == timestampAttribute) {
+          BPMNOS::number value = evaluateExpression(id, deferred.node, deferred.initializationExpression, timestampAttribute->type);
+          instance.data[timestampAttribute] = value;
+          break;
+        }
+      }
+    }
+
     ensureDefaultValue(instance, Keyword::Timestamp);
-    instance.instantiation = instance.data.at(attributes[instance.process][Keyword::Timestamp]);
+    instance.instantiation = instance.data.at(timestampAttribute);
 
     BPMNOS::number effectiveInstantiation = instance.instantiation;
     if (disclosure.contains(id) && disclosure.at(id).contains(instance.process)) {

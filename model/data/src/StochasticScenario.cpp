@@ -413,5 +413,10 @@ std::optional<BPMNOS::Values> StochasticScenario::getActivityReadyStatus(BPMNOS:
     return std::nullopt;
   }
 
-  return activityArrivalStatus.at(key);
+  auto& status = activityArrivalStatus.at(key);
+  // Check if currentTime >= timestamp (like getTaskCompletionStatus)
+  if (currentTime >= status[ExtensionElements::Index::Timestamp]) {
+    return status;
+  }
+  return std::nullopt;
 }
