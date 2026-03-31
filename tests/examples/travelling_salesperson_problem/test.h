@@ -7,6 +7,7 @@ SCENARIO( "Travelling salesperson problem", "[examples][travelling_salesperson_p
 
     std::string csv =
       "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance1; TravellingSalesperson_Process; speed := 1\n"
       "Instance1; TravellingSalesperson_Process; origin := \"Hamburg\"\n"
       "Instance1; TravellingSalesperson_Process; locations := [\"Munich\",\"Berlin\",\"Cologne\"]\n"
     ;
