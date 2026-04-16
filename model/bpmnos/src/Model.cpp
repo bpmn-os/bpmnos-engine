@@ -76,8 +76,8 @@ std::unique_ptr<XML::XMLObject> Model::createRoot(const std::string& filename) {
           auto lookupTable = lookupTables.back().get();
           // register callable
           // TODO: should I use shared pointers?
-          limexHandle.add(
-            lookupTable->name, 
+          limexHandle.addFunction(
+            lookupTable->name,
             [lookupTable](const std::vector<double>& args)
             {
               return lookupTable->at(args);

@@ -24,7 +24,7 @@ void ExpectedValueDataProvider::initializeExpectedValueHandle() {
   // Copy lookup tables from model
   for (auto& lookupTable : model->lookupTables) {
     auto* table = lookupTable.get();
-    expectedValueHandle.add(table->name, [table](const std::vector<double>& args) {
+    expectedValueHandle.addFunction(table->name, [table](const std::vector<double>& args) {
       return table->at(args);
     });
   }

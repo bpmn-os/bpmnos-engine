@@ -6,14 +6,14 @@
 using namespace BPMNOS;
 
 void ExpectedValueFactory::registerFunctions(LIMEX::Handle<double>& handle) {
-  const auto& existingNames = handle.getNames();
   auto nameExists = [&](const std::string& name) {
-    return std::find(existingNames.begin(), existingNames.end(), name) != existingNames.end();
+    return std::ranges::contains(handle.getFunctionNames(), name) ||
+           std::ranges::contains(handle.getAggregatorNames(), name);
   };
 
   // uniform(min, max) - Expected value: (min + max) / 2
   if (!nameExists("uniform")) {
-    handle.add("uniform", [](const std::vector<double>& args) -> double {
+    handle.addFunction("uniform", [](const std::vector<double>& args) -> double {
       if (args.size() != 2) {
         throw std::runtime_error("uniform requires 2 arguments: min, max");
       }
@@ -23,7 +23,7 @@ void ExpectedValueFactory::registerFunctions(LIMEX::Handle<double>& handle) {
 
   // uniform_int(min, max) - Expected value: (min + max) / 2
   if (!nameExists("uniform_int")) {
-    handle.add("uniform_int", [](const std::vector<double>& args) -> double {
+    handle.addFunction("uniform_int", [](const std::vector<double>& args) -> double {
       if (args.size() != 2) {
         throw std::runtime_error("uniform_int requires 2 arguments: min, max");
       }
@@ -33,7 +33,7 @@ void ExpectedValueFactory::registerFunctions(LIMEX::Handle<double>& handle) {
 
   // normal(mean, stddev) - Expected value: mean
   if (!nameExists("normal")) {
-    handle.add("normal", [](const std::vector<double>& args) -> double {
+    handle.addFunction("normal", [](const std::vector<double>& args) -> double {
       if (args.size() != 2) {
         throw std::runtime_error("normal requires 2 arguments: mean, stddev");
       }
@@ -43,7 +43,7 @@ void ExpectedValueFactory::registerFunctions(LIMEX::Handle<double>& handle) {
 
   // exponential(rate) - Expected value: 1 / rate
   if (!nameExists("exponential")) {
-    handle.add("exponential", [](const std::vector<double>& args) -> double {
+    handle.addFunction("exponential", [](const std::vector<double>& args) -> double {
       if (args.size() != 1) {
         throw std::runtime_error("exponential requires 1 argument: rate");
       }
@@ -53,7 +53,7 @@ void ExpectedValueFactory::registerFunctions(LIMEX::Handle<double>& handle) {
 
   // poisson(mean) - Expected value: mean
   if (!nameExists("poisson")) {
-    handle.add("poisson", [](const std::vector<double>& args) -> double {
+    handle.addFunction("poisson", [](const std::vector<double>& args) -> double {
       if (args.size() != 1) {
         throw std::runtime_error("poisson requires 1 argument: mean");
       }
@@ -63,7 +63,7 @@ void ExpectedValueFactory::registerFunctions(LIMEX::Handle<double>& handle) {
 
   // bernoulli(p) - Expected value: p
   if (!nameExists("bernoulli")) {
-    handle.add("bernoulli", [](const std::vector<double>& args) -> double {
+    handle.addFunction("bernoulli", [](const std::vector<double>& args) -> double {
       if (args.size() != 1) {
         throw std::runtime_error("bernoulli requires 1 argument: probability");
       }
@@ -73,7 +73,7 @@ void ExpectedValueFactory::registerFunctions(LIMEX::Handle<double>& handle) {
 
   // binomial(n, p) - Expected value: n * p
   if (!nameExists("binomial")) {
-    handle.add("binomial", [](const std::vector<double>& args) -> double {
+    handle.addFunction("binomial", [](const std::vector<double>& args) -> double {
       if (args.size() != 2) {
         throw std::runtime_error("binomial requires 2 arguments: trials, probability");
       }
@@ -83,7 +83,7 @@ void ExpectedValueFactory::registerFunctions(LIMEX::Handle<double>& handle) {
 
   // gamma(shape, scale) - Expected value: shape * scale
   if (!nameExists("gamma")) {
-    handle.add("gamma", [](const std::vector<double>& args) -> double {
+    handle.addFunction("gamma", [](const std::vector<double>& args) -> double {
       if (args.size() != 2) {
         throw std::runtime_error("gamma requires 2 arguments: shape, scale");
       }
@@ -93,7 +93,7 @@ void ExpectedValueFactory::registerFunctions(LIMEX::Handle<double>& handle) {
 
   // lognormal(logscale, shape) - Expected value: exp(logscale + shape^2 / 2)
   if (!nameExists("lognormal")) {
-    handle.add("lognormal", [](const std::vector<double>& args) -> double {
+    handle.addFunction("lognormal", [](const std::vector<double>& args) -> double {
       if (args.size() != 2) {
         throw std::runtime_error("lognormal requires 2 arguments: logscale, shape");
       }
@@ -103,7 +103,7 @@ void ExpectedValueFactory::registerFunctions(LIMEX::Handle<double>& handle) {
 
   // geometric(p) - Expected value: (1 - p) / p
   if (!nameExists("geometric")) {
-    handle.add("geometric", [](const std::vector<double>& args) -> double {
+    handle.addFunction("geometric", [](const std::vector<double>& args) -> double {
       if (args.size() != 1) {
         throw std::runtime_error("geometric requires 1 argument: probability");
       }
@@ -113,7 +113,7 @@ void ExpectedValueFactory::registerFunctions(LIMEX::Handle<double>& handle) {
 
   // triangular(min, mode, max) - Expected value: (min + mode + max) / 3
   if (!nameExists("triangular")) {
-    handle.add("triangular", [](const std::vector<double>& args) -> double {
+    handle.addFunction("triangular", [](const std::vector<double>& args) -> double {
       if (args.size() != 3) {
         throw std::runtime_error("triangular requires 3 arguments: min, mode, max");
       }
@@ -123,7 +123,7 @@ void ExpectedValueFactory::registerFunctions(LIMEX::Handle<double>& handle) {
 
   // discrete(values, probabilities) - Mode: value with highest probability
   if (!nameExists("discrete")) {
-    handle.add("discrete", [](const std::vector<double>& args) -> double {
+    handle.addFunction("discrete", [](const std::vector<double>& args) -> double {
       if (args.size() != 2) {
         throw std::runtime_error("discrete requires 2 arguments: values collection, probabilities collection");
       }

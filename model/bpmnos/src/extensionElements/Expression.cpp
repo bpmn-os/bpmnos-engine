@@ -55,7 +55,7 @@ LIMEX::Expression<double> Expression::getExpression(const std::string& input) co
 }
 
 Expression::Type Expression::getType() const {
-  auto& variableNames = compiled.getVariables();
+  auto variableNames = compiled.getVariables();
   assert( compiled.getRoot().operands.size() == 1 );
   assert( compiled.getRoot().type == LIMEX::Type::group );
 
@@ -92,9 +92,9 @@ Expression::Type Expression::getType() const {
 
     if (
       lhs.type != LIMEX::Type::variable ||
-      variableNames.at( std::get< size_t >(lhs.operands[0]) ) == BPMNOS::Keyword::Undefined ||
+      variableNames.front() == BPMNOS::Keyword::Undefined ||
       rhs.type != LIMEX::Type::variable ||
-      variableNames.at( std::get< size_t >(rhs.operands[0]) ) != BPMNOS::Keyword::Undefined
+      variableNames.back() != BPMNOS::Keyword::Undefined
     ) {
       throw std::runtime_error("Expression: illegal comparison '" + expression +"'");
     }

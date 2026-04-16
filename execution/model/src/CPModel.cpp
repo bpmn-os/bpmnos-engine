@@ -42,8 +42,8 @@ CPModel::CPModel(const BPMNOS::Execution::FlattenedGraph* flattenedGraph, Config
 
   // add callables for lookup tables
   for ( auto& lookupTable : scenario->model->lookupTables ) {
-    limexHandle.add(
-      lookupTable->name, 
+    limexHandle.addFunction(
+      lookupTable->name,
       [&lookupTable](const std::vector<CP::Expression>& args) -> CP::Expression
       {
         std::vector<CP::Operand> operands = { CP::Expression::getCustomIndex(lookupTable->name) };

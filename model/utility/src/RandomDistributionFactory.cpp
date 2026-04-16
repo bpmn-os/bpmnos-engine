@@ -88,14 +88,14 @@ RandomDistribution BPMNOS::make_distribution(const nlohmann::json& input) {
 }
 
 void RandomDistributionFactory::registerFunctions(LIMEX::Handle<double>& handle) {
-  const auto& existingNames = handle.getNames();
   auto nameExists = [&](const std::string& name) {
-    return std::find(existingNames.begin(), existingNames.end(), name) != existingNames.end();
+    return std::ranges::contains(handle.getFunctionNames(), name) ||
+           std::ranges::contains(handle.getAggregatorNames(), name);
   };
 
   // uniform(min, max) - Uniform real distribution
   if (!nameExists("uniform")) {
-    handle.add("uniform", [this](const std::vector<double>& args) -> double {
+    handle.addFunction("uniform", [this](const std::vector<double>& args) -> double {
       if (args.size() != 2) {
         throw std::runtime_error("uniform requires 2 arguments: min, max");
       }
@@ -109,7 +109,7 @@ void RandomDistributionFactory::registerFunctions(LIMEX::Handle<double>& handle)
 
   // uniform_int(min, max) - Uniform integer distribution
   if (!nameExists("uniform_int")) {
-    handle.add("uniform_int", [this](const std::vector<double>& args) -> double {
+    handle.addFunction("uniform_int", [this](const std::vector<double>& args) -> double {
       if (args.size() != 2) {
         throw std::runtime_error("uniform_int requires 2 arguments: min, max");
       }
@@ -123,7 +123,7 @@ void RandomDistributionFactory::registerFunctions(LIMEX::Handle<double>& handle)
 
   // normal(mean, stddev) - Normal/Gaussian distribution
   if (!nameExists("normal")) {
-    handle.add("normal", [this](const std::vector<double>& args) -> double {
+    handle.addFunction("normal", [this](const std::vector<double>& args) -> double {
       if (args.size() != 2) {
         throw std::runtime_error("normal requires 2 arguments: mean, stddev");
       }
@@ -137,7 +137,7 @@ void RandomDistributionFactory::registerFunctions(LIMEX::Handle<double>& handle)
 
   // exponential(rate) - Exponential distribution
   if (!nameExists("exponential")) {
-    handle.add("exponential", [this](const std::vector<double>& args) -> double {
+    handle.addFunction("exponential", [this](const std::vector<double>& args) -> double {
       if (args.size() != 1) {
         throw std::runtime_error("exponential requires 1 argument: rate");
       }
@@ -151,7 +151,7 @@ void RandomDistributionFactory::registerFunctions(LIMEX::Handle<double>& handle)
 
   // poisson(mean) - Poisson distribution
   if (!nameExists("poisson")) {
-    handle.add("poisson", [this](const std::vector<double>& args) -> double {
+    handle.addFunction("poisson", [this](const std::vector<double>& args) -> double {
       if (args.size() != 1) {
         throw std::runtime_error("poisson requires 1 argument: mean");
       }
@@ -165,7 +165,7 @@ void RandomDistributionFactory::registerFunctions(LIMEX::Handle<double>& handle)
 
   // bernoulli(p) - Bernoulli distribution (returns 0 or 1)
   if (!nameExists("bernoulli")) {
-    handle.add("bernoulli", [this](const std::vector<double>& args) -> double {
+    handle.addFunction("bernoulli", [this](const std::vector<double>& args) -> double {
       if (args.size() != 1) {
         throw std::runtime_error("bernoulli requires 1 argument: probability");
       }
@@ -179,7 +179,7 @@ void RandomDistributionFactory::registerFunctions(LIMEX::Handle<double>& handle)
 
   // binomial(n, p) - Binomial distribution
   if (!nameExists("binomial")) {
-    handle.add("binomial", [this](const std::vector<double>& args) -> double {
+    handle.addFunction("binomial", [this](const std::vector<double>& args) -> double {
       if (args.size() != 2) {
         throw std::runtime_error("binomial requires 2 arguments: trials, probability");
       }
@@ -193,7 +193,7 @@ void RandomDistributionFactory::registerFunctions(LIMEX::Handle<double>& handle)
 
   // gamma(shape, scale) - Gamma distribution
   if (!nameExists("gamma")) {
-    handle.add("gamma", [this](const std::vector<double>& args) -> double {
+    handle.addFunction("gamma", [this](const std::vector<double>& args) -> double {
       if (args.size() != 2) {
         throw std::runtime_error("gamma requires 2 arguments: shape, scale");
       }
@@ -207,7 +207,7 @@ void RandomDistributionFactory::registerFunctions(LIMEX::Handle<double>& handle)
 
   // lognormal(logscale, shape) - Log-normal distribution
   if (!nameExists("lognormal")) {
-    handle.add("lognormal", [this](const std::vector<double>& args) -> double {
+    handle.addFunction("lognormal", [this](const std::vector<double>& args) -> double {
       if (args.size() != 2) {
         throw std::runtime_error("lognormal requires 2 arguments: logscale, shape");
       }
@@ -221,7 +221,7 @@ void RandomDistributionFactory::registerFunctions(LIMEX::Handle<double>& handle)
 
   // geometric(p) - Geometric distribution
   if (!nameExists("geometric")) {
-    handle.add("geometric", [this](const std::vector<double>& args) -> double {
+    handle.addFunction("geometric", [this](const std::vector<double>& args) -> double {
       if (args.size() != 1) {
         throw std::runtime_error("geometric requires 1 argument: probability");
       }
@@ -235,7 +235,7 @@ void RandomDistributionFactory::registerFunctions(LIMEX::Handle<double>& handle)
 
   // triangular(min, mode, max) - Triangular distribution
   if (!nameExists("triangular")) {
-    handle.add("triangular", [this](const std::vector<double>& args) -> double {
+    handle.addFunction("triangular", [this](const std::vector<double>& args) -> double {
       if (args.size() != 3) {
         throw std::runtime_error("triangular requires 3 arguments: min, mode, max");
       }
@@ -261,7 +261,7 @@ void RandomDistributionFactory::registerFunctions(LIMEX::Handle<double>& handle)
   // discrete(values, probabilities) - Discrete distribution over arbitrary values
   // Arguments are collection indices (from encodeCollection preprocessing)
   if (!nameExists("discrete")) {
-    handle.add("discrete", [this](const std::vector<double>& args) -> double {
+    handle.addFunction("discrete", [this](const std::vector<double>& args) -> double {
       if (args.size() != 2) {
         throw std::runtime_error("discrete requires 2 arguments: values collection, probabilities collection");
       }

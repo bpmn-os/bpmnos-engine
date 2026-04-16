@@ -208,7 +208,7 @@ SCENARIO( "Stochastic data provider", "[data][stochastic]" ) {
       "Instance_1; Task_2;;;;y := 20\n"
       "Instance_1; Task_2;;;;z := 30\n"
       "Instance_1; Task_2;;;;w := 40\n"
-      "Instance_1; Task_2;;;;timestamp := 10 + min(90,lognormal(log(10)- 0.005,0.1))\n"
+      "Instance_1; Task_2;;;;timestamp := 10 + min{90,lognormal(log(10)- 0.005,0.1)}\n"
     ;
 
     WHEN( "The scenario is created and task runs" ) {
