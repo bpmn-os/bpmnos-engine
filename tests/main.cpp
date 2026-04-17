@@ -95,6 +95,7 @@ using namespace BPMNOS;
 #include "execution/collection/test.h"
 
 // Examples
+#include "examples/earliest_arrival_problem/test.h"
 #include "examples/travelling_salesperson_problem/test.h"
 #include "examples/truck_driver_scheduling_problem/test.h"
 #include "examples/assignment_problem/test.h"

@@ -2,6 +2,7 @@
 @page models Models
 
 - @subpage travelling_salesperson_problem "Travelling salesperson problem"
+- @subpage earliest_arrival_problem "Earliest arrival problem"
 - @subpage truck_driver_scheduling_problem "Truck driver scheduling problem"
 - @subpage assignment_problem "Assignment problem"
 - @subpage knapsack_problem "Knapsack problem"

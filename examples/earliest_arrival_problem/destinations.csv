@@ -1,0 +1,4 @@
+Location; Destinations
+"Origin"; [ "Location1", "Location2"]
+"Location1"; [ "Destination" ]
+"Location2"; [ "Destination" ]

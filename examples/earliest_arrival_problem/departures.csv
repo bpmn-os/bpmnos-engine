@@ -1,0 +1,5 @@
+From; To; Departures
+"Origin"; "Location1"; [ 0 ]
+"Origin"; "Location2"; [ 5 ]
+"Location1"; "Destination"; [ 10, 20, 30, 40, 50 ]
+"Location2"; "Destination"; [ 11, 22, 33, 44, 55 ]

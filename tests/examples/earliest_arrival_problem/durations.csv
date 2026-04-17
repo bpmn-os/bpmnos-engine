@@ -1,0 +1,5 @@
+From; To; Duration
+"Origin"; "Location1"; 10
+"Origin"; "Location2"; 20
+"Location1"; "Destination"; 10
+"Location2"; "Destination"; 20

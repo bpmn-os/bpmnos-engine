@@ -1,4 +1,5 @@
 set(MODEL_PAGES
+    "earliest_arrival_problem/Earliest_arrival_problem.md @page earliest_arrival_problem Earliest arrival problem"
     "assignment_problem/Assignment_problem.md @page assignment_problem Assignment problem"
     "knapsack_problem/Knapsack_problem.md @page knapsack_problem Knapsack problem"
     "guided_knapsack_problem/Guided_knapsack_problem.md @page guided_knapsack_problem Knapsack problem (guided)"
