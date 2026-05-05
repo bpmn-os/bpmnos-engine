@@ -7,14 +7,16 @@
 
 void print_usage() {
   std::cout << "Usage:" << std::endl;
-  std::cout << "\tbpmnos --model <model file> --data <data file> [--paths <path1> <path2> ...] [--timeout] [--verbose]" << std::endl;
+  std::cout << "\tbpmnos --model <model file> --data <data file> [--provider {static|expected|dynamic|stochastic}] [--evaluator {local|guided}] [--folders <folder1> <folder2> ...] [--timeout] [--verbose]" << std::endl;
   std::cout << "\tbpmnos -m <model file> -d <data file> [-p <path1> <path2> ...] [-t] [-v]" << std::endl;
   std::cout << std::endl;
-  std::cout << "\t-m, --model <model file>:         name of the BPMN model file" << std::endl;
-  std::cout << "\t-d, --data <data file>:           name of the CSV file containing the instance data" << std::endl;
-  std::cout << "\t-p, --paths <path1> <path2> ...:  paths in which lookup tables can be found" << std::endl;
-  std::cout << "\t-t, --timeout:                    time when execution is terminated" << std::endl;
-  std::cout << "\t-v, --verbose:                    display the execution log" << std::endl;
+  std::cout << "\t-m, --model <model file>:             name of the BPMN model file" << std::endl;
+  std::cout << "\t-d, --data <data file>:               name of the CSV file containing the instance data" << std::endl;
+  std::cout << "\t-p, --provider {static|expected|dynamic|stochastic} (default: stochastic)" << std::endl;
+  std::cout << "\t-e, --evaluator {local|guided} (default: guided)" << std::endl;
+  std::cout << "\t-f, --folder <folder1> <folder2> ...: folders in which lookup tables can be found" << std::endl;
+  std::cout << "\t-t, --timeout:                        time when execution is terminated" << std::endl;
+  std::cout << "\t-v, --verbose:                        display the execution log" << std::endl;
   exit(1);
 }
 
@@ -22,7 +24,9 @@ struct Arguments {
   Arguments() : verbose(false) {};
   std::string modelFile;
   std::string dataFile;
-  std::vector<std::string> paths;
+  std::string providerName = "stochastic";
+  std::string evaluatorName = "guided";
+  std::vector<std::string> folders;
   std::optional<BPMNOS::number> timeout;
   bool verbose;
 };
@@ -39,9 +43,15 @@ Arguments parse_arguments(int argc, char* argv[]) {
     else if ((arg == "--data" || arg == "-d") && i + 1 < argc) {
       args.dataFile = argv[++i];
     }
-    else if ((arg == "--paths" || arg == "-p") && i + 1 < argc) {
+    else if ((arg == "--provider" || arg == "-p") && i + 1 < argc) {
+      args.providerName = argv[++i];
+    }
+    else if ((arg == "--evaluator" || arg == "-e") && i + 1 < argc) {
+      args.evaluatorName = argv[++i];
+    }
+    else if ((arg == "--folders" || arg == "-f") && i + 1 < argc) {
       while (i + 1 < argc && argv[i + 1][0] != '-') {
-        args.paths.push_back(argv[++i]);
+        args.folders.push_back(argv[++i]);
       }
     }
     else if ((arg == "--timeout" || arg == "-t") && i + 1 < argc) {
@@ -70,16 +80,61 @@ int main(int argc, char* argv[]) {
   }
 
   Arguments args = parse_arguments(argc, argv);
+
+  auto createDataProvider = [&args]() -> std::unique_ptr<BPMNOS::Model::DataProvider> {
+    if (args.providerName == "static") {
+      return std::make_unique<BPMNOS::Model::StaticDataProvider>(args.modelFile,args.folders,args.dataFile);
+    }
+    else if (args.providerName == "expected") {
+      return std::make_unique<BPMNOS::Model::ExpectedValueDataProvider>(args.modelFile,args.folders,args.dataFile);
+    }
+    else if (args.providerName == "dynamic") {
+      return std::make_unique<BPMNOS::Model::DynamicDataProvider>(args.modelFile,args.folders,args.dataFile);
+    }
+    else if (args.providerName == "stochastic") {
+      return std::make_unique<BPMNOS::Model::StochasticDataProvider>(args.modelFile,args.folders,args.dataFile);
+    }
+    else {
+      std::cerr << "Error: unknown data provider.\n";
+      print_usage();
+    }
+    return nullptr;
+  };
+
+  auto createEvaluator = [&args]() -> std::unique_ptr<BPMNOS::Execution::Evaluator> {
+    if (args.evaluatorName == "local") {
+      return std::make_unique<BPMNOS::Execution::LocalEvaluator>();
+    }
+    else if (args.evaluatorName == "guided") {
+      return std::make_unique<BPMNOS::Execution::GuidedEvaluator>();
+    }
+    else {
+      std::cerr << "Error: unknown evaluator.\n";
+      print_usage();
+    }
+    return nullptr;
+  };
+
+
+  auto createRecorder = [&args]() -> std::unique_ptr<BPMNOS::Execution::Recorder> {
+    if (args.verbose) {
+      return std::make_unique<BPMNOS::Execution::Recorder>(std::cout);
+    }
+    else {
+      return std::make_unique<BPMNOS::Execution::Recorder>();
+    }
+  };
+
   
-  BPMNOS::Model::StaticDataProvider dataProvider(args.modelFile,args.paths,args.dataFile);
-  auto scenario = dataProvider.createScenario();
+  auto dataProvider = createDataProvider();
+  auto scenario = dataProvider->createScenario();
 
   BPMNOS::Execution::Engine engine;
   BPMNOS::Execution::ReadyHandler readyHandler;
   readyHandler.connect(&engine);
 
-  BPMNOS::Execution::GuidedEvaluator evaluator;
-  BPMNOS::Execution::GreedyController controller(&evaluator);
+  auto evaluator = createEvaluator();
+  BPMNOS::Execution::GreedyController controller(evaluator.get());
   controller.connect(&engine);
       
   BPMNOS::Execution::MyopicMessageTaskTerminator messageTaskTerminator;
@@ -87,16 +142,8 @@ int main(int argc, char* argv[]) {
   messageTaskTerminator.connect(&engine);
   timeHandler.connect(&engine);
 
-  auto createRecorder = [&args]() -> BPMNOS::Execution::Recorder {
-    if (args.verbose) {
-      return BPMNOS::Execution::Recorder(std::cout);
-    }
-    else {
-      return BPMNOS::Execution::Recorder();
-    }
-  };
   auto recorder = createRecorder();
-  recorder.subscribe(&engine);
+  recorder->subscribe(&engine);
 
   if (args.timeout.has_value()) {
     engine.run(scenario.get(),args.timeout.value());
