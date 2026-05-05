@@ -256,4 +256,54 @@ SCENARIO( "Stochastic data provider", "[data][stochastic]" ) {
     }
   }
 
+  GIVEN( "READY and COMPLETION expressions with += operator" ) {
+    std::string csv =
+      "INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE; READY; COMPLETION\n"
+      "Instance_1; Process_1; timestamp := 0;;;\n"
+      "Instance_1; Process_1; x := 100;;;\n"
+      "Instance_1; Activity_1; y := 10;;;\n"
+      "Instance_1; Task_2; z := 5;;;\n"
+      "Instance_1; Activity_1;;;x += 50;\n"
+      "Instance_1; Task_2;;;;z += 10\n"
+      "Instance_1; Task_2;;;;timestamp := 10\n"
+    ;
+
+    WHEN( "The scenario is created" ) {
+      Model::StochasticDataProvider dataProvider(modelFile, csv);
+      auto scenario = dataProvider.createScenario();
+
+      auto instances = scenario->getInstances(0);
+      REQUIRE( instances.size() == 1 );
+      auto instance = instances[0];
+
+      auto& process = dataProvider.getModel().processes[0];
+      auto activity = process->find([](BPMN::Node* n) { return n->id == "Activity_1"; });
+      auto task = process->find([](BPMN::Node* n) { return n->id == "Task_2"; });
+
+      THEN( "READY expression with += operator works" ) {
+        Values status = {0, 100};
+        Values data = {};
+        Values globals = {};
+
+        scenario->noticeReadyPending(instance->id, activity, status, data, globals);
+
+        auto activityStatus = scenario->getActivityReadyStatus(instance->id, activity, 0);
+        REQUIRE( activityStatus.has_value() );
+        REQUIRE( activityStatus->at(1).value() == 150 ); // x = 100 + 50
+      }
+
+      THEN( "COMPLETION expression with += operator works" ) {
+        Values status = {0, 150, 30, 5};
+        Values data = {};
+        Values globals = {};
+
+        scenario->noticeCompletionPending(instance->id, task, status, data, globals);
+
+        auto completionStatus = scenario->getTaskCompletionStatus(instance->id, task, 100);
+        REQUIRE( completionStatus.has_value() );
+        REQUIRE( completionStatus->at(3).value() == 15 );  // z = 5 + 10
+      }
+    }
+  }
+
 }

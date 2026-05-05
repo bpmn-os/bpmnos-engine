@@ -158,21 +158,18 @@ void StochasticDataProvider::readInstances() {
           throw std::runtime_error("StochasticDataProvider: completion expressions are not allowed for node '" + nodeId + "'");
         }
 
-        auto [attributeName, expressionString] = DataProvider::parseInitialization(completionExpression);
+        auto extensionElements = node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+        auto expression = std::make_unique<Expression>(stochasticHandle, completionExpression,
+                                                       extensionElements->attributeRegistry);
         // For SendTask, ReceiveTask, DecisionTask: timestamp must not be modified (completion time is event-driven)
-        if (attributeName == Keyword::Timestamp &&
+        if (expression->target.has_value() &&
+            expression->target.value()->name == Keyword::Timestamp &&
             (node->represents<BPMN::SendTask>() ||
              node->represents<BPMN::ReceiveTask>() ||
              node->represents<DecisionTask>())) {
           throw std::runtime_error("StochasticDataProvider: completion expression must not modify timestamp for '" + nodeId + "'");
         }
-        auto extensionElements = node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
-        if (!extensionElements->attributeRegistry.contains(attributeName)) {
-          throw std::runtime_error("StochasticDataProvider: node '" + nodeId + "' has no attribute '" + attributeName + "'");
-        }
 
-        auto expression = std::make_unique<Expression>(stochasticHandle, completionExpression,
-                                                       extensionElements->attributeRegistry);
         completionExpressions[instanceId][node].push_back(std::move(expression));
       }
 
@@ -182,19 +179,14 @@ void StochasticDataProvider::readInstances() {
           throw std::runtime_error("StochasticDataProvider: '" + nodeId + "' is not an activity (ready expressions are only allowed for activities)");
         }
 
-        auto [attributeName, expressionString] = DataProvider::parseInitialization(readyExpression);
         auto extensionElements = node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
-        if (!extensionElements->attributeRegistry.contains(attributeName)) {
-          throw std::runtime_error("StochasticDataProvider: node '" + nodeId + "' has no attribute '" + attributeName + "'");
-        }
-
-        auto attribute = extensionElements->attributeRegistry[attributeName];
-        if (attribute->expression) {
-          throw std::runtime_error("StochasticDataProvider: illegal ready expression for attribute '" + attributeName + "' (value is set by model expression)");
-        }
-
         auto expression = std::make_unique<Expression>(stochasticHandle, readyExpression,
                                                        extensionElements->attributeRegistry);
+        if (expression->target.has_value() && expression->target.value()->expression) {
+          throw std::runtime_error("StochasticDataProvider: illegal ready expression for attribute '" +
+                                   expression->target.value()->name + "' (value is set by model expression)");
+        }
+
         readyExpressions[instanceId][node].push_back(std::move(expression));
       }
 
