@@ -67,8 +67,7 @@ std::shared_ptr<Decision> BestEnumeratedChoice::determineBestChoices(std::shared
   assert( token->node->represents<BPMNOS::Model::DecisionTask>() );
   auto decisionTask = token->node->as<BPMNOS::Model::DecisionTask>();
   assert( token->node->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );
-  auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
-  assert( extensionElements->choices.size() );
+  assert( token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->choices.size() );
 
   auto alternativeChoices = decisionTask->enumerateAlternatives(token->status, *token->data, token->globals);
   std::shared_ptr<Decision> bestDecision = nullptr;
