@@ -61,23 +61,23 @@ include_directories(
   ${limex_SOURCE_DIR}
 )
 
-# nlohmann/json dependency
+# nlohmann/json dependency - download single header file
 FetchContent_Declare(
         json
-        GIT_REPOSITORY https://github.com/nlohmann/json.git
-        GIT_TAG v3.11.2
-        GIT_PROGRESS   TRUE
-        SOURCE_SUBDIR this-directory-does-not-exist # Work around to not build the project
+        URL https://github.com/nlohmann/json/releases/download/v3.11.2/json.hpp
+        DOWNLOAD_NO_EXTRACT TRUE
 )
 
-FetchContent_GetProperties(json)
 FetchContent_MakeAvailable(json)
+
+# Create nlohmann directory structure for the header
+file(MAKE_DIRECTORY ${json_SOURCE_DIR}/nlohmann)
+file(COPY_FILE ${json_SOURCE_DIR}/json.hpp ${json_SOURCE_DIR}/nlohmann/json.hpp)
 
 include_directories(
   SYSTEM
-  ${json_SOURCE_DIR}/single_include 
+  ${json_SOURCE_DIR}
 )
-#target_link_libraries(${PROJECT_NAME} nlohmann_json::nlohmann_json)
 
 include(FetchContent)
 set(FETCHCONTENT_QUIET FALSE)
