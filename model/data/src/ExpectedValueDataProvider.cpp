@@ -2,6 +2,7 @@
 #include "ExpectedValueScenario.h"
 #include "model/utility/src/Keywords.h"
 #include "model/bpmnos/src/extensionElements/ExtensionElements.h"
+#include <cmath>
 #include <ranges>
 
 using namespace BPMNOS::Model;
@@ -73,7 +74,7 @@ void ExpectedValueDataProvider::readInstances() {
   for (auto& [id, instance] : instances) {
     ensureDefaultValue(instance, Keyword::Instance, id);
     ensureDefaultValue(instance, Keyword::Timestamp);
-    instance.instantiation = instance.data.at(attributes[instance.process][Keyword::Timestamp]);
+    instance.instantiation = BPMNOS::number(std::ceil((double)instance.data.at(attributes[instance.process][Keyword::Timestamp])));
 
     if (earliestInstantiation > instance.instantiation) {
       earliestInstantiation = instance.instantiation;
@@ -157,9 +158,7 @@ std::unique_ptr<Scenario> ExpectedValueDataProvider::createScenario([[maybe_unus
 
   // Add instances
   for (auto& [id, instance] : instances) {
-    auto& timestampAttribute = attributes[instance.process][Keyword::Timestamp];
-    auto instantiationTime = instance.data[timestampAttribute];
-    scenario->addInstance(instance.process, id, instantiationTime);
+    scenario->addInstance(instance.process, id, instance.instantiation);
     for (auto& [attribute, value] : instance.data) {
       scenario->setValue(id, attribute, value);
     }

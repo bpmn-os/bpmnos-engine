@@ -6,6 +6,7 @@
 #include "model/utility/src/getDelimiter.h"
 #include "model/bpmnos/src/extensionElements/Expression.h"
 #include "model/bpmnos/src/extensionElements/ExtensionElements.h"
+#include <cmath>
 #include <unordered_map>
 #include <algorithm>
 #include <ranges>
@@ -119,8 +120,8 @@ void StaticDataProvider::readInstances() {
     // ensure that default attributes are available
     ensureDefaultValue(instance, Keyword::Instance, id);
     ensureDefaultValue(instance, Keyword::Timestamp);
-    // set time of instantiation
-    instance.instantiation = instance.data.at( attributes[instance.process][Keyword::Timestamp] );
+    // set time of instantiation (ceiled to align with integer time steps)
+    instance.instantiation = BPMNOS::number(std::ceil((double)instance.data.at( attributes[instance.process][Keyword::Timestamp] )));
 
     if ( earliestInstantiation > instance.instantiation ) {
       earliestInstantiation = instance.instantiation;

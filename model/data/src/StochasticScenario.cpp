@@ -1,6 +1,7 @@
 #include "StochasticScenario.h"
 #include "model/utility/src/StringRegistry.h"
 #include "model/bpmnos/src/extensionElements/ExtensionElements.h"
+#include <cmath>
 #include <functional>
 
 using namespace BPMNOS::Model;
@@ -88,14 +89,14 @@ void StochasticScenario::evaluateDeferredDisclosures() {
       // Store value immediately so subsequent expressions can reference it
       instance.values[deferred.attribute] = value;
 
-      // Update instantiation time if this is the timestamp attribute
+      // Update instantiation time if this is the timestamp attribute (ceiled to align with integer time steps)
       if (deferred.attribute->id == Keyword::Timestamp) {
-        instance.instantiationTime = value;
+        instance.instantiationTime = BPMNOS::number(std::ceil((double)value));
       }
 
       // Evaluate disclosure expression
       Expression disclosureExpression(*stochasticHandle, deferred.disclosureExpression, extensionElements->attributeRegistry);
-      BPMNOS::number ownDisclosure = disclosureExpression.execute(status, data, globals).value_or(0);
+      BPMNOS::number ownDisclosure = BPMNOS::number(std::ceil((double)disclosureExpression.execute(status, data, globals).value_or(0)));
       // Compute effective disclosure (max with parent scope)
       BPMNOS::number effectiveDisclosure = ownDisclosure;
       if (auto childNode = deferred.node->represents<BPMN::ChildNode>()) {

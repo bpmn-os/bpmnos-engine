@@ -6,6 +6,7 @@
 #include "model/utility/src/getDelimiter.h"
 #include "model/bpmnos/src/extensionElements/Expression.h"
 #include "model/bpmnos/src/extensionElements/ExtensionElements.h"
+#include <cmath>
 #include <unordered_map>
 #include <algorithm>
 #include <ranges>
@@ -124,7 +125,7 @@ void DynamicDataProvider::readInstances() {
       // Parse disclosure time (can reference the just-initialized attribute)
       BPMNOS::number ownDisclosure = 0;
       if ( !disclosureString.empty() ) {
-        ownDisclosure = evaluateExpression(instanceId, node, disclosureString, DECIMAL);
+        ownDisclosure = BPMNOS::number(std::ceil((double)evaluateExpression(instanceId, node, disclosureString, DECIMAL)));
       }
 
       // Compute effective disclosure = max(own, parent_scope_disclosure)
