@@ -144,12 +144,16 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const
 
     // add all operators
     if ( status->get().operators.has_value() ) {
-      assert( !baseElement->is<XML::bpmn::tProcess>() );
-      assert( (
-        !baseElement->is<XML::bpmn::tSubProcess>() || 
-        !baseElement->is<XML::bpmn::tSubProcess>()->triggeredByEvent.has_value() ||
-        (bool)baseElement->is<XML::bpmn::tSubProcess>()->triggeredByEvent.value().get().value
-      ) );
+      if ( baseElement->is<XML::bpmn::tProcess>() ) {
+          throw std::runtime_error("ExtensionElements: process '"+  (std::string)baseElement->id.value().get().value + "' must not have operators");
+      }
+      if (
+        baseElement->is<XML::bpmn::tSubProcess>() && 
+        baseElement->is<XML::bpmn::tSubProcess>()->triggeredByEvent.has_value() &&
+        !(bool)baseElement->is<XML::bpmn::tSubProcess>()->triggeredByEvent.value().get().value
+      ) {
+          throw std::runtime_error("ExtensionElements: subprocess '"+  (std::string)baseElement->id.value().get().value + "' must not have operators");
+      } 
     
       for ( XML::bpmnos::tOperator& operator_ : status->get().operators.value().get().operator_ ) {
         try {
