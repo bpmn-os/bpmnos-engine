@@ -130,8 +130,8 @@ int main(int argc, char* argv[]) {
   auto scenario = dataProvider->createScenario();
 
   BPMNOS::Execution::Engine engine;
-  BPMNOS::Execution::ReadyHandler readyHandler;
-  readyHandler.connect(&engine);
+//  BPMNOS::Execution::ReadyHandler readyHandler;
+//  readyHandler.connect(&engine);
 
   auto evaluator = createEvaluator();
   BPMNOS::Execution::GreedyController controller(evaluator.get());
