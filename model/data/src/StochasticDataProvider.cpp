@@ -161,6 +161,13 @@ void StochasticDataProvider::readInstances() {
         auto extensionElements = node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
         auto expression = std::make_unique<Expression>(stochasticHandle, completionExpression,
                                                        extensionElements->attributeRegistry);
+
+        // Completion expressions must only modify STATUS attributes
+        if (expression->target.has_value() &&
+            expression->target.value()->category != BPMNOS::Model::Attribute::Category::STATUS) {
+          throw std::runtime_error("StochasticDataProvider: completion expression for '" + nodeId + "' attempts to modify non-status attribute '" +  expression->target.value()->name + "'");
+        }
+
         // For SendTask, ReceiveTask, DecisionTask: timestamp must not be modified (completion time is event-driven)
         if (expression->target.has_value() &&
             expression->target.value()->name == Keyword::Timestamp &&
@@ -180,12 +187,18 @@ void StochasticDataProvider::readInstances() {
         }
 
         auto extensionElements = node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
-        auto expression = std::make_unique<Expression>(stochasticHandle, readyExpression,
-                                                       extensionElements->attributeRegistry);
+        auto expression = std::make_unique<Expression>(stochasticHandle, readyExpression, extensionElements->attributeRegistry);
+
         if (expression->target.has_value() && expression->target.value()->expression) {
-          throw std::runtime_error("StochasticDataProvider: illegal ready expression for attribute '" +
-                                   expression->target.value()->name + "' (value is set by model expression)");
+          throw std::runtime_error("StochasticDataProvider: illegal ready expression for attribute '" + expression->target.value()->name + "' (value is set by model expression)");
         }
+
+        // Ready expressions must only modify STATUS attributes
+        if (expression->target.has_value() &&
+            expression->target.value()->category != BPMNOS::Model::Attribute::Category::STATUS) {
+          throw std::runtime_error("StochasticDataProvider: ready expression for '" + nodeId + "' attempts to modify non-status attribute '" +  expression->target.value()->name + "'");
+        }
+
 
         readyExpressions[instanceId][node].push_back(std::move(expression));
       }
