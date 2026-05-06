@@ -150,8 +150,6 @@ void StochasticDataProvider::readInstances() {
         disclosure[instanceId][process] = 0;
       }
 
-      auto& instance = instances[instanceId];
-
       // Handle COMPLETION expression (valid for all Task types)
       if (!completionExpression.empty()) {
         if (!node->represents<BPMN::Task>()) {
@@ -208,17 +206,10 @@ void StochasticDataProvider::readInstances() {
       else {
         auto [attribute, expressionString] = lookupAttribute(node, initializationString);
 
-        if (disclosureExpression.empty()) {
-          // Immediate disclosure: evaluate and store value directly
-          BPMNOS::number value = evaluateExpression(instanceId, node, expressionString, attribute->type);
-          parseTimeEvaluatedValues[instanceId][attribute] = value;
-          instance.data[attribute] = value;
-          getEffectiveDisclosure(instanceId, node, 0);  // Update node disclosure tracking
-        }
-        else {
-          // Deferred disclosure: store expressions for per-scenario evaluation
-          deferredAttributes[instanceId].push_back({attribute, node, expressionString, disclosureExpression});
-        }
+        // All initializations are deferred for per-scenario evaluation
+        // If no DISCLOSURE expression, default to disclosure at time 0
+        std::string disclosure = disclosureExpression.empty() ? "0" : disclosureExpression;
+        deferredAttributes[instanceId].push_back({attribute, node, expressionString, disclosure});
       }
     }
   }
@@ -226,33 +217,11 @@ void StochasticDataProvider::readInstances() {
   // Finalize instances
   for (auto& [id, instance] : instances) {
     ensureDefaultValue(instance, Keyword::Instance, id);
-
-    // If timestamp was deferred, evaluate and use the deferred value for instantiation
-    auto timestampAttribute = attributes[instance.process][Keyword::Timestamp];
-    if (deferredAttributes.contains(id)) {
-      for (auto& deferred : deferredAttributes[id]) {
-        if (deferred.attribute == timestampAttribute) {
-          BPMNOS::number value = evaluateExpression(id, deferred.node, deferred.initializationExpression, timestampAttribute->type);
-          instance.data[timestampAttribute] = value;
-          break;
-        }
-      }
-    }
-
     ensureDefaultValue(instance, Keyword::Timestamp);
+
+    // Set placeholder instantiation time (actual value will be per-scenario)
+    auto timestampAttribute = attributes[instance.process][Keyword::Timestamp];
     instance.instantiation = instance.data.at(timestampAttribute);
-
-    BPMNOS::number effectiveInstantiation = instance.instantiation;
-    if (disclosure.contains(id) && disclosure.at(id).contains(instance.process)) {
-      effectiveInstantiation = std::max(effectiveInstantiation, disclosure.at(id).at(instance.process));
-    }
-
-    if (earliestInstantiation > effectiveInstantiation) {
-      earliestInstantiation = effectiveInstantiation;
-    }
-    if (latestInstantiation < effectiveInstantiation) {
-      latestInstantiation = effectiveInstantiation;
-    }
   }
 }
 
@@ -272,8 +241,7 @@ BPMNOS::number StochasticDataProvider::evaluateExpression(
   return DataProvider::evaluateExpression(instanceId, node, expressionString, type, stochasticHandle);
 }
 
-BPMNOS::number StochasticDataProvider::getEffectiveDisclosure(size_t instanceId, const BPMN::Node* node,
-                                                               BPMNOS::number ownDisclosure) {
+BPMNOS::number StochasticDataProvider::getEffectiveDisclosure(size_t instanceId, const BPMN::Node* node, BPMNOS::number ownDisclosure) {
   BPMNOS::number effectiveDisclosure = ownDisclosure;
 
   if (auto childNode = node->represents<BPMN::ChildNode>()) {
@@ -295,18 +263,14 @@ BPMNOS::number StochasticDataProvider::getEffectiveDisclosure(size_t instanceId,
 }
 
 std::unique_ptr<Scenario> StochasticDataProvider::createScenario(unsigned int scenarioId) {
-  auto scenario = std::make_unique<StochasticScenario>(model.get(), earliestInstantiation,
-                                                        latestInstantiation, globalValueMap,
-                                                        seed + scenarioId);
+  auto scenario = std::make_unique<StochasticScenario>(model.get(), globalValueMap, seed + scenarioId);
 
   // Set references for expression evaluation
   scenario->randomFactory = &randomFactory;
   scenario->stochasticHandle = &stochasticHandle;
 
   for (auto& [id, instance] : instances) {
-    auto& timestampAttribute = attributes[instance.process][Keyword::Timestamp];
-    auto instantiationTime = instance.data[timestampAttribute];
-    scenario->addInstance(instance.process, id, instantiationTime);
+    scenario->addInstance(instance.process, id);
     for (auto& [attribute, value] : instance.data) {
       scenario->setValue(id, attribute, value);
     }
@@ -322,9 +286,10 @@ std::unique_ptr<Scenario> StochasticDataProvider::createScenario(unsigned int sc
   // Add deferred disclosures (to be evaluated per-scenario)
   for (auto& [instanceId, deferreds] : deferredAttributes) {
     for (auto& deferred : deferreds) {
-      scenario->addDeferredDisclosure(instanceId, {deferred.attribute, deferred.node,
-                                                    deferred.initializationExpression,
-                                                    deferred.disclosureExpression});
+      scenario->addDeferredDisclosure(
+        instanceId, 
+        {deferred.attribute, deferred.node, deferred.initializationExpression, deferred.disclosureExpression}
+      );
     }
   }
 

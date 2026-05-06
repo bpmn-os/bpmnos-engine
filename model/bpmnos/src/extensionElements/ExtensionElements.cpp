@@ -147,6 +147,7 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const
       if ( baseElement->is<XML::bpmn::tProcess>() ) {
           throw std::runtime_error("ExtensionElements: process '"+  (std::string)baseElement->id.value().get().value + "' must not have operators");
       }
+
       if (
         baseElement->is<XML::bpmn::tSubProcess>() && 
         baseElement->is<XML::bpmn::tSubProcess>()->triggeredByEvent.has_value() &&

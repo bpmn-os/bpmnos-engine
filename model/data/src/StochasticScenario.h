@@ -52,8 +52,6 @@ class StochasticScenario : public Scenario {
 public:
   StochasticScenario(
     const Model* model,
-    BPMNOS::number earliestInstantiationTime,
-    BPMNOS::number latestInstantiationTime,
     const std::unordered_map<const Attribute*, BPMNOS::number>& globalValueMap,
     unsigned int seed = 0
   );
@@ -97,11 +95,14 @@ private:
 
   void setTaskCompletionStatus(BPMNOS::number instanceId, const BPMN::Node* task, const Values& status, const SharedValues& data, const Values& globals) const;
 
+  /// Compute earliestInstantiationTime and latestInstantiationTime after deferred disclosures are evaluated
+  void computeInstantiationBounds();
+
 protected:
   Values getKnownInitialStatus(const InstanceData*, const BPMNOS::number time) const override;
   Values getKnownInitialData(const InstanceData*, const BPMNOS::number time) const override;
 
-  void addInstance(const BPMN::Process* process, const BPMNOS::number instanceId, BPMNOS::number instantiationTime);
+  void addInstance(const BPMN::Process* process, const BPMNOS::number instanceId);
   void setValue(const BPMNOS::number instanceId, const Attribute* attribute, std::optional<BPMNOS::number> value);
   void setDisclosure(const BPMNOS::number instanceId, const BPMN::Node* node, BPMNOS::number disclosureTime);
   void addPendingDisclosure(const BPMNOS::number instanceId, StochasticPendingDisclosure&& pending);

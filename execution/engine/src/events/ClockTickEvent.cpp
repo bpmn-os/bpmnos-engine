@@ -17,6 +17,7 @@ nlohmann::ordered_json ClockTickEvent::jsonify() const {
   nlohmann::ordered_json jsonObject;
 
   jsonObject["event"] = "clocktick";
+  jsonObject["timestamp"] = (int)systemState->getTime();
 
   return jsonObject;
 }

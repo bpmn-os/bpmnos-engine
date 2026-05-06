@@ -7,20 +7,19 @@ using namespace BPMNOS::Model;
 
 StochasticScenario::StochasticScenario(
   const Model* model,
-  BPMNOS::number earliestInstantiationTime,
-  BPMNOS::number latestInstantiationTime,
   const std::unordered_map<const Attribute*, BPMNOS::number>& globalValueMap,
   unsigned int seed
 )
   : Scenario(model, globalValueMap)
   , scenarioSeed(seed)
-  , earliestInstantiationTime(earliestInstantiationTime)
-  , latestInstantiationTime(latestInstantiationTime)
+  , earliestInstantiationTime(std::numeric_limits<BPMNOS::number>::infinity())
+  , latestInstantiationTime(std::numeric_limits<BPMNOS::number>::lowest())
 {
 }
 
-void StochasticScenario::addInstance(const BPMN::Process* process, const BPMNOS::number instanceId, BPMNOS::number instantiationTime) {
-  instances[(size_t)instanceId] = {process, (size_t)instanceId, instantiationTime, {}};
+void StochasticScenario::addInstance(const BPMN::Process* process, const BPMNOS::number instanceId) {
+  // Instantiation time will be set when evaluating deferred timestamp attribute
+  instances[(size_t)instanceId] = {process, (size_t)instanceId, 0, {}};
 }
 
 void StochasticScenario::setValue(const BPMNOS::number instanceId, const Attribute* attribute, std::optional<BPMNOS::number> value) {
@@ -86,10 +85,17 @@ void StochasticScenario::evaluateDeferredDisclosures() {
           break;
       }
 
+      // Store value immediately so subsequent expressions can reference it
+      instance.values[deferred.attribute] = value;
+
+      // Update instantiation time if this is the timestamp attribute
+      if (deferred.attribute->id == Keyword::Timestamp) {
+        instance.instantiationTime = value;
+      }
+
       // Evaluate disclosure expression
       Expression disclosureExpression(*stochasticHandle, deferred.disclosureExpression, extensionElements->attributeRegistry);
       BPMNOS::number ownDisclosure = disclosureExpression.execute(status, data, globals).value_or(0);
-
       // Compute effective disclosure (max with parent scope)
       BPMNOS::number effectiveDisclosure = ownDisclosure;
       if (auto childNode = deferred.node->represents<BPMN::ChildNode>()) {
@@ -116,6 +122,30 @@ void StochasticScenario::evaluateDeferredDisclosures() {
 
   // Clear deferred disclosures (they've been processed)
   deferredDisclosures.clear();
+
+  // Compute instantiation bounds now that all disclosures are evaluated
+  computeInstantiationBounds();
+}
+
+void StochasticScenario::computeInstantiationBounds() {
+  earliestInstantiationTime = std::numeric_limits<BPMNOS::number>::infinity();
+  latestInstantiationTime = std::numeric_limits<BPMNOS::number>::lowest();
+
+  for (auto& [id, instance] : instances) {
+    BPMNOS::number effectiveInstantiation = instance.instantiationTime;
+
+    // Check if process has disclosure time (includes both immediate and deferred disclosures)
+    if (disclosure.contains(id) && disclosure.at(id).contains(instance.process)) {
+      effectiveInstantiation = std::max(effectiveInstantiation, disclosure.at(id).at(instance.process));
+    }
+
+    if (earliestInstantiationTime > effectiveInstantiation) {
+      earliestInstantiationTime = effectiveInstantiation;
+    }
+    if (latestInstantiationTime < effectiveInstantiation) {
+      latestInstantiationTime = effectiveInstantiation;
+    }
+  }
 }
 
 void StochasticScenario::noticeReadyPending(BPMNOS::number instanceId, const BPMN::Node* node, const Values& status, const SharedValues& data, const Values& globals) const {
