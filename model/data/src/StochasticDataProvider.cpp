@@ -189,10 +189,6 @@ void StochasticDataProvider::readInstances() {
         auto extensionElements = node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
         auto expression = std::make_unique<Expression>(stochasticHandle, readyExpression, extensionElements->attributeRegistry);
 
-        if (expression->target.has_value() && expression->target.value()->expression) {
-          throw std::runtime_error("StochasticDataProvider: illegal ready expression for attribute '" + expression->target.value()->name + "' (value is set by model expression)");
-        }
-
         // Ready expressions must only modify STATUS attributes
         if (expression->target.has_value() &&
             expression->target.value()->category != BPMNOS::Model::Attribute::Category::STATUS) {
