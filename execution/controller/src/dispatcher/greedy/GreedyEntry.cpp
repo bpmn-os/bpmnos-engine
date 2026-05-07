@@ -52,11 +52,11 @@ std::shared_ptr<Event> GreedyEntry::dispatchEvent( const SystemState* systemStat
     }
     else {
       // evaluation of decision is independent of others
-      auto reward = decision->evaluate();
+      decision->evaluate();
 //std::cerr << "Regular: " << decision->jsonify() << std::endl;
-      addEvaluation(token_ptr, request_ptr, decision, reward);
+      addEvaluation(token_ptr, request_ptr, decision, decision->reward());
 
-      if (  reward.has_value() ) {
+      if ( decision->reward().has_value() ) {
         // dispatch feasible decision 
         return std::make_shared<EntryEvent>(decision->token);
       }
@@ -103,9 +103,9 @@ std::shared_ptr<Event> GreedyEntry::dispatchEvent( const SystemState* systemStat
 //std::cerr << "Performer: " << performerToken->jsonify() << std::endl;
     for ( auto& [ token_ptr, request_ptr, decision ] : decisionTuples ) {
       // Call decision->evaluate() and add the evaluation
-      auto reward = decision->evaluate();
+      decision->evaluate();
 //std::cerr << "Exclusive: " << decision->jsonify() << std::endl;
-      addEvaluation(token_ptr, request_ptr, decision, reward);
+      addEvaluation(token_ptr, request_ptr, decision, decision->reward());
     }
     for ( auto decisionTuple : evaluatedDecisions ) {
       constexpr std::size_t last = std::tuple_size<decltype(decisionTuple)>::value - 1;

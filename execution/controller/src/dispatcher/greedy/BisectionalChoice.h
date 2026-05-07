@@ -35,8 +35,8 @@ private:
     size_t index;
     std::shared_ptr<ChoiceDecision> decision;
 
-    bool isFeasible() const { return decision && decision->reward.has_value(); }
-    double reward() const { return decision->reward.value(); }
+    bool isFeasible() const { return decision && decision->reward().has_value(); }
+    double reward() const { return decision->reward().value(); }
   };
 
   // State for current search (set by discreteBisection)

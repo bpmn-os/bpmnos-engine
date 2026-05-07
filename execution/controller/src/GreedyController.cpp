@@ -42,12 +42,12 @@ std::shared_ptr<Event> GreedyController::dispatchEvent(const SystemState* system
   for ( auto& eventDispatcher : eventDispatchers ) {
     if ( auto event = eventDispatcher->dispatchEvent(systemState) ) {
       if (  auto decision = dynamic_pointer_cast<Decision>(event) ) {
-        if ( decision->reward.has_value() ) {
+        if ( decision->reward().has_value() ) {
           if ( !best ) {
             // first feasible decision is used as best
             best = decision;
           }
-          else if ( decision->reward.value() > best->reward.value() ) {
+          else if ( decision->reward().value() > best->reward().value() ) {
             // decision has better reward than current best
             best = decision;
           }

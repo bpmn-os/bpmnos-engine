@@ -17,7 +17,7 @@ class Evaluator;
  */
 struct ChoiceDecision : ChoiceEvent, Decision {
   ChoiceDecision(const Token* token, std::vector<number> choices, Evaluator* evaluator);
-  std::optional<double> evaluate() override;
+  std::shared_ptr<Evaluation> evaluate() override;
 
   nlohmann::ordered_json jsonify() const override;
 };

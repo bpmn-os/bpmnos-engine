@@ -31,6 +31,7 @@ list(APPEND controller_SOURCES
 )
 
 list(APPEND controller_HEADERS
+  Evaluation.h
   Decision.h
   decisions/EntryDecision.h
   decisions/ChoiceDecision.h

@@ -3,6 +3,7 @@
 
 #include <bpmn++.h>
 #include "execution/engine/src/Event.h"
+#include "Evaluation.h"
 #include <nlohmann/json.hpp>
 
 namespace BPMNOS::Execution {
@@ -16,9 +17,13 @@ class Decision : virtual public Event {
 public:
   Decision(Evaluator* evaluator);
 
-  virtual std::optional<double> evaluate() = 0; ///< Evaluates the reward for the decision. Returns null if decision is infeasible.
-  std::optional<double> reward;  ///< Latest evaluated reward or null if decision has not been evaluated or reward is no longer valid
-  
+  virtual std::shared_ptr<Evaluation> evaluate() = 0; ///< Evaluates the reward for the decision. Returns null if decision is infeasible.
+  std::shared_ptr<Evaluation> evaluation;  ///< Current evaluation (used for lazy removal from evaluatedDecisions)
+
+  std::optional<double> reward() const {
+    return evaluation ? evaluation->value : std::nullopt;
+  }
+
   bool timeDependent;
   std::set<const BPMNOS::Model::Attribute*> dataDependencies;
 protected:

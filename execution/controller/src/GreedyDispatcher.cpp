@@ -70,8 +70,8 @@ std::shared_ptr<Event> GreedyDispatcher<WeakPtrs...>::dispatchEvent( [[maybe_unu
       auto decision = std::get<std::shared_ptr<Decision>>(decisionTuple);
       assert(decision);
       // Call decision->evaluate() and add the evaluation
-      auto reward = decision->evaluate();
-      this->addEvaluation(std::forward<decltype(args)>(args)..., reward);
+      auto eval = decision->evaluate();
+      this->addEvaluation(std::forward<decltype(args)>(args)..., eval ? eval->value : std::nullopt);
     }, decisionTuple);
   }
   decisionsWithoutEvaluation.clear();
@@ -110,8 +110,8 @@ void GreedyDispatcher<WeakPtrs...>::removeObsolete(const DataUpdate* update, aut
     auto& decisionTuple = *it;
     std::shared_ptr<Decision>& decision = std::get<sizeof...(WeakPtrs)>(decisionTuple);
     if ( intersect(update->attributes, decision->dataDependencies) ) {
-//std::cerr << "GreedyDispatcher: Remove evaluation of decision: " <<  decision->jsonify() << std::endl; 
-      decision->reward = std::nullopt;
+//std::cerr << "GreedyDispatcher: Remove evaluation of decision: " <<  decision->jsonify() << std::endl;
+      decision->evaluation.reset();
       std::apply([&unevaluatedDecisions](auto&&... args) { unevaluatedDecisions.emplace_back(std::forward<decltype(args)>(args)...); }, decisionTuple);
       // remove evaluation
       it = evaluation.erase(it);
@@ -151,7 +151,7 @@ template <typename... WeakPtrs>
 void GreedyDispatcher<WeakPtrs...>::clockTick() {
   for ( auto& decisionTuple : timeDependentEvaluations ) {
     std::shared_ptr<Decision>& decision = std::get<sizeof...(WeakPtrs)>(decisionTuple);
-    decision->reward = std::nullopt;
+    decision->evaluation.reset();
     std::apply([this](auto&&... args) { this->decisionsWithoutEvaluation.emplace_back(std::forward<decltype(args)>(args)...); }, decisionTuple);
   }
 
@@ -160,7 +160,7 @@ void GreedyDispatcher<WeakPtrs...>::clockTick() {
   for ( auto& [ instance, evaluations ] : timeAndDataDependentEvaluations ) {
     for ( auto& decisionTuple : evaluations ) {
       std::shared_ptr<Decision>& decision = std::get<sizeof...(WeakPtrs)>(decisionTuple);
-      decision->reward = std::nullopt;
+      decision->evaluation.reset();
       std::apply([this](auto&&... args) { this->decisionsWithoutEvaluation.emplace_back(std::forward<decltype(args)>(args)...); }, decisionTuple);
     }
   }

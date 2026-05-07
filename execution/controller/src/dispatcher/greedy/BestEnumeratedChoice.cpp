@@ -47,7 +47,7 @@ std::shared_ptr<Event> BestEnumeratedChoice::dispatchEvent( [[maybe_unused]] con
     // forget previous decision and find new best decision for the request
     auto decision = determineBestChoices( request );
     if ( decision ) {
-      addEvaluation( token_ptr, request_ptr, std::move(decision), decision->reward );
+      addEvaluation( token_ptr, request_ptr, std::move(decision), decision->reward() );
     }
   }
   decisionsWithoutEvaluation.clear();
@@ -75,8 +75,8 @@ std::shared_ptr<Decision> BestEnumeratedChoice::determineBestChoices(std::shared
     auto decision = std::make_shared<ChoiceDecision>(token, std::move(choices), evaluator);
     decision->evaluate();
     if (
-      decision->reward.has_value() &&
-      ( !bestDecision || decision->reward.value() > bestDecision->reward.value() )
+      decision->reward().has_value() &&
+      ( !bestDecision || decision->reward().value() > bestDecision->reward().value() )
     ) {
       bestDecision = decision;
     }

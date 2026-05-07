@@ -12,9 +12,9 @@ MessageDeliveryDecision::MessageDeliveryDecision(const Token* token, const Messa
   determineDependencies( evaluator->getDependencies(this) );
 }
 
-std::optional<double> MessageDeliveryDecision::evaluate() {
-  reward = evaluator->evaluate(this);
-  return reward;
+std::shared_ptr<Evaluation> MessageDeliveryDecision::evaluate() {
+  evaluation = evaluator->evaluate(this);
+  return evaluation;
 }
 
 nlohmann::ordered_json MessageDeliveryDecision::jsonify() const {
@@ -29,8 +29,8 @@ nlohmann::ordered_json MessageDeliveryDecision::jsonify() const {
     jsonObject["message"] = object->jsonify();
   }
   
-  if ( reward.has_value() ) {
-    jsonObject["reward"] = (double)reward.value();
+  if ( reward().has_value() ) {
+    jsonObject["reward"] = (double)reward().value();
   }
 
   return jsonObject;

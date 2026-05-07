@@ -16,10 +16,10 @@ public:
   bool updateValues(ChoiceDecision* decision, Values& status, Values& data, Values& globals) override;
   bool updateValues(MessageDeliveryDecision* decision, Values& status, Values& data, Values& globals) override;
 
-  std::optional<double> evaluate(EntryDecision* decision) override;
-  std::optional<double> evaluate(ExitDecision* decision) override;
-  std::optional<double> evaluate(ChoiceDecision* decision) override;
-  std::optional<double> evaluate(MessageDeliveryDecision* decision) override;
+  std::shared_ptr<Evaluation> evaluate(EntryDecision* decision) override;
+  std::shared_ptr<Evaluation> evaluate(ExitDecision* decision) override;
+  std::shared_ptr<Evaluation> evaluate(ChoiceDecision* decision) override;
+  std::shared_ptr<Evaluation> evaluate(MessageDeliveryDecision* decision) override;
 
   std::set<const BPMNOS::Model::Attribute*> getDependencies(EntryDecision* decision) override;
   std::set<const BPMNOS::Model::Attribute*> getDependencies(ExitDecision* decision) override;

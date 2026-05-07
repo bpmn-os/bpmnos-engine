@@ -16,7 +16,7 @@ namespace BPMNOS::Execution {
  */
 struct MessageDeliveryDecision : MessageDeliveryEvent, Decision {
   MessageDeliveryDecision(const Token* token, const Message* message, Evaluator* evaluator);
-  std::optional<double> evaluate() override;
+  std::shared_ptr<Evaluation> evaluate() override;
 
   nlohmann::ordered_json jsonify() const override;
 };

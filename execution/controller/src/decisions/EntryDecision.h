@@ -15,7 +15,7 @@ namespace BPMNOS::Execution {
  */
 struct EntryDecision : EntryEvent, Decision {
   EntryDecision(const Token* token, Evaluator* evaluator);
-  std::optional<double> evaluate() override;
+  std::shared_ptr<Evaluation> evaluate() override;
 
   nlohmann::ordered_json jsonify() const override;
 };

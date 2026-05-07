@@ -14,9 +14,9 @@ EntryDecision::EntryDecision(const Token* token, Evaluator* evaluator)
   determineDependencies( evaluator->getDependencies(this) );
 }
 
-std::optional<double> EntryDecision::evaluate() {
-  reward = evaluator->evaluate(this);
-  return reward;
+std::shared_ptr<Evaluation> EntryDecision::evaluate() {
+  evaluation = evaluator->evaluate(this);
+  return evaluation;
 }
 
 nlohmann::ordered_json EntryDecision::jsonify() const {
@@ -27,8 +27,8 @@ nlohmann::ordered_json EntryDecision::jsonify() const {
   jsonObject["instanceId"] = BPMNOS::to_string((*token->data)[BPMNOS::Model::ExtensionElements::Index::Instance].get().value(),STRING);
   jsonObject["nodeId"] = token->node->id;
 
-  if ( reward.has_value() ) {
-    jsonObject["reward"] = (double)reward.value();
+  if ( reward().has_value() ) {
+    jsonObject["reward"] = (double)reward().value();
   }
 
   return jsonObject;

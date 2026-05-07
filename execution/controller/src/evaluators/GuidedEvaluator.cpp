@@ -90,7 +90,7 @@ bool GuidedEvaluator::updateValues(MessageDeliveryDecision* decision, Values& st
   return guidance->restrictionsSatisfied(status,data,globals);
 }
 
-std::optional<double> GuidedEvaluator::evaluate(EntryDecision* decision) {
+std::shared_ptr<Evaluation> GuidedEvaluator::evaluate(EntryDecision* decision) {
   auto token = decision->token;
   assert( token->ready() || ( token->state == Token::State::EXITING ) ); // loop activities may re-enter
   auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
@@ -104,21 +104,21 @@ std::optional<double> GuidedEvaluator::evaluate(EntryDecision* decision) {
 //std::cerr << "Token: " << decision->token->jsonify() << std::endl;
 //std::cerr << "Initial evaluation: " << evaluation << std::endl;
 
-  bool feasible = updateValues(decision,status,data,globals); 
+  bool feasible = updateValues(decision,status,data,globals);
   if ( !feasible ) {
-    return std::nullopt;
+    return nullptr;
   }
 //std::cerr << "GuidedEvaluator: unguided evaluation " << extensionElements->getObjective(status,data,globals) << std::endl;
 
   if ( !extensionElements->entryGuidance ) {
-    return extensionElements->getObjective(status,data,globals) - evaluation;
+    return std::make_shared<Evaluation>(extensionElements->getObjective(status,data,globals) - evaluation);
   }
   // return evaluation of entry
 //std::cerr << "GuidedEvaluator: guided evaluation " << extensionElements->entryGuidance.value()->getObjective(status,data,globals) << std::endl;
-  return extensionElements->entryGuidance.value()->getObjective(status,data,globals) - evaluation;
+  return std::make_shared<Evaluation>(extensionElements->entryGuidance.value()->getObjective(status,data,globals) - evaluation);
 }
 
-std::optional<double> GuidedEvaluator::evaluate(ExitDecision* decision) {
+std::shared_ptr<Evaluation> GuidedEvaluator::evaluate(ExitDecision* decision) {
   auto token = decision->token;
   assert( token->completed() );
   auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
@@ -129,20 +129,20 @@ std::optional<double> GuidedEvaluator::evaluate(ExitDecision* decision) {
   Values globals = token->globals;
   double evaluation = (double)extensionElements->getObjective(status,data,globals);
 
-  bool feasible = updateValues(decision,status,data,globals); 
+  bool feasible = updateValues(decision,status,data,globals);
   if ( !feasible ) {
 //std::cerr << "GuidedEvaluator: Infeasible exit " << token->jsonify() << std::endl;
-    return std::nullopt;
+    return nullptr;
   }
 
   if ( !extensionElements->exitGuidance ) {
-    return extensionElements->getObjective(status,data,globals) - evaluation;
+    return std::make_shared<Evaluation>(extensionElements->getObjective(status,data,globals) - evaluation);
   }
 
-  return extensionElements->exitGuidance.value()->getObjective(status,data,globals) - evaluation;
+  return std::make_shared<Evaluation>(extensionElements->exitGuidance.value()->getObjective(status,data,globals) - evaluation);
 }
 
-std::optional<double> GuidedEvaluator::evaluate(ChoiceDecision* decision) {
+std::shared_ptr<Evaluation> GuidedEvaluator::evaluate(ChoiceDecision* decision) {
   auto token = decision->token;
   assert( token->busy() );
   auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
@@ -159,19 +159,19 @@ std::optional<double> GuidedEvaluator::evaluate(ChoiceDecision* decision) {
     extensionElements->attributeRegistry.setValue( extensionElements->choices[i]->attribute, status, data, globals, decision->choices[i] );
   }
 
-  bool feasible = updateValues(decision,status,data,globals); 
+  bool feasible = updateValues(decision,status,data,globals);
   if ( !feasible ) {
-    return std::nullopt;
+    return nullptr;
   }
 
   if ( !extensionElements->choiceGuidance ) {
-    return extensionElements->getObjective(status,data,globals) - evaluation;
+    return std::make_shared<Evaluation>(extensionElements->getObjective(status,data,globals) - evaluation);
   }
 
-  return extensionElements->choiceGuidance.value()->getObjective(status,data,globals) - evaluation;
+  return std::make_shared<Evaluation>(extensionElements->choiceGuidance.value()->getObjective(status,data,globals) - evaluation);
 }
 
-std::optional<double> GuidedEvaluator::evaluate(MessageDeliveryDecision* decision) {
+std::shared_ptr<Evaluation> GuidedEvaluator::evaluate(MessageDeliveryDecision* decision) {
   auto token = decision->token;
   assert( token->busy() );
 
@@ -186,17 +186,19 @@ std::optional<double> GuidedEvaluator::evaluate(MessageDeliveryDecision* decisio
 //std::cerr << "Token: " << decision->token->jsonify() << std::endl;
 //std::cerr << "Initial evaluation:\n" << evaluation << std::endl;
 
-  bool feasible = updateValues(decision,status,data,globals); 
+  bool feasible = updateValues(decision,status,data,globals);
   if ( !feasible ) {
-    return std::nullopt;
+std::cerr << "Infeasible:\n" << decision << decision->jsonify() <<"\n";
+    return nullptr;
   }
+std::cerr << "Feasible:\n" << decision << decision->jsonify() <<"\n";
 //std::cerr << "Local evaluation:\n" << extensionElements->getObjective(status,data,globals) << std::endl;
 
   if ( !extensionElements->messageDeliveryGuidance ) {
-    return extensionElements->getObjective(status,data,globals) - evaluation;
+    return std::make_shared<Evaluation>(extensionElements->getObjective(status,data,globals) - evaluation);
   }
 //std::cerr << "Guided evaluation:\n" << extensionElements->messageDeliveryGuidance.value()->getObjective(status,data,globals) << std::endl;
-  return extensionElements->messageDeliveryGuidance.value()->getObjective(status,data,globals) - evaluation;
+  return std::make_shared<Evaluation>(extensionElements->messageDeliveryGuidance.value()->getObjective(status,data,globals) - evaluation);
 }
 
 
@@ -246,6 +248,11 @@ std::set<const BPMNOS::Model::Attribute*> GuidedEvaluator::getDependencies(Messa
   std::set<const BPMNOS::Model::Attribute*> dependencies = LocalEvaluator::getDependencies(decision);
   // add guidance dependencies
   if ( extensionElements->messageDeliveryGuidance.has_value() ) {
+//std::cerr << "Dependencies: "  << extensionElements->messageDeliveryGuidance.value()->dependencies.size() << "\n";
+std::cerr << "All dependencies for " << decision->token->node->id << ": ";
+for (const auto* attr : dependencies) std::cerr << attr->name << " ";
+std::cerr << std::endl;
+
     dependencies.insert(extensionElements->messageDeliveryGuidance.value()->dependencies.begin(), extensionElements->messageDeliveryGuidance.value()->dependencies.end());
   }
 
