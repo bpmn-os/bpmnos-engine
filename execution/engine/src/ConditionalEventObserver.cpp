@@ -41,7 +41,7 @@ void ConditionalEventObserver::triggerConditionalEvent(const DataUpdate* dataUpd
     assert( token->node->extensionElements->represents<BPMNOS::Model::Conditions>() );
     auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::Conditions>();
 
-    // determine whether data update intersects with data dependencies of conditional event
+    // lambda determining whether data update intersects with data dependencies of conditional event
     auto intersect = [](const std::vector<const BPMNOS::Model::Attribute*>& first, const std::set<const BPMNOS::Model::Attribute*>& second) -> bool {
       for ( auto lhs : first ) {
         if ( second.contains(lhs) ) {
@@ -61,6 +61,9 @@ void ConditionalEventObserver::triggerConditionalEvent(const DataUpdate* dataUpd
       else {
         ++it;
       }
+    }
+    else {
+      ++it;
     }
   }
 }
