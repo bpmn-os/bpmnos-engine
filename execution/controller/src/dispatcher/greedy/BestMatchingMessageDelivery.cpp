@@ -25,18 +25,18 @@ std::shared_ptr<Event> BestMatchingMessageDelivery::dispatchEvent( [[maybe_unuse
     if ( decision ) {
       decision->evaluate();
 std::cerr << "Re-evaluated message delivery decision: " << decision << decision->jsonify().dump() << std::endl;
-      addEvaluation( token_ptr, request_ptr, message_ptr, std::move(decision), decision->reward() );
+      addEvaluation( token_ptr, request_ptr, message_ptr, std::move(decision) );
     }
   }
   decisionsWithoutEvaluation.clear();
 
 std::cerr << "\nEvaluated decisions:\n";
-  for ( auto [ cost, token_ptr, request_ptr, message_ptr, event_ptr ] : evaluatedDecisions ) {
+  for ( auto [ cost, token_ptr, request_ptr, message_ptr, event_ptr, evaluation_ptr ] : evaluatedDecisions ) {
      auto event = event_ptr.lock();
 std::cerr << event << event->jsonify() << " evaluated with " << cost << std::endl;
   } // TODO: REMOVE
 
-  for ( auto [ cost, token_ptr, request_ptr, message_ptr, event_ptr ] : evaluatedDecisions ) {
+  for ( auto [ cost, token_ptr, request_ptr, message_ptr, event_ptr, evaluation_ptr ] : evaluatedDecisions ) {
     // return best evaluated decision
 std::cerr << "\nBest message delivery decision " << event_ptr.lock()->jsonify() << " evaluated with " << cost << std::endl;
     return event_ptr.lock();

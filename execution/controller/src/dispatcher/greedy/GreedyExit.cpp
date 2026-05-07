@@ -43,7 +43,7 @@ std::shared_ptr<Event> GreedyExit::dispatchEvent( const SystemState* systemState
 
     // Call decision->evaluate() and add the evaluation
     decision->evaluate();
-    addEvaluation(token_ptr, request_ptr, decision, decision->reward());
+    addEvaluation(token_ptr, request_ptr, decision);
     if ( decision->reward().has_value() ) {
       return std::make_shared<ExitEvent>(decision->token);
     }
@@ -51,8 +51,8 @@ std::shared_ptr<Event> GreedyExit::dispatchEvent( const SystemState* systemState
   
   // all evaluated decisions are infeasible unless a previously dispatched decision was not deployed
   for ( auto decisionTuple : evaluatedDecisions ) {
-    constexpr std::size_t last = std::tuple_size<decltype(decisionTuple)>::value - 1;
-    std::weak_ptr<Event>& event_ptr = std::get<last>(decisionTuple);
+    constexpr std::size_t eventIndex = std::tuple_size<decltype(decisionTuple)>::value - 2;
+    std::weak_ptr<Event>& event_ptr = std::get<eventIndex>(decisionTuple);
     if ( auto event = event_ptr.lock();
       event && std::get<0>(decisionTuple) < std::numeric_limits<double>::max()
     ) {

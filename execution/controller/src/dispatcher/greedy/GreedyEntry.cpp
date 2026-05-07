@@ -54,7 +54,7 @@ std::shared_ptr<Event> GreedyEntry::dispatchEvent( const SystemState* systemStat
       // evaluation of decision is independent of others
       decision->evaluate();
 //std::cerr << "Regular: " << decision->jsonify() << std::endl;
-      addEvaluation(token_ptr, request_ptr, decision, decision->reward());
+      addEvaluation(token_ptr, request_ptr, decision);
 
       if ( decision->reward().has_value() ) {
         // dispatch feasible decision 
@@ -65,8 +65,8 @@ std::shared_ptr<Event> GreedyEntry::dispatchEvent( const SystemState* systemStat
 
   // all evaluated decisions are infeasible unless a previously dispatched decision was not deployed
   for ( auto decisionTuple : evaluatedDecisions ) {
-    constexpr std::size_t last = std::tuple_size<decltype(decisionTuple)>::value - 1;
-    std::weak_ptr<Event>& event_ptr = std::get<last>(decisionTuple);
+    constexpr std::size_t eventIndex = std::tuple_size<decltype(decisionTuple)>::value - 2;
+    std::weak_ptr<Event>& event_ptr = std::get<eventIndex>(decisionTuple);
     if ( auto event = event_ptr.lock();
       event && std::get<0>(decisionTuple) < std::numeric_limits<double>::max()
     ) {
@@ -105,11 +105,11 @@ std::shared_ptr<Event> GreedyEntry::dispatchEvent( const SystemState* systemStat
       // Call decision->evaluate() and add the evaluation
       decision->evaluate();
 //std::cerr << "Exclusive: " << decision->jsonify() << std::endl;
-      addEvaluation(token_ptr, request_ptr, decision, decision->reward());
+      addEvaluation(token_ptr, request_ptr, decision);
     }
     for ( auto decisionTuple : evaluatedDecisions ) {
-      constexpr std::size_t last = std::tuple_size<decltype(decisionTuple)>::value - 1;
-      std::weak_ptr<Event>& event_ptr = std::get<last>(decisionTuple);
+      constexpr std::size_t eventIndex = std::tuple_size<decltype(decisionTuple)>::value - 2;
+      std::weak_ptr<Event>& event_ptr = std::get<eventIndex>(decisionTuple);
       if ( auto event = event_ptr.lock();
         event && std::get<0>(decisionTuple) < std::numeric_limits<double>::max()
       ) {

@@ -25,11 +25,12 @@ void GreedyDispatcher<WeakPtrs...>::connect(Mediator* mediator) {
 }
 
 template <typename... WeakPtrs>
-void GreedyDispatcher<WeakPtrs...>::addEvaluation(WeakPtrs... weak_ptrs, std::shared_ptr<Decision> decision, std::optional<double> reward) {
-//std::cerr << reward.value_or(-999) << std::endl;  
+void GreedyDispatcher<WeakPtrs...>::addEvaluation(WeakPtrs... weak_ptrs, std::shared_ptr<Decision> decision) {
+  auto reward = decision->reward();
+//std::cerr << reward.value_or(-999) << std::endl;
   // evaluatedDecisions are sorted in ascending order
   // decisions without reward are assumed to be infeasible
-  evaluatedDecisions.emplace( (reward.has_value() ? -(double)reward.value() : std::numeric_limits<double>::max() ), weak_ptrs..., decision->weak_from_this());
+  evaluatedDecisions.emplace( (reward.has_value() ? -(double)reward.value() : std::numeric_limits<double>::max() ), weak_ptrs..., decision->weak_from_this(), decision->evaluation);
 
 //std::cerr << "GreedyDispatcher: evaluated decision: " <<  decision->jsonify() << " with " << reward.value_or(-999) << std::endl; 
   assert ( decision );
@@ -70,8 +71,8 @@ std::shared_ptr<Event> GreedyDispatcher<WeakPtrs...>::dispatchEvent( [[maybe_unu
       auto decision = std::get<std::shared_ptr<Decision>>(decisionTuple);
       assert(decision);
       // Call decision->evaluate() and add the evaluation
-      auto eval = decision->evaluate();
-      this->addEvaluation(std::forward<decltype(args)>(args)..., eval ? eval->value : std::nullopt);
+      decision->evaluate();
+      this->addEvaluation(std::forward<decltype(args)>(args)...);
     }, decisionTuple);
   }
   decisionsWithoutEvaluation.clear();

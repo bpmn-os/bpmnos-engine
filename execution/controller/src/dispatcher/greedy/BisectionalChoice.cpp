@@ -52,12 +52,12 @@ std::shared_ptr<Event> BisectionalChoice::dispatchEvent( [[maybe_unused]] const 
     // forget previous decision and find new best decision for the request
     auto decision = determineBestChoices( request );
     if ( decision ) {
-      addEvaluation( token_ptr, request_ptr, std::move(decision), decision->reward() );
+      addEvaluation( token_ptr, request_ptr, std::move(decision) );
     }
   }
   decisionsWithoutEvaluation.clear();
 
-  for ( auto [ cost, token_ptr, request_ptr, event_ptr ] : evaluatedDecisions ) {
+  for ( auto [ cost, token_ptr, request_ptr, event_ptr, evaluation_ptr ] : evaluatedDecisions ) {
 //std::cerr << "Best choice decision " << event_ptr.lock()->jsonify() << " evaluated with " << cost << std::endl;
     return event_ptr.lock();
   }

@@ -27,9 +27,9 @@ protected:
   Evaluator* evaluator;
   auto_list< WeakPtrs..., std::shared_ptr<Decision> > decisionsWithoutEvaluation;
 
-  void addEvaluation(WeakPtrs..., std::shared_ptr<Decision> decision, std::optional<double> reward );
+  void addEvaluation(WeakPtrs..., std::shared_ptr<Decision> decision);
 
-  auto_set< double, WeakPtrs..., std::weak_ptr<Event> > evaluatedDecisions;  
+  auto_set< double, WeakPtrs..., std::weak_ptr<Event>, std::weak_ptr<Evaluation> > evaluatedDecisions;  
   virtual void dataUpdate(const DataUpdate* update);
   bool intersect(const std::vector<const BPMNOS::Model::Attribute*>& first, const std::set<const BPMNOS::Model::Attribute*>& second) const;
   void removeObsolete(const DataUpdate* update, auto_list< WeakPtrs..., std::shared_ptr<Decision> >& evaluation, auto_list< WeakPtrs..., std::shared_ptr<Decision> >& unevaluatedDecisions);
