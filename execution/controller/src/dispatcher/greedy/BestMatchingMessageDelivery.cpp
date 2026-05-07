@@ -24,25 +24,26 @@ std::shared_ptr<Event> BestMatchingMessageDelivery::dispatchEvent( [[maybe_unuse
     assert(decision);
     if ( decision ) {
       decision->evaluate();
-std::cerr << "Re-evaluated message delivery decision: " << decision << decision->jsonify().dump() << std::endl;
+//std::cerr << "Re-evaluated message delivery decision: " << decision << decision->jsonify().dump() << std::endl;
       addEvaluation( token_ptr, request_ptr, message_ptr, std::move(decision) );
     }
   }
   decisionsWithoutEvaluation.clear();
 
+/*
 std::cerr << "\nEvaluated decisions:\n";
-  for ( auto [ cost, token_ptr, request_ptr, message_ptr, event_ptr, evaluation_ptr ] : evaluatedDecisions ) {
-     auto event = event_ptr.lock();
+for ( auto [ cost, token_ptr, request_ptr, message_ptr, event_ptr, evaluation_ptr ] : evaluatedDecisions ) {
+auto event = event_ptr.lock();
 std::cerr << event << event->jsonify() << " evaluated with " << cost << std::endl;
-  } // TODO: REMOVE
-
+} // TODO: REMOVE
+*/
   for ( auto [ cost, token_ptr, request_ptr, message_ptr, event_ptr, evaluation_ptr ] : evaluatedDecisions ) {
     // return best evaluated decision
-std::cerr << "\nBest message delivery decision " << event_ptr.lock()->jsonify() << " evaluated with " << cost << std::endl;
+//std::cerr << "\nBest message delivery decision " << event_ptr.lock()->jsonify() << " evaluated with " << cost << std::endl;
     return event_ptr.lock();
   }
 
-std::cerr << "No evaluated message delivery decision" << std::endl;
+//std::cerr << "No evaluated message delivery decision" << std::endl;
   return nullptr;
 }
 

@@ -188,10 +188,10 @@ std::shared_ptr<Evaluation> GuidedEvaluator::evaluate(MessageDeliveryDecision* d
 
   bool feasible = updateValues(decision,status,data,globals);
   if ( !feasible ) {
-std::cerr << "Infeasible:\n" << decision << decision->jsonify() <<"\n";
+//std::cerr << "Infeasible:\n" << decision << decision->jsonify() <<"\n";
     return nullptr;
   }
-std::cerr << "Feasible:\n" << decision << decision->jsonify() <<"\n";
+//std::cerr << "Feasible:\n" << decision << decision->jsonify() <<"\n";
 //std::cerr << "Local evaluation:\n" << extensionElements->getObjective(status,data,globals) << std::endl;
 
   if ( !extensionElements->messageDeliveryGuidance ) {
@@ -249,10 +249,11 @@ std::set<const BPMNOS::Model::Attribute*> GuidedEvaluator::getDependencies(Messa
   // add guidance dependencies
   if ( extensionElements->messageDeliveryGuidance.has_value() ) {
 //std::cerr << "Dependencies: "  << extensionElements->messageDeliveryGuidance.value()->dependencies.size() << "\n";
+/*
 std::cerr << "All dependencies for " << decision->token->node->id << ": ";
 for (const auto* attr : dependencies) std::cerr << attr->name << " ";
 std::cerr << std::endl;
-
+*/
     dependencies.insert(extensionElements->messageDeliveryGuidance.value()->dependencies.begin(), extensionElements->messageDeliveryGuidance.value()->dependencies.end());
   }
 
