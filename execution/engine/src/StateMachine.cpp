@@ -65,6 +65,28 @@ StateMachine::StateMachine(const StateMachine* other)
   data[BPMNOS::Model::ExtensionElements::Index::Instance] = std::ref(instance);
 }
 
+StateMachine::StateMachine(const SystemState* systemState, Token* parentToken, const StateMachine* other)
+  : systemState(systemState)
+  , process(other->process)
+  , scope(other->scope)
+  , root(parentToken ? parentToken->owner->root : this)
+  , instance(other->instance)
+  , parentToken(parentToken)
+  , ownedData(other->ownedData)
+  , data(parentToken ? SharedValues(parentToken->owner->data, ownedData) : SharedValues(ownedData))
+  , instantiations(other->instantiations)
+{
+  data[BPMNOS::Model::ExtensionElements::Index::Instance] = std::ref(instance);
+
+  // TODO: Copy tokens
+  // TODO: Copy compensationTokens
+  // TODO: Copy interruptingEventSubProcess
+  // TODO: Copy nonInterruptingEventSubProcesses
+  // TODO: Copy pendingEventSubProcesses
+  // TODO: Copy compensationEventSubProcesses
+  // TODO: Copy compensableSubProcesses
+}
+
 StateMachine::~StateMachine() {
 //std::cerr << "~StateMachine()" << std::endl;
   const_cast<SystemState*>(systemState)->tokensAwaitingGatewayActivation.erase(this);

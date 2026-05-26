@@ -21,8 +21,20 @@ SystemState::SystemState(const Engine* engine, const BPMNOS::Model::Scenario* sc
   , globals(other->globals)
   , instantiationCounter(other->instantiationCounter)
 {
-  // instances, messages, and all containers are left empty for now
-  // They will be populated in subsequent tasks
+  // Copy root state machine instances
+  for (const auto& otherInstance : other->instances) {
+    instances.push_back(std::make_shared<StateMachine>(this, nullptr, otherInstance.get()));
+
+    // Populate archive
+    auto key = (long unsigned int)otherInstance->instance.value();
+    if (other->archive.contains(key) &&
+        other->archive.at(key).lock().get() == otherInstance.get()) {
+      archive[key] = instances.back();
+    }
+  }
+
+  // TODO: Copy messages
+  // TODO: Populate remaining containers
 }
 
 SystemState::~SystemState() {

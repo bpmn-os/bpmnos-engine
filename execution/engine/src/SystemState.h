@@ -93,7 +93,11 @@ public:
   auto_set< BPMNOS::number, std::weak_ptr<Token> > tokensAwaitingCompletionEvent; ///< Sorted container holding all tokens awaiting a task completion event
 
   /**
-   * @brief Container holding instance identifier and corresponding state machine pointer for each instantiation.
+   * @brief Maps instance identifiers to state machines for message routing.
+   *
+   * Used to look up recipient state machines when delivering directed messages.
+   * Contains: root process state machines, multi-instance activity state machines,
+   * and non-interrupting event subprocess state machines.
    */
   std::unordered_map< long unsigned int, std::weak_ptr<StateMachine> > archive;
 
