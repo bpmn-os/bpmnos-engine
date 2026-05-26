@@ -23,8 +23,28 @@ private:
   const Engine* engine;
 
 public:
+  /**
+   * @brief Constructs a new SystemState for executing a scenario.
+   *
+   * @param engine The engine that will execute this state
+   * @param scenario The scenario providing instantiation and attribute data
+   * @param currentTime The initial simulation time (default: 0)
+   */
   SystemState(const Engine* engine, const BPMNOS::Model::Scenario* scenario, BPMNOS::number currentTime = 0);
+
+  /**
+   * @brief Copy constructor for cloning a SystemState to a different Engine/Scenario.
+   *
+   * Creates a deep copy of the system state that can be used independently
+   * with a different engine and scenario. All StateMachines, Tokens, and
+   * Messages are copied with their internal references remapped.
+   *
+   * @param engine The new engine this copy belongs to
+   * @param scenario The new scenario this copy belongs to
+   * @param other The source SystemState to copy from
+   */
   SystemState(const Engine* engine, const BPMNOS::Model::Scenario* scenario, const SystemState* other);
+
   ~SystemState();
 
   /**
