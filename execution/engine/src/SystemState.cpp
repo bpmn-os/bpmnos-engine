@@ -10,7 +10,19 @@ SystemState::SystemState(const Engine* engine, const BPMNOS::Model::Scenario* sc
   , currentTime(currentTime)
   , contributionsToObjective(0)
   , globals(scenario->globals)
-{  
+{
+}
+
+SystemState::SystemState(const Engine* engine, const BPMNOS::Model::Scenario* scenario, const SystemState* other)
+  : engine(engine)
+  , scenario(scenario)
+  , currentTime(other->currentTime)
+  , contributionsToObjective(other->contributionsToObjective)
+  , globals(other->globals)
+  , instantiationCounter(other->instantiationCounter)
+{
+  // instances, messages, and all containers are left empty for now
+  // They will be populated in subsequent tasks
 }
 
 SystemState::~SystemState() {

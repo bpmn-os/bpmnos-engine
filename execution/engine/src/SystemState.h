@@ -24,6 +24,7 @@ private:
 
 public:
   SystemState(const Engine* engine, const BPMNOS::Model::Scenario* scenario, BPMNOS::number currentTime = 0);
+  SystemState(const Engine* engine, const BPMNOS::Model::Scenario* scenario, const SystemState* other);
   ~SystemState();
 
   /**
