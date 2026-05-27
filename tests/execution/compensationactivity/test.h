@@ -384,13 +384,62 @@ SCENARIO( "Failing compensations of  multi instance activity", "[execution][comp
         REQUIRE( compensationLog[2]["state"] == "FAILED" );
 
         REQUIRE( compensationLog.size() == 3 );
-        
+
         auto failureLog = recorder.find(nlohmann::json{{"state","FAILED"}});
         REQUIRE( failureLog[0]["nodeId"] == "ErrorEvent_1" );
         REQUIRE( failureLog[1]["nodeId"] == "ErrorEvent_2" );
         REQUIRE( failureLog[2]["nodeId"] == "CompensationActivity_1" );
         REQUIRE( failureLog[3]["nodeId"] == nullptr );
-        
+
+      }
+    }
+  }
+}
+
+SCENARIO( "Two compensations triggered in reverse order", "[execution][compensation]" ) {
+  const std::string modelFile = "tests/execution/compensationactivity/Two_compensations_triggered.bpmn";
+  REQUIRE_NOTHROW( Model::Model(modelFile) );
+  GIVEN( "A single instance with no input values" ) {
+
+    std::string csv =
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1; timestamp := 0\n"
+    ;
+
+    Model::StaticDataProvider dataProvider(modelFile,csv);
+    auto scenario = dataProvider.createScenario();
+
+    WHEN( "The engine is started with a recorder" ) {
+      Execution::Engine engine;
+      Execution::InstantEntry entryHandler;
+      Execution::InstantExit exitHandler;
+      Execution::TimeWarp timeHandler;
+      entryHandler.connect(&engine);
+      exitHandler.connect(&engine);
+      timeHandler.connect(&engine);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
+      recorder.subscribe(&engine);
+      engine.run(scenario.get());
+      THEN( "Compensations execute in reverse order (Activity_2 first, then Activity_1)" ) {
+        auto entryLog = recorder.find(nlohmann::json{{"state", "ENTERED"}});
+        REQUIRE( entryLog[0]["nodeId"] == nullptr );
+        REQUIRE( entryLog[1]["nodeId"] == "StartEvent_1" );
+        REQUIRE( entryLog[2]["nodeId"] == "Activity_1" );
+        REQUIRE( entryLog[3]["nodeId"] == "Activity_2" );
+        REQUIRE( entryLog[4]["nodeId"] == "CompensateEndEvent_1" );
+        REQUIRE( entryLog[5]["nodeId"] == "CompensationActivity_2" );
+        REQUIRE( entryLog[6]["nodeId"] == "CompensationActivity_1" );
+
+        auto completionLog = recorder.find(nlohmann::json{{"state", "COMPLETED"}});
+        REQUIRE( completionLog[0]["nodeId"] == "Activity_1" );
+        REQUIRE( completionLog[1]["nodeId"] == "Activity_2" );
+        REQUIRE( completionLog[2]["nodeId"] == "CompensateBoundaryEvent_2" );
+        REQUIRE( completionLog[3]["nodeId"] == "CompensationActivity_2" );
+        REQUIRE( completionLog[4]["nodeId"] == "CompensateBoundaryEvent_1" );
+        REQUIRE( completionLog[5]["nodeId"] == "CompensationActivity_1" );
+        REQUIRE( completionLog[6]["nodeId"] == "CompensateEndEvent_1" );
+        REQUIRE( completionLog[7]["nodeId"] == nullptr );
       }
     }
   }
