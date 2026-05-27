@@ -3,3 +3,4 @@
 #include "signal/test.h"
 #include "condition/test.h"
 #include "task/test.h"
+#include "message/test.h"

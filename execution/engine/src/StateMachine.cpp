@@ -145,6 +145,23 @@ StateMachine::StateMachine(const SystemState* systemState, Token* parentToken, c
       auto time = token->status[BPMNOS::Model::ExtensionElements::Index::Timestamp].value();
       const_cast<SystemState*>(systemState)->tokensAwaitingCompletionEvent.emplace(time, token);
     }
+
+    // Populate boundary event containers
+    if (token->node && token->node->represents<BPMN::BoundaryEvent>() &&
+        !token->node->represents<BPMN::CompensateBoundaryEvent>() &&
+        token->state == Token::State::BUSY) {
+      auto it = other->systemState->tokenAssociatedToBoundaryEventToken.find(otherToken.get());
+      assert(it != other->systemState->tokenAssociatedToBoundaryEventToken.end());
+      const BPMN::FlowNode* activityNode = it->second->node;
+
+      auto activityIt = std::ranges::find_if(tokens,
+        [activityNode](const auto& t) { return t->node == activityNode; });
+      assert(activityIt != tokens.end());
+      Token* activityToken = activityIt->get();
+
+      const_cast<SystemState*>(systemState)->tokenAssociatedToBoundaryEventToken[token.get()] = activityToken;
+      const_cast<SystemState*>(systemState)->tokensAwaitingBoundaryEvent[activityToken].push_back(token.get());
+    }
   }
 
   // Copy compensationTokens (at CompensateBoundaryEvent or CompensateStartEvent in BUSY state)
