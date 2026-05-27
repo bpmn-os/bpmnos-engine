@@ -26,7 +26,8 @@ SCENARIO( "SystemState copy for simple process", "[systemstate]" ) {
     engine.run(scenario.get(),0);
     const auto* originalState= engine.getSystemState();
 
-    REQUIRE( originalState->instances.size() == 2);
+    REQUIRE( originalState->instances.size() == 2 );
+    REQUIRE( originalState->pendingEntryDecisions.count() == 2 );
 
     WHEN( "SystemState is copied" ) {
       auto scenarioCopy = dataProvider.createScenario();
@@ -53,6 +54,10 @@ SCENARIO( "SystemState copy for simple process", "[systemstate]" ) {
         REQUIRE( copiedState.currentTime == originalState->currentTime );
         REQUIRE( copiedState.globals.size() == originalState->globals.size() );
         REQUIRE( copiedState.contributionsToObjective == originalState->contributionsToObjective );
+      }
+
+      THEN( "The copy has the same pending entry decisions" ) {
+        REQUIRE( copiedState.pendingEntryDecisions.count() == originalState->pendingEntryDecisions.count() );
       }
     }
   }

@@ -58,6 +58,32 @@ Token::Token(const std::vector<Token*>& others)
 {
 }
 
+Token::Token(StateMachine* owner, const Token* other)
+  : owner(owner)
+  , owned(nullptr)
+  , node(other->node)
+  , sequenceFlow(other->sequenceFlow)
+  , state(other->state)
+  , status(other->status)
+  , data(&owner->data)
+  , globals(const_cast<SystemState*>(owner->systemState)->globals)
+  , performing(nullptr)
+{
+  // Copy decisionRequest (uses raw this pointer, not weak_ptr)
+  if (other->decisionRequest) {
+    decisionRequest = std::make_shared<DecisionRequest>(this, other->decisionRequest->type);
+  }
+
+  // Copy owned StateMachine (recursively copies child tokens and populates tracking containers)
+  if (other->owned) {
+    owned = std::make_shared<StateMachine>(owner->systemState, const_cast<Token*>(this), other->owned.get());
+    // Update data pointer to point to owned StateMachine's data
+    data = &owned->data;
+  }
+
+  // TODO: Populate pendingSequentialEntries (after make_shared, needs weak_from_this)
+}
+
 Token::~Token() {
 //std::cerr << "~Token(" << (node ? node->id : owner->process->id ) << "/" << this << ")" << std::endl;
   auto systemState = const_cast<SystemState*>(owner->systemState);

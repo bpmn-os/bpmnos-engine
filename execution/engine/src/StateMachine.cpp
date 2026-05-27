@@ -78,8 +78,61 @@ StateMachine::StateMachine(const SystemState* systemState, Token* parentToken, c
 {
   data[BPMNOS::Model::ExtensionElements::Index::Instance] = std::ref(instance);
 
-  // TODO: Copy tokens
-  // TODO: Copy compensationTokens
+  // Copy tokens
+  for (const auto& otherToken : other->tokens) {
+    tokens.push_back(std::make_shared<Token>(const_cast<StateMachine*>(this), otherToken.get()));
+
+    // Populate pending*Decisions containers (after make_shared, needs weak_from_this)
+    auto& token = tokens.back();
+    if (token->decisionRequest) {
+      auto type = token->decisionRequest->type;
+
+      if (type == Observable::Type::EntryRequest) {
+        const_cast<SystemState*>(systemState)->pendingEntryDecisions.emplace_back(token, token->decisionRequest);
+      }
+      else if (type == Observable::Type::ChoiceRequest) {
+        const_cast<SystemState*>(systemState)->pendingChoiceDecisions.emplace_back(token, token->decisionRequest);
+      }
+      else if (type == Observable::Type::ExitRequest) {
+        const_cast<SystemState*>(systemState)->pendingExitDecisions.emplace_back(token, token->decisionRequest);
+      }
+      else if (type == Observable::Type::MessageDeliveryRequest) {
+        const_cast<SystemState*>(systemState)->pendingMessageDeliveryDecisions.emplace_back(token, token->decisionRequest);
+      }
+    }
+
+    // TODO: Populate tokensAwaiting* containers
+  }
+
+  // Copy compensationTokens
+  for (const auto& otherToken : other->compensationTokens) {
+    compensationTokens.push_back(std::make_shared<Token>(const_cast<StateMachine*>(this), otherToken.get()));
+
+    // Populate pending*Decisions containers
+    auto& token = compensationTokens.back();
+    if (token->decisionRequest) {
+      auto type = token->decisionRequest->type;
+
+      if (type == Observable::Type::EntryRequest) {
+        const_cast<SystemState*>(systemState)->pendingEntryDecisions.emplace_back(token, token->decisionRequest);
+      }
+      else if (type == Observable::Type::ChoiceRequest) {
+        const_cast<SystemState*>(systemState)->pendingChoiceDecisions.emplace_back(token, token->decisionRequest);
+      }
+      else if (type == Observable::Type::ExitRequest) {
+        const_cast<SystemState*>(systemState)->pendingExitDecisions.emplace_back(token, token->decisionRequest);
+      }
+      else if (type == Observable::Type::MessageDeliveryRequest) {
+        const_cast<SystemState*>(systemState)->pendingMessageDeliveryDecisions.emplace_back(token, token->decisionRequest);
+      }
+    }
+
+    // TODO: Populate tokensAwaiting* containers
+  }
+
+  // TODO: Set cross-token references (performing, pendingSequentialEntries)
+  // TODO: Copy owned StateMachines
+
   // TODO: Copy interruptingEventSubProcess
   // TODO: Copy nonInterruptingEventSubProcesses
   // TODO: Copy pendingEventSubProcesses
