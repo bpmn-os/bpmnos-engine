@@ -6,3 +6,5 @@
 #include "message/test.h"
 #include "eventbasedgateway/test.h"
 #include "parallelgateway/test.h"
+#include "multiinstanceactivity/test.h"
+#include "compensationactivity/test.h"

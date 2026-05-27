@@ -1,5 +1,5 @@
 SCENARIO( "SystemState copy with parallel multi-instance activity", "[systemstate][multiinstanceactivity][parallel]" ) {
-  const std::string modelFile = "tests/execution/multiinstanceactivity/Parallel_multi-instance_task.bpmn";
+  const std::string modelFile = "tests/systemstate/multiinstanceactivity/Parallel_multi-instance_task.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
 
   GIVEN( "An instance with parallel multi-instance tokens" ) {
@@ -49,7 +49,7 @@ SCENARIO( "SystemState copy with parallel multi-instance activity", "[systemstat
 }
 
 SCENARIO( "SystemState copy with sequential multi-instance activity", "[systemstate][multiinstanceactivity][sequential]" ) {
-  const std::string modelFile = "tests/execution/multiinstanceactivity/Sequential_multi-instance_task.bpmn";
+  const std::string modelFile = "tests/systemstate/multiinstanceactivity/Sequential_multi-instance_task.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
 
   GIVEN( "An instance with sequential multi-instance tokens" ) {

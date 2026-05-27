@@ -193,11 +193,68 @@ StateMachine::StateMachine(const SystemState* systemState, Token* parentToken, c
 
       const_cast<SystemState*>(systemState)->tokensAwaitingGatewayActivation[const_cast<StateMachine*>(this)][token->node].push_back(token.get());
     }
+
+    // Populate multi-instance containers (tokenAtMultiInstanceActivity & tokensAtActivityInstance)
+    if (other->systemState->tokenAtMultiInstanceActivity.contains(otherToken.get())) {
+      // This is an activity instance token, find main token by node + WAITING state
+      auto mainIt = std::ranges::find_if(tokens, [&](const auto& t) {
+        return t->node == token->node && t->state == Token::State::WAITING;
+      });
+      assert(mainIt != tokens.end());
+      Token* mainToken = mainIt->get();
+
+      const_cast<SystemState*>(systemState)->tokenAtMultiInstanceActivity[token.get()] = mainToken;
+      const_cast<SystemState*>(systemState)->tokensAtActivityInstance[mainToken].push_back(token.get());
+    }
+
+    // Populate exitStatusAtActivityInstance (main token)
+    if (other->systemState->exitStatusAtActivityInstance.contains(otherToken.get())) {
+      const_cast<SystemState*>(systemState)->exitStatusAtActivityInstance[token.get()] =
+          other->systemState->exitStatusAtActivityInstance.at(otherToken.get());
+    }
+  }
+
+  // Populate tokenAwaitingMultiInstanceExit (sequential only) - after all tokens copied
+  for (auto& [otherPrevToken, otherNextToken] : other->systemState->tokenAwaitingMultiInstanceExit) {
+    if (otherPrevToken->owner != other) continue;  // Only process tokens owned by this StateMachine
+
+    auto prevInstance = otherPrevToken->status[BPMNOS::Model::ExtensionElements::Index::Instance];
+    auto nextInstance = otherNextToken->status[BPMNOS::Model::ExtensionElements::Index::Instance];
+    auto prevIt = std::ranges::find_if(tokens, [&](const auto& t) {
+      return t->node == otherPrevToken->node && t->status[BPMNOS::Model::ExtensionElements::Index::Instance] == prevInstance;
+    });
+    auto nextIt = std::ranges::find_if(tokens, [&](const auto& t) {
+      return t->node == otherNextToken->node && t->status[BPMNOS::Model::ExtensionElements::Index::Instance] == nextInstance;
+    });
+    assert(prevIt != tokens.end() && nextIt != tokens.end());
+
+    const_cast<SystemState*>(systemState)->tokenAwaitingMultiInstanceExit[prevIt->get()] = nextIt->get();
   }
 
   // Copy compensationTokens (at CompensateBoundaryEvent or CompensateStartEvent in BUSY state)
   for (const auto& otherToken : other->compensationTokens) {
     compensationTokens.push_back(std::make_shared<Token>(const_cast<StateMachine*>(this), otherToken.get()));
+  }
+
+  // Populate tokenAwaitingCompensationActivity - after tokens and compensationTokens copied
+  auto findTokenByNode = [&](const BPMN::FlowNode* node) -> Token* {
+    for (const auto& token : tokens) {
+      if (token->node == node) return token.get();
+    }
+    for (const auto& token : compensationTokens) {
+      if (token->node == node) return token.get();
+    }
+    return nullptr;
+  };
+
+  for (const auto& [otherCompensationToken, otherAwaitingToken] : other->systemState->tokenAwaitingCompensationActivity) {
+    if (otherCompensationToken->owner != other) continue;
+
+    Token* compensationToken = findTokenByNode(otherCompensationToken->node);
+    Token* awaitingToken = findTokenByNode(otherAwaitingToken->node);
+    assert(compensationToken && awaitingToken);
+
+    const_cast<SystemState*>(systemState)->tokenAwaitingCompensationActivity[compensationToken] = awaitingToken;
   }
 
   // TODO: Set cross-token references (performing, pendingSequentialEntries)
