@@ -100,6 +100,15 @@ public:
     return true;
   }
 
+  /**
+   * @brief Counts active (non-expired) elements. O(n) complexity.
+   */
+  size_t count() const {
+    size_t n = 0;
+    for ( [[maybe_unused]] auto _ : *this ) { n++; }
+    return n;
+  }
+
   void clear() {
     tuples.clear();
   }
