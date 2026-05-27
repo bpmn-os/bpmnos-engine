@@ -2,3 +2,4 @@
 #include "timer/test.h"
 #include "signal/test.h"
 #include "condition/test.h"
+#include "task/test.h"

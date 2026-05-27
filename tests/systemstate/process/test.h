@@ -62,3 +62,47 @@ SCENARIO( "SystemState copy for simple process", "[systemstate][process]" ) {
     }
   }
 }
+
+SCENARIO( "SystemState copy with token awaiting ready event", "[systemstate][process][ready]" ) {
+  const std::string modelFile = "tests/systemstate/process/Executable_process.bpmn";
+  REQUIRE_NOTHROW( Model::Model(modelFile) );
+
+  GIVEN( "An instance with activity data disclosed in the future" ) {
+    std::string csv =
+      "INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE\n"
+      "Instance_1; Process_1; timestamp := 0; 0\n"
+      "Instance_1; Activity_1; y := 0; 10\n"
+      "Instance_1; Activity_1; data := 0; 10\n"
+    ;
+
+    Model::DynamicDataProvider dataProvider(modelFile, csv);
+    auto scenario = dataProvider.createScenario();
+
+    Execution::Engine engine;
+    Execution::InstantEntry entryHandler;
+    Execution::InstantExit exitHandler;
+    Execution::TimeWarp timeHandler;
+    entryHandler.connect(&engine);
+    exitHandler.connect(&engine);
+    timeHandler.connect(&engine);
+    Execution::Recorder recorder;
+//    Execution::Recorder recorder(std::cerr);
+    recorder.subscribe(&engine);
+
+    engine.run(scenario.get(), 0);
+    const auto* originalState = engine.getSystemState();
+
+    // Token should be waiting for ready event at Activity_1
+    REQUIRE( originalState->tokensAwaitingReadyEvent.count() == 1 );
+
+    WHEN( "SystemState is copied" ) {
+      auto scenarioCopy = dataProvider.createScenario();
+      Execution::SystemState copiedState(&engine, scenarioCopy.get(), originalState);
+
+      THEN( "The copy has the same tokens awaiting ready event" ) {
+        REQUIRE( copiedState.tokensAwaitingReadyEvent.count() ==
+                 originalState->tokensAwaitingReadyEvent.count() );
+      }
+    }
+  }
+}

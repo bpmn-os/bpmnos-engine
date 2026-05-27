@@ -7,6 +7,7 @@
 #include "model/bpmnos/src/extensionElements/ExtensionElements.h"
 #include "model/bpmnos/src/extensionElements/Timer.h"
 #include "model/bpmnos/src/extensionElements/Signal.h"
+#include "model/bpmnos/src/DecisionTask.h"
 #include "model/utility/src/CollectionRegistry.h"
 #include "bpmn++.h"
 #include <cassert>
@@ -104,6 +105,8 @@ StateMachine::StateMachine(const SystemState* systemState, Token* parentToken, c
 
     // Populate tokensAwaitingTimer
     if (token->node && token->node->represents<BPMN::TimerCatchEvent>() && token->state == Token::State::BUSY) {
+      assert(other->systemState->tokensAwaitingTimer.find(otherToken.get()) !=
+             other->systemState->tokensAwaitingTimer.end());
       auto trigger = token->node->extensionElements->as<BPMNOS::Model::Timer>()->trigger.get();
       BPMNOS::number time = trigger->expression->execute(token->status, *token->data, token->globals).value();
       const_cast<SystemState*>(systemState)->tokensAwaitingTimer.emplace(time, token);
@@ -112,15 +115,36 @@ StateMachine::StateMachine(const SystemState* systemState, Token* parentToken, c
     // Populate tokensAwaitingSignal
     if (token->node && token->node->represents<BPMN::SignalCatchEvent>() && token->state == Token::State::BUSY) {
       auto signalName = token->node->extensionElements->as<BPMNOS::Model::Signal>()->name;
+      assert(other->systemState->tokensAwaitingSignal.at(signalName).find(otherToken.get()) !=
+             other->systemState->tokensAwaitingSignal.at(signalName).end());
       const_cast<SystemState*>(systemState)->tokensAwaitingSignal[signalName].emplace_back(token);
     }
 
     // Populate tokensAwaitingCondition
     if (token->node && token->node->represents<BPMN::ConditionalCatchEvent>() && token->state == Token::State::BUSY) {
+      assert(other->systemState->tokensAwaitingCondition.at(other->root->instance.value()).find(otherToken.get()) !=
+             other->systemState->tokensAwaitingCondition.at(other->root->instance.value()).end());
       const_cast<SystemState*>(systemState)->tokensAwaitingCondition[root->instance.value()].emplace_back(token);
     }
 
-    // TODO: Populate other tokensAwaiting* containers
+    // Populate tokensAwaitingReadyEvent
+    if (token->node && token->node->represents<BPMN::Activity>() &&
+        (token->state == Token::State::CREATED || token->state == Token::State::ARRIVED)) {
+      assert(other->systemState->tokensAwaitingReadyEvent.find(otherToken.get()) !=
+             other->systemState->tokensAwaitingReadyEvent.end());
+      const_cast<SystemState*>(systemState)->tokensAwaitingReadyEvent.emplace_back(token);
+    }
+
+    // Populate tokensAwaitingCompletionEvent
+    if (token->node && token->node->represents<BPMN::Task>() &&
+        !token->node->represents<BPMN::ReceiveTask>() &&
+        !token->node->represents<BPMNOS::Model::DecisionTask>() &&
+        token->state == Token::State::BUSY) {
+      assert(other->systemState->tokensAwaitingCompletionEvent.find(otherToken.get()) !=
+             other->systemState->tokensAwaitingCompletionEvent.end());
+      auto time = token->status[BPMNOS::Model::ExtensionElements::Index::Timestamp].value();
+      const_cast<SystemState*>(systemState)->tokensAwaitingCompletionEvent.emplace(time, token);
+    }
   }
 
   // Copy compensationTokens (at CompensateBoundaryEvent or CompensateStartEvent in BUSY state)
