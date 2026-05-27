@@ -7,4 +7,5 @@ docs/md/profiles/*
 docs/images/profile_*.svg
 profile/*.svg
 profile/*.dot
-
+build/
+dev_build

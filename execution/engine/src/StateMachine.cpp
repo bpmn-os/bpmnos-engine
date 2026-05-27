@@ -101,7 +101,14 @@ StateMachine::StateMachine(const SystemState* systemState, Token* parentToken, c
       }
     }
 
-    // TODO: Populate tokensAwaiting* containers
+    // Populate tokensAwaitingTimer
+    if (token->node && token->node->represents<BPMN::TimerCatchEvent>() && token->state == Token::State::BUSY) {
+      auto trigger = token->node->extensionElements->as<BPMNOS::Model::Timer>()->trigger.get();
+      BPMNOS::number time = trigger->expression->execute(token->status, *token->data, token->globals).value();
+      const_cast<SystemState*>(systemState)->tokensAwaitingTimer.emplace(time, token);
+    }
+
+    // TODO: Populate other tokensAwaiting* containers
   }
 
   // Copy compensationTokens
@@ -127,7 +134,14 @@ StateMachine::StateMachine(const SystemState* systemState, Token* parentToken, c
       }
     }
 
-    // TODO: Populate tokensAwaiting* containers
+    // Populate tokensAwaitingTimer
+    if (token->node && token->node->represents<BPMN::TimerCatchEvent>() && token->state == Token::State::BUSY) {
+      auto trigger = token->node->extensionElements->as<BPMNOS::Model::Timer>()->trigger.get();
+      BPMNOS::number time = trigger->expression->execute(token->status, *token->data, token->globals).value();
+      const_cast<SystemState*>(systemState)->tokensAwaitingTimer.emplace(time, token);
+    }
+
+    // TODO: Populate other tokensAwaiting* containers
   }
 
   // TODO: Set cross-token references (performing, pendingSequentialEntries)

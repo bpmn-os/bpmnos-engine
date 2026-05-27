@@ -1,4 +1,4 @@
-SCENARIO( "SystemState copy for simple process", "[systemstate]" ) {
+SCENARIO( "SystemState copy for simple process", "[systemstate][process]" ) {
   const std::string modelFile = "tests/systemstate/process/Simple_executable_process.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
 
