@@ -4,3 +4,4 @@
 #include "condition/test.h"
 #include "task/test.h"
 #include "message/test.h"
+#include "eventbasedgateway/test.h"

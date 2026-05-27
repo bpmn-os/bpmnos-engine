@@ -162,6 +162,24 @@ StateMachine::StateMachine(const SystemState* systemState, Token* parentToken, c
       const_cast<SystemState*>(systemState)->tokenAssociatedToBoundaryEventToken[token.get()] = activityToken;
       const_cast<SystemState*>(systemState)->tokensAwaitingBoundaryEvent[activityToken].push_back(token.get());
     }
+
+    // Populate event-based gateway containers
+    if (token->node && token->node->represents<BPMN::CatchEvent>() &&
+        token->state == Token::State::BUSY &&
+        !token->node->incoming.empty() &&
+        token->node->incoming.front()->source->represents<BPMN::EventBasedGateway>()) {
+      assert(other->systemState->tokenAtEventBasedGateway.find(otherToken.get()) !=
+             other->systemState->tokenAtEventBasedGateway.end());
+      const BPMN::FlowNode* gatewayNode = token->node->incoming.front()->source;
+
+      auto gatewayIt = std::ranges::find_if(tokens,
+        [gatewayNode](const auto& t) { return t->node == gatewayNode; });
+      assert(gatewayIt != tokens.end());
+      Token* gatewayToken = gatewayIt->get();
+
+      const_cast<SystemState*>(systemState)->tokenAtEventBasedGateway[token.get()] = gatewayToken;
+      const_cast<SystemState*>(systemState)->tokensAwaitingEvent[gatewayToken].push_back(token.get());
+    }
   }
 
   // Copy compensationTokens (at CompensateBoundaryEvent or CompensateStartEvent in BUSY state)
