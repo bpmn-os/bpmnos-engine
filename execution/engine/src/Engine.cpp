@@ -9,12 +9,14 @@
 #include "execution/engine/src/events/TimerEvent.h"
 #include "execution/utility/src/erase.h"
 #include <cassert>
+#include <limits>
 
 using namespace BPMNOS::Execution;
 
 Engine::Engine()
 {
   clockTick = 1;
+  lastInstantiationTime = std::numeric_limits<BPMNOS::number>::lowest();
   addSubscriber(&conditionalEventObserver, Observable::Type::DataUpdate);
   addSubscriber(&scenarioUpdater, Observable::Type::Event, Observable::Type::Token);
   readyHandler.connect(this);
@@ -74,10 +76,10 @@ BPMNOS::number Engine::run(const BPMNOS::Model::Scenario* scenario, BPMNOS::numb
 }
 
 bool Engine::advance() {
-  // add all new instances and advance tokens
-  addInstances();
-  // it is assumed that at least one clock tick or termination event is processed to ensure that
-  // each instance is only added once
+  // add new instances if time has advanced since last instantiation
+  if (lastInstantiationTime < systemState->getTime()) {
+    addInstances();
+  }
 
   while ( commands.size() ) {
 //std::cerr << "execute" << std::endl;
@@ -109,7 +111,8 @@ bool Engine::advance() {
     }
   }
 
-  throw std::runtime_error("Engine: unexpected absence of event");
+  // No event available, terminate
+  return false;
 }
 
 void Engine::addInstances() {
@@ -128,6 +131,7 @@ void Engine::addInstances() {
     // run instance and advance token
     systemState->instances.back()->run(std::move(status));
   }
+  lastInstantiationTime = systemState->getTime();
 }
 
 void Engine::deleteInstance(StateMachine* instance) {
