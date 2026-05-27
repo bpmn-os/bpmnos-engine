@@ -364,6 +364,7 @@ void Token::advanceToReady() {
     data = &owned->data;
   }
     
+  sequenceFlow = nullptr;
   update(State::READY);
   
   if ( auto activity = node->represents<BPMN::Activity>();

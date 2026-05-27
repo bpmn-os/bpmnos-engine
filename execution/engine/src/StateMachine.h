@@ -17,13 +17,18 @@ class SystemState;
 /**
  * @brief Represents a state machine for BPMN execution of a scope in the model.
  *
- * This class manages all tokens for BPMN execution of a given scope. It also holds
- * a state machine for each child scope instantiated.
+ * This class manages all tokens for BPMN execution of a given scope.
+ *
+ * @par Ownership Hierarchy
+ * All (sub)processes containing flow tokens are owned by a token via Token::owned.
+ * Root state machines (in SystemState::instances) only hold a single process-level
+ * token (node=nullptr). That token owns the child state machine containing the actual
+ * flow tokens. Subprocesses follow the same pattern: a token at the subprocess node
+ * owns a child state machine with the subprocess's flow tokens.
  *
  * @note A state machine without @ref parentToken represents a @ref BPMN::Process.
- * @par
  * @note Inclusive gateways are not yet supported.
- * 
+ *
  * @attention Event subprocesses within event subprocesses are not yet tested (and may not be supported).
  */
 class StateMachine : public std::enable_shared_from_this<StateMachine> {

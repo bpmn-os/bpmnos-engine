@@ -139,7 +139,6 @@ void Engine::process(const ReadyEvent* event) {
   Token* token = const_cast<Token*>(event->token);
   systemState->tokensAwaitingReadyEvent.remove(token);
 
-  token->sequenceFlow = nullptr;
   auto& status = const_cast<ReadyEvent*>(event)->statusAttributes;
   token->status = std::move(status);
   token->status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = systemState->currentTime;

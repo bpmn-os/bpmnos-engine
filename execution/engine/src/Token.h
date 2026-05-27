@@ -43,8 +43,8 @@ public:
   constexpr Type getObservableType() const override { return Type::Token; };
   const StateMachine* owner; ///< State machine owning the token
   std::shared_ptr<StateMachine> owned; ///< State machine owned by the token
-  const BPMN::FlowNode* node;
-  const BPMN::SequenceFlow* sequenceFlow;
+  const BPMN::FlowNode* node; ///< Flow node where the token resides (nullptr for process-level tokens)
+  const BPMN::SequenceFlow* sequenceFlow; ///< Sequence flow being traversed (only set in DEPARTED/ARRIVED states)
   enum class State { CREATED, READY, ENTERED, BUSY, COMPLETED, EXITING, DEPARTED, ARRIVED, WAITING, DONE, FAILED, FAILING, WITHDRAWN }; ///< The states that a token can be in
   const BPMNOS::Model::AttributeRegistry& getAttributeRegistry() const;
   static inline std::string stateName[] = { "CREATED", "READY", "ENTERED", "BUSY", "COMPLETED", "EXITING", "DEPARTED", "ARRIVED", "WAITING", "DONE", "FAILED", "FAILING", "WITHDRAWN" };
