@@ -5,3 +5,4 @@
 #include "task/test.h"
 #include "message/test.h"
 #include "eventbasedgateway/test.h"
+#include "parallelgateway/test.h"

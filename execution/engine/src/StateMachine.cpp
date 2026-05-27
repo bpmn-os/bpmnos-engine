@@ -180,6 +180,19 @@ StateMachine::StateMachine(const SystemState* systemState, Token* parentToken, c
       const_cast<SystemState*>(systemState)->tokenAtEventBasedGateway[token.get()] = gatewayToken;
       const_cast<SystemState*>(systemState)->tokensAwaitingEvent[gatewayToken].push_back(token.get());
     }
+
+    // Populate tokensAwaitingGatewayActivation (converging gateway)
+    if (token->sequenceFlow &&
+        token->state == Token::State::WAITING &&
+        token->node->represents<BPMN::Gateway>() &&
+        !token->node->represents<BPMN::ExclusiveGateway>() &&
+        token->node->incoming.size() > 1) {
+      assert(other->systemState->tokensAwaitingGatewayActivation.contains(const_cast<StateMachine*>(other)));
+      assert(other->systemState->tokensAwaitingGatewayActivation.at(const_cast<StateMachine*>(other)).contains(otherToken->node));
+      assert(std::ranges::contains(other->systemState->tokensAwaitingGatewayActivation.at(const_cast<StateMachine*>(other)).at(otherToken->node), otherToken.get()));
+
+      const_cast<SystemState*>(systemState)->tokensAwaitingGatewayActivation[const_cast<StateMachine*>(this)][token->node].push_back(token.get());
+    }
   }
 
   // Copy compensationTokens (at CompensateBoundaryEvent or CompensateStartEvent in BUSY state)
