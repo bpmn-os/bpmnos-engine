@@ -6,6 +6,7 @@
 #include "execution/utility/src/erase.h"
 #include "model/bpmnos/src/extensionElements/ExtensionElements.h"
 #include "model/bpmnos/src/extensionElements/Timer.h"
+#include "model/bpmnos/src/extensionElements/Signal.h"
 #include "model/utility/src/CollectionRegistry.h"
 #include "bpmn++.h"
 #include <cassert>
@@ -108,40 +109,23 @@ StateMachine::StateMachine(const SystemState* systemState, Token* parentToken, c
       const_cast<SystemState*>(systemState)->tokensAwaitingTimer.emplace(time, token);
     }
 
+    // Populate tokensAwaitingSignal
+    if (token->node && token->node->represents<BPMN::SignalCatchEvent>() && token->state == Token::State::BUSY) {
+      auto signalName = token->node->extensionElements->as<BPMNOS::Model::Signal>()->name;
+      const_cast<SystemState*>(systemState)->tokensAwaitingSignal[signalName].emplace_back(token);
+    }
+
+    // Populate tokensAwaitingCondition
+    if (token->node && token->node->represents<BPMN::ConditionalCatchEvent>() && token->state == Token::State::BUSY) {
+      const_cast<SystemState*>(systemState)->tokensAwaitingCondition[root->instance.value()].emplace_back(token);
+    }
+
     // TODO: Populate other tokensAwaiting* containers
   }
 
-  // Copy compensationTokens
+  // Copy compensationTokens (at CompensateBoundaryEvent or CompensateStartEvent in BUSY state)
   for (const auto& otherToken : other->compensationTokens) {
     compensationTokens.push_back(std::make_shared<Token>(const_cast<StateMachine*>(this), otherToken.get()));
-
-    // Populate pending*Decisions containers
-    auto& token = compensationTokens.back();
-    if (token->decisionRequest) {
-      auto type = token->decisionRequest->type;
-
-      if (type == Observable::Type::EntryRequest) {
-        const_cast<SystemState*>(systemState)->pendingEntryDecisions.emplace_back(token, token->decisionRequest);
-      }
-      else if (type == Observable::Type::ChoiceRequest) {
-        const_cast<SystemState*>(systemState)->pendingChoiceDecisions.emplace_back(token, token->decisionRequest);
-      }
-      else if (type == Observable::Type::ExitRequest) {
-        const_cast<SystemState*>(systemState)->pendingExitDecisions.emplace_back(token, token->decisionRequest);
-      }
-      else if (type == Observable::Type::MessageDeliveryRequest) {
-        const_cast<SystemState*>(systemState)->pendingMessageDeliveryDecisions.emplace_back(token, token->decisionRequest);
-      }
-    }
-
-    // Populate tokensAwaitingTimer
-    if (token->node && token->node->represents<BPMN::TimerCatchEvent>() && token->state == Token::State::BUSY) {
-      auto trigger = token->node->extensionElements->as<BPMNOS::Model::Timer>()->trigger.get();
-      BPMNOS::number time = trigger->expression->execute(token->status, *token->data, token->globals).value();
-      const_cast<SystemState*>(systemState)->tokensAwaitingTimer.emplace(time, token);
-    }
-
-    // TODO: Populate other tokensAwaiting* containers
   }
 
   // TODO: Set cross-token references (performing, pendingSequentialEntries)
