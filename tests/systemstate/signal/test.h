@@ -1,4 +1,4 @@
-SCENARIO( "SystemState copy with signal", "[systemstate][signal]" ) {
+SCENARIO( "SystemState copy with token awaiting signal", "[systemstate][signal]" ) {
   const std::string modelFile = "tests/systemstate/signal/Signal.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
 

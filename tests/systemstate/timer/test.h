@@ -1,4 +1,4 @@
-SCENARIO( "SystemState copy with timer", "[systemstate][timer]" ) {
+SCENARIO( "SystemState copy with token awaiting timer", "[systemstate][timer]" ) {
   const std::string modelFile = "tests/systemstate/timer/Timer.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
 

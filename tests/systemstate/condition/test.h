@@ -1,4 +1,4 @@
-SCENARIO( "SystemState copy with condition", "[systemstate][condition]" ) {
+SCENARIO( "SystemState copy with token awaiting condition", "[systemstate][condition]" ) {
   const std::string modelFile = "tests/systemstate/condition/Condition_on_global.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
 
