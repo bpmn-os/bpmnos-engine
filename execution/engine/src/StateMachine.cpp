@@ -291,9 +291,17 @@ StateMachine::StateMachine(const SystemState* systemState, Token* parentToken, c
     compensableSubProcesses.push_back(std::make_shared<Token>(const_cast<StateMachine*>(this), otherToken.get()));
   }
 
-  // Copy compensationEventSubProcesses
+  // Copy compensationEventSubProcesses and populate tokenAwaitingCompensationEventSubProcess
   for (const auto& otherEventSubProcess : other->compensationEventSubProcesses) {
     compensationEventSubProcesses.push_back(std::make_shared<StateMachine>(systemState, parentToken, otherEventSubProcess.get()));
+
+    // Populate tokenAwaitingCompensationEventSubProcess if original had a waiting token
+    if (auto it = other->systemState->tokenAwaitingCompensationEventSubProcess.find(otherEventSubProcess.get());
+        it != other->systemState->tokenAwaitingCompensationEventSubProcess.end()) {
+      Token* waitingToken = findTokenByNode(it->second->node);
+      assert(waitingToken);
+      const_cast<SystemState*>(systemState)->tokenAwaitingCompensationEventSubProcess[compensationEventSubProcesses.back().get()] = waitingToken;
+    }
   }
 }
 

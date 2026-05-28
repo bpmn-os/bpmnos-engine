@@ -123,6 +123,12 @@ SCENARIO( "SystemState copy with active compensation event subprocess", "[system
     REQUIRE( originalContext != nullptr );
     REQUIRE( originalContext->compensationEventSubProcesses.size() == 1 );
 
+    // Verify tokenAwaitingCompensationEventSubProcess is populated
+    auto* originalCompensationEventSubProcess = originalContext->compensationEventSubProcesses.front().get();
+    auto originalIt = originalState->tokenAwaitingCompensationEventSubProcess.find(originalCompensationEventSubProcess);
+    REQUIRE( originalIt != originalState->tokenAwaitingCompensationEventSubProcess.end() );
+    REQUIRE( originalIt->second->node->id == "CompensateThrowEvent_1" );
+
     WHEN( "SystemState is copied" ) {
       auto scenarioCopy = dataProvider.createScenario();
       Execution::SystemState copiedState(&engine, scenarioCopy.get(), originalState);
@@ -150,6 +156,15 @@ SCENARIO( "SystemState copy with active compensation event subprocess", "[system
         // Verify scope is the same
         REQUIRE( copiedContext->compensationEventSubProcesses.front()->scope ==
                  originalContext->compensationEventSubProcesses.front()->scope );
+
+        // Verify tokenAwaitingCompensationEventSubProcess is copied
+        auto* copiedCompensationEventSubProcess = copiedContext->compensationEventSubProcesses.front().get();
+        auto copiedIt = copiedState.tokenAwaitingCompensationEventSubProcess.find(copiedCompensationEventSubProcess);
+        REQUIRE( copiedIt != copiedState.tokenAwaitingCompensationEventSubProcess.end() );
+        REQUIRE( copiedIt->second->node->id == "CompensateThrowEvent_1" );
+
+        // Verify it points to the copied token, not the original
+        REQUIRE( copiedIt->second != originalIt->second );
       }
     }
   }
