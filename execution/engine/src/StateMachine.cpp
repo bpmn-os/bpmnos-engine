@@ -2,6 +2,7 @@
 #include "StateMachine.h"
 #include "Token.h"
 #include "SystemState.h"
+#include "Message.h"
 #include "Event.h"
 #include "execution/utility/src/erase.h"
 #include "model/bpmnos/src/extensionElements/ExtensionElements.h"
@@ -139,12 +140,24 @@ StateMachine::StateMachine(const SystemState* systemState, Token* parentToken, c
     // Populate tokensAwaitingCompletionEvent
     if (token->node && token->node->represents<BPMN::Task>() &&
         !token->node->represents<BPMN::ReceiveTask>() &&
+        !token->node->represents<BPMN::SendTask>() &&
         !token->node->represents<BPMNOS::Model::DecisionTask>() &&
         token->state == Token::State::BUSY) {
       assert(other->systemState->tokensAwaitingCompletionEvent.find(otherToken.get()) !=
              other->systemState->tokensAwaitingCompletionEvent.end());
       auto time = token->status[BPMNOS::Model::ExtensionElements::Index::Timestamp].value();
       const_cast<SystemState*>(systemState)->tokensAwaitingCompletionEvent.emplace(time, token);
+    }
+
+    // Create message for SendTask tokens awaiting delivery
+    if (token->node && token->node->represents<BPMN::SendTask>() &&
+        token->state == Token::State::BUSY) {
+      assert(other->systemState->messageAwaitingDelivery.contains(otherToken.get()));
+      auto otherMessage = other->systemState->messageAwaitingDelivery.at(otherToken.get()).lock();
+      assert(otherMessage);
+      auto message = std::make_shared<Message>(otherMessage.get(), token.get());
+      const_cast<SystemState*>(systemState)->messages.push_back(message);
+      const_cast<SystemState*>(systemState)->messageAwaitingDelivery[token.get()] = message;
     }
 
     // Populate boundary event containers

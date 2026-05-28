@@ -56,6 +56,68 @@ SCENARIO( "SystemState copy with undelivered message", "[systemstate][message]" 
   }
 }
 
+SCENARIO( "SystemState copy with SendTask message awaiting delivery", "[systemstate][message][sendtask]" ) {
+  const std::string modelFile = "tests/systemstate/message/Message_tasks_with_timer.bpmn";
+  REQUIRE_NOTHROW( Model::Model(modelFile) );
+
+  GIVEN( "A SendTask in BUSY state with message awaiting delivery" ) {
+    // Only instantiate Process_1 (sender) - SendTask waits for delivery
+    std::string csv =
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1; timestamp := 0\n"
+    ;
+
+    Model::StaticDataProvider dataProvider(modelFile, csv);
+    auto scenario = dataProvider.createScenario();
+
+    Execution::Engine engine;
+    Execution::InstantEntry entryHandler;
+    Execution::InstantExit exitHandler;
+    Execution::TimeWarp timeHandler;
+    entryHandler.connect(&engine);
+    exitHandler.connect(&engine);
+    timeHandler.connect(&engine);
+    Execution::Recorder recorder;
+//    Execution::Recorder recorder(std::cerr);
+    recorder.subscribe(&engine);
+
+    engine.run(scenario.get(), 0);
+    const auto* originalState = engine.getSystemState();
+
+    // SendTask is in BUSY state with message awaiting delivery
+    REQUIRE( originalState->messages.size() == 1 );
+    REQUIRE( originalState->messages.front()->waitingToken != nullptr );
+    REQUIRE( originalState->messageAwaitingDelivery.size() == 1 );
+
+    WHEN( "SystemState is copied" ) {
+      auto scenarioCopy = dataProvider.createScenario();
+      Execution::SystemState copiedState(&engine, scenarioCopy.get(), originalState);
+
+      THEN( "The message is copied" ) {
+        REQUIRE( copiedState.messages.size() == originalState->messages.size() );
+      }
+
+      THEN( "The copied message has waitingToken pointing to the copied token" ) {
+        const auto* copiedMessage = copiedState.messages.front().get();
+
+        REQUIRE( copiedMessage->waitingToken != nullptr );
+        // waitingToken should point to a token in the copied state, not the original
+        REQUIRE( copiedMessage->waitingToken != originalState->messages.front()->waitingToken );
+        REQUIRE( copiedMessage->waitingToken->owner->systemState == &copiedState );
+      }
+
+      THEN( "The messageAwaitingDelivery container is populated" ) {
+        REQUIRE( copiedState.messageAwaitingDelivery.size() == originalState->messageAwaitingDelivery.size() );
+
+        // The key should be the copied token, not the original
+        auto* copiedToken = copiedState.messages.front()->waitingToken;
+        REQUIRE( copiedState.messageAwaitingDelivery.contains(copiedToken) );
+        REQUIRE( copiedState.messageAwaitingDelivery.at(copiedToken).lock().get() == copiedState.messages.front().get() );
+      }
+    }
+  }
+}
+
 SCENARIO( "SystemState copy with token awaiting boundary event", "[systemstate][message][boundary]" ) {
   const std::string modelFile = "tests/systemstate/message/Message_tasks_with_timer.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
