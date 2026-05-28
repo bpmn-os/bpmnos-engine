@@ -275,11 +275,17 @@ StateMachine::StateMachine(const SystemState* systemState, Token* parentToken, c
     const_cast<SystemState*>(systemState)->tokenAwaitingCompensationActivity[compensationToken] = awaitingToken;
   }
 
-  // TODO: Copy owned StateMachines
+  // Copy event subprocesses (pending, interrupting, non-interrupting)
+  for (const auto& otherEventSubProcess : other->pendingEventSubProcesses) {
+    pendingEventSubProcesses.push_back(std::make_shared<StateMachine>(systemState, parentToken, otherEventSubProcess.get()));
+  }
+  if (other->interruptingEventSubProcess) {
+    interruptingEventSubProcess = std::make_shared<StateMachine>(systemState, parentToken, other->interruptingEventSubProcess.get());
+  }
+  for (const auto& otherEventSubProcess : other->nonInterruptingEventSubProcesses) {
+    nonInterruptingEventSubProcesses.push_back(std::make_shared<StateMachine>(systemState, parentToken, otherEventSubProcess.get()));
+  }
 
-  // TODO: Copy interruptingEventSubProcess
-  // TODO: Copy nonInterruptingEventSubProcesses
-  // TODO: Copy pendingEventSubProcesses
   // TODO: Copy compensationEventSubProcesses
   // TODO: Copy compensableSubProcesses
 }
@@ -1046,9 +1052,12 @@ void StateMachine::shutdown() {
     subProcess && subProcess->compensatedBy
   ) {
     if ( subProcess->compensatedBy->represents<BPMN::EventSubProcess>() ) {
-      auto parent = const_cast<StateMachine*>(parentToken->owner);
       // move state machine pointer to ensure it is not deleted
-      parent->compensableSubProcesses.push_back(shared_from_this());
+      auto parent = const_cast<StateMachine*>(parentToken->owner);
+      auto compensableSubProcess = shared_from_this();
+//      compensableSubProcess->parentToken = nullptr;
+      parent->compensableSubProcesses.push_back(std::move(compensableSubProcess));
+//      return;
     }
   }
 

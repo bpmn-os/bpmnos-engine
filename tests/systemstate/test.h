@@ -9,3 +9,4 @@
 #include "multiinstanceactivity/test.h"
 #include "compensationactivity/test.h"
 #include "adhocsubprocess/test.h"
+#include "eventsubprocess/test.h"
