@@ -541,12 +541,12 @@ void Token::advanceToEntered() {
         auto it = std::find_if(
           context->compensableSubProcesses.begin(),
           context->compensableSubProcesses.end(),
-          [&eventSubProcess](const std::shared_ptr<StateMachine>& stateMachine) -> bool {
+          [&eventSubProcess](const std::shared_ptr<Token>& token) -> bool {
             // check if compensation event subprocess belongs to compensable subprocess
-            return ( stateMachine->scope->compensationEventSubProcess == eventSubProcess );
+            return ( token->owned->scope->compensationEventSubProcess == eventSubProcess );
           }
         );
-        context = ( it != context->compensableSubProcesses.end() ? it->get() : nullptr );
+        context = ( it != context->compensableSubProcesses.end() ? (*it)->owned.get() : nullptr );
       }
 
       if ( context ) {

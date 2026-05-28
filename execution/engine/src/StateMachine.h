@@ -105,7 +105,7 @@ public:
 
   Tokens compensationTokens; ///< Container with all tokens created for a compensation activity.
   StateMachines compensationEventSubProcesses; ///< Container with state machines created for a compensation event subprocesses of a child subprocess
-  StateMachines compensableSubProcesses; ///< Container holding state machines for completed subprocesses with a compensation event subprocess and compensation tokens
+  Tokens compensableSubProcesses; ///< Container holding tokens owning completed subprocesses with a compensation event subprocess
 
   Tokens getCompensationTokens(const BPMN::Activity* activity = nullptr) const; ///< Returns the compensation tokens for a given activity or for all activities
   void run(Values status); ///< Create initial token and advance it.

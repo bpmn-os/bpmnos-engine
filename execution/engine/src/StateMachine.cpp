@@ -286,8 +286,12 @@ StateMachine::StateMachine(const SystemState* systemState, Token* parentToken, c
     nonInterruptingEventSubProcesses.push_back(std::make_shared<StateMachine>(systemState, parentToken, otherEventSubProcess.get()));
   }
 
+  // Copy compensableSubProcesses (tokens owning compensable subprocesses)
+  for (const auto& otherToken : other->compensableSubProcesses) {
+    compensableSubProcesses.push_back(std::make_shared<Token>(const_cast<StateMachine*>(this), otherToken.get()));
+  }
+
   // TODO: Copy compensationEventSubProcesses
-  // TODO: Copy compensableSubProcesses
 }
 
 StateMachine::~StateMachine() {
@@ -1056,17 +1060,6 @@ void StateMachine::shutdown() {
   else {
     auto parent = const_cast<StateMachine*>(parentToken->owner);
 
-    if ( auto subProcess = scope->represents<BPMN::SubProcess>();
-      subProcess && subProcess->compensatedBy
-    ) {
-      if ( subProcess->compensatedBy->represents<BPMN::EventSubProcess>() ) {
-        // move state machine pointer to ensure it is not deleted
-        auto compensableSubProcess = shared_from_this();
-//        compensableSubProcess->parentToken = parent->parentToken;
-        parent->compensableSubProcesses.push_back(std::move(compensableSubProcess));
-      }
-    }
-
 //std::cerr << "delete child: " << scope->id << std::endl;
     if ( auto eventSubProcess = scope->represents<BPMN::EventSubProcess>();
       eventSubProcess && eventSubProcess->startEvent->isInterrupting
@@ -1079,6 +1072,18 @@ void StateMachine::shutdown() {
     auto context = const_cast<StateMachine*>(parentToken->owned.get());
     auto token = context->parentToken;
     engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,token), token);
+
+    if ( auto subProcess = scope->represents<BPMN::SubProcess>();
+      subProcess && subProcess->compensatedBy
+    ) {
+      if ( subProcess->compensatedBy->represents<BPMN::EventSubProcess>() ) {
+        // create token copy to own the compensable subprocess
+        auto tokenCopy = std::make_shared<Token>(parentToken);
+        tokenCopy->owned = shared_from_this();
+        parentToken = tokenCopy.get();
+        parent->compensableSubProcesses.push_back(std::move(tokenCopy));
+      }
+    }
   }
 
 //std::cerr << "shutdown (done): " << scope->id <<std::endl;
