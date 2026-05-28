@@ -1048,27 +1048,26 @@ void StateMachine::shutdown() {
   // ensure that messages to state machine are removed  
   unregisterRecipient();
   
-  if ( auto subProcess = scope->represents<BPMN::SubProcess>();
-    subProcess && subProcess->compensatedBy
-  ) {
-    if ( subProcess->compensatedBy->represents<BPMN::EventSubProcess>() ) {
-      // move state machine pointer to ensure it is not deleted
-      auto parent = const_cast<StateMachine*>(parentToken->owner);
-      auto compensableSubProcess = shared_from_this();
-//      compensableSubProcess->parentToken = nullptr;
-      parent->compensableSubProcesses.push_back(std::move(compensableSubProcess));
-//      return;
-    }
-  }
-
   if ( !parentToken ) {
 //std::cerr << "delete root: " << BPMNOS::to_string(instance.value(),STRING) << std::endl;
     // delete root state machine (and all descendants)
     engine->commands.emplace_back(std::bind(&Engine::deleteInstance,engine,this), this);
   }
   else {
-//std::cerr << "delete child: " << scope->id << std::endl;
     auto parent = const_cast<StateMachine*>(parentToken->owner);
+
+    if ( auto subProcess = scope->represents<BPMN::SubProcess>();
+      subProcess && subProcess->compensatedBy
+    ) {
+      if ( subProcess->compensatedBy->represents<BPMN::EventSubProcess>() ) {
+        // move state machine pointer to ensure it is not deleted
+        auto compensableSubProcess = shared_from_this();
+//        compensableSubProcess->parentToken = parent->parentToken;
+        parent->compensableSubProcesses.push_back(std::move(compensableSubProcess));
+      }
+    }
+
+//std::cerr << "delete child: " << scope->id << std::endl;
     if ( auto eventSubProcess = scope->represents<BPMN::EventSubProcess>();
       eventSubProcess && eventSubProcess->startEvent->isInterrupting
     ) {
