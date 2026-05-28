@@ -8,3 +8,4 @@
 #include "parallelgateway/test.h"
 #include "multiinstanceactivity/test.h"
 #include "compensationactivity/test.h"
+#include "adhocsubprocess/test.h"

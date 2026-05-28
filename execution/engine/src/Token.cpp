@@ -81,7 +81,7 @@ Token::Token(StateMachine* owner, const Token* other)
     data = &owned->data;
   }
 
-  // TODO: Populate pendingSequentialEntries (after make_shared, needs weak_from_this)
+  // Note: performing and pendingSequentialEntries are populated in StateMachine copy constructor
 }
 
 Token::~Token() {

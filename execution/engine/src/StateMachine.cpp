@@ -8,6 +8,7 @@
 #include "model/bpmnos/src/extensionElements/Timer.h"
 #include "model/bpmnos/src/extensionElements/Signal.h"
 #include "model/bpmnos/src/DecisionTask.h"
+#include "model/bpmnos/src/SequentialAdHocSubProcess.h"
 #include "model/utility/src/CollectionRegistry.h"
 #include "bpmn++.h"
 #include <cassert>
@@ -212,6 +213,23 @@ StateMachine::StateMachine(const SystemState* systemState, Token* parentToken, c
       const_cast<SystemState*>(systemState)->exitStatusAtActivityInstance[token.get()] =
           other->systemState->exitStatusAtActivityInstance.at(otherToken.get());
     }
+
+    // Populate performing and pendingSequentialEntries for activities in SequentialAdHocSubProcess
+    if (token->node && token->node->parent &&
+        token->node->represents<BPMN::Activity>() &&
+        token->node->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>()) {
+      Token* performerToken = token->getSequentialPerformerToken();
+      Token* otherPerformerToken = otherToken->getSequentialPerformerToken();
+
+      if (otherPerformerToken->performing == otherToken.get()) {
+        performerToken->performing = token.get();
+      }
+
+      if (otherPerformerToken->pendingSequentialEntries.find(otherToken.get()) !=
+          otherPerformerToken->pendingSequentialEntries.end()) {
+        performerToken->pendingSequentialEntries.emplace_back(token);
+      }
+    }
   }
 
   // Populate tokenAwaitingMultiInstanceExit (sequential only) - after all tokens copied
@@ -257,7 +275,6 @@ StateMachine::StateMachine(const SystemState* systemState, Token* parentToken, c
     const_cast<SystemState*>(systemState)->tokenAwaitingCompensationActivity[compensationToken] = awaitingToken;
   }
 
-  // TODO: Set cross-token references (performing, pendingSequentialEntries)
   // TODO: Copy owned StateMachines
 
   // TODO: Copy interruptingEventSubProcess
