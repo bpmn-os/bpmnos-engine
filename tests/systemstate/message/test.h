@@ -29,6 +29,9 @@ SCENARIO( "SystemState copy with undelivered message", "[systemstate][message]" 
     // Process_1 completed, message sent but undelivered (no recipient instance)
     REQUIRE( originalState->messages.size() == 1 );
     REQUIRE( originalState->messages.front()->waitingToken == nullptr );
+    // Message should be in unsent only (recipient doesn't exist, outbox not populated for unsent messages)
+    REQUIRE( originalState->unsent.size() == 1 );
+    REQUIRE( originalState->outbox.size() == 0 );
 
     WHEN( "SystemState is copied" ) {
       auto scenarioCopy = dataProvider.createScenario();
@@ -51,6 +54,76 @@ SCENARIO( "SystemState copy with undelivered message", "[systemstate][message]" 
 
       THEN( "The copied message is independent of the original" ) {
         REQUIRE( copiedState.messages.front().get() != originalState->messages.front().get() );
+      }
+
+      THEN( "The unsent container is populated" ) {
+        REQUIRE( copiedState.unsent.size() == originalState->unsent.size() );
+      }
+    }
+  }
+}
+
+SCENARIO( "SystemState copy with delivered message in inbox", "[systemstate][message][inbox]" ) {
+  const std::string modelFile = "tests/execution/message/Simple_messaging.bpmn";
+  REQUIRE_NOTHROW( Model::Model(modelFile) );
+
+  GIVEN( "A message delivered to an existing recipient" ) {
+    // Instantiate both sender and recipient
+    std::string csv =
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1; timestamp := 0\n"
+      "Instance_2; Process_2; timestamp := 0\n"
+    ;
+
+    Model::StaticDataProvider dataProvider(modelFile, csv);
+    auto scenario = dataProvider.createScenario();
+
+    Execution::Engine engine;
+    Execution::InstantEntry entryHandler;
+    Execution::InstantExit exitHandler;
+    Execution::TimeWarp timeHandler;
+    entryHandler.connect(&engine);
+    exitHandler.connect(&engine);
+    timeHandler.connect(&engine);
+    Execution::Recorder recorder;
+//    Execution::Recorder recorder(std::cerr);
+    recorder.subscribe(&engine);
+
+    engine.run(scenario.get(), 0);
+    const auto* originalState = engine.getSystemState();
+
+    // Message delivered to recipient's inbox
+    REQUIRE( originalState->messages.size() == 1 );
+    REQUIRE( originalState->inbox.size() == 1 );
+    REQUIRE( originalState->outbox.size() == 1 );
+
+    WHEN( "SystemState is copied" ) {
+      auto scenarioCopy = dataProvider.createScenario();
+      Execution::SystemState copiedState(&engine, scenarioCopy.get(), originalState);
+
+      THEN( "The inbox container is populated" ) {
+        REQUIRE( copiedState.inbox.size() == originalState->inbox.size() );
+      }
+
+      THEN( "The outbox container is populated" ) {
+        REQUIRE( copiedState.outbox.size() == originalState->outbox.size() );
+      }
+
+      THEN( "The inbox key is the new StateMachine, not the original" ) {
+        // Get the original recipient StateMachine
+        auto originalRecipientIt = originalState->inbox.begin();
+        auto* originalRecipientSM = originalRecipientIt->first;
+
+        // The copied inbox should not have the original StateMachine as key
+        REQUIRE( !copiedState.inbox.contains(originalRecipientSM) );
+
+        // Find new StateMachine via archive
+        auto instanceId = (long unsigned int)originalRecipientSM->instance.value();
+        auto newSMIt = copiedState.archive.find(instanceId);
+        REQUIRE( newSMIt != copiedState.archive.end() );
+        auto newSM = newSMIt->second.lock();
+        REQUIRE( newSM != nullptr );
+        REQUIRE( copiedState.inbox.contains(newSM.get()) );
       }
     }
   }

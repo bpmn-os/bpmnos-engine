@@ -150,14 +150,16 @@ StateMachine::StateMachine(const SystemState* systemState, Token* parentToken, c
     }
 
     // Create message for SendTask tokens awaiting delivery
+    // (outbox, unsent, inbox are populated at the end of SystemState copy constructor)
     if (token->node && token->node->represents<BPMN::SendTask>() &&
         token->state == Token::State::BUSY) {
       assert(other->systemState->messageAwaitingDelivery.contains(otherToken.get()));
       auto otherMessage = other->systemState->messageAwaitingDelivery.at(otherToken.get()).lock();
       assert(otherMessage);
       auto message = std::make_shared<Message>(otherMessage.get(), token.get());
-      const_cast<SystemState*>(systemState)->messages.push_back(message);
-      const_cast<SystemState*>(systemState)->messageAwaitingDelivery[token.get()] = message;
+      auto newSystemState = const_cast<SystemState*>(systemState);
+      newSystemState->messages.push_back(message);
+      newSystemState->messageAwaitingDelivery[token.get()] = message;
     }
 
     // Populate boundary event containers

@@ -40,7 +40,60 @@ SystemState::SystemState(const Engine* engine, const BPMNOS::Model::Scenario* sc
     }
   }
 
-  // TODO: Populate message containers (inbox, outbox, unsent, messageAwaitingDelivery)
+  // Helper to find new message corresponding to original message
+  auto findNewMessage = [this](const Message* otherMessage) -> std::shared_ptr<Message> {
+    for (const auto& message : messages) {
+      if (message->origin != otherMessage->origin) continue;
+      if (message->recipient != otherMessage->recipient) continue;
+      // Match waitingToken by node (both nullptr or same node)
+      if (otherMessage->waitingToken) {
+        if (!message->waitingToken || message->waitingToken->node != otherMessage->waitingToken->node) continue;
+      } else {
+        if (message->waitingToken) continue;
+      }
+      return message;
+    }
+    return nullptr;
+  };
+
+  // Populate outbox (keyed by origin node)
+  for (const auto& [node, otherMessages] : other->outbox) {
+    for (const auto& [otherMessageWeak] : otherMessages) {
+      if (auto otherMessage = otherMessageWeak.lock()) {
+        if (auto message = findNewMessage(otherMessage.get())) {
+          outbox[node].emplace_back(message);
+        }
+      }
+    }
+  }
+
+  // Populate unsent (keyed by recipient ID)
+  for (const auto& [recipientId, otherMessages] : other->unsent) {
+    for (const auto& [otherMessageWeak] : otherMessages) {
+      if (auto otherMessage = otherMessageWeak.lock()) {
+        if (auto message = findNewMessage(otherMessage.get())) {
+          unsent[recipientId].emplace_back(message);
+        }
+      }
+    }
+  }
+
+  // Populate inbox (keyed by StateMachine*, use archive for remapping)
+  for (const auto& [otherStateMachine, otherMessages] : other->inbox) {
+    auto instanceId = (long unsigned int)otherStateMachine->instance.value();
+    auto it = archive.find(instanceId);
+    if (it == archive.end()) continue;
+    auto newStateMachine = it->second.lock();
+    if (!newStateMachine) continue;
+
+    for (const auto& [otherMessageWeak] : otherMessages) {
+      if (auto otherMessage = otherMessageWeak.lock()) {
+        if (auto message = findNewMessage(otherMessage.get())) {
+          inbox[newStateMachine.get()].emplace_back(message);
+        }
+      }
+    }
+  }
 }
 
 SystemState::~SystemState() {
