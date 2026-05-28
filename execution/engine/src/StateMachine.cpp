@@ -291,7 +291,10 @@ StateMachine::StateMachine(const SystemState* systemState, Token* parentToken, c
     compensableSubProcesses.push_back(std::make_shared<Token>(const_cast<StateMachine*>(this), otherToken.get()));
   }
 
-  // TODO: Copy compensationEventSubProcesses
+  // Copy compensationEventSubProcesses
+  for (const auto& otherEventSubProcess : other->compensationEventSubProcesses) {
+    compensationEventSubProcesses.push_back(std::make_shared<StateMachine>(systemState, parentToken, otherEventSubProcess.get()));
+  }
 }
 
 StateMachine::~StateMachine() {
