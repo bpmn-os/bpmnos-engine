@@ -43,14 +43,51 @@ public:
   constexpr Type getObservableType() const override { return Type::Token; };
   const StateMachine* owner; ///< State machine owning the token
   std::shared_ptr<StateMachine> owned; ///< State machine owned by the token
-  const BPMN::FlowNode* node;
-  const BPMN::SequenceFlow* sequenceFlow;
+  const BPMN::FlowNode* node; ///< Flow node where the token resides (nullptr for process-level tokens)
+  const BPMN::SequenceFlow* sequenceFlow; ///< Sequence flow being traversed (only set in DEPARTED/ARRIVED states)
   enum class State { CREATED, READY, ENTERED, BUSY, COMPLETED, EXITING, DEPARTED, ARRIVED, WAITING, DONE, FAILED, FAILING, WITHDRAWN }; ///< The states that a token can be in
   const BPMNOS::Model::AttributeRegistry& getAttributeRegistry() const;
   static inline std::string stateName[] = { "CREATED", "READY", "ENTERED", "BUSY", "COMPLETED", "EXITING", "DEPARTED", "ARRIVED", "WAITING", "DONE", "FAILED", "FAILING", "WITHDRAWN" };
+  /**
+   * @brief Constructs a new token at a flow node.
+   *
+   * @param owner The StateMachine this token belongs to
+   * @param node The flow node where the token is created
+   * @param status Initial status values for the token
+   */
   Token(const StateMachine* owner, const BPMN::FlowNode* node, const Values& status);
+
+  /**
+   * @brief Copy constructor for multi-instance activities (same owner).
+   *
+   * Creates a copy within the same StateMachine context.
+   * Used when spawning MI activity tokens.
+   *
+   * @param other The source Token to copy from
+   */
   Token(const Token* other);
+
+  /**
+   * @brief Merge constructor for converging gateways.
+   *
+   * Creates a token by merging multiple tokens at a gateway.
+   *
+   * @param others The tokens to merge
+   */
   Token(const std::vector<Token*>& others);
+
+  /**
+   * @brief Deep copy constructor for cloning to a different StateMachine.
+   *
+   * Creates a deep copy of the token that belongs to a new StateMachine.
+   * The owned StateMachine is NOT copied here (handled separately).
+   * The performing pointer is set later after all tokens are copied.
+   *
+   * @param owner The new StateMachine this token belongs to
+   * @param other The source Token to copy from
+   */
+  Token(StateMachine* owner, const Token* other);
+
   ~Token();
 
   State state;

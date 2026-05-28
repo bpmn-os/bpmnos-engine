@@ -21,6 +21,7 @@ class Message : public Observable, public std::enable_shared_from_this<Message> 
 public:
   constexpr Type getObservableType() const override { return Type::Message; };
   Message(Token* token, size_t index);
+  Message(const Message* other, Token* waitingToken = nullptr); ///< Copy constructor
   enum class State { CREATED, DELIVERED, WITHDRAWN }; ///< The states that a message can be in
 private:
   static inline std::string stateName[] = { "CREATED", "DELIVERED", "WITHDRAWN" };

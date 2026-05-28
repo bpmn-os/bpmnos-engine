@@ -2,10 +2,14 @@
 #include "StateMachine.h"
 #include "Token.h"
 #include "SystemState.h"
+#include "Message.h"
 #include "Event.h"
 #include "execution/utility/src/erase.h"
 #include "model/bpmnos/src/extensionElements/ExtensionElements.h"
 #include "model/bpmnos/src/extensionElements/Timer.h"
+#include "model/bpmnos/src/extensionElements/Signal.h"
+#include "model/bpmnos/src/DecisionTask.h"
+#include "model/bpmnos/src/SequentialAdHocSubProcess.h"
 #include "model/utility/src/CollectionRegistry.h"
 #include "bpmn++.h"
 #include <cassert>
@@ -63,6 +67,257 @@ StateMachine::StateMachine(const StateMachine* other)
 {
 //std::cerr << "oStateMachine(" << scope->id << "/" << this << " @ " << parentToken << ")"  << " owned by :" << parentToken->owner << std::endl;
   data[BPMNOS::Model::ExtensionElements::Index::Instance] = std::ref(instance);
+}
+
+StateMachine::StateMachine(const SystemState* systemState, Token* parentToken, const StateMachine* other)
+  : systemState(systemState)
+  , process(other->process)
+  , scope(other->scope)
+  , root(parentToken ? parentToken->owner->root : this)
+  , instance(other->instance)
+  , parentToken(parentToken)
+  , ownedData(other->ownedData)
+  , data(parentToken ? SharedValues(parentToken->owner->data, ownedData) : SharedValues(ownedData))
+  , instantiations(other->instantiations)
+{
+  data[BPMNOS::Model::ExtensionElements::Index::Instance] = std::ref(instance);
+
+  // Copy tokens
+  for (const auto& otherToken : other->tokens) {
+    tokens.push_back(std::make_shared<Token>(const_cast<StateMachine*>(this), otherToken.get()));
+
+    // Populate pending*Decisions containers (after make_shared, needs weak_from_this)
+    auto& token = tokens.back();
+    if (token->decisionRequest) {
+      auto type = token->decisionRequest->type;
+
+      if (type == Observable::Type::EntryRequest) {
+        const_cast<SystemState*>(systemState)->pendingEntryDecisions.emplace_back(token, token->decisionRequest);
+      }
+      else if (type == Observable::Type::ChoiceRequest) {
+        const_cast<SystemState*>(systemState)->pendingChoiceDecisions.emplace_back(token, token->decisionRequest);
+      }
+      else if (type == Observable::Type::ExitRequest) {
+        const_cast<SystemState*>(systemState)->pendingExitDecisions.emplace_back(token, token->decisionRequest);
+      }
+      else if (type == Observable::Type::MessageDeliveryRequest) {
+        const_cast<SystemState*>(systemState)->pendingMessageDeliveryDecisions.emplace_back(token, token->decisionRequest);
+      }
+    }
+
+    // Populate tokensAwaitingTimer
+    if (token->node && token->node->represents<BPMN::TimerCatchEvent>() && token->state == Token::State::BUSY) {
+      assert(other->systemState->tokensAwaitingTimer.find(otherToken.get()) !=
+             other->systemState->tokensAwaitingTimer.end());
+      auto trigger = token->node->extensionElements->as<BPMNOS::Model::Timer>()->trigger.get();
+      BPMNOS::number time = trigger->expression->execute(token->status, *token->data, token->globals).value();
+      const_cast<SystemState*>(systemState)->tokensAwaitingTimer.emplace(time, token);
+    }
+
+    // Populate tokensAwaitingSignal
+    if (token->node && token->node->represents<BPMN::SignalCatchEvent>() && token->state == Token::State::BUSY) {
+      auto signalName = token->node->extensionElements->as<BPMNOS::Model::Signal>()->name;
+      assert(other->systemState->tokensAwaitingSignal.at(signalName).find(otherToken.get()) !=
+             other->systemState->tokensAwaitingSignal.at(signalName).end());
+      const_cast<SystemState*>(systemState)->tokensAwaitingSignal[signalName].emplace_back(token);
+    }
+
+    // Populate tokensAwaitingCondition
+    if (token->node && token->node->represents<BPMN::ConditionalCatchEvent>() && token->state == Token::State::BUSY) {
+      assert(other->systemState->tokensAwaitingCondition.at(other->root->instance.value()).find(otherToken.get()) !=
+             other->systemState->tokensAwaitingCondition.at(other->root->instance.value()).end());
+      const_cast<SystemState*>(systemState)->tokensAwaitingCondition[root->instance.value()].emplace_back(token);
+    }
+
+    // Populate tokensAwaitingReadyEvent
+    if (token->node && token->node->represents<BPMN::Activity>() &&
+        (token->state == Token::State::CREATED || token->state == Token::State::ARRIVED)) {
+      assert(other->systemState->tokensAwaitingReadyEvent.find(otherToken.get()) !=
+             other->systemState->tokensAwaitingReadyEvent.end());
+      const_cast<SystemState*>(systemState)->tokensAwaitingReadyEvent.emplace_back(token);
+    }
+
+    // Populate tokensAwaitingCompletionEvent
+    if (token->node && token->node->represents<BPMN::Task>() &&
+        !token->node->represents<BPMN::ReceiveTask>() &&
+        !token->node->represents<BPMN::SendTask>() &&
+        !token->node->represents<BPMNOS::Model::DecisionTask>() &&
+        token->state == Token::State::BUSY) {
+      assert(other->systemState->tokensAwaitingCompletionEvent.find(otherToken.get()) !=
+             other->systemState->tokensAwaitingCompletionEvent.end());
+      auto time = token->status[BPMNOS::Model::ExtensionElements::Index::Timestamp].value();
+      const_cast<SystemState*>(systemState)->tokensAwaitingCompletionEvent.emplace(time, token);
+    }
+
+    // Create message for SendTask tokens awaiting delivery
+    // (outbox, unsent, inbox are populated at the end of SystemState copy constructor)
+    if (token->node && token->node->represents<BPMN::SendTask>() &&
+        token->state == Token::State::BUSY) {
+      assert(other->systemState->messageAwaitingDelivery.contains(otherToken.get()));
+      auto otherMessage = other->systemState->messageAwaitingDelivery.at(otherToken.get()).lock();
+      assert(otherMessage);
+      auto message = std::make_shared<Message>(otherMessage.get(), token.get());
+      auto newSystemState = const_cast<SystemState*>(systemState);
+      newSystemState->messages.push_back(message);
+      newSystemState->messageAwaitingDelivery[token.get()] = message;
+    }
+
+    // Populate boundary event containers
+    if (token->node && token->node->represents<BPMN::BoundaryEvent>() &&
+        !token->node->represents<BPMN::CompensateBoundaryEvent>() &&
+        token->state == Token::State::BUSY) {
+      auto it = other->systemState->tokenAssociatedToBoundaryEventToken.find(otherToken.get());
+      assert(it != other->systemState->tokenAssociatedToBoundaryEventToken.end());
+      const BPMN::FlowNode* activityNode = it->second->node;
+
+      auto activityIt = std::ranges::find_if(tokens,
+        [activityNode](const auto& t) { return t->node == activityNode; });
+      assert(activityIt != tokens.end());
+      Token* activityToken = activityIt->get();
+
+      const_cast<SystemState*>(systemState)->tokenAssociatedToBoundaryEventToken[token.get()] = activityToken;
+      const_cast<SystemState*>(systemState)->tokensAwaitingBoundaryEvent[activityToken].push_back(token.get());
+    }
+
+    // Populate event-based gateway containers
+    if (token->node && token->node->represents<BPMN::CatchEvent>() &&
+        token->state == Token::State::BUSY &&
+        !token->node->incoming.empty() &&
+        token->node->incoming.front()->source->represents<BPMN::EventBasedGateway>()) {
+      assert(other->systemState->tokenAtEventBasedGateway.find(otherToken.get()) !=
+             other->systemState->tokenAtEventBasedGateway.end());
+      const BPMN::FlowNode* gatewayNode = token->node->incoming.front()->source;
+
+      auto gatewayIt = std::ranges::find_if(tokens,
+        [gatewayNode](const auto& t) { return t->node == gatewayNode; });
+      assert(gatewayIt != tokens.end());
+      Token* gatewayToken = gatewayIt->get();
+
+      const_cast<SystemState*>(systemState)->tokenAtEventBasedGateway[token.get()] = gatewayToken;
+      const_cast<SystemState*>(systemState)->tokensAwaitingEvent[gatewayToken].push_back(token.get());
+    }
+
+    // Populate tokensAwaitingGatewayActivation (converging gateway)
+    if (token->sequenceFlow &&
+        token->state == Token::State::WAITING &&
+        token->node->represents<BPMN::Gateway>() &&
+        !token->node->represents<BPMN::ExclusiveGateway>() &&
+        token->node->incoming.size() > 1) {
+      assert(other->systemState->tokensAwaitingGatewayActivation.contains(const_cast<StateMachine*>(other)));
+      assert(other->systemState->tokensAwaitingGatewayActivation.at(const_cast<StateMachine*>(other)).contains(otherToken->node));
+      assert(std::ranges::contains(other->systemState->tokensAwaitingGatewayActivation.at(const_cast<StateMachine*>(other)).at(otherToken->node), otherToken.get()));
+
+      const_cast<SystemState*>(systemState)->tokensAwaitingGatewayActivation[const_cast<StateMachine*>(this)][token->node].push_back(token.get());
+    }
+
+    // Populate multi-instance containers (tokenAtMultiInstanceActivity & tokensAtActivityInstance)
+    if (other->systemState->tokenAtMultiInstanceActivity.contains(otherToken.get())) {
+      // This is an activity instance token, find main token by node + WAITING state
+      auto mainIt = std::ranges::find_if(tokens, [&](const auto& t) {
+        return t->node == token->node && t->state == Token::State::WAITING;
+      });
+      assert(mainIt != tokens.end());
+      Token* mainToken = mainIt->get();
+
+      const_cast<SystemState*>(systemState)->tokenAtMultiInstanceActivity[token.get()] = mainToken;
+      const_cast<SystemState*>(systemState)->tokensAtActivityInstance[mainToken].push_back(token.get());
+    }
+
+    // Populate exitStatusAtActivityInstance (main token)
+    if (other->systemState->exitStatusAtActivityInstance.contains(otherToken.get())) {
+      const_cast<SystemState*>(systemState)->exitStatusAtActivityInstance[token.get()] =
+          other->systemState->exitStatusAtActivityInstance.at(otherToken.get());
+    }
+
+    // Populate performing and pendingSequentialEntries for activities in SequentialAdHocSubProcess
+    if (token->node && token->node->parent &&
+        token->node->represents<BPMN::Activity>() &&
+        token->node->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>()) {
+      Token* performerToken = token->getSequentialPerformerToken();
+      Token* otherPerformerToken = otherToken->getSequentialPerformerToken();
+
+      if (otherPerformerToken->performing == otherToken.get()) {
+        performerToken->performing = token.get();
+      }
+
+      if (otherPerformerToken->pendingSequentialEntries.find(otherToken.get()) !=
+          otherPerformerToken->pendingSequentialEntries.end()) {
+        performerToken->pendingSequentialEntries.emplace_back(token);
+      }
+    }
+  }
+
+  // Populate tokenAwaitingMultiInstanceExit (sequential only) - after all tokens copied
+  for (auto& [otherPrevToken, otherNextToken] : other->systemState->tokenAwaitingMultiInstanceExit) {
+    if (otherPrevToken->owner != other) continue;  // Only process tokens owned by this StateMachine
+
+    auto prevInstance = otherPrevToken->status[BPMNOS::Model::ExtensionElements::Index::Instance];
+    auto nextInstance = otherNextToken->status[BPMNOS::Model::ExtensionElements::Index::Instance];
+    auto prevIt = std::ranges::find_if(tokens, [&](const auto& t) {
+      return t->node == otherPrevToken->node && t->status[BPMNOS::Model::ExtensionElements::Index::Instance] == prevInstance;
+    });
+    auto nextIt = std::ranges::find_if(tokens, [&](const auto& t) {
+      return t->node == otherNextToken->node && t->status[BPMNOS::Model::ExtensionElements::Index::Instance] == nextInstance;
+    });
+    assert(prevIt != tokens.end() && nextIt != tokens.end());
+
+    const_cast<SystemState*>(systemState)->tokenAwaitingMultiInstanceExit[prevIt->get()] = nextIt->get();
+  }
+
+  // Copy compensationTokens (at CompensateBoundaryEvent or CompensateStartEvent in BUSY state)
+  for (const auto& otherToken : other->compensationTokens) {
+    compensationTokens.push_back(std::make_shared<Token>(const_cast<StateMachine*>(this), otherToken.get()));
+  }
+
+  // Populate tokenAwaitingCompensationActivity - after tokens and compensationTokens copied
+  auto findTokenByNode = [&](const BPMN::FlowNode* node) -> Token* {
+    for (const auto& token : tokens) {
+      if (token->node == node) return token.get();
+    }
+    for (const auto& token : compensationTokens) {
+      if (token->node == node) return token.get();
+    }
+    return nullptr;
+  };
+
+  for (const auto& [otherCompensationToken, otherAwaitingToken] : other->systemState->tokenAwaitingCompensationActivity) {
+    if (otherCompensationToken->owner != other) continue;
+
+    Token* compensationToken = findTokenByNode(otherCompensationToken->node);
+    Token* awaitingToken = findTokenByNode(otherAwaitingToken->node);
+    assert(compensationToken && awaitingToken);
+
+    const_cast<SystemState*>(systemState)->tokenAwaitingCompensationActivity[compensationToken] = awaitingToken;
+  }
+
+  // Copy event subprocesses (pending, interrupting, non-interrupting)
+  for (const auto& otherEventSubProcess : other->pendingEventSubProcesses) {
+    pendingEventSubProcesses.push_back(std::make_shared<StateMachine>(systemState, parentToken, otherEventSubProcess.get()));
+  }
+  if (other->interruptingEventSubProcess) {
+    interruptingEventSubProcess = std::make_shared<StateMachine>(systemState, parentToken, other->interruptingEventSubProcess.get());
+  }
+  for (const auto& otherEventSubProcess : other->nonInterruptingEventSubProcesses) {
+    nonInterruptingEventSubProcesses.push_back(std::make_shared<StateMachine>(systemState, parentToken, otherEventSubProcess.get()));
+  }
+
+  // Copy compensableSubProcesses (tokens owning compensable subprocesses)
+  for (const auto& otherToken : other->compensableSubProcesses) {
+    compensableSubProcesses.push_back(std::make_shared<Token>(const_cast<StateMachine*>(this), otherToken.get()));
+  }
+
+  // Copy compensationEventSubProcesses and populate tokenAwaitingCompensationEventSubProcess
+  for (const auto& otherEventSubProcess : other->compensationEventSubProcesses) {
+    compensationEventSubProcesses.push_back(std::make_shared<StateMachine>(systemState, parentToken, otherEventSubProcess.get()));
+
+    // Populate tokenAwaitingCompensationEventSubProcess if original had a waiting token
+    if (auto it = other->systemState->tokenAwaitingCompensationEventSubProcess.find(otherEventSubProcess.get());
+        it != other->systemState->tokenAwaitingCompensationEventSubProcess.end()) {
+      Token* waitingToken = findTokenByNode(it->second->node);
+      assert(waitingToken);
+      const_cast<SystemState*>(systemState)->tokenAwaitingCompensationEventSubProcess[compensationEventSubProcesses.back().get()] = waitingToken;
+    }
+  }
 }
 
 StateMachine::~StateMachine() {
@@ -823,24 +1078,15 @@ void StateMachine::shutdown() {
   // ensure that messages to state machine are removed  
   unregisterRecipient();
   
-  if ( auto subProcess = scope->represents<BPMN::SubProcess>();
-    subProcess && subProcess->compensatedBy
-  ) {
-    if ( subProcess->compensatedBy->represents<BPMN::EventSubProcess>() ) {
-      auto parent = const_cast<StateMachine*>(parentToken->owner);
-      // move state machine pointer to ensure it is not deleted
-      parent->compensableSubProcesses.push_back(shared_from_this());
-    }
-  }
-
   if ( !parentToken ) {
 //std::cerr << "delete root: " << BPMNOS::to_string(instance.value(),STRING) << std::endl;
     // delete root state machine (and all descendants)
     engine->commands.emplace_back(std::bind(&Engine::deleteInstance,engine,this), this);
   }
   else {
-//std::cerr << "delete child: " << scope->id << std::endl;
     auto parent = const_cast<StateMachine*>(parentToken->owner);
+
+//std::cerr << "delete child: " << scope->id << std::endl;
     if ( auto eventSubProcess = scope->represents<BPMN::EventSubProcess>();
       eventSubProcess && eventSubProcess->startEvent->isInterrupting
     ) {
@@ -852,6 +1098,18 @@ void StateMachine::shutdown() {
     auto context = const_cast<StateMachine*>(parentToken->owned.get());
     auto token = context->parentToken;
     engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,token), token);
+
+    if ( auto subProcess = scope->represents<BPMN::SubProcess>();
+      subProcess && subProcess->compensatedBy
+    ) {
+      if ( subProcess->compensatedBy->represents<BPMN::EventSubProcess>() ) {
+        // create token copy to own the compensable subprocess
+        auto tokenCopy = std::make_shared<Token>(parentToken);
+        tokenCopy->owned = shared_from_this();
+        parentToken = tokenCopy.get();
+        parent->compensableSubProcesses.push_back(std::move(tokenCopy));
+      }
+    }
   }
 
 //std::cerr << "shutdown (done): " << scope->id <<std::endl;

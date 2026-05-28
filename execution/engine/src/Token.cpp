@@ -58,6 +58,32 @@ Token::Token(const std::vector<Token*>& others)
 {
 }
 
+Token::Token(StateMachine* owner, const Token* other)
+  : owner(owner)
+  , owned(nullptr)
+  , node(other->node)
+  , sequenceFlow(other->sequenceFlow)
+  , state(other->state)
+  , status(other->status)
+  , data(&owner->data)
+  , globals(const_cast<SystemState*>(owner->systemState)->globals)
+  , performing(nullptr)
+{
+  // Copy decisionRequest (uses raw this pointer, not weak_ptr)
+  if (other->decisionRequest) {
+    decisionRequest = std::make_shared<DecisionRequest>(this, other->decisionRequest->type);
+  }
+
+  // Copy owned StateMachine (recursively copies child tokens and populates tracking containers)
+  if (other->owned) {
+    owned = std::make_shared<StateMachine>(owner->systemState, const_cast<Token*>(this), other->owned.get());
+    // Update data pointer to point to owned StateMachine's data
+    data = &owned->data;
+  }
+
+  // Note: performing and pendingSequentialEntries are populated in StateMachine copy constructor
+}
+
 Token::~Token() {
 //std::cerr << "~Token(" << (node ? node->id : owner->process->id ) << "/" << this << ")" << std::endl;
   auto systemState = const_cast<SystemState*>(owner->systemState);
@@ -338,6 +364,7 @@ void Token::advanceToReady() {
     data = &owned->data;
   }
     
+  sequenceFlow = nullptr;
   update(State::READY);
   
   if ( auto activity = node->represents<BPMN::Activity>();
@@ -514,12 +541,12 @@ void Token::advanceToEntered() {
         auto it = std::find_if(
           context->compensableSubProcesses.begin(),
           context->compensableSubProcesses.end(),
-          [&eventSubProcess](const std::shared_ptr<StateMachine>& stateMachine) -> bool {
+          [&eventSubProcess](const std::shared_ptr<Token>& token) -> bool {
             // check if compensation event subprocess belongs to compensable subprocess
-            return ( stateMachine->scope->compensationEventSubProcess == eventSubProcess );
+            return ( token->owned->scope->compensationEventSubProcess == eventSubProcess );
           }
         );
-        context = ( it != context->compensableSubProcesses.end() ? it->get() : nullptr );
+        context = ( it != context->compensableSubProcesses.end() ? (*it)->owned.get() : nullptr );
       }
 
       if ( context ) {

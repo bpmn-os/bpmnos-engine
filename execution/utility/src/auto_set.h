@@ -1,6 +1,7 @@
 #ifndef BPMNOS_Execution_auto_set_H
 #define BPMNOS_Execution_auto_set_H
 
+#include <algorithm>
 #include <set>
 #include <tuple>
 #include <memory>
@@ -80,16 +81,8 @@ public:
 
   template <typename T>
   void remove(T* pointer) {
-    auto it = begin();
-    while (it != end()) {
-      auto& element = std::get< std::weak_ptr<T> >(*it.current);
-      if ( auto shared = element.lock() ) {
-        if ( shared.get() == pointer ) {
-          tuples.erase(it.current);
-          return;
-        }
-      }
-      ++it;
+    if (auto it = find(pointer); it != end()) {
+      tuples.erase(it.current);
     }
   }
 
@@ -98,6 +91,47 @@ public:
       return false;
     }
     return true;
+  }
+
+  /**
+   * @brief Counts active (non-expired) elements. O(n) complexity.
+   */
+  size_t count() const {
+    size_t n = 0;
+    for ( [[maybe_unused]] auto _ : *this ) { n++; }
+    return n;
+  }
+
+  /**
+   * @brief Finds an element by raw pointer. O(n) complexity.
+   */
+  template <typename T>
+  iterator find(T* pointer) {
+    auto it = std::find_if(tuples.begin(), tuples.end(),
+      [pointer](const std::tuple<V, U...>& elements) {
+        auto& element = std::get<std::weak_ptr<T>>(elements);
+        if (auto shared = element.lock()) {
+          return shared.get() == pointer;
+        }
+        return false;
+      });
+    return iterator(it, this);
+  }
+
+  /**
+   * @brief Finds an element by raw pointer (const version). O(n) complexity.
+   */
+  template <typename T>
+  iterator find(T* pointer) const {
+    auto it = std::find_if(tuples.begin(), tuples.end(),
+      [pointer](const std::tuple<V, U...>& elements) {
+        auto& element = std::get<std::weak_ptr<T>>(elements);
+        if (auto shared = element.lock()) {
+          return shared.get() == pointer;
+        }
+        return false;
+      });
+    return iterator(it, const_cast<auto_set<V, U...>*>(this));
   }
 
   void clear() {

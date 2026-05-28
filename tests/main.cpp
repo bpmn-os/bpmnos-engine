@@ -94,6 +94,9 @@ using namespace BPMNOS;
 #include "execution/data/test.h"
 #include "execution/collection/test.h"
 
+// SystemState
+#include "systemstate/test.h"
+
 // Examples
 #include "examples/earliest_arrival_problem/test.h"
 #include "examples/travelling_salesperson_problem/test.h"
