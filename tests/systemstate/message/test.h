@@ -1,3 +1,61 @@
+SCENARIO( "SystemState copy with undelivered message", "[systemstate][message]" ) {
+  const std::string modelFile = "tests/execution/message/Simple_messaging.bpmn";
+  REQUIRE_NOTHROW( Model::Model(modelFile) );
+
+  GIVEN( "A process that sends a message with no recipient instance" ) {
+    // Only instantiate Process_1 (sender) - message stays undelivered
+    std::string csv =
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1; timestamp := 0\n"
+    ;
+
+    Model::StaticDataProvider dataProvider(modelFile, csv);
+    auto scenario = dataProvider.createScenario();
+
+    Execution::Engine engine;
+    Execution::InstantEntry entryHandler;
+    Execution::InstantExit exitHandler;
+    Execution::TimeWarp timeHandler;
+    entryHandler.connect(&engine);
+    exitHandler.connect(&engine);
+    timeHandler.connect(&engine);
+    Execution::Recorder recorder;
+//    Execution::Recorder recorder(std::cerr);
+    recorder.subscribe(&engine);
+
+    engine.run(scenario.get(), 0);
+    const auto* originalState = engine.getSystemState();
+
+    // Process_1 completed, message sent but undelivered (no recipient instance)
+    REQUIRE( originalState->messages.size() == 1 );
+    REQUIRE( originalState->messages.front()->waitingToken == nullptr );
+
+    WHEN( "SystemState is copied" ) {
+      auto scenarioCopy = dataProvider.createScenario();
+      Execution::SystemState copiedState(&engine, scenarioCopy.get(), originalState);
+
+      THEN( "The message is copied" ) {
+        REQUIRE( copiedState.messages.size() == originalState->messages.size() );
+      }
+
+      THEN( "The copied message has the same values" ) {
+        const auto* originalMessage = originalState->messages.front().get();
+        const auto* copiedMessage = copiedState.messages.front().get();
+
+        REQUIRE( copiedMessage->state == originalMessage->state );
+        REQUIRE( copiedMessage->origin == originalMessage->origin );
+        REQUIRE( copiedMessage->waitingToken == nullptr );
+        REQUIRE( copiedMessage->recipient == originalMessage->recipient );
+        REQUIRE( copiedMessage->header == originalMessage->header );
+      }
+
+      THEN( "The copied message is independent of the original" ) {
+        REQUIRE( copiedState.messages.front().get() != originalState->messages.front().get() );
+      }
+    }
+  }
+}
+
 SCENARIO( "SystemState copy with token awaiting boundary event", "[systemstate][message][boundary]" ) {
   const std::string modelFile = "tests/systemstate/message/Message_tasks_with_timer.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );

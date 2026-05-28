@@ -4,6 +4,16 @@
 
 using namespace BPMNOS::Execution;
 
+Message::Message(const Message* other, Token* waitingToken)
+  : state(other->state)
+  , origin(other->origin)
+  , waitingToken(waitingToken)
+  , recipient(other->recipient)
+  , header(other->header)
+  , contentValueMap(other->contentValueMap)
+{
+}
+
 Message::Message(Token* token, size_t index)
   : state(State::CREATED)
   , origin(token->node)

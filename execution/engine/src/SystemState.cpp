@@ -33,8 +33,14 @@ SystemState::SystemState(const Engine* engine, const BPMNOS::Model::Scenario* sc
     }
   }
 
-  // TODO: Copy messages
-  // TODO: Populate remaining containers
+  // Copy messages sent from MessageThrowEvent, messages sent from SendTask are created when copying the associated Token
+  for (const auto& otherMessage : other->messages) {
+    if (!otherMessage->waitingToken) {
+      messages.push_back(std::make_shared<Message>(otherMessage.get()));
+    }
+  }
+
+  // TODO: Populate message containers (inbox, outbox, unsent, messageAwaitingDelivery)
 }
 
 SystemState::~SystemState() {
