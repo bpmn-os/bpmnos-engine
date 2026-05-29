@@ -157,6 +157,9 @@ protected:
   /// Constructor that initializes model and globals from CSV-provided values.
   Scenario(const Model* model, const std::unordered_map<const Attribute*, BPMNOS::number>& globalValueMap);
 
+  /// Protected copy constructor for derived class scenario copying.
+  Scenario(const Scenario* original);
+
   /// Evaluate global attributes (CSV-provided + model expressions).
   Values evaluateGlobals(const std::unordered_map<const Attribute*, BPMNOS::number>& globalValueMap);
 

@@ -76,6 +76,21 @@ public:
     unsigned int seed = 0
   );
 
+  /**
+   * @brief Copy constructor that resamples future values.
+   *
+   * Copies all data from original. Values with disclosure time >= spawnTime are
+   * re-evaluated using the new seed. The new seed is appended to scenarioSeeds.
+   *
+   * @pre spawnTime must be smaller or equal to all pending disclosure times.
+   *      Throws std::runtime_error if any pending disclosure has disclosureTime < spawnTime.
+   *
+   * @param original The scenario to copy from
+   * @param spawnTime Values with disclosure time >= spawnTime are resampled
+   * @param seed New seed for resampling future values
+   */
+  StochasticScenario(StochasticScenario* original, BPMNOS::number spawnTime, unsigned int seed);
+
   BPMNOS::number getEarliestInstantiationTime() const override;
   bool isCompleted(const BPMNOS::number currentTime) const override;
 
@@ -143,6 +158,7 @@ protected:
    * maxResamplingTries times, falling back to spawnTime if still in the past.
    *
    * @param spawnTime Items with disclosure time < spawnTime are not evaluated again
+   * @throws std::logic_error if any pending disclosure has disclosureTime < spawnTime
    */
   void evaluateDeferredDisclosures(BPMNOS::number spawnTime = std::numeric_limits<BPMNOS::number>::lowest());
 

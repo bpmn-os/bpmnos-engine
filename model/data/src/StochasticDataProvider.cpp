@@ -92,10 +92,12 @@ void StochasticDataProvider::readInstances() {
     // Get disclosure (if 4+ columns)
     std::string disclosureExpression;
     if (columnCount >= 4) {
-      if (!std::holds_alternative<std::string>(row.at(DISCLOSURE))) {
-        throw std::runtime_error("StochasticDataProvider: illegal disclosure");
+      if (std::holds_alternative<std::string>(row.at(DISCLOSURE))) {
+        disclosureExpression = std::get<std::string>(row.at(DISCLOSURE));
       }
-      disclosureExpression = std::get<std::string>(row.at(DISCLOSURE));
+      else if (std::holds_alternative<BPMNOS::number>(row.at(DISCLOSURE))) {
+        disclosureExpression = std::to_string((double)std::get<BPMNOS::number>(row.at(DISCLOSURE)));
+      }
     }
 
     // Get ready (if 6 columns)

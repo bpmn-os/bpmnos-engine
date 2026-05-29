@@ -3,6 +3,7 @@
 #include "model/bpmnos/src/extensionElements/ExtensionElements.h"
 #include <cmath>
 #include <functional>
+#include <stdexcept>
 
 using namespace BPMNOS::Model;
 
@@ -16,6 +17,28 @@ StochasticScenario::StochasticScenario(
   , earliestInstantiationTime(std::numeric_limits<BPMNOS::number>::infinity())
   , latestInstantiationTime(std::numeric_limits<BPMNOS::number>::lowest())
 {
+}
+
+StochasticScenario::StochasticScenario(StochasticScenario* original, BPMNOS::number spawnTime, unsigned int seed)
+  : Scenario(original)
+  , instances(original->instances)
+  , disclosureTimes(original->disclosureTimes)
+  , pastDisclosures(original->pastDisclosures)
+  , pendingDisclosures(original->pendingDisclosures)
+  , readyExpressions(original->readyExpressions)
+  , completionExpressions(original->completionExpressions)
+  , deferredDisclosures(original->deferredDisclosures)
+  , scenarioSeeds(original->scenarioSeeds)
+  , earliestInstantiationTime(original->earliestInstantiationTime)
+  , latestInstantiationTime(original->latestInstantiationTime)
+  , randomFactory(original->randomFactory)
+  , stochasticHandle(original->stochasticHandle)
+{
+  // Append new seed (rngs not copied - recreated with new seed via getRng())
+  scenarioSeeds.push_back({spawnTime, seed});
+
+  // Resample future items (validates precondition and throws if violated)
+  evaluateDeferredDisclosures(spawnTime);
 }
 
 void StochasticScenario::addInstance(const BPMN::Process* process, const BPMNOS::number instanceId) {
@@ -56,11 +79,22 @@ void StochasticScenario::evaluateDeferredDisclosures(BPMNOS::number spawnTime) {
     auto& instance = instances.at(instanceId);
 
     for (auto& disclosure : disclosures) {
-      // Skip if already evaluated and disclosureTime < spawnTime
+      // Skip if already revealed (in pastDisclosures)
+      if (pastDisclosures.contains(instanceId) &&
+          pastDisclosures.at(instanceId).contains(disclosure.attribute)
+      ) {
+        if (pastDisclosures.at(instanceId).at(disclosure.attribute).disclosureTime >= spawnTime) {
+          throw std::logic_error("StochasticScenario: past disclosure for '" + disclosure.attribute->name + "' has disclosureTime >= spawnTime");
+        }
+        continue;
+      }
+
+      // Check if already evaluated with disclosureTime < spawnTime (precondition violation)
       if (pendingDisclosures.contains(instanceId) &&
           pendingDisclosures.at(instanceId).contains(disclosure.attribute) &&
-          pendingDisclosures.at(instanceId).at(disclosure.attribute).disclosureTime < spawnTime) {
-        continue;
+          pendingDisclosures.at(instanceId).at(disclosure.attribute).disclosureTime < spawnTime
+      ) {
+        throw std::logic_error("StochasticScenario: pending disclosure for '" + disclosure.attribute->name + "' has disclosureTime < spawnTime");
       }
 
       // Set RNG context for this (instance, node)
