@@ -47,7 +47,7 @@ public:
    * no new instantiations are pending, or the timeout is exceeded.
    *
    * @param scenario The scenario to execute
-   * @param timeout Maximum time before termination (engine stops when time > timeout)
+   * @param timeout Last time to process (engine stops when time >= timeout)
    * @return The objective value at termination
    */
   BPMNOS::number run(const BPMNOS::Model::Scenario* scenario, BPMNOS::number timeout = std::numeric_limits<BPMNOS::number>::max());
@@ -59,7 +59,7 @@ public:
    *
    * @param scenario The scenario to use (may be forked from original)
    * @param foreignState The system state to resume from
-   * @param timeout Maximum time before termination (engine stops when time > timeout)
+   * @param timeout Last time to process (engine stops when time >= timeout)
    * @return The objective value at termination
    */
   BPMNOS::number resume(const BPMNOS::Model::Scenario* scenario, const SystemState* foreignState, BPMNOS::number timeout = std::numeric_limits<BPMNOS::number>::max());
@@ -126,7 +126,7 @@ protected:
   ReadyHandler readyHandler;
   TaskCompletionHandler taskCompletionHandler;
   
-  bool advance();
+  bool advance(BPMNOS::number timeout);
   bool terminated;
 //  friend void Token::notify() const;
 };

@@ -132,6 +132,8 @@ SCENARIO( "Engine resume from stopped state", "[systemstate][process][resume]" )
     // Run with timeout - will stop when task is waiting for exit event
     engine1.run(scenario.get(), 10);
 
+    REQUIRE( engine1.getSystemState()->getTime() == 10 );
+
     // Token should be at COMPLETED state, waiting for exit event
     auto activityLog1 = recorder1.find(nlohmann::json{{"nodeId","Activity_1"}}, nlohmann::json{{"event",nullptr},{"decision",nullptr}});
     REQUIRE( activityLog1.back()["state"] == "COMPLETED" );
@@ -142,7 +144,7 @@ SCENARIO( "Engine resume from stopped state", "[systemstate][process][resume]" )
       REQUIRE( stochasticScenario != nullptr );
       auto forkedScenario = std::make_unique<Model::StochasticScenario>(
         stochasticScenario,
-        engine1.getSystemState()->getTime() + 1,
+        engine1.getSystemState()->getTime() + 1, // next point in time
         42  // new seed
       );
 

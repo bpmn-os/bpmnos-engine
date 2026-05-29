@@ -72,16 +72,18 @@ BPMNOS::number Engine::run(BPMNOS::number timeout) {
   conditionalEventObserver.connect( systemState.get() );
 
   // advance all tokens in system state
-  while ( !terminated && advance() ) {
+  while ( !terminated && advance(timeout) ) {
 //std::cerr << ".";
     if ( !systemState->isAlive() ) {
 //std::cerr << "dead" << std::endl;
       break;
     }
+/*
     if ( systemState->getTime() > timeout ) {
 //std::cerr << "timeout" << std::endl;
       break;
     }
+*/
   }
   
   // get final objective value
@@ -90,7 +92,7 @@ BPMNOS::number Engine::run(BPMNOS::number timeout) {
 //  std::cout  << "Objective (minimization): " << -(float)objective << std::endl;
 }
 
-bool Engine::advance() {
+bool Engine::advance(BPMNOS::number timeout) {
   // add new instances if time has advanced since last instantiation
   if (lastInstantiationTime < systemState->getTime()) {
     addInstances();
@@ -106,6 +108,10 @@ bool Engine::advance() {
   // fetch and process all events
   while ( auto event = fetchEvent(systemState.get()) ) {
 //std::cerr << "*";
+    // stop before processing clock tick that would exceed timeout                
+    if ( event->is<ClockTickEvent>() && systemState->getTime() >= timeout ) {     
+      return false;                                                               
+    }   
     notify(event.get());
     event->processBy(this);
 
