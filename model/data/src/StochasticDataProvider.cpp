@@ -147,7 +147,7 @@ void StochasticDataProvider::readInstances() {
         auto process = dynamic_cast<BPMN::Process*>(node);
         instances[instanceId] = StochasticInstanceData{process, instanceId,
                                                        std::numeric_limits<BPMNOS::number>::max(), {}};
-        disclosure[instanceId][process] = 0;
+        disclosureTimes[instanceId][process] = 0;
       }
 
       // Handle COMPLETION expression (valid for all Task types)
@@ -251,17 +251,17 @@ BPMNOS::number StochasticDataProvider::getEffectiveDisclosure(size_t instanceId,
 
   if (auto childNode = node->represents<BPMN::ChildNode>()) {
     auto parentNode = childNode->parent;
-    if (!disclosure[instanceId].contains(parentNode)) {
+    if (!disclosureTimes[instanceId].contains(parentNode)) {
       throw std::runtime_error("StochasticDataProvider: disclosure for '" + node->id + "' given before parent '" + parentNode->id + "'");
     }
-    effectiveDisclosure = std::max(effectiveDisclosure, disclosure[instanceId][parentNode]);
+    effectiveDisclosure = std::max(effectiveDisclosure, disclosureTimes[instanceId][parentNode]);
   }
 
-  if (!disclosure[instanceId].contains(node)) {
-    disclosure[instanceId][node] = effectiveDisclosure;
+  if (!disclosureTimes[instanceId].contains(node)) {
+    disclosureTimes[instanceId][node] = effectiveDisclosure;
   }
   else {
-    disclosure[instanceId][node] = std::max(disclosure[instanceId][node], effectiveDisclosure);
+    disclosureTimes[instanceId][node] = std::max(disclosureTimes[instanceId][node], effectiveDisclosure);
   }
 
   return effectiveDisclosure;
@@ -282,7 +282,7 @@ std::unique_ptr<Scenario> StochasticDataProvider::createScenario(unsigned int sc
   }
 
   // Set node disclosure times (from immediate disclosures)
-  for (auto& [instanceId, nodes] : disclosure) {
+  for (auto& [instanceId, nodes] : disclosureTimes) {
     for (auto& [node, disclosureTime] : nodes) {
       scenario->setDisclosure(instanceId, node, disclosureTime);
     }

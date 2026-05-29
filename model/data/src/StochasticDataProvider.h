@@ -77,7 +77,7 @@ protected:
   std::unordered_map<size_t, std::unordered_map<const BPMN::Node*, std::vector<std::shared_ptr<Expression>>>> completionExpressions;
 
   /// Node disclosure times
-  std::unordered_map<size_t, std::unordered_map<const BPMN::Node*, BPMNOS::number>> disclosure;
+  std::unordered_map<size_t, std::unordered_map<const BPMN::Node*, BPMNOS::number>> disclosureTimes;
 
   BPMNOS::number evaluateExpression(const std::string& expressionString) const override;
   BPMNOS::number evaluateExpression(size_t instanceId, const BPMN::Node* node,

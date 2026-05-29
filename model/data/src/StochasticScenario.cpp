@@ -28,11 +28,11 @@ void StochasticScenario::setValue(const BPMNOS::number instanceId, const Attribu
 }
 
 void StochasticScenario::setDisclosure(const BPMNOS::number instanceId, const BPMN::Node* node, BPMNOS::number disclosureTime) {
-  disclosure[(size_t)instanceId][node] = disclosureTime;
+  disclosureTimes[(size_t)instanceId][node] = disclosureTime;
 }
 
 void StochasticScenario::addPendingDisclosure(const BPMNOS::number instanceId, StochasticPendingDisclosure&& pending) {
-  pendingDisclosures[(size_t)instanceId].push_back(std::move(pending));
+  pendingDisclosures[(size_t)instanceId][pending.attribute] = std::move(pending);
 }
 
 void StochasticScenario::addCompletionExpression(const BPMNOS::number instanceId, const BPMN::Node* task, std::shared_ptr<Expression> expression) {
@@ -47,21 +47,37 @@ void StochasticScenario::addDeferredDisclosure(const BPMNOS::number instanceId, 
   deferredDisclosures[(size_t)instanceId].push_back(std::move(deferred));
 }
 
-void StochasticScenario::evaluateDeferredDisclosures() {
+void StochasticScenario::evaluateDeferredDisclosures(BPMNOS::number spawnTime) {
   if (!stochasticHandle || !randomFactory) {
     return;
   }
 
-  for (auto& [instanceId, deferreds] : deferredDisclosures) {
+  // Build map from attribute to deferred for O(1) lookup
+  std::unordered_map<size_t, std::unordered_map<const Attribute*, const DeferredDisclosure*>> deferredByAttribute;
+  for (auto& [instanceId, disclosures] : deferredDisclosures) {
+    for (auto& disclosure : disclosures) {
+      deferredByAttribute[instanceId][disclosure.attribute] = &disclosure;
+    }
+  }
+
+  // Re-evaluate pending disclosures with disclosureTime >= spawnTime
+  for (auto& [instanceId, disclosures] : pendingDisclosures) {
     auto& instance = instances.at(instanceId);
 
-    for (auto& deferred : deferreds) {
+    for (auto& [attribute, pending] : disclosures) {
+      if (pending.disclosureTime < spawnTime) {
+        continue;  // Skip past disclosures
+      }
+
+      // Find corresponding deferred
+      auto* deferred = deferredByAttribute[instanceId][attribute];
+
       // Set RNG context for this (instance, node)
-      auto& rng = getRng(instanceId, deferred.node);
+      auto& rng = getRng(instanceId, deferred->node);
       randomFactory->setCurrentRng(&rng);
 
       // Build status/data vectors from instance values
-      auto extensionElements = deferred.node->extensionElements->as<const ExtensionElements>();
+      auto extensionElements = deferred->node->extensionElements->as<const ExtensionElements>();
       Values status, data;
       for (auto& attr : extensionElements->attributes) {
         status.push_back(instance.values.contains(attr.get()) ? instance.values.at(attr.get()) : std::nullopt);
@@ -70,11 +86,11 @@ void StochasticScenario::evaluateDeferredDisclosures() {
         data.push_back(instance.values.contains(attr.get()) ? instance.values.at(attr.get()) : std::nullopt);
       }
 
-      // Evaluate initialization expression (shared, different results from RNG context)
-      BPMNOS::number value = deferred.initializationExpression->execute(status, data, globals).value_or(0);
+      // Evaluate initialization expression
+      BPMNOS::number value = deferred->initializationExpression->execute(status, data, globals).value_or(0);
 
       // Apply type conversion
-      switch (deferred.attribute->type) {
+      switch (deferred->attribute->type) {
         case ValueType::INTEGER:
           value = BPMNOS::number((int)value);
           break;
@@ -85,42 +101,114 @@ void StochasticScenario::evaluateDeferredDisclosures() {
           break;
       }
 
-      // Store value immediately so subsequent expressions can reference it
-      instance.values[deferred.attribute] = value;
+      // Store value
+      instance.values[deferred->attribute] = value;
 
-      // Update instantiation time if this is the timestamp attribute (ceiled to align with integer time steps)
-      if (deferred.attribute->id == Keyword::Timestamp) {
+      // Update instantiation time if timestamp
+      if (deferred->attribute->id == Keyword::Timestamp) {
         instance.instantiationTime = BPMNOS::number(std::ceil((double)value));
       }
 
-      // Evaluate disclosure expression (shared, different results from RNG context)
-      BPMNOS::number ownDisclosure = BPMNOS::number(std::ceil((double)deferred.disclosureExpression->execute(status, data, globals).value_or(0)));
+      // Evaluate disclosure expression
+      BPMNOS::number ownDisclosure = BPMNOS::number(std::ceil((double)deferred->disclosureExpression->execute(status, data, globals).value_or(0)));
+
       // Compute effective disclosure (max with parent scope)
       BPMNOS::number effectiveDisclosure = ownDisclosure;
-      if (auto childNode = deferred.node->represents<BPMN::ChildNode>()) {
+      if (auto childNode = deferred->node->represents<BPMN::ChildNode>()) {
         auto parentNode = childNode->parent;
-        if (disclosure.contains(instanceId) && disclosure.at(instanceId).contains(parentNode)) {
-          effectiveDisclosure = std::max(effectiveDisclosure, disclosure.at(instanceId).at(parentNode));
+        if (disclosureTimes.contains(instanceId) && disclosureTimes.at(instanceId).contains(parentNode)) {
+          effectiveDisclosure = std::max(effectiveDisclosure, disclosureTimes.at(instanceId).at(parentNode));
         }
       }
 
       // Update node disclosure time
-      if (!disclosure[instanceId].contains(deferred.node)) {
-        disclosure[instanceId][deferred.node] = effectiveDisclosure;
-      } else {
-        disclosure[instanceId][deferred.node] = std::max(disclosure[instanceId][deferred.node], effectiveDisclosure);
+      if (!disclosureTimes[instanceId].contains(deferred->node)) {
+        disclosureTimes[instanceId][deferred->node] = effectiveDisclosure;
+      }
+      else {
+        disclosureTimes[instanceId][deferred->node] = std::max(disclosureTimes[instanceId][deferred->node], effectiveDisclosure);
+      }
+
+      // Update pending disclosure
+      pending = {deferred->attribute, ownDisclosure, effectiveDisclosure, value};
+    }
+  }
+
+  // Initial evaluation: process disclosures not yet in pendingDisclosures
+  for (auto& [instanceId, disclosures] : deferredDisclosures) {
+    auto& instance = instances.at(instanceId);
+
+    for (auto& disclosure : disclosures) {
+      // Skip if already in pendingDisclosures
+      if (pendingDisclosures.contains(instanceId) &&
+          pendingDisclosures.at(instanceId).contains(disclosure.attribute)) {
+        continue;
+      }
+
+      // Set RNG context for this (instance, node)
+      auto& rng = getRng(instanceId, disclosure.node);
+      randomFactory->setCurrentRng(&rng);
+
+      // Build status/data vectors from instance values
+      auto extensionElements = disclosure.node->extensionElements->as<const ExtensionElements>();
+      Values status, data;
+      for (auto& attr : extensionElements->attributes) {
+        status.push_back(instance.values.contains(attr.get()) ? instance.values.at(attr.get()) : std::nullopt);
+      }
+      for (auto& attr : extensionElements->data) {
+        data.push_back(instance.values.contains(attr.get()) ? instance.values.at(attr.get()) : std::nullopt);
+      }
+
+      // Evaluate initialization expression
+      BPMNOS::number value = disclosure.initializationExpression->execute(status, data, globals).value_or(0);
+
+      // Apply type conversion
+      switch (disclosure.attribute->type) {
+        case ValueType::INTEGER:
+          value = BPMNOS::number((int)value);
+          break;
+        case ValueType::BOOLEAN:
+          value = BPMNOS::number(value != 0 ? 1 : 0);
+          break;
+        default:
+          break;
+      }
+
+      // Store value
+      instance.values[disclosure.attribute] = value;
+
+      // Update instantiation time if timestamp
+      if (disclosure.attribute->id == Keyword::Timestamp) {
+        instance.instantiationTime = BPMNOS::number(std::ceil((double)value));
+      }
+
+      // Evaluate disclosure expression
+      BPMNOS::number ownDisclosure = BPMNOS::number(std::ceil((double)disclosure.disclosureExpression->execute(status, data, globals).value_or(0)));
+
+      // Compute effective disclosure (max with parent scope)
+      BPMNOS::number effectiveDisclosure = ownDisclosure;
+      if (auto childNode = disclosure.node->represents<BPMN::ChildNode>()) {
+        auto parentNode = childNode->parent;
+        if (disclosureTimes.contains(instanceId) && disclosureTimes.at(instanceId).contains(parentNode)) {
+          effectiveDisclosure = std::max(effectiveDisclosure, disclosureTimes.at(instanceId).at(parentNode));
+        }
+      }
+
+      // Update node disclosure time
+      if (!disclosureTimes[instanceId].contains(disclosure.node)) {
+        disclosureTimes[instanceId][disclosure.node] = effectiveDisclosure;
+      }
+      else {
+        disclosureTimes[instanceId][disclosure.node] = std::max(disclosureTimes[instanceId][disclosure.node], effectiveDisclosure);
       }
 
       // Add as pending disclosure
-      pendingDisclosures[instanceId].push_back({deferred.attribute, effectiveDisclosure, value});
+      pendingDisclosures[instanceId][disclosure.attribute] = {disclosure.attribute, ownDisclosure, effectiveDisclosure, value};
     }
   }
 
   // Clear RNG context
   randomFactory->setCurrentRng(nullptr);
-
-  // Clear deferred disclosures (they've been processed)
-  deferredDisclosures.clear();
 
   // Compute instantiation bounds now that all disclosures are evaluated
   computeInstantiationBounds();
@@ -134,8 +222,8 @@ void StochasticScenario::computeInstantiationBounds() {
     BPMNOS::number effectiveInstantiation = instance.instantiationTime;
 
     // Check if process has disclosure time (includes both immediate and deferred disclosures)
-    if (disclosure.contains(id) && disclosure.at(id).contains(instance.process)) {
-      effectiveInstantiation = std::max(effectiveInstantiation, disclosure.at(id).at(instance.process));
+    if (disclosureTimes.contains(id) && disclosureTimes.at(id).contains(instance.process)) {
+      effectiveInstantiation = std::max(effectiveInstantiation, disclosureTimes.at(id).at(instance.process));
     }
 
     if (earliestInstantiationTime > effectiveInstantiation) {
@@ -237,8 +325,8 @@ std::vector<const Scenario::InstanceData*> StochasticScenario::getInstances(cons
   for (auto& [id, instance] : instances) {
     // Instance is known when process disclosure time is reached
     BPMNOS::number processDisclosure = 0;
-    if (disclosure.contains(instance.id) && disclosure.at(instance.id).contains(instance.process)) {
-      processDisclosure = disclosure.at(instance.id).at(instance.process);
+    if (disclosureTimes.contains(instance.id) && disclosureTimes.at(instance.id).contains(instance.process)) {
+      processDisclosure = disclosureTimes.at(instance.id).at(instance.process);
     }
     if (currentTime >= processDisclosure) {
       result.push_back(&instance);
@@ -251,8 +339,8 @@ std::vector<std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values>> St
   std::vector<std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values>> result;
   for (auto& [id, instance] : instances) {
     BPMNOS::number effectiveInstantiationTime = instance.instantiationTime;
-    if (disclosure.contains(instance.id) && disclosure.at(instance.id).contains(instance.process)) {
-      effectiveInstantiationTime = std::max( effectiveInstantiationTime,                                             disclosure.at(instance.id).at(instance.process) );
+    if (disclosureTimes.contains(instance.id) && disclosureTimes.at(instance.id).contains(instance.process)) {
+      effectiveInstantiationTime = std::max( effectiveInstantiationTime,                                             disclosureTimes.at(instance.id).at(instance.process) );
     }
     if (effectiveInstantiationTime == currentTime) {
       auto status = getKnownInitialStatus(&instance, currentTime);
@@ -326,8 +414,8 @@ std::optional<BPMNOS::number> StochasticScenario::getValue(const BPMNOS::number 
 
 std::optional<BPMNOS::Values> StochasticScenario::getStatus(const BPMNOS::number instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const {
   auto& instance = instances.at((size_t)instanceId);
-  if (disclosure.contains(instance.id) && disclosure.at(instance.id).contains(node)) {
-    if (currentTime < disclosure.at(instance.id).at(node)) {
+  if (disclosureTimes.contains(instance.id) && disclosureTimes.at(instance.id).contains(node)) {
+    if (currentTime < disclosureTimes.at(instance.id).at(node)) {
       return std::nullopt;
     }
   }
@@ -340,8 +428,8 @@ std::optional<BPMNOS::Values> StochasticScenario::getStatus(const BPMNOS::number
 
 std::optional<BPMNOS::Values> StochasticScenario::getData(const BPMNOS::number instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const {
   auto& instance = instances.at((size_t)instanceId);
-  if (disclosure.contains(instance.id) && disclosure.at(instance.id).contains(node)) {
-    if (currentTime < disclosure.at(instance.id).at(node)) {
+  if (disclosureTimes.contains(instance.id) && disclosureTimes.at(instance.id).contains(node)) {
+    if (currentTime < disclosureTimes.at(instance.id).at(node)) {
       return std::nullopt;
     }
   }
@@ -407,17 +495,18 @@ void StochasticScenario::setTaskCompletionStatus(BPMNOS::number instanceId, cons
 }
 
 void StochasticScenario::revealData(BPMNOS::number currentTime) const {
-  for (auto& [instanceId, pendings] : pendingDisclosures) {
+  for (auto& [instanceId, disclosures] : pendingDisclosures) {
     auto& instance = instances.at(instanceId);
 
     // Process pending disclosures that are due
-    auto it = pendings.begin();
-    while (it != pendings.end()) {
-      if (currentTime >= it->disclosureTime) {
+    for (auto it = disclosures.begin(); it != disclosures.end(); ) {
+      auto& [attribute, disclosure] = *it;
+      if (currentTime >= disclosure.effectiveDisclosureTime) {
         // Reveal pre-computed value
-        instance.values[it->attribute] = it->value;
-        disclosedAttributes.insert({instanceId, it->attribute});
-        it = pendings.erase(it);
+        instance.values[attribute] = disclosure.value;
+        // Move to past disclosures
+        pastDisclosures[instanceId][attribute] = std::move(disclosure);
+        it = disclosures.erase(it);
       }
       else {
         ++it;
@@ -430,8 +519,8 @@ std::optional<BPMNOS::Values> StochasticScenario::getActivityReadyStatus(BPMNOS:
   size_t id = (size_t)instanceId;
 
   // Check if node data is disclosed
-  if (disclosure.contains(id) && disclosure.at(id).contains(activity)) {
-    if (currentTime < disclosure.at(id).at(activity)) {
+  if (disclosureTimes.contains(id) && disclosureTimes.at(id).contains(activity)) {
+    if (currentTime < disclosureTimes.at(id).at(activity)) {
       return std::nullopt;
     }
   }

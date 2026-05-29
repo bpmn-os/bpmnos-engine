@@ -19,9 +19,10 @@ namespace BPMNOS::Model {
  * The value is computed at parse time using only global attributes.
  */
 struct StochasticPendingDisclosure {
-  const Attribute* attribute;     ///< The attribute to initialize
-  BPMNOS::number disclosureTime;  ///< Time when this attribute is disclosed
-  BPMNOS::number value;           ///< Pre-computed value to reveal at disclosure time
+  const Attribute* attribute;              ///< The attribute to initialize
+  BPMNOS::number disclosureTime;           ///< Own disclosure time (from expression)
+  BPMNOS::number effectiveDisclosureTime;  ///< Effective disclosure time (max with parent)
+  BPMNOS::number value;                    ///< Pre-computed value to reveal at disclosure time
 };
 
 /**
@@ -111,16 +112,16 @@ protected:
   void addReadyExpression(const BPMNOS::number instanceId, const BPMN::Node* node, std::shared_ptr<Expression> expression);
   void addDeferredDisclosure(const BPMNOS::number instanceId, DeferredDisclosure&& deferred);
 
-  /// Evaluate all deferred disclosures using scenario-specific RNG
-  void evaluateDeferredDisclosures();
+  /// (Re-)evaluates items with disclosure time >= spawnTime
+  void evaluateDeferredDisclosures(BPMNOS::number spawnTime = std::numeric_limits<BPMNOS::number>::lowest());
 
   /// Get or create RNG for (instance, node) pair
   std::mt19937& getRng(size_t instanceId, const BPMN::Node* node) const;
 
   mutable std::unordered_map<size_t, InstanceData> instances;
-  std::unordered_map<size_t, std::unordered_map<const BPMN::Node*, BPMNOS::number>> disclosure; ///< Instance ID -> Node -> disclosure time
-  mutable std::unordered_map<size_t, std::vector<StochasticPendingDisclosure>> pendingDisclosures; ///< Instance ID -> pending disclosures
-  mutable std::set<std::pair<size_t, const Attribute*>> disclosedAttributes; ///< Track which attributes have been disclosed
+  std::unordered_map<size_t, std::unordered_map<const BPMN::Node*, BPMNOS::number>> disclosureTimes; ///< Instance ID -> Node -> disclosure time
+  mutable std::unordered_map<size_t, std::unordered_map<const Attribute*, StochasticPendingDisclosure>> pastDisclosures; ///< Already disclosed
+  mutable std::unordered_map<size_t, std::unordered_map<const Attribute*, StochasticPendingDisclosure>> pendingDisclosures; ///< Not yet disclosed
 
   /// Ready expressions per (instance, node) - shared across scenario copies
   std::unordered_map<size_t, std::unordered_map<const BPMN::Node*, std::vector<std::shared_ptr<Expression>>>> readyExpressions;
