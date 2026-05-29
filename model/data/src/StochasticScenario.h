@@ -44,6 +44,19 @@ struct DeferredDisclosure {
  * - Random functions in INITIALIZATION, DISCLOSURE, and COMPLETION expressions
  * - Per (instance, node) RNG for reproducibility
  * - Downward compatible with static (3-column) and dynamic (4-column) CSV formats
+ * - Scenario copying with resampling of future values
+ *
+ * @par Resampling Behavior
+ * When a scenario is copied at a given spawnTime, values with disclosure time >= spawnTime
+ * are re-evaluated using a new RNG seed. If re-evaluated timestamps or disclosure times
+ * fall before spawnTime, they are resampled up to @ref maxResamplingTries times. If still
+ * in the past after all attempts, they fall back to spawnTime.
+ *
+ * @warning Resampling with fallback may alter the effective probability distribution,
+ *          creating a point mass at spawnTime.
+ *
+ * @par Assumptions
+ * - CSV rows must be ordered with parent nodes before child nodes for dependent expressions
  */
 class StochasticDataProvider;
 
@@ -51,6 +64,11 @@ class StochasticScenario : public Scenario {
   friend class StochasticDataProvider;
 
 public:
+  /**
+   * @brief Maximum number of resampling attempts when re-evaluated disclosure time is before spawnTime
+   */
+  static constexpr int maxResamplingTries = 4;
+
   StochasticScenario(
     const Model* model,
     const std::unordered_map<const Attribute*, BPMNOS::number>& globalValueMap,
@@ -89,6 +107,12 @@ public:
    */
   void noticeCompletionPending(BPMNOS::number instanceId, const BPMN::Node* task, const Values& status, const SharedValues& data,     const Values& globals) const override;
 
+  /**
+   * @brief House keeping of internal data.
+   *
+   * This method only does house keeping without actually revealing data.
+   * Disclosures of data are handled by checking node-level disclosureTimes.
+   */
   void revealData(BPMNOS::number currentTime) const;
 
 private:
@@ -111,7 +135,14 @@ protected:
   void addReadyExpression(const BPMNOS::number instanceId, const BPMN::Node* node, std::shared_ptr<Expression> expression);
   void addDeferredDisclosure(const BPMNOS::number instanceId, DeferredDisclosure&& deferred);
 
-  /// (Re-)evaluates items with disclosure time >= spawnTime
+  /**
+   * @brief (Re-)evaluates deferred disclosures with disclosure time >= spawnTime.
+   *
+   * Timestamps and disclosure times that fall before spawnTime are resampled up to
+   * maxResamplingTries times, falling back to spawnTime if still in the past.
+   *
+   * @param spawnTime Items with disclosure time < spawnTime are not evaluated again
+   */
   void evaluateDeferredDisclosures(BPMNOS::number spawnTime = std::numeric_limits<BPMNOS::number>::lowest());
 
   /// Get or create RNG for (instance, node) pair

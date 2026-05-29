@@ -19,9 +19,17 @@ namespace BPMNOS::Model {
  * StochasticDataProvider supports:
  * - 3-column format (INSTANCE_ID, NODE_ID, INITIALIZATION) - static behavior
  * - 4-column format (+ DISCLOSURE) - dynamic behavior
- * - 6-column format (+ ARRIVAL, COMPLETION) - stochastic behavior
+ * - 6-column format (+ READY, COMPLETION) - stochastic behavior
  *
  * Has its own LIMEX handle with lookup tables from Model plus random functions.
+ *
+ * @note CSV ordering: For dependent expressions, parent node rows must be listed
+ *       before child node rows in the CSV file. If a child expression depends on
+ *       a parent's deferred attribute, the parent must be evaluated first.
+ *
+ * @note Guidance constraint: Guidance expressions must only reference attributes
+ *       that are disclosed at the time of access. This is not enforced; it is
+ *       the user's responsibility to ensure correct usage.
  */
 class StochasticDataProvider : public DataProvider {
 public:
