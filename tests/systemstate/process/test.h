@@ -106,3 +106,72 @@ SCENARIO( "SystemState copy with token awaiting ready event", "[systemstate][pro
     }
   }
 }
+
+SCENARIO( "Engine resume from stopped state", "[systemstate][process][resume]" ) {
+  const std::string modelFile = "tests/systemstate/process/Simple_executable_process.bpmn";
+  REQUIRE_NOTHROW( Model::Model(modelFile) );
+
+  GIVEN( "An instance that stops waiting for exit event" ) {
+    std::string csv =
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1; timestamp := 0\n"
+    ;
+
+    Model::StochasticDataProvider dataProvider(modelFile, csv);
+    auto scenario = dataProvider.createScenario();
+
+    // First engine: entry handler but NO exit handler
+    Execution::Engine engine1;
+    Execution::InstantEntry entryHandler1;
+    Execution::TimeWarp timeHandler1;
+    entryHandler1.connect(&engine1);
+    timeHandler1.connect(&engine1);
+    Execution::Recorder recorder1;
+    recorder1.subscribe(&engine1);
+
+    // Run with timeout - will stop when task is waiting for exit event
+    engine1.run(scenario.get(), 10);
+
+    REQUIRE( engine1.getSystemState()->getTime() == 10 );
+
+    // Token should be at COMPLETED state, waiting for exit event
+    auto activityLog1 = recorder1.find(nlohmann::json{{"nodeId","Activity_1"}}, nlohmann::json{{"event",nullptr},{"decision",nullptr}});
+    REQUIRE( activityLog1.back()["state"] == "COMPLETED" );
+
+    WHEN( "A second engine resumes with exit handler and forked scenario" ) {
+      // Fork scenario for continuation
+      auto* stochasticScenario = dynamic_cast<Model::StochasticScenario*>(scenario.get());
+      REQUIRE( stochasticScenario != nullptr );
+      auto forkedScenario = std::make_unique<Model::StochasticScenario>(
+        stochasticScenario,
+        engine1.getSystemState()->getTime() + 1, // next point in time
+        42  // new seed
+      );
+
+      // Second engine: has exit handler
+      Execution::Engine engine2;
+      Execution::InstantEntry entryHandler2;
+      Execution::InstantExit exitHandler2;
+      Execution::TimeWarp timeHandler2;
+      entryHandler2.connect(&engine2);
+      exitHandler2.connect(&engine2);
+      timeHandler2.connect(&engine2);
+      Execution::Recorder recorder2;
+      recorder2.subscribe(&engine2);
+
+      // Resume from first engine's state with forked scenario
+      engine2.resume(forkedScenario.get(), engine1.getSystemState());
+
+      THEN( "The process completes successfully" ) {
+        auto processLog = recorder2.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr}, {"event",nullptr}, {"decision",nullptr}});
+        REQUIRE( processLog.back()["state"] == "DONE" );
+
+        auto activityLog2 = recorder2.find(nlohmann::json{{"nodeId","Activity_1"}}, nlohmann::json{{"event",nullptr},{"decision",nullptr}});
+        REQUIRE( activityLog2.back()["state"] == "DEPARTED" );
+
+        auto endLog = recorder2.find(nlohmann::json{{"nodeId","EndEvent_1"}}, nlohmann::json{{"event",nullptr},{"decision",nullptr}});
+        REQUIRE( endLog.back()["state"] == "DONE" );
+      }
+    }
+  }
+}
