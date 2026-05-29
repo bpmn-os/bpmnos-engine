@@ -101,9 +101,6 @@ void StochasticScenario::evaluateDeferredDisclosures(BPMNOS::number spawnTime) {
           break;
       }
 
-      // Store value
-      instance.values[deferred->attribute] = value;
-
       // Update instantiation time if timestamp
       if (deferred->attribute->id == Keyword::Timestamp) {
         instance.instantiationTime = BPMNOS::number(std::ceil((double)value));
@@ -173,9 +170,6 @@ void StochasticScenario::evaluateDeferredDisclosures(BPMNOS::number spawnTime) {
         default:
           break;
       }
-
-      // Store value
-      instance.values[disclosure.attribute] = value;
 
       // Update instantiation time if timestamp
       if (disclosure.attribute->id == Keyword::Timestamp) {
