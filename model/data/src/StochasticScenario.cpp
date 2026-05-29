@@ -107,27 +107,27 @@ void StochasticScenario::evaluateDeferredDisclosures(BPMNOS::number spawnTime) {
       }
 
       // Evaluate disclosure expression
-      BPMNOS::number ownDisclosure = BPMNOS::number(std::ceil((double)deferred->disclosureExpression->execute(status, data, globals).value_or(0)));
+      BPMNOS::number disclosureTime = BPMNOS::number(std::ceil((double)deferred->disclosureExpression->execute(status, data, globals).value_or(0)));
 
-      // Compute effective disclosure (max with parent scope)
-      BPMNOS::number effectiveDisclosure = ownDisclosure;
+      // Compute effective disclosure time (max with parent scope)
+      BPMNOS::number effectiveDisclosureTime = disclosureTime;
       if (auto childNode = deferred->node->represents<BPMN::ChildNode>()) {
         auto parentNode = childNode->parent;
         if (disclosureTimes.contains(instanceId) && disclosureTimes.at(instanceId).contains(parentNode)) {
-          effectiveDisclosure = std::max(effectiveDisclosure, disclosureTimes.at(instanceId).at(parentNode));
+          effectiveDisclosureTime = std::max(effectiveDisclosureTime, disclosureTimes.at(instanceId).at(parentNode));
         }
       }
 
       // Update node disclosure time
       if (!disclosureTimes[instanceId].contains(deferred->node)) {
-        disclosureTimes[instanceId][deferred->node] = effectiveDisclosure;
+        disclosureTimes[instanceId][deferred->node] = effectiveDisclosureTime;
       }
       else {
-        disclosureTimes[instanceId][deferred->node] = std::max(disclosureTimes[instanceId][deferred->node], effectiveDisclosure);
+        disclosureTimes[instanceId][deferred->node] = std::max(disclosureTimes[instanceId][deferred->node], effectiveDisclosureTime);
       }
 
       // Update pending disclosure
-      pending = {deferred->attribute, ownDisclosure, effectiveDisclosure, value};
+      pending = {deferred->attribute, disclosureTime, value};
     }
   }
 
@@ -177,27 +177,27 @@ void StochasticScenario::evaluateDeferredDisclosures(BPMNOS::number spawnTime) {
       }
 
       // Evaluate disclosure expression
-      BPMNOS::number ownDisclosure = BPMNOS::number(std::ceil((double)disclosure.disclosureExpression->execute(status, data, globals).value_or(0)));
+      BPMNOS::number disclosureTime = BPMNOS::number(std::ceil((double)disclosure.disclosureExpression->execute(status, data, globals).value_or(0)));
 
-      // Compute effective disclosure (max with parent scope)
-      BPMNOS::number effectiveDisclosure = ownDisclosure;
+      // Compute effective disclosure time (max with parent scope)
+      BPMNOS::number effectiveDisclosureTime = disclosureTime;
       if (auto childNode = disclosure.node->represents<BPMN::ChildNode>()) {
         auto parentNode = childNode->parent;
         if (disclosureTimes.contains(instanceId) && disclosureTimes.at(instanceId).contains(parentNode)) {
-          effectiveDisclosure = std::max(effectiveDisclosure, disclosureTimes.at(instanceId).at(parentNode));
+          effectiveDisclosureTime = std::max(effectiveDisclosureTime, disclosureTimes.at(instanceId).at(parentNode));
         }
       }
 
       // Update node disclosure time
       if (!disclosureTimes[instanceId].contains(disclosure.node)) {
-        disclosureTimes[instanceId][disclosure.node] = effectiveDisclosure;
+        disclosureTimes[instanceId][disclosure.node] = effectiveDisclosureTime;
       }
       else {
-        disclosureTimes[instanceId][disclosure.node] = std::max(disclosureTimes[instanceId][disclosure.node], effectiveDisclosure);
+        disclosureTimes[instanceId][disclosure.node] = std::max(disclosureTimes[instanceId][disclosure.node], effectiveDisclosureTime);
       }
 
       // Add as pending disclosure
-      pendingDisclosures[instanceId][disclosure.attribute] = {disclosure.attribute, ownDisclosure, effectiveDisclosure, value};
+      pendingDisclosures[instanceId][disclosure.attribute] = {disclosure.attribute, disclosureTime, value};
     }
   }
 
@@ -495,7 +495,7 @@ void StochasticScenario::revealData(BPMNOS::number currentTime) const {
     // Process pending disclosures that are due
     for (auto it = disclosures.begin(); it != disclosures.end(); ) {
       auto& [attribute, disclosure] = *it;
-      if (currentTime >= disclosure.effectiveDisclosureTime) {
+      if (currentTime >= disclosure.disclosureTime) {
         // Reveal pre-computed value
         instance.values[attribute] = disclosure.value;
         // Move to past disclosures

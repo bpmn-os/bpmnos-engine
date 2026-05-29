@@ -21,7 +21,6 @@ namespace BPMNOS::Model {
 struct StochasticPendingDisclosure {
   const Attribute* attribute;              ///< The attribute to initialize
   BPMNOS::number disclosureTime;           ///< Own disclosure time (from expression)
-  BPMNOS::number effectiveDisclosureTime;  ///< Effective disclosure time (max with parent)
   BPMNOS::number value;                    ///< Pre-computed value to reveal at disclosure time
 };
 
