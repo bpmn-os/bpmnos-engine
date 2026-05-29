@@ -5,6 +5,7 @@
 #include "Scenario.h"
 #include "model/bpmnos/src/extensionElements/Expression.h"
 #include "model/utility/src/RandomDistributionFactory.h"
+#include <list>
 #include <memory>
 #include <random>
 #include <set>
@@ -165,7 +166,8 @@ protected:
   /// Per (instance, node) RNG for reproducibility
   mutable std::map<std::pair<size_t, const BPMN::Node*>, std::mt19937> rngs;
 
-  unsigned int scenarioSeed;
+  /// Seed history: list of (spawnTime, seed) pairs for scenario copies
+  std::list<std::pair<BPMNOS::number, unsigned int>> scenarioSeeds;
   BPMNOS::number earliestInstantiationTime;
   BPMNOS::number latestInstantiationTime;
 

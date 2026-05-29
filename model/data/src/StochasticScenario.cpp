@@ -12,7 +12,7 @@ StochasticScenario::StochasticScenario(
   unsigned int seed
 )
   : Scenario(model, globalValueMap)
-  , scenarioSeed(seed)
+  , scenarioSeeds({{0, seed}})
   , earliestInstantiationTime(std::numeric_limits<BPMNOS::number>::infinity())
   , latestInstantiationTime(std::numeric_limits<BPMNOS::number>::lowest())
 {
@@ -232,9 +232,10 @@ void StochasticScenario::initializeActivityData(BPMNOS::number instanceId, const
 std::mt19937& StochasticScenario::getRng(size_t instanceId, const BPMN::Node* node) const {
   auto key = std::make_pair(instanceId, node);
   if (!rngs.contains(key)) {
-    // Create RNG seeded from scenarioSeed combined with instanceId and node hash
+    // Create RNG seeded from current seed combined with instanceId and node hash
+    unsigned int currentSeed = scenarioSeeds.back().second;
     size_t nodeHash = std::hash<std::string>{}(node->id);
-    size_t combinedSeed = static_cast<size_t>(scenarioSeed) ^ (instanceId * 31) ^ (nodeHash * 17);
+    size_t combinedSeed = static_cast<size_t>(currentSeed) ^ (instanceId * 31) ^ (nodeHash * 17);
     rngs[key] = std::mt19937(combinedSeed);
   }
   return rngs[key];
