@@ -77,16 +77,21 @@ public:
   );
 
   /**
-   * @brief Copy constructor that resamples future values.
+   * @brief Copy constructor for creating a forked scenario with future values resampled.
    *
-   * Copies all data from original. Values with disclosure time >= spawnTime are
-   * re-evaluated using the new seed. The new seed is appended to scenarioSeeds.
+   * Creates a forked scenario to continue a run from a given SystemState. 
+   * Values with disclosure time >= spawnTime are re-evaluated using the new seed, 
+   * enabling independent sampling of future stochastic values.
    *
-   * @pre spawnTime must be smaller or equal to all pending disclosure times.
-   *      Throws std::runtime_error if any pending disclosure has disclosureTime < spawnTime.
+   * @note spawnTime must be the next point in time after the given SystemState's current
+   *       time (i.e., systemState->getTime() + 1). This ensures past values are
+   *       preserved and only future values are resampled.
    *
-   * @param original The scenario to copy from
-   * @param spawnTime Values with disclosure time >= spawnTime are resampled
+   * @pre Throws std::logic_error if any past disclosure has disclosureTime >= spawnTime.
+   *      Throws std::logic_error if any pending disclosure has disclosureTime < spawnTime.
+   *
+   * @param original The scenario to be forked
+   * @param spawnTime First time point for resampling (systemState->getTime() + 1)
    * @param seed New seed for resampling future values
    */
   StochasticScenario(StochasticScenario* original, BPMNOS::number spawnTime, unsigned int seed);

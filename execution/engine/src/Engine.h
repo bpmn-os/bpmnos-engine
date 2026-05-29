@@ -41,10 +41,31 @@ public:
 public:
 
   /**
-   * @brief Runs a scenario as long as there is a token or new instantiations. Terminates when the time if the system exceeds the timeout.
+   * @brief Runs a scenario from the beginning.
+   *
+   * Creates a fresh system state and executes until no tokens remain,
+   * no new instantiations are pending, or the timeout is exceeded.
+   *
+   * @param scenario The scenario to execute
+   * @param timeout Maximum time before termination (engine stops when time > timeout)
+   * @return The objective value at termination
    */
   BPMNOS::number run(const BPMNOS::Model::Scenario* scenario, BPMNOS::number timeout = std::numeric_limits<BPMNOS::number>::max());
 
+  /**
+   * @brief Resumes execution from a given system state.
+   *
+   * Creates a copy of the foreign state and continues execution for the given scenario.
+   *
+   * @param scenario The scenario to use (may be forked from original)
+   * @param foreignState The system state to resume from
+   * @param timeout Maximum time before termination (engine stops when time > timeout)
+   * @return The objective value at termination
+   */
+  BPMNOS::number resume(const BPMNOS::Model::Scenario* scenario, const SystemState* foreignState, BPMNOS::number timeout = std::numeric_limits<BPMNOS::number>::max());
+private:
+  BPMNOS::number run(BPMNOS::number timeout = std::numeric_limits<BPMNOS::number>::max());
+public:
   void process(const ReadyEvent* event);
   void process(const EntryEvent* event);
   void process(const ChoiceEvent* event);

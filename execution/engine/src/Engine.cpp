@@ -42,11 +42,26 @@ void Engine::Command::execute() {
   function();
 }
 
+
+
 BPMNOS::number Engine::run(const BPMNOS::Model::Scenario* scenario, BPMNOS::number timeout) {
-  terminated = false;
-  commands.clear();  
   // create initial system state
   systemState = std::make_unique<SystemState>(this, scenario);
+  lastInstantiationTime = std::numeric_limits<BPMNOS::number>::lowest();
+
+  return run(timeout);
+}
+
+BPMNOS::number Engine::resume(const BPMNOS::Model::Scenario* scenario, const SystemState* foreignState, BPMNOS::number timeout) {
+  // copy foreign system state
+  systemState = std::make_unique<SystemState>(this, scenario, foreignState);
+  lastInstantiationTime = systemState->getTime();
+  return run(timeout);
+}
+
+BPMNOS::number Engine::run(BPMNOS::number timeout) {
+  terminated = false;
+  commands.clear();  
 /*
   if ( conditionalEventObserver ) {
     removeSubscriber(conditionalEventObserver.get(), Observable::Type::DataUpdate);
