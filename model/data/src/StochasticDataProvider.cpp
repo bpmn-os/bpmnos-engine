@@ -157,7 +157,7 @@ void StochasticDataProvider::readInstances() {
         }
 
         auto extensionElements = node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
-        auto expression = std::make_unique<Expression>(stochasticHandle, completionExpression,
+        auto expression = std::make_shared<Expression>(stochasticHandle, completionExpression,
                                                        extensionElements->attributeRegistry);
 
         // Completion expressions must only modify STATUS attributes
@@ -185,7 +185,7 @@ void StochasticDataProvider::readInstances() {
         }
 
         auto extensionElements = node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
-        auto expression = std::make_unique<Expression>(stochasticHandle, readyExpression, extensionElements->attributeRegistry);
+        auto expression = std::make_shared<Expression>(stochasticHandle, readyExpression, extensionElements->attributeRegistry);
 
         // Ready expressions must only modify STATUS attributes
         if (expression->target.has_value() &&
@@ -205,11 +205,16 @@ void StochasticDataProvider::readInstances() {
       }
       else {
         auto [attribute, expressionString] = lookupAttribute(node, initializationString);
+        auto extensionElements = node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
 
-        // All initializations are deferred for per-scenario evaluation
+        // Create shared expressions for per-scenario evaluation
+        auto initializationExpression = std::make_shared<Expression>(stochasticHandle, expressionString, extensionElements->attributeRegistry);
+
         // If no DISCLOSURE expression, default to disclosure at time 0
-        std::string disclosure = disclosureExpression.empty() ? "0" : disclosureExpression;
-        deferredAttributes[instanceId].push_back({attribute, node, expressionString, disclosure});
+        std::string disclosureString = disclosureExpression.empty() ? "0" : disclosureExpression;
+        auto disclosureExpressionPtr = std::make_shared<Expression>(stochasticHandle, disclosureString, extensionElements->attributeRegistry);
+
+        deferredAttributes[instanceId].push_back({attribute, node, initializationExpression, disclosureExpressionPtr});
       }
     }
   }
@@ -283,40 +288,30 @@ std::unique_ptr<Scenario> StochasticDataProvider::createScenario(unsigned int sc
     }
   }
 
-  // Add deferred disclosures (to be evaluated per-scenario)
+  // Add deferred disclosures (shared expressions, evaluated per-scenario with different RNG)
   for (auto& [instanceId, deferreds] : deferredAttributes) {
     for (auto& deferred : deferreds) {
       scenario->addDeferredDisclosure(
-        instanceId, 
+        instanceId,
         {deferred.attribute, deferred.node, deferred.initializationExpression, deferred.disclosureExpression}
       );
     }
   }
 
-  // Add completion expressions
+  // Share completion expressions
   for (auto& [instanceId, tasks] : completionExpressions) {
     for (auto& [task, expressions] : tasks) {
-      for (auto& sourceExpression : expressions) {
-        auto expression = std::make_unique<Expression>(
-          stochasticHandle,
-          sourceExpression->expression,
-          sourceExpression->attributeRegistry
-        );
-        scenario->addCompletionExpression(instanceId, task, std::move(expression));
+      for (auto& expression : expressions) {
+        scenario->addCompletionExpression(instanceId, task, expression);
       }
     }
   }
 
-  // Add ready expressions
+  // Share ready expressions
   for (auto& [instanceId, nodes] : readyExpressions) {
     for (auto& [node, expressions] : nodes) {
-      for (auto& sourceExpression : expressions) {
-        auto expression = std::make_unique<Expression>(
-          stochasticHandle,
-          sourceExpression->expression,
-          sourceExpression->attributeRegistry
-        );
-        scenario->addReadyExpression(instanceId, node, std::move(expression));
+      for (auto& expression : expressions) {
+        scenario->addReadyExpression(instanceId, node, expression);
       }
     }
   }

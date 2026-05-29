@@ -35,11 +35,11 @@ void StochasticScenario::addPendingDisclosure(const BPMNOS::number instanceId, S
   pendingDisclosures[(size_t)instanceId].push_back(std::move(pending));
 }
 
-void StochasticScenario::addCompletionExpression(const BPMNOS::number instanceId, const BPMN::Node* task, std::unique_ptr<Expression> expression) {
+void StochasticScenario::addCompletionExpression(const BPMNOS::number instanceId, const BPMN::Node* task, std::shared_ptr<Expression> expression) {
   completionExpressions[(size_t)instanceId][task].push_back(std::move(expression));
 }
 
-void StochasticScenario::addReadyExpression(const BPMNOS::number instanceId, const BPMN::Node* node, std::unique_ptr<Expression> expression) {
+void StochasticScenario::addReadyExpression(const BPMNOS::number instanceId, const BPMN::Node* node, std::shared_ptr<Expression> expression) {
   readyExpressions[(size_t)instanceId][node].push_back(std::move(expression));
 }
 
@@ -70,9 +70,8 @@ void StochasticScenario::evaluateDeferredDisclosures() {
         data.push_back(instance.values.contains(attr.get()) ? instance.values.at(attr.get()) : std::nullopt);
       }
 
-      // Evaluate initialization expression
-      Expression initializationExpression(*stochasticHandle, deferred.initializationExpression, extensionElements->attributeRegistry);
-      BPMNOS::number value = initializationExpression.execute(status, data, globals).value_or(0);
+      // Evaluate initialization expression (shared, different results from RNG context)
+      BPMNOS::number value = deferred.initializationExpression->execute(status, data, globals).value_or(0);
 
       // Apply type conversion
       switch (deferred.attribute->type) {
@@ -94,9 +93,8 @@ void StochasticScenario::evaluateDeferredDisclosures() {
         instance.instantiationTime = BPMNOS::number(std::ceil((double)value));
       }
 
-      // Evaluate disclosure expression
-      Expression disclosureExpression(*stochasticHandle, deferred.disclosureExpression, extensionElements->attributeRegistry);
-      BPMNOS::number ownDisclosure = BPMNOS::number(std::ceil((double)disclosureExpression.execute(status, data, globals).value_or(0)));
+      // Evaluate disclosure expression (shared, different results from RNG context)
+      BPMNOS::number ownDisclosure = BPMNOS::number(std::ceil((double)deferred.disclosureExpression->execute(status, data, globals).value_or(0)));
       // Compute effective disclosure (max with parent scope)
       BPMNOS::number effectiveDisclosure = ownDisclosure;
       if (auto childNode = deferred.node->represents<BPMN::ChildNode>()) {

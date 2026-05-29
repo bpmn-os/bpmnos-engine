@@ -27,13 +27,14 @@ struct StochasticPendingDisclosure {
 /**
  * @brief Structure representing a deferred disclosure.
  *
- * Stores expression strings to be evaluated per-scenario for independent sampling.
+ * Stores shared expressions to be evaluated per-scenario for independent sampling.
+ * Expression objects are immutable; different results come from different RNG contexts.
  */
 struct DeferredDisclosure {
-  const Attribute* attribute;           ///< The attribute to initialize
-  const BPMN::Node* node;               ///< The node scope
-  std::string initializationExpression; ///< Expression to compute value
-  std::string disclosureExpression;     ///< Expression to compute disclosure time
+  const Attribute* attribute;                    ///< The attribute to initialize
+  const BPMN::Node* node;                        ///< The node scope
+  std::shared_ptr<Expression> initializationExpression;  ///< Expression to compute value
+  std::shared_ptr<Expression> disclosureExpression;      ///< Expression to compute disclosure time
 };
 
 /**
@@ -106,8 +107,8 @@ protected:
   void setValue(const BPMNOS::number instanceId, const Attribute* attribute, std::optional<BPMNOS::number> value);
   void setDisclosure(const BPMNOS::number instanceId, const BPMN::Node* node, BPMNOS::number disclosureTime);
   void addPendingDisclosure(const BPMNOS::number instanceId, StochasticPendingDisclosure&& pending);
-  void addCompletionExpression(const BPMNOS::number instanceId, const BPMN::Node* task, std::unique_ptr<Expression> expression);
-  void addReadyExpression(const BPMNOS::number instanceId, const BPMN::Node* node, std::unique_ptr<Expression> expression);
+  void addCompletionExpression(const BPMNOS::number instanceId, const BPMN::Node* task, std::shared_ptr<Expression> expression);
+  void addReadyExpression(const BPMNOS::number instanceId, const BPMN::Node* node, std::shared_ptr<Expression> expression);
   void addDeferredDisclosure(const BPMNOS::number instanceId, DeferredDisclosure&& deferred);
 
   /// Evaluate all deferred disclosures using scenario-specific RNG
@@ -121,11 +122,11 @@ protected:
   mutable std::unordered_map<size_t, std::vector<StochasticPendingDisclosure>> pendingDisclosures; ///< Instance ID -> pending disclosures
   mutable std::set<std::pair<size_t, const Attribute*>> disclosedAttributes; ///< Track which attributes have been disclosed
 
-  /// Ready expressions per (instance, node)
-  std::unordered_map<size_t, std::unordered_map<const BPMN::Node*, std::vector<std::unique_ptr<Expression>>>> readyExpressions;
+  /// Ready expressions per (instance, node) - shared across scenario copies
+  std::unordered_map<size_t, std::unordered_map<const BPMN::Node*, std::vector<std::shared_ptr<Expression>>>> readyExpressions;
 
-  /// Completion expressions per (instance, node)
-  std::unordered_map<size_t, std::unordered_map<const BPMN::Node*, std::vector<std::unique_ptr<Expression>>>> completionExpressions;
+  /// Completion expressions per (instance, node) - shared across scenario copies
+  std::unordered_map<size_t, std::unordered_map<const BPMN::Node*, std::vector<std::shared_ptr<Expression>>>> completionExpressions;
 
   /// Deferred disclosures per instance (evaluated per-scenario)
   std::unordered_map<size_t, std::vector<DeferredDisclosure>> deferredDisclosures;

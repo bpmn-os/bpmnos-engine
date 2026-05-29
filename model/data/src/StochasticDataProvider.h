@@ -61,8 +61,8 @@ protected:
   struct DeferredAttribute {
     const Attribute* attribute;
     const BPMN::Node* node;
-    std::string initializationExpression;
-    std::string disclosureExpression;
+    std::shared_ptr<Expression> initializationExpression;
+    std::shared_ptr<Expression> disclosureExpression;
   };
 
   std::unordered_map<long unsigned int, StochasticInstanceData> instances;
@@ -70,11 +70,11 @@ protected:
   /// Deferred attributes (evaluated per-scenario)
   std::unordered_map<size_t, std::vector<DeferredAttribute>> deferredAttributes;
 
-  /// Ready expressions per (instance, node)
-  std::unordered_map<size_t, std::unordered_map<const BPMN::Node*, std::vector<std::unique_ptr<Expression>>>> readyExpressions;
+  /// Ready expressions per (instance, node) - shared with scenarios
+  std::unordered_map<size_t, std::unordered_map<const BPMN::Node*, std::vector<std::shared_ptr<Expression>>>> readyExpressions;
 
-  /// Completion expressions per (instance, node)
-  std::unordered_map<size_t, std::unordered_map<const BPMN::Node*, std::vector<std::unique_ptr<Expression>>>> completionExpressions;
+  /// Completion expressions per (instance, node) - shared with scenarios
+  std::unordered_map<size_t, std::unordered_map<const BPMN::Node*, std::vector<std::shared_ptr<Expression>>>> completionExpressions;
 
   /// Node disclosure times
   std::unordered_map<size_t, std::unordered_map<const BPMN::Node*, BPMNOS::number>> disclosure;
