@@ -10,6 +10,14 @@ Scenario::Scenario(const Model* model, const std::unordered_map<const Attribute*
 {
 }
 
+Scenario::Scenario(const Scenario* original)
+  : model(original->model)
+  , globals(original->globals)
+  , taskCompletionStatus(original->taskCompletionStatus)
+  , activityArrivalStatus(original->activityArrivalStatus)
+{
+}
+
 BPMNOS::Values Scenario::evaluateGlobals(const std::unordered_map<const Attribute*, BPMNOS::number>& globalValueMap) {
   Values result(model->attributes.size());
 

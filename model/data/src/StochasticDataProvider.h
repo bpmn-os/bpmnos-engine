@@ -19,9 +19,17 @@ namespace BPMNOS::Model {
  * StochasticDataProvider supports:
  * - 3-column format (INSTANCE_ID, NODE_ID, INITIALIZATION) - static behavior
  * - 4-column format (+ DISCLOSURE) - dynamic behavior
- * - 6-column format (+ ARRIVAL, COMPLETION) - stochastic behavior
+ * - 6-column format (+ READY, COMPLETION) - stochastic behavior
  *
  * Has its own LIMEX handle with lookup tables from Model plus random functions.
+ *
+ * @note CSV ordering: For dependent expressions, parent node rows must be listed
+ *       before child node rows in the CSV file. If a child expression depends on
+ *       a parent's deferred attribute, the parent must be evaluated first.
+ *
+ * @note Guidance constraint: Guidance expressions must only reference attributes
+ *       that are disclosed at the time of access. This is not enforced; it is
+ *       the user's responsibility to ensure correct usage.
  */
 class StochasticDataProvider : public DataProvider {
 public:
@@ -61,8 +69,8 @@ protected:
   struct DeferredAttribute {
     const Attribute* attribute;
     const BPMN::Node* node;
-    std::string initializationExpression;
-    std::string disclosureExpression;
+    std::shared_ptr<Expression> initializationExpression;
+    std::shared_ptr<Expression> disclosureExpression;
   };
 
   std::unordered_map<long unsigned int, StochasticInstanceData> instances;
@@ -70,14 +78,14 @@ protected:
   /// Deferred attributes (evaluated per-scenario)
   std::unordered_map<size_t, std::vector<DeferredAttribute>> deferredAttributes;
 
-  /// Ready expressions per (instance, node)
-  std::unordered_map<size_t, std::unordered_map<const BPMN::Node*, std::vector<std::unique_ptr<Expression>>>> readyExpressions;
+  /// Ready expressions per (instance, node) - shared with scenarios
+  std::unordered_map<size_t, std::unordered_map<const BPMN::Node*, std::vector<std::shared_ptr<Expression>>>> readyExpressions;
 
-  /// Completion expressions per (instance, node)
-  std::unordered_map<size_t, std::unordered_map<const BPMN::Node*, std::vector<std::unique_ptr<Expression>>>> completionExpressions;
+  /// Completion expressions per (instance, node) - shared with scenarios
+  std::unordered_map<size_t, std::unordered_map<const BPMN::Node*, std::vector<std::shared_ptr<Expression>>>> completionExpressions;
 
   /// Node disclosure times
-  std::unordered_map<size_t, std::unordered_map<const BPMN::Node*, BPMNOS::number>> disclosure;
+  std::unordered_map<size_t, std::unordered_map<const BPMN::Node*, BPMNOS::number>> disclosureTimes;
 
   BPMNOS::number evaluateExpression(const std::string& expressionString) const override;
   BPMNOS::number evaluateExpression(size_t instanceId, const BPMN::Node* node,

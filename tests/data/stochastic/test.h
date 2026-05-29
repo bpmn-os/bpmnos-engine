@@ -307,3 +307,115 @@ SCENARIO( "Stochastic data provider", "[data][stochastic]" ) {
   }
 
 }
+
+SCENARIO( "Stochastic scenario copy constructor", "[data][stochastic][copy]" ) {
+  const std::string modelFile = "tests/data/stochastic/Executable_process.bpmn";
+  REQUIRE_NOTHROW( Model::Model(modelFile) );
+
+  GIVEN( "An instance with future disclosures" ) {
+    std::string csv =
+      "INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE; READY; COMPLETION\n"
+      "Instance_1; Process_1; timestamp := uniform(0,10); 0;;\n"
+      "Instance_1; Process_1; x := uniform(0,1000); 5;;\n"
+      "Instance_1; Activity_1; y := uniform(0,1000); 15;;\n"
+    ;
+
+    WHEN( "The scenario is copied after disclosure of x" ) {
+      Model::StochasticDataProvider dataProvider(modelFile, csv, 42);
+      auto scenario = dataProvider.createScenario(0);
+      auto* stochasticScenario = dynamic_cast<Model::StochasticScenario*>(scenario.get());
+      REQUIRE( stochasticScenario != nullptr );
+
+      // Reveal data up to time 10
+      stochasticScenario->revealData(10);
+
+      // Get original values
+      auto instances = scenario->getInstances(10);
+      REQUIRE( instances.size() == 1 );
+      auto instance = instances[0];
+      auto originalTimestamp = scenario->getValue(instance->id,
+        dataProvider.getModel().processes[0]->extensionElements->as<Model::ExtensionElements>()->attributes[0].get(), 10);
+      auto originalX = scenario->getValue(instance->id,
+        dataProvider.getModel().processes[0]->extensionElements->as<Model::ExtensionElements>()->attributes[1].get(), 10);
+
+      // Copy at spawnTime = 11 with new seed
+      Model::StochasticScenario copiedScenario(stochasticScenario, 11, 999);
+
+      THEN( "Past values (timestamp, x) are preserved" ) {
+        auto copiedInstances = copiedScenario.getInstances(10);
+        REQUIRE( copiedInstances.size() == 1 );
+        auto copiedInstance = copiedInstances[0];
+
+        auto copiedTimestamp = copiedScenario.getValue(copiedInstance->id,
+          dataProvider.getModel().processes[0]->extensionElements->as<Model::ExtensionElements>()->attributes[0].get(), 10);
+        auto copiedX = copiedScenario.getValue(copiedInstance->id,
+          dataProvider.getModel().processes[0]->extensionElements->as<Model::ExtensionElements>()->attributes[1].get(), 10);
+
+        REQUIRE( originalTimestamp.has_value() );
+        REQUIRE( copiedTimestamp.has_value() );
+        REQUIRE( originalTimestamp.value() == copiedTimestamp.value() );
+
+        REQUIRE( originalX.has_value() );
+        REQUIRE( copiedX.has_value() );
+        REQUIRE( originalX.value() == copiedX.value() );
+      }
+
+      THEN( "Future values (y) are resampled" ) {
+        // y has disclosure time 15, so it should be resampled
+        auto& process = dataProvider.getModel().processes[0];
+        auto activity = process->find([](BPMN::Node* n) { return n->id == "Activity_1"; });
+        REQUIRE( activity != nullptr );
+
+        // Get y from original at time 15
+        auto originalY = scenario->getStatus(instance->id, activity, 15);
+        REQUIRE( originalY.has_value() );
+
+        // Keep copying with different seeds until we get a different value
+        unsigned int seed = 1;
+        bool foundDifferent = false;
+        while (!foundDifferent && seed < 1000) {
+          Model::StochasticScenario testCopy(stochasticScenario, 11, seed);
+          auto copiedY = testCopy.getStatus(instance->id, activity, 15);
+          REQUIRE( copiedY.has_value() );
+          if (originalY->at(0).value() != copiedY->at(0).value()) {
+            foundDifferent = true;
+          }
+          ++seed;
+        }
+        REQUIRE( foundDifferent );
+      }
+    }
+  }
+
+  GIVEN( "An instance with all disclosures in the past" ) {
+    std::string csv =
+      "INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE; READY; COMPLETION\n"
+      "Instance_1; Process_1; timestamp := 0; 0;;\n"
+      "Instance_1; Process_1; x := 42; 0;;\n"
+    ;
+
+    WHEN( "The scenario is copied" ) {
+      Model::StochasticDataProvider dataProvider(modelFile, csv, 42);
+      auto scenario = dataProvider.createScenario(0);
+      auto* stochasticScenario = dynamic_cast<Model::StochasticScenario*>(scenario.get());
+
+      // Reveal all data
+      stochasticScenario->revealData(10);
+
+      // Copy at spawnTime = 11
+      Model::StochasticScenario copiedScenario(stochasticScenario, 11, 999);
+
+      THEN( "All values are preserved" ) {
+        auto copiedInstances = copiedScenario.getInstances(0);
+        REQUIRE( copiedInstances.size() == 1 );
+        auto copiedInstance = copiedInstances[0];
+
+        auto copiedX = copiedScenario.getValue(copiedInstance->id,
+          dataProvider.getModel().processes[0]->extensionElements->as<Model::ExtensionElements>()->attributes[1].get(), 0);
+        REQUIRE( copiedX.has_value() );
+        REQUIRE( copiedX.value() == 42 );
+      }
+    }
+  }
+
+}

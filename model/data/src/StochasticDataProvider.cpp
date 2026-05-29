@@ -92,10 +92,12 @@ void StochasticDataProvider::readInstances() {
     // Get disclosure (if 4+ columns)
     std::string disclosureExpression;
     if (columnCount >= 4) {
-      if (!std::holds_alternative<std::string>(row.at(DISCLOSURE))) {
-        throw std::runtime_error("StochasticDataProvider: illegal disclosure");
+      if (std::holds_alternative<std::string>(row.at(DISCLOSURE))) {
+        disclosureExpression = std::get<std::string>(row.at(DISCLOSURE));
       }
-      disclosureExpression = std::get<std::string>(row.at(DISCLOSURE));
+      else if (std::holds_alternative<BPMNOS::number>(row.at(DISCLOSURE))) {
+        disclosureExpression = std::to_string((double)std::get<BPMNOS::number>(row.at(DISCLOSURE)));
+      }
     }
 
     // Get ready (if 6 columns)
@@ -147,7 +149,7 @@ void StochasticDataProvider::readInstances() {
         auto process = dynamic_cast<BPMN::Process*>(node);
         instances[instanceId] = StochasticInstanceData{process, instanceId,
                                                        std::numeric_limits<BPMNOS::number>::max(), {}};
-        disclosure[instanceId][process] = 0;
+        disclosureTimes[instanceId][process] = 0;
       }
 
       // Handle COMPLETION expression (valid for all Task types)
@@ -157,7 +159,7 @@ void StochasticDataProvider::readInstances() {
         }
 
         auto extensionElements = node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
-        auto expression = std::make_unique<Expression>(stochasticHandle, completionExpression,
+        auto expression = std::make_shared<Expression>(stochasticHandle, completionExpression,
                                                        extensionElements->attributeRegistry);
 
         // Completion expressions must only modify STATUS attributes
@@ -185,7 +187,7 @@ void StochasticDataProvider::readInstances() {
         }
 
         auto extensionElements = node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
-        auto expression = std::make_unique<Expression>(stochasticHandle, readyExpression, extensionElements->attributeRegistry);
+        auto expression = std::make_shared<Expression>(stochasticHandle, readyExpression, extensionElements->attributeRegistry);
 
         // Ready expressions must only modify STATUS attributes
         if (expression->target.has_value() &&
@@ -205,11 +207,16 @@ void StochasticDataProvider::readInstances() {
       }
       else {
         auto [attribute, expressionString] = lookupAttribute(node, initializationString);
+        auto extensionElements = node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
 
-        // All initializations are deferred for per-scenario evaluation
+        // Create shared expressions for per-scenario evaluation
+        auto initializationExpression = std::make_shared<Expression>(stochasticHandle, expressionString, extensionElements->attributeRegistry);
+
         // If no DISCLOSURE expression, default to disclosure at time 0
-        std::string disclosure = disclosureExpression.empty() ? "0" : disclosureExpression;
-        deferredAttributes[instanceId].push_back({attribute, node, expressionString, disclosure});
+        std::string disclosureString = disclosureExpression.empty() ? "0" : disclosureExpression;
+        auto disclosureExpressionPtr = std::make_shared<Expression>(stochasticHandle, disclosureString, extensionElements->attributeRegistry);
+
+        deferredAttributes[instanceId].push_back({attribute, node, initializationExpression, disclosureExpressionPtr});
       }
     }
   }
@@ -246,17 +253,17 @@ BPMNOS::number StochasticDataProvider::getEffectiveDisclosure(size_t instanceId,
 
   if (auto childNode = node->represents<BPMN::ChildNode>()) {
     auto parentNode = childNode->parent;
-    if (!disclosure[instanceId].contains(parentNode)) {
+    if (!disclosureTimes[instanceId].contains(parentNode)) {
       throw std::runtime_error("StochasticDataProvider: disclosure for '" + node->id + "' given before parent '" + parentNode->id + "'");
     }
-    effectiveDisclosure = std::max(effectiveDisclosure, disclosure[instanceId][parentNode]);
+    effectiveDisclosure = std::max(effectiveDisclosure, disclosureTimes[instanceId][parentNode]);
   }
 
-  if (!disclosure[instanceId].contains(node)) {
-    disclosure[instanceId][node] = effectiveDisclosure;
+  if (!disclosureTimes[instanceId].contains(node)) {
+    disclosureTimes[instanceId][node] = effectiveDisclosure;
   }
   else {
-    disclosure[instanceId][node] = std::max(disclosure[instanceId][node], effectiveDisclosure);
+    disclosureTimes[instanceId][node] = std::max(disclosureTimes[instanceId][node], effectiveDisclosure);
   }
 
   return effectiveDisclosure;
@@ -277,46 +284,36 @@ std::unique_ptr<Scenario> StochasticDataProvider::createScenario(unsigned int sc
   }
 
   // Set node disclosure times (from immediate disclosures)
-  for (auto& [instanceId, nodes] : disclosure) {
+  for (auto& [instanceId, nodes] : disclosureTimes) {
     for (auto& [node, disclosureTime] : nodes) {
       scenario->setDisclosure(instanceId, node, disclosureTime);
     }
   }
 
-  // Add deferred disclosures (to be evaluated per-scenario)
+  // Add deferred disclosures (shared expressions, evaluated per-scenario with different RNG)
   for (auto& [instanceId, deferreds] : deferredAttributes) {
     for (auto& deferred : deferreds) {
       scenario->addDeferredDisclosure(
-        instanceId, 
+        instanceId,
         {deferred.attribute, deferred.node, deferred.initializationExpression, deferred.disclosureExpression}
       );
     }
   }
 
-  // Add completion expressions
+  // Share completion expressions
   for (auto& [instanceId, tasks] : completionExpressions) {
     for (auto& [task, expressions] : tasks) {
-      for (auto& sourceExpression : expressions) {
-        auto expression = std::make_unique<Expression>(
-          stochasticHandle,
-          sourceExpression->expression,
-          sourceExpression->attributeRegistry
-        );
-        scenario->addCompletionExpression(instanceId, task, std::move(expression));
+      for (auto& expression : expressions) {
+        scenario->addCompletionExpression(instanceId, task, expression);
       }
     }
   }
 
-  // Add ready expressions
+  // Share ready expressions
   for (auto& [instanceId, nodes] : readyExpressions) {
     for (auto& [node, expressions] : nodes) {
-      for (auto& sourceExpression : expressions) {
-        auto expression = std::make_unique<Expression>(
-          stochasticHandle,
-          sourceExpression->expression,
-          sourceExpression->attributeRegistry
-        );
-        scenario->addReadyExpression(instanceId, node, std::move(expression));
+      for (auto& expression : expressions) {
+        scenario->addReadyExpression(instanceId, node, expression);
       }
     }
   }
