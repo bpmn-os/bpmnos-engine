@@ -27,7 +27,6 @@ list(APPEND controller_SOURCES
   GreedyController.cpp
   SeededController.cpp
   SeededGreedyController.cpp
-  CPController.cpp
 )
 
 list(APPEND controller_HEADERS
@@ -60,5 +59,4 @@ list(APPEND controller_HEADERS
   GreedyController.h
   SeededController.h
   SeededGreedyController.h
-  CPController.h
 )
