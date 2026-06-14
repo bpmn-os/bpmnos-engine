@@ -27,7 +27,7 @@ public:
     /// the best across all requests).
     bool firstFeasible = true;
   };
-  static Config default_config() { return {}; } // Workaround for compiler bug, as in GreedyController (a `Config config = {}` default argument fails to compile).
+  static Config default_config() { return {}; } // Work around for compiler bug see: https://stackoverflow.com/questions/53408962/try-to-understand-compiler-error-message-default-member-initializer-required-be/75691051#75691051
 
   BisectionalChoice(Evaluator* evaluator, Config config = default_config());
   void connect(Mediator* mediator) override;
