@@ -18,7 +18,7 @@ GreedyController::GreedyController(Evaluator* evaluator)
   prioritizedDispatchers.push_back( std::make_unique<InstantDirectMessage>() );
   prioritizedDispatchers.push_back( std::make_unique<BisectionalChoice>(evaluator, BisectionalChoice::Config{ .firstFeasible = true }) );
   // Competing layer: best-of-best over the contested decisions.
-  competingDispatchers.push_back( std::make_unique<BestFirstEntry>(evaluator) );
+  competingDispatchers.push_back( std::make_unique<BestFirstEntry>(evaluator, BestFirstEntry::Config{ .onlySequential = true }) ); // sequential ad-hoc entries only
   competingDispatchers.push_back( std::make_unique<BestMatchingMessageDelivery>(evaluator) );
 }
 

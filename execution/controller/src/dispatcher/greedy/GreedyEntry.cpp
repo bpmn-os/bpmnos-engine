@@ -22,6 +22,13 @@ void GreedyEntry::notice(const Observable* observable) {
   if ( observable->getObservableType() == Observable::Type::EntryRequest ) {
     assert( dynamic_cast<const DecisionRequest*>(observable) );
     auto request = static_cast<const DecisionRequest*>(observable);
+    if ( !config.sequential ) {
+      assert( request->token->node->parent );
+      if ( request->token->node->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() ) {
+        // entries of sequential ad-hoc subprocess children are left to another dispatcher
+        return;
+      }
+    }
     auto decision = std::make_shared<EntryDecision>(request->token, evaluator);
     decisionsWithoutEvaluation.emplace_back( request->token->weak_from_this(), request->weak_from_this(), decision );
   }
@@ -57,8 +64,9 @@ std::shared_ptr<Event> GreedyEntry::dispatchEvent( const SystemState* systemStat
         return std::make_shared<EntryEvent>(decision->token);
       }
     }
-    else if ( config.sequential ) {
-      // defer evaluation of decision
+    else {
+      // sequential ad-hoc subprocess child entry (only registered when config.sequential):
+      // defer for performer grouping
       unevaluatedSequentialEntries.emplace_back(
         std::move(token_ptr), std::move(request_ptr), std::move(decision)
       );
