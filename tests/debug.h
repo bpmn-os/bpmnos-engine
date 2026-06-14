@@ -27,7 +27,7 @@ SCENARIO( "Guided knapsack problem", "[examples][knapsack_problem]" ) {
       completionHandler1.connect(&engine1);
 
       Execution::GuidedEvaluator evaluator1;
-      Execution::GreedyController controller1(&evaluator1, { .bestFirstEntry = false, .bestFirstExit = true });
+      Execution::GreedyController controller1(&evaluator1);
       controller1.connect(&engine1);
       
       Execution::MyopicMessageTaskTerminator messageTaskTerminator1;
@@ -62,7 +62,7 @@ SCENARIO( "Guided knapsack problem", "[examples][knapsack_problem]" ) {
       completionHandler2.connect(&engine2);
 
       Execution::GuidedEvaluator evaluator2;
-      Execution::GreedyController controller2(&evaluator2, { .bestFirstEntry = false, .bestFirstExit = true });
+      Execution::GreedyController controller2(&evaluator2);
       controller2.connect(&engine2);
       
       Execution::MyopicMessageTaskTerminator messageTaskTerminator2;

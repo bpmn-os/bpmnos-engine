@@ -4,8 +4,8 @@
 #include <catch2/reporters/catch_reporter_registrars.hpp>
 #define CATCH_CONFIG_NO_THROW
 #include <bpmn++.h>
-#include "bpmnos-model.h"
-#include "bpmnos-execution.h"
+#include <bpmnos-model.h>
+#include <bpmnos-execution.h>
 #include <iostream>
 
 class ProgressListener : public Catch::EventListenerBase {

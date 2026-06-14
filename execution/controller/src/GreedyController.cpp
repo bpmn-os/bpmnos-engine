@@ -2,44 +2,55 @@
 #include "dispatcher/greedy/GreedyEntry.h"
 #include "dispatcher/greedy/GreedyExit.h"
 #include "dispatcher/greedy/BestFirstEntry.h"
-#include "dispatcher/greedy/BestFirstExit.h"
 #include "dispatcher/greedy/BisectionalChoice.h"
 #include "dispatcher/greedy/BestMatchingMessageDelivery.h"
+#include "dispatcher/naive/InstantDirectMessage.h"
 #include <iostream>
 
 using namespace BPMNOS::Execution;
 
-GreedyController::GreedyController(Evaluator* evaluator, Config config)
+GreedyController::GreedyController(Evaluator* evaluator)
   : evaluator(evaluator)
-  , config(config)
 {
-  // add event dispatcher
-  if ( config.bestFirstEntry ) {
-    eventDispatchers.push_back( std::make_unique<BestFirstEntry>(evaluator) );
-  }
-  else {
-    eventDispatchers.push_back( std::make_unique<GreedyEntry>(evaluator) );
-  }
-  if ( config.bestFirstExit ) {
-    eventDispatchers.push_back( std::make_unique<BestFirstExit>(evaluator) );
-  }
-  else {
-    eventDispatchers.push_back( std::make_unique<GreedyExit>(evaluator) );
-  }
-  eventDispatchers.push_back( std::make_unique<BisectionalChoice>(evaluator) );
-  eventDispatchers.push_back( std::make_unique<BestMatchingMessageDelivery>(evaluator) );
+  // Prioritized layer: dispatch the first feasible decision.
+  prioritizedDispatchers.push_back( std::make_unique<GreedyExit>(evaluator) );
+  prioritizedDispatchers.push_back( std::make_unique<GreedyEntry>(evaluator, GreedyEntry::Config{ .sequential = false }) ); // non-sequential entries only
+  prioritizedDispatchers.push_back( std::make_unique<InstantDirectMessage>() );
+  prioritizedDispatchers.push_back( std::make_unique<BisectionalChoice>(evaluator, BisectionalChoice::Config{ .firstFeasible = true }) );
+  // Competing layer: best-of-best over the contested decisions.
+  competingDispatchers.push_back( std::make_unique<BestFirstEntry>(evaluator) );
+  competingDispatchers.push_back( std::make_unique<BestMatchingMessageDelivery>(evaluator) );
 }
 
 void GreedyController::connect(Mediator* mediator) {
-  for ( auto& eventDispatcher : eventDispatchers ) {
+  for ( auto& eventDispatcher : prioritizedDispatchers ) {
+    eventDispatcher->connect(this);
+  }
+  for ( auto& eventDispatcher : competingDispatchers ) {
     eventDispatcher->connect(this);
   }
   Controller::connect(mediator);
 }
 
 std::shared_ptr<Event> GreedyController::dispatchEvent(const SystemState* systemState) {
+  // Instant layer: dispatch the first feasible decision in priority order.
+  for ( auto& eventDispatcher : prioritizedDispatchers ) {
+    if ( auto event = eventDispatcher->dispatchEvent(systemState) ) {
+      if ( auto decision = dynamic_pointer_cast<Decision>(event) ) {
+        if ( decision->reward().has_value() ) {
+          return event;
+        }
+      }
+      else {
+        // events are immediately forwarded
+        return event;
+      }
+    }
+  }
+
+  // Competing layer: dispatch the best evaluated decision (best-of-best).
   std::shared_ptr<Decision> best = nullptr;
-  for ( auto& eventDispatcher : eventDispatchers ) {
+  for ( auto& eventDispatcher : competingDispatchers ) {
     if ( auto event = eventDispatcher->dispatchEvent(systemState) ) {
       if (  auto decision = dynamic_pointer_cast<Decision>(event) ) {
         if ( decision->reward().has_value() ) {
@@ -55,13 +66,10 @@ std::shared_ptr<Event> GreedyController::dispatchEvent(const SystemState* system
       }
       else {
         // events are immediately forwarded
-//std::cerr << "\nEvent " << event->jsonify() << " without evaluation" << std::endl;
         return event;
       }
     }
   }
-  
-//if ( best ) std::cerr << "\nGreedyController: Best decision " << best->jsonify() << " evaluated with " << best->evaluation.value_or(-999) << std::endl;
 
   return best;
 }

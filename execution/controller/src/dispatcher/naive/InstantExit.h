@@ -7,7 +7,7 @@
 namespace BPMNOS::Execution {
 
 /**
- * @brief Class creating an exit event for a token awaiting the exit at an activity.
+ * @brief Dispatches an exit event for the first token awaiting exit, without checking feasibility.
  */
 class InstantExit : public EventDispatcher {
 public:

@@ -7,7 +7,7 @@
 namespace BPMNOS::Execution {
 
 /**
- * @brief Class creating an entry event for a token awaiting the entry at an activity.
+ * @brief Dispatches an entry event for the first token awaiting entry, without checking feasibility.
  */
 class InstantEntry : public EventDispatcher {
 public:

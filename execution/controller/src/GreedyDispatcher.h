@@ -11,7 +11,12 @@
 namespace BPMNOS::Execution {
 
 /**
- * @brief Class for dispatching the event with the best evaluation.
+ * @brief Base class for evaluator-based dispatchers, selecting decisions by reward.
+ *
+ * Holds the pending decisions and their evaluations in a set ordered by reward,
+ * partitioned by dependency (invariant / time-dependent / data-dependent) so a decision
+ * is re-evaluated only when a clock tick or a relevant data update invalidates it.
+ * dispatchEvent evaluates the new decisions and returns the highest-reward feasible event.
  */
 // WeakPtrs... are < std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest> >
 template <typename... WeakPtrs>

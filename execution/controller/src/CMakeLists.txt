@@ -12,6 +12,7 @@ list(APPEND controller_SOURCES
   dispatcher/Metronome.cpp
   dispatcher/naive/InstantEntry.cpp
   dispatcher/naive/InstantExit.cpp
+  dispatcher/naive/InstantDirectMessage.cpp
   dispatcher/naive/FirstMatchingMessageDelivery.cpp
   dispatcher/naive/RandomChoice.cpp
   dispatcher/naive/MyopicDecisionTaskTerminator.cpp
@@ -44,6 +45,7 @@ list(APPEND controller_HEADERS
   dispatcher/Metronome.h
   dispatcher/naive/InstantEntry.h
   dispatcher/naive/InstantExit.h
+  dispatcher/naive/InstantDirectMessage.h
   dispatcher/naive/FirstMatchingMessageDelivery.h
   dispatcher/naive/RandomChoice.h
   dispatcher/naive/MyopicDecisionTaskTerminator.h

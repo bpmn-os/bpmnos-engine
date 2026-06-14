@@ -12,9 +12,10 @@
 
 using namespace BPMNOS::Execution;
 
-BisectionalChoice::BisectionalChoice(Evaluator* evaluator)
+BisectionalChoice::BisectionalChoice(Evaluator* evaluator, Config config)
   : GreedyDispatcher(evaluator)
   , enumeratedChoice(evaluator)
+  , config(config)
 {
 }
 
@@ -46,16 +47,22 @@ std::shared_ptr<Event> BisectionalChoice::dispatchEvent( [[maybe_unused]] const 
     clockTick();
   }
 
-  for ( auto& [ token_ptr, request_ptr, _ ] : decisionsWithoutEvaluation ) {
+  for ( auto it = decisionsWithoutEvaluation.begin(); it != decisionsWithoutEvaluation.end(); ) {
+    auto& [ token_ptr, request_ptr, _ ] = *it;
     auto request = request_ptr.lock();
     assert( request );
     // forget previous decision and find new best decision for the request
     auto decision = determineBestChoices( request );
+    bool feasible = (bool)decision;
     if ( decision ) {
       addEvaluation( token_ptr, request_ptr, std::move(decision) );
     }
+    it = decisionsWithoutEvaluation.erase(it);
+    if ( config.firstFeasible && feasible ) {
+      // dispatch the first feasible decision and leave the remaining requests pending
+      break;
+    }
   }
-  decisionsWithoutEvaluation.clear();
 
   for ( auto [ cost, token_ptr, request_ptr, event_ptr, evaluation_ptr ] : evaluatedDecisions ) {
 //std::cerr << "Best choice decision " << event_ptr.lock()->jsonify() << " evaluated with " << cost << std::endl;

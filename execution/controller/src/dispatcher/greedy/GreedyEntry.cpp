@@ -5,8 +5,9 @@
 
 using namespace BPMNOS::Execution;
 
-GreedyEntry::GreedyEntry(Evaluator* evaluator)
+GreedyEntry::GreedyEntry(Evaluator* evaluator, Config config)
   : GreedyDispatcher(evaluator)
+  , config(config)
 {
 }
 
@@ -44,14 +45,9 @@ std::shared_ptr<Event> GreedyEntry::dispatchEvent( const SystemState* systemStat
     auto token = token_ptr.lock();
     assert( token );
     assert( token->node->parent );
-    if ( token->node->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() ) {
-      // defer evaluation of decision
-      unevaluatedSequentialEntries.emplace_back(
-        std::move(token_ptr), std::move(request_ptr), std::move(decision)
-      );
-    }
-    else {
-      // evaluation of decision is independent of others
+    
+    if ( !token->node->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() ) {
+      // evaluation of decision that is independent of others
       decision->evaluate();
 //std::cerr << "Regular: " << decision->jsonify() << std::endl;
       addEvaluation(token_ptr, request_ptr, decision);
@@ -60,6 +56,12 @@ std::shared_ptr<Event> GreedyEntry::dispatchEvent( const SystemState* systemStat
         // dispatch feasible decision 
         return std::make_shared<EntryEvent>(decision->token);
       }
+    }
+    else if ( config.sequential ) {
+      // defer evaluation of decision
+      unevaluatedSequentialEntries.emplace_back(
+        std::move(token_ptr), std::move(request_ptr), std::move(decision)
+      );
     }
   }
 
