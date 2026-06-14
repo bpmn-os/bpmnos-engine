@@ -1,6 +1,8 @@
 #ifndef BPMNOS_Execution_erase_H
 #define BPMNOS_Execution_erase_H
 
+#include <vector>
+
 namespace BPMNOS::Execution {
 
 /**
