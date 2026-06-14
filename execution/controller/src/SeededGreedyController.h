@@ -10,7 +10,10 @@
 namespace BPMNOS::Execution {
 
 /**
- * @brief A controller dispatching the best evaluated decisions
+ * @brief SeededController realising the seeded decision order greedily.
+ *
+ * Entries and exits are taken as soon as they are feasible, choices are made by
+ * BisectionalChoice, and a message is delivered to the best matching receive.
  */
 class SeededGreedyController : public SeededController {
 public:

@@ -9,21 +9,20 @@
 namespace BPMNOS::Execution {
 
 /**
- * @brief A controller dispatching the best evaluated decisions
+ * @brief A controller making layered decisions.
+ *
+ * It first clears the unambiguous decisions (`prioritizedDispatchers`) in priority order,
+ * dispatching the first feasible one, and only falls back to best-of-best over the
+ * contested decisions (`competingDispatchers`).
  */
 class GreedyController : public Controller {
 public:
-  struct Config {
-    bool bestFirstEntry = true;
-    bool bestFirstExit = true;
-  };
-  static Config default_config() { return {}; } // Work around for compiler bug see: https://stackoverflow.com/questions/53408962/try-to-understand-compiler-error-message-default-member-initializer-required-be/75691051#75691051
-  GreedyController(Evaluator* evaluator, Config config = default_config());
+  GreedyController(Evaluator* evaluator);
   void connect(Mediator* mediator);
-  std::vector< std::unique_ptr<EventDispatcher> > eventDispatchers;
+  std::vector< std::unique_ptr<EventDispatcher> > prioritizedDispatchers;   ///< Dispatched first-feasible in priority order.
+  std::vector< std::unique_ptr<EventDispatcher> > competingDispatchers; ///< Dispatched by best-of-best reward.
 protected:
   Evaluator* evaluator;
-  Config config;
   std::shared_ptr<Event> dispatchEvent(const SystemState* systemState);
 };
 

@@ -10,7 +10,12 @@
 namespace BPMNOS::Execution {
 
 /**
- * @brief Class creating a message delivery.
+ * @brief Dispatches the message delivery decision with the best evaluation after updating the recipient's status.
+ *
+ * A message delivery request can be fulfilled by a created @ref Message when its origin is an
+ * admissible sender and its header matches the recipient header. Each fulfilling decision is
+ * evaluated after updating the recipient's status with the message, and the one with the best
+ * evaluation is dispatched.
  */
 class BestMatchingMessageDelivery : public GreedyDispatcher< std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest>, std::weak_ptr<const Message> > {
 public:

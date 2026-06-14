@@ -20,7 +20,16 @@ namespace BPMNOS::Execution {
  */
 class BisectionalChoice : public GreedyDispatcher< std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest> > {
 public:
-  BisectionalChoice(Evaluator* evaluator);
+  struct Config {
+    /// If true (default), dispatch the first feasible choice decision (the first
+    /// feasible value found by bisection for the first pending request). If false,
+    /// dispatch the best feasible choice decision (the best value per request, then
+    /// the best across all requests).
+    bool firstFeasible = true;
+  };
+  static Config default_config() { return {}; } // Workaround for compiler bug, as in GreedyController (a `Config config = {}` default argument fails to compile).
+
+  BisectionalChoice(Evaluator* evaluator, Config config = default_config());
   void connect(Mediator* mediator) override;
   void notice(const Observable* observable) override;
   std::shared_ptr<Event> dispatchEvent( const SystemState* systemState ) override;
@@ -28,6 +37,7 @@ public:
 
 private:
   BestEnumeratedChoice enumeratedChoice;
+  Config config;
   std::shared_ptr<Decision> discreteBisection(std::shared_ptr<const DecisionRequest> request, const BPMNOS::Model::Choice* choice);
 
   // Helper types

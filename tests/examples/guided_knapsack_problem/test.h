@@ -56,7 +56,7 @@ SCENARIO( "Guided knapsack problem", "[examples][knapsack_problem]" ) {
       Execution::Engine engine;
 
       Execution::GuidedEvaluator evaluator;
-      Execution::GreedyController controller(&evaluator, { .bestFirstEntry = false, .bestFirstExit = false });
+      Execution::GreedyController controller(&evaluator);
       controller.connect(&engine);
       
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;

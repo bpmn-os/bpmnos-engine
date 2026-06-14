@@ -23,7 +23,13 @@
 namespace BPMNOS::Execution {
 
 /**
- * @brief A controller dispatching decisions in the order derived from a given seed
+ * @brief Controller replaying decisions in the order prescribed by a seed.
+ *
+ * A seed is a sequence of indices that fixes, over the flattened graph, the order in
+ * which pending decisions are taken; the controller dispatches them in that order
+ * (tracking sequential performers in `performing`). Subclasses supply the event for
+ * each decision via createEntryEvent / createExitEvent / createChoiceEvent /
+ * createMessageDeliveryEvent.
  */
 class SeededController : public Controller {
 public:

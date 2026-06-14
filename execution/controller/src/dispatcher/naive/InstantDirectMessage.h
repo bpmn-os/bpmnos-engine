@@ -1,5 +1,5 @@
-#ifndef BPMNOS_Execution_FirstMatchingMessageDelivery_H
-#define BPMNOS_Execution_FirstMatchingMessageDelivery_H
+#ifndef BPMNOS_Execution_InstantDirectMessage_H
+#define BPMNOS_Execution_InstantDirectMessage_H
 
 #include <bpmn++.h>
 #include "execution/engine/src/EventDispatcher.h"
@@ -9,15 +9,14 @@
 namespace BPMNOS::Execution {
 
 /**
- * @brief Dispatches the first matching message delivery decision, without evaluation.
+ * @brief Dispatches the first explicitly addressed message delivery decision, without evaluation.
  *
- * A message delivery request can be fulfilled by a created @ref Message when its origin is an
- * admissible sender and its header matches the recipient header. The first matching message
- * delivery decision is dispatched.
+ * Dispatches messages if either the recipient is explicitly provided by the sender or if the sender
+ * is explicitly provided by the recipient. The first such message delivery decision is dispatched.
  */
-class FirstMatchingMessageDelivery : public EventDispatcher, public Observer {
+class InstantDirectMessage : public EventDispatcher, public Observer {
 public:
-  FirstMatchingMessageDelivery();
+  InstantDirectMessage();
   std::shared_ptr<Event> dispatchEvent( const SystemState* systemState ) override;
   void connect(Mediator* mediator) override;
   void notice(const Observable* observable) override;
@@ -28,5 +27,4 @@ private:
 
 } // namespace BPMNOS::Execution
 
-#endif // BPMNOS_Execution_FirstMatchingMessageDelivery_H
-
+#endif // BPMNOS_Execution_InstantDirectMessage_H
