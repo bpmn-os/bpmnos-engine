@@ -31,16 +31,13 @@ std::shared_ptr<Event> GreedyDispatcher<WeakPtrs...>::dispatchEvent( [[maybe_unu
     decisionStore.clockTick();
   }
 
-  for ( auto& decisionTuple : decisionStore.decisionsWithoutEvaluation ) {
-    std::apply([this,&decisionTuple](auto&&... args) {
-      auto decision = std::get<std::shared_ptr<Decision>>(decisionTuple);
-      assert(decision);
-      // Call decision->evaluate() and add the evaluation
-      decision->evaluate();
-      this->decisionStore.addEvaluation(std::forward<decltype(args)>(args)...);
-    }, decisionTuple);
-  }
-  decisionStore.decisionsWithoutEvaluation.clear();
+  decisionStore.evaluateDecisions([this](WeakPtrs... weak_ptrs, std::shared_ptr<Decision> decision) -> std::shared_ptr<Event> {
+    assert(decision);
+    // Call decision->evaluate() and add the evaluation
+    decision->evaluate();
+    decisionStore.addEvaluation(weak_ptrs..., std::move(decision));
+    return nullptr;
+  });
 
   return decisionStore.getBestDecision();
 }

@@ -18,6 +18,19 @@ void DecisionStore<WeakPtrs...>::addDecision(WeakPtrs... weak_ptrs, std::shared_
 }
 
 template <typename... WeakPtrs>
+std::shared_ptr<Event> DecisionStore<WeakPtrs...>::evaluateDecisions(const Evaluate& evaluate) {
+  for ( auto it = decisionsWithoutEvaluation.begin(); it != decisionsWithoutEvaluation.end(); ) {
+    auto decisionTuple = std::move(*it);
+    it = decisionsWithoutEvaluation.erase(it);
+    // immediately return decision provided by callback
+    if ( auto decision = std::apply(evaluate, std::move(decisionTuple)) ) {
+      return decision;
+    }
+  }
+  return nullptr;
+}
+
+template <typename... WeakPtrs>
 void DecisionStore<WeakPtrs...>::addEvaluation(WeakPtrs... weak_ptrs, std::shared_ptr<Decision> decision) {
   auto reward = decision->reward();
   // evaluatedDecisions are sorted in ascending order

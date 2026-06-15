@@ -2,6 +2,7 @@
 #define BPMNOS_Execution_DecisionStore_H
 
 #include <bpmn++.h>
+#include <functional>
 #include <memory>
 #include <unordered_map>
 #include "execution/utility/src/auto_list.h"
@@ -26,12 +27,16 @@ public:
   DecisionStore();
 
   BPMNOS::number timestamp; ///< Time of the most recent clock tick applied.
-  auto_list< WeakPtrs..., std::shared_ptr<Decision> > decisionsWithoutEvaluation; ///< Collected decisions awaiting evaluation.
+
+  /// Callback evaluating one pending decision; returns an event to dispatch (stopping the evaluation) or nullptr to continue.
+  using Evaluate = std::function< std::shared_ptr<Event>(WeakPtrs..., std::shared_ptr<Decision>) >;
 
   /// Register an unevaluated candidate decision.
   void addDecision(WeakPtrs..., std::shared_ptr<Decision> decision);
   /// Insert an already-evaluated decision into evaluatedDecisions and file it under its dependency category.
   void addEvaluation(WeakPtrs..., std::shared_ptr<Decision> decision);
+  /// Evaluate the pending decisions in turn (removing each); return the first event a callback dispatches, or nullptr.
+  std::shared_ptr<Event> evaluateDecisions(const Evaluate& evaluate);
   /// Re-issue the time-dependent decisions for re-evaluation.
   void clockTick();
   /// Handle an observable forwarded by the owning dispatcher: a DataUpdate invalidates the affected evaluations.
@@ -45,6 +50,7 @@ private:
   void removeObsolete(const DataUpdate* update, auto_list< WeakPtrs..., std::shared_ptr<Decision> >& evaluation, auto_list< WeakPtrs..., std::shared_ptr<Decision> >& unevaluatedDecisions);
   void removeDependentEvaluations(const DataUpdate* update, std::unordered_map< long unsigned int, auto_list< WeakPtrs..., std::shared_ptr<Decision> > >& evaluatedDecisions, auto_list< WeakPtrs..., std::shared_ptr<Decision> >& unevaluatedDecisions);
 
+  auto_list< WeakPtrs..., std::shared_ptr<Decision> > decisionsWithoutEvaluation; ///< Collected decisions awaiting evaluation.
   auto_set< double, WeakPtrs..., std::weak_ptr<Event>, std::weak_ptr<Evaluation> > evaluatedDecisions; ///< Evaluated decisions ordered by negated reward (best first; infeasible last).
   auto_list< WeakPtrs..., std::shared_ptr<Decision> > invariantEvaluations;
   auto_list< WeakPtrs..., std::shared_ptr<Decision> > timeDependentEvaluations;

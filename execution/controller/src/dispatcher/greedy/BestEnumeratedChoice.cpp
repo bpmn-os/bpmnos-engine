@@ -41,16 +41,18 @@ std::shared_ptr<Event> BestEnumeratedChoice::dispatchEvent( [[maybe_unused]] con
     decisionStore.clockTick();
   }
 
-  for ( auto& [ token_ptr, request_ptr, _ ] : decisionStore.decisionsWithoutEvaluation ) {
-    auto request = request_ptr.lock();
-    assert( request );
-    // forget previous decision and find new best decision for the request
-    auto decision = determineBestChoices( request );
-    if ( decision ) {
-      decisionStore.addEvaluation( token_ptr, request_ptr, std::move(decision) );
+  decisionStore.evaluateDecisions(
+    [this]( std::weak_ptr<const Token> token_ptr, std::weak_ptr<const DecisionRequest> request_ptr, std::shared_ptr<Decision> ) -> std::shared_ptr<Event> {
+      auto request = request_ptr.lock();
+      assert( request );
+      // forget previous decision and find new best decision for the request
+      auto decision = determineBestChoices( request );
+      if ( decision ) {
+        decisionStore.addEvaluation( token_ptr, request_ptr, std::move(decision) );
+      }
+      return nullptr;
     }
-  }
-  decisionStore.decisionsWithoutEvaluation.clear();
+  );
 
   return decisionStore.getBestDecision();
 }

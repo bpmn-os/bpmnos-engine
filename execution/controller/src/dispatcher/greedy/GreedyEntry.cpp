@@ -45,32 +45,35 @@ std::shared_ptr<Event> GreedyEntry::dispatchEvent( const SystemState* systemStat
     decisionStore.clockTick();
   }
 
-  for (auto it = decisionStore.decisionsWithoutEvaluation.begin(); it != decisionStore.decisionsWithoutEvaluation.end(); ) {
-    auto [ token_ptr, request_ptr, decision  ] = std::move(*it);
-    it = decisionStore.decisionsWithoutEvaluation.erase(it);
-    assert(decision);
-    auto token = token_ptr.lock();
-    assert( token );
-    assert( token->node->parent );
-    
-    if ( !token->node->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() ) {
-      // evaluation of decision that is independent of others
-      decision->evaluate();
-//std::cerr << "Regular: " << decision->jsonify() << std::endl;
-      decisionStore.addEvaluation(token_ptr, request_ptr, decision);
+  if ( auto event = decisionStore.evaluateDecisions(
+    [this]( std::weak_ptr<const Token> token_ptr, std::weak_ptr<const DecisionRequest> request_ptr, std::shared_ptr<Decision> decision ) -> std::shared_ptr<Event> {
+      assert(decision);
+      auto token = token_ptr.lock();
+      assert( token );
+      assert( token->node->parent );
 
-      if ( decision->reward().has_value() ) {
-        // dispatch feasible decision 
-        return std::make_shared<EntryEvent>(decision->token);
+      if ( !token->node->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() ) {
+        // evaluation of decision that is independent of others
+        decision->evaluate();
+//std::cerr << "Regular: " << decision->jsonify() << std::endl;
+        decisionStore.addEvaluation(token_ptr, request_ptr, decision);
+
+        if ( decision->reward().has_value() ) {
+          // dispatch feasible decision
+          return std::make_shared<EntryEvent>(decision->token);
+        }
       }
+      else {
+        // sequential ad-hoc subprocess child entry (only registered when config.sequential):
+        // defer for performer grouping
+        unevaluatedSequentialEntries.emplace_back(
+          std::move(token_ptr), std::move(request_ptr), std::move(decision)
+        );
+      }
+      return nullptr;
     }
-    else {
-      // sequential ad-hoc subprocess child entry (only registered when config.sequential):
-      // defer for performer grouping
-      unevaluatedSequentialEntries.emplace_back(
-        std::move(token_ptr), std::move(request_ptr), std::move(decision)
-      );
-    }
+  ) ) {
+    return event;
   }
 
   // all evaluated decisions are infeasible unless a previously dispatched decision was not deployed

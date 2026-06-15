@@ -47,21 +47,23 @@ std::shared_ptr<Event> BisectionalChoice::dispatchEvent( [[maybe_unused]] const 
     decisionStore.clockTick();
   }
 
-  for ( auto it = decisionStore.decisionsWithoutEvaluation.begin(); it != decisionStore.decisionsWithoutEvaluation.end(); ) {
-    auto& [ token_ptr, request_ptr, _ ] = *it;
-    auto request = request_ptr.lock();
-    assert( request );
-    // forget previous decision and find new best decision for the request
-    auto decision = determineBestChoices( request );
-    bool feasible = (bool)decision;
-    if ( decision ) {
-      decisionStore.addEvaluation( token_ptr, request_ptr, std::move(decision) );
+  if ( auto event = decisionStore.evaluateDecisions(
+    [this]( std::weak_ptr<const Token> token_ptr, std::weak_ptr<const DecisionRequest> request_ptr, std::shared_ptr<Decision> ) -> std::shared_ptr<Event> {
+      auto request = request_ptr.lock();
+      assert( request );
+      // forget previous decision and find new best decision for the request
+      auto decision = determineBestChoices( request );
+      if ( decision ) {
+        decisionStore.addEvaluation( token_ptr, request_ptr, decision );
+        if ( config.firstFeasible ) {
+          // dispatch the first feasible decision and leave the remaining requests pending
+          return decision;
+        }
+      }
+      return nullptr;
     }
-    it = decisionStore.decisionsWithoutEvaluation.erase(it);
-    if ( config.firstFeasible && feasible ) {
-      // dispatch the first feasible decision and leave the remaining requests pending
-      break;
-    }
+  ) ) {
+    return event;
   }
 
   return decisionStore.getBestDecision();

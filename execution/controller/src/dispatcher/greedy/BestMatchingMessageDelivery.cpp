@@ -20,15 +20,17 @@ void BestMatchingMessageDelivery::connect(Mediator* mediator) {
 }
 
 std::shared_ptr<Event> BestMatchingMessageDelivery::dispatchEvent( [[maybe_unused]] const SystemState* systemState ) {
-  for ( auto& [ token_ptr, request_ptr, message_ptr, decision ] : decisionStore.decisionsWithoutEvaluation ) {
-    assert(decision);
-    if ( decision ) {
-      decision->evaluate();
+  decisionStore.evaluateDecisions(
+    [this]( std::weak_ptr<const Token> token_ptr, std::weak_ptr<const DecisionRequest> request_ptr, std::weak_ptr<const Message> message_ptr, std::shared_ptr<Decision> decision ) -> std::shared_ptr<Event> {
+      assert(decision);
+      if ( decision ) {
+        decision->evaluate();
 //std::cerr << "Re-evaluated message delivery decision: " << decision << decision->jsonify().dump() << std::endl;
-      decisionStore.addEvaluation( token_ptr, request_ptr, message_ptr, std::move(decision) );
+        decisionStore.addEvaluation( token_ptr, request_ptr, message_ptr, std::move(decision) );
+      }
+      return nullptr;
     }
-  }
-  decisionStore.decisionsWithoutEvaluation.clear();
+  );
 
   // return best evaluated decision
   return decisionStore.getBestDecision();

@@ -36,19 +36,21 @@ std::shared_ptr<Event> GreedyExit::dispatchEvent( const SystemState* systemState
     decisionStore.clockTick();
   }
 
-  for (auto it = decisionStore.decisionsWithoutEvaluation.begin(); it != decisionStore.decisionsWithoutEvaluation.end(); ) {
-    auto [ token_ptr, request_ptr, decision ] = std::move(*it);  // Move out the tuple to avoid dangling reference
-    it = decisionStore.decisionsWithoutEvaluation.erase(it);
-    assert(decision);
-
-    // Call decision->evaluate() and add the evaluation
-    decision->evaluate();
-    decisionStore.addEvaluation(token_ptr, request_ptr, decision);
-    if ( decision->reward().has_value() ) {
-      return std::make_shared<ExitEvent>(decision->token);
+  if ( auto event = decisionStore.evaluateDecisions(
+    [this]( std::weak_ptr<const Token> token_ptr, std::weak_ptr<const DecisionRequest> request_ptr, std::shared_ptr<Decision> decision ) -> std::shared_ptr<Event> {
+      assert(decision);
+      // Call decision->evaluate() and add the evaluation
+      decision->evaluate();
+      decisionStore.addEvaluation(token_ptr, request_ptr, decision);
+      if ( decision->reward().has_value() ) {
+        return std::make_shared<ExitEvent>(decision->token);
+      }
+      return nullptr;
     }
+  ) ) {
+    return event;
   }
-  
+
   // all evaluated decisions are infeasible unless a previously dispatched decision was not deployed
   return decisionStore.getBestDecision();
 }
