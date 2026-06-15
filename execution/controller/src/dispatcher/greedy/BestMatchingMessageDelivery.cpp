@@ -30,21 +30,8 @@ std::shared_ptr<Event> BestMatchingMessageDelivery::dispatchEvent( [[maybe_unuse
   }
   decisionStore.decisionsWithoutEvaluation.clear();
 
-/*
-std::cerr << "\nEvaluated decisions:\n";
-for ( auto [ cost, token_ptr, request_ptr, message_ptr, event_ptr, evaluation_ptr ] : decisionStore.evaluatedDecisions ) {
-auto event = event_ptr.lock();
-std::cerr << event << event->jsonify() << " evaluated with " << cost << std::endl;
-} // TODO: REMOVE
-*/
-  for ( auto [ cost, token_ptr, request_ptr, message_ptr, event_ptr, evaluation_ptr ] : decisionStore.evaluatedDecisions ) {
-    // return best evaluated decision
-//std::cerr << "\nBest message delivery decision " << event_ptr.lock()->jsonify() << " evaluated with " << cost << std::endl;
-    return event_ptr.lock();
-  }
-
-//std::cerr << "No evaluated message delivery decision" << std::endl;
-  return nullptr;
+  // return best evaluated decision
+  return decisionStore.getBestDecision();
 }
 
 void BestMatchingMessageDelivery::notice(const Observable* observable) {

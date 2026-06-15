@@ -74,20 +74,9 @@ std::shared_ptr<Event> GreedyEntry::dispatchEvent( const SystemState* systemStat
   }
 
   // all evaluated decisions are infeasible unless a previously dispatched decision was not deployed
-  for ( auto decisionTuple : decisionStore.evaluatedDecisions ) {
-    constexpr std::size_t eventIndex = std::tuple_size<decltype(decisionTuple)>::value - 2;
-    std::weak_ptr<Event>& event_ptr = std::get<eventIndex>(decisionTuple);
-    if ( auto event = event_ptr.lock();
-      event && std::get<0>(decisionTuple) < std::numeric_limits<double>::max()
-    ) {
-//std::cerr << "\nBest (old) decision " << event->jsonify() << " evaluated with " << std::get<0>(decisionTuple) << std::endl;
-      // Warning: event is dispatched even if it is no longer the best due to data updates since undeployed dispatch
-      return event;
-    }
-    else {
-      // best evalutated decision is infeasible, no need to inspect others
-      break;
-    }
+  // Warning: event is dispatched even if it is no longer the best due to data updates since undeployed dispatch
+  if ( auto event = decisionStore.getBestDecision() ) {
+    return event;
   }
 
   std::unordered_map<const Token*, auto_list<std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest>, std::shared_ptr<Decision> > > sequentialActivityEntries;
@@ -117,19 +106,9 @@ std::shared_ptr<Event> GreedyEntry::dispatchEvent( const SystemState* systemStat
 //std::cerr << "Exclusive: " << decision->jsonify() << std::endl;
       decisionStore.addEvaluation(token_ptr, request_ptr, decision);
     }
-    for ( auto decisionTuple : decisionStore.evaluatedDecisions ) {
-      constexpr std::size_t eventIndex = std::tuple_size<decltype(decisionTuple)>::value - 2;
-      std::weak_ptr<Event>& event_ptr = std::get<eventIndex>(decisionTuple);
-      if ( auto event = event_ptr.lock();
-        event && std::get<0>(decisionTuple) < std::numeric_limits<double>::max()
-      ) {
-//std::cerr << "\nBest decision " << event->jsonify() << " evaluated with " << std::get<0>(decisionTuple) << std::endl;
-        return event;
-      }
-      else {
-        // best decision is infeasible, proceed with next performer
-        break;
-      }
+    // best decision is infeasible, proceed with next performer
+    if ( auto event = decisionStore.getBestDecision() ) {
+      return event;
     }
   }
 

@@ -42,13 +42,7 @@ std::shared_ptr<Event> GreedyDispatcher<WeakPtrs...>::dispatchEvent( [[maybe_unu
   }
   decisionStore.decisionsWithoutEvaluation.clear();
 
-  for ( auto decisionTuple : decisionStore.evaluatedDecisions ) {
-    std::weak_ptr<Event>& event_ptr = std::get<sizeof...(WeakPtrs)+1>(decisionTuple);
-//std::cerr << "\nBest decision " << event_ptr.lock()->jsonify() << " evaluated with " << std::get<0>(decisionTuple) << std::endl;
-    return event_ptr.lock();
-  }
-
-  return nullptr;
+  return decisionStore.getBestDecision();
 }
 
 template <typename... WeakPtrs>

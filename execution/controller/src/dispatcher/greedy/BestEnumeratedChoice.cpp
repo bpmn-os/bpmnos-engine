@@ -52,13 +52,7 @@ std::shared_ptr<Event> BestEnumeratedChoice::dispatchEvent( [[maybe_unused]] con
   }
   decisionStore.decisionsWithoutEvaluation.clear();
 
-  for ( auto [ cost, token_ptr, request_ptr, event_ptr, evaluation_ptr ] : decisionStore.evaluatedDecisions ) {
-//std::cerr << "Best choice decision " << event_ptr.lock()->jsonify() << " evaluated with " << cost << std::endl;
-    return event_ptr.lock();
-  }
-
-//std::cerr << "No evaluated choice decision" << std::endl;
-  return nullptr;
+  return decisionStore.getBestDecision();
 }
 
 std::shared_ptr<Decision> BestEnumeratedChoice::determineBestChoices(std::shared_ptr<const DecisionRequest> request) {

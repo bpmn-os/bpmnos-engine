@@ -50,21 +50,6 @@ std::shared_ptr<Event> GreedyExit::dispatchEvent( const SystemState* systemState
   }
   
   // all evaluated decisions are infeasible unless a previously dispatched decision was not deployed
-  for ( auto decisionTuple : decisionStore.evaluatedDecisions ) {
-    constexpr std::size_t eventIndex = std::tuple_size<decltype(decisionTuple)>::value - 2;
-    std::weak_ptr<Event>& event_ptr = std::get<eventIndex>(decisionTuple);
-    if ( auto event = event_ptr.lock();
-      event && std::get<0>(decisionTuple) < std::numeric_limits<double>::max()
-    ) {
-//std::cerr << "\nBest decision " << event->jsonify() << " evaluated with " << std::get<0>(decisionTuple) << std::endl;
-      return event;
-    }
-    else {
-      // best decision is infeasible, no need to inspect others
-      break;
-    }
-  }
-
-  return nullptr;
+  return decisionStore.getBestDecision();
 }
 

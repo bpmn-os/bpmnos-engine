@@ -27,7 +27,6 @@ public:
 
   BPMNOS::number timestamp; ///< Time of the most recent clock tick applied.
   auto_list< WeakPtrs..., std::shared_ptr<Decision> > decisionsWithoutEvaluation; ///< Collected decisions awaiting evaluation.
-  auto_set< double, WeakPtrs..., std::weak_ptr<Event>, std::weak_ptr<Evaluation> > evaluatedDecisions; ///< Evaluated decisions ordered by negated reward (best first; infeasible last).
 
   /// Insert an already-evaluated decision into evaluatedDecisions and file it under its dependency category.
   void addEvaluation(WeakPtrs..., std::shared_ptr<Decision> decision);
@@ -35,6 +34,8 @@ public:
   void clockTick();
   /// Handle an observable forwarded by the owning dispatcher: a DataUpdate invalidates the affected evaluations.
   void notice(const Observable* observable) override;
+  /// Get the best evaluated decision if it is feasible, nullptr otherwise.
+  std::shared_ptr<Event> getBestDecision();
 
 private:
   void dataUpdate(const DataUpdate* update);
@@ -42,6 +43,7 @@ private:
   void removeObsolete(const DataUpdate* update, auto_list< WeakPtrs..., std::shared_ptr<Decision> >& evaluation, auto_list< WeakPtrs..., std::shared_ptr<Decision> >& unevaluatedDecisions);
   void removeDependentEvaluations(const DataUpdate* update, std::unordered_map< long unsigned int, auto_list< WeakPtrs..., std::shared_ptr<Decision> > >& evaluatedDecisions, auto_list< WeakPtrs..., std::shared_ptr<Decision> >& unevaluatedDecisions);
 
+  auto_set< double, WeakPtrs..., std::weak_ptr<Event>, std::weak_ptr<Evaluation> > evaluatedDecisions; ///< Evaluated decisions ordered by negated reward (best first; infeasible last).
   auto_list< WeakPtrs..., std::shared_ptr<Decision> > invariantEvaluations;
   auto_list< WeakPtrs..., std::shared_ptr<Decision> > timeDependentEvaluations;
   std::unordered_map< long unsigned int, auto_list< WeakPtrs..., std::shared_ptr<Decision> > > dataDependentEvaluations;

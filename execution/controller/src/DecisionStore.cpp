@@ -41,6 +41,24 @@ void DecisionStore<WeakPtrs...>::addEvaluation(WeakPtrs... weak_ptrs, std::share
 }
 
 template <typename... WeakPtrs>
+std::shared_ptr<Event> DecisionStore<WeakPtrs...>::getBestDecision() {
+  for ( auto decisionTuple : evaluatedDecisions ) {
+    constexpr std::size_t eventIndex = std::tuple_size<decltype(decisionTuple)>::value - 2;
+    std::weak_ptr<Event>& event_ptr = std::get<eventIndex>(decisionTuple);
+    if ( auto event = event_ptr.lock();
+      event && std::get<0>(decisionTuple) < std::numeric_limits<double>::max()
+    ) {
+      return event;
+    }
+    else {
+      // best decision is infeasible, no need to inspect others
+      break;
+    }
+  }
+  return nullptr;
+}
+
+template <typename... WeakPtrs>
 bool DecisionStore<WeakPtrs...>::intersect(const std::vector<const BPMNOS::Model::Attribute*>& first, const std::set<const BPMNOS::Model::Attribute*>& second) const {
   for ( auto lhs : first ) {
     if ( second.contains(lhs) ) {
