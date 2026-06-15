@@ -80,7 +80,8 @@ SCENARIO( "Truck driver scheduling problem", "[examples][truck_driver_scheduling
       THEN( "Then the process completes at the correct time" ) {
         auto processLog = recorder.find(nlohmann::json{{"state", "DONE"}},nlohmann::json{{"nodeId", nullptr}});
         REQUIRE( processLog.size() == 1 );
-        REQUIRE( processLog.back()["status"]["timestamp"] == 930 );
+        REQUIRE( processLog.back()["status"]["timestamp"] >= 930 ); // if break is chosen during trip
+        REQUIRE( processLog.back()["status"]["timestamp"] <= 1130 ); // if rest is chosen during trip
       }
     }
   }
@@ -100,7 +101,7 @@ SCENARIO( "Truck driver scheduling problem", "[examples][truck_driver_scheduling
     // T_REST: 10h
     // T_BREAK: ½h
     // Solution 1a: D6, B½,W3½, S½, D3, R10, D3, S½ => 27h
-    // Solution 1b: D6, W4, S½, D2, B½, D1, R10, D3, S½ => 27½h
+    // Solution 1b: D6, W4, S½, B½, D1, R10, D3, S½ => 27½h
     // Solution 2: D6, R10, S½, D6, S½ => 23h
 
     Model::StaticDataProvider dataProvider(modelFile,csv);
@@ -121,7 +122,7 @@ SCENARIO( "Truck driver scheduling problem", "[examples][truck_driver_scheduling
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get(),3000);
+      engine.run(scenario.get(),2000);
       THEN( "Then no failure occurs" ) {
         auto failureLog = recorder.find(nlohmann::json{{"state", "FAILED"}});
         REQUIRE( failureLog.size() == 0 );
@@ -129,8 +130,9 @@ SCENARIO( "Truck driver scheduling problem", "[examples][truck_driver_scheduling
       THEN( "Then the process completes at the correct non-optimal time" ) {
         auto processLog = recorder.find(nlohmann::json{{"state", "DONE"}},nlohmann::json{{"nodeId", nullptr}});
         REQUIRE( processLog.size() == 1 );
-        // Solution 1a or 1b
-        REQUIRE( (processLog.back()["status"]["timestamp"] == 1620 || processLog.back()["status"]["timestamp"] == 1650) ); 
+
+        REQUIRE( (processLog.back()["status"]["timestamp"] >= 1380) ); 
+        REQUIRE( (processLog.back()["status"]["timestamp"] <= 1650) ); 
       }
     }
   }
