@@ -41,6 +41,8 @@ public:
   void notice(const Observable* observable) override;
   /// Get the best evaluated decision if it is feasible, nullptr otherwise.
   std::shared_ptr<Event> getBestDecision();
+  /// Read-only view of the evaluated decisions, ordered by reward (best first; infeasible last).
+  const auto_set< double, WeakPtrs..., std::weak_ptr<Event>, std::weak_ptr<Evaluation> >& getEvaluatedDecisions() const;
 
 private:
   BPMNOS::number timestamp; ///< Time of the most recent clock tick applied.
