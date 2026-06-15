@@ -6,7 +6,7 @@
 #include "candidates/SequentialEntries.h"
 #include "candidates/FirstBisectionalChoice.h"
 #include "candidates/MessageDeliveries.h"
-#include "dispatcher/naive/InstantDirectMessage.h"
+#include "dispatcher/InstantDirectMessage.h"
 #include <iostream>
 
 using namespace BPMNOS::Execution;

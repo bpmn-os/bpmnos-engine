@@ -16,13 +16,13 @@ list(APPEND controller_SOURCES
   candidates/FirstBisectionalChoice.cpp
   dispatcher/TimeWarp.cpp
   dispatcher/Metronome.cpp
-  dispatcher/naive/InstantEntry.cpp
-  dispatcher/naive/InstantExit.cpp
-  dispatcher/naive/InstantDirectMessage.cpp
-  dispatcher/naive/FirstMatchingMessageDelivery.cpp
-  dispatcher/naive/RandomChoice.cpp
-  dispatcher/naive/MyopicDecisionTaskTerminator.cpp
-  dispatcher/naive/MyopicMessageTaskTerminator.cpp
+  dispatcher/InstantEntry.cpp
+  dispatcher/InstantExit.cpp
+  dispatcher/InstantDirectMessage.cpp
+  dispatcher/FirstMatchingMessageDelivery.cpp
+  dispatcher/RandomChoice.cpp
+  dispatcher/MyopicDecisionTaskTerminator.cpp
+  dispatcher/MyopicMessageTaskTerminator.cpp
   Controller.cpp
   GreedyController.cpp
   SeededController.cpp
@@ -50,13 +50,13 @@ list(APPEND controller_HEADERS
   GreedyDispatcher.h
   dispatcher/TimeWarp.h
   dispatcher/Metronome.h
-  dispatcher/naive/InstantEntry.h
-  dispatcher/naive/InstantExit.h
-  dispatcher/naive/InstantDirectMessage.h
-  dispatcher/naive/FirstMatchingMessageDelivery.h
-  dispatcher/naive/RandomChoice.h
-  dispatcher/naive/MyopicDecisionTaskTerminator.h
-  dispatcher/naive/MyopicMessageTaskTerminator.h
+  dispatcher/InstantEntry.h
+  dispatcher/InstantExit.h
+  dispatcher/InstantDirectMessage.h
+  dispatcher/FirstMatchingMessageDelivery.h
+  dispatcher/RandomChoice.h
+  dispatcher/MyopicDecisionTaskTerminator.h
+  dispatcher/MyopicMessageTaskTerminator.h
   Controller.h
   GreedyController.h
   SeededController.h
