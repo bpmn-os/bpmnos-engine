@@ -77,6 +77,11 @@ std::shared_ptr<Event> DecisionStore<WeakPtrs...>::getBestDecision() {
 }
 
 template <typename... WeakPtrs>
+const auto_set< double, WeakPtrs..., std::weak_ptr<Event>, std::weak_ptr<Evaluation> >& DecisionStore<WeakPtrs...>::getEvaluatedDecisions() const {
+  return evaluatedDecisions;
+}
+
+template <typename... WeakPtrs>
 bool DecisionStore<WeakPtrs...>::intersect(const std::vector<const BPMNOS::Model::Attribute*>& first, const std::set<const BPMNOS::Model::Attribute*>& second) const {
   for ( auto lhs : first ) {
     if ( second.contains(lhs) ) {
