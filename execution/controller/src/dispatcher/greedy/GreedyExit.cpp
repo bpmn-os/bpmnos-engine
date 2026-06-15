@@ -21,7 +21,7 @@ void GreedyExit::notice(const Observable* observable) {
     assert( dynamic_cast<const DecisionRequest*>(observable) );
     auto request = static_cast<const DecisionRequest*>(observable);
     auto decision = std::make_shared<ExitDecision>(request->token, evaluator);
-    decisionsWithoutEvaluation.emplace_back( request->token->weak_from_this(), request->weak_from_this(), decision );
+    decisionStore.decisionsWithoutEvaluation.emplace_back( request->token->weak_from_this(), request->weak_from_this(), decision );
   }
   else {
     GreedyDispatcher::notice(observable);
@@ -31,26 +31,26 @@ void GreedyExit::notice(const Observable* observable) {
 
 std::shared_ptr<Event> GreedyExit::dispatchEvent( const SystemState* systemState ) {
 //std::cout << "dispatchEvent" << std::endl;
-  if ( systemState->currentTime > timestamp ) {
-    timestamp = systemState->currentTime;
-    clockTick();
+  if ( systemState->currentTime > decisionStore.timestamp ) {
+    decisionStore.timestamp = systemState->currentTime;
+    decisionStore.clockTick();
   }
 
-  for (auto it = decisionsWithoutEvaluation.begin(); it != decisionsWithoutEvaluation.end(); ) {
+  for (auto it = decisionStore.decisionsWithoutEvaluation.begin(); it != decisionStore.decisionsWithoutEvaluation.end(); ) {
     auto [ token_ptr, request_ptr, decision ] = std::move(*it);  // Move out the tuple to avoid dangling reference
-    it = decisionsWithoutEvaluation.erase(it);
+    it = decisionStore.decisionsWithoutEvaluation.erase(it);
     assert(decision);
 
     // Call decision->evaluate() and add the evaluation
     decision->evaluate();
-    addEvaluation(token_ptr, request_ptr, decision);
+    decisionStore.addEvaluation(token_ptr, request_ptr, decision);
     if ( decision->reward().has_value() ) {
       return std::make_shared<ExitEvent>(decision->token);
     }
   }
   
   // all evaluated decisions are infeasible unless a previously dispatched decision was not deployed
-  for ( auto decisionTuple : evaluatedDecisions ) {
+  for ( auto decisionTuple : decisionStore.evaluatedDecisions ) {
     constexpr std::size_t eventIndex = std::tuple_size<decltype(decisionTuple)>::value - 2;
     std::weak_ptr<Event>& event_ptr = std::get<eventIndex>(decisionTuple);
     if ( auto event = event_ptr.lock();

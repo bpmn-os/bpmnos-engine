@@ -30,7 +30,7 @@ void GreedyEntry::notice(const Observable* observable) {
       }
     }
     auto decision = std::make_shared<EntryDecision>(request->token, evaluator);
-    decisionsWithoutEvaluation.emplace_back( request->token->weak_from_this(), request->weak_from_this(), decision );
+    decisionStore.decisionsWithoutEvaluation.emplace_back( request->token->weak_from_this(), request->weak_from_this(), decision );
   }
   else {
     GreedyDispatcher::notice(observable);
@@ -40,14 +40,14 @@ void GreedyEntry::notice(const Observable* observable) {
 
 std::shared_ptr<Event> GreedyEntry::dispatchEvent( const SystemState* systemState ) {
 //std::cout << "dispatchEvent" << std::endl;
-  if ( systemState->currentTime > timestamp ) {
-    timestamp = systemState->currentTime;
-    clockTick();
+  if ( systemState->currentTime > decisionStore.timestamp ) {
+    decisionStore.timestamp = systemState->currentTime;
+    decisionStore.clockTick();
   }
 
-  for (auto it = decisionsWithoutEvaluation.begin(); it != decisionsWithoutEvaluation.end(); ) {
+  for (auto it = decisionStore.decisionsWithoutEvaluation.begin(); it != decisionStore.decisionsWithoutEvaluation.end(); ) {
     auto [ token_ptr, request_ptr, decision  ] = std::move(*it);
-    it = decisionsWithoutEvaluation.erase(it);
+    it = decisionStore.decisionsWithoutEvaluation.erase(it);
     assert(decision);
     auto token = token_ptr.lock();
     assert( token );
@@ -57,7 +57,7 @@ std::shared_ptr<Event> GreedyEntry::dispatchEvent( const SystemState* systemStat
       // evaluation of decision that is independent of others
       decision->evaluate();
 //std::cerr << "Regular: " << decision->jsonify() << std::endl;
-      addEvaluation(token_ptr, request_ptr, decision);
+      decisionStore.addEvaluation(token_ptr, request_ptr, decision);
 
       if ( decision->reward().has_value() ) {
         // dispatch feasible decision 
@@ -74,7 +74,7 @@ std::shared_ptr<Event> GreedyEntry::dispatchEvent( const SystemState* systemStat
   }
 
   // all evaluated decisions are infeasible unless a previously dispatched decision was not deployed
-  for ( auto decisionTuple : evaluatedDecisions ) {
+  for ( auto decisionTuple : decisionStore.evaluatedDecisions ) {
     constexpr std::size_t eventIndex = std::tuple_size<decltype(decisionTuple)>::value - 2;
     std::weak_ptr<Event>& event_ptr = std::get<eventIndex>(decisionTuple);
     if ( auto event = event_ptr.lock();
@@ -115,9 +115,9 @@ std::shared_ptr<Event> GreedyEntry::dispatchEvent( const SystemState* systemStat
       // Call decision->evaluate() and add the evaluation
       decision->evaluate();
 //std::cerr << "Exclusive: " << decision->jsonify() << std::endl;
-      addEvaluation(token_ptr, request_ptr, decision);
+      decisionStore.addEvaluation(token_ptr, request_ptr, decision);
     }
-    for ( auto decisionTuple : evaluatedDecisions ) {
+    for ( auto decisionTuple : decisionStore.evaluatedDecisions ) {
       constexpr std::size_t eventIndex = std::tuple_size<decltype(decisionTuple)>::value - 2;
       std::weak_ptr<Event>& event_ptr = std::get<eventIndex>(decisionTuple);
       if ( auto event = event_ptr.lock();

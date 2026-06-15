@@ -27,7 +27,7 @@ void BestEnumeratedChoice::notice(const Observable* observable) {
     auto request = static_cast<const DecisionRequest*>(observable);
     // create pseudo decision
     auto decision = std::make_shared<ChoiceDecision>(request->token, std::vector<number>{}, evaluator);
-    decisionsWithoutEvaluation.emplace_back( request->token->weak_from_this(), request->weak_from_this(), decision );
+    decisionStore.decisionsWithoutEvaluation.emplace_back( request->token->weak_from_this(), request->weak_from_this(), decision );
   }
   else {
     GreedyDispatcher::notice(observable);
@@ -36,23 +36,23 @@ void BestEnumeratedChoice::notice(const Observable* observable) {
 
 std::shared_ptr<Event> BestEnumeratedChoice::dispatchEvent( [[maybe_unused]] const SystemState* systemState ) {
 //std::cout << "BestEnumeratedChoice::dispatchEvent" << std::endl;
-  if ( systemState->currentTime > timestamp ) {
-    timestamp = systemState->currentTime;
-    clockTick();
+  if ( systemState->currentTime > decisionStore.timestamp ) {
+    decisionStore.timestamp = systemState->currentTime;
+    decisionStore.clockTick();
   }
 
-  for ( auto& [ token_ptr, request_ptr, _ ] : decisionsWithoutEvaluation ) {
+  for ( auto& [ token_ptr, request_ptr, _ ] : decisionStore.decisionsWithoutEvaluation ) {
     auto request = request_ptr.lock();
     assert( request );
     // forget previous decision and find new best decision for the request
     auto decision = determineBestChoices( request );
     if ( decision ) {
-      addEvaluation( token_ptr, request_ptr, std::move(decision) );
+      decisionStore.addEvaluation( token_ptr, request_ptr, std::move(decision) );
     }
   }
-  decisionsWithoutEvaluation.clear();
+  decisionStore.decisionsWithoutEvaluation.clear();
 
-  for ( auto [ cost, token_ptr, request_ptr, event_ptr, evaluation_ptr ] : evaluatedDecisions ) {
+  for ( auto [ cost, token_ptr, request_ptr, event_ptr, evaluation_ptr ] : decisionStore.evaluatedDecisions ) {
 //std::cerr << "Best choice decision " << event_ptr.lock()->jsonify() << " evaluated with " << cost << std::endl;
     return event_ptr.lock();
   }

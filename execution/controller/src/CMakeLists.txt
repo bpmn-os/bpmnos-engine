@@ -7,6 +7,7 @@ list(APPEND controller_SOURCES
   Evaluator.cpp
   evaluators/LocalEvaluator.cpp
   evaluators/GuidedEvaluator.cpp
+  DecisionStore.cpp
   GreedyDispatcher.cpp
   dispatcher/TimeWarp.cpp
   dispatcher/Metronome.cpp
@@ -40,6 +41,7 @@ list(APPEND controller_HEADERS
   Evaluator.h
   evaluators/LocalEvaluator.h
   evaluators/GuidedEvaluator.h
+  DecisionStore.h
   GreedyDispatcher.h
   dispatcher/TimeWarp.h
   dispatcher/Metronome.h
