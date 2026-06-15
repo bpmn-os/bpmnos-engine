@@ -48,8 +48,8 @@ SCENARIO( "Travelling salesperson problem", "[examples][travelling_salesperson_p
       Execution::LocalEvaluator evaluator;
       
 //      Execution::InstantEntry entryHandler;
-      Execution::GreedyCandidateDispatcher<Execution::FirstFeasibleEntry> entryHandler(&evaluator);
-      Execution::GreedyCandidateDispatcher<Execution::SequentialEntries> sequentialEntryHandler(&evaluator);
+      Execution::GreedyDispatcher<Execution::FirstFeasibleEntry> entryHandler(&evaluator);
+      Execution::GreedyDispatcher<Execution::SequentialEntries> sequentialEntryHandler(&evaluator);
       Execution::FirstMatchingMessageDelivery messageHandler;
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;
       Execution::InstantExit exitHandler;

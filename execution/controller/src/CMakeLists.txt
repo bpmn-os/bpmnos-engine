@@ -7,7 +7,6 @@ list(APPEND controller_SOURCES
   Evaluator.cpp
   evaluators/LocalEvaluator.cpp
   evaluators/GuidedEvaluator.cpp
-  DecisionStore.cpp
   CachedCandidates.cpp
   candidates/FirstFeasibleExit.cpp
   candidates/FirstFeasibleEntry.cpp
@@ -15,7 +14,6 @@ list(APPEND controller_SOURCES
   candidates/MessageDeliveries.cpp
   candidates/FirstEnumeratedChoice.cpp
   candidates/FirstBisectionalChoice.cpp
-  GreedyDispatcher.cpp
   dispatcher/TimeWarp.cpp
   dispatcher/Metronome.cpp
   dispatcher/naive/InstantEntry.cpp
@@ -25,13 +23,6 @@ list(APPEND controller_SOURCES
   dispatcher/naive/RandomChoice.cpp
   dispatcher/naive/MyopicDecisionTaskTerminator.cpp
   dispatcher/naive/MyopicMessageTaskTerminator.cpp
-  dispatcher/greedy/GreedyEntry.cpp
-  dispatcher/greedy/GreedyExit.cpp
-  dispatcher/greedy/BestFirstEntry.cpp
-  dispatcher/greedy/BestFirstExit.cpp
-  dispatcher/greedy/BestMatchingMessageDelivery.cpp
-  dispatcher/greedy/BestEnumeratedChoice.cpp
-  dispatcher/greedy/BisectionalChoice.cpp
   Controller.cpp
   GreedyController.cpp
   SeededController.cpp
@@ -48,7 +39,6 @@ list(APPEND controller_HEADERS
   Evaluator.h
   evaluators/LocalEvaluator.h
   evaluators/GuidedEvaluator.h
-  DecisionStore.h
   Candidates.h
   CachedCandidates.h
   candidates/FirstFeasibleExit.h
@@ -58,7 +48,6 @@ list(APPEND controller_HEADERS
   candidates/FirstEnumeratedChoice.h
   candidates/FirstBisectionalChoice.h
   GreedyDispatcher.h
-  GreedyCandidateDispatcher.h
   dispatcher/TimeWarp.h
   dispatcher/Metronome.h
   dispatcher/naive/InstantEntry.h
@@ -68,13 +57,6 @@ list(APPEND controller_HEADERS
   dispatcher/naive/RandomChoice.h
   dispatcher/naive/MyopicDecisionTaskTerminator.h
   dispatcher/naive/MyopicMessageTaskTerminator.h
-  dispatcher/greedy/GreedyEntry.h
-  dispatcher/greedy/GreedyExit.h
-  dispatcher/greedy/BestFirstEntry.h
-  dispatcher/greedy/BestFirstExit.h
-  dispatcher/greedy/BestMatchingMessageDelivery.h
-  dispatcher/greedy/BestEnumeratedChoice.h
-  dispatcher/greedy/BisectionalChoice.h
   Controller.h
   GreedyController.h
   SeededController.h

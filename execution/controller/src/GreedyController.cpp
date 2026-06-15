@@ -1,6 +1,6 @@
 #include "GreedyController.h"
 #include "execution/engine/src/Engine.h"
-#include "GreedyCandidateDispatcher.h"
+#include "GreedyDispatcher.h"
 #include "candidates/FirstFeasibleExit.h"
 #include "candidates/FirstFeasibleEntry.h"
 #include "candidates/SequentialEntries.h"
@@ -15,15 +15,15 @@ GreedyController::GreedyController(Evaluator* evaluator)
   : evaluator(evaluator)
 {
   // Entry, exit, sequential, and message-delivery decisions come from Candidates sources, each owned by a
-  // generic GreedyCandidateDispatcher (templated on the source type).
+  // generic GreedyDispatcher (templated on the source type).
   // Prioritized layer: dispatch the first feasible decision.
-  prioritizedDispatchers.push_back( std::make_unique<GreedyCandidateDispatcher<FirstFeasibleExit>>(evaluator) );
-  prioritizedDispatchers.push_back( std::make_unique<GreedyCandidateDispatcher<FirstFeasibleEntry>>(evaluator) ); // non-sequential entries only (config.sequential=false)
+  prioritizedDispatchers.push_back( std::make_unique<GreedyDispatcher<FirstFeasibleExit>>(evaluator) );
+  prioritizedDispatchers.push_back( std::make_unique<GreedyDispatcher<FirstFeasibleEntry>>(evaluator) ); // non-sequential entries only (config.sequential=false)
   prioritizedDispatchers.push_back( std::make_unique<InstantDirectMessage>() );
-  prioritizedDispatchers.push_back( std::make_unique<GreedyCandidateDispatcher<FirstBisectionalChoice>>(evaluator) );
+  prioritizedDispatchers.push_back( std::make_unique<GreedyDispatcher<FirstBisectionalChoice>>(evaluator) );
   // Competing layer: best-of-best over the contested decisions.
-  competingDispatchers.push_back( std::make_unique<GreedyCandidateDispatcher<SequentialEntries>>(evaluator) ); // sequential ad-hoc entries only
-  competingDispatchers.push_back( std::make_unique<GreedyCandidateDispatcher<MessageDeliveries>>(evaluator) );
+  competingDispatchers.push_back( std::make_unique<GreedyDispatcher<SequentialEntries>>(evaluator) ); // sequential ad-hoc entries only
+  competingDispatchers.push_back( std::make_unique<GreedyDispatcher<MessageDeliveries>>(evaluator) );
 }
 
 void GreedyController::connect(Mediator* mediator) {
