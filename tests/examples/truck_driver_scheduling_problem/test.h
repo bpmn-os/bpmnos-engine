@@ -30,7 +30,7 @@ SCENARIO( "Truck driver scheduling problem", "[examples][truck_driver_scheduling
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get());
+      engine.run(scenario.get(),1500);
       THEN( "Then no failure occurs" ) {
         auto failureLog = recorder.find(nlohmann::json{{"state", "FAILED"}});
         REQUIRE( failureLog.size() == 0 );
@@ -72,7 +72,7 @@ SCENARIO( "Truck driver scheduling problem", "[examples][truck_driver_scheduling
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get());
+      engine.run(scenario.get(),1500);
       THEN( "Then no failure occurs" ) {
         auto failureLog = recorder.find(nlohmann::json{{"state", "FAILED"}});
         REQUIRE( failureLog.size() == 0 );
@@ -121,12 +121,12 @@ SCENARIO( "Truck driver scheduling problem", "[examples][truck_driver_scheduling
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get(),2000);
+      engine.run(scenario.get(),3000);
       THEN( "Then no failure occurs" ) {
         auto failureLog = recorder.find(nlohmann::json{{"state", "FAILED"}});
         REQUIRE( failureLog.size() == 0 );
       }
-      THEN( "Then no the process completes at the correct non-optimal time" ) {
+      THEN( "Then the process completes at the correct non-optimal time" ) {
         auto processLog = recorder.find(nlohmann::json{{"state", "DONE"}},nlohmann::json{{"nodeId", nullptr}});
         REQUIRE( processLog.size() == 1 );
         // Solution 1a or 1b
