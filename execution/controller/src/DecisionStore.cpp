@@ -137,6 +137,14 @@ void DecisionStore<WeakPtrs...>::dataUpdate(const DataUpdate* update) {
 }
 
 template <typename... WeakPtrs>
+void DecisionStore<WeakPtrs...>::advanceTime(BPMNOS::number currentTime) {
+  if ( currentTime > timestamp ) {
+    timestamp = currentTime;
+    clockTick();
+  }
+}
+
+template <typename... WeakPtrs>
 void DecisionStore<WeakPtrs...>::clockTick() {
   for ( auto& decisionTuple : timeDependentEvaluations ) {
     std::shared_ptr<Decision>& decision = std::get<sizeof...(WeakPtrs)>(decisionTuple);

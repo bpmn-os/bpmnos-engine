@@ -26,10 +26,7 @@ void GreedyDispatcher<WeakPtrs...>::connect(Mediator* mediator) {
 template <typename... WeakPtrs>
 std::shared_ptr<Event> GreedyDispatcher<WeakPtrs...>::dispatchEvent( [[maybe_unused]] const SystemState* systemState ) {
 //std::cout << "dispatchEvent" << std::endl;
-  if ( systemState->currentTime > decisionStore.timestamp ) {
-    decisionStore.timestamp = systemState->currentTime;
-    decisionStore.clockTick();
-  }
+  decisionStore.advanceTime(systemState->currentTime);
 
   decisionStore.evaluateDecisions([this](WeakPtrs... weak_ptrs, std::shared_ptr<Decision> decision) -> std::shared_ptr<Event> {
     assert(decision);

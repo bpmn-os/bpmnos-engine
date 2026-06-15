@@ -36,10 +36,7 @@ void BestEnumeratedChoice::notice(const Observable* observable) {
 
 std::shared_ptr<Event> BestEnumeratedChoice::dispatchEvent( [[maybe_unused]] const SystemState* systemState ) {
 //std::cout << "BestEnumeratedChoice::dispatchEvent" << std::endl;
-  if ( systemState->currentTime > decisionStore.timestamp ) {
-    decisionStore.timestamp = systemState->currentTime;
-    decisionStore.clockTick();
-  }
+  decisionStore.advanceTime(systemState->currentTime);
 
   decisionStore.evaluateDecisions(
     [this]( std::weak_ptr<const Token> token_ptr, std::weak_ptr<const DecisionRequest> request_ptr, std::shared_ptr<Decision> ) -> std::shared_ptr<Event> {

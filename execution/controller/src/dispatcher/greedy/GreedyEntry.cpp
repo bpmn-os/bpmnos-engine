@@ -40,10 +40,7 @@ void GreedyEntry::notice(const Observable* observable) {
 
 std::shared_ptr<Event> GreedyEntry::dispatchEvent( const SystemState* systemState ) {
 //std::cout << "dispatchEvent" << std::endl;
-  if ( systemState->currentTime > decisionStore.timestamp ) {
-    decisionStore.timestamp = systemState->currentTime;
-    decisionStore.clockTick();
-  }
+  decisionStore.advanceTime(systemState->currentTime);
 
   if ( auto event = decisionStore.evaluateDecisions(
     [this]( std::weak_ptr<const Token> token_ptr, std::weak_ptr<const DecisionRequest> request_ptr, std::shared_ptr<Decision> decision ) -> std::shared_ptr<Event> {

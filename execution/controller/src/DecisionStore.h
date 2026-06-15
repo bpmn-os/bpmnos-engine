@@ -26,8 +26,6 @@ class DecisionStore : public Observer {
 public:
   DecisionStore();
 
-  BPMNOS::number timestamp; ///< Time of the most recent clock tick applied.
-
   /// Callback evaluating one pending decision; returns an event to dispatch (stopping the evaluation) or nullptr to continue.
   using Evaluate = std::function< std::shared_ptr<Event>(WeakPtrs..., std::shared_ptr<Decision>) >;
 
@@ -37,14 +35,16 @@ public:
   void addEvaluation(WeakPtrs..., std::shared_ptr<Decision> decision);
   /// Evaluate the pending decisions in turn (removing each); return the first event a callback dispatches, or nullptr.
   std::shared_ptr<Event> evaluateDecisions(const Evaluate& evaluate);
-  /// Re-issue the time-dependent decisions for re-evaluation.
-  void clockTick();
+  /// Advance to currentTime; if the clock ticked, re-issue the time-dependent decisions for re-evaluation.
+  void advanceTime(BPMNOS::number currentTime);
   /// Handle an observable forwarded by the owning dispatcher: a DataUpdate invalidates the affected evaluations.
   void notice(const Observable* observable) override;
   /// Get the best evaluated decision if it is feasible, nullptr otherwise.
   std::shared_ptr<Event> getBestDecision();
 
 private:
+  BPMNOS::number timestamp; ///< Time of the most recent clock tick applied.
+  void clockTick(); ///< Re-issue the time-dependent decisions for re-evaluation.
   void dataUpdate(const DataUpdate* update);
   bool intersect(const std::vector<const BPMNOS::Model::Attribute*>& first, const std::set<const BPMNOS::Model::Attribute*>& second) const;
   void removeObsolete(const DataUpdate* update, auto_list< WeakPtrs..., std::shared_ptr<Decision> >& evaluation, auto_list< WeakPtrs..., std::shared_ptr<Decision> >& unevaluatedDecisions);
