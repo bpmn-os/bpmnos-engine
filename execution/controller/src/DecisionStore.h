@@ -28,6 +28,8 @@ public:
   BPMNOS::number timestamp; ///< Time of the most recent clock tick applied.
   auto_list< WeakPtrs..., std::shared_ptr<Decision> > decisionsWithoutEvaluation; ///< Collected decisions awaiting evaluation.
 
+  /// Register an unevaluated candidate decision.
+  void addDecision(WeakPtrs..., std::shared_ptr<Decision> decision);
   /// Insert an already-evaluated decision into evaluatedDecisions and file it under its dependency category.
   void addEvaluation(WeakPtrs..., std::shared_ptr<Decision> decision);
   /// Re-issue the time-dependent decisions for re-evaluation.

@@ -13,6 +13,11 @@ DecisionStore<WeakPtrs...>::DecisionStore()
 }
 
 template <typename... WeakPtrs>
+void DecisionStore<WeakPtrs...>::addDecision(WeakPtrs... weak_ptrs, std::shared_ptr<Decision> decision) {
+  decisionsWithoutEvaluation.emplace_back(weak_ptrs..., std::move(decision));
+}
+
+template <typename... WeakPtrs>
 void DecisionStore<WeakPtrs...>::addEvaluation(WeakPtrs... weak_ptrs, std::shared_ptr<Decision> decision) {
   auto reward = decision->reward();
   // evaluatedDecisions are sorted in ascending order

@@ -33,7 +33,7 @@ void BisectionalChoice::notice(const Observable* observable) {
     auto request = static_cast<const DecisionRequest*>(observable);
     // create pseudo decision
     auto decision = std::make_shared<ChoiceDecision>(request->token, std::vector<number>{}, evaluator);
-    decisionStore.decisionsWithoutEvaluation.emplace_back( request->token->weak_from_this(), request->weak_from_this(), decision );
+    decisionStore.addDecision( request->token->weak_from_this(), request->weak_from_this(), decision );
   }
   else {
     GreedyDispatcher::notice(observable);
