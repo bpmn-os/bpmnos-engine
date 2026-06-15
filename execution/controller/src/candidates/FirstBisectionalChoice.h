@@ -21,10 +21,10 @@ namespace BPMNOS::Execution {
  * calls determineBestChoices; it stops at the first request that yields a feasible choice ("first" refers to
  * the request). determineBestChoices finds the best feasible value of a single attribute with bounds and a
  * multipleOf discretizer by bisection; for multiple choices, an explicit enumeration, or a continuous attribute
- * it evaluates the alternatives by enumeration instead. Every evaluated alternative is kept alive (in
- * evaluatedChoices) until the next evaluation; only the best feasible one is added to the reward-ordered
- * candidates and returned, so the greedy dispatcher takes it while the full alternative set stays available for
- * rollout. Stateless: no caching across calls, so connect does nothing.
+ * it evaluates the alternatives by enumeration instead. Every evaluated alternative is added to the reward-ordered
+ * candidates and kept alive (in evaluatedChoices) until the next evaluation, and the best feasible one is returned
+ * — so the greedy dispatcher takes the front (best) while the full alternative set stays available for rollout.
+ * Stateless: no caching across calls, so connect does nothing.
  */
 class FirstBisectionalChoice : public Candidates< std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest> > {
 public:

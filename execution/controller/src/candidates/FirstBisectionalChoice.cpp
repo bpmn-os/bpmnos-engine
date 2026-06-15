@@ -16,8 +16,8 @@ FirstBisectionalChoice::FirstBisectionalChoice(Evaluator* evaluator)
 }
 
 void FirstBisectionalChoice::evaluateCandidates(const SystemState* systemState) {
-  // stateless: recompute from scratch; determineBestChoices adds the best choice of the considered request to
-  // `candidates` (and keeps all its alternatives in `evaluatedChoices`), so stop at the first feasible request
+  // stateless: recompute from scratch; determineBestChoices populates `candidates` with the considered request's
+  // full alternative set (and keeps all alive in `evaluatedChoices`), so stop at the first feasible request
   candidates.clear();
   evaluatedChoices.clear();
   for ( [[maybe_unused]] auto& [ pendingToken, pendingRequest ] : systemState->pendingChoiceDecisions ) {
@@ -43,33 +43,27 @@ std::shared_ptr<Decision> FirstBisectionalChoice::determineBestChoices(std::shar
   token_ptr = token->weak_from_this();
   request_ptr = request->weak_from_this();
 
-  // evaluate the alternatives (each is kept alive in evaluatedChoices) and pick the best feasible
-  std::shared_ptr<Decision> bestDecision;
   if ( extensionElements->choices.size() > 1 ) {
-    bestDecision = bestEnumeratedChoice(request);
-  }
-  else {
-    auto& choice = extensionElements->choices[0];
-    if ( !choice->enumeration.empty() ) {
-      bestDecision = bestEnumeratedChoice(request);
-    }
-    else if ( !choice->lowerBound && !choice->upperBound ) {
-      throw std::runtime_error("FirstBisectionalChoice: choice requires bounds");
-    }
-    else if ( choice->multipleOf ) {
-      // single choice with bounds (no enumeration) → use bisection
-      bestDecision = discreteBisection(request, choice.get());
-    }
-    else {
-      bestDecision = bestEnumeratedChoice(request);
-    }
+    return bestEnumeratedChoice(request);
   }
 
-  // only the (first-encountered) best feasible choice is offered to the greedy dispatcher (deterministic on ties)
-  if ( bestDecision ) {
-    candidates.emplace( -(double)bestDecision->reward().value(), token_ptr, request_ptr, bestDecision->weak_from_this(), bestDecision->evaluation );
+  auto& choice = extensionElements->choices[0];
+
+  if ( !choice->enumeration.empty() ) {
+    return bestEnumeratedChoice(request);
   }
-  return bestDecision;
+
+  if ( !choice->lowerBound && !choice->upperBound ) {
+    throw std::runtime_error("FirstBisectionalChoice: choice requires bounds");
+  }
+
+  // Single choice with bounds (no enumeration) → use bisection
+  if ( choice->multipleOf ) {
+    return discreteBisection(request, choice.get());
+  }
+  else {
+    return bestEnumeratedChoice(request);
+  }
 }
 
 std::shared_ptr<Decision> FirstBisectionalChoice::bestEnumeratedChoice(std::shared_ptr<const DecisionRequest> request) {
@@ -81,10 +75,12 @@ std::shared_ptr<Decision> FirstBisectionalChoice::bestEnumeratedChoice(std::shar
   for ( auto& choices : alternativeChoices ) {
     auto decision = std::make_shared<ChoiceDecision>(token, std::move(choices), evaluator);
     decision->evaluate();
-    if ( decision->reward().has_value() && ( !bestDecision || decision->reward().value() > bestDecision->reward().value() ) ) {
+    auto reward = decision->reward();
+    candidates.emplace( reward.has_value() ? -(double)reward.value() : std::numeric_limits<double>::max(),
+                        token_ptr, request_ptr, decision->weak_from_this(), decision->evaluation );
+    if ( reward.has_value() && ( !bestDecision || reward.value() > bestDecision->reward().value() ) ) {
       bestDecision = decision;
     }
-    // keep every evaluated alternative alive (for rollout); only the best is offered to the dispatcher
     evaluatedChoices.emplace_back( token_ptr, request_ptr, std::move(decision) );
   }
   return bestDecision;
@@ -93,7 +89,9 @@ std::shared_ptr<Decision> FirstBisectionalChoice::bestEnumeratedChoice(std::shar
 FirstBisectionalChoice::Candidate FirstBisectionalChoice::evaluate(size_t index) {
   auto decision = std::make_shared<ChoiceDecision>(token, std::vector<number>{ values[index] }, evaluator);
   decision->evaluate();
-  // keep every sampled alternative alive (for rollout); the best is offered to the dispatcher by determineBestChoices
+  auto reward = decision->reward();
+  candidates.emplace( reward.has_value() ? -(double)reward.value() : std::numeric_limits<double>::max(),
+                      token_ptr, request_ptr, decision->weak_from_this(), decision->evaluation );
   evaluatedChoices.emplace_back( token_ptr, request_ptr, decision );
   return { index, decision };
 }

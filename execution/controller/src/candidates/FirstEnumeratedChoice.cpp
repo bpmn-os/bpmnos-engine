@@ -3,6 +3,7 @@
 #include "model/bpmnos/src/DecisionTask.h"
 #include "model/bpmnos/src/extensionElements/Attribute.h"
 #include <cassert>
+#include <limits>
 
 using namespace BPMNOS::Execution;
 
@@ -44,16 +45,15 @@ std::shared_ptr<Decision> FirstEnumeratedChoice::determineBestChoices(std::share
   for ( auto& choices : alternativeChoices ) {
     auto decision = std::make_shared<ChoiceDecision>(token, std::move(choices), evaluator);
     decision->evaluate();
-    if ( decision->reward().has_value() && ( !bestDecision || decision->reward().value() > bestDecision->reward().value() ) ) {
+    auto reward = decision->reward();
+    // add every alternative to the reward-ordered candidates (infeasible last) and keep it alive
+    candidates.emplace( reward.has_value() ? -(double)reward.value() : std::numeric_limits<double>::max(),
+                        token_ptr, request_ptr, decision->weak_from_this(), decision->evaluation );
+    if ( reward.has_value() && ( !bestDecision || reward.value() > bestDecision->reward().value() ) ) {
       bestDecision = decision;
     }
-    // keep every evaluated alternative alive (for rollout); only the best is offered to the dispatcher
     evaluatedChoices.emplace_back( token_ptr, request_ptr, std::move(decision) );
   }
 
-  // only the (first-encountered) best feasible choice is offered to the greedy dispatcher (deterministic on ties)
-  if ( bestDecision ) {
-    candidates.emplace( -(double)bestDecision->reward().value(), token_ptr, request_ptr, bestDecision->weak_from_this(), bestDecision->evaluation );
-  }
   return bestDecision;
 }
