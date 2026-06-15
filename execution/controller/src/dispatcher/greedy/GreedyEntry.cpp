@@ -30,7 +30,7 @@ void GreedyEntry::notice(const Observable* observable) {
       }
     }
     auto decision = std::make_shared<EntryDecision>(request->token, evaluator);
-    decisionsWithoutEvaluation.emplace_back( request->token->weak_from_this(), request->weak_from_this(), decision );
+    decisionStore.addDecision( request->token->weak_from_this(), request->weak_from_this(), decision );
   }
   else {
     GreedyDispatcher::notice(observable);
@@ -40,54 +40,43 @@ void GreedyEntry::notice(const Observable* observable) {
 
 std::shared_ptr<Event> GreedyEntry::dispatchEvent( const SystemState* systemState ) {
 //std::cout << "dispatchEvent" << std::endl;
-  if ( systemState->currentTime > timestamp ) {
-    timestamp = systemState->currentTime;
-    clockTick();
-  }
+  decisionStore.advanceTime(systemState->currentTime);
 
-  for (auto it = decisionsWithoutEvaluation.begin(); it != decisionsWithoutEvaluation.end(); ) {
-    auto [ token_ptr, request_ptr, decision  ] = std::move(*it);
-    it = decisionsWithoutEvaluation.erase(it);
-    assert(decision);
-    auto token = token_ptr.lock();
-    assert( token );
-    assert( token->node->parent );
-    
-    if ( !token->node->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() ) {
-      // evaluation of decision that is independent of others
-      decision->evaluate();
+  if ( auto event = decisionStore.evaluateDecisions(
+    [this]( std::weak_ptr<const Token> token_ptr, std::weak_ptr<const DecisionRequest> request_ptr, std::shared_ptr<Decision> decision ) -> std::shared_ptr<Event> {
+      assert(decision);
+      auto token = token_ptr.lock();
+      assert( token );
+      assert( token->node->parent );
+
+      if ( !token->node->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() ) {
+        // evaluation of decision that is independent of others
+        decision->evaluate();
 //std::cerr << "Regular: " << decision->jsonify() << std::endl;
-      addEvaluation(token_ptr, request_ptr, decision);
+        decisionStore.addEvaluation(token_ptr, request_ptr, decision);
 
-      if ( decision->reward().has_value() ) {
-        // dispatch feasible decision 
-        return std::make_shared<EntryEvent>(decision->token);
+        if ( decision->reward().has_value() ) {
+          // dispatch feasible decision
+          return std::make_shared<EntryEvent>(decision->token);
+        }
       }
+      else {
+        // sequential ad-hoc subprocess child entry (only registered when config.sequential):
+        // defer for performer grouping
+        unevaluatedSequentialEntries.emplace_back(
+          std::move(token_ptr), std::move(request_ptr), std::move(decision)
+        );
+      }
+      return nullptr;
     }
-    else {
-      // sequential ad-hoc subprocess child entry (only registered when config.sequential):
-      // defer for performer grouping
-      unevaluatedSequentialEntries.emplace_back(
-        std::move(token_ptr), std::move(request_ptr), std::move(decision)
-      );
-    }
+  ) ) {
+    return event;
   }
 
   // all evaluated decisions are infeasible unless a previously dispatched decision was not deployed
-  for ( auto decisionTuple : evaluatedDecisions ) {
-    constexpr std::size_t eventIndex = std::tuple_size<decltype(decisionTuple)>::value - 2;
-    std::weak_ptr<Event>& event_ptr = std::get<eventIndex>(decisionTuple);
-    if ( auto event = event_ptr.lock();
-      event && std::get<0>(decisionTuple) < std::numeric_limits<double>::max()
-    ) {
-//std::cerr << "\nBest (old) decision " << event->jsonify() << " evaluated with " << std::get<0>(decisionTuple) << std::endl;
-      // Warning: event is dispatched even if it is no longer the best due to data updates since undeployed dispatch
-      return event;
-    }
-    else {
-      // best evalutated decision is infeasible, no need to inspect others
-      break;
-    }
+  // Warning: event is dispatched even if it is no longer the best due to data updates since undeployed dispatch
+  if ( auto event = decisionStore.getBestDecision() ) {
+    return event;
   }
 
   std::unordered_map<const Token*, auto_list<std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest>, std::shared_ptr<Decision> > > sequentialActivityEntries;
@@ -115,21 +104,11 @@ std::shared_ptr<Event> GreedyEntry::dispatchEvent( const SystemState* systemStat
       // Call decision->evaluate() and add the evaluation
       decision->evaluate();
 //std::cerr << "Exclusive: " << decision->jsonify() << std::endl;
-      addEvaluation(token_ptr, request_ptr, decision);
+      decisionStore.addEvaluation(token_ptr, request_ptr, decision);
     }
-    for ( auto decisionTuple : evaluatedDecisions ) {
-      constexpr std::size_t eventIndex = std::tuple_size<decltype(decisionTuple)>::value - 2;
-      std::weak_ptr<Event>& event_ptr = std::get<eventIndex>(decisionTuple);
-      if ( auto event = event_ptr.lock();
-        event && std::get<0>(decisionTuple) < std::numeric_limits<double>::max()
-      ) {
-//std::cerr << "\nBest decision " << event->jsonify() << " evaluated with " << std::get<0>(decisionTuple) << std::endl;
-        return event;
-      }
-      else {
-        // best decision is infeasible, proceed with next performer
-        break;
-      }
+    // best decision is infeasible, proceed with next performer
+    if ( auto event = decisionStore.getBestDecision() ) {
+      return event;
     }
   }
 

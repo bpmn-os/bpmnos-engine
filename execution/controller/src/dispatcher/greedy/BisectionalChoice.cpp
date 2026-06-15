@@ -33,7 +33,7 @@ void BisectionalChoice::notice(const Observable* observable) {
     auto request = static_cast<const DecisionRequest*>(observable);
     // create pseudo decision
     auto decision = std::make_shared<ChoiceDecision>(request->token, std::vector<number>{}, evaluator);
-    decisionsWithoutEvaluation.emplace_back( request->token->weak_from_this(), request->weak_from_this(), decision );
+    decisionStore.addDecision( request->token->weak_from_this(), request->weak_from_this(), decision );
   }
   else {
     GreedyDispatcher::notice(observable);
@@ -42,35 +42,28 @@ void BisectionalChoice::notice(const Observable* observable) {
 
 std::shared_ptr<Event> BisectionalChoice::dispatchEvent( [[maybe_unused]] const SystemState* systemState ) {
 //std::cout << "BisectionalChoice::dispatchEvent" << std::endl;
-  if ( systemState->currentTime > timestamp ) {
-    timestamp = systemState->currentTime;
-    clockTick();
-  }
+  decisionStore.advanceTime(systemState->currentTime);
 
-  for ( auto it = decisionsWithoutEvaluation.begin(); it != decisionsWithoutEvaluation.end(); ) {
-    auto& [ token_ptr, request_ptr, _ ] = *it;
-    auto request = request_ptr.lock();
-    assert( request );
-    // forget previous decision and find new best decision for the request
-    auto decision = determineBestChoices( request );
-    bool feasible = (bool)decision;
-    if ( decision ) {
-      addEvaluation( token_ptr, request_ptr, std::move(decision) );
+  if ( auto event = decisionStore.evaluateDecisions(
+    [this]( std::weak_ptr<const Token> token_ptr, std::weak_ptr<const DecisionRequest> request_ptr, std::shared_ptr<Decision> ) -> std::shared_ptr<Event> {
+      auto request = request_ptr.lock();
+      assert( request );
+      // forget previous decision and find new best decision for the request
+      auto decision = determineBestChoices( request );
+      if ( decision ) {
+        decisionStore.addEvaluation( token_ptr, request_ptr, decision );
+        if ( config.firstFeasible ) {
+          // dispatch the first feasible decision and leave the remaining requests pending
+          return decision;
+        }
+      }
+      return nullptr;
     }
-    it = decisionsWithoutEvaluation.erase(it);
-    if ( config.firstFeasible && feasible ) {
-      // dispatch the first feasible decision and leave the remaining requests pending
-      break;
-    }
+  ) ) {
+    return event;
   }
 
-  for ( auto [ cost, token_ptr, request_ptr, event_ptr, evaluation_ptr ] : evaluatedDecisions ) {
-//std::cerr << "Best choice decision " << event_ptr.lock()->jsonify() << " evaluated with " << cost << std::endl;
-    return event_ptr.lock();
-  }
-
-//std::cerr << "No evaluated choice decision" << std::endl;
-  return nullptr;
+  return decisionStore.getBestDecision();
 }
 
 std::shared_ptr<Decision> BisectionalChoice::determineBestChoices(std::shared_ptr<const DecisionRequest> request) {

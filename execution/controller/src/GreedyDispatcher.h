@@ -7,6 +7,7 @@
 #include "execution/engine/src/Observer.h"
 #include "execution/engine/src/DataUpdate.h"
 #include "Decision.h"
+#include "DecisionStore.h"
 
 namespace BPMNOS::Execution {
 
@@ -27,27 +28,11 @@ public:
   std::shared_ptr<Event> dispatchEvent( const SystemState* systemState ) override;
   void connect(Mediator* mediator) override;
   void notice(const Observable* observable) override;
-  BPMNOS::number timestamp;
 protected:
   Evaluator* evaluator;
-  auto_list< WeakPtrs..., std::shared_ptr<Decision> > decisionsWithoutEvaluation;
-
-  void addEvaluation(WeakPtrs..., std::shared_ptr<Decision> decision);
-
-  auto_set< double, WeakPtrs..., std::weak_ptr<Event>, std::weak_ptr<Evaluation> > evaluatedDecisions;  
-  virtual void dataUpdate(const DataUpdate* update);
-  bool intersect(const std::vector<const BPMNOS::Model::Attribute*>& first, const std::set<const BPMNOS::Model::Attribute*>& second) const;
-  void removeObsolete(const DataUpdate* update, auto_list< WeakPtrs..., std::shared_ptr<Decision> >& evaluation, auto_list< WeakPtrs..., std::shared_ptr<Decision> >& unevaluatedDecisions);
-  void removeDependentEvaluations(const DataUpdate* update, std::unordered_map< long unsigned int, auto_list< WeakPtrs..., std::shared_ptr<Decision> > >& evaluatedDecisions, auto_list< WeakPtrs..., std::shared_ptr<Decision> >& unevaluatedDecisions);
-
-  auto_list< WeakPtrs..., std::shared_ptr<Decision> > invariantEvaluations;
-  auto_list< WeakPtrs..., std::shared_ptr<Decision> > timeDependentEvaluations;
-  std::unordered_map< long unsigned int, auto_list< WeakPtrs..., std::shared_ptr<Decision> > > dataDependentEvaluations;
-  std::unordered_map< long unsigned int, auto_list< WeakPtrs..., std::shared_ptr<Decision> > > timeAndDataDependentEvaluations;
-  void clockTick();
+  DecisionStore<WeakPtrs...> decisionStore;
 };
 
 } // namespace BPMNOS::Execution
 
 #endif // BPMNOS_Execution_GreedyDispatcher_H
-

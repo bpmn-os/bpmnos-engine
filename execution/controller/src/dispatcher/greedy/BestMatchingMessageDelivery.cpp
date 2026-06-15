@@ -20,31 +20,20 @@ void BestMatchingMessageDelivery::connect(Mediator* mediator) {
 }
 
 std::shared_ptr<Event> BestMatchingMessageDelivery::dispatchEvent( [[maybe_unused]] const SystemState* systemState ) {
-  for ( auto& [ token_ptr, request_ptr, message_ptr, decision ] : decisionsWithoutEvaluation ) {
-    assert(decision);
-    if ( decision ) {
-      decision->evaluate();
+  decisionStore.evaluateDecisions(
+    [this]( std::weak_ptr<const Token> token_ptr, std::weak_ptr<const DecisionRequest> request_ptr, std::weak_ptr<const Message> message_ptr, std::shared_ptr<Decision> decision ) -> std::shared_ptr<Event> {
+      assert(decision);
+      if ( decision ) {
+        decision->evaluate();
 //std::cerr << "Re-evaluated message delivery decision: " << decision << decision->jsonify().dump() << std::endl;
-      addEvaluation( token_ptr, request_ptr, message_ptr, std::move(decision) );
+        decisionStore.addEvaluation( token_ptr, request_ptr, message_ptr, std::move(decision) );
+      }
+      return nullptr;
     }
-  }
-  decisionsWithoutEvaluation.clear();
+  );
 
-/*
-std::cerr << "\nEvaluated decisions:\n";
-for ( auto [ cost, token_ptr, request_ptr, message_ptr, event_ptr, evaluation_ptr ] : evaluatedDecisions ) {
-auto event = event_ptr.lock();
-std::cerr << event << event->jsonify() << " evaluated with " << cost << std::endl;
-} // TODO: REMOVE
-*/
-  for ( auto [ cost, token_ptr, request_ptr, message_ptr, event_ptr, evaluation_ptr ] : evaluatedDecisions ) {
-    // return best evaluated decision
-//std::cerr << "\nBest message delivery decision " << event_ptr.lock()->jsonify() << " evaluated with " << cost << std::endl;
-    return event_ptr.lock();
-  }
-
-//std::cerr << "No evaluated message delivery decision" << std::endl;
-  return nullptr;
+  // return best evaluated decision
+  return decisionStore.getBestDecision();
 }
 
 void BestMatchingMessageDelivery::notice(const Observable* observable) {
@@ -68,7 +57,7 @@ void BestMatchingMessageDelivery::notice(const Observable* observable) {
       ) {
 //std::cerr << "match" << std::endl;
         auto decision = std::make_shared<MessageDeliveryDecision>(request->token, message.get(), evaluator);
-        decisionsWithoutEvaluation.emplace_back( request->token->weak_from_this(), request->weak_from_this(), message_ptr, decision );
+        decisionStore.addDecision( request->token->weak_from_this(), request->weak_from_this(), message_ptr, decision );
       }
     }
   }
@@ -88,7 +77,7 @@ void BestMatchingMessageDelivery::notice(const Observable* observable) {
         ) {
 //std::cerr << "match" << std::endl;
           auto decision = std::make_shared<MessageDeliveryDecision>(token.get(), message, evaluator);
-          decisionsWithoutEvaluation.emplace_back( token_ptr, request_ptr, message->weak_from_this(), decision );
+          decisionStore.addDecision( token_ptr, request_ptr, message->weak_from_this(), decision );
         }
       }
     }
