@@ -1,9 +1,11 @@
 #include "GreedyController.h"
-#include "dispatcher/greedy/GreedyEntry.h"
-#include "dispatcher/greedy/GreedyExit.h"
-#include "dispatcher/greedy/BestFirstEntry.h"
-#include "dispatcher/greedy/BisectionalChoice.h"
-#include "dispatcher/greedy/BestMatchingMessageDelivery.h"
+#include "execution/engine/src/Engine.h"
+#include "GreedyCandidateDispatcher.h"
+#include "candidates/FirstFeasibleExit.h"
+#include "candidates/FirstFeasibleEntry.h"
+#include "candidates/SequentialEntries.h"
+#include "candidates/FirstBisectionalChoice.h"
+#include "candidates/MessageDeliveries.h"
 #include "dispatcher/naive/InstantDirectMessage.h"
 #include <iostream>
 
@@ -12,14 +14,16 @@ using namespace BPMNOS::Execution;
 GreedyController::GreedyController(Evaluator* evaluator)
   : evaluator(evaluator)
 {
+  // Entry, exit, sequential, and message-delivery decisions come from Candidates sources, each owned by a
+  // generic GreedyCandidateDispatcher (templated on the source type).
   // Prioritized layer: dispatch the first feasible decision.
-  prioritizedDispatchers.push_back( std::make_unique<GreedyExit>(evaluator) );
-  prioritizedDispatchers.push_back( std::make_unique<GreedyEntry>(evaluator, GreedyEntry::Config{ .sequential = false }) ); // non-sequential entries only
+  prioritizedDispatchers.push_back( std::make_unique<GreedyCandidateDispatcher<FirstFeasibleExit>>(evaluator) );
+  prioritizedDispatchers.push_back( std::make_unique<GreedyCandidateDispatcher<FirstFeasibleEntry>>(evaluator) ); // non-sequential entries only (config.sequential=false)
   prioritizedDispatchers.push_back( std::make_unique<InstantDirectMessage>() );
-  prioritizedDispatchers.push_back( std::make_unique<BisectionalChoice>(evaluator, BisectionalChoice::Config{ .firstFeasible = true }) );
+  prioritizedDispatchers.push_back( std::make_unique<GreedyCandidateDispatcher<FirstBisectionalChoice>>(evaluator) );
   // Competing layer: best-of-best over the contested decisions.
-  competingDispatchers.push_back( std::make_unique<BestFirstEntry>(evaluator, BestFirstEntry::Config{ .onlySequential = true }) ); // sequential ad-hoc entries only
-  competingDispatchers.push_back( std::make_unique<BestMatchingMessageDelivery>(evaluator) );
+  competingDispatchers.push_back( std::make_unique<GreedyCandidateDispatcher<SequentialEntries>>(evaluator) ); // sequential ad-hoc entries only
+  competingDispatchers.push_back( std::make_unique<GreedyCandidateDispatcher<MessageDeliveries>>(evaluator) );
 }
 
 void GreedyController::connect(Mediator* mediator) {

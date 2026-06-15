@@ -8,6 +8,13 @@ list(APPEND controller_SOURCES
   evaluators/LocalEvaluator.cpp
   evaluators/GuidedEvaluator.cpp
   DecisionStore.cpp
+  CachedCandidates.cpp
+  candidates/FirstFeasibleExit.cpp
+  candidates/FirstFeasibleEntry.cpp
+  candidates/SequentialEntries.cpp
+  candidates/MessageDeliveries.cpp
+  candidates/FirstEnumeratedChoice.cpp
+  candidates/FirstBisectionalChoice.cpp
   GreedyDispatcher.cpp
   dispatcher/TimeWarp.cpp
   dispatcher/Metronome.cpp
@@ -42,7 +49,16 @@ list(APPEND controller_HEADERS
   evaluators/LocalEvaluator.h
   evaluators/GuidedEvaluator.h
   DecisionStore.h
+  Candidates.h
+  CachedCandidates.h
+  candidates/FirstFeasibleExit.h
+  candidates/FirstFeasibleEntry.h
+  candidates/SequentialEntries.h
+  candidates/MessageDeliveries.h
+  candidates/FirstEnumeratedChoice.h
+  candidates/FirstBisectionalChoice.h
   GreedyDispatcher.h
+  GreedyCandidateDispatcher.h
   dispatcher/TimeWarp.h
   dispatcher/Metronome.h
   dispatcher/naive/InstantEntry.h
