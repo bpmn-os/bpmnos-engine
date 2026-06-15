@@ -6,19 +6,22 @@
 #include <tuple>
 #include "model/bpmnos/src/extensionElements/Choice.h"
 #include "execution/engine/src/EventDispatcher.h"
-#include "execution/controller/src/GreedyDispatcher.h"
+#include "execution/engine/src/DecisionRequest.h"
+#include "execution/controller/src/Evaluator.h"
 #include "execution/controller/src/decisions/ChoiceDecision.h"
 #include "BestEnumeratedChoice.h"
 
 namespace BPMNOS::Execution {
 
 /**
- * @brief Class creating a choice decision for a token at a decision task using bisection.
+ * @brief Stateless dispatcher creating a choice decision for a token at a decision task using bisection.
  *
- * The BisectionalChoice dispatcher uses bisection for attributes with bounds and a multipleOf 
- * discretizer. For attributes with explicit enumeration, enumeration is used.
+ * Reads systemState->pendingChoiceDecisions on each dispatch. For attributes with bounds and a
+ * multipleOf discretizer it uses bisection; for attributes with explicit enumeration it delegates
+ * to BestEnumeratedChoice. A request for which no feasible choice exists is left to the
+ * MyopicDecisionTaskTerminator.
  */
-class BisectionalChoice : public GreedyDispatcher< std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest> > {
+class BisectionalChoice : public EventDispatcher {
 public:
   struct Config {
     /// If true (default), dispatch the first feasible choice decision (the first
@@ -30,12 +33,11 @@ public:
   static Config default_config() { return {}; } // Work around for compiler bug see: https://stackoverflow.com/questions/53408962/try-to-understand-compiler-error-message-default-member-initializer-required-be/75691051#75691051
 
   BisectionalChoice(Evaluator* evaluator, Config config = default_config());
-  void connect(Mediator* mediator) override;
-  void notice(const Observable* observable) override;
   std::shared_ptr<Event> dispatchEvent( const SystemState* systemState ) override;
   std::shared_ptr<Decision> determineBestChoices(std::shared_ptr<const DecisionRequest> request);
 
 private:
+  Evaluator* evaluator;
   BestEnumeratedChoice enumeratedChoice;
   Config config;
   std::shared_ptr<Decision> discreteBisection(std::shared_ptr<const DecisionRequest> request, const BPMNOS::Model::Choice* choice);
@@ -69,4 +71,3 @@ private:
 } // namespace BPMNOS::Execution
 
 #endif // BPMNOS_Execution_BisectionalChoice_H
-
