@@ -15,8 +15,7 @@ FirstEnumeratedChoice::FirstEnumeratedChoice(Evaluator* evaluator)
 void FirstEnumeratedChoice::evaluateCandidates(const SystemState* systemState) {
   // stateless: recompute from scratch; determineBestChoices populates `candidates` with the considered
   // request's full alternative set, so stop at the first request that yields a feasible choice
-  candidates.clear();
-  evaluatedChoices.clear();
+  this->clearDecisions();
   for ( [[maybe_unused]] auto& [ pendingToken, pendingRequest ] : systemState->pendingChoiceDecisions ) {
     if ( auto request = pendingRequest.lock() ) {
       if ( determineBestChoices( request ) ) {
@@ -27,8 +26,7 @@ void FirstEnumeratedChoice::evaluateCandidates(const SystemState* systemState) {
 }
 
 std::shared_ptr<Decision> FirstEnumeratedChoice::determineBestChoices(std::shared_ptr<const DecisionRequest> request) {
-  candidates.clear();
-  evaluatedChoices.clear();
+  this->clearDecisions();
 
   auto token = request->token;
   assert( token->node );
@@ -46,13 +44,11 @@ std::shared_ptr<Decision> FirstEnumeratedChoice::determineBestChoices(std::share
     auto decision = std::make_shared<ChoiceDecision>(token, std::move(choices), evaluator);
     decision->evaluate();
     auto reward = decision->reward();
-    // add every alternative to the reward-ordered candidates (infeasible last) and keep it alive
-    candidates.emplace( reward.has_value() ? -(double)reward.value() : std::numeric_limits<double>::max(),
-                        token_ptr, request_ptr, decision->weak_from_this(), decision->evaluation );
     if ( reward.has_value() && ( !bestDecision || reward.value() > bestDecision->reward().value() ) ) {
       bestDecision = decision;
     }
-    evaluatedChoices.emplace_back( token_ptr, request_ptr, std::move(decision) );
+    // add every alternative to the reward-ordered candidates (infeasible last), taking ownership
+    this->addCandidate( token_ptr, request_ptr, std::move(decision) );
   }
 
   return bestDecision;

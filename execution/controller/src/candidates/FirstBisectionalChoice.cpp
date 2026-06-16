@@ -17,9 +17,8 @@ FirstBisectionalChoice::FirstBisectionalChoice(Evaluator* evaluator)
 
 void FirstBisectionalChoice::evaluateCandidates(const SystemState* systemState) {
   // stateless: recompute from scratch; determineBestChoices populates `candidates` with the considered request's
-  // full alternative set (and keeps all alive in `evaluatedChoices`), so stop at the first feasible request
-  candidates.clear();
-  evaluatedChoices.clear();
+  // full alternative set, so stop at the first feasible request
+  this->clearDecisions();
   for ( [[maybe_unused]] auto& [ pendingToken, pendingRequest ] : systemState->pendingChoiceDecisions ) {
     if ( auto request = pendingRequest.lock() ) {
       if ( determineBestChoices( request ) ) {
@@ -30,8 +29,7 @@ void FirstBisectionalChoice::evaluateCandidates(const SystemState* systemState) 
 }
 
 std::shared_ptr<Decision> FirstBisectionalChoice::determineBestChoices(std::shared_ptr<const DecisionRequest> request) {
-  candidates.clear();
-  evaluatedChoices.clear();
+  this->clearDecisions();
 
   auto token = request->token;
   assert( token->node );
@@ -76,12 +74,11 @@ std::shared_ptr<Decision> FirstBisectionalChoice::bestEnumeratedChoice(std::shar
     auto decision = std::make_shared<ChoiceDecision>(token, std::move(choices), evaluator);
     decision->evaluate();
     auto reward = decision->reward();
-    candidates.emplace( reward.has_value() ? -(double)reward.value() : std::numeric_limits<double>::max(),
-                        token_ptr, request_ptr, decision->weak_from_this(), decision->evaluation );
     if ( reward.has_value() && ( !bestDecision || reward.value() > bestDecision->reward().value() ) ) {
       bestDecision = decision;
     }
-    evaluatedChoices.emplace_back( token_ptr, request_ptr, std::move(decision) );
+    // add every alternative to the reward-ordered candidates (infeasible last), taking ownership
+    this->addCandidate( token_ptr, request_ptr, std::move(decision) );
   }
   return bestDecision;
 }
@@ -89,10 +86,8 @@ std::shared_ptr<Decision> FirstBisectionalChoice::bestEnumeratedChoice(std::shar
 FirstBisectionalChoice::Candidate FirstBisectionalChoice::evaluate(size_t index) {
   auto decision = std::make_shared<ChoiceDecision>(token, std::vector<number>{ values[index] }, evaluator);
   decision->evaluate();
-  auto reward = decision->reward();
-  candidates.emplace( reward.has_value() ? -(double)reward.value() : std::numeric_limits<double>::max(),
-                      token_ptr, request_ptr, decision->weak_from_this(), decision->evaluation );
-  evaluatedChoices.emplace_back( token_ptr, request_ptr, decision );
+  // add this sampled alternative to the reward-ordered candidates, taking ownership; keep the local for the result
+  this->addCandidate( token_ptr, request_ptr, decision );
   return { index, decision };
 }
 

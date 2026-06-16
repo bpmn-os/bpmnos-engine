@@ -10,7 +10,6 @@
 #include "execution/controller/src/Candidates.h"
 #include "execution/controller/src/Evaluator.h"
 #include "execution/controller/src/decisions/ChoiceDecision.h"
-#include "execution/utility/src/auto_list.h"
 
 namespace BPMNOS::Execution {
 
@@ -22,8 +21,8 @@ namespace BPMNOS::Execution {
  * the request). determineBestChoices finds the best feasible value of a single attribute with bounds and a
  * multipleOf discretizer by bisection; for multiple choices, an explicit enumeration, or a continuous attribute
  * it evaluates the alternatives by enumeration instead. Every evaluated alternative is added to the reward-ordered
- * candidates and kept alive (in evaluatedChoices) until the next evaluation, and the best feasible one is returned
- * — so the greedy dispatcher takes the front (best) while the full alternative set stays available for rollout.
+ * candidates (which own them until the next evaluation), and the best feasible one is returned — so the greedy
+ * dispatcher takes the front (best) while the full alternative set stays available for rollout.
  * Stateless: no caching across calls, so connect does nothing.
  */
 class FirstBisectionalChoice : public Candidates< std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest> > {
@@ -34,7 +33,6 @@ public:
 protected:
   void evaluateCandidates(const SystemState* systemState) override;
   Evaluator* evaluator;
-  auto_list< std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest>, std::shared_ptr<Decision> > evaluatedChoices;  ///< Owns every evaluated choice; entries auto-expire with their token/request, in sync with `candidates`.
 
 private:
   /// Evaluates the enumerated alternatives and returns the best feasible one (used when bisection does not apply).

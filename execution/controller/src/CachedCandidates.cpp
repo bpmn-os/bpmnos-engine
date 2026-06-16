@@ -14,17 +14,28 @@ CachedCandidates<WeakPtrs...>::CachedCandidates()
 
 template <typename... WeakPtrs>
 void CachedCandidates<WeakPtrs...>::addDecision(WeakPtrs... weak_ptrs, std::shared_ptr<Decision> decision) {
-  candidatesWithoutEvaluations.emplace_back(weak_ptrs..., std::move(decision));
+  candidatesWithoutEvaluations.emplace_back(weak_ptrs..., decision); // weak index of the pending decision
+  Candidates<WeakPtrs...>::addDecision(weak_ptrs..., std::move(decision)); // base takes ownership (and prunes the expired front)
+}
+
+template <typename... WeakPtrs>
+template <std::size_t... I>
+std::shared_ptr<Event> CachedCandidates<WeakPtrs...>::applyEvaluate(const Evaluate& evaluate, const std::tuple< WeakPtrs..., std::weak_ptr<Decision> >& tuple, std::shared_ptr<Decision> decision, std::index_sequence<I...>) {
+  return evaluate(std::get<I>(tuple)..., std::move(decision));
 }
 
 template <typename... WeakPtrs>
 std::shared_ptr<Event> CachedCandidates<WeakPtrs...>::evaluateDecisions(const Evaluate& evaluate) {
   for ( auto it = candidatesWithoutEvaluations.begin(); it != candidatesWithoutEvaluations.end(); ) {
-    auto decisionTuple = std::move(*it);
+    auto decisionTuple = *it; // copy the weak identifiers before erasing
     it = candidatesWithoutEvaluations.erase(it);
+    auto decision = std::get<sizeof...(WeakPtrs)>(decisionTuple).lock();
+    if ( !decision ) {
+      continue; // decision already released
+    }
     // immediately return decision provided by callback
-    if ( auto decision = std::apply(evaluate, std::move(decisionTuple)) ) {
-      return decision;
+    if ( auto event = applyEvaluate(evaluate, decisionTuple, std::move(decision), std::make_index_sequence<sizeof...(WeakPtrs)>{}) ) {
+      return event;
     }
   }
   return nullptr;
@@ -32,29 +43,26 @@ std::shared_ptr<Event> CachedCandidates<WeakPtrs...>::evaluateDecisions(const Ev
 
 template <typename... WeakPtrs>
 void CachedCandidates<WeakPtrs...>::addEvaluation(WeakPtrs... weak_ptrs, std::shared_ptr<Decision> decision) {
-  auto reward = decision->reward();
-  // candidates are sorted in ascending order of negated reward
-  // decisions without reward are assumed to be infeasible
-  this->candidates.emplace( (reward.has_value() ? -(double)reward.value() : std::numeric_limits<double>::max() ), weak_ptrs..., decision->weak_from_this(), decision->evaluation);
-
   assert ( decision );
 
-  // add evaluation to respective container
-  if ( !decision->timeDependent && decision->dataDependencies.empty() ) {
-    invariantEvaluations.emplace_back(weak_ptrs..., std::move(decision) );
-  }
-  else if ( decision->timeDependent && decision->dataDependencies.empty() ) {
-    timeDependentEvaluations.emplace_back(weak_ptrs..., std::move(decision) );
+  // candidates are sorted in ascending order of negated reward; decisions without reward are assumed infeasible.
+  // The decision is already owned in the base `decisions`, so this only lists the (weak) candidate.
+  auto reward = decision->reward();
+  this->candidates.emplace( (reward.has_value() ? -(double)reward.value() : std::numeric_limits<double>::max() ), weak_ptrs..., decision->weak_from_this(), decision->evaluation);
+
+  // weak-index the evaluation for invalidation; invariant decisions never invalidate, so they need no index
+  if ( decision->timeDependent && decision->dataDependencies.empty() ) {
+    timeDependentEvaluations.emplace_back(weak_ptrs..., decision );
   }
   else if ( !decision->timeDependent && decision->dataDependencies.size() ) {
     assert(decision->token);
     BPMNOS::number instanceId = decision->token->owner->root->instance.value();
-    dataDependentEvaluations[(long unsigned int)instanceId].emplace_back(weak_ptrs..., std::move(decision) );
+    dataDependentEvaluations[(long unsigned int)instanceId].emplace_back(weak_ptrs..., decision );
   }
   else if ( decision->timeDependent && decision->dataDependencies.size() ) {
     assert(decision->token);
     BPMNOS::number instanceId = decision->token->owner->root->instance.value();
-    timeAndDataDependentEvaluations[(long unsigned int)instanceId].emplace_back(weak_ptrs..., std::move(decision) );
+    timeAndDataDependentEvaluations[(long unsigned int)instanceId].emplace_back(weak_ptrs..., decision );
   }
 }
 
@@ -69,13 +77,13 @@ bool CachedCandidates<WeakPtrs...>::intersect(const std::vector<const BPMNOS::Mo
 };
 
 template <typename... WeakPtrs>
-void CachedCandidates<WeakPtrs...>::removeObsolete(const DataUpdate* update, auto_list< WeakPtrs..., std::shared_ptr<Decision> >& evaluation, auto_list< WeakPtrs..., std::shared_ptr<Decision> >& unevaluatedDecisions) {
+void CachedCandidates<WeakPtrs...>::removeObsolete(const DataUpdate* update, auto_list< WeakPtrs..., std::weak_ptr<Decision> >& evaluation, auto_list< WeakPtrs..., std::weak_ptr<Decision> >& unevaluatedDecisions) {
   // check whether evaluation has become obsolete
   for ( auto it = evaluation.begin(); it != evaluation.end(); ) {
     auto& decisionTuple = *it;
-    std::shared_ptr<Decision>& decision = std::get<sizeof...(WeakPtrs)>(decisionTuple);
-    if ( intersect(update->attributes, decision->dataDependencies) ) {
-      decision->evaluation.reset();
+    auto decision = std::get<sizeof...(WeakPtrs)>(decisionTuple).lock();
+    if ( decision && intersect(update->attributes, decision->dataDependencies) ) {
+      decision->evaluation.reset(); // drops the candidate; re-queues the decision for re-evaluation
       std::apply([&unevaluatedDecisions](auto&&... args) { unevaluatedDecisions.emplace_back(std::forward<decltype(args)>(args)...); }, decisionTuple);
       // remove evaluation
       it = evaluation.erase(it);
@@ -87,7 +95,7 @@ void CachedCandidates<WeakPtrs...>::removeObsolete(const DataUpdate* update, aut
 };
 
 template <typename... WeakPtrs>
-void CachedCandidates<WeakPtrs...>::removeDependentEvaluations(const DataUpdate* update, std::unordered_map< long unsigned int, auto_list< WeakPtrs..., std::shared_ptr<Decision> > >& evaluatedDecisions, auto_list< WeakPtrs..., std::shared_ptr<Decision> >& unevaluatedDecisions)  {
+void CachedCandidates<WeakPtrs...>::removeDependentEvaluations(const DataUpdate* update, std::unordered_map< long unsigned int, auto_list< WeakPtrs..., std::weak_ptr<Decision> > >& evaluatedDecisions, auto_list< WeakPtrs..., std::weak_ptr<Decision> >& unevaluatedDecisions)  {
     if ( update->instanceId >= 0 ) {
       // find instance that data update refers to
       if ( auto it = evaluatedDecisions.find((long unsigned int)update->instanceId);
@@ -129,18 +137,20 @@ void CachedCandidates<WeakPtrs...>::advanceTime(BPMNOS::number currentTime) {
 template <typename... WeakPtrs>
 void CachedCandidates<WeakPtrs...>::clockTick() {
   for ( auto& decisionTuple : timeDependentEvaluations ) {
-    std::shared_ptr<Decision>& decision = std::get<sizeof...(WeakPtrs)>(decisionTuple);
-    decision->evaluation.reset();
-    std::apply([this](auto&&... args) { this->candidatesWithoutEvaluations.emplace_back(std::forward<decltype(args)>(args)...); }, decisionTuple);
+    if ( auto decision = std::get<sizeof...(WeakPtrs)>(decisionTuple).lock() ) {
+      decision->evaluation.reset(); // drops the candidate; re-queues the decision for re-evaluation
+      std::apply([this](auto&&... args) { this->candidatesWithoutEvaluations.emplace_back(std::forward<decltype(args)>(args)...); }, decisionTuple);
+    }
   }
 
   timeDependentEvaluations.clear();
 
   for ( auto& [ instance, evaluations ] : timeAndDataDependentEvaluations ) {
     for ( auto& decisionTuple : evaluations ) {
-      std::shared_ptr<Decision>& decision = std::get<sizeof...(WeakPtrs)>(decisionTuple);
-      decision->evaluation.reset();
-      std::apply([this](auto&&... args) { this->candidatesWithoutEvaluations.emplace_back(std::forward<decltype(args)>(args)...); }, decisionTuple);
+      if ( auto decision = std::get<sizeof...(WeakPtrs)>(decisionTuple).lock() ) {
+        decision->evaluation.reset();
+        std::apply([this](auto&&... args) { this->candidatesWithoutEvaluations.emplace_back(std::forward<decltype(args)>(args)...); }, decisionTuple);
+      }
     }
   }
   timeAndDataDependentEvaluations.clear();
