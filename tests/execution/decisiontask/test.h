@@ -17,7 +17,7 @@ SCENARIO( "Decision task with enumeration", "[execution][decisiontask]" ) {
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
       Execution::LocalEvaluator evaluator;
-      Execution::BestEnumeratedChoice choiceHandler(&evaluator);
+      Execution::GreedyDispatcher<Execution::FirstEnumeratedChoice> choiceHandler(&evaluator);
       Execution::TimeWarp timeHandler;
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
@@ -52,7 +52,7 @@ SCENARIO( "Decision task with enumeration", "[execution][decisiontask]" ) {
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
       Execution::LocalEvaluator evaluator;
-      Execution::BestEnumeratedChoice choiceHandler(&evaluator);
+      Execution::GreedyDispatcher<Execution::FirstEnumeratedChoice> choiceHandler(&evaluator);
       Execution::TimeWarp timeHandler;
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
@@ -90,7 +90,7 @@ SCENARIO( "Decision task with bounds", "[execution][decisiontask]" ) {
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
       Execution::LocalEvaluator evaluator;
-      Execution::BestEnumeratedChoice choiceHandler(&evaluator);
+      Execution::GreedyDispatcher<Execution::FirstEnumeratedChoice> choiceHandler(&evaluator);
       Execution::TimeWarp timeHandler;
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
@@ -125,7 +125,7 @@ SCENARIO( "Decision task with bounds", "[execution][decisiontask]" ) {
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
       Execution::LocalEvaluator evaluator;
-      Execution::BestEnumeratedChoice choiceHandler(&evaluator);
+      Execution::GreedyDispatcher<Execution::FirstEnumeratedChoice> choiceHandler(&evaluator);
       Execution::TimeWarp timeHandler;
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);

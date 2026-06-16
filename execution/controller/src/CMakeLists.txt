@@ -7,24 +7,22 @@ list(APPEND controller_SOURCES
   Evaluator.cpp
   evaluators/LocalEvaluator.cpp
   evaluators/GuidedEvaluator.cpp
-  DecisionStore.cpp
-  GreedyDispatcher.cpp
+  CachedCandidates.cpp
+  candidates/FirstFeasibleExit.cpp
+  candidates/FirstFeasibleEntry.cpp
+  candidates/SequentialEntries.cpp
+  candidates/MessageDeliveries.cpp
+  candidates/FirstEnumeratedChoice.cpp
+  candidates/FirstBisectionalChoice.cpp
   dispatcher/TimeWarp.cpp
   dispatcher/Metronome.cpp
-  dispatcher/naive/InstantEntry.cpp
-  dispatcher/naive/InstantExit.cpp
-  dispatcher/naive/InstantDirectMessage.cpp
-  dispatcher/naive/FirstMatchingMessageDelivery.cpp
-  dispatcher/naive/RandomChoice.cpp
-  dispatcher/naive/MyopicDecisionTaskTerminator.cpp
-  dispatcher/naive/MyopicMessageTaskTerminator.cpp
-  dispatcher/greedy/GreedyEntry.cpp
-  dispatcher/greedy/GreedyExit.cpp
-  dispatcher/greedy/BestFirstEntry.cpp
-  dispatcher/greedy/BestFirstExit.cpp
-  dispatcher/greedy/BestMatchingMessageDelivery.cpp
-  dispatcher/greedy/BestEnumeratedChoice.cpp
-  dispatcher/greedy/BisectionalChoice.cpp
+  dispatcher/InstantEntry.cpp
+  dispatcher/InstantExit.cpp
+  dispatcher/InstantDirectMessage.cpp
+  dispatcher/FirstMatchingMessageDelivery.cpp
+  dispatcher/RandomChoice.cpp
+  dispatcher/MyopicDecisionTaskTerminator.cpp
+  dispatcher/MyopicMessageTaskTerminator.cpp
   Controller.cpp
   GreedyController.cpp
   SeededController.cpp
@@ -41,24 +39,24 @@ list(APPEND controller_HEADERS
   Evaluator.h
   evaluators/LocalEvaluator.h
   evaluators/GuidedEvaluator.h
-  DecisionStore.h
+  Candidates.h
+  CachedCandidates.h
+  candidates/FirstFeasibleExit.h
+  candidates/FirstFeasibleEntry.h
+  candidates/SequentialEntries.h
+  candidates/MessageDeliveries.h
+  candidates/FirstEnumeratedChoice.h
+  candidates/FirstBisectionalChoice.h
   GreedyDispatcher.h
   dispatcher/TimeWarp.h
   dispatcher/Metronome.h
-  dispatcher/naive/InstantEntry.h
-  dispatcher/naive/InstantExit.h
-  dispatcher/naive/InstantDirectMessage.h
-  dispatcher/naive/FirstMatchingMessageDelivery.h
-  dispatcher/naive/RandomChoice.h
-  dispatcher/naive/MyopicDecisionTaskTerminator.h
-  dispatcher/naive/MyopicMessageTaskTerminator.h
-  dispatcher/greedy/GreedyEntry.h
-  dispatcher/greedy/GreedyExit.h
-  dispatcher/greedy/BestFirstEntry.h
-  dispatcher/greedy/BestFirstExit.h
-  dispatcher/greedy/BestMatchingMessageDelivery.h
-  dispatcher/greedy/BestEnumeratedChoice.h
-  dispatcher/greedy/BisectionalChoice.h
+  dispatcher/InstantEntry.h
+  dispatcher/InstantExit.h
+  dispatcher/InstantDirectMessage.h
+  dispatcher/FirstMatchingMessageDelivery.h
+  dispatcher/RandomChoice.h
+  dispatcher/MyopicDecisionTaskTerminator.h
+  dispatcher/MyopicMessageTaskTerminator.h
   Controller.h
   GreedyController.h
   SeededController.h

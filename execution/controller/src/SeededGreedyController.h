@@ -5,7 +5,7 @@
 #include "SeededController.h"
 #include "Evaluator.h"
 #include "execution/engine/src/Mediator.h"
-#include "dispatcher/greedy/BisectionalChoice.h"
+#include "candidates/FirstBisectionalChoice.h"
 
 namespace BPMNOS::Execution {
 
@@ -13,7 +13,7 @@ namespace BPMNOS::Execution {
  * @brief SeededController realising the seeded decision order greedily.
  *
  * Entries and exits are taken as soon as they are feasible, choices are made by
- * BisectionalChoice, and a message is delivered to the best matching receive.
+ * bisection (falling back to enumeration), and a message is delivered to the best matching receive.
  */
 class SeededGreedyController : public SeededController {
 public:
@@ -25,7 +25,7 @@ public:
   std::shared_ptr<Event> createMessageDeliveryEvent(const SystemState* systemState, const Token* token, const Vertex* vertex) override;
 protected:
   auto_list< std::weak_ptr<const Message> > messages;
-  std::unique_ptr<BisectionalChoice> choiceDispatcher;
+  std::unique_ptr<FirstBisectionalChoice> choiceDispatcher;
   Evaluator* evaluator;
 };
 

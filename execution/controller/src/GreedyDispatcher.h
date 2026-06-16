@@ -2,35 +2,55 @@
 #define BPMNOS_Execution_GreedyDispatcher_H
 
 #include <bpmn++.h>
-#include "Evaluator.h"
+#include <memory>
+#include <tuple>
+#include <limits>
+#include <utility>
 #include "execution/engine/src/EventDispatcher.h"
-#include "execution/engine/src/Observer.h"
-#include "execution/engine/src/DataUpdate.h"
-#include "Decision.h"
-#include "DecisionStore.h"
 
 namespace BPMNOS::Execution {
 
+class Mediator;
+
 /**
- * @brief Base class for evaluator-based dispatchers, selecting decisions by reward.
+ * @brief Generic greedy policy dispatcher owning a concrete Candidates source.
  *
- * Holds the pending decisions and their evaluations in a set ordered by reward,
- * partitioned by dependency (invariant / time-dependent / data-dependent) so a decision
- * is re-evaluated only when a clock tick or a relevant data update invalidates it.
- * dispatchEvent evaluates the new decisions and returns the highest-reward feasible event.
+ * Templated on the source type (a Candidates specialization), which it owns by value and constructs by
+ * forwarding the constructor arguments. On each dispatch it obtains the reward-ordered candidates for the
+ * current state (Source::getCandidates populates them via evaluateCandidates) and dispatches the best
+ * feasible one — the front of the set, unless that front is infeasible.
  */
-// WeakPtrs... are < std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest> >
-template <typename... WeakPtrs>
-class GreedyDispatcher : public EventDispatcher, public Observer {
+template <typename Source>
+class GreedyDispatcher : public EventDispatcher {
 public:
-  GreedyDispatcher(Evaluator* evaluator);
-  virtual ~GreedyDispatcher() = default;
-  std::shared_ptr<Event> dispatchEvent( const SystemState* systemState ) override;
-  void connect(Mediator* mediator) override;
-  void notice(const Observable* observable) override;
+  template <typename... Args>
+  GreedyDispatcher(Args&&... args) : source(std::forward<Args>(args)...) {}
+
+  std::shared_ptr<Event> dispatchEvent( const SystemState* systemState ) override {
+    for ( auto candidate : source.getCandidates(systemState) ) {
+      constexpr std::size_t eventIndex = std::tuple_size<decltype(candidate)>::value - 2;
+      std::weak_ptr<Event>& event_ptr = std::get<eventIndex>(candidate);
+      if ( auto event = event_ptr.lock();
+        event && std::get<0>(candidate) < std::numeric_limits<double>::max()
+      ) {
+        // dispatch the best feasible decision
+        return event;
+      }
+      else {
+        // best decision is infeasible, no need to inspect others
+        break;
+      }
+    }
+    return nullptr;
+  }
+
+  void connect(Mediator* mediator) override {
+    source.connect(mediator);   // the source subscribes to its request type and DataUpdate
+    EventDispatcher::connect(mediator);
+  }
+
 protected:
-  Evaluator* evaluator;
-  DecisionStore<WeakPtrs...> decisionStore;
+  Source source;
 };
 
 } // namespace BPMNOS::Execution

@@ -1,45 +1,36 @@
-#include "BisectionalChoice.h"
+#include "FirstBisectionalChoice.h"
 #include "execution/engine/src/SystemState.h"
 #include "model/bpmnos/src/DecisionTask.h"
 #include "model/bpmnos/src/extensionElements/Attribute.h"
-#include "execution/engine/src/events/ChoiceEvent.h"
 #include <cassert>
 #include <stdexcept>
 #include <functional>
 #include <limits>
 #include <queue>
-//#include <iostream>
 
 using namespace BPMNOS::Execution;
 
-BisectionalChoice::BisectionalChoice(Evaluator* evaluator, Config config)
+FirstBisectionalChoice::FirstBisectionalChoice(Evaluator* evaluator)
   : evaluator(evaluator)
-  , enumeratedChoice(evaluator)
-  , config(config)
 {
 }
 
-std::shared_ptr<Event> BisectionalChoice::dispatchEvent( const SystemState* systemState ) {
-  // stateless: bisect each pending choice request directly from the system state
-  std::shared_ptr<Decision> best = nullptr;
-  for ( auto& [ token_ptr, request_ptr ] : systemState->pendingChoiceDecisions ) {
-    if ( auto request = request_ptr.lock() ) {
-      auto decision = determineBestChoices( request );
-      if ( decision ) {
-        if ( config.firstFeasible ) {
-          // dispatch the first feasible choice decision and leave the remaining requests pending
-          return decision;
-        }
-        if ( !best || decision->reward().value() > best->reward().value() ) {
-          best = std::move(decision);
-        }
+void FirstBisectionalChoice::evaluateCandidates(const SystemState* systemState) {
+  // stateless: recompute from scratch; determineBestChoices populates `candidates` with the considered request's
+  // full alternative set, so stop at the first feasible request
+  this->clearDecisions();
+  for ( [[maybe_unused]] auto& [ pendingToken, pendingRequest ] : systemState->pendingChoiceDecisions ) {
+    if ( auto request = pendingRequest.lock() ) {
+      if ( determineBestChoices( request ) ) {
+        return;
       }
     }
   }
-  return best;
 }
 
-std::shared_ptr<Decision> BisectionalChoice::determineBestChoices(std::shared_ptr<const DecisionRequest> request) {
+std::shared_ptr<Decision> FirstBisectionalChoice::determineBestChoices(std::shared_ptr<const DecisionRequest> request) {
+  this->clearDecisions();
+
   auto token = request->token;
   assert( token->node );
   assert( token->node->represents<BPMNOS::Model::DecisionTask>() );
@@ -47,22 +38,21 @@ std::shared_ptr<Decision> BisectionalChoice::determineBestChoices(std::shared_pt
   auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   assert( extensionElements->choices.size() );
 
+  token_ptr = token->weak_from_this();
+  request_ptr = request->weak_from_this();
+
   if ( extensionElements->choices.size() > 1 ) {
-    // delegate to BestEnumeratedChoice
-//std::cerr << "delegate multiple choices" << std::endl; 
-    return enumeratedChoice.determineBestChoices(request);
+    return bestEnumeratedChoice(request);
   }
 
   auto& choice = extensionElements->choices[0];
 
   if ( !choice->enumeration.empty() ) {
-//std::cerr << "delegate enumeration" << std::endl; 
-    // delegate to BestEnumeratedChoice
-    return enumeratedChoice.determineBestChoices(request);
+    return bestEnumeratedChoice(request);
   }
 
   if ( !choice->lowerBound && !choice->upperBound ) {
-    throw std::runtime_error("BisectionalChoice: choice requires bounds");
+    throw std::runtime_error("FirstBisectionalChoice: choice requires bounds");
   }
 
   // Single choice with bounds (no enumeration) → use bisection
@@ -70,20 +60,38 @@ std::shared_ptr<Decision> BisectionalChoice::determineBestChoices(std::shared_pt
     return discreteBisection(request, choice.get());
   }
   else {
-//    throw std::runtime_error("BisectionalChoice: continuous bisection is not yet supported");
-    // delegate to BestEnumeratedChoice
-    return enumeratedChoice.determineBestChoices(request);
+    return bestEnumeratedChoice(request);
   }
 }
 
-BisectionalChoice::Candidate BisectionalChoice::evaluate(size_t index) {
-//std::cerr << "Evaluate " << index << ": " << values[index] << std::endl;
+std::shared_ptr<Decision> FirstBisectionalChoice::bestEnumeratedChoice(std::shared_ptr<const DecisionRequest> request) {
+  auto token = request->token;
+  auto decisionTask = token->node->as<BPMNOS::Model::DecisionTask>();
+
+  auto alternativeChoices = decisionTask->enumerateAlternatives(token->status, *token->data, token->globals);
+  std::shared_ptr<Decision> bestDecision = nullptr;
+  for ( auto& choices : alternativeChoices ) {
+    auto decision = std::make_shared<ChoiceDecision>(token, std::move(choices), evaluator);
+    decision->evaluate();
+    auto reward = decision->reward();
+    if ( reward.has_value() && ( !bestDecision || reward.value() > bestDecision->reward().value() ) ) {
+      bestDecision = decision;
+    }
+    // add every alternative to the reward-ordered candidates (infeasible last), taking ownership
+    this->addCandidate( token_ptr, request_ptr, std::move(decision) );
+  }
+  return bestDecision;
+}
+
+FirstBisectionalChoice::Candidate FirstBisectionalChoice::evaluate(size_t index) {
   auto decision = std::make_shared<ChoiceDecision>(token, std::vector<number>{ values[index] }, evaluator);
   decision->evaluate();
+  // add this sampled alternative to the reward-ordered candidates, taking ownership; keep the local for the result
+  this->addCandidate( token_ptr, request_ptr, decision );
   return { index, decision };
 }
 
-std::tuple<size_t, BisectionalChoice::Candidate, size_t> BisectionalChoice::findFeasible(size_t first, size_t last) {
+std::tuple<size_t, FirstBisectionalChoice::Candidate, size_t> FirstBisectionalChoice::findFeasible(size_t first, size_t last) {
   const size_t npos = std::numeric_limits<size_t>::max();
   if ( first > last ) return { npos, { npos, nullptr }, npos };
 
@@ -112,7 +120,7 @@ std::tuple<size_t, BisectionalChoice::Candidate, size_t> BisectionalChoice::find
   return { npos, { npos, nullptr }, npos };
 }
 
-void BisectionalChoice::findBetweenFeasibleAndFeasible(Candidate left, Candidate right) {
+void FirstBisectionalChoice::findBetweenFeasibleAndFeasible(Candidate left, Candidate right) {
   if ( right.index <= left.index + 1 ) return;
 
   size_t mid = left.index + (right.index - left.index) / 2;
@@ -142,7 +150,7 @@ void BisectionalChoice::findBetweenFeasibleAndFeasible(Candidate left, Candidate
   }
 }
 
-void BisectionalChoice::findBetweenFeasibleAndInfeasible(Candidate feasible, size_t infeasibleIndex) {
+void FirstBisectionalChoice::findBetweenFeasibleAndInfeasible(Candidate feasible, size_t infeasibleIndex) {
   while ( infeasibleIndex > feasible.index + 1 ) {
     size_t mid = feasible.index + (infeasibleIndex - feasible.index + 1) / 2;
     auto candidate = evaluate(mid);
@@ -150,11 +158,11 @@ void BisectionalChoice::findBetweenFeasibleAndInfeasible(Candidate feasible, siz
     if ( !candidate.isFeasible() ) {
       // Still infeasible - narrow right boundary
       infeasibleIndex = mid;
-    } 
+    }
     else if ( candidate.reward() <= best.reward() ) {
       // Feasible but worse - done (past peak)
       break;
-    } 
+    }
     else {
       // Feasible and better - new best, continue toward infeasible
       best = candidate;
@@ -163,7 +171,7 @@ void BisectionalChoice::findBetweenFeasibleAndInfeasible(Candidate feasible, siz
   }
 }
 
-void BisectionalChoice::findBetweenInfeasibleAndFeasible(size_t infeasibleIndex, Candidate feasible) {
+void FirstBisectionalChoice::findBetweenInfeasibleAndFeasible(size_t infeasibleIndex, Candidate feasible) {
   while ( feasible.index > infeasibleIndex + 1 ) {
     size_t mid = infeasibleIndex + (feasible.index - infeasibleIndex) / 2;
     auto candidate = evaluate(mid);
@@ -175,7 +183,7 @@ void BisectionalChoice::findBetweenInfeasibleAndFeasible(size_t infeasibleIndex,
     else if ( candidate.reward() <= best.reward() ) {
       // Feasible but worse - done (past peak)
       break;
-    } 
+    }
     else {
       // Feasible and better - new best, continue toward infeasible
       best = candidate;
@@ -184,7 +192,7 @@ void BisectionalChoice::findBetweenInfeasibleAndFeasible(size_t infeasibleIndex,
   }
 }
 
-std::shared_ptr<Decision> BisectionalChoice::discreteBisection(std::shared_ptr<const DecisionRequest> request, const BPMNOS::Model::Choice* choice) {
+std::shared_ptr<Decision> FirstBisectionalChoice::discreteBisection(std::shared_ptr<const DecisionRequest> request, const BPMNOS::Model::Choice* choice) {
   const size_t npos = std::numeric_limits<size_t>::max();
 
   // Set member state for this search
@@ -240,7 +248,5 @@ std::shared_ptr<Decision> BisectionalChoice::discreteBisection(std::shared_ptr<c
     }
   }
 
-//std::cerr << "Best " << best.index << std::endl;
   return best.decision;
 }
-
