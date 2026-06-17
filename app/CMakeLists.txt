@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.26.4)
 
-project(bpmnos-app)
+project(bpmnos-greedy)
 
 # Set the C++ standard
 set(CMAKE_CXX_STANDARD 23)
@@ -13,10 +13,10 @@ include_directories(
 )
 
 # Add the executable
-add_executable(bpmnos main.cpp)
+add_executable(bpmnos-greedy main.cpp)
 
 # Add libraries
-target_link_libraries(bpmnos
+target_link_libraries(bpmnos-greedy
   PRIVATE 
   bpmnos-execution
   bpmnos-model
@@ -26,7 +26,7 @@ target_link_libraries(bpmnos
 )
 
 if (NDEBUG)
-  target_compile_options(bpmnos
+  target_compile_options(bpmnos-greedy
     PRIVATE
     -O3
     -Werror
@@ -43,7 +43,7 @@ if (NDEBUG)
     -Wno-misleading-indentation
 )
 else()
-  target_compile_options(bpmnos
+  target_compile_options(bpmnos-greedy
     PRIVATE
     -O0
     -Werror
@@ -67,7 +67,7 @@ else()
 
   add_link_options(-fsanitize=address,undefined,leak)
 
-  target_link_options(bpmnos
+  target_link_options(bpmnos-greedy
     PRIVATE
     -fsanitize=address,undefined,leak
     -pg # Profiling
