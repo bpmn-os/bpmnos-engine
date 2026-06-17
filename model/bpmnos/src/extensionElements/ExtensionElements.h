@@ -89,7 +89,7 @@ public:
   BPMNOS::number getObjective(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const; ///< Returns the total objective of all attributes provided.
 
   template <typename DataType>
-  BPMNOS::number getContributionToObjective(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const; ///< Returns the contribution to the objective by the attributes declared for the node.
+  std::vector<std::pair<const Attribute*, BPMNOS::number>> getContributionsToObjective(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const; ///< Returns the contribution to the objective by the attributes declared for the node.
   
   std::optional< std::unique_ptr<Guidance> > messageDeliveryGuidance;
   std::optional< std::unique_ptr<Guidance> > entryGuidance;

@@ -476,23 +476,22 @@ template BPMNOS::number ExtensionElements::getObjective<BPMNOS::SharedValues>(co
 
 
 template <typename DataType>
-BPMNOS::number ExtensionElements::getContributionToObjective(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const {
-  BPMNOS::number contribution = 0;
+std::vector<std::pair<const Attribute*, BPMNOS::number>> ExtensionElements::getContributionsToObjective(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const {
+  std::vector<std::pair<const Attribute*, BPMNOS::number>> contributions;  
   for ( auto& attribute : attributes ) {
     auto value = attributeRegistry.getValue(attribute.get(),status,data,globals);
     if ( value.has_value() ) {
-      contribution += attribute->weight * value.value();
+      contributions.emplace_back(attribute.get(),value.value());
     }
   }
   for ( auto& attribute : this->data ) {
     auto value = attributeRegistry.getValue(attribute.get(),status,data,globals);
     if ( value.has_value() ) {
-      contribution += attribute->weight * value.value();
+      contributions.emplace_back(attribute.get(),value.value());
     }
   }
-  return contribution;
+  return contributions;
 }
 
-template BPMNOS::number ExtensionElements::getContributionToObjective<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data, const BPMNOS::Values& globals) const;
-template BPMNOS::number ExtensionElements::getContributionToObjective<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data, const BPMNOS::Values& globals) const;
-
+template std::vector<std::pair<const Attribute*, BPMNOS::number>> ExtensionElements::getContributionsToObjective<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data, const BPMNOS::Values& globals) const;
+template std::vector<std::pair<const Attribute*, BPMNOS::number>> ExtensionElements::getContributionsToObjective<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data, const BPMNOS::Values& globals) const;

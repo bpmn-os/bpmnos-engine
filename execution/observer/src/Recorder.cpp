@@ -38,7 +38,7 @@ void Recorder::subscribe(Engine* engine) {
 void Recorder::notice(const Observable* observable) {
   if ( observable->getObservableType() ==  Execution::Observable::Type::Token ) {
     auto token = static_cast<const Token*>(observable);
-    objective = token->owner->systemState->getObjective();
+    objective = token->owner->systemState->getWeightedObjective();
     auto json = token->jsonify();
 
     if (os.has_value()) {

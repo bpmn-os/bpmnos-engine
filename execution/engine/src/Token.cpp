@@ -811,9 +811,11 @@ void Token::advanceToCompleted() {
   auto engine = const_cast<Engine*>(owner->systemState->engine);
 
   if ( !node ) {
-    // update global objective
+    // update objectives
     assert( owner->scope->extensionElements->as<BPMNOS::Model::ExtensionElements>() );
-    const_cast<SystemState*>(owner->systemState)->contributionsToObjective += owner->scope->extensionElements->as<BPMNOS::Model::ExtensionElements>()->getContributionToObjective(status,*data,globals);
+    for ( auto& [attribute,value] : owner->scope->extensionElements->as<BPMNOS::Model::ExtensionElements>()->getContributionsToObjective(status,*data,globals) ) {
+      const_cast<SystemState*>(owner->systemState)->contributionsToObjective[attribute] += value;
+    }
 
 //std::cerr << "check restrictions" << std::endl;
   // check restrictions
@@ -842,9 +844,11 @@ void Token::advanceToCompleted() {
 
         auto stateMachine = const_cast<StateMachine*>(owner);
         engine->commands.emplace_back(std::bind(&StateMachine::completeCompensationActivity,stateMachine,this), this);
-        // update global objective
+        // update objectives
         assert( node->extensionElements->as<BPMNOS::Model::ExtensionElements>() );
-        const_cast<SystemState*>(owner->systemState)->contributionsToObjective += node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->getContributionToObjective(status,*data,globals);
+        for ( auto& [attribute,value] : node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->getContributionsToObjective(status,*data,globals) ) {
+          const_cast<SystemState*>(owner->systemState)->contributionsToObjective[attribute] += value;
+        }
       }
       else {
         // check restrictions
@@ -995,8 +999,10 @@ void Token::advanceToExiting() {
   auto extensionElements = node->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
 
   if (  extensionElements && ( extensionElements->attributes.size() || extensionElements->data.size() ) ) {
-    // update global objective
-    const_cast<SystemState*>(owner->systemState)->contributionsToObjective += extensionElements->getContributionToObjective(status,*data,globals);
+    // update objectives
+    for ( auto& [attribute,value] : extensionElements->as<BPMNOS::Model::ExtensionElements>()->getContributionsToObjective(status,*data,globals) ) {
+      const_cast<SystemState*>(owner->systemState)->contributionsToObjective[attribute] += value;
+    }
 //std::cerr << "objective updated" << std::endl;
   }
     

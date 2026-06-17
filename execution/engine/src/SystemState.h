@@ -68,7 +68,7 @@ public:
   bool isAlive() const;
 
   /**
-   * @brief Returns the total objective value (assuming maximization) accumulated during execution.
+   * @brief Returns the total weighted objective value (assuming maximization) accumulated during execution.
    *
    * Global attributes are evaluated upon each call of the method.
    *
@@ -80,9 +80,10 @@ public:
    *
    * In all other cases values of attributes declared to contribute to the objective will be ignored.
    */
-  BPMNOS::number getObjective() const;
+  BPMNOS::number getWeightedObjective() const;
 
-  BPMNOS::number contributionsToObjective; ///< All contributions that have already been added to the objective.
+  std::unordered_map<const BPMNOS::Model::Attribute*, BPMNOS::number> contributionsToObjective; ///< All contributions that have already been added to the objective.
+//  BPMNOS::number contributionsToObjective; ///< All contributions that have already been added to the objective.
   
   auto_list< std::weak_ptr<Token>, std::weak_ptr<DecisionRequest> > pendingEntryDecisions;
   auto_list< std::weak_ptr<Token>, std::weak_ptr<DecisionRequest> > pendingChoiceDecisions;

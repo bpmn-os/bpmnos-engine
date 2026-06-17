@@ -87,7 +87,7 @@ BPMNOS::number Engine::run(BPMNOS::number timeout) {
   }
   
   // get final objective value
-  return systemState->getObjective();
+  return systemState->getWeightedObjective();
 //  std::cout << "Objective (maximization): " << (float)objective << std::endl;
 //  std::cout  << "Objective (minimization): " << -(float)objective << std::endl;
 }
