@@ -48,11 +48,19 @@ SCENARIO( "Truck driver scheduling problem", "[examples][truck_driver_scheduling
 
     std::string csv =
       "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
-      "Driver1; TruckDriverProcess; travel_times := [500]\n"
+      "Driver1; TruckDriverProcess; travel_times := [510]\n"
       "Driver1; TruckDriverProcess; service_times := [30]\n"
       "Driver1; TruckDriverProcess; earliest_visits := [900]\n"
       "Driver1; TruckDriverProcess; latest_visits := [1440]\n"
     ;
+    // T_MAX_DRIVING_SINCE_REST: 11h
+    // T_MAX_ELAPSED_SINCE_REST: 14h
+    // T_MAX_ELAPSED_SINCE_BREAK: 8h
+    // T_REST: 10h
+    // T_BREAK: ½h
+    // Solution: D8h, B½, D½, W6 ,S½ => 15½
+    // Solution: D8h, B½, D½, R10 ,S½ => 19½
+    // Solution: D8h, R10, D½, S½ => 19h
 
     Model::StaticDataProvider dataProvider(modelFile,csv);
     auto scenario = dataProvider.createScenario();
@@ -81,7 +89,7 @@ SCENARIO( "Truck driver scheduling problem", "[examples][truck_driver_scheduling
         auto processLog = recorder.find(nlohmann::json{{"state", "DONE"}},nlohmann::json{{"nodeId", nullptr}});
         REQUIRE( processLog.size() == 1 );
         REQUIRE( processLog.back()["status"]["timestamp"] >= 930 ); // if break is chosen during trip
-        REQUIRE( processLog.back()["status"]["timestamp"] <= 1130 ); // if rest is chosen during trip
+        REQUIRE( processLog.back()["status"]["timestamp"] <= 1170 ); // if rest is chosen during trip
       }
     }
   }
@@ -100,9 +108,9 @@ SCENARIO( "Truck driver scheduling problem", "[examples][truck_driver_scheduling
     // T_MAX_ELAPSED_SINCE_BREAK: 8h
     // T_REST: 10h
     // T_BREAK: ½h
-    // Solution 1a: D6, B½,W3½, S½, D3, R10, D3, S½ => 27h
-    // Solution 1b: D6, W4, S½, B½, D1, R10, D3, S½ => 27½h
-    // Solution 2: D6, R10, S½, D6, S½ => 23h
+    // Solution: D6, B½,W3½, S½, D3, R10, D3, S½ => 27h
+    // Solution: D6, W4, S½, B½, D1, R10, D3, S½ => 27½h
+    // Solution: D6, R10, S½, D6, S½ => 23h
 
     Model::StaticDataProvider dataProvider(modelFile,csv);
     auto scenario = dataProvider.createScenario();
