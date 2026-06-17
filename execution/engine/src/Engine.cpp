@@ -44,22 +44,22 @@ void Engine::Command::execute() {
 
 
 
-BPMNOS::number Engine::run(const BPMNOS::Model::Scenario* scenario, BPMNOS::number timeout) {
+void Engine::run(const BPMNOS::Model::Scenario* scenario, BPMNOS::number timeout) {
   // create initial system state
   systemState = std::make_unique<SystemState>(this, scenario);
   lastInstantiationTime = std::numeric_limits<BPMNOS::number>::lowest();
 
-  return run(timeout);
+  run(timeout);
 }
 
-BPMNOS::number Engine::resume(const BPMNOS::Model::Scenario* scenario, const SystemState* foreignState, BPMNOS::number timeout) {
+void Engine::resume(const BPMNOS::Model::Scenario* scenario, const SystemState* foreignState, BPMNOS::number timeout) {
   // copy foreign system state
   systemState = std::make_unique<SystemState>(this, scenario, foreignState);
   lastInstantiationTime = systemState->getTime();
-  return run(timeout);
+  run(timeout);
 }
 
-BPMNOS::number Engine::run(BPMNOS::number timeout) {
+void Engine::run(BPMNOS::number timeout) {
   terminated = false;
   commands.clear();  
 /*
@@ -85,11 +85,6 @@ BPMNOS::number Engine::run(BPMNOS::number timeout) {
     }
 */
   }
-  
-  // get final objective value
-  return systemState->getWeightedObjective();
-//  std::cout << "Objective (maximization): " << (float)objective << std::endl;
-//  std::cout  << "Objective (minimization): " << -(float)objective << std::endl;
 }
 
 bool Engine::advance(BPMNOS::number timeout) {
