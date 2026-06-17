@@ -119,14 +119,17 @@ bool SystemState::isAlive() const {
   return !instances.empty();
 };
 
-BPMNOS::number SystemState::getObjective() const {
-  auto result = contributionsToObjective;
+BPMNOS::number SystemState::getWeightedObjective() const {
+  BPMNOS::number result = 0.0;
+  for ( auto& [attribute, value] : contributionsToObjective ) {
+    result += value * attribute->weight;
+  }
   
   for ( auto& attribute : scenario->getModel()->attributes ) {
     assert( attribute->category == BPMNOS::Model::Attribute::Category::GLOBAL );
     auto value = globals[attribute->index];
     if ( value.has_value() ) {
-      result += attribute->weight * value.value();
+      result += value.value() * attribute->weight;
     }
   }
   
