@@ -45,10 +45,10 @@ template <typename... WeakPtrs>
 void CachedCandidates<WeakPtrs...>::addEvaluation(WeakPtrs... weak_ptrs, std::shared_ptr<Decision> decision) {
   assert ( decision );
 
-  // candidates are sorted in ascending order of negated reward; decisions without reward are assumed infeasible.
+  // candidates are sorted in descending order of reward; decisions without reward are assumed infeasible (-infinity, sorting last).
   // The decision is already owned in the base `decisions`, so this only lists the (weak) candidate.
   auto reward = decision->reward();
-  this->candidates.emplace( (reward.has_value() ? -(double)reward.value() : std::numeric_limits<double>::max() ), weak_ptrs..., decision->weak_from_this(), decision->evaluation);
+  this->candidates.emplace( (reward.has_value() ? (double)reward.value() : -std::numeric_limits<double>::infinity() ), weak_ptrs..., decision->weak_from_this(), decision->evaluation);
 
   // weak-index the evaluation for invalidation; invariant decisions never invalidate, so they need no index
   if ( decision->timeDependent && decision->dataDependencies.empty() ) {

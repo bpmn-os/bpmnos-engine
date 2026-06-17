@@ -31,7 +31,7 @@ public:
       constexpr std::size_t eventIndex = std::tuple_size<decltype(candidate)>::value - 2;
       std::weak_ptr<Event>& event_ptr = std::get<eventIndex>(candidate);
       if ( auto event = event_ptr.lock();
-        event && std::get<0>(candidate) < std::numeric_limits<double>::max()
+        event && std::get<0>(candidate) > -std::numeric_limits<double>::infinity()
       ) {
         // dispatch the best feasible decision
         return event;

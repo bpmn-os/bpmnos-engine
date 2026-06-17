@@ -5,21 +5,64 @@
 #include <set>
 #include <tuple>
 #include <memory>
+#include <concepts>
 #include "expired.h"
 
 namespace BPMNOS::Execution {
 
 /**
- * @brief Set of tuples ordered in increasing order of the first component with automatic removal of tuples containing an expired weak_ptr.
+ * @brief Orders tuples by increasing value of the first component (ties broken by address).
+ */
+struct ascending {
+  template <typename Tuple>
+  bool operator()(const Tuple& lhs, const Tuple& rhs) const {
+    if ( std::get<0>(lhs) != std::get<0>(rhs) ) {
+      return std::get<0>(lhs) < std::get<0>(rhs);
+    }
+    return (&lhs < &rhs); // distinct tuples with equal first component coexist, ordered by address
+  }
+};
+
+/**
+ * @brief Orders tuples by decreasing value of the first component (ties broken by address).
+ */
+struct descending {
+  template <typename Tuple>
+  bool operator()(const Tuple& lhs, const Tuple& rhs) const {
+    if ( std::get<0>(lhs) != std::get<0>(rhs) ) {
+      return std::get<0>(lhs) > std::get<0>(rhs);
+    }
+    return (&lhs < &rhs); // distinct tuples with equal first component coexist, ordered by address
+  }
+};
+
+/// Satisfied by a type that can order two tuples of the given type (data element types like weak_ptr are not).
+template <typename C, typename Tuple>
+concept TupleComparator = requires (const C& c, const Tuple& a, const Tuple& b) {
+  { c(a, b) } -> std::convertible_to<bool>;
+};
+
+/**
+ * @brief Set of tuples ordered by the first component, with automatic removal of tuples containing an expired weak_ptr.
+ *
+ * Templated on the value type `V` of the first component and the trailing tuple element types `U...`. Pass a
+ * comparator as the second template argument to choose the order — `auto_set<V, descending, U...>`; with no
+ * comparator (`auto_set<V, U...>`) it orders ascending. The two forms are distinguished by the
+ * `TupleComparator` concept, so a data type in the second position is never mistaken for a comparator.
  */
 template <typename V, typename... U>
-class auto_set {
+class auto_set;
+
+// Comparator given explicitly as the second argument.
+template <typename V, typename Compare, typename... U>
+  requires TupleComparator< Compare, std::tuple<V, U...> >
+class auto_set<V, Compare, U...> {
 public:
   struct iterator {
-    typename std::set< std::tuple< V, U... > >::iterator current;
-    auto_set<V,U...>* container;
+    typename std::set< std::tuple< V, U... >, Compare >::iterator current;
+    auto_set<V, Compare, U...>* container;
 
-    iterator(typename std::set< std::tuple< V, U... > >::iterator iter, auto_set<V,U...>* cont)
+    iterator(typename std::set< std::tuple< V, U... >, Compare >::iterator iter, auto_set<V, Compare, U...>* cont)
       : current(iter), container(cont) {
         skipExpired();
       }
@@ -56,19 +99,19 @@ public:
   }
 
   iterator cbegin() const {
-    return iterator(tuples.begin(), const_cast<auto_set<V,U...>*>(this));
+    return iterator(tuples.begin(), const_cast<auto_set<V,Compare,U...>*>(this));
   }
 
   iterator cend() const {
-    return iterator(tuples.end(), const_cast<auto_set<V,U...>*>(this));
+    return iterator(tuples.end(), const_cast<auto_set<V,Compare,U...>*>(this));
   }
 
   iterator begin() const {
-    return iterator(tuples.begin(), const_cast<auto_set<V,U...>*>(this));
+    return iterator(tuples.begin(), const_cast<auto_set<V,Compare,U...>*>(this));
   }
 
   iterator end() const {
-    return iterator(tuples.end(), const_cast<auto_set<V,U...>*>(this));
+    return iterator(tuples.end(), const_cast<auto_set<V,Compare,U...>*>(this));
   }
 
   void emplace(V value, U... data) {
@@ -131,26 +174,20 @@ public:
         }
         return false;
       });
-    return iterator(it, const_cast<auto_set<V, U...>*>(this));
+    return iterator(it, const_cast<auto_set<V, Compare, U...>*>(this));
   }
 
   void clear() {
     tuples.clear();
   }
+
 private:
-  struct comparator {
-    bool operator()(const std::tuple<V, U... >& lhs, const std::tuple<V, U... >& rhs) const {
-      // Compare based on the value of the first component
-      if ( std::get<0>(lhs) != std::get<0>(rhs) ) {
-        return std::get<0>(lhs) < std::get<0>(rhs);
-      }
-      // Compare pointers, if both have same value
-      return (&lhs < &rhs);
-    }
-  };
-  mutable std::set< std::tuple< V, U... >, comparator > tuples;
+  mutable std::set< std::tuple< V, U... >, Compare > tuples;
 };
+
+// No comparator given: order ascending by the first component.
+template <typename V, typename... U>
+class auto_set : public auto_set<V, ascending, U...> {};
 
 } // namespace BPMNOS::Execution
 #endif // BPMNOS_Execution_auto_set_H
-
