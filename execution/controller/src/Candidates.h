@@ -40,7 +40,7 @@ public:
   virtual void connect(Mediator* /*mediator*/) {}
 
   /// Populate the candidates for the current state (via evaluateCandidates) and return them, ordered by reward (best first; infeasible last).
-  const auto_set< double, WeakPtrs..., std::weak_ptr<Event>, std::weak_ptr<Evaluation> >& getCandidates(const SystemState* systemState) { evaluateCandidates(systemState); return candidates; }
+  const auto_set< double, descending, WeakPtrs..., std::weak_ptr<Event>, std::weak_ptr<Evaluation> >& getCandidates(const SystemState* systemState) { evaluateCandidates(systemState); return candidates; }
 
 protected:
   /// Create, evaluate, and insert the candidate decisions for the current state into `candidates`, deciding how many to create.
@@ -52,10 +52,10 @@ protected:
     decisions.begin();
   }
 
-  /// Take ownership of a decision and list it as a candidate in one step (sorted by negated reward; infeasible last; cannot list a candidate without an owner).
+  /// Take ownership of a decision and list it as a candidate in one step (descending by reward, best first; infeasible (-infinity) last; cannot list a candidate without an owner).
   void addCandidate(WeakPtrs... weak_ptrs, std::shared_ptr<Decision> decision) {
     auto reward = decision->reward();
-    candidates.emplace( reward.has_value() ? -(double)reward.value() : std::numeric_limits<double>::max(),
+    candidates.emplace( reward.has_value() ? (double)reward.value() : -std::numeric_limits<double>::infinity(),
                         weak_ptrs..., decision->weak_from_this(), decision->evaluation );
     addDecision(weak_ptrs..., std::move(decision));
   }
@@ -66,7 +66,7 @@ protected:
     decisions.clear();
   }
 
-  auto_set< double, WeakPtrs..., std::weak_ptr<Event>, std::weak_ptr<Evaluation> > candidates; ///< Reward-ordered candidate decisions (best first; infeasible last); holds only weak references.
+  auto_set< double, descending, WeakPtrs..., std::weak_ptr<Event>, std::weak_ptr<Evaluation> > candidates; ///< Reward-ordered candidate decisions, descending (best first; infeasible last); holds only weak references.
   auto_list< WeakPtrs..., std::shared_ptr<Decision> > decisions; ///< Sole owner of the decisions referenced by `candidates`.
 };
 

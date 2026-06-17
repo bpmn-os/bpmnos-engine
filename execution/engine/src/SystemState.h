@@ -91,7 +91,7 @@ public:
   auto_list< std::weak_ptr<Token>, std::weak_ptr<DecisionRequest> > pendingMessageDeliveryDecisions;
 
   auto_list< std::weak_ptr<Token> > tokensAwaitingReadyEvent; ///< Container holding all tokens awaiting a ready event
-  auto_set< BPMNOS::number, std::weak_ptr<Token> > tokensAwaitingCompletionEvent; ///< Sorted container holding all tokens awaiting a task completion event
+  auto_set< BPMNOS::number, ascending, std::weak_ptr<Token> > tokensAwaitingCompletionEvent; ///< Sorted container holding all tokens awaiting a task completion event
 
   /**
    * @brief Maps instance identifiers to state machines for message routing.
@@ -122,7 +122,7 @@ public:
   std::unordered_map< Token*, std::vector<Token*> > tokensAwaitingBoundaryEvent; ///< Map holding a container of all tokens at a boundary event awaiting to be triggered for each token at an activity
   std::unordered_map< Token*, Token* > tokenAssociatedToBoundaryEventToken; ///< Map holding the token residing at the associated activity for each token at a boundary event
 
-  auto_set<BPMNOS::number, std::weak_ptr<Token>> tokensAwaitingTimer; ///< Sorted container holding holding all tokens awaiting a timer event
+  auto_set<BPMNOS::number, ascending, std::weak_ptr<Token>> tokensAwaitingTimer; ///< Sorted container holding all tokens awaiting a timer event
 
   std::unordered_map< BPMNOS::number, auto_list< std::weak_ptr<Token> > > tokensAwaitingSignal; ///< Map holding a container of all tokens at a signal event awaiting a signal with a given name
 
