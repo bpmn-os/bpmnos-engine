@@ -66,7 +66,7 @@ To turn off compiler optimizations use
 cmake -DNDEBUG=OFF ..
 ```
 
-This creates a single header file `lib/bpmnos-model.h` and a library `lib/libbpmnos-model.a`. Moreover, an executable `bpmnos` using these libraries is created in the `bin` folder. An example showing how to use this executable is given in the [example folder](example).
+This creates a single header file `lib/bpmnos-model.h` and a library `lib/libbpmnos-model.a`. Moreover, an executable `bpmnos-greedy` using these libraries is created in the `bin` folder. An example showing how to use this executable is given in the [example folder](example).
 
 ### Tests
 
