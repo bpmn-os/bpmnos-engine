@@ -63,7 +63,9 @@ public:
   std::mt19937* getCurrentRng() const { return currentRng; }
 
 private:
-  std::mt19937* currentRng = nullptr;
+  // Thread-local so concurrent expression evaluations (e.g. parallel rollouts that each run their own
+  // scenario) set and read their own RNG without racing on a shared pointer.
+  static thread_local std::mt19937* currentRng;
 };
 
 } // namespace BPMNOS

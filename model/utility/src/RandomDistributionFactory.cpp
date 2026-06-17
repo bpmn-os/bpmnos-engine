@@ -5,6 +5,9 @@
 
 using namespace BPMNOS;
 
+// Definition of the thread-local current RNG pointer (declared static thread_local in the header).
+thread_local std::mt19937* BPMNOS::RandomDistributionFactory::currentRng = nullptr;
+
 RandomDistribution BPMNOS::make_distribution(const std::string& jsonString) {
   nlohmann::json input = nlohmann::json::parse(jsonString);
   return make_distribution(input);
