@@ -50,7 +50,7 @@ public:
    * @param timeout Last time to process (engine stops when time >= timeout)
    * @return The objective value at termination
    */
-  BPMNOS::number run(const BPMNOS::Model::Scenario* scenario, BPMNOS::number timeout = std::numeric_limits<BPMNOS::number>::max());
+  void run(const BPMNOS::Model::Scenario* scenario, BPMNOS::number timeout = std::numeric_limits<BPMNOS::number>::max());
 
   /**
    * @brief Resumes execution from a given system state.
@@ -60,11 +60,10 @@ public:
    * @param scenario The scenario to use (may be forked from original)
    * @param foreignState The system state to resume from
    * @param timeout Last time to process (engine stops when time >= timeout)
-   * @return The objective value at termination
    */
-  BPMNOS::number resume(const BPMNOS::Model::Scenario* scenario, const SystemState* foreignState, BPMNOS::number timeout = std::numeric_limits<BPMNOS::number>::max());
+  void resume(const BPMNOS::Model::Scenario* scenario, const SystemState* foreignState, BPMNOS::number timeout = std::numeric_limits<BPMNOS::number>::max());
 private:
-  BPMNOS::number run(BPMNOS::number timeout = std::numeric_limits<BPMNOS::number>::max());
+  void run(BPMNOS::number timeout = std::numeric_limits<BPMNOS::number>::max());
 public:
   void process(const ReadyEvent* event);
   void process(const EntryEvent* event);
