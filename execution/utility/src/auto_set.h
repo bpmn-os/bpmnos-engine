@@ -45,18 +45,14 @@ concept TupleComparator = requires (const C& c, const Tuple& a, const Tuple& b) 
 /**
  * @brief Set of tuples ordered by the first component, with automatic removal of tuples containing an expired weak_ptr.
  *
- * Templated on the value type `V` of the first component and the trailing tuple element types `U...`. Pass a
- * comparator as the second template argument to choose the order — `auto_set<V, descending, U...>`; with no
- * comparator (`auto_set<V, U...>`) it orders ascending. The two forms are distinguished by the
- * `TupleComparator` concept, so a data type in the second position is never mistaken for a comparator.
+ * Templated on the value type `V` of the first component, the comparator `Compare`, and the trailing tuple
+ * element types `U...`. The order must be given explicitly as the second template argument —
+ * `auto_set<V, ascending, U...>` or `auto_set<V, descending, U...>`. The `TupleComparator` constraint
+ * rejects a non-comparator (e.g. a data type left in the second position) with a clear error.
  */
-template <typename V, typename... U>
-class auto_set;
-
-// Comparator given explicitly as the second argument.
 template <typename V, typename Compare, typename... U>
   requires TupleComparator< Compare, std::tuple<V, U...> >
-class auto_set<V, Compare, U...> {
+class auto_set {
 public:
   struct iterator {
     typename std::set< std::tuple< V, U... >, Compare >::iterator current;
@@ -184,10 +180,6 @@ public:
 private:
   mutable std::set< std::tuple< V, U... >, Compare > tuples;
 };
-
-// No comparator given: order ascending by the first component.
-template <typename V, typename... U>
-class auto_set : public auto_set<V, ascending, U...> {};
 
 } // namespace BPMNOS::Execution
 #endif // BPMNOS_Execution_auto_set_H
