@@ -22,6 +22,7 @@ public:
   MessageDeliveries(Evaluator* evaluator);
   void connect(Mediator* mediator) override;
   void notice(const Observable* observable) override;
+  void clear() override;
 protected:
   void evaluateCandidates(const SystemState* systemState) override;
   Evaluator* evaluator;

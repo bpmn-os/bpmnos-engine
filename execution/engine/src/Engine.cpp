@@ -53,6 +53,8 @@ void Engine::run(const BPMNOS::Model::Scenario* scenario, BPMNOS::number timeout
   terminated = false;
   commands.clear();
   conditionalEventObserver.connect( systemState.get() );
+  // announce the installed state so subscribers (cached candidate sources) reset for the new run
+  notify( systemState.get() );
 
   run(timeout);
 }
@@ -66,6 +68,8 @@ void Engine::initializeSystemState(const BPMNOS::Model::Scenario* scenario, cons
   terminated = false;
   commands.clear();
   conditionalEventObserver.connect( systemState.get() );
+  // announce the initialized state so subscribers can build their data structures
+  notify( systemState.get() );
 }
 
 void Engine::resume(BPMNOS::number timeout) {

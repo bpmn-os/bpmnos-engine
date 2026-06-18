@@ -121,6 +121,15 @@ void CachedCandidates<WeakPtrs...>::notice(const Observable* observable) {
 }
 
 template <typename... WeakPtrs>
+void CachedCandidates<WeakPtrs...>::clear() {
+  this->clearDecisions();   // base: the owning `decisions` and the reward-ordered `candidates`
+  candidatesWithoutEvaluations.clear();
+  timeDependentEvaluations.clear();
+  dataDependentEvaluations.clear();
+  timeAndDataDependentEvaluations.clear();
+}
+
+template <typename... WeakPtrs>
 void CachedCandidates<WeakPtrs...>::dataUpdate(const DataUpdate* update) {
   removeDependentEvaluations(update,dataDependentEvaluations,candidatesWithoutEvaluations);
   removeDependentEvaluations(update,timeAndDataDependentEvaluations,candidatesWithoutEvaluations);

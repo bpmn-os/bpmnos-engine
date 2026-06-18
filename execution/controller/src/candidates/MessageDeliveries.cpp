@@ -17,8 +17,15 @@ void MessageDeliveries::connect(Mediator* mediator) {
   mediator->addSubscriber(this,
     Observable::Type::MessageDeliveryRequest,
     Observable::Type::Message,
-    Observable::Type::DataUpdate
+    Observable::Type::DataUpdate,
+    Observable::Type::SystemState
   );
+}
+
+void MessageDeliveries::clear() {
+  CachedCandidates::clear();   // the cached decisions and their weak indexes
+  requests.clear();
+  messages.clear();
 }
 
 void MessageDeliveries::notice(const Observable* observable) {
@@ -58,6 +65,19 @@ void MessageDeliveries::notice(const Observable* observable) {
           auto decision = std::make_shared<MessageDeliveryDecision>(token.get(), message, evaluator);
           addDecision( token_ptr, request_ptr, message->weak_from_this(), decision );
         }
+      }
+    }
+  }
+  else if ( observable->getObservableType() == Observable::Type::SystemState ) {
+    clear();   // start from a clean cache, then rebuild from the installed state
+    auto systemState = static_cast<const SystemState*>(observable);
+    // rebuild the message pool first, then replay the pending delivery requests so they match against it
+    for ( auto& message : systemState->messages ) {
+      notice( message.get() );
+    }
+    for ( auto& [_, request_ptr] : systemState->pendingMessageDeliveryDecisions ) {
+      if ( auto request = request_ptr.lock() ) {
+        notice( request.get() );
       }
     }
   }

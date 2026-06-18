@@ -14,7 +14,8 @@ FirstFeasibleExit::FirstFeasibleExit(Evaluator* evaluator)
 void FirstFeasibleExit::connect(Mediator* mediator) {
   mediator->addSubscriber(this,
     Observable::Type::ExitRequest,
-    Observable::Type::DataUpdate
+    Observable::Type::DataUpdate,
+    Observable::Type::SystemState
   );
 }
 
@@ -24,6 +25,15 @@ void FirstFeasibleExit::notice(const Observable* observable) {
     auto request = static_cast<const DecisionRequest*>(observable);
     auto decision = std::make_shared<ExitDecision>(request->token, evaluator);
     addDecision( request->token->weak_from_this(), request->weak_from_this(), decision );
+  }
+  else if ( observable->getObservableType() == Observable::Type::SystemState ) {
+    clear();   // start from a clean cache, then rebuild from the installed state
+    // rebuild the cache from the exit decisions a freshly installed (e.g. resumed) state lists as pending
+    for ( auto& [_, request_ptr] : static_cast<const SystemState*>(observable)->pendingExitDecisions ) {
+      if ( auto request = request_ptr.lock() ) {
+        notice( request.get() );
+      }
+    }
   }
   else {
     CachedCandidates::notice(observable);
