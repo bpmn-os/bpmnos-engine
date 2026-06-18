@@ -21,7 +21,7 @@ public:
   void connect(Mediator* mediator) override;
   void notice(const Observable* observable) override;
 protected:
-  void evaluateCandidates(const SystemState* systemState) override;
+  void evaluateCandidates() override;
   Evaluator* evaluator;
 };
 

@@ -23,15 +23,16 @@ namespace BPMNOS::Execution {
  * it evaluates the alternatives by enumeration instead. Every evaluated alternative is added to the reward-ordered
  * candidates (which own them until the next evaluation), and the best feasible one is returned — so the greedy
  * dispatcher takes the front (best) while the full alternative set stays available for rollout.
- * Stateless: no caching across calls, so connect does nothing.
+ * Stateless: nothing is cached across iterations; connect only binds the per-run system state.
  */
 class FirstBisectionalChoice : public Candidates< std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest> > {
 public:
   FirstBisectionalChoice(Evaluator* evaluator);
+  void connect(Mediator* mediator) override;
   std::shared_ptr<Decision> determineBestChoices(std::shared_ptr<const DecisionRequest> request);
 
 protected:
-  void evaluateCandidates(const SystemState* systemState) override;
+  void evaluateCandidates() override;
   Evaluator* evaluator;
 
 private:

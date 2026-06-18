@@ -1,4 +1,5 @@
 #include "FirstEnumeratedChoice.h"
+#include "execution/engine/src/Mediator.h"
 #include "execution/engine/src/SystemState.h"
 #include "model/bpmnos/src/DecisionTask.h"
 #include "model/bpmnos/src/extensionElements/Attribute.h"
@@ -12,7 +13,11 @@ FirstEnumeratedChoice::FirstEnumeratedChoice(Evaluator* evaluator)
 {
 }
 
-void FirstEnumeratedChoice::evaluateCandidates(const SystemState* systemState) {
+void FirstEnumeratedChoice::connect(Mediator* mediator) {
+  mediator->addSubscriber(this, Observable::Type::SystemState);
+}
+
+void FirstEnumeratedChoice::evaluateCandidates() {
   // stateless: recompute from scratch; determineBestChoices populates `candidates` with the considered
   // request's full alternative set, so stop at the first request that yields a feasible choice
   this->clearDecisions();

@@ -1,4 +1,5 @@
 #include "FirstBisectionalChoice.h"
+#include "execution/engine/src/Mediator.h"
 #include "execution/engine/src/SystemState.h"
 #include "model/bpmnos/src/DecisionTask.h"
 #include "model/bpmnos/src/extensionElements/Attribute.h"
@@ -15,7 +16,11 @@ FirstBisectionalChoice::FirstBisectionalChoice(Evaluator* evaluator)
 {
 }
 
-void FirstBisectionalChoice::evaluateCandidates(const SystemState* systemState) {
+void FirstBisectionalChoice::connect(Mediator* mediator) {
+  mediator->addSubscriber(this, Observable::Type::SystemState);
+}
+
+void FirstBisectionalChoice::evaluateCandidates() {
   // stateless: recompute from scratch; determineBestChoices populates `candidates` with the considered request's
   // full alternative set, so stop at the first feasible request
   this->clearDecisions();
