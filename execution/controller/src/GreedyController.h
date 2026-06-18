@@ -9,18 +9,18 @@
 namespace BPMNOS::Execution {
 
 /**
- * @brief A controller making layered decisions.
+ * @brief A controller dispatching the first feasible decision in priority order.
  *
- * It first clears the unambiguous decisions (`prioritizedDispatchers`) in priority order,
- * dispatching the first feasible one, and only falls back to best-of-best over the
- * contested decisions (`competingDispatchers`).
+ * Holds a priority-ordered list of dispatchers and dispatches the first feasible decision they yield.
+ * Contested entries and message deliveries (which have no precedence over each other) are merged into a
+ * single reward-ordered dispatcher, so their best feasible decision competes within the same list rather
+ * than in a separate best-of-best stage.
  */
 class GreedyController : public Controller {
 public:
   GreedyController(Evaluator* evaluator);
   void connect(Mediator* mediator);
-  std::vector< std::unique_ptr<EventDispatcher> > prioritizedDispatchers;   ///< Dispatched first-feasible in priority order.
-  std::vector< std::unique_ptr<EventDispatcher> > competingDispatchers; ///< Dispatched by best-of-best reward.
+  std::vector< std::unique_ptr<EventDispatcher> > dispatchers;   ///< Dispatched first-feasible in priority order.
 protected:
   Evaluator* evaluator;
   std::shared_ptr<Event> dispatchEvent(const SystemState* systemState);
