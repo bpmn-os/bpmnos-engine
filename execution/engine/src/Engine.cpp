@@ -3,6 +3,7 @@
 #include "StateMachine.h"
 #include "SequentialPerformerUpdate.h"
 #include "ConditionalEventObserver.h"
+#include "execution/controller/src/Decision.h"
 #include "model/bpmnos/src/extensionElements/ExtensionElements.h"
 #include "model/bpmnos/src/SequentialAdHocSubProcess.h"
 #include "model/bpmnos/src/DecisionTask.h"
@@ -80,13 +81,18 @@ void Engine::resume(BPMNOS::number timeout) {
   run(timeout);
 }
 
-void Engine::resume(std::shared_ptr<Event> decision, BPMNOS::number timeout) {
+void Engine::resume(std::shared_ptr<Decision> decision, BPMNOS::number timeout) {
+  resume(std::shared_ptr<Event>(decision), timeout);
+}
+
+
+void Engine::resume(std::shared_ptr<Event> event, BPMNOS::number timeout) {
   if ( !systemState ) {
     throw std::logic_error("Engine: resume requires an existing system state (call run or initializeSystemState first)");
   }
   // force the given decision as the first event; the commands it enqueues are executed by advance()
-  notify(decision.get());
-  decision->processBy(this);
+  notify(event.get());
+  event->processBy(this);
   run(timeout);
 }
 
