@@ -70,7 +70,7 @@ void MessageDeliveries::notice(const Observable* observable) {
   }
   else if ( observable->getObservableType() == Observable::Type::SystemState ) {
     clear();   // start from a clean cache, then rebuild from the installed state
-    auto systemState = static_cast<const SystemState*>(observable);
+    systemState = static_cast<const SystemState*>(observable);
     // rebuild the message pool first, then replay the pending delivery requests so they match against it
     for ( auto& message : systemState->messages ) {
       notice( message.get() );
@@ -86,7 +86,7 @@ void MessageDeliveries::notice(const Observable* observable) {
   }
 }
 
-void MessageDeliveries::evaluateCandidates([[maybe_unused]] const SystemState* systemState) {
+void MessageDeliveries::evaluateCandidates() {
   evaluateDecisions(
     [this]( std::weak_ptr<const Token> token_ptr, std::weak_ptr<const DecisionRequest> request_ptr, std::weak_ptr<const Message> message_ptr, std::shared_ptr<Decision> decision ) -> std::shared_ptr<Event> {
       assert(decision);

@@ -9,7 +9,6 @@
 #include <unordered_map>
 #include "execution/utility/src/auto_list.h"
 #include "execution/utility/src/auto_set.h"
-#include "execution/engine/src/Observer.h"
 #include "execution/engine/src/DataUpdate.h"
 #include "Decision.h"
 #include "Candidates.h"
@@ -28,7 +27,7 @@ namespace BPMNOS::Execution {
  */
 // WeakPtrs... are < std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest> >
 template <typename... WeakPtrs>
-class CachedCandidates : public Observer, public Candidates<WeakPtrs...> {
+class CachedCandidates : public Candidates<WeakPtrs...> {
 public:
   CachedCandidates();
 

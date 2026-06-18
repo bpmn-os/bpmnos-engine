@@ -13,21 +13,21 @@ namespace BPMNOS::Execution {
 class Mediator;
 
 /**
- * @brief Generic greedy policy dispatcher owning a concrete Candidates source.
+ * @brief Generic greedy policy dispatcher owning a concrete Candidates collection.
  *
- * Templated on the source type (a Candidates specialization), which it owns by value and constructs by
- * forwarding the constructor arguments. On each dispatch it obtains the reward-ordered candidates for the
- * current state (Source::getCandidates populates them via evaluateCandidates) and dispatches the best
- * feasible one — the front of the set, unless that front is infeasible.
+ * Templated on the Candidates type (a Candidates specialization), which it owns by value and constructs by
+ * forwarding the constructor arguments. On each dispatch it iterates the reward-ordered candidates for the
+ * current state (iterating them evaluates them lazily) and dispatches the best feasible one — the front of
+ * the set, unless that front is infeasible.
  */
-template <typename Source>
+template <typename Candidates>
 class GreedyDispatcher : public EventDispatcher {
 public:
   template <typename... Args>
-  GreedyDispatcher(Args&&... args) : source(std::forward<Args>(args)...) {}
+  GreedyDispatcher(Args&&... args) : candidates(std::forward<Args>(args)...) {}
 
-  std::shared_ptr<Event> dispatchEvent( const SystemState* systemState ) override {
-    for ( auto candidate : source.getCandidates(systemState) ) {
+  std::shared_ptr<Event> dispatchEvent( [[maybe_unused]] const SystemState* systemState ) override {
+    for ( auto candidate : candidates ) {
       constexpr std::size_t eventIndex = std::tuple_size<decltype(candidate)>::value - 2;
       std::weak_ptr<Event>& event_ptr = std::get<eventIndex>(candidate);
       if ( auto event = event_ptr.lock();
@@ -45,12 +45,12 @@ public:
   }
 
   void connect(Mediator* mediator) override {
-    source.connect(mediator);   // the source subscribes to its request type and DataUpdate
+    candidates.connect(mediator);   // the candidates subscribe to their request type and DataUpdate
     EventDispatcher::connect(mediator);
   }
 
 protected:
-  Source source;
+  Candidates candidates;
 };
 
 } // namespace BPMNOS::Execution

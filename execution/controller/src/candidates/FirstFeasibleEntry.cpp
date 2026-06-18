@@ -37,8 +37,9 @@ void FirstFeasibleEntry::notice(const Observable* observable) {
   }
   else if ( observable->getObservableType() == Observable::Type::SystemState ) {
     clear();   // start from a clean cache, then rebuild from the installed state
+    systemState = static_cast<const SystemState*>(observable);
     // rebuild the cache from the entry decisions a freshly installed (e.g. resumed) state lists as pending
-    for ( auto& [_, request_ptr] : static_cast<const SystemState*>(observable)->pendingEntryDecisions ) {
+    for ( auto& [_, request_ptr] : systemState->pendingEntryDecisions ) {
       if ( auto request = request_ptr.lock() ) {
         notice( request.get() );
       }
@@ -49,7 +50,7 @@ void FirstFeasibleEntry::notice(const Observable* observable) {
   }
 }
 
-void FirstFeasibleEntry::evaluateCandidates(const SystemState* systemState) {
+void FirstFeasibleEntry::evaluateCandidates() {
   advanceTime(systemState->currentTime);
   evaluateDecisions(
     [this]( std::weak_ptr<const Token> token_ptr, std::weak_ptr<const DecisionRequest> request_ptr, std::shared_ptr<Decision> decision ) -> std::shared_ptr<Event> {
