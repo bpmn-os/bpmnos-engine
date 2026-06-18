@@ -298,11 +298,11 @@ void Engine::process([[maybe_unused]] const TerminationEvent* event) {
 }
 
 
-BPMNOS::number Engine::getCurrentTime() {
+BPMNOS::number Engine::getCurrentTime() const {
   return systemState->currentTime;
 }
 
-const SystemState* Engine::getSystemState() {
+const SystemState* Engine::getSystemState() const {
   return systemState.get();
 }
 
