@@ -96,6 +96,9 @@ public:
    */
   StochasticScenario(StochasticScenario* original, BPMNOS::number spawnTime, unsigned int seed);
 
+  /// Returns the current effective seed (the seed of the most recent scenario copy, or the base seed).
+  unsigned int getSeed() const;
+
   BPMNOS::number getEarliestInstantiationTime() const override;
   bool isCompleted(const BPMNOS::number currentTime) const override;
 

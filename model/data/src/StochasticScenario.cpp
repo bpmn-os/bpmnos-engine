@@ -41,6 +41,10 @@ StochasticScenario::StochasticScenario(StochasticScenario* original, BPMNOS::num
   evaluateDeferredDisclosures(spawnTime);
 }
 
+unsigned int StochasticScenario::getSeed() const {
+  return scenarioSeeds.back().second;
+}
+
 void StochasticScenario::addInstance(const BPMN::Process* process, const BPMNOS::number instanceId) {
   // Instantiation time will be set when evaluating deferred timestamp attribute
   instances[(size_t)instanceId] = {process, (size_t)instanceId, 0, {}};
