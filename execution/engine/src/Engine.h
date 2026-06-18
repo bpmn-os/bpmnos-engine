@@ -53,15 +53,34 @@ public:
   void run(const BPMNOS::Model::Scenario* scenario, BPMNOS::number timeout = std::numeric_limits<BPMNOS::number>::max());
 
   /**
-   * @brief Resumes execution from a given system state.
+   * @brief Initializes the engine's system state with a deep copy of a foreign system state.
    *
-   * Creates a copy of the foreign state and continues execution for the given scenario.
+   * Does not run; call resume() afterwards to continue execution. The copy already holds every instance
+   * due up to its current time, so the instantiation watermark starts at that time.
    *
-   * @param scenario The scenario to use (may be forked from original)
-   * @param foreignState The system state to resume from
+   * @param scenario The scenario to use (may be forked from the original)
+   * @param foreignState The system state to copy
+   */
+  void initializeSystemState(const BPMNOS::Model::Scenario* scenario, const SystemState* foreignState);
+
+  /**
+   * @brief Continues advancing the engine's existing system state.
+   *
+   * Does not create a new state — run() or initializeSystemState() must have established one first.
+   *
    * @param timeout Last time to process (engine stops when time >= timeout)
    */
-  void resume(const BPMNOS::Model::Scenario* scenario, const SystemState* foreignState, BPMNOS::number timeout = std::numeric_limits<BPMNOS::number>::max());
+  void resume(BPMNOS::number timeout = std::numeric_limits<BPMNOS::number>::max());
+
+  /**
+   * @brief Forces a decision as the first event, then continues advancing the existing system state.
+   *
+   * Does not create a new state — run() or initializeSystemState() must have established one first.
+   *
+   * @param decision The decision to process before greedy dispatch resumes
+   * @param timeout Last time to process (engine stops when time >= timeout)
+   */
+  void resume(std::shared_ptr<Event> decision, BPMNOS::number timeout = std::numeric_limits<BPMNOS::number>::max());
 private:
   void run(BPMNOS::number timeout = std::numeric_limits<BPMNOS::number>::max());
 public:
