@@ -10,6 +10,7 @@
 #include "execution/utility/src/erase.h"
 #include <cassert>
 #include <limits>
+#include <stdexcept>
 
 using namespace BPMNOS::Execution;
 
@@ -48,42 +49,49 @@ void Engine::run(const BPMNOS::Model::Scenario* scenario, BPMNOS::number timeout
   // create initial system state
   systemState = std::make_unique<SystemState>(this, scenario);
   lastInstantiationTime = std::numeric_limits<BPMNOS::number>::lowest();
+  // installing a new state resets the run state and binds the conditional-event observer to it
+  terminated = false;
+  commands.clear();
+  conditionalEventObserver.connect( systemState.get() );
 
   run(timeout);
 }
 
-void Engine::resume(const BPMNOS::Model::Scenario* scenario, const SystemState* foreignState, BPMNOS::number timeout) {
-  // copy foreign system state
+void Engine::initializeSystemState(const BPMNOS::Model::Scenario* scenario, const SystemState* foreignState) {
+  // install a deep copy of the foreign state as this engine's own state; the copy already holds every
+  // instance due up to its current time, so the instantiation watermark starts at that time
   systemState = std::make_unique<SystemState>(this, scenario, foreignState);
   lastInstantiationTime = systemState->getTime();
+  // installing a new state resets the run state and binds the conditional-event observer to it
+  terminated = false;
+  commands.clear();
+  conditionalEventObserver.connect( systemState.get() );
+}
+
+void Engine::resume(BPMNOS::number timeout) {
+  if ( !systemState ) {
+    throw std::logic_error("Engine: resume requires an existing system state (call run or initializeSystemState first)");
+  }
+  // continue advancing the existing system state (no new state is created)
+  run(timeout);
+}
+
+void Engine::resume(std::shared_ptr<Event> decision, BPMNOS::number timeout) {
+  if ( !systemState ) {
+    throw std::logic_error("Engine: resume requires an existing system state (call run or initializeSystemState first)");
+  }
+  // force the given decision as the first event; the commands it enqueues are executed by advance()
+  notify(decision.get());
+  decision->processBy(this);
   run(timeout);
 }
 
 void Engine::run(BPMNOS::number timeout) {
-  terminated = false;
-  commands.clear();  
-/*
-  if ( conditionalEventObserver ) {
-    removeSubscriber(conditionalEventObserver.get(), Observable::Type::DataUpdate);
-  } 
-  conditionalEventObserver = std::make_unique<ConditionalEventObserver>(systemState.get());
-  addSubscriber(conditionalEventObserver.get(), Observable::Type::DataUpdate);
-*/
-  conditionalEventObserver.connect( systemState.get() );
-
-  // advance all tokens in system state
+  // advance all tokens in system state (state setup is done where the state is installed)
   while ( !terminated && advance(timeout) ) {
-//std::cerr << ".";
     if ( !systemState->isAlive() ) {
-//std::cerr << "dead" << std::endl;
       break;
     }
-/*
-    if ( systemState->getTime() > timeout ) {
-//std::cerr << "timeout" << std::endl;
-      break;
-    }
-*/
   }
 }
 

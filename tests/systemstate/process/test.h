@@ -159,8 +159,9 @@ SCENARIO( "Engine resume from stopped state", "[systemstate][process][resume]" )
       Execution::Recorder recorder2;
       recorder2.subscribe(&engine2);
 
-      // Resume from first engine's state with forked scenario
-      engine2.resume(forkedScenario.get(), engine1.getSystemState());
+      // Resume from a copy of the first engine's state with forked scenario
+      engine2.initializeSystemState(forkedScenario.get(), engine1.getSystemState());
+      engine2.resume();
 
       THEN( "The process completes successfully" ) {
         auto processLog = recorder2.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr}, {"event",nullptr}, {"decision",nullptr}});
