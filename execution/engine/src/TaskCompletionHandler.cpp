@@ -17,11 +17,22 @@ TaskCompletionHandler::~TaskCompletionHandler() {
 }
 
 void TaskCompletionHandler::connect(Mediator* mediator) {
-  mediator->addSubscriber(this, Observable::Type::Token);
+  mediator->addSubscriber(this, Observable::Type::Token, Observable::Type::SystemState);
   EventDispatcher::connect(mediator);
 }
 
 void TaskCompletionHandler::notice(const Observable* observable) {
+  if (observable->getObservableType() == Observable::Type::SystemState) {
+    // a freshly installed state (e.g. on resume): reset and rebuild from the tokens it lists as awaiting a completion event
+    auto systemState = static_cast<const SystemState*>(observable);
+    lastCheckedTime = std::numeric_limits<BPMNOS::number>::lowest();
+    awaitingTokens.clear();
+    pendingEvents.clear();
+    for (auto element : systemState->tokensAwaitingCompletionEvent) {
+      awaitingTokens.emplace_back(std::get<1>(element));
+    }
+    return;
+  }
   if (observable->getObservableType() != Observable::Type::Token) {
     return;
   }

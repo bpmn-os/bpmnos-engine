@@ -4,6 +4,7 @@
 #include "StateMachine.h"
 #include "DecisionRequest.h"
 #include "execution/engine/src/Message.h"
+#include "execution/engine/src/Observable.h"
 #include "execution/utility/src/auto_list.h"
 #include "execution/utility/src/auto_set.h"
 #include "model/data/src/Scenario.h"
@@ -18,11 +19,14 @@ class Engine;
 /**
  * @brief A class representing the state that the execution or simulation of a given scenario is in.
  */
-class SystemState {
+class SystemState : public Observable {
 private:
   const Engine* engine;
 
 public:
+  /// Observable so the engine can announce a freshly installed state to subscribers (e.g. cached candidate sources).
+  constexpr Observable::Type getObservableType() const override { return Observable::Type::SystemState; }
+
   /**
    * @brief Constructs a new SystemState for executing a scenario.
    *

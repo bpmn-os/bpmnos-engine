@@ -45,6 +45,8 @@ public:
   void advanceTime(BPMNOS::number currentTime);
   /// Handle an observable: a DataUpdate invalidates the affected evaluations.
   void notice(const Observable* observable) override;
+  /// Clear the cached decisions and their weak indexes; derived sources override to also clear what they own (calling this base first).
+  virtual void clear();
 
 private:
   BPMNOS::number timestamp; ///< Time of the most recent clock tick applied.

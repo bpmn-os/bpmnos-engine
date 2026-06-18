@@ -16,7 +16,8 @@ FirstFeasibleEntry::FirstFeasibleEntry(Evaluator* evaluator, Config config)
 void FirstFeasibleEntry::connect(Mediator* mediator) {
   mediator->addSubscriber(this,
     Observable::Type::EntryRequest,
-    Observable::Type::DataUpdate
+    Observable::Type::DataUpdate,
+    Observable::Type::SystemState
   );
 }
 
@@ -33,6 +34,15 @@ void FirstFeasibleEntry::notice(const Observable* observable) {
     }
     auto decision = std::make_shared<EntryDecision>(request->token, evaluator);
     addDecision( request->token->weak_from_this(), request->weak_from_this(), decision );
+  }
+  else if ( observable->getObservableType() == Observable::Type::SystemState ) {
+    clear();   // start from a clean cache, then rebuild from the installed state
+    // rebuild the cache from the entry decisions a freshly installed (e.g. resumed) state lists as pending
+    for ( auto& [_, request_ptr] : static_cast<const SystemState*>(observable)->pendingEntryDecisions ) {
+      if ( auto request = request_ptr.lock() ) {
+        notice( request.get() );
+      }
+    }
   }
   else {
     CachedCandidates::notice(observable);

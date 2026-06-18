@@ -17,11 +17,22 @@ ReadyHandler::~ReadyHandler() {
 }
 
 void ReadyHandler::connect(Mediator* mediator) {
-  mediator->addSubscriber(this, Observable::Type::Token);
+  mediator->addSubscriber(this, Observable::Type::Token, Observable::Type::SystemState);
   EventDispatcher::connect(mediator);
 }
 
 void ReadyHandler::notice(const Observable* observable) {
+  if (observable->getObservableType() == Observable::Type::SystemState) {
+    // a freshly installed state (e.g. on resume): reset and rebuild from the tokens it lists as awaiting a ready event
+    auto systemState = static_cast<const SystemState*>(observable);
+    lastCheckedTime = std::numeric_limits<BPMNOS::number>::lowest();
+    awaitingTokens.clear();
+    pendingEvents.clear();
+    for (auto& [token_ptr] : systemState->tokensAwaitingReadyEvent) {
+      awaitingTokens.emplace_back(token_ptr);
+    }
+    return;
+  }
   if (observable->getObservableType() != Observable::Type::Token) {
     return;
   }
