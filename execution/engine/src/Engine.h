@@ -29,6 +29,7 @@ class Token;
 class StateMachine;
 //class Listener;
 class Controller;
+class Decision;
 
 class Engine : public Mediator {
   friend class Token;
@@ -73,14 +74,24 @@ public:
   void resume(BPMNOS::number timeout = std::numeric_limits<BPMNOS::number>::max());
 
   /**
-   * @brief Forces a decision as the first event, then continues advancing the existing system state.
+   * @brief Start processing the decision, then continues advancing the existing system state.
    *
    * Does not create a new state — run() or initializeSystemState() must have established one first.
    *
    * @param decision The decision to process before greedy dispatch resumes
    * @param timeout Last time to process (engine stops when time >= timeout)
    */
-  void resume(std::shared_ptr<Event> decision, BPMNOS::number timeout = std::numeric_limits<BPMNOS::number>::max());
+  void resume(std::shared_ptr<Decision> decision, BPMNOS::number timeout = std::numeric_limits<BPMNOS::number>::max());
+
+  /**
+   * @brief Start processing the event, then continues advancing the existing system state.
+   *
+   * Does not create a new state — run() or initializeSystemState() must have established one first.
+   *
+   * @param decision The decision to process before greedy dispatch resumes
+   * @param timeout Last time to process (engine stops when time >= timeout)
+   */
+  void resume(std::shared_ptr<Event> event, BPMNOS::number timeout = std::numeric_limits<BPMNOS::number>::max());
 private:
   void run(BPMNOS::number timeout = std::numeric_limits<BPMNOS::number>::max());
 public:
