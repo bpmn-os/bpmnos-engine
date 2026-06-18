@@ -97,12 +97,12 @@ public:
 /**
  * @brief Returns the timestamp the engine is in.
  */
-  BPMNOS::number getCurrentTime();
+  BPMNOS::number getCurrentTime() const;
 
 /**
  * @brief Returns a pointer to the system state
  */
-  const SystemState* getSystemState();
+  const SystemState* getSystemState() const;
 
 protected:
 
