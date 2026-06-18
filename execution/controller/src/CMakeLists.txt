@@ -45,6 +45,7 @@ list(APPEND controller_HEADERS
   candidates/FirstFeasibleEntry.h
   candidates/SequentialEntries.h
   candidates/MessageDeliveries.h
+  candidates/CompetingCandidates.h
   candidates/FirstEnumeratedChoice.h
   candidates/FirstBisectionalChoice.h
   GreedyDispatcher.h
