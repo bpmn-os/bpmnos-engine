@@ -72,7 +72,7 @@ void TaskCompletionHandler::notice(const Observable* observable) {
 }
 
 std::shared_ptr<Event> TaskCompletionHandler::getEvent(const Token* token, const SystemState* systemState) {
-  auto instanceId = token->owner->root->instance.value();
+  auto instanceId = token->getInstanceId();
   auto currentTime = systemState->getTime();
 
   auto status = systemState->scenario->getTaskCompletionStatus(instanceId, token->node, currentTime);

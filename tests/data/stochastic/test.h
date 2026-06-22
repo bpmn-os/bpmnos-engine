@@ -99,7 +99,7 @@ SCENARIO( "Stochastic data provider", "[data][stochastic]" ) {
       THEN( "y is updated and x becomes local copy after noticeReadyPending" ) {
         // Parent status passed to activity (timestamp=0, x=1)
         Values status = {0, 1};
-        Values data = {};
+        Values data = { (int)instance->id };  // data[Index::Instance]
         Values globals = {};
 
         scenario->noticeReadyPending(instance->id, activity, status, data, globals);
@@ -110,7 +110,7 @@ SCENARIO( "Stochastic data provider", "[data][stochastic]" ) {
         REQUIRE( processStatus->at(1).value() == 1 );  // x = 1 (unchanged)
 
         // Activity ready status includes arrival expression results
-        auto activityStatus = scenario->getActivityReadyStatus(instance->id, activity, 0);
+        auto activityStatus = scenario->getActivityReadyStatus(instance->id, instance->id, activity, 0);
         REQUIRE( activityStatus.has_value() );
         // Status: [timestamp, x, y] = [0, 100, 200]
         REQUIRE( activityStatus->at(0).value() == 0 );   // timestamp unchanged
@@ -146,15 +146,15 @@ SCENARIO( "Stochastic data provider", "[data][stochastic]" ) {
       auto activity = process->find([](BPMN::Node* n) { return n->id == "Activity_1"; });
 
       Values status = {0, 1};
-      Values data = {};
+      Values data = { (int)instance1->id };  // data[Index::Instance]; instance1/instance2 share the declared id
       Values globals = {};
 
       scenario1->noticeReadyPending(instance1->id, activity, status, data, globals);
       scenario2->noticeReadyPending(instance2->id, activity, status, data, globals);
 
       THEN( "Both scenarios produce identical arrival status" ) {
-        auto activityStatus1 = scenario1->getActivityReadyStatus(instance1->id, activity, 0);
-        auto activityStatus2 = scenario2->getActivityReadyStatus(instance2->id, activity, 0);
+        auto activityStatus1 = scenario1->getActivityReadyStatus(instance1->id, instance1->id, activity, 0);
+        auto activityStatus2 = scenario2->getActivityReadyStatus(instance2->id, instance2->id, activity, 0);
 
         REQUIRE( activityStatus1.has_value() );
         REQUIRE( activityStatus2.has_value() );
@@ -177,15 +177,15 @@ SCENARIO( "Stochastic data provider", "[data][stochastic]" ) {
       auto activity = process->find([](BPMN::Node* n) { return n->id == "Activity_1"; });
 
       Values status = {0, 1};
-      Values data = {};
+      Values data = { (int)instance1->id };  // data[Index::Instance]; instance1/instance2 share the declared id
       Values globals = {};
 
       scenario1->noticeReadyPending(instance1->id, activity, status, data, globals);
       scenario2->noticeReadyPending(instance2->id, activity, status, data, globals);
 
       THEN( "Scenarios produce different ready status" ) {
-        auto activityStatus1 = scenario1->getActivityReadyStatus(instance1->id, activity, 0);
-        auto activityStatus2 = scenario2->getActivityReadyStatus(instance2->id, activity, 0);
+        auto activityStatus1 = scenario1->getActivityReadyStatus(instance1->id, instance1->id, activity, 0);
+        auto activityStatus2 = scenario2->getActivityReadyStatus(instance2->id, instance2->id, activity, 0);
 
         REQUIRE( activityStatus1.has_value() );
         REQUIRE( activityStatus2.has_value() );
@@ -227,7 +227,7 @@ SCENARIO( "Stochastic data provider", "[data][stochastic]" ) {
 
       // Status at task: [timestamp, x, y, z, w] = [0, 1, 2, 3, 4]
       Values status = {0, 1, 2, 3, 4};
-      Values data = {};
+      Values data = { (int)instance->id };  // data[Index::Instance]
       Values globals = {};
 
       scenario->noticeCompletionPending(instance->id, task, status, data, globals);
@@ -282,19 +282,19 @@ SCENARIO( "Stochastic data provider", "[data][stochastic]" ) {
 
       THEN( "READY expression with += operator works" ) {
         Values status = {0, 100};
-        Values data = {};
+        Values data = { (int)instance->id };  // data[Index::Instance]
         Values globals = {};
 
         scenario->noticeReadyPending(instance->id, activity, status, data, globals);
 
-        auto activityStatus = scenario->getActivityReadyStatus(instance->id, activity, 0);
+        auto activityStatus = scenario->getActivityReadyStatus(instance->id, instance->id, activity, 0);
         REQUIRE( activityStatus.has_value() );
         REQUIRE( activityStatus->at(1).value() == 150 ); // x = 100 + 50
       }
 
       THEN( "COMPLETION expression with += operator works" ) {
         Values status = {0, 150, 30, 5};
-        Values data = {};
+        Values data = { (int)instance->id };  // data[Index::Instance]
         Values globals = {};
 
         scenario->noticeCompletionPending(instance->id, task, status, data, globals);
