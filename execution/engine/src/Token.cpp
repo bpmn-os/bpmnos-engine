@@ -154,6 +154,12 @@ Token::~Token() {
       }
     }
     
+    // WARNING: this reaches back into the engine. During engine teardown (~Engine -> ~SystemState -> ~Token),
+    // the derived engine is already destroyed and the vtable has reverted to the abstract Notifier, so this
+    // notify() calls a pure virtual -> abort. Only reached if a token still holds the performer at teardown,
+    // i.e. the run was stopped mid-conduct (e.g. resume(timeout) in-flight); a completed run releases it -> safe.
+    // (Could be made safe by clearing `performing` on owned tokens in StateMachine teardown; left unfixed as
+    // it is unreachable under normal run-to-completion teardown.)
     if ( performing ) {
       performing = nullptr;
       owner->systemState->engine->notify(SequentialPerformerUpdate(this));
