@@ -183,13 +183,13 @@ void DynamicScenario::addPendingDisclosure(const BPMNOS::number instanceId, Pend
 }
 
 void DynamicScenario::noticeReadyPending(
-    BPMNOS::number instanceId,
+    [[maybe_unused]] BPMNOS::number rootId,
     const BPMN::Node* node,
     const Values& status,
-    [[maybe_unused]] const SharedValues& data,
+    const SharedValues& data,
     [[maybe_unused]] const Values& globals) const {
-  // Store parent status for getActivityReadyStatus
-  activityArrivalStatus[{(size_t)instanceId, node}] = status;
+  // key by the full instance id (from data) so concurrent executions of one node don't collide
+  activityArrivalStatus[{(size_t)data[ExtensionElements::Index::Instance].get().value(), node}] = status;
 }
 
 void DynamicScenario::revealData(BPMNOS::number currentTime) const {
@@ -213,26 +213,25 @@ void DynamicScenario::revealData(BPMNOS::number currentTime) const {
 }
 
 std::optional<BPMNOS::Values> DynamicScenario::getActivityReadyStatus(
+  BPMNOS::number rootId,
   BPMNOS::number instanceId,
   const BPMN::Node* activity,
   BPMNOS::number currentTime
 ) const {
-  size_t id = (size_t)instanceId;
-
-  // Check if node data is disclosed
-  if (disclosure.contains(id) && disclosure.at(id).contains(activity)) {
-    if (currentTime < disclosure.at(id).at(activity)) {
+  // disclosure is keyed by the root id (specified pre-runtime)
+  if (disclosure.contains((size_t)rootId) && disclosure.at((size_t)rootId).contains(activity)) {
+    if (currentTime < disclosure.at((size_t)rootId).at(activity)) {
       return std::nullopt;
     }
   }
 
-  // Get stored arrival status (parent's status)
-  auto key = std::make_pair(id, activity);
+  // status keyed by the full instance id; declared instance/values keyed by root id
+  auto key = std::make_pair((size_t)instanceId, activity);
   if (!activityArrivalStatus.contains(key)) {
     return std::nullopt;
   }
 
-  auto& instance = instances.at(id);
+  auto& instance = instances.at((size_t)rootId);
   auto extensionElements = activity->extensionElements->as<const BPMNOS::Model::ExtensionElements>();
 
   // Start with parent's status

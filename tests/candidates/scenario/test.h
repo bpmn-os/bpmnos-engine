@@ -43,7 +43,7 @@ SCENARIO( "Scenario records the correct completion timestamp for a BUSY task", "
       REQUIRE( (double)(*completion)[Timestamp].value() == 1.0 );
     }
     AND_THEN( "Scenario::activityArrivalStatus exposes the activity as ready at its arrival time t=0" ) {
-      auto ready = scenario->getActivityReadyStatus(instanceId, node, 0);
+      auto ready = scenario->getActivityReadyStatus(instanceId, instanceId, node, 0);
       REQUIRE( ready.has_value() );
       REQUIRE( (*ready)[Timestamp].has_value() );
       REQUIRE( (double)(*ready)[Timestamp].value() == 0.0 );

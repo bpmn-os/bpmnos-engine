@@ -136,28 +136,28 @@ std::optional<BPMNOS::Values> StaticScenario::getData(const BPMNOS::number insta
 }
 
 void StaticScenario::noticeReadyPending(
-    BPMNOS::number instanceId,
+    [[maybe_unused]] BPMNOS::number rootId,
     const BPMN::Node* node,
     const Values& status,
-    [[maybe_unused]] const SharedValues& data,
+    const SharedValues& data,
     [[maybe_unused]] const Values& globals) const {
-  // Store parent status for getActivityReadyStatus
-  activityArrivalStatus[{(size_t)instanceId, node}] = status;
+  // key by the full instance id (from data) so concurrent executions of one node don't collide
+  activityArrivalStatus[{(size_t)data[ExtensionElements::Index::Instance].get().value(), node}] = status;
 }
 
 std::optional<BPMNOS::Values> StaticScenario::getActivityReadyStatus(
+  BPMNOS::number rootId,
   BPMNOS::number instanceId,
   const BPMN::Node* activity,
   [[maybe_unused]] BPMNOS::number currentTime
 ) const {
-  // For static scenarios, all data is known from start - no disclosure checking needed.
-  // Get stored arrival status (parent's status) and extend with node's own attributes.
+  // status keyed by full instance id; declared instance/values keyed by root id
   auto key = std::make_pair((size_t)instanceId, activity);
   if (!activityArrivalStatus.contains(key)) {
     return std::nullopt;
   }
 
-  auto& instance = instances.at((size_t)instanceId);
+  auto& instance = instances.at((size_t)rootId);
   auto extensionElements = activity->extensionElements->as<const BPMNOS::Model::ExtensionElements>();
 
   // Start with parent's status

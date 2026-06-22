@@ -211,14 +211,16 @@ void StochasticScenario::computeInstantiationBounds() {
   }
 }
 
-void StochasticScenario::noticeReadyPending(BPMNOS::number instanceId, const BPMN::Node* node, const Values& status, const SharedValues& data, const Values& globals) const {
-  initializeActivityData(instanceId, node, status, data, globals);
+void StochasticScenario::noticeReadyPending(BPMNOS::number rootId, const BPMN::Node* node, const Values& status, const SharedValues& data, const Values& globals) const {
+  initializeActivityData(rootId, node, status, data, globals);
 }
 
-void StochasticScenario::initializeActivityData(BPMNOS::number instanceId, const BPMN::Node* node, const Values& status, const SharedValues& data, const Values& globals) const {
-  size_t id = (size_t)instanceId;
-  auto key = std::make_pair(id, node);
-  auto& instance = instances.at(id);
+void StochasticScenario::initializeActivityData(BPMNOS::number rootId, const BPMN::Node* node, const Values& status, const SharedValues& data, const Values& globals) const {
+  // store key uses the full instance id (from data) so concurrent executions of one node don't collide;
+  // expressions/RNG/declared-instances are keyed by the root id (specified pre-runtime)
+  auto instanceId = (size_t)data[BPMNOS::Model::ExtensionElements::Index::Instance].get().value();
+  auto key = std::make_pair(instanceId, node);
+  auto& instance = instances.at((size_t)rootId);
   auto extensionElements = node->extensionElements->as<const ExtensionElements>();
 
   // Build full status: parent status + node's own attributes
@@ -228,15 +230,15 @@ void StochasticScenario::initializeActivityData(BPMNOS::number instanceId, const
   }
 
   // Apply ready expressions if any
-  if (readyExpressions.contains(id) && readyExpressions.at(id).contains(node)) {
+  if (readyExpressions.contains((size_t)rootId) && readyExpressions.at((size_t)rootId).contains(node)) {
     // Set RNG context for random functions
-    auto& randomGenerator = getRng(id, node);
+    auto& randomGenerator = getRng((size_t)rootId, node);
     if (randomFactory) {
       randomFactory->setCurrentRng(&randomGenerator);
     }
 
     // Evaluate ready expressions and apply to full status
-    for (auto& expression : readyExpressions.at(id).at(node)) {
+    for (auto& expression : readyExpressions.at((size_t)rootId).at(node)) {
       auto value = expression->execute(fullStatus, data, globals);
       if (value.has_value() && expression->target) {
         // Apply type conversion
@@ -417,24 +419,23 @@ std::optional<BPMNOS::Values> StochasticScenario::getData(const BPMNOS::number i
   return result;
 }
 
-void StochasticScenario::noticeCompletionPending(BPMNOS::number instanceId, const BPMN::Node* task, const Values& status, const SharedValues& data, const Values& globals) const {
-  setTaskCompletionStatus(instanceId, task, status, data, globals);
+void StochasticScenario::noticeCompletionPending(BPMNOS::number rootId, const BPMN::Node* task, const Values& status, const SharedValues& data, const Values& globals) const {
+  setTaskCompletionStatus(rootId, task, status, data, globals);
 }
 
-void StochasticScenario::setTaskCompletionStatus(BPMNOS::number instanceId, const BPMN::Node* task, const Values& status, const SharedValues& data, const Values& globals) const {
+void StochasticScenario::setTaskCompletionStatus(BPMNOS::number rootId, const BPMN::Node* task, const Values& status, const SharedValues& data, const Values& globals) const {
 
-  size_t id = (size_t)instanceId;
   Values modifiedStatus = status;
 
-  // Check if we have completion expressions for this (instance, task)
-  if (completionExpressions.contains(id) &&
-      completionExpressions.at(id).contains(task) &&
-      !completionExpressions.at(id).at(task).empty()) {
+  // completion expressions/RNG are keyed by the root id (specified pre-runtime)
+  if (completionExpressions.contains((size_t)rootId) &&
+      completionExpressions.at((size_t)rootId).contains(task) &&
+      !completionExpressions.at((size_t)rootId).at(task).empty()) {
 
-    auto& taskCompletionExpressions = completionExpressions.at(id).at(task);
+    auto& taskCompletionExpressions = completionExpressions.at((size_t)rootId).at(task);
 
     // Set RNG context for random functions
-    auto& randomGenerator = getRng(id, task);
+    auto& randomGenerator = getRng((size_t)rootId, task);
     if (randomFactory) {
       randomFactory->setCurrentRng(&randomGenerator);
     }
@@ -467,8 +468,9 @@ void StochasticScenario::setTaskCompletionStatus(BPMNOS::number instanceId, cons
     }
   }
 
-  // Store the (possibly modified) status
-  taskCompletionStatus[{id, task}] = std::move(modifiedStatus);
+  // Store the realized status keyed by the full instance id (from data), not the root id
+  auto instanceId = (size_t)data[BPMNOS::Model::ExtensionElements::Index::Instance].get().value();
+  taskCompletionStatus[{instanceId, task}] = std::move(modifiedStatus);
 }
 
 void StochasticScenario::revealData(BPMNOS::number currentTime) const {
@@ -488,18 +490,16 @@ void StochasticScenario::revealData(BPMNOS::number currentTime) const {
   }
 }
 
-std::optional<BPMNOS::Values> StochasticScenario::getActivityReadyStatus(BPMNOS::number instanceId, const BPMN::Node* activity, BPMNOS::number currentTime) const {
-  size_t id = (size_t)instanceId;
-
-  // Check if node data is disclosed
-  if (disclosureTimes.contains(id) && disclosureTimes.at(id).contains(activity)) {
-    if (currentTime < disclosureTimes.at(id).at(activity)) {
+std::optional<BPMNOS::Values> StochasticScenario::getActivityReadyStatus(BPMNOS::number rootId, BPMNOS::number instanceId, const BPMN::Node* activity, BPMNOS::number currentTime) const {
+  // disclosure is keyed by the root id (specified pre-runtime)
+  if (disclosureTimes.contains((size_t)rootId) && disclosureTimes.at((size_t)rootId).contains(activity)) {
+    if (currentTime < disclosureTimes.at((size_t)rootId).at(activity)) {
       return std::nullopt;
     }
   }
 
-  // Return stored ready status
-  auto key = std::make_pair(id, activity);
+  // stored ready status keyed by the full instance id
+  auto key = std::make_pair((size_t)instanceId, activity);
   if (!activityArrivalStatus.contains(key)) {
     return std::nullopt;
   }

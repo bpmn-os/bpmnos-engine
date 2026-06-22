@@ -115,12 +115,10 @@ public:
    * @param data The current data values.
    * @param globals Global attributes.
    */
-  virtual void noticeCompletionPending(BPMNOS::number instanceId, const BPMN::Node* task, const Values& status, [[maybe_unused]] const SharedValues& data, [[maybe_unused]] const Values& globals ) const {
-    taskCompletionStatus[{(size_t)instanceId, task}] = status;
-  }
+  virtual void noticeCompletionPending(BPMNOS::number rootId, const BPMN::Node* task, const Values& status, const SharedValues& data, const Values& globals) const;
 
   /// @brief Get the completion status for a SendTask, ReceiveTask, and Decisiontask.
-  BPMNOS::Values getTaskCompletionStatus(BPMNOS::number instanceId, const BPMN::Node* task, const Values& status, const SharedValues& data, const Values& globals) const;
+  BPMNOS::Values getTaskCompletionStatus(BPMNOS::number rootId, const BPMN::Node* task, const Values& status, const SharedValues& data, const Values& globals) const;
 
   /**
    * @brief Get the completion status for a task.
@@ -148,7 +146,7 @@ public:
    * @param currentTime The current time for disclosure check.
    * @return Full status values if ready, std::nullopt otherwise.
    */
-  virtual std::optional<BPMNOS::Values> getActivityReadyStatus(BPMNOS::number instanceId, const BPMN::Node* activity, BPMNOS::number currentTime) const = 0;
+  virtual std::optional<BPMNOS::Values> getActivityReadyStatus(BPMNOS::number rootId, BPMNOS::number instanceId, const BPMN::Node* activity, BPMNOS::number currentTime) const = 0;
 
   const Model* model;  ///< Pointer to the BPMN model.
   BPMNOS::Values globals;

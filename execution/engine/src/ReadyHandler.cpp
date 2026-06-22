@@ -65,10 +65,11 @@ void ReadyHandler::notice(const Observable* observable) {
 }
 
 std::shared_ptr<Event> ReadyHandler::getEvent(const Token* token, const SystemState* systemState) {
-  auto instanceId = token->owner->root->instance.value();
+  auto rootId = token->owner->root->instance.value();
+  auto instanceId = token->getInstanceId();
   auto currentTime = systemState->getTime();
 
-  auto status = systemState->scenario->getActivityReadyStatus(instanceId, token->node, currentTime);
+  auto status = systemState->scenario->getActivityReadyStatus(rootId, instanceId, token->node, currentTime);
   auto data = systemState->getDataAttributes(token->owner->root, token->node);
 
   if (status.has_value() && data.has_value()) {
