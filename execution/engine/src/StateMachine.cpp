@@ -267,14 +267,15 @@ StateMachine::StateMachine(const SystemState* systemState, Token* parentToken, c
   for (auto& [otherPrevToken, otherNextToken] : other->systemState->tokenAwaitingMultiInstanceExit) {
     if (otherPrevToken->owner != other) continue;  // Only process tokens owned by this StateMachine
 
-    auto prevInstance = otherPrevToken->status[BPMNOS::Model::ExtensionElements::Index::Instance];
-    auto nextInstance = otherNextToken->status[BPMNOS::Model::ExtensionElements::Index::Instance];
-    auto prevIt = std::ranges::find_if(tokens, [&](const auto& t) {
-      return t->node == otherPrevToken->node && t->status[BPMNOS::Model::ExtensionElements::Index::Instance] == prevInstance;
-    });
-    auto nextIt = std::ranges::find_if(tokens, [&](const auto& t) {
-      return t->node == otherNextToken->node && t->status[BPMNOS::Model::ExtensionElements::Index::Instance] == nextInstance;
-    });
+    // Match by node and instance identity.
+    auto prevMatch = [&](const auto& token) {
+      return token->node == otherPrevToken->node && token->getInstanceId() == otherPrevToken->getInstanceId();
+    };
+    auto nextMatch = [&](const auto& token) {
+      return token->node == otherNextToken->node && token->getInstanceId() == otherNextToken->getInstanceId();
+    };
+    auto prevIt = std::ranges::find_if(tokens, prevMatch);
+    auto nextIt = std::ranges::find_if(tokens, nextMatch);
     assert(prevIt != tokens.end() && nextIt != tokens.end());
 
     const_cast<SystemState*>(systemState)->tokenAwaitingMultiInstanceExit[prevIt->get()] = nextIt->get();

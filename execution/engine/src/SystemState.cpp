@@ -27,8 +27,7 @@ SystemState::SystemState(const Engine* engine, const BPMNOS::Model::Scenario* sc
 
     // Populate archive
     auto key = (long unsigned int)otherInstance->instance.value();
-    if (other->archive.contains(key) &&
-        other->archive.at(key).lock().get() == otherInstance.get()) {
+    if (other->archive.contains(key) && other->archive.at(key).lock().get() == otherInstance.get()) {
       archive[key] = instances.back();
     }
   }
@@ -48,11 +47,13 @@ SystemState::SystemState(const Engine* engine, const BPMNOS::Model::Scenario* sc
       // Match waitingToken by node (both nullptr or same node)
       if (otherMessage->waitingToken) {
         if (!message->waitingToken || message->waitingToken->node != otherMessage->waitingToken->node) continue;
-      } else {
+      }
+      else {
         if (message->waitingToken) continue;
       }
       return message;
     }
+    assert(!"Unable to find message!");
     return nullptr;
   };
 

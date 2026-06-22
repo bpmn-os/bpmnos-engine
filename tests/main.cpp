@@ -92,6 +92,9 @@ using namespace BPMNOS;
 // SystemState
 #include "systemstate/test.h"
 
+// Candidate sources (notice(SystemState) rebuild path)
+#include "candidates/test.h"
+
 // Examples
 #include "examples/earliest_arrival_problem/test.h"
 #include "examples/travelling_salesperson_problem/test.h"
