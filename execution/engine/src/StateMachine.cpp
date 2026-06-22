@@ -106,53 +106,65 @@ StateMachine::StateMachine(const SystemState* systemState, Token* parentToken, c
     }
 
     // Populate tokensAwaitingTimer
-    if (token->node && token->node->represents<BPMN::TimerCatchEvent>() && token->state == Token::State::BUSY) {
-      assert(other->systemState->tokensAwaitingTimer.find(otherToken.get()) !=
-             other->systemState->tokensAwaitingTimer.end());
+    if (
+      token->node && 
+      token->node->represents<BPMN::TimerCatchEvent>() && 
+      token->state == Token::State::BUSY
+    ) {
+      assert(other->systemState->tokensAwaitingTimer.find(otherToken.get()) != other->systemState->tokensAwaitingTimer.end());
       auto trigger = token->node->extensionElements->as<BPMNOS::Model::Timer>()->trigger.get();
       BPMNOS::number time = trigger->expression->execute(token->status, *token->data, token->globals).value();
       const_cast<SystemState*>(systemState)->tokensAwaitingTimer.emplace(time, token);
     }
 
     // Populate tokensAwaitingSignal
-    if (token->node && token->node->represents<BPMN::SignalCatchEvent>() && token->state == Token::State::BUSY) {
+    if (
+      token->node && token->node->represents<BPMN::SignalCatchEvent>() && 
+      token->state == Token::State::BUSY
+    ) {
       auto signalName = token->node->extensionElements->as<BPMNOS::Model::Signal>()->name;
-      assert(other->systemState->tokensAwaitingSignal.at(signalName).find(otherToken.get()) !=
-             other->systemState->tokensAwaitingSignal.at(signalName).end());
+      assert(other->systemState->tokensAwaitingSignal.at(signalName).find(otherToken.get()) != other->systemState->tokensAwaitingSignal.at(signalName).end());
       const_cast<SystemState*>(systemState)->tokensAwaitingSignal[signalName].emplace_back(token);
     }
 
     // Populate tokensAwaitingCondition
-    if (token->node && token->node->represents<BPMN::ConditionalCatchEvent>() && token->state == Token::State::BUSY) {
-      assert(other->systemState->tokensAwaitingCondition.at(other->root->instance.value()).find(otherToken.get()) !=
-             other->systemState->tokensAwaitingCondition.at(other->root->instance.value()).end());
+    if (
+      token->node && 
+      token->node->represents<BPMN::ConditionalCatchEvent>() && 
+      token->state == Token::State::BUSY
+    ) {
+      assert(other->systemState->tokensAwaitingCondition.at(other->root->instance.value()).find(otherToken.get()) != other->systemState->tokensAwaitingCondition.at(other->root->instance.value()).end());
       const_cast<SystemState*>(systemState)->tokensAwaitingCondition[root->instance.value()].emplace_back(token);
     }
 
     // Populate tokensAwaitingReadyEvent
-    if (token->node && token->node->represents<BPMN::Activity>() &&
-        (token->state == Token::State::CREATED || token->state == Token::State::ARRIVED)) {
-      assert(other->systemState->tokensAwaitingReadyEvent.find(otherToken.get()) !=
-             other->systemState->tokensAwaitingReadyEvent.end());
+    if (
+      token->node && token->node->represents<BPMN::Activity>() &&
+      (token->state == Token::State::CREATED || token->state == Token::State::ARRIVED)
+    ) {
+      assert(other->systemState->tokensAwaitingReadyEvent.find(otherToken.get()) != other->systemState->tokensAwaitingReadyEvent.end());
       const_cast<SystemState*>(systemState)->tokensAwaitingReadyEvent.emplace_back(token);
     }
 
     // Populate tokensAwaitingCompletionEvent
-    if (token->node && token->node->represents<BPMN::Task>() &&
-        !token->node->represents<BPMN::ReceiveTask>() &&
-        !token->node->represents<BPMN::SendTask>() &&
-        !token->node->represents<BPMNOS::Model::DecisionTask>() &&
-        token->state == Token::State::BUSY) {
-      assert(other->systemState->tokensAwaitingCompletionEvent.find(otherToken.get()) !=
-             other->systemState->tokensAwaitingCompletionEvent.end());
+    if (
+      token->node && token->node->represents<BPMN::Task>() &&
+      !token->node->represents<BPMN::ReceiveTask>() &&
+      !token->node->represents<BPMN::SendTask>() &&
+      !token->node->represents<BPMNOS::Model::DecisionTask>() &&
+      token->state == Token::State::BUSY
+    ) {
+      assert(other->systemState->tokensAwaitingCompletionEvent.find(otherToken.get()) != other->systemState->tokensAwaitingCompletionEvent.end());
       auto time = token->status[BPMNOS::Model::ExtensionElements::Index::Timestamp].value();
       const_cast<SystemState*>(systemState)->tokensAwaitingCompletionEvent.emplace(time, token);
     }
 
     // Create message for SendTask tokens awaiting delivery
     // (outbox, unsent, inbox are populated at the end of SystemState copy constructor)
-    if (token->node && token->node->represents<BPMN::SendTask>() &&
-        token->state == Token::State::BUSY) {
+    if (
+      token->node && token->node->represents<BPMN::SendTask>() &&
+      token->state == Token::State::BUSY
+    ) {
       assert(other->systemState->messageAwaitingDelivery.contains(otherToken.get()));
       auto otherMessage = other->systemState->messageAwaitingDelivery.at(otherToken.get()).lock();
       assert(otherMessage);
@@ -163,15 +175,16 @@ StateMachine::StateMachine(const SystemState* systemState, Token* parentToken, c
     }
 
     // Populate boundary event containers
-    if (token->node && token->node->represents<BPMN::BoundaryEvent>() &&
-        !token->node->represents<BPMN::CompensateBoundaryEvent>() &&
-        token->state == Token::State::BUSY) {
+    if (
+      token->node && token->node->represents<BPMN::BoundaryEvent>() &&
+      !token->node->represents<BPMN::CompensateBoundaryEvent>() &&
+      token->state == Token::State::BUSY
+    ) {
       auto it = other->systemState->tokenAssociatedToBoundaryEventToken.find(otherToken.get());
       assert(it != other->systemState->tokenAssociatedToBoundaryEventToken.end());
       const BPMN::FlowNode* activityNode = it->second->node;
 
-      auto activityIt = std::ranges::find_if(tokens,
-        [activityNode](const auto& t) { return t->node == activityNode; });
+      auto activityIt = std::ranges::find_if(tokens, [activityNode](const auto& t) { return t->node == activityNode; });
       assert(activityIt != tokens.end());
       Token* activityToken = activityIt->get();
 
@@ -180,16 +193,17 @@ StateMachine::StateMachine(const SystemState* systemState, Token* parentToken, c
     }
 
     // Populate event-based gateway containers
-    if (token->node && token->node->represents<BPMN::CatchEvent>() &&
-        token->state == Token::State::BUSY &&
-        !token->node->incoming.empty() &&
-        token->node->incoming.front()->source->represents<BPMN::EventBasedGateway>()) {
+    if (
+      token->node && token->node->represents<BPMN::CatchEvent>() &&
+      token->state == Token::State::BUSY &&
+      !token->node->incoming.empty() &&
+      token->node->incoming.front()->source->represents<BPMN::EventBasedGateway>()
+    ) {
       assert(other->systemState->tokenAtEventBasedGateway.find(otherToken.get()) !=
              other->systemState->tokenAtEventBasedGateway.end());
       const BPMN::FlowNode* gatewayNode = token->node->incoming.front()->source;
 
-      auto gatewayIt = std::ranges::find_if(tokens,
-        [gatewayNode](const auto& t) { return t->node == gatewayNode; });
+      auto gatewayIt = std::ranges::find_if(tokens, [gatewayNode](const auto& t) { return t->node == gatewayNode; });
       assert(gatewayIt != tokens.end());
       Token* gatewayToken = gatewayIt->get();
 
@@ -198,11 +212,13 @@ StateMachine::StateMachine(const SystemState* systemState, Token* parentToken, c
     }
 
     // Populate tokensAwaitingGatewayActivation (converging gateway)
-    if (token->sequenceFlow &&
-        token->state == Token::State::WAITING &&
-        token->node->represents<BPMN::Gateway>() &&
-        !token->node->represents<BPMN::ExclusiveGateway>() &&
-        token->node->incoming.size() > 1) {
+    if (
+      token->sequenceFlow &&
+      token->state == Token::State::WAITING &&
+      token->node->represents<BPMN::Gateway>() &&
+      !token->node->represents<BPMN::ExclusiveGateway>() &&
+      token->node->incoming.size() > 1
+    ) {
       assert(other->systemState->tokensAwaitingGatewayActivation.contains(const_cast<StateMachine*>(other)));
       assert(other->systemState->tokensAwaitingGatewayActivation.at(const_cast<StateMachine*>(other)).contains(otherToken->node));
       assert(std::ranges::contains(other->systemState->tokensAwaitingGatewayActivation.at(const_cast<StateMachine*>(other)).at(otherToken->node), otherToken.get()));
@@ -225,14 +241,15 @@ StateMachine::StateMachine(const SystemState* systemState, Token* parentToken, c
 
     // Populate exitStatusAtActivityInstance (main token)
     if (other->systemState->exitStatusAtActivityInstance.contains(otherToken.get())) {
-      const_cast<SystemState*>(systemState)->exitStatusAtActivityInstance[token.get()] =
-          other->systemState->exitStatusAtActivityInstance.at(otherToken.get());
+      const_cast<SystemState*>(systemState)->exitStatusAtActivityInstance[token.get()] = other->systemState->exitStatusAtActivityInstance.at(otherToken.get());
     }
 
     // Populate performing and pendingSequentialEntries for activities in SequentialAdHocSubProcess
-    if (token->node && token->node->parent &&
-        token->node->represents<BPMN::Activity>() &&
-        token->node->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>()) {
+    if (
+      token->node && token->node->parent &&
+      token->node->represents<BPMN::Activity>() &&
+      token->node->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>()
+    ) {
       Token* performerToken = token->getSequentialPerformerToken();
       Token* otherPerformerToken = otherToken->getSequentialPerformerToken();
 
@@ -240,8 +257,7 @@ StateMachine::StateMachine(const SystemState* systemState, Token* parentToken, c
         performerToken->performing = token.get();
       }
 
-      if (otherPerformerToken->pendingSequentialEntries.find(otherToken.get()) !=
-          otherPerformerToken->pendingSequentialEntries.end()) {
+      if (otherPerformerToken->pendingSequentialEntries.find(otherToken.get()) != otherPerformerToken->pendingSequentialEntries.end()) {
         performerToken->pendingSequentialEntries.emplace_back(token);
       }
     }
@@ -251,14 +267,15 @@ StateMachine::StateMachine(const SystemState* systemState, Token* parentToken, c
   for (auto& [otherPrevToken, otherNextToken] : other->systemState->tokenAwaitingMultiInstanceExit) {
     if (otherPrevToken->owner != other) continue;  // Only process tokens owned by this StateMachine
 
-    auto prevInstance = otherPrevToken->status[BPMNOS::Model::ExtensionElements::Index::Instance];
-    auto nextInstance = otherNextToken->status[BPMNOS::Model::ExtensionElements::Index::Instance];
-    auto prevIt = std::ranges::find_if(tokens, [&](const auto& t) {
-      return t->node == otherPrevToken->node && t->status[BPMNOS::Model::ExtensionElements::Index::Instance] == prevInstance;
-    });
-    auto nextIt = std::ranges::find_if(tokens, [&](const auto& t) {
-      return t->node == otherNextToken->node && t->status[BPMNOS::Model::ExtensionElements::Index::Instance] == nextInstance;
-    });
+    // Match by node and instance identity.
+    auto prevMatch = [&](const auto& token) {
+      return token->node == otherPrevToken->node && token->getInstanceId() == otherPrevToken->getInstanceId();
+    };
+    auto nextMatch = [&](const auto& token) {
+      return token->node == otherNextToken->node && token->getInstanceId() == otherNextToken->getInstanceId();
+    };
+    auto prevIt = std::ranges::find_if(tokens, prevMatch);
+    auto nextIt = std::ranges::find_if(tokens, nextMatch);
     assert(prevIt != tokens.end() && nextIt != tokens.end());
 
     const_cast<SystemState*>(systemState)->tokenAwaitingMultiInstanceExit[prevIt->get()] = nextIt->get();
@@ -327,6 +344,7 @@ StateMachine::~StateMachine() {
   if ( !systemState->inbox.empty() && scope ) {
     unregisterRecipient();
   }
+  compensationTokens.clear();
 }
 
 BPMNOS::Values StateMachine::getData(const BPMN::Scope* scope) {
