@@ -18,11 +18,16 @@ namespace BPMNOS::Execution {
  */
 class GreedyController : public Controller {
 public:
-  GreedyController(Evaluator* evaluator);
+  struct Config {
+    bool bisection = false; ///< If true, use FirstBisectionalChoice, otherwise use FirstEnumeratedChoice.
+  };
+  static Config default_config() { return {}; }  // Work around for compiler bug see: https://stackoverflow.com/questions/53408962/try-to-understand-compiler-error-message-default-member-initializer-required-be/75691051#75691051
+  GreedyController(Evaluator* evaluator, Config config = default_config());
   void connect(Mediator* mediator);
   std::vector< std::unique_ptr<EventDispatcher> > dispatchers;   ///< Dispatched first-feasible in priority order.
 protected:
   Evaluator* evaluator;
+  Config config;
   std::shared_ptr<Event> dispatchEvent(const SystemState* systemState);
 };
 
