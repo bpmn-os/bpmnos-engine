@@ -1,5 +1,7 @@
 #include "InstantDirectMessage.h"
 #include "execution/engine/src/Mediator.h"
+#include "execution/engine/src/SystemState.h"
+#include "execution/engine/src/DecisionRequest.h"
 #include "execution/engine/src/events/MessageDeliveryEvent.h"
 #include "model/bpmnos/src/extensionElements/MessageDefinition.h"
 #include <cassert>
@@ -13,7 +15,8 @@ InstantDirectMessage::InstantDirectMessage()
 void InstantDirectMessage::connect(Mediator* mediator) {
   mediator->addSubscriber(this,
     Execution::Observable::Type::MessageDeliveryRequest,
-    Execution::Observable::Type::Message
+    Execution::Observable::Type::Message,
+    Execution::Observable::Type::SystemState
   );
   EventDispatcher::connect(mediator);
 }
@@ -54,6 +57,24 @@ void InstantDirectMessage::notice(const Observable* observable) {
         ) {
           candidates.emplace_back( message->weak_from_this() );
         }
+      }
+    }
+  }
+  else if ( observable->getObservableType() == Observable::Type::SystemState ) {
+    // A foreign state was installed (e.g. on resume). Rebuild from it: incremental Message/MessageDeliveryRequest
+    // notices are not replayed for state that already existed at install time, so a directly-addressed delivery
+    // pending at install (e.g. an order waiting at NoticeJobCompletionTask for its completion) would otherwise be
+    // invisible here. Replay the created messages first, then the pending delivery requests so they match against
+    // them — mirroring MessageDeliveries::notice(SystemState).
+    auto systemState = static_cast<const SystemState*>(observable);
+    messages.clear();
+    messageDeliveryRequests.clear();
+    for ( auto& message : systemState->messages ) {
+      notice( message.get() );
+    }
+    for ( auto& [token_ptr, request_ptr] : systemState->pendingMessageDeliveryDecisions ) {
+      if ( auto request = request_ptr.lock() ) {
+        notice( request.get() );
       }
     }
   }

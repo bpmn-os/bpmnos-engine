@@ -27,9 +27,9 @@ SCENARIO( "Job shop schedulng problem", "[examples][job_shop_scheduling_problem]
       Execution::GreedyController controller(&evaluator);
       controller.connect(&engine);
       
-      Execution::MyopicMessageTaskTerminator messageTaskTerminator;
+//      Execution::MyopicMessageTaskTerminator messageTaskTerminator;
+//      messageTaskTerminator.connect(&engine);
       Execution::TimeWarp timeHandler;
-      messageTaskTerminator.connect(&engine);
       timeHandler.connect(&engine);
 
       Execution::Recorder recorder;
