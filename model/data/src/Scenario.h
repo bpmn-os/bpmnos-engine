@@ -148,6 +148,11 @@ public:
    */
   virtual std::optional<BPMNOS::Values> getActivityReadyStatus(BPMNOS::number rootId, BPMNOS::number instanceId, const BPMN::Node* activity, BPMNOS::number currentTime) const = 0;
 
+  /// @brief Deep-copy this scenario (including the mutable per-run memoization maps), so each rollout
+  /// sub-engine gets its own and parallel runs don't share/race on those maps. Only deterministic
+  /// scenarios override this; the base throws (stochastic scenarios are forked, not cloned).
+  virtual std::unique_ptr<Scenario> clone() const;
+
   const Model* model;  ///< Pointer to the BPMN model.
   BPMNOS::Values globals;
 

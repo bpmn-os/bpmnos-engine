@@ -53,6 +53,8 @@ public:
 
   void noticeReadyPending( BPMNOS::number instanceId, const BPMN::Node* node, const Values& status, const SharedValues& data, const Values& globals ) const override;
 
+  std::unique_ptr<Scenario> clone() const override { return std::make_unique<DynamicScenario>(*this); }
+
   void revealData(BPMNOS::number currentTime) const;
 
 protected:
