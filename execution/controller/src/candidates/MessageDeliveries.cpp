@@ -1,5 +1,5 @@
 #include "MessageDeliveries.h"
-#include "execution/engine/src/Mediator.h"
+#include "execution/engine/src/Notifier.h"
 #include "execution/engine/src/SystemState.h"
 #include "execution/engine/src/DecisionRequest.h"
 #include "model/bpmnos/src/extensionElements/MessageDefinition.h"
@@ -13,8 +13,8 @@ MessageDeliveries::MessageDeliveries(Evaluator* evaluator)
 {
 }
 
-void MessageDeliveries::connect(Mediator* mediator) {
-  mediator->addSubscriber(this,
+void MessageDeliveries::connect(Notifier* notifier) {
+  notifier->addSubscriber(this,
     Observable::Type::MessageDeliveryRequest,
     Observable::Type::Message,
     Observable::Type::DataUpdate,

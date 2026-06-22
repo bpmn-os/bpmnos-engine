@@ -20,7 +20,7 @@ namespace BPMNOS::Execution {
 class MessageDeliveries : public CachedCandidates< std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest>, std::weak_ptr<const Message> > {
 public:
   MessageDeliveries(Evaluator* evaluator);
-  void connect(Mediator* mediator) override;
+  void connect(Notifier* notifier) override;
   void notice(const Observable* observable) override;
   void clear() override;
 protected:

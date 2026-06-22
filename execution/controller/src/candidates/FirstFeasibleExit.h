@@ -18,7 +18,7 @@ namespace BPMNOS::Execution {
 class FirstFeasibleExit : public CachedCandidates< std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest> > {
 public:
   FirstFeasibleExit(Evaluator* evaluator);
-  void connect(Mediator* mediator) override;
+  void connect(Notifier* notifier) override;
   void notice(const Observable* observable) override;
 protected:
   void evaluateCandidates() override;

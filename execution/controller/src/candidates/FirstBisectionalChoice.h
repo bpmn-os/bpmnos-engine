@@ -28,7 +28,7 @@ namespace BPMNOS::Execution {
 class FirstBisectionalChoice : public Candidates< std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest> > {
 public:
   FirstBisectionalChoice(Evaluator* evaluator);
-  void connect(Mediator* mediator) override;
+  void connect(Notifier* notifier) override;
   std::shared_ptr<Decision> determineBestChoices(std::shared_ptr<const DecisionRequest> request);
 
 protected:

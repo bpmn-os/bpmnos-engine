@@ -3,6 +3,7 @@
 #include "GreedyDispatcher.h"
 #include "candidates/FirstFeasibleExit.h"
 #include "candidates/FirstFeasibleEntry.h"
+#include "candidates/FirstEnumeratedChoice.h"
 #include "candidates/FirstBisectionalChoice.h"
 #include "candidates/CompetingCandidates.h"
 #include "dispatcher/InstantDirectMessage.h"
@@ -10,8 +11,9 @@
 
 using namespace BPMNOS::Execution;
 
-GreedyController::GreedyController(Evaluator* evaluator)
+GreedyController::GreedyController(Evaluator* evaluator, Config config)
   : evaluator(evaluator)
+  , config(config)
 {
   // Decisions come from Candidates collections, each owned by a generic GreedyDispatcher (templated on the
   // collection type), tried in priority order. Exit, entry, and direct message delivery are unambiguous;
@@ -20,7 +22,12 @@ GreedyController::GreedyController(Evaluator* evaluator)
   dispatchers.push_back( std::make_unique<GreedyDispatcher<FirstFeasibleExit>>(evaluator) );
   dispatchers.push_back( std::make_unique<GreedyDispatcher<FirstFeasibleEntry>>(evaluator) ); // non-sequential entries only (config.sequential=false)
   dispatchers.push_back( std::make_unique<InstantDirectMessage>() );
-  dispatchers.push_back( std::make_unique<GreedyDispatcher<FirstBisectionalChoice>>(evaluator) );
+  if ( config.bisection ) {
+    dispatchers.push_back( std::make_unique<GreedyDispatcher<FirstBisectionalChoice>>(evaluator) );
+  }
+  else {
+    dispatchers.push_back( std::make_unique<GreedyDispatcher<FirstEnumeratedChoice>>(evaluator) );
+  }
   dispatchers.push_back( std::make_unique<GreedyDispatcher<CompetingCandidates>>(evaluator) ); // sequential ad-hoc entries and message deliveries
 }
 

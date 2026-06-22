@@ -1,5 +1,5 @@
 #include "SequentialEntries.h"
-#include "execution/engine/src/Mediator.h"
+#include "execution/engine/src/Notifier.h"
 #include "execution/engine/src/SystemState.h"
 #include "execution/engine/src/DecisionRequest.h"
 #include "model/bpmnos/src/SequentialAdHocSubProcess.h"
@@ -12,8 +12,8 @@ SequentialEntries::SequentialEntries(Evaluator* evaluator)
 {
 }
 
-void SequentialEntries::connect(Mediator* mediator) {
-  mediator->addSubscriber(this,
+void SequentialEntries::connect(Notifier* notifier) {
+  notifier->addSubscriber(this,
     Observable::Type::EntryRequest,
     Observable::Type::DataUpdate,
     Observable::Type::SystemState

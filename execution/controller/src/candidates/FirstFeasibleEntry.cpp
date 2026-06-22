@@ -1,5 +1,5 @@
 #include "FirstFeasibleEntry.h"
-#include "execution/engine/src/Mediator.h"
+#include "execution/engine/src/Notifier.h"
 #include "execution/engine/src/SystemState.h"
 #include "execution/engine/src/DecisionRequest.h"
 #include "model/bpmnos/src/SequentialAdHocSubProcess.h"
@@ -13,8 +13,8 @@ FirstFeasibleEntry::FirstFeasibleEntry(Evaluator* evaluator, Config config)
 {
 }
 
-void FirstFeasibleEntry::connect(Mediator* mediator) {
-  mediator->addSubscriber(this,
+void FirstFeasibleEntry::connect(Notifier* notifier) {
+  notifier->addSubscriber(this,
     Observable::Type::EntryRequest,
     Observable::Type::DataUpdate,
     Observable::Type::SystemState

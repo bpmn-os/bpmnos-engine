@@ -12,7 +12,7 @@
 
 namespace BPMNOS::Execution {
 
-class Mediator;
+class Notifier;
 
 /**
  * @brief Iterable union of the contested entry and message-delivery candidate decisions, ordered by reward.
@@ -33,9 +33,9 @@ public:
   }
 
   /// Connect both owned candidate collections so each registers itself for the observables it needs.
-  void connect(Mediator* mediator) {
-    sequentialEntries.connect(mediator);
-    messageDeliveries.connect(mediator);
+  void connect(Notifier* notifier) {
+    sequentialEntries.connect(notifier);
+    messageDeliveries.connect(notifier);
   }
 
   /// Element yielded by the merge: reward, the decision's weak Event (second-to-last), its weak Evaluation (last).
