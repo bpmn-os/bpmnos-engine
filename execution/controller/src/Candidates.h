@@ -14,7 +14,7 @@
 
 namespace BPMNOS::Execution {
 
-class Mediator;
+class Notifier;
 
 /**
  * @brief An iterable collection of evaluated candidate decisions, ordered by reward (best first; infeasible last).
@@ -35,7 +35,7 @@ public:
   virtual ~Candidates() = default;
 
   /// Subscriptions are made by the specializations; the base does nothing.
-  virtual void connect(Mediator* /*mediator*/) {}
+  virtual void connect(Notifier* /*notifier*/) {}
 
   /// Binds the per-run system state (specializations override and call this).
   void notice(const Observable* observable) override {

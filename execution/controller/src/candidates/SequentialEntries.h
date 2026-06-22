@@ -18,7 +18,7 @@ namespace BPMNOS::Execution {
 class SequentialEntries : public CachedCandidates< std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest> > {
 public:
   SequentialEntries(Evaluator* evaluator);
-  void connect(Mediator* mediator) override;
+  void connect(Notifier* notifier) override;
   void notice(const Observable* observable) override;
 protected:
   void evaluateCandidates() override;

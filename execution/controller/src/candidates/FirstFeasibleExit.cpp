@@ -1,5 +1,5 @@
 #include "FirstFeasibleExit.h"
-#include "execution/engine/src/Mediator.h"
+#include "execution/engine/src/Notifier.h"
 #include "execution/engine/src/SystemState.h"
 #include "execution/engine/src/DecisionRequest.h"
 #include <cassert>
@@ -11,8 +11,8 @@ FirstFeasibleExit::FirstFeasibleExit(Evaluator* evaluator)
 {
 }
 
-void FirstFeasibleExit::connect(Mediator* mediator) {
-  mediator->addSubscriber(this,
+void FirstFeasibleExit::connect(Notifier* notifier) {
+  notifier->addSubscriber(this,
     Observable::Type::ExitRequest,
     Observable::Type::DataUpdate,
     Observable::Type::SystemState
