@@ -38,6 +38,8 @@ public:
 
   void noticeReadyPending( BPMNOS::number instanceId, const BPMN::Node* node, const Values& status, const SharedValues& data, const Values& globals ) const override;
 
+  std::unique_ptr<Scenario> clone() const override { return std::make_unique<StaticScenario>(*this); }
+
 protected:
   Values getKnownInitialStatus(const InstanceData*, const BPMNOS::number time) const override;
   Values getKnownInitialData(const InstanceData*, const BPMNOS::number time) const override;

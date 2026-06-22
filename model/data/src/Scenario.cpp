@@ -40,6 +40,10 @@ BPMNOS::Values Scenario::evaluateGlobals(const std::unordered_map<const Attribut
   return result;
 }
 
+std::unique_ptr<Scenario> Scenario::clone() const {
+  throw std::logic_error("Scenario::clone() is only supported for deterministic scenarios");
+}
+
 void Scenario::noticeCompletionPending([[maybe_unused]] BPMNOS::number rootId, const BPMN::Node* task, const Values& status, const SharedValues& data, [[maybe_unused]] const Values& globals) const {
   // key by the full instance id (carries ^...#k for event-subprocess/multi-instance executions)
   auto instanceId = (size_t)data[ExtensionElements::Index::Instance].get().value();

@@ -25,6 +25,8 @@ public:
     BPMNOS::number latestInstantiationTime,
     const std::unordered_map<const Attribute*, BPMNOS::number>& globalValueMap
   );
+
+  std::unique_ptr<Scenario> clone() const override { return std::make_unique<ExpectedValueScenario>(*this); }
 };
 
 } // namespace BPMNOS::Model
