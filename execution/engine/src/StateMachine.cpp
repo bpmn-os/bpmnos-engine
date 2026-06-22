@@ -327,6 +327,7 @@ StateMachine::~StateMachine() {
   if ( !systemState->inbox.empty() && scope ) {
     unregisterRecipient();
   }
+  compensationTokens.clear();
 }
 
 BPMNOS::Values StateMachine::getData(const BPMN::Scope* scope) {
