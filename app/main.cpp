@@ -7,7 +7,7 @@
 
 void print_usage() {
   std::cout << "Usage:" << std::endl;
-  std::cout << "\tbpmnos-greedy --model <model file> --data <data file> [--provider {static|expected|dynamic|stochastic}] [--evaluator {local|guided}] [--folders <folder1> <folder2> ...] [--timeout] [--verbose]" << std::endl;
+  std::cout << "\tbpmnos-greedy --model <model file> --data <data file> [--provider {static|expected|dynamic|stochastic}] [--evaluator {local|guided}] [--folders <folder1> <folder2> ...] [--bisection] [--timeout] [--verbose]" << std::endl;
   std::cout << "\tbpmnos-greedy -m <model file> -d <data file> [-p <path1> <path2> ...] [-t] [-v]" << std::endl;
   std::cout << std::endl;
   std::cout << "\t-m, --model <model file>:             name of the BPMN model file" << std::endl;
@@ -15,6 +15,7 @@ void print_usage() {
   std::cout << "\t-p, --provider {static|expected|dynamic|stochastic} (default: stochastic)" << std::endl;
   std::cout << "\t-e, --evaluator {local|guided} (default: guided)" << std::endl;
   std::cout << "\t-f, --folder <folder1> <folder2> ...: folders in which lookup tables can be found" << std::endl;
+  std::cout << "\t-b, --bisection:                      use bisection for choices" << std::endl;
   std::cout << "\t-t, --timeout:                        time when execution is terminated" << std::endl;
   std::cout << "\t-v, --verbose:                        display the execution log" << std::endl;
   exit(1);
@@ -27,8 +28,9 @@ struct Arguments {
   std::string providerName = "stochastic";
   std::string evaluatorName = "guided";
   std::vector<std::string> folders;
+  bool bisection = false;
   std::optional<BPMNOS::number> timeout;
-  bool verbose;
+  bool verbose = false;
 };
 
 Arguments parse_arguments(int argc, char* argv[]) {
@@ -53,6 +55,9 @@ Arguments parse_arguments(int argc, char* argv[]) {
       while (i + 1 < argc && argv[i + 1][0] != '-') {
         args.folders.push_back(argv[++i]);
       }
+    }
+    else if ((arg == "--bisection" || arg == "-b")) {
+      args.bisection = true;
     }
     else if ((arg == "--timeout" || arg == "-t") && i + 1 < argc) {
       args.timeout = BPMNOS::to_number(std::string(argv[++i]),BPMNOS::STRING);
@@ -134,7 +139,7 @@ int main(int argc, char* argv[]) {
 //  readyHandler.connect(&engine);
 
   auto evaluator = createEvaluator();
-  BPMNOS::Execution::GreedyController controller(evaluator.get());
+  BPMNOS::Execution::GreedyController controller(evaluator.get(), { .bisection = args.bisection });
   controller.connect(&engine);
       
   BPMNOS::Execution::MyopicMessageTaskTerminator messageTaskTerminator;
