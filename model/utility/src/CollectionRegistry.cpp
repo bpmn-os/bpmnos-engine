@@ -10,9 +10,9 @@ CollectionRegistry::CollectionRegistry() {
   (*this)(std::vector<double>());
 }
 
-const std::vector<double>&  CollectionRegistry::operator[](size_t i) const {
-  assert( i < registeredCollections.size() );
+std::vector<double> CollectionRegistry::operator[](size_t i) const {
   std::shared_lock read_lock(registryMutex);
+  assert( i < registeredCollections.size() );
   return registeredCollections[i];
 }
 

@@ -21,7 +21,9 @@ namespace BPMNOS {
     CollectionRegistry();
 
     /// Operator providing access to a registered collections by index.
-    const std::vector<double>& operator[](size_t i) const;
+    /// Returns by value: a reference would dangle if a concurrent operator() push_back reallocates
+    /// registeredCollections after the read lock is released.
+    std::vector<double> operator[](size_t i) const;
     /// Operator to register a collection by its values and return its index.
     size_t operator()(const std::vector<double>& collection);
     size_t size() const;
