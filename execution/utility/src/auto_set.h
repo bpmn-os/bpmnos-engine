@@ -11,28 +11,26 @@
 namespace BPMNOS::Execution {
 
 /**
- * @brief Orders tuples by increasing value of the first component (ties broken by address).
+ * @brief Orders tuples by increasing value of the first component; equal values are kept in insertion order.
  */
 struct ascending {
   template <typename Tuple>
   bool operator()(const Tuple& lhs, const Tuple& rhs) const {
-    if ( std::get<0>(lhs) != std::get<0>(rhs) ) {
-      return std::get<0>(lhs) < std::get<0>(rhs);
-    }
-    return (&lhs < &rhs); // distinct tuples with equal first component coexist, ordered by address
+    // First component only: equal-first-component tuples compare equivalent and coexist in the multiset,
+    // ordered by insertion — a deterministic, allocation-independent tiebreak.
+    return std::get<0>(lhs) < std::get<0>(rhs);
   }
 };
 
 /**
- * @brief Orders tuples by decreasing value of the first component (ties broken by address).
+ * @brief Orders tuples by decreasing value of the first component; equal values are kept in insertion order.
  */
 struct descending {
   template <typename Tuple>
   bool operator()(const Tuple& lhs, const Tuple& rhs) const {
-    if ( std::get<0>(lhs) != std::get<0>(rhs) ) {
-      return std::get<0>(lhs) > std::get<0>(rhs);
-    }
-    return (&lhs < &rhs); // distinct tuples with equal first component coexist, ordered by address
+    // First component only: equal-first-component tuples compare equivalent and coexist in the multiset,
+    // ordered by insertion — a deterministic, allocation-independent tiebreak.
+    return std::get<0>(lhs) > std::get<0>(rhs);
   }
 };
 
@@ -43,7 +41,7 @@ concept TupleComparator = requires (const C& c, const Tuple& a, const Tuple& b) 
 };
 
 /**
- * @brief Set of tuples ordered by the first component, with automatic removal of tuples containing an expired weak_ptr.
+ * @brief Multiset of tuples ordered by the first component, with automatic removal of tuples containing an expired weak_ptr.
  *
  * Templated on the value type `V` of the first component, the comparator `Compare`, and the trailing tuple
  * element types `U...`. The order must be given explicitly as the second template argument —
@@ -55,10 +53,10 @@ template <typename V, typename Compare, typename... U>
 class auto_set {
 public:
   struct iterator {
-    typename std::set< std::tuple< V, U... >, Compare >::iterator current;
+    typename std::multiset< std::tuple< V, U... >, Compare >::iterator current;
     auto_set<V, Compare, U...>* container;
 
-    iterator(typename std::set< std::tuple< V, U... >, Compare >::iterator iter, auto_set<V, Compare, U...>* cont)
+    iterator(typename std::multiset< std::tuple< V, U... >, Compare >::iterator iter, auto_set<V, Compare, U...>* cont)
       : current(iter), container(cont) {
         skipExpired();
       }
@@ -178,7 +176,7 @@ public:
   }
 
 private:
-  mutable std::set< std::tuple< V, U... >, Compare > tuples;
+  mutable std::multiset< std::tuple< V, U... >, Compare > tuples;
 };
 
 } // namespace BPMNOS::Execution
