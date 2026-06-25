@@ -57,6 +57,10 @@ void Recorder::record(const nlohmann::ordered_json& json, const std::string& typ
   }
 }
 
+void Recorder::inject(const std::string& tag, const nlohmann::ordered_json& json) {
+  record( json, tag, Color::FG_WHITE );
+}
+
 void Recorder::subscribe(Engine* engine) {
   if ( config.token ) {
     engine->addSubscriber(this, Execution::Observable::Type::Token);
