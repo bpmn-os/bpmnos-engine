@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <string>
 #include <bpmn++.h>
@@ -7,14 +8,15 @@
 
 void print_usage() {
   std::cout << "Usage:" << std::endl;
-  std::cout << "\tbpmnos-greedy --model <model file> --data <data file> [--provider {static|expected|dynamic|stochastic}] [--evaluator {local|guided}] [--folders <folder1> <folder2> ...] [--bisection] [--timeout] [--verbose]" << std::endl;
+  std::cout << "\tbpmnos-greedy --model <model file> --data <data file> [--json <json file>] [--provider {static|expected|dynamic|stochastic}] [--evaluator {local|guided}] [--folders <folder1> <folder2> ...] [--bisection] [--timeout] [--verbose]" << std::endl;
   std::cout << "\tbpmnos-greedy -m <model file> -d <data file> [-p <path1> <path2> ...] [-t] [-v]" << std::endl;
   std::cout << std::endl;
   std::cout << "\t-m, --model <model file>:             name of the BPMN model file" << std::endl;
   std::cout << "\t-d, --data <data file>:               name of the CSV file containing the instance data" << std::endl;
+  std::cout << "\t-j, --json <json file>:               name of the file for the JSON output" << std::endl;
   std::cout << "\t-p, --provider {static|expected|dynamic|stochastic} (default: stochastic)" << std::endl;
   std::cout << "\t-e, --evaluator {local|guided} (default: guided)" << std::endl;
-  std::cout << "\t-f, --folder <folder1> <folder2> ...: folders in which lookup tables can be found" << std::endl;
+  std::cout << "\t-f, --folders <folder1> <folder2> ...: folders in which lookup tables can be found" << std::endl;
   std::cout << "\t-b, --bisection:                      use bisection for choices" << std::endl;
   std::cout << "\t-t, --timeout:                        time when execution is terminated" << std::endl;
   std::cout << "\t-v, --verbose:                        display the execution log" << std::endl;
@@ -25,6 +27,7 @@ struct Arguments {
   Arguments() : verbose(false) {};
   std::string modelFile;
   std::string dataFile;
+  std::string jsonFile;
   std::string providerName = "stochastic";
   std::string evaluatorName = "guided";
   std::vector<std::string> folders;
@@ -44,6 +47,9 @@ Arguments parse_arguments(int argc, char* argv[]) {
     }
     else if ((arg == "--data" || arg == "-d") && i + 1 < argc) {
       args.dataFile = argv[++i];
+    }
+    else if ((arg == "--json" || arg == "-j") && i + 1 < argc) {
+      args.jsonFile = argv[++i];
     }
     else if ((arg == "--provider" || arg == "-p") && i + 1 < argc) {
       args.providerName = argv[++i];
@@ -119,24 +125,11 @@ int main(int argc, char* argv[]) {
     }
     return nullptr;
   };
-
-
-  auto createRecorder = [&args]() -> std::unique_ptr<BPMNOS::Execution::Recorder> {
-    if (args.verbose) {
-      return std::make_unique<BPMNOS::Execution::Recorder>(std::cout);
-    }
-    else {
-      return std::make_unique<BPMNOS::Execution::Recorder>();
-    }
-  };
-
   
   auto dataProvider = createDataProvider();
   auto scenario = dataProvider->createScenario();
 
   BPMNOS::Execution::Engine engine;
-//  BPMNOS::Execution::ReadyHandler readyHandler;
-//  readyHandler.connect(&engine);
 
   auto evaluator = createEvaluator();
   BPMNOS::Execution::GreedyController controller(evaluator.get(), { .bisection = args.bisection });
@@ -147,8 +140,24 @@ int main(int argc, char* argv[]) {
   messageTaskTerminator.connect(&engine);
   timeHandler.connect(&engine);
 
-  auto recorder = createRecorder();
-  recorder->subscribe(&engine);
+
+  std::ofstream jsonStream;
+  std::unique_ptr<BPMNOS::Execution::Recorder> recorder;
+  if (!args.jsonFile.empty()) {
+    jsonStream.open(args.jsonFile);
+    if (!jsonStream.is_open()) {
+      std::cerr << "Error: unable to open JSON output file: " << args.jsonFile << "\n";
+      return 1;
+    }
+    recorder = std::make_unique<BPMNOS::Execution::Recorder>(BPMNOS::Execution::Recorder::Config{ .stream = jsonStream, .tagged = true });
+    recorder->subscribe(&engine);
+  }
+
+  std::unique_ptr<BPMNOS::Execution::Recorder> logger;
+  if (args.verbose) {
+    logger = std::make_unique<BPMNOS::Execution::Recorder>(BPMNOS::Execution::Recorder::Config{ .stream = std::cout, .colored = true });
+    logger->subscribe(&engine);
+  }
 
   if (args.timeout.has_value()) {
     engine.run(scenario.get(),args.timeout.value());
@@ -156,7 +165,10 @@ int main(int argc, char* argv[]) {
   else {
     engine.run(scenario.get());
   }
-  
+  auto objective = (float)engine.getSystemState()->getWeightedObjective();
+  std::cout << "Objective (maximization): " << objective << std::endl;
+  std::cout << "Objective (minimization): " << -objective  << std::endl;
+
   return 0;
 }
 

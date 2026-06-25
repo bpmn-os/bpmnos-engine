@@ -4,92 +4,83 @@
 
 using namespace BPMNOS::Execution;
 
-Recorder::Recorder(size_t maxSize) : objective(0), os(std::nullopt), maxSize(maxSize)
+Recorder::Recorder(Config config) : isFirst(true), config(config)
 {
   log = nlohmann::ordered_json::array();
-}
-
-Recorder::Recorder(std::ostream &os, size_t maxSize) : objective(0), os(os), maxSize(maxSize)
-{
-  log = nlohmann::ordered_json::array();
-  if (this->os.has_value()) {
-    this->os.value().get() << Color::Modifier(Color::FG_LIGHT_GRAY) << "[" << Color::Modifier(Color::FG_DEFAULT);
-  }
-  isFirst = true;
+  emit("[", Color::FG_LIGHT_GRAY);
 }
 
 Recorder::~Recorder()
 {
-  if (os.has_value()) {
-    os.value().get() << Color::Modifier(Color::FG_LIGHT_GRAY) << "]" << Color::Modifier(Color::FG_DEFAULT) << std::endl;
-    os.value().get()  << "Objective (maximization): " << (float)objective << std::endl;
-    os.value().get()  << "Objective (minimization): " << -(float)objective << std::endl;
+  emit("]", Color::FG_LIGHT_GRAY);
+  if (config.stream.has_value()) {
+    config.stream.value().get() << std::endl;
+  }
+}
+
+void Recorder::emit(const std::string& text, Color::Code color)
+{
+  if (!config.stream.has_value()) {
+    return;
+  }
+  auto& stream = config.stream.value().get();
+  if (config.colored) {
+    stream << Color::Modifier(color) << text << Color::Modifier(Color::FG_DEFAULT);
+  }
+  else {
+    stream << text;
+  }
+}
+
+void Recorder::record(const nlohmann::ordered_json& json, const std::string& type, Color::Code color)
+{
+  nlohmann::ordered_json item;
+  if (config.tagged) {
+    item[type] = json;
+  }
+  else {
+    item = json;
+  }
+
+  if (config.stream.has_value()) {
+    if (!isFirst) {
+      emit(",", color);
+    }
+    emit(item.dump(), color);
+    isFirst = false;
+  }
+
+  log.push_back( std::move(item) );
+
+  if ( log.size() > config.maxSize) {
+    log.erase(log.begin());
   }
 }
 
 void Recorder::subscribe(Engine* engine) {
-  engine->addSubscriber(this, 
-    Execution::Observable::Type::Token,
-    Execution::Observable::Type::Event,
-    Execution::Observable::Type::Message
-  );
+  if ( config.token ) {
+    engine->addSubscriber(this, Execution::Observable::Type::Token);
+  }
+  if ( config.event ) {
+    engine->addSubscriber(this, Execution::Observable::Type::Event);
+  }
+  if ( config.message ) {
+    engine->addSubscriber(this, Execution::Observable::Type::Message);
+  }
 }
 
 void Recorder::notice(const Observable* observable) {
   if ( observable->getObservableType() ==  Execution::Observable::Type::Token ) {
     auto token = static_cast<const Token*>(observable);
-    objective = token->owner->systemState->getWeightedObjective();
-    auto json = token->jsonify();
-
-    if (os.has_value()) {
-      if ( !isFirst ) {
-        os.value().get() << Color::Modifier(Color::FG_LIGHT_GRAY) << "," << Color::Modifier(Color::FG_DEFAULT);
-      }
-      os.value().get() << Color::Modifier(Color::FG_LIGHT_GRAY) << json.dump() << Color::Modifier(Color::FG_DEFAULT);
-      isFirst = false;
-    }
-
-    log.push_back( json );
-
-    if ( log.size() > maxSize) {
-      log.erase(log.begin());
-    }
+    record( token->jsonify(), "token", Color::FG_LIGHT_GRAY );
   }
   else if ( observable->getObservableType() ==  Execution::Observable::Type::Event ) {
     auto event = static_cast<const Event*>(observable);
-    auto json = event->jsonify();
-
-    if (os.has_value()) {
-      if ( !isFirst ) {
-        os.value().get() << Color::Modifier(Color::FG_LIGHT_CYAN) << "," << Color::Modifier(Color::FG_DEFAULT);
-      }
-      os.value().get() << Color::Modifier(Color::FG_LIGHT_CYAN) << json.dump() << Color::Modifier(Color::FG_DEFAULT);
-      isFirst = false;
-    }
-
-    log.push_back( json );
-
-    if ( log.size() > maxSize) {
-      log.erase(log.begin());
-    }
+    record( event->jsonify(), "event", Color::FG_LIGHT_CYAN );
   }
   else if ( observable->getObservableType() ==  Execution::Observable::Type::Message ) {
     auto message = static_cast<const Message*>(observable);
-    auto json = message->jsonify();
-
-    if (os.has_value()) {
-      if ( !isFirst ) {
-        os.value().get() << Color::Modifier(Color::FG_LIGHT_YELLOW) << "," << Color::Modifier(Color::FG_DEFAULT);
-      }
-      os.value().get() << Color::Modifier(Color::FG_LIGHT_YELLOW) << json.dump() << Color::Modifier(Color::FG_DEFAULT);
-      isFirst = false;
-    }
-
-    log.push_back( json );
-
-    if ( log.size() > maxSize) {
-      log.erase(log.begin());
-    }
+    record( message->jsonify(), "message", Color::FG_LIGHT_YELLOW );
   }
 
 };
