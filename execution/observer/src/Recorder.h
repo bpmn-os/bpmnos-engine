@@ -65,6 +65,11 @@ public:
   void subscribe(Engine* engine);
   void notice(const Observable* observable) override;
 
+  /// Appends an externally supplied json entry to the log (and the attached stream, comma-separated),
+  /// independent of the engine observables recorded through notice(). In tagged mode the entry is
+  /// wrapped as {tag: json}; otherwise it is stored as given. The caller owns the entry's shape.
+  void inject(const std::string& tag, const nlohmann::ordered_json& json);
+
   nlohmann::ordered_json log; ///< A json object of the entire log.
   /**
    * @brief Returns a json array containing all log entries matching the include object and not matching the exclude object.
