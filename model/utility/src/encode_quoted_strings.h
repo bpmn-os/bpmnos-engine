@@ -14,7 +14,7 @@ namespace BPMNOS {
 
 // Function to replace all strings within double quotes
 inline std::string encodeQuotedStrings(std::string text) {
-  std::regex doubleQuoteRegex("\"([^\"]*)\""); // Match strings within double quotes
+  static const std::regex doubleQuoteRegex("\"([^\"]*)\""); // Match strings within double quotes (compiled once)
   std::stack< std::tuple<size_t, size_t, long unsigned int> > replacements;
 
   // collect all matches and their positions
