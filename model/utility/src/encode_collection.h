@@ -13,8 +13,8 @@ namespace BPMNOS {
 
 /// Function to replace a collection that is not preceded by an alphanumeric or underscore
 inline std::string encodeCollection(std::string text) {
-  std::string pattern = "(^|[^a-zA-Z0-9_])\\[(.*?)\\]";// "[\\s]*\\[(.*?)\\]";
-  std::regex regular_expression(pattern); // Match "[" ... "]" that is not preceded by an alphanumeric or underscore
+  // Match "[" ... "]" that is not preceded by an alphanumeric or underscore (compiled once)
+  static const std::regex regular_expression("(^|[^a-zA-Z0-9_])\\[(.*?)\\]");
   std::smatch match;
 
   while (std::regex_search(text, match, regular_expression)) {

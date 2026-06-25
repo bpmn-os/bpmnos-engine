@@ -1,7 +1,7 @@
 #!/bin/bash
 
 script_dir=$(dirname "$(realpath "$0")")
-bpmnos=$(dirname "$script_dir")/bin/bpmnos
+bpmnos=$(dirname "$script_dir")/bin/bpmnos-greedy
 
 # Function to display usage information
 usage() {
@@ -45,9 +45,9 @@ echo "Profiling (this may take a while)..."
 {
   TIMEFORMAT="Instance executed in %Rs"
   if [ -z "${path}" ]; then
-    time $bpmnos -m ${model} -d ${data}
+    time $bpmnos -m ${model} -d ${data} -p static -e guided
   else
-    time $bpmnos -m ${model} -d ${data} -p ${path}
+    time $bpmnos -m ${model} -d ${data} -f ${path} -p static -e guided
   fi
 }
 
