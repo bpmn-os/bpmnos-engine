@@ -2,23 +2,25 @@
 #include <fstream>
 #include <vector>
 #include <string>
+#include <random>
 #include <bpmn++.h>
 #include <bpmnos-model.h>
 #include <bpmnos-execution.h>
 
 void print_usage() {
   std::cout << "Usage:" << std::endl;
-  std::cout << "\tbpmnos-greedy --model <model file> --data <data file> [--json <json file>] [--provider {static|expected|dynamic|stochastic}] [--evaluator {local|guided}] [--folders <folder1> <folder2> ...] [--bisection] [--timeout] [--verbose]" << std::endl;
-  std::cout << "\tbpmnos-greedy -m <model file> -d <data file> [-j <json file>] [-p <path1> <path2> ...] [-t] [-v]" << std::endl;
+  std::cout << "\tbpmnos-greedy --model <model file> --data <data file> [--json <json file>] [--provider {static|expected|dynamic|stochastic}] [--evaluator {local|guided}] [--seed <number>] [--folders <folder1> <folder2> ...] [--bisection] [--timeout] [--verbose]" << std::endl;
+  std::cout << "\tbpmnos-greedy -m <model file> -d <data file> [-j <json file>] [-p <path1> <path2> ...]  [-s <number>] [-f <folder1> <folder2> ...] [--b] [-t <number>] [-v]" << std::endl;
   std::cout << std::endl;
   std::cout << "\t-m, --model <model file>:             name of the BPMN model file" << std::endl;
   std::cout << "\t-d, --data <data file>:               name of the CSV file containing the instance data" << std::endl;
   std::cout << "\t-j, --json <json file>:               name of the file for the JSON output" << std::endl;
   std::cout << "\t-p, --provider {static|expected|dynamic|stochastic} (default: stochastic)" << std::endl;
+  std::cout << "\t-s, --seed <number>                   seed for stochastic scenarios (default: random)" << std::endl;
   std::cout << "\t-e, --evaluator {local|guided} (default: guided)" << std::endl;
   std::cout << "\t-f, --folders <folder1> <folder2> ...: folders in which lookup tables can be found" << std::endl;
   std::cout << "\t-b, --bisection:                      use bisection for choices" << std::endl;
-  std::cout << "\t-t, --timeout:                        time when execution is terminated" << std::endl;
+  std::cout << "\t-t, --timeout <number>:               simulation time when execution is terminated" << std::endl;
   std::cout << "\t-v, --verbose:                        display the execution log" << std::endl;
   exit(1);
 }
@@ -29,6 +31,7 @@ struct Arguments {
   std::string dataFile;
   std::string jsonFile;
   std::string providerName = "stochastic";
+  unsigned int seed = std::random_device{}();
   std::string evaluatorName = "guided";
   std::vector<std::string> folders;
   bool bisection = false;
@@ -53,6 +56,9 @@ Arguments parse_arguments(int argc, char* argv[]) {
     }
     else if ((arg == "--provider" || arg == "-p") && i + 1 < argc) {
       args.providerName = argv[++i];
+    }
+    else if ((arg == "--seed" || arg == "-s") && i + 1 < argc) {
+      args.seed = (unsigned int)std::stoul(argv[++i]);
     }
     else if ((arg == "--evaluator" || arg == "-e") && i + 1 < argc) {
       args.evaluatorName = argv[++i];
@@ -103,7 +109,7 @@ int main(int argc, char* argv[]) {
       return std::make_unique<BPMNOS::Model::DynamicDataProvider>(args.modelFile,args.folders,args.dataFile);
     }
     else if (args.providerName == "stochastic") {
-      return std::make_unique<BPMNOS::Model::StochasticDataProvider>(args.modelFile,args.folders,args.dataFile);
+      return std::make_unique<BPMNOS::Model::StochasticDataProvider>(args.modelFile,args.folders,args.dataFile, args.seed);
     }
     else {
       std::cerr << "Error: unknown data provider.\n";
@@ -127,6 +133,9 @@ int main(int argc, char* argv[]) {
   };
   
   auto dataProvider = createDataProvider();
+  if (args.providerName == "stochastic") {
+    std::cout << "Seed: " << args.seed  << std::endl;
+  }
   auto scenario = dataProvider->createScenario();
 
   BPMNOS::Execution::Engine engine;
