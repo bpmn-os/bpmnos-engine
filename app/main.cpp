@@ -10,7 +10,7 @@
 void print_usage() {
   std::cout << "Usage:" << std::endl;
   std::cout << "\tbpmnos-greedy --model <model file> --data <data file> [--json <json file>] [--provider {static|expected|dynamic|stochastic}] [--seed <number>] [--evaluator {local|guided}] [--folders <folder1> <folder2> ...] [--bisection] [--timeout] [--verbose]" << std::endl;
-  std::cout << "\tbpmnos-greedy -m <model file> -d <data file> [-j <json file>] [-p {static|expected|dynamic|stochastic}]  [-s <number>] [-e {local|guided}] [-f <folder1> <folder2> ...] [--b] [-t <number>] [-v]" << std::endl;
+  std::cout << "\tbpmnos-greedy -m <model file> -d <data file> [-j <json file>] [-p <provider>]  [-s <number>] [-e <evaluator>] [-f <folder1> <folder2> ...] [--b] [-t <number>] [-v]" << std::endl;
   std::cout << std::endl;
   std::cout << "\t-m, --model <model file>:             name of the BPMN model file" << std::endl;
   std::cout << "\t-d, --data <data file>:               name of the CSV file containing the instance data" << std::endl;
