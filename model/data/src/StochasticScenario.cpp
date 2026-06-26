@@ -37,6 +37,13 @@ StochasticScenario::StochasticScenario(StochasticScenario* original, BPMNOS::num
   // Append new seed (rngs not copied - recreated with new seed via getRng())
   scenarioSeeds.push_back({spawnTime, seed});
 
+  // Settle the realized past before resampling: forking spawns at spawnTime = currentTime + 1, so every
+  // disclosure due up to currentTime (= spawnTime - 1) was already revealed to the live run via
+  // disclosureTimes. The pending->past bookkeeping is only flushed by revealData() on a clock tick (which
+  // lags one tick), so move those due disclosures to pastDisclosures here. This preserves their realized
+  // values (they precede the resampling horizon) and upholds the precondition of evaluateDeferredDisclosures.
+  revealData(spawnTime - 1);
+
   // Resample future items (validates precondition and throws if violated)
   evaluateDeferredDisclosures(spawnTime);
 }
@@ -87,8 +94,16 @@ void StochasticScenario::evaluateDeferredDisclosures(BPMNOS::number spawnTime) {
       if (pastDisclosures.contains(instanceId) &&
           pastDisclosures.at(instanceId).contains(disclosure.attribute)
       ) {
-        if (pastDisclosures.at(instanceId).at(disclosure.attribute).disclosureTime >= spawnTime) {
-          throw std::logic_error("StochasticScenario: past disclosure for '" + disclosure.attribute->name + "' has disclosureTime >= spawnTime");
+        const auto& pastDisclosure = pastDisclosures.at(instanceId).at(disclosure.attribute);
+        if (pastDisclosure.disclosureTime >= spawnTime) {
+          throw std::logic_error(
+            "StochasticScenario: past disclosure for attribute '" + disclosure.attribute->name +
+            "' (" + BPMNOS::to_string(instanceId, BPMNOS::STRING) +
+            ", " + disclosure.node->id +
+            ") has disclosureTime " + std::to_string((double)pastDisclosure.disclosureTime) +
+            " >= spawnTime " + std::to_string((double)spawnTime) +
+            " (disclosed value " + std::to_string((double)pastDisclosure.value) + ")"
+          );
         }
         continue;
       }
@@ -98,7 +113,15 @@ void StochasticScenario::evaluateDeferredDisclosures(BPMNOS::number spawnTime) {
           pendingDisclosures.at(instanceId).contains(disclosure.attribute) &&
           pendingDisclosures.at(instanceId).at(disclosure.attribute).disclosureTime < spawnTime
       ) {
-        throw std::logic_error("StochasticScenario: pending disclosure for '" + disclosure.attribute->name + "' has disclosureTime < spawnTime");
+        const auto& pendingDisclosure = pendingDisclosures.at(instanceId).at(disclosure.attribute);
+        throw std::logic_error(
+          "StochasticScenario: pending disclosure for attribute '" + disclosure.attribute->name +
+          "' (" + BPMNOS::to_string(instanceId, BPMNOS::STRING) +
+          ", " + disclosure.node->id +
+          ") has disclosureTime " + std::to_string((double)pendingDisclosure.disclosureTime) +
+          " < spawnTime " + std::to_string((double)spawnTime) +
+          " (pending value " + std::to_string((double)pendingDisclosure.value) + ")"
+        );
       }
 
       // Set RNG context for this (instance, node)
