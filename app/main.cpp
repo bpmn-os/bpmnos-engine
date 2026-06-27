@@ -144,9 +144,7 @@ int main(int argc, char* argv[]) {
   BPMNOS::Execution::GreedyController controller(evaluator.get(), { .bisection = args.bisection });
   controller.connect(&engine);
       
-  BPMNOS::Execution::MyopicMessageTaskTerminator messageTaskTerminator;
   BPMNOS::Execution::TimeWarp timeHandler;
-  messageTaskTerminator.connect(&engine);
   timeHandler.connect(&engine);
 
 
@@ -168,16 +166,23 @@ int main(int argc, char* argv[]) {
     logger->subscribe(&engine);
   }
 
+
+  BPMNOS::Execution::OutcomeSentinel sentinel;
+  sentinel.subscribe(&engine);
+
   if (args.timeout.has_value()) {
     engine.run(scenario.get(),args.timeout.value());
   }
   else {
     engine.run(scenario.get());
   }
+  
+  logger.reset();
+  std::cout << "Status: " << BPMNOS::Execution::outcome[(size_t)sentinel.getOutcome()] << std::endl;
+  
   auto objective = (float)engine.getSystemState()->getWeightedObjective();
   std::cout << "Objective (maximization): " << objective << std::endl;
   std::cout << "Objective (minimization): " << -objective  << std::endl;
-
   return 0;
 }
 
