@@ -14,7 +14,7 @@ namespace BPMNOS::Execution {
  */
 struct TimerEvent : virtual Event {
   TimerEvent(const Token* token);
-  void processBy(Engine* engine) const;
+  void processBy(Engine* engine) const override;
 
   nlohmann::ordered_json jsonify() const override;
 };

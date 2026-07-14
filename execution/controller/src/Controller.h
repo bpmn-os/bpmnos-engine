@@ -16,7 +16,8 @@ class Controller : public Observer, public EventDispatcher, public Mediator {
 public:
   Controller();
   virtual ~Controller() = default;
-  virtual void connect(Mediator* mediator);
+  void connect(Mediator* mediator) override;
+  using EventDispatcher::notice;
   void notice(const Observable* observable) override;
 };
 

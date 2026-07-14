@@ -469,7 +469,7 @@ std::shared_ptr<Event> SeededController::dispatchEvent(const SystemState* system
       event = createChoiceEvent( systemState, request->token, vertex);
     }
     else {
-      assert(!"Unexpected request type");
+      assert(false && "Unexpected request type");
     }
     return event;
   };

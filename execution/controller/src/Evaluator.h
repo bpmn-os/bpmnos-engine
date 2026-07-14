@@ -15,6 +15,7 @@ namespace BPMNOS::Execution {
  */
 class Evaluator {
 public:
+  virtual ~Evaluator() = default;
   virtual std::shared_ptr<Evaluation> evaluate(EntryDecision* decision) = 0;
   virtual std::shared_ptr<Evaluation> evaluate(ExitDecision* decision) = 0;
   virtual std::shared_ptr<Evaluation> evaluate(ChoiceDecision* decision) = 0;

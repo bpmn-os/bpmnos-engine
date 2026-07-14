@@ -18,7 +18,7 @@ class StateMachine;
 class Token;
 typedef std::vector< std::shared_ptr<Token> > Tokens;
 class EventDispatcher;
-class DecisionRequest;
+struct DecisionRequest;
 
 /**
  * @brief Represents a token running through a (sub)process.

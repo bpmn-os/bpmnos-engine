@@ -79,14 +79,14 @@ BPMNOS::number Guidance::getObjective(const BPMNOS::Values& status, const DataTy
   BPMNOS::number objective = 0;
   for ( auto attribute : attributeRegistry.statusAttributes ) {
     auto value = attributeRegistry.getValue(attribute,status,data,globals);
-    if ( value.has_value() && attribute->weight ) {
+    if ( value.has_value() && attribute->weight != 0 ) {
 //std::cerr << attribute->name << " contributes " <<  attribute->weight * value.value() << std::endl;
       objective += attribute->weight * value.value();
     }
   }
   for ( auto attribute : attributeRegistry.dataAttributes ) {
     auto value = attributeRegistry.getValue(attribute,status,data,globals);
-    if ( value.has_value() && attribute->weight ) {
+    if ( value.has_value() && attribute->weight != 0 ) {
 //std::cerr << attribute->name << " contributes " <<  attribute->weight * value.value() << std::endl;
       objective += attribute->weight * value.value();
     }
