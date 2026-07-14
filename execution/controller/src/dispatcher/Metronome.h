@@ -17,7 +17,7 @@ public:
   std::shared_ptr<Event> dispatchEvent( const SystemState* systemState ) override;
   void initialize(unsigned int clockTickDuration); ///< Change clockTickDuration and set timestamp to current time and 
 private:
-  std::chrono::high_resolution_clock::time_point timestamp;
+  std::chrono::steady_clock::time_point timestamp;
   unsigned int clockTickDuration; ///< Duration of clock ticks in milliseconds
 };
 
