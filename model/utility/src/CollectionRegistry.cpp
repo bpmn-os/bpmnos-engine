@@ -1,6 +1,5 @@
 #include "CollectionRegistry.h"
 #include "Keywords.h"
-#include <strutil.h>
 #include <cassert>
 
 using namespace BPMNOS;

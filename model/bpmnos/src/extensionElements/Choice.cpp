@@ -1,7 +1,7 @@
 #include "Choice.h"
 #include "model/utility/src/CollectionRegistry.h"
 #include <cmath>
-#include <strutil.h>
+#include "model/utility/src/string_utility.h"
 #include "model/utility/src/encode_quoted_strings.h"
 #include "model/utility/src/encode_collection.h"
 
@@ -13,18 +13,18 @@ Choice::Choice(XML::bpmnos::tDecision* decision, const AttributeRegistry& attrib
   , attribute(nullptr)
 {
   auto input = encodeQuotedStrings(decision->condition.value.value);
-  strutil::replace_all( input, "∈", " in ");
+  BPMNOS::replace_all( input, "∈", " in ");
 
-  if ( strutil::contains(input," in ") ) {
+  if ( input.contains(" in ") ) {
     parseEnumeration(input);
   }
-  else if ( !strutil::contains(input,"<") ) {
+  else if ( !input.contains("<") ) {
     throw std::runtime_error("Choice: no enumeration or bounds given in '" + input + "'");
   }
   else {  
-    strutil::replace_all( input, "|", " divides ");
+    BPMNOS::replace_all( input, "|", " divides ");
     auto [bounds,discretizer] = [&input]() -> std::pair<std::string, std::string> {
-      if ( !strutil::contains(input," divides ") ) {
+      if ( !input.contains(" divides ") ) {
         // no discretizer provided
         return { input, "" };
       }
@@ -35,8 +35,8 @@ Choice::Choice(XML::bpmnos::tDecision* decision, const AttributeRegistry& attrib
         throw std::runtime_error("Choice: illegal condition '" + input + "'");
       }
       return { 
-        strutil::trim_copy(input.substr(0, pos)), 
-        strutil::trim_copy(input.substr(pos + 1))
+        BPMNOS::trim_copy(input.substr(0, pos)), 
+        BPMNOS::trim_copy(input.substr(pos + 1))
       };
     }();
 
@@ -58,23 +58,23 @@ Choice::Choice(XML::bpmnos::tDecision* decision, const AttributeRegistry& attrib
 }
 
 void Choice::parseEnumeration(const std::string& input) {
-  auto parts = strutil::split(input," in ");
+  auto parts = BPMNOS::split(input," in ");
   if ( parts.size() != 2 ) {
     throw std::runtime_error("Choice: illegal enumeration '" + input + "'");
   }
 
-  std::string attributeName = strutil::trim_copy(parts.front());
+  std::string attributeName = BPMNOS::trim_copy(parts.front());
   if ( attributeName == "" ) {
     throw std::runtime_error("Choice: unable to determine attribute name");
   }
   attribute = attributeRegistry[ attributeName ];
 
-  auto rhs = strutil::trim_copy(parts.back());
+  auto rhs = BPMNOS::trim_copy(parts.back());
 
   if ( (rhs.front() == '[' && rhs.back() == ']') || (rhs.front() == '{' && rhs.back() == '}') ) {
-    auto alternatives = strutil::split( encodeCollection( rhs.substr(1, rhs.size()-2) ), ',' );
+    auto alternatives = BPMNOS::split( encodeCollection( rhs.substr(1, rhs.size()-2) ), ',' );
     for ( auto& alternative : alternatives ) {
-      enumeration.emplace_back( std::make_unique<Expression>(strutil::trim_copy(alternative), attributeRegistry) );
+      enumeration.emplace_back( std::make_unique<Expression>(BPMNOS::trim_copy(alternative), attributeRegistry) );
       for ( auto dependency : enumeration.back()->inputs ) {
         dependencies.insert(dependency);
       }
@@ -90,7 +90,7 @@ void Choice::parseEnumeration(const std::string& input) {
 
 void Choice::parseBounds(const std::string& input) {
   // check bounds
-  auto conditions = strutil::split(input,'<');
+  auto conditions = BPMNOS::split(input,'<');
   if ( conditions.size() == 3 ) {
     bool strictLB = false;
     // condition has two inequalities
@@ -103,7 +103,7 @@ void Choice::parseBounds(const std::string& input) {
       strictLB = true;
     }
     lowerBound.emplace(
-      std::make_unique<Expression>(strutil::trim_copy(conditions[0]), attributeRegistry),
+      std::make_unique<Expression>(BPMNOS::trim_copy(conditions[0]), attributeRegistry),
       strictLB
     );
     for ( auto dependency : lowerBound.value().first->inputs ) {
@@ -111,7 +111,7 @@ void Choice::parseBounds(const std::string& input) {
     }
     
     // determine attribute
-    std::string attributeName = strutil::trim_copy(conditions[1]);
+    std::string attributeName = BPMNOS::trim_copy(conditions[1]);
     if ( attributeName == "" ) {
       throw std::runtime_error("Choice: unable to determine attribute name");
     }
@@ -128,7 +128,7 @@ void Choice::parseBounds(const std::string& input) {
     }
 
     upperBound.emplace(
-      std::make_unique<Expression>(strutil::trim_copy(conditions[2]), attributeRegistry),
+      std::make_unique<Expression>(BPMNOS::trim_copy(conditions[2]), attributeRegistry),
       strictUB
     );
     for ( auto dependency : upperBound.value().first->inputs ) {
@@ -143,12 +143,12 @@ void Choice::parseBounds(const std::string& input) {
 }
 
 void Choice::parseDiscretizer(const std::string& input) {
-  auto parts = strutil::split(input," divides ");
-  std::string attributeName = strutil::trim_copy(parts[1]);
+  auto parts = BPMNOS::split(input," divides ");
+  std::string attributeName = BPMNOS::trim_copy(parts[1]);
   if ( attribute->name != attributeName ) {
     throw std::runtime_error("Choice: inconsistent attribute name '" + attributeName + "' in '" + input + "'");
   }
-  multipleOf = std::make_unique<Expression>(strutil::trim_copy(parts[0]), attributeRegistry);
+  multipleOf = std::make_unique<Expression>(BPMNOS::trim_copy(parts[0]), attributeRegistry);
   for ( auto dependency : multipleOf->inputs ) {
     dependencies.insert(dependency);
   }

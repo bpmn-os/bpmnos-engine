@@ -4,7 +4,7 @@
 #include <string>
 #include <regex>
 #include <cassert>
-#include <strutil.h>
+#include "string_utility.h"
 
 #include "CollectionRegistry.h"
 #include "Keywords.h"
@@ -22,8 +22,8 @@ inline std::string encodeCollection(std::string text) {
       throw std::runtime_error("Nested collections are not supported");
     }
     std::vector<double> collection;
-    for ( auto value : strutil::split(match[2].str(),',') ) {
-      strutil::trim(value);
+    for ( auto value : BPMNOS::split(match[2].str(),',') ) {
+      BPMNOS::trim(value);
       if ( value == Keyword::False ) {
         collection.push_back( false );
       }

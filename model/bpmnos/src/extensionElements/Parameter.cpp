@@ -1,5 +1,5 @@
 #include "Parameter.h"
-#include <strutil.h>
+#include "model/utility/src/string_utility.h"
 #include "model/utility/src/encode_quoted_strings.h"
 #include "model/utility/src/encode_collection.h"
 
@@ -13,7 +13,7 @@ Parameter::Parameter(XML::bpmnos::tParameter* parameter, const AttributeRegistry
 }
 
 std::unique_ptr<const Expression> Parameter::getExpression(XML::bpmnos::tParameter* parameter, const AttributeRegistry& attributeRegistry) const {
-  if ( !parameter->value.has_value() || strutil::trim_copy(parameter->value->get().value).empty() ) {
+  if ( !parameter->value.has_value() || BPMNOS::trim_copy(parameter->value->get().value).empty() ) {
     return nullptr;
   }
 
