@@ -76,20 +76,6 @@ include(FetchContent)
 set(FETCHCONTENT_QUIET FALSE)
 
 set(BUILD_TESTING OFF CACHE BOOL "Disable testing")
-# String Util
-FetchContent_Declare(
-        strutil
-        GIT_REPOSITORY https://github.com/Shot511/strutil.git
-        GIT_TAG v1.1.0
-        SOURCE_SUBDIR this-directory-does-not-exist # Work around to not build the project
-)
-
-FetchContent_MakeAvailable(strutil)
-
-include_directories(
-  SYSTEM
-  ${strutil_SOURCE_DIR} 
-)
 
 add_subdirectory(model)
 add_subdirectory(execution)

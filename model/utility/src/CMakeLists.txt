@@ -19,6 +19,7 @@ list(APPEND model_utility_HEADERS
   RandomDistributionFactory.h
   ExpectedValueFactory.h
   getDelimiter.h
+  string_utility.h
   encode_quoted_strings.h
   encode_collection.h
 )

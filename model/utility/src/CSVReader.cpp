@@ -3,7 +3,7 @@
 #include <sstream>
 #include <fstream>
 #include <filesystem>
-#include <strutil.h>
+#include "string_utility.h"
 
 using namespace BPMNOS;
 
@@ -34,13 +34,13 @@ CSVReader::Table CSVReader::read() {
   std::string line;
   while (std::getline(*input, line)) {
     line = encodeCollection( encodeQuotedStrings( line ) );
-    strutil::trim(line);
+    BPMNOS::trim(line);
 //std::cerr << "Line: " << line << std::endl;
     if ( line.empty() ) continue; // skip empty lines
-    auto cells = strutil::split_any( line, delimiters );
+    auto cells = BPMNOS::split_any( line, delimiters );
     Row row;
     for ( auto cell : cells ) {
-      strutil::trim(cell);
+      BPMNOS::trim(cell);
       if ( !cell.empty() && (std::isdigit( cell[0] ) || cell[0] == '.' || cell[0] == '-') ) {
         // treat cell as number
         row.push_back((BPMNOS::number)std::stod(cell));
