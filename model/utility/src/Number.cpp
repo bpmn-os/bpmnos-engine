@@ -71,7 +71,7 @@ number to_number(const std::string& valueString, const ValueType& type) {
       return number(BPMNOS::stoi( valueString ));
 //      return number(collectionRegistry( valueString ));
   }
-  throw std::logic_error("to_number: unknown value type " + type );
+  throw std::logic_error("to_number: unknown value type " + std::to_string(static_cast<int>(type)) );
 }
 
 number to_number(const Value& value, const ValueType& type) {
@@ -87,7 +87,7 @@ number to_number(const Value& value, const ValueType& type) {
         return number(std::get<int>(value) ? 1 : 0);
       }
       else if (std::holds_alternative<double>(value)) {
-        return number(std::get<double>(value) ? 1 : 0);
+        return number(std::get<double>(value) != 0.0 ? 1 : 0);
       }
       else [[unlikely]] {
         throw std::logic_error("to_number: value holds no alternative" );
@@ -148,7 +148,7 @@ number to_number(const Value& value, const ValueType& type) {
         throw std::logic_error("to_number: illegal conversion" );
       }
   }
-  throw std::logic_error("to_number: unknown value type " + type );
+  throw std::logic_error("to_number: unknown value type " + std::to_string(static_cast<int>(type)) );
 }
 
 std::string to_string(number numericValue, const ValueType& type) {
@@ -170,7 +170,7 @@ std::string to_string(number numericValue, const ValueType& type) {
       result += " ]";
       return result;
   }
-  throw std::logic_error("to_string: unknown value type " + type );
+  throw std::logic_error("to_string: unknown value type " + std::to_string(static_cast<int>(type)) );
 }
 
 std::string to_string(double value) {

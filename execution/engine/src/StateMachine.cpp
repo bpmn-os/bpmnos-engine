@@ -583,7 +583,7 @@ void StateMachine::deleteMultiInstanceActivityToken(Token* token) {
     }
   }
   else {
-    assert(!"cannot find tokens created for multi instance activity");
+    assert(false && "cannot find tokens created for multi instance activity");
   }
 }
 // TODO: handle failure events
@@ -1224,7 +1224,7 @@ void StateMachine::advanceTokenWaitingForCompensation(Token* waitingToken) {
   }
   else {
 //  std::cerr << waitingToken->node->id << " has state: " << Token::stateName[(int)waitingToken->state]  << std::endl;
-    assert(!"unexpected state of waiting token");
+    assert(false && "unexpected state of waiting token");
   }
 }
 

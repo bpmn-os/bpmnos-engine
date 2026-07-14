@@ -18,7 +18,7 @@ bool LocalEvaluator::updateValues(EntryDecision* decision, Values& status, Value
 
   // TODO: this shoud not be relevant
   if ( token->node->represents<BPMN::EventSubProcess>() ) {
-assert(!"No entry for event-subprocesses");
+assert(false && "No entry for event-subprocesses");
     // for event-subprocesses apply operators before checking entry restrictions
     extensionElements->applyOperators(status,data,globals);
   }

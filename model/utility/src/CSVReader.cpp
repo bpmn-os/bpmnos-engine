@@ -53,7 +53,11 @@ CSVReader::Table CSVReader::read() {
       }
       else {
         // treat cell as string
-        row.push_back(cell);
+        // Note: construct the alternative explicitly. The variant's converting
+        // constructor would otherwise test std::string -> BPMNOS::number
+        // convertibility, forcing instantiation of cnl's unconstrained
+        // string constructor, which fails to compile under clang.
+        row.emplace_back(std::in_place_type<std::string>, cell);
       }
     }
     table.push_back(row);

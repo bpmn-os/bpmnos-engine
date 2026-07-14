@@ -14,7 +14,7 @@ namespace BPMNOS::Execution {
  */
 struct ChoiceEvent : virtual Event {
   ChoiceEvent(const Token* token, std::vector<number> choices);
-  void processBy(Engine* engine) const;
+  void processBy(Engine* engine) const override;
   std::vector<number> choices; // attribute values in order of the choices to be made
 
   nlohmann::ordered_json jsonify() const override;

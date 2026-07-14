@@ -43,15 +43,16 @@ public:
   static Config default_config() { return {}; } // Work around for compiler bug see: https://stackoverflow.com/questions/53408962/try-to-understand-compiler-error-message-default-member-initializer-required-be/75691051#75691051
   SeededController(const BPMNOS::Execution::FlattenedGraph* flattenedGraph, Config config = default_config());
   bool setSeed(const std::vector<size_t> initialSeed);
-  void connect(Mediator* mediator);
+  void connect(Mediator* mediator) override;
   void subscribe(Engine* engine);
+  using EventDispatcher::notice;
   void notice(const Observable* observable) override;
   void synchronizeSolution(const Token* token);
 
 protected:
   Evaluator* evaluator;
   std::shared_ptr<TerminationEvent> terminationEvent;
-  std::shared_ptr<Event> dispatchEvent(const SystemState* systemState);
+  std::shared_ptr<Event> dispatchEvent(const SystemState* systemState) override;
   Config config;
 public:
   const FlattenedGraph* flattenedGraph;

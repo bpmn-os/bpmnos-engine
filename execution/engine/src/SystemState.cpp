@@ -53,7 +53,7 @@ SystemState::SystemState(const Engine* engine, const BPMNOS::Model::Scenario* sc
       }
       return message;
     }
-    assert(!"Unable to find message!");
+    assert(false && "Unable to find message!");
     return nullptr;
   };
 

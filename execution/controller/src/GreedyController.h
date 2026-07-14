@@ -23,12 +23,12 @@ public:
   };
   static Config default_config() { return {}; }  // Work around for compiler bug see: https://stackoverflow.com/questions/53408962/try-to-understand-compiler-error-message-default-member-initializer-required-be/75691051#75691051
   GreedyController(Evaluator* evaluator, Config config = default_config());
-  void connect(Mediator* mediator);
+  void connect(Mediator* mediator) override;
   std::vector< std::unique_ptr<EventDispatcher> > dispatchers;   ///< Dispatched first-feasible in priority order.
 protected:
   Evaluator* evaluator;
   Config config;
-  std::shared_ptr<Event> dispatchEvent(const SystemState* systemState);
+  std::shared_ptr<Event> dispatchEvent(const SystemState* systemState) override;
 };
 
 } // namespace BPMNOS::Execution

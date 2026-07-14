@@ -23,6 +23,7 @@ public:
   ~ReadyHandler();
 
   void connect(Mediator* mediator) override;
+  using EventDispatcher::notice;
   void notice(const Observable* observable) override;
   std::shared_ptr<Event> dispatchEvent(const SystemState* systemState) override;
 

@@ -82,11 +82,12 @@ if (NDEBUG)
     -pedantic-errors
     -Wpedantic
     -Wall
-    -Wshadow=local
+    ${BPMNOS_SHADOW_FLAG}
     -Wextra
     -Wconversion
     -Wsign-conversion
-    -fmax-errors=1 # Remove
+    ${BPMNOS_WARNING_FLAGS}
+    ${BPMNOS_MAX_ERRORS_FLAG}
     -Wno-error=unused-parameter # Remove
     -Wno-error=unused-variable # Remove
   )
@@ -98,16 +99,17 @@ else()
     -pedantic-errors
     -Wpedantic
     -Wall
-    -Wshadow=local
+    ${BPMNOS_SHADOW_FLAG}
     -Wextra
     -Wconversion
     -Wsign-conversion
+    ${BPMNOS_WARNING_FLAGS}
     -fsanitize=address,undefined,leak
     -fno-omit-frame-pointer
     -g
     -ggdb3
     -pg # Profiling
-    -fmax-errors=1 # Remove
+    ${BPMNOS_MAX_ERRORS_FLAG}
     -Wno-error=unused-parameter # Remove
     -Wno-error=unused-variable # Remove
   )

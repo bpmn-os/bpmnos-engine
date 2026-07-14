@@ -21,6 +21,32 @@ include_directories("${PROJECT_SOURCE_DIR}/")
 # Set the C++ standard
 set(CMAKE_CXX_STANDARD 23)
 
+# Compiler-specific spellings of otherwise-common warning/diagnostic flags.
+# Used verbatim in the target_compile_options blocks of the sub-projects.
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+  set(BPMNOS_SHADOW_FLAG -Wshadow=local)
+  set(BPMNOS_MAX_ERRORS_FLAG -fmax-errors=1) # Remove
+elseif (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  # clang has no equivalent of -Wshadow=local: its "shadows a field" and
+  # "shadows a local" diagnostics are both under -Wshadow and cannot be
+  # separated. Since the project deliberately allows parameters/locals to
+  # shadow member fields (e.g. the ubiquitous status/data/globals parameters),
+  # no shadow flag is passed for clang; the GCC build still enforces
+  # -Wshadow=local for local-vs-local shadowing.
+  set(BPMNOS_SHADOW_FLAG "")
+  set(BPMNOS_MAX_ERRORS_FLAG -ferror-limit=1) # Remove
+endif()
+
+# Additional warnings accepted by both GCC and clang. Enabled for parity so
+# that either compiler surfaces missing overrides, hidden virtual overloads,
+# non-virtual destructors of polymorphic bases, and struct/class tag mismatches.
+set(BPMNOS_WARNING_FLAGS
+  -Wsuggest-override
+  -Woverloaded-virtual
+  -Wnon-virtual-dtor
+  -Wmismatched-tags
+)
+
 include(FetchContent)
 set(FETCHCONTENT_QUIET FALSE)
 

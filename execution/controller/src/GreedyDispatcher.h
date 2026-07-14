@@ -12,7 +12,7 @@
 
 namespace BPMNOS::Execution {
 
-class Mediator;
+struct Mediator;
 
 /// A candidate element: a tuple-like value whose first component is the reward and whose second-to-last
 /// component is the decision's weak Event — the only parts a dispatcher reads.

@@ -79,7 +79,7 @@ void InstantDirectMessage::notice(const Observable* observable) {
     }
   }
   else {
-    assert(!"Unexpected observable type");
+    assert(false && "Unexpected observable type");
   }
 }
 

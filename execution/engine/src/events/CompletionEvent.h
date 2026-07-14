@@ -13,7 +13,7 @@ namespace BPMNOS::Execution {
  */
 struct CompletionEvent : Event {
   CompletionEvent(const Token* token, Values status);
-  void processBy(Engine* engine) const;
+  void processBy(Engine* engine) const override;
   Values status;
 
   nlohmann::ordered_json jsonify() const override;

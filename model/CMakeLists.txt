@@ -75,14 +75,15 @@ if (NDEBUG)
     PRIVATE
     -O3
     -Werror
-    -Wshadow=local
+    ${BPMNOS_SHADOW_FLAG}
     -pedantic-errors
     -Wpedantic
     -Wall
     -Wextra
     -Wconversion
     -Wsign-conversion
-    -fmax-errors=1 # Remove
+    ${BPMNOS_WARNING_FLAGS}
+    ${BPMNOS_MAX_ERRORS_FLAG}
     -Wno-error=unused-parameter # Remove
     -Wno-error=unused-variable # Remove
 # Add below line to suppress warnings for CSV Parser (not necessary for -O2)
@@ -94,19 +95,20 @@ else()
     PRIVATE
     -O0
     -Werror
-    -Wshadow=local
+    ${BPMNOS_SHADOW_FLAG}
     -pedantic-errors
     -Wpedantic
     -Wall
     -Wextra
     -Wconversion
     -Wsign-conversion
+    ${BPMNOS_WARNING_FLAGS}
     -fsanitize=address,undefined,leak
     -fno-omit-frame-pointer
     -g
     -ggdb3
     -pg # Profiling
-    -fmax-errors=1 # Remove
+    ${BPMNOS_MAX_ERRORS_FLAG}
     -Wno-error=unused-parameter # Remove
     -Wno-error=unused-variable # Remove
   )

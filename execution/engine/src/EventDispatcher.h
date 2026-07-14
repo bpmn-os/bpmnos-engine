@@ -6,7 +6,7 @@
 
 namespace BPMNOS::Execution {
 
-class Mediator;
+struct Mediator;
 
 class EventDispatcher {
 public:
