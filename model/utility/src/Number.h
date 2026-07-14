@@ -1,7 +1,7 @@
 #ifndef BPMNOS_Number_H
 #define BPMNOS_Number_H
 
-#include <cnl/all.h>
+#include <cnl/scaled_integer.h>
 #include <limits>
 #include <string>
 #include <vector>
