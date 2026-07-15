@@ -17,7 +17,6 @@ using namespace BPMNOS::Execution;
 
 Engine::Engine()
 {
-  clockTick = 1;
   lastInstantiationTime = std::numeric_limits<BPMNOS::number>::lowest();
   addSubscriber(&conditionalEventObserver, Observable::Type::DataUpdate);
   addSubscriber(&scenarioUpdater, Observable::Type::Event, Observable::Type::Token);
@@ -122,7 +121,7 @@ bool Engine::advance(BPMNOS::number timeout) {
   while ( auto event = fetchEvent(systemState.get()) ) {
 //std::cerr << "*";
     // stop before processing clock tick that would exceed timeout                
-    if ( event->is<ClockTickEvent>() && systemState->getTime() >= timeout ) {     
+    if ( auto clockTickEvent = event->is<ClockTickEvent>(); clockTickEvent && clockTickEvent->time > timeout ) {     
       return false;                                                               
     }   
     notify(event.get());
@@ -283,7 +282,7 @@ void Engine::process(const ErrorEvent* event) {
 
 void Engine::process([[maybe_unused]] const ClockTickEvent* event) {
 //std::cerr << "ClockTickEvent " << std::endl;
-  systemState->incrementTimeBy(clockTick);
+  systemState->increaseTimeTo(event->time);
   // trigger tokens awaiting timer
   while ( !systemState->tokensAwaitingTimer.empty() ) {
     auto it = systemState->tokensAwaitingTimer.begin();
