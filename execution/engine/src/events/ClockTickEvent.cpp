@@ -5,6 +5,7 @@ using namespace BPMNOS::Execution;
 
 ClockTickEvent::ClockTickEvent(const SystemState* systemState)
   : Event(nullptr)
+  , time(systemState->getTime() + clockTick)
   , systemState(systemState)
 {
 }
@@ -17,7 +18,7 @@ nlohmann::ordered_json ClockTickEvent::jsonify() const {
   nlohmann::ordered_json jsonObject;
 
   jsonObject["event"] = "clocktick";
-  jsonObject["timestamp"] = (int)systemState->getTime();
+  jsonObject["time"] = (int)time;
 
   return jsonObject;
 }

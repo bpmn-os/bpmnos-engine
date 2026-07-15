@@ -149,7 +149,8 @@ std::optional<BPMNOS::Values> SystemState::getDataAttributes(const StateMachine*
   return scenario->getData(root->instance.value(), node, currentTime);
 }
 
-void SystemState::incrementTimeBy(BPMNOS::number duration) {
-  currentTime += duration;
+void SystemState::increaseTimeTo(BPMNOS::number time) {
+  assert(time > currentTime);
+  currentTime = time;
 }
 

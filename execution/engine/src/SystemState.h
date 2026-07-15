@@ -180,7 +180,7 @@ private:
   SystemState() = delete;
 
 
-  void incrementTimeBy(BPMNOS::number duration);
+  void increaseTimeTo(BPMNOS::number time);
   size_t instantiationCounter;
 };
 

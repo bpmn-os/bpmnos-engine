@@ -147,7 +147,6 @@ protected:
 
   void deleteInstance(StateMachine* instance); ///< Method removing completed instance
 
-  BPMNOS::number clockTick; ///< Timestep used to advance the current time by systemState.time += clockTick
   BPMNOS::number lastInstantiationTime; ///< Timestamp when instances were last added (to prevent duplicate additions at same time)
   std::unique_ptr<SystemState> systemState;
   ConditionalEventObserver conditionalEventObserver;

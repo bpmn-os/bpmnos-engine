@@ -19,6 +19,8 @@ struct ClockTickEvent : Event {
 
   nlohmann::ordered_json jsonify() const override;
 
+  static constexpr BPMNOS::number clockTick = 1; ///< Timestep used to advance the current time
+  BPMNOS::number time;
   const SystemState* systemState;
 };
 
