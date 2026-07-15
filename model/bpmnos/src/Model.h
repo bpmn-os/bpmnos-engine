@@ -4,6 +4,8 @@
 #include <memory>
 #include <vector>
 #include <string>
+#include <unordered_map>
+#include <optional>
 #include <bpmn++.h>
 #include <limex.h>
 #include "model/bpmnos/src/xml/bpmnos/tAttribute.h"
@@ -22,15 +24,24 @@ namespace BPMNOS::Model {
 class Model : public BPMN::Model {
 public:
   Model(const std::string filename, const std::vector<std::string> folders = {});
-  const std::string filename; ///< File name of the BPMN model
+  Model(std::unique_ptr<XML::XMLObject> model, std::unordered_map<std::string, std::string> lookupTables);
   const std::vector<std::string> folders; ///< Folders containing lookup tables
+  std::optional<std::unordered_map<std::string, std::string>> lookupContents; ///< Lookup table contents keyed by source file name when the model is built from in-memory content; empty for the file/folder path.
   LIMEX::Handle<double> limexHandle;
 
   std::vector<std::reference_wrapper<XML::bpmnos::tAttribute>> getAttributes(XML::bpmn::tBaseElement* element);
   std::vector<std::reference_wrapper<XML::bpmnos::tAttribute>> getData(XML::bpmn::tBaseElement* element);
   
-  std::unique_ptr<LookupTable> createLookupTable(XML::bpmnos::tTable* table);
-  std::unique_ptr<XML::XMLObject> createRoot(const std::string& filename) override;
+  std::unique_ptr<LookupTable> createLookupTable(const std::string& name, const std::string& source);
+  void processRoot() override;
+
+  /// @brief Returns the file names of the lookup tables referenced by the given model.
+  /// @param root The parsed BPMN model tree.
+  /// @return The `source` file name of each referenced lookup table — i.e. the file name under which
+  ///         its CSV content must be provided (the keys expected in the lookup content map).
+  /// @throws std::runtime_error if a lookup table source contains a path separator; a source must be a
+  ///         bare file name.
+  static std::vector<std::string> getLookupTableNames(const XML::XMLObject& root);
 
   std::unique_ptr<BPMN::Process> createProcess(XML::bpmn::tProcess* process) override;
   std::unique_ptr<BPMN::EventSubProcess> createEventSubProcess(XML::bpmn::tSubProcess* subProcess, BPMN::Scope* parent) override;

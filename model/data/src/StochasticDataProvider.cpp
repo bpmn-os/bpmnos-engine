@@ -32,6 +32,19 @@ StochasticDataProvider::StochasticDataProvider(const std::string& modelFile,
   readInstances();
 }
 
+StochasticDataProvider::StochasticDataProvider(Input input, unsigned int seed)
+  : DataProvider(std::move(input.model), std::move(input.lookupTables))
+  , reader(CSVReader(input.instance, ";"))
+  , seed(seed)
+  , columnCount(0)
+{
+  initializeStochasticHandle();
+  // Set up RNG for parse-time evaluation of random expressions
+  std::mt19937 parseTimeRng(seed);
+  randomFactory.setCurrentRng(&parseTimeRng);
+  readInstances();
+}
+
 void StochasticDataProvider::initializeStochasticHandle() {
   // Copy lookup tables from model
   for (auto& lookupTable : model->lookupTables) {

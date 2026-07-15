@@ -21,6 +21,15 @@ ExpectedValueDataProvider::ExpectedValueDataProvider(const std::string& modelFil
   readInstances();
 }
 
+ExpectedValueDataProvider::ExpectedValueDataProvider(Input input)
+  : StaticDataProvider(std::move(input.model), std::move(input.lookupTables))
+{
+  initializeExpectedValueHandle();
+
+  reader = std::make_unique<CSVReader>(input.instance, ";");
+  readInstances();
+}
+
 void ExpectedValueDataProvider::initializeExpectedValueHandle() {
   // Copy lookup tables from model
   for (auto& lookupTable : model->lookupTables) {

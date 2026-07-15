@@ -15,6 +15,7 @@
 #include "model/bpmnos/src/extensionElements/Attribute.h"
 #include "model/bpmnos/src/extensionElements/ExtensionElements.h"
 #include "model/bpmnos/src/extensionElements/Expression.h"
+#include "Input.h"
 #include "Scenario.h"
 
 namespace BPMNOS::Model {
@@ -35,10 +36,23 @@ public:
    * @param folders The folder names in which lookup tables can be found.
    */
   DataProvider(const std::string& modelFile, const std::vector<std::string>& folders);
+
+  /**
+   * @brief Constructor for DataProvider building the model from in-memory content.
+   *
+   * @param model The parsed BPMN model tree.
+   * @param lookupTables Lookup table CSV content keyed by source file name.
+   */
+  DataProvider(std::unique_ptr<XML::XMLObject> model, std::unordered_map<std::string, std::string> lookupTables);
   virtual ~DataProvider() = 0;
   const Model& getModel() const;
 
   virtual std::unique_ptr<Scenario> createScenario(unsigned int scenarioId = 0) = 0;
+
+private:
+  /// @brief Delegating constructor holding the shared post-build setup. Both public constructors
+  ///        build the Model and delegate here.
+  explicit DataProvider(std::unique_ptr<Model> model);
 
 protected:
   std::unique_ptr<Model> model;  ///< Pointer to the BPMN model.

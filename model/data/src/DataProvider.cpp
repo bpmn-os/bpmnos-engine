@@ -5,7 +5,17 @@
 using namespace BPMNOS::Model;
 
 DataProvider::DataProvider(const std::string& modelFile, const std::vector<std::string>& folders)
-  : model(std::make_unique<Model>(modelFile, folders))
+  : DataProvider(std::make_unique<Model>(modelFile, folders))
+{
+}
+
+DataProvider::DataProvider(std::unique_ptr<XML::XMLObject> model, std::unordered_map<std::string, std::string> lookupTables)
+  : DataProvider(std::make_unique<Model>(std::move(model), std::move(lookupTables)))
+{
+}
+
+DataProvider::DataProvider(std::unique_ptr<Model> builtModel)
+  : model(std::move(builtModel))
 {
   // determine all global attributes
   attributes[nullptr] = {};
