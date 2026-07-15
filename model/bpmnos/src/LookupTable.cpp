@@ -7,7 +7,13 @@ using namespace BPMNOS::Model;
 LookupTable::LookupTable(const std::string& name, const std::string& source, const std::vector<std::string>& folders)
   : name(name)
 {
-  createMap(source,folders);
+  populate(source, openCsv(source,folders).read());
+}
+
+LookupTable::LookupTable(const std::string& name, const std::string& csvContent)
+  : name(name)
+{
+  populate(name, CSVReader(csvContent).read());
 }
 
 BPMNOS::CSVReader LookupTable::openCsv(const std::string& filename, const std::vector<std::string>& folders) {
@@ -32,11 +38,9 @@ BPMNOS::CSVReader LookupTable::openCsv(const std::string& filename, const std::v
   throw std::runtime_error(errorMsg);
 }
 
-void LookupTable::createMap(const std::string& source, const std::vector<std::string>& folders) {
-  BPMNOS::CSVReader reader = openCsv(source,folders);
-  CSVReader::Table table = reader.read();
+void LookupTable::populate(const std::string& sourceLabel, CSVReader::Table table) {
   if ( table.empty() ) {
-    throw std::runtime_error(std::format("LookupTable: table '{}' with source '{}' is empty", name, source));
+    throw std::runtime_error(std::format("LookupTable: table '{}' with source '{}' is empty", name, sourceLabel));
   }
   // populate lookup map
   for (size_t j = 1; j < table.size(); j++) {   // assume a single header line at index 0

@@ -1,5 +1,7 @@
 #include <unordered_set>
 #include <cassert>
+#include <stdexcept>
+#include <utility>
 
 #include "Model.h"
 #include "extensionElements/ExtensionElements.h"
@@ -19,11 +21,17 @@
 using namespace BPMNOS::Model;
 
 Model::Model(const std::string filename, const std::vector<std::string> folders)
-  : filename(std::move(filename))
-  , folders(std::move(folders))
+  : folders(std::move(folders))
   , attributeRegistry(limexHandle)
 {
   readBPMNFile(filename);
+}
+
+Model::Model(std::unique_ptr<XML::XMLObject> model, std::unordered_map<std::string, std::string> lookupTables)
+  : lookupContents(std::move(lookupTables))
+  , attributeRegistry(limexHandle)
+{
+  buildModel(std::move(model));
 }
 
 std::vector<std::reference_wrapper<XML::bpmnos::tAttribute>> Model::getAttributes(XML::bpmn::tBaseElement* baseElement) {
@@ -56,36 +64,71 @@ std::vector<std::reference_wrapper<XML::bpmnos::tAttribute>> Model::getData(XML:
   return attributes;
 }
 
-std::unique_ptr<LookupTable> Model::createLookupTable(XML::bpmnos::tTable* table) {
-  std::string lookupName = table->getRequiredAttributeByName("name").value;
-  std::string source = table->getRequiredAttributeByName("source").value;
-  return std::make_unique<LookupTable>(lookupName,source,folders);
+std::unique_ptr<LookupTable> Model::createLookupTable(const std::string& name, const std::string& source) {
+  if ( lookupContents.has_value() ) {
+    // content mode: resolve the source from the supplied content map
+    auto it = lookupContents->find(source);
+    if ( it == lookupContents->end() ) {
+      throw std::runtime_error("Model: content for lookup table '" + source + "' not provided");
+    }
+    return std::make_unique<LookupTable>(name, it->second);
+  }
+  // file mode: resolve the source against the folders (unchanged)
+  return std::make_unique<LookupTable>(name, source, folders);
 }
 
-std::unique_ptr<XML::XMLObject> Model::createRoot(const std::string& filename) {
-  auto root = BPMN::Model::createRoot(filename);
-  // TODO: make sure that only built in callables exist 
-  // create lookup tables
-  for ( XML::bpmn::tDataStoreReference& dataStoreReference : root->find<XML::bpmn::tDataStoreReference>() ) {
+namespace {
+
+/// @brief Walks the parsed tree and returns the {name, source} of every referenced lookup table.
+/// @throws std::runtime_error if a source contains a path separator (a source must be a bare file name).
+std::vector<std::pair<std::string, std::string>> collectLookupTables(const XML::XMLObject& root) {
+  std::vector<std::pair<std::string, std::string>> lookups;
+  for ( const XML::bpmn::tDataStoreReference& dataStoreReference : root.find<XML::bpmn::tDataStoreReference>() ) {
     auto extensionElements = dataStoreReference.getOptionalChild<XML::bpmn::tExtensionElements>();
-    if ( extensionElements.has_value() ) {
-      auto tables = extensionElements->get().getOptionalChild<XML::bpmnos::tTables>();
-      if ( tables.has_value() ) {
-        for ( XML::bpmnos::tTable& table : tables->get().find<XML::bpmnos::tTable>() ) {
-          lookupTables.push_back( createLookupTable(&table) );
-          auto lookupTable = lookupTables.back().get();
-          // register callable
-          // TODO: should I use shared pointers?
-          limexHandle.addFunction(
-            lookupTable->name,
-            [lookupTable](const std::vector<double>& args)
-            {
-              return lookupTable->at(args);
-            }
-          );
-        }
-      }
+    if ( !extensionElements.has_value() ) {
+      continue;
     }
+    auto tables = extensionElements->get().getOptionalChild<XML::bpmnos::tTables>();
+    if ( !tables.has_value() ) {
+      continue;
+    }
+    for ( const XML::bpmnos::tTable& table : tables->get().find<XML::bpmnos::tTable>() ) {
+      std::string name = table.getRequiredAttributeByName("name").value;
+      std::string source = table.getRequiredAttributeByName("source").value;
+      if ( source.find('/') != std::string::npos || source.find('\\') != std::string::npos ) {
+        throw std::runtime_error("Model: lookup table source '" + source + "' must be a file name, not a path");
+      }
+      lookups.emplace_back( std::move(name), std::move(source) );
+    }
+  }
+  return lookups;
+}
+
+} // namespace
+
+std::vector<std::string> Model::getLookupTableNames(const XML::XMLObject& root) {
+  std::vector<std::string> names;
+  for ( auto& lookup : collectLookupTables(root) ) {
+    names.push_back( lookup.second );
+  }
+  return names;
+}
+
+void Model::processRoot() {
+  // TODO: make sure that only built in callables exist
+  // create lookup tables and register them as callables
+  for ( auto& [name, source] : collectLookupTables(*root) ) {
+    lookupTables.push_back( createLookupTable(name, source) );
+    auto lookupTable = lookupTables.back().get();
+    // register callable
+    // TODO: should I use shared pointers?
+    limexHandle.addFunction(
+      lookupTable->name,
+      [lookupTable](const std::vector<double>& args)
+      {
+        return lookupTable->at(args);
+      }
+    );
   }
 
   // create global variables
@@ -96,9 +139,6 @@ std::unique_ptr<XML::XMLObject> Model::createRoot(const std::string& filename) {
       attributes.push_back( std::make_unique<Attribute>(&attributeElement, Attribute::Category::GLOBAL, attributeRegistry) );
     }
   }
-
-
-  return root;
 }
  
 std::unique_ptr<BPMN::Process> Model::createProcess(XML::bpmn::tProcess* process) {

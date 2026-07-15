@@ -37,6 +37,12 @@ public:
                          unsigned int seed = 0);
   StochasticDataProvider(const std::string& modelFile, const std::vector<std::string>& folders,
                          const std::string& instanceFileOrString, unsigned int seed = 0);
+  /**
+   * @brief Constructor building the provider from in-memory content.
+   * @param input The parsed model, lookup table content, and instance content.
+   * @param seed The seed for the random number generator.
+   */
+  StochasticDataProvider(Input input, unsigned int seed = 0);
   ~StochasticDataProvider() override = default;
 
   std::unique_ptr<Scenario> createScenario(unsigned int scenarioId = 0) override;

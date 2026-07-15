@@ -26,10 +26,22 @@ StaticDataProvider::StaticDataProvider(const std::string& modelFile, const std::
 {
 }
 
+StaticDataProvider::StaticDataProvider(std::unique_ptr<XML::XMLObject> model, std::unordered_map<std::string, std::string> lookupTables)
+  : DataProvider(std::move(model), std::move(lookupTables))
+{
+}
+
 StaticDataProvider::StaticDataProvider(const std::string& modelFile, const std::vector<std::string>& folders, const std::string& instanceFileOrString)
   : StaticDataProvider(modelFile, folders)
 {
   reader = std::make_unique<CSVReader>(instanceFileOrString, ";");
+  readInstances();
+}
+
+StaticDataProvider::StaticDataProvider(Input input)
+  : StaticDataProvider(std::move(input.model), std::move(input.lookupTables))
+{
+  reader = std::make_unique<CSVReader>(input.instance, ";");
   readInstances();
 }
 

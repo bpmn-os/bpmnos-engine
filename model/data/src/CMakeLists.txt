@@ -17,6 +17,7 @@ list(APPEND data_HEADERS
   ExpectedValueScenario.h
   DynamicScenario.h
   StochasticScenario.h
+  Input.h
   DataProvider.h
   StaticDataProvider.h
   ExpectedValueDataProvider.h

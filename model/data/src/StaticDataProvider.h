@@ -31,11 +31,18 @@ public:
    * @param instanceFileOrString The file path to the instance data file or a string containing the data.
    */
   StaticDataProvider(const std::string& modelFile, const std::vector<std::string>& folders, const std::string& instanceFileOrString);
+  /**
+   * @brief Constructor building the provider from in-memory content.
+   * @param input The parsed model, lookup table content, and instance content.
+   */
+  StaticDataProvider(Input input);
   ~StaticDataProvider() override = default;
   std::unique_ptr<Scenario> createScenario(unsigned int scenarioId = 0) override;
 protected:
   /// Protected constructor that skips readInstances() - for derived classes
   StaticDataProvider(const std::string& modelFile, const std::vector<std::string>& folders);
+  /// Protected content constructor that skips readInstances() - for derived classes
+  StaticDataProvider(std::unique_ptr<XML::XMLObject> model, std::unordered_map<std::string, std::string> lookupTables);
 
   std::unique_ptr<CSVReader> reader;
   void readInstances();

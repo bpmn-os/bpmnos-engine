@@ -45,6 +45,11 @@ public:
    * @param instanceFileOrString The file path to the instance data file or a string containing the data.
    */
   DynamicDataProvider(const std::string& modelFile, const std::vector<std::string>& folders, const std::string& instanceFileOrString);
+  /**
+   * @brief Constructor building the provider from in-memory content.
+   * @param input The parsed model, lookup table content, and instance content.
+   */
+  DynamicDataProvider(Input input);
   ~DynamicDataProvider() override = default;
   std::unique_ptr<Scenario> createScenario(unsigned int scenarioId = 0) override;
 protected:

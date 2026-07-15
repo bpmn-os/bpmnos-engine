@@ -25,6 +25,13 @@ DynamicDataProvider::DynamicDataProvider(const std::string& modelFile, const std
   readInstances();
 }
 
+DynamicDataProvider::DynamicDataProvider(Input input)
+  : DataProvider(std::move(input.model), std::move(input.lookupTables))
+  , reader( CSVReader(input.instance, ";") )
+{
+  readInstances();
+}
+
 void DynamicDataProvider::readInstances() {
   CSVReader::Table table = reader.read();
   if ( table.empty() ) {
