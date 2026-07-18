@@ -24,14 +24,16 @@ Model::Model(const std::string filename, const std::vector<std::string> folders)
   : folders(std::move(folders))
   , attributeRegistry(limexHandle)
 {
-  readBPMNFile(filename);
+  root = createRoot(filename);
+  build();
 }
 
-Model::Model(std::unique_ptr<XML::XMLObject> model, std::unordered_map<std::string, std::string> lookupTables)
+Model::Model(std::unique_ptr<XML::XMLObject> root, std::unordered_map<std::string, std::string> lookupTables)
   : lookupContents(std::move(lookupTables))
   , attributeRegistry(limexHandle)
 {
-  buildModel(std::move(model));
+  this->root = std::move(root);
+  build();
 }
 
 std::vector<std::reference_wrapper<XML::bpmnos::tAttribute>> Model::getAttributes(XML::bpmn::tBaseElement* baseElement) {
@@ -114,7 +116,12 @@ std::vector<std::string> Model::getLookupTableNames(const XML::XMLObject& root) 
   return names;
 }
 
-void Model::processRoot() {
+void Model::build() {
+  registerLookupTablesAndGlobals();   // lookup tables + globals must exist before children are built
+  BPMN::Model::build();
+}
+
+void Model::registerLookupTablesAndGlobals() {
   // TODO: make sure that only built in callables exist
   // create lookup tables and register them as callables
   for ( auto& [name, source] : collectLookupTables(*root) ) {

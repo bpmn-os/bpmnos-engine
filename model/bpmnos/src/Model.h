@@ -24,7 +24,7 @@ namespace BPMNOS::Model {
 class Model : public BPMN::Model {
 public:
   Model(const std::string filename, const std::vector<std::string> folders = {});
-  Model(std::unique_ptr<XML::XMLObject> model, std::unordered_map<std::string, std::string> lookupTables);
+  Model(std::unique_ptr<XML::XMLObject> root, std::unordered_map<std::string, std::string> lookupTables);
   const std::vector<std::string> folders; ///< Folders containing lookup tables
   std::optional<std::unordered_map<std::string, std::string>> lookupContents; ///< Lookup table contents keyed by source file name when the model is built from in-memory content; empty for the file/folder path.
   LIMEX::Handle<double> limexHandle;
@@ -33,7 +33,8 @@ public:
   std::vector<std::reference_wrapper<XML::bpmnos::tAttribute>> getData(XML::bpmn::tBaseElement* element);
   
   std::unique_ptr<LookupTable> createLookupTable(const std::string& name, const std::string& source);
-  void processRoot() override;
+  void build() override;
+  void registerLookupTablesAndGlobals();
 
   /// @brief Returns the file names of the lookup tables referenced by the given model.
   /// @param root The parsed BPMN model tree.
