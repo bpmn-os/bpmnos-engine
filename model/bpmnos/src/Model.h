@@ -24,15 +24,14 @@ namespace BPMNOS::Model {
 class Model : public BPMN::Model {
 public:
   Model(const std::string filename, const std::vector<std::string> folders = {});
-  Model(std::unique_ptr<XML::XMLObject> root, std::unordered_map<std::string, std::string> lookupTables);
-  const std::vector<std::string> folders; ///< Folders containing lookup tables
-  std::optional<std::unordered_map<std::string, std::string>> lookupContents; ///< Lookup table contents keyed by source file name when the model is built from in-memory content; empty for the file/folder path.
+  Model(std::unique_ptr<XML::XMLObject> root, std::unordered_map<std::string, std::string> lookupTableContents);
   LIMEX::Handle<double> limexHandle;
 
   std::vector<std::reference_wrapper<XML::bpmnos::tAttribute>> getAttributes(XML::bpmn::tBaseElement* element);
   std::vector<std::reference_wrapper<XML::bpmnos::tAttribute>> getData(XML::bpmn::tBaseElement* element);
   
-  std::unique_ptr<LookupTable> createLookupTable(const std::string& name, const std::string& source);
+  void createLookupTables(const std::vector<std::string>& folders);                                 ///< Create lookup tables by resolving each referenced source against the folders.
+  void createLookupTables(const std::unordered_map<std::string, std::string>& lookupTableContents);  ///< Create lookup tables from in-memory CSV content keyed by source file name.
   void build() override;
   void registerLookupTablesAndGlobals();
 

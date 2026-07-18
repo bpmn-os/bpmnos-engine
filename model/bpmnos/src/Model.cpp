@@ -21,18 +21,18 @@
 using namespace BPMNOS::Model;
 
 Model::Model(const std::string filename, const std::vector<std::string> folders)
-  : folders(std::move(folders))
-  , attributeRegistry(limexHandle)
+  : attributeRegistry(limexHandle)
 {
   root = createRoot(filename);
+  createLookupTables(folders);
   build();
 }
 
-Model::Model(std::unique_ptr<XML::XMLObject> root, std::unordered_map<std::string, std::string> lookupTables)
-  : lookupContents(std::move(lookupTables))
-  , attributeRegistry(limexHandle)
+Model::Model(std::unique_ptr<XML::XMLObject> root, std::unordered_map<std::string, std::string> lookupTableContents)
+  : attributeRegistry(limexHandle)
 {
   this->root = std::move(root);
+  createLookupTables(lookupTableContents);
   build();
 }
 
@@ -64,19 +64,6 @@ std::vector<std::reference_wrapper<XML::bpmnos::tAttribute>> Model::getData(XML:
     }
   }
   return attributes;
-}
-
-std::unique_ptr<LookupTable> Model::createLookupTable(const std::string& name, const std::string& source) {
-  if ( lookupContents.has_value() ) {
-    // content mode: resolve the source from the supplied content map
-    auto it = lookupContents->find(source);
-    if ( it == lookupContents->end() ) {
-      throw std::runtime_error("Model: content for lookup table '" + source + "' not provided");
-    }
-    return std::make_unique<LookupTable>(name, it->second);
-  }
-  // file mode: resolve the source against the folders (unchanged)
-  return std::make_unique<LookupTable>(name, source, folders);
 }
 
 namespace {
@@ -116,6 +103,24 @@ std::vector<std::string> Model::getLookupTableNames(const XML::XMLObject& root) 
   return names;
 }
 
+void Model::createLookupTables(const std::vector<std::string>& folders) {
+  // file mode: resolve each referenced source against the folders
+  for ( auto& [name, source] : collectLookupTables(*root) ) {
+    lookupTables.push_back( std::make_unique<LookupTable>(name, source, folders) );
+  }
+}
+
+void Model::createLookupTables(const std::unordered_map<std::string, std::string>& lookupTableContents) {
+  // content mode: resolve each referenced source from the supplied content map
+  for ( auto& [name, source] : collectLookupTables(*root) ) {
+    auto it = lookupTableContents.find(source);
+    if ( it == lookupTableContents.end() ) {
+      throw std::runtime_error("Model: content for lookup table '" + source + "' not provided");
+    }
+    lookupTables.push_back( std::make_unique<LookupTable>(name, it->second) );
+  }
+}
+
 void Model::build() {
   registerLookupTablesAndGlobals();   // lookup tables + globals must exist before children are built
   BPMN::Model::build();
@@ -123,17 +128,15 @@ void Model::build() {
 
 void Model::registerLookupTablesAndGlobals() {
   // TODO: make sure that only built in callables exist
-  // create lookup tables and register them as callables
-  for ( auto& [name, source] : collectLookupTables(*root) ) {
-    lookupTables.push_back( createLookupTable(name, source) );
-    auto lookupTable = lookupTables.back().get();
-    // register callable
+  // register the (already created) lookup tables as callables
+  for ( auto& lookupTable : lookupTables ) {
+    auto table = lookupTable.get();
     // TODO: should I use shared pointers?
     limexHandle.addFunction(
-      lookupTable->name,
-      [lookupTable](const std::vector<double>& args)
+      table->name,
+      [table](const std::vector<double>& args)
       {
-        return lookupTable->at(args);
+        return table->at(args);
       }
     );
   }
