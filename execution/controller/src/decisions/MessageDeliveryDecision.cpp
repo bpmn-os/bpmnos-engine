@@ -1,15 +1,22 @@
 #include "MessageDeliveryDecision.h"
 #include "execution/engine/src/Engine.h"
+#include "execution/engine/src/DecisionRequest.h"
 #include "execution/controller/src/Evaluator.h"
 
 using namespace BPMNOS::Execution;
 
-MessageDeliveryDecision::MessageDeliveryDecision(const Token* token, const Message* message, Evaluator* evaluator)
-  : Event(token)
-  , MessageDeliveryEvent(token,message)
-  , Decision(evaluator)
+MessageDeliveryDecision::MessageDeliveryDecision(const DecisionRequest* request, const Message* message, Evaluator* evaluator)
+  : Event(request->token)
+  , MessageDeliveryEvent(request->token,message)
+  , Decision(request, evaluator)
 {
   determineDependencies( evaluator->getDependencies(this) );
+}
+
+bool MessageDeliveryDecision::expired() const {
+  // Diamond: MessageDeliveryEvent and Decision both override expired(); merge request (covers token) and
+  // the independently-withdrawable message.
+  return request.expired() || message.expired();
 }
 
 std::shared_ptr<Evaluation> MessageDeliveryDecision::evaluate() {

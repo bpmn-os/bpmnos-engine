@@ -45,7 +45,7 @@ void MessageDeliveries::notice(const Observable* observable) {
         std::ranges::contains(senderCandidates, message->origin) &&
         message->matches(recipientHeader)
       ) {
-        auto decision = std::make_shared<MessageDeliveryDecision>(request->token, message.get(), evaluator);
+        auto decision = std::make_shared<MessageDeliveryDecision>(request, message.get(), evaluator);
         addDecision( request->token->weak_from_this(), request->weak_from_this(), message_ptr, decision );
       }
     }
@@ -62,7 +62,9 @@ void MessageDeliveries::notice(const Observable* observable) {
           std::ranges::contains(recipientCandidates, token->node) &&
           message->matches(recipientHeader)
         ) {
-          auto decision = std::make_shared<MessageDeliveryDecision>(token.get(), message, evaluator);
+          auto request = request_ptr.lock();
+          assert( request );
+          auto decision = std::make_shared<MessageDeliveryDecision>(request.get(), message, evaluator);
           addDecision( token_ptr, request_ptr, message->weak_from_this(), decision );
         }
       }

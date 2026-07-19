@@ -1,13 +1,14 @@
 #include "ChoiceDecision.h"
 #include "execution/engine/src/Engine.h"
+#include "execution/engine/src/DecisionRequest.h"
 #include "execution/controller/src/Evaluator.h"
 
 using namespace BPMNOS::Execution;
 
-ChoiceDecision::ChoiceDecision(const Token* token, std::vector<number> choices, Evaluator* evaluator)
-  : Event(token)
-  , ChoiceEvent(token, std::move(choices))
-  , Decision(evaluator)
+ChoiceDecision::ChoiceDecision(const DecisionRequest* request, std::vector<number> choices, Evaluator* evaluator)
+  : Event(request->token)
+  , ChoiceEvent(request->token, std::move(choices))
+  , Decision(request, evaluator)
 {
   determineDependencies( evaluator->getDependencies(this) );
 }

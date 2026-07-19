@@ -14,7 +14,7 @@ namespace BPMNOS::Execution {
  * Transition from State::COMPLETION to State::DONE or State::DEPARTED
  */
 struct ExitDecision : ExitEvent, Decision {
-  ExitDecision(const Token* token, Evaluator* evaluator);
+  ExitDecision(const DecisionRequest* request, Evaluator* evaluator);
   std::shared_ptr<Evaluation> evaluate() override;
 
   nlohmann::ordered_json jsonify() const override;

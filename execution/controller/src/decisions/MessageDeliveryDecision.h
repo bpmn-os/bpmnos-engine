@@ -15,8 +15,11 @@ namespace BPMNOS::Execution {
  * Transition from State::BUSY to State::COMPLETED
  */
 struct MessageDeliveryDecision : MessageDeliveryEvent, Decision {
-  MessageDeliveryDecision(const Token* token, const Message* message, Evaluator* evaluator);
+  MessageDeliveryDecision(const DecisionRequest* request, const Message* message, Evaluator* evaluator);
   std::shared_ptr<Evaluation> evaluate() override;
+
+  /// Merges the diamond: stale if token gone, message withdrawn, or the decision request superseded.
+  bool expired() const override;
 
   nlohmann::ordered_json jsonify() const override;
 };

@@ -46,7 +46,7 @@ std::shared_ptr<Decision> FirstEnumeratedChoice::determineBestChoices(std::share
   auto alternativeChoices = decisionTask->enumerateAlternatives(token->status, *token->data, token->globals);
   std::shared_ptr<Decision> bestDecision = nullptr;
   for ( auto& choices : alternativeChoices ) {
-    auto decision = std::make_shared<ChoiceDecision>(token, std::move(choices), evaluator);
+    auto decision = std::make_shared<ChoiceDecision>(request.get(), std::move(choices), evaluator);
     decision->evaluate();
     auto reward = decision->reward();
     if ( reward.has_value() && ( !bestDecision || reward.value() > bestDecision->reward().value() ) ) {

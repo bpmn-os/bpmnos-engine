@@ -1,13 +1,14 @@
 #include "ExitDecision.h"
 #include "execution/engine/src/Engine.h"
+#include "execution/engine/src/DecisionRequest.h"
 #include "execution/controller/src/Evaluator.h"
 
 using namespace BPMNOS::Execution;
 
-ExitDecision::ExitDecision(const Token* token, Evaluator* evaluator)
-  : Event(token)
-  , ExitEvent(token)
-  , Decision(evaluator)
+ExitDecision::ExitDecision(const DecisionRequest* request, Evaluator* evaluator)
+  : Event(request->token)
+  , ExitEvent(request->token)
+  , Decision(request, evaluator)
 {
   determineDependencies( evaluator->getDependencies(this) );
 }
