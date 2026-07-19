@@ -18,6 +18,9 @@ struct MessageDeliveryEvent : virtual Event {
   void processBy(Engine* engine) const override;
   std::weak_ptr<const Message> message;
 
+  /// Stale if the recipient token is gone or the message was withdrawn (its weak_ptr expired).
+  bool expired() const override;
+
   nlohmann::ordered_json jsonify() const override;
 };
 

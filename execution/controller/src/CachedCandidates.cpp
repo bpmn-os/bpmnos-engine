@@ -55,13 +55,15 @@ void CachedCandidates<WeakPtrs...>::addEvaluation(WeakPtrs... weak_ptrs, std::sh
     timeDependentEvaluations.emplace_back(weak_ptrs..., decision );
   }
   else if ( !decision->timeDependent && decision->dataDependencies.size() ) {
-    assert(decision->token);
-    BPMNOS::number instanceId = decision->token->owner->root->instance.value();
+    auto token = decision->token.lock();
+    assert( token );
+    BPMNOS::number instanceId = token->owner->root->instance.value();
     dataDependentEvaluations[(long unsigned int)instanceId].emplace_back(weak_ptrs..., decision );
   }
   else if ( decision->timeDependent && decision->dataDependencies.size() ) {
-    assert(decision->token);
-    BPMNOS::number instanceId = decision->token->owner->root->instance.value();
+    auto token = decision->token.lock();
+    assert( token );
+    BPMNOS::number instanceId = token->owner->root->instance.value();
     timeAndDataDependentEvaluations[(long unsigned int)instanceId].emplace_back(weak_ptrs..., decision );
   }
 }

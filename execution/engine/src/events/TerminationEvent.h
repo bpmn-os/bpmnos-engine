@@ -13,6 +13,9 @@ struct TerminationEvent : Event {
   TerminationEvent();
   void processBy(Engine* engine) const override;
 
+  /// A termination event is never stale.
+  bool expired() const override;
+
   nlohmann::ordered_json jsonify() const override;
 };
 

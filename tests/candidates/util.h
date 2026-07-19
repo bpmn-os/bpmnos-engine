@@ -35,11 +35,11 @@ inline std::vector<CandidateInfo> collectCompeting(BPMNOS::Execution::CompetingC
   std::vector<CandidateInfo> result;
   for ( auto candidate : candidates ) {
     auto event = std::get<1>(candidate).lock();
-    const BPMNOS::Execution::Token* token = nullptr;
+    std::shared_ptr<const BPMNOS::Execution::Token> token;
     if ( auto decision = std::dynamic_pointer_cast<BPMNOS::Execution::Decision>(event) ) {
-      token = decision->token;
+      token = decision->token.lock();
     }
-    result.push_back({ std::get<0>(candidate), tokenTag(token) });
+    result.push_back({ std::get<0>(candidate), tokenTag(token.get()) });
   }
   return result;
 }

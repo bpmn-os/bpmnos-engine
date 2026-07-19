@@ -22,6 +22,11 @@ nlohmann::ordered_json ChoiceDecision::jsonify() const {
 
 
   jsonObject["decision"] = "choice";
+  auto token = this->token.lock();
+  if ( !token || expired() ) {
+    jsonObject["expired"] = true;
+    return jsonObject;
+  }
   jsonObject["processId"] = token->owner->process->id;
   jsonObject["instanceId"] = BPMNOS::to_string((*token->data)[BPMNOS::Model::ExtensionElements::Index::Instance].get().value(),STRING);
   jsonObject["nodeId"] = token->node->id;

@@ -89,6 +89,10 @@ void Engine::resume(std::shared_ptr<Event> event, BPMNOS::number timeout) {
   if ( !systemState ) {
     throw std::logic_error("Engine: resume requires an existing system state (call run or initializeSystemState first)");
   }
+  if ( event->expired() ) {
+    // a controller must check Event::expired() before forcing an event; guard against a stale one
+    throw std::logic_error("Engine: event to resume is expired");
+  }
   // force the given decision as the first event; the commands it enqueues are executed by advance()
   notify(event.get());
   event->processBy(this);
@@ -120,7 +124,12 @@ bool Engine::advance(BPMNOS::number timeout) {
   // fetch and process all events
   while ( auto event = fetchEvent(systemState.get()) ) {
 //std::cerr << "*";
-    // stop before processing clock tick that would exceed timeout                
+    if ( event->expired() ) {
+      // the engine assumes only non-expired events are dispatched; a controller that is not safe by
+      // design must check Event::expired() before dispatching. Guard against a stale event here.
+      throw std::logic_error("Engine: event fetched is expired");
+    }
+    // stop before processing clock tick that would exceed timeout
     if ( auto clockTickEvent = event->is<ClockTickEvent>(); clockTickEvent && clockTickEvent->time > timeout ) {     
       return false;                                                               
     }   
@@ -173,7 +182,9 @@ void Engine::deleteInstance(StateMachine* instance) {
 }
 
 void Engine::process(const ReadyEvent* event) {
-  Token* token = const_cast<Token*>(event->token);
+  auto token_ptr = event->token.lock();
+  assert( token_ptr );
+  Token* token = const_cast<Token*>(token_ptr.get());
   systemState->tokensAwaitingReadyEvent.remove(token);
 
   auto& status = const_cast<ReadyEvent*>(event)->statusAttributes;
@@ -189,7 +200,9 @@ void Engine::process(const ReadyEvent* event) {
 
 void Engine::process(const EntryEvent* event) {
 //std::cerr << systemState->pendingEntryEvents.empty() << "EntryEvent " << event->token->jsonify().dump() << std::endl;
-  Token* token = const_cast<Token*>(event->token);
+  auto token_ptr = event->token.lock();
+  assert( token_ptr );
+  Token* token = const_cast<Token*>(token_ptr.get());
   token->decisionRequest.reset();
   token->status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = systemState->currentTime;
   if ( token->node->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() ) {
@@ -206,7 +219,9 @@ void Engine::process(const EntryEvent* event) {
 
 void Engine::process(const ChoiceEvent* event) {
 //std::cerr << "ChoiceEvent " << event.token->node->id << std::endl;
-  Token* token = const_cast<Token*>(event->token);
+  auto token_ptr = event->token.lock();
+  assert( token_ptr );
+  Token* token = const_cast<Token*>(token_ptr.get());
   token->decisionRequest.reset();
   token->status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = systemState->currentTime;
   assert( token->node );
@@ -225,7 +240,9 @@ void Engine::process(const ChoiceEvent* event) {
 
 void Engine::process(const CompletionEvent* event) {
 //std::cerr << "CompletionEvent " << event.token->node->id << std::endl;
-  Token* token = const_cast<Token*>(event->token);
+  auto token_ptr = event->token.lock();
+  assert( token_ptr );
+  Token* token = const_cast<Token*>(token_ptr.get());
   systemState->tokensAwaitingCompletionEvent.remove(token);
   // update token status
   token->status = std::move(event->status);
@@ -234,7 +251,9 @@ void Engine::process(const CompletionEvent* event) {
 }
 
 void Engine::process(const MessageDeliveryEvent* event) {
-  Token* token = const_cast<Token*>(event->token);
+  auto token_ptr = event->token.lock();
+  assert( token_ptr );
+  Token* token = const_cast<Token*>(token_ptr.get());
   token->decisionRequest.reset();
   token->status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = systemState->currentTime;
   assert( token->node );
@@ -260,7 +279,9 @@ void Engine::process(const MessageDeliveryEvent* event) {
 
 void Engine::process(const ExitEvent* event) {
 //std::cerr << "ExitEvent: " << event->token->jsonify().dump() << std::endl;
-  Token* token = const_cast<Token*>(event->token);
+  auto token_ptr = event->token.lock();
+  assert( token_ptr );
+  Token* token = const_cast<Token*>(token_ptr.get());
   token->decisionRequest.reset();
 
   if ( token->node->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() ) {
@@ -276,7 +297,9 @@ void Engine::process(const ExitEvent* event) {
 }
 
 void Engine::process(const ErrorEvent* event) {
-  Token* token = const_cast<Token*>(event->token);
+  auto token_ptr = event->token.lock();
+  assert( token_ptr );
+  Token* token = const_cast<Token*>(token_ptr.get());
   commands.emplace_back(std::bind(&Token::advanceToFailed,token), token);
 }
 
