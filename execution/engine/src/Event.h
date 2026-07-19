@@ -15,9 +15,14 @@ struct Event : std::enable_shared_from_this<Event>, Observable {
   constexpr Type getObservableType() const override { return Type::Event; };
   Event(const Token* token);
   virtual ~Event() = default;  // Virtual destructor
-  const Token* token;  
+  std::weak_ptr<const Token> token;  ///< Weak reference to the token; empty for token-less events (clock tick, termination).
 
   virtual void processBy(Engine* engine) const  = 0;
+
+  /// @brief Returns true if the event has become stale and must be skipped instead of processed.
+  /// The default treats a token-bearing event as expired once its token no longer exists; token-less
+  /// events and events with additional validity conditions override this.
+  virtual bool expired() const;
 
   /// Returns a pointer of type T of the Event.
   template<typename T> const T* is() const {

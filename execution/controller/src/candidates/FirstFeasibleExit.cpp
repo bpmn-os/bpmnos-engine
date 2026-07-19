@@ -23,7 +23,7 @@ void FirstFeasibleExit::notice(const Observable* observable) {
   if ( observable->getObservableType() == Observable::Type::ExitRequest ) {
     assert( dynamic_cast<const DecisionRequest*>(observable) );
     auto request = static_cast<const DecisionRequest*>(observable);
-    auto decision = std::make_shared<ExitDecision>(request->token, evaluator);
+    auto decision = std::make_shared<ExitDecision>(request, evaluator);
     addDecision( request->token->weak_from_this(), request->weak_from_this(), decision );
   }
   else if ( observable->getObservableType() == Observable::Type::SystemState ) {

@@ -76,7 +76,7 @@ std::shared_ptr<Decision> FirstBisectionalChoice::bestEnumeratedChoice(std::shar
   auto alternativeChoices = decisionTask->enumerateAlternatives(token->status, *token->data, token->globals);
   std::shared_ptr<Decision> bestDecision = nullptr;
   for ( auto& choices : alternativeChoices ) {
-    auto decision = std::make_shared<ChoiceDecision>(token, std::move(choices), evaluator);
+    auto decision = std::make_shared<ChoiceDecision>(request.get(), std::move(choices), evaluator);
     decision->evaluate();
     auto reward = decision->reward();
     if ( reward.has_value() && ( !bestDecision || reward.value() > bestDecision->reward().value() ) ) {
@@ -89,7 +89,9 @@ std::shared_ptr<Decision> FirstBisectionalChoice::bestEnumeratedChoice(std::shar
 }
 
 FirstBisectionalChoice::Candidate FirstBisectionalChoice::evaluate(size_t index) {
-  auto decision = std::make_shared<ChoiceDecision>(token, std::vector<number>{ values[index] }, evaluator);
+  auto request = request_ptr.lock();
+  assert( request );
+  auto decision = std::make_shared<ChoiceDecision>(request.get(), std::vector<number>{ values[index] }, evaluator);
   decision->evaluate();
   // add this sampled alternative to the reward-ordered candidates, taking ownership; keep the local for the result
   this->addCandidate( token_ptr, request_ptr, decision );

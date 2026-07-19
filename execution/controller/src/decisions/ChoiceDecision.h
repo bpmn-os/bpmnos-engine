@@ -16,7 +16,7 @@ class Evaluator;
  * Transition from State::BUSY to State::COMPLETED
  */
 struct ChoiceDecision : ChoiceEvent, Decision {
-  ChoiceDecision(const Token* token, std::vector<number> choices, Evaluator* evaluator);
+  ChoiceDecision(const DecisionRequest* request, std::vector<number> choices, Evaluator* evaluator);
   std::shared_ptr<Evaluation> evaluate() override;
 
   nlohmann::ordered_json jsonify() const override;

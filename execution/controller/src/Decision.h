@@ -9,16 +9,22 @@
 namespace BPMNOS::Execution {
 
 class Evaluator;
+struct DecisionRequest;
 
 /**
  * @brief Represents an abstract base class for a pending decision
  */
 class Decision : virtual public Event {
 public:
-  Decision(Evaluator* evaluator);
+  Decision(const DecisionRequest* request, Evaluator* evaluator);
 
   virtual std::shared_ptr<Evaluation> evaluate() = 0; ///< Evaluates the reward for the decision. Returns null if decision is infeasible.
   std::shared_ptr<Evaluation> evaluation;  ///< Current evaluation (used for lazy removal from evaluatedDecisions)
+
+  std::weak_ptr<const DecisionRequest> request; ///< The decision request this decision responds to; expires when the request is reset/superseded/withdrawn.
+
+  /// Stale if the token no longer exists or the decision request was superseded (reset/withdrawn).
+  bool expired() const override;
 
   std::optional<double> reward() const {
     return evaluation ? evaluation->value : std::nullopt;

@@ -29,7 +29,7 @@ void SequentialEntries::notice(const Observable* observable) {
       // only entries of sequential ad-hoc subprocess children are handled here
       return;
     }
-    auto decision = std::make_shared<EntryDecision>(request->token, evaluator);
+    auto decision = std::make_shared<EntryDecision>(request, evaluator);
     addDecision( request->token->weak_from_this(), request->weak_from_this(), decision );
   }
   else if ( observable->getObservableType() == Observable::Type::SystemState ) {

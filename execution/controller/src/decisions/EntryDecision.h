@@ -14,7 +14,7 @@ namespace BPMNOS::Execution {
  * Transition from State::READY to State::ENTERED
  */
 struct EntryDecision : EntryEvent, Decision {
-  EntryDecision(const Token* token, Evaluator* evaluator);
+  EntryDecision(const DecisionRequest* request, Evaluator* evaluator);
   std::shared_ptr<Evaluation> evaluate() override;
 
   nlohmann::ordered_json jsonify() const override;

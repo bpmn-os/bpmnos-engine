@@ -8,12 +8,14 @@ using namespace BPMNOS::Execution;
 
 
 bool GuidedEvaluator::updateValues(EntryDecision* decision, Values& status, Values& data, Values& globals) {
+  auto token = decision->token.lock();
+  assert( token );
   if ( !LocalEvaluator::updateValues(decision,status,data,globals) ) {
-//std::cerr << "GuidedEvaluator: infeasible entry " << decision->token->node->id << std::endl;
+//std::cerr << "GuidedEvaluator: infeasible entry " << token->node->id << std::endl;
     return false;
   }
   
-  auto extensionElements = decision->token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+  auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   assert(extensionElements);
   if ( !extensionElements->entryGuidance ) {
 //std::cerr << "GuidedEvaluator: No entry guidance" << std::endl;
@@ -22,20 +24,22 @@ bool GuidedEvaluator::updateValues(EntryDecision* decision, Values& status, Valu
 
   // apply guidance
   auto guidance = extensionElements->entryGuidance.value().get();
-  auto systemState = decision->token->owner->systemState;
-  guidance->apply(systemState->scenario, systemState->currentTime, decision->token->owner->root->instance.value(), status, data, globals);
-//std::cerr << "GuidedEvaluator: guidance " << guidance->restrictionsSatisfied(decision->token->node,status,data,globals) << ": " << decision->token->node->id << std::endl;
+  auto systemState = token->owner->systemState;
+  guidance->apply(systemState->scenario, systemState->currentTime, token->owner->root->instance.value(), status, data, globals);
+//std::cerr << "GuidedEvaluator: guidance " << guidance->restrictionsSatisfied(token->node,status,data,globals) << ": " << token->node->id << std::endl;
 
   return guidance->restrictionsSatisfied(status,data,globals);
 }
 
 bool GuidedEvaluator::updateValues(ExitDecision* decision, Values& status, Values& data, Values& globals) {
+  auto token = decision->token.lock();
+  assert( token );
   if ( !LocalEvaluator::updateValues(decision,status,data,globals) ) {
-//std::cerr << "GuidedEvaluator: infeasible exit " << decision->token->node->id << std::endl;
+//std::cerr << "GuidedEvaluator: infeasible exit " << token->node->id << std::endl;
     return false;
   }
 
-  auto extensionElements = decision->token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+  auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   assert(extensionElements);
   if ( !extensionElements->exitGuidance ) {
 //std::cerr << "GuidedEvaluator: No exit guidance" << std::endl;
@@ -44,19 +48,21 @@ bool GuidedEvaluator::updateValues(ExitDecision* decision, Values& status, Value
 
   // apply guidance
   auto guidance = extensionElements->exitGuidance.value().get();
-  auto systemState = decision->token->owner->systemState;
-  guidance->apply(systemState->scenario, systemState->currentTime, decision->token->owner->root->instance.value(), status, data, globals);
+  auto systemState = token->owner->systemState;
+  guidance->apply(systemState->scenario, systemState->currentTime, token->owner->root->instance.value(), status, data, globals);
 
   return guidance->restrictionsSatisfied(status,data,globals);
 }
 
 
 bool GuidedEvaluator::updateValues(ChoiceDecision* decision, Values& status, Values& data, Values& globals) {
+  auto token = decision->token.lock();
+  assert( token );
   if ( !LocalEvaluator::updateValues(decision,status,data,globals) ) {
     return false;
   }
 
-  auto extensionElements = decision->token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+  auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   assert(extensionElements);
   if ( !extensionElements->choiceGuidance ) {
     return true;
@@ -64,19 +70,21 @@ bool GuidedEvaluator::updateValues(ChoiceDecision* decision, Values& status, Val
 
   // apply guidance
   auto guidance = extensionElements->choiceGuidance.value().get();
-  auto systemState = decision->token->owner->systemState;
-  guidance->apply(systemState->scenario, systemState->currentTime, decision->token->owner->root->instance.value(), status, data, globals);
+  auto systemState = token->owner->systemState;
+  guidance->apply(systemState->scenario, systemState->currentTime, token->owner->root->instance.value(), status, data, globals);
 
   return guidance->restrictionsSatisfied(status,data,globals);
 }
 
 
 bool GuidedEvaluator::updateValues(MessageDeliveryDecision* decision, Values& status, Values& data, Values& globals) {
+  auto token = decision->token.lock();
+  assert( token );
   if ( !LocalEvaluator::updateValues(decision,status,data,globals) ) {
     return false;
   }
 
-  auto extensionElements = decision->token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+  auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   assert(extensionElements);
   if ( !extensionElements->messageDeliveryGuidance ) {
     return true;
@@ -84,14 +92,15 @@ bool GuidedEvaluator::updateValues(MessageDeliveryDecision* decision, Values& st
 
   // apply guidance
   auto guidance = extensionElements->messageDeliveryGuidance.value().get();
-  auto systemState = decision->token->owner->systemState;
-  guidance->apply(systemState->scenario, systemState->currentTime, decision->token->owner->root->instance.value(), status, data, globals);
+  auto systemState = token->owner->systemState;
+  guidance->apply(systemState->scenario, systemState->currentTime, token->owner->root->instance.value(), status, data, globals);
 
   return guidance->restrictionsSatisfied(status,data,globals);
 }
 
 std::shared_ptr<Evaluation> GuidedEvaluator::evaluate(EntryDecision* decision) {
-  auto token = decision->token;
+  auto token = decision->token.lock();
+  assert( token );
   assert( token->ready() || ( token->state == Token::State::EXITING ) ); // loop activities may re-enter
   auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   assert(extensionElements);
@@ -101,7 +110,7 @@ std::shared_ptr<Evaluation> GuidedEvaluator::evaluate(EntryDecision* decision) {
   Values globals = token->globals;
   double evaluation = (double)extensionElements->getObjective(status,data,globals);
 //std::cerr << "Decision: " << decision->jsonify() << std::endl;
-//std::cerr << "Token: " << decision->token->jsonify() << std::endl;
+//std::cerr << "Token: " << token->jsonify() << std::endl;
 //std::cerr << "Initial evaluation: " << evaluation << std::endl;
 
   bool feasible = updateValues(decision,status,data,globals);
@@ -119,7 +128,8 @@ std::shared_ptr<Evaluation> GuidedEvaluator::evaluate(EntryDecision* decision) {
 }
 
 std::shared_ptr<Evaluation> GuidedEvaluator::evaluate(ExitDecision* decision) {
-  auto token = decision->token;
+  auto token = decision->token.lock();
+  assert( token );
   assert( token->completed() );
   auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   assert(extensionElements);
@@ -143,7 +153,8 @@ std::shared_ptr<Evaluation> GuidedEvaluator::evaluate(ExitDecision* decision) {
 }
 
 std::shared_ptr<Evaluation> GuidedEvaluator::evaluate(ChoiceDecision* decision) {
-  auto token = decision->token;
+  auto token = decision->token.lock();
+  assert( token );
   assert( token->busy() );
   auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   assert(extensionElements);
@@ -172,7 +183,8 @@ std::shared_ptr<Evaluation> GuidedEvaluator::evaluate(ChoiceDecision* decision) 
 }
 
 std::shared_ptr<Evaluation> GuidedEvaluator::evaluate(MessageDeliveryDecision* decision) {
-  auto token = decision->token;
+  auto token = decision->token.lock();
+  assert( token );
   assert( token->busy() );
 
   auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
@@ -183,7 +195,7 @@ std::shared_ptr<Evaluation> GuidedEvaluator::evaluate(MessageDeliveryDecision* d
   Values globals = token->globals;
   double evaluation = (double)extensionElements->getObjective(status,data,globals);
 //std::cerr << "Decision: " << decision->jsonify() << std::endl;
-//std::cerr << "Token: " << decision->token->jsonify() << std::endl;
+//std::cerr << "Token: " << token->jsonify() << std::endl;
 //std::cerr << "Initial evaluation:\n" << evaluation << std::endl;
 
   bool feasible = updateValues(decision,status,data,globals);
@@ -203,7 +215,9 @@ std::shared_ptr<Evaluation> GuidedEvaluator::evaluate(MessageDeliveryDecision* d
 
 
 std::set<const BPMNOS::Model::Attribute*> GuidedEvaluator::getDependencies(EntryDecision* decision) {
-  auto extensionElements = decision->token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+  auto token = decision->token.lock();
+  assert( token );
+  auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   assert(extensionElements);
 
   std::set<const BPMNOS::Model::Attribute*> dependencies = LocalEvaluator::getDependencies(decision);
@@ -216,7 +230,9 @@ std::set<const BPMNOS::Model::Attribute*> GuidedEvaluator::getDependencies(Entry
 }
 
 std::set<const BPMNOS::Model::Attribute*> GuidedEvaluator::getDependencies(ExitDecision* decision) {
-  auto extensionElements = decision->token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+  auto token = decision->token.lock();
+  assert( token );
+  auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   assert(extensionElements);
 
   std::set<const BPMNOS::Model::Attribute*> dependencies = LocalEvaluator::getDependencies(decision);
@@ -229,7 +245,9 @@ std::set<const BPMNOS::Model::Attribute*> GuidedEvaluator::getDependencies(ExitD
 }
 
 std::set<const BPMNOS::Model::Attribute*> GuidedEvaluator::getDependencies(ChoiceDecision* decision) {
-  auto extensionElements = decision->token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+  auto token = decision->token.lock();
+  assert( token );
+  auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   assert(extensionElements);
 
   std::set<const BPMNOS::Model::Attribute*> dependencies = LocalEvaluator::getDependencies(decision);
@@ -242,7 +260,9 @@ std::set<const BPMNOS::Model::Attribute*> GuidedEvaluator::getDependencies(Choic
 }
 
 std::set<const BPMNOS::Model::Attribute*> GuidedEvaluator::getDependencies(MessageDeliveryDecision* decision) {
-  auto extensionElements = decision->token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+  auto token = decision->token.lock();
+  assert( token );
+  auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   assert(extensionElements);
 
   std::set<const BPMNOS::Model::Attribute*> dependencies = LocalEvaluator::getDependencies(decision);
@@ -250,7 +270,7 @@ std::set<const BPMNOS::Model::Attribute*> GuidedEvaluator::getDependencies(Messa
   if ( extensionElements->messageDeliveryGuidance.has_value() ) {
 //std::cerr << "Dependencies: "  << extensionElements->messageDeliveryGuidance.value()->dependencies.size() << "\n";
 /*
-std::cerr << "All dependencies for " << decision->token->node->id << ": ";
+std::cerr << "All dependencies for " << token->node->id << ": ";
 for (const auto* attr : dependencies) std::cerr << attr->name << " ";
 std::cerr << std::endl;
 */

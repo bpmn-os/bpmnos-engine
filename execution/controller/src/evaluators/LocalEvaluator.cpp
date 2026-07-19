@@ -8,7 +8,8 @@ using namespace BPMNOS::Execution;
 
 
 bool LocalEvaluator::updateValues(EntryDecision* decision, Values& status, Values& data, Values& globals) {
-  auto token = decision->token;
+  auto token = decision->token.lock();
+  assert( token );
   assert( token->ready() || ( token->state == Token::State::EXITING ) ); // loop activities may re-enter
   auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   assert(extensionElements);
@@ -42,7 +43,8 @@ assert(false && "No entry for event-subprocesses");
 }
 
 bool LocalEvaluator::updateValues(ExitDecision* decision, Values& status, Values& data, Values& globals) {
-  auto token = decision->token;
+  auto token = decision->token.lock();
+  assert( token );
   assert( token->completed() );
 
   // make sure that timestamp used for evaluation is up to date
@@ -58,7 +60,8 @@ bool LocalEvaluator::updateValues(ExitDecision* decision, Values& status, Values
 }
 
 bool LocalEvaluator::updateValues(ChoiceDecision* decision, Values& status, Values& data, Values& globals) {
-  auto token = decision->token;
+  auto token = decision->token.lock();
+  assert( token );
   // make sure that timestamp used for evaluation is up to date
   auto now = token->owner->systemState->getTime();
   if ( status[BPMNOS::Model::ExtensionElements::Index::Timestamp].value() < now ) {
@@ -71,7 +74,8 @@ bool LocalEvaluator::updateValues(ChoiceDecision* decision, Values& status, Valu
 }
 
 bool LocalEvaluator::updateValues(MessageDeliveryDecision* decision, Values& status, Values& data, Values& globals) {
-  auto token = decision->token;
+  auto token = decision->token.lock();
+  assert( token );
   // make sure that timestamp used for evaluation is up to date
   auto now = token->owner->systemState->getTime();
   if ( status[BPMNOS::Model::ExtensionElements::Index::Timestamp].value() < now ) {
@@ -103,7 +107,8 @@ bool LocalEvaluator::updateValues(MessageDeliveryDecision* decision, Values& sta
 }
 
 std::shared_ptr<Evaluation> LocalEvaluator::evaluate(EntryDecision* decision) {
-  auto token = decision->token;
+  auto token = decision->token.lock();
+  assert( token );
   assert( token->ready() || ( token->state == Token::State::EXITING ) ); // loop activities may re-enter
   auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   assert(extensionElements);
@@ -124,7 +129,8 @@ std::shared_ptr<Evaluation> LocalEvaluator::evaluate(EntryDecision* decision) {
 }
 
 std::shared_ptr<Evaluation> LocalEvaluator::evaluate(ExitDecision* decision) {
-  auto token = decision->token;
+  auto token = decision->token.lock();
+  assert( token );
   assert( token->completed() );
   Values status = token->status;
   status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = token->owner->systemState->currentTime;
@@ -138,7 +144,8 @@ std::shared_ptr<Evaluation> LocalEvaluator::evaluate(ExitDecision* decision) {
 }
 
 std::shared_ptr<Evaluation> LocalEvaluator::evaluate(ChoiceDecision* decision) {
-  auto token = decision->token;
+  auto token = decision->token.lock();
+  assert( token );
   assert( token->busy() );
   auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   assert(extensionElements);
@@ -164,7 +171,8 @@ std::shared_ptr<Evaluation> LocalEvaluator::evaluate(ChoiceDecision* decision) {
 }
 
 std::shared_ptr<Evaluation> LocalEvaluator::evaluate(MessageDeliveryDecision* decision) {
-  auto token = decision->token;
+  auto token = decision->token.lock();
+  assert( token );
   assert( token->busy() );
 
   auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
@@ -187,7 +195,8 @@ std::shared_ptr<Evaluation> LocalEvaluator::evaluate(MessageDeliveryDecision* de
 std::set<const BPMNOS::Model::Attribute*> LocalEvaluator::getDependencies(EntryDecision* decision) {
   std::set<const BPMNOS::Model::Attribute*> dependencies;
 
-  auto token = decision->token;
+  auto token = decision->token.lock();
+  assert( token );
   auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   assert(extensionElements);
 
@@ -212,7 +221,8 @@ std::set<const BPMNOS::Model::Attribute*> LocalEvaluator::getDependencies(EntryD
 std::set<const BPMNOS::Model::Attribute*> LocalEvaluator::getDependencies(ExitDecision* decision) {
   std::set<const BPMNOS::Model::Attribute*> dependencies;
 
-  auto token = decision->token;
+  auto token = decision->token.lock();
+  assert( token );
   auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   assert(extensionElements);
 
@@ -222,7 +232,8 @@ std::set<const BPMNOS::Model::Attribute*> LocalEvaluator::getDependencies(ExitDe
 }
 
 std::set<const BPMNOS::Model::Attribute*> LocalEvaluator::getDependencies(ChoiceDecision* decision) {
-  auto token = decision->token;
+  auto token = decision->token.lock();
+  assert( token );
   auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   assert(extensionElements);
 
@@ -241,7 +252,8 @@ std::set<const BPMNOS::Model::Attribute*> LocalEvaluator::getDependencies(Choice
 
 std::set<const BPMNOS::Model::Attribute*> LocalEvaluator::getDependencies(MessageDeliveryDecision* decision) {
   std::set<const BPMNOS::Model::Attribute*> dependencies;
-  auto token = decision->token;
+  auto token = decision->token.lock();
+  assert( token );
 
 /* 
   // THIS SHOULD NOT BE NEEDED

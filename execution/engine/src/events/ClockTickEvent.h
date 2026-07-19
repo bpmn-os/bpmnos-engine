@@ -17,6 +17,9 @@ struct ClockTickEvent : Event {
   ClockTickEvent(const SystemState* systemState);
   void processBy(Engine* engine) const override;
 
+  /// Stale once live time already reached the scheduled tick time (time must strictly advance).
+  bool expired() const override;
+
   nlohmann::ordered_json jsonify() const override;
 
   static constexpr BPMNOS::number clockTick = 1; ///< Timestep used to advance the current time

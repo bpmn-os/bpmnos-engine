@@ -1,13 +1,14 @@
 #include "ChoiceDecision.h"
 #include "execution/engine/src/Engine.h"
+#include "execution/engine/src/DecisionRequest.h"
 #include "execution/controller/src/Evaluator.h"
 
 using namespace BPMNOS::Execution;
 
-ChoiceDecision::ChoiceDecision(const Token* token, std::vector<number> choices, Evaluator* evaluator)
-  : Event(token)
-  , ChoiceEvent(token, std::move(choices))
-  , Decision(evaluator)
+ChoiceDecision::ChoiceDecision(const DecisionRequest* request, std::vector<number> choices, Evaluator* evaluator)
+  : Event(request->token)
+  , ChoiceEvent(request->token, std::move(choices))
+  , Decision(request, evaluator)
 {
   determineDependencies( evaluator->getDependencies(this) );
 }
@@ -22,6 +23,11 @@ nlohmann::ordered_json ChoiceDecision::jsonify() const {
 
 
   jsonObject["decision"] = "choice";
+  auto token = this->token.lock();
+  if ( !token || expired() ) {
+    jsonObject["expired"] = true;
+    return jsonObject;
+  }
   jsonObject["processId"] = token->owner->process->id;
   jsonObject["instanceId"] = BPMNOS::to_string((*token->data)[BPMNOS::Model::ExtensionElements::Index::Instance].get().value(),STRING);
   jsonObject["nodeId"] = token->node->id;
