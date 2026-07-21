@@ -138,9 +138,13 @@ StateMachine::StateMachine(const SystemState* systemState, Token* parentToken, c
     }
 
     // Populate tokensAwaitingReadyEvent
+    // Multi-instance instance tokens may also sit in CREATED state (sequential copies awaiting
+    // their predecessor), but they receive no ready event of their own and are instead
+    // reconstructed via the multi-instance containers below; exclude them here.
     if (
       token->node && token->node->represents<BPMN::Activity>() &&
-      (token->state == Token::State::CREATED || token->state == Token::State::ARRIVED)
+      (token->state == Token::State::CREATED || token->state == Token::State::ARRIVED) &&
+      !other->systemState->tokenAtMultiInstanceActivity.contains(otherToken.get())
     ) {
       assert(other->systemState->tokensAwaitingReadyEvent.find(otherToken.get()) != other->systemState->tokensAwaitingReadyEvent.end());
       const_cast<SystemState*>(systemState)->tokensAwaitingReadyEvent.emplace_back(token);
@@ -493,29 +497,38 @@ void StateMachine::createMultiInstanceActivityTokens(Token* token) {
       tokens.back().get()->status[attribute->index] = value;
     }
 
+    auto instanceToken = tokens.back().get();
+
+    // Register instance bookkeeping BEFORE any state notification, so that the ready-event
+    // handler recognises this as a multi-instance instance token and skips it (the single
+    // ready event is consumed by the main token, not re-raised for each instance).
+    const_cast<SystemState*>(systemState)->tokensAtActivityInstance[token].push_back(instanceToken);
+    const_cast<SystemState*>(systemState)->exitStatusAtActivityInstance[token] = {};
+    const_cast<SystemState*>(systemState)->tokenAtMultiInstanceActivity[instanceToken] = token;
+
+    // Every instance emits its own CREATED state (birth); ARRIVED is skipped (no incoming flow).
+    instanceToken->update(Token::State::CREATED);
+
     if ( activity->loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::MultiInstanceSequential ) {
       if ( !tokenCopy ) {
-        // for sequential multi-instance activities only the first token awaits entry event
-        tokens.back().get()->update(Token::State::READY);
-//std::cerr << "Token awaiting entry:" << tokens.back()->jsonify() << std::endl;
-        tokens.back().get()->awaitEntryEvent();
+        // for sequential multi-instance activities only the first instance becomes ready immediately
+        instanceToken->update(Token::State::READY);
+//std::cerr << "Token awaiting entry:" << instanceToken->jsonify() << std::endl;
+        instanceToken->awaitEntryEvent();
       }
       else {
-        // newly created tokens have to wait for previous token copy
-        const_cast<SystemState*>(systemState)->tokenAwaitingMultiInstanceExit[tokenCopy] = tokens.back().get();
+        // subsequent instances remain in CREATED until their predecessor has exited
+        const_cast<SystemState*>(systemState)->tokenAwaitingMultiInstanceExit[tokenCopy] = instanceToken;
       }
     }
     else if ( activity->loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::MultiInstanceParallel ) {
-      // for parallel multi-instance activities all new tokens await entry event
-      tokens.back().get()->update(Token::State::READY);
-//std::cerr << "Token awaiting entry:" << tokens.back()->jsonify() << std::endl;
-      tokens.back().get()->awaitEntryEvent();
+      // for parallel multi-instance activities all instances become ready immediately
+      instanceToken->update(Token::State::READY);
+//std::cerr << "Token awaiting entry:" << instanceToken->jsonify() << std::endl;
+      instanceToken->awaitEntryEvent();
     }
 
-    tokenCopy = tokens.back().get();
-    const_cast<SystemState*>(systemState)->tokensAtActivityInstance[token].push_back(tokenCopy);
-    const_cast<SystemState*>(systemState)->exitStatusAtActivityInstance[token] = {};
-    const_cast<SystemState*>(systemState)->tokenAtMultiInstanceActivity[tokenCopy] = token;
+    tokenCopy = instanceToken;
   }
 
   assert( tokenCopy );
@@ -538,10 +551,16 @@ void StateMachine::deleteMultiInstanceActivityToken(Token* token) {
   
     if ( it != tokenAwaitingMultiInstanceExit.end() ) {
       auto waitingToken = it->second;
+      // successor leaves CREATED and becomes ready now that its predecessor has exited
+      waitingToken->update(Token::State::READY);
       waitingToken->awaitEntryEvent();
       tokenAwaitingMultiInstanceExit.erase(it);
     }
   }
+
+  // Instance has no outgoing flow: emit DONE as its terminal state before removal.
+  // Aggregation into the main token is handled below, not via the generic scope shutdown.
+  token->update(Token::State::DONE);
 
   // record exit status
   const_cast<SystemState*>(systemState)->exitStatusAtActivityInstance[mainToken].push_back(token->status);
