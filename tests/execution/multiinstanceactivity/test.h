@@ -41,6 +41,15 @@ SCENARIO( "Parallel multi instance task", "[execution][multiinstanceactivity]" )
         REQUIRE( exitLog[1]["status"]["timestamp"] == 3 );
         REQUIRE( exitLog[2]["status"]["timestamp"] == 3 );
 
+        // each instance is born (CREATED), gets its own entry decision (READY), and ends at DONE;
+        // the main token neither emits READY nor DONE (it departs)
+        auto createdLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "CREATED"}});
+        REQUIRE( createdLog.size() == 3 );
+        auto readyLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "READY"}});
+        REQUIRE( readyLog.size() == 3 );
+        auto doneLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "DONE"}});
+        REQUIRE( doneLog.size() == 3 );
+
         auto departureLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "DEPARTED"}});
         REQUIRE( departureLog[0]["status"]["timestamp"] == 3 );
       }
@@ -90,6 +99,19 @@ SCENARIO( "Sequential multi instance task", "[execution][multiinstanceactivity]"
         REQUIRE( exitLog[0]["status"]["timestamp"] == 1 );
         REQUIRE( exitLog[1]["status"]["timestamp"] == 2 );
         REQUIRE( exitLog[2]["status"]["timestamp"] == 3 );
+
+        // each instance is born (CREATED), gets its own entry decision (READY), and ends at DONE.
+        // Before the fix, sequential instances #2/#3 emitted no READY and the main token emitted a
+        // spurious one; READY.size() == 3 pins both directions of that regression.
+        auto createdLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "CREATED"}});
+        REQUIRE( createdLog.size() == 3 );
+        auto readyLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "READY"}});
+        REQUIRE( readyLog.size() == 3 );
+        REQUIRE( readyLog[0]["status"]["counter"] == 1 );
+        REQUIRE( readyLog[1]["status"]["counter"] == 2 );
+        REQUIRE( readyLog[2]["status"]["counter"] == 3 );
+        auto doneLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "DONE"}});
+        REQUIRE( doneLog.size() == 3 );
 
         auto departureLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "DEPARTED"}});
         REQUIRE( departureLog[0]["status"]["timestamp"] == 3 );
@@ -141,6 +163,12 @@ SCENARIO( "Parallel multi instance task with timeout", "[execution][multiinstanc
         REQUIRE( withdrawnLog[0]["status"]["timestamp"] >= 2 );
         REQUIRE( withdrawnLog[1]["status"]["timestamp"] >= 2 );
         REQUIRE( withdrawnLog[2]["status"]["timestamp"] >= 2 );
+
+        // all instances are born and become ready before the timeout withdraws them
+        auto createdLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "CREATED"}});
+        REQUIRE( createdLog.size() == 3 );
+        auto readyLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "READY"}});
+        REQUIRE( readyLog.size() == 3 );
 
         auto exitLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "EXITING"}});
         REQUIRE( exitLog.size() == 0 );
@@ -199,6 +227,13 @@ SCENARIO( "Sequential multi instance task with timeout", "[execution][multiinsta
         REQUIRE( withdrawnLog.size() >= 1 );
         REQUIRE( withdrawnLog[0]["status"]["timestamp"] == 2 );
 
+        // all instances are born up front even though the timeout stops the sequence early;
+        // at least the first two reach their own READY state
+        auto createdLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "CREATED"}});
+        REQUIRE( createdLog.size() == 3 );
+        auto readyLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "READY"}});
+        REQUIRE( readyLog.size() >= 2 );
+
         auto exitLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "EXITING"}});
         REQUIRE( exitLog.size() >= 1 );
         REQUIRE( exitLog.size() < 3 );
@@ -251,6 +286,10 @@ SCENARIO( "Sequential multi instance subprocess with error", "[execution][multii
         auto withdrawnLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "WITHDRAWN"}});
         REQUIRE( withdrawnLog.size() == 3 );
 
+        // all instances are born even though only the first enters before the error aborts the rest
+        auto createdLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "CREATED"}});
+        REQUIRE( createdLog.size() == 3 );
+
         auto exitLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "EXITING"}});
         REQUIRE( exitLog.size() == 0 );
 
@@ -298,6 +337,14 @@ SCENARIO( "Sequential multi instance subprocess with escalation", "[execution][m
 
         auto withdrawnLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "WITHDRAWN"}});
         REQUIRE( withdrawnLog.size() == 0 );
+
+        // all instances are born, become ready, and reach DONE on exit (escalation is non-interrupting)
+        auto createdLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "CREATED"}});
+        REQUIRE( createdLog.size() == 3 );
+        auto readyLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "READY"}});
+        REQUIRE( readyLog.size() == 3 );
+        auto doneLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "DONE"}});
+        REQUIRE( doneLog.size() == 3 );
 
         auto exitLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "EXITING"}});
         REQUIRE( exitLog.size() == 3 );
