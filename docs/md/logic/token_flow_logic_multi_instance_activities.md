@@ -31,13 +31,15 @@ If the token is at a multi-instance @ref BPMN::SendTask "send task" or @ref BPMN
 If a @ref BPMNOS::Model::ExtensionElements::loopIndex "loop index parameter" is provided, the respective attribute of the *i* th token copy receives the value *i*.
 
 Depending on whether the multi-instance activity is parallel or sequential, each token copy is advanced in parallel or sequential fashion.
-These tokens change their states as described in @ref token_flow_logic_subprocesses or @ref token_flow_logic_tasks except that the @ref BPMNOS::Execution::Token::State::ARRIVED "ARRIVED" / @ref BPMNOS::Execution::Token::State::CREATED "CREATED", @ref BPMNOS::Execution::Token::State::DEPARTED "DEPARTED", and @ref BPMNOS::Execution::Token::State::DONE "DONE" states are skipped.
+Each token copy begins in the @ref BPMNOS::Execution::Token::State::CREATED "CREATED" state when it is created from the main token; no ready event of its own is raised, as the single ready event is consumed by the main token. It then changes its states as described in @ref token_flow_logic_subprocesses or @ref token_flow_logic_tasks, except that the @ref BPMNOS::Execution::Token::State::ARRIVED "ARRIVED" and @ref BPMNOS::Execution::Token::State::DEPARTED "DEPARTED" states are skipped (a copy has neither an incoming nor an outgoing sequence flow). Upon exiting, each copy advances to the @ref BPMNOS::Execution::Token::State::DONE "DONE" state.
+
+For a sequential multi-instance activity, all copies are created in the @ref BPMNOS::Execution::Token::State::CREATED "CREATED" state, but only the first copy advances to the @ref BPMNOS::Execution::Token::State::READY "READY" state immediately; each subsequent copy advances from @ref BPMNOS::Execution::Token::State::CREATED "CREATED" to @ref BPMNOS::Execution::Token::State::READY "READY" only once its predecessor has exited. For a parallel multi-instance activity, all copies advance to the @ref BPMNOS::Execution::Token::State::READY "READY" state at once.
 
 
 
 ## WAITING
 
-A token in @ref BPMNOS::Execution::Token::State::WAITING "WAITING" state remains in this state until all token copies have passed the  @ref  BPMNOS::Execution::Token::State::EXITING "EXITING" state or have terminated with a failure.
+A token in @ref BPMNOS::Execution::Token::State::WAITING "WAITING" state remains in this state until all token copies have reached the  @ref  BPMNOS::Execution::Token::State::DONE "DONE" state or have terminated with a failure.
 The token state is then updated accordingly.
 
 ## DEPARTED

@@ -371,20 +371,23 @@ void Token::advanceToReady() {
   }
     
   sequenceFlow = nullptr;
-  update(State::READY);
-  
+
   if ( auto activity = node->represents<BPMN::Activity>();
-    activity && 
+    activity &&
     activity->loopCharacteristics.has_value()
   ) {
     if ( activity->loopCharacteristics.value() != BPMN::Activity::LoopCharacteristics::Standard ) {
-      // delegate creation of token copies for multi-instance activity to owner
+      // The main token of a multi-instance activity does not enter the READY state; it
+      // delegates creation of the instance token copies to the owner and then advances
+      // directly to WAITING (see StateMachine::createMultiInstanceActivityTokens).
       auto stateMachine = const_cast<StateMachine*>(owner);
       auto engine = const_cast<Engine*>(owner->systemState->engine);
       engine->commands.emplace_back(std::bind(&StateMachine::createMultiInstanceActivityTokens,stateMachine,this), this);
       return;
     }
   }
+
+  update(State::READY);
 
 //std::cerr << "->awaitEntryEvent" << std::endl;
   awaitEntryEvent();

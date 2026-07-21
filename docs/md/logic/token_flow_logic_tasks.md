@@ -17,8 +17,9 @@ stateDiagram-v2
     state departure <<choice>>
     [*] --> ARRIVED/CREATED
     note left of ARRIVED/CREATED
-      For multi-instance activity copies,
-      the ARRIVED / CREATED state is skipped
+      For multi-instance activity copies, the ARRIVED state
+      is skipped; the copy starts in CREATED and advances to
+      READY without a ready event
     end note
     ARRIVED/CREATED --> READY: ready event
     READY --> ENTERED: entry event

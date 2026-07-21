@@ -46,6 +46,14 @@ void ReadyHandler::notice(const Observable* observable) {
     return;
   }
 
+  // Multi-instance instance tokens receive no ready event of their own: the single ready
+  // event fires on the main token, and each instance is materialised from it with its data
+  // already known. Instance tokens are the keys of tokenAtMultiInstanceActivity; the main
+  // token is only ever a value, so it still passes this guard and keeps its ready event.
+  if (token->owner->systemState->tokenAtMultiInstanceActivity.contains(const_cast<Token*>(token))) {
+    return;
+  }
+
   auto systemState = token->owner->systemState;
   auto currentTime = systemState->getTime();
   auto token_ptr = const_cast<Token*>(token)->weak_from_this();
