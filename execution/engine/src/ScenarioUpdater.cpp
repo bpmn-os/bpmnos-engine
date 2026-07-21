@@ -41,10 +41,15 @@ void ScenarioUpdater::notice(const Observable* observable) {
       return;
     }
 
-    // Handle ARRIVED/CREATED at Activity - notify scenario of arrival
+    // Handle ARRIVED/CREATED at Activity - notify scenario of arrival.
+    // Multi-instance instance tokens also pass through CREATED, but the activity's arrival
+    // status is computed once for the main token and inherited by the instances; they must not
+    // re-trigger the scenario (which would write orphaned arrival statuses and, for stochastic
+    // scenarios, consume the activity's random stream). Exclude them here, mirroring ReadyHandler.
     if (
       token->node->represents<BPMN::Activity>() &&
-      (token->state == Token::State::ARRIVED || token->state == Token::State::CREATED)
+      (token->state == Token::State::ARRIVED || token->state == Token::State::CREATED) &&
+      !token->owner->systemState->tokenAtMultiInstanceActivity.contains(const_cast<Token*>(token))
     ) {
       auto instanceId = token->owner->root->instance.value();
       assert(token->data);
