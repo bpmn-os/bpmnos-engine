@@ -2,6 +2,7 @@
 #include <cassert>
 #include <stdexcept>
 #include <utility>
+#include <tuple>
 
 #include "Model.h"
 #include "extensionElements/ExtensionElements.h"
@@ -68,10 +69,10 @@ std::vector<std::reference_wrapper<XML::bpmnos::tAttribute>> Model::getData(XML:
 
 namespace {
 
-/// @brief Walks the parsed tree and returns the {name, source} of every referenced lookup table.
+/// @brief Walks the parsed tree and returns the {name, source, header} of every referenced lookup table.
 /// @throws std::runtime_error if a source contains a path separator (a source must be a bare file name).
-std::vector<std::pair<std::string, std::string>> collectLookupTables(const XML::XMLObject& root) {
-  std::vector<std::pair<std::string, std::string>> lookups;
+std::vector<std::tuple<std::string, std::string, std::string>> collectLookupTables(const XML::XMLObject& root) {
+  std::vector<std::tuple<std::string, std::string, std::string>> lookups;
   for ( const XML::bpmn::tDataStoreReference& dataStoreReference : root.find<XML::bpmn::tDataStoreReference>() ) {
     auto extensionElements = dataStoreReference.getOptionalChild<XML::bpmn::tExtensionElements>();
     if ( !extensionElements.has_value() ) {
@@ -84,10 +85,11 @@ std::vector<std::pair<std::string, std::string>> collectLookupTables(const XML::
     for ( const XML::bpmnos::tTable& table : tables->get().find<XML::bpmnos::tTable>() ) {
       std::string name = table.getRequiredAttributeByName("name").value;
       std::string source = table.getRequiredAttributeByName("source").value;
+      std::string header = table.getRequiredAttributeByName("header").value;
       if ( source.find('/') != std::string::npos || source.find('\\') != std::string::npos ) {
         throw std::runtime_error("Model: lookup table source '" + source + "' must be a file name, not a path");
       }
-      lookups.emplace_back( std::move(name), std::move(source) );
+      lookups.emplace_back( std::move(name), std::move(source), std::move(header) );
     }
   }
   return lookups;
@@ -97,27 +99,27 @@ std::vector<std::pair<std::string, std::string>> collectLookupTables(const XML::
 
 std::vector<std::string> Model::getLookupTableNames(const XML::XMLObject& root) {
   std::vector<std::string> names;
-  for ( auto& lookup : collectLookupTables(root) ) {
-    names.push_back( lookup.second );
+  for ( auto& [name, source, header] : collectLookupTables(root) ) {
+    names.push_back( source );
   }
   return names;
 }
 
 void Model::createLookupTables(const std::vector<std::string>& folders) {
   // file mode: resolve each referenced source against the folders
-  for ( auto& [name, source] : collectLookupTables(*root) ) {
-    lookupTables.push_back( std::make_unique<LookupTable>(name, source, folders) );
+  for ( auto& [name, source, header] : collectLookupTables(*root) ) {
+    lookupTables.push_back( std::make_unique<LookupTable>(name, source, header, folders) );
   }
 }
 
 void Model::createLookupTables(const std::unordered_map<std::string, std::string>& lookupTableContents) {
   // content mode: resolve each referenced source from the supplied content map
-  for ( auto& [name, source] : collectLookupTables(*root) ) {
+  for ( auto& [name, source, header] : collectLookupTables(*root) ) {
     auto it = lookupTableContents.find(source);
     if ( it == lookupTableContents.end() ) {
       throw std::runtime_error("Model: content for lookup table '" + source + "' not provided");
     }
-    lookupTables.push_back( std::make_unique<LookupTable>(name, it->second) );
+    lookupTables.push_back( std::make_unique<LookupTable>(name, it->second, header) );
   }
 }
 
