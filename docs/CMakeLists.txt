@@ -17,9 +17,9 @@ set(MODEL_PAGES
 # Generate the documentation
 set(DOCUMENTATION ON CACHE BOOL "Create documentation")
 if (DOCUMENTATION)
-  find_program(BPMN2SVG_FOUND "bpmn2svg")
-  if (NOT BPMN2SVG_FOUND)
-    message(FATAL_ERROR "bpmn2svg not found.\n\nDownload bpmn2svg from: https://github.com/bpmn-os/bpmnos-modeller" and run npm install; sudo npm link)
+  find_program(BPMNOS2SVG_FOUND "bpmnos2svg")
+  if (NOT BPMNOS2SVG_FOUND)
+    message(FATAL_ERROR "bpmnos2svg not found.\n\nDownload bpmnos2svg from: https://github.com/bpmn-os/bpmnos-js" and run npm install; npm link)
   endif()
   find_program(BPMNDOC_FOUND "bpmndoc")
   if (NOT BPMNDOC_FOUND)
@@ -48,9 +48,9 @@ if (DOCUMENTATION)
   set(MODEL_SRC ${PROJECT_SOURCE_DIR}/examples)
   set(MODEL_DOC ${PROJECT_SOURCE_DIR}/docs/md/models)
   set(HTML_DIR ${PROJECT_SOURCE_DIR}/docs/html)
-  add_custom_target(bpmn2svg
+  add_custom_target(bpmnos2svg
     COMMAND bash -c "echo 'Convert bpmn to svg ...'"
-    COMMAND bash -c "for model in ${MODEL_SRC}/*/*bpmn; do baseName=$(basename $model '.bpmn'); folder=$(basename $(dirname $model)); if [[ $model -nt \"$folder/$baseName.svg\" ]]; then bpmn2svg $model -o $folder; fi; done"
+    COMMAND bash -c "for model in ${MODEL_SRC}/*/*bpmn; do baseName=$(basename $model '.bpmn'); folder=$(basename $(dirname $model)); if [[ $model -nt \"$folder/$baseName.svg\" ]]; then bpmnos2svg $model -o $folder; fi; done"
     COMMENT "Generating BPMN model diagrams (this may take a while)"
     WORKING_DIRECTORY ${MODEL_DOC}
     VERBATIM
@@ -63,7 +63,7 @@ if (DOCUMENTATION)
     WORKING_DIRECTORY ${MODEL_DOC}
     COMMENT "Generating BPMN model documentation"
     VERBATIM
-    DEPENDS bpmn2svg
+    DEPENDS bpmnos2svg
   )
 
   add_custom_target(bpmndoc
