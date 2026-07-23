@@ -23,13 +23,13 @@ Moreover, by connecting to the execution engine, the engine is enabled to @ref B
 
 ## Greedy controller
 
-The @ref BPMNOS::Execution::GreedyController::connect "greedy controller" implements a @ref BPMNOS::Execution::Controller "controller" with a collection of @ref BPMNOS::Execution::GreedyDispatcher "greedy dispatchers":
-- the @ref BPMNOS::Execution::BestFirstEntry "best first entry" dispatcher evaluates entry decisions for all activities and dispatches the entry decision with the best evaluation,
-- @ref BPMNOS::Execution::BestFirstExit "best first exit" dispatcher evaluates exit decisions for all activities and dispatches the exit decision with the best evaluation,
-- @ref BPMNOS::Execution::BestMatchingMessageDelivery "best matching message delivery" dispatcher evaluates message delivery decisions for all @ref BPMNOS::Execution::Message "sent messages" and @ref BPMN::MessageCatchEvent "potential recipients" and dispatches the message delivery decision with the best evaluation.
-- the @ref BPMNOS::Execution::BestEnumeratedChoice "best enumerated choice dispatcher" evaluates all choices that can be enumerated. In case, of numeric choices lower bound and upper bound as well a discretize condition must be provided, e.g. `lb <= choice <= ub, 5 divides choice` where `lb` and `ub` may be arbitrary expressions and `choice` is the attribute name for which the choice is to be made. The discretize condition accepts a numeric value or an expression. If no discretize condition is provided only minimum and maximum values are considered.
+The @ref BPMNOS::Execution::GreedyController "greedy controller" is a @ref BPMNOS::Execution::Controller "controller" that holds a list of dispatchers that are consulted in the given order:
 
-Among all decisions dispatched by any of the greedy dispatchers, the greedy controller selects the decision with the overall best evaluation.
+- the @ref BPMNOS::Execution::FirstFeasibleExit "exit dispatcher" evaluates the pending exit decisions and dispatches the first feasible exit,
+- the @ref BPMNOS::Execution::FirstFeasibleEntry "entry dispatcher" evaluates the pending entry decisions (excluding those in a sequential ad-hoc subprocess) and dispatches the first feasible entry,
+- the @ref BPMNOS::Execution::InstantDirectMessage "direct message dispatcher" dispatches a message delivery without evaluation whenever the sender explicitly addresses its recipient or the recipient explicitly refers to the sender,
+- the @ref BPMNOS::Execution::FirstEnumeratedChoice "enumerated choice dispatcher" (, )or the @ref BPMNOS::Execution::FirstBisectionalChoice "bisectional choice dispatcher" when `config.bisection` is set) evaluates choices for decision tasks and as soon as feasible choices are found for a decision task, it dispatches the best evaluated choices for that task,
+- the @ref BPMNOS::Execution::CompetingCandidates "competing candidates dispatcher" evaluates message delivery decisions and entry decisions for activities within sequential ad-hoc subprocesses. It dispatches the best evaluated decision among all.
 
 All evaluations are conducted by an @ref BPMNOS::Execution::Evaluator "evaluator".
 

@@ -109,7 +109,7 @@ public:
   /**
    * @brief Make scenario aware of a task for which the completion status must be determined.
    *
-   * @param instanceId The instance identifier.
+   * @param rootId The root instance identifier.
    * @param task The task node entering BUSY state.
    * @param status The current status values.
    * @param data The current data values.
@@ -141,6 +141,7 @@ public:
    * node's own attributes to return full status.
    * If no, returns std::nullopt.
    *
+   * @param rootId The root instance identifier.
    * @param instanceId The instance identifier.
    * @param activity The activity node.
    * @param currentTime The current time for disclosure check.

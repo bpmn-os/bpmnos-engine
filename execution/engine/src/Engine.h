@@ -49,7 +49,6 @@ public:
    *
    * @param scenario The scenario to execute
    * @param timeout Last time to process (engine stops when time >= timeout)
-   * @return The objective value at termination
    */
   void run(const BPMNOS::Model::Scenario* scenario, BPMNOS::number timeout = std::numeric_limits<BPMNOS::number>::max());
 
@@ -88,7 +87,7 @@ public:
    *
    * Does not create a new state — run() or initializeSystemState() must have established one first.
    *
-   * @param decision The decision to process before greedy dispatch resumes
+   * @param event The event to process before greedy dispatch resumes
    * @param timeout Last time to process (engine stops when time >= timeout)
    */
   void resume(std::shared_ptr<Event> event, BPMNOS::number timeout = std::numeric_limits<BPMNOS::number>::max());
