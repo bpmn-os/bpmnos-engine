@@ -1,0 +1,105 @@
+# Build the Doxygen documentation and publish it to GitHub Pages.
+#
+# Modelled on bpmn-os/bpmnpp's Pages workflow (which deploys the same kind of Doxygen output — source
+# browser + dot graphs). The key to publishing a ~5000-file Doxygen site is peaceiris/actions-gh-pages:
+# it pushes to the gh-pages branch AND drops a `.nojekyll` (enable_jekyll defaults to false), which skips
+# the Jekyll build that otherwise times out on this many files. After the first green run, set
+# Settings -> Pages -> Source: "Deploy from a branch" -> gh-pages / (root).
+#
+# The engine's `make docs` needs a heavier toolchain than bpmnpp:
+#   - doxygen + graphviz            (apt)
+#   - bpmn++.h                      -> build bpmn-os/bpmnpp, which needs schematic++ + xerces-c
+#   - bpmndoc                       -> build bpmn-os/bpmndoc (C++ tool, on PATH)
+#   - bpmnos2svg                    -> bpmn-os/bpmnos-js (Node + headless Chrome), on PATH
+# If the Node/Chrome model-rendering step (bpmnos2svg/bpmndoc) is troublesome, you can drop the BPMN
+# example pages for a first deploy by removing their INPUT dirs / the `bpmndoc` dependency — the API
+# reference + graphs still build from doxygen + graphviz alone.
+
+name: Deploy Docs
+
+on:
+  workflow_dispatch:        # run manually from the Actions tab to test
+  push:
+    branches: [ main, develop ]
+  schedule:
+    - cron: "0 3 * * 1"     # weekly rebuild (keeps external tag-file links fresh)
+
+permissions:
+  contents: write            # peaceiris pushes the built site to the gh-pages branch
+
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout engine
+        uses: actions/checkout@v4
+
+      - name: System packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y doxygen graphviz libxerces-c-dev cmake build-essential curl git
+
+      # --- toolchain the docs build depends on ------------------------------------------------
+
+      - name: Build & install schematic++ (generates bpmn++.h)
+        run: |
+          git clone --depth 1 https://github.com/rajgoel/schematicpp.git
+          cmake -S schematicpp -B schematicpp/build
+          cmake --build schematicpp/build --parallel
+          sudo cmake --install schematicpp/build
+
+      # bpmn++ is built ONLY because bpmndoc links libbpmn++ (find_library(bpmn++)); the engine docs
+      # cross-reference bpmn++ via the downloaded tag file, not this build.
+      - name: Build & install bpmn++
+        run: |
+          git clone --depth 1 https://github.com/bpmn-os/bpmnpp.git
+          cmake -S bpmnpp -B bpmnpp/build
+          cmake --build bpmnpp/build --parallel
+          sudo cmake --install bpmnpp/build
+
+      - name: Build & install bpmndoc (turns the example .bpmn models into doc pages; links libbpmn++)
+        run: |
+          git clone --depth 1 https://github.com/bpmn-os/bpmndoc.git
+          cmake -S bpmndoc -B bpmndoc/build
+          cmake --build bpmndoc/build --parallel
+          sudo cmake --install bpmndoc/build
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Chrome (for bpmnos2svg headless rendering)
+        uses: browser-actions/setup-chrome@v1
+
+      - name: Link bpmnos2svg
+        run: |
+          git clone --depth 1 https://github.com/bpmn-os/bpmnos-js.git
+          cd bpmnos-js
+          npm ci
+          sudo npm link
+
+      # --- build & publish --------------------------------------------------------------------
+
+      # docs-only configure: no engine build, no cnl/limex/json fetch. bpmn++ (installed above for
+      # bpmndoc) is found on the default include path and lands in INPUT, and the docs target downloads
+      # the bpmnpp tag file, so the ~43k cross-links into https://bpmn-os.github.io/bpmnpp are produced
+      # exactly as in a local build.
+      - name: Generate documentation
+        run: |
+          cmake -S . -B build -DBPMNOS_DOCS_ONLY=ON
+          cmake --build build --target docs
+          # drop Doxygen's dot intermediates — not needed to serve the SVGs, and they shrink the site
+          rm -f docs/html/*.md5 docs/html/*.map
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs/html
+          # enable_jekyll defaults to false -> a .nojekyll is written, so Pages serves the static tree
+          # directly with no build (the fix for the "too many pages" failure).
