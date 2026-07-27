@@ -15,7 +15,7 @@ name: Deploy Docs
 on:
   workflow_dispatch:        # trigger manually (use this to test this branch before merging to main)
   push:
-    branches: [ main ]      # auto-deploy only from main
+    branches: [ main, deploy-docs ]   # TEMP: deploy-docs is here to be able to trigger workflow when testing
 
 permissions:
   contents: write            # peaceiris pushes the built site to the gh-pages branch
