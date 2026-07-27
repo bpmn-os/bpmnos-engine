@@ -1,0 +1,421 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<!-- BEGIN opengraph metadata -->
+<meta property="og:title" content="Doxygen Awesome" />
+<meta property="og:image" content="https://repository-images.githubusercontent.com/348492097/4f16df80-88fb-11eb-9d31-4015ff22c452" />
+<meta property="og:description" content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
+<meta property="og:url" content="https://jothepro.github.io/doxygen-awesome-css/" />
+<!-- END opengraph metadata -->
+<!-- BEGIN twitter metadata -->
+<meta name="twitter:image:src" content="https://repository-images.githubusercontent.com/348492097/4f16df80-88fb-11eb-9d31-4015ff22c452" />
+<meta name="twitter:title" content="Doxygen Awesome" />
+<meta name="twitter:description" content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
+<!-- END twitter metadata -->
+<title>BPMN-OS: execution/engine/src/Token.h Source File</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript" src="doxygen-awesome-interactive-toc.js"></script>
+<script type="text/javascript" src="doxygen-awesome-tabs.js"></script>
+<script type="text/javascript" src="toggle-alternative-theme.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeParagraphLink.init()
+    DoxygenAwesomeInteractiveToc.init()
+    DoxygenAwesomeTabs.init()
+</script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="custom.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<link href="custom-alternative.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<!-- https://tholman.com/github-corners/ -->
+<a href="https://github.com/bpmn-os/bpmnos-engine" class="github-corner" title="View source on GitHub" target="_blank" rel="noopener noreferrer">
+    <svg viewBox="0 0 250 250" width="40" height="40" style="position: absolute; top: 0; border: 0; right: 0; z-index: 99;" aria-hidden="true">
+    <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="BPMNOS.svg"/></td>
+  <td id="projectalign" style="padding-left: 0.5em;">
+   <div id="projectname">BPMN-OS
+   </div>
+   <div id="projectbrief">BPMN for optimization and simulation</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() {
+  initMenu('',true,false,'search.php','Search');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */
+</script>
+<div id="main-nav"></div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(document).ready(function() { init_codefold(0); });
+/* @license-end */
+</script>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(document).ready(function(){initNavTree('Token_8h_source.html',''); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">Token.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="Token_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef BPMNOS_Execution_Token_H</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define BPMNOS_Execution_Token_H</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;bpmn++.h&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="ExtensionElements_8h.html">model/bpmnos/src/extensionElements/ExtensionElements.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="Content_8h.html">model/bpmnos/src/extensionElements/Content.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="Number_8h.html">model/utility/src/Number.h</a>&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="auto__list_8h.html">execution/utility/src/auto_list.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="Observable_8h.html">Observable.h</a>&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;nlohmann/json.hpp&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;iostream&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;cassert&gt;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceBPMNOS_1_1Execution.html">BPMNOS::Execution</a> {</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">class </span>Engine;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">class </span>StateMachine;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keyword">class </span>Token;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="namespaceBPMNOS_1_1Execution.html#aecc76732c42d9421b8b0d48ec878c527">   19</a></span><span class="keyword">typedef</span> std::vector&lt; std::shared_ptr&lt;Token&gt; &gt; <a class="code hl_typedef" href="namespaceBPMNOS_1_1Execution.html#aecc76732c42d9421b8b0d48ec878c527">Tokens</a>;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keyword">class </span><a class="code hl_class" href="classBPMNOS_1_1Execution_1_1EventDispatcher.html">EventDispatcher</a>;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">struct </span><a class="code hl_struct" href="structBPMNOS_1_1Execution_1_1DecisionRequest.html">DecisionRequest</a>;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="comment"></span> </div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="comment">/**</span></div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="comment"> * @brief Represents a token running through a (sub)process.</span></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="comment"> * </span></div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="comment"> * The `Token` class is used to represent tokens running through the execution flow of a (sub)process.</span></div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="comment"> * The execution logic is documented in section @ref execution_logic.</span></div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="comment"> *</span></div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="comment"> * @note All tokens can be WITHDRAWN at any time, e.g., when the respective state machine terminates.</span></div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="comment"> *</span></div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="comment"> * @note It is assumed that @ref XML::bpmn::tCompensateEventDefinition::waitForCompletion is `true`.</span></div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span><span class="comment"> *</span></div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="comment"> * @note It is assumed that @ref XML::bpmn::tAdHocSubProcess::ordering is `Sequential`.</span></div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span><span class="comment"> */</span></div>
+<div class="foldopen" id="foldopen00035" data-start="{" data-end="};">
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1Execution_1_1Token.html">   35</a></span><span class="keyword">class </span><a class="code hl_class" href="classBPMNOS_1_1Execution_1_1Token.html">Token</a> : <span class="keyword">public</span> <a class="code hl_struct" href="structBPMNOS_1_1Execution_1_1Observable.html">Observable</a>, <span class="keyword">public</span> std::enable_shared_from_this&lt;Token&gt; {</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1Execution_1_1Token.html#ae76677096c6a3ad900e8b39056d5e44d">   37</a></span>  <span class="keyword">friend</span> <span class="keyword">class </span><a class="code hl_class" href="classBPMNOS_1_1Execution_1_1SystemState.html">SystemState</a>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1Execution_1_1Token.html#a97c30032fa6c28eaf8a40b6df6ea97ed">   38</a></span>  <span class="keyword">friend</span> <span class="keyword">class </span><a class="code hl_class" href="classBPMNOS_1_1Execution_1_1StateMachine.html">StateMachine</a>;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1Execution_1_1Token.html#a3e1914489e4bed4f9f23cdeab34a43dc">   39</a></span>  <span class="keyword">friend</span> <span class="keyword">class </span><a class="code hl_class" href="classBPMNOS_1_1Execution_1_1Engine.html">Engine</a>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1Execution_1_1Token.html#a87500327ae69187f741e942383b5bca8">   40</a></span>  <span class="keyword">friend</span> <span class="keyword">class </span><a class="code hl_class" href="classBPMNOS_1_1Execution_1_1ConditionalEventObserver.html">ConditionalEventObserver</a>;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1Execution_1_1Token.html#a07d1c48888da58ef306d5bd8af155fce">   43</a></span>  <span class="keyword">constexpr</span> <a class="code hl_enumeration" href="structBPMNOS_1_1Execution_1_1Observable.html#a08cd1bc9081eb51f7fb6bb20578a355e">Type</a> <a class="code hl_function" href="classBPMNOS_1_1Execution_1_1Token.html#a07d1c48888da58ef306d5bd8af155fce">getObservableType</a>()<span class="keyword"> const override </span>{ <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="structBPMNOS_1_1Execution_1_1Observable.html#a08cd1bc9081eb51f7fb6bb20578a355ea459a6f79ad9b13cbcb5f692d2cc7a94d">Type::Token</a>; };</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1Execution_1_1Token.html#a267acf498c28d5feb2ceb5c1c3b33c07">   44</a></span>  <span class="keyword">const</span> <a class="code hl_class" href="classBPMNOS_1_1Execution_1_1StateMachine.html">StateMachine</a>* <a class="code hl_variable" href="classBPMNOS_1_1Execution_1_1Token.html#a267acf498c28d5feb2ceb5c1c3b33c07">owner</a>; <span class="comment">///&lt; State machine owning the token</span></div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1Execution_1_1Token.html#a30cf58b79491a9c451a39ad288b262a1">   45</a></span>  std::shared_ptr&lt;StateMachine&gt; <a class="code hl_variable" href="classBPMNOS_1_1Execution_1_1Token.html#a30cf58b79491a9c451a39ad288b262a1">owned</a>; <span class="comment">///&lt; State machine owned by the token</span></div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1Execution_1_1Token.html#a10c9b3346bcb378e3d3ff04d8f5025f0">   46</a></span>  <span class="keyword">const</span> <a class="code hl_classRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1FlowNode.html">BPMN::FlowNode</a>* <a class="code hl_variable" href="classBPMNOS_1_1Execution_1_1Token.html#a10c9b3346bcb378e3d3ff04d8f5025f0">node</a>; <span class="comment">///&lt; Flow node where the token resides (nullptr for process-level tokens)</span></div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1Execution_1_1Token.html#a7ae562e714c511deb6dfd64c2d3fe483">   47</a></span>  <span class="keyword">const</span> <a class="code hl_classRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1SequenceFlow.html">BPMN::SequenceFlow</a>* <a class="code hl_variable" href="classBPMNOS_1_1Execution_1_1Token.html#a7ae562e714c511deb6dfd64c2d3fe483">sequenceFlow</a>; <span class="comment">///&lt; Sequence flow being traversed (only set in DEPARTED/ARRIVED states)</span></div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92d">   48</a></span>  <span class="keyword">enum class</span> <a class="code hl_enumeration" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92d">State</a> { <a class="code hl_enumvalue" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da98690bf632c29c17c9e4c5a64069903c">CREATED</a>, <a class="code hl_enumvalue" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da2baa69eafc7204f3bd8648eba580c489">READY</a>, <a class="code hl_enumvalue" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da7ea8694c832315449be4318681c872f2">ENTERED</a>, <a class="code hl_enumvalue" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da802706a9238e2928077f97736854bad4">BUSY</a>, <a class="code hl_enumvalue" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da8f7afecbc8fbc4cd0f50a57d1172482e">COMPLETED</a>, <a class="code hl_enumvalue" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da835d592fc110ac5d9471b44151d96d40">EXITING</a>, <a class="code hl_enumvalue" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92daf648cfdf0a03c4aaad51d6d837613ec7">DEPARTED</a>, <a class="code hl_enumvalue" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92daecf81265919ceb1222992d59f5e66300">ARRIVED</a>, <a class="code hl_enumvalue" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da1869d56535e8b1449a6da54ff5e11f50">WAITING</a>, <a class="code hl_enumvalue" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da2ba22e58ca17bb728d522bba36cf8350">DONE</a>, <a class="code hl_enumvalue" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92dab9e14d9b2886bcff408b85aefa780419">FAILED</a>, <a class="code hl_enumvalue" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da04a6fafe393ceb9f5b6ce96aae00c8cb">FAILING</a>, <a class="code hl_enumvalue" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da15f20da2a811c696726c7187065cd6d2">WITHDRAWN</a> }; <span class="comment">///&lt; The states that a token can be in</span></div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>  <span class="keyword">const</span> <a class="code hl_class" href="classBPMNOS_1_1Model_1_1AttributeRegistry.html">BPMNOS::Model::AttributeRegistry</a>&amp; <a class="code hl_function" href="classBPMNOS_1_1Execution_1_1Token.html#a1a107bcfecef5c8a0c6d60013dc9cc9d">getAttributeRegistry</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1Execution_1_1Token.html#a9653eaba46d293fa1da9f349c8e126d2">   50</a></span>  <span class="keyword">static</span> <span class="keyword">inline</span> std::string <a class="code hl_variable" href="classBPMNOS_1_1Execution_1_1Token.html#a9653eaba46d293fa1da9f349c8e126d2">stateName</a>[] = { <span class="stringliteral">&quot;CREATED&quot;</span>, <span class="stringliteral">&quot;READY&quot;</span>, <span class="stringliteral">&quot;ENTERED&quot;</span>, <span class="stringliteral">&quot;BUSY&quot;</span>, <span class="stringliteral">&quot;COMPLETED&quot;</span>, <span class="stringliteral">&quot;EXITING&quot;</span>, <span class="stringliteral">&quot;DEPARTED&quot;</span>, <span class="stringliteral">&quot;ARRIVED&quot;</span>, <span class="stringliteral">&quot;WAITING&quot;</span>, <span class="stringliteral">&quot;DONE&quot;</span>, <span class="stringliteral">&quot;FAILED&quot;</span>, <span class="stringliteral">&quot;FAILING&quot;</span>, <span class="stringliteral">&quot;WITHDRAWN&quot;</span> };<span class="comment"></span></div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span><span class="comment">  /**</span></div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span><span class="comment">   * @brief Constructs a new token at a flow node.</span></div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span><span class="comment">   *</span></div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span><span class="comment">   * @param owner The StateMachine this token belongs to</span></div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span><span class="comment">   * @param node The flow node where the token is created</span></div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span><span class="comment">   * @param status Initial status values for the token</span></div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span><span class="comment">   */</span></div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>  <a class="code hl_enumvalue" href="structBPMNOS_1_1Execution_1_1Observable.html#a08cd1bc9081eb51f7fb6bb20578a355ea459a6f79ad9b13cbcb5f692d2cc7a94d">Token</a>(<span class="keyword">const</span> <a class="code hl_class" href="classBPMNOS_1_1Execution_1_1StateMachine.html">StateMachine</a>* <a class="code hl_variable" href="classBPMNOS_1_1Execution_1_1Token.html#a267acf498c28d5feb2ceb5c1c3b33c07">owner</a>, <span class="keyword">const</span> <a class="code hl_classRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1FlowNode.html">BPMN::FlowNode</a>* <a class="code hl_variable" href="classBPMNOS_1_1Execution_1_1Token.html#a10c9b3346bcb378e3d3ff04d8f5025f0">node</a>, <span class="keyword">const</span> <a class="code hl_struct" href="structBPMNOS_1_1Values.html">Values</a>&amp; <a class="code hl_variable" href="classBPMNOS_1_1Execution_1_1Token.html#a3048b9edc0543483ae499a0dae5e77a8">status</a>);</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span><span class="comment"></span> </div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span><span class="comment">  /**</span></div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span><span class="comment">   * @brief Copy constructor for multi-instance activities (same owner).</span></div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span><span class="comment">   *</span></div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span><span class="comment">   * Creates a copy within the same StateMachine context.</span></div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span><span class="comment">   * Used when spawning MI activity tokens.</span></div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span><span class="comment">   *</span></div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span><span class="comment">   * @param other The source Token to copy from</span></div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span><span class="comment">   */</span></div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>  <a class="code hl_enumvalue" href="structBPMNOS_1_1Execution_1_1Observable.html#a08cd1bc9081eb51f7fb6bb20578a355ea459a6f79ad9b13cbcb5f692d2cc7a94d">Token</a>(<span class="keyword">const</span> <a class="code hl_class" href="classBPMNOS_1_1Execution_1_1Token.html">Token</a>* other);</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span><span class="comment"></span> </div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span><span class="comment">  /**</span></div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span><span class="comment">   * @brief Merge constructor for converging gateways.</span></div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span><span class="comment">   *</span></div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span><span class="comment">   * Creates a token by merging multiple tokens at a gateway.</span></div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span><span class="comment">   *</span></div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span><span class="comment">   * @param others The tokens to merge</span></div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span><span class="comment">   */</span></div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>  <a class="code hl_enumvalue" href="structBPMNOS_1_1Execution_1_1Observable.html#a08cd1bc9081eb51f7fb6bb20578a355ea459a6f79ad9b13cbcb5f692d2cc7a94d">Token</a>(<span class="keyword">const</span> std::vector&lt;Token*&gt;&amp; others);</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span><span class="comment"></span> </div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span><span class="comment">  /**</span></div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span><span class="comment">   * @brief Deep copy constructor for cloning to a different StateMachine.</span></div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span><span class="comment">   *</span></div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span><span class="comment">   * Creates a deep copy of the token that belongs to a new StateMachine.</span></div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span><span class="comment">   * The owned StateMachine is NOT copied here (handled separately).</span></div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span><span class="comment">   * The performing pointer is set later after all tokens are copied.</span></div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span><span class="comment">   *</span></div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span><span class="comment">   * @param owner The new StateMachine this token belongs to</span></div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span><span class="comment">   * @param other The source Token to copy from</span></div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span><span class="comment">   */</span></div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>  <a class="code hl_enumvalue" href="structBPMNOS_1_1Execution_1_1Observable.html#a08cd1bc9081eb51f7fb6bb20578a355ea459a6f79ad9b13cbcb5f692d2cc7a94d">Token</a>(<a class="code hl_class" href="classBPMNOS_1_1Execution_1_1StateMachine.html">StateMachine</a>* <a class="code hl_variable" href="classBPMNOS_1_1Execution_1_1Token.html#a267acf498c28d5feb2ceb5c1c3b33c07">owner</a>, <span class="keyword">const</span> <a class="code hl_class" href="classBPMNOS_1_1Execution_1_1Token.html">Token</a>* other);</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span> </div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>  <a class="code hl_function" href="classBPMNOS_1_1Execution_1_1Token.html#a3d7d59eaac1535df1433357d5d372f84">~Token</a>();</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1Execution_1_1Token.html#ad3d143002b2a548bdeac6404fc97bc1e">   93</a></span>  <a class="code hl_enumeration" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92d">State</a> <a class="code hl_variable" href="classBPMNOS_1_1Execution_1_1Token.html#ad3d143002b2a548bdeac6404fc97bc1e">state</a>;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1Execution_1_1Token.html#a3048b9edc0543483ae499a0dae5e77a8">   94</a></span>  <a class="code hl_struct" href="structBPMNOS_1_1Values.html">Values</a> <a class="code hl_variable" href="classBPMNOS_1_1Execution_1_1Token.html#a3048b9edc0543483ae499a0dae5e77a8">status</a>;</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1Execution_1_1Token.html#a5f14c75621bd6627cf4d7af2e9cd9979">   95</a></span>  <a class="code hl_struct" href="structBPMNOS_1_1SharedValues.html">SharedValues</a>* <a class="code hl_variable" href="classBPMNOS_1_1Execution_1_1Token.html#a5f14c75621bd6627cf4d7af2e9cd9979">data</a>; <span class="comment">///&lt; Pointer to the data of the owner or owned state machine subprocesses)</span></div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1Execution_1_1Token.html#ac0669447261f6ee0ee5677e1d186b610">   96</a></span>  <a class="code hl_struct" href="structBPMNOS_1_1Values.html">Values</a>&amp; <a class="code hl_variable" href="classBPMNOS_1_1Execution_1_1Token.html#ac0669447261f6ee0ee5677e1d186b610">globals</a>;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1Execution_1_1Token.html#a79b026438bda3f72cf67023359af5c99">   97</a></span>  std::shared_ptr&lt;DecisionRequest&gt; <a class="code hl_variable" href="classBPMNOS_1_1Execution_1_1Token.html#a79b026438bda3f72cf67023359af5c99">decisionRequest</a>;</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1Execution_1_1Token.html#a169e5ce7edc041f251a5a659151af1ba">   98</a></span>  <a class="code hl_class" href="classBPMNOS_1_1Execution_1_1Token.html">Token</a>* <a class="code hl_variable" href="classBPMNOS_1_1Execution_1_1Token.html#a169e5ce7edc041f251a5a659151af1ba">performing</a>; <span class="comment">///&lt; Pointer to the activity token currently performed (only applies if node is a performer referenced by sequential ad-hoc subprocesses)</span></div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1Execution_1_1Token.html#ac161ab385826d16d918b0922b01311af">   99</a></span>  <a class="code hl_class" href="classBPMNOS_1_1Execution_1_1auto__list.html">auto_list&lt; std::weak_ptr&lt;Token&gt;</a> &gt; <a class="code hl_variable" href="classBPMNOS_1_1Execution_1_1Token.html#ac161ab385826d16d918b0922b01311af">pendingSequentialEntries</a>; <span class="comment">///&lt; List of tokens awaiting an activity entry (only applies if node is a performer referenced by sequential ad-hoc subprocesses)</span></div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>  </div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span> </div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1Execution_1_1Token.html#ac43ca6afa13a236e7eaf5e8ec32092b4">  102</a></span>  <span class="keywordtype">bool</span> <a class="code hl_function" href="classBPMNOS_1_1Execution_1_1Token.html#ac43ca6afa13a236e7eaf5e8ec32092b4">ready</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classBPMNOS_1_1Execution_1_1Token.html#ad3d143002b2a548bdeac6404fc97bc1e">state</a> == <a class="code hl_enumvalue" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da2baa69eafc7204f3bd8648eba580c489">State::READY</a>; };</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1Execution_1_1Token.html#a6cd0bf5c5d611d1732eaead8b4c9c45f">  103</a></span>  <span class="keywordtype">bool</span> <a class="code hl_function" href="classBPMNOS_1_1Execution_1_1Token.html#a6cd0bf5c5d611d1732eaead8b4c9c45f">entered</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classBPMNOS_1_1Execution_1_1Token.html#ad3d143002b2a548bdeac6404fc97bc1e">state</a> == <a class="code hl_enumvalue" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da7ea8694c832315449be4318681c872f2">State::ENTERED</a>; };</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1Execution_1_1Token.html#ae4116f9eae2df1604a099cd6c3566bc8">  104</a></span>  <span class="keywordtype">bool</span> <a class="code hl_function" href="classBPMNOS_1_1Execution_1_1Token.html#ae4116f9eae2df1604a099cd6c3566bc8">busy</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classBPMNOS_1_1Execution_1_1Token.html#ad3d143002b2a548bdeac6404fc97bc1e">state</a> == <a class="code hl_enumvalue" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da802706a9238e2928077f97736854bad4">State::BUSY</a>; };</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1Execution_1_1Token.html#a8bb2c234c64a3cbd83208ce588cbe10b">  105</a></span>  <span class="keywordtype">bool</span> <a class="code hl_function" href="classBPMNOS_1_1Execution_1_1Token.html#a8bb2c234c64a3cbd83208ce588cbe10b">completed</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classBPMNOS_1_1Execution_1_1Token.html#ad3d143002b2a548bdeac6404fc97bc1e">state</a> == <a class="code hl_enumvalue" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da8f7afecbc8fbc4cd0f50a57d1172482e">State::COMPLETED</a>; };</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1Execution_1_1Token.html#a395a1d17ffca282b097f3b6d30cc4f6d">  106</a></span>  <span class="keywordtype">bool</span> <a class="code hl_function" href="classBPMNOS_1_1Execution_1_1Token.html#a395a1d17ffca282b097f3b6d30cc4f6d">arrived</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classBPMNOS_1_1Execution_1_1Token.html#ad3d143002b2a548bdeac6404fc97bc1e">state</a> == <a class="code hl_enumvalue" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92daecf81265919ceb1222992d59f5e66300">State::ARRIVED</a>; };</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1Execution_1_1Token.html#ac44d9bb8d4817e2bba4c212b197559f7">  107</a></span>  <span class="keywordtype">bool</span> <a class="code hl_function" href="classBPMNOS_1_1Execution_1_1Token.html#ac44d9bb8d4817e2bba4c212b197559f7">waiting</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classBPMNOS_1_1Execution_1_1Token.html#ad3d143002b2a548bdeac6404fc97bc1e">state</a> == <a class="code hl_enumvalue" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da1869d56535e8b1449a6da54ff5e11f50">State::WAITING</a>; };</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1Execution_1_1Token.html#ac922ff4a588e22f9c62a1ea30913407d">  108</a></span>  <span class="keywordtype">bool</span> <a class="code hl_function" href="classBPMNOS_1_1Execution_1_1Token.html#ac922ff4a588e22f9c62a1ea30913407d">done</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classBPMNOS_1_1Execution_1_1Token.html#ad3d143002b2a548bdeac6404fc97bc1e">state</a> == <a class="code hl_enumvalue" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da2ba22e58ca17bb728d522bba36cf8350">State::DONE</a>; };</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1Execution_1_1Token.html#a5965345d3aca133edc08104b46f57efb">  109</a></span>  <span class="keywordtype">bool</span> <a class="code hl_function" href="classBPMNOS_1_1Execution_1_1Token.html#a5965345d3aca133edc08104b46f57efb">failed</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classBPMNOS_1_1Execution_1_1Token.html#ad3d143002b2a548bdeac6404fc97bc1e">state</a> == <a class="code hl_enumvalue" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92dab9e14d9b2886bcff408b85aefa780419">State::FAILED</a>; };</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span> </div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>  <a class="code hl_typedef" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> <a class="code hl_function" href="classBPMNOS_1_1Execution_1_1Token.html#a0bbd22b446e4496cf25c182450836b93">getInstanceId</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>  nlohmann::ordered_json <a class="code hl_function" href="classBPMNOS_1_1Execution_1_1Token.html#ae4623107dc19f136e3f266967f4f04d5">jsonify</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>  <span class="keywordtype">void</span> occupySequentialPerformer();</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>  <span class="keywordtype">void</span> releaseSequentialPerformer();</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span> </div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>  <span class="keywordtype">bool</span> entryIsFeasible() <span class="keyword">const</span>; <span class="comment">///&lt; Check restrictions within current and ancestor scopes</span></div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>  <span class="keywordtype">bool</span> completionIsFeasible() <span class="keyword">const</span>; <span class="comment">///&lt; Check restrictions within current and ancestor scopes</span></div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>  <span class="keywordtype">bool</span> exitIsFeasible() <span class="keyword">const</span>; <span class="comment">///&lt; Check restrictions within current and ancestor scopes</span></div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span><span class="comment">//  bool satisfiesInheritedRestrictions() const; ///&lt; Check restrictions within ancestor scopes</span></div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span> </div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>  <span class="keywordtype">void</span> computeInitialValues( <span class="keyword">const</span> <a class="code hl_class" href="classBPMNOS_1_1Model_1_1ExtensionElements.html">BPMNOS::Model::ExtensionElements</a>* extensionElements );</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span> </div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>  <span class="keywordtype">void</span> advanceFromCreated();</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>  <span class="keywordtype">void</span> advanceToReady();</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>  <span class="keywordtype">void</span> advanceToEntered();</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>  <span class="keywordtype">void</span> advanceToIdle();</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>  <span class="keywordtype">void</span> advanceToBusy();</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span> </div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>  <span class="keywordtype">void</span> advanceToCompleted();</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span> </div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>  <span class="keywordtype">void</span> advanceToExiting();</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>  <span class="keywordtype">void</span> advanceToDone();</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>  <span class="keywordtype">void</span> advanceToDeparting();</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>  <span class="keywordtype">void</span> advanceToDeparted(<span class="keyword">const</span> <a class="code hl_classRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1SequenceFlow.html">BPMN::SequenceFlow</a>* <a class="code hl_variable" href="classBPMNOS_1_1Execution_1_1Token.html#a7ae562e714c511deb6dfd64c2d3fe483">sequenceFlow</a>);</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>  <span class="keywordtype">void</span> advanceToArrived();</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span> </div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>  <span class="keywordtype">void</span> advanceToFailed();</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span> </div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>  <span class="keywordtype">void</span> terminate(); <span class="comment">///&lt; Terminates state machine owned by token</span></div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span> </div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>  <span class="keywordtype">void</span> awaitCompensation();</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span> </div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>  <span class="keywordtype">void</span> awaitReadyEvent(); <span class="comment">///&lt; Wait for ready event for activities</span></div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span> </div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>  <span class="keywordtype">void</span> awaitEntryEvent(); <span class="comment">///&lt; Wait for entry event for activities</span></div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span> </div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>  <span class="keywordtype">void</span> awaitChoiceEvent(); <span class="comment">///&lt; Wait for choices to be made for decision tasks</span></div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>  <span class="keywordtype">void</span> awaitTaskCompletionEvent(); <span class="comment">///&lt; Wait for completion event for tasks (except for decision tasks)</span></div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>  <span class="keywordtype">void</span> awaitExitEvent(); <span class="comment">///&lt; Wait for exit event for activities</span></div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span> </div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>  <span class="keywordtype">void</span> awaitTimer(<a class="code hl_typedef" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> time); <span class="comment">///&lt; Wait for message trigger at catching timer events</span></div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>  <span class="keywordtype">void</span> awaitSignal(<a class="code hl_typedef" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> name); <span class="comment">///&lt; Wait for signal with given name at catching signal events</span></div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>  <span class="keywordtype">void</span> awaitConditions(<a class="code hl_typedef" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> instanceId); <span class="comment">///&lt; Wait for conditions at catching conditional events within root instance</span></div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>  <span class="keywordtype">void</span> awaitMessageDelivery(); <span class="comment">///&lt; Wait for message delivery event</span></div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span> </div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>  <span class="keywordtype">void</span> awaitEventBasedGateway(); <span class="comment">///&lt; Wait for catching event at event-based gateways</span></div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span> </div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>  <span class="keywordtype">void</span> awaitGatewayActivation(); <span class="comment">///&lt; Wait for activiation of merging gateway</span></div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span> </div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>  <span class="keyword">template</span>&lt;<span class="keyword">typename</span> DecisionType, <span class="keyword">typename</span>... Args&gt;</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>  std::shared_ptr&lt;DecisionType&gt; createDecisionRequest(Args&amp;&amp;... args);</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    </div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>  <span class="keywordtype">void</span> withdraw(); <span class="comment">///&lt; Remove token</span></div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span> </div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>  <span class="keywordtype">void</span> emitSignal();</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>  </div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>  <a class="code hl_typedef" href="namespaceBPMNOS.html#a1d06a2687909f3e02379bfda7c70be2b">BPMNOS::VariedValueMap</a> getSignalContent(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceBPMNOS_1_1Model.html#a603d366d0bdb8002b19ca0cd32b8a452">BPMNOS::Model::ContentMap</a>&amp; contentMap); <span class="comment">///&lt; Returns content of signal</span></div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>  <span class="keywordtype">void</span> setSignalContent(<a class="code hl_typedef" href="namespaceBPMNOS.html#a1d06a2687909f3e02379bfda7c70be2b">BPMNOS::VariedValueMap</a>&amp; sourceMap); <span class="comment">// Applies content of signal</span></div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>  </div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>  <span class="keywordtype">void</span> sendMessage( <span class="keywordtype">size_t</span> index = 0 ); </div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>  <a class="code hl_class" href="classBPMNOS_1_1Execution_1_1Token.html">Token</a>* <a class="code hl_function" href="classBPMNOS_1_1Execution_1_1Token.html#ab24ac923f7b7b73943fcf5b025a4bb17">getSequentialPerformerToken</a>() <span class="keyword">const</span>; <span class="comment">///&lt; Returns token at sequential performer for tokens at activities within sequential adhoc subprocesses</span></div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>  <span class="keywordtype">void</span> update(<a class="code hl_enumeration" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92d">State</a> newState); <span class="comment">///&lt; Updates token state and timestamp before calling notify()</span></div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span> </div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>  <span class="keywordtype">void</span> notify() <span class="keyword">const</span>; <span class="comment">///&lt; Inform all listeners about token update</span></div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span><span class="comment"></span> </div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span><span class="comment">  /**</span></div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span><span class="comment">   * Returns a merged status from the status of each token</span></div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span><span class="comment">   **/</span></div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>  <span class="keyword">template</span> &lt;<span class="keyword">typename</span> TokenPtr&gt;</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>  <span class="keyword">static</span> <a class="code hl_struct" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a> mergeStatus(<span class="keyword">const</span> std::vector&lt;TokenPtr&gt;&amp; tokens) {</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>    assert( !tokens.empty() );</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>    <span class="keywordtype">size_t</span> n = tokens.front()-&gt;status.size();</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>    <a class="code hl_struct" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a> result;</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>    result.resize(n);</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>    result[(int)<a class="code hl_variable" href="structBPMNOS_1_1Model_1_1ExtensionElements_1_1Index.html#a61bc17d7595e94a17d8e85a32a48b1d8">BPMNOS::Model::ExtensionElements::Index::Timestamp</a>] = tokens.front()-&gt;status[(int)<a class="code hl_variable" href="structBPMNOS_1_1Model_1_1ExtensionElements_1_1Index.html#a61bc17d7595e94a17d8e85a32a48b1d8">BPMNOS::Model::ExtensionElements::Index::Timestamp</a>];</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span> </div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>    <span class="keywordflow">for</span> ( <span class="keywordtype">size_t</span> i = 0; i &lt; n; i++ ) {</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>      <span class="keywordflow">for</span> ( <span class="keyword">auto</span>&amp; token : tokens ) {</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>        <span class="keywordflow">if</span> ( i == (<span class="keywordtype">int</span>)<a class="code hl_variable" href="structBPMNOS_1_1Model_1_1ExtensionElements_1_1Index.html#a61bc17d7595e94a17d8e85a32a48b1d8">BPMNOS::Model::ExtensionElements::Index::Timestamp</a> ) {</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>          <span class="keywordflow">if</span> ( result[i].value() &lt; token-&gt;status[i].value() ) {</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>            result[i] = token-&gt;status[i];</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>          }</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>        }</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> ( !result[i].has_value() ) {</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>          result[i] = token-&gt;status[i];</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>        }</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> ( token-&gt;status[i].has_value() &amp;&amp; token-&gt;status[i].value() != result[i].value() ) {</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>          result[i] = std::nullopt;</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>          <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>        }</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>      }</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>    }</div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>    <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>  }</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>};</div>
+</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span> </div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>} <span class="comment">// namespace BPMNOS::Execution</span></div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span> </div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span><span class="preprocessor">#endif </span><span class="comment">// BPMNOS_Execution_Token_H</span></div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span> </div>
+<div class="ttc" id="aContent_8h_html"><div class="ttname"><a href="Content_8h.html">Content.h</a></div></div>
+<div class="ttc" id="aExtensionElements_8h_html"><div class="ttname"><a href="ExtensionElements_8h.html">ExtensionElements.h</a></div></div>
+<div class="ttc" id="aNumber_8h_html"><div class="ttname"><a href="Number_8h.html">Number.h</a></div></div>
+<div class="ttc" id="aObservable_8h_html"><div class="ttname"><a href="Observable_8h.html">Observable.h</a></div></div>
+<div class="ttc" id="aauto__list_8h_html"><div class="ttname"><a href="auto__list_8h.html">auto_list.h</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Execution_1_1ConditionalEventObserver_html"><div class="ttname"><a href="classBPMNOS_1_1Execution_1_1ConditionalEventObserver.html">BPMNOS::Execution::ConditionalEventObserver</a></div><div class="ttdef"><b>Definition</b> <a href="ConditionalEventObserver_8h_source.html#l00014">ConditionalEventObserver.h:14</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Execution_1_1Engine_html"><div class="ttname"><a href="classBPMNOS_1_1Execution_1_1Engine.html">BPMNOS::Execution::Engine</a></div><div class="ttdef"><b>Definition</b> <a href="Engine_8h_source.html#l00034">Engine.h:34</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Execution_1_1EventDispatcher_html"><div class="ttname"><a href="classBPMNOS_1_1Execution_1_1EventDispatcher.html">BPMNOS::Execution::EventDispatcher</a></div><div class="ttdef"><b>Definition</b> <a href="EventDispatcher_8h_source.html#l00011">EventDispatcher.h:11</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Execution_1_1StateMachine_html"><div class="ttname"><a href="classBPMNOS_1_1Execution_1_1StateMachine.html">BPMNOS::Execution::StateMachine</a></div><div class="ttdoc">Represents a state machine for BPMN execution of a scope in the model.</div><div class="ttdef"><b>Definition</b> <a href="StateMachine_8h_source.html#l00034">StateMachine.h:34</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Execution_1_1SystemState_html"><div class="ttname"><a href="classBPMNOS_1_1Execution_1_1SystemState.html">BPMNOS::Execution::SystemState</a></div><div class="ttdoc">A class representing the state that the execution or simulation of a given scenario is in.</div><div class="ttdef"><b>Definition</b> <a href="SystemState_8h_source.html#l00022">SystemState.h:22</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Execution_1_1Token_html"><div class="ttname"><a href="classBPMNOS_1_1Execution_1_1Token.html">BPMNOS::Execution::Token</a></div><div class="ttdoc">Represents a token running through a (sub)process.</div><div class="ttdef"><b>Definition</b> <a href="Token_8h_source.html#l00035">Token.h:35</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Execution_1_1Token_html_a07d1c48888da58ef306d5bd8af155fce"><div class="ttname"><a href="classBPMNOS_1_1Execution_1_1Token.html#a07d1c48888da58ef306d5bd8af155fce">BPMNOS::Execution::Token::getObservableType</a></div><div class="ttdeci">constexpr Type getObservableType() const override</div><div class="ttdef"><b>Definition</b> <a href="Token_8h_source.html#l00043">Token.h:43</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Execution_1_1Token_html_a0bbd22b446e4496cf25c182450836b93"><div class="ttname"><a href="classBPMNOS_1_1Execution_1_1Token.html#a0bbd22b446e4496cf25c182450836b93">BPMNOS::Execution::Token::getInstanceId</a></div><div class="ttdeci">BPMNOS::number getInstanceId() const</div><div class="ttdef"><b>Definition</b> <a href="Token_8cpp_source.html#l00188">Token.cpp:188</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Execution_1_1Token_html_a10c9b3346bcb378e3d3ff04d8f5025f0"><div class="ttname"><a href="classBPMNOS_1_1Execution_1_1Token.html#a10c9b3346bcb378e3d3ff04d8f5025f0">BPMNOS::Execution::Token::node</a></div><div class="ttdeci">const BPMN::FlowNode * node</div><div class="ttdoc">Flow node where the token resides (nullptr for process-level tokens)</div><div class="ttdef"><b>Definition</b> <a href="Token_8h_source.html#l00046">Token.h:46</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Execution_1_1Token_html_a169e5ce7edc041f251a5a659151af1ba"><div class="ttname"><a href="classBPMNOS_1_1Execution_1_1Token.html#a169e5ce7edc041f251a5a659151af1ba">BPMNOS::Execution::Token::performing</a></div><div class="ttdeci">Token * performing</div><div class="ttdoc">Pointer to the activity token currently performed (only applies if node is a performer referenced by ...</div><div class="ttdef"><b>Definition</b> <a href="Token_8h_source.html#l00098">Token.h:98</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Execution_1_1Token_html_a1a107bcfecef5c8a0c6d60013dc9cc9d"><div class="ttname"><a href="classBPMNOS_1_1Execution_1_1Token.html#a1a107bcfecef5c8a0c6d60013dc9cc9d">BPMNOS::Execution::Token::getAttributeRegistry</a></div><div class="ttdeci">const BPMNOS::Model::AttributeRegistry &amp; getAttributeRegistry() const</div><div class="ttdef"><b>Definition</b> <a href="Token_8cpp_source.html#l00171">Token.cpp:171</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Execution_1_1Token_html_a267acf498c28d5feb2ceb5c1c3b33c07"><div class="ttname"><a href="classBPMNOS_1_1Execution_1_1Token.html#a267acf498c28d5feb2ceb5c1c3b33c07">BPMNOS::Execution::Token::owner</a></div><div class="ttdeci">const StateMachine * owner</div><div class="ttdoc">State machine owning the token.</div><div class="ttdef"><b>Definition</b> <a href="Token_8h_source.html#l00044">Token.h:44</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Execution_1_1Token_html_a3048b9edc0543483ae499a0dae5e77a8"><div class="ttname"><a href="classBPMNOS_1_1Execution_1_1Token.html#a3048b9edc0543483ae499a0dae5e77a8">BPMNOS::Execution::Token::status</a></div><div class="ttdeci">Values status</div><div class="ttdef"><b>Definition</b> <a href="Token_8h_source.html#l00094">Token.h:94</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Execution_1_1Token_html_a30cf58b79491a9c451a39ad288b262a1"><div class="ttname"><a href="classBPMNOS_1_1Execution_1_1Token.html#a30cf58b79491a9c451a39ad288b262a1">BPMNOS::Execution::Token::owned</a></div><div class="ttdeci">std::shared_ptr&lt; StateMachine &gt; owned</div><div class="ttdoc">State machine owned by the token.</div><div class="ttdef"><b>Definition</b> <a href="Token_8h_source.html#l00045">Token.h:45</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Execution_1_1Token_html_a395a1d17ffca282b097f3b6d30cc4f6d"><div class="ttname"><a href="classBPMNOS_1_1Execution_1_1Token.html#a395a1d17ffca282b097f3b6d30cc4f6d">BPMNOS::Execution::Token::arrived</a></div><div class="ttdeci">bool arrived() const</div><div class="ttdef"><b>Definition</b> <a href="Token_8h_source.html#l00106">Token.h:106</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Execution_1_1Token_html_a3d7d59eaac1535df1433357d5d372f84"><div class="ttname"><a href="classBPMNOS_1_1Execution_1_1Token.html#a3d7d59eaac1535df1433357d5d372f84">BPMNOS::Execution::Token::~Token</a></div><div class="ttdeci">~Token()</div><div class="ttdef"><b>Definition</b> <a href="Token_8cpp_source.html#l00087">Token.cpp:87</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Execution_1_1Token_html_a5965345d3aca133edc08104b46f57efb"><div class="ttname"><a href="classBPMNOS_1_1Execution_1_1Token.html#a5965345d3aca133edc08104b46f57efb">BPMNOS::Execution::Token::failed</a></div><div class="ttdeci">bool failed() const</div><div class="ttdef"><b>Definition</b> <a href="Token_8h_source.html#l00109">Token.h:109</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Execution_1_1Token_html_a5f14c75621bd6627cf4d7af2e9cd9979"><div class="ttname"><a href="classBPMNOS_1_1Execution_1_1Token.html#a5f14c75621bd6627cf4d7af2e9cd9979">BPMNOS::Execution::Token::data</a></div><div class="ttdeci">SharedValues * data</div><div class="ttdoc">Pointer to the data of the owner or owned state machine subprocesses)</div><div class="ttdef"><b>Definition</b> <a href="Token_8h_source.html#l00095">Token.h:95</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Execution_1_1Token_html_a635be14129b3dcfd2a8753cdc4f9e92d"><div class="ttname"><a href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92d">BPMNOS::Execution::Token::State</a></div><div class="ttdeci">State</div><div class="ttdef"><b>Definition</b> <a href="Token_8h_source.html#l00048">Token.h:48</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Execution_1_1Token_html_a635be14129b3dcfd2a8753cdc4f9e92da04a6fafe393ceb9f5b6ce96aae00c8cb"><div class="ttname"><a href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da04a6fafe393ceb9f5b6ce96aae00c8cb">BPMNOS::Execution::Token::State::FAILING</a></div><div class="ttdeci">@ FAILING</div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Execution_1_1Token_html_a635be14129b3dcfd2a8753cdc4f9e92da15f20da2a811c696726c7187065cd6d2"><div class="ttname"><a href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da15f20da2a811c696726c7187065cd6d2">BPMNOS::Execution::Token::State::WITHDRAWN</a></div><div class="ttdeci">@ WITHDRAWN</div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Execution_1_1Token_html_a635be14129b3dcfd2a8753cdc4f9e92da1869d56535e8b1449a6da54ff5e11f50"><div class="ttname"><a href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da1869d56535e8b1449a6da54ff5e11f50">BPMNOS::Execution::Token::State::WAITING</a></div><div class="ttdeci">@ WAITING</div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Execution_1_1Token_html_a635be14129b3dcfd2a8753cdc4f9e92da2ba22e58ca17bb728d522bba36cf8350"><div class="ttname"><a href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da2ba22e58ca17bb728d522bba36cf8350">BPMNOS::Execution::Token::State::DONE</a></div><div class="ttdeci">@ DONE</div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Execution_1_1Token_html_a635be14129b3dcfd2a8753cdc4f9e92da2baa69eafc7204f3bd8648eba580c489"><div class="ttname"><a href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da2baa69eafc7204f3bd8648eba580c489">BPMNOS::Execution::Token::State::READY</a></div><div class="ttdeci">@ READY</div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Execution_1_1Token_html_a635be14129b3dcfd2a8753cdc4f9e92da7ea8694c832315449be4318681c872f2"><div class="ttname"><a href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da7ea8694c832315449be4318681c872f2">BPMNOS::Execution::Token::State::ENTERED</a></div><div class="ttdeci">@ ENTERED</div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Execution_1_1Token_html_a635be14129b3dcfd2a8753cdc4f9e92da802706a9238e2928077f97736854bad4"><div class="ttname"><a href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da802706a9238e2928077f97736854bad4">BPMNOS::Execution::Token::State::BUSY</a></div><div class="ttdeci">@ BUSY</div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Execution_1_1Token_html_a635be14129b3dcfd2a8753cdc4f9e92da835d592fc110ac5d9471b44151d96d40"><div class="ttname"><a href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da835d592fc110ac5d9471b44151d96d40">BPMNOS::Execution::Token::State::EXITING</a></div><div class="ttdeci">@ EXITING</div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Execution_1_1Token_html_a635be14129b3dcfd2a8753cdc4f9e92da8f7afecbc8fbc4cd0f50a57d1172482e"><div class="ttname"><a href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da8f7afecbc8fbc4cd0f50a57d1172482e">BPMNOS::Execution::Token::State::COMPLETED</a></div><div class="ttdeci">@ COMPLETED</div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Execution_1_1Token_html_a635be14129b3dcfd2a8753cdc4f9e92da98690bf632c29c17c9e4c5a64069903c"><div class="ttname"><a href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da98690bf632c29c17c9e4c5a64069903c">BPMNOS::Execution::Token::State::CREATED</a></div><div class="ttdeci">@ CREATED</div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Execution_1_1Token_html_a635be14129b3dcfd2a8753cdc4f9e92dab9e14d9b2886bcff408b85aefa780419"><div class="ttname"><a href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92dab9e14d9b2886bcff408b85aefa780419">BPMNOS::Execution::Token::State::FAILED</a></div><div class="ttdeci">@ FAILED</div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Execution_1_1Token_html_a635be14129b3dcfd2a8753cdc4f9e92daecf81265919ceb1222992d59f5e66300"><div class="ttname"><a href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92daecf81265919ceb1222992d59f5e66300">BPMNOS::Execution::Token::State::ARRIVED</a></div><div class="ttdeci">@ ARRIVED</div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Execution_1_1Token_html_a635be14129b3dcfd2a8753cdc4f9e92daf648cfdf0a03c4aaad51d6d837613ec7"><div class="ttname"><a href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92daf648cfdf0a03c4aaad51d6d837613ec7">BPMNOS::Execution::Token::State::DEPARTED</a></div><div class="ttdeci">@ DEPARTED</div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Execution_1_1Token_html_a6cd0bf5c5d611d1732eaead8b4c9c45f"><div class="ttname"><a href="classBPMNOS_1_1Execution_1_1Token.html#a6cd0bf5c5d611d1732eaead8b4c9c45f">BPMNOS::Execution::Token::entered</a></div><div class="ttdeci">bool entered() const</div><div class="ttdef"><b>Definition</b> <a href="Token_8h_source.html#l00103">Token.h:103</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Execution_1_1Token_html_a79b026438bda3f72cf67023359af5c99"><div class="ttname"><a href="classBPMNOS_1_1Execution_1_1Token.html#a79b026438bda3f72cf67023359af5c99">BPMNOS::Execution::Token::decisionRequest</a></div><div class="ttdeci">std::shared_ptr&lt; DecisionRequest &gt; decisionRequest</div><div class="ttdef"><b>Definition</b> <a href="Token_8h_source.html#l00097">Token.h:97</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Execution_1_1Token_html_a7ae562e714c511deb6dfd64c2d3fe483"><div class="ttname"><a href="classBPMNOS_1_1Execution_1_1Token.html#a7ae562e714c511deb6dfd64c2d3fe483">BPMNOS::Execution::Token::sequenceFlow</a></div><div class="ttdeci">const BPMN::SequenceFlow * sequenceFlow</div><div class="ttdoc">Sequence flow being traversed (only set in DEPARTED/ARRIVED states)</div><div class="ttdef"><b>Definition</b> <a href="Token_8h_source.html#l00047">Token.h:47</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Execution_1_1Token_html_a8bb2c234c64a3cbd83208ce588cbe10b"><div class="ttname"><a href="classBPMNOS_1_1Execution_1_1Token.html#a8bb2c234c64a3cbd83208ce588cbe10b">BPMNOS::Execution::Token::completed</a></div><div class="ttdeci">bool completed() const</div><div class="ttdef"><b>Definition</b> <a href="Token_8h_source.html#l00105">Token.h:105</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Execution_1_1Token_html_a9653eaba46d293fa1da9f349c8e126d2"><div class="ttname"><a href="classBPMNOS_1_1Execution_1_1Token.html#a9653eaba46d293fa1da9f349c8e126d2">BPMNOS::Execution::Token::stateName</a></div><div class="ttdeci">static std::string stateName[]</div><div class="ttdef"><b>Definition</b> <a href="Token_8h_source.html#l00050">Token.h:50</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Execution_1_1Token_html_ab24ac923f7b7b73943fcf5b025a4bb17"><div class="ttname"><a href="classBPMNOS_1_1Execution_1_1Token.html#ab24ac923f7b7b73943fcf5b025a4bb17">BPMNOS::Execution::Token::getSequentialPerformerToken</a></div><div class="ttdeci">Token * getSequentialPerformerToken() const</div><div class="ttdoc">Returns token at sequential performer for tokens at activities within sequential adhoc subprocesses.</div><div class="ttdef"><b>Definition</b> <a href="Token_8cpp_source.html#l01494">Token.cpp:1494</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Execution_1_1Token_html_ac0669447261f6ee0ee5677e1d186b610"><div class="ttname"><a href="classBPMNOS_1_1Execution_1_1Token.html#ac0669447261f6ee0ee5677e1d186b610">BPMNOS::Execution::Token::globals</a></div><div class="ttdeci">Values &amp; globals</div><div class="ttdef"><b>Definition</b> <a href="Token_8h_source.html#l00096">Token.h:96</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Execution_1_1Token_html_ac161ab385826d16d918b0922b01311af"><div class="ttname"><a href="classBPMNOS_1_1Execution_1_1Token.html#ac161ab385826d16d918b0922b01311af">BPMNOS::Execution::Token::pendingSequentialEntries</a></div><div class="ttdeci">auto_list&lt; std::weak_ptr&lt; Token &gt; &gt; pendingSequentialEntries</div><div class="ttdoc">List of tokens awaiting an activity entry (only applies if node is a performer referenced by sequenti...</div><div class="ttdef"><b>Definition</b> <a href="Token_8h_source.html#l00099">Token.h:99</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Execution_1_1Token_html_ac43ca6afa13a236e7eaf5e8ec32092b4"><div class="ttname"><a href="classBPMNOS_1_1Execution_1_1Token.html#ac43ca6afa13a236e7eaf5e8ec32092b4">BPMNOS::Execution::Token::ready</a></div><div class="ttdeci">bool ready() const</div><div class="ttdef"><b>Definition</b> <a href="Token_8h_source.html#l00102">Token.h:102</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Execution_1_1Token_html_ac44d9bb8d4817e2bba4c212b197559f7"><div class="ttname"><a href="classBPMNOS_1_1Execution_1_1Token.html#ac44d9bb8d4817e2bba4c212b197559f7">BPMNOS::Execution::Token::waiting</a></div><div class="ttdeci">bool waiting() const</div><div class="ttdef"><b>Definition</b> <a href="Token_8h_source.html#l00107">Token.h:107</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Execution_1_1Token_html_ac922ff4a588e22f9c62a1ea30913407d"><div class="ttname"><a href="classBPMNOS_1_1Execution_1_1Token.html#ac922ff4a588e22f9c62a1ea30913407d">BPMNOS::Execution::Token::done</a></div><div class="ttdeci">bool done() const</div><div class="ttdef"><b>Definition</b> <a href="Token_8h_source.html#l00108">Token.h:108</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Execution_1_1Token_html_ad3d143002b2a548bdeac6404fc97bc1e"><div class="ttname"><a href="classBPMNOS_1_1Execution_1_1Token.html#ad3d143002b2a548bdeac6404fc97bc1e">BPMNOS::Execution::Token::state</a></div><div class="ttdeci">State state</div><div class="ttdef"><b>Definition</b> <a href="Token_8h_source.html#l00093">Token.h:93</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Execution_1_1Token_html_ae4116f9eae2df1604a099cd6c3566bc8"><div class="ttname"><a href="classBPMNOS_1_1Execution_1_1Token.html#ae4116f9eae2df1604a099cd6c3566bc8">BPMNOS::Execution::Token::busy</a></div><div class="ttdeci">bool busy() const</div><div class="ttdef"><b>Definition</b> <a href="Token_8h_source.html#l00104">Token.h:104</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Execution_1_1Token_html_ae4623107dc19f136e3f266967f4f04d5"><div class="ttname"><a href="classBPMNOS_1_1Execution_1_1Token.html#ae4623107dc19f136e3f266967f4f04d5">BPMNOS::Execution::Token::jsonify</a></div><div class="ttdeci">nlohmann::ordered_json jsonify() const</div><div class="ttdef"><b>Definition</b> <a href="Token_8cpp_source.html#l00192">Token.cpp:192</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Execution_1_1auto__list_html"><div class="ttname"><a href="classBPMNOS_1_1Execution_1_1auto__list.html">BPMNOS::Execution::auto_list</a></div><div class="ttdoc">List of tuples with automatic removal of tuples containing an expired weak_ptr.</div><div class="ttdef"><b>Definition</b> <a href="auto__list_8h_source.html#l00016">auto_list.h:16</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1AttributeRegistry_html"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1AttributeRegistry.html">BPMNOS::Model::AttributeRegistry</a></div><div class="ttdef"><b>Definition</b> <a href="AttributeRegistry_8h_source.html#l00015">AttributeRegistry.h:15</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1ExtensionElements_html"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1ExtensionElements.html">BPMNOS::Model::ExtensionElements</a></div><div class="ttdoc">Class holding extension elements representing execution data for nodes.</div><div class="ttdef"><b>Definition</b> <a href="ExtensionElements_8h_source.html#l00023">ExtensionElements.h:23</a></div></div>
+<div class="ttc" id="aclassBPMN_1_1FlowNode_html"><div class="ttname"><a href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1FlowNode.html">BPMN::FlowNode</a></div></div>
+<div class="ttc" id="aclassBPMN_1_1SequenceFlow_html"><div class="ttname"><a href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1SequenceFlow.html">BPMN::SequenceFlow</a></div></div>
+<div class="ttc" id="anamespaceBPMNOS_1_1Execution_html"><div class="ttname"><a href="namespaceBPMNOS_1_1Execution.html">BPMNOS::Execution</a></div><div class="ttdef"><b>Definition</b> <a href="CachedCandidates_8h_source.html#l00016">CachedCandidates.h:16</a></div></div>
+<div class="ttc" id="anamespaceBPMNOS_1_1Execution_html_aecc76732c42d9421b8b0d48ec878c527"><div class="ttname"><a href="namespaceBPMNOS_1_1Execution.html#aecc76732c42d9421b8b0d48ec878c527">BPMNOS::Execution::Tokens</a></div><div class="ttdeci">std::vector&lt; std::shared_ptr&lt; Token &gt; &gt; Tokens</div><div class="ttdef"><b>Definition</b> <a href="Token_8h_source.html#l00019">Token.h:19</a></div></div>
+<div class="ttc" id="anamespaceBPMNOS_1_1Model_html_a603d366d0bdb8002b19ca0cd32b8a452"><div class="ttname"><a href="namespaceBPMNOS_1_1Model.html#a603d366d0bdb8002b19ca0cd32b8a452">BPMNOS::Model::ContentMap</a></div><div class="ttdeci">std::unordered_map&lt; std::string, std::unique_ptr&lt; Content &gt; &gt; ContentMap</div><div class="ttdef"><b>Definition</b> <a href="Content_8h_source.html#l00027">Content.h:27</a></div></div>
+<div class="ttc" id="anamespaceBPMNOS_html_a1d06a2687909f3e02379bfda7c70be2b"><div class="ttname"><a href="namespaceBPMNOS.html#a1d06a2687909f3e02379bfda7c70be2b">BPMNOS::VariedValueMap</a></div><div class="ttdeci">std::unordered_map&lt; std::string, std::variant&lt; std::optional&lt; number &gt;, std::string &gt; &gt; VariedValueMap</div><div class="ttdef"><b>Definition</b> <a href="Number_8h_source.html#l00069">Number.h:69</a></div></div>
+<div class="ttc" id="anamespaceBPMNOS_html_a6ba3ea22499481d120e383529198d598"><div class="ttname"><a href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a></div><div class="ttdeci">BPMNOS_NUMBER_TYPE number</div><div class="ttdef"><b>Definition</b> <a href="Number_8h_source.html#l00050">Number.h:50</a></div></div>
+<div class="ttc" id="astructBPMNOS_1_1Execution_1_1DecisionRequest_html"><div class="ttname"><a href="structBPMNOS_1_1Execution_1_1DecisionRequest.html">BPMNOS::Execution::DecisionRequest</a></div><div class="ttdoc">Represents a pending decision.</div><div class="ttdef"><b>Definition</b> <a href="DecisionRequest_8h_source.html#l00013">DecisionRequest.h:13</a></div></div>
+<div class="ttc" id="astructBPMNOS_1_1Execution_1_1Observable_html"><div class="ttname"><a href="structBPMNOS_1_1Execution_1_1Observable.html">BPMNOS::Execution::Observable</a></div><div class="ttdef"><b>Definition</b> <a href="Observable_8h_source.html#l00006">Observable.h:6</a></div></div>
+<div class="ttc" id="astructBPMNOS_1_1Execution_1_1Observable_html_a08cd1bc9081eb51f7fb6bb20578a355e"><div class="ttname"><a href="structBPMNOS_1_1Execution_1_1Observable.html#a08cd1bc9081eb51f7fb6bb20578a355e">BPMNOS::Execution::Observable::Type</a></div><div class="ttdeci">Type</div><div class="ttdef"><b>Definition</b> <a href="Observable_8h_source.html#l00007">Observable.h:7</a></div></div>
+<div class="ttc" id="astructBPMNOS_1_1Execution_1_1Observable_html_a08cd1bc9081eb51f7fb6bb20578a355ea459a6f79ad9b13cbcb5f692d2cc7a94d"><div class="ttname"><a href="structBPMNOS_1_1Execution_1_1Observable.html#a08cd1bc9081eb51f7fb6bb20578a355ea459a6f79ad9b13cbcb5f692d2cc7a94d">BPMNOS::Execution::Observable::Type::Token</a></div><div class="ttdeci">@ Token</div></div>
+<div class="ttc" id="astructBPMNOS_1_1Model_1_1ExtensionElements_1_1Index_html_a61bc17d7595e94a17d8e85a32a48b1d8"><div class="ttname"><a href="structBPMNOS_1_1Model_1_1ExtensionElements_1_1Index.html#a61bc17d7595e94a17d8e85a32a48b1d8">BPMNOS::Model::ExtensionElements::Index::Timestamp</a></div><div class="ttdeci">static constexpr size_t Timestamp</div><div class="ttdef"><b>Definition</b> <a href="ExtensionElements_8h_source.html#l00032">ExtensionElements.h:32</a></div></div>
+<div class="ttc" id="astructBPMNOS_1_1SharedValues_html"><div class="ttname"><a href="structBPMNOS_1_1SharedValues.html">BPMNOS::SharedValues</a></div><div class="ttdef"><b>Definition</b> <a href="Number_8h_source.html#l00062">Number.h:62</a></div></div>
+<div class="ttc" id="astructBPMNOS_1_1Values_html"><div class="ttname"><a href="structBPMNOS_1_1Values.html">BPMNOS::Values</a></div><div class="ttdef"><b>Definition</b> <a href="Number_8h_source.html#l00055">Number.h:55</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+</div><!-- doc-content -->
+<script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs"; mermaid.initialize({ startOnLoad: true, theme: "neutral" });</script></body></html>

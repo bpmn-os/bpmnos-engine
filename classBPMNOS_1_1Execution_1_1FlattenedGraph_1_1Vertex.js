@@ -1,0 +1,36 @@
+var classBPMNOS_1_1Execution_1_1FlattenedGraph_1_1Vertex =
+[
+    [ "Type", "classBPMNOS_1_1Execution_1_1FlattenedGraph_1_1Vertex.html#a74fcda374d34cf2d0c241a83eec08480", [
+      [ "ENTRY", "classBPMNOS_1_1Execution_1_1FlattenedGraph_1_1Vertex.html#a74fcda374d34cf2d0c241a83eec08480a5d5fa847ba846e56023955fb50c7f803", null ],
+      [ "EXIT", "classBPMNOS_1_1Execution_1_1FlattenedGraph_1_1Vertex.html#a74fcda374d34cf2d0c241a83eec08480aa42b2fb0e720a080e79a92f4ca97d927", null ]
+    ] ],
+    [ "Vertex", "classBPMNOS_1_1Execution_1_1FlattenedGraph_1_1Vertex.html#a4a5a864600e45a26f83ce35e299c1349", null ],
+    [ "Vertex", "classBPMNOS_1_1Execution_1_1FlattenedGraph_1_1Vertex.html#a5560cd0270e7ef63d36099a8d362492b", null ],
+    [ "Vertex", "classBPMNOS_1_1Execution_1_1FlattenedGraph_1_1Vertex.html#a4b384ad88b47db7e8990f1dd48f2d1d3", null ],
+    [ "Vertex", "classBPMNOS_1_1Execution_1_1FlattenedGraph_1_1Vertex.html#a97788576d2a807db4e96109106d799c7", null ],
+    [ "dataOwner", "classBPMNOS_1_1Execution_1_1FlattenedGraph_1_1Vertex.html#a00aba73a3c1f77761515e651fb065bff", null ],
+    [ "dataOwnerIndex", "classBPMNOS_1_1Execution_1_1FlattenedGraph_1_1Vertex.html#a6f67d19454d49a7a013770ec3ba88d68", null ],
+    [ "entry", "classBPMNOS_1_1Execution_1_1FlattenedGraph_1_1Vertex.html#a6b98127c19feedf706ad621dbe629bfb", null ],
+    [ "exit", "classBPMNOS_1_1Execution_1_1FlattenedGraph_1_1Vertex.html#a4d51feac9940e23c055960c35054d296", null ],
+    [ "jsonify", "classBPMNOS_1_1Execution_1_1FlattenedGraph_1_1Vertex.html#a41c66b1c3fd8e4c489c2d90e1aeebe2d", null ],
+    [ "operator=", "classBPMNOS_1_1Execution_1_1FlattenedGraph_1_1Vertex.html#a61f7cad92be119b15a4fe9353c61bec8", null ],
+    [ "operator=", "classBPMNOS_1_1Execution_1_1FlattenedGraph_1_1Vertex.html#a590d06cb984fb371b4499fab329bceb3", null ],
+    [ "performer", "classBPMNOS_1_1Execution_1_1FlattenedGraph_1_1Vertex.html#a8eafbb578211146d107e44993e1a4ac7", null ],
+    [ "reference", "classBPMNOS_1_1Execution_1_1FlattenedGraph_1_1Vertex.html#acf1a649a67625a3aba4f5b30eb421064", null ],
+    [ "shortReference", "classBPMNOS_1_1Execution_1_1FlattenedGraph_1_1Vertex.html#a747d0325419ac0051585d0dd3e1adb8d", null ],
+    [ "dataOwners", "classBPMNOS_1_1Execution_1_1FlattenedGraph_1_1Vertex.html#aca1e45afbadfef0d3d11ce4761ea9a1a", null ],
+    [ "graph", "classBPMNOS_1_1Execution_1_1FlattenedGraph_1_1Vertex.html#ada2b722ae464298da3b04e076d9c3493", null ],
+    [ "index", "classBPMNOS_1_1Execution_1_1FlattenedGraph_1_1Vertex.html#a55945e829af9d8ef1a404f7f16640228", null ],
+    [ "inflows", "classBPMNOS_1_1Execution_1_1FlattenedGraph_1_1Vertex.html#a488ff903434a02d0f9ebd0aae2935f66", null ],
+    [ "instanceId", "classBPMNOS_1_1Execution_1_1FlattenedGraph_1_1Vertex.html#aeecf67b99fb760396bfbb27f06457b48", null ],
+    [ "loopIndices", "classBPMNOS_1_1Execution_1_1FlattenedGraph_1_1Vertex.html#abd579545f12b2ca1d118754b0dbd91fd", null ],
+    [ "node", "classBPMNOS_1_1Execution_1_1FlattenedGraph_1_1Vertex.html#a74a3163a563c75ac09f839e3c9ecc57e", null ],
+    [ "outflows", "classBPMNOS_1_1Execution_1_1FlattenedGraph_1_1Vertex.html#a1ec93078c8a0f64fdcf464dfbb7d3468", null ],
+    [ "parent", "classBPMNOS_1_1Execution_1_1FlattenedGraph_1_1Vertex.html#a9534fb3c6e0b13094a1ce594308ba192", null ],
+    [ "predecessors", "classBPMNOS_1_1Execution_1_1FlattenedGraph_1_1Vertex.html#a7e1265a1543459b62165aa16ecfa9c26", null ],
+    [ "recipients", "classBPMNOS_1_1Execution_1_1FlattenedGraph_1_1Vertex.html#ab458b68b58a81cb86c8e3d0f6e94707f", null ],
+    [ "rootId", "classBPMNOS_1_1Execution_1_1FlattenedGraph_1_1Vertex.html#ae0da6eaba3b63e62106875edd6b46d65", null ],
+    [ "senders", "classBPMNOS_1_1Execution_1_1FlattenedGraph_1_1Vertex.html#a283862076292e7a288761efe63fcf32a", null ],
+    [ "successors", "classBPMNOS_1_1Execution_1_1FlattenedGraph_1_1Vertex.html#a3534bfcef3f16cce90059803250ddef5", null ],
+    [ "type", "classBPMNOS_1_1Execution_1_1FlattenedGraph_1_1Vertex.html#aa479de38823121279ffaf01294ad61f6", null ]
+];

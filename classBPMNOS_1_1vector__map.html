@@ -1,0 +1,946 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<!-- BEGIN opengraph metadata -->
+<meta property="og:title" content="Doxygen Awesome" />
+<meta property="og:image" content="https://repository-images.githubusercontent.com/348492097/4f16df80-88fb-11eb-9d31-4015ff22c452" />
+<meta property="og:description" content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
+<meta property="og:url" content="https://jothepro.github.io/doxygen-awesome-css/" />
+<!-- END opengraph metadata -->
+<!-- BEGIN twitter metadata -->
+<meta name="twitter:image:src" content="https://repository-images.githubusercontent.com/348492097/4f16df80-88fb-11eb-9d31-4015ff22c452" />
+<meta name="twitter:title" content="Doxygen Awesome" />
+<meta name="twitter:description" content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
+<!-- END twitter metadata -->
+<title>BPMN-OS: BPMNOS::vector_map&lt; Key, Value &gt; Class Template Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript" src="doxygen-awesome-interactive-toc.js"></script>
+<script type="text/javascript" src="doxygen-awesome-tabs.js"></script>
+<script type="text/javascript" src="toggle-alternative-theme.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeParagraphLink.init()
+    DoxygenAwesomeInteractiveToc.init()
+    DoxygenAwesomeTabs.init()
+</script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="custom.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<link href="custom-alternative.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<!-- https://tholman.com/github-corners/ -->
+<a href="https://github.com/bpmn-os/bpmnos-engine" class="github-corner" title="View source on GitHub" target="_blank" rel="noopener noreferrer">
+    <svg viewBox="0 0 250 250" width="40" height="40" style="position: absolute; top: 0; border: 0; right: 0; z-index: 99;" aria-hidden="true">
+    <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="BPMNOS.svg"/></td>
+  <td id="projectalign" style="padding-left: 0.5em;">
+   <div id="projectname">BPMN-OS
+   </div>
+   <div id="projectbrief">BPMN for optimization and simulation</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() {
+  initMenu('',true,false,'search.php','Search');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */
+</script>
+<div id="main-nav"></div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(document).ready(function(){initNavTree('classBPMNOS_1_1vector__map.html',''); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
+<a href="#pub-types">Public Types</a> &#124;
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="classBPMNOS_1_1vector__map-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">BPMNOS::vector_map&lt; Key, Value &gt; Class Template Reference</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Wrapper class around <code>std::unordered_map</code> for maps with vector keys.  
+ <a href="classBPMNOS_1_1vector__map.html#details">More...</a></p>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><div class="compoundTemplParams">template&lt;typename Key, typename <a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">Value</a>&gt;<br />
+class BPMNOS::vector_map&lt; Key, Value &gt;</div><p>Example usage: </p><div class="fragment"><div class="line"><a class="code hl_class" href="classBPMNOS_1_1vector__map.html">BPMNOS::vector_map&lt; std::vector&lt;int&gt;</a>, <span class="keywordtype">double</span> &gt; my_map;</div>
+<div class="line">my_map[{1, 2, 3}] = 42.0;</div>
+<div class="line">my_map[{4, 5, 6}] = 84.0;</div>
+<div class="line"> </div>
+<div class="line"><span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; [key, value] : my_map) {</div>
+<div class="line">  std::cout &lt;&lt; <span class="stringliteral">&quot;[&quot;</span>;</div>
+<div class="line">  <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; elem : key) {</div>
+<div class="line">    std::cout &lt;&lt; elem &lt;&lt; <span class="stringliteral">&quot;, &quot;</span>;</div>
+<div class="line">  }</div>
+<div class="line">  std::cout &lt;&lt; <span class="stringliteral">&quot;] -&gt; &quot;</span> &lt;&lt; value &lt;&lt; std::endl;</div>
+<div class="line">}</div>
+<div class="ttc" id="aclassBPMNOS_1_1vector__map_html"><div class="ttname"><a href="classBPMNOS_1_1vector__map.html">BPMNOS::vector_map</a></div><div class="ttdoc">Wrapper class around std::unordered_map for maps with vector keys.</div><div class="ttdef"><b>Definition</b> <a href="vector__map_8h_source.html#l00031">vector_map.h:31</a></div></div>
+</div><!-- fragment --> 
+<p class="definition">Definition at line <a class="el" href="vector__map_8h_source.html#l00031">31</a> of file <a class="el" href="vector__map_8h_source.html">vector_map.h</a>.</p>
+</div>
+<p><code>#include &lt;<a class="el" href="vector__map_8h_source.html">vector_map.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
+Public Types</h2></td></tr>
+<tr class="memitem:a071dd8e86033d8197a33b66cb5171e89" id="r_a071dd8e86033d8197a33b66cb5171e89"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1vector__map.html#a071dd8e86033d8197a33b66cb5171e89">iterator</a> = typename std::unordered_map&lt; Key, <a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">Value</a>, vector_hash &gt;::iterator</td></tr>
+<tr class="separator:a071dd8e86033d8197a33b66cb5171e89"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a04b478541cd317a0c8371fc10698c664" id="r_a04b478541cd317a0c8371fc10698c664"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1vector__map.html#a04b478541cd317a0c8371fc10698c664">const_iterator</a> = typename std::unordered_map&lt; Key, <a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">Value</a>, vector_hash &gt;::const_iterator</td></tr>
+<tr class="separator:a04b478541cd317a0c8371fc10698c664"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9f43a44d9c474794e0ef7f0d83370766" id="r_a9f43a44d9c474794e0ef7f0d83370766"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1vector__map.html#a9f43a44d9c474794e0ef7f0d83370766">size_type</a> = typename std::unordered_map&lt; Key, <a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">Value</a>, vector_hash &gt;::size_type</td></tr>
+<tr class="separator:a9f43a44d9c474794e0ef7f0d83370766"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:af571db48dfd2e6a5e8077f56da958e70" id="r_af571db48dfd2e6a5e8077f56da958e70"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">Value</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1vector__map.html#af571db48dfd2e6a5e8077f56da958e70">operator[]</a> (const Key &amp;key)</td></tr>
+<tr class="separator:af571db48dfd2e6a5e8077f56da958e70"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb73cc5f84e72a5ee41a90e4cfa9af37" id="r_aeb73cc5f84e72a5ee41a90e4cfa9af37"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1vector__map.html#aeb73cc5f84e72a5ee41a90e4cfa9af37">contains</a> (const Key &amp;key) const</td></tr>
+<tr class="separator:aeb73cc5f84e72a5ee41a90e4cfa9af37"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a68ff2c78ce65721e435e5792da78fe72" id="r_a68ff2c78ce65721e435e5792da78fe72"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">Value</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1vector__map.html#a68ff2c78ce65721e435e5792da78fe72">at</a> (const Key &amp;key)</td></tr>
+<tr class="separator:a68ff2c78ce65721e435e5792da78fe72"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f6b6517e28c77b509260d00a2dd97fe" id="r_a3f6b6517e28c77b509260d00a2dd97fe"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">Value</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1vector__map.html#a3f6b6517e28c77b509260d00a2dd97fe">at</a> (const Key &amp;key) const</td></tr>
+<tr class="separator:a3f6b6517e28c77b509260d00a2dd97fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a42de7e7b11a7f7b6d163cbb9230d3d9f" id="r_a42de7e7b11a7f7b6d163cbb9230d3d9f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classBPMNOS_1_1vector__map.html#a071dd8e86033d8197a33b66cb5171e89">iterator</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1vector__map.html#a42de7e7b11a7f7b6d163cbb9230d3d9f">begin</a> () noexcept</td></tr>
+<tr class="separator:a42de7e7b11a7f7b6d163cbb9230d3d9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a546747a068ec0e925fdc860d80e26b42" id="r_a546747a068ec0e925fdc860d80e26b42"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classBPMNOS_1_1vector__map.html#a04b478541cd317a0c8371fc10698c664">const_iterator</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1vector__map.html#a546747a068ec0e925fdc860d80e26b42">begin</a> () const noexcept</td></tr>
+<tr class="separator:a546747a068ec0e925fdc860d80e26b42"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aacf921ce65ae9e6537fd5c802ce904bb" id="r_aacf921ce65ae9e6537fd5c802ce904bb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classBPMNOS_1_1vector__map.html#a04b478541cd317a0c8371fc10698c664">const_iterator</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1vector__map.html#aacf921ce65ae9e6537fd5c802ce904bb">cbegin</a> () const noexcept</td></tr>
+<tr class="separator:aacf921ce65ae9e6537fd5c802ce904bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a59fa694683bc1dc4d38a294df2b08f7b" id="r_a59fa694683bc1dc4d38a294df2b08f7b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classBPMNOS_1_1vector__map.html#a071dd8e86033d8197a33b66cb5171e89">iterator</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1vector__map.html#a59fa694683bc1dc4d38a294df2b08f7b">end</a> () noexcept</td></tr>
+<tr class="separator:a59fa694683bc1dc4d38a294df2b08f7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a63a47fb86de79ed398a84e8778c01225" id="r_a63a47fb86de79ed398a84e8778c01225"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classBPMNOS_1_1vector__map.html#a04b478541cd317a0c8371fc10698c664">const_iterator</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1vector__map.html#a63a47fb86de79ed398a84e8778c01225">end</a> () const noexcept</td></tr>
+<tr class="separator:a63a47fb86de79ed398a84e8778c01225"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ae9adac25e032c4531cfee4a78feb8c" id="r_a8ae9adac25e032c4531cfee4a78feb8c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classBPMNOS_1_1vector__map.html#a04b478541cd317a0c8371fc10698c664">const_iterator</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1vector__map.html#a8ae9adac25e032c4531cfee4a78feb8c">cend</a> () const noexcept</td></tr>
+<tr class="separator:a8ae9adac25e032c4531cfee4a78feb8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f9a51838e98fc268bd328af9a62a8eb" id="r_a3f9a51838e98fc268bd328af9a62a8eb"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1vector__map.html#a3f9a51838e98fc268bd328af9a62a8eb">empty</a> () const noexcept</td></tr>
+<tr class="separator:a3f9a51838e98fc268bd328af9a62a8eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a88009963939ff903d769730f82c28e83" id="r_a88009963939ff903d769730f82c28e83"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classBPMNOS_1_1vector__map.html#a9f43a44d9c474794e0ef7f0d83370766">size_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1vector__map.html#a88009963939ff903d769730f82c28e83">size</a> () const noexcept</td></tr>
+<tr class="separator:a88009963939ff903d769730f82c28e83"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8671533848dd38f56a480e056bc8bef9" id="r_a8671533848dd38f56a480e056bc8bef9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1vector__map.html#a8671533848dd38f56a480e056bc8bef9">clear</a> () noexcept</td></tr>
+<tr class="separator:a8671533848dd38f56a480e056bc8bef9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae08214812f6f1841fcb93c0a3e65d8df" id="r_ae08214812f6f1841fcb93c0a3e65d8df"><td class="memItemLeft" align="right" valign="top">std::pair&lt; <a class="el" href="classBPMNOS_1_1vector__map.html#a071dd8e86033d8197a33b66cb5171e89">iterator</a>, bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1vector__map.html#ae08214812f6f1841fcb93c0a3e65d8df">insert</a> (const std::pair&lt; Key, <a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">Value</a> &gt; &amp;value)</td></tr>
+<tr class="separator:ae08214812f6f1841fcb93c0a3e65d8df"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6dcec3cc50648b1e9962db86c469ac81" id="r_a6dcec3cc50648b1e9962db86c469ac81"><td class="memItemLeft" align="right" valign="top">std::pair&lt; <a class="el" href="classBPMNOS_1_1vector__map.html#a071dd8e86033d8197a33b66cb5171e89">iterator</a>, bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1vector__map.html#a6dcec3cc50648b1e9962db86c469ac81">emplace</a> (const Key &amp;key, const <a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">Value</a> &amp;value)</td></tr>
+<tr class="separator:a6dcec3cc50648b1e9962db86c469ac81"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af3a8bce1208ef5a6ce16ad018de5872b" id="r_af3a8bce1208ef5a6ce16ad018de5872b"><td class="memItemLeft" align="right" valign="top">std::pair&lt; <a class="el" href="classBPMNOS_1_1vector__map.html#a071dd8e86033d8197a33b66cb5171e89">iterator</a>, bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1vector__map.html#af3a8bce1208ef5a6ce16ad018de5872b">try_emplace</a> (const Key &amp;key, const <a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">Value</a> &amp;value)</td></tr>
+<tr class="separator:af3a8bce1208ef5a6ce16ad018de5872b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1f7c3fc9ebb9cb78b5fd6af916136b8" id="r_ab1f7c3fc9ebb9cb78b5fd6af916136b8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1vector__map.html#ab1f7c3fc9ebb9cb78b5fd6af916136b8">erase</a> (<a class="el" href="classBPMNOS_1_1vector__map.html#a071dd8e86033d8197a33b66cb5171e89">iterator</a> pos)</td></tr>
+<tr class="separator:ab1f7c3fc9ebb9cb78b5fd6af916136b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9d33fd5d4569d8ed0728541fe35e6d75" id="r_a9d33fd5d4569d8ed0728541fe35e6d75"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classBPMNOS_1_1vector__map.html#a9f43a44d9c474794e0ef7f0d83370766">size_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1vector__map.html#a9d33fd5d4569d8ed0728541fe35e6d75">erase</a> (const Key &amp;key)</td></tr>
+<tr class="separator:a9d33fd5d4569d8ed0728541fe35e6d75"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a925c99af1f1ff52a9f902499e1fc4439" id="r_a925c99af1f1ff52a9f902499e1fc4439"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1vector__map.html#a925c99af1f1ff52a9f902499e1fc4439">swap</a> (<a class="el" href="classBPMNOS_1_1vector__map.html">vector_map</a> &amp;other) noexcept</td></tr>
+<tr class="separator:a925c99af1f1ff52a9f902499e1fc4439"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aac507da1a381c78803e926c1a1b44dcc" id="r_aac507da1a381c78803e926c1a1b44dcc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classBPMNOS_1_1vector__map.html#a9f43a44d9c474794e0ef7f0d83370766">size_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1vector__map.html#aac507da1a381c78803e926c1a1b44dcc">count</a> (const Key &amp;key) const</td></tr>
+<tr class="separator:aac507da1a381c78803e926c1a1b44dcc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a06fdd263bb3b6de81f557f73cfc03594" id="r_a06fdd263bb3b6de81f557f73cfc03594"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classBPMNOS_1_1vector__map.html#a071dd8e86033d8197a33b66cb5171e89">iterator</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1vector__map.html#a06fdd263bb3b6de81f557f73cfc03594">find</a> (const Key &amp;key)</td></tr>
+<tr class="separator:a06fdd263bb3b6de81f557f73cfc03594"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaad77760913b011b08e5d17f2667ddef" id="r_aaad77760913b011b08e5d17f2667ddef"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classBPMNOS_1_1vector__map.html#a04b478541cd317a0c8371fc10698c664">const_iterator</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1vector__map.html#aaad77760913b011b08e5d17f2667ddef">find</a> (const Key &amp;key) const</td></tr>
+<tr class="separator:aaad77760913b011b08e5d17f2667ddef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">Member Typedef Documentation</h2>
+<a id="a04b478541cd317a0c8371fc10698c664" name="a04b478541cd317a0c8371fc10698c664"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a04b478541cd317a0c8371fc10698c664">&#9670;&#160;</a></span>const_iterator</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Key , typename <a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">Value</a> &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classBPMNOS_1_1vector__map.html">BPMNOS::vector_map</a>&lt; Key, <a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">Value</a> &gt;::const_iterator =  typename std::unordered_map&lt;Key, <a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">Value</a>, vector_hash&gt;::const_iterator</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="vector__map_8h_source.html#l00050">50</a> of file <a class="el" href="vector__map_8h_source.html">vector_map.h</a>.</p>
+
+</div>
+</div>
+<a id="a071dd8e86033d8197a33b66cb5171e89" name="a071dd8e86033d8197a33b66cb5171e89"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a071dd8e86033d8197a33b66cb5171e89">&#9670;&#160;</a></span>iterator</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Key , typename <a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">Value</a> &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classBPMNOS_1_1vector__map.html">BPMNOS::vector_map</a>&lt; Key, <a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">Value</a> &gt;::iterator =  typename std::unordered_map&lt;Key, <a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">Value</a>, vector_hash&gt;::iterator</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="vector__map_8h_source.html#l00049">49</a> of file <a class="el" href="vector__map_8h_source.html">vector_map.h</a>.</p>
+
+</div>
+</div>
+<a id="a9f43a44d9c474794e0ef7f0d83370766" name="a9f43a44d9c474794e0ef7f0d83370766"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9f43a44d9c474794e0ef7f0d83370766">&#9670;&#160;</a></span>size_type</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Key , typename <a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">Value</a> &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classBPMNOS_1_1vector__map.html">BPMNOS::vector_map</a>&lt; Key, <a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">Value</a> &gt;::size_type =  typename std::unordered_map&lt;Key, <a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">Value</a>, vector_hash&gt;::size_type</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="vector__map_8h_source.html#l00051">51</a> of file <a class="el" href="vector__map_8h_source.html">vector_map.h</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a68ff2c78ce65721e435e5792da78fe72" name="a68ff2c78ce65721e435e5792da78fe72"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a68ff2c78ce65721e435e5792da78fe72">&#9670;&#160;</a></span>at() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Key , typename <a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">Value</a> &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">Value</a> &amp; <a class="el" href="classBPMNOS_1_1vector__map.html">BPMNOS::vector_map</a>&lt; Key, <a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">Value</a> &gt;::at </td>
+          <td>(</td>
+          <td class="paramtype">const Key &amp;&#160;</td>
+          <td class="paramname"><em>key</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="vector__map_8h_source.html#l00062">62</a> of file <a class="el" href="vector__map_8h_source.html">vector_map.h</a>.</p>
+
+</div>
+</div>
+<a id="a3f6b6517e28c77b509260d00a2dd97fe" name="a3f6b6517e28c77b509260d00a2dd97fe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f6b6517e28c77b509260d00a2dd97fe">&#9670;&#160;</a></span>at() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Key , typename <a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">Value</a> &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">Value</a> &amp; <a class="el" href="classBPMNOS_1_1vector__map.html">BPMNOS::vector_map</a>&lt; Key, <a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">Value</a> &gt;::at </td>
+          <td>(</td>
+          <td class="paramtype">const Key &amp;&#160;</td>
+          <td class="paramname"><em>key</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="vector__map_8h_source.html#l00066">66</a> of file <a class="el" href="vector__map_8h_source.html">vector_map.h</a>.</p>
+
+</div>
+</div>
+<a id="a546747a068ec0e925fdc860d80e26b42" name="a546747a068ec0e925fdc860d80e26b42"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a546747a068ec0e925fdc860d80e26b42">&#9670;&#160;</a></span>begin() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Key , typename <a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">Value</a> &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classBPMNOS_1_1vector__map.html#a04b478541cd317a0c8371fc10698c664">const_iterator</a> <a class="el" href="classBPMNOS_1_1vector__map.html">BPMNOS::vector_map</a>&lt; Key, <a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">Value</a> &gt;::begin </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="vector__map_8h_source.html#l00075">75</a> of file <a class="el" href="vector__map_8h_source.html">vector_map.h</a>.</p>
+
+</div>
+</div>
+<a id="a42de7e7b11a7f7b6d163cbb9230d3d9f" name="a42de7e7b11a7f7b6d163cbb9230d3d9f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a42de7e7b11a7f7b6d163cbb9230d3d9f">&#9670;&#160;</a></span>begin() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Key , typename <a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">Value</a> &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classBPMNOS_1_1vector__map.html#a071dd8e86033d8197a33b66cb5171e89">iterator</a> <a class="el" href="classBPMNOS_1_1vector__map.html">BPMNOS::vector_map</a>&lt; Key, <a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">Value</a> &gt;::begin </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="vector__map_8h_source.html#l00071">71</a> of file <a class="el" href="vector__map_8h_source.html">vector_map.h</a>.</p>
+
+</div>
+</div>
+<a id="aacf921ce65ae9e6537fd5c802ce904bb" name="aacf921ce65ae9e6537fd5c802ce904bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aacf921ce65ae9e6537fd5c802ce904bb">&#9670;&#160;</a></span>cbegin()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Key , typename <a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">Value</a> &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classBPMNOS_1_1vector__map.html#a04b478541cd317a0c8371fc10698c664">const_iterator</a> <a class="el" href="classBPMNOS_1_1vector__map.html">BPMNOS::vector_map</a>&lt; Key, <a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">Value</a> &gt;::cbegin </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="vector__map_8h_source.html#l00079">79</a> of file <a class="el" href="vector__map_8h_source.html">vector_map.h</a>.</p>
+
+</div>
+</div>
+<a id="a8ae9adac25e032c4531cfee4a78feb8c" name="a8ae9adac25e032c4531cfee4a78feb8c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8ae9adac25e032c4531cfee4a78feb8c">&#9670;&#160;</a></span>cend()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Key , typename <a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">Value</a> &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classBPMNOS_1_1vector__map.html#a04b478541cd317a0c8371fc10698c664">const_iterator</a> <a class="el" href="classBPMNOS_1_1vector__map.html">BPMNOS::vector_map</a>&lt; Key, <a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">Value</a> &gt;::cend </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="vector__map_8h_source.html#l00091">91</a> of file <a class="el" href="vector__map_8h_source.html">vector_map.h</a>.</p>
+
+</div>
+</div>
+<a id="a8671533848dd38f56a480e056bc8bef9" name="a8671533848dd38f56a480e056bc8bef9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8671533848dd38f56a480e056bc8bef9">&#9670;&#160;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Key , typename <a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">Value</a> &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classBPMNOS_1_1vector__map.html">BPMNOS::vector_map</a>&lt; Key, <a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">Value</a> &gt;::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="vector__map_8h_source.html#l00105">105</a> of file <a class="el" href="vector__map_8h_source.html">vector_map.h</a>.</p>
+
+</div>
+</div>
+<a id="aeb73cc5f84e72a5ee41a90e4cfa9af37" name="aeb73cc5f84e72a5ee41a90e4cfa9af37"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb73cc5f84e72a5ee41a90e4cfa9af37">&#9670;&#160;</a></span>contains()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Key , typename <a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">Value</a> &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="classBPMNOS_1_1vector__map.html">BPMNOS::vector_map</a>&lt; Key, <a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">Value</a> &gt;::contains </td>
+          <td>(</td>
+          <td class="paramtype">const Key &amp;&#160;</td>
+          <td class="paramname"><em>key</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="vector__map_8h_source.html#l00058">58</a> of file <a class="el" href="vector__map_8h_source.html">vector_map.h</a>.</p>
+
+</div>
+</div>
+<a id="aac507da1a381c78803e926c1a1b44dcc" name="aac507da1a381c78803e926c1a1b44dcc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac507da1a381c78803e926c1a1b44dcc">&#9670;&#160;</a></span>count()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Key , typename <a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">Value</a> &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classBPMNOS_1_1vector__map.html#a9f43a44d9c474794e0ef7f0d83370766">size_type</a> <a class="el" href="classBPMNOS_1_1vector__map.html">BPMNOS::vector_map</a>&lt; Key, <a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">Value</a> &gt;::count </td>
+          <td>(</td>
+          <td class="paramtype">const Key &amp;&#160;</td>
+          <td class="paramname"><em>key</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="vector__map_8h_source.html#l00134">134</a> of file <a class="el" href="vector__map_8h_source.html">vector_map.h</a>.</p>
+
+</div>
+</div>
+<a id="a6dcec3cc50648b1e9962db86c469ac81" name="a6dcec3cc50648b1e9962db86c469ac81"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6dcec3cc50648b1e9962db86c469ac81">&#9670;&#160;</a></span>emplace()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Key , typename <a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">Value</a> &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::pair&lt; <a class="el" href="classBPMNOS_1_1vector__map.html#a071dd8e86033d8197a33b66cb5171e89">iterator</a>, bool &gt; <a class="el" href="classBPMNOS_1_1vector__map.html">BPMNOS::vector_map</a>&lt; Key, <a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">Value</a> &gt;::emplace </td>
+          <td>(</td>
+          <td class="paramtype">const Key &amp;&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">Value</a> &amp;&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="vector__map_8h_source.html#l00113">113</a> of file <a class="el" href="vector__map_8h_source.html">vector_map.h</a>.</p>
+
+</div>
+</div>
+<a id="a3f9a51838e98fc268bd328af9a62a8eb" name="a3f9a51838e98fc268bd328af9a62a8eb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f9a51838e98fc268bd328af9a62a8eb">&#9670;&#160;</a></span>empty()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Key , typename <a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">Value</a> &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="classBPMNOS_1_1vector__map.html">BPMNOS::vector_map</a>&lt; Key, <a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">Value</a> &gt;::empty </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="vector__map_8h_source.html#l00096">96</a> of file <a class="el" href="vector__map_8h_source.html">vector_map.h</a>.</p>
+
+</div>
+</div>
+<a id="a63a47fb86de79ed398a84e8778c01225" name="a63a47fb86de79ed398a84e8778c01225"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a63a47fb86de79ed398a84e8778c01225">&#9670;&#160;</a></span>end() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Key , typename <a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">Value</a> &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classBPMNOS_1_1vector__map.html#a04b478541cd317a0c8371fc10698c664">const_iterator</a> <a class="el" href="classBPMNOS_1_1vector__map.html">BPMNOS::vector_map</a>&lt; Key, <a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">Value</a> &gt;::end </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="vector__map_8h_source.html#l00087">87</a> of file <a class="el" href="vector__map_8h_source.html">vector_map.h</a>.</p>
+
+</div>
+</div>
+<a id="a59fa694683bc1dc4d38a294df2b08f7b" name="a59fa694683bc1dc4d38a294df2b08f7b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a59fa694683bc1dc4d38a294df2b08f7b">&#9670;&#160;</a></span>end() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Key , typename <a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">Value</a> &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classBPMNOS_1_1vector__map.html#a071dd8e86033d8197a33b66cb5171e89">iterator</a> <a class="el" href="classBPMNOS_1_1vector__map.html">BPMNOS::vector_map</a>&lt; Key, <a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">Value</a> &gt;::end </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="vector__map_8h_source.html#l00083">83</a> of file <a class="el" href="vector__map_8h_source.html">vector_map.h</a>.</p>
+
+</div>
+</div>
+<a id="a9d33fd5d4569d8ed0728541fe35e6d75" name="a9d33fd5d4569d8ed0728541fe35e6d75"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9d33fd5d4569d8ed0728541fe35e6d75">&#9670;&#160;</a></span>erase() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Key , typename <a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">Value</a> &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classBPMNOS_1_1vector__map.html#a9f43a44d9c474794e0ef7f0d83370766">size_type</a> <a class="el" href="classBPMNOS_1_1vector__map.html">BPMNOS::vector_map</a>&lt; Key, <a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">Value</a> &gt;::erase </td>
+          <td>(</td>
+          <td class="paramtype">const Key &amp;&#160;</td>
+          <td class="paramname"><em>key</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="vector__map_8h_source.html#l00125">125</a> of file <a class="el" href="vector__map_8h_source.html">vector_map.h</a>.</p>
+
+</div>
+</div>
+<a id="ab1f7c3fc9ebb9cb78b5fd6af916136b8" name="ab1f7c3fc9ebb9cb78b5fd6af916136b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab1f7c3fc9ebb9cb78b5fd6af916136b8">&#9670;&#160;</a></span>erase() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Key , typename <a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">Value</a> &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classBPMNOS_1_1vector__map.html">BPMNOS::vector_map</a>&lt; Key, <a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">Value</a> &gt;::erase </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classBPMNOS_1_1vector__map.html#a071dd8e86033d8197a33b66cb5171e89">iterator</a>&#160;</td>
+          <td class="paramname"><em>pos</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="vector__map_8h_source.html#l00121">121</a> of file <a class="el" href="vector__map_8h_source.html">vector_map.h</a>.</p>
+
+</div>
+</div>
+<a id="a06fdd263bb3b6de81f557f73cfc03594" name="a06fdd263bb3b6de81f557f73cfc03594"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a06fdd263bb3b6de81f557f73cfc03594">&#9670;&#160;</a></span>find() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Key , typename <a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">Value</a> &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classBPMNOS_1_1vector__map.html#a071dd8e86033d8197a33b66cb5171e89">iterator</a> <a class="el" href="classBPMNOS_1_1vector__map.html">BPMNOS::vector_map</a>&lt; Key, <a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">Value</a> &gt;::find </td>
+          <td>(</td>
+          <td class="paramtype">const Key &amp;&#160;</td>
+          <td class="paramname"><em>key</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="vector__map_8h_source.html#l00138">138</a> of file <a class="el" href="vector__map_8h_source.html">vector_map.h</a>.</p>
+
+</div>
+</div>
+<a id="aaad77760913b011b08e5d17f2667ddef" name="aaad77760913b011b08e5d17f2667ddef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaad77760913b011b08e5d17f2667ddef">&#9670;&#160;</a></span>find() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Key , typename <a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">Value</a> &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classBPMNOS_1_1vector__map.html#a04b478541cd317a0c8371fc10698c664">const_iterator</a> <a class="el" href="classBPMNOS_1_1vector__map.html">BPMNOS::vector_map</a>&lt; Key, <a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">Value</a> &gt;::find </td>
+          <td>(</td>
+          <td class="paramtype">const Key &amp;&#160;</td>
+          <td class="paramname"><em>key</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="vector__map_8h_source.html#l00142">142</a> of file <a class="el" href="vector__map_8h_source.html">vector_map.h</a>.</p>
+
+</div>
+</div>
+<a id="ae08214812f6f1841fcb93c0a3e65d8df" name="ae08214812f6f1841fcb93c0a3e65d8df"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae08214812f6f1841fcb93c0a3e65d8df">&#9670;&#160;</a></span>insert()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Key , typename <a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">Value</a> &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::pair&lt; <a class="el" href="classBPMNOS_1_1vector__map.html#a071dd8e86033d8197a33b66cb5171e89">iterator</a>, bool &gt; <a class="el" href="classBPMNOS_1_1vector__map.html">BPMNOS::vector_map</a>&lt; Key, <a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">Value</a> &gt;::insert </td>
+          <td>(</td>
+          <td class="paramtype">const std::pair&lt; Key, <a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">Value</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="vector__map_8h_source.html#l00109">109</a> of file <a class="el" href="vector__map_8h_source.html">vector_map.h</a>.</p>
+
+</div>
+</div>
+<a id="af571db48dfd2e6a5e8077f56da958e70" name="af571db48dfd2e6a5e8077f56da958e70"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af571db48dfd2e6a5e8077f56da958e70">&#9670;&#160;</a></span>operator[]()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Key , typename <a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">Value</a> &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">Value</a> &amp; <a class="el" href="classBPMNOS_1_1vector__map.html">BPMNOS::vector_map</a>&lt; Key, <a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">Value</a> &gt;::operator[] </td>
+          <td>(</td>
+          <td class="paramtype">const Key &amp;&#160;</td>
+          <td class="paramname"><em>key</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="vector__map_8h_source.html#l00054">54</a> of file <a class="el" href="vector__map_8h_source.html">vector_map.h</a>.</p>
+
+</div>
+</div>
+<a id="a88009963939ff903d769730f82c28e83" name="a88009963939ff903d769730f82c28e83"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a88009963939ff903d769730f82c28e83">&#9670;&#160;</a></span>size()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Key , typename <a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">Value</a> &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classBPMNOS_1_1vector__map.html#a9f43a44d9c474794e0ef7f0d83370766">size_type</a> <a class="el" href="classBPMNOS_1_1vector__map.html">BPMNOS::vector_map</a>&lt; Key, <a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">Value</a> &gt;::size </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="vector__map_8h_source.html#l00100">100</a> of file <a class="el" href="vector__map_8h_source.html">vector_map.h</a>.</p>
+
+</div>
+</div>
+<a id="a925c99af1f1ff52a9f902499e1fc4439" name="a925c99af1f1ff52a9f902499e1fc4439"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a925c99af1f1ff52a9f902499e1fc4439">&#9670;&#160;</a></span>swap()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Key , typename <a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">Value</a> &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classBPMNOS_1_1vector__map.html">BPMNOS::vector_map</a>&lt; Key, <a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">Value</a> &gt;::swap </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classBPMNOS_1_1vector__map.html">vector_map</a>&lt; Key, <a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">Value</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="vector__map_8h_source.html#l00129">129</a> of file <a class="el" href="vector__map_8h_source.html">vector_map.h</a>.</p>
+
+</div>
+</div>
+<a id="af3a8bce1208ef5a6ce16ad018de5872b" name="af3a8bce1208ef5a6ce16ad018de5872b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af3a8bce1208ef5a6ce16ad018de5872b">&#9670;&#160;</a></span>try_emplace()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Key , typename <a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">Value</a> &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::pair&lt; <a class="el" href="classBPMNOS_1_1vector__map.html#a071dd8e86033d8197a33b66cb5171e89">iterator</a>, bool &gt; <a class="el" href="classBPMNOS_1_1vector__map.html">BPMNOS::vector_map</a>&lt; Key, <a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">Value</a> &gt;::try_emplace </td>
+          <td>(</td>
+          <td class="paramtype">const Key &amp;&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">Value</a> &amp;&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="vector__map_8h_source.html#l00117">117</a> of file <a class="el" href="vector__map_8h_source.html">vector_map.h</a>.</p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following file:<ul>
+<li>model/utility/src/<a class="el" href="vector__map_8h_source.html">vector_map.h</a></li>
+</ul>
+</div><!-- contents -->
+</div><!-- doc-content -->
+<script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs"; mermaid.initialize({ startOnLoad: true, theme: "neutral" });</script></body></html>

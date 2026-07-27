@@ -1,0 +1,961 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<!-- BEGIN opengraph metadata -->
+<meta property="og:title" content="Doxygen Awesome" />
+<meta property="og:image" content="https://repository-images.githubusercontent.com/348492097/4f16df80-88fb-11eb-9d31-4015ff22c452" />
+<meta property="og:description" content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
+<meta property="og:url" content="https://jothepro.github.io/doxygen-awesome-css/" />
+<!-- END opengraph metadata -->
+<!-- BEGIN twitter metadata -->
+<meta name="twitter:image:src" content="https://repository-images.githubusercontent.com/348492097/4f16df80-88fb-11eb-9d31-4015ff22c452" />
+<meta name="twitter:title" content="Doxygen Awesome" />
+<meta name="twitter:description" content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
+<!-- END twitter metadata -->
+<title>BPMN-OS: BPMNOS::Model::StochasticDataProvider Class Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript" src="doxygen-awesome-interactive-toc.js"></script>
+<script type="text/javascript" src="doxygen-awesome-tabs.js"></script>
+<script type="text/javascript" src="toggle-alternative-theme.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeParagraphLink.init()
+    DoxygenAwesomeInteractiveToc.init()
+    DoxygenAwesomeTabs.init()
+</script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="custom.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<link href="custom-alternative.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<!-- https://tholman.com/github-corners/ -->
+<a href="https://github.com/bpmn-os/bpmnos-engine" class="github-corner" title="View source on GitHub" target="_blank" rel="noopener noreferrer">
+    <svg viewBox="0 0 250 250" width="40" height="40" style="position: absolute; top: 0; border: 0; right: 0; z-index: 99;" aria-hidden="true">
+    <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="BPMNOS.svg"/></td>
+  <td id="projectalign" style="padding-left: 0.5em;">
+   <div id="projectname">BPMN-OS
+   </div>
+   <div id="projectbrief">BPMN for optimization and simulation</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() {
+  initMenu('',true,false,'search.php','Search');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */
+</script>
+<div id="main-nav"></div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(document).ready(function(){initNavTree('classBPMNOS_1_1Model_1_1StochasticDataProvider.html',''); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pro-methods">Protected Member Functions</a> &#124;
+<a href="#pro-attribs">Protected Attributes</a> &#124;
+<a href="classBPMNOS_1_1Model_1_1StochasticDataProvider-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">BPMNOS::Model::StochasticDataProvider Class Reference</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Data provider supporting stochastic behavior.  
+ <a href="classBPMNOS_1_1Model_1_1StochasticDataProvider.html#details">More...</a></p>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>StochasticDataProvider supports:</p><ul>
+<li>3-column format (INSTANCE_ID, NODE_ID, INITIALIZATION) - static behavior</li>
+<li>4-column format (+ DISCLOSURE) - dynamic behavior</li>
+<li>6-column format (+ READY, COMPLETION) - stochastic behavior</li>
+</ul>
+<p>Has its own LIMEX handle with lookup tables from Model plus random functions.</p>
+<dl class="section note"><dt>Note</dt><dd>CSV ordering: For dependent expressions, parent node rows must be listed before child node rows in the CSV file. If a child expression depends on a parent's deferred attribute, the parent must be evaluated first.</dd>
+<dd>
+Guidance constraint: Guidance expressions must only reference attributes that are disclosed at the time of access. This is not enforced; it is the user's responsibility to ensure correct usage. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="StochasticDataProvider_8h_source.html#l00034">34</a> of file <a class="el" href="StochasticDataProvider_8h_source.html">StochasticDataProvider.h</a>.</p>
+</div>
+<p><code>#include &lt;<a class="el" href="StochasticDataProvider_8h_source.html">StochasticDataProvider.h</a>&gt;</code></p>
+<div class="dynheader">
+Inheritance diagram for BPMNOS::Model::StochasticDataProvider:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classBPMNOS_1_1Model_1_1StochasticDataProvider__inherit__graph.svg" width="223" height="984"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structBPMNOS_1_1Model_1_1StochasticDataProvider_1_1DeferredAttribute.html">DeferredAttribute</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deferred attribute with expressions to evaluate per-scenario.  <a href="structBPMNOS_1_1Model_1_1StochasticDataProvider_1_1DeferredAttribute.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structBPMNOS_1_1Model_1_1StochasticDataProvider_1_1StochasticInstanceData.html">StochasticInstanceData</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a1e1ab489622918e35dec0fcfcff06bfa" id="r_a1e1ab489622918e35dec0fcfcff06bfa"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1StochasticDataProvider.html#a1e1ab489622918e35dec0fcfcff06bfa">StochasticDataProvider</a> (const std::string &amp;modelFile, const std::string &amp;instanceFileOrString, unsigned int <a class="el" href="classBPMNOS_1_1Model_1_1StochasticDataProvider.html#ae83a8c49651865989cc01aa0f429b43e">seed</a>=0)</td></tr>
+<tr class="separator:a1e1ab489622918e35dec0fcfcff06bfa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a301152243e8b7a0330fe093a4ba1e209" id="r_a301152243e8b7a0330fe093a4ba1e209"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1StochasticDataProvider.html#a301152243e8b7a0330fe093a4ba1e209">StochasticDataProvider</a> (const std::string &amp;modelFile, const std::vector&lt; std::string &gt; &amp;folders, const std::string &amp;instanceFileOrString, unsigned int <a class="el" href="classBPMNOS_1_1Model_1_1StochasticDataProvider.html#ae83a8c49651865989cc01aa0f429b43e">seed</a>=0)</td></tr>
+<tr class="separator:a301152243e8b7a0330fe093a4ba1e209"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8edf6ea6e2c6e8abead126cbc27e5038" id="r_a8edf6ea6e2c6e8abead126cbc27e5038"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1StochasticDataProvider.html#a8edf6ea6e2c6e8abead126cbc27e5038">StochasticDataProvider</a> (<a class="el" href="structBPMNOS_1_1Model_1_1Input.html">Input</a> input, unsigned int <a class="el" href="classBPMNOS_1_1Model_1_1StochasticDataProvider.html#ae83a8c49651865989cc01aa0f429b43e">seed</a>=0)</td></tr>
+<tr class="memdesc:a8edf6ea6e2c6e8abead126cbc27e5038"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor building the provider from in-memory content.  <br /></td></tr>
+<tr class="separator:a8edf6ea6e2c6e8abead126cbc27e5038"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af210018cde53d6bfc86bd6876c6979de" id="r_af210018cde53d6bfc86bd6876c6979de"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1StochasticDataProvider.html#af210018cde53d6bfc86bd6876c6979de">~StochasticDataProvider</a> () override=default</td></tr>
+<tr class="separator:af210018cde53d6bfc86bd6876c6979de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb9dfd001c5a434160f7fefa25483fc5" id="r_acb9dfd001c5a434160f7fefa25483fc5"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html">Scenario</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1StochasticDataProvider.html#acb9dfd001c5a434160f7fefa25483fc5">createScenario</a> (unsigned int scenarioId=0) override</td></tr>
+<tr class="separator:acb9dfd001c5a434160f7fefa25483fc5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2ff1c8cad8c4a6016f48e8338ed54293" id="r_a2ff1c8cad8c4a6016f48e8338ed54293"><td class="memItemLeft" align="right" valign="top">const LIMEX::Handle&lt; double &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1StochasticDataProvider.html#a2ff1c8cad8c4a6016f48e8338ed54293">getStochasticHandle</a> () const</td></tr>
+<tr class="memdesc:a2ff1c8cad8c4a6016f48e8338ed54293"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the stochastic LIMEX handle (for expression compilation)  <br /></td></tr>
+<tr class="separator:a2ff1c8cad8c4a6016f48e8338ed54293"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classBPMNOS_1_1Model_1_1DataProvider"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classBPMNOS_1_1Model_1_1DataProvider')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classBPMNOS_1_1Model_1_1DataProvider.html">BPMNOS::Model::DataProvider</a></td></tr>
+<tr class="memitem:a7cb4c7fe3ad38b24c5c955e8e2d904b9 inherit pub_methods_classBPMNOS_1_1Model_1_1DataProvider" id="r_a7cb4c7fe3ad38b24c5c955e8e2d904b9"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1DataProvider.html#a7cb4c7fe3ad38b24c5c955e8e2d904b9">DataProvider</a> (const std::string &amp;modelFile, const std::vector&lt; std::string &gt; &amp;folders)</td></tr>
+<tr class="memdesc:a7cb4c7fe3ad38b24c5c955e8e2d904b9 inherit pub_methods_classBPMNOS_1_1Model_1_1DataProvider"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor for DataProvider.  <br /></td></tr>
+<tr class="separator:a7cb4c7fe3ad38b24c5c955e8e2d904b9 inherit pub_methods_classBPMNOS_1_1Model_1_1DataProvider"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae3e958462c9a36fc575d503e34944a8c inherit pub_methods_classBPMNOS_1_1Model_1_1DataProvider" id="r_ae3e958462c9a36fc575d503e34944a8c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1DataProvider.html#ae3e958462c9a36fc575d503e34944a8c">DataProvider</a> (std::unique_ptr&lt; <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classXML_1_1XMLObject.html">XML::XMLObject</a> &gt; <a class="el" href="classBPMNOS_1_1Model_1_1DataProvider.html#afcc5033d8c547ef6ffeb35c31241171a">model</a>, std::unordered_map&lt; std::string, std::string &gt; lookupTables)</td></tr>
+<tr class="memdesc:ae3e958462c9a36fc575d503e34944a8c inherit pub_methods_classBPMNOS_1_1Model_1_1DataProvider"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor for DataProvider building the model from in-memory content.  <br /></td></tr>
+<tr class="separator:ae3e958462c9a36fc575d503e34944a8c inherit pub_methods_classBPMNOS_1_1Model_1_1DataProvider"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8cf9cbf6df5b5981aba7ee9e933f7fc9 inherit pub_methods_classBPMNOS_1_1Model_1_1DataProvider" id="r_a8cf9cbf6df5b5981aba7ee9e933f7fc9"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1DataProvider.html#a8cf9cbf6df5b5981aba7ee9e933f7fc9">~DataProvider</a> ()=0</td></tr>
+<tr class="separator:a8cf9cbf6df5b5981aba7ee9e933f7fc9 inherit pub_methods_classBPMNOS_1_1Model_1_1DataProvider"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af352c2193844109f607c98293e3303da inherit pub_methods_classBPMNOS_1_1Model_1_1DataProvider" id="r_af352c2193844109f607c98293e3303da"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classBPMNOS_1_1Model_1_1Model.html">Model</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1DataProvider.html#af352c2193844109f607c98293e3303da">getModel</a> () const</td></tr>
+<tr class="separator:af352c2193844109f607c98293e3303da inherit pub_methods_classBPMNOS_1_1Model_1_1DataProvider"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
+Protected Member Functions</h2></td></tr>
+<tr class="memitem:af7540ac4b744e509f0d251067f0a0c62" id="r_af7540ac4b744e509f0d251067f0a0c62"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1StochasticDataProvider.html#af7540ac4b744e509f0d251067f0a0c62">initializeStochasticHandle</a> ()</td></tr>
+<tr class="separator:af7540ac4b744e509f0d251067f0a0c62"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aab5d989bb3d479e7656e7bd6e09ffa07" id="r_aab5d989bb3d479e7656e7bd6e09ffa07"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1StochasticDataProvider.html#aab5d989bb3d479e7656e7bd6e09ffa07">readInstances</a> ()</td></tr>
+<tr class="separator:aab5d989bb3d479e7656e7bd6e09ffa07"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a83a1c4f3b17768d1c7e373235f9e3905" id="r_a83a1c4f3b17768d1c7e373235f9e3905"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1StochasticDataProvider.html#a83a1c4f3b17768d1c7e373235f9e3905">evaluateExpression</a> (const std::string &amp;expressionString) const override</td></tr>
+<tr class="memdesc:a83a1c4f3b17768d1c7e373235f9e3905"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluate an expression using the provider's default handle.  <br /></td></tr>
+<tr class="separator:a83a1c4f3b17768d1c7e373235f9e3905"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d1e9847b5cce9d0adaf7f429d734106" id="r_a3d1e9847b5cce9d0adaf7f429d734106"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1StochasticDataProvider.html#a3d1e9847b5cce9d0adaf7f429d734106">evaluateExpression</a> (size_t instanceId, const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a> *node, const std::string &amp;expressionString, <a class="el" href="namespaceBPMNOS.html#abd0d3034519d54779b4df3e9754cd681">ValueType</a> type) const override</td></tr>
+<tr class="memdesc:a3d1e9847b5cce9d0adaf7f429d734106"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluate an expression for an instance using the default handle.  <br /></td></tr>
+<tr class="separator:a3d1e9847b5cce9d0adaf7f429d734106"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2483c361c53d88eea5a9a00f1ec59886" id="r_a2483c361c53d88eea5a9a00f1ec59886"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1StochasticDataProvider.html#a2483c361c53d88eea5a9a00f1ec59886">evaluateGlobal</a> (const std::string &amp;initializationString) override</td></tr>
+<tr class="memdesc:a2483c361c53d88eea5a9a00f1ec59886"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluate a global attribute initialization using the default handle.  <br /></td></tr>
+<tr class="separator:a2483c361c53d88eea5a9a00f1ec59886"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa0c8bea17d75d03fbe907e2c521dd4d4" id="r_aa0c8bea17d75d03fbe907e2c521dd4d4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1StochasticDataProvider.html#aa0c8bea17d75d03fbe907e2c521dd4d4">getEffectiveDisclosure</a> (size_t instanceId, const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a> *node, <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> ownDisclosure)</td></tr>
+<tr class="separator:aa0c8bea17d75d03fbe907e2c521dd4d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pro_methods_classBPMNOS_1_1Model_1_1DataProvider"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classBPMNOS_1_1Model_1_1DataProvider')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classBPMNOS_1_1Model_1_1DataProvider.html">BPMNOS::Model::DataProvider</a></td></tr>
+<tr class="memitem:a4095ffbd0b81e5d6b46b761f4d350f58 inherit pro_methods_classBPMNOS_1_1Model_1_1DataProvider" id="r_a4095ffbd0b81e5d6b46b761f4d350f58"><td class="memItemLeft" align="right" valign="top"><a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1DataProvider.html#a4095ffbd0b81e5d6b46b761f4d350f58">findNode</a> (const std::string &amp;nodeId) const</td></tr>
+<tr class="separator:a4095ffbd0b81e5d6b46b761f4d350f58 inherit pro_methods_classBPMNOS_1_1Model_1_1DataProvider"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a39536a5d0a0d8371681e0211a08023c2 inherit pro_methods_classBPMNOS_1_1Model_1_1DataProvider" id="r_a39536a5d0a0d8371681e0211a08023c2"><td class="memItemLeft" align="right" valign="top">std::pair&lt; const <a class="el" href="classBPMNOS_1_1Model_1_1Attribute.html">Attribute</a> *, std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1DataProvider.html#a39536a5d0a0d8371681e0211a08023c2">lookupAttribute</a> (const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a> *node, const std::string &amp;initializationString) const</td></tr>
+<tr class="memdesc:a39536a5d0a0d8371681e0211a08023c2 inherit pro_methods_classBPMNOS_1_1Model_1_1DataProvider"><td class="mdescLeft">&#160;</td><td class="mdescRight">Look up an attribute from an initialization string.  <br /></td></tr>
+<tr class="separator:a39536a5d0a0d8371681e0211a08023c2 inherit pro_methods_classBPMNOS_1_1Model_1_1DataProvider"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a596882bd156384c9fa76303decccc354 inherit pro_methods_classBPMNOS_1_1Model_1_1DataProvider" id="r_a596882bd156384c9fa76303decccc354"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1DataProvider.html#a596882bd156384c9fa76303decccc354">evaluateGlobal</a> (const std::string &amp;initializationString, const LIMEX::Handle&lt; double &gt; &amp;handle)</td></tr>
+<tr class="memdesc:a596882bd156384c9fa76303decccc354 inherit pro_methods_classBPMNOS_1_1Model_1_1DataProvider"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluate a global attribute initialization from CSV.  <br /></td></tr>
+<tr class="separator:a596882bd156384c9fa76303decccc354 inherit pro_methods_classBPMNOS_1_1Model_1_1DataProvider"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad42450348d52fd012331417ab4a645d6 inherit pro_methods_classBPMNOS_1_1Model_1_1DataProvider" id="r_ad42450348d52fd012331417ab4a645d6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1DataProvider.html#ad42450348d52fd012331417ab4a645d6">evaluateExpression</a> (const std::string &amp;expressionString, const LIMEX::Handle&lt; double &gt; &amp;handle) const</td></tr>
+<tr class="memdesc:ad42450348d52fd012331417ab4a645d6 inherit pro_methods_classBPMNOS_1_1Model_1_1DataProvider"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluate an expression using the provided LIMEX handle.  <br /></td></tr>
+<tr class="separator:ad42450348d52fd012331417ab4a645d6 inherit pro_methods_classBPMNOS_1_1Model_1_1DataProvider"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ada9d993b8764a59a2dcde314d90321cc inherit pro_methods_classBPMNOS_1_1Model_1_1DataProvider" id="r_ada9d993b8764a59a2dcde314d90321cc"><td class="memTemplParams" colspan="2">template&lt;typename InstanceData &gt; </td></tr>
+<tr class="memitem:ada9d993b8764a59a2dcde314d90321cc inherit pro_methods_classBPMNOS_1_1Model_1_1DataProvider"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1DataProvider.html#ada9d993b8764a59a2dcde314d90321cc">ensureDefaultValue</a> (InstanceData &amp;instance, const std::string &amp;attributeId, std::optional&lt; <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> &gt; value=std::nullopt)</td></tr>
+<tr class="memdesc:ada9d993b8764a59a2dcde314d90321cc inherit pro_methods_classBPMNOS_1_1Model_1_1DataProvider"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ensure a default attribute value is set for an instance.  <br /></td></tr>
+<tr class="separator:ada9d993b8764a59a2dcde314d90321cc inherit pro_methods_classBPMNOS_1_1Model_1_1DataProvider"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a092f493150ed121dc50fd38c712627f6 inherit pro_methods_classBPMNOS_1_1Model_1_1DataProvider" id="r_a092f493150ed121dc50fd38c712627f6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1DataProvider.html#a092f493150ed121dc50fd38c712627f6">evaluateExpression</a> (size_t instanceId, const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a> *node, const std::string &amp;expressionString, <a class="el" href="namespaceBPMNOS.html#abd0d3034519d54779b4df3e9754cd681">ValueType</a> type, const LIMEX::Handle&lt; double &gt; &amp;handle) const</td></tr>
+<tr class="memdesc:a092f493150ed121dc50fd38c712627f6 inherit pro_methods_classBPMNOS_1_1Model_1_1DataProvider"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluate an expression in the context of a specific instance.  <br /></td></tr>
+<tr class="separator:a092f493150ed121dc50fd38c712627f6 inherit pro_methods_classBPMNOS_1_1Model_1_1DataProvider"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
+Protected Attributes</h2></td></tr>
+<tr class="memitem:a9461ee3d746dfd2e8eac4778223f53e9" id="r_a9461ee3d746dfd2e8eac4778223f53e9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classBPMNOS_1_1CSVReader.html">CSVReader</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1StochasticDataProvider.html#a9461ee3d746dfd2e8eac4778223f53e9">reader</a></td></tr>
+<tr class="separator:a9461ee3d746dfd2e8eac4778223f53e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae83a8c49651865989cc01aa0f429b43e" id="r_ae83a8c49651865989cc01aa0f429b43e"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1StochasticDataProvider.html#ae83a8c49651865989cc01aa0f429b43e">seed</a></td></tr>
+<tr class="separator:ae83a8c49651865989cc01aa0f429b43e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a1144154ebe860d076bc5bff025afe7" id="r_a3a1144154ebe860d076bc5bff025afe7"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1StochasticDataProvider.html#a3a1144154ebe860d076bc5bff025afe7">columnCount</a></td></tr>
+<tr class="separator:a3a1144154ebe860d076bc5bff025afe7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa15f685653fd6532977b8b155ef3b44f" id="r_aa15f685653fd6532977b8b155ef3b44f"><td class="memItemLeft" align="right" valign="top">LIMEX::Handle&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1StochasticDataProvider.html#aa15f685653fd6532977b8b155ef3b44f">stochasticHandle</a></td></tr>
+<tr class="memdesc:aa15f685653fd6532977b8b155ef3b44f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dedicated LIMEX handle with lookup tables + random functions.  <br /></td></tr>
+<tr class="separator:aa15f685653fd6532977b8b155ef3b44f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa5a9543f0aac84c310ee4cf14c8ecb90" id="r_aa5a9543f0aac84c310ee4cf14c8ecb90"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classBPMNOS_1_1RandomDistributionFactory.html">RandomDistributionFactory</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1StochasticDataProvider.html#aa5a9543f0aac84c310ee4cf14c8ecb90">randomFactory</a></td></tr>
+<tr class="memdesc:aa5a9543f0aac84c310ee4cf14c8ecb90"><td class="mdescLeft">&#160;</td><td class="mdescRight">Random distribution factory.  <br /></td></tr>
+<tr class="separator:aa5a9543f0aac84c310ee4cf14c8ecb90"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a63183c68a69693d5e1c60415163b441f" id="r_a63183c68a69693d5e1c60415163b441f"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; long unsigned int, <a class="el" href="structBPMNOS_1_1Model_1_1StochasticDataProvider_1_1StochasticInstanceData.html">StochasticInstanceData</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1StochasticDataProvider.html#a63183c68a69693d5e1c60415163b441f">instances</a></td></tr>
+<tr class="separator:a63183c68a69693d5e1c60415163b441f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7a53533143b9eeaa6c7f95e3ba72df79" id="r_a7a53533143b9eeaa6c7f95e3ba72df79"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; size_t, std::vector&lt; <a class="el" href="structBPMNOS_1_1Model_1_1StochasticDataProvider_1_1DeferredAttribute.html">DeferredAttribute</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1StochasticDataProvider.html#a7a53533143b9eeaa6c7f95e3ba72df79">deferredAttributes</a></td></tr>
+<tr class="memdesc:a7a53533143b9eeaa6c7f95e3ba72df79"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deferred attributes (evaluated per-scenario)  <br /></td></tr>
+<tr class="separator:a7a53533143b9eeaa6c7f95e3ba72df79"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f9b5daedda3853006f6293e5d1748e7" id="r_a1f9b5daedda3853006f6293e5d1748e7"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; size_t, std::unordered_map&lt; const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a> *, std::vector&lt; std::shared_ptr&lt; <a class="el" href="classBPMNOS_1_1Model_1_1Expression.html">Expression</a> &gt; &gt; &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1StochasticDataProvider.html#a1f9b5daedda3853006f6293e5d1748e7">readyExpressions</a></td></tr>
+<tr class="memdesc:a1f9b5daedda3853006f6293e5d1748e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ready expressions per (instance, node) - shared with scenarios.  <br /></td></tr>
+<tr class="separator:a1f9b5daedda3853006f6293e5d1748e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6589be37250d37cfe31857f31433337d" id="r_a6589be37250d37cfe31857f31433337d"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; size_t, std::unordered_map&lt; const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a> *, std::vector&lt; std::shared_ptr&lt; <a class="el" href="classBPMNOS_1_1Model_1_1Expression.html">Expression</a> &gt; &gt; &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1StochasticDataProvider.html#a6589be37250d37cfe31857f31433337d">completionExpressions</a></td></tr>
+<tr class="memdesc:a6589be37250d37cfe31857f31433337d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Completion expressions per (instance, node) - shared with scenarios.  <br /></td></tr>
+<tr class="separator:a6589be37250d37cfe31857f31433337d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a941a65c72a113b5b97e9f0fa60b20799" id="r_a941a65c72a113b5b97e9f0fa60b20799"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; size_t, std::unordered_map&lt; const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a> *, <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1StochasticDataProvider.html#a941a65c72a113b5b97e9f0fa60b20799">disclosureTimes</a></td></tr>
+<tr class="memdesc:a941a65c72a113b5b97e9f0fa60b20799"><td class="mdescLeft">&#160;</td><td class="mdescRight">Node disclosure times.  <br /></td></tr>
+<tr class="separator:a941a65c72a113b5b97e9f0fa60b20799"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pro_attribs_classBPMNOS_1_1Model_1_1DataProvider"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classBPMNOS_1_1Model_1_1DataProvider')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classBPMNOS_1_1Model_1_1DataProvider.html">BPMNOS::Model::DataProvider</a></td></tr>
+<tr class="memitem:afcc5033d8c547ef6ffeb35c31241171a inherit pro_attribs_classBPMNOS_1_1Model_1_1DataProvider" id="r_afcc5033d8c547ef6ffeb35c31241171a"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classBPMNOS_1_1Model_1_1Model.html">Model</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1DataProvider.html#afcc5033d8c547ef6ffeb35c31241171a">model</a></td></tr>
+<tr class="memdesc:afcc5033d8c547ef6ffeb35c31241171a inherit pro_attribs_classBPMNOS_1_1Model_1_1DataProvider"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pointer to the BPMN model.  <br /></td></tr>
+<tr class="separator:afcc5033d8c547ef6ffeb35c31241171a inherit pro_attribs_classBPMNOS_1_1Model_1_1DataProvider"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a27901913faf3fb9eb15d41b3e29b663c inherit pro_attribs_classBPMNOS_1_1Model_1_1DataProvider" id="r_a27901913faf3fb9eb15d41b3e29b663c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceBPMNOS_1_1Model.html#a3eb56353d86ae4c42f7c1060ced21ddc">DataInput</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1DataProvider.html#a27901913faf3fb9eb15d41b3e29b663c">attributes</a></td></tr>
+<tr class="memdesc:a27901913faf3fb9eb15d41b3e29b663c inherit pro_attribs_classBPMNOS_1_1Model_1_1DataProvider"><td class="mdescLeft">&#160;</td><td class="mdescRight">Map holding all attributes in the model with keys being the process (or nullptr for global attributes) and attribute id. TODO: Remove when old CSV format support is removed.  <br /></td></tr>
+<tr class="separator:a27901913faf3fb9eb15d41b3e29b663c inherit pro_attribs_classBPMNOS_1_1Model_1_1DataProvider"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf5053ae6b0cc2c3136ed0020ba05549 inherit pro_attribs_classBPMNOS_1_1Model_1_1DataProvider" id="r_acf5053ae6b0cc2c3136ed0020ba05549"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; const <a class="el" href="classBPMNOS_1_1Model_1_1Attribute.html">Attribute</a> *, <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1DataProvider.html#acf5053ae6b0cc2c3136ed0020ba05549">globalValueMap</a></td></tr>
+<tr class="memdesc:acf5053ae6b0cc2c3136ed0020ba05549 inherit pro_attribs_classBPMNOS_1_1Model_1_1DataProvider"><td class="mdescLeft">&#160;</td><td class="mdescRight">Map of global attributes to their evaluated values.  <br /></td></tr>
+<tr class="separator:acf5053ae6b0cc2c3136ed0020ba05549 inherit pro_attribs_classBPMNOS_1_1Model_1_1DataProvider"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a518ef8ddff61e0c12d230cf15e7f9cb3 inherit pro_attribs_classBPMNOS_1_1Model_1_1DataProvider" id="r_a518ef8ddff61e0c12d230cf15e7f9cb3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1DataProvider.html#a518ef8ddff61e0c12d230cf15e7f9cb3">earliestInstantiation</a> = std::numeric_limits&lt;<a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&gt;::max()</td></tr>
+<tr class="memdesc:a518ef8ddff61e0c12d230cf15e7f9cb3 inherit pro_attribs_classBPMNOS_1_1Model_1_1DataProvider"><td class="mdescLeft">&#160;</td><td class="mdescRight">Earliest instantiation time across all instances.  <br /></td></tr>
+<tr class="separator:a518ef8ddff61e0c12d230cf15e7f9cb3 inherit pro_attribs_classBPMNOS_1_1Model_1_1DataProvider"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae386253a93ad106d665bb3209dae6eb9 inherit pro_attribs_classBPMNOS_1_1Model_1_1DataProvider" id="r_ae386253a93ad106d665bb3209dae6eb9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1DataProvider.html#ae386253a93ad106d665bb3209dae6eb9">latestInstantiation</a> = std::numeric_limits&lt;<a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&gt;::min()</td></tr>
+<tr class="memdesc:ae386253a93ad106d665bb3209dae6eb9 inherit pro_attribs_classBPMNOS_1_1Model_1_1DataProvider"><td class="mdescLeft">&#160;</td><td class="mdescRight">Latest instantiation time across all instances.  <br /></td></tr>
+<tr class="separator:ae386253a93ad106d665bb3209dae6eb9 inherit pro_attribs_classBPMNOS_1_1Model_1_1DataProvider"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a59c796975d9f1db2152e3f87388820dc inherit pro_attribs_classBPMNOS_1_1Model_1_1DataProvider" id="r_a59c796975d9f1db2152e3f87388820dc"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; size_t, std::unordered_map&lt; const <a class="el" href="classBPMNOS_1_1Model_1_1Attribute.html">Attribute</a> *, <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1DataProvider.html#a59c796975d9f1db2152e3f87388820dc">parseTimeEvaluatedValues</a></td></tr>
+<tr class="separator:a59c796975d9f1db2152e3f87388820dc inherit pro_attribs_classBPMNOS_1_1Model_1_1DataProvider"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
+Additional Inherited Members</h2></td></tr>
+<tr class="inherit_header pro_static_methods_classBPMNOS_1_1Model_1_1DataProvider"><td colspan="2" onclick="javascript:toggleInherit('pro_static_methods_classBPMNOS_1_1Model_1_1DataProvider')"><img src="closed.png" alt="-"/>&#160;Static Protected Member Functions inherited from <a class="el" href="classBPMNOS_1_1Model_1_1DataProvider.html">BPMNOS::Model::DataProvider</a></td></tr>
+<tr class="memitem:a12fb27d2ac059f8e1490ecef2fb06876 inherit pro_static_methods_classBPMNOS_1_1Model_1_1DataProvider" id="r_a12fb27d2ac059f8e1490ecef2fb06876"><td class="memItemLeft" align="right" valign="top">static std::pair&lt; std::string, std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1DataProvider.html#a12fb27d2ac059f8e1490ecef2fb06876">parseInitialization</a> (const std::string &amp;initialization)</td></tr>
+<tr class="memdesc:a12fb27d2ac059f8e1490ecef2fb06876 inherit pro_static_methods_classBPMNOS_1_1Model_1_1DataProvider"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse an initialization string in the format "attribute := expression".  <br /></td></tr>
+<tr class="separator:a12fb27d2ac059f8e1490ecef2fb06876 inherit pro_static_methods_classBPMNOS_1_1Model_1_1DataProvider"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a1e1ab489622918e35dec0fcfcff06bfa" name="a1e1ab489622918e35dec0fcfcff06bfa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1e1ab489622918e35dec0fcfcff06bfa">&#9670;&#160;</a></span>StochasticDataProvider() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">StochasticDataProvider::StochasticDataProvider </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>modelFile</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>instanceFileOrString</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>seed</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="StochasticDataProvider_8cpp_source.html#l00012">12</a> of file <a class="el" href="StochasticDataProvider_8cpp_source.html">StochasticDataProvider.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a301152243e8b7a0330fe093a4ba1e209" name="a301152243e8b7a0330fe093a4ba1e209"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a301152243e8b7a0330fe093a4ba1e209">&#9670;&#160;</a></span>StochasticDataProvider() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">StochasticDataProvider::StochasticDataProvider </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>modelFile</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; std::string &gt; &amp;&#160;</td>
+          <td class="paramname"><em>folders</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>instanceFileOrString</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>seed</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="StochasticDataProvider_8cpp_source.html#l00019">19</a> of file <a class="el" href="StochasticDataProvider_8cpp_source.html">StochasticDataProvider.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a8edf6ea6e2c6e8abead126cbc27e5038" name="a8edf6ea6e2c6e8abead126cbc27e5038"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8edf6ea6e2c6e8abead126cbc27e5038">&#9670;&#160;</a></span>StochasticDataProvider() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">StochasticDataProvider::StochasticDataProvider </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structBPMNOS_1_1Model_1_1Input.html">Input</a>&#160;</td>
+          <td class="paramname"><em>input</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>seed</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">input</td><td>The parsed model, lookup table content, and instance content. </td></tr>
+    <tr><td class="paramname">seed</td><td>The seed for the random number generator. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="StochasticDataProvider_8cpp_source.html#l00035">35</a> of file <a class="el" href="StochasticDataProvider_8cpp_source.html">StochasticDataProvider.cpp</a>.</p>
+
+</div>
+</div>
+<a id="af210018cde53d6bfc86bd6876c6979de" name="af210018cde53d6bfc86bd6876c6979de"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af210018cde53d6bfc86bd6876c6979de">&#9670;&#160;</a></span>~StochasticDataProvider()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">BPMNOS::Model::StochasticDataProvider::~StochasticDataProvider </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="acb9dfd001c5a434160f7fefa25483fc5" name="acb9dfd001c5a434160f7fefa25483fc5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb9dfd001c5a434160f7fefa25483fc5">&#9670;&#160;</a></span>createScenario()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html">Scenario</a> &gt; StochasticDataProvider::createScenario </td>
+          <td>(</td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>scenarioId</em> = <code>0</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classBPMNOS_1_1Model_1_1DataProvider.html#a826148b37f8c4cdf39856a0e6e5f0bcc">BPMNOS::Model::DataProvider</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="StochasticDataProvider_8cpp_source.html#l00285">285</a> of file <a class="el" href="StochasticDataProvider_8cpp_source.html">StochasticDataProvider.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a83a1c4f3b17768d1c7e373235f9e3905" name="a83a1c4f3b17768d1c7e373235f9e3905"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a83a1c4f3b17768d1c7e373235f9e3905">&#9670;&#160;</a></span>evaluateExpression() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> StochasticDataProvider::evaluateExpression </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>expressionString</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">protected</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Uses model-&gt;limexHandle by default. Override if a different handle is needed.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">expressionString</td><td>The expression to evaluate. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The evaluated numeric value. </dd></dl>
+
+<p>Reimplemented from <a class="el" href="classBPMNOS_1_1Model_1_1DataProvider.html#a914f879deb57c1b41ef64d8cac04c706">BPMNOS::Model::DataProvider</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="StochasticDataProvider_8cpp_source.html#l00248">248</a> of file <a class="el" href="StochasticDataProvider_8cpp_source.html">StochasticDataProvider.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a3d1e9847b5cce9d0adaf7f429d734106" name="a3d1e9847b5cce9d0adaf7f429d734106"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3d1e9847b5cce9d0adaf7f429d734106">&#9670;&#160;</a></span>evaluateExpression() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> StochasticDataProvider::evaluateExpression </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>instanceId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a> *&#160;</td>
+          <td class="paramname"><em>node</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>expressionString</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceBPMNOS.html#abd0d3034519d54779b4df3e9754cd681">ValueType</a>&#160;</td>
+          <td class="paramname"><em>type</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">protected</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">instanceId</td><td>The instance ID for context lookup. </td></tr>
+    <tr><td class="paramname">node</td><td>The node whose attributeRegistry to use. </td></tr>
+    <tr><td class="paramname">expressionString</td><td>The expression to evaluate. </td></tr>
+    <tr><td class="paramname">type</td><td>The target value type for conversion. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The evaluated and type-converted numeric value. </dd></dl>
+
+<p>Reimplemented from <a class="el" href="classBPMNOS_1_1Model_1_1DataProvider.html#a2af2eea71dc50f09c624c8d52670eaa3">BPMNOS::Model::DataProvider</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="StochasticDataProvider_8cpp_source.html#l00256">256</a> of file <a class="el" href="StochasticDataProvider_8cpp_source.html">StochasticDataProvider.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a2483c361c53d88eea5a9a00f1ec59886" name="a2483c361c53d88eea5a9a00f1ec59886"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2483c361c53d88eea5a9a00f1ec59886">&#9670;&#160;</a></span>evaluateGlobal()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void StochasticDataProvider::evaluateGlobal </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>initializationString</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">protected</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reimplemented from <a class="el" href="classBPMNOS_1_1Model_1_1DataProvider.html#a61b09a40be33a625e1be9b6218aa230f">BPMNOS::Model::DataProvider</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="StochasticDataProvider_8cpp_source.html#l00252">252</a> of file <a class="el" href="StochasticDataProvider_8cpp_source.html">StochasticDataProvider.cpp</a>.</p>
+
+</div>
+</div>
+<a id="aa0c8bea17d75d03fbe907e2c521dd4d4" name="aa0c8bea17d75d03fbe907e2c521dd4d4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa0c8bea17d75d03fbe907e2c521dd4d4">&#9670;&#160;</a></span>getEffectiveDisclosure()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> StochasticDataProvider::getEffectiveDisclosure </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>instanceId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a> *&#160;</td>
+          <td class="paramname"><em>node</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td>
+          <td class="paramname"><em>ownDisclosure</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="StochasticDataProvider_8cpp_source.html#l00264">264</a> of file <a class="el" href="StochasticDataProvider_8cpp_source.html">StochasticDataProvider.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a2ff1c8cad8c4a6016f48e8338ed54293" name="a2ff1c8cad8c4a6016f48e8338ed54293"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2ff1c8cad8c4a6016f48e8338ed54293">&#9670;&#160;</a></span>getStochasticHandle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const LIMEX::Handle&lt; double &gt; &amp; BPMNOS::Model::StochasticDataProvider::getStochasticHandle </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="StochasticDataProvider_8h_source.html#l00051">51</a> of file <a class="el" href="StochasticDataProvider_8h_source.html">StochasticDataProvider.h</a>.</p>
+
+</div>
+</div>
+<a id="af7540ac4b744e509f0d251067f0a0c62" name="af7540ac4b744e509f0d251067f0a0c62"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af7540ac4b744e509f0d251067f0a0c62">&#9670;&#160;</a></span>initializeStochasticHandle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void StochasticDataProvider::initializeStochasticHandle </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="StochasticDataProvider_8cpp_source.html#l00048">48</a> of file <a class="el" href="StochasticDataProvider_8cpp_source.html">StochasticDataProvider.cpp</a>.</p>
+
+</div>
+</div>
+<a id="aab5d989bb3d479e7656e7bd6e09ffa07" name="aab5d989bb3d479e7656e7bd6e09ffa07"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aab5d989bb3d479e7656e7bd6e09ffa07">&#9670;&#160;</a></span>readInstances()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void StochasticDataProvider::readInstances </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="StochasticDataProvider_8cpp_source.html#l00061">61</a> of file <a class="el" href="StochasticDataProvider_8cpp_source.html">StochasticDataProvider.cpp</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="a3a1144154ebe860d076bc5bff025afe7" name="a3a1144154ebe860d076bc5bff025afe7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a1144154ebe860d076bc5bff025afe7">&#9670;&#160;</a></span>columnCount</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t BPMNOS::Model::StochasticDataProvider::columnCount</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="StochasticDataProvider_8h_source.html#l00056">56</a> of file <a class="el" href="StochasticDataProvider_8h_source.html">StochasticDataProvider.h</a>.</p>
+
+</div>
+</div>
+<a id="a6589be37250d37cfe31857f31433337d" name="a6589be37250d37cfe31857f31433337d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6589be37250d37cfe31857f31433337d">&#9670;&#160;</a></span>completionExpressions</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unordered_map&lt;size_t, std::unordered_map&lt;const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a>*, std::vector&lt;std::shared_ptr&lt;<a class="el" href="classBPMNOS_1_1Model_1_1Expression.html">Expression</a>&gt; &gt; &gt; &gt; BPMNOS::Model::StochasticDataProvider::completionExpressions</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="StochasticDataProvider_8h_source.html#l00091">91</a> of file <a class="el" href="StochasticDataProvider_8h_source.html">StochasticDataProvider.h</a>.</p>
+
+</div>
+</div>
+<a id="a7a53533143b9eeaa6c7f95e3ba72df79" name="a7a53533143b9eeaa6c7f95e3ba72df79"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7a53533143b9eeaa6c7f95e3ba72df79">&#9670;&#160;</a></span>deferredAttributes</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unordered_map&lt;size_t, std::vector&lt;<a class="el" href="structBPMNOS_1_1Model_1_1StochasticDataProvider_1_1DeferredAttribute.html">DeferredAttribute</a>&gt; &gt; BPMNOS::Model::StochasticDataProvider::deferredAttributes</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="StochasticDataProvider_8h_source.html#l00085">85</a> of file <a class="el" href="StochasticDataProvider_8h_source.html">StochasticDataProvider.h</a>.</p>
+
+</div>
+</div>
+<a id="a941a65c72a113b5b97e9f0fa60b20799" name="a941a65c72a113b5b97e9f0fa60b20799"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a941a65c72a113b5b97e9f0fa60b20799">&#9670;&#160;</a></span>disclosureTimes</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unordered_map&lt;size_t, std::unordered_map&lt;const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a>*, <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&gt; &gt; BPMNOS::Model::StochasticDataProvider::disclosureTimes</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="StochasticDataProvider_8h_source.html#l00094">94</a> of file <a class="el" href="StochasticDataProvider_8h_source.html">StochasticDataProvider.h</a>.</p>
+
+</div>
+</div>
+<a id="a63183c68a69693d5e1c60415163b441f" name="a63183c68a69693d5e1c60415163b441f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a63183c68a69693d5e1c60415163b441f">&#9670;&#160;</a></span>instances</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unordered_map&lt;long unsigned int, <a class="el" href="structBPMNOS_1_1Model_1_1StochasticDataProvider_1_1StochasticInstanceData.html">StochasticInstanceData</a>&gt; BPMNOS::Model::StochasticDataProvider::instances</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="StochasticDataProvider_8h_source.html#l00082">82</a> of file <a class="el" href="StochasticDataProvider_8h_source.html">StochasticDataProvider.h</a>.</p>
+
+</div>
+</div>
+<a id="aa5a9543f0aac84c310ee4cf14c8ecb90" name="aa5a9543f0aac84c310ee4cf14c8ecb90"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa5a9543f0aac84c310ee4cf14c8ecb90">&#9670;&#160;</a></span>randomFactory</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classBPMNOS_1_1RandomDistributionFactory.html">RandomDistributionFactory</a> BPMNOS::Model::StochasticDataProvider::randomFactory</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="StochasticDataProvider_8h_source.html#l00062">62</a> of file <a class="el" href="StochasticDataProvider_8h_source.html">StochasticDataProvider.h</a>.</p>
+
+</div>
+</div>
+<a id="a9461ee3d746dfd2e8eac4778223f53e9" name="a9461ee3d746dfd2e8eac4778223f53e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9461ee3d746dfd2e8eac4778223f53e9">&#9670;&#160;</a></span>reader</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classBPMNOS_1_1CSVReader.html">CSVReader</a> BPMNOS::Model::StochasticDataProvider::reader</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="StochasticDataProvider_8h_source.html#l00054">54</a> of file <a class="el" href="StochasticDataProvider_8h_source.html">StochasticDataProvider.h</a>.</p>
+
+</div>
+</div>
+<a id="a1f9b5daedda3853006f6293e5d1748e7" name="a1f9b5daedda3853006f6293e5d1748e7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1f9b5daedda3853006f6293e5d1748e7">&#9670;&#160;</a></span>readyExpressions</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unordered_map&lt;size_t, std::unordered_map&lt;const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a>*, std::vector&lt;std::shared_ptr&lt;<a class="el" href="classBPMNOS_1_1Model_1_1Expression.html">Expression</a>&gt; &gt; &gt; &gt; BPMNOS::Model::StochasticDataProvider::readyExpressions</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="StochasticDataProvider_8h_source.html#l00088">88</a> of file <a class="el" href="StochasticDataProvider_8h_source.html">StochasticDataProvider.h</a>.</p>
+
+</div>
+</div>
+<a id="ae83a8c49651865989cc01aa0f429b43e" name="ae83a8c49651865989cc01aa0f429b43e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae83a8c49651865989cc01aa0f429b43e">&#9670;&#160;</a></span>seed</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned int BPMNOS::Model::StochasticDataProvider::seed</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="StochasticDataProvider_8h_source.html#l00055">55</a> of file <a class="el" href="StochasticDataProvider_8h_source.html">StochasticDataProvider.h</a>.</p>
+
+</div>
+</div>
+<a id="aa15f685653fd6532977b8b155ef3b44f" name="aa15f685653fd6532977b8b155ef3b44f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa15f685653fd6532977b8b155ef3b44f">&#9670;&#160;</a></span>stochasticHandle</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">LIMEX::Handle&lt;double&gt; BPMNOS::Model::StochasticDataProvider::stochasticHandle</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="StochasticDataProvider_8h_source.html#l00059">59</a> of file <a class="el" href="StochasticDataProvider_8h_source.html">StochasticDataProvider.h</a>.</p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>model/data/src/<a class="el" href="StochasticDataProvider_8h_source.html">StochasticDataProvider.h</a></li>
+<li>model/data/src/<a class="el" href="StochasticDataProvider_8cpp_source.html">StochasticDataProvider.cpp</a></li>
+</ul>
+</div><!-- contents -->
+</div><!-- doc-content -->
+<script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs"; mermaid.initialize({ startOnLoad: true, theme: "neutral" });</script></body></html>

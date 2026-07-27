@@ -1,0 +1,408 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<!-- BEGIN opengraph metadata -->
+<meta property="og:title" content="Doxygen Awesome" />
+<meta property="og:image" content="https://repository-images.githubusercontent.com/348492097/4f16df80-88fb-11eb-9d31-4015ff22c452" />
+<meta property="og:description" content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
+<meta property="og:url" content="https://jothepro.github.io/doxygen-awesome-css/" />
+<!-- END opengraph metadata -->
+<!-- BEGIN twitter metadata -->
+<meta name="twitter:image:src" content="https://repository-images.githubusercontent.com/348492097/4f16df80-88fb-11eb-9d31-4015ff22c452" />
+<meta name="twitter:title" content="Doxygen Awesome" />
+<meta name="twitter:description" content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
+<!-- END twitter metadata -->
+<title>BPMN-OS: model/data/src/DataProvider.h Source File</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript" src="doxygen-awesome-interactive-toc.js"></script>
+<script type="text/javascript" src="doxygen-awesome-tabs.js"></script>
+<script type="text/javascript" src="toggle-alternative-theme.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeParagraphLink.init()
+    DoxygenAwesomeInteractiveToc.init()
+    DoxygenAwesomeTabs.init()
+</script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="custom.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<link href="custom-alternative.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<!-- https://tholman.com/github-corners/ -->
+<a href="https://github.com/bpmn-os/bpmnos-engine" class="github-corner" title="View source on GitHub" target="_blank" rel="noopener noreferrer">
+    <svg viewBox="0 0 250 250" width="40" height="40" style="position: absolute; top: 0; border: 0; right: 0; z-index: 99;" aria-hidden="true">
+    <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="BPMNOS.svg"/></td>
+  <td id="projectalign" style="padding-left: 0.5em;">
+   <div id="projectname">BPMN-OS
+   </div>
+   <div id="projectbrief">BPMN for optimization and simulation</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() {
+  initMenu('',true,false,'search.php','Search');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */
+</script>
+<div id="main-nav"></div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(document).ready(function() { init_codefold(0); });
+/* @license-end */
+</script>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(document).ready(function(){initNavTree('DataProvider_8h_source.html',''); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">DataProvider.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="DataProvider_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef BPMNOS_Model_DataProvider_H</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define BPMNOS_Model_DataProvider_H</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;cassert&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;unordered_map&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;limits&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;bpmn++.h&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;limex.h&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &quot;<a class="code" href="Number_8h.html">model/utility/src/Number.h</a>&quot;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &quot;<a class="code" href="StringRegistry_8h.html">model/utility/src/StringRegistry.h</a>&quot;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &quot;<a class="code" href="Keywords_8h.html">model/utility/src/Keywords.h</a>&quot;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &quot;<a class="code" href="Model_8h.html">model/bpmnos/src/Model.h</a>&quot;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &quot;<a class="code" href="Attribute_8h.html">model/bpmnos/src/extensionElements/Attribute.h</a>&quot;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &quot;<a class="code" href="ExtensionElements_8h.html">model/bpmnos/src/extensionElements/ExtensionElements.h</a>&quot;</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &quot;<a class="code" href="Expression_8h.html">model/bpmnos/src/extensionElements/Expression.h</a>&quot;</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &quot;<a class="code" href="Input_8h.html">Input.h</a>&quot;</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &quot;<a class="code" href="Scenario_8h.html">Scenario.h</a>&quot;</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceBPMNOS_1_1Model.html">BPMNOS::Model</a> {</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="comment"></span> </div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="comment">/**</span></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="comment"> * @brief Abstract base class representing a data provider for BPMN instance data.</span></div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="comment"> *</span></div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="comment"> * The DataProvider class is responsible for providing and managing instance data</span></div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="comment"> * for BPMN processes. </span></div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="comment"> */</span></div>
+<div class="foldopen" id="foldopen00030" data-start="{" data-end="};">
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1Model_1_1DataProvider.html">   30</a></span><span class="keyword">class </span><a class="code hl_class" href="classBPMNOS_1_1Model_1_1DataProvider.html">DataProvider</a> {</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="keyword">public</span>:<span class="comment"></span></div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span><span class="comment">  /**</span></div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="comment">   * @brief Constructor for DataProvider.</span></div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span><span class="comment">   *</span></div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="comment">   * @param modelFile The file path to the BPMN model file.</span></div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="comment">   * @param folders The folder names in which lookup tables can be found.</span></div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span><span class="comment">   */</span></div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>  <a class="code hl_class" href="classBPMNOS_1_1Model_1_1DataProvider.html">DataProvider</a>(<span class="keyword">const</span> std::string&amp; modelFile, <span class="keyword">const</span> std::vector&lt;std::string&gt;&amp; folders);</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span><span class="comment"></span> </div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span><span class="comment">  /**</span></div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><span class="comment">   * @brief Constructor for DataProvider building the model from in-memory content.</span></div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span><span class="comment">   *</span></div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span><span class="comment">   * @param model The parsed BPMN model tree.</span></div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span><span class="comment">   * @param lookupTables Lookup table CSV content keyed by source file name.</span></div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span><span class="comment">   */</span></div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>  <a class="code hl_class" href="classBPMNOS_1_1Model_1_1DataProvider.html">DataProvider</a>(std::unique_ptr&lt;XML::XMLObject&gt; <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1DataProvider.html#afcc5033d8c547ef6ffeb35c31241171a">model</a>, std::unordered_map&lt;std::string, std::string&gt; lookupTables);</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>  <span class="keyword">virtual</span> <a class="code hl_function" href="classBPMNOS_1_1Model_1_1DataProvider.html#a8cf9cbf6df5b5981aba7ee9e933f7fc9">~DataProvider</a>() = 0;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>  <span class="keyword">const</span> <a class="code hl_class" href="classBPMNOS_1_1Model_1_1Model.html">Model</a>&amp; <a class="code hl_function" href="classBPMNOS_1_1Model_1_1DataProvider.html#af352c2193844109f607c98293e3303da">getModel</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1Model_1_1DataProvider.html#a826148b37f8c4cdf39856a0e6e5f0bcc">   50</a></span>  <span class="keyword">virtual</span> std::unique_ptr&lt;Scenario&gt; <a class="code hl_function" href="classBPMNOS_1_1Model_1_1DataProvider.html#a826148b37f8c4cdf39856a0e6e5f0bcc">createScenario</a>(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> scenarioId = 0) = 0;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span><span class="keyword">private</span>:<span class="comment"></span></div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span><span class="comment">  /// @brief Delegating constructor holding the shared post-build setup. Both public constructors</span></div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span><span class="comment">  ///        build the Model and delegate here.</span></div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span><span class="comment"></span>  <span class="keyword">explicit</span> <a class="code hl_class" href="classBPMNOS_1_1Model_1_1DataProvider.html">DataProvider</a>(std::unique_ptr&lt;Model&gt; <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1DataProvider.html#afcc5033d8c547ef6ffeb35c31241171a">model</a>);</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span><span class="keyword">protected</span>:</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1Model_1_1DataProvider.html#afcc5033d8c547ef6ffeb35c31241171a">   58</a></span>  std::unique_ptr&lt;Model&gt; <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1DataProvider.html#afcc5033d8c547ef6ffeb35c31241171a">model</a>;  <span class="comment">///&lt; Pointer to the BPMN model.</span></div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1Model_1_1DataProvider.html#a27901913faf3fb9eb15d41b3e29b663c">   60</a></span>  <a class="code hl_typedef" href="namespaceBPMNOS_1_1Model.html#a3eb56353d86ae4c42f7c1060ced21ddc">DataInput</a> <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1DataProvider.html#a27901913faf3fb9eb15d41b3e29b663c">attributes</a>; <span class="comment">///&lt; Map holding all attributes in the model with keys being the process (or nullptr for global attributes) and attribute id. TODO: Remove when old CSV format support is removed.</span></div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>  <a class="code hl_classRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a>* <a class="code hl_function" href="classBPMNOS_1_1Model_1_1DataProvider.html#a4095ffbd0b81e5d6b46b761f4d350f58">findNode</a>(<span class="keyword">const</span> std::string&amp; nodeId) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span><span class="comment"></span> </div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span><span class="comment">  /**</span></div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span><span class="comment">   * @brief Parse an initialization string in the format &quot;attribute := expression&quot;.</span></div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span><span class="comment">   *</span></div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span><span class="comment">   * @param initialization The initialization string to parse.</span></div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span><span class="comment">   * @return A pair containing the attribute name and expression string.</span></div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span><span class="comment">   */</span></div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>  <span class="keyword">static</span> std::pair&lt;std::string, std::string&gt; <a class="code hl_function" href="classBPMNOS_1_1Model_1_1DataProvider.html#a12fb27d2ac059f8e1490ecef2fb06876">parseInitialization</a>(</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>      <span class="keyword">const</span> std::string&amp; initialization);</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span><span class="comment"></span> </div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span><span class="comment">  /**</span></div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span><span class="comment">   * @brief Look up an attribute from an initialization string.</span></div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span><span class="comment">   *</span></div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span><span class="comment">   * Parses the initialization, finds the attribute in the node&#39;s attributeRegistry,</span></div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span><span class="comment">   * and validates it doesn&#39;t have a model expression.</span></div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span><span class="comment">   *</span></div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span><span class="comment">   * @param node The node whose attributeRegistry to search.</span></div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span><span class="comment">   * @param initializationString The initialization in &quot;attribute := expression&quot; format.</span></div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span><span class="comment">   * @return A pair containing the attribute pointer and the expression string.</span></div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span><span class="comment">   */</span></div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>  std::pair&lt;const Attribute*, std::string&gt; <a class="code hl_function" href="classBPMNOS_1_1Model_1_1DataProvider.html#a39536a5d0a0d8371681e0211a08023c2">lookupAttribute</a>(</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>      <span class="keyword">const</span> <a class="code hl_classRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a>* node,</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>      <span class="keyword">const</span> std::string&amp; initializationString) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span><span class="comment"></span> </div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span><span class="comment">  /**</span></div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span><span class="comment">   * @brief Evaluate a global attribute initialization from CSV.</span></div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span><span class="comment">   *</span></div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span><span class="comment">   * Parses the initialization string, finds the global attribute, validates it</span></div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span><span class="comment">   * doesn&#39;t have a model expression, evaluates the expression, and stores the</span></div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span><span class="comment">   * result in globalValueMap.</span></div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span><span class="comment">   *</span></div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span><span class="comment">   * @param initializationString The initialization in &quot;attribute := expression&quot; format.</span></div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span><span class="comment">   * @param handle The LIMEX handle to use for expression compilation.</span></div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span><span class="comment">   */</span></div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classBPMNOS_1_1Model_1_1DataProvider.html#a596882bd156384c9fa76303decccc354">evaluateGlobal</a>(<span class="keyword">const</span> std::string&amp; initializationString,</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>                      <span class="keyword">const</span> LIMEX::Handle&lt;double&gt;&amp; handle);</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span><span class="comment"></span> </div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span><span class="comment">  /**</span></div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span><span class="comment">   * @brief Evaluate a global attribute initialization using the default handle.</span></div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span><span class="comment">   */</span></div>
+<div class="foldopen" id="foldopen00103" data-start="{" data-end="}">
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1Model_1_1DataProvider.html#a61b09a40be33a625e1be9b6218aa230f">  103</a></span>  <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classBPMNOS_1_1Model_1_1DataProvider.html#a61b09a40be33a625e1be9b6218aa230f">evaluateGlobal</a>(<span class="keyword">const</span> std::string&amp; initializationString) {</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <a class="code hl_function" href="classBPMNOS_1_1Model_1_1DataProvider.html#a596882bd156384c9fa76303decccc354">evaluateGlobal</a>(initializationString, <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1DataProvider.html#afcc5033d8c547ef6ffeb35c31241171a">model</a>-&gt;limexHandle);</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>  }</div>
+</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span><span class="comment"></span> </div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span><span class="comment">  /**</span></div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span><span class="comment">   * @brief Evaluate an expression using the provided LIMEX handle.</span></div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span><span class="comment">   *</span></div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span><span class="comment">   * @param expressionString The expression to evaluate.</span></div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span><span class="comment">   * @param handle The LIMEX handle to use for evaluation.</span></div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span><span class="comment">   * @return The evaluated numeric value.</span></div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span><span class="comment">   */</span></div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>  <a class="code hl_typedef" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> <a class="code hl_function" href="classBPMNOS_1_1Model_1_1DataProvider.html#ad42450348d52fd012331417ab4a645d6">evaluateExpression</a>(</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>      <span class="keyword">const</span> std::string&amp; expressionString,</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>      <span class="keyword">const</span> LIMEX::Handle&lt;double&gt;&amp; handle) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span><span class="comment"></span> </div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span><span class="comment">  /**</span></div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span><span class="comment">   * @brief Evaluate an expression using the provider&#39;s default handle.</span></div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span><span class="comment">   *</span></div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span><span class="comment">   * Uses model-&gt;limexHandle by default. Override if a different handle is needed.</span></div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span><span class="comment">   *</span></div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span><span class="comment">   * @param expressionString The expression to evaluate.</span></div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span><span class="comment">   * @return The evaluated numeric value.</span></div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span><span class="comment">   */</span></div>
+<div class="foldopen" id="foldopen00126" data-start="{" data-end="}">
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1Model_1_1DataProvider.html#a914f879deb57c1b41ef64d8cac04c706">  126</a></span>  <span class="keyword">virtual</span> <a class="code hl_typedef" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> <a class="code hl_function" href="classBPMNOS_1_1Model_1_1DataProvider.html#a914f879deb57c1b41ef64d8cac04c706">evaluateExpression</a>(<span class="keyword">const</span> std::string&amp; expressionString)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classBPMNOS_1_1Model_1_1DataProvider.html#ad42450348d52fd012331417ab4a645d6">evaluateExpression</a>(expressionString, <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1DataProvider.html#afcc5033d8c547ef6ffeb35c31241171a">model</a>-&gt;limexHandle);</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>  }</div>
+</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span><span class="comment"></span> </div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span><span class="comment">  /**</span></div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span><span class="comment">   * @brief Ensure a default attribute value is set for an instance.</span></div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span><span class="comment">   *</span></div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span><span class="comment">   * @tparam InstanceData Type with .process and .data members.</span></div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span><span class="comment">   * @param instance The instance data to check/update.</span></div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span><span class="comment">   * @param attributeId The attribute ID to ensure.</span></div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span><span class="comment">   * @param value Optional value to set if attribute is missing.</span></div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span><span class="comment">   */</span></div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>  <span class="keyword">template</span>&lt;<span class="keyword">typename</span> InstanceData&gt;</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classBPMNOS_1_1Model_1_1DataProvider.html#ada9d993b8764a59a2dcde314d90321cc">ensureDefaultValue</a>(InstanceData&amp; instance, <span class="keyword">const</span> std::string&amp; attributeId,</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>                          std::optional&lt;BPMNOS::number&gt; value = std::nullopt);</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span><span class="comment"></span> </div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span><span class="comment">  /// Map of global attributes to their evaluated values.</span></div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1Model_1_1DataProvider.html#acf5053ae6b0cc2c3136ed0020ba05549">  143</a></span><span class="comment"></span>  std::unordered_map&lt;const Attribute*, BPMNOS::number&gt; <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1DataProvider.html#acf5053ae6b0cc2c3136ed0020ba05549">globalValueMap</a>;</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span><span class="comment"></span> </div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span><span class="comment">  /// Earliest instantiation time across all instances.</span></div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1Model_1_1DataProvider.html#a518ef8ddff61e0c12d230cf15e7f9cb3">  146</a></span><span class="comment"></span>  <a class="code hl_typedef" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1DataProvider.html#a518ef8ddff61e0c12d230cf15e7f9cb3">earliestInstantiation</a> = std::numeric_limits&lt;BPMNOS::number&gt;::max();</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span><span class="comment"></span> </div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span><span class="comment">  /// Latest instantiation time across all instances.</span></div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1Model_1_1DataProvider.html#ae386253a93ad106d665bb3209dae6eb9">  149</a></span><span class="comment"></span>  <a class="code hl_typedef" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1DataProvider.html#ae386253a93ad106d665bb3209dae6eb9">latestInstantiation</a> = std::numeric_limits&lt;BPMNOS::number&gt;::min();</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span><span class="comment"></span> </div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span><span class="comment">  /// Per-instance tracking of parse-time evaluated attributes.</span></div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span><span class="comment">  /// Key: instanceId, Value: map of attribute -&gt; evaluated value.</span></div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span><span class="comment">  /// Used to allow CSV expressions to reference previously-evaluated attributes.</span></div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1Model_1_1DataProvider.html#a59c796975d9f1db2152e3f87388820dc">  154</a></span><span class="comment"></span>  std::unordered_map&lt;size_t, std::unordered_map&lt;const Attribute*, BPMNOS::number&gt;&gt; <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1DataProvider.html#a59c796975d9f1db2152e3f87388820dc">parseTimeEvaluatedValues</a>;</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span><span class="comment"></span> </div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span><span class="comment">  /**</span></div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span><span class="comment">   * @brief Evaluate an expression in the context of a specific instance.</span></div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span><span class="comment">   *</span></div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span><span class="comment">   * This method allows CSV expressions to reference:</span></div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span><span class="comment">   * - Global attributes (if already evaluated)</span></div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span><span class="comment">   * - Status/data attributes from the same instance (if previously parse-time evaluated)</span></div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span><span class="comment">   *</span></div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span><span class="comment">   * @param instanceId The instance ID for context lookup.</span></div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span><span class="comment">   * @param node The node whose attributeRegistry to use for compilation.</span></div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span><span class="comment">   * @param expressionString The expression to evaluate.</span></div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span><span class="comment">   * @param type The target value type for conversion.</span></div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span><span class="comment">   * @param handle The LIMEX handle to use for compilation.</span></div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span><span class="comment">   * @return The evaluated and type-converted numeric value.</span></div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span><span class="comment">   */</span></div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>  <a class="code hl_typedef" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> <a class="code hl_function" href="classBPMNOS_1_1Model_1_1DataProvider.html#ad42450348d52fd012331417ab4a645d6">evaluateExpression</a>(</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>      <span class="keywordtype">size_t</span> instanceId,</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>      <span class="keyword">const</span> <a class="code hl_classRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a>* node,</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>      <span class="keyword">const</span> std::string&amp; expressionString,</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>      <a class="code hl_enumeration" href="namespaceBPMNOS.html#abd0d3034519d54779b4df3e9754cd681">ValueType</a> type,</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>      <span class="keyword">const</span> LIMEX::Handle&lt;double&gt;&amp; handle) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span><span class="comment"></span> </div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span><span class="comment">  /**</span></div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span><span class="comment">   * @brief Evaluate an expression for an instance using the default handle.</span></div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span><span class="comment">   *</span></div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span><span class="comment">   * @param instanceId The instance ID for context lookup.</span></div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span><span class="comment">   * @param node The node whose attributeRegistry to use.</span></div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span><span class="comment">   * @param expressionString The expression to evaluate.</span></div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span><span class="comment">   * @param type The target value type for conversion.</span></div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span><span class="comment">   * @return The evaluated and type-converted numeric value.</span></div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span><span class="comment">   */</span></div>
+<div class="foldopen" id="foldopen00186" data-start="{" data-end="}">
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1Model_1_1DataProvider.html#a2af2eea71dc50f09c624c8d52670eaa3">  186</a></span>  <span class="keyword">virtual</span> <a class="code hl_typedef" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> <a class="code hl_function" href="classBPMNOS_1_1Model_1_1DataProvider.html#a2af2eea71dc50f09c624c8d52670eaa3">evaluateExpression</a>(</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>      <span class="keywordtype">size_t</span> instanceId,</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>      <span class="keyword">const</span> <a class="code hl_classRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a>* node,</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>      <span class="keyword">const</span> std::string&amp; expressionString,</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>      <a class="code hl_enumeration" href="namespaceBPMNOS.html#abd0d3034519d54779b4df3e9754cd681">ValueType</a> type)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classBPMNOS_1_1Model_1_1DataProvider.html#ad42450348d52fd012331417ab4a645d6">evaluateExpression</a>(instanceId, node, expressionString, type, <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1DataProvider.html#afcc5033d8c547ef6ffeb35c31241171a">model</a>-&gt;limexHandle);</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>  }</div>
+</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>};</div>
+</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span> </div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> InstanceData&gt;</div>
+<div class="foldopen" id="foldopen00196" data-start="{" data-end="}">
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1Model_1_1DataProvider.html#ada9d993b8764a59a2dcde314d90321cc">  196</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classBPMNOS_1_1Model_1_1DataProvider.html#ada9d993b8764a59a2dcde314d90321cc">DataProvider::ensureDefaultValue</a>(InstanceData&amp; instance, <span class="keyword">const</span> std::string&amp; attributeId,</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>                                       std::optional&lt;BPMNOS::number&gt; value) {</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>  assert(<a class="code hl_variable" href="classBPMNOS_1_1Model_1_1DataProvider.html#a27901913faf3fb9eb15d41b3e29b663c">attributes</a>.contains(instance.process));</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>  <span class="keyword">auto</span> it1 = <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1DataProvider.html#a27901913faf3fb9eb15d41b3e29b663c">attributes</a>.at(instance.process).find(attributeId);</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>  <span class="keywordflow">if</span> (it1 == <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1DataProvider.html#a27901913faf3fb9eb15d41b3e29b663c">attributes</a>.at(instance.process).end()) {</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;DataProvider: unable to find required attribute &#39;&quot;</span> +</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>                             attributeId + <span class="stringliteral">&quot;&#39; for process &#39;&quot;</span> + instance.process-&gt;id + <span class="stringliteral">&quot;&#39;&quot;</span>);</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>  }</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>  <span class="keyword">auto</span> attribute = it1-&gt;second;</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>  <span class="keywordflow">if</span> (<span class="keyword">auto</span> it2 = instance.data.find(attribute); it2 == instance.data.end()) {</div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>    <span class="keywordflow">if</span> (attribute-&gt;expression) {</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>      <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;DataProvider: initial value of default attribute &#39;&quot;</span> +</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>                               attribute-&gt;id + <span class="stringliteral">&quot;&#39; must not be provided by expression&quot;</span>);</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>    }</div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span> </div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>    <span class="keywordflow">if</span> (value.has_value()) {</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>      instance.data[attribute] = value.value();</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>    }</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (attributeId == <a class="code hl_variable" href="namespaceBPMNOS_1_1Keyword.html#ae6f1f908c3a580b797240d966b0b9de4">BPMNOS::Keyword::Timestamp</a>) {</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>      instance.data[attribute] = 0;</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>    }</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>    <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>      <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;DataProvider: attribute &#39;&quot;</span> + attribute-&gt;id + <span class="stringliteral">&quot;&#39; has no default value&quot;</span>);</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>    }</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>  }</div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>}</div>
+</div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span> </div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>} <span class="comment">// namespace BPMNOS::Model</span></div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span> </div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span><span class="preprocessor">#endif </span><span class="comment">// BPMNOS_Model_DataProvider_H</span></div>
+<div class="ttc" id="aAttribute_8h_html"><div class="ttname"><a href="Attribute_8h.html">Attribute.h</a></div></div>
+<div class="ttc" id="aExpression_8h_html"><div class="ttname"><a href="Expression_8h.html">Expression.h</a></div></div>
+<div class="ttc" id="aExtensionElements_8h_html"><div class="ttname"><a href="ExtensionElements_8h.html">ExtensionElements.h</a></div></div>
+<div class="ttc" id="aInput_8h_html"><div class="ttname"><a href="Input_8h.html">Input.h</a></div></div>
+<div class="ttc" id="aKeywords_8h_html"><div class="ttname"><a href="Keywords_8h.html">Keywords.h</a></div></div>
+<div class="ttc" id="aModel_8h_html"><div class="ttname"><a href="Model_8h.html">Model.h</a></div></div>
+<div class="ttc" id="aNumber_8h_html"><div class="ttname"><a href="Number_8h.html">Number.h</a></div></div>
+<div class="ttc" id="aScenario_8h_html"><div class="ttname"><a href="Scenario_8h.html">Scenario.h</a></div></div>
+<div class="ttc" id="aStringRegistry_8h_html"><div class="ttname"><a href="StringRegistry_8h.html">StringRegistry.h</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1DataProvider_html"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1DataProvider.html">BPMNOS::Model::DataProvider</a></div><div class="ttdoc">Abstract base class representing a data provider for BPMN instance data.</div><div class="ttdef"><b>Definition</b> <a href="DataProvider_8h_source.html#l00030">DataProvider.h:30</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1DataProvider_html_a12fb27d2ac059f8e1490ecef2fb06876"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1DataProvider.html#a12fb27d2ac059f8e1490ecef2fb06876">BPMNOS::Model::DataProvider::parseInitialization</a></div><div class="ttdeci">static std::pair&lt; std::string, std::string &gt; parseInitialization(const std::string &amp;initialization)</div><div class="ttdoc">Parse an initialization string in the format &quot;attribute := expression&quot;.</div><div class="ttdef"><b>Definition</b> <a href="DataProvider_8cpp_source.html#l00176">DataProvider.cpp:176</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1DataProvider_html_a27901913faf3fb9eb15d41b3e29b663c"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1DataProvider.html#a27901913faf3fb9eb15d41b3e29b663c">BPMNOS::Model::DataProvider::attributes</a></div><div class="ttdeci">DataInput attributes</div><div class="ttdoc">Map holding all attributes in the model with keys being the process (or nullptr for global attributes...</div><div class="ttdef"><b>Definition</b> <a href="DataProvider_8h_source.html#l00060">DataProvider.h:60</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1DataProvider_html_a2af2eea71dc50f09c624c8d52670eaa3"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1DataProvider.html#a2af2eea71dc50f09c624c8d52670eaa3">BPMNOS::Model::DataProvider::evaluateExpression</a></div><div class="ttdeci">virtual BPMNOS::number evaluateExpression(size_t instanceId, const BPMN::Node *node, const std::string &amp;expressionString, ValueType type) const</div><div class="ttdoc">Evaluate an expression for an instance using the default handle.</div><div class="ttdef"><b>Definition</b> <a href="DataProvider_8h_source.html#l00186">DataProvider.h:186</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1DataProvider_html_a39536a5d0a0d8371681e0211a08023c2"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1DataProvider.html#a39536a5d0a0d8371681e0211a08023c2">BPMNOS::Model::DataProvider::lookupAttribute</a></div><div class="ttdeci">std::pair&lt; const Attribute *, std::string &gt; lookupAttribute(const BPMN::Node *node, const std::string &amp;initializationString) const</div><div class="ttdoc">Look up an attribute from an initialization string.</div><div class="ttdef"><b>Definition</b> <a href="DataProvider_8cpp_source.html#l00156">DataProvider.cpp:156</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1DataProvider_html_a4095ffbd0b81e5d6b46b761f4d350f58"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1DataProvider.html#a4095ffbd0b81e5d6b46b761f4d350f58">BPMNOS::Model::DataProvider::findNode</a></div><div class="ttdeci">BPMN::Node * findNode(const std::string &amp;nodeId) const</div><div class="ttdef"><b>Definition</b> <a href="DataProvider_8cpp_source.html#l00085">DataProvider.cpp:85</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1DataProvider_html_a518ef8ddff61e0c12d230cf15e7f9cb3"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1DataProvider.html#a518ef8ddff61e0c12d230cf15e7f9cb3">BPMNOS::Model::DataProvider::earliestInstantiation</a></div><div class="ttdeci">BPMNOS::number earliestInstantiation</div><div class="ttdoc">Earliest instantiation time across all instances.</div><div class="ttdef"><b>Definition</b> <a href="DataProvider_8h_source.html#l00146">DataProvider.h:146</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1DataProvider_html_a596882bd156384c9fa76303decccc354"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1DataProvider.html#a596882bd156384c9fa76303decccc354">BPMNOS::Model::DataProvider::evaluateGlobal</a></div><div class="ttdeci">void evaluateGlobal(const std::string &amp;initializationString, const LIMEX::Handle&lt; double &gt; &amp;handle)</div><div class="ttdoc">Evaluate a global attribute initialization from CSV.</div><div class="ttdef"><b>Definition</b> <a href="DataProvider_8cpp_source.html#l00098">DataProvider.cpp:98</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1DataProvider_html_a59c796975d9f1db2152e3f87388820dc"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1DataProvider.html#a59c796975d9f1db2152e3f87388820dc">BPMNOS::Model::DataProvider::parseTimeEvaluatedValues</a></div><div class="ttdeci">std::unordered_map&lt; size_t, std::unordered_map&lt; const Attribute *, BPMNOS::number &gt; &gt; parseTimeEvaluatedValues</div><div class="ttdef"><b>Definition</b> <a href="DataProvider_8h_source.html#l00154">DataProvider.h:154</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1DataProvider_html_a61b09a40be33a625e1be9b6218aa230f"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1DataProvider.html#a61b09a40be33a625e1be9b6218aa230f">BPMNOS::Model::DataProvider::evaluateGlobal</a></div><div class="ttdeci">virtual void evaluateGlobal(const std::string &amp;initializationString)</div><div class="ttdoc">Evaluate a global attribute initialization using the default handle.</div><div class="ttdef"><b>Definition</b> <a href="DataProvider_8h_source.html#l00103">DataProvider.h:103</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1DataProvider_html_a826148b37f8c4cdf39856a0e6e5f0bcc"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1DataProvider.html#a826148b37f8c4cdf39856a0e6e5f0bcc">BPMNOS::Model::DataProvider::createScenario</a></div><div class="ttdeci">virtual std::unique_ptr&lt; Scenario &gt; createScenario(unsigned int scenarioId=0)=0</div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1DataProvider_html_a8cf9cbf6df5b5981aba7ee9e933f7fc9"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1DataProvider.html#a8cf9cbf6df5b5981aba7ee9e933f7fc9">BPMNOS::Model::DataProvider::~DataProvider</a></div><div class="ttdeci">virtual ~DataProvider()=0</div><div class="ttdef"><b>Definition</b> <a href="DataProvider_8cpp_source.html#l00079">DataProvider.cpp:79</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1DataProvider_html_a914f879deb57c1b41ef64d8cac04c706"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1DataProvider.html#a914f879deb57c1b41ef64d8cac04c706">BPMNOS::Model::DataProvider::evaluateExpression</a></div><div class="ttdeci">virtual BPMNOS::number evaluateExpression(const std::string &amp;expressionString) const</div><div class="ttdoc">Evaluate an expression using the provider's default handle.</div><div class="ttdef"><b>Definition</b> <a href="DataProvider_8h_source.html#l00126">DataProvider.h:126</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1DataProvider_html_acf5053ae6b0cc2c3136ed0020ba05549"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1DataProvider.html#acf5053ae6b0cc2c3136ed0020ba05549">BPMNOS::Model::DataProvider::globalValueMap</a></div><div class="ttdeci">std::unordered_map&lt; const Attribute *, BPMNOS::number &gt; globalValueMap</div><div class="ttdoc">Map of global attributes to their evaluated values.</div><div class="ttdef"><b>Definition</b> <a href="DataProvider_8h_source.html#l00143">DataProvider.h:143</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1DataProvider_html_ad42450348d52fd012331417ab4a645d6"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1DataProvider.html#ad42450348d52fd012331417ab4a645d6">BPMNOS::Model::DataProvider::evaluateExpression</a></div><div class="ttdeci">BPMNOS::number evaluateExpression(const std::string &amp;expressionString, const LIMEX::Handle&lt; double &gt; &amp;handle) const</div><div class="ttdoc">Evaluate an expression using the provided LIMEX handle.</div><div class="ttdef"><b>Definition</b> <a href="DataProvider_8cpp_source.html#l00205">DataProvider.cpp:205</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1DataProvider_html_ada9d993b8764a59a2dcde314d90321cc"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1DataProvider.html#ada9d993b8764a59a2dcde314d90321cc">BPMNOS::Model::DataProvider::ensureDefaultValue</a></div><div class="ttdeci">void ensureDefaultValue(InstanceData &amp;instance, const std::string &amp;attributeId, std::optional&lt; BPMNOS::number &gt; value=std::nullopt)</div><div class="ttdoc">Ensure a default attribute value is set for an instance.</div><div class="ttdef"><b>Definition</b> <a href="DataProvider_8h_source.html#l00196">DataProvider.h:196</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1DataProvider_html_ae386253a93ad106d665bb3209dae6eb9"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1DataProvider.html#ae386253a93ad106d665bb3209dae6eb9">BPMNOS::Model::DataProvider::latestInstantiation</a></div><div class="ttdeci">BPMNOS::number latestInstantiation</div><div class="ttdoc">Latest instantiation time across all instances.</div><div class="ttdef"><b>Definition</b> <a href="DataProvider_8h_source.html#l00149">DataProvider.h:149</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1DataProvider_html_af352c2193844109f607c98293e3303da"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1DataProvider.html#af352c2193844109f607c98293e3303da">BPMNOS::Model::DataProvider::getModel</a></div><div class="ttdeci">const Model &amp; getModel() const</div><div class="ttdef"><b>Definition</b> <a href="DataProvider_8cpp_source.html#l00081">DataProvider.cpp:81</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1DataProvider_html_afcc5033d8c547ef6ffeb35c31241171a"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1DataProvider.html#afcc5033d8c547ef6ffeb35c31241171a">BPMNOS::Model::DataProvider::model</a></div><div class="ttdeci">std::unique_ptr&lt; Model &gt; model</div><div class="ttdoc">Pointer to the BPMN model.</div><div class="ttdef"><b>Definition</b> <a href="DataProvider_8h_source.html#l00058">DataProvider.h:58</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1Model_html"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1Model.html">BPMNOS::Model::Model</a></div><div class="ttdoc">Represents a BPMN model with all its processes.</div><div class="ttdef"><b>Definition</b> <a href="Model_8h_source.html#l00024">Model.h:24</a></div></div>
+<div class="ttc" id="aclassBPMN_1_1Node_html"><div class="ttname"><a href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a></div></div>
+<div class="ttc" id="anamespaceBPMNOS_1_1Keyword_html_ae6f1f908c3a580b797240d966b0b9de4"><div class="ttname"><a href="namespaceBPMNOS_1_1Keyword.html#ae6f1f908c3a580b797240d966b0b9de4">BPMNOS::Keyword::Timestamp</a></div><div class="ttdeci">const std::string Timestamp</div><div class="ttdef"><b>Definition</b> <a href="Keywords_8h_source.html#l00012">Keywords.h:12</a></div></div>
+<div class="ttc" id="anamespaceBPMNOS_1_1Model_html"><div class="ttname"><a href="namespaceBPMNOS_1_1Model.html">BPMNOS::Model</a></div><div class="ttdef"><b>Definition</b> <a href="DecisionTask_8h_source.html#l00010">DecisionTask.h:10</a></div></div>
+<div class="ttc" id="anamespaceBPMNOS_1_1Model_html_a3eb56353d86ae4c42f7c1060ced21ddc"><div class="ttname"><a href="namespaceBPMNOS_1_1Model.html#a3eb56353d86ae4c42f7c1060ced21ddc">BPMNOS::Model::DataInput</a></div><div class="ttdeci">std::unordered_map&lt; const BPMN::Process *, std::unordered_map&lt; std::string, const Attribute * &gt; &gt; DataInput</div><div class="ttdef"><b>Definition</b> <a href="Scenario_8h_source.html#l00016">Scenario.h:16</a></div></div>
+<div class="ttc" id="anamespaceBPMNOS_html_a6ba3ea22499481d120e383529198d598"><div class="ttname"><a href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a></div><div class="ttdeci">BPMNOS_NUMBER_TYPE number</div><div class="ttdef"><b>Definition</b> <a href="Number_8h_source.html#l00050">Number.h:50</a></div></div>
+<div class="ttc" id="anamespaceBPMNOS_html_abd0d3034519d54779b4df3e9754cd681"><div class="ttname"><a href="namespaceBPMNOS.html#abd0d3034519d54779b4df3e9754cd681">BPMNOS::ValueType</a></div><div class="ttdeci">ValueType</div><div class="ttdef"><b>Definition</b> <a href="Value_8h_source.html#l00009">Value.h:9</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+</div><!-- doc-content -->
+<script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs"; mermaid.initialize({ startOnLoad: true, theme: "neutral" });</script></body></html>

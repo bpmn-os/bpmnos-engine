@@ -1,0 +1,1785 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<!-- BEGIN opengraph metadata -->
+<meta property="og:title" content="Doxygen Awesome" />
+<meta property="og:image" content="https://repository-images.githubusercontent.com/348492097/4f16df80-88fb-11eb-9d31-4015ff22c452" />
+<meta property="og:description" content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
+<meta property="og:url" content="https://jothepro.github.io/doxygen-awesome-css/" />
+<!-- END opengraph metadata -->
+<!-- BEGIN twitter metadata -->
+<meta name="twitter:image:src" content="https://repository-images.githubusercontent.com/348492097/4f16df80-88fb-11eb-9d31-4015ff22c452" />
+<meta name="twitter:title" content="Doxygen Awesome" />
+<meta name="twitter:description" content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
+<!-- END twitter metadata -->
+<title>BPMN-OS: BPMNOS::Model::StochasticScenario Class Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript" src="doxygen-awesome-interactive-toc.js"></script>
+<script type="text/javascript" src="doxygen-awesome-tabs.js"></script>
+<script type="text/javascript" src="toggle-alternative-theme.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeParagraphLink.init()
+    DoxygenAwesomeInteractiveToc.init()
+    DoxygenAwesomeTabs.init()
+</script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="custom.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<link href="custom-alternative.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<!-- https://tholman.com/github-corners/ -->
+<a href="https://github.com/bpmn-os/bpmnos-engine" class="github-corner" title="View source on GitHub" target="_blank" rel="noopener noreferrer">
+    <svg viewBox="0 0 250 250" width="40" height="40" style="position: absolute; top: 0; border: 0; right: 0; z-index: 99;" aria-hidden="true">
+    <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="BPMNOS.svg"/></td>
+  <td id="projectalign" style="padding-left: 0.5em;">
+   <div id="projectname">BPMN-OS
+   </div>
+   <div id="projectbrief">BPMN for optimization and simulation</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() {
+  initMenu('',true,false,'search.php','Search');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */
+</script>
+<div id="main-nav"></div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(document).ready(function(){initNavTree('classBPMNOS_1_1Model_1_1StochasticScenario.html',''); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-attribs">Static Public Attributes</a> &#124;
+<a href="#pro-methods">Protected Member Functions</a> &#124;
+<a href="#pro-attribs">Protected Attributes</a> &#124;
+<a href="#friends">Friends</a> &#124;
+<a href="classBPMNOS_1_1Model_1_1StochasticScenario-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">BPMNOS::Model::StochasticScenario Class Reference</div></div>
+</div><!--header-->
+<div class="contents">
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock">
+<p class="definition">Definition at line <a class="el" href="StochasticScenario_8h_source.html#l00064">64</a> of file <a class="el" href="StochasticScenario_8h_source.html">StochasticScenario.h</a>.</p>
+</div>
+<p><code>#include &lt;<a class="el" href="StochasticScenario_8h_source.html">StochasticScenario.h</a>&gt;</code></p>
+<div class="dynheader">
+Inheritance diagram for BPMNOS::Model::StochasticScenario:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classBPMNOS_1_1Model_1_1StochasticScenario__inherit__graph.svg" width="239" height="1294"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:ad0ae4792bf4b3cd48fa7c9b10d8a1c6e" id="r_ad0ae4792bf4b3cd48fa7c9b10d8a1c6e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1StochasticScenario.html#ad0ae4792bf4b3cd48fa7c9b10d8a1c6e">StochasticScenario</a> (const <a class="el" href="classBPMNOS_1_1Model_1_1Model.html">Model</a> *<a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#aee0bb548aaa629e088cfc0f83493646b">model</a>, const std::unordered_map&lt; const <a class="el" href="classBPMNOS_1_1Model_1_1Attribute.html">Attribute</a> *, <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> &gt; &amp;globalValueMap, unsigned int seed=0)</td></tr>
+<tr class="separator:ad0ae4792bf4b3cd48fa7c9b10d8a1c6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1f0e177e24557683baeead9cee69cd2" id="r_ad1f0e177e24557683baeead9cee69cd2"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1StochasticScenario.html#ad1f0e177e24557683baeead9cee69cd2">StochasticScenario</a> (<a class="el" href="classBPMNOS_1_1Model_1_1StochasticScenario.html">StochasticScenario</a> *original, <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> spawnTime, unsigned int seed)</td></tr>
+<tr class="memdesc:ad1f0e177e24557683baeead9cee69cd2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy constructor for creating a forked scenario with future values resampled.  <br /></td></tr>
+<tr class="separator:ad1f0e177e24557683baeead9cee69cd2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a89ca73279ff8f385448bd52dd899f35b" id="r_a89ca73279ff8f385448bd52dd899f35b"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1StochasticScenario.html#a89ca73279ff8f385448bd52dd899f35b">getSeed</a> () const</td></tr>
+<tr class="memdesc:a89ca73279ff8f385448bd52dd899f35b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the current effective seed (the seed of the most recent scenario copy, or the base seed).  <br /></td></tr>
+<tr class="separator:a89ca73279ff8f385448bd52dd899f35b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a352f688e615fe13957514939e4e5a0" id="r_a2a352f688e615fe13957514939e4e5a0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1StochasticScenario.html#a2a352f688e615fe13957514939e4e5a0">getEarliestInstantiationTime</a> () const override</td></tr>
+<tr class="memdesc:a2a352f688e615fe13957514939e4e5a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method returning the time of the earliest instantiation.  <br /></td></tr>
+<tr class="separator:a2a352f688e615fe13957514939e4e5a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9ab4792ea0341e1da44f29f6aa0cd685" id="r_a9ab4792ea0341e1da44f29f6aa0cd685"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1StochasticScenario.html#a9ab4792ea0341e1da44f29f6aa0cd685">isCompleted</a> (const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> currentTime) const override</td></tr>
+<tr class="memdesc:a9ab4792ea0341e1da44f29f6aa0cd685"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method returning true if the currentTime exceeds the completion time.  <br /></td></tr>
+<tr class="separator:a9ab4792ea0341e1da44f29f6aa0cd685"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6d73e7ed9752b036247b499628f0573f" id="r_a6d73e7ed9752b036247b499628f0573f"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::tuple&lt; const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Process.html">BPMN::Process</a> *, <a class="el" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a>, <a class="el" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1StochasticScenario.html#a6d73e7ed9752b036247b499628f0573f">getCurrentInstantiations</a> (const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> currentTime) const override</td></tr>
+<tr class="memdesc:a6d73e7ed9752b036247b499628f0573f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method returning a vector of all instances that are to be instantiated at the given time.  <br /></td></tr>
+<tr class="separator:a6d73e7ed9752b036247b499628f0573f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a4fec2cbbb5a2629e71602440d08536" id="r_a2a4fec2cbbb5a2629e71602440d08536"><td class="memItemLeft" align="right" valign="top">std::vector&lt; const <a class="el" href="structBPMNOS_1_1Model_1_1Scenario_1_1InstanceData.html">InstanceData</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1StochasticScenario.html#a2a4fec2cbbb5a2629e71602440d08536">getCreatedInstances</a> (const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> currentTime) const override</td></tr>
+<tr class="memdesc:a2a4fec2cbbb5a2629e71602440d08536"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method returning a vector of all instances that have been created until the given time.  <br /></td></tr>
+<tr class="separator:a2a4fec2cbbb5a2629e71602440d08536"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a10381af6e9f05f284df3946857d63826" id="r_a10381af6e9f05f284df3946857d63826"><td class="memItemLeft" align="right" valign="top">std::vector&lt; const <a class="el" href="structBPMNOS_1_1Model_1_1Scenario_1_1InstanceData.html">InstanceData</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1StochasticScenario.html#a10381af6e9f05f284df3946857d63826">getInstances</a> (const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> currentTime) const override</td></tr>
+<tr class="memdesc:a10381af6e9f05f284df3946857d63826"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method returning a vector of all instances that have been created or are known until the given time.  <br /></td></tr>
+<tr class="separator:a10381af6e9f05f284df3946857d63826"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af22c8349d9f68b4a9c4c02e80b18790b" id="r_af22c8349d9f68b4a9c4c02e80b18790b"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1StochasticScenario.html#af22c8349d9f68b4a9c4c02e80b18790b">getValue</a> (const <a class="el" href="structBPMNOS_1_1Model_1_1Scenario_1_1InstanceData.html">Scenario::InstanceData</a> *instance, const <a class="el" href="classBPMNOS_1_1Model_1_1Attribute.html">BPMNOS::Model::Attribute</a> *attribute, const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> currentTime) const override</td></tr>
+<tr class="memdesc:af22c8349d9f68b4a9c4c02e80b18790b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method returning a value of an attribute.  <br /></td></tr>
+<tr class="separator:af22c8349d9f68b4a9c4c02e80b18790b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aac1e8a990c8d11bd41e754d1663381fe" id="r_aac1e8a990c8d11bd41e754d1663381fe"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1StochasticScenario.html#aac1e8a990c8d11bd41e754d1663381fe">getValue</a> (const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> instanceId, const <a class="el" href="classBPMNOS_1_1Model_1_1Attribute.html">BPMNOS::Model::Attribute</a> *attribute, const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> currentTime) const override</td></tr>
+<tr class="memdesc:aac1e8a990c8d11bd41e754d1663381fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method returning a value of an attribute.  <br /></td></tr>
+<tr class="separator:aac1e8a990c8d11bd41e754d1663381fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a451cfbcc2e11c8b2e87f806aeca48eb6" id="r_a451cfbcc2e11c8b2e87f806aeca48eb6"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1StochasticScenario.html#a451cfbcc2e11c8b2e87f806aeca48eb6">getStatus</a> (const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> instanceId, const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a> *node, const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> currentTime) const override</td></tr>
+<tr class="memdesc:a451cfbcc2e11c8b2e87f806aeca48eb6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method returning values for all new status attributes.  <br /></td></tr>
+<tr class="separator:a451cfbcc2e11c8b2e87f806aeca48eb6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a73c34c402c4290991d3ec6e7d2b95b50" id="r_a73c34c402c4290991d3ec6e7d2b95b50"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1StochasticScenario.html#a73c34c402c4290991d3ec6e7d2b95b50">getData</a> (const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> instanceId, const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a> *node, const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> currentTime) const override</td></tr>
+<tr class="memdesc:a73c34c402c4290991d3ec6e7d2b95b50"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method returning values for all new data attributes.  <br /></td></tr>
+<tr class="separator:a73c34c402c4290991d3ec6e7d2b95b50"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7842537ee463eb4415a9b440f3cc4b1a" id="r_a7842537ee463eb4415a9b440f3cc4b1a"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1StochasticScenario.html#a7842537ee463eb4415a9b440f3cc4b1a">getActivityReadyStatus</a> (<a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> rootId, <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> instanceId, const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a> *activity, <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> currentTime) const override</td></tr>
+<tr class="memdesc:a7842537ee463eb4415a9b440f3cc4b1a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the ready status for an activity.  <br /></td></tr>
+<tr class="separator:a7842537ee463eb4415a9b440f3cc4b1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6a37ea75429cd710eca30124637c4bbd" id="r_a6a37ea75429cd710eca30124637c4bbd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1StochasticScenario.html#a6a37ea75429cd710eca30124637c4bbd">noticeReadyPending</a> (<a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> instanceId, const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a> *node, const <a class="el" href="structBPMNOS_1_1Values.html">Values</a> &amp;status, const <a class="el" href="structBPMNOS_1_1SharedValues.html">SharedValues</a> &amp;data, const <a class="el" href="structBPMNOS_1_1Values.html">Values</a> &amp;<a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#af62d210f70ee664720212016cb168742">globals</a>) const override</td></tr>
+<tr class="memdesc:a6a37ea75429cd710eca30124637c4bbd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Make scenario aware of a token arriving at an activity.  <br /></td></tr>
+<tr class="separator:a6a37ea75429cd710eca30124637c4bbd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff9d24e2668f3c41d5e785422c88ee74" id="r_aff9d24e2668f3c41d5e785422c88ee74"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1StochasticScenario.html#aff9d24e2668f3c41d5e785422c88ee74">noticeCompletionPending</a> (<a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> instanceId, const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a> *task, const <a class="el" href="structBPMNOS_1_1Values.html">Values</a> &amp;status, const <a class="el" href="structBPMNOS_1_1SharedValues.html">SharedValues</a> &amp;data, const <a class="el" href="structBPMNOS_1_1Values.html">Values</a> &amp;<a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#af62d210f70ee664720212016cb168742">globals</a>) const override</td></tr>
+<tr class="memdesc:aff9d24e2668f3c41d5e785422c88ee74"><td class="mdescLeft">&#160;</td><td class="mdescRight">Make scenario aware of a task entering BUSY state.  <br /></td></tr>
+<tr class="separator:aff9d24e2668f3c41d5e785422c88ee74"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a10990948840b77b2be6cecb50d5a61cd" id="r_a10990948840b77b2be6cecb50d5a61cd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1StochasticScenario.html#a10990948840b77b2be6cecb50d5a61cd">revealData</a> (<a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> currentTime) const</td></tr>
+<tr class="memdesc:a10990948840b77b2be6cecb50d5a61cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">House keeping of internal data.  <br /></td></tr>
+<tr class="separator:a10990948840b77b2be6cecb50d5a61cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classBPMNOS_1_1Model_1_1Scenario"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classBPMNOS_1_1Model_1_1Scenario')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html">BPMNOS::Model::Scenario</a></td></tr>
+<tr class="memitem:a7bea7a2629d08c9be4ff7bbb620f23b0 inherit pub_methods_classBPMNOS_1_1Model_1_1Scenario" id="r_a7bea7a2629d08c9be4ff7bbb620f23b0"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#a7bea7a2629d08c9be4ff7bbb620f23b0">~Scenario</a> ()=default</td></tr>
+<tr class="separator:a7bea7a2629d08c9be4ff7bbb620f23b0 inherit pub_methods_classBPMNOS_1_1Model_1_1Scenario"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a97408f773bdc54ecaa99498f99ddbe59 inherit pub_methods_classBPMNOS_1_1Model_1_1Scenario" id="r_a97408f773bdc54ecaa99498f99ddbe59"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classBPMNOS_1_1Model_1_1Model.html">Model</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#a97408f773bdc54ecaa99498f99ddbe59">getModel</a> () const</td></tr>
+<tr class="memdesc:a97408f773bdc54ecaa99498f99ddbe59 inherit pub_methods_classBPMNOS_1_1Model_1_1Scenario"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method returning the model.  <br /></td></tr>
+<tr class="separator:a97408f773bdc54ecaa99498f99ddbe59 inherit pub_methods_classBPMNOS_1_1Model_1_1Scenario"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa4cc4fae8a051e6f12f31501ed30b888 inherit pub_methods_classBPMNOS_1_1Model_1_1Scenario" id="r_aa4cc4fae8a051e6f12f31501ed30b888"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#aa4cc4fae8a051e6f12f31501ed30b888">getTaskCompletionStatus</a> (<a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> rootId, const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a> *task, const <a class="el" href="structBPMNOS_1_1Values.html">Values</a> &amp;status, const <a class="el" href="structBPMNOS_1_1SharedValues.html">SharedValues</a> &amp;data, const <a class="el" href="structBPMNOS_1_1Values.html">Values</a> &amp;<a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#af62d210f70ee664720212016cb168742">globals</a>) const</td></tr>
+<tr class="memdesc:aa4cc4fae8a051e6f12f31501ed30b888 inherit pub_methods_classBPMNOS_1_1Model_1_1Scenario"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the completion status for a SendTask, ReceiveTask, and Decisiontask.  <br /></td></tr>
+<tr class="separator:aa4cc4fae8a051e6f12f31501ed30b888 inherit pub_methods_classBPMNOS_1_1Model_1_1Scenario"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a18a61c5bb715be08e2108e5b0b84763a inherit pub_methods_classBPMNOS_1_1Model_1_1Scenario" id="r_a18a61c5bb715be08e2108e5b0b84763a"><td class="memItemLeft" align="right" valign="top">virtual std::optional&lt; <a class="el" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#a18a61c5bb715be08e2108e5b0b84763a">getTaskCompletionStatus</a> (<a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> instanceId, const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a> *task, <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> currentTime) const</td></tr>
+<tr class="memdesc:a18a61c5bb715be08e2108e5b0b84763a inherit pub_methods_classBPMNOS_1_1Model_1_1Scenario"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the completion status for a task.  <br /></td></tr>
+<tr class="separator:a18a61c5bb715be08e2108e5b0b84763a inherit pub_methods_classBPMNOS_1_1Model_1_1Scenario"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9446b4988507e71ace6682af8705188e inherit pub_methods_classBPMNOS_1_1Model_1_1Scenario" id="r_a9446b4988507e71ace6682af8705188e"><td class="memItemLeft" align="right" valign="top">virtual std::unique_ptr&lt; <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html">Scenario</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#a9446b4988507e71ace6682af8705188e">clone</a> () const</td></tr>
+<tr class="memdesc:a9446b4988507e71ace6682af8705188e inherit pub_methods_classBPMNOS_1_1Model_1_1Scenario"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deep-copy this scenario (including the mutable per-run memoization maps), so each rollout sub-engine gets its own and parallel runs don't share/race on those maps. Only deterministic scenarios override this; the base throws (stochastic scenarios are forked, not cloned).  <br /></td></tr>
+<tr class="separator:a9446b4988507e71ace6682af8705188e inherit pub_methods_classBPMNOS_1_1Model_1_1Scenario"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
+Static Public Attributes</h2></td></tr>
+<tr class="memitem:a25625bbe3d2b80a4711ce8676ae1da6e" id="r_a25625bbe3d2b80a4711ce8676ae1da6e"><td class="memItemLeft" align="right" valign="top">static constexpr int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1StochasticScenario.html#a25625bbe3d2b80a4711ce8676ae1da6e">maxResamplingTries</a> = 4</td></tr>
+<tr class="memdesc:a25625bbe3d2b80a4711ce8676ae1da6e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum number of resampling attempts when re-evaluated disclosure time is before spawnTime.  <br /></td></tr>
+<tr class="separator:a25625bbe3d2b80a4711ce8676ae1da6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_static_attribs_classBPMNOS_1_1Model_1_1Scenario"><td colspan="2" onclick="javascript:toggleInherit('pub_static_attribs_classBPMNOS_1_1Model_1_1Scenario')"><img src="closed.png" alt="-"/>&#160;Static Public Attributes inherited from <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html">BPMNOS::Model::Scenario</a></td></tr>
+<tr class="memitem:a259c90d0f96f787ec540620d91bc63bc inherit pub_static_attribs_classBPMNOS_1_1Model_1_1Scenario" id="r_a259c90d0f96f787ec540620d91bc63bc"><td class="memItemLeft" align="right" valign="top">static constexpr char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#a259c90d0f96f787ec540620d91bc63bc">delimiters</a> [] = {'^','#'}</td></tr>
+<tr class="memdesc:a259c90d0f96f787ec540620d91bc63bc inherit pub_static_attribs_classBPMNOS_1_1Model_1_1Scenario"><td class="mdescLeft">&#160;</td><td class="mdescRight">Delimiters used for disambiguation of identifiers of non-interrupting event subprocesses and multi-instance activities.  <br /></td></tr>
+<tr class="separator:a259c90d0f96f787ec540620d91bc63bc inherit pub_static_attribs_classBPMNOS_1_1Model_1_1Scenario"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
+Protected Member Functions</h2></td></tr>
+<tr class="memitem:a9807c397f235eff5a436c12a653b4d8e" id="r_a9807c397f235eff5a436c12a653b4d8e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structBPMNOS_1_1Values.html">Values</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1StochasticScenario.html#a9807c397f235eff5a436c12a653b4d8e">getKnownInitialStatus</a> (const <a class="el" href="structBPMNOS_1_1Model_1_1Scenario_1_1InstanceData.html">InstanceData</a> *, const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> time) const override</td></tr>
+<tr class="memdesc:a9807c397f235eff5a436c12a653b4d8e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method returning the initial status attributes for process instantiation.  <br /></td></tr>
+<tr class="separator:a9807c397f235eff5a436c12a653b4d8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a24bddb583b84efd68a482c63efe2e6f6" id="r_a24bddb583b84efd68a482c63efe2e6f6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structBPMNOS_1_1Values.html">Values</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1StochasticScenario.html#a24bddb583b84efd68a482c63efe2e6f6">getKnownInitialData</a> (const <a class="el" href="structBPMNOS_1_1Model_1_1Scenario_1_1InstanceData.html">InstanceData</a> *, const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> time) const override</td></tr>
+<tr class="memdesc:a24bddb583b84efd68a482c63efe2e6f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method returning the initial data attributes for process instantiation.  <br /></td></tr>
+<tr class="separator:a24bddb583b84efd68a482c63efe2e6f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad77ace1fb9787c820270a49636ea23e8" id="r_ad77ace1fb9787c820270a49636ea23e8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1StochasticScenario.html#ad77ace1fb9787c820270a49636ea23e8">addInstance</a> (const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Process.html">BPMN::Process</a> *process, const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> instanceId)</td></tr>
+<tr class="separator:ad77ace1fb9787c820270a49636ea23e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a165c576f532558c60ef5b55aeef336a1" id="r_a165c576f532558c60ef5b55aeef336a1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1StochasticScenario.html#a165c576f532558c60ef5b55aeef336a1">setValue</a> (const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> instanceId, const <a class="el" href="classBPMNOS_1_1Model_1_1Attribute.html">Attribute</a> *attribute, std::optional&lt; <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> &gt; value)</td></tr>
+<tr class="separator:a165c576f532558c60ef5b55aeef336a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e2d3e6efd14b9b13c1e1199ee4cc9cc" id="r_a6e2d3e6efd14b9b13c1e1199ee4cc9cc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1StochasticScenario.html#a6e2d3e6efd14b9b13c1e1199ee4cc9cc">setDisclosure</a> (const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> instanceId, const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a> *node, <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> disclosureTime)</td></tr>
+<tr class="separator:a6e2d3e6efd14b9b13c1e1199ee4cc9cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a435e1bd823c9e6ccf6bf5410aa8a4780" id="r_a435e1bd823c9e6ccf6bf5410aa8a4780"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1StochasticScenario.html#a435e1bd823c9e6ccf6bf5410aa8a4780">addPendingDisclosure</a> (const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> instanceId, <a class="el" href="structBPMNOS_1_1Model_1_1StochasticPendingDisclosure.html">StochasticPendingDisclosure</a> &amp;&amp;pending)</td></tr>
+<tr class="separator:a435e1bd823c9e6ccf6bf5410aa8a4780"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9ecb5bc6e10a952268d28d25323e2421" id="r_a9ecb5bc6e10a952268d28d25323e2421"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1StochasticScenario.html#a9ecb5bc6e10a952268d28d25323e2421">addCompletionExpression</a> (const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> instanceId, const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a> *task, std::shared_ptr&lt; <a class="el" href="classBPMNOS_1_1Model_1_1Expression.html">Expression</a> &gt; expression)</td></tr>
+<tr class="separator:a9ecb5bc6e10a952268d28d25323e2421"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee272f5ea41e98f61e56cf716b62b3ea" id="r_aee272f5ea41e98f61e56cf716b62b3ea"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1StochasticScenario.html#aee272f5ea41e98f61e56cf716b62b3ea">addReadyExpression</a> (const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> instanceId, const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a> *node, std::shared_ptr&lt; <a class="el" href="classBPMNOS_1_1Model_1_1Expression.html">Expression</a> &gt; expression)</td></tr>
+<tr class="separator:aee272f5ea41e98f61e56cf716b62b3ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab860c026ece195b6d679ee90ecfc3c1c" id="r_ab860c026ece195b6d679ee90ecfc3c1c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1StochasticScenario.html#ab860c026ece195b6d679ee90ecfc3c1c">addDeferredDisclosure</a> (const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> instanceId, <a class="el" href="structBPMNOS_1_1Model_1_1DeferredDisclosure.html">DeferredDisclosure</a> &amp;&amp;deferred)</td></tr>
+<tr class="separator:ab860c026ece195b6d679ee90ecfc3c1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a66960ea2b69cabadf157f5f583110152" id="r_a66960ea2b69cabadf157f5f583110152"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1StochasticScenario.html#a66960ea2b69cabadf157f5f583110152">evaluateDeferredDisclosures</a> (<a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> spawnTime=std::numeric_limits&lt; <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> &gt;::lowest())</td></tr>
+<tr class="memdesc:a66960ea2b69cabadf157f5f583110152"><td class="mdescLeft">&#160;</td><td class="mdescRight">(Re-)evaluates deferred disclosures with disclosure time &gt;= spawnTime.  <br /></td></tr>
+<tr class="separator:a66960ea2b69cabadf157f5f583110152"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac1ccaa2689f4179e81134e956a6049b4" id="r_ac1ccaa2689f4179e81134e956a6049b4"><td class="memItemLeft" align="right" valign="top">std::mt19937 &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1StochasticScenario.html#ac1ccaa2689f4179e81134e956a6049b4">getRng</a> (size_t instanceId, const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a> *node) const</td></tr>
+<tr class="memdesc:ac1ccaa2689f4179e81134e956a6049b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get or create RNG for (instance, node) pair.  <br /></td></tr>
+<tr class="separator:ac1ccaa2689f4179e81134e956a6049b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pro_methods_classBPMNOS_1_1Model_1_1Scenario"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classBPMNOS_1_1Model_1_1Scenario')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html">BPMNOS::Model::Scenario</a></td></tr>
+<tr class="memitem:afaac97f810599b3639e0ef85fa68ba22 inherit pro_methods_classBPMNOS_1_1Model_1_1Scenario" id="r_afaac97f810599b3639e0ef85fa68ba22"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#afaac97f810599b3639e0ef85fa68ba22">Scenario</a> (const <a class="el" href="classBPMNOS_1_1Model_1_1Model.html">Model</a> *<a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#aee0bb548aaa629e088cfc0f83493646b">model</a>, const std::unordered_map&lt; const <a class="el" href="classBPMNOS_1_1Model_1_1Attribute.html">Attribute</a> *, <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> &gt; &amp;globalValueMap)</td></tr>
+<tr class="memdesc:afaac97f810599b3639e0ef85fa68ba22 inherit pro_methods_classBPMNOS_1_1Model_1_1Scenario"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor that initializes model and globals from CSV-provided values.  <br /></td></tr>
+<tr class="separator:afaac97f810599b3639e0ef85fa68ba22 inherit pro_methods_classBPMNOS_1_1Model_1_1Scenario"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a867b955f4f6c08f46f90f0d62e349aa8 inherit pro_methods_classBPMNOS_1_1Model_1_1Scenario" id="r_a867b955f4f6c08f46f90f0d62e349aa8"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#a867b955f4f6c08f46f90f0d62e349aa8">Scenario</a> (const <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html">Scenario</a> *original)</td></tr>
+<tr class="memdesc:a867b955f4f6c08f46f90f0d62e349aa8 inherit pro_methods_classBPMNOS_1_1Model_1_1Scenario"><td class="mdescLeft">&#160;</td><td class="mdescRight">Protected copy constructor for derived class scenario copying.  <br /></td></tr>
+<tr class="separator:a867b955f4f6c08f46f90f0d62e349aa8 inherit pro_methods_classBPMNOS_1_1Model_1_1Scenario"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a675df37fb5e94600f2bfd77dd1537b6d inherit pro_methods_classBPMNOS_1_1Model_1_1Scenario" id="r_a675df37fb5e94600f2bfd77dd1537b6d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structBPMNOS_1_1Values.html">Values</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#a675df37fb5e94600f2bfd77dd1537b6d">evaluateGlobals</a> (const std::unordered_map&lt; const <a class="el" href="classBPMNOS_1_1Model_1_1Attribute.html">Attribute</a> *, <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> &gt; &amp;globalValueMap)</td></tr>
+<tr class="memdesc:a675df37fb5e94600f2bfd77dd1537b6d inherit pro_methods_classBPMNOS_1_1Model_1_1Scenario"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluate global attributes (CSV-provided + model expressions).  <br /></td></tr>
+<tr class="separator:a675df37fb5e94600f2bfd77dd1537b6d inherit pro_methods_classBPMNOS_1_1Model_1_1Scenario"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
+Protected Attributes</h2></td></tr>
+<tr class="memitem:a388152f1a525bd2c76956e657df8b939" id="r_a388152f1a525bd2c76956e657df8b939"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; size_t, <a class="el" href="structBPMNOS_1_1Model_1_1Scenario_1_1InstanceData.html">InstanceData</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1StochasticScenario.html#a388152f1a525bd2c76956e657df8b939">instances</a></td></tr>
+<tr class="separator:a388152f1a525bd2c76956e657df8b939"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e25cad6890b96520328b413a7066ee0" id="r_a3e25cad6890b96520328b413a7066ee0"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; size_t, std::unordered_map&lt; const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a> *, <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1StochasticScenario.html#a3e25cad6890b96520328b413a7066ee0">disclosureTimes</a></td></tr>
+<tr class="memdesc:a3e25cad6890b96520328b413a7066ee0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instance ID -&gt; Node -&gt; disclosure time.  <br /></td></tr>
+<tr class="separator:a3e25cad6890b96520328b413a7066ee0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a893b68a3834094cf9b3d8f4bf805d79c" id="r_a893b68a3834094cf9b3d8f4bf805d79c"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; size_t, std::unordered_map&lt; const <a class="el" href="classBPMNOS_1_1Model_1_1Attribute.html">Attribute</a> *, <a class="el" href="structBPMNOS_1_1Model_1_1StochasticPendingDisclosure.html">StochasticPendingDisclosure</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1StochasticScenario.html#a893b68a3834094cf9b3d8f4bf805d79c">pastDisclosures</a></td></tr>
+<tr class="memdesc:a893b68a3834094cf9b3d8f4bf805d79c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Already disclosed.  <br /></td></tr>
+<tr class="separator:a893b68a3834094cf9b3d8f4bf805d79c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf5600451b5d38af221d6785859287f5" id="r_aaf5600451b5d38af221d6785859287f5"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; size_t, std::unordered_map&lt; const <a class="el" href="classBPMNOS_1_1Model_1_1Attribute.html">Attribute</a> *, <a class="el" href="structBPMNOS_1_1Model_1_1StochasticPendingDisclosure.html">StochasticPendingDisclosure</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1StochasticScenario.html#aaf5600451b5d38af221d6785859287f5">pendingDisclosures</a></td></tr>
+<tr class="memdesc:aaf5600451b5d38af221d6785859287f5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Not yet disclosed.  <br /></td></tr>
+<tr class="separator:aaf5600451b5d38af221d6785859287f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa48059320d49d9edf2611bf53dac4d2d" id="r_aa48059320d49d9edf2611bf53dac4d2d"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; size_t, std::unordered_map&lt; const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a> *, std::vector&lt; std::shared_ptr&lt; <a class="el" href="classBPMNOS_1_1Model_1_1Expression.html">Expression</a> &gt; &gt; &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1StochasticScenario.html#aa48059320d49d9edf2611bf53dac4d2d">readyExpressions</a></td></tr>
+<tr class="memdesc:aa48059320d49d9edf2611bf53dac4d2d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ready expressions per (instance, node) - shared across scenario copies.  <br /></td></tr>
+<tr class="separator:aa48059320d49d9edf2611bf53dac4d2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae6caf6fc81d4c43306fb0b3d149476b5" id="r_ae6caf6fc81d4c43306fb0b3d149476b5"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; size_t, std::unordered_map&lt; const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a> *, std::vector&lt; std::shared_ptr&lt; <a class="el" href="classBPMNOS_1_1Model_1_1Expression.html">Expression</a> &gt; &gt; &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1StochasticScenario.html#ae6caf6fc81d4c43306fb0b3d149476b5">completionExpressions</a></td></tr>
+<tr class="memdesc:ae6caf6fc81d4c43306fb0b3d149476b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Completion expressions per (instance, node) - shared across scenario copies.  <br /></td></tr>
+<tr class="separator:ae6caf6fc81d4c43306fb0b3d149476b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a58c17a9d06638c5cbb49826fbdd11097" id="r_a58c17a9d06638c5cbb49826fbdd11097"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; size_t, std::vector&lt; <a class="el" href="structBPMNOS_1_1Model_1_1DeferredDisclosure.html">DeferredDisclosure</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1StochasticScenario.html#a58c17a9d06638c5cbb49826fbdd11097">deferredDisclosures</a></td></tr>
+<tr class="memdesc:a58c17a9d06638c5cbb49826fbdd11097"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deferred disclosures per instance (evaluated per-scenario)  <br /></td></tr>
+<tr class="separator:a58c17a9d06638c5cbb49826fbdd11097"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9513fde55b2072efb484f83fd9dca8e4" id="r_a9513fde55b2072efb484f83fd9dca8e4"><td class="memItemLeft" align="right" valign="top">std::map&lt; std::pair&lt; size_t, const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a> * &gt;, std::mt19937 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1StochasticScenario.html#a9513fde55b2072efb484f83fd9dca8e4">rngs</a></td></tr>
+<tr class="memdesc:a9513fde55b2072efb484f83fd9dca8e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Per (instance, node) RNG for reproducibility.  <br /></td></tr>
+<tr class="separator:a9513fde55b2072efb484f83fd9dca8e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a304619852019feb4aa4331163631a155" id="r_a304619852019feb4aa4331163631a155"><td class="memItemLeft" align="right" valign="top">std::list&lt; std::pair&lt; <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>, unsigned int &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1StochasticScenario.html#a304619852019feb4aa4331163631a155">scenarioSeeds</a></td></tr>
+<tr class="memdesc:a304619852019feb4aa4331163631a155"><td class="mdescLeft">&#160;</td><td class="mdescRight">Seed history: list of (spawnTime, seed) pairs for scenario copies.  <br /></td></tr>
+<tr class="separator:a304619852019feb4aa4331163631a155"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3680bda1a1a60f4428ca1ba90be9b70c" id="r_a3680bda1a1a60f4428ca1ba90be9b70c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1StochasticScenario.html#a3680bda1a1a60f4428ca1ba90be9b70c">earliestInstantiationTime</a></td></tr>
+<tr class="separator:a3680bda1a1a60f4428ca1ba90be9b70c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6c8e16bfc560050886016fa794ef71e8" id="r_a6c8e16bfc560050886016fa794ef71e8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1StochasticScenario.html#a6c8e16bfc560050886016fa794ef71e8">latestInstantiationTime</a></td></tr>
+<tr class="separator:a6c8e16bfc560050886016fa794ef71e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aad529f3df92a1e59ba32361895f3b10a" id="r_aad529f3df92a1e59ba32361895f3b10a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classBPMNOS_1_1RandomDistributionFactory.html">RandomDistributionFactory</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1StochasticScenario.html#aad529f3df92a1e59ba32361895f3b10a">randomFactory</a> = nullptr</td></tr>
+<tr class="memdesc:aad529f3df92a1e59ba32361895f3b10a"><td class="mdescLeft">&#160;</td><td class="mdescRight">RandomDistributionFactory for expression evaluation (set by provider)  <br /></td></tr>
+<tr class="separator:aad529f3df92a1e59ba32361895f3b10a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2249f673bcf20b4d6672c29b4ec9a38e" id="r_a2249f673bcf20b4d6672c29b4ec9a38e"><td class="memItemLeft" align="right" valign="top">const LIMEX::Handle&lt; double &gt; *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1StochasticScenario.html#a2249f673bcf20b4d6672c29b4ec9a38e">stochasticHandle</a> = nullptr</td></tr>
+<tr class="memdesc:a2249f673bcf20b4d6672c29b4ec9a38e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stochastic LIMEX handle for expression evaluation (set by provider)  <br /></td></tr>
+<tr class="separator:a2249f673bcf20b4d6672c29b4ec9a38e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pro_attribs_classBPMNOS_1_1Model_1_1Scenario"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classBPMNOS_1_1Model_1_1Scenario')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html">BPMNOS::Model::Scenario</a></td></tr>
+<tr class="memitem:ac178d5e6cc70be483edfb07b19a91c38 inherit pro_attribs_classBPMNOS_1_1Model_1_1Scenario" id="r_ac178d5e6cc70be483edfb07b19a91c38"><td class="memItemLeft" align="right" valign="top">std::map&lt; std::pair&lt; size_t, const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a> * &gt;, <a class="el" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#ac178d5e6cc70be483edfb07b19a91c38">taskCompletionStatus</a></td></tr>
+<tr class="memdesc:ac178d5e6cc70be483edfb07b19a91c38 inherit pro_attribs_classBPMNOS_1_1Model_1_1Scenario"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stored completion status per (instanceId, task)  <br /></td></tr>
+<tr class="separator:ac178d5e6cc70be483edfb07b19a91c38 inherit pro_attribs_classBPMNOS_1_1Model_1_1Scenario"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac791dd2bbb091f6977580927e1e1a85b inherit pro_attribs_classBPMNOS_1_1Model_1_1Scenario" id="r_ac791dd2bbb091f6977580927e1e1a85b"><td class="memItemLeft" align="right" valign="top">std::map&lt; std::pair&lt; size_t, const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a> * &gt;, <a class="el" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#ac791dd2bbb091f6977580927e1e1a85b">activityArrivalStatus</a></td></tr>
+<tr class="memdesc:ac791dd2bbb091f6977580927e1e1a85b inherit pro_attribs_classBPMNOS_1_1Model_1_1Scenario"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stored arrival status per (instanceId, activity) from noticeActivityArrival.  <br /></td></tr>
+<tr class="separator:ac791dd2bbb091f6977580927e1e1a85b inherit pro_attribs_classBPMNOS_1_1Model_1_1Scenario"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
+Friends</h2></td></tr>
+<tr class="memitem:a9d4655c6b0c09872b0e438567a617cdb" id="r_a9d4655c6b0c09872b0e438567a617cdb"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1StochasticScenario.html#a9d4655c6b0c09872b0e438567a617cdb">StochasticDataProvider</a></td></tr>
+<tr class="separator:a9d4655c6b0c09872b0e438567a617cdb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
+Additional Inherited Members</h2></td></tr>
+<tr class="inherit_header pub_attribs_classBPMNOS_1_1Model_1_1Scenario"><td colspan="2" onclick="javascript:toggleInherit('pub_attribs_classBPMNOS_1_1Model_1_1Scenario')"><img src="closed.png" alt="-"/>&#160;Public Attributes inherited from <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html">BPMNOS::Model::Scenario</a></td></tr>
+<tr class="memitem:aee0bb548aaa629e088cfc0f83493646b inherit pub_attribs_classBPMNOS_1_1Model_1_1Scenario" id="r_aee0bb548aaa629e088cfc0f83493646b"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classBPMNOS_1_1Model_1_1Model.html">Model</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#aee0bb548aaa629e088cfc0f83493646b">model</a></td></tr>
+<tr class="memdesc:aee0bb548aaa629e088cfc0f83493646b inherit pub_attribs_classBPMNOS_1_1Model_1_1Scenario"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pointer to the BPMN model.  <br /></td></tr>
+<tr class="separator:aee0bb548aaa629e088cfc0f83493646b inherit pub_attribs_classBPMNOS_1_1Model_1_1Scenario"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af62d210f70ee664720212016cb168742 inherit pub_attribs_classBPMNOS_1_1Model_1_1Scenario" id="r_af62d210f70ee664720212016cb168742"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#af62d210f70ee664720212016cb168742">globals</a></td></tr>
+<tr class="separator:af62d210f70ee664720212016cb168742 inherit pub_attribs_classBPMNOS_1_1Model_1_1Scenario"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="ad0ae4792bf4b3cd48fa7c9b10d8a1c6e" name="ad0ae4792bf4b3cd48fa7c9b10d8a1c6e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad0ae4792bf4b3cd48fa7c9b10d8a1c6e">&#9670;&#160;</a></span>StochasticScenario() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">StochasticScenario::StochasticScenario </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classBPMNOS_1_1Model_1_1Model.html">Model</a> *&#160;</td>
+          <td class="paramname"><em>model</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::unordered_map&lt; const <a class="el" href="classBPMNOS_1_1Model_1_1Attribute.html">Attribute</a> *, <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>globalValueMap</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>seed</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="StochasticScenario_8cpp_source.html#l00010">10</a> of file <a class="el" href="StochasticScenario_8cpp_source.html">StochasticScenario.cpp</a>.</p>
+
+</div>
+</div>
+<a id="ad1f0e177e24557683baeead9cee69cd2" name="ad1f0e177e24557683baeead9cee69cd2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad1f0e177e24557683baeead9cee69cd2">&#9670;&#160;</a></span>StochasticScenario() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">StochasticScenario::StochasticScenario </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classBPMNOS_1_1Model_1_1StochasticScenario.html">StochasticScenario</a> *&#160;</td>
+          <td class="paramname"><em>original</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td>
+          <td class="paramname"><em>spawnTime</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>seed</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Creates a forked scenario to continue a run from a given SystemState. Values with disclosure time &gt;= spawnTime are re-evaluated using the new seed, enabling independent sampling of future stochastic values.</p>
+<dl class="section note"><dt>Note</dt><dd>spawnTime must be the next point in time after the given SystemState's current time (i.e., systemState-&gt;getTime() + 1). This ensures past values are preserved and only future values are resampled.</dd></dl>
+<dl class="section pre"><dt>Precondition</dt><dd>Throws std::logic_error if any past disclosure has disclosureTime &gt;= spawnTime. Throws std::logic_error if any pending disclosure has disclosureTime &lt; spawnTime.</dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">original</td><td>The scenario to be forked </td></tr>
+    <tr><td class="paramname">spawnTime</td><td>First time point for resampling (systemState-&gt;getTime() + 1) </td></tr>
+    <tr><td class="paramname">seed</td><td>New seed for resampling future values </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="StochasticScenario_8cpp_source.html#l00022">22</a> of file <a class="el" href="StochasticScenario_8cpp_source.html">StochasticScenario.cpp</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a9ecb5bc6e10a952268d28d25323e2421" name="a9ecb5bc6e10a952268d28d25323e2421"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9ecb5bc6e10a952268d28d25323e2421">&#9670;&#160;</a></span>addCompletionExpression()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void StochasticScenario::addCompletionExpression </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td>
+          <td class="paramname"><em>instanceId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a> *&#160;</td>
+          <td class="paramname"><em>task</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classBPMNOS_1_1Model_1_1Expression.html">Expression</a> &gt;&#160;</td>
+          <td class="paramname"><em>expression</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="StochasticScenario_8cpp_source.html#l00072">72</a> of file <a class="el" href="StochasticScenario_8cpp_source.html">StochasticScenario.cpp</a>.</p>
+
+</div>
+</div>
+<a id="ab860c026ece195b6d679ee90ecfc3c1c" name="ab860c026ece195b6d679ee90ecfc3c1c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab860c026ece195b6d679ee90ecfc3c1c">&#9670;&#160;</a></span>addDeferredDisclosure()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void StochasticScenario::addDeferredDisclosure </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td>
+          <td class="paramname"><em>instanceId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structBPMNOS_1_1Model_1_1DeferredDisclosure.html">DeferredDisclosure</a> &amp;&amp;&#160;</td>
+          <td class="paramname"><em>deferred</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="StochasticScenario_8cpp_source.html#l00080">80</a> of file <a class="el" href="StochasticScenario_8cpp_source.html">StochasticScenario.cpp</a>.</p>
+
+</div>
+</div>
+<a id="ad77ace1fb9787c820270a49636ea23e8" name="ad77ace1fb9787c820270a49636ea23e8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad77ace1fb9787c820270a49636ea23e8">&#9670;&#160;</a></span>addInstance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void StochasticScenario::addInstance </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Process.html">BPMN::Process</a> *&#160;</td>
+          <td class="paramname"><em>process</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td>
+          <td class="paramname"><em>instanceId</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="StochasticScenario_8cpp_source.html#l00055">55</a> of file <a class="el" href="StochasticScenario_8cpp_source.html">StochasticScenario.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a435e1bd823c9e6ccf6bf5410aa8a4780" name="a435e1bd823c9e6ccf6bf5410aa8a4780"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a435e1bd823c9e6ccf6bf5410aa8a4780">&#9670;&#160;</a></span>addPendingDisclosure()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void StochasticScenario::addPendingDisclosure </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td>
+          <td class="paramname"><em>instanceId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structBPMNOS_1_1Model_1_1StochasticPendingDisclosure.html">StochasticPendingDisclosure</a> &amp;&amp;&#160;</td>
+          <td class="paramname"><em>pending</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="StochasticScenario_8cpp_source.html#l00068">68</a> of file <a class="el" href="StochasticScenario_8cpp_source.html">StochasticScenario.cpp</a>.</p>
+
+</div>
+</div>
+<a id="aee272f5ea41e98f61e56cf716b62b3ea" name="aee272f5ea41e98f61e56cf716b62b3ea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aee272f5ea41e98f61e56cf716b62b3ea">&#9670;&#160;</a></span>addReadyExpression()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void StochasticScenario::addReadyExpression </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td>
+          <td class="paramname"><em>instanceId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a> *&#160;</td>
+          <td class="paramname"><em>node</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classBPMNOS_1_1Model_1_1Expression.html">Expression</a> &gt;&#160;</td>
+          <td class="paramname"><em>expression</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="StochasticScenario_8cpp_source.html#l00076">76</a> of file <a class="el" href="StochasticScenario_8cpp_source.html">StochasticScenario.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a66960ea2b69cabadf157f5f583110152" name="a66960ea2b69cabadf157f5f583110152"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a66960ea2b69cabadf157f5f583110152">&#9670;&#160;</a></span>evaluateDeferredDisclosures()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void StochasticScenario::evaluateDeferredDisclosures </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td>
+          <td class="paramname"><em>spawnTime</em> = <code>std::numeric_limits&lt;<a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&gt;::lowest()</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Timestamps and disclosure times that fall before spawnTime are resampled up to maxResamplingTries times, falling back to spawnTime if still in the past.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">spawnTime</td><td>Items with disclosure time &lt; spawnTime are not evaluated again </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::logic_error</td><td>if any pending disclosure has disclosureTime &lt; spawnTime </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="StochasticScenario_8cpp_source.html#l00084">84</a> of file <a class="el" href="StochasticScenario_8cpp_source.html">StochasticScenario.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a7842537ee463eb4415a9b440f3cc4b1a" name="a7842537ee463eb4415a9b440f3cc4b1a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7842537ee463eb4415a9b440f3cc4b1a">&#9670;&#160;</a></span>getActivityReadyStatus()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt; <a class="el" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a> &gt; StochasticScenario::getActivityReadyStatus </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td>
+          <td class="paramname"><em>rootId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td>
+          <td class="paramname"><em>instanceId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a> *&#160;</td>
+          <td class="paramname"><em>activity</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td>
+          <td class="paramname"><em>currentTime</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Checks if all node's own attributes are disclosed at currentTime. If yes, combines stored parent status (from noticeActivityArrival) with node's own attributes to return full status. If no, returns std::nullopt.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">rootId</td><td>The root instance identifier. </td></tr>
+    <tr><td class="paramname">instanceId</td><td>The instance identifier. </td></tr>
+    <tr><td class="paramname">activity</td><td>The activity node. </td></tr>
+    <tr><td class="paramname">currentTime</td><td>The current time for disclosure check. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Full status values if ready, std::nullopt otherwise. </dd></dl>
+
+<p>Implements <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#ab000f8eba25546a04f80f0247d5400bc">BPMNOS::Model::Scenario</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="StochasticScenario_8cpp_source.html#l00516">516</a> of file <a class="el" href="StochasticScenario_8cpp_source.html">StochasticScenario.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a2a4fec2cbbb5a2629e71602440d08536" name="a2a4fec2cbbb5a2629e71602440d08536"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2a4fec2cbbb5a2629e71602440d08536">&#9670;&#160;</a></span>getCreatedInstances()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; const <a class="el" href="structBPMNOS_1_1Model_1_1Scenario_1_1InstanceData.html">Scenario::InstanceData</a> * &gt; StochasticScenario::getCreatedInstances </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td>
+          <td class="paramname"><em>currentTime</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#a3ecee7232616785c7aaf481994d64a8d">BPMNOS::Model::Scenario</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="StochasticScenario_8cpp_source.html#l00315">315</a> of file <a class="el" href="StochasticScenario_8cpp_source.html">StochasticScenario.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a6d73e7ed9752b036247b499628f0573f" name="a6d73e7ed9752b036247b499628f0573f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6d73e7ed9752b036247b499628f0573f">&#9670;&#160;</a></span>getCurrentInstantiations()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; std::tuple&lt; const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Process.html">BPMN::Process</a> *, <a class="el" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a>, <a class="el" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a> &gt; &gt; StochasticScenario::getCurrentInstantiations </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td>
+          <td class="paramname"><em>currentTime</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#adb46b1bf8f7f6236f2ded3451fb154df">BPMNOS::Model::Scenario</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="StochasticScenario_8cpp_source.html#l00340">340</a> of file <a class="el" href="StochasticScenario_8cpp_source.html">StochasticScenario.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a73c34c402c4290991d3ec6e7d2b95b50" name="a73c34c402c4290991d3ec6e7d2b95b50"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a73c34c402c4290991d3ec6e7d2b95b50">&#9670;&#160;</a></span>getData()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt; <a class="el" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a> &gt; StochasticScenario::getData </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td>
+          <td class="paramname"><em>instanceId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a> *&#160;</td>
+          <td class="paramname"><em>node</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td>
+          <td class="paramname"><em>currentTime</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>If at least one attribute value is not yet known, the method returns std::nullopt. </p>
+
+<p>Implements <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#ad308a7ed8d89254f5f879258d671827a">BPMNOS::Model::Scenario</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="StochasticScenario_8cpp_source.html#l00431">431</a> of file <a class="el" href="StochasticScenario_8cpp_source.html">StochasticScenario.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a2a352f688e615fe13957514939e4e5a0" name="a2a352f688e615fe13957514939e4e5a0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2a352f688e615fe13957514939e4e5a0">&#9670;&#160;</a></span>getEarliestInstantiationTime()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> StochasticScenario::getEarliestInstantiationTime </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#a0b0ea9975eb5e6c7ec306c6126c6cdaf">BPMNOS::Model::Scenario</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="StochasticScenario_8cpp_source.html#l00307">307</a> of file <a class="el" href="StochasticScenario_8cpp_source.html">StochasticScenario.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a10381af6e9f05f284df3946857d63826" name="a10381af6e9f05f284df3946857d63826"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a10381af6e9f05f284df3946857d63826">&#9670;&#160;</a></span>getInstances()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; const <a class="el" href="structBPMNOS_1_1Model_1_1Scenario_1_1InstanceData.html">Scenario::InstanceData</a> * &gt; StochasticScenario::getInstances </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td>
+          <td class="paramname"><em>currentTime</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#afd54fe067dea011d4b07339e5beb3547">BPMNOS::Model::Scenario</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="StochasticScenario_8cpp_source.html#l00325">325</a> of file <a class="el" href="StochasticScenario_8cpp_source.html">StochasticScenario.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a24bddb583b84efd68a482c63efe2e6f6" name="a24bddb583b84efd68a482c63efe2e6f6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a24bddb583b84efd68a482c63efe2e6f6">&#9670;&#160;</a></span>getKnownInitialData()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a> StochasticScenario::getKnownInitialData </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structBPMNOS_1_1Model_1_1Scenario_1_1InstanceData.html">InstanceData</a> *&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td>
+          <td class="paramname"><em>time</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">protected</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Used internally by getCurrentInstantiations to get process-level data attributes. </p>
+
+<p>Implements <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#adac2f750cf089c8402d2e76bd5432d35">BPMNOS::Model::Scenario</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="StochasticScenario_8cpp_source.html#l00366">366</a> of file <a class="el" href="StochasticScenario_8cpp_source.html">StochasticScenario.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a9807c397f235eff5a436c12a653b4d8e" name="a9807c397f235eff5a436c12a653b4d8e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9807c397f235eff5a436c12a653b4d8e">&#9670;&#160;</a></span>getKnownInitialStatus()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a> StochasticScenario::getKnownInitialStatus </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structBPMNOS_1_1Model_1_1Scenario_1_1InstanceData.html">InstanceData</a> *&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td>
+          <td class="paramname"><em>time</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">protected</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Used internally by getCurrentInstantiations to get process-level status attributes. </p>
+
+<p>Implements <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#af95f252ea0217ae66c98f7c2844610af">BPMNOS::Model::Scenario</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="StochasticScenario_8cpp_source.html#l00358">358</a> of file <a class="el" href="StochasticScenario_8cpp_source.html">StochasticScenario.cpp</a>.</p>
+
+</div>
+</div>
+<a id="ac1ccaa2689f4179e81134e956a6049b4" name="ac1ccaa2689f4179e81134e956a6049b4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac1ccaa2689f4179e81134e956a6049b4">&#9670;&#160;</a></span>getRng()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::mt19937 &amp; StochasticScenario::getRng </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>instanceId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a> *&#160;</td>
+          <td class="paramname"><em>node</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="StochasticScenario_8cpp_source.html#l00295">295</a> of file <a class="el" href="StochasticScenario_8cpp_source.html">StochasticScenario.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a89ca73279ff8f385448bd52dd899f35b" name="a89ca73279ff8f385448bd52dd899f35b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a89ca73279ff8f385448bd52dd899f35b">&#9670;&#160;</a></span>getSeed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned int StochasticScenario::getSeed </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="StochasticScenario_8cpp_source.html#l00051">51</a> of file <a class="el" href="StochasticScenario_8cpp_source.html">StochasticScenario.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a451cfbcc2e11c8b2e87f806aeca48eb6" name="a451cfbcc2e11c8b2e87f806aeca48eb6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a451cfbcc2e11c8b2e87f806aeca48eb6">&#9670;&#160;</a></span>getStatus()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt; <a class="el" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a> &gt; StochasticScenario::getStatus </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td>
+          <td class="paramname"><em>instanceId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a> *&#160;</td>
+          <td class="paramname"><em>node</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td>
+          <td class="paramname"><em>currentTime</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>If at least one attribute value is not yet known, the method returns std::nullopt. </p>
+
+<p>Implements <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#a34b2ee3668fe609e0ad072c2441419df">BPMNOS::Model::Scenario</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="StochasticScenario_8cpp_source.html#l00417">417</a> of file <a class="el" href="StochasticScenario_8cpp_source.html">StochasticScenario.cpp</a>.</p>
+
+</div>
+</div>
+<a id="aac1e8a990c8d11bd41e754d1663381fe" name="aac1e8a990c8d11bd41e754d1663381fe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac1e8a990c8d11bd41e754d1663381fe">&#9670;&#160;</a></span>getValue() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt; <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> &gt; StochasticScenario::getValue </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td>
+          <td class="paramname"><em>instanceId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classBPMNOS_1_1Model_1_1Attribute.html">BPMNOS::Model::Attribute</a> *&#160;</td>
+          <td class="paramname"><em>attribute</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td>
+          <td class="paramname"><em>currentTime</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>If the attribute value is not yet known, the method returns std::nullopt. </p>
+
+<p>Implements <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#a0ec67037e3574dcc9b3af688a42e736c">BPMNOS::Model::Scenario</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="StochasticScenario_8cpp_source.html#l00413">413</a> of file <a class="el" href="StochasticScenario_8cpp_source.html">StochasticScenario.cpp</a>.</p>
+
+</div>
+</div>
+<a id="af22c8349d9f68b4a9c4c02e80b18790b" name="af22c8349d9f68b4a9c4c02e80b18790b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af22c8349d9f68b4a9c4c02e80b18790b">&#9670;&#160;</a></span>getValue() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt; <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> &gt; StochasticScenario::getValue </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structBPMNOS_1_1Model_1_1Scenario_1_1InstanceData.html">Scenario::InstanceData</a> *&#160;</td>
+          <td class="paramname"><em>instance</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classBPMNOS_1_1Model_1_1Attribute.html">BPMNOS::Model::Attribute</a> *&#160;</td>
+          <td class="paramname"><em>attribute</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td>
+          <td class="paramname"><em>currentTime</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>If the attribute value is not yet known, the method returns std::nullopt. </p>
+
+<p>Implements <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#a23e900832113250d19dd1c3016b8a135">BPMNOS::Model::Scenario</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="StochasticScenario_8cpp_source.html#l00374">374</a> of file <a class="el" href="StochasticScenario_8cpp_source.html">StochasticScenario.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a9ab4792ea0341e1da44f29f6aa0cd685" name="a9ab4792ea0341e1da44f29f6aa0cd685"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9ab4792ea0341e1da44f29f6aa0cd685">&#9670;&#160;</a></span>isCompleted()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool StochasticScenario::isCompleted </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td>
+          <td class="paramname"><em>currentTime</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#ad026b6ae8fc0b3c5e2937ccfa3b4e3e2">BPMNOS::Model::Scenario</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="StochasticScenario_8cpp_source.html#l00311">311</a> of file <a class="el" href="StochasticScenario_8cpp_source.html">StochasticScenario.cpp</a>.</p>
+
+</div>
+</div>
+<a id="aff9d24e2668f3c41d5e785422c88ee74" name="aff9d24e2668f3c41d5e785422c88ee74"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aff9d24e2668f3c41d5e785422c88ee74">&#9670;&#160;</a></span>noticeCompletionPending()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void StochasticScenario::noticeCompletionPending </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td>
+          <td class="paramname"><em>instanceId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a> *&#160;</td>
+          <td class="paramname"><em>task</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structBPMNOS_1_1Values.html">Values</a> &amp;&#160;</td>
+          <td class="paramname"><em>status</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structBPMNOS_1_1SharedValues.html">SharedValues</a> &amp;&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structBPMNOS_1_1Values.html">Values</a> &amp;&#160;</td>
+          <td class="paramname"><em>globals</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Evaluates COMPLETION expressions immediately and stores the final result. Uses per-(instance, node) RNG for reproducibility. </p>
+
+<p>Reimplemented from <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#a3e5662eae1e0e8b2b0db744ed27e44d3">BPMNOS::Model::Scenario</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="StochasticScenario_8cpp_source.html#l00445">445</a> of file <a class="el" href="StochasticScenario_8cpp_source.html">StochasticScenario.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a6a37ea75429cd710eca30124637c4bbd" name="a6a37ea75429cd710eca30124637c4bbd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6a37ea75429cd710eca30124637c4bbd">&#9670;&#160;</a></span>noticeReadyPending()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void StochasticScenario::noticeReadyPending </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td>
+          <td class="paramname"><em>instanceId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a> *&#160;</td>
+          <td class="paramname"><em>node</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structBPMNOS_1_1Values.html">Values</a> &amp;&#160;</td>
+          <td class="paramname"><em>status</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structBPMNOS_1_1SharedValues.html">SharedValues</a> &amp;&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structBPMNOS_1_1Values.html">Values</a> &amp;&#160;</td>
+          <td class="paramname"><em>globals</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Evaluates READY expressions using the parent scope's context and stores the computed values. </p>
+
+<p>Reimplemented from <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#a46005036b881cf65bbca027ef9027eab">BPMNOS::Model::Scenario</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="StochasticScenario_8cpp_source.html#l00237">237</a> of file <a class="el" href="StochasticScenario_8cpp_source.html">StochasticScenario.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a10990948840b77b2be6cecb50d5a61cd" name="a10990948840b77b2be6cecb50d5a61cd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a10990948840b77b2be6cecb50d5a61cd">&#9670;&#160;</a></span>revealData()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void StochasticScenario::revealData </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td>
+          <td class="paramname"><em>currentTime</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>This method only does house keeping without actually revealing data. Disclosures of data are handled by checking node-level disclosureTimes. </p>
+
+<p class="definition">Definition at line <a class="el" href="StochasticScenario_8cpp_source.html#l00499">499</a> of file <a class="el" href="StochasticScenario_8cpp_source.html">StochasticScenario.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a6e2d3e6efd14b9b13c1e1199ee4cc9cc" name="a6e2d3e6efd14b9b13c1e1199ee4cc9cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6e2d3e6efd14b9b13c1e1199ee4cc9cc">&#9670;&#160;</a></span>setDisclosure()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void StochasticScenario::setDisclosure </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td>
+          <td class="paramname"><em>instanceId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a> *&#160;</td>
+          <td class="paramname"><em>node</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td>
+          <td class="paramname"><em>disclosureTime</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="StochasticScenario_8cpp_source.html#l00064">64</a> of file <a class="el" href="StochasticScenario_8cpp_source.html">StochasticScenario.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a165c576f532558c60ef5b55aeef336a1" name="a165c576f532558c60ef5b55aeef336a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a165c576f532558c60ef5b55aeef336a1">&#9670;&#160;</a></span>setValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void StochasticScenario::setValue </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td>
+          <td class="paramname"><em>instanceId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classBPMNOS_1_1Model_1_1Attribute.html">Attribute</a> *&#160;</td>
+          <td class="paramname"><em>attribute</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::optional&lt; <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> &gt;&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="StochasticScenario_8cpp_source.html#l00060">60</a> of file <a class="el" href="StochasticScenario_8cpp_source.html">StochasticScenario.cpp</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Friends And Related Symbol Documentation</h2>
+<a id="a9d4655c6b0c09872b0e438567a617cdb" name="a9d4655c6b0c09872b0e438567a617cdb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9d4655c6b0c09872b0e438567a617cdb">&#9670;&#160;</a></span>StochasticDataProvider</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend class <a class="el" href="classBPMNOS_1_1Model_1_1StochasticDataProvider.html">StochasticDataProvider</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="StochasticScenario_8h_source.html#l00065">65</a> of file <a class="el" href="StochasticScenario_8h_source.html">StochasticScenario.h</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="ae6caf6fc81d4c43306fb0b3d149476b5" name="ae6caf6fc81d4c43306fb0b3d149476b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae6caf6fc81d4c43306fb0b3d149476b5">&#9670;&#160;</a></span>completionExpressions</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unordered_map&lt;size_t, std::unordered_map&lt;const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a>*, std::vector&lt;std::shared_ptr&lt;<a class="el" href="classBPMNOS_1_1Model_1_1Expression.html">Expression</a>&gt; &gt; &gt; &gt; BPMNOS::Model::StochasticScenario::completionExpressions</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="StochasticScenario_8h_source.html#l00185">185</a> of file <a class="el" href="StochasticScenario_8h_source.html">StochasticScenario.h</a>.</p>
+
+</div>
+</div>
+<a id="a58c17a9d06638c5cbb49826fbdd11097" name="a58c17a9d06638c5cbb49826fbdd11097"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a58c17a9d06638c5cbb49826fbdd11097">&#9670;&#160;</a></span>deferredDisclosures</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unordered_map&lt;size_t, std::vector&lt;<a class="el" href="structBPMNOS_1_1Model_1_1DeferredDisclosure.html">DeferredDisclosure</a>&gt; &gt; BPMNOS::Model::StochasticScenario::deferredDisclosures</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="StochasticScenario_8h_source.html#l00188">188</a> of file <a class="el" href="StochasticScenario_8h_source.html">StochasticScenario.h</a>.</p>
+
+</div>
+</div>
+<a id="a3e25cad6890b96520328b413a7066ee0" name="a3e25cad6890b96520328b413a7066ee0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3e25cad6890b96520328b413a7066ee0">&#9670;&#160;</a></span>disclosureTimes</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unordered_map&lt;size_t, std::unordered_map&lt;const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a>*, <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&gt; &gt; BPMNOS::Model::StochasticScenario::disclosureTimes</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="StochasticScenario_8h_source.html#l00177">177</a> of file <a class="el" href="StochasticScenario_8h_source.html">StochasticScenario.h</a>.</p>
+
+</div>
+</div>
+<a id="a3680bda1a1a60f4428ca1ba90be9b70c" name="a3680bda1a1a60f4428ca1ba90be9b70c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3680bda1a1a60f4428ca1ba90be9b70c">&#9670;&#160;</a></span>earliestInstantiationTime</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> BPMNOS::Model::StochasticScenario::earliestInstantiationTime</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="StochasticScenario_8h_source.html#l00195">195</a> of file <a class="el" href="StochasticScenario_8h_source.html">StochasticScenario.h</a>.</p>
+
+</div>
+</div>
+<a id="a388152f1a525bd2c76956e657df8b939" name="a388152f1a525bd2c76956e657df8b939"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a388152f1a525bd2c76956e657df8b939">&#9670;&#160;</a></span>instances</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unordered_map&lt;size_t, <a class="el" href="structBPMNOS_1_1Model_1_1Scenario_1_1InstanceData.html">InstanceData</a>&gt; BPMNOS::Model::StochasticScenario::instances</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">mutable</span><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="StochasticScenario_8h_source.html#l00176">176</a> of file <a class="el" href="StochasticScenario_8h_source.html">StochasticScenario.h</a>.</p>
+
+</div>
+</div>
+<a id="a6c8e16bfc560050886016fa794ef71e8" name="a6c8e16bfc560050886016fa794ef71e8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6c8e16bfc560050886016fa794ef71e8">&#9670;&#160;</a></span>latestInstantiationTime</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> BPMNOS::Model::StochasticScenario::latestInstantiationTime</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="StochasticScenario_8h_source.html#l00196">196</a> of file <a class="el" href="StochasticScenario_8h_source.html">StochasticScenario.h</a>.</p>
+
+</div>
+</div>
+<a id="a25625bbe3d2b80a4711ce8676ae1da6e" name="a25625bbe3d2b80a4711ce8676ae1da6e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a25625bbe3d2b80a4711ce8676ae1da6e">&#9670;&#160;</a></span>maxResamplingTries</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr int BPMNOS::Model::StochasticScenario::maxResamplingTries = 4</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="StochasticScenario_8h_source.html#l00071">71</a> of file <a class="el" href="StochasticScenario_8h_source.html">StochasticScenario.h</a>.</p>
+
+</div>
+</div>
+<a id="a893b68a3834094cf9b3d8f4bf805d79c" name="a893b68a3834094cf9b3d8f4bf805d79c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a893b68a3834094cf9b3d8f4bf805d79c">&#9670;&#160;</a></span>pastDisclosures</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unordered_map&lt;size_t, std::unordered_map&lt;const <a class="el" href="classBPMNOS_1_1Model_1_1Attribute.html">Attribute</a>*, <a class="el" href="structBPMNOS_1_1Model_1_1StochasticPendingDisclosure.html">StochasticPendingDisclosure</a>&gt; &gt; BPMNOS::Model::StochasticScenario::pastDisclosures</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">mutable</span><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="StochasticScenario_8h_source.html#l00178">178</a> of file <a class="el" href="StochasticScenario_8h_source.html">StochasticScenario.h</a>.</p>
+
+</div>
+</div>
+<a id="aaf5600451b5d38af221d6785859287f5" name="aaf5600451b5d38af221d6785859287f5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaf5600451b5d38af221d6785859287f5">&#9670;&#160;</a></span>pendingDisclosures</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unordered_map&lt;size_t, std::unordered_map&lt;const <a class="el" href="classBPMNOS_1_1Model_1_1Attribute.html">Attribute</a>*, <a class="el" href="structBPMNOS_1_1Model_1_1StochasticPendingDisclosure.html">StochasticPendingDisclosure</a>&gt; &gt; BPMNOS::Model::StochasticScenario::pendingDisclosures</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">mutable</span><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="StochasticScenario_8h_source.html#l00179">179</a> of file <a class="el" href="StochasticScenario_8h_source.html">StochasticScenario.h</a>.</p>
+
+</div>
+</div>
+<a id="aad529f3df92a1e59ba32361895f3b10a" name="aad529f3df92a1e59ba32361895f3b10a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aad529f3df92a1e59ba32361895f3b10a">&#9670;&#160;</a></span>randomFactory</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classBPMNOS_1_1RandomDistributionFactory.html">RandomDistributionFactory</a>* BPMNOS::Model::StochasticScenario::randomFactory = nullptr</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">mutable</span><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="StochasticScenario_8h_source.html#l00199">199</a> of file <a class="el" href="StochasticScenario_8h_source.html">StochasticScenario.h</a>.</p>
+
+</div>
+</div>
+<a id="aa48059320d49d9edf2611bf53dac4d2d" name="aa48059320d49d9edf2611bf53dac4d2d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa48059320d49d9edf2611bf53dac4d2d">&#9670;&#160;</a></span>readyExpressions</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unordered_map&lt;size_t, std::unordered_map&lt;const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a>*, std::vector&lt;std::shared_ptr&lt;<a class="el" href="classBPMNOS_1_1Model_1_1Expression.html">Expression</a>&gt; &gt; &gt; &gt; BPMNOS::Model::StochasticScenario::readyExpressions</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="StochasticScenario_8h_source.html#l00182">182</a> of file <a class="el" href="StochasticScenario_8h_source.html">StochasticScenario.h</a>.</p>
+
+</div>
+</div>
+<a id="a9513fde55b2072efb484f83fd9dca8e4" name="a9513fde55b2072efb484f83fd9dca8e4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9513fde55b2072efb484f83fd9dca8e4">&#9670;&#160;</a></span>rngs</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::map&lt;std::pair&lt;size_t, const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a>*&gt;, std::mt19937&gt; BPMNOS::Model::StochasticScenario::rngs</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">mutable</span><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="StochasticScenario_8h_source.html#l00191">191</a> of file <a class="el" href="StochasticScenario_8h_source.html">StochasticScenario.h</a>.</p>
+
+</div>
+</div>
+<a id="a304619852019feb4aa4331163631a155" name="a304619852019feb4aa4331163631a155"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a304619852019feb4aa4331163631a155">&#9670;&#160;</a></span>scenarioSeeds</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::list&lt;std::pair&lt;<a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>, unsigned int&gt; &gt; BPMNOS::Model::StochasticScenario::scenarioSeeds</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="StochasticScenario_8h_source.html#l00194">194</a> of file <a class="el" href="StochasticScenario_8h_source.html">StochasticScenario.h</a>.</p>
+
+</div>
+</div>
+<a id="a2249f673bcf20b4d6672c29b4ec9a38e" name="a2249f673bcf20b4d6672c29b4ec9a38e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2249f673bcf20b4d6672c29b4ec9a38e">&#9670;&#160;</a></span>stochasticHandle</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const LIMEX::Handle&lt;double&gt;* BPMNOS::Model::StochasticScenario::stochasticHandle = nullptr</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="StochasticScenario_8h_source.html#l00202">202</a> of file <a class="el" href="StochasticScenario_8h_source.html">StochasticScenario.h</a>.</p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>model/data/src/<a class="el" href="StochasticScenario_8h_source.html">StochasticScenario.h</a></li>
+<li>model/data/src/<a class="el" href="StochasticScenario_8cpp_source.html">StochasticScenario.cpp</a></li>
+</ul>
+</div><!-- contents -->
+</div><!-- doc-content -->
+<script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs"; mermaid.initialize({ startOnLoad: true, theme: "neutral" });</script></body></html>

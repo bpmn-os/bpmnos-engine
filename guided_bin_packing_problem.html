@@ -1,0 +1,754 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<!-- BEGIN opengraph metadata -->
+<meta property="og:title" content="Doxygen Awesome" />
+<meta property="og:image" content="https://repository-images.githubusercontent.com/348492097/4f16df80-88fb-11eb-9d31-4015ff22c452" />
+<meta property="og:description" content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
+<meta property="og:url" content="https://jothepro.github.io/doxygen-awesome-css/" />
+<!-- END opengraph metadata -->
+<!-- BEGIN twitter metadata -->
+<meta name="twitter:image:src" content="https://repository-images.githubusercontent.com/348492097/4f16df80-88fb-11eb-9d31-4015ff22c452" />
+<meta name="twitter:title" content="Doxygen Awesome" />
+<meta name="twitter:description" content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
+<!-- END twitter metadata -->
+<title>BPMN-OS: Bin packing problem (guided)</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript" src="doxygen-awesome-interactive-toc.js"></script>
+<script type="text/javascript" src="doxygen-awesome-tabs.js"></script>
+<script type="text/javascript" src="toggle-alternative-theme.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeParagraphLink.init()
+    DoxygenAwesomeInteractiveToc.init()
+    DoxygenAwesomeTabs.init()
+</script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="custom.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<link href="custom-alternative.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<!-- https://tholman.com/github-corners/ -->
+<a href="https://github.com/bpmn-os/bpmnos-engine" class="github-corner" title="View source on GitHub" target="_blank" rel="noopener noreferrer">
+    <svg viewBox="0 0 250 250" width="40" height="40" style="position: absolute; top: 0; border: 0; right: 0; z-index: 99;" aria-hidden="true">
+    <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="BPMNOS.svg"/></td>
+  <td id="projectalign" style="padding-left: 0.5em;">
+   <div id="projectname">BPMN-OS
+   </div>
+   <div id="projectbrief">BPMN for optimization and simulation</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() {
+  initMenu('',true,false,'search.php','Search');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */
+</script>
+<div id="main-nav"></div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(document).ready(function(){initNavTree('guided_bin_packing_problem.html',''); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div><div class="header">
+  <div class="headertitle"><div class="title">Bin packing problem (guided)</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><h1><a class="anchor" id="collaboration-bin_packing_problem-1"></a>
+Collaboration &lt;tt&gt;Bin_packing_problem&lt;/tt&gt;</h1>
+<p>Given a set of items, each having a specifed size, and a set of bins each having a specified capacity, the <em>Bin packing problem</em> can be described as the problem of finding the minimal number of bins required to include all items such that the total size of all items associated to a bin does not exceed the capacity of the bin.</p>
+<p>The model contains guidance on the allocation of items to bins.</p>
+<h2><a class="anchor" id="diagram-3"></a>
+Diagram</h2>
+<p> 
+<object data="Guided_bin_packing_problem.svg" type="image/svg+xml" style="max-width: 100%;">Diagram</object>
+</p>
+<h2><a class="anchor" id="globals-20"></a>
+Globals</h2>
+<ul>
+<li><em>integer:</em> <b>items</b></li>
+<li><em>integer:</em> <b>item_requests</b> (initialized by <code>item_requests := 0</code>)</li>
+<li><em>integer:</em> <b>bins</b></li>
+<li><em>integer:</em> <b>available_bins</b> (initialized by <code>available_bins := 0</code>)</li>
+<li><em>integer:</em> <b>items_included</b> (initialized by <code>items_included := 0</code>)</li>
+<li><em>boolean:</em> <b>blocker</b> (initialized by <code>blocker := false</code>)</li>
+</ul>
+<h2><a class="anchor" id="item-process-itemprocess-1"></a>
+Item process &lt;tt&gt;ItemProcess&lt;/tt&gt;</h2>
+<h3><a class="anchor" id="status-38"></a>
+Status</h3>
+<ul>
+<li><em>decimal:</em> <b>timestamp</b></li>
+<li><em>decimal:</em> <b>size</b></li>
+</ul>
+<h3><a class="anchor" id="data-39"></a>
+Data</h3>
+<ul>
+<li><em>string:</em> <b>instance</b></li>
+</ul>
+<h3><a class="anchor" id="globals-21"></a>
+Globals</h3>
+<ul>
+<li><em>integer:</em> <b>items</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>integer:</em> <b>item_requests</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>integer:</em> <b>bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>integer:</em> <b>available_bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>integer:</em> <b>items_included</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>boolean:</em> <b>blocker</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+</ul>
+<h2><a class="anchor" id="startevent-starteventitem-1"></a>
+StartEvent &lt;tt&gt;StartEventItem&lt;/tt&gt;</h2>
+<h3><a class="anchor" id="status-39"></a>
+Status</h3>
+<ul>
+<li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="bin_packing_problem.html#item-process-itemprocess">`ItemProcess`</a>)</li>
+<li><em>decimal:</em> <b>size</b> (from <a class="el" href="bin_packing_problem.html#item-process-itemprocess">`ItemProcess`</a>)</li>
+</ul>
+<h3><a class="anchor" id="data-40"></a>
+Data</h3>
+<ul>
+<li><em>string:</em> <b>instance</b> (from <a class="el" href="bin_packing_problem.html#item-process-itemprocess">`ItemProcess`</a>)</li>
+</ul>
+<h3><a class="anchor" id="globals-22"></a>
+Globals</h3>
+<ul>
+<li><em>integer:</em> <b>items</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>integer:</em> <b>item_requests</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>integer:</em> <b>bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>integer:</em> <b>available_bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>integer:</em> <b>items_included</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>boolean:</em> <b>blocker</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+</ul>
+<h2><a class="anchor" id="endevent-endeventitem-1"></a>
+EndEvent &lt;tt&gt;EndEventItem&lt;/tt&gt;</h2>
+<h3><a class="anchor" id="status-40"></a>
+Status</h3>
+<ul>
+<li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="bin_packing_problem.html#item-process-itemprocess">`ItemProcess`</a>)</li>
+<li><em>decimal:</em> <b>size</b> (from <a class="el" href="bin_packing_problem.html#item-process-itemprocess">`ItemProcess`</a>)</li>
+</ul>
+<h3><a class="anchor" id="data-41"></a>
+Data</h3>
+<ul>
+<li><em>string:</em> <b>instance</b> (from <a class="el" href="bin_packing_problem.html#item-process-itemprocess">`ItemProcess`</a>)</li>
+</ul>
+<h3><a class="anchor" id="globals-23"></a>
+Globals</h3>
+<ul>
+<li><em>integer:</em> <b>items</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>integer:</em> <b>item_requests</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>integer:</em> <b>bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>integer:</em> <b>available_bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>integer:</em> <b>items_included</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>boolean:</em> <b>blocker</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+</ul>
+<h2><a class="anchor" id="sendtask-requestactivity-1"></a>
+SendTask &lt;tt&gt;RequestActivity&lt;/tt&gt;</h2>
+<h3><a class="anchor" id="status-41"></a>
+Status</h3>
+<ul>
+<li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="bin_packing_problem.html#item-process-itemprocess">`ItemProcess`</a>)</li>
+<li><em>decimal:</em> <b>size</b> (from <a class="el" href="bin_packing_problem.html#item-process-itemprocess">`ItemProcess`</a>)</li>
+</ul>
+<h3><a class="anchor" id="data-42"></a>
+Data</h3>
+<ul>
+<li><em>string:</em> <b>instance</b> (from <a class="el" href="bin_packing_problem.html#item-process-itemprocess">`ItemProcess`</a>)</li>
+</ul>
+<h3><a class="anchor" id="globals-24"></a>
+Globals</h3>
+<ul>
+<li><em>integer:</em> <b>items</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>integer:</em> <b>item_requests</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>integer:</em> <b>bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>integer:</em> <b>available_bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>integer:</em> <b>items_included</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>boolean:</em> <b>blocker</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+</ul>
+<h3><a class="anchor" id="operators-8"></a>
+Operators</h3>
+<ul>
+<li><code>item_requests += 1</code></li>
+</ul>
+<h3><a class="anchor" id="message-4"></a>
+Message</h3>
+<h4><a class="anchor" id="name-request-2"></a>
+&lt;em&gt;Name&lt;/em&gt; Request</h4>
+<p><a class="anchor" id="header-0-4"></a> </p><h5>Header (0)</h5>
+<p><a class="anchor" id="content-2-2"></a> </p><h5>Content (2)</h5>
+<ul>
+<li><em>Item:</em> <b>instance</b></li>
+<li><em>Size:</em> <b>size</b></li>
+</ul>
+<h2><a class="anchor" id="bin-process-binprocess-1"></a>
+Bin process &lt;tt&gt;BinProcess&lt;/tt&gt;</h2>
+<h3><a class="anchor" id="status-42"></a>
+Status</h3>
+<ul>
+<li><em>decimal:</em> <b>timestamp</b></li>
+</ul>
+<h3><a class="anchor" id="data-43"></a>
+Data</h3>
+<ul>
+<li><em>string:</em> <b>instance</b></li>
+<li><em>decimal:</em> <b>capacity</b></li>
+<li><em>decimal:</em> <b>total_size</b> (initialized by <code>total_size := 0</code>)</li>
+<li><em>boolean:</em> <b>used</b> (initialized by <code>used := false</code>)<ul>
+<li><code>→ minimize 1 * used</code></li>
+</ul>
+</li>
+</ul>
+<h3><a class="anchor" id="globals-25"></a>
+Globals</h3>
+<ul>
+<li><em>integer:</em> <b>items</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>integer:</em> <b>item_requests</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>integer:</em> <b>bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>integer:</em> <b>available_bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>integer:</em> <b>items_included</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>boolean:</em> <b>blocker</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+</ul>
+<h3><a class="anchor" id="entry-restrictions-15"></a>
+Entry restrictions</h3>
+<ul>
+<li><code>total_size &lt;= capacity</code></li>
+</ul>
+<h3><a class="anchor" id="completion-restrictions-15"></a>
+Completion restrictions</h3>
+<ul>
+<li><code>total_size &lt;= capacity</code></li>
+</ul>
+<h3><a class="anchor" id="exit-restrictions-16"></a>
+Exit restrictions</h3>
+<ul>
+<li><code>total_size &lt;= capacity</code></li>
+</ul>
+<h2><a class="anchor" id="subprocess-eventsubprocess-1"></a>
+SubProcess &lt;tt&gt;EventSubProcess&lt;/tt&gt;</h2>
+<h3><a class="anchor" id="status-43"></a>
+Status</h3>
+<ul>
+<li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
+<li><em>string:</em> <b>item</b></li>
+<li><em>decimal:</em> <b>size</b></li>
+</ul>
+<h3><a class="anchor" id="data-44"></a>
+Data</h3>
+<ul>
+<li><em>string:</em> <b>instance</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
+<li><em>decimal:</em> <b>capacity</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
+<li><em>decimal:</em> <b>total_size</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
+<li><em>boolean:</em> <b>used</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)<ul>
+<li><code>→ minimize 1 * used</code></li>
+</ul>
+</li>
+</ul>
+<h3><a class="anchor" id="globals-26"></a>
+Globals</h3>
+<ul>
+<li><em>integer:</em> <b>items</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>integer:</em> <b>item_requests</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>integer:</em> <b>bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>integer:</em> <b>available_bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>integer:</em> <b>items_included</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>boolean:</em> <b>blocker</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+</ul>
+<h3><a class="anchor" id="entry-restrictions-16"></a>
+Entry restrictions</h3>
+<ul>
+<li><code>total_size &lt;= capacity</code> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
+<li><code>blocker == false</code></li>
+</ul>
+<h3><a class="anchor" id="operators-9"></a>
+Operators</h3>
+<ul>
+<li><code>blocker := true</code></li>
+</ul>
+<h3><a class="anchor" id="completion-restrictions-16"></a>
+Completion restrictions</h3>
+<ul>
+<li><code>total_size &lt;= capacity</code> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
+</ul>
+<h3><a class="anchor" id="exit-restrictions-17"></a>
+Exit restrictions</h3>
+<ul>
+<li><code>total_size &lt;= capacity</code> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
+</ul>
+<h2><a class="anchor" id="adhocsubprocess-adhocsubprocess-1"></a>
+AdHocSubProcess &lt;tt&gt;AdHocSubProcess&lt;/tt&gt;</h2>
+<h3><a class="anchor" id="status-44"></a>
+Status</h3>
+<ul>
+<li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
+<li><em>string:</em> <b>item</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+<li><em>decimal:</em> <b>size</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+</ul>
+<h3><a class="anchor" id="data-45"></a>
+Data</h3>
+<ul>
+<li><em>string:</em> <b>instance</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
+<li><em>decimal:</em> <b>capacity</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
+<li><em>decimal:</em> <b>total_size</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
+<li><em>boolean:</em> <b>used</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)<ul>
+<li><code>→ minimize 1 * used</code></li>
+</ul>
+</li>
+</ul>
+<h3><a class="anchor" id="globals-27"></a>
+Globals</h3>
+<ul>
+<li><em>integer:</em> <b>items</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>integer:</em> <b>item_requests</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>integer:</em> <b>bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>integer:</em> <b>available_bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>integer:</em> <b>items_included</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>boolean:</em> <b>blocker</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+</ul>
+<h3><a class="anchor" id="entry-restrictions-17"></a>
+Entry restrictions</h3>
+<ul>
+<li><code>total_size &lt;= capacity</code> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
+</ul>
+<h3><a class="anchor" id="completion-restrictions-17"></a>
+Completion restrictions</h3>
+<ul>
+<li><code>total_size &lt;= capacity</code> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
+</ul>
+<h3><a class="anchor" id="exit-restrictions-18"></a>
+Exit restrictions</h3>
+<ul>
+<li><code>total_size &lt;= capacity</code> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
+</ul>
+<h2><a class="anchor" id="task-includeitemactivity"></a>
+Task &lt;tt&gt;IncludeItemActivity&lt;/tt&gt;</h2>
+<h3><a class="anchor" id="status-45"></a>
+Status</h3>
+<ul>
+<li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
+<li><em>string:</em> <b>item</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+<li><em>decimal:</em> <b>size</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+</ul>
+<h3><a class="anchor" id="data-46"></a>
+Data</h3>
+<ul>
+<li><em>string:</em> <b>instance</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
+<li><em>decimal:</em> <b>capacity</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
+<li><em>decimal:</em> <b>total_size</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
+<li><em>boolean:</em> <b>used</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)<ul>
+<li><code>→ minimize 1 * used</code></li>
+</ul>
+</li>
+</ul>
+<h3><a class="anchor" id="globals-28"></a>
+Globals</h3>
+<ul>
+<li><em>integer:</em> <b>items</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>integer:</em> <b>item_requests</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>integer:</em> <b>bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>integer:</em> <b>available_bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>integer:</em> <b>items_included</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>boolean:</em> <b>blocker</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+</ul>
+<h3><a class="anchor" id="entry-restrictions-18"></a>
+Entry restrictions</h3>
+<ul>
+<li><code>total_size &lt;= capacity</code> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
+</ul>
+<h3><a class="anchor" id="operators-10"></a>
+Operators</h3>
+<ul>
+<li><code>used := true</code></li>
+<li><code>total_size += size</code></li>
+<li><code>items_included += 1</code></li>
+<li><code>blocker := false</code></li>
+</ul>
+<h3><a class="anchor" id="completion-restrictions-18"></a>
+Completion restrictions</h3>
+<ul>
+<li><code>total_size &lt;= capacity</code> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
+</ul>
+<h3><a class="anchor" id="exit-restrictions-19"></a>
+Exit restrictions</h3>
+<ul>
+<li><code>total_size &lt;= capacity</code> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
+</ul>
+<h2><a class="anchor" id="endevent-endeventsubprocess-1"></a>
+EndEvent &lt;tt&gt;EndEventSubProcess&lt;/tt&gt;</h2>
+<h3><a class="anchor" id="status-46"></a>
+Status</h3>
+<ul>
+<li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
+<li><em>string:</em> <b>item</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+<li><em>decimal:</em> <b>size</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+</ul>
+<h3><a class="anchor" id="data-47"></a>
+Data</h3>
+<ul>
+<li><em>string:</em> <b>instance</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
+<li><em>decimal:</em> <b>capacity</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
+<li><em>decimal:</em> <b>total_size</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
+<li><em>boolean:</em> <b>used</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)<ul>
+<li><code>→ minimize 1 * used</code></li>
+</ul>
+</li>
+</ul>
+<h3><a class="anchor" id="globals-29"></a>
+Globals</h3>
+<ul>
+<li><em>integer:</em> <b>items</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>integer:</em> <b>item_requests</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>integer:</em> <b>bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>integer:</em> <b>available_bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>integer:</em> <b>items_included</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>boolean:</em> <b>blocker</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+</ul>
+<h3><a class="anchor" id="entry-restrictions-19"></a>
+Entry restrictions</h3>
+<ul>
+<li><code>total_size &lt;= capacity</code> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
+</ul>
+<h3><a class="anchor" id="completion-restrictions-19"></a>
+Completion restrictions</h3>
+<ul>
+<li><code>total_size &lt;= capacity</code> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
+</ul>
+<h3><a class="anchor" id="exit-restrictions-20"></a>
+Exit restrictions</h3>
+<ul>
+<li><code>total_size &lt;= capacity</code> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
+</ul>
+<h2><a class="anchor" id="startevent-catchrequestmessage-1"></a>
+StartEvent &lt;tt&gt;CatchRequestMessage&lt;/tt&gt;</h2>
+<p>The guidance for the allocation of items to bins requires that all items have sent their request, all bins are available, and that the inclusion of an item will not exceed the capacity. Allocations are made in an order that the item which minimise the residual capacity is chosen first.</p>
+<h3><a class="anchor" id="status-47"></a>
+Status</h3>
+<ul>
+<li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
+<li><em>string:</em> <b>item</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+<li><em>decimal:</em> <b>size</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+</ul>
+<h3><a class="anchor" id="data-48"></a>
+Data</h3>
+<ul>
+<li><em>string:</em> <b>instance</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
+<li><em>decimal:</em> <b>capacity</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
+<li><em>decimal:</em> <b>total_size</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
+<li><em>boolean:</em> <b>used</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)<ul>
+<li><code>→ minimize 1 * used</code></li>
+</ul>
+</li>
+</ul>
+<h3><a class="anchor" id="globals-30"></a>
+Globals</h3>
+<ul>
+<li><em>integer:</em> <b>items</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>integer:</em> <b>item_requests</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>integer:</em> <b>bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>integer:</em> <b>available_bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>integer:</em> <b>items_included</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>boolean:</em> <b>blocker</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+</ul>
+<h3><a class="anchor" id="entry-restrictions-20"></a>
+Entry restrictions</h3>
+<ul>
+<li><code>total_size &lt;= capacity</code> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
+</ul>
+<h3><a class="anchor" id="message-5"></a>
+Message</h3>
+<h4><a class="anchor" id="name-request-3"></a>
+&lt;em&gt;Name&lt;/em&gt; Request</h4>
+<p><a class="anchor" id="header-0-5"></a> </p><h5>Header (0)</h5>
+<p><a class="anchor" id="content-2-3"></a> </p><h5>Content (2)</h5>
+<ul>
+<li><em>Item:</em> <b>item</b></li>
+<li><em>Size:</em> <b>size</b></li>
+</ul>
+<h3><a class="anchor" id="completion-restrictions-20"></a>
+Completion restrictions</h3>
+<ul>
+<li><code>total_size &lt;= capacity</code> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
+</ul>
+<h3><a class="anchor" id="exit-restrictions-21"></a>
+Exit restrictions</h3>
+<ul>
+<li><code>total_size &lt;= capacity</code> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
+</ul>
+<h3><a class="anchor" id="message-guidance-1"></a>
+Message guidance</h3>
+<h4><a class="anchor" id="attributes-3"></a>
+Attributes</h4>
+<ul>
+<li><em>decimal:</em> <b>residual</b><ul>
+<li><code>→ minimize 1 * residual</code></li>
+</ul>
+</li>
+</ul>
+<h4><a class="anchor" id="operators-11"></a>
+Operators</h4>
+<ul>
+<li><code>residual := capacity - total_size - size</code></li>
+</ul>
+<h4><a class="anchor" id="restrictions-1"></a>
+Restrictions</h4>
+<ul>
+<li><code>item_requests == items</code></li>
+<li><code>available_bins == bins</code></li>
+<li><code>total_size + size &lt;= capacity</code></li>
+<li><code>blocker == false</code></li>
+</ul>
+<h2><a class="anchor" id="endevent-endeventbin-1"></a>
+EndEvent &lt;tt&gt;EndEventBin&lt;/tt&gt;</h2>
+<h3><a class="anchor" id="status-48"></a>
+Status</h3>
+<ul>
+<li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
+</ul>
+<h3><a class="anchor" id="data-49"></a>
+Data</h3>
+<ul>
+<li><em>string:</em> <b>instance</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
+<li><em>decimal:</em> <b>capacity</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
+<li><em>decimal:</em> <b>total_size</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
+<li><em>boolean:</em> <b>used</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)<ul>
+<li><code>→ minimize 1 * used</code></li>
+</ul>
+</li>
+</ul>
+<h3><a class="anchor" id="globals-31"></a>
+Globals</h3>
+<ul>
+<li><em>integer:</em> <b>items</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>integer:</em> <b>item_requests</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>integer:</em> <b>bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>integer:</em> <b>available_bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>integer:</em> <b>items_included</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>boolean:</em> <b>blocker</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+</ul>
+<h3><a class="anchor" id="entry-restrictions-21"></a>
+Entry restrictions</h3>
+<ul>
+<li><code>total_size &lt;= capacity</code> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
+</ul>
+<h3><a class="anchor" id="completion-restrictions-21"></a>
+Completion restrictions</h3>
+<ul>
+<li><code>total_size &lt;= capacity</code> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
+</ul>
+<h3><a class="anchor" id="exit-restrictions-22"></a>
+Exit restrictions</h3>
+<ul>
+<li><code>total_size &lt;= capacity</code> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
+</ul>
+<h2><a class="anchor" id="task-waitactivity-1"></a>
+Task &lt;tt&gt;WaitActivity&lt;/tt&gt;</h2>
+<h3><a class="anchor" id="status-49"></a>
+Status</h3>
+<ul>
+<li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
+</ul>
+<h3><a class="anchor" id="data-50"></a>
+Data</h3>
+<ul>
+<li><em>string:</em> <b>instance</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
+<li><em>decimal:</em> <b>capacity</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
+<li><em>decimal:</em> <b>total_size</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
+<li><em>boolean:</em> <b>used</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)<ul>
+<li><code>→ minimize 1 * used</code></li>
+</ul>
+</li>
+</ul>
+<h3><a class="anchor" id="globals-32"></a>
+Globals</h3>
+<ul>
+<li><em>integer:</em> <b>items</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>integer:</em> <b>item_requests</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>integer:</em> <b>bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>integer:</em> <b>available_bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>integer:</em> <b>items_included</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>boolean:</em> <b>blocker</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+</ul>
+<h3><a class="anchor" id="entry-restrictions-22"></a>
+Entry restrictions</h3>
+<ul>
+<li><code>total_size &lt;= capacity</code> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
+</ul>
+<h3><a class="anchor" id="operators-12"></a>
+Operators</h3>
+<ul>
+<li><code>available_bins += 1</code></li>
+</ul>
+<h3><a class="anchor" id="completion-restrictions-22"></a>
+Completion restrictions</h3>
+<ul>
+<li><code>total_size &lt;= capacity</code> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
+</ul>
+<h3><a class="anchor" id="exit-restrictions-23"></a>
+Exit restrictions</h3>
+<ul>
+<li><code>total_size &lt;= capacity</code> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
+<li><code>items_included == items</code></li>
+</ul>
+<h2><a class="anchor" id="startevent-startevent-1"></a>
+StartEvent &lt;tt&gt;StartEvent&lt;/tt&gt;</h2>
+<h3><a class="anchor" id="status-50"></a>
+Status</h3>
+<ul>
+<li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
+</ul>
+<h3><a class="anchor" id="data-51"></a>
+Data</h3>
+<ul>
+<li><em>string:</em> <b>instance</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
+<li><em>decimal:</em> <b>capacity</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
+<li><em>decimal:</em> <b>total_size</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
+<li><em>boolean:</em> <b>used</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)<ul>
+<li><code>→ minimize 1 * used</code></li>
+</ul>
+</li>
+</ul>
+<h3><a class="anchor" id="globals-33"></a>
+Globals</h3>
+<ul>
+<li><em>integer:</em> <b>items</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>integer:</em> <b>item_requests</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>integer:</em> <b>bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>integer:</em> <b>available_bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>integer:</em> <b>items_included</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>boolean:</em> <b>blocker</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+</ul>
+<h3><a class="anchor" id="entry-restrictions-23"></a>
+Entry restrictions</h3>
+<ul>
+<li><code>total_size &lt;= capacity</code> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
+</ul>
+<h3><a class="anchor" id="completion-restrictions-23"></a>
+Completion restrictions</h3>
+<ul>
+<li><code>total_size &lt;= capacity</code> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
+</ul>
+<h3><a class="anchor" id="exit-restrictions-24"></a>
+Exit restrictions</h3>
+<ul>
+<li><code>total_size &lt;= capacity</code> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
+</ul>
+<h2><a class="anchor" id="dataobjectreference-dataobjectreference_04cxu4w-1"></a>
+DataObjectReference &lt;tt&gt;DataObjectReference_04cxu4w&lt;/tt&gt;</h2>
+<h3><a class="anchor" id="status-51"></a>
+Status</h3>
+<ul>
+<li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
+</ul>
+<h3><a class="anchor" id="data-52"></a>
+Data</h3>
+<ul>
+<li><em>string:</em> <b>instance</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
+<li><em>decimal:</em> <b>capacity</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
+<li><em>decimal:</em> <b>total_size</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
+<li><em>boolean:</em> <b>used</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)<ul>
+<li><code>→ minimize 1 * used</code></li>
+</ul>
+</li>
+</ul>
+<h3><a class="anchor" id="globals-34"></a>
+Globals</h3>
+<ul>
+<li><em>integer:</em> <b>items</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>integer:</em> <b>item_requests</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>integer:</em> <b>bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>integer:</em> <b>available_bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>integer:</em> <b>items_included</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>boolean:</em> <b>blocker</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+</ul>
+<h3><a class="anchor" id="entry-restrictions-24"></a>
+Entry restrictions</h3>
+<ul>
+<li><code>total_size &lt;= capacity</code> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
+</ul>
+<h3><a class="anchor" id="completion-restrictions-24"></a>
+Completion restrictions</h3>
+<ul>
+<li><code>total_size &lt;= capacity</code> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
+</ul>
+<h3><a class="anchor" id="exit-restrictions-25"></a>
+Exit restrictions</h3>
+<ul>
+<li><code>total_size &lt;= capacity</code> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>) </li>
+</ul>
+</div></div><!-- contents -->
+</div><!-- PageDoc -->
+</div><!-- doc-content -->
+<script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs"; mermaid.initialize({ startOnLoad: true, theme: "neutral" });</script></body></html>

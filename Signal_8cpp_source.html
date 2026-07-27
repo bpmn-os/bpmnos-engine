@@ -1,0 +1,210 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<!-- BEGIN opengraph metadata -->
+<meta property="og:title" content="Doxygen Awesome" />
+<meta property="og:image" content="https://repository-images.githubusercontent.com/348492097/4f16df80-88fb-11eb-9d31-4015ff22c452" />
+<meta property="og:description" content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
+<meta property="og:url" content="https://jothepro.github.io/doxygen-awesome-css/" />
+<!-- END opengraph metadata -->
+<!-- BEGIN twitter metadata -->
+<meta name="twitter:image:src" content="https://repository-images.githubusercontent.com/348492097/4f16df80-88fb-11eb-9d31-4015ff22c452" />
+<meta name="twitter:title" content="Doxygen Awesome" />
+<meta name="twitter:description" content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
+<!-- END twitter metadata -->
+<title>BPMN-OS: model/bpmnos/src/extensionElements/Signal.cpp Source File</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript" src="doxygen-awesome-interactive-toc.js"></script>
+<script type="text/javascript" src="doxygen-awesome-tabs.js"></script>
+<script type="text/javascript" src="toggle-alternative-theme.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeParagraphLink.init()
+    DoxygenAwesomeInteractiveToc.init()
+    DoxygenAwesomeTabs.init()
+</script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="custom.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<link href="custom-alternative.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<!-- https://tholman.com/github-corners/ -->
+<a href="https://github.com/bpmn-os/bpmnos-engine" class="github-corner" title="View source on GitHub" target="_blank" rel="noopener noreferrer">
+    <svg viewBox="0 0 250 250" width="40" height="40" style="position: absolute; top: 0; border: 0; right: 0; z-index: 99;" aria-hidden="true">
+    <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="BPMNOS.svg"/></td>
+  <td id="projectalign" style="padding-left: 0.5em;">
+   <div id="projectname">BPMN-OS
+   </div>
+   <div id="projectbrief">BPMN for optimization and simulation</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() {
+  initMenu('',true,false,'search.php','Search');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */
+</script>
+<div id="main-nav"></div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(document).ready(function() { init_codefold(0); });
+/* @license-end */
+</script>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(document).ready(function(){initNavTree('Signal_8cpp_source.html',''); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">Signal.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="Signal_8cpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="Signal_8h.html">Signal.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="codeRef" href="https://bpmn-os.github.io/bpmnpp/ExtensionElements_8h.html">ExtensionElements.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Keywords_8h.html">model/utility/src/Keywords.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="tSignal_8h.html">model/bpmnos/src/xml/bpmnos/tSignal.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="tParameter_8h.html">model/bpmnos/src/xml/bpmnos/tParameter.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="tSignal_8h.html">model/bpmnos/src/xml/bpmnos/tSignal.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">using namespace </span><a class="code hl_namespace" href="namespaceBPMNOS_1_1Model.html">BPMNOS::Model</a>;</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="foldopen" id="foldopen00010" data-start="{" data-end="}">
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1Model_1_1Signal.html#aba8a6a160d29b707800b23b71568f5cb">   10</a></span><a class="code hl_function" href="classBPMNOS_1_1Model_1_1Signal.html#aba8a6a160d29b707800b23b71568f5cb">Signal::Signal</a>(<a class="code hl_classRef" href="https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1tBaseElement.html">XML::bpmn::tBaseElement</a>* baseElement, <a class="code hl_classRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Scope.html">BPMN::Scope</a>* parent)</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>  : <a class="code hl_namespaceRef" href="https://bpmn-os.github.io/bpmnpp/namespaceBPMN.html">BPMN</a>::<a class="code hl_class" href="classBPMNOS_1_1Model_1_1ExtensionElements.html">ExtensionElements</a>( baseElement ) </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>  , parent(parent)</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>  , attributeRegistry(parent-&gt;extensionElements-&gt;as&lt;<a class="code hl_namespace" href="namespaceBPMNOS.html">BPMNOS</a>::<a class="code hl_class" href="classBPMNOS_1_1Model_1_1Model.html">Model</a>::<a class="code hl_class" href="classBPMNOS_1_1Model_1_1ExtensionElements.html">ExtensionElements</a>&gt;()-&gt;attributeRegistry)</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>{</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>  <span class="keywordflow">if</span> ( !<a class="code hl_variableRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1ExtensionElements.html#aa50f154523b37259487a15a23bfb7c08">element</a> ) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>  </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>  <span class="comment">// get signal definition</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>  <span class="keywordflow">if</span> ( <span class="keyword">auto</span> signal = <a class="code hl_variableRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1ExtensionElements.html#aa50f154523b37259487a15a23bfb7c08">element</a>-&gt;<a class="code hl_functionRef" href="https://bpmn-os.github.io/bpmnpp/classXML_1_1XMLObject.html#a0f01824e23e01f7229979d510fd90257">getOptionalChild</a>&lt;<a class="code hl_class" href="classXML_1_1bpmnos_1_1tSignal.html">XML::bpmnos::tSignal</a>&gt;(); signal.has_value() ) {</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1Signal.html#a1850fce3bb6d99d2582b039a84430f2c">name</a> = <a class="code hl_function" href="namespaceBPMNOS.html#a2d245dee590cfec09f964e60afe635f8">BPMNOS::to_number</a>(signal.value().get().name.value.value,<a class="code hl_enumvalue" href="namespaceBPMNOS.html#abd0d3034519d54779b4df3e9754cd681a420dd3a823baacf2ff185343271e216a">STRING</a>);</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>  </div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <span class="keywordflow">for</span> ( <a class="code hl_class" href="classXML_1_1bpmnos_1_1tContent.html">XML::bpmnos::tContent</a>&amp; content : signal.value().get().content ) {</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>      <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1Signal.html#ad6c803be0584fd699bcf3f8e8bf0da1f">contentMap</a>.emplace(content.key.value.value,std::make_unique&lt;Content&gt;(&amp;content,<a class="code hl_variable" href="classBPMNOS_1_1Model_1_1Signal.html#a590cf1107958e562d9482a0d10c826b9">attributeRegistry</a>));</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    }</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keywordflow">if</span> ( <a class="code hl_variableRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1ExtensionElements.html#a1090342629fc0b15005fe0a769ba294f">baseElement</a>-&gt;<a class="code hl_functionRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1BaseElement.html#a05dd1779e7ed7f0b4ecd95dacb9c28e2">is</a>&lt;<a class="code hl_classRef" href="https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1tCatchEvent.html">XML::bpmn::tCatchEvent</a>&gt;() ) {</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>      <span class="comment">// add data attributes modified by signal to dataUpdateOnCompletion (global values must not be updated by signals)</span></div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>      <span class="keywordflow">for</span> ( <span class="keyword">auto</span>&amp; [key,content] : <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1Signal.html#ad6c803be0584fd699bcf3f8e8bf0da1f">contentMap</a> ) {</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>        <a class="code hl_class" href="classBPMNOS_1_1Model_1_1Attribute.html">Attribute</a>* attribute = content-&gt;attribute;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        <span class="keywordflow">if</span> ( attribute-&gt;<a class="code hl_variable" href="classBPMNOS_1_1Model_1_1Attribute.html#a1ee7d0aa9c8aa5eed633b96bf5b96e0a">category</a> == <a class="code hl_enumvalue" href="classBPMNOS_1_1Model_1_1Attribute.html#aae591f2dba868c00d93ef926d42bf145ae44f9e348e41cb272efa87387728571b">Attribute::Category::DATA</a> ) {</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>          <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1Signal.html#a3d4ee23814b59b696163a215f05f73b7">updatedData</a>.push_back(attribute);</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        }</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> ( attribute-&gt;<a class="code hl_variable" href="classBPMNOS_1_1Model_1_1Attribute.html#a1ee7d0aa9c8aa5eed633b96bf5b96e0a">category</a> == <a class="code hl_enumvalue" href="classBPMNOS_1_1Model_1_1Attribute.html#aae591f2dba868c00d93ef926d42bf145a6eecfba72d12922ee1dead07a0ef3334">Attribute::Category::GLOBAL</a> ) {</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>          <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;Signal: illegal update of global attribute&#39;&quot;</span> + (std::string)attribute-&gt;<a class="code hl_variable" href="classBPMNOS_1_1Model_1_1Attribute.html#a2b6347767756cbbefb784c7451901fa7">id</a> + <span class="stringliteral">&quot;&#39; for content &#39;&quot;</span> + (std::string)content-&gt;key + <span class="stringliteral">&quot;&#39;.&quot;</span>);</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        }</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>      }</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    }</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>  }</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>}</div>
+</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="ttc" id="aExtensionElements_8h_html"><div class="ttname"><a href="https://bpmn-os.github.io/bpmnpp/ExtensionElements_8h.html">ExtensionElements.h</a></div></div>
+<div class="ttc" id="aKeywords_8h_html"><div class="ttname"><a href="Keywords_8h.html">Keywords.h</a></div></div>
+<div class="ttc" id="aSignal_8h_html"><div class="ttname"><a href="Signal_8h.html">Signal.h</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1Attribute_html"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1Attribute.html">BPMNOS::Model::Attribute</a></div><div class="ttdef"><b>Definition</b> <a href="Attribute_8h_source.html#l00021">Attribute.h:21</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1Attribute_html_a1ee7d0aa9c8aa5eed633b96bf5b96e0a"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1Attribute.html#a1ee7d0aa9c8aa5eed633b96bf5b96e0a">BPMNOS::Model::Attribute::category</a></div><div class="ttdeci">Category category</div><div class="ttdef"><b>Definition</b> <a href="Attribute_8h_source.html#l00027">Attribute.h:27</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1Attribute_html_a2b6347767756cbbefb784c7451901fa7"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1Attribute.html#a2b6347767756cbbefb784c7451901fa7">BPMNOS::Model::Attribute::id</a></div><div class="ttdeci">std::string &amp; id</div><div class="ttdef"><b>Definition</b> <a href="Attribute_8h_source.html#l00030">Attribute.h:30</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1Attribute_html_aae591f2dba868c00d93ef926d42bf145a6eecfba72d12922ee1dead07a0ef3334"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1Attribute.html#aae591f2dba868c00d93ef926d42bf145a6eecfba72d12922ee1dead07a0ef3334">BPMNOS::Model::Attribute::Category::GLOBAL</a></div><div class="ttdeci">@ GLOBAL</div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1Attribute_html_aae591f2dba868c00d93ef926d42bf145ae44f9e348e41cb272efa87387728571b"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1Attribute.html#aae591f2dba868c00d93ef926d42bf145ae44f9e348e41cb272efa87387728571b">BPMNOS::Model::Attribute::Category::DATA</a></div><div class="ttdeci">@ DATA</div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1ExtensionElements_html"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1ExtensionElements.html">BPMNOS::Model::ExtensionElements</a></div><div class="ttdoc">Class holding extension elements representing execution data for nodes.</div><div class="ttdef"><b>Definition</b> <a href="ExtensionElements_8h_source.html#l00023">ExtensionElements.h:23</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1Model_html"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1Model.html">BPMNOS::Model::Model</a></div><div class="ttdoc">Represents a BPMN model with all its processes.</div><div class="ttdef"><b>Definition</b> <a href="Model_8h_source.html#l00024">Model.h:24</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1Signal_html_a1850fce3bb6d99d2582b039a84430f2c"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1Signal.html#a1850fce3bb6d99d2582b039a84430f2c">BPMNOS::Model::Signal::name</a></div><div class="ttdeci">BPMNOS::number name</div><div class="ttdoc">Signal name.</div><div class="ttdef"><b>Definition</b> <a href="Signal_8h_source.html#l00022">Signal.h:22</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1Signal_html_a3d4ee23814b59b696163a215f05f73b7"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1Signal.html#a3d4ee23814b59b696163a215f05f73b7">BPMNOS::Model::Signal::updatedData</a></div><div class="ttdeci">std::vector&lt; const Attribute * &gt; updatedData</div><div class="ttdoc">Vector containing data attributes that are modified (for catching signal events)</div><div class="ttdef"><b>Definition</b> <a href="Signal_8h_source.html#l00024">Signal.h:24</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1Signal_html_a590cf1107958e562d9482a0d10c826b9"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1Signal.html#a590cf1107958e562d9482a0d10c826b9">BPMNOS::Model::Signal::attributeRegistry</a></div><div class="ttdeci">const AttributeRegistry &amp; attributeRegistry</div><div class="ttdef"><b>Definition</b> <a href="Signal_8h_source.html#l00021">Signal.h:21</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1Signal_html_aba8a6a160d29b707800b23b71568f5cb"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1Signal.html#aba8a6a160d29b707800b23b71568f5cb">BPMNOS::Model::Signal::Signal</a></div><div class="ttdeci">Signal(XML::bpmn::tBaseElement *baseElement, BPMN::Scope *parent)</div><div class="ttdef"><b>Definition</b> <a href="Signal_8cpp_source.html#l00010">Signal.cpp:10</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1Signal_html_ad6c803be0584fd699bcf3f8e8bf0da1f"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1Signal.html#ad6c803be0584fd699bcf3f8e8bf0da1f">BPMNOS::Model::Signal::contentMap</a></div><div class="ttdeci">ContentMap contentMap</div><div class="ttdoc">Map allowing to look up contents by their keys.</div><div class="ttdef"><b>Definition</b> <a href="Signal_8h_source.html#l00023">Signal.h:23</a></div></div>
+<div class="ttc" id="aclassBPMN_1_1BaseElement_html_a05dd1779e7ed7f0b4ecd95dacb9c28e2"><div class="ttname"><a href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1BaseElement.html#a05dd1779e7ed7f0b4ecd95dacb9c28e2">BPMN::BaseElement::is</a></div><div class="ttdeci">T * is()</div></div>
+<div class="ttc" id="aclassBPMN_1_1ExtensionElements_html_a1090342629fc0b15005fe0a769ba294f"><div class="ttname"><a href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1ExtensionElements.html#a1090342629fc0b15005fe0a769ba294f">BPMN::ExtensionElements::baseElement</a></div><div class="ttdeci">BaseElement * baseElement</div></div>
+<div class="ttc" id="aclassBPMN_1_1ExtensionElements_html_aa50f154523b37259487a15a23bfb7c08"><div class="ttname"><a href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1ExtensionElements.html#aa50f154523b37259487a15a23bfb7c08">BPMN::ExtensionElements::element</a></div><div class="ttdeci">XML::bpmn::tExtensionElements * element</div></div>
+<div class="ttc" id="aclassBPMN_1_1Scope_html"><div class="ttname"><a href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Scope.html">BPMN::Scope</a></div></div>
+<div class="ttc" id="aclassXML_1_1XMLObject_html_a0f01824e23e01f7229979d510fd90257"><div class="ttname"><a href="https://bpmn-os.github.io/bpmnpp/classXML_1_1XMLObject.html#a0f01824e23e01f7229979d510fd90257">XML::XMLObject::getOptionalChild</a></div><div class="ttdeci">auto getOptionalChild(this Self &amp;&amp;self)</div></div>
+<div class="ttc" id="aclassXML_1_1bpmn_1_1tBaseElement_html"><div class="ttname"><a href="https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1tBaseElement.html">XML::bpmn::tBaseElement</a></div></div>
+<div class="ttc" id="aclassXML_1_1bpmn_1_1tCatchEvent_html"><div class="ttname"><a href="https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1tCatchEvent.html">XML::bpmn::tCatchEvent</a></div></div>
+<div class="ttc" id="aclassXML_1_1bpmnos_1_1tContent_html"><div class="ttname"><a href="classXML_1_1bpmnos_1_1tContent.html">XML::bpmnos::tContent</a></div><div class="ttdef"><b>Definition</b> <a href="tContent_8h_source.html#l00026">tContent.h:26</a></div></div>
+<div class="ttc" id="aclassXML_1_1bpmnos_1_1tSignal_html"><div class="ttname"><a href="classXML_1_1bpmnos_1_1tSignal.html">XML::bpmnos::tSignal</a></div><div class="ttdef"><b>Definition</b> <a href="tSignal_8h_source.html#l00029">tSignal.h:29</a></div></div>
+<div class="ttc" id="anamespaceBPMNOS_1_1Model_html"><div class="ttname"><a href="namespaceBPMNOS_1_1Model.html">BPMNOS::Model</a></div><div class="ttdef"><b>Definition</b> <a href="DecisionTask_8h_source.html#l00010">DecisionTask.h:10</a></div></div>
+<div class="ttc" id="anamespaceBPMNOS_html"><div class="ttname"><a href="namespaceBPMNOS.html">BPMNOS</a></div><div class="ttdef"><b>Definition</b> <a href="DecisionTask_8h_source.html#l00010">DecisionTask.h:10</a></div></div>
+<div class="ttc" id="anamespaceBPMNOS_html_a2d245dee590cfec09f964e60afe635f8"><div class="ttname"><a href="namespaceBPMNOS.html#a2d245dee590cfec09f964e60afe635f8">BPMNOS::to_number</a></div><div class="ttdeci">number to_number(const std::string &amp;valueString, const ValueType &amp;type)</div><div class="ttdoc">Converts a string to a number.</div><div class="ttdef"><b>Definition</b> <a href="Number_8cpp_source.html#l00059">Number.cpp:59</a></div></div>
+<div class="ttc" id="anamespaceBPMNOS_html_abd0d3034519d54779b4df3e9754cd681a420dd3a823baacf2ff185343271e216a"><div class="ttname"><a href="namespaceBPMNOS.html#abd0d3034519d54779b4df3e9754cd681a420dd3a823baacf2ff185343271e216a">BPMNOS::STRING</a></div><div class="ttdeci">@ STRING</div><div class="ttdef"><b>Definition</b> <a href="Value_8h_source.html#l00009">Value.h:9</a></div></div>
+<div class="ttc" id="anamespaceBPMN_html"><div class="ttname"><a href="https://bpmn-os.github.io/bpmnpp/namespaceBPMN.html">BPMN</a></div></div>
+<div class="ttc" id="atParameter_8h_html"><div class="ttname"><a href="tParameter_8h.html">tParameter.h</a></div></div>
+<div class="ttc" id="atSignal_8h_html"><div class="ttname"><a href="tSignal_8h.html">tSignal.h</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+</div><!-- doc-content -->
+<script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs"; mermaid.initialize({ startOnLoad: true, theme: "neutral" });</script></body></html>

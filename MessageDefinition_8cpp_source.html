@@ -1,0 +1,262 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<!-- BEGIN opengraph metadata -->
+<meta property="og:title" content="Doxygen Awesome" />
+<meta property="og:image" content="https://repository-images.githubusercontent.com/348492097/4f16df80-88fb-11eb-9d31-4015ff22c452" />
+<meta property="og:description" content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
+<meta property="og:url" content="https://jothepro.github.io/doxygen-awesome-css/" />
+<!-- END opengraph metadata -->
+<!-- BEGIN twitter metadata -->
+<meta name="twitter:image:src" content="https://repository-images.githubusercontent.com/348492097/4f16df80-88fb-11eb-9d31-4015ff22c452" />
+<meta name="twitter:title" content="Doxygen Awesome" />
+<meta name="twitter:description" content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
+<!-- END twitter metadata -->
+<title>BPMN-OS: model/bpmnos/src/extensionElements/MessageDefinition.cpp Source File</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript" src="doxygen-awesome-interactive-toc.js"></script>
+<script type="text/javascript" src="doxygen-awesome-tabs.js"></script>
+<script type="text/javascript" src="toggle-alternative-theme.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeParagraphLink.init()
+    DoxygenAwesomeInteractiveToc.init()
+    DoxygenAwesomeTabs.init()
+</script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="custom.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<link href="custom-alternative.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<!-- https://tholman.com/github-corners/ -->
+<a href="https://github.com/bpmn-os/bpmnos-engine" class="github-corner" title="View source on GitHub" target="_blank" rel="noopener noreferrer">
+    <svg viewBox="0 0 250 250" width="40" height="40" style="position: absolute; top: 0; border: 0; right: 0; z-index: 99;" aria-hidden="true">
+    <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="BPMNOS.svg"/></td>
+  <td id="projectalign" style="padding-left: 0.5em;">
+   <div id="projectname">BPMN-OS
+   </div>
+   <div id="projectbrief">BPMN for optimization and simulation</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() {
+  initMenu('',true,false,'search.php','Search');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */
+</script>
+<div id="main-nav"></div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(document).ready(function() { init_codefold(0); });
+/* @license-end */
+</script>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(document).ready(function(){initNavTree('MessageDefinition_8cpp_source.html',''); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">MessageDefinition.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="MessageDefinition_8cpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="MessageDefinition_8h.html">MessageDefinition.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="Content_8h.html">Content.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="codeRef" href="https://bpmn-os.github.io/bpmnpp/ExtensionElements_8h.html">ExtensionElements.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="tContent_8h.html">model/bpmnos/src/xml/bpmnos/tContent.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="keyword">using namespace </span><a class="code hl_namespace" href="namespaceBPMNOS_1_1Model.html">BPMNOS::Model</a>;</div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="foldopen" id="foldopen00008" data-start="{" data-end="}">
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1Model_1_1MessageDefinition.html#aa87b9a97148aa11f4aa7fd93c59aaedd">    8</a></span><a class="code hl_function" href="classBPMNOS_1_1Model_1_1MessageDefinition.html#aa87b9a97148aa11f4aa7fd93c59aaedd">MessageDefinition::MessageDefinition</a>(<a class="code hl_class" href="classXML_1_1bpmnos_1_1tMessage.html">XML::bpmnos::tMessage</a>* message, <span class="keyword">const</span> <a class="code hl_class" href="classBPMNOS_1_1Model_1_1AttributeRegistry.html">AttributeRegistry</a>&amp; attributeRegistry)</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>  : element(message)</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>  , name( <a class="code hl_namespace" href="namespaceBPMNOS.html">BPMNOS</a>::<a class="code hl_function" href="namespaceBPMNOS.html#a2d245dee590cfec09f964e60afe635f8">to_number</a>(message-&gt;name.value.value,<a class="code hl_enumvalue" href="namespaceBPMNOS.html#abd0d3034519d54779b4df3e9754cd681a420dd3a823baacf2ff185343271e216a">STRING</a>) )</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>{</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>  <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1MessageDefinition.html#a3504307a97cc179d794fa4e593973c30">header</a>.resize(3);</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>  <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1MessageDefinition.html#a3504307a97cc179d794fa4e593973c30">header</a>[ <a class="code hl_enumvalue" href="classBPMNOS_1_1Model_1_1MessageDefinition.html#a68c605294c66b84c79c77ad12983568aaef8d70bd87b396e0093b597aaf2d8b17">Index::Name</a> ] = <span class="stringliteral">&quot;name&quot;</span>;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>  <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1MessageDefinition.html#a3504307a97cc179d794fa4e593973c30">header</a>[ <a class="code hl_enumvalue" href="classBPMNOS_1_1Model_1_1MessageDefinition.html#a68c605294c66b84c79c77ad12983568aab6612d572c1842e9c8284d4d3bcbad05">Index::Sender</a> ] = <span class="stringliteral">&quot;sender&quot;</span>;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>  <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1MessageDefinition.html#a3504307a97cc179d794fa4e593973c30">header</a>[ <a class="code hl_enumvalue" href="classBPMNOS_1_1Model_1_1MessageDefinition.html#a68c605294c66b84c79c77ad12983568aa863c79ff8fdd62b79f3ca6979886efed">Index::Recipient</a> ] = <span class="stringliteral">&quot;recipient&quot;</span>;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>  std::set&lt; std::string &gt; additionalHeader;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>  <span class="keywordflow">for</span> ( <a class="code hl_class" href="classXML_1_1bpmnos_1_1tParameter.html">XML::bpmnos::tParameter</a>&amp; parameter : <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1MessageDefinition.html#a8c6aa5008de7968f456a4626c98f1122">element</a>-&gt;<a class="code hl_variable" href="classXML_1_1bpmnos_1_1tMessage.html#a1e04ce255c8207f00677d0be7e20a963">parameter</a> ) {</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <span class="keyword">auto</span>&amp; key = parameter.name.value.value;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1MessageDefinition.html#a7f0372e53cffdd6b655d8ee1cfc3d87c">parameterMap</a>.emplace(key,std::make_unique&lt;Parameter&gt;(&amp;parameter,attributeRegistry));</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <span class="keywordflow">if</span> ( key != <span class="stringliteral">&quot;name&quot;</span> &amp;&amp; key != <span class="stringliteral">&quot;sender&quot;</span> &amp;&amp; key != <span class="stringliteral">&quot;recipient&quot;</span> ) {</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>      additionalHeader.insert(key);</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    }</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>  }</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>  <span class="keywordflow">for</span> ( <span class="keyword">auto</span>&amp; key : additionalHeader ) {</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1MessageDefinition.html#a3504307a97cc179d794fa4e593973c30">header</a>.push_back(key);</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>  }</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>  <span class="keywordflow">for</span> ( <a class="code hl_class" href="classXML_1_1bpmnos_1_1tContent.html">XML::bpmnos::tContent</a>&amp; content : <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1MessageDefinition.html#a8c6aa5008de7968f456a4626c98f1122">element</a>-&gt;<a class="code hl_variable" href="classXML_1_1bpmnos_1_1tMessage.html#afb560525523a442b78516d9ccd572cc6">content</a> ) {</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1MessageDefinition.html#a15629be9fa9ba6e9fc8ca9f76fe853e9">contentMap</a>.emplace(content.key.value.value,std::make_unique&lt;Content&gt;(&amp;content,attributeRegistry));</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>  }</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>}</div>
+</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</div>
+<div class="foldopen" id="foldopen00035" data-start="{" data-end="}">
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1Model_1_1MessageDefinition.html#a8a0b7c33779b4aadb5719c28ba5bfd22">   35</a></span><a class="code hl_struct" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a> <a class="code hl_function" href="classBPMNOS_1_1Model_1_1MessageDefinition.html#a8a0b7c33779b4aadb5719c28ba5bfd22">MessageDefinition::getSenderHeader</a>(<span class="keyword">const</span> <a class="code hl_class" href="classBPMNOS_1_1Model_1_1AttributeRegistry.html">AttributeRegistry</a>&amp; attributeRegistry, <span class="keyword">const</span> <a class="code hl_struct" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a>&amp; status, <span class="keyword">const</span> DataType&amp; data, <span class="keyword">const</span> <a class="code hl_struct" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a>&amp; globals)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>  <a class="code hl_struct" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a> headerValues;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>  <span class="keywordflow">for</span> ( <span class="keyword">auto</span>&amp; key : <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1MessageDefinition.html#a3504307a97cc179d794fa4e593973c30">header</a> ) {</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keywordflow">if</span> ( key == <span class="stringliteral">&quot;name&quot;</span> ) {</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>      headerValues.push_back( <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1MessageDefinition.html#ad1cd5a56c5431c061b2d9a885a5113c2">name</a> );</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    }</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> ( key == <span class="stringliteral">&quot;sender&quot;</span> ) {</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>      headerValues.push_back( data[<a class="code hl_variable" href="structBPMNOS_1_1Model_1_1ExtensionElements_1_1Index.html#a0767330ddb622acab290bd86524a40f0">BPMNOS::Model::ExtensionElements::Index::Instance</a>] );</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    }</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>      headerValues.push_back( getHeaderValue(key, attributeRegistry, status, data, globals) );</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    }</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>  }</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>  <span class="keywordflow">return</span> headerValues;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>}</div>
+</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="MessageDefinition_8cpp.html#a5c4c966c0c74f309f37a60a4ee92fea7">   53</a></span><span class="keyword">template</span>  <a class="code hl_struct" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a> MessageDefinition::getSenderHeader&lt;BPMNOS::Values&gt;(<span class="keyword">const</span> <a class="code hl_class" href="classBPMNOS_1_1Model_1_1AttributeRegistry.html">AttributeRegistry</a>&amp; attributeRegistry, <span class="keyword">const</span> <a class="code hl_struct" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a>&amp; status, <span class="keyword">const</span> <a class="code hl_struct" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a>&amp; data, <span class="keyword">const</span> <a class="code hl_struct" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a>&amp; globals) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="MessageDefinition_8cpp.html#adc1e8509d4066d6cbd9d153bda695dfc">   54</a></span><span class="keyword">template</span>  <a class="code hl_struct" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a> MessageDefinition::getSenderHeader&lt;BPMNOS::SharedValues&gt;(<span class="keyword">const</span> <a class="code hl_class" href="classBPMNOS_1_1Model_1_1AttributeRegistry.html">AttributeRegistry</a>&amp; attributeRegistry, <span class="keyword">const</span> <a class="code hl_struct" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a>&amp; status, <span class="keyword">const</span> <a class="code hl_struct" href="structBPMNOS_1_1SharedValues.html">BPMNOS::SharedValues</a>&amp; data, <span class="keyword">const</span> <a class="code hl_struct" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a>&amp; globals) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</div>
+<div class="foldopen" id="foldopen00057" data-start="{" data-end="}">
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1Model_1_1MessageDefinition.html#a25a6240f74177fd103afecef3caf2424">   57</a></span><a class="code hl_struct" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a> <a class="code hl_function" href="classBPMNOS_1_1Model_1_1MessageDefinition.html#a25a6240f74177fd103afecef3caf2424">MessageDefinition::getRecipientHeader</a>(<span class="keyword">const</span> <a class="code hl_class" href="classBPMNOS_1_1Model_1_1AttributeRegistry.html">AttributeRegistry</a>&amp; attributeRegistry, <span class="keyword">const</span> <a class="code hl_struct" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a>&amp; status, <span class="keyword">const</span> DataType&amp; data, <span class="keyword">const</span> <a class="code hl_struct" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a>&amp; globals)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>  <a class="code hl_struct" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a> headerValues;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>  <span class="keywordflow">for</span> ( <span class="keyword">auto</span>&amp; key : <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1MessageDefinition.html#a3504307a97cc179d794fa4e593973c30">header</a> ) {</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keywordflow">if</span> ( key == <span class="stringliteral">&quot;name&quot;</span> ) {</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>      headerValues.push_back( <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1MessageDefinition.html#ad1cd5a56c5431c061b2d9a885a5113c2">name</a> );</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    }</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> ( key == <span class="stringliteral">&quot;recipient&quot;</span> ) {</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>      headerValues.push_back( data[<a class="code hl_variable" href="structBPMNOS_1_1Model_1_1ExtensionElements_1_1Index.html#a0767330ddb622acab290bd86524a40f0">BPMNOS::Model::ExtensionElements::Index::Instance</a>] );</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    }</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>      headerValues.push_back( getHeaderValue(key, attributeRegistry, status, data, globals) );</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    }</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>  }</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>  <span class="keywordflow">return</span> headerValues;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>}</div>
+</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="MessageDefinition_8cpp.html#ab5f8c90fbf43d6a1c8995d33518c2da5">   75</a></span><span class="keyword">template</span>  <a class="code hl_struct" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a> MessageDefinition::getRecipientHeader&lt;BPMNOS::Values&gt;(<span class="keyword">const</span> <a class="code hl_class" href="classBPMNOS_1_1Model_1_1AttributeRegistry.html">AttributeRegistry</a>&amp; attributeRegistry, <span class="keyword">const</span> <a class="code hl_struct" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a>&amp; status, <span class="keyword">const</span> <a class="code hl_struct" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a>&amp; data, <span class="keyword">const</span> <a class="code hl_struct" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a>&amp; globals) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno"><a class="line" href="MessageDefinition_8cpp.html#a1cf131a9aa0b0abcada17f9c7e685d45">   76</a></span><span class="keyword">template</span>  <a class="code hl_struct" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a> MessageDefinition::getRecipientHeader&lt;BPMNOS::SharedValues&gt;(<span class="keyword">const</span> <a class="code hl_class" href="classBPMNOS_1_1Model_1_1AttributeRegistry.html">AttributeRegistry</a>&amp; attributeRegistry, <span class="keyword">const</span> <a class="code hl_struct" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a>&amp; status, <span class="keyword">const</span> <a class="code hl_struct" href="structBPMNOS_1_1SharedValues.html">BPMNOS::SharedValues</a>&amp; data, <span class="keyword">const</span> <a class="code hl_struct" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a>&amp; globals) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span><span class="keyword">template</span> &lt;<span class="keyword">typename</span> DataType&gt;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>std::optional&lt;BPMNOS::number&gt; MessageDefinition::getHeaderValue(<span class="keyword">const</span> std::string&amp; key, [[maybe_unused]] <span class="keyword">const</span> <a class="code hl_class" href="classBPMNOS_1_1Model_1_1AttributeRegistry.html">AttributeRegistry</a>&amp; attributeRegistry, <span class="keyword">const</span> <a class="code hl_struct" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a>&amp; status, <span class="keyword">const</span> DataType&amp; data, <span class="keyword">const</span> <a class="code hl_struct" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a>&amp; globals)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>  std::optional&lt;BPMNOS::number&gt; value;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>  <span class="keyword">auto</span> it = <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1MessageDefinition.html#a7f0372e53cffdd6b655d8ee1cfc3d87c">parameterMap</a>.find(key);</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>  <span class="keywordflow">if</span> ( it != <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1MessageDefinition.html#a7f0372e53cffdd6b655d8ee1cfc3d87c">parameterMap</a>.end() &amp;&amp; it-&gt;second-&gt;expression ) {</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    value =  it-&gt;second-&gt;expression-&gt;execute(status,data,globals);</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>  }</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>  <span class="keywordflow">return</span> value;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>}</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno"><a class="line" href="MessageDefinition_8cpp.html#a8385d0f75fff8fd2bd86323ef51233d7">   88</a></span><span class="keyword">template</span> std::optional&lt;BPMNOS::number&gt; MessageDefinition::getHeaderValue&lt;BPMNOS::Values&gt;(<span class="keyword">const</span> std::string&amp; key, <span class="keyword">const</span> <a class="code hl_class" href="classBPMNOS_1_1Model_1_1AttributeRegistry.html">AttributeRegistry</a>&amp; attributeRegistry, <span class="keyword">const</span> <a class="code hl_struct" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a>&amp; status, <span class="keyword">const</span> <a class="code hl_struct" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a>&amp; data, <span class="keyword">const</span> <a class="code hl_struct" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a>&amp; globals) <span class="keyword">const</span>; </div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno"><a class="line" href="MessageDefinition_8cpp.html#a0a88ed456d1d34c493dfc82962050921">   89</a></span><span class="keyword">template</span> std::optional&lt;BPMNOS::number&gt; MessageDefinition::getHeaderValue&lt;BPMNOS::SharedValues&gt;(<span class="keyword">const</span> std::string&amp; key, <span class="keyword">const</span> <a class="code hl_class" href="classBPMNOS_1_1Model_1_1AttributeRegistry.html">AttributeRegistry</a>&amp; attributeRegistry, <span class="keyword">const</span> <a class="code hl_struct" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a>&amp; status, <span class="keyword">const</span> <a class="code hl_struct" href="structBPMNOS_1_1SharedValues.html">BPMNOS::SharedValues</a>&amp; data, <span class="keyword">const</span> <a class="code hl_struct" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a>&amp; globals) <span class="keyword">const</span>; </div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span> </div>
+<div class="ttc" id="aContent_8h_html"><div class="ttname"><a href="Content_8h.html">Content.h</a></div></div>
+<div class="ttc" id="aExtensionElements_8h_html"><div class="ttname"><a href="https://bpmn-os.github.io/bpmnpp/ExtensionElements_8h.html">ExtensionElements.h</a></div></div>
+<div class="ttc" id="aMessageDefinition_8h_html"><div class="ttname"><a href="MessageDefinition_8h.html">MessageDefinition.h</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1AttributeRegistry_html"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1AttributeRegistry.html">BPMNOS::Model::AttributeRegistry</a></div><div class="ttdef"><b>Definition</b> <a href="AttributeRegistry_8h_source.html#l00015">AttributeRegistry.h:15</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1MessageDefinition_html_a15629be9fa9ba6e9fc8ca9f76fe853e9"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1MessageDefinition.html#a15629be9fa9ba6e9fc8ca9f76fe853e9">BPMNOS::Model::MessageDefinition::contentMap</a></div><div class="ttdeci">ContentMap contentMap</div><div class="ttdoc">Map allowing to look up contents by their keys.</div><div class="ttdef"><b>Definition</b> <a href="MessageDefinition_8h_source.html#l00023">MessageDefinition.h:23</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1MessageDefinition_html_a25a6240f74177fd103afecef3caf2424"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1MessageDefinition.html#a25a6240f74177fd103afecef3caf2424">BPMNOS::Model::MessageDefinition::getRecipientHeader</a></div><div class="ttdeci">BPMNOS::Values getRecipientHeader(const AttributeRegistry &amp;attributeRegistry, const BPMNOS::Values &amp;status, const DataType &amp;data, const BPMNOS::Values &amp;globals) const</div><div class="ttdoc">Returns a vector of values including message name, recipient, sender, and all other header parameters...</div><div class="ttdef"><b>Definition</b> <a href="MessageDefinition_8cpp_source.html#l00057">MessageDefinition.cpp:57</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1MessageDefinition_html_a3504307a97cc179d794fa4e593973c30"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1MessageDefinition.html#a3504307a97cc179d794fa4e593973c30">BPMNOS::Model::MessageDefinition::header</a></div><div class="ttdeci">std::vector&lt; std::string &gt; header</div><div class="ttdoc">Set of parameter names always beginning with &quot;sender&quot; and &quot;recipient&quot;.</div><div class="ttdef"><b>Definition</b> <a href="MessageDefinition_8h_source.html#l00021">MessageDefinition.h:21</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1MessageDefinition_html_a68c605294c66b84c79c77ad12983568aa863c79ff8fdd62b79f3ca6979886efed"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1MessageDefinition.html#a68c605294c66b84c79c77ad12983568aa863c79ff8fdd62b79f3ca6979886efed">BPMNOS::Model::MessageDefinition::Recipient</a></div><div class="ttdeci">@ Recipient</div><div class="ttdef"><b>Definition</b> <a href="MessageDefinition_8h_source.html#l00022">MessageDefinition.h:22</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1MessageDefinition_html_a68c605294c66b84c79c77ad12983568aab6612d572c1842e9c8284d4d3bcbad05"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1MessageDefinition.html#a68c605294c66b84c79c77ad12983568aab6612d572c1842e9c8284d4d3bcbad05">BPMNOS::Model::MessageDefinition::Sender</a></div><div class="ttdeci">@ Sender</div><div class="ttdef"><b>Definition</b> <a href="MessageDefinition_8h_source.html#l00022">MessageDefinition.h:22</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1MessageDefinition_html_a68c605294c66b84c79c77ad12983568aaef8d70bd87b396e0093b597aaf2d8b17"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1MessageDefinition.html#a68c605294c66b84c79c77ad12983568aaef8d70bd87b396e0093b597aaf2d8b17">BPMNOS::Model::MessageDefinition::Name</a></div><div class="ttdeci">@ Name</div><div class="ttdef"><b>Definition</b> <a href="MessageDefinition_8h_source.html#l00022">MessageDefinition.h:22</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1MessageDefinition_html_a7f0372e53cffdd6b655d8ee1cfc3d87c"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1MessageDefinition.html#a7f0372e53cffdd6b655d8ee1cfc3d87c">BPMNOS::Model::MessageDefinition::parameterMap</a></div><div class="ttdeci">ParameterMap parameterMap</div><div class="ttdoc">Map allowing to look up parameters by their names.</div><div class="ttdef"><b>Definition</b> <a href="MessageDefinition_8h_source.html#l00020">MessageDefinition.h:20</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1MessageDefinition_html_a8a0b7c33779b4aadb5719c28ba5bfd22"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1MessageDefinition.html#a8a0b7c33779b4aadb5719c28ba5bfd22">BPMNOS::Model::MessageDefinition::getSenderHeader</a></div><div class="ttdeci">BPMNOS::Values getSenderHeader(const AttributeRegistry &amp;attributeRegistry, const BPMNOS::Values &amp;status, const DataType &amp;data, const BPMNOS::Values &amp;globals) const</div><div class="ttdef"><b>Definition</b> <a href="MessageDefinition_8cpp_source.html#l00035">MessageDefinition.cpp:35</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1MessageDefinition_html_a8c6aa5008de7968f456a4626c98f1122"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1MessageDefinition.html#a8c6aa5008de7968f456a4626c98f1122">BPMNOS::Model::MessageDefinition::element</a></div><div class="ttdeci">XML::bpmnos::tMessage * element</div><div class="ttdef"><b>Definition</b> <a href="MessageDefinition_8h_source.html#l00018">MessageDefinition.h:18</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1MessageDefinition_html_aa87b9a97148aa11f4aa7fd93c59aaedd"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1MessageDefinition.html#aa87b9a97148aa11f4aa7fd93c59aaedd">BPMNOS::Model::MessageDefinition::MessageDefinition</a></div><div class="ttdeci">MessageDefinition(XML::bpmnos::tMessage *message, const AttributeRegistry &amp;attributeRegistry)</div><div class="ttdef"><b>Definition</b> <a href="MessageDefinition_8cpp_source.html#l00008">MessageDefinition.cpp:8</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1MessageDefinition_html_ad1cd5a56c5431c061b2d9a885a5113c2"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1MessageDefinition.html#ad1cd5a56c5431c061b2d9a885a5113c2">BPMNOS::Model::MessageDefinition::name</a></div><div class="ttdeci">BPMNOS::number name</div><div class="ttdoc">Message name.</div><div class="ttdef"><b>Definition</b> <a href="MessageDefinition_8h_source.html#l00019">MessageDefinition.h:19</a></div></div>
+<div class="ttc" id="aclassXML_1_1bpmnos_1_1tContent_html"><div class="ttname"><a href="classXML_1_1bpmnos_1_1tContent.html">XML::bpmnos::tContent</a></div><div class="ttdef"><b>Definition</b> <a href="tContent_8h_source.html#l00026">tContent.h:26</a></div></div>
+<div class="ttc" id="aclassXML_1_1bpmnos_1_1tMessage_html"><div class="ttname"><a href="classXML_1_1bpmnos_1_1tMessage.html">XML::bpmnos::tMessage</a></div><div class="ttdef"><b>Definition</b> <a href="tMessage_8h_source.html#l00032">tMessage.h:32</a></div></div>
+<div class="ttc" id="aclassXML_1_1bpmnos_1_1tMessage_html_a1e04ce255c8207f00677d0be7e20a963"><div class="ttname"><a href="classXML_1_1bpmnos_1_1tMessage.html#a1e04ce255c8207f00677d0be7e20a963">XML::bpmnos::tMessage::parameter</a></div><div class="ttdeci">std::vector&lt; std::reference_wrapper&lt; tParameter &gt; &gt; parameter</div><div class="ttdef"><b>Definition</b> <a href="tMessage_8h_source.html#l00051">tMessage.h:51</a></div></div>
+<div class="ttc" id="aclassXML_1_1bpmnos_1_1tMessage_html_afb560525523a442b78516d9ccd572cc6"><div class="ttname"><a href="classXML_1_1bpmnos_1_1tMessage.html#afb560525523a442b78516d9ccd572cc6">XML::bpmnos::tMessage::content</a></div><div class="ttdeci">std::vector&lt; std::reference_wrapper&lt; tContent &gt; &gt; content</div><div class="ttdef"><b>Definition</b> <a href="tMessage_8h_source.html#l00052">tMessage.h:52</a></div></div>
+<div class="ttc" id="aclassXML_1_1bpmnos_1_1tParameter_html"><div class="ttname"><a href="classXML_1_1bpmnos_1_1tParameter.html">XML::bpmnos::tParameter</a></div><div class="ttdef"><b>Definition</b> <a href="tParameter_8h_source.html#l00026">tParameter.h:26</a></div></div>
+<div class="ttc" id="anamespaceBPMNOS_1_1Model_html"><div class="ttname"><a href="namespaceBPMNOS_1_1Model.html">BPMNOS::Model</a></div><div class="ttdef"><b>Definition</b> <a href="DecisionTask_8h_source.html#l00010">DecisionTask.h:10</a></div></div>
+<div class="ttc" id="anamespaceBPMNOS_html"><div class="ttname"><a href="namespaceBPMNOS.html">BPMNOS</a></div><div class="ttdef"><b>Definition</b> <a href="DecisionTask_8h_source.html#l00010">DecisionTask.h:10</a></div></div>
+<div class="ttc" id="anamespaceBPMNOS_html_a2d245dee590cfec09f964e60afe635f8"><div class="ttname"><a href="namespaceBPMNOS.html#a2d245dee590cfec09f964e60afe635f8">BPMNOS::to_number</a></div><div class="ttdeci">number to_number(const std::string &amp;valueString, const ValueType &amp;type)</div><div class="ttdoc">Converts a string to a number.</div><div class="ttdef"><b>Definition</b> <a href="Number_8cpp_source.html#l00059">Number.cpp:59</a></div></div>
+<div class="ttc" id="anamespaceBPMNOS_html_abd0d3034519d54779b4df3e9754cd681a420dd3a823baacf2ff185343271e216a"><div class="ttname"><a href="namespaceBPMNOS.html#abd0d3034519d54779b4df3e9754cd681a420dd3a823baacf2ff185343271e216a">BPMNOS::STRING</a></div><div class="ttdeci">@ STRING</div><div class="ttdef"><b>Definition</b> <a href="Value_8h_source.html#l00009">Value.h:9</a></div></div>
+<div class="ttc" id="astructBPMNOS_1_1Model_1_1ExtensionElements_1_1Index_html_a0767330ddb622acab290bd86524a40f0"><div class="ttname"><a href="structBPMNOS_1_1Model_1_1ExtensionElements_1_1Index.html#a0767330ddb622acab290bd86524a40f0">BPMNOS::Model::ExtensionElements::Index::Instance</a></div><div class="ttdeci">static constexpr size_t Instance</div><div class="ttdef"><b>Definition</b> <a href="ExtensionElements_8h_source.html#l00031">ExtensionElements.h:31</a></div></div>
+<div class="ttc" id="astructBPMNOS_1_1SharedValues_html"><div class="ttname"><a href="structBPMNOS_1_1SharedValues.html">BPMNOS::SharedValues</a></div><div class="ttdef"><b>Definition</b> <a href="Number_8h_source.html#l00062">Number.h:62</a></div></div>
+<div class="ttc" id="astructBPMNOS_1_1Values_html"><div class="ttname"><a href="structBPMNOS_1_1Values.html">BPMNOS::Values</a></div><div class="ttdef"><b>Definition</b> <a href="Number_8h_source.html#l00055">Number.h:55</a></div></div>
+<div class="ttc" id="atContent_8h_html"><div class="ttname"><a href="tContent_8h.html">tContent.h</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+</div><!-- doc-content -->
+<script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs"; mermaid.initialize({ startOnLoad: true, theme: "neutral" });</script></body></html>

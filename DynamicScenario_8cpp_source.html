@@ -1,0 +1,471 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<!-- BEGIN opengraph metadata -->
+<meta property="og:title" content="Doxygen Awesome" />
+<meta property="og:image" content="https://repository-images.githubusercontent.com/348492097/4f16df80-88fb-11eb-9d31-4015ff22c452" />
+<meta property="og:description" content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
+<meta property="og:url" content="https://jothepro.github.io/doxygen-awesome-css/" />
+<!-- END opengraph metadata -->
+<!-- BEGIN twitter metadata -->
+<meta name="twitter:image:src" content="https://repository-images.githubusercontent.com/348492097/4f16df80-88fb-11eb-9d31-4015ff22c452" />
+<meta name="twitter:title" content="Doxygen Awesome" />
+<meta name="twitter:description" content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
+<!-- END twitter metadata -->
+<title>BPMN-OS: model/data/src/DynamicScenario.cpp Source File</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript" src="doxygen-awesome-interactive-toc.js"></script>
+<script type="text/javascript" src="doxygen-awesome-tabs.js"></script>
+<script type="text/javascript" src="toggle-alternative-theme.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeParagraphLink.init()
+    DoxygenAwesomeInteractiveToc.init()
+    DoxygenAwesomeTabs.init()
+</script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="custom.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<link href="custom-alternative.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<!-- https://tholman.com/github-corners/ -->
+<a href="https://github.com/bpmn-os/bpmnos-engine" class="github-corner" title="View source on GitHub" target="_blank" rel="noopener noreferrer">
+    <svg viewBox="0 0 250 250" width="40" height="40" style="position: absolute; top: 0; border: 0; right: 0; z-index: 99;" aria-hidden="true">
+    <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="BPMNOS.svg"/></td>
+  <td id="projectalign" style="padding-left: 0.5em;">
+   <div id="projectname">BPMN-OS
+   </div>
+   <div id="projectbrief">BPMN for optimization and simulation</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() {
+  initMenu('',true,false,'search.php','Search');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */
+</script>
+<div id="main-nav"></div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(document).ready(function() { init_codefold(0); });
+/* @license-end */
+</script>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(document).ready(function(){initNavTree('DynamicScenario_8cpp_source.html',''); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">DynamicScenario.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="DynamicScenario_8cpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="DynamicScenario_8h.html">DynamicScenario.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="StringRegistry_8h.html">model/utility/src/StringRegistry.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="ExtensionElements_8h.html">model/bpmnos/src/extensionElements/ExtensionElements.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="keyword">using namespace </span><a class="code hl_namespace" href="namespaceBPMNOS_1_1Model.html">BPMNOS::Model</a>;</div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="foldopen" id="foldopen00007" data-start="{" data-end="}">
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#acdd810b3171f317fb8e81701748fb471">    7</a></span><a class="code hl_function" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#acdd810b3171f317fb8e81701748fb471">DynamicScenario::DynamicScenario</a>(<span class="keyword">const</span> <a class="code hl_class" href="classBPMNOS_1_1Model_1_1Model.html">Model</a>* model, <a class="code hl_typedef" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> earliestInstantiationTime, <a class="code hl_typedef" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> latestInstantiationTime, <span class="keyword">const</span> std::unordered_map&lt; const Attribute*, BPMNOS::number &gt;&amp; globalValueMap)</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span>  : <a class="code hl_class" href="classBPMNOS_1_1Model_1_1Scenario.html">Scenario</a>(model, globalValueMap)</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>  , earliestInstantiationTime(earliestInstantiationTime)</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>  , latestInstantiationTime(latestInstantiationTime)</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>{</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>}</div>
+</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="foldopen" id="foldopen00014" data-start="{" data-end="}">
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#a3cdcb0c8f5acaeeb727e84360a510d55">   14</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#a3cdcb0c8f5acaeeb727e84360a510d55">DynamicScenario::addInstance</a>(<span class="keyword">const</span> <a class="code hl_classRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Process.html">BPMN::Process</a>* process, <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> instanceId, <a class="code hl_typedef" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> instantiationTime) {</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>  <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#aec64ad142f17f2628d0035b098c211be">instances</a>[(size_t)instanceId] = {process, (size_t)instanceId, instantiationTime, {}};</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>}</div>
+</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="foldopen" id="foldopen00018" data-start="{" data-end="}">
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#a50225e72c8f85f389850a6b3ac7e1507">   18</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#a50225e72c8f85f389850a6b3ac7e1507">DynamicScenario::setValue</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> instanceId, <span class="keyword">const</span> <a class="code hl_class" href="classBPMNOS_1_1Model_1_1Attribute.html">Attribute</a>* attribute, std::optional&lt;BPMNOS::number&gt; value) {</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>  <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#aec64ad142f17f2628d0035b098c211be">instances</a>[(size_t)instanceId].values[attribute] = value;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>}</div>
+</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="foldopen" id="foldopen00022" data-start="{" data-end="}">
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#a602aec34eb1bbc6a36aebecf6441e207">   22</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#a602aec34eb1bbc6a36aebecf6441e207">DynamicScenario::setDisclosure</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> instanceId, <span class="keyword">const</span> <a class="code hl_classRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a>* node, <a class="code hl_typedef" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> disclosureTime) {</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>  <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#a64bc25473f91fc48a2144528c6fbbe09">disclosure</a>[(size_t)instanceId][node] = disclosureTime;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>}</div>
+</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="foldopen" id="foldopen00026" data-start="{" data-end="}">
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#a0c431fded59cab7d7af9142373a2726b">   26</a></span><a class="code hl_typedef" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> <a class="code hl_function" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#a0c431fded59cab7d7af9142373a2726b">DynamicScenario::getEarliestInstantiationTime</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#af09a2620541c0284427d4a2b275be448">earliestInstantiationTime</a>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>}</div>
+</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="foldopen" id="foldopen00030" data-start="{" data-end="}">
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#a9820d84293212c838b479fbb169838ef">   30</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#a9820d84293212c838b479fbb169838ef">DynamicScenario::isCompleted</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> currentTime)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>  <span class="keywordflow">return</span> currentTime &gt; <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#a2e1cf8d39ba4b1ee3fd0eacba6810a69">latestInstantiationTime</a>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>}</div>
+</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
+<div class="foldopen" id="foldopen00034" data-start="{" data-end="}">
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#ac3da66dedcff9e532bd0d485e158797e">   34</a></span>std::vector&lt; const Scenario::InstanceData* &gt; <a class="code hl_function" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#ac3da66dedcff9e532bd0d485e158797e">DynamicScenario::getCreatedInstances</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> currentTime)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>  std::vector&lt; const Scenario::InstanceData* &gt; result;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>  <span class="keywordflow">for</span> ( <span class="keyword">auto</span>&amp; [<span class="keywordtype">id</span>, instance] : <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#aec64ad142f17f2628d0035b098c211be">instances</a> ) {</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keywordflow">if</span> ( instance.instantiationTime &lt;= currentTime ) {</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>      result.push_back(&amp;instance);</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    }</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>  }</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>  <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>}</div>
+</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
+<div class="foldopen" id="foldopen00044" data-start="{" data-end="}">
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#a6cc72da0fb34c4bd115f9454bf623f78">   44</a></span>std::vector&lt; const Scenario::InstanceData* &gt; <a class="code hl_function" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#a6cc72da0fb34c4bd115f9454bf623f78">DynamicScenario::getInstances</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> currentTime)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>  std::vector&lt; const Scenario::InstanceData* &gt; result;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>  <span class="keywordflow">for</span> ( <span class="keyword">auto</span>&amp; [<span class="keywordtype">id</span>, instance] : <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#aec64ad142f17f2628d0035b098c211be">instances</a> ) {</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="comment">// Instance is known when process disclosure time is reached</span></div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <a class="code hl_typedef" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> processDisclosure = 0;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keywordflow">if</span> ( <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#a64bc25473f91fc48a2144528c6fbbe09">disclosure</a>.contains(instance.id) &amp;&amp; <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#a64bc25473f91fc48a2144528c6fbbe09">disclosure</a>.at(instance.id).contains(instance.process) ) {</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>      processDisclosure = <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#a64bc25473f91fc48a2144528c6fbbe09">disclosure</a>.at(instance.id).at(instance.process);</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    }</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keywordflow">if</span> ( currentTime &gt;= processDisclosure ) {</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>      result.push_back(&amp;instance);</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    }</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>  }</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>  <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>}</div>
+</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
+<div class="foldopen" id="foldopen00059" data-start="{" data-end="}">
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#a9793964864df63d7932134a9def6ac3e">   59</a></span>std::vector&lt; std::tuple&lt;const BPMN::Process*, BPMNOS::Values, BPMNOS::Values&gt; &gt; <a class="code hl_function" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#a9793964864df63d7932134a9def6ac3e">DynamicScenario::getCurrentInstantiations</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> currentTime)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>  std::vector&lt; std::tuple&lt;const BPMN::Process*, BPMNOS::Values, BPMNOS::Values&gt; &gt; result;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>  <span class="keywordflow">for</span> ( <span class="keyword">auto</span>&amp; [<span class="keywordtype">id</span>, instance] : <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#aec64ad142f17f2628d0035b098c211be">instances</a> ) {</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="comment">// Effective instantiation time is max(instantiationTime, processDisclosure).</span></div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <span class="comment">// If process data disclosure is later than instantiation time, instantiation is delayed</span></div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <span class="comment">// until all process data is disclosed.</span></div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <a class="code hl_typedef" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> effectiveInstantiationTime = instance.instantiationTime;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keywordflow">if</span> ( <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#a64bc25473f91fc48a2144528c6fbbe09">disclosure</a>.contains(instance.id) &amp;&amp; <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#a64bc25473f91fc48a2144528c6fbbe09">disclosure</a>.at(instance.id).contains(instance.process) ) {</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>      effectiveInstantiationTime = std::max(effectiveInstantiationTime, <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#a64bc25473f91fc48a2144528c6fbbe09">disclosure</a>.at(instance.id).at(instance.process));</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    }</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keywordflow">if</span> ( effectiveInstantiationTime == currentTime ) {</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>      <span class="keyword">auto</span> status = <a class="code hl_function" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#a67d0190835cdf80b83d8f49b0609b00f">getKnownInitialStatus</a>(&amp;instance, currentTime);</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>      <span class="comment">// If instantiation was delayed due to disclosure, update timestamp to reflect actual instantiation time</span></div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>      <span class="keywordflow">if</span> ( effectiveInstantiationTime &gt; instance.instantiationTime ) {</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>        status[<a class="code hl_variable" href="structBPMNOS_1_1Model_1_1ExtensionElements_1_1Index.html#a61bc17d7595e94a17d8e85a32a48b1d8">ExtensionElements::Index::Timestamp</a>] = currentTime;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>      }</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>      result.push_back({instance.process, std::move(status), <a class="code hl_function" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#ae62465da49af8b0333fb0773f9f1c356">getKnownInitialData</a>(&amp;instance, currentTime)});</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    }</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>  }</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>  <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>}</div>
+</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
+<div class="foldopen" id="foldopen00081" data-start="{" data-end="}">
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#a67d0190835cdf80b83d8f49b0609b00f">   81</a></span><a class="code hl_struct" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a> <a class="code hl_function" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#a67d0190835cdf80b83d8f49b0609b00f">DynamicScenario::getKnownInitialStatus</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structBPMNOS_1_1Model_1_1Scenario_1_1InstanceData.html">Scenario::InstanceData</a>* instance, <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> currentTime)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>  <a class="code hl_struct" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a> result;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>  <span class="keywordflow">for</span> ( <span class="keyword">auto</span>&amp; attribute : instance-&gt;<a class="code hl_variable" href="structBPMNOS_1_1Model_1_1Scenario_1_1InstanceData.html#a8e549787156e2024132f12f2cd21bff6">process</a>-&gt;<a class="code hl_variableRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1BaseElement.html#a078f33477ca96151f1a79fee93a8ba76">extensionElements</a>-&gt;as&lt;<span class="keyword">const</span> <a class="code hl_class" href="classBPMNOS_1_1Model_1_1ExtensionElements.html">BPMNOS::Model::ExtensionElements</a>&gt;()-&gt;attributes ) {</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    result.push_back( <a class="code hl_function" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#ac5f14ada793cdce00d3d629a4412695c">getValue</a>(instance, attribute.get(), currentTime) );</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>  }</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>  <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>}</div>
+</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span> </div>
+<div class="foldopen" id="foldopen00089" data-start="{" data-end="}">
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#ae62465da49af8b0333fb0773f9f1c356">   89</a></span><a class="code hl_struct" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a> <a class="code hl_function" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#ae62465da49af8b0333fb0773f9f1c356">DynamicScenario::getKnownInitialData</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structBPMNOS_1_1Model_1_1Scenario_1_1InstanceData.html">Scenario::InstanceData</a>* instance, <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> currentTime)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>  <a class="code hl_struct" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a> result;</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>  <span class="keywordflow">for</span> ( <span class="keyword">auto</span>&amp; attribute : instance-&gt;<a class="code hl_variable" href="structBPMNOS_1_1Model_1_1Scenario_1_1InstanceData.html#a8e549787156e2024132f12f2cd21bff6">process</a>-&gt;<a class="code hl_variableRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1BaseElement.html#a078f33477ca96151f1a79fee93a8ba76">extensionElements</a>-&gt;as&lt;<span class="keyword">const</span> <a class="code hl_class" href="classBPMNOS_1_1Model_1_1ExtensionElements.html">BPMNOS::Model::ExtensionElements</a>&gt;()-&gt;data ) {</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    result.push_back( <a class="code hl_function" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#ac5f14ada793cdce00d3d629a4412695c">getValue</a>(instance, attribute.get(), currentTime) );</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>  }</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>  <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>}</div>
+</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span> </div>
+<div class="foldopen" id="foldopen00097" data-start="{" data-end="}">
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#ac5f14ada793cdce00d3d629a4412695c">   97</a></span>std::optional&lt;BPMNOS::number&gt; <a class="code hl_function" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#ac5f14ada793cdce00d3d629a4412695c">DynamicScenario::getValue</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structBPMNOS_1_1Model_1_1Scenario_1_1InstanceData.html">Scenario::InstanceData</a>* instance, <span class="keyword">const</span> <a class="code hl_class" href="classBPMNOS_1_1Model_1_1Attribute.html">BPMNOS::Model::Attribute</a>* attribute, [[maybe_unused]] <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> currentTime)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>  <span class="comment">// Node-level disclosure is checked by caller (getCurrentInstantiations, getStatus, getData)</span></div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>  <span class="keywordflow">if</span> ( attribute-&gt;<a class="code hl_variable" href="classBPMNOS_1_1Model_1_1Attribute.html#a4c3dbc016c148d4d91658789caf5901f">expression</a> &amp;&amp; attribute-&gt;<a class="code hl_variable" href="classBPMNOS_1_1Model_1_1Attribute.html#a4c3dbc016c148d4d91658789caf5901f">expression</a>-&gt;type == <a class="code hl_enumvalue" href="classBPMNOS_1_1Model_1_1Expression.html#a1c6c51e0e04397036812c3e83434344eaffd6976a2b4f6934eb075d0013316ff1">Expression::Type::ASSIGN</a> ) {</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    <span class="comment">// Value is computed from an expression</span></div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    std::vector&lt;double&gt; variableValues;</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    <span class="keywordflow">for</span> ( <span class="keyword">auto</span> input : attribute-&gt;<a class="code hl_variable" href="classBPMNOS_1_1Model_1_1Attribute.html#a4c3dbc016c148d4d91658789caf5901f">expression</a>-&gt;variables ) {</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>      <span class="keywordflow">if</span> ( !input-&gt;isImmutable ) {</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>        <span class="keywordflow">return</span> std::nullopt;</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>      }</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>      <span class="keyword">auto</span> value = <a class="code hl_function" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#ac5f14ada793cdce00d3d629a4412695c">getValue</a>(instance, input, currentTime);</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>      <span class="keywordflow">if</span> ( !value.has_value() ) {</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>        <span class="keywordflow">return</span> std::nullopt;</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>      }</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>      variableValues.push_back( (<span class="keywordtype">double</span>)value.value() );</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    }</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span> </div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    std::vector&lt;std::vector&lt;double&gt;&gt; collectionValues;</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    <span class="keywordflow">for</span> ( <span class="keyword">auto</span> input : attribute-&gt;<a class="code hl_variable" href="classBPMNOS_1_1Model_1_1Attribute.html#a4c3dbc016c148d4d91658789caf5901f">expression</a>-&gt;collections ) {</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>      <span class="keywordflow">if</span> ( !input-&gt;isImmutable ) {</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>        <span class="keywordflow">return</span> std::nullopt;</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>      }</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>      collectionValues.push_back( {} );</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>      <span class="keyword">auto</span> collection = <a class="code hl_function" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#ac5f14ada793cdce00d3d629a4412695c">getValue</a>(instance, input, currentTime);</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>      <span class="keywordflow">if</span> ( !collection.has_value() ) {</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>        <span class="keywordflow">return</span> std::nullopt;</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>      }</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>      <span class="keywordflow">for</span> ( <span class="keyword">auto</span> value : <a class="code hl_variable" href="CollectionRegistry_8cpp.html#a4df1f4374f341a4c8d159809dece3378">collectionRegistry</a>[(size_t)collection.value()] ) {</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>        collectionValues.back().push_back( value );</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>      }</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    }</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span> </div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    <span class="keywordflow">return</span> <a class="code hl_typedef" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">number</a>(attribute-&gt;<a class="code hl_variable" href="classBPMNOS_1_1Model_1_1Attribute.html#a4c3dbc016c148d4d91658789caf5901f">expression</a>-&gt;compiled.evaluate(variableValues, collectionValues));</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>  }</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>  <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>    <span class="comment">// Return stored value directly</span></div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    <span class="keywordflow">if</span> ( instance-&gt;<a class="code hl_variable" href="structBPMNOS_1_1Model_1_1Scenario_1_1InstanceData.html#a82fb5ad877f885513bd5d0c426513b45">values</a>.contains(attribute) ) {</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>      <span class="keywordflow">return</span> instance-&gt;<a class="code hl_variable" href="structBPMNOS_1_1Model_1_1Scenario_1_1InstanceData.html#a82fb5ad877f885513bd5d0c426513b45">values</a>.at(attribute);</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>    }</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    <span class="comment">// Check pending disclosures</span></div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>    <span class="keywordflow">if</span> ( <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#a0a4255309dfe40fa3e327732b0543906">pendingDisclosures</a>.contains(instance-&gt;<a class="code hl_variable" href="structBPMNOS_1_1Model_1_1Scenario_1_1InstanceData.html#ae15e871b4832a72c3a23ecdfdb2379d8">id</a>) ) {</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>      <span class="keywordflow">for</span> ( <span class="keyword">auto</span>&amp; pending : <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#a0a4255309dfe40fa3e327732b0543906">pendingDisclosures</a>.at(instance-&gt;<a class="code hl_variable" href="structBPMNOS_1_1Model_1_1Scenario_1_1InstanceData.html#ae15e871b4832a72c3a23ecdfdb2379d8">id</a>) ) {</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>        <span class="keywordflow">if</span> ( pending.attribute == attribute &amp;&amp; currentTime &gt;= pending.disclosureTime ) {</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>          <span class="keywordflow">return</span> pending.value;</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>        }</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>      }</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>    }</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>  }</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>  <span class="keywordflow">return</span> std::nullopt;</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>}</div>
+</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span> </div>
+<div class="foldopen" id="foldopen00147" data-start="{" data-end="}">
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#a19134339038135e811969d4b19f835dc">  147</a></span>std::optional&lt;BPMNOS::number&gt; <a class="code hl_function" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#ac5f14ada793cdce00d3d629a4412695c">DynamicScenario::getValue</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> instanceId, <span class="keyword">const</span> <a class="code hl_class" href="classBPMNOS_1_1Model_1_1Attribute.html">BPMNOS::Model::Attribute</a>* attribute, <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> currentTime)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>  <span class="keywordflow">return</span> <a class="code hl_function" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#ac5f14ada793cdce00d3d629a4412695c">getValue</a>(&amp;<a class="code hl_variable" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#aec64ad142f17f2628d0035b098c211be">instances</a>.at((<span class="keywordtype">size_t</span>)instanceId), attribute, currentTime);</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>}</div>
+</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span> </div>
+<div class="foldopen" id="foldopen00151" data-start="{" data-end="}">
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#a6ec385a743a5afea647168bc41f57146">  151</a></span>std::optional&lt;BPMNOS::Values&gt; <a class="code hl_function" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#a6ec385a743a5afea647168bc41f57146">DynamicScenario::getStatus</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> instanceId, <span class="keyword">const</span> <a class="code hl_classRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a>* node, <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> currentTime)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>  <span class="keyword">auto</span>&amp; instance = <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#aec64ad142f17f2628d0035b098c211be">instances</a>.at((<span class="keywordtype">size_t</span>)instanceId);</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>  <span class="comment">// Check if node data is disclosed</span></div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>  <span class="keywordflow">if</span> ( <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#a64bc25473f91fc48a2144528c6fbbe09">disclosure</a>.contains(instance.id) &amp;&amp; <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#a64bc25473f91fc48a2144528c6fbbe09">disclosure</a>.at(instance.id).contains(node) ) {</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>    <span class="keywordflow">if</span> ( currentTime &lt; <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#a64bc25473f91fc48a2144528c6fbbe09">disclosure</a>.at(instance.id).at(node) ) {</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>      <span class="keywordflow">return</span> std::nullopt;</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>    }</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>  }</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>  <a class="code hl_struct" href="structBPMNOS_1_1Values.html">Values</a> result;</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>  <span class="keywordflow">for</span> ( <span class="keyword">auto</span>&amp; attribute : node-&gt;<a class="code hl_variableRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1BaseElement.html#a078f33477ca96151f1a79fee93a8ba76">extensionElements</a>-&gt;as&lt;<span class="keyword">const</span> <a class="code hl_class" href="classBPMNOS_1_1Model_1_1ExtensionElements.html">BPMNOS::Model::ExtensionElements</a>&gt;()-&gt;attributes ) {</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>    result.push_back( <a class="code hl_function" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#ac5f14ada793cdce00d3d629a4412695c">getValue</a>(&amp;instance, attribute.get(), currentTime) );</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>  }</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>  <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>}</div>
+</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span> </div>
+<div class="foldopen" id="foldopen00166" data-start="{" data-end="}">
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#a745653fcdec07d534137162316bba1ce">  166</a></span>std::optional&lt;BPMNOS::Values&gt; <a class="code hl_function" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#a745653fcdec07d534137162316bba1ce">DynamicScenario::getData</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> instanceId, <span class="keyword">const</span> <a class="code hl_classRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a>* node, <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> currentTime)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>  <span class="keyword">auto</span>&amp; instance = <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#aec64ad142f17f2628d0035b098c211be">instances</a>.at((<span class="keywordtype">size_t</span>)instanceId);</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>  <span class="comment">// Check if node data is disclosed</span></div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>  <span class="keywordflow">if</span> ( <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#a64bc25473f91fc48a2144528c6fbbe09">disclosure</a>.contains(instance.id) &amp;&amp; <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#a64bc25473f91fc48a2144528c6fbbe09">disclosure</a>.at(instance.id).contains(node) ) {</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>    <span class="keywordflow">if</span> ( currentTime &lt; <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#a64bc25473f91fc48a2144528c6fbbe09">disclosure</a>.at(instance.id).at(node) ) {</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>      <span class="keywordflow">return</span> std::nullopt;</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>    }</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>  }</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>  <a class="code hl_struct" href="structBPMNOS_1_1Values.html">Values</a> result;</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>  <span class="keywordflow">for</span> ( <span class="keyword">auto</span>&amp; attribute : node-&gt;<a class="code hl_variableRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1BaseElement.html#a078f33477ca96151f1a79fee93a8ba76">extensionElements</a>-&gt;as&lt;<span class="keyword">const</span> <a class="code hl_class" href="classBPMNOS_1_1Model_1_1ExtensionElements.html">BPMNOS::Model::ExtensionElements</a>&gt;()-&gt;data ) {</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>    result.push_back( <a class="code hl_function" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#ac5f14ada793cdce00d3d629a4412695c">getValue</a>(&amp;instance, attribute.get(), currentTime) );</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>  }</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>  <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>}</div>
+</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span> </div>
+<div class="foldopen" id="foldopen00181" data-start="{" data-end="}">
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#abb073b0b769305006649fadbd5f71436">  181</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#abb073b0b769305006649fadbd5f71436">DynamicScenario::addPendingDisclosure</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> instanceId, <a class="code hl_struct" href="structBPMNOS_1_1Model_1_1PendingDisclosure.html">PendingDisclosure</a>&amp;&amp; pending) {</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>  <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#a0a4255309dfe40fa3e327732b0543906">pendingDisclosures</a>[(size_t)instanceId].push_back(std::move(pending));</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>}</div>
+</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span> </div>
+<div class="foldopen" id="foldopen00185" data-start="{" data-end="}">
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#a230402f07af4320786830c10ae04f870">  185</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#a230402f07af4320786830c10ae04f870">DynamicScenario::noticeReadyPending</a>(</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>    [[maybe_unused]] <a class="code hl_typedef" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> rootId,</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>    <span class="keyword">const</span> <a class="code hl_classRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a>* node,</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structBPMNOS_1_1Values.html">Values</a>&amp; status,</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structBPMNOS_1_1SharedValues.html">SharedValues</a>&amp; data,</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>    [[maybe_unused]] <span class="keyword">const</span> <a class="code hl_struct" href="structBPMNOS_1_1Values.html">Values</a>&amp; globals)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>  <span class="comment">// key by the full instance id (from data) so concurrent executions of one node don&#39;t collide</span></div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>  <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1Scenario.html#ac791dd2bbb091f6977580927e1e1a85b">activityArrivalStatus</a>[{(size_t)data[<a class="code hl_variable" href="structBPMNOS_1_1Model_1_1ExtensionElements_1_1Index.html#a0767330ddb622acab290bd86524a40f0">ExtensionElements::Index::Instance</a>].get().value(), node}] = status;</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>}</div>
+</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span> </div>
+<div class="foldopen" id="foldopen00195" data-start="{" data-end="}">
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#a4beaf1f4eb018329577a2938b9527c4c">  195</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#a4beaf1f4eb018329577a2938b9527c4c">DynamicScenario::revealData</a>(<a class="code hl_typedef" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> currentTime)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>  <span class="keywordflow">for</span> (<span class="keyword">auto</span>&amp; [instanceId, pendings] : <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#a0a4255309dfe40fa3e327732b0543906">pendingDisclosures</a>) {</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>    <span class="keyword">auto</span>&amp; instance = <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#aec64ad142f17f2628d0035b098c211be">instances</a>.at(instanceId);</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span> </div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>    <span class="comment">// Process pending disclosures that are due</span></div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>    <span class="keyword">auto</span> it = pendings.begin();</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>    <span class="keywordflow">while</span> (it != pendings.end()) {</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>      <span class="keywordflow">if</span> (currentTime &gt;= it-&gt;disclosureTime) {</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>        <span class="comment">// Reveal pre-computed value</span></div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>        instance.values[it-&gt;attribute] = it-&gt;value;</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>        <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#a6c474f8c7ce374ea210cbd6a5521976a">disclosedAttributes</a>.insert({instanceId, it-&gt;attribute});</div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>        it = pendings.erase(it);</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>      }</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>      <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>        ++it;</div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>      }</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>    }</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>  }</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>}</div>
+</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span> </div>
+<div class="foldopen" id="foldopen00215" data-start="{" data-end="}">
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#a04e3af16cc59b3420d6146688283cf2b">  215</a></span>std::optional&lt;BPMNOS::Values&gt; <a class="code hl_function" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#a04e3af16cc59b3420d6146688283cf2b">DynamicScenario::getActivityReadyStatus</a>(</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>  <a class="code hl_typedef" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> rootId,</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>  <a class="code hl_typedef" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> instanceId,</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>  <span class="keyword">const</span> <a class="code hl_classRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a>* activity,</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>  <a class="code hl_typedef" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> currentTime</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>  <span class="comment">// disclosure is keyed by the root id (specified pre-runtime)</span></div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#a64bc25473f91fc48a2144528c6fbbe09">disclosure</a>.contains((<span class="keywordtype">size_t</span>)rootId) &amp;&amp; <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#a64bc25473f91fc48a2144528c6fbbe09">disclosure</a>.at((<span class="keywordtype">size_t</span>)rootId).contains(activity)) {</div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>    <span class="keywordflow">if</span> (currentTime &lt; <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#a64bc25473f91fc48a2144528c6fbbe09">disclosure</a>.at((<span class="keywordtype">size_t</span>)rootId).at(activity)) {</div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>      <span class="keywordflow">return</span> std::nullopt;</div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>    }</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>  }</div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span> </div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>  <span class="comment">// status keyed by the full instance id; declared instance/values keyed by root id</span></div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>  <span class="keyword">auto</span> key = std::make_pair((<span class="keywordtype">size_t</span>)instanceId, activity);</div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="classBPMNOS_1_1Model_1_1Scenario.html#ac791dd2bbb091f6977580927e1e1a85b">activityArrivalStatus</a>.contains(key)) {</div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>    <span class="keywordflow">return</span> std::nullopt;</div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>  }</div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span> </div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>  <span class="keyword">auto</span>&amp; instance = <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#aec64ad142f17f2628d0035b098c211be">instances</a>.at((<span class="keywordtype">size_t</span>)rootId);</div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>  <span class="keyword">auto</span> extensionElements = activity-&gt;<a class="code hl_variableRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1BaseElement.html#a078f33477ca96151f1a79fee93a8ba76">extensionElements</a>-&gt;as&lt;<span class="keyword">const</span> <a class="code hl_class" href="classBPMNOS_1_1Model_1_1ExtensionElements.html">BPMNOS::Model::ExtensionElements</a>&gt;();</div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span> </div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>  <span class="comment">// Start with parent&#39;s status</span></div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>  <a class="code hl_struct" href="structBPMNOS_1_1Values.html">Values</a> result = <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1Scenario.html#ac791dd2bbb091f6977580927e1e1a85b">activityArrivalStatus</a>.at(key);</div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span> </div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>  <span class="comment">// Add node&#39;s own attributes (same approach as getStatus)</span></div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>  <span class="keywordflow">for</span> (<span class="keyword">auto</span>&amp; attribute : extensionElements-&gt;attributes) {</div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>    result.push_back(<a class="code hl_function" href="classBPMNOS_1_1Model_1_1DynamicScenario.html#ac5f14ada793cdce00d3d629a4412695c">getValue</a>(&amp;instance, attribute.get(), currentTime));</div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>  }</div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span> </div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>  <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>}</div>
+</div>
+<div class="ttc" id="aCollectionRegistry_8cpp_html_a4df1f4374f341a4c8d159809dece3378"><div class="ttname"><a href="CollectionRegistry_8cpp.html#a4df1f4374f341a4c8d159809dece3378">collectionRegistry</a></div><div class="ttdeci">CollectionRegistry collectionRegistry</div><div class="ttdef"><b>Definition</b> <a href="CollectionRegistry_8cpp_source.html#l00058">CollectionRegistry.cpp:58</a></div></div>
+<div class="ttc" id="aDynamicScenario_8h_html"><div class="ttname"><a href="DynamicScenario_8h.html">DynamicScenario.h</a></div></div>
+<div class="ttc" id="aExtensionElements_8h_html"><div class="ttname"><a href="ExtensionElements_8h.html">ExtensionElements.h</a></div></div>
+<div class="ttc" id="aStringRegistry_8h_html"><div class="ttname"><a href="StringRegistry_8h.html">StringRegistry.h</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1Attribute_html"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1Attribute.html">BPMNOS::Model::Attribute</a></div><div class="ttdef"><b>Definition</b> <a href="Attribute_8h_source.html#l00021">Attribute.h:21</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1Attribute_html_a4c3dbc016c148d4d91658789caf5901f"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1Attribute.html#a4c3dbc016c148d4d91658789caf5901f">BPMNOS::Model::Attribute::expression</a></div><div class="ttdeci">std::unique_ptr&lt; const Expression &gt; expression</div><div class="ttdef"><b>Definition</b> <a href="Attribute_8h_source.html#l00031">Attribute.h:31</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1DynamicScenario_html_a04e3af16cc59b3420d6146688283cf2b"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1DynamicScenario.html#a04e3af16cc59b3420d6146688283cf2b">BPMNOS::Model::DynamicScenario::getActivityReadyStatus</a></div><div class="ttdeci">std::optional&lt; BPMNOS::Values &gt; getActivityReadyStatus(BPMNOS::number rootId, BPMNOS::number instanceId, const BPMN::Node *activity, BPMNOS::number currentTime) const override</div><div class="ttdoc">Get the ready status for an activity.</div><div class="ttdef"><b>Definition</b> <a href="DynamicScenario_8cpp_source.html#l00215">DynamicScenario.cpp:215</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1DynamicScenario_html_a0a4255309dfe40fa3e327732b0543906"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1DynamicScenario.html#a0a4255309dfe40fa3e327732b0543906">BPMNOS::Model::DynamicScenario::pendingDisclosures</a></div><div class="ttdeci">std::unordered_map&lt; size_t, std::vector&lt; PendingDisclosure &gt; &gt; pendingDisclosures</div><div class="ttdoc">Instance ID -&gt; pending disclosures.</div><div class="ttdef"><b>Definition</b> <a href="DynamicScenario_8h_source.html#l00071">DynamicScenario.h:71</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1DynamicScenario_html_a0c431fded59cab7d7af9142373a2726b"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1DynamicScenario.html#a0c431fded59cab7d7af9142373a2726b">BPMNOS::Model::DynamicScenario::getEarliestInstantiationTime</a></div><div class="ttdeci">BPMNOS::number getEarliestInstantiationTime() const override</div><div class="ttdoc">Method returning the time of the earliest instantiation.</div><div class="ttdef"><b>Definition</b> <a href="DynamicScenario_8cpp_source.html#l00026">DynamicScenario.cpp:26</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1DynamicScenario_html_a230402f07af4320786830c10ae04f870"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1DynamicScenario.html#a230402f07af4320786830c10ae04f870">BPMNOS::Model::DynamicScenario::noticeReadyPending</a></div><div class="ttdeci">void noticeReadyPending(BPMNOS::number instanceId, const BPMN::Node *node, const Values &amp;status, const SharedValues &amp;data, const Values &amp;globals) const override</div><div class="ttdoc">Make scenario aware of a an activity for which the ready status must be determined.</div><div class="ttdef"><b>Definition</b> <a href="DynamicScenario_8cpp_source.html#l00185">DynamicScenario.cpp:185</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1DynamicScenario_html_a2e1cf8d39ba4b1ee3fd0eacba6810a69"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1DynamicScenario.html#a2e1cf8d39ba4b1ee3fd0eacba6810a69">BPMNOS::Model::DynamicScenario::latestInstantiationTime</a></div><div class="ttdeci">BPMNOS::number latestInstantiationTime</div><div class="ttdef"><b>Definition</b> <a href="DynamicScenario_8h_source.html#l00074">DynamicScenario.h:74</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1DynamicScenario_html_a3cdcb0c8f5acaeeb727e84360a510d55"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1DynamicScenario.html#a3cdcb0c8f5acaeeb727e84360a510d55">BPMNOS::Model::DynamicScenario::addInstance</a></div><div class="ttdeci">void addInstance(const BPMN::Process *process, const BPMNOS::number instanceId, BPMNOS::number instantiationTime)</div><div class="ttdef"><b>Definition</b> <a href="DynamicScenario_8cpp_source.html#l00014">DynamicScenario.cpp:14</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1DynamicScenario_html_a4beaf1f4eb018329577a2938b9527c4c"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1DynamicScenario.html#a4beaf1f4eb018329577a2938b9527c4c">BPMNOS::Model::DynamicScenario::revealData</a></div><div class="ttdeci">void revealData(BPMNOS::number currentTime) const</div><div class="ttdef"><b>Definition</b> <a href="DynamicScenario_8cpp_source.html#l00195">DynamicScenario.cpp:195</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1DynamicScenario_html_a50225e72c8f85f389850a6b3ac7e1507"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1DynamicScenario.html#a50225e72c8f85f389850a6b3ac7e1507">BPMNOS::Model::DynamicScenario::setValue</a></div><div class="ttdeci">void setValue(const BPMNOS::number instanceId, const Attribute *attribute, std::optional&lt; BPMNOS::number &gt; value)</div><div class="ttdef"><b>Definition</b> <a href="DynamicScenario_8cpp_source.html#l00018">DynamicScenario.cpp:18</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1DynamicScenario_html_a602aec34eb1bbc6a36aebecf6441e207"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1DynamicScenario.html#a602aec34eb1bbc6a36aebecf6441e207">BPMNOS::Model::DynamicScenario::setDisclosure</a></div><div class="ttdeci">void setDisclosure(const BPMNOS::number instanceId, const BPMN::Node *node, BPMNOS::number disclosureTime)</div><div class="ttdef"><b>Definition</b> <a href="DynamicScenario_8cpp_source.html#l00022">DynamicScenario.cpp:22</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1DynamicScenario_html_a64bc25473f91fc48a2144528c6fbbe09"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1DynamicScenario.html#a64bc25473f91fc48a2144528c6fbbe09">BPMNOS::Model::DynamicScenario::disclosure</a></div><div class="ttdeci">std::unordered_map&lt; size_t, std::unordered_map&lt; const BPMN::Node *, BPMNOS::number &gt; &gt; disclosure</div><div class="ttdoc">Instance ID -&gt; Node -&gt; time when node's data is disclosed.</div><div class="ttdef"><b>Definition</b> <a href="DynamicScenario_8h_source.html#l00070">DynamicScenario.h:70</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1DynamicScenario_html_a67d0190835cdf80b83d8f49b0609b00f"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1DynamicScenario.html#a67d0190835cdf80b83d8f49b0609b00f">BPMNOS::Model::DynamicScenario::getKnownInitialStatus</a></div><div class="ttdeci">Values getKnownInitialStatus(const InstanceData *, const BPMNOS::number time) const override</div><div class="ttdoc">Method returning the initial status attributes for process instantiation.</div><div class="ttdef"><b>Definition</b> <a href="DynamicScenario_8cpp_source.html#l00081">DynamicScenario.cpp:81</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1DynamicScenario_html_a6c474f8c7ce374ea210cbd6a5521976a"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1DynamicScenario.html#a6c474f8c7ce374ea210cbd6a5521976a">BPMNOS::Model::DynamicScenario::disclosedAttributes</a></div><div class="ttdeci">std::set&lt; std::pair&lt; size_t, const Attribute * &gt; &gt; disclosedAttributes</div><div class="ttdoc">Track which attributes have been disclosed.</div><div class="ttdef"><b>Definition</b> <a href="DynamicScenario_8h_source.html#l00072">DynamicScenario.h:72</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1DynamicScenario_html_a6cc72da0fb34c4bd115f9454bf623f78"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1DynamicScenario.html#a6cc72da0fb34c4bd115f9454bf623f78">BPMNOS::Model::DynamicScenario::getInstances</a></div><div class="ttdeci">std::vector&lt; const InstanceData * &gt; getInstances(const BPMNOS::number currentTime) const override</div><div class="ttdoc">Method returning a vector of all instances that have been created or are known until the given time.</div><div class="ttdef"><b>Definition</b> <a href="DynamicScenario_8cpp_source.html#l00044">DynamicScenario.cpp:44</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1DynamicScenario_html_a6ec385a743a5afea647168bc41f57146"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1DynamicScenario.html#a6ec385a743a5afea647168bc41f57146">BPMNOS::Model::DynamicScenario::getStatus</a></div><div class="ttdeci">std::optional&lt; BPMNOS::Values &gt; getStatus(const BPMNOS::number instanceId, const BPMN::Node *node, const BPMNOS::number currentTime) const override</div><div class="ttdoc">Method returning values for all new status attributes.</div><div class="ttdef"><b>Definition</b> <a href="DynamicScenario_8cpp_source.html#l00151">DynamicScenario.cpp:151</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1DynamicScenario_html_a745653fcdec07d534137162316bba1ce"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1DynamicScenario.html#a745653fcdec07d534137162316bba1ce">BPMNOS::Model::DynamicScenario::getData</a></div><div class="ttdeci">std::optional&lt; BPMNOS::Values &gt; getData(const BPMNOS::number instanceId, const BPMN::Node *node, const BPMNOS::number currentTime) const override</div><div class="ttdoc">Method returning values for all new data attributes.</div><div class="ttdef"><b>Definition</b> <a href="DynamicScenario_8cpp_source.html#l00166">DynamicScenario.cpp:166</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1DynamicScenario_html_a9793964864df63d7932134a9def6ac3e"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1DynamicScenario.html#a9793964864df63d7932134a9def6ac3e">BPMNOS::Model::DynamicScenario::getCurrentInstantiations</a></div><div class="ttdeci">std::vector&lt; std::tuple&lt; const BPMN::Process *, BPMNOS::Values, BPMNOS::Values &gt; &gt; getCurrentInstantiations(const BPMNOS::number currentTime) const override</div><div class="ttdoc">Method returning a vector of all instances that are to be instantiated at the given time.</div><div class="ttdef"><b>Definition</b> <a href="DynamicScenario_8cpp_source.html#l00059">DynamicScenario.cpp:59</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1DynamicScenario_html_a9820d84293212c838b479fbb169838ef"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1DynamicScenario.html#a9820d84293212c838b479fbb169838ef">BPMNOS::Model::DynamicScenario::isCompleted</a></div><div class="ttdeci">bool isCompleted(const BPMNOS::number currentTime) const override</div><div class="ttdoc">Method returning true if the currentTime exceeds the completion time.</div><div class="ttdef"><b>Definition</b> <a href="DynamicScenario_8cpp_source.html#l00030">DynamicScenario.cpp:30</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1DynamicScenario_html_abb073b0b769305006649fadbd5f71436"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1DynamicScenario.html#abb073b0b769305006649fadbd5f71436">BPMNOS::Model::DynamicScenario::addPendingDisclosure</a></div><div class="ttdeci">void addPendingDisclosure(const BPMNOS::number instanceId, PendingDisclosure &amp;&amp;pending)</div><div class="ttdef"><b>Definition</b> <a href="DynamicScenario_8cpp_source.html#l00181">DynamicScenario.cpp:181</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1DynamicScenario_html_ac3da66dedcff9e532bd0d485e158797e"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1DynamicScenario.html#ac3da66dedcff9e532bd0d485e158797e">BPMNOS::Model::DynamicScenario::getCreatedInstances</a></div><div class="ttdeci">std::vector&lt; const InstanceData * &gt; getCreatedInstances(const BPMNOS::number currentTime) const override</div><div class="ttdoc">Method returning a vector of all instances that have been created until the given time.</div><div class="ttdef"><b>Definition</b> <a href="DynamicScenario_8cpp_source.html#l00034">DynamicScenario.cpp:34</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1DynamicScenario_html_ac5f14ada793cdce00d3d629a4412695c"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1DynamicScenario.html#ac5f14ada793cdce00d3d629a4412695c">BPMNOS::Model::DynamicScenario::getValue</a></div><div class="ttdeci">std::optional&lt; BPMNOS::number &gt; getValue(const Scenario::InstanceData *instance, const BPMNOS::Model::Attribute *attribute, const BPMNOS::number currentTime) const override</div><div class="ttdoc">Method returning a value of an attribute.</div><div class="ttdef"><b>Definition</b> <a href="DynamicScenario_8cpp_source.html#l00097">DynamicScenario.cpp:97</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1DynamicScenario_html_acdd810b3171f317fb8e81701748fb471"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1DynamicScenario.html#acdd810b3171f317fb8e81701748fb471">BPMNOS::Model::DynamicScenario::DynamicScenario</a></div><div class="ttdeci">DynamicScenario(const Model *model, BPMNOS::number earliestInstantiationTime, BPMNOS::number latestInstantiationTime, const std::unordered_map&lt; const Attribute *, BPMNOS::number &gt; &amp;globalValueMap)</div><div class="ttdef"><b>Definition</b> <a href="DynamicScenario_8cpp_source.html#l00007">DynamicScenario.cpp:7</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1DynamicScenario_html_ae62465da49af8b0333fb0773f9f1c356"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1DynamicScenario.html#ae62465da49af8b0333fb0773f9f1c356">BPMNOS::Model::DynamicScenario::getKnownInitialData</a></div><div class="ttdeci">Values getKnownInitialData(const InstanceData *, const BPMNOS::number time) const override</div><div class="ttdoc">Method returning the initial data attributes for process instantiation.</div><div class="ttdef"><b>Definition</b> <a href="DynamicScenario_8cpp_source.html#l00089">DynamicScenario.cpp:89</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1DynamicScenario_html_aec64ad142f17f2628d0035b098c211be"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1DynamicScenario.html#aec64ad142f17f2628d0035b098c211be">BPMNOS::Model::DynamicScenario::instances</a></div><div class="ttdeci">std::unordered_map&lt; size_t, InstanceData &gt; instances</div><div class="ttdef"><b>Definition</b> <a href="DynamicScenario_8h_source.html#l00069">DynamicScenario.h:69</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1DynamicScenario_html_af09a2620541c0284427d4a2b275be448"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1DynamicScenario.html#af09a2620541c0284427d4a2b275be448">BPMNOS::Model::DynamicScenario::earliestInstantiationTime</a></div><div class="ttdeci">BPMNOS::number earliestInstantiationTime</div><div class="ttdef"><b>Definition</b> <a href="DynamicScenario_8h_source.html#l00073">DynamicScenario.h:73</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1Expression_html_a1c6c51e0e04397036812c3e83434344eaffd6976a2b4f6934eb075d0013316ff1"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1Expression.html#a1c6c51e0e04397036812c3e83434344eaffd6976a2b4f6934eb075d0013316ff1">BPMNOS::Model::Expression::Type::ASSIGN</a></div><div class="ttdeci">@ ASSIGN</div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1ExtensionElements_html"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1ExtensionElements.html">BPMNOS::Model::ExtensionElements</a></div><div class="ttdoc">Class holding extension elements representing execution data for nodes.</div><div class="ttdef"><b>Definition</b> <a href="ExtensionElements_8h_source.html#l00023">ExtensionElements.h:23</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1Model_html"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1Model.html">BPMNOS::Model::Model</a></div><div class="ttdoc">Represents a BPMN model with all its processes.</div><div class="ttdef"><b>Definition</b> <a href="Model_8h_source.html#l00024">Model.h:24</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1Scenario_html"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1Scenario.html">BPMNOS::Model::Scenario</a></div><div class="ttdoc">Abstract base class for scenarios holding data for all BPMN instances.</div><div class="ttdef"><b>Definition</b> <a href="Scenario_8h_source.html#l00021">Scenario.h:21</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1Scenario_html_ac791dd2bbb091f6977580927e1e1a85b"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1Scenario.html#ac791dd2bbb091f6977580927e1e1a85b">BPMNOS::Model::Scenario::activityArrivalStatus</a></div><div class="ttdeci">std::map&lt; std::pair&lt; size_t, const BPMN::Node * &gt;, BPMNOS::Values &gt; activityArrivalStatus</div><div class="ttdoc">Stored arrival status per (instanceId, activity) from noticeActivityArrival.</div><div class="ttdef"><b>Definition</b> <a href="Scenario_8h_source.html#l00189">Scenario.h:189</a></div></div>
+<div class="ttc" id="aclassBPMN_1_1BaseElement_html_a078f33477ca96151f1a79fee93a8ba76"><div class="ttname"><a href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1BaseElement.html#a078f33477ca96151f1a79fee93a8ba76">BPMN::BaseElement::extensionElements</a></div><div class="ttdeci">std::unique_ptr&lt; ExtensionElements &gt; extensionElements</div></div>
+<div class="ttc" id="aclassBPMN_1_1Node_html"><div class="ttname"><a href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a></div></div>
+<div class="ttc" id="aclassBPMN_1_1Process_html"><div class="ttname"><a href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Process.html">BPMN::Process</a></div></div>
+<div class="ttc" id="anamespaceBPMNOS_1_1Model_html"><div class="ttname"><a href="namespaceBPMNOS_1_1Model.html">BPMNOS::Model</a></div><div class="ttdef"><b>Definition</b> <a href="DecisionTask_8h_source.html#l00010">DecisionTask.h:10</a></div></div>
+<div class="ttc" id="anamespaceBPMNOS_html_a6ba3ea22499481d120e383529198d598"><div class="ttname"><a href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a></div><div class="ttdeci">BPMNOS_NUMBER_TYPE number</div><div class="ttdef"><b>Definition</b> <a href="Number_8h_source.html#l00050">Number.h:50</a></div></div>
+<div class="ttc" id="astructBPMNOS_1_1Model_1_1ExtensionElements_1_1Index_html_a0767330ddb622acab290bd86524a40f0"><div class="ttname"><a href="structBPMNOS_1_1Model_1_1ExtensionElements_1_1Index.html#a0767330ddb622acab290bd86524a40f0">BPMNOS::Model::ExtensionElements::Index::Instance</a></div><div class="ttdeci">static constexpr size_t Instance</div><div class="ttdef"><b>Definition</b> <a href="ExtensionElements_8h_source.html#l00031">ExtensionElements.h:31</a></div></div>
+<div class="ttc" id="astructBPMNOS_1_1Model_1_1ExtensionElements_1_1Index_html_a61bc17d7595e94a17d8e85a32a48b1d8"><div class="ttname"><a href="structBPMNOS_1_1Model_1_1ExtensionElements_1_1Index.html#a61bc17d7595e94a17d8e85a32a48b1d8">BPMNOS::Model::ExtensionElements::Index::Timestamp</a></div><div class="ttdeci">static constexpr size_t Timestamp</div><div class="ttdef"><b>Definition</b> <a href="ExtensionElements_8h_source.html#l00032">ExtensionElements.h:32</a></div></div>
+<div class="ttc" id="astructBPMNOS_1_1Model_1_1PendingDisclosure_html"><div class="ttname"><a href="structBPMNOS_1_1Model_1_1PendingDisclosure.html">BPMNOS::Model::PendingDisclosure</a></div><div class="ttdoc">Structure representing a pending disclosure.</div><div class="ttdef"><b>Definition</b> <a href="DynamicScenario_8h_source.html#l00018">DynamicScenario.h:18</a></div></div>
+<div class="ttc" id="astructBPMNOS_1_1Model_1_1Scenario_1_1InstanceData_html"><div class="ttname"><a href="structBPMNOS_1_1Model_1_1Scenario_1_1InstanceData.html">BPMNOS::Model::Scenario::InstanceData</a></div><div class="ttdef"><b>Definition</b> <a href="Scenario_8h_source.html#l00023">Scenario.h:23</a></div></div>
+<div class="ttc" id="astructBPMNOS_1_1Model_1_1Scenario_1_1InstanceData_html_a82fb5ad877f885513bd5d0c426513b45"><div class="ttname"><a href="structBPMNOS_1_1Model_1_1Scenario_1_1InstanceData.html#a82fb5ad877f885513bd5d0c426513b45">BPMNOS::Model::Scenario::InstanceData::values</a></div><div class="ttdeci">std::unordered_map&lt; const Attribute *, std::optional&lt; BPMNOS::number &gt; &gt; values</div><div class="ttdoc">Attribute values.</div><div class="ttdef"><b>Definition</b> <a href="Scenario_8h_source.html#l00027">Scenario.h:27</a></div></div>
+<div class="ttc" id="astructBPMNOS_1_1Model_1_1Scenario_1_1InstanceData_html_a8e549787156e2024132f12f2cd21bff6"><div class="ttname"><a href="structBPMNOS_1_1Model_1_1Scenario_1_1InstanceData.html#a8e549787156e2024132f12f2cd21bff6">BPMNOS::Model::Scenario::InstanceData::process</a></div><div class="ttdeci">const BPMN::Process * process</div><div class="ttdef"><b>Definition</b> <a href="Scenario_8h_source.html#l00024">Scenario.h:24</a></div></div>
+<div class="ttc" id="astructBPMNOS_1_1Model_1_1Scenario_1_1InstanceData_html_ae15e871b4832a72c3a23ecdfdb2379d8"><div class="ttname"><a href="structBPMNOS_1_1Model_1_1Scenario_1_1InstanceData.html#ae15e871b4832a72c3a23ecdfdb2379d8">BPMNOS::Model::Scenario::InstanceData::id</a></div><div class="ttdeci">size_t id</div><div class="ttdoc">Instance identifier.</div><div class="ttdef"><b>Definition</b> <a href="Scenario_8h_source.html#l00025">Scenario.h:25</a></div></div>
+<div class="ttc" id="astructBPMNOS_1_1SharedValues_html"><div class="ttname"><a href="structBPMNOS_1_1SharedValues.html">BPMNOS::SharedValues</a></div><div class="ttdef"><b>Definition</b> <a href="Number_8h_source.html#l00062">Number.h:62</a></div></div>
+<div class="ttc" id="astructBPMNOS_1_1Values_html"><div class="ttname"><a href="structBPMNOS_1_1Values.html">BPMNOS::Values</a></div><div class="ttdef"><b>Definition</b> <a href="Number_8h_source.html#l00055">Number.h:55</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+</div><!-- doc-content -->
+<script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs"; mermaid.initialize({ startOnLoad: true, theme: "neutral" });</script></body></html>

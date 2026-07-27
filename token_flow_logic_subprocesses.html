@@ -1,0 +1,228 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<!-- BEGIN opengraph metadata -->
+<meta property="og:title" content="Doxygen Awesome" />
+<meta property="og:image" content="https://repository-images.githubusercontent.com/348492097/4f16df80-88fb-11eb-9d31-4015ff22c452" />
+<meta property="og:description" content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
+<meta property="og:url" content="https://jothepro.github.io/doxygen-awesome-css/" />
+<!-- END opengraph metadata -->
+<!-- BEGIN twitter metadata -->
+<meta name="twitter:image:src" content="https://repository-images.githubusercontent.com/348492097/4f16df80-88fb-11eb-9d31-4015ff22c452" />
+<meta name="twitter:title" content="Doxygen Awesome" />
+<meta name="twitter:description" content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
+<!-- END twitter metadata -->
+<title>BPMN-OS: Subprocesses and ad-hoc subprocesses</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript" src="doxygen-awesome-interactive-toc.js"></script>
+<script type="text/javascript" src="doxygen-awesome-tabs.js"></script>
+<script type="text/javascript" src="toggle-alternative-theme.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeParagraphLink.init()
+    DoxygenAwesomeInteractiveToc.init()
+    DoxygenAwesomeTabs.init()
+</script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="custom.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<link href="custom-alternative.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<!-- https://tholman.com/github-corners/ -->
+<a href="https://github.com/bpmn-os/bpmnos-engine" class="github-corner" title="View source on GitHub" target="_blank" rel="noopener noreferrer">
+    <svg viewBox="0 0 250 250" width="40" height="40" style="position: absolute; top: 0; border: 0; right: 0; z-index: 99;" aria-hidden="true">
+    <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="BPMNOS.svg"/></td>
+  <td id="projectalign" style="padding-left: 0.5em;">
+   <div id="projectname">BPMN-OS
+   </div>
+   <div id="projectbrief">BPMN for optimization and simulation</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() {
+  initMenu('',true,false,'search.php','Search');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */
+</script>
+<div id="main-nav"></div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(document).ready(function(){initNavTree('token_flow_logic_subprocesses.html',''); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div><div class="header">
+  <div class="headertitle"><div class="title">Subprocesses and ad-hoc subprocesses</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><p>The token flow logic for activities depends on whether the multi-instance marker for the activity is set or not and whether the activity is for compensation or not.</p>
+<ul>
+<li><a class="el" href="token_flow_logic_multi_instance_activities.html">Multi-instance activities</a></li>
+<li><a class="el" href="token_flow_logic_compensation_activities.html">Compensation activities</a></li>
+</ul>
+<h1><a class="anchor" id="subprocesses-and-ad-hoc-subprocesses-excluding-multi-instance-and-compensation-activities"></a>
+Subprocesses and ad-hoc subprocesses (excluding multi-instance and compensation activities)</h1>
+<p>A token at a subprocess or ad-hoc subprocess changes its state as follows:</p>
+<pre class="mermaid">
+stateDiagram-v2
+    state feasibleEntry &lt;&lt;choice&gt;&gt;
+    state feasibleExit &lt;&lt;choice&gt;&gt;
+    state departure &lt;&lt;choice&gt;&gt;
+    [*] --&gt; ARRIVED/CREATED
+    note left of ARRIVED/CREATED
+      For multi-instance activity copies,
+      the ARRIVED / CREATED state is skipped
+    end note
+    ARRIVED/CREATED --&gt; READY: ready event
+    READY --&gt; ENTERED: entry event
+    ENTERED --&gt; feasibleEntry
+    feasibleEntry --&gt; BUSY: [feasible]
+    feasibleEntry --&gt; FAILING: [infeasible]
+    BUSY --&gt; COMPLETED
+    BUSY --&gt; FAILING: failure
+    COMPLETED --&gt; feasibleCompletion
+    feasibleCompletion --&gt; EXITING: [feasible] exit event
+    feasibleCompletion --&gt; FAILING: [infeasible]
+    EXITING --&gt; feasibleExit
+    feasibleExit --&gt; departure: [feasible]
+    note left of departure
+      In case of loop activities, the token may return to ENTERED state
+      after receipt of the respective entry event.
+    end note
+    feasibleExit --&gt; FAILING: [infeasible]
+    departure --&gt; DEPARTED: [outgoing sequence flow]
+    departure --&gt; DONE: [no outgoing sequence flow]
+    DEPARTED --&gt; [*]
+    DONE --&gt; [*]
+    FAILING --&gt; FAILED
+    FAILED --&gt; [*]
+</pre><h2><a class="anchor" id="arrived--created-1"></a>
+ARRIVED / CREATED</h2>
+<p>A token enters <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92daecf81265919ceb1222992d59f5e66300">ARRIVED</a> state when it arrives via an incoming sequence flow, or <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da98690bf632c29c17c9e4c5a64069903c">CREATED</a> state when the activity has no incoming sequence flows (e.g., activities in ad-hoc subprocesses).</p>
+<p>In either state, the token waits for a <a class="el" href="structBPMNOS_1_1Execution_1_1ReadyEvent.html">ready event</a> indicating that all relevant data has become known. When the event occurs the token state is updated to <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da2baa69eafc7204f3bd8648eba580c489">READY</a>.</p>
+<h2><a class="anchor" id="ready"></a>
+READY</h2>
+<p>A token in <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da2baa69eafc7204f3bd8648eba580c489">READY</a> state waits for an <a class="el" href="structBPMNOS_1_1Execution_1_1EntryEvent.html">entry event</a> indicating that a decision is made to start with the activity. When the event occurs the token state is updated to <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da7ea8694c832315449be4318681c872f2">ENTERED</a>.</p>
+<h2><a class="anchor" id="entered-1"></a>
+ENTERED</h2>
+<p>Upon entry, the initial assignment of <a class="el" href="classBPMNOS_1_1Model_1_1Attribute.html">attributes</a> are conducted in the order of attribute definitions. Then, feasibility of the <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a3048b9edc0543483ae499a0dae5e77a8">token status</a> is validated. If any of the <a class="el" href="classBPMNOS_1_1Model_1_1ExtensionElements.html#ac44780683342f3c370799caad0b1f98f">restrictions</a> is violated, the <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#ad3d143002b2a548bdeac6404fc97bc1e">token state</a> is updated to <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92dab9e14d9b2886bcff408b85aefa780419">FAILED</a>. Otherwise, a token is created at the unique <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1SubProcess.html#a10064b652520de44f33a7934b6746aaf">start event</a> of the subprocess or each <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Scope.html#a2abb85eda0980c258f206c36bc6f2c7e">start node</a> of the ad-hoc subprocess, at the <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1EventSubProcess.html#a6533740de2f0bf62ee7c1cad6f398476">start event</a> of each <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1EventSubProcess.html">event subprocess</a> (excluding those having a <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1CompensateStartEvent.html">compensate start event</a>), and at each <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1BoundaryEvent.html">boundary event</a> (excluding <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1CompensateBoundaryEvent.html">compensate boundary events</a>). These tokens inherit the <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a3048b9edc0543483ae499a0dae5e77a8">status attributes</a> of the (ad-hoc) subprocess token. Furthermore, the <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#ad3d143002b2a548bdeac6404fc97bc1e">token state</a> is updated to <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da802706a9238e2928077f97736854bad4">BUSY</a>.</p>
+<dl class="section note"><dt>Note</dt><dd><a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1SubProcess.html">Subprocesses</a> must have a unique <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1UntypedStartEvent.html">blank start event</a>. </dd></dl>
+<dl class="section user"><dt></dt><dd></dd></dl>
+<dl class="section note"><dt>Note</dt><dd><a class="el" href="classBPMNOS_1_1Model_1_1SequentialAdHocSubProcess.html">Ad-hoc subprocesses</a> must not contain any start event and any flow node without incoming sequence flows must be a an <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Activity.html">activity</a>. </dd></dl>
+<dl class="section user"><dt></dt><dd></dd></dl>
+<dl class="section note"><dt>Note</dt><dd><a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1EventSubProcess.html">Event-subprocesses</a> must have a unique <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1TypedStartEvent.html">typed start event</a>. </dd></dl>
+<dl class="section user"><dt></dt><dd></dd></dl>
+<dl class="section attention"><dt>Attention</dt><dd>A failure occurring at this stage can not yet be caught by an <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1EventSubProcess.html">event subprocess</a> with an <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1ErrorStartEvent.html">error start event</a>.</dd></dl>
+<h2><a class="anchor" id="busy-1"></a>
+BUSY</h2>
+<p>A token remains in <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da802706a9238e2928077f97736854bad4">BUSY</a> state until the process</p><ul>
+<li>is terminated due to an uncaught failure,</li>
+<li>is interrupted by an interrupting boundary event, or</li>
+<li>the last active token within the scope has completed without failure.</li>
+</ul>
+<p>While the token is in <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da802706a9238e2928077f97736854bad4">BUSY</a> state, the <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a3048b9edc0543483ae499a0dae5e77a8">token status</a> may be updated due to an escalation raised downstream by an <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1EscalationThrowEvent.html">escalation event</a>. If the token resides at a (ad-hoc) subprocess which is the <a class="el" href="classBPMNOS_1_1Model_1_1SequentialAdHocSubProcess.html#a718e85c101b08ab6e33e11ded9010814">performer</a> of a <a class="el" href="classBPMNOS_1_1Model_1_1SequentialAdHocSubProcess.html">sequential ad-hoc subprocess</a>, the <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a3048b9edc0543483ae499a0dae5e77a8">token status</a> is also updated whenever a token exits a child activity of the <a class="el" href="classBPMNOS_1_1Model_1_1SequentialAdHocSubProcess.html">sequential ad-hoc subprocess</a>.</p>
+<p>When an uncaught failure is raised within the scope of the (ad-hoc) subprocess, the <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a3048b9edc0543483ae499a0dae5e77a8">status</a> of the (ad-hoc) subprocess token is set to the <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a3048b9edc0543483ae499a0dae5e77a8">status</a> of the token raising the failure. All tokens within the scope of the process (excluding those created for compensation) are disposed before the <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#ad3d143002b2a548bdeac6404fc97bc1e">state</a> of the process token is updated to <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da04a6fafe393ceb9f5b6ce96aae00c8cb">FAILING</a>.</p>
+<dl class="section note"><dt>Note</dt><dd>A failure occurring at this stage may be caught by an <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1EventSubProcess.html">event subprocess</a> with an <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1ErrorStartEvent.html">error start event</a>.</dd></dl>
+<p>When all tokens within the scope of the (ad-hoc) subprocess have reached <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da2ba22e58ca17bb728d522bba36cf8350">DONE</a> state and no event subprocess is running, the <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a3048b9edc0543483ae499a0dae5e77a8">status</a> of the (ad-hoc) subprocess token is updated with the merged status of all these tokens within the scope. All child tokens are disposed (including those at start events of <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1EventSubProcess.html">event subprocesses</a>) before the <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#ad3d143002b2a548bdeac6404fc97bc1e">state</a> of the (ad-hoc) subprocess token is updated to <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da8f7afecbc8fbc4cd0f50a57d1172482e">COMPLETED</a>.</p>
+<p>An (ad-hoc) subprocess also completes if an <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1EventSubProcess.html">event subprocess</a> with a <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1TypedStartEvent.html">start event</a> that is <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1TypedStartEvent.html#aeeb745948b1187144a368731b8de2325">interrupting</a> completes successfully. In such a case, the <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a3048b9edc0543483ae499a0dae5e77a8">token status</a> of the (ad-hoc) subprocess is analogously updated with the merged status of all tokens in <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da2ba22e58ca17bb728d522bba36cf8350">DONE</a> state within the scope of the interrupting event subprocess. All of these tokens are disposed before the <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#ad3d143002b2a548bdeac6404fc97bc1e">state</a> of the (ad-hoc) subprocess token is updated to <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da8f7afecbc8fbc4cd0f50a57d1172482e">COMPLETED</a>.</p>
+<h2><a class="anchor" id="completed-1"></a>
+COMPLETED</h2>
+<p>When a token at the (ad-hoc) subprocess with an <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1EventSubProcess.html">event subprocess</a> with a <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1CompensateStartEvent.html">compensate start event</a> reaches <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da8f7afecbc8fbc4cd0f50a57d1172482e">COMPLETED</a> state, a token is created at this start event. If the (ad-hoc) subprocess has a <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1CompensateBoundaryEvent.html">compensate boundary event</a>, a token is created at this boundary event.</p>
+<p>After completion, feasibility of the <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a3048b9edc0543483ae499a0dae5e77a8">token status</a> is validated. If any of the <a class="el" href="classBPMNOS_1_1Model_1_1ExtensionElements.html#ac44780683342f3c370799caad0b1f98f">restrictions</a> is violated, the <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#ad3d143002b2a548bdeac6404fc97bc1e">token state</a> is updated to <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da04a6fafe393ceb9f5b6ce96aae00c8cb">FAILING</a>.</p>
+<p>Otherwise, the token in <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da8f7afecbc8fbc4cd0f50a57d1172482e">COMPLETED</a> state waits for an <a class="el" href="structBPMNOS_1_1Execution_1_1ExitEvent.html">exit event</a> indicating that a decision is made to leave the activity. When the event occurs, the token state is updated to <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da835d592fc110ac5d9471b44151d96d40">EXITING</a>.</p>
+<h2><a class="anchor" id="exiting"></a>
+EXITING</h2>
+<p>Feasibility of the <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a3048b9edc0543483ae499a0dae5e77a8">token status</a> is validated. If any of the <a class="el" href="classBPMNOS_1_1Model_1_1ExtensionElements.html#ac44780683342f3c370799caad0b1f98f">restrictions</a> is violated, the <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#ad3d143002b2a548bdeac6404fc97bc1e">token state</a> is updated to <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da04a6fafe393ceb9f5b6ce96aae00c8cb">FAILING</a>.</p>
+<dl class="section note"><dt>Note</dt><dd>The failure occurring at this stage can no longer be caught by an <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1EventSubProcess.html">event subprocess</a> with an <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1ErrorStartEvent.html">error start event</a>, but an <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1EventSubProcess.html">event subprocess</a> with a <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1CompensateStartEvent.html">compensate start event</a> can be triggered.</dd></dl>
+<p>Otherwise, the (ad-hoc) subprocess has been executed successfully and all tokens at boundary events (except <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1CompensateBoundaryEvent.html">compensate boundary events</a>) of the (ad-hoc) subprocess are withdrawn.</p>
+<p>If the (ad-hoc) subprocess has an outgoing sequence flow, the <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#ad3d143002b2a548bdeac6404fc97bc1e">token state</a> is updated to <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92daf648cfdf0a03c4aaad51d6d837613ec7">DEPARTED</a>. Otherwise, the <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#ad3d143002b2a548bdeac6404fc97bc1e">token state</a> is updated to <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da2ba22e58ca17bb728d522bba36cf8350">DONE</a>. In case of <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1tStandardLoopCharacteristics.html">loop activities</a>, the token may advance to <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da7ea8694c832315449be4318681c872f2">ENTERED</a> state after the respective entry decision has been made for the next loop of the activity.</p>
+<h2><a class="anchor" id="departed-1"></a>
+DEPARTED</h2>
+<p>When the (ad-hoc) subprocess token reaches <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92daf648cfdf0a03c4aaad51d6d837613ec7">DEPARTED</a> state, the token moves to the next node.</p>
+<h2><a class="anchor" id="done-2"></a>
+DONE</h2>
+<p>When the (ad-hoc) subprocess token reaches <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da2ba22e58ca17bb728d522bba36cf8350">DONE</a> state, the token remains at the node until all other tokens in the parent scope have reached <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da2ba22e58ca17bb728d522bba36cf8350">DONE</a> state or a failure occurred.</p>
+<dl class="section note"><dt>Note</dt><dd>When all tokens in the parent scope have reached <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da2ba22e58ca17bb728d522bba36cf8350">DONE</a> state, the state of the parent token is changed to <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da8f7afecbc8fbc4cd0f50a57d1172482e">COMPLETED</a> state.</dd></dl>
+<h2><a class="anchor" id="failing-1"></a>
+FAILING</h2>
+<p>When the process token reaches <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da04a6fafe393ceb9f5b6ce96aae00c8cb">FAILING</a> state, the <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a3048b9edc0543483ae499a0dae5e77a8">status</a> of the process token is updated using the values of the token causing the failure, all tokens within the scope of the process are withdrawn, and the <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#ad3d143002b2a548bdeac6404fc97bc1e">state</a> of the process token is updated to <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92dab9e14d9b2886bcff408b85aefa780419">FAILED</a> after all relevant activities within the scope of the process have been compensated.</p>
+<h2><a class="anchor" id="failed-2"></a>
+FAILED</h2>
+<p>Upon failure, the state of a token at an <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1ErrorBoundaryEvent.html">error boundary event</a> is changed to <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da8f7afecbc8fbc4cd0f50a57d1172482e">COMPLETED</a>. If no such <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1ErrorBoundaryEvent.html">error boundary event</a> exists, the error is bubbled up to its parent scope. </p>
+</div></div><!-- contents -->
+</div><!-- PageDoc -->
+</div><!-- doc-content -->
+<script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs"; mermaid.initialize({ startOnLoad: true, theme: "neutral" });</script></body></html>

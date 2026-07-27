@@ -1,0 +1,242 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<!-- BEGIN opengraph metadata -->
+<meta property="og:title" content="Doxygen Awesome" />
+<meta property="og:image" content="https://repository-images.githubusercontent.com/348492097/4f16df80-88fb-11eb-9d31-4015ff22c452" />
+<meta property="og:description" content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
+<meta property="og:url" content="https://jothepro.github.io/doxygen-awesome-css/" />
+<!-- END opengraph metadata -->
+<!-- BEGIN twitter metadata -->
+<meta name="twitter:image:src" content="https://repository-images.githubusercontent.com/348492097/4f16df80-88fb-11eb-9d31-4015ff22c452" />
+<meta name="twitter:title" content="Doxygen Awesome" />
+<meta name="twitter:description" content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
+<!-- END twitter metadata -->
+<title>BPMN-OS: execution/controller/src/GreedyDispatcher.h Source File</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript" src="doxygen-awesome-interactive-toc.js"></script>
+<script type="text/javascript" src="doxygen-awesome-tabs.js"></script>
+<script type="text/javascript" src="toggle-alternative-theme.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeParagraphLink.init()
+    DoxygenAwesomeInteractiveToc.init()
+    DoxygenAwesomeTabs.init()
+</script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="custom.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<link href="custom-alternative.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<!-- https://tholman.com/github-corners/ -->
+<a href="https://github.com/bpmn-os/bpmnos-engine" class="github-corner" title="View source on GitHub" target="_blank" rel="noopener noreferrer">
+    <svg viewBox="0 0 250 250" width="40" height="40" style="position: absolute; top: 0; border: 0; right: 0; z-index: 99;" aria-hidden="true">
+    <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="BPMNOS.svg"/></td>
+  <td id="projectalign" style="padding-left: 0.5em;">
+   <div id="projectname">BPMN-OS
+   </div>
+   <div id="projectbrief">BPMN for optimization and simulation</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() {
+  initMenu('',true,false,'search.php','Search');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */
+</script>
+<div id="main-nav"></div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(document).ready(function() { init_codefold(0); });
+/* @license-end */
+</script>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(document).ready(function(){initNavTree('GreedyDispatcher_8h_source.html',''); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">GreedyDispatcher.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="GreedyDispatcher_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef BPMNOS_Execution_GreedyDispatcher_H</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define BPMNOS_Execution_GreedyDispatcher_H</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;bpmn++.h&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;tuple&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;limits&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;utility&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;concepts&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;type_traits&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &quot;<a class="code" href="EventDispatcher_8h.html">execution/engine/src/EventDispatcher.h</a>&quot;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceBPMNOS_1_1Execution.html">BPMNOS::Execution</a> {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">struct </span>Mediator;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="comment"></span> </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="comment">/// A candidate element: a tuple-like value whose first component is the reward and whose second-to-last</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="comment">/// component is the decision&#39;s weak Event — the only parts a dispatcher reads.</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="comment"></span><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="foldopen" id="foldopen00020" data-start="{" data-end="}">
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="conceptBPMNOS_1_1Execution_1_1CandidateElement.html">   20</a></span><span class="keyword">concept </span><a class="code hl_concept" href="conceptBPMNOS_1_1Execution_1_1CandidateElement.html">CandidateElement</a> = <span class="keyword">requires</span> (T candidate) {</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>  { std::get&lt;0&gt;(candidate) } -&gt; std::convertible_to&lt;double&gt;;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>  { std::get&lt;std::tuple_size_v&lt;T&gt; - 2&gt;(candidate) } -&gt; std::convertible_to&lt;std::weak_ptr&lt;Event&gt;&gt;;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>};</div>
+</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="comment"></span> </div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="comment">/// A reward-ordered candidate collection a dispatcher can drive: connectable to a mediator and iterable over</span></div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="comment">/// CandidateElements (best first).</span></div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="comment"></span><span class="keyword">template</span> &lt;<span class="keyword">typename</span> C&gt;</div>
+<div class="foldopen" id="foldopen00028" data-start="{" data-end="}">
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="conceptBPMNOS_1_1Execution_1_1CandidateCollection.html">   28</a></span><span class="keyword">concept </span><a class="code hl_concept" href="conceptBPMNOS_1_1Execution_1_1CandidateCollection.html">CandidateCollection</a> = <span class="keyword">requires</span> (C&amp; collection, Mediator* mediator) {</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>  collection.connect(mediator);</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>  collection.begin() != collection.end();</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>  ++std::declval&lt; <span class="keyword">decltype</span>(collection.begin())&amp; &gt;();</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>  <span class="keyword">requires</span> <a class="code hl_concept" href="conceptBPMNOS_1_1Execution_1_1CandidateElement.html">CandidateElement</a>&lt; std::remove_cvref_t&lt;<span class="keyword">decltype</span>(*collection.begin())&gt; &gt;;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>};</div>
+</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span><span class="comment"></span> </div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="comment">/**</span></div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="comment"> * @brief Generic greedy policy dispatcher owning a concrete Candidates collection.</span></div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span><span class="comment"> *</span></div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="comment"> * Templated on the Candidates type (any CandidateCollection), which it owns by value and constructs by</span></div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span><span class="comment"> * forwarding the constructor arguments. On each dispatch it iterates the reward-ordered candidates for the</span></div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span><span class="comment"> * current state (iterating them evaluates them lazily) and dispatches the best feasible one — the front of</span></div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><span class="comment"> * the set, unless that front is infeasible.</span></div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span><span class="comment"> */</span></div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span><span class="keyword">template</span> &lt;Cand<span class="keywordtype">id</span>ateCollection Cand<span class="keywordtype">id</span>ates&gt;</div>
+<div class="foldopen" id="foldopen00044" data-start="{" data-end="};">
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1Execution_1_1GreedyDispatcher.html">   44</a></span><span class="keyword">class </span><a class="code hl_class" href="classBPMNOS_1_1Execution_1_1GreedyDispatcher.html">GreedyDispatcher</a> : <span class="keyword">public</span> <a class="code hl_class" href="classBPMNOS_1_1Execution_1_1EventDispatcher.html">EventDispatcher</a> {</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>  <span class="keyword">template</span> &lt;<span class="keyword">typename</span>... Args&gt;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1Execution_1_1GreedyDispatcher.html#a4ca8968ea213989b058279b1558e7c74">   47</a></span>  <a class="code hl_function" href="classBPMNOS_1_1Execution_1_1GreedyDispatcher.html#a4ca8968ea213989b058279b1558e7c74">GreedyDispatcher</a>(Args&amp;&amp;... args) : <a class="code hl_variable" href="classBPMNOS_1_1Execution_1_1GreedyDispatcher.html#a74bbccb5bea695e7779693601eaf8c8a">candidates</a>(<a class="code hl_namespace" href="namespacestd.html">std</a>::forward&lt;Args&gt;(args)...) {}</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
+<div class="foldopen" id="foldopen00049" data-start="{" data-end="}">
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1Execution_1_1GreedyDispatcher.html#a06ec3b4fab882445168277fc0e927245">   49</a></span>  std::shared_ptr&lt;Event&gt; <a class="code hl_function" href="classBPMNOS_1_1Execution_1_1GreedyDispatcher.html#a06ec3b4fab882445168277fc0e927245">dispatchEvent</a>( [[maybe_unused]] <span class="keyword">const</span> <a class="code hl_class" href="classBPMNOS_1_1Execution_1_1SystemState.html">SystemState</a>* systemState )<span class="keyword"> override </span>{</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keywordflow">for</span> ( <span class="keyword">auto</span> candidate : <a class="code hl_variable" href="classBPMNOS_1_1Execution_1_1GreedyDispatcher.html#a74bbccb5bea695e7779693601eaf8c8a">candidates</a> ) {</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>      <span class="keyword">constexpr</span> std::size_t eventIndex = std::tuple_size&lt;<span class="keyword">decltype</span>(candidate)&gt;::value - 2;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>      std::weak_ptr&lt;Event&gt;&amp; event_ptr = std::get&lt;eventIndex&gt;(candidate);</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>      <span class="keywordflow">if</span> ( <span class="keyword">auto</span> event = event_ptr.lock();</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        <span class="keyword">event</span> &amp;&amp; std::get&lt;0&gt;(candidate) &gt; -std::numeric_limits&lt;double&gt;::infinity()</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>      ) {</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        <span class="comment">// dispatch the best feasible decision</span></div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        <span class="keywordflow">return</span> event;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>      }</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>      <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>        <span class="comment">// best decision is infeasible, no need to inspect others</span></div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>      }</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    }</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>  }</div>
+</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
+<div class="foldopen" id="foldopen00067" data-start="{" data-end="}">
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1Execution_1_1GreedyDispatcher.html#a6e2697019d31f562e36d209765880a48">   67</a></span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classBPMNOS_1_1Execution_1_1GreedyDispatcher.html#a6e2697019d31f562e36d209765880a48">connect</a>(<a class="code hl_struct" href="structBPMNOS_1_1Execution_1_1Mediator.html">Mediator</a>* mediator)<span class="keyword"> override </span>{</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <a class="code hl_variable" href="classBPMNOS_1_1Execution_1_1GreedyDispatcher.html#a74bbccb5bea695e7779693601eaf8c8a">candidates</a>.<a class="code hl_function" href="classBPMNOS_1_1Execution_1_1Candidates.html#a5159342208cfd3301796af0df507b3f0">connect</a>(mediator);   <span class="comment">// the candidates subscribe to their request type and DataUpdate</span></div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <a class="code hl_function" href="classBPMNOS_1_1Execution_1_1EventDispatcher.html#ab9dfeb9aa1d4c42db4c2331384f5a16e">EventDispatcher::connect</a>(mediator);</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>  }</div>
+</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span><span class="keyword">protected</span>:</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1Execution_1_1GreedyDispatcher.html#a74bbccb5bea695e7779693601eaf8c8a">   73</a></span>  <a class="code hl_class" href="classBPMNOS_1_1Execution_1_1Candidates.html">Candidates</a> <a class="code hl_variable" href="classBPMNOS_1_1Execution_1_1GreedyDispatcher.html#a74bbccb5bea695e7779693601eaf8c8a">candidates</a>;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>};</div>
+</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span> </div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>} <span class="comment">// namespace BPMNOS::Execution</span></div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span><span class="preprocessor">#endif </span><span class="comment">// BPMNOS_Execution_GreedyDispatcher_H</span></div>
+<div class="ttc" id="aEventDispatcher_8h_html"><div class="ttname"><a href="EventDispatcher_8h.html">EventDispatcher.h</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Execution_1_1Candidates_html"><div class="ttname"><a href="classBPMNOS_1_1Execution_1_1Candidates.html">BPMNOS::Execution::Candidates</a></div><div class="ttdoc">An iterable collection of evaluated candidate decisions, ordered by reward (best first; infeasible la...</div><div class="ttdef"><b>Definition</b> <a href="Candidates_8h_source.html#l00033">Candidates.h:33</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Execution_1_1Candidates_html_a5159342208cfd3301796af0df507b3f0"><div class="ttname"><a href="classBPMNOS_1_1Execution_1_1Candidates.html#a5159342208cfd3301796af0df507b3f0">BPMNOS::Execution::Candidates::connect</a></div><div class="ttdeci">virtual void connect(Notifier *)</div><div class="ttdoc">Subscriptions are made by the specializations; the base does nothing.</div><div class="ttdef"><b>Definition</b> <a href="Candidates_8h_source.html#l00038">Candidates.h:38</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Execution_1_1EventDispatcher_html"><div class="ttname"><a href="classBPMNOS_1_1Execution_1_1EventDispatcher.html">BPMNOS::Execution::EventDispatcher</a></div><div class="ttdef"><b>Definition</b> <a href="EventDispatcher_8h_source.html#l00011">EventDispatcher.h:11</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Execution_1_1EventDispatcher_html_ab9dfeb9aa1d4c42db4c2331384f5a16e"><div class="ttname"><a href="classBPMNOS_1_1Execution_1_1EventDispatcher.html#ab9dfeb9aa1d4c42db4c2331384f5a16e">BPMNOS::Execution::EventDispatcher::connect</a></div><div class="ttdeci">virtual void connect(Mediator *mediator)</div><div class="ttdef"><b>Definition</b> <a href="EventDispatcher_8cpp_source.html#l00006">EventDispatcher.cpp:6</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Execution_1_1GreedyDispatcher_html"><div class="ttname"><a href="classBPMNOS_1_1Execution_1_1GreedyDispatcher.html">BPMNOS::Execution::GreedyDispatcher</a></div><div class="ttdoc">Generic greedy policy dispatcher owning a concrete Candidates collection.</div><div class="ttdef"><b>Definition</b> <a href="GreedyDispatcher_8h_source.html#l00044">GreedyDispatcher.h:44</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Execution_1_1GreedyDispatcher_html_a06ec3b4fab882445168277fc0e927245"><div class="ttname"><a href="classBPMNOS_1_1Execution_1_1GreedyDispatcher.html#a06ec3b4fab882445168277fc0e927245">BPMNOS::Execution::GreedyDispatcher::dispatchEvent</a></div><div class="ttdeci">std::shared_ptr&lt; Event &gt; dispatchEvent(const SystemState *systemState) override</div><div class="ttdef"><b>Definition</b> <a href="GreedyDispatcher_8h_source.html#l00049">GreedyDispatcher.h:49</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Execution_1_1GreedyDispatcher_html_a4ca8968ea213989b058279b1558e7c74"><div class="ttname"><a href="classBPMNOS_1_1Execution_1_1GreedyDispatcher.html#a4ca8968ea213989b058279b1558e7c74">BPMNOS::Execution::GreedyDispatcher::GreedyDispatcher</a></div><div class="ttdeci">GreedyDispatcher(Args &amp;&amp;... args)</div><div class="ttdef"><b>Definition</b> <a href="GreedyDispatcher_8h_source.html#l00047">GreedyDispatcher.h:47</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Execution_1_1GreedyDispatcher_html_a6e2697019d31f562e36d209765880a48"><div class="ttname"><a href="classBPMNOS_1_1Execution_1_1GreedyDispatcher.html#a6e2697019d31f562e36d209765880a48">BPMNOS::Execution::GreedyDispatcher::connect</a></div><div class="ttdeci">void connect(Mediator *mediator) override</div><div class="ttdef"><b>Definition</b> <a href="GreedyDispatcher_8h_source.html#l00067">GreedyDispatcher.h:67</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Execution_1_1GreedyDispatcher_html_a74bbccb5bea695e7779693601eaf8c8a"><div class="ttname"><a href="classBPMNOS_1_1Execution_1_1GreedyDispatcher.html#a74bbccb5bea695e7779693601eaf8c8a">BPMNOS::Execution::GreedyDispatcher::candidates</a></div><div class="ttdeci">Candidates candidates</div><div class="ttdef"><b>Definition</b> <a href="GreedyDispatcher_8h_source.html#l00073">GreedyDispatcher.h:73</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Execution_1_1SystemState_html"><div class="ttname"><a href="classBPMNOS_1_1Execution_1_1SystemState.html">BPMNOS::Execution::SystemState</a></div><div class="ttdoc">A class representing the state that the execution or simulation of a given scenario is in.</div><div class="ttdef"><b>Definition</b> <a href="SystemState_8h_source.html#l00022">SystemState.h:22</a></div></div>
+<div class="ttc" id="aconceptBPMNOS_1_1Execution_1_1CandidateCollection_html"><div class="ttname"><a href="conceptBPMNOS_1_1Execution_1_1CandidateCollection.html">BPMNOS::Execution::CandidateCollection</a></div><div class="ttdef"><b>Definition</b> <a href="GreedyDispatcher_8h_source.html#l00028">GreedyDispatcher.h:28</a></div></div>
+<div class="ttc" id="aconceptBPMNOS_1_1Execution_1_1CandidateElement_html"><div class="ttname"><a href="conceptBPMNOS_1_1Execution_1_1CandidateElement.html">BPMNOS::Execution::CandidateElement</a></div><div class="ttdef"><b>Definition</b> <a href="GreedyDispatcher_8h_source.html#l00020">GreedyDispatcher.h:20</a></div></div>
+<div class="ttc" id="anamespaceBPMNOS_1_1Execution_html"><div class="ttname"><a href="namespaceBPMNOS_1_1Execution.html">BPMNOS::Execution</a></div><div class="ttdef"><b>Definition</b> <a href="CachedCandidates_8h_source.html#l00016">CachedCandidates.h:16</a></div></div>
+<div class="ttc" id="anamespacestd_html"><div class="ttname"><a href="namespacestd.html">std</a></div><div class="ttdoc">STL namespace.</div></div>
+<div class="ttc" id="astructBPMNOS_1_1Execution_1_1Mediator_html"><div class="ttname"><a href="structBPMNOS_1_1Execution_1_1Mediator.html">BPMNOS::Execution::Mediator</a></div><div class="ttdoc">Represents an abstract base class for a class that is an event listener and notifier.</div><div class="ttdef"><b>Definition</b> <a href="Mediator_8h_source.html#l00013">Mediator.h:13</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+</div><!-- doc-content -->
+<script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs"; mermaid.initialize({ startOnLoad: true, theme: "neutral" });</script></body></html>
