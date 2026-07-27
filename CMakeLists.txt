@@ -16,6 +16,15 @@ else()
   message("-- Tests are turned off")
 endif()
 
+# Docs-only: configure just the documentation, without building the engine (no cnl/limex/json fetch, no
+# model/execution/app compilation, hence no bpmn++). The `docs` target runs Doxygen over the source and
+# generates the BPMN-OS schema headers it needs with schematic++; cross-references to bpmn++ come from the
+# downloaded tag file. Used by the GitHub Pages workflow to publish the docs without compiling anything.
+option(BPMNOS_DOCS_ONLY "Configure only the documentation target (skip building the engine)" OFF)
+if (BPMNOS_DOCS_ONLY)
+  message("-- Docs-only configuration: engine build and its dependencies are skipped")
+endif()
+
 include_directories("${PROJECT_SOURCE_DIR}/")
 
 # Set the C++ standard
@@ -49,6 +58,8 @@ set(BPMNOS_WARNING_FLAGS
 
 include(FetchContent)
 set(FETCHCONTENT_QUIET FALSE)
+
+if (NOT BPMNOS_DOCS_ONLY)
 
 #  Compositional Numeric Library
 FetchContent_Declare(
@@ -109,10 +120,13 @@ if(BPMNOS_TESTS)
   add_subdirectory(tests)
 endif()
 add_subdirectory(app)
+
+endif() # NOT BPMNOS_DOCS_ONLY
+
 add_subdirectory(docs)
 
 # Generate code profiles
-if (NOT NDEBUG)
+if (NOT NDEBUG AND NOT BPMNOS_DOCS_ONLY)
   add_subdirectory(profile)
 endif()
 

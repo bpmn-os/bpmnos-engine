@@ -1,0 +1,81 @@
+# Build the Doxygen documentation and publish it to GitHub Pages — WITHOUT compiling the engine.
+#
+# Only schematic++ is built: it generates the BPMN-OS schema headers from model/bpmnos/xsd/BPMNOS.xsd,
+# which are part of the Doxygen INPUT. The engine itself is not compiled — `cmake -DBPMNOS_DOCS_ONLY=ON`
+# skips model/execution/app and their dependencies (cnl/limex/json, bpmn++). Cross-references to the
+# bpmn++ documentation come from the tag file the docs target downloads. The example-model pages are
+# produced by bpmnosdoc (bpmn-os/bpmnos-js), a headless bpmn-js tool — no bpmn++ / C++ bpmndoc.
+#
+# peaceiris/actions-gh-pages writes a .nojekyll and pushes to the gh-pages branch, so Pages serves the
+# ~5000-file site statically with no Jekyll build. After the first successful run, set
+# Settings -> Pages -> Source: "Deploy from a branch" -> gh-pages / (root).
+
+name: Deploy Docs
+
+on:
+  workflow_dispatch:        # trigger manually (use this to test this branch before merging to main)
+  push:
+    branches: [ main ]      # auto-deploy only from main
+
+permissions:
+  contents: write            # peaceiris pushes the built site to the gh-pages branch
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout engine
+        uses: actions/checkout@v4
+
+      - name: System packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y doxygen graphviz libxerces-c-dev cmake build-essential git curl wget
+
+      # schematic++ generates the BPMN-OS schema headers from the XSD (needs xerces; a quick build)
+      - name: Build & install schematic++
+        run: |
+          git clone --depth 1 https://github.com/rajgoel/schematicpp.git
+          cmake -S schematicpp -B schematicpp/build
+          cmake --build schematicpp/build --parallel
+          sudo cmake --install schematicpp/build
+
+      # Chrome for bpmnosdoc's headless rendering — installed at /usr/bin/google-chrome-stable, where
+      # chrome-launcher (used by bpmnosdoc) looks for it.
+      - name: Install Google Chrome
+        run: |
+          wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+          sudo apt-get install -y ./google-chrome-stable_current_amd64.deb
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # bpmnosdoc renders the example models to SVG + markdown (headless bpmn-js, no bpmn++)
+      - name: Link bpmnosdoc
+        run: |
+          git clone --depth 1 https://github.com/bpmn-os/bpmnos-js.git
+          cd bpmnos-js
+          npm ci
+          sudo npm link
+
+      # docs-only: no engine build, no bpmn++. The docs target generates the schema headers with
+      # schematic++, runs bpmnosdoc for the model pages, downloads the bpmn++ tag file for cross-links,
+      # and runs Doxygen.
+      - name: Generate documentation
+        run: |
+          cmake -S . -B build -DBPMNOS_DOCS_ONLY=ON
+          cmake --build build --target docs
+          # drop Doxygen's dot intermediates — not needed to serve the SVGs, and they shrink the site
+          rm -f docs/html/*.md5 docs/html/*.map
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs/html

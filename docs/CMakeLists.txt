@@ -17,13 +17,13 @@ set(MODEL_PAGES
 # Generate the documentation
 set(DOCUMENTATION ON CACHE BOOL "Create documentation")
 if (DOCUMENTATION)
-  find_program(BPMNOS2SVG_FOUND "bpmnos2svg")
-  if (NOT BPMNOS2SVG_FOUND)
-    message(FATAL_ERROR "bpmnos2svg not found.\n\nDownload bpmnos2svg from: https://github.com/bpmn-os/bpmnos-js" and run npm install; npm link)
+  find_program(BPMNOSDOC_FOUND "bpmnosdoc")
+  if (NOT BPMNOSDOC_FOUND)
+    message(FATAL_ERROR "bpmnosdoc not found.\n\nInstall it from https://github.com/bpmn-os/bpmnos-js (npm install; npm link)")
   endif()
-  find_program(BPMNDOC_FOUND "bpmndoc")
-  if (NOT BPMNDOC_FOUND)
-    message(FATAL_ERROR "bpmndoc not found.\n\nDownload bpmndoc from: https://github.com/bpmn-os/bpmndoc")
+  find_program(SCHEMATICPP "schematic++")
+  if (NOT SCHEMATICPP)
+    message(FATAL_ERROR "schematic++ not found.\nDownload schematic++ from: https://github.com/bpmn-os/schematicpp")
   endif()
   find_program(DOXYGEN_FOUND "doxygen")
   if (NOT DOXYGEN_FOUND)
@@ -45,33 +45,40 @@ if (DOCUMENTATION)
   )
 
   
+  # BPMN-OS extension classes: schematic++ generates them from the XSD into model/bpmnos/src/xml. A full
+  # build does this in model/bpmnos; for a docs-only build (engine not configured) generate them here, as
+  # they are part of the Doxygen INPUT. Only schematic++ is needed, not bpmn++.
+  set(BPMNOS_XML_DIR ${PROJECT_SOURCE_DIR}/model/bpmnos/src/xml)
+  if (NOT EXISTS "${BPMNOS_XML_DIR}")
+    message("-- Generating BPMN-OS XML classes in: ${BPMNOS_XML_DIR}")
+    file(MAKE_DIRECTORY ${BPMNOS_XML_DIR})
+    execute_process(
+      COMMAND ${SCHEMATICPP} -n bpmnos -o ${BPMNOS_XML_DIR} -i xsd/BPMNOS.xsd
+      WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/model/bpmnos
+    )
+  endif()
+
   set(MODEL_SRC ${PROJECT_SOURCE_DIR}/examples)
   set(MODEL_DOC ${PROJECT_SOURCE_DIR}/docs/md/models)
   set(HTML_DIR ${PROJECT_SOURCE_DIR}/docs/html)
-  add_custom_target(bpmnos2svg
-    COMMAND bash -c "echo 'Convert bpmn to svg ...'"
-    COMMAND bash -c "for model in ${MODEL_SRC}/*/*bpmn; do baseName=$(basename $model '.bpmn'); folder=$(basename $(dirname $model)); if [[ $model -nt \"$folder/$baseName.svg\" ]]; then bpmnos2svg $model -o $folder; fi; done"
-    COMMENT "Generating BPMN model diagrams (this may take a while)"
-    WORKING_DIRECTORY ${MODEL_DOC}
-    VERBATIM
-  )
-
-  add_custom_target(bpmndoc_md
+  # bpmnosdoc (bpmn-os/bpmnos-js) renders each example model to SVG and writes a markdown page of its
+  # execution data — replacing the former bpmnos2svg + bpmndoc pair, and with it the bpmn++ dependency.
+  add_custom_target(model_docs
     COMMAND bash -c "mkdir -p ${HTML_DIR}"
-    COMMAND bash -c "echo 'Convert bpmn to md ...'"
-    COMMAND bash -c "for model in ${MODEL_SRC}/*/*bpmn; do baseName=$(basename $model '.bpmn'); folder=$(basename $(dirname $model)); cd $folder; bpmndoc $model; cp *.svg  ${HTML_DIR}; cd ..; done"
+    COMMAND bash -c "for model in ${MODEL_SRC}/*/*bpmn; do folder=$(basename $(dirname $model)); bpmnosdoc \"$model\" -o \"${MODEL_DOC}/$folder\"; cp \"${MODEL_DOC}/$folder/\"*.svg ${HTML_DIR}; done"
+    COMMENT "Generating BPMN-OS model documentation (bpmnosdoc: markdown + diagrams)"
     WORKING_DIRECTORY ${MODEL_DOC}
-    COMMENT "Generating BPMN model documentation"
     VERBATIM
-    DEPENDS bpmnos2svg
   )
 
-  add_custom_target(bpmndoc
-    COMMAND bash -c "IFS=';' read -ra pages <<< '${MODEL_PAGES}'; for page in \"\${pages[@]}\"; do filename=\$(echo \$page | cut -d' ' -f1); title=\$(echo \$page | cut -d' ' -f2-); sed 's|!\\[\\([^ ]*\\)](\\([^ ]*\\.svg\\))|\\\\htmlonly\\n<object data=\"\\2\" type=\"image\\/svg+xml\" style=\"max-width: 100%;\">\\1<\\/object>\\n\\\\endhtmlonly\\n|g' \$filename > temp_file && mv temp_file \$filename; echo \"$(echo \"$title\"; cat $filename)\" > $filename; done"
+  # Assemble the Doxygen pages from bpmnosdoc's markdown: turn each `![alt](x.svg)` into an inline SVG
+  # object (alt may contain spaces, e.g. "Diagram: <sub-process>"), and prepend the `@page id title`.
+  add_custom_target(model_pages
+    COMMAND bash -c "IFS=';' read -ra pages <<< '${MODEL_PAGES}'; for page in \"\${pages[@]}\"; do filename=\$(echo \$page | cut -d' ' -f1); title=\$(echo \$page | cut -d' ' -f2-); sed 's|!\\[\\([^]]*\\)](\\([^ ]*\\.svg\\))|\\\\htmlonly\\n<object data=\"\\2\" type=\"image\\/svg+xml\" style=\"max-width: 100%;\">\\1<\\/object>\\n\\\\endhtmlonly\\n|g' \$filename > temp_file && mv temp_file \$filename; echo \"$(echo \"$title\"; cat $filename)\" > $filename; done"
     WORKING_DIRECTORY ${MODEL_DOC}
-    COMMENT "Generating BPMN model pages"
+    COMMENT "Assembling BPMN-OS model pages"
     VERBATIM
-    DEPENDS bpmndoc_md
+    DEPENDS model_docs
   )
 
   # Configure Doxyfile
@@ -87,7 +94,7 @@ if (DOCUMENTATION)
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
     COMMENT "Generating Doxygen documentation (this may take a while)"
     VERBATIM
-    DEPENDS doxygen-awesome bpmndoc
+    DEPENDS doxygen-awesome model_pages
   )
 
 endif()
