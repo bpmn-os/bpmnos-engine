@@ -54,7 +54,7 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22   # bpmnos-js requires node >=22 (its modeler app won't init otherwise)
 
       # bpmnosdoc renders the example models to SVG + markdown (headless bpmn-js, no bpmn++)
       - name: Link bpmnosdoc
