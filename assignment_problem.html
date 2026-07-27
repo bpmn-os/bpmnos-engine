@@ -129,7 +129,7 @@ $(document).ready(function(){initNavTree('assignment_problem.html',''); initResi
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><h1><a class="anchor" id="collaboration-assignment_problem"></a>
-Collaboration &lt;tt&gt;Assignment_problem&lt;/tt&gt;</h1>
+Collaboration (Assignment_problem)</h1>
 <p>The <em>Assignment problem</em> can be described as the problem of finding an assignment of clients to servers, such that</p>
 <ul>
 <li>each client is assigned to exactly one server,</li>
@@ -147,7 +147,7 @@ Lookup tables</h2>
 <li><b>costs(…)</b> (from <code>costs.csv</code>) with columns <code>ClientId</code>, <code>ServerId</code>, <code>Costs</code></li>
 </ul>
 <h2><a class="anchor" id="client-process-clientprocess"></a>
-Client process &lt;tt&gt;ClientProcess&lt;/tt&gt;</h2>
+Client process (ClientProcess)</h2>
 <h3><a class="anchor" id="status"></a>
 Status</h3>
 <ul>
@@ -159,30 +159,54 @@ Data</h3>
 <li><em>string:</em> <b>instance</b></li>
 </ul>
 <h2><a class="anchor" id="startevent-starteventclient"></a>
-StartEvent &lt;tt&gt;StartEventClient&lt;/tt&gt;</h2>
+StartEvent (StartEventClient)</h2>
 <h3><a class="anchor" id="status-1"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="assignment_problem.html#client-process-clientprocess">`ClientProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-2"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="assignment_problem.html#client-process-clientprocess">`ClientProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="sendtask-sendrequesttask"></a>
-SendTask &lt;tt&gt;SendRequestTask&lt;/tt&gt;</h2>
+SendTask (SendRequestTask)</h2>
 <p>The task creates a message containing the instance identifier of the client and waits until the message is delivered to a server.</p>
 <h3><a class="anchor" id="status-2"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="assignment_problem.html#client-process-clientprocess">`ClientProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-3"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="assignment_problem.html#client-process-clientprocess">`ClientProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="message"></a>
 Message</h3>
 <h4><a class="anchor" id="name-message"></a>
@@ -193,19 +217,31 @@ Message</h3>
 <li><em>ClientId:</em> <b>instance</b></li>
 </ul>
 <h2><a class="anchor" id="endevent-endeventclient"></a>
-EndEvent &lt;tt&gt;EndEventClient&lt;/tt&gt;</h2>
+EndEvent (EndEventClient)</h2>
 <h3><a class="anchor" id="status-3"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="assignment_problem.html#client-process-clientprocess">`ClientProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-4"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="assignment_problem.html#client-process-clientprocess">`ClientProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="server-process-serverprocess"></a>
-Server process &lt;tt&gt;ServerProcess&lt;/tt&gt;</h2>
+Server process (ServerProcess)</h2>
 <h3><a class="anchor" id="status-4"></a>
 Status</h3>
 <ul>
@@ -218,26 +254,46 @@ Data</h3>
 <li><em>string:</em> <b>instance</b></li>
 </ul>
 <h2><a class="anchor" id="startevent-starteventserver"></a>
-StartEvent &lt;tt&gt;StartEventServer&lt;/tt&gt;</h2>
+StartEvent (StartEventServer)</h2>
 <h3><a class="anchor" id="status-5"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (2)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="assignment_problem.html#server-process-serverprocess">`ServerProcess`</a>)</li>
 <li><em>string:</em> <b>client</b> (from <a class="el" href="assignment_problem.html#server-process-serverprocess">`ServerProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-6"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="assignment_problem.html#server-process-serverprocess">`ServerProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="receivetask-receiverequesttask"></a>
-ReceiveTask &lt;tt&gt;ReceiveRequestTask&lt;/tt&gt;</h2>
+ReceiveTask (ReceiveRequestTask)</h2>
 <p>The task waits for a message from a client. When the message is received, it looks up the cost of the assignment in the table <code>costs.csv</code> and sets the <code>cost</code> attribute accordingly.</p>
 <h3><a class="anchor" id="status-6"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (2)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="assignment_problem.html#server-process-serverprocess">`ServerProcess`</a>)</li>
 <li><em>string:</em> <b>client</b> (from <a class="el" href="assignment_problem.html#server-process-serverprocess">`ServerProcess`</a>)</li>
+</ul>
+<p></p>
+</details>
+<ul>
 <li><em>decimal:</em> <b>cost</b><ul>
 <li><code>→ minimize 1 * cost</code></li>
 </ul>
@@ -245,9 +301,15 @@ Status</h3>
 </ul>
 <h3><a class="anchor" id="data-7"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="assignment_problem.html#server-process-serverprocess">`ServerProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="message-1"></a>
 Message</h3>
 <h4><a class="anchor" id="name-message-1"></a>
@@ -263,31 +325,55 @@ Operators</h3>
 <li><code>cost := costs(client,instance)</code></li>
 </ul>
 <h2><a class="anchor" id="endevent-endeventserver"></a>
-EndEvent &lt;tt&gt;EndEventServer&lt;/tt&gt;</h2>
+EndEvent (EndEventServer)</h2>
 <h3><a class="anchor" id="status-7"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (2)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="assignment_problem.html#server-process-serverprocess">`ServerProcess`</a>)</li>
 <li><em>string:</em> <b>client</b> (from <a class="el" href="assignment_problem.html#server-process-serverprocess">`ServerProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-8"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="assignment_problem.html#server-process-serverprocess">`ServerProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="datastorereference-datastorereference_13uqyvh"></a>
-DataStoreReference &lt;tt&gt;DataStoreReference_13uqyvh&lt;/tt&gt;</h2>
+DataStoreReference (DataStoreReference_13uqyvh)</h2>
 <h3><a class="anchor" id="status-8"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (2)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="assignment_problem.html#server-process-serverprocess">`ServerProcess`</a>)</li>
 <li><em>string:</em> <b>client</b> (from <a class="el" href="assignment_problem.html#server-process-serverprocess">`ServerProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-9"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
-<li><em>string:</em> <b>instance</b> (from <a class="el" href="assignment_problem.html#server-process-serverprocess">`ServerProcess`</a>) </li>
+<li><em>string:</em> <b>instance</b> (from <a class="el" href="assignment_problem.html#server-process-serverprocess">`ServerProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
 </div><!-- doc-content -->

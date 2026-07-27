@@ -129,7 +129,7 @@ $(document).ready(function(){initNavTree('guided_knapsack_problem.html',''); ini
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><h1><a class="anchor" id="collaboration-knapsack_problem"></a>
-Collaboration &lt;tt&gt;Knapsack_problem&lt;/tt&gt;</h1>
+Collaboration (Knapsack_problem)</h1>
 <p>Given a set of items, each having a specifed weight and value, and a knapsack with limited capacity, the <em>Knapsack problem</em> can be described as the problem of finding a selection of items to be included in the knapsack such that</p><ul>
 <li>the total weight of the selected items does not exceed the capacity of the knapsack, and</li>
 <li>the total value of the selected items is maximised.</li>
@@ -141,7 +141,7 @@ Diagram</h2>
 <object data="Guided_knapsack_problem.svg" type="image/svg+xml" style="max-width: 100%;">Diagram</object>
 </p>
 <h2><a class="anchor" id="item-process-itemprocess-2"></a>
-Item process &lt;tt&gt;ItemProcess&lt;/tt&gt;</h2>
+Item process (ItemProcess)</h2>
 <p>The <em>Item process</em> starts with sending a request messsage including the item identifier, its <code>weight</code> and its <code>value</code>. Depending on whether the knapsack reject or accepts the item for inclusion, the respective end event is reached.</p>
 <h3><a class="anchor" id="status-52"></a>
 Status</h3>
@@ -156,33 +156,57 @@ Data</h3>
 <li><em>string:</em> <b>instance</b></li>
 </ul>
 <h2><a class="anchor" id="startevent-starteventitem-2"></a>
-StartEvent &lt;tt&gt;StartEventItem&lt;/tt&gt;</h2>
+StartEvent (StartEventItem)</h2>
 <h3><a class="anchor" id="status-53"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="bin_packing_problem.html#item-process-itemprocess">`ItemProcess`</a>)</li>
 <li><em>decimal:</em> <b>value</b> (from <a class="el" href="bin_packing_problem.html#item-process-itemprocess">`ItemProcess`</a>)</li>
 <li><em>decimal:</em> <b>weight</b> (from <a class="el" href="bin_packing_problem.html#item-process-itemprocess">`ItemProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-54"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="bin_packing_problem.html#item-process-itemprocess">`ItemProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="sendtask-sendrequesttask-1"></a>
-SendTask &lt;tt&gt;SendRequestTask&lt;/tt&gt;</h2>
+SendTask (SendRequestTask)</h2>
 <h3><a class="anchor" id="status-54"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="bin_packing_problem.html#item-process-itemprocess">`ItemProcess`</a>)</li>
 <li><em>decimal:</em> <b>value</b> (from <a class="el" href="bin_packing_problem.html#item-process-itemprocess">`ItemProcess`</a>)</li>
 <li><em>decimal:</em> <b>weight</b> (from <a class="el" href="bin_packing_problem.html#item-process-itemprocess">`ItemProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-55"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="bin_packing_problem.html#item-process-itemprocess">`ItemProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="message-6"></a>
 Message</h3>
 <h4><a class="anchor" id="name-request-4"></a>
@@ -195,33 +219,57 @@ Message</h3>
 <li><em>Weight:</em> <b>weight</b></li>
 </ul>
 <h2><a class="anchor" id="eventbasedgateway-event-basedgateway"></a>
-EventBasedGateway &lt;tt&gt;Event-basedGateway&lt;/tt&gt;</h2>
+EventBasedGateway (Event-basedGateway)</h2>
 <h3><a class="anchor" id="status-55"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="bin_packing_problem.html#item-process-itemprocess">`ItemProcess`</a>)</li>
 <li><em>decimal:</em> <b>value</b> (from <a class="el" href="bin_packing_problem.html#item-process-itemprocess">`ItemProcess`</a>)</li>
 <li><em>decimal:</em> <b>weight</b> (from <a class="el" href="bin_packing_problem.html#item-process-itemprocess">`ItemProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-56"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="bin_packing_problem.html#item-process-itemprocess">`ItemProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="intermediatecatchevent-catchacceptancemessage"></a>
-IntermediateCatchEvent &lt;tt&gt;CatchAcceptanceMessage&lt;/tt&gt;</h2>
+IntermediateCatchEvent (CatchAcceptanceMessage)</h2>
 <h3><a class="anchor" id="status-56"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="bin_packing_problem.html#item-process-itemprocess">`ItemProcess`</a>)</li>
 <li><em>decimal:</em> <b>value</b> (from <a class="el" href="bin_packing_problem.html#item-process-itemprocess">`ItemProcess`</a>)</li>
 <li><em>decimal:</em> <b>weight</b> (from <a class="el" href="bin_packing_problem.html#item-process-itemprocess">`ItemProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-57"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="bin_packing_problem.html#item-process-itemprocess">`ItemProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="message-7"></a>
 Message</h3>
 <h4><a class="anchor" id="name-acceptance"></a>
@@ -229,33 +277,57 @@ Message</h3>
 <p><a class="anchor" id="header-0-7"></a> </p><h5>Header (0)</h5>
 <p><a class="anchor" id="content-0"></a> </p><h5>Content (0)</h5>
 <h2><a class="anchor" id="endevent-itemaccepted"></a>
-EndEvent &lt;tt&gt;ItemAccepted&lt;/tt&gt;</h2>
+EndEvent (ItemAccepted)</h2>
 <h3><a class="anchor" id="status-57"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="bin_packing_problem.html#item-process-itemprocess">`ItemProcess`</a>)</li>
 <li><em>decimal:</em> <b>value</b> (from <a class="el" href="bin_packing_problem.html#item-process-itemprocess">`ItemProcess`</a>)</li>
 <li><em>decimal:</em> <b>weight</b> (from <a class="el" href="bin_packing_problem.html#item-process-itemprocess">`ItemProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-58"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="bin_packing_problem.html#item-process-itemprocess">`ItemProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="intermediatecatchevent-catchrejectionmessage"></a>
-IntermediateCatchEvent &lt;tt&gt;CatchRejectionMessage&lt;/tt&gt;</h2>
+IntermediateCatchEvent (CatchRejectionMessage)</h2>
 <h3><a class="anchor" id="status-58"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="bin_packing_problem.html#item-process-itemprocess">`ItemProcess`</a>)</li>
 <li><em>decimal:</em> <b>value</b> (from <a class="el" href="bin_packing_problem.html#item-process-itemprocess">`ItemProcess`</a>)</li>
 <li><em>decimal:</em> <b>weight</b> (from <a class="el" href="bin_packing_problem.html#item-process-itemprocess">`ItemProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-59"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="bin_packing_problem.html#item-process-itemprocess">`ItemProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="message-8"></a>
 Message</h3>
 <h4><a class="anchor" id="name-rejection"></a>
@@ -263,21 +335,33 @@ Message</h3>
 <p><a class="anchor" id="header-0-8"></a> </p><h5>Header (0)</h5>
 <p><a class="anchor" id="content-0-1"></a> </p><h5>Content (0)</h5>
 <h2><a class="anchor" id="endevent-itemrejected"></a>
-EndEvent &lt;tt&gt;ItemRejected&lt;/tt&gt;</h2>
+EndEvent (ItemRejected)</h2>
 <h3><a class="anchor" id="status-59"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="bin_packing_problem.html#item-process-itemprocess">`ItemProcess`</a>)</li>
 <li><em>decimal:</em> <b>value</b> (from <a class="el" href="bin_packing_problem.html#item-process-itemprocess">`ItemProcess`</a>)</li>
 <li><em>decimal:</em> <b>weight</b> (from <a class="el" href="bin_packing_problem.html#item-process-itemprocess">`ItemProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-60"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="bin_packing_problem.html#item-process-itemprocess">`ItemProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="knapsack-process-knapsackprocess"></a>
-Knapsack process &lt;tt&gt;KnapsackProcess&lt;/tt&gt;</h2>
+Knapsack process (KnapsackProcess)</h2>
 <p>The <em>Knapsack process</em> awaits requests for inclusion and spawns an event-subprocess for each item requesting inclusion.</p>
 <p>It has a data object containing the <code>capacity</code>as well as the <code>total_weight</code> and <code>total_value</code> of all items included.</p>
 <p>Moreover, it has an input attribute <code>items</code> representing the total number of items to be considered, and an attribute <code>handled</code> indicating the number of items handled.</p>
@@ -300,17 +384,29 @@ Data</h3>
 <li><em>string:</em> <b>instance</b></li>
 </ul>
 <h2><a class="anchor" id="subprocess-eventsubprocess-2"></a>
-SubProcess &lt;tt&gt;EventSubProcess&lt;/tt&gt;</h2>
+SubProcess (EventSubProcess)</h2>
 <h3><a class="anchor" id="status-61"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="guided_knapsack_problem.html#knapsack-process-knapsackprocess">`KnapsackProcess`</a>)</li>
+</ul>
+<p></p>
+</details>
+<ul>
 <li><em>string:</em> <b>item</b></li>
 <li><em>decimal:</em> <b>weight</b></li>
 <li><em>decimal:</em> <b>value</b></li>
 </ul>
 <h3><a class="anchor" id="data-62"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (6)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>capacity</b> (from <a class="el" href="guided_knapsack_problem.html#knapsack-process-knapsackprocess">`KnapsackProcess`</a>)</li>
 <li><em>decimal:</em> <b>total_weight</b> (from <a class="el" href="guided_knapsack_problem.html#knapsack-process-knapsackprocess">`KnapsackProcess`</a>)</li>
@@ -322,25 +418,37 @@ Data</h3>
 <li><em>integer:</em> <b>handled</b> (from <a class="el" href="guided_knapsack_problem.html#knapsack-process-knapsackprocess">`KnapsackProcess`</a>)</li>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="guided_knapsack_problem.html#knapsack-process-knapsackprocess">`KnapsackProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="operators-13"></a>
 Operators</h3>
 <ul>
 <li><code>handled += 1</code></li>
 </ul>
 <h2><a class="anchor" id="adhocsubprocess-adhocsubprocess-2"></a>
-AdHocSubProcess &lt;tt&gt;AdHocSubProcess&lt;/tt&gt;</h2>
+AdHocSubProcess (AdHocSubProcess)</h2>
 <p>The adhoc-subprocess ensures that the <em>Handle item</em> activities of all event-subprocesses are executed sequentially.</p>
 <p>It increments the counter of the items handled by the knapsack.</p>
 <h3><a class="anchor" id="status-62"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (4)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="guided_knapsack_problem.html#knapsack-process-knapsackprocess">`KnapsackProcess`</a>)</li>
 <li><em>string:</em> <b>item</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
 <li><em>decimal:</em> <b>weight</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
 <li><em>decimal:</em> <b>value</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-63"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (6)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>capacity</b> (from <a class="el" href="guided_knapsack_problem.html#knapsack-process-knapsackprocess">`KnapsackProcess`</a>)</li>
 <li><em>decimal:</em> <b>total_weight</b> (from <a class="el" href="guided_knapsack_problem.html#knapsack-process-knapsackprocess">`KnapsackProcess`</a>)</li>
@@ -352,21 +460,33 @@ Data</h3>
 <li><em>integer:</em> <b>handled</b> (from <a class="el" href="guided_knapsack_problem.html#knapsack-process-knapsackprocess">`KnapsackProcess`</a>)</li>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="guided_knapsack_problem.html#knapsack-process-knapsackprocess">`KnapsackProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="subprocess-handleitemactivity-1"></a>
-SubProcess &lt;tt&gt;HandleItemActivity&lt;/tt&gt;</h2>
+SubProcess (HandleItemActivity)</h2>
 <p>This activity checks whether the item can be included in the knapsack without exceeding its capacity and rejects or accepts the item accordingly.</p>
 <p>Moreover, it has a guiding operator determining the value to weight ratio.</p>
 <p>The activity must not be entered before all requests have been received, to ensure that the best item can be handled first.</p>
 <h3><a class="anchor" id="status-63"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (4)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="guided_knapsack_problem.html#knapsack-process-knapsackprocess">`KnapsackProcess`</a>)</li>
 <li><em>string:</em> <b>item</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
 <li><em>decimal:</em> <b>weight</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
 <li><em>decimal:</em> <b>value</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-64"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (6)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>capacity</b> (from <a class="el" href="guided_knapsack_problem.html#knapsack-process-knapsackprocess">`KnapsackProcess`</a>)</li>
 <li><em>decimal:</em> <b>total_weight</b> (from <a class="el" href="guided_knapsack_problem.html#knapsack-process-knapsackprocess">`KnapsackProcess`</a>)</li>
@@ -378,6 +498,8 @@ Data</h3>
 <li><em>integer:</em> <b>handled</b> (from <a class="el" href="guided_knapsack_problem.html#knapsack-process-knapsackprocess">`KnapsackProcess`</a>)</li>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="guided_knapsack_problem.html#knapsack-process-knapsackprocess">`KnapsackProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="entry-guidance"></a>
 Entry guidance</h3>
 <h4><a class="anchor" id="attributes-4"></a>
@@ -394,17 +516,27 @@ Restrictions</h4>
 <li><code>handled == items</code></li>
 </ul>
 <h2><a class="anchor" id="startevent-starthandleitemevent"></a>
-StartEvent &lt;tt&gt;StartHandleItemEvent&lt;/tt&gt;</h2>
+StartEvent (StartHandleItemEvent)</h2>
 <h3><a class="anchor" id="status-64"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (4)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="guided_knapsack_problem.html#knapsack-process-knapsackprocess">`KnapsackProcess`</a>)</li>
 <li><em>string:</em> <b>item</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
 <li><em>decimal:</em> <b>weight</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
 <li><em>decimal:</em> <b>value</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-65"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (6)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>capacity</b> (from <a class="el" href="guided_knapsack_problem.html#knapsack-process-knapsackprocess">`KnapsackProcess`</a>)</li>
 <li><em>decimal:</em> <b>total_weight</b> (from <a class="el" href="guided_knapsack_problem.html#knapsack-process-knapsackprocess">`KnapsackProcess`</a>)</li>
@@ -416,18 +548,30 @@ Data</h3>
 <li><em>integer:</em> <b>handled</b> (from <a class="el" href="guided_knapsack_problem.html#knapsack-process-knapsackprocess">`KnapsackProcess`</a>)</li>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="guided_knapsack_problem.html#knapsack-process-knapsackprocess">`KnapsackProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="exclusivegateway-capacitygateway"></a>
-ExclusiveGateway &lt;tt&gt;CapacityGateway&lt;/tt&gt;</h2>
+ExclusiveGateway (CapacityGateway)</h2>
 <h3><a class="anchor" id="status-65"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (4)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="guided_knapsack_problem.html#knapsack-process-knapsackprocess">`KnapsackProcess`</a>)</li>
 <li><em>string:</em> <b>item</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
 <li><em>decimal:</em> <b>weight</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
 <li><em>decimal:</em> <b>value</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-66"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (6)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>capacity</b> (from <a class="el" href="guided_knapsack_problem.html#knapsack-process-knapsackprocess">`KnapsackProcess`</a>)</li>
 <li><em>decimal:</em> <b>total_weight</b> (from <a class="el" href="guided_knapsack_problem.html#knapsack-process-knapsackprocess">`KnapsackProcess`</a>)</li>
@@ -439,18 +583,30 @@ Data</h3>
 <li><em>integer:</em> <b>handled</b> (from <a class="el" href="guided_knapsack_problem.html#knapsack-process-knapsackprocess">`KnapsackProcess`</a>)</li>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="guided_knapsack_problem.html#knapsack-process-knapsackprocess">`KnapsackProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="endevent-throwrejectionmessage"></a>
-EndEvent &lt;tt&gt;ThrowRejectionMessage&lt;/tt&gt;</h2>
+EndEvent (ThrowRejectionMessage)</h2>
 <h3><a class="anchor" id="status-66"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (4)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="guided_knapsack_problem.html#knapsack-process-knapsackprocess">`KnapsackProcess`</a>)</li>
 <li><em>string:</em> <b>item</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
 <li><em>decimal:</em> <b>weight</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
 <li><em>decimal:</em> <b>value</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-67"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (6)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>capacity</b> (from <a class="el" href="guided_knapsack_problem.html#knapsack-process-knapsackprocess">`KnapsackProcess`</a>)</li>
 <li><em>decimal:</em> <b>total_weight</b> (from <a class="el" href="guided_knapsack_problem.html#knapsack-process-knapsackprocess">`KnapsackProcess`</a>)</li>
@@ -462,6 +618,8 @@ Data</h3>
 <li><em>integer:</em> <b>handled</b> (from <a class="el" href="guided_knapsack_problem.html#knapsack-process-knapsackprocess">`KnapsackProcess`</a>)</li>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="guided_knapsack_problem.html#knapsack-process-knapsackprocess">`KnapsackProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="message-9"></a>
 Message</h3>
 <h4><a class="anchor" id="name-rejection-1"></a>
@@ -472,17 +630,27 @@ Message</h3>
 </ul>
 <p><a class="anchor" id="content-0-2"></a> </p><h5>Content (0)</h5>
 <h2><a class="anchor" id="task-includeitemactivity-1"></a>
-Task &lt;tt&gt;IncludeItemActivity&lt;/tt&gt;</h2>
+Task (IncludeItemActivity)</h2>
 <h3><a class="anchor" id="status-67"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (4)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="guided_knapsack_problem.html#knapsack-process-knapsackprocess">`KnapsackProcess`</a>)</li>
 <li><em>string:</em> <b>item</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
 <li><em>decimal:</em> <b>weight</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
 <li><em>decimal:</em> <b>value</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-68"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (6)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>capacity</b> (from <a class="el" href="guided_knapsack_problem.html#knapsack-process-knapsackprocess">`KnapsackProcess`</a>)</li>
 <li><em>decimal:</em> <b>total_weight</b> (from <a class="el" href="guided_knapsack_problem.html#knapsack-process-knapsackprocess">`KnapsackProcess`</a>)</li>
@@ -494,6 +662,8 @@ Data</h3>
 <li><em>integer:</em> <b>handled</b> (from <a class="el" href="guided_knapsack_problem.html#knapsack-process-knapsackprocess">`KnapsackProcess`</a>)</li>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="guided_knapsack_problem.html#knapsack-process-knapsackprocess">`KnapsackProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="operators-14"></a>
 Operators</h3>
 <ul>
@@ -501,17 +671,27 @@ Operators</h3>
 <li><code>total_weight += weight</code></li>
 </ul>
 <h2><a class="anchor" id="endevent-throwacceptancemessage"></a>
-EndEvent &lt;tt&gt;ThrowAcceptanceMessage&lt;/tt&gt;</h2>
+EndEvent (ThrowAcceptanceMessage)</h2>
 <h3><a class="anchor" id="status-68"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (4)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="guided_knapsack_problem.html#knapsack-process-knapsackprocess">`KnapsackProcess`</a>)</li>
 <li><em>string:</em> <b>item</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
 <li><em>decimal:</em> <b>weight</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
 <li><em>decimal:</em> <b>value</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-69"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (6)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>capacity</b> (from <a class="el" href="guided_knapsack_problem.html#knapsack-process-knapsackprocess">`KnapsackProcess`</a>)</li>
 <li><em>decimal:</em> <b>total_weight</b> (from <a class="el" href="guided_knapsack_problem.html#knapsack-process-knapsackprocess">`KnapsackProcess`</a>)</li>
@@ -523,6 +703,8 @@ Data</h3>
 <li><em>integer:</em> <b>handled</b> (from <a class="el" href="guided_knapsack_problem.html#knapsack-process-knapsackprocess">`KnapsackProcess`</a>)</li>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="guided_knapsack_problem.html#knapsack-process-knapsackprocess">`KnapsackProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="message-10"></a>
 Message</h3>
 <h4><a class="anchor" id="name-acceptance-1"></a>
@@ -533,17 +715,27 @@ Message</h3>
 </ul>
 <p><a class="anchor" id="content-0-3"></a> </p><h5>Content (0)</h5>
 <h2><a class="anchor" id="endevent-endeventsubprocess-2"></a>
-EndEvent &lt;tt&gt;EndEventSubProcess&lt;/tt&gt;</h2>
+EndEvent (EndEventSubProcess)</h2>
 <h3><a class="anchor" id="status-69"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (4)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="guided_knapsack_problem.html#knapsack-process-knapsackprocess">`KnapsackProcess`</a>)</li>
 <li><em>string:</em> <b>item</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
 <li><em>decimal:</em> <b>weight</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
 <li><em>decimal:</em> <b>value</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-70"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (6)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>capacity</b> (from <a class="el" href="guided_knapsack_problem.html#knapsack-process-knapsackprocess">`KnapsackProcess`</a>)</li>
 <li><em>decimal:</em> <b>total_weight</b> (from <a class="el" href="guided_knapsack_problem.html#knapsack-process-knapsackprocess">`KnapsackProcess`</a>)</li>
@@ -555,18 +747,30 @@ Data</h3>
 <li><em>integer:</em> <b>handled</b> (from <a class="el" href="guided_knapsack_problem.html#knapsack-process-knapsackprocess">`KnapsackProcess`</a>)</li>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="guided_knapsack_problem.html#knapsack-process-knapsackprocess">`KnapsackProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="startevent-catchrequestmessage-2"></a>
-StartEvent &lt;tt&gt;CatchRequestMessage&lt;/tt&gt;</h2>
+StartEvent (CatchRequestMessage)</h2>
 <h3><a class="anchor" id="status-70"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (4)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="guided_knapsack_problem.html#knapsack-process-knapsackprocess">`KnapsackProcess`</a>)</li>
 <li><em>string:</em> <b>item</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
 <li><em>decimal:</em> <b>weight</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
 <li><em>decimal:</em> <b>value</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-71"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (6)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>capacity</b> (from <a class="el" href="guided_knapsack_problem.html#knapsack-process-knapsackprocess">`KnapsackProcess`</a>)</li>
 <li><em>decimal:</em> <b>total_weight</b> (from <a class="el" href="guided_knapsack_problem.html#knapsack-process-knapsackprocess">`KnapsackProcess`</a>)</li>
@@ -578,6 +782,8 @@ Data</h3>
 <li><em>integer:</em> <b>handled</b> (from <a class="el" href="guided_knapsack_problem.html#knapsack-process-knapsackprocess">`KnapsackProcess`</a>)</li>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="guided_knapsack_problem.html#knapsack-process-knapsackprocess">`KnapsackProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="message-11"></a>
 Message</h3>
 <h4><a class="anchor" id="name-request-5"></a>
@@ -590,14 +796,24 @@ Message</h3>
 <li><em>Value:</em> <b>value</b></li>
 </ul>
 <h2><a class="anchor" id="endevent-endeventknapsack"></a>
-EndEvent &lt;tt&gt;EndEventKnapsack&lt;/tt&gt;</h2>
+EndEvent (EndEventKnapsack)</h2>
 <h3><a class="anchor" id="status-71"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="guided_knapsack_problem.html#knapsack-process-knapsackprocess">`KnapsackProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-72"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (6)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>capacity</b> (from <a class="el" href="guided_knapsack_problem.html#knapsack-process-knapsackprocess">`KnapsackProcess`</a>)</li>
 <li><em>decimal:</em> <b>total_weight</b> (from <a class="el" href="guided_knapsack_problem.html#knapsack-process-knapsackprocess">`KnapsackProcess`</a>)</li>
@@ -609,16 +825,28 @@ Data</h3>
 <li><em>integer:</em> <b>handled</b> (from <a class="el" href="guided_knapsack_problem.html#knapsack-process-knapsackprocess">`KnapsackProcess`</a>)</li>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="guided_knapsack_problem.html#knapsack-process-knapsackprocess">`KnapsackProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="task-waitactivity-2"></a>
-Task &lt;tt&gt;WaitActivity&lt;/tt&gt;</h2>
+Task (WaitActivity)</h2>
 <p>The activity must not be exited before all requests have been received.</p>
 <h3><a class="anchor" id="status-72"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="guided_knapsack_problem.html#knapsack-process-knapsackprocess">`KnapsackProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-73"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (6)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>capacity</b> (from <a class="el" href="guided_knapsack_problem.html#knapsack-process-knapsackprocess">`KnapsackProcess`</a>)</li>
 <li><em>decimal:</em> <b>total_weight</b> (from <a class="el" href="guided_knapsack_problem.html#knapsack-process-knapsackprocess">`KnapsackProcess`</a>)</li>
@@ -630,6 +858,8 @@ Data</h3>
 <li><em>integer:</em> <b>handled</b> (from <a class="el" href="guided_knapsack_problem.html#knapsack-process-knapsackprocess">`KnapsackProcess`</a>)</li>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="guided_knapsack_problem.html#knapsack-process-knapsackprocess">`KnapsackProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="exit-guidance"></a>
 Exit guidance</h3>
 <h4><a class="anchor" id="restrictions-3"></a>
@@ -638,14 +868,24 @@ Restrictions</h4>
 <li><code>handled == items</code></li>
 </ul>
 <h2><a class="anchor" id="startevent-starteventknapsack"></a>
-StartEvent &lt;tt&gt;StartEventKnapsack&lt;/tt&gt;</h2>
+StartEvent (StartEventKnapsack)</h2>
 <h3><a class="anchor" id="status-73"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="guided_knapsack_problem.html#knapsack-process-knapsackprocess">`KnapsackProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-74"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (6)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>capacity</b> (from <a class="el" href="guided_knapsack_problem.html#knapsack-process-knapsackprocess">`KnapsackProcess`</a>)</li>
 <li><em>decimal:</em> <b>total_weight</b> (from <a class="el" href="guided_knapsack_problem.html#knapsack-process-knapsackprocess">`KnapsackProcess`</a>)</li>
@@ -657,15 +897,27 @@ Data</h3>
 <li><em>integer:</em> <b>handled</b> (from <a class="el" href="guided_knapsack_problem.html#knapsack-process-knapsackprocess">`KnapsackProcess`</a>)</li>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="guided_knapsack_problem.html#knapsack-process-knapsackprocess">`KnapsackProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="dataobjectreference-dataobjectreference_18bke9g"></a>
-DataObjectReference &lt;tt&gt;DataObjectReference_18bke9g&lt;/tt&gt;</h2>
+DataObjectReference (DataObjectReference_18bke9g)</h2>
 <h3><a class="anchor" id="status-74"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="guided_knapsack_problem.html#knapsack-process-knapsackprocess">`KnapsackProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-75"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (6)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>capacity</b> (from <a class="el" href="guided_knapsack_problem.html#knapsack-process-knapsackprocess">`KnapsackProcess`</a>)</li>
 <li><em>decimal:</em> <b>total_weight</b> (from <a class="el" href="guided_knapsack_problem.html#knapsack-process-knapsackprocess">`KnapsackProcess`</a>)</li>
@@ -677,15 +929,17 @@ Data</h3>
 <li><em>integer:</em> <b>handled</b> (from <a class="el" href="guided_knapsack_problem.html#knapsack-process-knapsackprocess">`KnapsackProcess`</a>)</li>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="guided_knapsack_problem.html#knapsack-process-knapsackprocess">`KnapsackProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="sequenceflow-flow_0y2js91"></a>
-SequenceFlow &lt;tt&gt;Flow_0y2js91&lt;/tt&gt;</h2>
+SequenceFlow (Flow_0y2js91)</h2>
 <h3><a class="anchor" id="gatekeeper-2"></a>
 Gatekeeper</h3>
 <ul>
 <li><code>total_weight + weight &gt; capacity</code></li>
 </ul>
 <h2><a class="anchor" id="sequenceflow-flow_1r0tr4t"></a>
-SequenceFlow &lt;tt&gt;Flow_1r0tr4t&lt;/tt&gt;</h2>
+SequenceFlow (Flow_1r0tr4t)</h2>
 <h3><a class="anchor" id="gatekeeper-3"></a>
 Gatekeeper</h3>
 <ul>

@@ -1,11 +1,11 @@
 var searchData=
 [
-  ['u_20s_20truck_20driver_20process_20tt_20truckdriverprocess_20tt_0',['U.S. Truck driver process &lt;tt&gt;TruckDriverProcess&lt;/tt&gt;',['../truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess',1,'']]],
+  ['u_20s_20truck_20driver_20process_20truckdriverprocess_0',['U.S. Truck driver process (TruckDriverProcess)',['../truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess',1,'']]],
   ['unassign_1',['UNASSIGN',['../classBPMNOS_1_1Model_1_1Expression.html#a1c6c51e0e04397036812c3e83434344ea778b19a675d2f9e6a012821e9fea6204',1,'BPMNOS::Model::Expression']]],
   ['undefined_2',['Undefined',['../namespaceBPMNOS_1_1Keyword.html#a82f3806399226e1d9ab602a5c772502b',1,'BPMNOS::Keyword']]],
-  ['unloadactivity_20tt_3',['unloadactivity tt',['../guided_pickup_delivery_problem.html#task-unloadactivity',1,'Task &lt;tt&gt;UnloadActivity&lt;/tt&gt;'],['../pickup_delivery_problem.html#task-unloadactivity-1',1,'Task &lt;tt&gt;UnloadActivity&lt;/tt&gt;']]],
+  ['unloadactivity_3',['unloadactivity',['../guided_pickup_delivery_problem.html#task-unloadactivity',1,'Task (UnloadActivity)'],['../pickup_delivery_problem.html#task-unloadactivity-1',1,'Task (UnloadActivity)']]],
   ['unloaded_4',['unloaded',['../guided_pickup_delivery_problem.html#name-unloaded-1',1,'&lt;em&gt;Name&lt;/em&gt; Unloaded'],['../guided_pickup_delivery_problem.html#name-unloaded',1,'&lt;em&gt;Name&lt;/em&gt; Unloaded'],['../pickup_delivery_problem.html#name-unloaded-2',1,'&lt;em&gt;Name&lt;/em&gt; Unloaded'],['../pickup_delivery_problem.html#name-unloaded-3',1,'&lt;em&gt;Name&lt;/em&gt; Unloaded']]],
-  ['unloadreceivetask_20tt_5',['unloadreceivetask tt',['../guided_pickup_delivery_problem.html#receivetask-unloadreceivetask',1,'ReceiveTask &lt;tt&gt;UnloadReceiveTask&lt;/tt&gt;'],['../pickup_delivery_problem.html#receivetask-unloadreceivetask-1',1,'ReceiveTask &lt;tt&gt;UnloadReceiveTask&lt;/tt&gt;']]],
+  ['unloadreceivetask_5',['unloadreceivetask',['../guided_pickup_delivery_problem.html#receivetask-unloadreceivetask',1,'ReceiveTask (UnloadReceiveTask)'],['../pickup_delivery_problem.html#receivetask-unloadreceivetask-1',1,'ReceiveTask (UnloadReceiveTask)']]],
   ['unsent_6',['unsent',['../classBPMNOS_1_1Execution_1_1SystemState.html#af5c1514cd3cfc4758c7fa8773b52eb0f',1,'BPMNOS::Execution::SystemState']]],
   ['untyped_20start_20events_7',['Untyped start events',['../token_flow_logic_untyped_start_events.html',1,'execution_logic']]],
   ['untypedendevent_8',['untypedendevent',['https://bpmn-os.github.io/bpmnpp/classBPMN_1_1UntypedEndEvent.html#abbc1efc9380574314e84888ccd757194',1,'BPMN::UntypedEndEvent::UntypedEndEvent()'],['https://bpmn-os.github.io/bpmnpp/classBPMN_1_1UntypedEndEvent.html',1,'BPMN::UntypedEndEvent']]],

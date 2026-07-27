@@ -129,17 +129,7 @@ $(document).ready(function(){initNavTree('truck_driver_scheduling_problem.html',
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><h1><a class="anchor" id="us-truck-driver-process-truckdriverprocess"></a>
-U.S. Truck driver process &lt;tt&gt;TruckDriverProcess&lt;/tt&gt;</h1>
-<h2><a class="anchor" id="diagram-offdutyactivity"></a>
-Diagram: OffDutyActivity</h2>
-<p> 
-<object data="US_Truck_driver_scheduling_problem-OffDutyActivity.svg" type="image/svg+xml" style="max-width: 100%;">Diagram: OffDutyActivity</object>
-</p>
-<h2><a class="anchor" id="diagram-waitactivity"></a>
-Diagram: WaitActivity</h2>
-<p> 
-<object data="US_Truck_driver_scheduling_problem-WaitActivity.svg" type="image/svg+xml" style="max-width: 100%;">Diagram: WaitActivity</object>
-</p>
+U.S. Truck driver process (TruckDriverProcess)</h1>
 <h2><a class="anchor" id="diagram-11"></a>
 Diagram</h2>
 <p> 
@@ -170,9 +160,13 @@ Data</h2>
 <li><em>decimal:</em> <b>driving_since_rest</b> (initialized by <code>driving_since_rest := 0</code>)</li>
 </ul>
 <h2><a class="anchor" id="startevent-startprocessevent"></a>
-StartEvent &lt;tt&gt;StartProcessEvent&lt;/tt&gt;</h2>
+StartEvent (StartProcessEvent)</h2>
 <h3><a class="anchor" id="status-221"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (5)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>collection:</em> <b>earliest_visits</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -180,8 +174,14 @@ Status</h3>
 <li><em>collection:</em> <b>travel_times</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>collection:</em> <b>service_times</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-222"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (11)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>max_driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -195,16 +195,26 @@ Data</h3>
 <li><em>decimal:</em> <b>last_break</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="subprocess-customerserviceactivity"></a>
-SubProcess &lt;tt&gt;CustomerServiceActivity&lt;/tt&gt;</h2>
+SubProcess (CustomerServiceActivity)</h2>
 <h3><a class="anchor" id="status-222"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (5)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>collection:</em> <b>earliest_visits</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>collection:</em> <b>latest_visits</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>collection:</em> <b>travel_times</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>collection:</em> <b>service_times</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
+</ul>
+<p></p>
+</details>
+<ul>
 <li><em>integer:</em> <b>index</b></li>
 <li><em>decimal:</em> <b>service_time</b> (initialized by <code>service_time := service_times[index]</code>)</li>
 <li><em>decimal:</em> <b>travel_time</b> (initialized by <code>travel_time := travel_times[index]</code>)</li>
@@ -214,6 +224,10 @@ Status</h3>
 </ul>
 <h3><a class="anchor" id="data-223"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (11)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>max_driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -227,6 +241,8 @@ Data</h3>
 <li><em>decimal:</em> <b>last_break</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="multi-instance-2"></a>
 Multi-instance</h3>
 <ul>
@@ -234,9 +250,13 @@ Multi-instance</h3>
 <li><em>cardinality:</em> <code>count( travel_times )</code></li>
 </ul>
 <h2><a class="anchor" id="startevent-starttripevent"></a>
-StartEvent &lt;tt&gt;StartTripEvent&lt;/tt&gt;</h2>
+StartEvent (StartTripEvent)</h2>
 <h3><a class="anchor" id="status-223"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (11)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>collection:</em> <b>earliest_visits</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -250,8 +270,14 @@ Status</h3>
 <li><em>decimal:</em> <b>earliest_visit</b> (from <a class="el" href="truck_driver_scheduling_problem.html#subprocess-customerserviceactivity">`CustomerServiceActivity`</a>)</li>
 <li><em>decimal:</em> <b>remaining_driving_time</b> (from <a class="el" href="truck_driver_scheduling_problem.html#subprocess-customerserviceactivity">`CustomerServiceActivity`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-224"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (11)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>max_driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -265,10 +291,16 @@ Data</h3>
 <li><em>decimal:</em> <b>last_break</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="task-visittask"></a>
-Task &lt;tt&gt;VisitTask&lt;/tt&gt;</h2>
+Task (VisitTask)</h2>
 <h3><a class="anchor" id="status-224"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (11)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>collection:</em> <b>earliest_visits</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -281,6 +313,10 @@ Status</h3>
 <li><em>decimal:</em> <b>latest_visit</b> (from <a class="el" href="truck_driver_scheduling_problem.html#subprocess-customerserviceactivity">`CustomerServiceActivity`</a>)</li>
 <li><em>decimal:</em> <b>earliest_visit</b> (from <a class="el" href="truck_driver_scheduling_problem.html#subprocess-customerserviceactivity">`CustomerServiceActivity`</a>)</li>
 <li><em>decimal:</em> <b>remaining_driving_time</b> (from <a class="el" href="truck_driver_scheduling_problem.html#subprocess-customerserviceactivity">`CustomerServiceActivity`</a>)</li>
+</ul>
+<p></p>
+</details>
+<ul>
 <li><em>decimal:</em> <b>lateness</b> (initialized by <code>lateness := max{0,timestamp - latest_visit}</code>)<ul>
 <li><code>→ minimize 1 * lateness</code></li>
 </ul>
@@ -288,6 +324,10 @@ Status</h3>
 </ul>
 <h3><a class="anchor" id="data-225"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (11)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>max_driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -301,15 +341,21 @@ Data</h3>
 <li><em>decimal:</em> <b>last_break</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="operators-42"></a>
 Operators</h3>
 <ul>
 <li><code>timestamp += service_time</code></li>
 </ul>
 <h2><a class="anchor" id="endevent-endvisitevent"></a>
-EndEvent &lt;tt&gt;EndVisitEvent&lt;/tt&gt;</h2>
+EndEvent (EndVisitEvent)</h2>
 <h3><a class="anchor" id="status-225"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (11)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>collection:</em> <b>earliest_visits</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -323,8 +369,14 @@ Status</h3>
 <li><em>decimal:</em> <b>earliest_visit</b> (from <a class="el" href="truck_driver_scheduling_problem.html#subprocess-customerserviceactivity">`CustomerServiceActivity`</a>)</li>
 <li><em>decimal:</em> <b>remaining_driving_time</b> (from <a class="el" href="truck_driver_scheduling_problem.html#subprocess-customerserviceactivity">`CustomerServiceActivity`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-226"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (11)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>max_driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -338,10 +390,21 @@ Data</h3>
 <li><em>decimal:</em> <b>last_break</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="subprocess-waitactivity"></a>
-SubProcess &lt;tt&gt;WaitActivity&lt;/tt&gt;</h2>
+SubProcess (WaitActivity)</h2>
+<h3><a class="anchor" id="diagram-12"></a>
+Diagram</h3>
+<p> 
+<object data="US_Truck_driver_scheduling_problem-WaitActivity.svg" type="image/svg+xml" style="max-width: 100%;">Diagram: WaitActivity</object>
+</p>
 <h3><a class="anchor" id="status-226"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (11)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>collection:</em> <b>earliest_visits</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -354,11 +417,19 @@ Status</h3>
 <li><em>decimal:</em> <b>latest_visit</b> (from <a class="el" href="truck_driver_scheduling_problem.html#subprocess-customerserviceactivity">`CustomerServiceActivity`</a>)</li>
 <li><em>decimal:</em> <b>earliest_visit</b> (from <a class="el" href="truck_driver_scheduling_problem.html#subprocess-customerserviceactivity">`CustomerServiceActivity`</a>)</li>
 <li><em>decimal:</em> <b>remaining_driving_time</b> (from <a class="el" href="truck_driver_scheduling_problem.html#subprocess-customerserviceactivity">`CustomerServiceActivity`</a>)</li>
+</ul>
+<p></p>
+</details>
+<ul>
 <li><em>decimal:</em> <b>duration</b></li>
 <li><em>string:</em> <b>wait_type</b></li>
 </ul>
 <h3><a class="anchor" id="data-227"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (11)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>max_driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -372,10 +443,16 @@ Data</h3>
 <li><em>decimal:</em> <b>last_break</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="exclusivegateway-waitbeforevisitgateway"></a>
-ExclusiveGateway &lt;tt&gt;WaitBeforeVisitGateway&lt;/tt&gt;</h2>
+ExclusiveGateway (WaitBeforeVisitGateway)</h2>
 <h3><a class="anchor" id="status-227"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (11)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>collection:</em> <b>earliest_visits</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -389,8 +466,14 @@ Status</h3>
 <li><em>decimal:</em> <b>earliest_visit</b> (from <a class="el" href="truck_driver_scheduling_problem.html#subprocess-customerserviceactivity">`CustomerServiceActivity`</a>)</li>
 <li><em>decimal:</em> <b>remaining_driving_time</b> (from <a class="el" href="truck_driver_scheduling_problem.html#subprocess-customerserviceactivity">`CustomerServiceActivity`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-228"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (11)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>max_driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -404,10 +487,16 @@ Data</h3>
 <li><em>decimal:</em> <b>last_break</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="exclusivegateway-visitgateway"></a>
-ExclusiveGateway &lt;tt&gt;VisitGateway&lt;/tt&gt;</h2>
+ExclusiveGateway (VisitGateway)</h2>
 <h3><a class="anchor" id="status-228"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (11)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>collection:</em> <b>earliest_visits</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -421,8 +510,14 @@ Status</h3>
 <li><em>decimal:</em> <b>earliest_visit</b> (from <a class="el" href="truck_driver_scheduling_problem.html#subprocess-customerserviceactivity">`CustomerServiceActivity`</a>)</li>
 <li><em>decimal:</em> <b>remaining_driving_time</b> (from <a class="el" href="truck_driver_scheduling_problem.html#subprocess-customerserviceactivity">`CustomerServiceActivity`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-229"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (11)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>max_driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -436,10 +531,16 @@ Data</h3>
 <li><em>decimal:</em> <b>last_break</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="subprocess-tripactivity"></a>
-SubProcess &lt;tt&gt;TripActivity&lt;/tt&gt;</h2>
+SubProcess (TripActivity)</h2>
 <h3><a class="anchor" id="status-229"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (11)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>collection:</em> <b>earliest_visits</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -452,11 +553,19 @@ Status</h3>
 <li><em>decimal:</em> <b>latest_visit</b> (from <a class="el" href="truck_driver_scheduling_problem.html#subprocess-customerserviceactivity">`CustomerServiceActivity`</a>)</li>
 <li><em>decimal:</em> <b>earliest_visit</b> (from <a class="el" href="truck_driver_scheduling_problem.html#subprocess-customerserviceactivity">`CustomerServiceActivity`</a>)</li>
 <li><em>decimal:</em> <b>remaining_driving_time</b> (from <a class="el" href="truck_driver_scheduling_problem.html#subprocess-customerserviceactivity">`CustomerServiceActivity`</a>)</li>
+</ul>
+<p></p>
+</details>
+<ul>
 <li><em>boolean:</em> <b>loop</b></li>
 <li><em>integer:</em> <b>loop_index</b></li>
 </ul>
 <h3><a class="anchor" id="data-230"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (11)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>max_driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -470,6 +579,8 @@ Data</h3>
 <li><em>decimal:</em> <b>last_break</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="loop-1"></a>
 Loop</h3>
 <ul>
@@ -478,9 +589,13 @@ Loop</h3>
 <li><em>maximum:</em> <code>max_driving_periods_per_trip</code></li>
 </ul>
 <h2><a class="anchor" id="startevent-startdriveevent"></a>
-StartEvent &lt;tt&gt;StartDriveEvent&lt;/tt&gt;</h2>
+StartEvent (StartDriveEvent)</h2>
 <h3><a class="anchor" id="status-230"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (13)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>collection:</em> <b>earliest_visits</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -496,8 +611,14 @@ Status</h3>
 <li><em>boolean:</em> <b>loop</b> (from <a class="el" href="truck_driver_scheduling_problem.html#subprocess-tripactivity">`TripActivity`</a>)</li>
 <li><em>integer:</em> <b>loop_index</b> (from <a class="el" href="truck_driver_scheduling_problem.html#subprocess-tripactivity">`TripActivity`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-231"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (11)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>max_driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -511,10 +632,16 @@ Data</h3>
 <li><em>decimal:</em> <b>last_break</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="task-drivetask"></a>
-Task &lt;tt&gt;DriveTask&lt;/tt&gt;</h2>
+Task (DriveTask)</h2>
 <h3><a class="anchor" id="status-231"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (13)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>collection:</em> <b>earliest_visits</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -529,10 +656,18 @@ Status</h3>
 <li><em>decimal:</em> <b>remaining_driving_time</b> (from <a class="el" href="truck_driver_scheduling_problem.html#subprocess-customerserviceactivity">`CustomerServiceActivity`</a>)</li>
 <li><em>boolean:</em> <b>loop</b> (from <a class="el" href="truck_driver_scheduling_problem.html#subprocess-tripactivity">`TripActivity`</a>)</li>
 <li><em>integer:</em> <b>loop_index</b> (from <a class="el" href="truck_driver_scheduling_problem.html#subprocess-tripactivity">`TripActivity`</a>)</li>
+</ul>
+<p></p>
+</details>
+<ul>
 <li><em>decimal:</em> <b>duration</b> (initialized by <code>duration := max{ 0, min{ remaining_driving_time, max_driving_since_rest - driving_since_rest, max_elapsed_since_rest - (timestamp - last_rest ), max_elapsed_since_break - (timestamp - last_break) } }</code>)</li>
 </ul>
 <h3><a class="anchor" id="data-232"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (11)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>max_driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -546,6 +681,8 @@ Data</h3>
 <li><em>decimal:</em> <b>last_break</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="operators-43"></a>
 Operators</h3>
 <ul>
@@ -555,9 +692,13 @@ Operators</h3>
 <li><code>loop := (remaining_driving_time &gt; 0)</code></li>
 </ul>
 <h2><a class="anchor" id="exclusivegateway-arrivalgateway"></a>
-ExclusiveGateway &lt;tt&gt;ArrivalGateway&lt;/tt&gt;</h2>
+ExclusiveGateway (ArrivalGateway)</h2>
 <h3><a class="anchor" id="status-232"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (13)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>collection:</em> <b>earliest_visits</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -573,8 +714,14 @@ Status</h3>
 <li><em>boolean:</em> <b>loop</b> (from <a class="el" href="truck_driver_scheduling_problem.html#subprocess-tripactivity">`TripActivity`</a>)</li>
 <li><em>integer:</em> <b>loop_index</b> (from <a class="el" href="truck_driver_scheduling_problem.html#subprocess-tripactivity">`TripActivity`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-233"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (11)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>max_driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -588,10 +735,21 @@ Data</h3>
 <li><em>decimal:</em> <b>last_break</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="subprocess-offdutyactivity"></a>
-SubProcess &lt;tt&gt;OffDutyActivity&lt;/tt&gt;</h2>
+SubProcess (OffDutyActivity)</h2>
+<h3><a class="anchor" id="diagram-13"></a>
+Diagram</h3>
+<p> 
+<object data="US_Truck_driver_scheduling_problem-OffDutyActivity.svg" type="image/svg+xml" style="max-width: 100%;">Diagram: OffDutyActivity</object>
+</p>
 <h3><a class="anchor" id="status-233"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (13)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>collection:</em> <b>earliest_visits</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -606,11 +764,19 @@ Status</h3>
 <li><em>decimal:</em> <b>remaining_driving_time</b> (from <a class="el" href="truck_driver_scheduling_problem.html#subprocess-customerserviceactivity">`CustomerServiceActivity`</a>)</li>
 <li><em>boolean:</em> <b>loop</b> (from <a class="el" href="truck_driver_scheduling_problem.html#subprocess-tripactivity">`TripActivity`</a>)</li>
 <li><em>integer:</em> <b>loop_index</b> (from <a class="el" href="truck_driver_scheduling_problem.html#subprocess-tripactivity">`TripActivity`</a>)</li>
+</ul>
+<p></p>
+</details>
+<ul>
 <li><em>decimal:</em> <b>duration</b></li>
 <li><em>string:</em> <b>offduty_type</b></li>
 </ul>
 <h3><a class="anchor" id="data-234"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (11)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>max_driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -624,10 +790,16 @@ Data</h3>
 <li><em>decimal:</em> <b>last_break</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="endevent-tripendevent"></a>
-EndEvent &lt;tt&gt;TripEndEvent&lt;/tt&gt;</h2>
+EndEvent (TripEndEvent)</h2>
 <h3><a class="anchor" id="status-234"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (13)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>collection:</em> <b>earliest_visits</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -643,8 +815,14 @@ Status</h3>
 <li><em>boolean:</em> <b>loop</b> (from <a class="el" href="truck_driver_scheduling_problem.html#subprocess-tripactivity">`TripActivity`</a>)</li>
 <li><em>integer:</em> <b>loop_index</b> (from <a class="el" href="truck_driver_scheduling_problem.html#subprocess-tripactivity">`TripActivity`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-235"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (11)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>max_driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -658,10 +836,16 @@ Data</h3>
 <li><em>decimal:</em> <b>last_break</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="endevent-offdutyendevent"></a>
-EndEvent &lt;tt&gt;OffDutyEndEvent&lt;/tt&gt;</h2>
+EndEvent (OffDutyEndEvent)</h2>
 <h3><a class="anchor" id="status-235"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (13)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>collection:</em> <b>earliest_visits</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -677,8 +861,14 @@ Status</h3>
 <li><em>boolean:</em> <b>loop</b> (from <a class="el" href="truck_driver_scheduling_problem.html#subprocess-tripactivity">`TripActivity`</a>)</li>
 <li><em>integer:</em> <b>loop_index</b> (from <a class="el" href="truck_driver_scheduling_problem.html#subprocess-tripactivity">`TripActivity`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-236"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (11)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>max_driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -692,10 +882,16 @@ Data</h3>
 <li><em>decimal:</em> <b>last_break</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="endevent-endprocessevent"></a>
-EndEvent &lt;tt&gt;EndProcessEvent&lt;/tt&gt;</h2>
+EndEvent (EndProcessEvent)</h2>
 <h3><a class="anchor" id="status-236"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (5)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>collection:</em> <b>earliest_visits</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -703,8 +899,14 @@ Status</h3>
 <li><em>collection:</em> <b>travel_times</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>collection:</em> <b>service_times</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-237"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (11)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>max_driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -718,10 +920,16 @@ Data</h3>
 <li><em>decimal:</em> <b>last_break</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="dataobjectreference-dataobjectreference_15y3y37"></a>
-DataObjectReference &lt;tt&gt;DataObjectReference_15y3y37&lt;/tt&gt;</h2>
+DataObjectReference (DataObjectReference_15y3y37)</h2>
 <h3><a class="anchor" id="status-237"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (5)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>collection:</em> <b>earliest_visits</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -729,8 +937,14 @@ Status</h3>
 <li><em>collection:</em> <b>travel_times</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>collection:</em> <b>service_times</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-238"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (11)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>max_driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -744,38 +958,44 @@ Data</h3>
 <li><em>decimal:</em> <b>last_break</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="sequenceflow-flow_12gilga"></a>
-SequenceFlow &lt;tt&gt;Flow_12gilga&lt;/tt&gt;</h2>
+SequenceFlow (Flow_12gilga)</h2>
 <h3><a class="anchor" id="gatekeeper-6"></a>
 Gatekeeper</h3>
 <ul>
 <li><code>timestamp &lt; earliest_visit</code></li>
 </ul>
 <h2><a class="anchor" id="sequenceflow-flow_14ovnm9"></a>
-SequenceFlow &lt;tt&gt;Flow_14ovnm9&lt;/tt&gt;</h2>
+SequenceFlow (Flow_14ovnm9)</h2>
 <h3><a class="anchor" id="gatekeeper-7"></a>
 Gatekeeper</h3>
 <ul>
 <li><code>timestamp &gt;= earliest_visit</code></li>
 </ul>
 <h2><a class="anchor" id="sequenceflow-flow_0s8gidz"></a>
-SequenceFlow &lt;tt&gt;Flow_0s8gidz&lt;/tt&gt;</h2>
+SequenceFlow (Flow_0s8gidz)</h2>
 <h3><a class="anchor" id="gatekeeper-8"></a>
 Gatekeeper</h3>
 <ul>
 <li><code>remaining_driving_time &gt; 0</code></li>
 </ul>
 <h2><a class="anchor" id="sequenceflow-flow_09sie24"></a>
-SequenceFlow &lt;tt&gt;Flow_09sie24&lt;/tt&gt;</h2>
+SequenceFlow (Flow_09sie24)</h2>
 <h3><a class="anchor" id="gatekeeper-9"></a>
 Gatekeeper</h3>
 <ul>
 <li><code>remaining_driving_time == 0</code></li>
 </ul>
 <h2><a class="anchor" id="startevent-offdutystartevent"></a>
-StartEvent &lt;tt&gt;OffDutyStartEvent&lt;/tt&gt;</h2>
+StartEvent (OffDutyStartEvent)</h2>
 <h3><a class="anchor" id="status-238"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (15)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>collection:</em> <b>earliest_visits</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -793,8 +1013,14 @@ Status</h3>
 <li><em>decimal:</em> <b>duration</b> (from <a class="el" href="truck_driver_scheduling_problem.html#subprocess-offdutyactivity">`OffDutyActivity`</a>)</li>
 <li><em>string:</em> <b>offduty_type</b> (from <a class="el" href="truck_driver_scheduling_problem.html#subprocess-offdutyactivity">`OffDutyActivity`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-239"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (11)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>max_driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -808,10 +1034,16 @@ Data</h3>
 <li><em>decimal:</em> <b>last_break</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="task-decideduringtriptask"></a>
-Task &lt;tt&gt;DecideDuringTripTask&lt;/tt&gt;</h2>
+Task (DecideDuringTripTask)</h2>
 <h3><a class="anchor" id="status-239"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (15)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>collection:</em> <b>earliest_visits</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -829,8 +1061,14 @@ Status</h3>
 <li><em>decimal:</em> <b>duration</b> (from <a class="el" href="truck_driver_scheduling_problem.html#subprocess-offdutyactivity">`OffDutyActivity`</a>)</li>
 <li><em>string:</em> <b>offduty_type</b> (from <a class="el" href="truck_driver_scheduling_problem.html#subprocess-offdutyactivity">`OffDutyActivity`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-240"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (11)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>max_driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -844,6 +1082,8 @@ Data</h3>
 <li><em>decimal:</em> <b>last_break</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="choices-2"></a>
 Choices</h3>
 <ul>
@@ -855,9 +1095,13 @@ Completion restrictions</h3>
 <li><code>( offduty_type == "rest" ) || ( (driving_since_rest &lt; max_driving_since_rest) &amp;&amp; ( timestamp + min_break_duration &lt; last_rest + max_elapsed_since_rest ) )</code></li>
 </ul>
 <h2><a class="anchor" id="exclusivegateway-tripgateway"></a>
-ExclusiveGateway &lt;tt&gt;TripGateway&lt;/tt&gt;</h2>
+ExclusiveGateway (TripGateway)</h2>
 <h3><a class="anchor" id="status-240"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (15)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>collection:</em> <b>earliest_visits</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -875,8 +1119,14 @@ Status</h3>
 <li><em>decimal:</em> <b>duration</b> (from <a class="el" href="truck_driver_scheduling_problem.html#subprocess-offdutyactivity">`OffDutyActivity`</a>)</li>
 <li><em>string:</em> <b>offduty_type</b> (from <a class="el" href="truck_driver_scheduling_problem.html#subprocess-offdutyactivity">`OffDutyActivity`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-241"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (11)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>max_driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -890,10 +1140,16 @@ Data</h3>
 <li><em>decimal:</em> <b>last_break</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="task-breakduringtriptask"></a>
-Task &lt;tt&gt;BreakDuringTripTask&lt;/tt&gt;</h2>
+Task (BreakDuringTripTask)</h2>
 <h3><a class="anchor" id="status-241"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (15)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>collection:</em> <b>earliest_visits</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -911,8 +1167,14 @@ Status</h3>
 <li><em>decimal:</em> <b>duration</b> (from <a class="el" href="truck_driver_scheduling_problem.html#subprocess-offdutyactivity">`OffDutyActivity`</a>)</li>
 <li><em>string:</em> <b>offduty_type</b> (from <a class="el" href="truck_driver_scheduling_problem.html#subprocess-offdutyactivity">`OffDutyActivity`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-242"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (11)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>max_driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -926,6 +1188,8 @@ Data</h3>
 <li><em>decimal:</em> <b>last_break</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="operators-44"></a>
 Operators</h3>
 <ul>
@@ -933,9 +1197,13 @@ Operators</h3>
 <li><code>last_break := timestamp</code></li>
 </ul>
 <h2><a class="anchor" id="task-restduringtriptask"></a>
-Task &lt;tt&gt;RestDuringTripTask&lt;/tt&gt;</h2>
+Task (RestDuringTripTask)</h2>
 <h3><a class="anchor" id="status-242"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (15)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>collection:</em> <b>earliest_visits</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -953,8 +1221,14 @@ Status</h3>
 <li><em>decimal:</em> <b>duration</b> (from <a class="el" href="truck_driver_scheduling_problem.html#subprocess-offdutyactivity">`OffDutyActivity`</a>)</li>
 <li><em>string:</em> <b>offduty_type</b> (from <a class="el" href="truck_driver_scheduling_problem.html#subprocess-offdutyactivity">`OffDutyActivity`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-243"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (11)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>max_driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -968,6 +1242,8 @@ Data</h3>
 <li><em>decimal:</em> <b>last_break</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="operators-45"></a>
 Operators</h3>
 <ul>
@@ -977,9 +1253,13 @@ Operators</h3>
 <li><code>driving_since_rest := 0</code></li>
 </ul>
 <h2><a class="anchor" id="endevent-tripendeventbreak"></a>
-EndEvent &lt;tt&gt;TripEndEventBreak&lt;/tt&gt;</h2>
+EndEvent (TripEndEventBreak)</h2>
 <h3><a class="anchor" id="status-243"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (15)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>collection:</em> <b>earliest_visits</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -997,8 +1277,14 @@ Status</h3>
 <li><em>decimal:</em> <b>duration</b> (from <a class="el" href="truck_driver_scheduling_problem.html#subprocess-offdutyactivity">`OffDutyActivity`</a>)</li>
 <li><em>string:</em> <b>offduty_type</b> (from <a class="el" href="truck_driver_scheduling_problem.html#subprocess-offdutyactivity">`OffDutyActivity`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-244"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (11)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>max_driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -1012,10 +1298,16 @@ Data</h3>
 <li><em>decimal:</em> <b>last_break</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="endevent-tripendeventrest"></a>
-EndEvent &lt;tt&gt;TripEndEventRest&lt;/tt&gt;</h2>
+EndEvent (TripEndEventRest)</h2>
 <h3><a class="anchor" id="status-244"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (15)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>collection:</em> <b>earliest_visits</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -1033,8 +1325,14 @@ Status</h3>
 <li><em>decimal:</em> <b>duration</b> (from <a class="el" href="truck_driver_scheduling_problem.html#subprocess-offdutyactivity">`OffDutyActivity`</a>)</li>
 <li><em>string:</em> <b>offduty_type</b> (from <a class="el" href="truck_driver_scheduling_problem.html#subprocess-offdutyactivity">`OffDutyActivity`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-245"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (11)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>max_driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -1048,10 +1346,16 @@ Data</h3>
 <li><em>decimal:</em> <b>last_break</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="task-breakduringtripduration"></a>
-Task &lt;tt&gt;BreakDuringTripDuration&lt;/tt&gt;</h2>
+Task (BreakDuringTripDuration)</h2>
 <h3><a class="anchor" id="status-245"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (15)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>collection:</em> <b>earliest_visits</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -1069,8 +1373,14 @@ Status</h3>
 <li><em>decimal:</em> <b>duration</b> (from <a class="el" href="truck_driver_scheduling_problem.html#subprocess-offdutyactivity">`OffDutyActivity`</a>)</li>
 <li><em>string:</em> <b>offduty_type</b> (from <a class="el" href="truck_driver_scheduling_problem.html#subprocess-offdutyactivity">`OffDutyActivity`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-246"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (11)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>max_driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -1084,6 +1394,8 @@ Data</h3>
 <li><em>decimal:</em> <b>last_break</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="choices-3"></a>
 Choices</h3>
 <ul>
@@ -1105,9 +1417,13 @@ Attributes</h4>
 </li>
 </ul>
 <h2><a class="anchor" id="task-restduringtripduration"></a>
-Task &lt;tt&gt;RestDuringTripDuration&lt;/tt&gt;</h2>
+Task (RestDuringTripDuration)</h2>
 <h3><a class="anchor" id="status-246"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (15)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>collection:</em> <b>earliest_visits</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -1125,8 +1441,14 @@ Status</h3>
 <li><em>decimal:</em> <b>duration</b> (from <a class="el" href="truck_driver_scheduling_problem.html#subprocess-offdutyactivity">`OffDutyActivity`</a>)</li>
 <li><em>string:</em> <b>offduty_type</b> (from <a class="el" href="truck_driver_scheduling_problem.html#subprocess-offdutyactivity">`OffDutyActivity`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-247"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (11)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>max_driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -1140,6 +1462,8 @@ Data</h3>
 <li><em>decimal:</em> <b>last_break</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="choices-4"></a>
 Choices</h3>
 <ul>
@@ -1156,23 +1480,27 @@ Attributes</h4>
 </li>
 </ul>
 <h2><a class="anchor" id="sequenceflow-flow_00x8mrp"></a>
-SequenceFlow &lt;tt&gt;Flow_00x8mrp&lt;/tt&gt;</h2>
+SequenceFlow (Flow_00x8mrp)</h2>
 <h3><a class="anchor" id="gatekeeper-10"></a>
 Gatekeeper</h3>
 <ul>
 <li><code>offduty_type == "break"</code></li>
 </ul>
 <h2><a class="anchor" id="sequenceflow-flow_16bmg1w"></a>
-SequenceFlow &lt;tt&gt;Flow_16bmg1w&lt;/tt&gt;</h2>
+SequenceFlow (Flow_16bmg1w)</h2>
 <h3><a class="anchor" id="gatekeeper-11"></a>
 Gatekeeper</h3>
 <ul>
 <li><code>offduty_type == "rest"</code></li>
 </ul>
 <h2><a class="anchor" id="startevent-waitstartevent"></a>
-StartEvent &lt;tt&gt;WaitStartEvent&lt;/tt&gt;</h2>
+StartEvent (WaitStartEvent)</h2>
 <h3><a class="anchor" id="status-247"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (13)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>collection:</em> <b>earliest_visits</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -1188,8 +1516,14 @@ Status</h3>
 <li><em>decimal:</em> <b>duration</b> (from <a class="el" href="truck_driver_scheduling_problem.html#subprocess-waitactivity">`WaitActivity`</a>)</li>
 <li><em>string:</em> <b>wait_type</b> (from <a class="el" href="truck_driver_scheduling_problem.html#subprocess-waitactivity">`WaitActivity`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-248"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (11)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>max_driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -1203,10 +1537,16 @@ Data</h3>
 <li><em>decimal:</em> <b>last_break</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="task-breakatdestinationtask"></a>
-Task &lt;tt&gt;BreakAtDestinationTask&lt;/tt&gt;</h2>
+Task (BreakAtDestinationTask)</h2>
 <h3><a class="anchor" id="status-248"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (13)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>collection:</em> <b>earliest_visits</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -1222,8 +1562,14 @@ Status</h3>
 <li><em>decimal:</em> <b>duration</b> (from <a class="el" href="truck_driver_scheduling_problem.html#subprocess-waitactivity">`WaitActivity`</a>)</li>
 <li><em>string:</em> <b>wait_type</b> (from <a class="el" href="truck_driver_scheduling_problem.html#subprocess-waitactivity">`WaitActivity`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-249"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (11)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>max_driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -1237,6 +1583,8 @@ Data</h3>
 <li><em>decimal:</em> <b>last_break</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="operators-46"></a>
 Operators</h3>
 <ul>
@@ -1244,9 +1592,13 @@ Operators</h3>
 <li><code>last_break := timestamp</code></li>
 </ul>
 <h2><a class="anchor" id="task-restatdestinationtask"></a>
-Task &lt;tt&gt;RestAtDestinationTask&lt;/tt&gt;</h2>
+Task (RestAtDestinationTask)</h2>
 <h3><a class="anchor" id="status-249"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (13)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>collection:</em> <b>earliest_visits</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -1262,8 +1614,14 @@ Status</h3>
 <li><em>decimal:</em> <b>duration</b> (from <a class="el" href="truck_driver_scheduling_problem.html#subprocess-waitactivity">`WaitActivity`</a>)</li>
 <li><em>string:</em> <b>wait_type</b> (from <a class="el" href="truck_driver_scheduling_problem.html#subprocess-waitactivity">`WaitActivity`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-250"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (11)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>max_driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -1277,6 +1635,8 @@ Data</h3>
 <li><em>decimal:</em> <b>last_break</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="operators-47"></a>
 Operators</h3>
 <ul>
@@ -1286,9 +1646,13 @@ Operators</h3>
 <li><code>driving_since_rest := 0</code></li>
 </ul>
 <h2><a class="anchor" id="task-decideatdestinationtask"></a>
-Task &lt;tt&gt;DecideAtDestinationTask&lt;/tt&gt;</h2>
+Task (DecideAtDestinationTask)</h2>
 <h3><a class="anchor" id="status-250"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (13)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>collection:</em> <b>earliest_visits</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -1304,8 +1668,14 @@ Status</h3>
 <li><em>decimal:</em> <b>duration</b> (from <a class="el" href="truck_driver_scheduling_problem.html#subprocess-waitactivity">`WaitActivity`</a>)</li>
 <li><em>string:</em> <b>wait_type</b> (from <a class="el" href="truck_driver_scheduling_problem.html#subprocess-waitactivity">`WaitActivity`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-251"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (11)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>max_driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -1319,6 +1689,8 @@ Data</h3>
 <li><em>decimal:</em> <b>last_break</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="choices-5"></a>
 Choices</h3>
 <ul>
@@ -1331,9 +1703,13 @@ Completion restrictions</h3>
 <li><code>( wait_type != "wait" ) || ( timestamp + min_break_duration &gt; earliest_visit)</code></li>
 </ul>
 <h2><a class="anchor" id="exclusivegateway-waitgateway_1"></a>
-ExclusiveGateway &lt;tt&gt;WaitGateway_1&lt;/tt&gt;</h2>
+ExclusiveGateway (WaitGateway_1)</h2>
 <h3><a class="anchor" id="status-251"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (13)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>collection:</em> <b>earliest_visits</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -1349,8 +1725,14 @@ Status</h3>
 <li><em>decimal:</em> <b>duration</b> (from <a class="el" href="truck_driver_scheduling_problem.html#subprocess-waitactivity">`WaitActivity`</a>)</li>
 <li><em>string:</em> <b>wait_type</b> (from <a class="el" href="truck_driver_scheduling_problem.html#subprocess-waitactivity">`WaitActivity`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-252"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (11)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>max_driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -1364,10 +1746,16 @@ Data</h3>
 <li><em>decimal:</em> <b>last_break</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="intermediatecatchevent-timerevent-1"></a>
-IntermediateCatchEvent &lt;tt&gt;TimerEvent&lt;/tt&gt;</h2>
+IntermediateCatchEvent (TimerEvent)</h2>
 <h3><a class="anchor" id="status-252"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (13)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>collection:</em> <b>earliest_visits</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -1383,8 +1771,14 @@ Status</h3>
 <li><em>decimal:</em> <b>duration</b> (from <a class="el" href="truck_driver_scheduling_problem.html#subprocess-waitactivity">`WaitActivity`</a>)</li>
 <li><em>string:</em> <b>wait_type</b> (from <a class="el" href="truck_driver_scheduling_problem.html#subprocess-waitactivity">`WaitActivity`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-253"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (11)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>max_driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -1398,15 +1792,21 @@ Data</h3>
 <li><em>decimal:</em> <b>last_break</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="timer-7"></a>
 Timer</h3>
 <ul>
 <li><em>trigger:</em> <code>earliest_visit</code></li>
 </ul>
 <h2><a class="anchor" id="endevent-waitendevent"></a>
-EndEvent &lt;tt&gt;WaitEndEvent&lt;/tt&gt;</h2>
+EndEvent (WaitEndEvent)</h2>
 <h3><a class="anchor" id="status-253"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (13)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>collection:</em> <b>earliest_visits</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -1422,8 +1822,14 @@ Status</h3>
 <li><em>decimal:</em> <b>duration</b> (from <a class="el" href="truck_driver_scheduling_problem.html#subprocess-waitactivity">`WaitActivity`</a>)</li>
 <li><em>string:</em> <b>wait_type</b> (from <a class="el" href="truck_driver_scheduling_problem.html#subprocess-waitactivity">`WaitActivity`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-254"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (11)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>max_driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -1437,10 +1843,16 @@ Data</h3>
 <li><em>decimal:</em> <b>last_break</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="task-breakatdestinationduration"></a>
-Task &lt;tt&gt;BreakAtDestinationDuration&lt;/tt&gt;</h2>
+Task (BreakAtDestinationDuration)</h2>
 <h3><a class="anchor" id="status-254"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (13)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>collection:</em> <b>earliest_visits</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -1456,8 +1868,14 @@ Status</h3>
 <li><em>decimal:</em> <b>duration</b> (from <a class="el" href="truck_driver_scheduling_problem.html#subprocess-waitactivity">`WaitActivity`</a>)</li>
 <li><em>string:</em> <b>wait_type</b> (from <a class="el" href="truck_driver_scheduling_problem.html#subprocess-waitactivity">`WaitActivity`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-255"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (11)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>max_driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -1471,6 +1889,8 @@ Data</h3>
 <li><em>decimal:</em> <b>last_break</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="choices-6"></a>
 Choices</h3>
 <ul>
@@ -1492,9 +1912,13 @@ Attributes</h4>
 </li>
 </ul>
 <h2><a class="anchor" id="task-restatdestinationduration"></a>
-Task &lt;tt&gt;RestAtDestinationDuration&lt;/tt&gt;</h2>
+Task (RestAtDestinationDuration)</h2>
 <h3><a class="anchor" id="status-255"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (13)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>collection:</em> <b>earliest_visits</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -1510,8 +1934,14 @@ Status</h3>
 <li><em>decimal:</em> <b>duration</b> (from <a class="el" href="truck_driver_scheduling_problem.html#subprocess-waitactivity">`WaitActivity`</a>)</li>
 <li><em>string:</em> <b>wait_type</b> (from <a class="el" href="truck_driver_scheduling_problem.html#subprocess-waitactivity">`WaitActivity`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-256"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (11)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>max_driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -1525,6 +1955,8 @@ Data</h3>
 <li><em>decimal:</em> <b>last_break</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="choices-7"></a>
 Choices</h3>
 <ul>
@@ -1541,9 +1973,13 @@ Attributes</h4>
 </li>
 </ul>
 <h2><a class="anchor" id="exclusivegateway-waitgateway_2"></a>
-ExclusiveGateway &lt;tt&gt;WaitGateway_2&lt;/tt&gt;</h2>
+ExclusiveGateway (WaitGateway_2)</h2>
 <h3><a class="anchor" id="status-256"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (13)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>collection:</em> <b>earliest_visits</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -1559,8 +1995,14 @@ Status</h3>
 <li><em>decimal:</em> <b>duration</b> (from <a class="el" href="truck_driver_scheduling_problem.html#subprocess-waitactivity">`WaitActivity`</a>)</li>
 <li><em>string:</em> <b>wait_type</b> (from <a class="el" href="truck_driver_scheduling_problem.html#subprocess-waitactivity">`WaitActivity`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-257"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (11)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>max_driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
@@ -1574,22 +2016,24 @@ Data</h3>
 <li><em>decimal:</em> <b>last_break</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 <li><em>decimal:</em> <b>driving_since_rest</b> (from <a class="el" href="truck_driver_scheduling_problem.html#us-truck-driver-process-truckdriverprocess">`TruckDriverProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="sequenceflow-flow_08rnlb8"></a>
-SequenceFlow &lt;tt&gt;Flow_08rnlb8&lt;/tt&gt;</h2>
+SequenceFlow (Flow_08rnlb8)</h2>
 <h3><a class="anchor" id="gatekeeper-12"></a>
 Gatekeeper</h3>
 <ul>
 <li><code>wait_type == "break"</code></li>
 </ul>
 <h2><a class="anchor" id="sequenceflow-flow_08pr2zc"></a>
-SequenceFlow &lt;tt&gt;Flow_08pr2zc&lt;/tt&gt;</h2>
+SequenceFlow (Flow_08pr2zc)</h2>
 <h3><a class="anchor" id="gatekeeper-13"></a>
 Gatekeeper</h3>
 <ul>
 <li><code>wait_type == "rest"</code></li>
 </ul>
 <h2><a class="anchor" id="sequenceflow-flow_1at46ok"></a>
-SequenceFlow &lt;tt&gt;Flow_1at46ok&lt;/tt&gt;</h2>
+SequenceFlow (Flow_1at46ok)</h2>
 <h3><a class="anchor" id="gatekeeper-14"></a>
 Gatekeeper</h3>
 <ul>

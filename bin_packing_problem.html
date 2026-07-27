@@ -129,7 +129,7 @@ $(document).ready(function(){initNavTree('bin_packing_problem.html',''); initRes
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><h1><a class="anchor" id="collaboration-bin_packing_problem"></a>
-Collaboration &lt;tt&gt;Bin_packing_problem&lt;/tt&gt;</h1>
+Collaboration (Bin_packing_problem)</h1>
 <p>Given a set of items, each having a specifed size, and a set of bins each having a specified capacity, the <em>Bin packing problem</em> can be described as the problem of finding the minimal number of bins required to include all items such that the total size of all items associated to a bin does not exceed the capacity of the bin.</p>
 <p>I the stochastic case, where actual item size is only revaled when handling the item, the capacity may be exceeded if the actual size is higher than the expected size. In this case, the bin is cleared to make space for the new item. Cleared bins count as a new bin being used.</p>
 <h2><a class="anchor" id="diagram-1"></a>
@@ -145,7 +145,7 @@ Globals</h2>
 <li><em>integer:</em> <b>items_allocated</b> (initialized by <code>items_allocated := 0</code>)</li>
 </ul>
 <h2><a class="anchor" id="item-process-itemprocess"></a>
-Item process &lt;tt&gt;ItemProcess&lt;/tt&gt;</h2>
+Item process (ItemProcess)</h2>
 <h3><a class="anchor" id="status-9"></a>
 Status</h3>
 <ul>
@@ -159,71 +159,131 @@ Data</h3>
 </ul>
 <h3><a class="anchor" id="globals-1"></a>
 Globals</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
 <ul>
 <li><em>integer:</em> <b>items</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
 <li><em>integer:</em> <b>bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
 <li><em>integer:</em> <b>items_allocated</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="startevent-starteventitem"></a>
-StartEvent &lt;tt&gt;StartEventItem&lt;/tt&gt;</h2>
+StartEvent (StartEventItem)</h2>
 <h3><a class="anchor" id="status-10"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (2)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="bin_packing_problem.html#item-process-itemprocess">`ItemProcess`</a>)</li>
 <li><em>decimal:</em> <b>size</b> (from <a class="el" href="bin_packing_problem.html#item-process-itemprocess">`ItemProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-11"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="bin_packing_problem.html#item-process-itemprocess">`ItemProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="globals-2"></a>
 Globals</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
 <ul>
 <li><em>integer:</em> <b>items</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
 <li><em>integer:</em> <b>bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
 <li><em>integer:</em> <b>items_allocated</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="endevent-endeventitem"></a>
-EndEvent &lt;tt&gt;EndEventItem&lt;/tt&gt;</h2>
+EndEvent (EndEventItem)</h2>
 <h3><a class="anchor" id="status-11"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (2)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="bin_packing_problem.html#item-process-itemprocess">`ItemProcess`</a>)</li>
 <li><em>decimal:</em> <b>size</b> (from <a class="el" href="bin_packing_problem.html#item-process-itemprocess">`ItemProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-12"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="bin_packing_problem.html#item-process-itemprocess">`ItemProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="globals-3"></a>
 Globals</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
 <ul>
 <li><em>integer:</em> <b>items</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
 <li><em>integer:</em> <b>bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
 <li><em>integer:</em> <b>items_allocated</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="sendtask-requestactivity"></a>
-SendTask &lt;tt&gt;RequestActivity&lt;/tt&gt;</h2>
+SendTask (RequestActivity)</h2>
 <h3><a class="anchor" id="status-12"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (2)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="bin_packing_problem.html#item-process-itemprocess">`ItemProcess`</a>)</li>
 <li><em>decimal:</em> <b>size</b> (from <a class="el" href="bin_packing_problem.html#item-process-itemprocess">`ItemProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-13"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="bin_packing_problem.html#item-process-itemprocess">`ItemProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="globals-4"></a>
 Globals</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
 <ul>
 <li><em>integer:</em> <b>items</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
 <li><em>integer:</em> <b>bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
 <li><em>integer:</em> <b>items_allocated</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="message-2"></a>
 Message</h3>
 <h4><a class="anchor" id="name-request"></a>
@@ -235,7 +295,7 @@ Message</h3>
 <li><em>Size:</em> <b>size</b></li>
 </ul>
 <h2><a class="anchor" id="bin-process-binprocess"></a>
-Bin process &lt;tt&gt;BinProcess&lt;/tt&gt;</h2>
+Bin process (BinProcess)</h2>
 <h3><a class="anchor" id="status-13"></a>
 Status</h3>
 <ul>
@@ -254,11 +314,17 @@ Data</h3>
 </ul>
 <h3><a class="anchor" id="globals-5"></a>
 Globals</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
 <ul>
 <li><em>integer:</em> <b>items</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
 <li><em>integer:</em> <b>bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
 <li><em>integer:</em> <b>items_allocated</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="entry-restrictions"></a>
 Entry restrictions</h3>
 <ul>
@@ -275,14 +341,24 @@ Exit restrictions</h3>
 <li><code>total_size &lt;= capacity</code></li>
 </ul>
 <h2><a class="anchor" id="endevent-endeventbin"></a>
-EndEvent &lt;tt&gt;EndEventBin&lt;/tt&gt;</h2>
+EndEvent (EndEventBin)</h2>
 <h3><a class="anchor" id="status-14"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-15"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (4)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
 <li><em>decimal:</em> <b>capacity</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
@@ -292,37 +368,73 @@ Data</h3>
 </ul>
 </li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="globals-6"></a>
 Globals</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
 <ul>
 <li><em>integer:</em> <b>items</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
 <li><em>integer:</em> <b>bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
 <li><em>integer:</em> <b>items_allocated</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="entry-restrictions-1"></a>
 Entry restrictions</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><code>total_size &lt;= capacity</code> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="completion-restrictions-1"></a>
 Completion restrictions</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><code>total_size &lt;= capacity</code> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="exit-restrictions-1"></a>
 Exit restrictions</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><code>total_size &lt;= capacity</code> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="task-waitactivity"></a>
-Task &lt;tt&gt;WaitActivity&lt;/tt&gt;</h2>
+Task (WaitActivity)</h2>
 <h3><a class="anchor" id="status-15"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-16"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (4)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
 <li><em>decimal:</em> <b>capacity</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
@@ -332,38 +444,76 @@ Data</h3>
 </ul>
 </li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="globals-7"></a>
 Globals</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
 <ul>
 <li><em>integer:</em> <b>items</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
 <li><em>integer:</em> <b>bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
 <li><em>integer:</em> <b>items_allocated</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="entry-restrictions-2"></a>
 Entry restrictions</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><code>total_size &lt;= capacity</code> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="completion-restrictions-2"></a>
 Completion restrictions</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><code>total_size &lt;= capacity</code> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="exit-restrictions-2"></a>
 Exit restrictions</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><code>total_size &lt;= capacity</code> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
+</ul>
+<p></p>
+</details>
+<ul>
 <li><code>items_allocated == items</code></li>
 </ul>
 <h2><a class="anchor" id="startevent-startevent"></a>
-StartEvent &lt;tt&gt;StartEvent&lt;/tt&gt;</h2>
+StartEvent (StartEvent)</h2>
 <h3><a class="anchor" id="status-16"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-17"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (4)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
 <li><em>decimal:</em> <b>capacity</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
@@ -373,39 +523,77 @@ Data</h3>
 </ul>
 </li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="globals-8"></a>
 Globals</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
 <ul>
 <li><em>integer:</em> <b>items</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
 <li><em>integer:</em> <b>bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
 <li><em>integer:</em> <b>items_allocated</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="entry-restrictions-3"></a>
 Entry restrictions</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><code>total_size &lt;= capacity</code> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="completion-restrictions-3"></a>
 Completion restrictions</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><code>total_size &lt;= capacity</code> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="exit-restrictions-3"></a>
 Exit restrictions</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><code>total_size &lt;= capacity</code> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="subprocess-eventsubprocess"></a>
-SubProcess &lt;tt&gt;EventSubProcess&lt;/tt&gt;</h2>
+SubProcess (EventSubProcess)</h2>
 <h3><a class="anchor" id="status-17"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
+</ul>
+<p></p>
+</details>
+<ul>
 <li><em>string:</em> <b>item</b></li>
 <li><em>decimal:</em> <b>size</b></li>
 </ul>
 <h3><a class="anchor" id="data-18"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (4)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
 <li><em>decimal:</em> <b>capacity</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
@@ -415,17 +603,33 @@ Data</h3>
 </ul>
 </li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="globals-9"></a>
 Globals</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
 <ul>
 <li><em>integer:</em> <b>items</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
 <li><em>integer:</em> <b>bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
 <li><em>integer:</em> <b>items_allocated</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="entry-restrictions-4"></a>
 Entry restrictions</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><code>total_size &lt;= capacity</code> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
+</ul>
+<p></p>
+</details>
+<ul>
 <li><code>total_size &lt;= capacity</code></li>
 </ul>
 <h3><a class="anchor" id="operators-2"></a>
@@ -437,25 +641,47 @@ Operators</h3>
 </ul>
 <h3><a class="anchor" id="completion-restrictions-4"></a>
 Completion restrictions</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><code>total_size &lt;= capacity</code> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="exit-restrictions-4"></a>
 Exit restrictions</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><code>total_size &lt;= capacity</code> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="endevent-endeventsubprocess"></a>
-EndEvent &lt;tt&gt;EndEventSubProcess&lt;/tt&gt;</h2>
+EndEvent (EndEventSubProcess)</h2>
 <h3><a class="anchor" id="status-18"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
 <li><em>string:</em> <b>item</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
 <li><em>decimal:</em> <b>size</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-19"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (4)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
 <li><em>decimal:</em> <b>capacity</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
@@ -465,39 +691,75 @@ Data</h3>
 </ul>
 </li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="globals-10"></a>
 Globals</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
 <ul>
 <li><em>integer:</em> <b>items</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
 <li><em>integer:</em> <b>bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
 <li><em>integer:</em> <b>items_allocated</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="entry-restrictions-5"></a>
 Entry restrictions</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><code>total_size &lt;= capacity</code> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="completion-restrictions-5"></a>
 Completion restrictions</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><code>total_size &lt;= capacity</code> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="exit-restrictions-5"></a>
 Exit restrictions</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><code>total_size &lt;= capacity</code> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="startevent-catchrequestmessage"></a>
-StartEvent &lt;tt&gt;CatchRequestMessage&lt;/tt&gt;</h2>
+StartEvent (CatchRequestMessage)</h2>
 <h3><a class="anchor" id="status-19"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
 <li><em>string:</em> <b>item</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
 <li><em>decimal:</em> <b>size</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-20"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (4)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
 <li><em>decimal:</em> <b>capacity</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
@@ -507,18 +769,32 @@ Data</h3>
 </ul>
 </li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="globals-11"></a>
 Globals</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
 <ul>
 <li><em>integer:</em> <b>items</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
 <li><em>integer:</em> <b>bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
 <li><em>integer:</em> <b>items_allocated</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="entry-restrictions-6"></a>
 Entry restrictions</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><code>total_size &lt;= capacity</code> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="message-3"></a>
 Message</h3>
 <h4><a class="anchor" id="name-request-1"></a>
@@ -531,14 +807,26 @@ Message</h3>
 </ul>
 <h3><a class="anchor" id="completion-restrictions-6"></a>
 Completion restrictions</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><code>total_size &lt;= capacity</code> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="exit-restrictions-6"></a>
 Exit restrictions</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><code>total_size &lt;= capacity</code> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="message-guidance"></a>
 Message guidance</h3>
 <h4><a class="anchor" id="attributes-1"></a>
@@ -555,16 +843,26 @@ Operators</h4>
 <li><code>fill_rate := total_size / capacity</code></li>
 </ul>
 <h2><a class="anchor" id="adhocsubprocess-adhocsubprocess"></a>
-AdHocSubProcess &lt;tt&gt;AdHocSubProcess&lt;/tt&gt;</h2>
+AdHocSubProcess (AdHocSubProcess)</h2>
 <h3><a class="anchor" id="status-20"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
 <li><em>string:</em> <b>item</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
 <li><em>decimal:</em> <b>size</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-21"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (4)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
 <li><em>decimal:</em> <b>capacity</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
@@ -574,40 +872,78 @@ Data</h3>
 </ul>
 </li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="globals-12"></a>
 Globals</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
 <ul>
 <li><em>integer:</em> <b>items</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
 <li><em>integer:</em> <b>bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
 <li><em>integer:</em> <b>items_allocated</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="entry-restrictions-7"></a>
 Entry restrictions</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><code>total_size &lt;= capacity</code> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
+</ul>
+<p></p>
+</details>
+<ul>
 <li><code>items_allocated == items</code></li>
 </ul>
 <h3><a class="anchor" id="completion-restrictions-7"></a>
 Completion restrictions</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><code>total_size &lt;= capacity</code> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="exit-restrictions-7"></a>
 Exit restrictions</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><code>total_size &lt;= capacity</code> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="subprocess-handleitemactivity"></a>
-SubProcess &lt;tt&gt;HandleItemActivity&lt;/tt&gt;</h2>
+SubProcess (HandleItemActivity)</h2>
 <h3><a class="anchor" id="status-21"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
 <li><em>string:</em> <b>item</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
 <li><em>decimal:</em> <b>size</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-22"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (4)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
 <li><em>decimal:</em> <b>capacity</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
@@ -617,39 +953,75 @@ Data</h3>
 </ul>
 </li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="globals-13"></a>
 Globals</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
 <ul>
 <li><em>integer:</em> <b>items</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
 <li><em>integer:</em> <b>bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
 <li><em>integer:</em> <b>items_allocated</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="entry-restrictions-8"></a>
 Entry restrictions</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><code>total_size &lt;= capacity</code> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="completion-restrictions-8"></a>
 Completion restrictions</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><code>total_size &lt;= capacity</code> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="exit-restrictions-8"></a>
 Exit restrictions</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><code>total_size &lt;= capacity</code> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="startevent-handleitemstartevent"></a>
-StartEvent &lt;tt&gt;HandleItemStartEvent&lt;/tt&gt;</h2>
+StartEvent (HandleItemStartEvent)</h2>
 <h3><a class="anchor" id="status-22"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
 <li><em>string:</em> <b>item</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
 <li><em>decimal:</em> <b>size</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-23"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (4)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
 <li><em>decimal:</em> <b>capacity</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
@@ -659,39 +1031,75 @@ Data</h3>
 </ul>
 </li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="globals-14"></a>
 Globals</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
 <ul>
 <li><em>integer:</em> <b>items</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
 <li><em>integer:</em> <b>bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
 <li><em>integer:</em> <b>items_allocated</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="entry-restrictions-9"></a>
 Entry restrictions</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><code>total_size &lt;= capacity</code> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="completion-restrictions-9"></a>
 Completion restrictions</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><code>total_size &lt;= capacity</code> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="exit-restrictions-9"></a>
 Exit restrictions</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><code>total_size &lt;= capacity</code> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="exclusivegateway-splitgateway"></a>
-ExclusiveGateway &lt;tt&gt;SplitGateway&lt;/tt&gt;</h2>
+ExclusiveGateway (SplitGateway)</h2>
 <h3><a class="anchor" id="status-23"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
 <li><em>string:</em> <b>item</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
 <li><em>decimal:</em> <b>size</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-24"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (4)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
 <li><em>decimal:</em> <b>capacity</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
@@ -701,39 +1109,75 @@ Data</h3>
 </ul>
 </li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="globals-15"></a>
 Globals</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
 <ul>
 <li><em>integer:</em> <b>items</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
 <li><em>integer:</em> <b>bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
 <li><em>integer:</em> <b>items_allocated</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="entry-restrictions-10"></a>
 Entry restrictions</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><code>total_size &lt;= capacity</code> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="completion-restrictions-10"></a>
 Completion restrictions</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><code>total_size &lt;= capacity</code> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="exit-restrictions-10"></a>
 Exit restrictions</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><code>total_size &lt;= capacity</code> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="task-clearbintask"></a>
-Task &lt;tt&gt;ClearBinTask&lt;/tt&gt;</h2>
+Task (ClearBinTask)</h2>
 <h3><a class="anchor" id="status-24"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
 <li><em>string:</em> <b>item</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
 <li><em>decimal:</em> <b>size</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-25"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (4)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
 <li><em>decimal:</em> <b>capacity</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
@@ -743,18 +1187,32 @@ Data</h3>
 </ul>
 </li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="globals-16"></a>
 Globals</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
 <ul>
 <li><em>integer:</em> <b>items</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
 <li><em>integer:</em> <b>bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
 <li><em>integer:</em> <b>items_allocated</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="entry-restrictions-11"></a>
 Entry restrictions</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><code>total_size &lt;= capacity</code> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="operators-4"></a>
 Operators</h3>
 <ul>
@@ -763,25 +1221,47 @@ Operators</h3>
 </ul>
 <h3><a class="anchor" id="completion-restrictions-11"></a>
 Completion restrictions</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><code>total_size &lt;= capacity</code> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="exit-restrictions-11"></a>
 Exit restrictions</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><code>total_size &lt;= capacity</code> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="exclusivegateway-mergegateway"></a>
-ExclusiveGateway &lt;tt&gt;MergeGateway&lt;/tt&gt;</h2>
+ExclusiveGateway (MergeGateway)</h2>
 <h3><a class="anchor" id="status-25"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
 <li><em>string:</em> <b>item</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
 <li><em>decimal:</em> <b>size</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-26"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (4)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
 <li><em>decimal:</em> <b>capacity</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
@@ -791,39 +1271,75 @@ Data</h3>
 </ul>
 </li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="globals-17"></a>
 Globals</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
 <ul>
 <li><em>integer:</em> <b>items</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
 <li><em>integer:</em> <b>bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
 <li><em>integer:</em> <b>items_allocated</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="entry-restrictions-12"></a>
 Entry restrictions</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><code>total_size &lt;= capacity</code> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="completion-restrictions-12"></a>
 Completion restrictions</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><code>total_size &lt;= capacity</code> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="exit-restrictions-12"></a>
 Exit restrictions</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><code>total_size &lt;= capacity</code> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="endevent-handleitemendevent"></a>
-EndEvent &lt;tt&gt;HandleItemEndEvent&lt;/tt&gt;</h2>
+EndEvent (HandleItemEndEvent)</h2>
 <h3><a class="anchor" id="status-26"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
 <li><em>string:</em> <b>item</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
 <li><em>decimal:</em> <b>size</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-27"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (4)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
 <li><em>decimal:</em> <b>capacity</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
@@ -833,37 +1349,73 @@ Data</h3>
 </ul>
 </li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="globals-18"></a>
 Globals</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
 <ul>
 <li><em>integer:</em> <b>items</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
 <li><em>integer:</em> <b>bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
 <li><em>integer:</em> <b>items_allocated</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="entry-restrictions-13"></a>
 Entry restrictions</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><code>total_size &lt;= capacity</code> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="completion-restrictions-13"></a>
 Completion restrictions</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><code>total_size &lt;= capacity</code> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="exit-restrictions-13"></a>
 Exit restrictions</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><code>total_size &lt;= capacity</code> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="dataobjectreference-dataobjectreference_04cxu4w"></a>
-DataObjectReference &lt;tt&gt;DataObjectReference_04cxu4w&lt;/tt&gt;</h2>
+DataObjectReference (DataObjectReference_04cxu4w)</h2>
 <h3><a class="anchor" id="status-27"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-28"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (4)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
 <li><em>decimal:</em> <b>capacity</b> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
@@ -873,37 +1425,63 @@ Data</h3>
 </ul>
 </li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="globals-19"></a>
 Globals</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
 <ul>
 <li><em>integer:</em> <b>items</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
 <li><em>integer:</em> <b>bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
 <li><em>integer:</em> <b>items_allocated</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="entry-restrictions-14"></a>
 Entry restrictions</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><code>total_size &lt;= capacity</code> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="completion-restrictions-14"></a>
 Completion restrictions</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><code>total_size &lt;= capacity</code> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="exit-restrictions-14"></a>
 Exit restrictions</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><code>total_size &lt;= capacity</code> (from <a class="el" href="bin_packing_problem.html#bin-process-binprocess">`BinProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="sequenceflow-flow_0an2vmk"></a>
-SequenceFlow &lt;tt&gt;Flow_0an2vmk&lt;/tt&gt;</h2>
+SequenceFlow (Flow_0an2vmk)</h2>
 <h3><a class="anchor" id="gatekeeper"></a>
 Gatekeeper</h3>
 <ul>
 <li><code>total_size &lt;= capacity</code></li>
 </ul>
 <h2><a class="anchor" id="sequenceflow-flow_0kc2iyd"></a>
-SequenceFlow &lt;tt&gt;Flow_0kc2iyd&lt;/tt&gt;</h2>
+SequenceFlow (Flow_0kc2iyd)</h2>
 <h3><a class="anchor" id="gatekeeper-1"></a>
 Gatekeeper</h3>
 <ul>

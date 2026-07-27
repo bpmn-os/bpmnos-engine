@@ -1,9 +1,9 @@
 var searchData=
 [
   ['handle_0',['handle',['../classBPMNOS_1_1Model_1_1Expression.html#af1a8e24629f43f102c9d75e6d7b6a67d',1,'BPMNOS::Model::Expression']]],
-  ['handleitemactivity_20tt_1',['handleitemactivity tt',['../knapsack_problem.html#subprocess-handleitemactivity-2',1,'SubProcess &lt;tt&gt;HandleItemActivity&lt;/tt&gt;'],['../guided_knapsack_problem.html#subprocess-handleitemactivity-1',1,'SubProcess &lt;tt&gt;HandleItemActivity&lt;/tt&gt;'],['../bin_packing_problem.html#subprocess-handleitemactivity',1,'SubProcess &lt;tt&gt;HandleItemActivity&lt;/tt&gt;']]],
-  ['handleitemendevent_20tt_2',['EndEvent &lt;tt&gt;HandleItemEndEvent&lt;/tt&gt;',['../bin_packing_problem.html#endevent-handleitemendevent',1,'']]],
-  ['handleitemstartevent_20tt_3',['StartEvent &lt;tt&gt;HandleItemStartEvent&lt;/tt&gt;',['../bin_packing_problem.html#startevent-handleitemstartevent',1,'']]],
+  ['handleitemactivity_1',['handleitemactivity',['../knapsack_problem.html#subprocess-handleitemactivity-2',1,'SubProcess (HandleItemActivity)'],['../guided_knapsack_problem.html#subprocess-handleitemactivity-1',1,'SubProcess (HandleItemActivity)'],['../bin_packing_problem.html#subprocess-handleitemactivity',1,'SubProcess (HandleItemActivity)']]],
+  ['handleitemendevent_2',['EndEvent (HandleItemEndEvent)',['../bin_packing_problem.html#endevent-handleitemendevent',1,'']]],
+  ['handleitemstartevent_3',['StartEvent (HandleItemStartEvent)',['../bin_packing_problem.html#startevent-handleitemstartevent',1,'']]],
   ['hash_3c_20bpmnos_5fnumber_5ftype_20_3e_4',['hash&lt; BPMNOS_NUMBER_TYPE &gt;',['../structstd_1_1hash_3_01BPMNOS__NUMBER__TYPE_01_4.html',1,'std']]],
   ['hash_3c_20const_20bpmnos_5fnumber_5ftype_20_3e_5',['hash&lt; const BPMNOS_NUMBER_TYPE &gt;',['../structstd_1_1hash_3_01const_01BPMNOS__NUMBER__TYPE_01_4.html',1,'std']]],
   ['haspendingpredecessor_6',['hasPendingPredecessor',['../classBPMNOS_1_1Execution_1_1SeededController.html#afb1adcde9b575bae9b9be67be96d234b',1,'BPMNOS::Execution::SeededController']]],

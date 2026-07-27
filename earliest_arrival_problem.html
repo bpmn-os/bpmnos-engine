@@ -128,8 +128,8 @@ $(document).ready(function(){initNavTree('earliest_arrival_problem.html',''); in
   <div class="headertitle"><div class="title">Earliest arrival problem</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><h1><a class="anchor" id="earliestarrival_process"></a>
-&lt;tt&gt;EarliestArrival_Process&lt;/tt&gt;</h1>
+<div class="textblock"><h1><a class="anchor" id="process-earliestarrival_process"></a>
+Process (EarliestArrival_Process)</h1>
 <h2><a class="anchor" id="diagram-2"></a>
 Diagram</h2>
 <p> 
@@ -160,35 +160,55 @@ Lookup tables</h2>
 <li><b>heuristic(…)</b> (from <code>heuristic.csv</code>) with columns <code>Location</code>, <code>Heuristic</code></li>
 </ul>
 <h2><a class="anchor" id="startevent-startevent_1"></a>
-StartEvent &lt;tt&gt;StartEvent_1&lt;/tt&gt;</h2>
+StartEvent (StartEvent_1)</h2>
 <h3><a class="anchor" id="status-29"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (4)</summary>
+<p></p>
 <ul>
-<li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="earliest_arrival_problem.html#earliestarrival_process">`EarliestArrival_Process`</a>)<ul>
+<li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="earliest_arrival_problem.html#process-earliestarrival_process">`EarliestArrival_Process`</a>)<ul>
 <li><code>→ minimize 1 * timestamp</code></li>
 </ul>
 </li>
-<li><em>string:</em> <b>initial_location</b> (from <a class="el" href="earliest_arrival_problem.html#earliestarrival_process">`EarliestArrival_Process`</a>)</li>
-<li><em>string:</em> <b>final_location</b> (from <a class="el" href="earliest_arrival_problem.html#earliestarrival_process">`EarliestArrival_Process`</a>)</li>
-<li><em>string:</em> <b>current_location</b> (from <a class="el" href="earliest_arrival_problem.html#earliestarrival_process">`EarliestArrival_Process`</a>)</li>
+<li><em>string:</em> <b>initial_location</b> (from <a class="el" href="earliest_arrival_problem.html#process-earliestarrival_process">`EarliestArrival_Process`</a>)</li>
+<li><em>string:</em> <b>final_location</b> (from <a class="el" href="earliest_arrival_problem.html#process-earliestarrival_process">`EarliestArrival_Process`</a>)</li>
+<li><em>string:</em> <b>current_location</b> (from <a class="el" href="earliest_arrival_problem.html#process-earliestarrival_process">`EarliestArrival_Process`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-30"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
-<li><em>string:</em> <b>instance</b> (from <a class="el" href="earliest_arrival_problem.html#earliestarrival_process">`EarliestArrival_Process`</a>)</li>
+<li><em>string:</em> <b>instance</b> (from <a class="el" href="earliest_arrival_problem.html#process-earliestarrival_process">`EarliestArrival_Process`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="subprocess-loopactivity"></a>
-SubProcess &lt;tt&gt;LoopActivity&lt;/tt&gt;</h2>
+SubProcess (LoopActivity)</h2>
 <h3><a class="anchor" id="status-30"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (4)</summary>
+<p></p>
 <ul>
-<li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="earliest_arrival_problem.html#earliestarrival_process">`EarliestArrival_Process`</a>)<ul>
+<li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="earliest_arrival_problem.html#process-earliestarrival_process">`EarliestArrival_Process`</a>)<ul>
 <li><code>→ minimize 1 * timestamp</code></li>
 </ul>
 </li>
-<li><em>string:</em> <b>initial_location</b> (from <a class="el" href="earliest_arrival_problem.html#earliestarrival_process">`EarliestArrival_Process`</a>)</li>
-<li><em>string:</em> <b>final_location</b> (from <a class="el" href="earliest_arrival_problem.html#earliestarrival_process">`EarliestArrival_Process`</a>)</li>
-<li><em>string:</em> <b>current_location</b> (from <a class="el" href="earliest_arrival_problem.html#earliestarrival_process">`EarliestArrival_Process`</a>)</li>
+<li><em>string:</em> <b>initial_location</b> (from <a class="el" href="earliest_arrival_problem.html#process-earliestarrival_process">`EarliestArrival_Process`</a>)</li>
+<li><em>string:</em> <b>final_location</b> (from <a class="el" href="earliest_arrival_problem.html#process-earliestarrival_process">`EarliestArrival_Process`</a>)</li>
+<li><em>string:</em> <b>current_location</b> (from <a class="el" href="earliest_arrival_problem.html#process-earliestarrival_process">`EarliestArrival_Process`</a>)</li>
+</ul>
+<p></p>
+</details>
+<ul>
 <li><em>collection:</em> <b>destinations</b> (initialized by <code>destinations := destinations(current_location)</code>)</li>
 <li><em>decimal:</em> <b>duration</b></li>
 <li><em>decimal:</em> <b>departure</b></li>
@@ -196,82 +216,126 @@ Status</h3>
 </ul>
 <h3><a class="anchor" id="data-31"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
-<li><em>string:</em> <b>instance</b> (from <a class="el" href="earliest_arrival_problem.html#earliestarrival_process">`EarliestArrival_Process`</a>)</li>
+<li><em>string:</em> <b>instance</b> (from <a class="el" href="earliest_arrival_problem.html#process-earliestarrival_process">`EarliestArrival_Process`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="loop"></a>
 Loop</h3>
 <ul>
 <li><em>condition:</em> <code>current_location != final_location</code></li>
 </ul>
 <h2><a class="anchor" id="startevent-starteventtrip"></a>
-StartEvent &lt;tt&gt;StartEventTrip&lt;/tt&gt;</h2>
+StartEvent (StartEventTrip)</h2>
 <h3><a class="anchor" id="status-31"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (8)</summary>
+<p></p>
 <ul>
-<li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="earliest_arrival_problem.html#earliestarrival_process">`EarliestArrival_Process`</a>)<ul>
+<li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="earliest_arrival_problem.html#process-earliestarrival_process">`EarliestArrival_Process`</a>)<ul>
 <li><code>→ minimize 1 * timestamp</code></li>
 </ul>
 </li>
-<li><em>string:</em> <b>initial_location</b> (from <a class="el" href="earliest_arrival_problem.html#earliestarrival_process">`EarliestArrival_Process`</a>)</li>
-<li><em>string:</em> <b>final_location</b> (from <a class="el" href="earliest_arrival_problem.html#earliestarrival_process">`EarliestArrival_Process`</a>)</li>
-<li><em>string:</em> <b>current_location</b> (from <a class="el" href="earliest_arrival_problem.html#earliestarrival_process">`EarliestArrival_Process`</a>)</li>
+<li><em>string:</em> <b>initial_location</b> (from <a class="el" href="earliest_arrival_problem.html#process-earliestarrival_process">`EarliestArrival_Process`</a>)</li>
+<li><em>string:</em> <b>final_location</b> (from <a class="el" href="earliest_arrival_problem.html#process-earliestarrival_process">`EarliestArrival_Process`</a>)</li>
+<li><em>string:</em> <b>current_location</b> (from <a class="el" href="earliest_arrival_problem.html#process-earliestarrival_process">`EarliestArrival_Process`</a>)</li>
 <li><em>collection:</em> <b>destinations</b> (from <a class="el" href="earliest_arrival_problem.html#subprocess-loopactivity">`LoopActivity`</a>)</li>
 <li><em>decimal:</em> <b>duration</b> (from <a class="el" href="earliest_arrival_problem.html#subprocess-loopactivity">`LoopActivity`</a>)</li>
 <li><em>decimal:</em> <b>departure</b> (from <a class="el" href="earliest_arrival_problem.html#subprocess-loopactivity">`LoopActivity`</a>)</li>
 <li><em>string:</em> <b>next_location</b> (from <a class="el" href="earliest_arrival_problem.html#subprocess-loopactivity">`LoopActivity`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-32"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
-<li><em>string:</em> <b>instance</b> (from <a class="el" href="earliest_arrival_problem.html#earliestarrival_process">`EarliestArrival_Process`</a>)</li>
+<li><em>string:</em> <b>instance</b> (from <a class="el" href="earliest_arrival_problem.html#process-earliestarrival_process">`EarliestArrival_Process`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="endevent-endeventtrip"></a>
-EndEvent &lt;tt&gt;EndEventTrip&lt;/tt&gt;</h2>
+EndEvent (EndEventTrip)</h2>
 <h3><a class="anchor" id="status-32"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (8)</summary>
+<p></p>
 <ul>
-<li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="earliest_arrival_problem.html#earliestarrival_process">`EarliestArrival_Process`</a>)<ul>
+<li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="earliest_arrival_problem.html#process-earliestarrival_process">`EarliestArrival_Process`</a>)<ul>
 <li><code>→ minimize 1 * timestamp</code></li>
 </ul>
 </li>
-<li><em>string:</em> <b>initial_location</b> (from <a class="el" href="earliest_arrival_problem.html#earliestarrival_process">`EarliestArrival_Process`</a>)</li>
-<li><em>string:</em> <b>final_location</b> (from <a class="el" href="earliest_arrival_problem.html#earliestarrival_process">`EarliestArrival_Process`</a>)</li>
-<li><em>string:</em> <b>current_location</b> (from <a class="el" href="earliest_arrival_problem.html#earliestarrival_process">`EarliestArrival_Process`</a>)</li>
+<li><em>string:</em> <b>initial_location</b> (from <a class="el" href="earliest_arrival_problem.html#process-earliestarrival_process">`EarliestArrival_Process`</a>)</li>
+<li><em>string:</em> <b>final_location</b> (from <a class="el" href="earliest_arrival_problem.html#process-earliestarrival_process">`EarliestArrival_Process`</a>)</li>
+<li><em>string:</em> <b>current_location</b> (from <a class="el" href="earliest_arrival_problem.html#process-earliestarrival_process">`EarliestArrival_Process`</a>)</li>
 <li><em>collection:</em> <b>destinations</b> (from <a class="el" href="earliest_arrival_problem.html#subprocess-loopactivity">`LoopActivity`</a>)</li>
 <li><em>decimal:</em> <b>duration</b> (from <a class="el" href="earliest_arrival_problem.html#subprocess-loopactivity">`LoopActivity`</a>)</li>
 <li><em>decimal:</em> <b>departure</b> (from <a class="el" href="earliest_arrival_problem.html#subprocess-loopactivity">`LoopActivity`</a>)</li>
 <li><em>string:</em> <b>next_location</b> (from <a class="el" href="earliest_arrival_problem.html#subprocess-loopactivity">`LoopActivity`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-33"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
-<li><em>string:</em> <b>instance</b> (from <a class="el" href="earliest_arrival_problem.html#earliestarrival_process">`EarliestArrival_Process`</a>)</li>
+<li><em>string:</em> <b>instance</b> (from <a class="el" href="earliest_arrival_problem.html#process-earliestarrival_process">`EarliestArrival_Process`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="task-selectdestination"></a>
-Task &lt;tt&gt;SelectDestination&lt;/tt&gt;</h2>
+Task (SelectDestination)</h2>
 <h3><a class="anchor" id="status-33"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (8)</summary>
+<p></p>
 <ul>
-<li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="earliest_arrival_problem.html#earliestarrival_process">`EarliestArrival_Process`</a>)<ul>
+<li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="earliest_arrival_problem.html#process-earliestarrival_process">`EarliestArrival_Process`</a>)<ul>
 <li><code>→ minimize 1 * timestamp</code></li>
 </ul>
 </li>
-<li><em>string:</em> <b>initial_location</b> (from <a class="el" href="earliest_arrival_problem.html#earliestarrival_process">`EarliestArrival_Process`</a>)</li>
-<li><em>string:</em> <b>final_location</b> (from <a class="el" href="earliest_arrival_problem.html#earliestarrival_process">`EarliestArrival_Process`</a>)</li>
-<li><em>string:</em> <b>current_location</b> (from <a class="el" href="earliest_arrival_problem.html#earliestarrival_process">`EarliestArrival_Process`</a>)</li>
+<li><em>string:</em> <b>initial_location</b> (from <a class="el" href="earliest_arrival_problem.html#process-earliestarrival_process">`EarliestArrival_Process`</a>)</li>
+<li><em>string:</em> <b>final_location</b> (from <a class="el" href="earliest_arrival_problem.html#process-earliestarrival_process">`EarliestArrival_Process`</a>)</li>
+<li><em>string:</em> <b>current_location</b> (from <a class="el" href="earliest_arrival_problem.html#process-earliestarrival_process">`EarliestArrival_Process`</a>)</li>
 <li><em>collection:</em> <b>destinations</b> (from <a class="el" href="earliest_arrival_problem.html#subprocess-loopactivity">`LoopActivity`</a>)</li>
 <li><em>decimal:</em> <b>duration</b> (from <a class="el" href="earliest_arrival_problem.html#subprocess-loopactivity">`LoopActivity`</a>)</li>
 <li><em>decimal:</em> <b>departure</b> (from <a class="el" href="earliest_arrival_problem.html#subprocess-loopactivity">`LoopActivity`</a>)</li>
 <li><em>string:</em> <b>next_location</b> (from <a class="el" href="earliest_arrival_problem.html#subprocess-loopactivity">`LoopActivity`</a>)</li>
+</ul>
+<p></p>
+</details>
+<ul>
 <li><em>integer:</em> <b>index</b></li>
 <li><em>collection:</em> <b>departures</b></li>
 </ul>
 <h3><a class="anchor" id="data-34"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
-<li><em>string:</em> <b>instance</b> (from <a class="el" href="earliest_arrival_problem.html#earliestarrival_process">`EarliestArrival_Process`</a>)</li>
+<li><em>string:</em> <b>instance</b> (from <a class="el" href="earliest_arrival_problem.html#process-earliestarrival_process">`EarliestArrival_Process`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="choices-1"></a>
 Choices</h3>
 <ul>
@@ -306,27 +370,39 @@ Operators</h4>
 <li><code>heuristic := departure - timestamp + duration + heuristic(next_location)</code></li>
 </ul>
 <h2><a class="anchor" id="task-travel"></a>
-Task &lt;tt&gt;Travel&lt;/tt&gt;</h2>
+Task (Travel)</h2>
 <h3><a class="anchor" id="status-34"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (8)</summary>
+<p></p>
 <ul>
-<li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="earliest_arrival_problem.html#earliestarrival_process">`EarliestArrival_Process`</a>)<ul>
+<li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="earliest_arrival_problem.html#process-earliestarrival_process">`EarliestArrival_Process`</a>)<ul>
 <li><code>→ minimize 1 * timestamp</code></li>
 </ul>
 </li>
-<li><em>string:</em> <b>initial_location</b> (from <a class="el" href="earliest_arrival_problem.html#earliestarrival_process">`EarliestArrival_Process`</a>)</li>
-<li><em>string:</em> <b>final_location</b> (from <a class="el" href="earliest_arrival_problem.html#earliestarrival_process">`EarliestArrival_Process`</a>)</li>
-<li><em>string:</em> <b>current_location</b> (from <a class="el" href="earliest_arrival_problem.html#earliestarrival_process">`EarliestArrival_Process`</a>)</li>
+<li><em>string:</em> <b>initial_location</b> (from <a class="el" href="earliest_arrival_problem.html#process-earliestarrival_process">`EarliestArrival_Process`</a>)</li>
+<li><em>string:</em> <b>final_location</b> (from <a class="el" href="earliest_arrival_problem.html#process-earliestarrival_process">`EarliestArrival_Process`</a>)</li>
+<li><em>string:</em> <b>current_location</b> (from <a class="el" href="earliest_arrival_problem.html#process-earliestarrival_process">`EarliestArrival_Process`</a>)</li>
 <li><em>collection:</em> <b>destinations</b> (from <a class="el" href="earliest_arrival_problem.html#subprocess-loopactivity">`LoopActivity`</a>)</li>
 <li><em>decimal:</em> <b>duration</b> (from <a class="el" href="earliest_arrival_problem.html#subprocess-loopactivity">`LoopActivity`</a>)</li>
 <li><em>decimal:</em> <b>departure</b> (from <a class="el" href="earliest_arrival_problem.html#subprocess-loopactivity">`LoopActivity`</a>)</li>
 <li><em>string:</em> <b>next_location</b> (from <a class="el" href="earliest_arrival_problem.html#subprocess-loopactivity">`LoopActivity`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-35"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
-<li><em>string:</em> <b>instance</b> (from <a class="el" href="earliest_arrival_problem.html#earliestarrival_process">`EarliestArrival_Process`</a>)</li>
+<li><em>string:</em> <b>instance</b> (from <a class="el" href="earliest_arrival_problem.html#process-earliestarrival_process">`EarliestArrival_Process`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="operators-7"></a>
 Operators</h3>
 <ul>
@@ -334,68 +410,104 @@ Operators</h3>
 <li><code>current_location := next_location</code></li>
 </ul>
 <h2><a class="anchor" id="intermediatecatchevent-timerevent"></a>
-IntermediateCatchEvent &lt;tt&gt;TimerEvent&lt;/tt&gt;</h2>
+IntermediateCatchEvent (TimerEvent)</h2>
 <h3><a class="anchor" id="status-35"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (8)</summary>
+<p></p>
 <ul>
-<li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="earliest_arrival_problem.html#earliestarrival_process">`EarliestArrival_Process`</a>)<ul>
+<li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="earliest_arrival_problem.html#process-earliestarrival_process">`EarliestArrival_Process`</a>)<ul>
 <li><code>→ minimize 1 * timestamp</code></li>
 </ul>
 </li>
-<li><em>string:</em> <b>initial_location</b> (from <a class="el" href="earliest_arrival_problem.html#earliestarrival_process">`EarliestArrival_Process`</a>)</li>
-<li><em>string:</em> <b>final_location</b> (from <a class="el" href="earliest_arrival_problem.html#earliestarrival_process">`EarliestArrival_Process`</a>)</li>
-<li><em>string:</em> <b>current_location</b> (from <a class="el" href="earliest_arrival_problem.html#earliestarrival_process">`EarliestArrival_Process`</a>)</li>
+<li><em>string:</em> <b>initial_location</b> (from <a class="el" href="earliest_arrival_problem.html#process-earliestarrival_process">`EarliestArrival_Process`</a>)</li>
+<li><em>string:</em> <b>final_location</b> (from <a class="el" href="earliest_arrival_problem.html#process-earliestarrival_process">`EarliestArrival_Process`</a>)</li>
+<li><em>string:</em> <b>current_location</b> (from <a class="el" href="earliest_arrival_problem.html#process-earliestarrival_process">`EarliestArrival_Process`</a>)</li>
 <li><em>collection:</em> <b>destinations</b> (from <a class="el" href="earliest_arrival_problem.html#subprocess-loopactivity">`LoopActivity`</a>)</li>
 <li><em>decimal:</em> <b>duration</b> (from <a class="el" href="earliest_arrival_problem.html#subprocess-loopactivity">`LoopActivity`</a>)</li>
 <li><em>decimal:</em> <b>departure</b> (from <a class="el" href="earliest_arrival_problem.html#subprocess-loopactivity">`LoopActivity`</a>)</li>
 <li><em>string:</em> <b>next_location</b> (from <a class="el" href="earliest_arrival_problem.html#subprocess-loopactivity">`LoopActivity`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-36"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
-<li><em>string:</em> <b>instance</b> (from <a class="el" href="earliest_arrival_problem.html#earliestarrival_process">`EarliestArrival_Process`</a>)</li>
+<li><em>string:</em> <b>instance</b> (from <a class="el" href="earliest_arrival_problem.html#process-earliestarrival_process">`EarliestArrival_Process`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="timer-1"></a>
 Timer</h3>
 <ul>
 <li><em>trigger:</em> <code>departure</code></li>
 </ul>
 <h2><a class="anchor" id="endevent-endevent_1"></a>
-EndEvent &lt;tt&gt;EndEvent_1&lt;/tt&gt;</h2>
+EndEvent (EndEvent_1)</h2>
 <h3><a class="anchor" id="status-36"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (4)</summary>
+<p></p>
 <ul>
-<li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="earliest_arrival_problem.html#earliestarrival_process">`EarliestArrival_Process`</a>)<ul>
+<li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="earliest_arrival_problem.html#process-earliestarrival_process">`EarliestArrival_Process`</a>)<ul>
 <li><code>→ minimize 1 * timestamp</code></li>
 </ul>
 </li>
-<li><em>string:</em> <b>initial_location</b> (from <a class="el" href="earliest_arrival_problem.html#earliestarrival_process">`EarliestArrival_Process`</a>)</li>
-<li><em>string:</em> <b>final_location</b> (from <a class="el" href="earliest_arrival_problem.html#earliestarrival_process">`EarliestArrival_Process`</a>)</li>
-<li><em>string:</em> <b>current_location</b> (from <a class="el" href="earliest_arrival_problem.html#earliestarrival_process">`EarliestArrival_Process`</a>)</li>
+<li><em>string:</em> <b>initial_location</b> (from <a class="el" href="earliest_arrival_problem.html#process-earliestarrival_process">`EarliestArrival_Process`</a>)</li>
+<li><em>string:</em> <b>final_location</b> (from <a class="el" href="earliest_arrival_problem.html#process-earliestarrival_process">`EarliestArrival_Process`</a>)</li>
+<li><em>string:</em> <b>current_location</b> (from <a class="el" href="earliest_arrival_problem.html#process-earliestarrival_process">`EarliestArrival_Process`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-37"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
-<li><em>string:</em> <b>instance</b> (from <a class="el" href="earliest_arrival_problem.html#earliestarrival_process">`EarliestArrival_Process`</a>)</li>
+<li><em>string:</em> <b>instance</b> (from <a class="el" href="earliest_arrival_problem.html#process-earliestarrival_process">`EarliestArrival_Process`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="datastorereference-datastorereference_0myx9a2"></a>
-DataStoreReference &lt;tt&gt;DataStoreReference_0myx9a2&lt;/tt&gt;</h2>
+DataStoreReference (DataStoreReference_0myx9a2)</h2>
 <h3><a class="anchor" id="status-37"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (4)</summary>
+<p></p>
 <ul>
-<li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="earliest_arrival_problem.html#earliestarrival_process">`EarliestArrival_Process`</a>)<ul>
+<li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="earliest_arrival_problem.html#process-earliestarrival_process">`EarliestArrival_Process`</a>)<ul>
 <li><code>→ minimize 1 * timestamp</code></li>
 </ul>
 </li>
-<li><em>string:</em> <b>initial_location</b> (from <a class="el" href="earliest_arrival_problem.html#earliestarrival_process">`EarliestArrival_Process`</a>)</li>
-<li><em>string:</em> <b>final_location</b> (from <a class="el" href="earliest_arrival_problem.html#earliestarrival_process">`EarliestArrival_Process`</a>)</li>
-<li><em>string:</em> <b>current_location</b> (from <a class="el" href="earliest_arrival_problem.html#earliestarrival_process">`EarliestArrival_Process`</a>)</li>
+<li><em>string:</em> <b>initial_location</b> (from <a class="el" href="earliest_arrival_problem.html#process-earliestarrival_process">`EarliestArrival_Process`</a>)</li>
+<li><em>string:</em> <b>final_location</b> (from <a class="el" href="earliest_arrival_problem.html#process-earliestarrival_process">`EarliestArrival_Process`</a>)</li>
+<li><em>string:</em> <b>current_location</b> (from <a class="el" href="earliest_arrival_problem.html#process-earliestarrival_process">`EarliestArrival_Process`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-38"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
-<li><em>string:</em> <b>instance</b> (from <a class="el" href="earliest_arrival_problem.html#earliestarrival_process">`EarliestArrival_Process`</a>) </li>
+<li><em>string:</em> <b>instance</b> (from <a class="el" href="earliest_arrival_problem.html#process-earliestarrival_process">`EarliestArrival_Process`</a>)</li>
 </ul>
+<p></p>
+</details>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
 </div><!-- doc-content -->

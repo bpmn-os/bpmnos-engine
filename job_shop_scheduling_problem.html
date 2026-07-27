@@ -129,7 +129,7 @@ $(document).ready(function(){initNavTree('job_shop_scheduling_problem.html','');
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><h1><a class="anchor" id="collaboration-job_shop_scheduling_problem"></a>
-Collaboration &lt;tt&gt;Job_shop_scheduling_problem&lt;/tt&gt;</h1>
+Collaboration (Job_shop_scheduling_problem)</h1>
 <h2><a class="anchor" id="diagram-7"></a>
 Diagram</h2>
 <p> 
@@ -144,7 +144,7 @@ Globals</h2>
 </li>
 </ul>
 <h2><a class="anchor" id="order-process-orderprocess"></a>
-Order process &lt;tt&gt;OrderProcess&lt;/tt&gt;</h2>
+Order process (OrderProcess)</h2>
 <h3><a class="anchor" id="status-135"></a>
 Status</h3>
 <ul>
@@ -159,81 +159,143 @@ Data</h3>
 </ul>
 <h3><a class="anchor" id="globals-98"></a>
 Globals</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>makespan</b> (from <a class="el" href="job_shop_scheduling_problem.html#collaboration-job_shop_scheduling_problem">`Job_shop_scheduling_problem`</a>)<ul>
 <li><code>→ minimize 1 * makespan</code></li>
 </ul>
 </li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="startevent-starteventitem-3"></a>
-StartEvent &lt;tt&gt;StartEventItem&lt;/tt&gt;</h2>
+StartEvent (StartEventItem)</h2>
 <h3><a class="anchor" id="status-136"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="job_shop_scheduling_problem.html#order-process-orderprocess">`OrderProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-137"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="job_shop_scheduling_problem.html#order-process-orderprocess">`OrderProcess`</a>)</li>
 <li><em>collection:</em> <b>machines</b> (from <a class="el" href="job_shop_scheduling_problem.html#order-process-orderprocess">`OrderProcess`</a>)</li>
 <li><em>collection:</em> <b>durations</b> (from <a class="el" href="job_shop_scheduling_problem.html#order-process-orderprocess">`OrderProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="globals-99"></a>
 Globals</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>makespan</b> (from <a class="el" href="job_shop_scheduling_problem.html#collaboration-job_shop_scheduling_problem">`Job_shop_scheduling_problem`</a>)<ul>
 <li><code>→ minimize 1 * makespan</code></li>
 </ul>
 </li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="endevent-endeventitem-2"></a>
-EndEvent &lt;tt&gt;EndEventItem&lt;/tt&gt;</h2>
+EndEvent (EndEventItem)</h2>
 <h3><a class="anchor" id="status-137"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="job_shop_scheduling_problem.html#order-process-orderprocess">`OrderProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-138"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="job_shop_scheduling_problem.html#order-process-orderprocess">`OrderProcess`</a>)</li>
 <li><em>collection:</em> <b>machines</b> (from <a class="el" href="job_shop_scheduling_problem.html#order-process-orderprocess">`OrderProcess`</a>)</li>
 <li><em>collection:</em> <b>durations</b> (from <a class="el" href="job_shop_scheduling_problem.html#order-process-orderprocess">`OrderProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="globals-100"></a>
 Globals</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>makespan</b> (from <a class="el" href="job_shop_scheduling_problem.html#collaboration-job_shop_scheduling_problem">`Job_shop_scheduling_problem`</a>)<ul>
 <li><code>→ minimize 1 * makespan</code></li>
 </ul>
 </li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="subprocess-jobactivity"></a>
-SubProcess &lt;tt&gt;JobActivity&lt;/tt&gt;</h2>
+SubProcess (JobActivity)</h2>
 <h3><a class="anchor" id="status-138"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="job_shop_scheduling_problem.html#order-process-orderprocess">`OrderProcess`</a>)</li>
+</ul>
+<p></p>
+</details>
+<ul>
 <li><em>integer:</em> <b>index</b></li>
 <li><em>string:</em> <b>machine</b> (initialized by <code>machine := machines[index]</code>)</li>
 <li><em>decimal:</em> <b>duration</b> (initialized by <code>duration := durations[index]</code>)</li>
 </ul>
 <h3><a class="anchor" id="data-139"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="job_shop_scheduling_problem.html#order-process-orderprocess">`OrderProcess`</a>)</li>
 <li><em>collection:</em> <b>machines</b> (from <a class="el" href="job_shop_scheduling_problem.html#order-process-orderprocess">`OrderProcess`</a>)</li>
 <li><em>collection:</em> <b>durations</b> (from <a class="el" href="job_shop_scheduling_problem.html#order-process-orderprocess">`OrderProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="globals-101"></a>
 Globals</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>makespan</b> (from <a class="el" href="job_shop_scheduling_problem.html#collaboration-job_shop_scheduling_problem">`Job_shop_scheduling_problem`</a>)<ul>
 <li><code>→ minimize 1 * makespan</code></li>
 </ul>
 </li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="multi-instance"></a>
 Multi-instance</h3>
 <ul>
@@ -241,80 +303,134 @@ Multi-instance</h3>
 <li><em>cardinality:</em> <code>count(machines)</code></li>
 </ul>
 <h2><a class="anchor" id="startevent-jobstartevent"></a>
-StartEvent &lt;tt&gt;JobStartEvent&lt;/tt&gt;</h2>
+StartEvent (JobStartEvent)</h2>
 <h3><a class="anchor" id="status-139"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (4)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="job_shop_scheduling_problem.html#order-process-orderprocess">`OrderProcess`</a>)</li>
 <li><em>integer:</em> <b>index</b> (from <a class="el" href="job_shop_scheduling_problem.html#subprocess-jobactivity">`JobActivity`</a>)</li>
 <li><em>string:</em> <b>machine</b> (from <a class="el" href="job_shop_scheduling_problem.html#subprocess-jobactivity">`JobActivity`</a>)</li>
 <li><em>decimal:</em> <b>duration</b> (from <a class="el" href="job_shop_scheduling_problem.html#subprocess-jobactivity">`JobActivity`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-140"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="job_shop_scheduling_problem.html#order-process-orderprocess">`OrderProcess`</a>)</li>
 <li><em>collection:</em> <b>machines</b> (from <a class="el" href="job_shop_scheduling_problem.html#order-process-orderprocess">`OrderProcess`</a>)</li>
 <li><em>collection:</em> <b>durations</b> (from <a class="el" href="job_shop_scheduling_problem.html#order-process-orderprocess">`OrderProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="globals-102"></a>
 Globals</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>makespan</b> (from <a class="el" href="job_shop_scheduling_problem.html#collaboration-job_shop_scheduling_problem">`Job_shop_scheduling_problem`</a>)<ul>
 <li><code>→ minimize 1 * makespan</code></li>
 </ul>
 </li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="endevent-jobendevent"></a>
-EndEvent &lt;tt&gt;JobEndEvent&lt;/tt&gt;</h2>
+EndEvent (JobEndEvent)</h2>
 <h3><a class="anchor" id="status-140"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (4)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="job_shop_scheduling_problem.html#order-process-orderprocess">`OrderProcess`</a>)</li>
 <li><em>integer:</em> <b>index</b> (from <a class="el" href="job_shop_scheduling_problem.html#subprocess-jobactivity">`JobActivity`</a>)</li>
 <li><em>string:</em> <b>machine</b> (from <a class="el" href="job_shop_scheduling_problem.html#subprocess-jobactivity">`JobActivity`</a>)</li>
 <li><em>decimal:</em> <b>duration</b> (from <a class="el" href="job_shop_scheduling_problem.html#subprocess-jobactivity">`JobActivity`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-141"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="job_shop_scheduling_problem.html#order-process-orderprocess">`OrderProcess`</a>)</li>
 <li><em>collection:</em> <b>machines</b> (from <a class="el" href="job_shop_scheduling_problem.html#order-process-orderprocess">`OrderProcess`</a>)</li>
 <li><em>collection:</em> <b>durations</b> (from <a class="el" href="job_shop_scheduling_problem.html#order-process-orderprocess">`OrderProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="globals-103"></a>
 Globals</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>makespan</b> (from <a class="el" href="job_shop_scheduling_problem.html#collaboration-job_shop_scheduling_problem">`Job_shop_scheduling_problem`</a>)<ul>
 <li><code>→ minimize 1 * makespan</code></li>
 </ul>
 </li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="sendtask-sendjobtask"></a>
-SendTask &lt;tt&gt;SendJobTask&lt;/tt&gt;</h2>
+SendTask (SendJobTask)</h2>
 <h3><a class="anchor" id="status-141"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (4)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="job_shop_scheduling_problem.html#order-process-orderprocess">`OrderProcess`</a>)</li>
 <li><em>integer:</em> <b>index</b> (from <a class="el" href="job_shop_scheduling_problem.html#subprocess-jobactivity">`JobActivity`</a>)</li>
 <li><em>string:</em> <b>machine</b> (from <a class="el" href="job_shop_scheduling_problem.html#subprocess-jobactivity">`JobActivity`</a>)</li>
 <li><em>decimal:</em> <b>duration</b> (from <a class="el" href="job_shop_scheduling_problem.html#subprocess-jobactivity">`JobActivity`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-142"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="job_shop_scheduling_problem.html#order-process-orderprocess">`OrderProcess`</a>)</li>
 <li><em>collection:</em> <b>machines</b> (from <a class="el" href="job_shop_scheduling_problem.html#order-process-orderprocess">`OrderProcess`</a>)</li>
 <li><em>collection:</em> <b>durations</b> (from <a class="el" href="job_shop_scheduling_problem.html#order-process-orderprocess">`OrderProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="globals-104"></a>
 Globals</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>makespan</b> (from <a class="el" href="job_shop_scheduling_problem.html#collaboration-job_shop_scheduling_problem">`Job_shop_scheduling_problem`</a>)<ul>
 <li><code>→ minimize 1 * makespan</code></li>
 </ul>
 </li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="message-28"></a>
 Message</h3>
 <h4><a class="anchor" id="name-request-10"></a>
@@ -329,30 +445,48 @@ Message</h3>
 <li><em>Duration:</em> <b>duration</b></li>
 </ul>
 <h2><a class="anchor" id="receivetask-noticejobcompletiontask"></a>
-ReceiveTask &lt;tt&gt;NoticeJobCompletionTask&lt;/tt&gt;</h2>
+ReceiveTask (NoticeJobCompletionTask)</h2>
 <h3><a class="anchor" id="status-142"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (4)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="job_shop_scheduling_problem.html#order-process-orderprocess">`OrderProcess`</a>)</li>
 <li><em>integer:</em> <b>index</b> (from <a class="el" href="job_shop_scheduling_problem.html#subprocess-jobactivity">`JobActivity`</a>)</li>
 <li><em>string:</em> <b>machine</b> (from <a class="el" href="job_shop_scheduling_problem.html#subprocess-jobactivity">`JobActivity`</a>)</li>
 <li><em>decimal:</em> <b>duration</b> (from <a class="el" href="job_shop_scheduling_problem.html#subprocess-jobactivity">`JobActivity`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-143"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="job_shop_scheduling_problem.html#order-process-orderprocess">`OrderProcess`</a>)</li>
 <li><em>collection:</em> <b>machines</b> (from <a class="el" href="job_shop_scheduling_problem.html#order-process-orderprocess">`OrderProcess`</a>)</li>
 <li><em>collection:</em> <b>durations</b> (from <a class="el" href="job_shop_scheduling_problem.html#order-process-orderprocess">`OrderProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="globals-105"></a>
 Globals</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>makespan</b> (from <a class="el" href="job_shop_scheduling_problem.html#collaboration-job_shop_scheduling_problem">`Job_shop_scheduling_problem`</a>)<ul>
 <li><code>→ minimize 1 * makespan</code></li>
 </ul>
 </li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="message-29"></a>
 Message</h3>
 <h4><a class="anchor" id="name-completion"></a>
@@ -365,29 +499,47 @@ Operators</h3>
 <li><code>makespan := timestamp</code></li>
 </ul>
 <h2><a class="anchor" id="dataobjectreference-dataobjectreference_0nc3n7b"></a>
-DataObjectReference &lt;tt&gt;DataObjectReference_0nc3n7b&lt;/tt&gt;</h2>
+DataObjectReference (DataObjectReference_0nc3n7b)</h2>
 <h3><a class="anchor" id="status-143"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="job_shop_scheduling_problem.html#order-process-orderprocess">`OrderProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-144"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="job_shop_scheduling_problem.html#order-process-orderprocess">`OrderProcess`</a>)</li>
 <li><em>collection:</em> <b>machines</b> (from <a class="el" href="job_shop_scheduling_problem.html#order-process-orderprocess">`OrderProcess`</a>)</li>
 <li><em>collection:</em> <b>durations</b> (from <a class="el" href="job_shop_scheduling_problem.html#order-process-orderprocess">`OrderProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="globals-106"></a>
 Globals</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>makespan</b> (from <a class="el" href="job_shop_scheduling_problem.html#collaboration-job_shop_scheduling_problem">`Job_shop_scheduling_problem`</a>)<ul>
 <li><code>→ minimize 1 * makespan</code></li>
 </ul>
 </li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="machine-process-machineprocess"></a>
-Machine process &lt;tt&gt;MachineProcess&lt;/tt&gt;</h2>
+Machine process (MachineProcess)</h2>
 <h3><a class="anchor" id="status-144"></a>
 Status</h3>
 <ul>
@@ -403,122 +555,202 @@ Data</h3>
 </ul>
 <h3><a class="anchor" id="globals-107"></a>
 Globals</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>makespan</b> (from <a class="el" href="job_shop_scheduling_problem.html#collaboration-job_shop_scheduling_problem">`Job_shop_scheduling_problem`</a>)<ul>
 <li><code>→ minimize 1 * makespan</code></li>
 </ul>
 </li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="subprocess-eventsubprocess-5"></a>
-SubProcess &lt;tt&gt;EventSubProcess&lt;/tt&gt;</h2>
+SubProcess (EventSubProcess)</h2>
 <h3><a class="anchor" id="status-145"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="job_shop_scheduling_problem.html#machine-process-machineprocess">`MachineProcess`</a>)</li>
+</ul>
+<p></p>
+</details>
+<ul>
 <li><em>decimal:</em> <b>duration</b></li>
 <li><em>string:</em> <b>order</b></li>
 </ul>
 <h3><a class="anchor" id="data-146"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (4)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="job_shop_scheduling_problem.html#machine-process-machineprocess">`MachineProcess`</a>)</li>
 <li><em>integer:</em> <b>jobs</b> (from <a class="el" href="job_shop_scheduling_problem.html#machine-process-machineprocess">`MachineProcess`</a>)</li>
 <li><em>integer:</em> <b>job_requests</b> (from <a class="el" href="job_shop_scheduling_problem.html#machine-process-machineprocess">`MachineProcess`</a>)</li>
 <li><em>string:</em> <b>machine</b> (from <a class="el" href="job_shop_scheduling_problem.html#machine-process-machineprocess">`MachineProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="globals-108"></a>
 Globals</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>makespan</b> (from <a class="el" href="job_shop_scheduling_problem.html#collaboration-job_shop_scheduling_problem">`Job_shop_scheduling_problem`</a>)<ul>
 <li><code>→ minimize 1 * makespan</code></li>
 </ul>
 </li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="operators-28"></a>
 Operators</h3>
 <ul>
 <li><code>job_requests += 1</code></li>
 </ul>
 <h2><a class="anchor" id="adhocsubprocess-adhocsubprocess-3"></a>
-AdHocSubProcess &lt;tt&gt;AdHocSubProcess&lt;/tt&gt;</h2>
+AdHocSubProcess (AdHocSubProcess)</h2>
 <h3><a class="anchor" id="status-146"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="job_shop_scheduling_problem.html#machine-process-machineprocess">`MachineProcess`</a>)</li>
 <li><em>decimal:</em> <b>duration</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
 <li><em>string:</em> <b>order</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-147"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (4)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="job_shop_scheduling_problem.html#machine-process-machineprocess">`MachineProcess`</a>)</li>
 <li><em>integer:</em> <b>jobs</b> (from <a class="el" href="job_shop_scheduling_problem.html#machine-process-machineprocess">`MachineProcess`</a>)</li>
 <li><em>integer:</em> <b>job_requests</b> (from <a class="el" href="job_shop_scheduling_problem.html#machine-process-machineprocess">`MachineProcess`</a>)</li>
 <li><em>string:</em> <b>machine</b> (from <a class="el" href="job_shop_scheduling_problem.html#machine-process-machineprocess">`MachineProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="globals-109"></a>
 Globals</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>makespan</b> (from <a class="el" href="job_shop_scheduling_problem.html#collaboration-job_shop_scheduling_problem">`Job_shop_scheduling_problem`</a>)<ul>
 <li><code>→ minimize 1 * makespan</code></li>
 </ul>
 </li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="task-conductjobtask"></a>
-Task &lt;tt&gt;ConductJobTask&lt;/tt&gt;</h2>
+Task (ConductJobTask)</h2>
 <h3><a class="anchor" id="status-147"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="job_shop_scheduling_problem.html#machine-process-machineprocess">`MachineProcess`</a>)</li>
 <li><em>decimal:</em> <b>duration</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
 <li><em>string:</em> <b>order</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-148"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (4)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="job_shop_scheduling_problem.html#machine-process-machineprocess">`MachineProcess`</a>)</li>
 <li><em>integer:</em> <b>jobs</b> (from <a class="el" href="job_shop_scheduling_problem.html#machine-process-machineprocess">`MachineProcess`</a>)</li>
 <li><em>integer:</em> <b>job_requests</b> (from <a class="el" href="job_shop_scheduling_problem.html#machine-process-machineprocess">`MachineProcess`</a>)</li>
 <li><em>string:</em> <b>machine</b> (from <a class="el" href="job_shop_scheduling_problem.html#machine-process-machineprocess">`MachineProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="globals-110"></a>
 Globals</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>makespan</b> (from <a class="el" href="job_shop_scheduling_problem.html#collaboration-job_shop_scheduling_problem">`Job_shop_scheduling_problem`</a>)<ul>
 <li><code>→ minimize 1 * makespan</code></li>
 </ul>
 </li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="operators-29"></a>
 Operators</h3>
 <ul>
 <li><code>timestamp += duration</code></li>
 </ul>
 <h2><a class="anchor" id="startevent-catchrequestmessage-3"></a>
-StartEvent &lt;tt&gt;CatchRequestMessage&lt;/tt&gt;</h2>
+StartEvent (CatchRequestMessage)</h2>
 <h3><a class="anchor" id="status-148"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="job_shop_scheduling_problem.html#machine-process-machineprocess">`MachineProcess`</a>)</li>
 <li><em>decimal:</em> <b>duration</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
 <li><em>string:</em> <b>order</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-149"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (4)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="job_shop_scheduling_problem.html#machine-process-machineprocess">`MachineProcess`</a>)</li>
 <li><em>integer:</em> <b>jobs</b> (from <a class="el" href="job_shop_scheduling_problem.html#machine-process-machineprocess">`MachineProcess`</a>)</li>
 <li><em>integer:</em> <b>job_requests</b> (from <a class="el" href="job_shop_scheduling_problem.html#machine-process-machineprocess">`MachineProcess`</a>)</li>
 <li><em>string:</em> <b>machine</b> (from <a class="el" href="job_shop_scheduling_problem.html#machine-process-machineprocess">`MachineProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="globals-111"></a>
 Globals</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>makespan</b> (from <a class="el" href="job_shop_scheduling_problem.html#collaboration-job_shop_scheduling_problem">`Job_shop_scheduling_problem`</a>)<ul>
 <li><code>→ minimize 1 * makespan</code></li>
 </ul>
 </li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="message-30"></a>
 Message</h3>
 <h4><a class="anchor" id="name-request-11"></a>
@@ -533,30 +765,48 @@ Message</h3>
 <li><em>Order:</em> <b>order</b></li>
 </ul>
 <h2><a class="anchor" id="endevent-throwcompletionmessage"></a>
-EndEvent &lt;tt&gt;ThrowCompletionMessage&lt;/tt&gt;</h2>
+EndEvent (ThrowCompletionMessage)</h2>
 <h3><a class="anchor" id="status-149"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="job_shop_scheduling_problem.html#machine-process-machineprocess">`MachineProcess`</a>)</li>
 <li><em>decimal:</em> <b>duration</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
 <li><em>string:</em> <b>order</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-150"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (4)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="job_shop_scheduling_problem.html#machine-process-machineprocess">`MachineProcess`</a>)</li>
 <li><em>integer:</em> <b>jobs</b> (from <a class="el" href="job_shop_scheduling_problem.html#machine-process-machineprocess">`MachineProcess`</a>)</li>
 <li><em>integer:</em> <b>job_requests</b> (from <a class="el" href="job_shop_scheduling_problem.html#machine-process-machineprocess">`MachineProcess`</a>)</li>
 <li><em>string:</em> <b>machine</b> (from <a class="el" href="job_shop_scheduling_problem.html#machine-process-machineprocess">`MachineProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="globals-112"></a>
 Globals</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>makespan</b> (from <a class="el" href="job_shop_scheduling_problem.html#collaboration-job_shop_scheduling_problem">`Job_shop_scheduling_problem`</a>)<ul>
 <li><code>→ minimize 1 * makespan</code></li>
 </ul>
 </li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="message-31"></a>
 Message</h3>
 <h4><a class="anchor" id="name-completion-1"></a>
@@ -567,97 +817,169 @@ Message</h3>
 </ul>
 <p><a class="anchor" id="content-0-17"></a> </p><h5>Content (0)</h5>
 <h2><a class="anchor" id="endevent-endeventmachine"></a>
-EndEvent &lt;tt&gt;EndEventMachine&lt;/tt&gt;</h2>
+EndEvent (EndEventMachine)</h2>
 <h3><a class="anchor" id="status-150"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="job_shop_scheduling_problem.html#machine-process-machineprocess">`MachineProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-151"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (4)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="job_shop_scheduling_problem.html#machine-process-machineprocess">`MachineProcess`</a>)</li>
 <li><em>integer:</em> <b>jobs</b> (from <a class="el" href="job_shop_scheduling_problem.html#machine-process-machineprocess">`MachineProcess`</a>)</li>
 <li><em>integer:</em> <b>job_requests</b> (from <a class="el" href="job_shop_scheduling_problem.html#machine-process-machineprocess">`MachineProcess`</a>)</li>
 <li><em>string:</em> <b>machine</b> (from <a class="el" href="job_shop_scheduling_problem.html#machine-process-machineprocess">`MachineProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="globals-113"></a>
 Globals</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>makespan</b> (from <a class="el" href="job_shop_scheduling_problem.html#collaboration-job_shop_scheduling_problem">`Job_shop_scheduling_problem`</a>)<ul>
 <li><code>→ minimize 1 * makespan</code></li>
 </ul>
 </li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="startevent-starteventmachine"></a>
-StartEvent &lt;tt&gt;StartEventMachine&lt;/tt&gt;</h2>
+StartEvent (StartEventMachine)</h2>
 <h3><a class="anchor" id="status-151"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="job_shop_scheduling_problem.html#machine-process-machineprocess">`MachineProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-152"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (4)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="job_shop_scheduling_problem.html#machine-process-machineprocess">`MachineProcess`</a>)</li>
 <li><em>integer:</em> <b>jobs</b> (from <a class="el" href="job_shop_scheduling_problem.html#machine-process-machineprocess">`MachineProcess`</a>)</li>
 <li><em>integer:</em> <b>job_requests</b> (from <a class="el" href="job_shop_scheduling_problem.html#machine-process-machineprocess">`MachineProcess`</a>)</li>
 <li><em>string:</em> <b>machine</b> (from <a class="el" href="job_shop_scheduling_problem.html#machine-process-machineprocess">`MachineProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="globals-114"></a>
 Globals</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>makespan</b> (from <a class="el" href="job_shop_scheduling_problem.html#collaboration-job_shop_scheduling_problem">`Job_shop_scheduling_problem`</a>)<ul>
 <li><code>→ minimize 1 * makespan</code></li>
 </ul>
 </li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="dataobjectreference-dataobjectreference_0j8smsl"></a>
-DataObjectReference &lt;tt&gt;DataObjectReference_0j8smsl&lt;/tt&gt;</h2>
+DataObjectReference (DataObjectReference_0j8smsl)</h2>
 <h3><a class="anchor" id="status-152"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="job_shop_scheduling_problem.html#machine-process-machineprocess">`MachineProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-153"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (4)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="job_shop_scheduling_problem.html#machine-process-machineprocess">`MachineProcess`</a>)</li>
 <li><em>integer:</em> <b>jobs</b> (from <a class="el" href="job_shop_scheduling_problem.html#machine-process-machineprocess">`MachineProcess`</a>)</li>
 <li><em>integer:</em> <b>job_requests</b> (from <a class="el" href="job_shop_scheduling_problem.html#machine-process-machineprocess">`MachineProcess`</a>)</li>
 <li><em>string:</em> <b>machine</b> (from <a class="el" href="job_shop_scheduling_problem.html#machine-process-machineprocess">`MachineProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="globals-115"></a>
 Globals</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>makespan</b> (from <a class="el" href="job_shop_scheduling_problem.html#collaboration-job_shop_scheduling_problem">`Job_shop_scheduling_problem`</a>)<ul>
 <li><code>→ minimize 1 * makespan</code></li>
 </ul>
 </li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="intermediatecatchevent-conditionalevent"></a>
-IntermediateCatchEvent &lt;tt&gt;ConditionalEvent&lt;/tt&gt;</h2>
+IntermediateCatchEvent (ConditionalEvent)</h2>
 <h3><a class="anchor" id="status-153"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="job_shop_scheduling_problem.html#machine-process-machineprocess">`MachineProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-154"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (4)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="job_shop_scheduling_problem.html#machine-process-machineprocess">`MachineProcess`</a>)</li>
 <li><em>integer:</em> <b>jobs</b> (from <a class="el" href="job_shop_scheduling_problem.html#machine-process-machineprocess">`MachineProcess`</a>)</li>
 <li><em>integer:</em> <b>job_requests</b> (from <a class="el" href="job_shop_scheduling_problem.html#machine-process-machineprocess">`MachineProcess`</a>)</li>
 <li><em>string:</em> <b>machine</b> (from <a class="el" href="job_shop_scheduling_problem.html#machine-process-machineprocess">`MachineProcess`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="globals-116"></a>
 Globals</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>makespan</b> (from <a class="el" href="job_shop_scheduling_problem.html#collaboration-job_shop_scheduling_problem">`Job_shop_scheduling_problem`</a>)<ul>
 <li><code>→ minimize 1 * makespan</code></li>
 </ul>
 </li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="conditions"></a>
 Conditions</h3>
 <ul>

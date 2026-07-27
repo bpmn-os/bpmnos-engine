@@ -129,7 +129,7 @@ $(document).ready(function(){initNavTree('travelling_salesperson_problem.html','
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><h1><a class="anchor" id="travelling-salesperson-problem-travellingsalesperson_process"></a>
-Travelling salesperson problem &lt;tt&gt;TravellingSalesperson_Process&lt;/tt&gt;</h1>
+Travelling salesperson problem (TravellingSalesperson_Process)</h1>
 <h2><a class="anchor" id="diagram-10"></a>
 Diagram</h2>
 <p> 
@@ -158,9 +158,13 @@ Lookup tables</h2>
 <li><b>distance(…)</b> (from <code>distances.csv</code>) with columns <code>From</code>, <code>To</code>, <code>Distance</code></li>
 </ul>
 <h2><a class="anchor" id="startevent-startevent_1-1"></a>
-StartEvent &lt;tt&gt;StartEvent_1&lt;/tt&gt;</h2>
+StartEvent (StartEvent_1)</h2>
 <h3><a class="anchor" id="status-213"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="travelling_salesperson_problem.html#travelling-salesperson-problem-travellingsalesperson_process">`TravellingSalesperson_Process`</a>)<ul>
 <li><code>→ minimize 1 * timestamp</code></li>
@@ -169,17 +173,29 @@ Status</h3>
 <li><em>string:</em> <b>origin</b> (from <a class="el" href="travelling_salesperson_problem.html#travelling-salesperson-problem-travellingsalesperson_process">`TravellingSalesperson_Process`</a>)</li>
 <li><em>collection:</em> <b>locations</b> (from <a class="el" href="travelling_salesperson_problem.html#travelling-salesperson-problem-travellingsalesperson_process">`TravellingSalesperson_Process`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-214"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>current_location</b> (from <a class="el" href="travelling_salesperson_problem.html#travelling-salesperson-problem-travellingsalesperson_process">`TravellingSalesperson_Process`</a>)</li>
 <li><em>decimal:</em> <b>speed</b> (from <a class="el" href="travelling_salesperson_problem.html#travelling-salesperson-problem-travellingsalesperson_process">`TravellingSalesperson_Process`</a>)</li>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="travelling_salesperson_problem.html#travelling-salesperson-problem-travellingsalesperson_process">`TravellingSalesperson_Process`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="adhocsubprocess-adhocsubprocess-5"></a>
-AdHocSubProcess &lt;tt&gt;AdHocSubProcess&lt;/tt&gt;</h2>
+AdHocSubProcess (AdHocSubProcess)</h2>
 <h3><a class="anchor" id="status-214"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="travelling_salesperson_problem.html#travelling-salesperson-problem-travellingsalesperson_process">`TravellingSalesperson_Process`</a>)<ul>
 <li><code>→ minimize 1 * timestamp</code></li>
@@ -188,17 +204,29 @@ Status</h3>
 <li><em>string:</em> <b>origin</b> (from <a class="el" href="travelling_salesperson_problem.html#travelling-salesperson-problem-travellingsalesperson_process">`TravellingSalesperson_Process`</a>)</li>
 <li><em>collection:</em> <b>locations</b> (from <a class="el" href="travelling_salesperson_problem.html#travelling-salesperson-problem-travellingsalesperson_process">`TravellingSalesperson_Process`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-215"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>current_location</b> (from <a class="el" href="travelling_salesperson_problem.html#travelling-salesperson-problem-travellingsalesperson_process">`TravellingSalesperson_Process`</a>)</li>
 <li><em>decimal:</em> <b>speed</b> (from <a class="el" href="travelling_salesperson_problem.html#travelling-salesperson-problem-travellingsalesperson_process">`TravellingSalesperson_Process`</a>)</li>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="travelling_salesperson_problem.html#travelling-salesperson-problem-travellingsalesperson_process">`TravellingSalesperson_Process`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="task-visitlocation"></a>
-Task &lt;tt&gt;VisitLocation&lt;/tt&gt;</h2>
+Task (VisitLocation)</h2>
 <h3><a class="anchor" id="status-215"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="travelling_salesperson_problem.html#travelling-salesperson-problem-travellingsalesperson_process">`TravellingSalesperson_Process`</a>)<ul>
 <li><code>→ minimize 1 * timestamp</code></li>
@@ -206,17 +234,27 @@ Status</h3>
 </li>
 <li><em>string:</em> <b>origin</b> (from <a class="el" href="travelling_salesperson_problem.html#travelling-salesperson-problem-travellingsalesperson_process">`TravellingSalesperson_Process`</a>)</li>
 <li><em>collection:</em> <b>locations</b> (from <a class="el" href="travelling_salesperson_problem.html#travelling-salesperson-problem-travellingsalesperson_process">`TravellingSalesperson_Process`</a>)</li>
+</ul>
+<p></p>
+</details>
+<ul>
 <li><em>integer:</em> <b>index</b></li>
 <li><em>string:</em> <b>location</b> (initialized by <code>location := locations[index]</code>)</li>
 <li><em>decimal:</em> <b>distance</b> (initialized by <code>distance := distance(current_location,location)</code>)</li>
 </ul>
 <h3><a class="anchor" id="data-216"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>current_location</b> (from <a class="el" href="travelling_salesperson_problem.html#travelling-salesperson-problem-travellingsalesperson_process">`TravellingSalesperson_Process`</a>)</li>
 <li><em>decimal:</em> <b>speed</b> (from <a class="el" href="travelling_salesperson_problem.html#travelling-salesperson-problem-travellingsalesperson_process">`TravellingSalesperson_Process`</a>)</li>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="travelling_salesperson_problem.html#travelling-salesperson-problem-travellingsalesperson_process">`TravellingSalesperson_Process`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="multi-instance-1"></a>
 Multi-instance</h3>
 <ul>
@@ -230,9 +268,13 @@ Operators</h3>
 <li><code>timestamp += distance / speed</code></li>
 </ul>
 <h2><a class="anchor" id="task-returntrip-3"></a>
-Task &lt;tt&gt;ReturnTrip&lt;/tt&gt;</h2>
+Task (ReturnTrip)</h2>
 <h3><a class="anchor" id="status-216"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="travelling_salesperson_problem.html#travelling-salesperson-problem-travellingsalesperson_process">`TravellingSalesperson_Process`</a>)<ul>
 <li><code>→ minimize 1 * timestamp</code></li>
@@ -240,15 +282,25 @@ Status</h3>
 </li>
 <li><em>string:</em> <b>origin</b> (from <a class="el" href="travelling_salesperson_problem.html#travelling-salesperson-problem-travellingsalesperson_process">`TravellingSalesperson_Process`</a>)</li>
 <li><em>collection:</em> <b>locations</b> (from <a class="el" href="travelling_salesperson_problem.html#travelling-salesperson-problem-travellingsalesperson_process">`TravellingSalesperson_Process`</a>)</li>
+</ul>
+<p></p>
+</details>
+<ul>
 <li><em>decimal:</em> <b>distance</b> (initialized by <code>distance := distance(current_location,origin)</code>)</li>
 </ul>
 <h3><a class="anchor" id="data-217"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>current_location</b> (from <a class="el" href="travelling_salesperson_problem.html#travelling-salesperson-problem-travellingsalesperson_process">`TravellingSalesperson_Process`</a>)</li>
 <li><em>decimal:</em> <b>speed</b> (from <a class="el" href="travelling_salesperson_problem.html#travelling-salesperson-problem-travellingsalesperson_process">`TravellingSalesperson_Process`</a>)</li>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="travelling_salesperson_problem.html#travelling-salesperson-problem-travellingsalesperson_process">`TravellingSalesperson_Process`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="operators-41"></a>
 Operators</h3>
 <ul>
@@ -256,9 +308,13 @@ Operators</h3>
 <li><code>timestamp += distance / speed</code></li>
 </ul>
 <h2><a class="anchor" id="endevent-endevent_1-1"></a>
-EndEvent &lt;tt&gt;EndEvent_1&lt;/tt&gt;</h2>
+EndEvent (EndEvent_1)</h2>
 <h3><a class="anchor" id="status-217"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="travelling_salesperson_problem.html#travelling-salesperson-problem-travellingsalesperson_process">`TravellingSalesperson_Process`</a>)<ul>
 <li><code>→ minimize 1 * timestamp</code></li>
@@ -267,17 +323,29 @@ Status</h3>
 <li><em>string:</em> <b>origin</b> (from <a class="el" href="travelling_salesperson_problem.html#travelling-salesperson-problem-travellingsalesperson_process">`TravellingSalesperson_Process`</a>)</li>
 <li><em>collection:</em> <b>locations</b> (from <a class="el" href="travelling_salesperson_problem.html#travelling-salesperson-problem-travellingsalesperson_process">`TravellingSalesperson_Process`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-218"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>current_location</b> (from <a class="el" href="travelling_salesperson_problem.html#travelling-salesperson-problem-travellingsalesperson_process">`TravellingSalesperson_Process`</a>)</li>
 <li><em>decimal:</em> <b>speed</b> (from <a class="el" href="travelling_salesperson_problem.html#travelling-salesperson-problem-travellingsalesperson_process">`TravellingSalesperson_Process`</a>)</li>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="travelling_salesperson_problem.html#travelling-salesperson-problem-travellingsalesperson_process">`TravellingSalesperson_Process`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="dataobjectreference-dataobjectreference_1db7c4q"></a>
-DataObjectReference &lt;tt&gt;DataObjectReference_1db7c4q&lt;/tt&gt;</h2>
+DataObjectReference (DataObjectReference_1db7c4q)</h2>
 <h3><a class="anchor" id="status-218"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="travelling_salesperson_problem.html#travelling-salesperson-problem-travellingsalesperson_process">`TravellingSalesperson_Process`</a>)<ul>
 <li><code>→ minimize 1 * timestamp</code></li>
@@ -286,17 +354,29 @@ Status</h3>
 <li><em>string:</em> <b>origin</b> (from <a class="el" href="travelling_salesperson_problem.html#travelling-salesperson-problem-travellingsalesperson_process">`TravellingSalesperson_Process`</a>)</li>
 <li><em>collection:</em> <b>locations</b> (from <a class="el" href="travelling_salesperson_problem.html#travelling-salesperson-problem-travellingsalesperson_process">`TravellingSalesperson_Process`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-219"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>current_location</b> (from <a class="el" href="travelling_salesperson_problem.html#travelling-salesperson-problem-travellingsalesperson_process">`TravellingSalesperson_Process`</a>)</li>
 <li><em>decimal:</em> <b>speed</b> (from <a class="el" href="travelling_salesperson_problem.html#travelling-salesperson-problem-travellingsalesperson_process">`TravellingSalesperson_Process`</a>)</li>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="travelling_salesperson_problem.html#travelling-salesperson-problem-travellingsalesperson_process">`TravellingSalesperson_Process`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="datastorereference-datastorereference_1ns10u7"></a>
-DataStoreReference &lt;tt&gt;DataStoreReference_1ns10u7&lt;/tt&gt;</h2>
+DataStoreReference (DataStoreReference_1ns10u7)</h2>
 <h3><a class="anchor" id="status-219"></a>
 Status</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="travelling_salesperson_problem.html#travelling-salesperson-problem-travellingsalesperson_process">`TravellingSalesperson_Process`</a>)<ul>
 <li><code>→ minimize 1 * timestamp</code></li>
@@ -305,13 +385,21 @@ Status</h3>
 <li><em>string:</em> <b>origin</b> (from <a class="el" href="travelling_salesperson_problem.html#travelling-salesperson-problem-travellingsalesperson_process">`TravellingSalesperson_Process`</a>)</li>
 <li><em>collection:</em> <b>locations</b> (from <a class="el" href="travelling_salesperson_problem.html#travelling-salesperson-problem-travellingsalesperson_process">`TravellingSalesperson_Process`</a>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-220"></a>
 Data</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>current_location</b> (from <a class="el" href="travelling_salesperson_problem.html#travelling-salesperson-problem-travellingsalesperson_process">`TravellingSalesperson_Process`</a>)</li>
 <li><em>decimal:</em> <b>speed</b> (from <a class="el" href="travelling_salesperson_problem.html#travelling-salesperson-problem-travellingsalesperson_process">`TravellingSalesperson_Process`</a>)</li>
-<li><em>string:</em> <b>instance</b> (from <a class="el" href="travelling_salesperson_problem.html#travelling-salesperson-problem-travellingsalesperson_process">`TravellingSalesperson_Process`</a>) </li>
+<li><em>string:</em> <b>instance</b> (from <a class="el" href="travelling_salesperson_problem.html#travelling-salesperson-problem-travellingsalesperson_process">`TravellingSalesperson_Process`</a>)</li>
 </ul>
+<p></p>
+</details>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
 </div><!-- doc-content -->
