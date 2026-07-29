@@ -31,7 +31,7 @@
 
   <xsd:element name="attribute" type="tAttribute"/>
   <xsd:complexType name="tAttribute">
-    <xsd:attribute name="id" type="xsd:ID" use="required"/>
+    <xsd:attribute name="id" type="xsd:NCName" use="required"/>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
     <xsd:attribute name="type" type="tAttributeType" use="required"/>
     <xsd:attribute name="objective" type="tObjectiveType" use="optional"/>
@@ -63,7 +63,7 @@
 
   <xsd:element name="decision" type="tDecision"/>
   <xsd:complexType name="tDecision">
-    <xsd:attribute name="id" type="xsd:ID" use="required"/>
+    <xsd:attribute name="id" type="xsd:NCName" use="required"/>
     <xsd:attribute name="condition" type="xsd:string" use="required"/>
   </xsd:complexType>
 
@@ -76,7 +76,7 @@
 
   <xsd:element name="restriction" type="tRestriction"/>
   <xsd:complexType name="tRestriction">
-    <xsd:attribute name="id" type="xsd:ID" use="required"/>
+    <xsd:attribute name="id" type="xsd:NCName" use="required"/>
     <xsd:attribute name="scope" type="tRestrictionScope" use="optional" default="full"/>
     <xsd:attribute name="expression" type="xsd:string" use="required"/>
   </xsd:complexType>
@@ -98,7 +98,7 @@
 
   <xsd:element name="operator" type="tOperator"/>
   <xsd:complexType name="tOperator">
-    <xsd:attribute name="id" type="xsd:ID" use="required"/>
+    <xsd:attribute name="id" type="xsd:NCName" use="required"/>
     <xsd:attribute name="expression" type="xsd:string" use="required"/>
   </xsd:complexType>
 
@@ -164,7 +164,7 @@
 
   <xsd:element name="table" type="tTable"/>
   <xsd:complexType name="tTable">
-    <xsd:attribute name="id" type="xsd:ID" use="required"/>
+    <xsd:attribute name="id" type="xsd:NCName" use="required"/>
     <xsd:attribute name="source" type="xsd:string" use="required"/>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
     <xsd:attribute name="header" type="xsd:string" use="required"/>
