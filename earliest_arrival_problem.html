@@ -137,6 +137,10 @@ Diagram</h2>
 </p>
 <h2><a class="anchor" id="status-28"></a>
 Status</h2>
+<details  open="true">
+<summary >
+Owned (4)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b><ul>
 <li><code>→ minimize 1 * timestamp</code></li>
@@ -146,11 +150,19 @@ Status</h2>
 <li><em>string:</em> <b>final_location</b></li>
 <li><em>string:</em> <b>current_location</b> (initialized by <code>current_location := initial_location</code>)</li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="data-29"></a>
 Data</h2>
+<details  open="true">
+<summary >
+Owned (1)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b></li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="lookup-tables-2"></a>
 Lookup tables</h2>
 <ul>
@@ -208,12 +220,18 @@ Inherited (4)</summary>
 </ul>
 <p></p>
 </details>
+<details  open="true">
+<summary >
+Owned (4)</summary>
+<p></p>
 <ul>
 <li><em>collection:</em> <b>destinations</b> (initialized by <code>destinations := destinations(current_location)</code>)</li>
 <li><em>decimal:</em> <b>duration</b></li>
 <li><em>decimal:</em> <b>departure</b></li>
 <li><em>string:</em> <b>next_location</b></li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-31"></a>
 Data</h3>
 <details >
@@ -321,10 +339,16 @@ Inherited (8)</summary>
 </ul>
 <p></p>
 </details>
+<details  open="true">
+<summary >
+Owned (2)</summary>
+<p></p>
 <ul>
 <li><em>integer:</em> <b>index</b></li>
 <li><em>collection:</em> <b>departures</b></li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-34"></a>
 Data</h3>
 <details >
@@ -351,9 +375,15 @@ Operators</h3>
 </ul>
 <h3><a class="anchor" id="exit-restrictions-15"></a>
 Exit restrictions</h3>
+<details  open="true">
+<summary >
+Owned (1)</summary>
+<p></p>
 <ul>
 <li><code>departure &gt;= timestamp</code></li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="choice-guidance"></a>
 Choice guidance</h3>
 <h4><a class="anchor" id="attributes-2"></a>

@@ -137,6 +137,10 @@ Diagram</h2>
 </p>
 <h2><a class="anchor" id="status-212"></a>
 Status</h2>
+<details  open="true">
+<summary >
+Owned (3)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b><ul>
 <li><code>→ minimize 1 * timestamp</code></li>
@@ -145,13 +149,21 @@ Status</h2>
 <li><em>string:</em> <b>origin</b></li>
 <li><em>collection:</em> <b>locations</b></li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="data-213"></a>
 Data</h2>
+<details  open="true">
+<summary >
+Owned (3)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>current_location</b> (initialized by <code>current_location := origin</code>)</li>
 <li><em>decimal:</em> <b>speed</b></li>
 <li><em>string:</em> <b>instance</b></li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="lookup-tables-6"></a>
 Lookup tables</h2>
 <ul>
@@ -237,11 +249,17 @@ Inherited (3)</summary>
 </ul>
 <p></p>
 </details>
+<details  open="true">
+<summary >
+Owned (3)</summary>
+<p></p>
 <ul>
 <li><em>integer:</em> <b>index</b></li>
 <li><em>string:</em> <b>location</b> (initialized by <code>location := locations[index]</code>)</li>
 <li><em>decimal:</em> <b>distance</b> (initialized by <code>distance := distance(current_location,location)</code>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-216"></a>
 Data</h3>
 <details >
@@ -285,9 +303,15 @@ Inherited (3)</summary>
 </ul>
 <p></p>
 </details>
+<details  open="true">
+<summary >
+Owned (1)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>distance</b> (initialized by <code>distance := distance(current_location,origin)</code>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-217"></a>
 Data</h3>
 <details >

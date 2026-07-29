@@ -137,6 +137,10 @@ Diagram</h2>
 </p>
 <h2><a class="anchor" id="status-220"></a>
 Status</h2>
+<details  open="true">
+<summary >
+Owned (5)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b></li>
 <li><em>collection:</em> <b>earliest_visits</b></li>
@@ -144,8 +148,14 @@ Status</h2>
 <li><em>collection:</em> <b>travel_times</b></li>
 <li><em>collection:</em> <b>service_times</b></li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="data-221"></a>
 Data</h2>
+<details  open="true">
+<summary >
+Owned (11)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b></li>
 <li><em>decimal:</em> <b>max_driving_since_rest</b> (initialized by <code>max_driving_since_rest := 660</code>)</li>
@@ -159,6 +169,8 @@ Data</h2>
 <li><em>decimal:</em> <b>last_break</b> (initialized by <code>last_break := 0</code>)</li>
 <li><em>decimal:</em> <b>driving_since_rest</b> (initialized by <code>driving_since_rest := 0</code>)</li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="startevent-startprocessevent"></a>
 StartEvent (StartProcessEvent)</h2>
 <h3><a class="anchor" id="status-221"></a>
@@ -214,6 +226,10 @@ Inherited (5)</summary>
 </ul>
 <p></p>
 </details>
+<details  open="true">
+<summary >
+Owned (6)</summary>
+<p></p>
 <ul>
 <li><em>integer:</em> <b>index</b></li>
 <li><em>decimal:</em> <b>service_time</b> (initialized by <code>service_time := service_times[index]</code>)</li>
@@ -222,6 +238,8 @@ Inherited (5)</summary>
 <li><em>decimal:</em> <b>earliest_visit</b> (initialized by <code>earliest_visit := earliest_visits[index]</code>)</li>
 <li><em>decimal:</em> <b>remaining_driving_time</b> (initialized by <code>remaining_driving_time := travel_time</code>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-223"></a>
 Data</h3>
 <details >
@@ -316,12 +334,18 @@ Inherited (11)</summary>
 </ul>
 <p></p>
 </details>
+<details  open="true">
+<summary >
+Owned (1)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>lateness</b> (initialized by <code>lateness := max{0,timestamp - latest_visit}</code>)<ul>
 <li><code>→ minimize 1 * lateness</code></li>
 </ul>
 </li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-225"></a>
 Data</h3>
 <details >
@@ -420,10 +444,16 @@ Inherited (11)</summary>
 </ul>
 <p></p>
 </details>
+<details  open="true">
+<summary >
+Owned (2)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>duration</b></li>
 <li><em>string:</em> <b>wait_type</b></li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-227"></a>
 Data</h3>
 <details >
@@ -556,10 +586,16 @@ Inherited (11)</summary>
 </ul>
 <p></p>
 </details>
+<details  open="true">
+<summary >
+Owned (2)</summary>
+<p></p>
 <ul>
 <li><em>boolean:</em> <b>loop</b></li>
 <li><em>integer:</em> <b>loop_index</b></li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-230"></a>
 Data</h3>
 <details >
@@ -659,9 +695,15 @@ Inherited (13)</summary>
 </ul>
 <p></p>
 </details>
+<details  open="true">
+<summary >
+Owned (1)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>duration</b> (initialized by <code>duration := max{ 0, min{ remaining_driving_time, max_driving_since_rest - driving_since_rest, max_elapsed_since_rest - (timestamp - last_rest ), max_elapsed_since_break - (timestamp - last_break) } }</code>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-232"></a>
 Data</h3>
 <details >
@@ -767,10 +809,16 @@ Inherited (13)</summary>
 </ul>
 <p></p>
 </details>
+<details  open="true">
+<summary >
+Owned (2)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>duration</b></li>
 <li><em>string:</em> <b>offduty_type</b></li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-234"></a>
 Data</h3>
 <details >
@@ -1091,9 +1139,15 @@ Choices</h3>
 </ul>
 <h3><a class="anchor" id="completion-restrictions-25"></a>
 Completion restrictions</h3>
+<details  open="true">
+<summary >
+Owned (1)</summary>
+<p></p>
 <ul>
 <li><code>( offduty_type == "rest" ) || ( (driving_since_rest &lt; max_driving_since_rest) &amp;&amp; ( timestamp + min_break_duration &lt; last_rest + max_elapsed_since_rest ) )</code></li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="exclusivegateway-tripgateway"></a>
 ExclusiveGateway (TripGateway)</h2>
 <h3><a class="anchor" id="status-240"></a>
@@ -1403,9 +1457,15 @@ Choices</h3>
 </ul>
 <h3><a class="anchor" id="completion-restrictions-26"></a>
 Completion restrictions</h3>
+<details  open="true">
+<summary >
+Owned (1)</summary>
+<p></p>
 <ul>
 <li><code>duration &lt; min_rest_duration</code></li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="choice-guidance-1"></a>
 Choice guidance</h3>
 <h4><a class="anchor" id="attributes-11"></a>
@@ -1698,10 +1758,16 @@ Choices</h3>
 </ul>
 <h3><a class="anchor" id="completion-restrictions-27"></a>
 Completion restrictions</h3>
+<details  open="true">
+<summary >
+Owned (2)</summary>
+<p></p>
 <ul>
 <li><code>( wait_type == "rest" ) || ( timestamp + min_rest_duration &gt; earliest_visit)</code></li>
 <li><code>( wait_type != "wait" ) || ( timestamp + min_break_duration &gt; earliest_visit)</code></li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="exclusivegateway-waitgateway_1"></a>
 ExclusiveGateway (WaitGateway_1)</h2>
 <h3><a class="anchor" id="status-251"></a>
@@ -1898,9 +1964,15 @@ Choices</h3>
 </ul>
 <h3><a class="anchor" id="completion-restrictions-28"></a>
 Completion restrictions</h3>
+<details  open="true">
+<summary >
+Owned (1)</summary>
+<p></p>
 <ul>
 <li><code>duration &lt; min_rest_duration</code></li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="choice-guidance-3"></a>
 Choice guidance</h3>
 <h4><a class="anchor" id="attributes-13"></a>

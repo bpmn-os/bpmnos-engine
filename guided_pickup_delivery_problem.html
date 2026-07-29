@@ -137,10 +137,16 @@ Diagram</h2>
 </p>
 <h2><a class="anchor" id="globals-35"></a>
 Globals</h2>
+<details  open="true">
+<summary >
+Owned (2)</summary>
+<p></p>
 <ul>
 <li><em>integer:</em> <b>requests_expected</b></li>
 <li><em>integer:</em> <b>requests_made</b> (initialized by <code>requests_made := 0</code>)</li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="lookup-tables-3"></a>
 Lookup tables</h2>
 <ul>
@@ -151,6 +157,10 @@ Lookup tables</h2>
 Customer process (CustomerProcess)</h2>
 <h3><a class="anchor" id="status-75"></a>
 Status</h3>
+<details  open="true">
+<summary >
+Owned (12)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b></li>
 <li><em>decimal:</em> <b>quantity</b></li>
@@ -165,11 +175,19 @@ Status</h3>
 <li><em>decimal:</em> <b>delivery_duration</b></li>
 <li><em>decimal:</em> <b>late_delivery_penalty</b></li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-76"></a>
 Data</h3>
+<details  open="true">
+<summary >
+Owned (1)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b></li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="globals-36"></a>
 Globals</h3>
 <details >
@@ -767,11 +785,21 @@ Message</h3>
 Vehicle process (VehicleProcess)</h2>
 <h3><a class="anchor" id="status-87"></a>
 Status</h3>
+<details  open="true">
+<summary >
+Owned (1)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b></li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-88"></a>
 Data</h3>
+<details  open="true">
+<summary >
+Owned (10)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b></li>
 <li><em>decimal:</em> <b>load</b> (initialized by <code>load := 0</code>)</li>
@@ -787,6 +815,8 @@ Data</h3>
 <li><em>integer:</em> <b>pending</b> (initialized by <code>pending := 0</code>)</li>
 <li><em>string:</em> <b>location</b> (initialized by <code>location := depot</code>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="globals-48"></a>
 Globals</h3>
 <details >
@@ -812,6 +842,10 @@ Inherited (1)</summary>
 </ul>
 <p></p>
 </details>
+<details  open="true">
+<summary >
+Owned (12)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>customer</b></li>
 <li><em>decimal:</em> <b>quantity</b></li>
@@ -826,6 +860,8 @@ Inherited (1)</summary>
 <li><em>decimal:</em> <b>delivery_duration</b></li>
 <li><em>decimal:</em> <b>late_delivery_penalty</b></li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-89"></a>
 Data</h3>
 <details >
@@ -1085,10 +1121,16 @@ Inherited (2)</summary>
 </details>
 <h3><a class="anchor" id="entry-restrictions-25"></a>
 Entry restrictions</h3>
+<details  open="true">
+<summary >
+Owned (2)</summary>
+<p></p>
 <ul>
 <li><code>load + quantity &lt;= capacity</code></li>
 <li><code>requests_made == requests_expected</code></li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="startevent-starteventpickup"></a>
 StartEvent (StartEventPickup)</h2>
 <h3><a class="anchor" id="status-92"></a>
@@ -1174,10 +1216,16 @@ Inherited (13)</summary>
 </ul>
 <p></p>
 </details>
+<details  open="true">
+<summary >
+Owned (2)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>costs</b> (initialized by <code>costs := costs(location,pickup_location)</code>)</li>
 <li><em>decimal:</em> <b>duration</b> (initialized by <code>duration := duration(location,pickup_location)</code>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-94"></a>
 Data</h3>
 <details >
@@ -1589,10 +1637,16 @@ Inherited (13)</summary>
 </ul>
 <p></p>
 </details>
+<details  open="true">
+<summary >
+Owned (2)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>costs</b> (initialized by <code>costs := costs(location,delivery_location)</code>)</li>
 <li><em>decimal:</em> <b>duration</b> (initialized by <code>duration := duration(location,delivery_location)</code>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-100"></a>
 Data</h3>
 <details >
@@ -2066,10 +2120,16 @@ Inherited (1)</summary>
 </ul>
 <p></p>
 </details>
+<details  open="true">
+<summary >
+Owned (2)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>costs</b> (initialized by <code>costs := costs(location,depot)</code>)</li>
 <li><em>decimal:</em> <b>duration</b> (initialized by <code>duration := duration(location,depot)</code>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-108"></a>
 Data</h3>
 <details >
@@ -2107,10 +2167,16 @@ Inherited (2)</summary>
 </details>
 <h3><a class="anchor" id="entry-restrictions-26"></a>
 Entry restrictions</h3>
+<details  open="true">
+<summary >
+Owned (2)</summary>
+<p></p>
 <ul>
 <li><code>pending == 0</code></li>
 <li><code>requests_made == requests_expected</code></li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="operators-22"></a>
 Operators</h3>
 <ul>

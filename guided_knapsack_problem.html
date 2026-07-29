@@ -145,16 +145,28 @@ Item process (ItemProcess)</h2>
 <p>The <em>Item process</em> starts with sending a request messsage including the item identifier, its <code>weight</code> and its <code>value</code>. Depending on whether the knapsack reject or accepts the item for inclusion, the respective end event is reached.</p>
 <h3><a class="anchor" id="status-52"></a>
 Status</h3>
+<details  open="true">
+<summary >
+Owned (3)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b></li>
 <li><em>decimal:</em> <b>value</b></li>
 <li><em>decimal:</em> <b>weight</b></li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-53"></a>
 Data</h3>
+<details  open="true">
+<summary >
+Owned (1)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b></li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="startevent-starteventitem-2"></a>
 StartEvent (StartEventItem)</h2>
 <h3><a class="anchor" id="status-53"></a>
@@ -367,11 +379,21 @@ Knapsack process (KnapsackProcess)</h2>
 <p>Moreover, it has an input attribute <code>items</code> representing the total number of items to be considered, and an attribute <code>handled</code> indicating the number of items handled.</p>
 <h3><a class="anchor" id="status-60"></a>
 Status</h3>
+<details  open="true">
+<summary >
+Owned (1)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b></li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-61"></a>
 Data</h3>
+<details  open="true">
+<summary >
+Owned (6)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>capacity</b></li>
 <li><em>decimal:</em> <b>total_weight</b> (initialized by <code>total_weight := 0</code>)</li>
@@ -383,6 +405,8 @@ Data</h3>
 <li><em>integer:</em> <b>handled</b> (initialized by <code>handled := 0</code>)</li>
 <li><em>string:</em> <b>instance</b></li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="subprocess-eventsubprocess-2"></a>
 SubProcess (EventSubProcess)</h2>
 <h3><a class="anchor" id="status-61"></a>
@@ -396,11 +420,17 @@ Inherited (1)</summary>
 </ul>
 <p></p>
 </details>
+<details  open="true">
+<summary >
+Owned (3)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>item</b></li>
 <li><em>decimal:</em> <b>weight</b></li>
 <li><em>decimal:</em> <b>value</b></li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-62"></a>
 Data</h3>
 <details >

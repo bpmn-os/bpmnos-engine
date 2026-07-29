@@ -139,6 +139,10 @@ Diagram</h2>
 </p>
 <h2><a class="anchor" id="globals-20"></a>
 Globals</h2>
+<details  open="true">
+<summary >
+Owned (6)</summary>
+<p></p>
 <ul>
 <li><em>integer:</em> <b>items</b></li>
 <li><em>integer:</em> <b>item_requests</b> (initialized by <code>item_requests := 0</code>)</li>
@@ -147,19 +151,33 @@ Globals</h2>
 <li><em>integer:</em> <b>items_included</b> (initialized by <code>items_included := 0</code>)</li>
 <li><em>boolean:</em> <b>blocker</b> (initialized by <code>blocker := false</code>)</li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="item-process-itemprocess-1"></a>
 Item process (ItemProcess)</h2>
 <h3><a class="anchor" id="status-38"></a>
 Status</h3>
+<details  open="true">
+<summary >
+Owned (2)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b></li>
 <li><em>decimal:</em> <b>size</b></li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-39"></a>
 Data</h3>
+<details  open="true">
+<summary >
+Owned (1)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b></li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="globals-21"></a>
 Globals</h3>
 <details >
@@ -318,11 +336,21 @@ Message</h3>
 Bin process (BinProcess)</h2>
 <h3><a class="anchor" id="status-42"></a>
 Status</h3>
+<details  open="true">
+<summary >
+Owned (1)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b></li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-43"></a>
 Data</h3>
+<details  open="true">
+<summary >
+Owned (4)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b></li>
 <li><em>decimal:</em> <b>capacity</b></li>
@@ -332,6 +360,8 @@ Data</h3>
 </ul>
 </li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="globals-25"></a>
 Globals</h3>
 <details >
@@ -350,19 +380,37 @@ Inherited (6)</summary>
 </details>
 <h3><a class="anchor" id="entry-restrictions-15"></a>
 Entry restrictions</h3>
+<details  open="true">
+<summary >
+Owned (1)</summary>
+<p></p>
 <ul>
 <li><code>total_size &lt;= capacity</code></li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="completion-restrictions-15"></a>
 Completion restrictions</h3>
+<details  open="true">
+<summary >
+Owned (1)</summary>
+<p></p>
 <ul>
 <li><code>total_size &lt;= capacity</code></li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="exit-restrictions-16"></a>
 Exit restrictions</h3>
+<details  open="true">
+<summary >
+Owned (1)</summary>
+<p></p>
 <ul>
 <li><code>total_size &lt;= capacity</code></li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="subprocess-eventsubprocess-1"></a>
 SubProcess (EventSubProcess)</h2>
 <h3><a class="anchor" id="status-43"></a>
@@ -376,10 +424,16 @@ Inherited (1)</summary>
 </ul>
 <p></p>
 </details>
+<details  open="true">
+<summary >
+Owned (2)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>item</b></li>
 <li><em>decimal:</em> <b>size</b></li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-44"></a>
 Data</h3>
 <details >
@@ -424,9 +478,15 @@ Inherited (1)</summary>
 </ul>
 <p></p>
 </details>
+<details  open="true">
+<summary >
+Owned (1)</summary>
+<p></p>
 <ul>
 <li><code>blocker == false</code></li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="operators-9"></a>
 Operators</h3>
 <ul>
@@ -983,9 +1043,15 @@ Inherited (1)</summary>
 </ul>
 <p></p>
 </details>
+<details  open="true">
+<summary >
+Owned (1)</summary>
+<p></p>
 <ul>
 <li><code>items_included == items</code></li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="startevent-startevent-1"></a>
 StartEvent (StartEvent)</h2>
 <h3><a class="anchor" id="status-50"></a>

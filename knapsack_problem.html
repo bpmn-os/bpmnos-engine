@@ -144,16 +144,28 @@ Item process (ItemProcess)</h2>
 <p>The <em>Item process</em> starts with sending a request messsage including the item identifier, its <code>weight</code> and its <code>value</code>. Depending on whether the knapsack reject or accepts the item for inclusion, the respective end event is reached.</p>
 <h3><a class="anchor" id="status-154"></a>
 Status</h3>
+<details  open="true">
+<summary >
+Owned (3)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b></li>
 <li><em>decimal:</em> <b>value</b></li>
 <li><em>decimal:</em> <b>weight</b></li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-155"></a>
 Data</h3>
+<details  open="true">
+<summary >
+Owned (1)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b></li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="startevent-starteventitem-4"></a>
 StartEvent (StartEventItem)</h2>
 <h3><a class="anchor" id="status-155"></a>
@@ -365,11 +377,21 @@ Knapsack process (KnapsackProcess)</h2>
 <p>It has a data object containing the <code>capacity</code>as well as the <code>total_weight</code> and <code>total_value</code> of all items included.</p>
 <h3><a class="anchor" id="status-162"></a>
 Status</h3>
+<details  open="true">
+<summary >
+Owned (1)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b></li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-163"></a>
 Data</h3>
+<details  open="true">
+<summary >
+Owned (6)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>capacity</b></li>
 <li><em>decimal:</em> <b>total_weight</b> (initialized by <code>total_weight := 0</code>)</li>
@@ -381,6 +403,8 @@ Data</h3>
 <li><em>integer:</em> <b>items_requested</b> (initialized by <code>items_requested := 0</code>)</li>
 <li><em>string:</em> <b>instance</b></li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="subprocess-eventsubprocess-6"></a>
 SubProcess (EventSubProcess)</h2>
 <h3><a class="anchor" id="status-163"></a>
@@ -394,11 +418,17 @@ Inherited (1)</summary>
 </ul>
 <p></p>
 </details>
+<details  open="true">
+<summary >
+Owned (3)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>item</b></li>
 <li><em>decimal:</em> <b>weight</b></li>
 <li><em>decimal:</em> <b>value</b></li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-164"></a>
 Data</h3>
 <details >
@@ -842,9 +872,15 @@ Inherited (6)</summary>
 </details>
 <h3><a class="anchor" id="exit-restrictions-27"></a>
 Exit restrictions</h3>
+<details  open="true">
+<summary >
+Owned (1)</summary>
+<p></p>
 <ul>
 <li><code>items_requested == items</code></li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="startevent-starteventknapsack-1"></a>
 StartEvent (StartEventKnapsack)</h2>
 <h3><a class="anchor" id="status-175"></a>

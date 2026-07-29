@@ -137,10 +137,16 @@ Diagram</h2>
 </p>
 <h2><a class="anchor" id="globals-153"></a>
 Globals</h2>
+<details  open="true">
+<summary >
+Owned (2)</summary>
+<p></p>
 <ul>
 <li><em>integer:</em> <b>requests_expected</b></li>
 <li><em>integer:</em> <b>requests_made</b> (initialized by <code>requests_made := 0</code>)</li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="lookup-tables-7"></a>
 Lookup tables</h2>
 <ul>
@@ -151,6 +157,10 @@ Lookup tables</h2>
 Customer process (CustomerProcess)</h2>
 <h3><a class="anchor" id="status-257"></a>
 Status</h3>
+<details  open="true">
+<summary >
+Owned (7)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b></li>
 <li><em>decimal:</em> <b>quantity</b></li>
@@ -160,11 +170,19 @@ Status</h3>
 <li><em>decimal:</em> <b>handling_duration</b></li>
 <li><em>decimal:</em> <b>lateness_penalty</b></li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-258"></a>
 Data</h3>
+<details  open="true">
+<summary >
+Owned (1)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b></li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="globals-154"></a>
 Globals</h3>
 <details >
@@ -512,11 +530,21 @@ Message</h3>
 Vehicle process (VehicleProcess)</h2>
 <h3><a class="anchor" id="status-265"></a>
 Status</h3>
+<details  open="true">
+<summary >
+Owned (1)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b></li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-266"></a>
 Data</h3>
+<details  open="true">
+<summary >
+Owned (10)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b></li>
 <li><em>string:</em> <b>depot</b></li>
@@ -532,6 +560,8 @@ Data</h3>
 <li><em>decimal:</em> <b>overtime_penalty</b></li>
 <li><em>integer:</em> <b>pending</b> (initialized by <code>pending := 0</code>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="globals-162"></a>
 Globals</h3>
 <details >
@@ -749,10 +779,16 @@ Inherited (1)</summary>
 </ul>
 <p></p>
 </details>
+<details  open="true">
+<summary >
+Owned (2)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>costs</b> (initialized by <code>costs := costs(location,depot)</code>)</li>
 <li><em>decimal:</em> <b>duration</b> (initialized by <code>duration := duration(location,depot)</code>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-271"></a>
 Data</h3>
 <details >
@@ -790,10 +826,16 @@ Inherited (2)</summary>
 </details>
 <h3><a class="anchor" id="entry-restrictions-30"></a>
 Entry restrictions</h3>
+<details  open="true">
+<summary >
+Owned (2)</summary>
+<p></p>
 <ul>
 <li><code>pending == 0</code></li>
 <li><code>requests_made == requests_expected</code></li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="operators-49"></a>
 Operators</h3>
 <ul>
@@ -814,6 +856,10 @@ Inherited (1)</summary>
 </ul>
 <p></p>
 </details>
+<details  open="true">
+<summary >
+Owned (7)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>customer</b></li>
 <li><em>decimal:</em> <b>quantity</b></li>
@@ -823,6 +869,8 @@ Inherited (1)</summary>
 <li><em>decimal:</em> <b>handling_duration</b></li>
 <li><em>decimal:</em> <b>lateness_penalty</b> (initialized by <code>lateness_penalty := 0</code>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-272"></a>
 Data</h3>
 <details >
@@ -867,10 +915,16 @@ Operators</h3>
 </ul>
 <h3><a class="anchor" id="exit-restrictions-28"></a>
 Exit restrictions</h3>
+<details  open="true">
+<summary >
+Owned (2)</summary>
+<p></p>
 <ul>
 <li><code>load &lt;= capacity</code></li>
 <li><code>pending == 0</code></li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="startevent-starteventrequest-3"></a>
 StartEvent (StartEventRequest)</h2>
 <h3><a class="anchor" id="status-272"></a>
@@ -1125,10 +1179,16 @@ Inherited (8)</summary>
 </ul>
 <p></p>
 </details>
+<details  open="true">
+<summary >
+Owned (2)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>costs</b> (initialized by <code>costs := costs(location,customer_location)</code>)</li>
 <li><em>decimal:</em> <b>duration</b> (initialized by <code>duration := duration(location,customer_location)</code>)</li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-277"></a>
 Data</h3>
 <details >

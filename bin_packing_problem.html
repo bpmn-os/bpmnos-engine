@@ -139,24 +139,42 @@ Diagram</h2>
 </p>
 <h2><a class="anchor" id="globals"></a>
 Globals</h2>
+<details  open="true">
+<summary >
+Owned (3)</summary>
+<p></p>
 <ul>
 <li><em>integer:</em> <b>items</b></li>
 <li><em>integer:</em> <b>bins</b></li>
 <li><em>integer:</em> <b>items_allocated</b> (initialized by <code>items_allocated := 0</code>)</li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="item-process-itemprocess"></a>
 Item process (ItemProcess)</h2>
 <h3><a class="anchor" id="status-9"></a>
 Status</h3>
+<details  open="true">
+<summary >
+Owned (2)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b></li>
 <li><em>decimal:</em> <b>size</b></li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-10"></a>
 Data</h3>
+<details  open="true">
+<summary >
+Owned (1)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b></li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="globals-1"></a>
 Globals</h3>
 <details >
@@ -298,11 +316,21 @@ Message</h3>
 Bin process (BinProcess)</h2>
 <h3><a class="anchor" id="status-13"></a>
 Status</h3>
+<details  open="true">
+<summary >
+Owned (1)</summary>
+<p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b></li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-14"></a>
 Data</h3>
+<details  open="true">
+<summary >
+Owned (4)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>instance</b></li>
 <li><em>decimal:</em> <b>capacity</b></li>
@@ -312,6 +340,8 @@ Data</h3>
 </ul>
 </li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="globals-5"></a>
 Globals</h3>
 <details >
@@ -327,19 +357,37 @@ Inherited (3)</summary>
 </details>
 <h3><a class="anchor" id="entry-restrictions"></a>
 Entry restrictions</h3>
+<details  open="true">
+<summary >
+Owned (1)</summary>
+<p></p>
 <ul>
 <li><code>total_size &lt;= capacity</code></li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="completion-restrictions"></a>
 Completion restrictions</h3>
+<details  open="true">
+<summary >
+Owned (1)</summary>
+<p></p>
 <ul>
 <li><code>total_size &lt;= capacity</code></li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="exit-restrictions"></a>
 Exit restrictions</h3>
+<details  open="true">
+<summary >
+Owned (1)</summary>
+<p></p>
 <ul>
 <li><code>total_size &lt;= capacity</code></li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="endevent-endeventbin"></a>
 EndEvent (EndEventBin)</h2>
 <h3><a class="anchor" id="status-14"></a>
@@ -492,9 +540,15 @@ Inherited (1)</summary>
 </ul>
 <p></p>
 </details>
+<details  open="true">
+<summary >
+Owned (1)</summary>
+<p></p>
 <ul>
 <li><code>items_allocated == items</code></li>
 </ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="startevent-startevent"></a>
 StartEvent (StartEvent)</h2>
 <h3><a class="anchor" id="status-16"></a>
@@ -584,10 +638,16 @@ Inherited (1)</summary>
 </ul>
 <p></p>
 </details>
+<details  open="true">
+<summary >
+Owned (2)</summary>
+<p></p>
 <ul>
 <li><em>string:</em> <b>item</b></li>
 <li><em>decimal:</em> <b>size</b></li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="data-18"></a>
 Data</h3>
 <details >
@@ -629,9 +689,15 @@ Inherited (1)</summary>
 </ul>
 <p></p>
 </details>
+<details  open="true">
+<summary >
+Owned (1)</summary>
+<p></p>
 <ul>
 <li><code>total_size &lt;= capacity</code></li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="operators-2"></a>
 Operators</h3>
 <ul>
@@ -898,9 +964,15 @@ Inherited (1)</summary>
 </ul>
 <p></p>
 </details>
+<details  open="true">
+<summary >
+Owned (1)</summary>
+<p></p>
 <ul>
 <li><code>items_allocated == items</code></li>
 </ul>
+<p></p>
+</details>
 <h3><a class="anchor" id="completion-restrictions-7"></a>
 Completion restrictions</h3>
 <details >
