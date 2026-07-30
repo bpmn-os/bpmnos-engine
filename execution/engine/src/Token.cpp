@@ -1016,9 +1016,16 @@ void Token::advanceToExiting() {
   }
     
   auto activity = node->represents<BPMN::Activity>();
-  auto isActivityInstance = activity && activity->loopCharacteristics.has_value() && owner->systemState->tokenAtMultiInstanceActivity.contains(this);
 
-  if ( owned && !isActivityInstance ) {
+  if (
+    owned &&
+    !(
+      activity &&
+      activity->loopCharacteristics.has_value() &&
+      activity->loopCharacteristics.value() != BPMN::Activity::LoopCharacteristics::Standard &&
+      owner->systemState->tokenAtMultiInstanceActivity.contains(this)
+    )
+  ) {
     data = &const_cast<StateMachine*>(owner)->data;
   }
   
