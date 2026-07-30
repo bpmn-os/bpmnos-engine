@@ -2,28 +2,71 @@
 #include "Content.h"
 #include "ExtensionElements.h"
 #include "model/bpmnos/src/xml/bpmnos/tContent.h"
+#include "model/utility/src/string_utility.h"
+#include <map>
 
 using namespace BPMNOS::Model;
+
+namespace {
+
+/**
+ * @brief Returns the type of the values held under a header key, and no type where the parameter states
+ * no value, the entry then holding none.
+ *
+ * A header parameter states the name of a declared attribute or a quoted string and nothing else, so
+ * that the type is known when the model is read. Both are one node of the compiled expression, a
+ * variable in the first case and a literal in the second, and the text tells a quoted string from a
+ * number, the scan having turned the one into the other. Every other shape is refused.
+ */
+std::optional<BPMNOS::ValueType> getHeaderType(const XML::bpmnos::tParameter& element, const Parameter& parameter) {
+  if ( !parameter.expression ) {
+    return std::nullopt;
+  }
+
+  if ( auto attribute = parameter.expression->isAttribute() ) {
+    return attribute->type;
+  }
+
+  auto& root = parameter.expression->compiled.getRoot();
+  auto& node = std::get< LIMEX::Node<double> >(root.operands[0]);
+  auto value = BPMNOS::trim_copy( element.value->get().value );
+
+  if ( node.type == LIMEX::Type::literal && value.starts_with('"') ) {
+    return BPMNOS::STRING;
+  }
+
+  throw std::runtime_error("MessageDefinition: header parameter '" + parameter.name + "' must state an attribute or a quoted string");
+}
+
+} // namespace
 
 MessageDefinition::MessageDefinition(XML::bpmnos::tMessage* message, const AttributeRegistry& attributeRegistry)
   : element(message)
   , name( BPMNOS::to_number(message->name.value.value,STRING) )
 {
   header.resize(3);
-  header[ Index::Name ] = "name";
-  header[ Index::Sender ] = "sender";
-  header[ Index::Recipient ] = "recipient";
+  // these hold the message name and the instance identifiers of the sending and the receiving token
+  header[ Index::Name ] = { "name", STRING };
+  header[ Index::Sender ] = { "sender", STRING };
+  header[ Index::Recipient ] = { "recipient", STRING };
 
-  std::set< std::string > additionalHeader;
+  std::map< std::string, std::optional<ValueType> > additionalHeader;
   for ( XML::bpmnos::tParameter& parameter : element->parameter ) {
     auto& key = parameter.name.value.value;
-    parameterMap.emplace(key,std::make_unique<Parameter>(&parameter,attributeRegistry));
-    if ( key != "name" && key != "sender" && key != "recipient" ) {
-      additionalHeader.insert(key);
+    auto& inserted = parameterMap.emplace(key,std::make_unique<Parameter>(&parameter,attributeRegistry)).first->second;
+    auto type = getHeaderType(parameter,*inserted);
+
+    if ( key == "name" || key == "sender" || key == "recipient" ) {
+      if ( type.has_value() && type.value() != STRING ) {
+        throw std::runtime_error("MessageDefinition: header parameter '" + key + "' must state a string");
+      }
+    }
+    else {
+      additionalHeader.emplace(key,type);
     }
   }
-  for ( auto& key : additionalHeader ) {
-    header.push_back(key);
+  for ( auto& [key,type] : additionalHeader ) {
+    header.push_back({key,type});
   }
 
   for ( XML::bpmnos::tContent& content : element->content ) {
@@ -35,7 +78,7 @@ template <typename DataType>
 BPMNOS::Values MessageDefinition::getSenderHeader(const AttributeRegistry& attributeRegistry, const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const {
   BPMNOS::Values headerValues;
 
-  for ( auto& key : header ) {
+  for ( auto& [key,type] : header ) {
     if ( key == "name" ) {
       headerValues.push_back( name );
     }
@@ -57,7 +100,7 @@ template <typename DataType>
 BPMNOS::Values MessageDefinition::getRecipientHeader(const AttributeRegistry& attributeRegistry, const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const {
   BPMNOS::Values headerValues;
 
-  for ( auto& key : header ) {
+  for ( auto& [key,type] : header ) {
     if ( key == "name" ) {
       headerValues.push_back( name );
     }

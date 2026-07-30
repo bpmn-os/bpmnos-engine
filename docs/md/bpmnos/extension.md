@@ -151,9 +151,12 @@ Each condition constrains the values that may be chosen for the specified attrib
 @ref BPMNOS::Model::MessageDefinition "Messages" can be used to exchange information by delivering a @ref BPMNOS::Model::Content "content" from one process to another. 
 
 For @ref BPMN::MessageThrowEvent "message throw events" and @ref BPMN::MessageCatchEvent "message catch events" a `<bpmnos:message>` element must be provided with field `name` representing a name of the message.
-Message definitions may contain one or more parameters defining a message header, where the `name` field represents a name for the header entry and either the `attribute` field provides an attribute name holding the value of the header entry or the `value` field explicitly specifies the value.
-By default, every header contains entries with names `sender` and `recipient`.
-Messages can only be deliered to a recipient if the recipient specifies the same message name as the sender and the entry names of the headers are identical and all header values match, i.e. either have the same value or one of both is undefined.
+Message definitions may contain one or more parameters defining a message header, where the `name` field represents a name for the header entry and the `value` field states the value held under it.
+The value states the name of a declared attribute, in which case the entry holds the value of that attribute and is of the type the attribute is declared with, or a quoted string, in which case the entry holds that string.
+Nothing else may be stated, so that the type of every entry is known when the model is read.
+A parameter that states no value at all is permitted and means that the entry holds no value, which every value held under that name matches.
+By default, every header contains entries with names `sender` and `recipient`, which hold instance identifiers, and an entry with name `name`, which holds the message name.
+Messages can only be delivered to a recipient if the recipient specifies the same message name as the sender, the entry names of the headers are identical, the entries of the same name are of the same type wherever both sender and recipient state one, and all header values match, i.e. either have the same value or one of both is undefined.
  
 Moreover, message definitions may contain one or more `<bpmnos:content>` element defining a message content.
 For each such element the following fields can be provided

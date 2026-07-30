@@ -31,6 +31,14 @@ SCENARIO( "Simple messaging", "[execution][message]" ) {
         REQUIRE( recorder.find(nlohmann::json{{"processId", "Process_1"},{"instanceId", "Instance_1"},{"nodeId", "MessageThrowEvent_1"},{"state", "DONE"}}).size() == 1 );
         REQUIRE( recorder.find(nlohmann::json{{"processId", "Process_2"},{"instanceId", "Instance_2"},{"nodeId", "MessageCatchEvent_2"},{"state", "DONE"}}).size() == 1 );
       }
+      AND_THEN( "The header of the message is reported with the type of each of its keys" ) {
+        auto messageLog = recorder.find(nlohmann::json{{"origin", "MessageThrowEvent_1"},{"state", "CREATED"}});
+        REQUIRE( messageLog.size() == 1 );
+        REQUIRE( messageLog[0]["header"]["name"] == "Message" );
+        REQUIRE( messageLog[0]["header"]["sender"] == "Instance_1" );
+        REQUIRE( messageLog[0]["header"]["recipient"] == "Instance_2" );
+        REQUIRE( messageLog[0]["header"]["time"] == "0" );
+      }
     }
   }
 
