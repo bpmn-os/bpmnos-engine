@@ -340,7 +340,7 @@ Owned (1)</summary>
 <p></p>
 <ul>
 <li><em>decimal:</em> <b>lateness</b> (initialized by <code>lateness := max{0,timestamp - latest_visit}</code>)<ul>
-<li><code>→ minimize 1 * lateness</code></li>
+<li><code>➔ minimize 1 * lateness</code></li>
 </ul>
 </li>
 </ul>
@@ -1472,7 +1472,7 @@ Choice guidance</h3>
 Attributes</h4>
 <ul>
 <li><em>decimal:</em> <b>delay := duration - min_break_duration</b><ul>
-<li><code>→ minimize 1 * delay := duration - min_break_duration</code></li>
+<li><code>➔ minimize 1 * delay := duration - min_break_duration</code></li>
 </ul>
 </li>
 </ul>
@@ -1535,7 +1535,7 @@ Choice guidance</h3>
 Attributes</h4>
 <ul>
 <li><em>decimal:</em> <b>delay := duration - min_rest_duration</b><ul>
-<li><code>→ minimize 1 * delay := duration - min_rest_duration</code></li>
+<li><code>➔ minimize 1 * delay := duration - min_rest_duration</code></li>
 </ul>
 </li>
 </ul>
@@ -1979,7 +1979,7 @@ Choice guidance</h3>
 Attributes</h4>
 <ul>
 <li><em>decimal:</em> <b>delay := duration - max{ earliest_visit - timestamp - delta + 1, min_break_duration}</b><ul>
-<li><code>→ minimize 1 * delay := duration - max{ earliest_visit - timestamp - delta + 1, min_break_duration}</code></li>
+<li><code>➔ minimize 1 * delay := duration - max{ earliest_visit - timestamp - delta + 1, min_break_duration}</code></li>
 </ul>
 </li>
 </ul>
@@ -2040,7 +2040,7 @@ Choice guidance</h3>
 Attributes</h4>
 <ul>
 <li><em>decimal:</em> <b>delay := duration - max{ earliest_visit - timestamp - delta + 1, min_rest_duration}</b><ul>
-<li><code>→ minimize 1 * delay := duration - max{ earliest_visit - timestamp - delta + 1, min_rest_duration}</code></li>
+<li><code>➔ minimize 1 * delay := duration - max{ earliest_visit - timestamp - delta + 1, min_rest_duration}</code></li>
 </ul>
 </li>
 </ul>
