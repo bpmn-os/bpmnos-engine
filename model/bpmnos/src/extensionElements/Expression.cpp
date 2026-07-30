@@ -2,20 +2,19 @@
 #include "model/bpmnos/src/Model.h"
 #include "model/utility/src/CollectionRegistry.h"
 #include "model/utility/src/Keywords.h"
-#include "model/utility/src/encode_quoted_strings.h"
 
 using namespace BPMNOS::Model;
 
-Expression::Expression(std::string expression, const AttributeRegistry& attributeRegistry, bool newTarget)
-  : Expression(attributeRegistry.limexHandle, expression, attributeRegistry, newTarget)
+Expression::Expression(const InputEncoder& encoder, const AttributeRegistry& attributeRegistry, bool newTarget)
+  : Expression(attributeRegistry.limexHandle, encoder, attributeRegistry, newTarget)
 {
 }
 
-Expression::Expression(const LIMEX::Handle<double>& handle, std::string expression,
+Expression::Expression(const LIMEX::Handle<double>& handle, const InputEncoder& encoder,
                        const AttributeRegistry& attributeRegistry, bool newTarget)
   : attributeRegistry(attributeRegistry)
   , handle(handle)
-  , expression(expression)
+  , expression(encoder.text())
   , compiled(getExpression(expression))
   , type(getType())
 {
@@ -47,7 +46,8 @@ Expression::Expression(const LIMEX::Handle<double>& handle, std::string expressi
 
 LIMEX::Expression<double> Expression::getExpression(const std::string& input) const {
   try {
-    return LIMEX::Expression<double>(encodeQuotedStrings(input), handle);
+    // the text has been scanned by the caller, so that every literal in it is a number already
+    return LIMEX::Expression<double>(input, handle);
   }
   catch ( const std::exception& error ) {
     throw std::runtime_error("Expression: illegal expression '" + input + "'.\n" + error.what());

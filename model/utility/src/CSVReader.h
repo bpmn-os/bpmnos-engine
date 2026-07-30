@@ -6,8 +6,6 @@
 #include <variant>
 
 #include "model/utility/src/Number.h"
-#include "model/utility/src/encode_collection.h"
-#include "model/utility/src/encode_quoted_strings.h"
 
 namespace BPMNOS {
 

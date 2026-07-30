@@ -1,6 +1,7 @@
 #include "DataProvider.h"
 #include "model/bpmnos/src/extensionElements/ExtensionElements.h"
 #include "model/bpmnos/src/extensionElements/Expression.h"
+#include "model/utility/src/InputEncoder.h"
 
 using namespace BPMNOS::Model;
 
@@ -122,7 +123,7 @@ void DataProvider::evaluateGlobal(const std::string& initializationString,
   }
 
   // Compile and evaluate expression
-  Expression expression(handle, expressionString, model->attributeRegistry);
+  Expression expression(handle, InputEncoder::fragment(expressionString), model->attributeRegistry);
 
   // Validate all referenced globals are already evaluated
   for (auto* referencedAttribute : expression.variables) {
@@ -210,7 +211,7 @@ BPMNOS::number DataProvider::evaluateExpression(
     globals[attribute->index] = value;
   }
 
-  Expression expression(handle, expressionString, model->attributeRegistry);
+  Expression expression(handle, InputEncoder::fragment(expressionString), model->attributeRegistry);
 
   for (auto* attribute : expression.variables) {
     if (attribute->category != Attribute::Category::GLOBAL) {
@@ -258,7 +259,7 @@ BPMNOS::number DataProvider::evaluateExpression(
   }
 
   // Compile expression using node's attributeRegistry
-  Expression expression(handle, expressionString, extensionElements->attributeRegistry);
+  Expression expression(handle, InputEncoder::fragment(expressionString), extensionElements->attributeRegistry);
 
   // Validate all referenced attributes are available
   for (auto* attribute : expression.variables) {

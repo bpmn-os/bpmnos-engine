@@ -2,8 +2,7 @@
 #include "Keywords.h"
 #include "StringRegistry.h"
 #include "CollectionRegistry.h"
-#include "encode_collection.h"
-#include "encode_quoted_strings.h"
+#include "InputEncoder.h"
 #include "model/bpmnos/src/extensionElements/ExtensionElements.h"
 #include <cassert>
 
@@ -142,7 +141,14 @@ number to_number(const Value& value, const ValueType& type) {
       }
     case ValueType::COLLECTION:
       if (std::holds_alternative<std::string>(value)) [[likely]] {
-        return number( std::stoi( encodeCollection( encodeQuotedStrings( std::get<std::string>(value) ) ) ) );
+        {
+          // the text must state a collection, the number encoding it being meaningless otherwise
+          InputEncoder encoder( std::get<std::string>(value) );
+          if ( encoder.type() != ValueType::COLLECTION ) {
+            throw std::runtime_error("to_number: '" + std::get<std::string>(value) + "' is no collection" );
+          }
+          return number( BPMNOS::stoi( encoder.text() ) );
+        }
       }
       else [[unlikely]] {
         throw std::logic_error("to_number: illegal conversion" );
@@ -161,14 +167,25 @@ std::string to_string(number numericValue, const ValueType& type) {
       return BPMNOS::to_string((double)numericValue);
     case ValueType::STRING:
       return stringRegistry[(std::size_t)numericValue];
-    case ValueType::COLLECTION:
+    case ValueType::COLLECTION: {
+      auto collection = collectionRegistry[(std::size_t)numericValue];
+      if ( collection.empty() ) {
+        return "[ ]";
+      }
+      // members are rendered with the type they were registered with, which for a member that is itself
+      // a collection is COLLECTION, so that a nested collection is rendered to any depth
+      auto memberType = collectionRegistry.memberType((std::size_t)numericValue);
+      // a string member keeps its quotes, so that the rendering of a collection is text stating that
+      // very collection
+      std::string quote = ( memberType == ValueType::STRING ? "\"" : "" );
       std::string result;
-      for ( auto value : collectionRegistry[(std::size_t)numericValue] ) {
-        result += ", " + BPMNOS::to_string(value);
+      for ( auto value : collection ) {
+        result += ", " + quote + BPMNOS::to_string(number(value),memberType) + quote;
       }
       result.front() = '[';
       result += " ]";
       return result;
+    }
   }
   throw std::logic_error("to_string: unknown value type " + std::to_string(static_cast<int>(type)) );
 }

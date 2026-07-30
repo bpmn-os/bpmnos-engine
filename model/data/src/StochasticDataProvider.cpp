@@ -2,6 +2,7 @@
 #include "model/utility/src/Keywords.h"
 #include "model/utility/src/Number.h"
 #include "model/utility/src/Value.h"
+#include "model/utility/src/InputEncoder.h"
 #include "model/bpmnos/src/extensionElements/ExtensionElements.h"
 #include "model/bpmnos/src/DecisionTask.h"
 #include <algorithm>
@@ -172,7 +173,7 @@ void StochasticDataProvider::readInstances() {
         }
 
         auto extensionElements = node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
-        auto expression = std::make_shared<Expression>(stochasticHandle, completionExpression,
+        auto expression = std::make_shared<Expression>(stochasticHandle, InputEncoder::fragment(completionExpression),
                                                        extensionElements->attributeRegistry);
 
         // Completion expressions must only modify STATUS attributes
@@ -200,7 +201,7 @@ void StochasticDataProvider::readInstances() {
         }
 
         auto extensionElements = node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
-        auto expression = std::make_shared<Expression>(stochasticHandle, readyExpression, extensionElements->attributeRegistry);
+        auto expression = std::make_shared<Expression>(stochasticHandle, InputEncoder::fragment(readyExpression), extensionElements->attributeRegistry);
 
         // Ready expressions must only modify STATUS attributes
         if (expression->target.has_value() &&
@@ -223,11 +224,11 @@ void StochasticDataProvider::readInstances() {
         auto extensionElements = node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
 
         // Create shared expressions for per-scenario evaluation
-        auto initializationExpression = std::make_shared<Expression>(stochasticHandle, expressionString, extensionElements->attributeRegistry);
+        auto initializationExpression = std::make_shared<Expression>(stochasticHandle, InputEncoder::fragment(expressionString), extensionElements->attributeRegistry);
 
         // If no DISCLOSURE expression, default to disclosure at time 0
         std::string disclosureString = disclosureExpression.empty() ? "0" : disclosureExpression;
-        auto disclosureExpressionPtr = std::make_shared<Expression>(stochasticHandle, disclosureString, extensionElements->attributeRegistry);
+        auto disclosureExpressionPtr = std::make_shared<Expression>(stochasticHandle, InputEncoder::fragment(disclosureString), extensionElements->attributeRegistry);
 
         deferredAttributes[instanceId].push_back({attribute, node, initializationExpression, disclosureExpressionPtr});
       }

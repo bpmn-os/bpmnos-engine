@@ -1,11 +1,12 @@
 #include "Restriction.h"
+#include "model/utility/src/InputEncoder.h"
 
 using namespace BPMNOS::Model;
 
 Restriction::Restriction(XML::bpmnos::tRestriction* restriction, const AttributeRegistry& attributeRegistry)
   : element(restriction)
   , id(restriction->id.value.value)
-  , expression(Expression(restriction->expression.value.value,attributeRegistry))
+  , expression(Expression(InputEncoder(restriction->expression.value.value),attributeRegistry))
   , scope(Scope::FULL)
 {
   if ( expression.type == Expression::Type::ASSIGN || expression.type == Expression::Type::UNASSIGN ) {

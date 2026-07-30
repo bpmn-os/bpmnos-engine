@@ -5,6 +5,7 @@
 #include "model/bpmnos/src/SequentialAdHocSubProcess.h"
 #include "model/utility/src/Number.h"
 #include "model/utility/src/CollectionRegistry.h"
+#include "model/utility/src/StringRegistry.h"
 #include <ranges>
 #include <iostream>
 

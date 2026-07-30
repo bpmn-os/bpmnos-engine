@@ -2,8 +2,7 @@
 #include "model/utility/src/CollectionRegistry.h"
 #include <cmath>
 #include "model/utility/src/string_utility.h"
-#include "model/utility/src/encode_quoted_strings.h"
-#include "model/utility/src/encode_collection.h"
+#include "model/utility/src/InputEncoder.h"
 
 using namespace BPMNOS::Model;
 
@@ -12,8 +11,13 @@ Choice::Choice(XML::bpmnos::tDecision* decision, const AttributeRegistry& attrib
   , attributeRegistry(attributeRegistry)
   , attribute(nullptr)
 {
-  auto input = encodeQuotedStrings(decision->condition.value.value);
-  BPMNOS::replace_all( input, "∈", " in ");
+  // The membership operator is written out before the condition is scanned, so that the scan meets the
+  // name `in` and reads the brackets of an enumeration as an index, which it copies. Were the operator
+  // written out afterwards, the brackets would follow no name and the enumeration would be read as a
+  // collection literal, which it is not: its alternatives may be expressions.
+  auto condition = decision->condition.value.value;
+  BPMNOS::replace_all( condition, "∈", " in ");
+  auto input = InputEncoder(condition).text();
 
   if ( input.contains(" in ") ) {
     parseEnumeration(input);
@@ -72,9 +76,11 @@ void Choice::parseEnumeration(const std::string& input) {
   auto rhs = BPMNOS::trim_copy(parts.back());
 
   if ( (rhs.front() == '[' && rhs.back() == ']') || (rhs.front() == '{' && rhs.back() == '}') ) {
-    auto alternatives = BPMNOS::split( encodeCollection( rhs.substr(1, rhs.size()-2) ), ',' );
+    // the condition has been scanned, so a literal among the alternatives is a number already and the
+    // commas that remain are the ones separating the alternatives
+    auto alternatives = BPMNOS::split( rhs.substr(1, rhs.size()-2), ',' );
     for ( auto& alternative : alternatives ) {
-      enumeration.emplace_back( std::make_unique<Expression>(BPMNOS::trim_copy(alternative), attributeRegistry) );
+      enumeration.emplace_back( std::make_unique<Expression>(InputEncoder::fragment(BPMNOS::trim_copy(alternative)), attributeRegistry) );
       for ( auto dependency : enumeration.back()->inputs ) {
         dependencies.insert(dependency);
       }
@@ -103,7 +109,7 @@ void Choice::parseBounds(const std::string& input) {
       strictLB = true;
     }
     lowerBound.emplace(
-      std::make_unique<Expression>(BPMNOS::trim_copy(conditions[0]), attributeRegistry),
+      std::make_unique<Expression>(InputEncoder::fragment(BPMNOS::trim_copy(conditions[0])), attributeRegistry),
       strictLB
     );
     for ( auto dependency : lowerBound.value().first->inputs ) {
@@ -128,7 +134,7 @@ void Choice::parseBounds(const std::string& input) {
     }
 
     upperBound.emplace(
-      std::make_unique<Expression>(BPMNOS::trim_copy(conditions[2]), attributeRegistry),
+      std::make_unique<Expression>(InputEncoder::fragment(BPMNOS::trim_copy(conditions[2])), attributeRegistry),
       strictUB
     );
     for ( auto dependency : upperBound.value().first->inputs ) {
@@ -148,7 +154,7 @@ void Choice::parseDiscretizer(const std::string& input) {
   if ( attribute->name != attributeName ) {
     throw std::runtime_error("Choice: inconsistent attribute name '" + attributeName + "' in '" + input + "'");
   }
-  multipleOf = std::make_unique<Expression>(BPMNOS::trim_copy(parts[0]), attributeRegistry);
+  multipleOf = std::make_unique<Expression>(InputEncoder::fragment(BPMNOS::trim_copy(parts[0])), attributeRegistry);
   for ( auto dependency : multipleOf->inputs ) {
     dependencies.insert(dependency);
   }

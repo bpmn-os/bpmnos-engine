@@ -4,6 +4,7 @@
 #include <fstream>
 #include <filesystem>
 #include "string_utility.h"
+#include "InputEncoder.h"
 
 using namespace BPMNOS;
 
@@ -33,7 +34,7 @@ CSVReader::Table CSVReader::read() {
 
   std::string line;
   while (std::getline(*input, line)) {
-    line = encodeCollection( encodeQuotedStrings( line ) );
+    line = InputEncoder( line ).text();
     BPMNOS::trim(line);
 //std::cerr << "Line: " << line << std::endl;
     if ( line.empty() ) continue; // skip empty lines

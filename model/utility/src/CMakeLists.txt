@@ -3,6 +3,7 @@ list(APPEND model_utility_SOURCES
   StringRegistry.cpp
   CollectionRegistry.cpp
   CSVReader.cpp
+  InputEncoder.cpp
   RandomDistributionFactory.cpp
   ExpectedValueFactory.cpp
 )
@@ -16,10 +17,9 @@ list(APPEND model_utility_HEADERS
   vector_map.h
   CollectionRegistry.h
   CSVReader.h
+  InputEncoder.h
   RandomDistributionFactory.h
   ExpectedValueFactory.h
   getDelimiter.h
   string_utility.h
-  encode_quoted_strings.h
-  encode_collection.h
 )

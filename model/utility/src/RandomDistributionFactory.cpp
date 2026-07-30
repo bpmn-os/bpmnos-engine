@@ -262,7 +262,7 @@ void RandomDistributionFactory::registerFunctions(LIMEX::Handle<double>& handle)
   }
 
   // discrete(values, probabilities) - Discrete distribution over arbitrary values
-  // Arguments are collection indices (from encodeCollection preprocessing)
+  // Arguments are collection indices (from the input encoder)
   if (!nameExists("discrete")) {
     handle.addFunction("discrete", [](const std::vector<double>& args) -> double {
       if (args.size() != 2) {

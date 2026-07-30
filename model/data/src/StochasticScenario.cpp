@@ -1,4 +1,6 @@
 #include "StochasticScenario.h"
+#include "model/utility/src/CollectionRegistry.h"
+#include "model/utility/src/Keywords.h"
 #include "model/utility/src/StringRegistry.h"
 #include "model/bpmnos/src/extensionElements/ExtensionElements.h"
 #include <cmath>

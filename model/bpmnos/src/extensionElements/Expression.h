@@ -6,6 +6,7 @@
 
 #include "Attribute.h"
 #include "AttributeRegistry.h"
+#include "model/utility/src/InputEncoder.h"
 #include "model/utility/src/Number.h"
 #include "model/utility/src/StringRegistry.h"
 
@@ -17,11 +18,12 @@ namespace BPMNOS::Model {
 class Expression {
 public:
   enum class Type { ASSIGN, UNASSIGN, IS_NULL, IS_NOT_NULL, OTHER };
-  /// Construct expression using attributeRegistry's limexHandle
-  Expression(const std::string expression, const AttributeRegistry& attributeRegistry,
+  /// Construct expression using attributeRegistry's limexHandle.
+  /// The text must be scanned by the caller, so that the text of an expression is analysed once.
+  Expression(const InputEncoder& encoder, const AttributeRegistry& attributeRegistry,
              bool newTarget = false);
   /// Construct expression using a custom LIMEX handle (for stochastic expressions)
-  Expression(const LIMEX::Handle<double>& handle, const std::string expression,
+  Expression(const LIMEX::Handle<double>& handle, const InputEncoder& encoder,
              const AttributeRegistry& attributeRegistry, bool newTarget = false);
   Expression(const Expression&) = delete;
   Expression(Expression&&) = delete;

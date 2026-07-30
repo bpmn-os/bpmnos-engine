@@ -3,8 +3,7 @@
 #include "model/utility/src/Keywords.h"
 #include "Parameter.h"
 #include "Expression.h"
-#include "model/utility/src/encode_collection.h"
-#include "model/utility/src/encode_quoted_strings.h"
+#include "model/utility/src/InputEncoder.h"
 
 using namespace BPMNOS::Model;
 
@@ -71,7 +70,7 @@ std::unique_ptr<const Expression> Attribute::getExpression(std::string& input, A
     return nullptr;
   }
 
-  auto expression = std::make_unique<const Expression>(encodeCollection(encodeQuotedStrings(input)),attributeRegistry,true);
+  auto expression = std::make_unique<const Expression>(InputEncoder(input),attributeRegistry,true);
   auto& root = expression->compiled.getRoot(); 
   assert( root.operands.size() == 1 );
   assert( root.type == LIMEX::Type::group );

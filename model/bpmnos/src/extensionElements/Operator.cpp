@@ -1,11 +1,12 @@
 #include "Operator.h"
+#include "model/utility/src/InputEncoder.h"
 
 using namespace BPMNOS::Model;
 
 Operator::Operator(XML::bpmnos::tOperator* operator_, const AttributeRegistry& attributeRegistry)
   : element(operator_)
   , id(operator_->id.value.value)
-  , expression(Expression(operator_->expression.value.value,attributeRegistry))
+  , expression(Expression(InputEncoder(operator_->expression.value.value),attributeRegistry))
   , attributeRegistry(attributeRegistry)
   , attribute(getAttribute())
 {

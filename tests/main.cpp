@@ -37,6 +37,7 @@ using namespace BPMNOS;
 #ifdef ALL_TESTS
 
 /* Model */
+#include "model/encoder/test.h"
 #include "model/parser/test.h"
 /* Data provider */
 #include "data/static/test.h"

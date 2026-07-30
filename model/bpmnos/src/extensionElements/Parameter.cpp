@@ -1,7 +1,6 @@
 #include "Parameter.h"
 #include "model/utility/src/string_utility.h"
-#include "model/utility/src/encode_quoted_strings.h"
-#include "model/utility/src/encode_collection.h"
+#include "model/utility/src/InputEncoder.h"
 
 using namespace BPMNOS::Model;
 
@@ -17,6 +16,6 @@ std::unique_ptr<const Expression> Parameter::getExpression(XML::bpmnos::tParamet
     return nullptr;
   }
 
-  return std::make_unique<const Expression>(encodeCollection(encodeQuotedStrings(parameter->value->get().value)),attributeRegistry,true);
+  return std::make_unique<const Expression>(InputEncoder(parameter->value->get().value),attributeRegistry,true);
 }
 
