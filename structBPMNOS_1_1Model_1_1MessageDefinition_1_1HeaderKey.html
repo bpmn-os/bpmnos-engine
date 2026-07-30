@@ -16,7 +16,7 @@
 <meta name="twitter:title" content="Doxygen Awesome" />
 <meta name="twitter:description" content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
 <!-- END twitter metadata -->
-<title>BPMN-OS: model/utility/src/encode_collection.h File Reference</title>
+<title>BPMN-OS: BPMNOS::Model::MessageDefinition::HeaderKey Struct Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
@@ -99,7 +99,7 @@ $(function() {
 </div>
 <script type="text/javascript">
 /* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
-$(document).ready(function(){initNavTree('encode__collection_8h.html',''); initResizable(); });
+$(document).ready(function(){initNavTree('structBPMNOS_1_1Model_1_1MessageDefinition_1_1HeaderKey.html',''); initResizable(); });
 /* @license-end */
 </script>
 <div id="doc-content">
@@ -126,31 +126,100 @@ $(document).ready(function(){initNavTree('encode__collection_8h.html',''); initR
 
 <div class="header">
   <div class="summary">
-<a href="#namespaces">Namespaces</a> &#124;
-<a href="#func-members">Functions</a>  </div>
-  <div class="headertitle"><div class="title">encode_collection.h File Reference</div></div>
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-attribs">Public Attributes</a> &#124;
+<a href="structBPMNOS_1_1Model_1_1MessageDefinition_1_1HeaderKey-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">BPMNOS::Model::MessageDefinition::HeaderKey Struct Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;string&gt;</code><br />
-<code>#include &lt;regex&gt;</code><br />
-<code>#include &lt;cassert&gt;</code><br />
-<code>#include &quot;<a class="el" href="string__utility_8h_source.html">string_utility.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="CollectionRegistry_8h_source.html">CollectionRegistry.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="Keywords_8h_source.html">Keywords.h</a>&quot;</code><br />
+
+<p>A key of the header together with the type of the values held under it.  
+ <a href="structBPMNOS_1_1Model_1_1MessageDefinition_1_1HeaderKey.html#details">More...</a></p>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>The type is that of the attribute a parameter names, or <code>STRING</code> where a parameter states a quoted literal, and it is known when the model is read because a header parameter states nothing else. A parameter without a value states no type, as it states no value, and the entry then holds no value and is matched by any value held under the same key. </p>
+
+<p class="definition">Definition at line <a class="el" href="MessageDefinition_8h_source.html#l00032">32</a> of file <a class="el" href="MessageDefinition_8h_source.html">MessageDefinition.h</a>.</p>
 </div>
-<p><a href="encode__collection_8h_source.html">Go to the source code of this file.</a></p>
+<p><code>#include &lt;<a class="el" href="MessageDefinition_8h_source.html">MessageDefinition.h</a>&gt;</code></p>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
-Namespaces</h2></td></tr>
-<tr class="memitem:namespaceBPMNOS" id="r_namespaceBPMNOS"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceBPMNOS.html">BPMNOS</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:ade30827ba99883db046e9c3b6bf6874f" id="r_ade30827ba99883db046e9c3b6bf6874f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structBPMNOS_1_1Model_1_1MessageDefinition_1_1HeaderKey.html#ade30827ba99883db046e9c3b6bf6874f">operator==</a> (const <a class="el" href="structBPMNOS_1_1Model_1_1MessageDefinition_1_1HeaderKey.html">HeaderKey</a> &amp;other) const</td></tr>
+<tr class="separator:ade30827ba99883db046e9c3b6bf6874f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
-Functions</h2></td></tr>
-<tr class="memitem:a40265862a596c36bcd1334674ba36be4" id="r_a40265862a596c36bcd1334674ba36be4"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceBPMNOS.html#a40265862a596c36bcd1334674ba36be4">BPMNOS::encodeCollection</a> (std::string text)</td></tr>
-<tr class="memdesc:a40265862a596c36bcd1334674ba36be4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Function to replace a collection that is not preceded by an alphanumeric or underscore.  <br /></td></tr>
-<tr class="separator:a40265862a596c36bcd1334674ba36be4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public Attributes</h2></td></tr>
+<tr class="memitem:ab9176bbd52b597e1f8e18fe565861974" id="r_ab9176bbd52b597e1f8e18fe565861974"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structBPMNOS_1_1Model_1_1MessageDefinition_1_1HeaderKey.html#ab9176bbd52b597e1f8e18fe565861974">key</a></td></tr>
+<tr class="separator:ab9176bbd52b597e1f8e18fe565861974"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab279c964a83e21a13d46dc4ec16b6c14" id="r_ab279c964a83e21a13d46dc4ec16b6c14"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="namespaceBPMNOS.html#abd0d3034519d54779b4df3e9754cd681">ValueType</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structBPMNOS_1_1Model_1_1MessageDefinition_1_1HeaderKey.html#ab279c964a83e21a13d46dc4ec16b6c14">type</a></td></tr>
+<tr class="separator:ab279c964a83e21a13d46dc4ec16b6c14"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="ade30827ba99883db046e9c3b6bf6874f" name="ade30827ba99883db046e9c3b6bf6874f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ade30827ba99883db046e9c3b6bf6874f">&#9670;&#160;</a></span>operator==()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool BPMNOS::Model::MessageDefinition::HeaderKey::operator== </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structBPMNOS_1_1Model_1_1MessageDefinition_1_1HeaderKey.html">HeaderKey</a> &amp;&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Two keys are the same where they are named alike and, wherever both state a type, hold values of that same type. A key stating no type is the same as a key stating any, its entry holding no value and being matched by every value held under that key. </p>
+
+<p class="definition">Definition at line <a class="el" href="MessageDefinition_8h_source.html#l00039">39</a> of file <a class="el" href="MessageDefinition_8h_source.html">MessageDefinition.h</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="ab9176bbd52b597e1f8e18fe565861974" name="ab9176bbd52b597e1f8e18fe565861974"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab9176bbd52b597e1f8e18fe565861974">&#9670;&#160;</a></span>key</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string BPMNOS::Model::MessageDefinition::HeaderKey::key</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="MessageDefinition_8h_source.html#l00033">33</a> of file <a class="el" href="MessageDefinition_8h_source.html">MessageDefinition.h</a>.</p>
+
+</div>
+</div>
+<a id="ab279c964a83e21a13d46dc4ec16b6c14" name="ab279c964a83e21a13d46dc4ec16b6c14"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab279c964a83e21a13d46dc4ec16b6c14">&#9670;&#160;</a></span>type</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt;<a class="el" href="namespaceBPMNOS.html#abd0d3034519d54779b4df3e9754cd681">ValueType</a>&gt; BPMNOS::Model::MessageDefinition::HeaderKey::type</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="MessageDefinition_8h_source.html#l00034">34</a> of file <a class="el" href="MessageDefinition_8h_source.html">MessageDefinition.h</a>.</p>
+
+</div>
+</div>
+<hr/>The documentation for this struct was generated from the following file:<ul>
+<li>model/bpmnos/src/extensionElements/<a class="el" href="MessageDefinition_8h_source.html">MessageDefinition.h</a></li>
+</ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs"; mermaid.initialize({ startOnLoad: true, theme: "neutral" });</script></body></html>

@@ -7,8 +7,8 @@ var classBPMNOS_1_1Model_1_1Expression =
       [ "IS_NOT_NULL", "classBPMNOS_1_1Model_1_1Expression.html#a1c6c51e0e04397036812c3e83434344ea05dd132ba23ff57c0ca5ec4100c31fdc", null ],
       [ "OTHER", "classBPMNOS_1_1Model_1_1Expression.html#a1c6c51e0e04397036812c3e83434344ea03570470bad94692ce93e32700d2e1cb", null ]
     ] ],
-    [ "Expression", "classBPMNOS_1_1Model_1_1Expression.html#a326479b4b6a32efdca9212ee05c3ff66", null ],
-    [ "Expression", "classBPMNOS_1_1Model_1_1Expression.html#a126e7e2f499e02d032ac73f8db99acc6", null ],
+    [ "Expression", "classBPMNOS_1_1Model_1_1Expression.html#a2e37655805509634d816a09f87323029", null ],
+    [ "Expression", "classBPMNOS_1_1Model_1_1Expression.html#a99ec284d9a2dbfed350cf98aeec63d68", null ],
     [ "Expression", "classBPMNOS_1_1Model_1_1Expression.html#a300edddfdf5ae864cde58176a373baaf", null ],
     [ "Expression", "classBPMNOS_1_1Model_1_1Expression.html#a29888e3457f8c6db7523545dee3138b5", null ],
     [ "execute", "classBPMNOS_1_1Model_1_1Expression.html#af7594ad8e2e00f5ea38548a49b3fcb10", null ],

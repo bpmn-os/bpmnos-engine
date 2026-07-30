@@ -402,7 +402,7 @@ $(document).ready(function(){initNavTree('RandomDistributionFactory_8cpp_source.
 <div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>  }</div>
 <div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span> </div>
 <div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>  <span class="comment">// discrete(values, probabilities) - Discrete distribution over arbitrary values</span></div>
-<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>  <span class="comment">// Arguments are collection indices (from encodeCollection preprocessing)</span></div>
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>  <span class="comment">// Arguments are collection indices (from the input encoder)</span></div>
 <div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>  <span class="keywordflow">if</span> (!nameExists(<span class="stringliteral">&quot;discrete&quot;</span>)) {</div>
 <div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>    handle.addFunction(<span class="stringliteral">&quot;discrete&quot;</span>, [](<span class="keyword">const</span> std::vector&lt;double&gt;&amp; args) -&gt; <span class="keywordtype">double</span> {</div>
 <div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>      <span class="keywordflow">if</span> (args.size() != 2) {</div>
@@ -427,7 +427,7 @@ $(document).ready(function(){initNavTree('RandomDistributionFactory_8cpp_source.
 <div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>  }</div>
 <div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>}</div>
 </div>
-<div class="ttc" id="aCollectionRegistry_8cpp_html_a4df1f4374f341a4c8d159809dece3378"><div class="ttname"><a href="CollectionRegistry_8cpp.html#a4df1f4374f341a4c8d159809dece3378">collectionRegistry</a></div><div class="ttdeci">CollectionRegistry collectionRegistry</div><div class="ttdef"><b>Definition</b> <a href="CollectionRegistry_8cpp_source.html#l00058">CollectionRegistry.cpp:58</a></div></div>
+<div class="ttc" id="aCollectionRegistry_8cpp_html_a4df1f4374f341a4c8d159809dece3378"><div class="ttname"><a href="CollectionRegistry_8cpp.html#a4df1f4374f341a4c8d159809dece3378">collectionRegistry</a></div><div class="ttdeci">CollectionRegistry collectionRegistry</div><div class="ttdef"><b>Definition</b> <a href="CollectionRegistry_8cpp_source.html#l00060">CollectionRegistry.cpp:60</a></div></div>
 <div class="ttc" id="aCollectionRegistry_8h_html"><div class="ttname"><a href="CollectionRegistry_8h.html">CollectionRegistry.h</a></div></div>
 <div class="ttc" id="aRandomDistributionFactory_8h_html"><div class="ttname"><a href="RandomDistributionFactory_8h.html">RandomDistributionFactory.h</a></div></div>
 <div class="ttc" id="aclassBPMNOS_1_1RandomDistributionFactory_html_a8aa5f0236257f4de2421a35f1f8ff62c"><div class="ttname"><a href="classBPMNOS_1_1RandomDistributionFactory.html#a8aa5f0236257f4de2421a35f1f8ff62c">BPMNOS::RandomDistributionFactory::registerFunctions</a></div><div class="ttdeci">void registerFunctions(LIMEX::Handle&lt; double &gt; &amp;handle)</div><div class="ttdoc">Register all random distribution functions with the given LIMEX handle.</div><div class="ttdef"><b>Definition</b> <a href="RandomDistributionFactory_8cpp_source.html#l00093">RandomDistributionFactory.cpp:93</a></div></div>

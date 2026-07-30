@@ -126,6 +126,7 @@ $(document).ready(function(){initNavTree('classBPMNOS_1_1Model_1_1MessageDefinit
 
 <div class="header">
   <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
@@ -135,10 +136,16 @@ $(document).ready(function(){initNavTree('classBPMNOS_1_1Model_1_1MessageDefinit
 <div class="contents">
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="MessageDefinition_8h_source.html#l00015">15</a> of file <a class="el" href="MessageDefinition_8h_source.html">MessageDefinition.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MessageDefinition_8h_source.html#l00017">17</a> of file <a class="el" href="MessageDefinition_8h_source.html">MessageDefinition.h</a>.</p>
 </div>
 <p><code>#include &lt;<a class="el" href="MessageDefinition_8h_source.html">MessageDefinition.h</a>&gt;</code></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structBPMNOS_1_1Model_1_1MessageDefinition_1_1HeaderKey.html">HeaderKey</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A key of the header together with the type of the values held under it.  <a href="structBPMNOS_1_1Model_1_1MessageDefinition_1_1HeaderKey.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
 Public Types</h2></td></tr>
 <tr class="memitem:a68c605294c66b84c79c77ad12983568a" id="r_a68c605294c66b84c79c77ad12983568a"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1MessageDefinition.html#a68c605294c66b84c79c77ad12983568a">Index</a> { <a class="el" href="classBPMNOS_1_1Model_1_1MessageDefinition.html#a68c605294c66b84c79c77ad12983568aaef8d70bd87b396e0093b597aaf2d8b17">Name</a>
@@ -169,9 +176,9 @@ Public Attributes</h2></td></tr>
 <tr class="memitem:a7f0372e53cffdd6b655d8ee1cfc3d87c" id="r_a7f0372e53cffdd6b655d8ee1cfc3d87c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceBPMNOS_1_1Model.html#a3afc968f97816dc421cdc353ade49dca">ParameterMap</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1MessageDefinition.html#a7f0372e53cffdd6b655d8ee1cfc3d87c">parameterMap</a></td></tr>
 <tr class="memdesc:a7f0372e53cffdd6b655d8ee1cfc3d87c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Map allowing to look up parameters by their names.  <br /></td></tr>
 <tr class="separator:a7f0372e53cffdd6b655d8ee1cfc3d87c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3504307a97cc179d794fa4e593973c30" id="r_a3504307a97cc179d794fa4e593973c30"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1MessageDefinition.html#a3504307a97cc179d794fa4e593973c30">header</a></td></tr>
-<tr class="memdesc:a3504307a97cc179d794fa4e593973c30"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set of parameter names always beginning with "sender" and "recipient".  <br /></td></tr>
-<tr class="separator:a3504307a97cc179d794fa4e593973c30"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac5e4b7ae8b64bbeae719235e249123a0" id="r_ac5e4b7ae8b64bbeae719235e249123a0"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structBPMNOS_1_1Model_1_1MessageDefinition_1_1HeaderKey.html">HeaderKey</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1MessageDefinition.html#ac5e4b7ae8b64bbeae719235e249123a0">header</a></td></tr>
+<tr class="memdesc:ac5e4b7ae8b64bbeae719235e249123a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Keys of the header always beginning with "name", "sender", and "recipient".  <br /></td></tr>
+<tr class="separator:ac5e4b7ae8b64bbeae719235e249123a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a15629be9fa9ba6e9fc8ca9f76fe853e9" id="r_a15629be9fa9ba6e9fc8ca9f76fe853e9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceBPMNOS_1_1Model.html#a603d366d0bdb8002b19ca0cd32b8a452">ContentMap</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1MessageDefinition.html#a15629be9fa9ba6e9fc8ca9f76fe853e9">contentMap</a></td></tr>
 <tr class="memdesc:a15629be9fa9ba6e9fc8ca9f76fe853e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Map allowing to look up contents by their keys.  <br /></td></tr>
 <tr class="separator:a15629be9fa9ba6e9fc8ca9f76fe853e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -194,7 +201,7 @@ Public Attributes</h2></td></tr>
 <tr><td class="fieldname"><a id="a68c605294c66b84c79c77ad12983568aa863c79ff8fdd62b79f3ca6979886efed" name="a68c605294c66b84c79c77ad12983568aa863c79ff8fdd62b79f3ca6979886efed"></a>Recipient&#160;</td><td class="fielddoc"></td></tr>
 </table>
 
-<p class="definition">Definition at line <a class="el" href="MessageDefinition_8h_source.html#l00022">22</a> of file <a class="el" href="MessageDefinition_8h_source.html">MessageDefinition.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MessageDefinition_8h_source.html#l00046">46</a> of file <a class="el" href="MessageDefinition_8h_source.html">MessageDefinition.h</a>.</p>
 
 </div>
 </div>
@@ -225,7 +232,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="MessageDefinition_8cpp_source.html#l00008">8</a> of file <a class="el" href="MessageDefinition_8cpp_source.html">MessageDefinition.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MessageDefinition_8cpp_source.html#l00043">43</a> of file <a class="el" href="MessageDefinition_8cpp_source.html">MessageDefinition.cpp</a>.</p>
 
 </div>
 </div>
@@ -270,7 +277,7 @@ template&lt;typename DataType &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="MessageDefinition_8cpp_source.html#l00057">57</a> of file <a class="el" href="MessageDefinition_8cpp_source.html">MessageDefinition.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MessageDefinition_8cpp_source.html#l00100">100</a> of file <a class="el" href="MessageDefinition_8cpp_source.html">MessageDefinition.cpp</a>.</p>
 
 </div>
 </div>
@@ -314,7 +321,7 @@ template&lt;typename DataType &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="MessageDefinition_8cpp_source.html#l00035">35</a> of file <a class="el" href="MessageDefinition_8cpp_source.html">MessageDefinition.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MessageDefinition_8cpp_source.html#l00078">78</a> of file <a class="el" href="MessageDefinition_8cpp_source.html">MessageDefinition.cpp</a>.</p>
 
 </div>
 </div>
@@ -331,7 +338,7 @@ template&lt;typename DataType &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="MessageDefinition_8h_source.html#l00023">23</a> of file <a class="el" href="MessageDefinition_8h_source.html">MessageDefinition.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MessageDefinition_8h_source.html#l00047">47</a> of file <a class="el" href="MessageDefinition_8h_source.html">MessageDefinition.h</a>.</p>
 
 </div>
 </div>
@@ -347,23 +354,23 @@ template&lt;typename DataType &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="MessageDefinition_8h_source.html#l00018">18</a> of file <a class="el" href="MessageDefinition_8h_source.html">MessageDefinition.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MessageDefinition_8h_source.html#l00020">20</a> of file <a class="el" href="MessageDefinition_8h_source.html">MessageDefinition.h</a>.</p>
 
 </div>
 </div>
-<a id="a3504307a97cc179d794fa4e593973c30" name="a3504307a97cc179d794fa4e593973c30"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3504307a97cc179d794fa4e593973c30">&#9670;&#160;</a></span>header</h2>
+<a id="ac5e4b7ae8b64bbeae719235e249123a0" name="ac5e4b7ae8b64bbeae719235e249123a0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac5e4b7ae8b64bbeae719235e249123a0">&#9670;&#160;</a></span>header</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::vector&lt; std::string &gt; BPMNOS::Model::MessageDefinition::header</td>
+          <td class="memname">std::vector&lt; <a class="el" href="structBPMNOS_1_1Model_1_1MessageDefinition_1_1HeaderKey.html">HeaderKey</a> &gt; BPMNOS::Model::MessageDefinition::header</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="MessageDefinition_8h_source.html#l00021">21</a> of file <a class="el" href="MessageDefinition_8h_source.html">MessageDefinition.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MessageDefinition_8h_source.html#l00045">45</a> of file <a class="el" href="MessageDefinition_8h_source.html">MessageDefinition.h</a>.</p>
 
 </div>
 </div>
@@ -379,7 +386,7 @@ template&lt;typename DataType &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="MessageDefinition_8h_source.html#l00019">19</a> of file <a class="el" href="MessageDefinition_8h_source.html">MessageDefinition.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MessageDefinition_8h_source.html#l00021">21</a> of file <a class="el" href="MessageDefinition_8h_source.html">MessageDefinition.h</a>.</p>
 
 </div>
 </div>
@@ -395,7 +402,7 @@ template&lt;typename DataType &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="MessageDefinition_8h_source.html#l00020">20</a> of file <a class="el" href="MessageDefinition_8h_source.html">MessageDefinition.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MessageDefinition_8h_source.html#l00022">22</a> of file <a class="el" href="MessageDefinition_8h_source.html">MessageDefinition.h</a>.</p>
 
 </div>
 </div>

@@ -140,83 +140,80 @@ $(document).ready(function(){initNavTree('CollectionRegistry_8cpp_source.html','
 <div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="keyword">using namespace </span><a class="code hl_namespace" href="namespaceBPMNOS.html">BPMNOS</a>;</div>
 <div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
 <div class="foldopen" id="foldopen00007" data-start="{" data-end="}">
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno"><a class="line" href="structBPMNOS_1_1CollectionRegistry.html#a7c65963d651813716bf37459332ac826">    7</a></span><a class="code hl_function" href="structBPMNOS_1_1CollectionRegistry.html#a7c65963d651813716bf37459332ac826">CollectionRegistry::CollectionRegistry</a>() {</div>
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span>  <span class="comment">// register empty collection with index 0</span></div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>  (*this)(std::vector&lt;double&gt;());</div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>}</div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno"><a class="line" href="structBPMNOS_1_1CollectionRegistry.html#aa615ff3cd14846dd1adbf9f23687edcb">    7</a></span>std::vector&lt;double&gt; <a class="code hl_function" href="structBPMNOS_1_1CollectionRegistry.html#aa615ff3cd14846dd1adbf9f23687edcb">CollectionRegistry::operator[]</a>(<span class="keywordtype">size_t</span> i)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span>  std::shared_lock read_lock(registryMutex);</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>  assert( i &lt; registeredCollections.size() );</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>  <span class="keywordflow">return</span> registeredCollections[i];</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>}</div>
 </div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
-<div class="foldopen" id="foldopen00012" data-start="{" data-end="}">
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno"><a class="line" href="structBPMNOS_1_1CollectionRegistry.html#aa615ff3cd14846dd1adbf9f23687edcb">   12</a></span>std::vector&lt;double&gt; <a class="code hl_function" href="structBPMNOS_1_1CollectionRegistry.html#aa615ff3cd14846dd1adbf9f23687edcb">CollectionRegistry::operator[]</a>(<span class="keywordtype">size_t</span> i)<span class="keyword"> const </span>{</div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>  std::shared_lock read_lock(registryMutex);</div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>  assert( i &lt; registeredCollections.size() );</div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>  <span class="keywordflow">return</span> registeredCollections[i];</div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>}</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="foldopen" id="foldopen00013" data-start="{" data-end="}">
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="structBPMNOS_1_1CollectionRegistry.html#abb6569ba7b45d3c3b9426f659f8484f4">   13</a></span><a class="code hl_enumeration" href="namespaceBPMNOS.html#abd0d3034519d54779b4df3e9754cd681">ValueType</a> <a class="code hl_function" href="structBPMNOS_1_1CollectionRegistry.html#abb6569ba7b45d3c3b9426f659f8484f4">CollectionRegistry::memberType</a>(<span class="keywordtype">size_t</span> i)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>  std::shared_lock read_lock(registryMutex);</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>  assert( i &lt; registeredMemberTypes.size() );</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>  <span class="keywordflow">return</span> registeredMemberTypes[i];</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>}</div>
 </div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
-<div class="foldopen" id="foldopen00018" data-start="{" data-end="}">
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="structBPMNOS_1_1CollectionRegistry.html#a707df89b2f887e4ef18cb44269eff466">   18</a></span><span class="keywordtype">size_t</span> <a class="code hl_function" href="structBPMNOS_1_1CollectionRegistry.html#a707df89b2f887e4ef18cb44269eff466">CollectionRegistry::operator()</a>(<span class="keyword">const</span> std::vector&lt;double&gt;&amp; collection) {</div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>  std::shared_lock read_lock(registryMutex);</div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>  <span class="keywordflow">if</span> ( <span class="keyword">auto</span> it = index.<a class="code hl_function" href="classBPMNOS_1_1vector__map.html#a06fdd263bb3b6de81f557f73cfc03594">find</a>(collection);</div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    it != index.<a class="code hl_function" href="classBPMNOS_1_1vector__map.html#a59fa694683bc1dc4d38a294df2b08f7b">end</a>()</div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>  ) {</div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="keywordflow">return</span> it-&gt;second;</div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>  }</div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>  read_lock.unlock();  </div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>  std::unique_lock write_lock(registryMutex);</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>  <span class="keyword">auto</span> [it, inserted] = index.<a class="code hl_function" href="classBPMNOS_1_1vector__map.html#af3a8bce1208ef5a6ce16ad018de5872b">try_emplace</a>(collection, index.<a class="code hl_function" href="classBPMNOS_1_1vector__map.html#a88009963939ff903d769730f82c28e83">size</a>());</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="foldopen" id="foldopen00019" data-start="{" data-end="}">
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="structBPMNOS_1_1CollectionRegistry.html#acdc1bc46abafeb08e24ef741ffb0fd1f">   19</a></span><span class="keywordtype">size_t</span> <a class="code hl_function" href="structBPMNOS_1_1CollectionRegistry.html#acdc1bc46abafeb08e24ef741ffb0fd1f">CollectionRegistry::operator()</a>(<span class="keyword">const</span> std::vector&lt;double&gt;&amp; collection, <a class="code hl_enumeration" href="namespaceBPMNOS.html#abd0d3034519d54779b4df3e9754cd681">ValueType</a> memberType) {</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>  <span class="keyword">auto</span>&amp; typeIndex = index[(size_t)<a class="code hl_function" href="structBPMNOS_1_1CollectionRegistry.html#abb6569ba7b45d3c3b9426f659f8484f4">memberType</a>];</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>  std::shared_lock read_lock(registryMutex);</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>  <span class="keywordflow">if</span> ( <span class="keyword">auto</span> it = typeIndex.find(collection);</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    it != typeIndex.end()</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>  ) {</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keywordflow">return</span> it-&gt;second;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>  }</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>  read_lock.unlock();</div>
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>  <span class="keywordflow">if</span> ( !inserted ) {</div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    assert( index.<a class="code hl_function" href="classBPMNOS_1_1vector__map.html#a88009963939ff903d769730f82c28e83">size</a>() == registeredCollections.size() );</div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keywordflow">return</span> it-&gt;second;</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>  }</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>  registeredCollections.push_back(collection);</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>  assert( index.<a class="code hl_function" href="classBPMNOS_1_1vector__map.html#a88009963939ff903d769730f82c28e83">size</a>() == registeredCollections.size() );</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>  <span class="keywordflow">return</span> registeredCollections.size()-1;</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>}</div>
-</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>  std::unique_lock write_lock(registryMutex);</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>  <span class="keyword">auto</span> [it, inserted] = typeIndex.try_emplace(collection, registeredCollections.size());</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>  <span class="keywordflow">if</span> ( !inserted ) {</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    assert( registeredMemberTypes.size() == registeredCollections.size() );</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keywordflow">return</span> it-&gt;second;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>  }</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>  registeredCollections.push_back(collection);</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>  registeredMemberTypes.push_back(<a class="code hl_function" href="structBPMNOS_1_1CollectionRegistry.html#abb6569ba7b45d3c3b9426f659f8484f4">memberType</a>);</div>
 <div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
-<div class="foldopen" id="foldopen00041" data-start="{" data-end="}">
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="structBPMNOS_1_1CollectionRegistry.html#a0b134786eec7917843e12cb07b8e1e7f">   41</a></span><span class="keywordtype">size_t</span> <a class="code hl_function" href="structBPMNOS_1_1CollectionRegistry.html#a0b134786eec7917843e12cb07b8e1e7f">CollectionRegistry::size</a>()<span class="keyword"> const </span>{</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>  std::shared_lock read_lock(registryMutex);</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>  <span class="keywordflow">return</span> registeredCollections.size();</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>}</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>  assert( registeredMemberTypes.size() == registeredCollections.size() );</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>  <span class="keywordflow">return</span> registeredCollections.size()-1;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>}</div>
 </div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
-<div class="foldopen" id="foldopen00046" data-start="{" data-end="}">
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="structBPMNOS_1_1CollectionRegistry.html#a3ff738ae7b01d965c6d25dfaf7d14ee5">   46</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="structBPMNOS_1_1CollectionRegistry.html#a3ff738ae7b01d965c6d25dfaf7d14ee5">CollectionRegistry::clear</a>() {</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>  std::unique_lock write_lock(registryMutex);</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>  index.<a class="code hl_function" href="classBPMNOS_1_1vector__map.html#a8671533848dd38f56a480e056bc8bef9">clear</a>();</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>  registeredCollections.clear();</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>  index.<a class="code hl_function" href="classBPMNOS_1_1vector__map.html#a6dcec3cc50648b1e9962db86c469ac81">emplace</a>(std::vector&lt;double&gt;(),0);  </div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>  registeredCollections.push_back(std::vector&lt;double&gt;());</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>  </div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>  assert( index.<a class="code hl_function" href="classBPMNOS_1_1vector__map.html#a88009963939ff903d769730f82c28e83">size</a>() == registeredCollections.size() );</div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>}</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="foldopen" id="foldopen00045" data-start="{" data-end="}">
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="structBPMNOS_1_1CollectionRegistry.html#a0b134786eec7917843e12cb07b8e1e7f">   45</a></span><span class="keywordtype">size_t</span> <a class="code hl_function" href="structBPMNOS_1_1CollectionRegistry.html#a0b134786eec7917843e12cb07b8e1e7f">CollectionRegistry::size</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>  std::shared_lock read_lock(registryMutex);</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>  <span class="keywordflow">return</span> registeredCollections.size();</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>}</div>
 </div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span><span class="comment">// Create global registry</span></div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="CollectionRegistry_8cpp.html#a4df1f4374f341a4c8d159809dece3378">   58</a></span><a class="code hl_struct" href="structBPMNOS_1_1CollectionRegistry.html">CollectionRegistry</a> <a class="code hl_variable" href="CollectionRegistry_8cpp.html#a4df1f4374f341a4c8d159809dece3378">collectionRegistry</a> = <a class="code hl_struct" href="structBPMNOS_1_1CollectionRegistry.html">CollectionRegistry</a>();</div>
-<div class="ttc" id="aCollectionRegistry_8cpp_html_a4df1f4374f341a4c8d159809dece3378"><div class="ttname"><a href="CollectionRegistry_8cpp.html#a4df1f4374f341a4c8d159809dece3378">collectionRegistry</a></div><div class="ttdeci">CollectionRegistry collectionRegistry</div><div class="ttdef"><b>Definition</b> <a href="CollectionRegistry_8cpp_source.html#l00058">CollectionRegistry.cpp:58</a></div></div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
+<div class="foldopen" id="foldopen00050" data-start="{" data-end="}">
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="structBPMNOS_1_1CollectionRegistry.html#a3ff738ae7b01d965c6d25dfaf7d14ee5">   50</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="structBPMNOS_1_1CollectionRegistry.html#a3ff738ae7b01d965c6d25dfaf7d14ee5">CollectionRegistry::clear</a>() {</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>  std::unique_lock write_lock(registryMutex);</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>  <span class="keywordflow">for</span> ( <span class="keyword">auto</span>&amp; typeIndex : index ) {</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    typeIndex.clear();</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>  }</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>  registeredCollections.clear();</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>  registeredMemberTypes.clear();</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>}</div>
+</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span><span class="comment">// Create global registry</span></div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="CollectionRegistry_8cpp.html#a4df1f4374f341a4c8d159809dece3378">   60</a></span><a class="code hl_struct" href="structBPMNOS_1_1CollectionRegistry.html">CollectionRegistry</a> <a class="code hl_variable" href="CollectionRegistry_8cpp.html#a4df1f4374f341a4c8d159809dece3378">collectionRegistry</a> = <a class="code hl_struct" href="structBPMNOS_1_1CollectionRegistry.html">CollectionRegistry</a>();</div>
+<div class="ttc" id="aCollectionRegistry_8cpp_html_a4df1f4374f341a4c8d159809dece3378"><div class="ttname"><a href="CollectionRegistry_8cpp.html#a4df1f4374f341a4c8d159809dece3378">collectionRegistry</a></div><div class="ttdeci">CollectionRegistry collectionRegistry</div><div class="ttdef"><b>Definition</b> <a href="CollectionRegistry_8cpp_source.html#l00060">CollectionRegistry.cpp:60</a></div></div>
 <div class="ttc" id="aCollectionRegistry_8h_html"><div class="ttname"><a href="CollectionRegistry_8h.html">CollectionRegistry.h</a></div></div>
 <div class="ttc" id="aKeywords_8h_html"><div class="ttname"><a href="Keywords_8h.html">Keywords.h</a></div></div>
-<div class="ttc" id="aclassBPMNOS_1_1vector__map_html_a06fdd263bb3b6de81f557f73cfc03594"><div class="ttname"><a href="classBPMNOS_1_1vector__map.html#a06fdd263bb3b6de81f557f73cfc03594">BPMNOS::vector_map::find</a></div><div class="ttdeci">iterator find(const Key &amp;key)</div><div class="ttdef"><b>Definition</b> <a href="vector__map_8h_source.html#l00138">vector_map.h:138</a></div></div>
-<div class="ttc" id="aclassBPMNOS_1_1vector__map_html_a59fa694683bc1dc4d38a294df2b08f7b"><div class="ttname"><a href="classBPMNOS_1_1vector__map.html#a59fa694683bc1dc4d38a294df2b08f7b">BPMNOS::vector_map::end</a></div><div class="ttdeci">iterator end() noexcept</div><div class="ttdef"><b>Definition</b> <a href="vector__map_8h_source.html#l00083">vector_map.h:83</a></div></div>
-<div class="ttc" id="aclassBPMNOS_1_1vector__map_html_a6dcec3cc50648b1e9962db86c469ac81"><div class="ttname"><a href="classBPMNOS_1_1vector__map.html#a6dcec3cc50648b1e9962db86c469ac81">BPMNOS::vector_map::emplace</a></div><div class="ttdeci">std::pair&lt; iterator, bool &gt; emplace(const Key &amp;key, const Value &amp;value)</div><div class="ttdef"><b>Definition</b> <a href="vector__map_8h_source.html#l00113">vector_map.h:113</a></div></div>
-<div class="ttc" id="aclassBPMNOS_1_1vector__map_html_a8671533848dd38f56a480e056bc8bef9"><div class="ttname"><a href="classBPMNOS_1_1vector__map.html#a8671533848dd38f56a480e056bc8bef9">BPMNOS::vector_map::clear</a></div><div class="ttdeci">void clear() noexcept</div><div class="ttdef"><b>Definition</b> <a href="vector__map_8h_source.html#l00105">vector_map.h:105</a></div></div>
-<div class="ttc" id="aclassBPMNOS_1_1vector__map_html_a88009963939ff903d769730f82c28e83"><div class="ttname"><a href="classBPMNOS_1_1vector__map.html#a88009963939ff903d769730f82c28e83">BPMNOS::vector_map::size</a></div><div class="ttdeci">size_type size() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="vector__map_8h_source.html#l00100">vector_map.h:100</a></div></div>
-<div class="ttc" id="aclassBPMNOS_1_1vector__map_html_af3a8bce1208ef5a6ce16ad018de5872b"><div class="ttname"><a href="classBPMNOS_1_1vector__map.html#af3a8bce1208ef5a6ce16ad018de5872b">BPMNOS::vector_map::try_emplace</a></div><div class="ttdeci">std::pair&lt; iterator, bool &gt; try_emplace(const Key &amp;key, const Value &amp;value)</div><div class="ttdef"><b>Definition</b> <a href="vector__map_8h_source.html#l00117">vector_map.h:117</a></div></div>
 <div class="ttc" id="anamespaceBPMNOS_html"><div class="ttname"><a href="namespaceBPMNOS.html">BPMNOS</a></div><div class="ttdef"><b>Definition</b> <a href="DecisionTask_8h_source.html#l00010">DecisionTask.h:10</a></div></div>
-<div class="ttc" id="astructBPMNOS_1_1CollectionRegistry_html"><div class="ttname"><a href="structBPMNOS_1_1CollectionRegistry.html">BPMNOS::CollectionRegistry</a></div><div class="ttdoc">Utility class for representing collections by numeric values.</div><div class="ttdef"><b>Definition</b> <a href="CollectionRegistry_8h_source.html#l00019">CollectionRegistry.h:19</a></div></div>
-<div class="ttc" id="astructBPMNOS_1_1CollectionRegistry_html_a0b134786eec7917843e12cb07b8e1e7f"><div class="ttname"><a href="structBPMNOS_1_1CollectionRegistry.html#a0b134786eec7917843e12cb07b8e1e7f">BPMNOS::CollectionRegistry::size</a></div><div class="ttdeci">size_t size() const</div><div class="ttdef"><b>Definition</b> <a href="CollectionRegistry_8cpp_source.html#l00041">CollectionRegistry.cpp:41</a></div></div>
-<div class="ttc" id="astructBPMNOS_1_1CollectionRegistry_html_a3ff738ae7b01d965c6d25dfaf7d14ee5"><div class="ttname"><a href="structBPMNOS_1_1CollectionRegistry.html#a3ff738ae7b01d965c6d25dfaf7d14ee5">BPMNOS::CollectionRegistry::clear</a></div><div class="ttdeci">void clear()</div><div class="ttdef"><b>Definition</b> <a href="CollectionRegistry_8cpp_source.html#l00046">CollectionRegistry.cpp:46</a></div></div>
-<div class="ttc" id="astructBPMNOS_1_1CollectionRegistry_html_a707df89b2f887e4ef18cb44269eff466"><div class="ttname"><a href="structBPMNOS_1_1CollectionRegistry.html#a707df89b2f887e4ef18cb44269eff466">BPMNOS::CollectionRegistry::operator()</a></div><div class="ttdeci">size_t operator()(const std::vector&lt; double &gt; &amp;collection)</div><div class="ttdoc">Operator to register a collection by its values and return its index.</div><div class="ttdef"><b>Definition</b> <a href="CollectionRegistry_8cpp_source.html#l00018">CollectionRegistry.cpp:18</a></div></div>
-<div class="ttc" id="astructBPMNOS_1_1CollectionRegistry_html_a7c65963d651813716bf37459332ac826"><div class="ttname"><a href="structBPMNOS_1_1CollectionRegistry.html#a7c65963d651813716bf37459332ac826">BPMNOS::CollectionRegistry::CollectionRegistry</a></div><div class="ttdeci">CollectionRegistry()</div><div class="ttdoc">Constructor adds empty collection at index 0.</div><div class="ttdef"><b>Definition</b> <a href="CollectionRegistry_8cpp_source.html#l00007">CollectionRegistry.cpp:7</a></div></div>
-<div class="ttc" id="astructBPMNOS_1_1CollectionRegistry_html_aa615ff3cd14846dd1adbf9f23687edcb"><div class="ttname"><a href="structBPMNOS_1_1CollectionRegistry.html#aa615ff3cd14846dd1adbf9f23687edcb">BPMNOS::CollectionRegistry::operator[]</a></div><div class="ttdeci">std::vector&lt; double &gt; operator[](size_t i) const</div><div class="ttdef"><b>Definition</b> <a href="CollectionRegistry_8cpp_source.html#l00012">CollectionRegistry.cpp:12</a></div></div>
+<div class="ttc" id="anamespaceBPMNOS_html_abd0d3034519d54779b4df3e9754cd681"><div class="ttname"><a href="namespaceBPMNOS.html#abd0d3034519d54779b4df3e9754cd681">BPMNOS::ValueType</a></div><div class="ttdeci">ValueType</div><div class="ttdef"><b>Definition</b> <a href="Value_8h_source.html#l00009">Value.h:9</a></div></div>
+<div class="ttc" id="astructBPMNOS_1_1CollectionRegistry_html"><div class="ttname"><a href="structBPMNOS_1_1CollectionRegistry.html">BPMNOS::CollectionRegistry</a></div><div class="ttdoc">Utility class for representing collections by numeric values.</div><div class="ttdef"><b>Definition</b> <a href="CollectionRegistry_8h_source.html#l00029">CollectionRegistry.h:29</a></div></div>
+<div class="ttc" id="astructBPMNOS_1_1CollectionRegistry_html_a0b134786eec7917843e12cb07b8e1e7f"><div class="ttname"><a href="structBPMNOS_1_1CollectionRegistry.html#a0b134786eec7917843e12cb07b8e1e7f">BPMNOS::CollectionRegistry::size</a></div><div class="ttdeci">size_t size() const</div><div class="ttdef"><b>Definition</b> <a href="CollectionRegistry_8cpp_source.html#l00045">CollectionRegistry.cpp:45</a></div></div>
+<div class="ttc" id="astructBPMNOS_1_1CollectionRegistry_html_a3ff738ae7b01d965c6d25dfaf7d14ee5"><div class="ttname"><a href="structBPMNOS_1_1CollectionRegistry.html#a3ff738ae7b01d965c6d25dfaf7d14ee5">BPMNOS::CollectionRegistry::clear</a></div><div class="ttdeci">void clear()</div><div class="ttdef"><b>Definition</b> <a href="CollectionRegistry_8cpp_source.html#l00050">CollectionRegistry.cpp:50</a></div></div>
+<div class="ttc" id="astructBPMNOS_1_1CollectionRegistry_html_aa615ff3cd14846dd1adbf9f23687edcb"><div class="ttname"><a href="structBPMNOS_1_1CollectionRegistry.html#aa615ff3cd14846dd1adbf9f23687edcb">BPMNOS::CollectionRegistry::operator[]</a></div><div class="ttdeci">std::vector&lt; double &gt; operator[](size_t i) const</div><div class="ttdef"><b>Definition</b> <a href="CollectionRegistry_8cpp_source.html#l00007">CollectionRegistry.cpp:7</a></div></div>
+<div class="ttc" id="astructBPMNOS_1_1CollectionRegistry_html_abb6569ba7b45d3c3b9426f659f8484f4"><div class="ttname"><a href="structBPMNOS_1_1CollectionRegistry.html#abb6569ba7b45d3c3b9426f659f8484f4">BPMNOS::CollectionRegistry::memberType</a></div><div class="ttdeci">ValueType memberType(size_t i) const</div><div class="ttdoc">Returns the type of the members of the registered collection with the given index.</div><div class="ttdef"><b>Definition</b> <a href="CollectionRegistry_8cpp_source.html#l00013">CollectionRegistry.cpp:13</a></div></div>
+<div class="ttc" id="astructBPMNOS_1_1CollectionRegistry_html_acdc1bc46abafeb08e24ef741ffb0fd1f"><div class="ttname"><a href="structBPMNOS_1_1CollectionRegistry.html#acdc1bc46abafeb08e24ef741ffb0fd1f">BPMNOS::CollectionRegistry::operator()</a></div><div class="ttdeci">size_t operator()(const std::vector&lt; double &gt; &amp;collection, ValueType memberType)</div><div class="ttdoc">Operator to register a collection by its values and the type of its members and return its index.</div><div class="ttdef"><b>Definition</b> <a href="CollectionRegistry_8cpp_source.html#l00019">CollectionRegistry.cpp:19</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs"; mermaid.initialize({ startOnLoad: true, theme: "neutral" });</script></body></html>

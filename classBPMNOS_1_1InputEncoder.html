@@ -1,0 +1,278 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<!-- BEGIN opengraph metadata -->
+<meta property="og:title" content="Doxygen Awesome" />
+<meta property="og:image" content="https://repository-images.githubusercontent.com/348492097/4f16df80-88fb-11eb-9d31-4015ff22c452" />
+<meta property="og:description" content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
+<meta property="og:url" content="https://jothepro.github.io/doxygen-awesome-css/" />
+<!-- END opengraph metadata -->
+<!-- BEGIN twitter metadata -->
+<meta name="twitter:image:src" content="https://repository-images.githubusercontent.com/348492097/4f16df80-88fb-11eb-9d31-4015ff22c452" />
+<meta name="twitter:title" content="Doxygen Awesome" />
+<meta name="twitter:description" content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
+<!-- END twitter metadata -->
+<title>BPMN-OS: BPMNOS::InputEncoder Class Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript" src="doxygen-awesome-interactive-toc.js"></script>
+<script type="text/javascript" src="doxygen-awesome-tabs.js"></script>
+<script type="text/javascript" src="toggle-alternative-theme.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeParagraphLink.init()
+    DoxygenAwesomeInteractiveToc.init()
+    DoxygenAwesomeTabs.init()
+</script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="custom.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<link href="custom-alternative.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<!-- https://tholman.com/github-corners/ -->
+<a href="https://github.com/bpmn-os/bpmnos-engine" class="github-corner" title="View source on GitHub" target="_blank" rel="noopener noreferrer">
+    <svg viewBox="0 0 250 250" width="40" height="40" style="position: absolute; top: 0; border: 0; right: 0; z-index: 99;" aria-hidden="true">
+    <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="BPMNOS.svg"/></td>
+  <td id="projectalign" style="padding-left: 0.5em;">
+   <div id="projectname">BPMN-OS
+   </div>
+   <div id="projectbrief">BPMN for optimization and simulation</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() {
+  initMenu('',true,false,'search.php','Search');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */
+</script>
+<div id="main-nav"></div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(document).ready(function(){initNavTree('classBPMNOS_1_1InputEncoder.html',''); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
+<a href="classBPMNOS_1_1InputEncoder-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">BPMNOS::InputEncoder Class Reference</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Utility class replacing every literal in a text by the number encoding it.  
+ <a href="classBPMNOS_1_1InputEncoder.html#details">More...</a></p>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>The engine represents a string by its index in the string registry and a collection by its index in the collection registry, so that every value is a number. Text stating such a value must therefore be scanned before it is read as a value or parsed as an expression, and this class is the one place in which that is done, so that what a lexeme is is decided once.</p>
+<p>The text is read once, from left to right, and each thing met is dealt with where it is met.</p>
+<p>A quoted span is read to its closing quote and emitted as its index in the string registry. A quote within it does not occur, quotes not being escaped, and a comma or a bracket within it is text rather than structure.</p>
+<p>A bracket either opens a collection literal or belongs to the expression it stands in, and which of the two is decided by what has been emitted last. After a name, a closing bracket or a closing parenthesis it indexes a collection, and after a membership operator it states a collection the expression parser reads itself, so in both cases the bracketed text is copied and its contents are scanned where they stand. Everywhere else the bracket opens a literal. The members of a literal are read one by one, each by the same rules, so that a member is a quoted string, a truth value, a number, or a literal of its own, to any depth. The members must agree in the type they are recorded as, a member that is a literal being recorded as a collection whatever it holds, and the literal is registered with the type they agree on and emitted as its index in the collection registry. A numeric member is recorded as a decimal, so that a literal may hold whole and fractional numbers alike and both are written out as they were read.</p>
+<p>Everything else, which is to say names, numbers, operators, whitespace, and the delimiters of a line, is copied unchanged, a membership operator included. Of the grammar the expression parser applies, the scan knows what decides a bracket and nothing besides, so that the text it emits is read as the text it was given.</p>
+<p>A text that cannot be read is refused, naming it: a quote that is not closed, a literal that is not closed, a literal without members, a member without a value, a member that is neither a truth value nor a number nor a literal, and members that do not agree in type. </p>
+
+<p class="definition">Definition at line <a class="el" href="InputEncoder_8h_source.html#l00046">46</a> of file <a class="el" href="InputEncoder_8h_source.html">InputEncoder.h</a>.</p>
+</div>
+<p><code>#include &lt;<a class="el" href="InputEncoder_8h_source.html">InputEncoder.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:aff0d0db5b6853735f9b17165e71d9044" id="r_aff0d0db5b6853735f9b17165e71d9044"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1InputEncoder.html#aff0d0db5b6853735f9b17165e71d9044">InputEncoder</a> (const std::string &amp;input)</td></tr>
+<tr class="memdesc:aff0d0db5b6853735f9b17165e71d9044"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor scanning the given text.  <br /></td></tr>
+<tr class="separator:aff0d0db5b6853735f9b17165e71d9044"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e767b4c2a2239c747a1bd0df3071a8e" id="r_a8e767b4c2a2239c747a1bd0df3071a8e"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1InputEncoder.html#a8e767b4c2a2239c747a1bd0df3071a8e">text</a> () const</td></tr>
+<tr class="memdesc:a8e767b4c2a2239c747a1bd0df3071a8e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the text with every literal replaced by the number encoding it.  <br /></td></tr>
+<tr class="separator:a8e767b4c2a2239c747a1bd0df3071a8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9a2b00089136d76894430108cc504b3b" id="r_a9a2b00089136d76894430108cc504b3b"><td class="memItemLeft" align="right" valign="top">const std::optional&lt; <a class="el" href="namespaceBPMNOS.html#abd0d3034519d54779b4df3e9754cd681">ValueType</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1InputEncoder.html#a9a2b00089136d76894430108cc504b3b">type</a> () const</td></tr>
+<tr class="separator:a9a2b00089136d76894430108cc504b3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:a2cf2ddd64534dfa4700e478bb5cfdbf7" id="r_a2cf2ddd64534dfa4700e478bb5cfdbf7"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classBPMNOS_1_1InputEncoder.html">InputEncoder</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1InputEncoder.html#a2cf2ddd64534dfa4700e478bb5cfdbf7">fragment</a> (std::string <a class="el" href="classBPMNOS_1_1InputEncoder.html#a8e767b4c2a2239c747a1bd0df3071a8e">text</a>)</td></tr>
+<tr class="separator:a2cf2ddd64534dfa4700e478bb5cfdbf7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="aff0d0db5b6853735f9b17165e71d9044" name="aff0d0db5b6853735f9b17165e71d9044"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aff0d0db5b6853735f9b17165e71d9044">&#9670;&#160;</a></span>InputEncoder()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">InputEncoder::InputEncoder </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>input</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="InputEncoder_8cpp_source.html#l00273">273</a> of file <a class="el" href="InputEncoder_8cpp_source.html">InputEncoder.cpp</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a2cf2ddd64534dfa4700e478bb5cfdbf7" name="a2cf2ddd64534dfa4700e478bb5cfdbf7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2cf2ddd64534dfa4700e478bb5cfdbf7">&#9670;&#160;</a></span>fragment()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classBPMNOS_1_1InputEncoder.html">InputEncoder</a> InputEncoder::fragment </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>text</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Returns a part of a text that has been scanned already, such as one alternative of an enumeration. No type is stated, a part of a text being no literal of its own. </p>
+
+<p class="definition">Definition at line <a class="el" href="InputEncoder_8cpp_source.html#l00286">286</a> of file <a class="el" href="InputEncoder_8cpp_source.html">InputEncoder.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a8e767b4c2a2239c747a1bd0df3071a8e" name="a8e767b4c2a2239c747a1bd0df3071a8e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e767b4c2a2239c747a1bd0df3071a8e">&#9670;&#160;</a></span>text()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string &amp; BPMNOS::InputEncoder::text </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="InputEncoder_8h_source.html#l00052">52</a> of file <a class="el" href="InputEncoder_8h_source.html">InputEncoder.h</a>.</p>
+
+</div>
+</div>
+<a id="a9a2b00089136d76894430108cc504b3b" name="a9a2b00089136d76894430108cc504b3b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9a2b00089136d76894430108cc504b3b">&#9670;&#160;</a></span>type()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::optional&lt; <a class="el" href="namespaceBPMNOS.html#abd0d3034519d54779b4df3e9754cd681">ValueType</a> &gt; &amp; BPMNOS::InputEncoder::type </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Returns the type of the literal if the text states one literal and nothing besides whitespace, and no value otherwise. This is what a caller needs where the text states a value rather than an expression, the type of an expression following from its shape rather than from its text. </p>
+
+<p class="definition">Definition at line <a class="el" href="InputEncoder_8h_source.html#l00057">57</a> of file <a class="el" href="InputEncoder_8h_source.html">InputEncoder.h</a>.</p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>model/utility/src/<a class="el" href="InputEncoder_8h_source.html">InputEncoder.h</a></li>
+<li>model/utility/src/<a class="el" href="InputEncoder_8cpp_source.html">InputEncoder.cpp</a></li>
+</ul>
+</div><!-- contents -->
+</div><!-- doc-content -->
+<script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs"; mermaid.initialize({ startOnLoad: true, theme: "neutral" });</script></body></html>

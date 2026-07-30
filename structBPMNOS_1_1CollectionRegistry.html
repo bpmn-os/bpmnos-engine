@@ -135,22 +135,25 @@ $(document).ready(function(){initNavTree('structBPMNOS_1_1CollectionRegistry.htm
 <p>Utility class for representing collections by numeric values.  
  <a href="structBPMNOS_1_1CollectionRegistry.html#details">More...</a></p>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>The CollectionRegistry class provides efficient access to the collection by index and retrieval of the index by the values representing the collection. </p>
+<div class="textblock"><p>The CollectionRegistry class provides efficient access to the collection by index and retrieval of the index by the values representing the collection.</p>
+<p>A collection is registered together with the type of its members, which is the only record of what its values mean: a member of a collection of strings is an index into the string registry, a member of a collection of collections is an index into this registry, and neither can be told from a number by inspection. A collection is therefore identified by its values and its member type together, so that a collection of the numbers one and two and a collection of the two strings registered under those indices remain distinct. Every collection has a member type, the empty collection included, which is why the registry holds no collection until one is registered. </p>
 
-<p class="definition">Definition at line <a class="el" href="CollectionRegistry_8h_source.html#l00019">19</a> of file <a class="el" href="CollectionRegistry_8h_source.html">CollectionRegistry.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="CollectionRegistry_8h_source.html#l00029">29</a> of file <a class="el" href="CollectionRegistry_8h_source.html">CollectionRegistry.h</a>.</p>
 </div>
 <p><code>#include &lt;<a class="el" href="CollectionRegistry_8h_source.html">CollectionRegistry.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a7c65963d651813716bf37459332ac826" id="r_a7c65963d651813716bf37459332ac826"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structBPMNOS_1_1CollectionRegistry.html#a7c65963d651813716bf37459332ac826">CollectionRegistry</a> ()</td></tr>
-<tr class="memdesc:a7c65963d651813716bf37459332ac826"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor adds empty collection at index 0.  <br /></td></tr>
-<tr class="separator:a7c65963d651813716bf37459332ac826"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b14286a55c6227abf4fd09ba62a51f7" id="r_a0b14286a55c6227abf4fd09ba62a51f7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structBPMNOS_1_1CollectionRegistry.html#a0b14286a55c6227abf4fd09ba62a51f7">CollectionRegistry</a> ()=default</td></tr>
+<tr class="separator:a0b14286a55c6227abf4fd09ba62a51f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa615ff3cd14846dd1adbf9f23687edcb" id="r_aa615ff3cd14846dd1adbf9f23687edcb"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structBPMNOS_1_1CollectionRegistry.html#aa615ff3cd14846dd1adbf9f23687edcb">operator[]</a> (size_t i) const</td></tr>
 <tr class="separator:aa615ff3cd14846dd1adbf9f23687edcb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a707df89b2f887e4ef18cb44269eff466" id="r_a707df89b2f887e4ef18cb44269eff466"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structBPMNOS_1_1CollectionRegistry.html#a707df89b2f887e4ef18cb44269eff466">operator()</a> (const std::vector&lt; double &gt; &amp;collection)</td></tr>
-<tr class="memdesc:a707df89b2f887e4ef18cb44269eff466"><td class="mdescLeft">&#160;</td><td class="mdescRight">Operator to register a collection by its values and return its index.  <br /></td></tr>
-<tr class="separator:a707df89b2f887e4ef18cb44269eff466"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abb6569ba7b45d3c3b9426f659f8484f4" id="r_abb6569ba7b45d3c3b9426f659f8484f4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceBPMNOS.html#abd0d3034519d54779b4df3e9754cd681">ValueType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structBPMNOS_1_1CollectionRegistry.html#abb6569ba7b45d3c3b9426f659f8484f4">memberType</a> (size_t i) const</td></tr>
+<tr class="memdesc:abb6569ba7b45d3c3b9426f659f8484f4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the type of the members of the registered collection with the given index.  <br /></td></tr>
+<tr class="separator:abb6569ba7b45d3c3b9426f659f8484f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acdc1bc46abafeb08e24ef741ffb0fd1f" id="r_acdc1bc46abafeb08e24ef741ffb0fd1f"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structBPMNOS_1_1CollectionRegistry.html#acdc1bc46abafeb08e24ef741ffb0fd1f">operator()</a> (const std::vector&lt; double &gt; &amp;collection, <a class="el" href="namespaceBPMNOS.html#abd0d3034519d54779b4df3e9754cd681">ValueType</a> <a class="el" href="structBPMNOS_1_1CollectionRegistry.html#abb6569ba7b45d3c3b9426f659f8484f4">memberType</a>)</td></tr>
+<tr class="memdesc:acdc1bc46abafeb08e24ef741ffb0fd1f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Operator to register a collection by its values and the type of its members and return its index.  <br /></td></tr>
+<tr class="separator:acdc1bc46abafeb08e24ef741ffb0fd1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0b134786eec7917843e12cb07b8e1e7f" id="r_a0b134786eec7917843e12cb07b8e1e7f"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structBPMNOS_1_1CollectionRegistry.html#a0b134786eec7917843e12cb07b8e1e7f">size</a> () const</td></tr>
 <tr class="separator:a0b134786eec7917843e12cb07b8e1e7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3ff738ae7b01d965c6d25dfaf7d14ee5" id="r_a3ff738ae7b01d965c6d25dfaf7d14ee5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structBPMNOS_1_1CollectionRegistry.html#a3ff738ae7b01d965c6d25dfaf7d14ee5">clear</a> ()</td></tr>
@@ -161,22 +164,29 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:abc33653fec026d8f801695f0c60eb4f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a7c65963d651813716bf37459332ac826" name="a7c65963d651813716bf37459332ac826"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7c65963d651813716bf37459332ac826">&#9670;&#160;</a></span>CollectionRegistry() <span class="overload">[1/2]</span></h2>
+<a id="a0b14286a55c6227abf4fd09ba62a51f7" name="a0b14286a55c6227abf4fd09ba62a51f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b14286a55c6227abf4fd09ba62a51f7">&#9670;&#160;</a></span>CollectionRegistry() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">CollectionRegistry::CollectionRegistry </td>
+          <td class="memname">BPMNOS::CollectionRegistry::CollectionRegistry </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="CollectionRegistry_8cpp_source.html#l00007">7</a> of file <a class="el" href="CollectionRegistry_8cpp_source.html">CollectionRegistry.cpp</a>.</p>
+<p>Constructor creating an empty registry. Declared because the deleted copy constructor below would otherwise suppress the implicit default constructor. </p>
 
 </div>
 </div>
@@ -222,12 +232,32 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="CollectionRegistry_8cpp_source.html#l00046">46</a> of file <a class="el" href="CollectionRegistry_8cpp_source.html">CollectionRegistry.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="CollectionRegistry_8cpp_source.html#l00050">50</a> of file <a class="el" href="CollectionRegistry_8cpp_source.html">CollectionRegistry.cpp</a>.</p>
 
 </div>
 </div>
-<a id="a707df89b2f887e4ef18cb44269eff466" name="a707df89b2f887e4ef18cb44269eff466"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a707df89b2f887e4ef18cb44269eff466">&#9670;&#160;</a></span>operator()()</h2>
+<a id="abb6569ba7b45d3c3b9426f659f8484f4" name="abb6569ba7b45d3c3b9426f659f8484f4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abb6569ba7b45d3c3b9426f659f8484f4">&#9670;&#160;</a></span>memberType()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceBPMNOS.html#abd0d3034519d54779b4df3e9754cd681">ValueType</a> CollectionRegistry::memberType </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>i</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="CollectionRegistry_8cpp_source.html#l00013">13</a> of file <a class="el" href="CollectionRegistry_8cpp_source.html">CollectionRegistry.cpp</a>.</p>
+
+</div>
+</div>
+<a id="acdc1bc46abafeb08e24ef741ffb0fd1f" name="acdc1bc46abafeb08e24ef741ffb0fd1f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acdc1bc46abafeb08e24ef741ffb0fd1f">&#9670;&#160;</a></span>operator()()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -236,13 +266,23 @@ Public Member Functions</h2></td></tr>
           <td class="memname">size_t CollectionRegistry::operator() </td>
           <td>(</td>
           <td class="paramtype">const std::vector&lt; double &gt; &amp;&#160;</td>
-          <td class="paramname"><em>collection</em></td><td>)</td>
+          <td class="paramname"><em>collection</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype"><a class="el" href="namespaceBPMNOS.html#abd0d3034519d54779b4df3e9754cd681">ValueType</a>&#160;</td>
+          <td class="paramname"><em>memberType</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="CollectionRegistry_8cpp_source.html#l00018">18</a> of file <a class="el" href="CollectionRegistry_8cpp_source.html">CollectionRegistry.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="CollectionRegistry_8cpp_source.html#l00019">19</a> of file <a class="el" href="CollectionRegistry_8cpp_source.html">CollectionRegistry.cpp</a>.</p>
 
 </div>
 </div>
@@ -289,7 +329,7 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 <p>Operator providing access to a registered collections by index. Returns by value: a reference would dangle if a concurrent operator() push_back reallocates registeredCollections after the read lock is released. </p>
 
-<p class="definition">Definition at line <a class="el" href="CollectionRegistry_8cpp_source.html#l00012">12</a> of file <a class="el" href="CollectionRegistry_8cpp_source.html">CollectionRegistry.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="CollectionRegistry_8cpp_source.html#l00007">7</a> of file <a class="el" href="CollectionRegistry_8cpp_source.html">CollectionRegistry.cpp</a>.</p>
 
 </div>
 </div>
@@ -308,7 +348,7 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="CollectionRegistry_8cpp_source.html#l00041">41</a> of file <a class="el" href="CollectionRegistry_8cpp_source.html">CollectionRegistry.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="CollectionRegistry_8cpp_source.html#l00045">45</a> of file <a class="el" href="CollectionRegistry_8cpp_source.html">CollectionRegistry.cpp</a>.</p>
 
 </div>
 </div>

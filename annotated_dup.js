@@ -115,6 +115,7 @@ var annotated_dup =
       [ "CollectionRegistry", "structBPMNOS_1_1CollectionRegistry.html", "structBPMNOS_1_1CollectionRegistry" ],
       [ "CSVReader", "classBPMNOS_1_1CSVReader.html", "classBPMNOS_1_1CSVReader" ],
       [ "ExpectedValueFactory", "classBPMNOS_1_1ExpectedValueFactory.html", "classBPMNOS_1_1ExpectedValueFactory" ],
+      [ "InputEncoder", "classBPMNOS_1_1InputEncoder.html", "classBPMNOS_1_1InputEncoder" ],
       [ "is_vector", "structBPMNOS_1_1is__vector.html", null ],
       [ "is_vector< std::vector< T, Allocator > >", "structBPMNOS_1_1is__vector_3_01std_1_1vector_3_01T_00_01Allocator_01_4_01_4.html", null ],
       [ "RandomDistributionFactory", "classBPMNOS_1_1RandomDistributionFactory.html", "classBPMNOS_1_1RandomDistributionFactory" ],

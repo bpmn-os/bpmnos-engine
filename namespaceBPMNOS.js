@@ -12,6 +12,7 @@ var namespaceBPMNOS =
     [ "CollectionRegistry", "structBPMNOS_1_1CollectionRegistry.html", "structBPMNOS_1_1CollectionRegistry" ],
     [ "CSVReader", "classBPMNOS_1_1CSVReader.html", "classBPMNOS_1_1CSVReader" ],
     [ "ExpectedValueFactory", "classBPMNOS_1_1ExpectedValueFactory.html", "classBPMNOS_1_1ExpectedValueFactory" ],
+    [ "InputEncoder", "classBPMNOS_1_1InputEncoder.html", "classBPMNOS_1_1InputEncoder" ],
     [ "is_vector", "structBPMNOS_1_1is__vector.html", null ],
     [ "is_vector< std::vector< T, Allocator > >", "structBPMNOS_1_1is__vector_3_01std_1_1vector_3_01T_00_01Allocator_01_4_01_4.html", null ],
     [ "RandomDistributionFactory", "classBPMNOS_1_1RandomDistributionFactory.html", "classBPMNOS_1_1RandomDistributionFactory" ],
@@ -33,8 +34,6 @@ var namespaceBPMNOS =
       [ "STRING", "namespaceBPMNOS.html#abd0d3034519d54779b4df3e9754cd681a420dd3a823baacf2ff185343271e216a", null ],
       [ "COLLECTION", "namespaceBPMNOS.html#abd0d3034519d54779b4df3e9754cd681af4bf4b6bfa012424f6a7bcdfcd94a321", null ]
     ] ],
-    [ "encodeCollection", "namespaceBPMNOS.html#a40265862a596c36bcd1334674ba36be4", null ],
-    [ "encodeQuotedStrings", "namespaceBPMNOS.html#a392ae46e8582beb1d5612c7321bbed5c", null ],
     [ "make_distribution", "namespaceBPMNOS.html#a0048bc0bc5758b19b7512c4f9e384316", null ],
     [ "make_distribution", "namespaceBPMNOS.html#ad01ff246a892594224633e55767c9ec9", null ],
     [ "make_distribution_impl", "namespaceBPMNOS.html#af705c229c48c681c067cfe6718be3b1b", null ],

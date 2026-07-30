@@ -154,6 +154,9 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1ExpectedValueFactory.html">ExpectedValueFactory</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Factory for expected value functions in LIMEX expressions.  <a href="classBPMNOS_1_1ExpectedValueFactory.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1InputEncoder.html">InputEncoder</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Utility class replacing every literal in a text by the number encoding it.  <a href="classBPMNOS_1_1InputEncoder.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structBPMNOS_1_1is__vector.html">is_vector</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structBPMNOS_1_1is__vector_3_01std_1_1vector_3_01T_00_01Allocator_01_4_01_4.html">is_vector&lt; std::vector&lt; T, Allocator &gt; &gt;</a></td></tr>
@@ -205,11 +208,6 @@ Enumerations</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a40265862a596c36bcd1334674ba36be4" id="r_a40265862a596c36bcd1334674ba36be4"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceBPMNOS.html#a40265862a596c36bcd1334674ba36be4">encodeCollection</a> (std::string text)</td></tr>
-<tr class="memdesc:a40265862a596c36bcd1334674ba36be4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Function to replace a collection that is not preceded by an alphanumeric or underscore.  <br /></td></tr>
-<tr class="separator:a40265862a596c36bcd1334674ba36be4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a392ae46e8582beb1d5612c7321bbed5c" id="r_a392ae46e8582beb1d5612c7321bbed5c"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceBPMNOS.html#a392ae46e8582beb1d5612c7321bbed5c">encodeQuotedStrings</a> (std::string text)</td></tr>
-<tr class="separator:a392ae46e8582beb1d5612c7321bbed5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a87c97555b1c1329b2d0eec225a6b24db" id="r_a87c97555b1c1329b2d0eec225a6b24db"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceBPMNOS.html#a87c97555b1c1329b2d0eec225a6b24db">stod</a> (const std::string &amp;str)</td></tr>
 <tr class="separator:a87c97555b1c1329b2d0eec225a6b24db"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae2cf5f7750a645381b719d881d3ee89b" id="r_ae2cf5f7750a645381b719d881d3ee89b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceBPMNOS.html#ae2cf5f7750a645381b719d881d3ee89b">stoi</a> (const std::string &amp;str)</td></tr>
@@ -379,62 +377,6 @@ Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="a40265862a596c36bcd1334674ba36be4" name="a40265862a596c36bcd1334674ba36be4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a40265862a596c36bcd1334674ba36be4">&#9670;&#160;</a></span>encodeCollection()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::string BPMNOS::encodeCollection </td>
-          <td>(</td>
-          <td class="paramtype">std::string&#160;</td>
-          <td class="paramname"><em>text</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="encode__collection_8h_source.html#l00015">15</a> of file <a class="el" href="encode__collection_8h_source.html">encode_collection.h</a>.</p>
-
-</div>
-</div>
-<a id="a392ae46e8582beb1d5612c7321bbed5c" name="a392ae46e8582beb1d5612c7321bbed5c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a392ae46e8582beb1d5612c7321bbed5c">&#9670;&#160;</a></span>encodeQuotedStrings()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::string BPMNOS::encodeQuotedStrings </td>
-          <td>(</td>
-          <td class="paramtype">std::string&#160;</td>
-          <td class="paramname"><em>text</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="encode__quoted__strings_8h_source.html#l00016">16</a> of file <a class="el" href="encode__quoted__strings_8h_source.html">encode_quoted_strings.h</a>.</p>
-
-</div>
-</div>
 <a id="a0048bc0bc5758b19b7512c4f9e384316" name="a0048bc0bc5758b19b7512c4f9e384316"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a0048bc0bc5758b19b7512c4f9e384316">&#9670;&#160;</a></span>make_distribution() <span class="overload">[1/2]</span></h2>
 
@@ -524,7 +466,7 @@ template&lt;class DistributionType , class... Parameters&gt; </div>
 </div><div class="memdoc">
 <p>Returns merged values from a set of values </p>
 
-<p class="definition">Definition at line <a class="el" href="Number_8cpp_source.html#l00189">189</a> of file <a class="el" href="Number_8cpp_source.html">Number.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Number_8cpp_source.html#l00206">206</a> of file <a class="el" href="Number_8cpp_source.html">Number.cpp</a>.</p>
 
 </div>
 </div>
@@ -705,7 +647,7 @@ template&lt;class DistributionType , class... Parameters&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Number_8cpp_source.html#l00039">39</a> of file <a class="el" href="Number_8cpp_source.html">Number.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Number_8cpp_source.html#l00038">38</a> of file <a class="el" href="Number_8cpp_source.html">Number.cpp</a>.</p>
 
 </div>
 </div>
@@ -725,7 +667,7 @@ template&lt;class DistributionType , class... Parameters&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Number_8cpp_source.html#l00049">49</a> of file <a class="el" href="Number_8cpp_source.html">Number.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Number_8cpp_source.html#l00048">48</a> of file <a class="el" href="Number_8cpp_source.html">Number.cpp</a>.</p>
 
 </div>
 </div>
@@ -755,7 +697,7 @@ template&lt;class DistributionType , class... Parameters&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Number_8cpp_source.html#l00059">59</a> of file <a class="el" href="Number_8cpp_source.html">Number.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Number_8cpp_source.html#l00058">58</a> of file <a class="el" href="Number_8cpp_source.html">Number.cpp</a>.</p>
 
 </div>
 </div>
@@ -785,7 +727,7 @@ template&lt;class DistributionType , class... Parameters&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Number_8cpp_source.html#l00077">77</a> of file <a class="el" href="Number_8cpp_source.html">Number.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Number_8cpp_source.html#l00076">76</a> of file <a class="el" href="Number_8cpp_source.html">Number.cpp</a>.</p>
 
 </div>
 </div>
@@ -805,7 +747,7 @@ template&lt;class DistributionType , class... Parameters&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Number_8cpp_source.html#l00176">176</a> of file <a class="el" href="Number_8cpp_source.html">Number.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Number_8cpp_source.html#l00193">193</a> of file <a class="el" href="Number_8cpp_source.html">Number.cpp</a>.</p>
 
 </div>
 </div>
@@ -835,7 +777,7 @@ template&lt;class DistributionType , class... Parameters&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Number_8cpp_source.html#l00154">154</a> of file <a class="el" href="Number_8cpp_source.html">Number.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Number_8cpp_source.html#l00160">160</a> of file <a class="el" href="Number_8cpp_source.html">Number.cpp</a>.</p>
 
 </div>
 </div>
