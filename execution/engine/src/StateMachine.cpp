@@ -544,6 +544,10 @@ void StateMachine::deleteMultiInstanceActivityToken(Token* token) {
   auto activity = token->node->represents<BPMN::Activity>();
   assert( activity );
 
+  // Instance has no outgoing flow: emit DONE as its terminal state before removal.
+  // Aggregation into the main token is handled below, not via the generic scope shutdown.
+  token->update(Token::State::DONE);
+
   if ( activity->loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::MultiInstanceSequential ) {
     // advance next token for sequential multi-instance activity
     auto& tokenAwaitingMultiInstanceExit = const_cast<SystemState*>(systemState)->tokenAwaitingMultiInstanceExit;
@@ -557,10 +561,6 @@ void StateMachine::deleteMultiInstanceActivityToken(Token* token) {
       tokenAwaitingMultiInstanceExit.erase(it);
     }
   }
-
-  // Instance has no outgoing flow: emit DONE as its terminal state before removal.
-  // Aggregation into the main token is handled below, not via the generic scope shutdown.
-  token->update(Token::State::DONE);
 
   // record exit status
   const_cast<SystemState*>(systemState)->exitStatusAtActivityInstance[mainToken].push_back(token->status);

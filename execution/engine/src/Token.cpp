@@ -1015,12 +1015,13 @@ void Token::advanceToExiting() {
 //std::cerr << "objective updated" << std::endl;
   }
     
-  if ( owned ) {
-//std::cerr << "Use data of scope " << owner->scope->id << std::endl;
+  auto activity = node->represents<BPMN::Activity>();
+  auto isActivityInstance = activity && activity->loopCharacteristics.has_value() && owner->systemState->tokenAtMultiInstanceActivity.contains(this);
+
+  if ( owned && !isActivityInstance ) {
     data = &const_cast<StateMachine*>(owner)->data;
   }
   
-  auto activity = node->represents<BPMN::Activity>();
   if ( activity && activity->loopCharacteristics.has_value() && activity->loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::Standard ) {
     auto& attributeRegistry = getAttributeRegistry(); 
 
