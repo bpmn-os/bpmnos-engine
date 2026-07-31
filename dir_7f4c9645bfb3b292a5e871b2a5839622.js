@@ -16,6 +16,8 @@ var dir_7f4c9645bfb3b292a5e871b2a5839622 =
     [ "Mediator.h", "Mediator_8h.html", "Mediator_8h" ],
     [ "Message.cpp", "Message_8cpp.html", "Message_8cpp" ],
     [ "Message.h", "Message_8h.html", "Message_8h" ],
+    [ "MessageDeliveryRequest.cpp", "MessageDeliveryRequest_8cpp.html", null ],
+    [ "MessageDeliveryRequest.h", "MessageDeliveryRequest_8h.html", "MessageDeliveryRequest_8h" ],
     [ "Notifier.cpp", "Notifier_8cpp.html", null ],
     [ "Notifier.h", "Notifier_8h.html", "Notifier_8h" ],
     [ "Observable.h", "Observable_8h.html", "Observable_8h" ],

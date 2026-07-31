@@ -52,6 +52,7 @@ var annotated_dup =
         [ "MessageDeliveries", "classBPMNOS_1_1Execution_1_1MessageDeliveries.html", "classBPMNOS_1_1Execution_1_1MessageDeliveries" ],
         [ "MessageDeliveryDecision", "structBPMNOS_1_1Execution_1_1MessageDeliveryDecision.html", "structBPMNOS_1_1Execution_1_1MessageDeliveryDecision" ],
         [ "MessageDeliveryEvent", "structBPMNOS_1_1Execution_1_1MessageDeliveryEvent.html", "structBPMNOS_1_1Execution_1_1MessageDeliveryEvent" ],
+        [ "MessageDeliveryRequest", "structBPMNOS_1_1Execution_1_1MessageDeliveryRequest.html", "structBPMNOS_1_1Execution_1_1MessageDeliveryRequest" ],
         [ "Metronome", "classBPMNOS_1_1Execution_1_1Metronome.html", "classBPMNOS_1_1Execution_1_1Metronome" ],
         [ "MyopicDecisionTaskTerminator", "classBPMNOS_1_1Execution_1_1MyopicDecisionTaskTerminator.html", "classBPMNOS_1_1Execution_1_1MyopicDecisionTaskTerminator" ],
         [ "MyopicMessageTaskTerminator", "classBPMNOS_1_1Execution_1_1MyopicMessageTaskTerminator.html", "classBPMNOS_1_1Execution_1_1MyopicMessageTaskTerminator" ],

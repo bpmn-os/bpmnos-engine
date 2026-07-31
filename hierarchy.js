@@ -8,10 +8,11 @@ var hierarchy =
     [ "BPMNOS::Execution::auto_list< std::weak_ptr< BPMNOS::Execution::Token > >", "classBPMNOS_1_1Execution_1_1auto__list.html", null ],
     [ "BPMNOS::Execution::auto_list< std::weak_ptr< BPMNOS::Execution::Token >, std::shared_ptr< BPMNOS::Execution::Event > >", "classBPMNOS_1_1Execution_1_1auto__list.html", null ],
     [ "BPMNOS::Execution::auto_list< std::weak_ptr< BPMNOS::Execution::Token >, std::weak_ptr< BPMNOS::Execution::DecisionRequest > >", "classBPMNOS_1_1Execution_1_1auto__list.html", null ],
+    [ "BPMNOS::Execution::auto_list< std::weak_ptr< BPMNOS::Execution::Token >, std::weak_ptr< BPMNOS::Execution::MessageDeliveryRequest > >", "classBPMNOS_1_1Execution_1_1auto__list.html", null ],
     [ "BPMNOS::Execution::auto_list< std::weak_ptr< const BPMNOS::Execution::Message > >", "classBPMNOS_1_1Execution_1_1auto__list.html", null ],
     [ "BPMNOS::Execution::auto_list< std::weak_ptr< const BPMNOS::Execution::Token >, std::weak_ptr< const BPMNOS::Execution::DecisionRequest > >", "classBPMNOS_1_1Execution_1_1auto__list.html", null ],
-    [ "BPMNOS::Execution::auto_list< std::weak_ptr< const BPMNOS::Execution::Token >, std::weak_ptr< const BPMNOS::Execution::DecisionRequest >, BPMNOS::Execution::auto_list< std::weak_ptr< const BPMNOS::Execution::Message > >, const BPMNOS::Values >", "classBPMNOS_1_1Execution_1_1auto__list.html", null ],
-    [ "BPMNOS::Execution::auto_list< std::weak_ptr< const BPMNOS::Execution::Token >, std::weak_ptr< const BPMNOS::Execution::DecisionRequest >, const BPMNOS::Values >", "classBPMNOS_1_1Execution_1_1auto__list.html", null ],
+    [ "BPMNOS::Execution::auto_list< std::weak_ptr< const BPMNOS::Execution::Token >, std::weak_ptr< const BPMNOS::Execution::MessageDeliveryRequest > >", "classBPMNOS_1_1Execution_1_1auto__list.html", null ],
+    [ "BPMNOS::Execution::auto_list< std::weak_ptr< const BPMNOS::Execution::Token >, std::weak_ptr< const BPMNOS::Execution::MessageDeliveryRequest >, BPMNOS::Execution::auto_list< std::weak_ptr< const BPMNOS::Execution::Message > > >", "classBPMNOS_1_1Execution_1_1auto__list.html", null ],
     [ "BPMNOS::Execution::auto_list< U... >", "classBPMNOS_1_1Execution_1_1auto__list.html", null ],
     [ "BPMNOS::Execution::auto_list< WeakPtrs..., std::shared_ptr< BPMNOS::Execution::Decision > >", "classBPMNOS_1_1Execution_1_1auto__list.html", null ],
     [ "BPMNOS::Execution::auto_list< WeakPtrs..., std::weak_ptr< BPMNOS::Execution::Decision > >", "classBPMNOS_1_1Execution_1_1auto__list.html", null ],
@@ -70,7 +71,9 @@ var hierarchy =
       ] ]
     ] ],
     [ "std::enable_shared_from_this", null, [
-      [ "BPMNOS::Execution::DecisionRequest", "structBPMNOS_1_1Execution_1_1DecisionRequest.html", null ],
+      [ "BPMNOS::Execution::DecisionRequest", "structBPMNOS_1_1Execution_1_1DecisionRequest.html", [
+        [ "BPMNOS::Execution::MessageDeliveryRequest", "structBPMNOS_1_1Execution_1_1MessageDeliveryRequest.html", null ]
+      ] ],
       [ "BPMNOS::Execution::Evaluation", "structBPMNOS_1_1Execution_1_1Evaluation.html", null ],
       [ "BPMNOS::Execution::Event", "structBPMNOS_1_1Execution_1_1Event.html", [
         [ "BPMNOS::Execution::ChoiceEvent", "structBPMNOS_1_1Execution_1_1ChoiceEvent.html", [
