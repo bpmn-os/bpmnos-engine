@@ -2,6 +2,7 @@
 #include "StateMachine.h"
 #include "Engine.h"
 #include "DecisionRequest.h"
+#include "MessageDeliveryRequest.h"
 #include "SequentialPerformerUpdate.h"
 #include "DataUpdate.h"
 #include "model/bpmnos/src/extensionElements/ExtensionElements.h"
@@ -71,7 +72,16 @@ Token::Token(StateMachine* owner, const Token* other)
 {
   // Copy decisionRequest (uses raw this pointer, not weak_ptr)
   if (other->decisionRequest) {
-    decisionRequest = std::make_shared<DecisionRequest>(this, other->decisionRequest->type);
+    if ( other->decisionRequest->type == Observable::Type::MessageDeliveryRequest ) {
+      // the header is carried rather than built again: this copy is made later than the request, and the
+      // values it would build from are shared and may have been written meanwhile
+      assert( dynamic_cast<const MessageDeliveryRequest*>(other->decisionRequest.get()) );
+      auto request = static_cast<const MessageDeliveryRequest*>(other->decisionRequest.get());
+      decisionRequest = std::make_shared<MessageDeliveryRequest>(this, request->recipientHeader);
+    }
+    else {
+      decisionRequest = std::make_shared<DecisionRequest>(this, other->decisionRequest->type);
+    }
   }
 
   // Copy owned StateMachine (recursively copies child tokens and populates tracking containers)
@@ -1332,8 +1342,18 @@ void Token::awaitExitEvent() {
 void Token::awaitMessageDelivery() {
 //std::cerr << "awaitMessageDelivery" << std::endl;
   auto systemState = const_cast<SystemState*>(owner->systemState);
-  decisionRequest = std::make_shared<DecisionRequest>( this, Observable::Type::MessageDeliveryRequest );
-  systemState->pendingMessageDeliveryDecisions.emplace_back( weak_from_this(), decisionRequest );
+  // the header a message is matched against is what this token presents now, and it is kept for as long as
+  // the token waits, so that a value written meanwhile does not change what the token accepts
+  assert( node );
+  auto extensionElements = node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+  auto messageDefinition = extensionElements->getMessageDefinition(status);
+  assert( messageDefinition ); // a token awaits a delivery only at a node defining a message
+  auto request = std::make_shared<MessageDeliveryRequest>(
+    this,
+    messageDefinition->getRecipientHeader(getAttributeRegistry(),status,*data,globals)
+  );
+  decisionRequest = request;
+  systemState->pendingMessageDeliveryDecisions.emplace_back( weak_from_this(), request );
   owner->systemState->engine->notify(decisionRequest.get());
 }
 

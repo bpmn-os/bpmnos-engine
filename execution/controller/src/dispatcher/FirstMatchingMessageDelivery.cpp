@@ -20,10 +20,9 @@ void FirstMatchingMessageDelivery::connect(Mediator* mediator) {
 
 void FirstMatchingMessageDelivery::notice(const Observable* observable) {
   if ( observable->getObservableType() == Observable::Type::MessageDeliveryRequest ) {
-    auto request = static_cast<const DecisionRequest*>(observable);
+    auto request = static_cast<const MessageDeliveryRequest*>(observable);
     assert(request->token->node);
-    auto messageDefinition = request->token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->getMessageDefinition(request->token->status);
-    auto recipientHeader = messageDefinition->getRecipientHeader(request->token->getAttributeRegistry(),request->token->status,*request->token->data,request->token->globals);
+    auto& recipientHeader = request->recipientHeader;
     auto senderCandidates = request->token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->messageCandidates;
     auto_list< std::weak_ptr<const Message> > candidates;
     // determine candidate messages
@@ -36,7 +35,7 @@ void FirstMatchingMessageDelivery::notice(const Observable* observable) {
         candidates.emplace_back( message->weak_from_this() );
       }
     }
-    messageDeliveryRequests.emplace_back(request->token->weak_from_this(), request->weak_from_this(), candidates, recipientHeader);
+    messageDeliveryRequests.emplace_back(request->token->weak_from_this(), std::static_pointer_cast<const MessageDeliveryRequest>(request->shared_from_this()), candidates);
   }
   else if ( observable->getObservableType() == Observable::Type::Message ) {
     auto message = static_cast<const Message*>(observable);
@@ -44,13 +43,16 @@ void FirstMatchingMessageDelivery::notice(const Observable* observable) {
       messages.emplace_back( message->weak_from_this() );
       // add new message to relevant candidate lists
       auto recipientCandidates = message->origin->extensionElements->as<BPMNOS::Model::ExtensionElements>()->messageCandidates;
-      for ( auto& [token_ptr, request_ptr, candidates, recipientHeader ] : messageDeliveryRequests ) {
+      for ( auto& [token_ptr, request_ptr, candidates ] : messageDeliveryRequests ) {
         if ( auto token = token_ptr.lock();
           token &&
-          std::ranges::contains(recipientCandidates, token->node) &&
-          message->matches(recipientHeader)
+          std::ranges::contains(recipientCandidates, token->node)
         ) {
-          candidates.emplace_back( message->weak_from_this() );
+          auto request = request_ptr.lock();
+          assert( request );
+          if ( message->matches(request->recipientHeader) ) {
+            candidates.emplace_back( message->weak_from_this() );
+          }
         }
       }
     }
@@ -61,7 +63,7 @@ void FirstMatchingMessageDelivery::notice(const Observable* observable) {
 }
 
 std::shared_ptr<Event> FirstMatchingMessageDelivery::dispatchEvent( [[maybe_unused]] const SystemState* systemState ) {
-  for ( auto& [token_ptr, request_ptr, candidates, recipientHeader ] : messageDeliveryRequests ) {
+  for ( auto& [token_ptr, request_ptr, candidates ] : messageDeliveryRequests ) {
     if( auto token = token_ptr.lock() )  {
       if ( request_ptr.lock() )  {
         for ( auto& [message_ptr] : candidates ) {

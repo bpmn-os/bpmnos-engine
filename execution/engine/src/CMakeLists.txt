@@ -1,6 +1,7 @@
 list(APPEND engine_SOURCES
   Notifier.cpp
   Message.cpp
+  MessageDeliveryRequest.cpp
   Token.cpp
   ConditionalEventObserver.cpp
   ScenarioUpdater.cpp
@@ -34,6 +35,7 @@ list(APPEND engine_HEADERS
   DataUpdate.h
   ConditionalEventObserver.h
   DecisionRequest.h
+  MessageDeliveryRequest.h
   Event.h
   events/TerminationEvent.h
   events/ClockTickEvent.h

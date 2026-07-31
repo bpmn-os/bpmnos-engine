@@ -1,4 +1,5 @@
 #include "SeededGreedyController.h"
+#include "execution/engine/src/MessageDeliveryRequest.h"
 #include "execution/engine/src/events/ErrorEvent.h"
 //#include <iostream>
 
@@ -56,9 +57,9 @@ std::shared_ptr<Event> SeededGreedyController::createChoiceEvent([[maybe_unused]
 
 std::shared_ptr<Event> SeededGreedyController::createMessageDeliveryEvent([[maybe_unused]] const SystemState* systemState, const Token* token, [[maybe_unused]] const Vertex* vertex) {
 //std::cerr << "SeededGreedyController::createMessageDeliveryEvent" << std::endl;
-  // obtain message candidates
-  auto messageDefinition = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->getMessageDefinition(token->status);
-  auto recipientHeader = messageDefinition->getRecipientHeader(token->getAttributeRegistry(),token->status,*token->data,token->globals);
+  // obtain message candidates, matched against the header the token presented when it began waiting
+  assert( token->decisionRequest && token->decisionRequest->type == Observable::Type::MessageDeliveryRequest );
+  auto& recipientHeader = static_cast<const MessageDeliveryRequest*>(token->decisionRequest.get())->recipientHeader;
   auto senderCandidates = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->messageCandidates;
   std::list< std::shared_ptr<const Message> > candidates;
 //std::cerr << "Messages: " << !messages.empty() << std::endl;

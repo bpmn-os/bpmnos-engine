@@ -3,6 +3,7 @@
 
 #include <bpmn++.h>
 #include "execution/engine/src/Message.h"
+#include "execution/engine/src/MessageDeliveryRequest.h"
 #include "execution/controller/src/CachedCandidates.h"
 #include "execution/controller/src/Evaluator.h"
 #include "execution/controller/src/decisions/MessageDeliveryDecision.h"
@@ -27,7 +28,8 @@ protected:
   void evaluateCandidates() override;
   Evaluator* evaluator;
 private:
-  auto_list< std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest>, const BPMNOS::Values > requests;
+  /// Requests awaiting a delivery. The header a request is matched by is the request's own.
+  auto_list< std::weak_ptr<const Token>, std::weak_ptr<const MessageDeliveryRequest> > requests;
   auto_list< std::weak_ptr<const Message> > messages;
 };
 

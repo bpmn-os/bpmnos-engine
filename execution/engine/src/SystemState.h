@@ -3,6 +3,7 @@
 
 #include "StateMachine.h"
 #include "DecisionRequest.h"
+#include "MessageDeliveryRequest.h"
 #include "execution/engine/src/Message.h"
 #include "execution/engine/src/Observable.h"
 #include "execution/utility/src/auto_list.h"
@@ -92,7 +93,8 @@ public:
   auto_list< std::weak_ptr<Token>, std::weak_ptr<DecisionRequest> > pendingEntryDecisions;
   auto_list< std::weak_ptr<Token>, std::weak_ptr<DecisionRequest> > pendingChoiceDecisions;
   auto_list< std::weak_ptr<Token>, std::weak_ptr<DecisionRequest> > pendingExitDecisions;
-  auto_list< std::weak_ptr<Token>, std::weak_ptr<DecisionRequest> > pendingMessageDeliveryDecisions;
+  /// Pending deliveries hold the request of their own kind, which carries the header its token is matched by.
+  auto_list< std::weak_ptr<Token>, std::weak_ptr<MessageDeliveryRequest> > pendingMessageDeliveryDecisions;
 
   auto_list< std::weak_ptr<Token> > tokensAwaitingReadyEvent; ///< Container holding all tokens awaiting a ready event
   auto_set< BPMNOS::number, ascending, std::weak_ptr<Token> > tokensAwaitingCompletionEvent; ///< Sorted container holding all tokens awaiting a task completion event

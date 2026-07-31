@@ -30,12 +30,11 @@ void MessageDeliveries::clear() {
 
 void MessageDeliveries::notice(const Observable* observable) {
   if ( observable->getObservableType() == Observable::Type::MessageDeliveryRequest ) {
-    auto request = static_cast<const DecisionRequest*>(observable);
+    auto request = static_cast<const MessageDeliveryRequest*>(observable);
     assert(request->token->node);
 
-    auto messageDefinition = request->token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->getMessageDefinition(request->token->status);
-    auto recipientHeader = messageDefinition->getRecipientHeader(request->token->getAttributeRegistry(),request->token->status,*request->token->data,request->token->globals);
-    requests.emplace_back( request->token->weak_from_this(), request->weak_from_this(), recipientHeader );
+    auto& recipientHeader = request->recipientHeader;
+    requests.emplace_back( request->token->weak_from_this(), std::static_pointer_cast<const MessageDeliveryRequest>(request->shared_from_this()) );
 
     auto senderCandidates = request->token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->messageCandidates;
     // determine candidate decisions
@@ -56,16 +55,17 @@ void MessageDeliveries::notice(const Observable* observable) {
       messages.emplace_back( message->weak_from_this() );
       // add new decision
       auto recipientCandidates = message->origin->extensionElements->as<BPMNOS::Model::ExtensionElements>()->messageCandidates;
-      for ( auto& [token_ptr, request_ptr, recipientHeader ] : requests ) {
+      for ( auto& [token_ptr, request_ptr ] : requests ) {
         if ( auto token = token_ptr.lock();
           token &&
-          std::ranges::contains(recipientCandidates, token->node) &&
-          message->matches(recipientHeader)
+          std::ranges::contains(recipientCandidates, token->node)
         ) {
           auto request = request_ptr.lock();
           assert( request );
-          auto decision = std::make_shared<MessageDeliveryDecision>(request.get(), message, evaluator);
-          addDecision( token_ptr, request_ptr, message->weak_from_this(), decision );
+          if ( message->matches(request->recipientHeader) ) {
+            auto decision = std::make_shared<MessageDeliveryDecision>(request.get(), message, evaluator);
+            addDecision( token_ptr, request_ptr, message->weak_from_this(), decision );
+          }
         }
       }
     }

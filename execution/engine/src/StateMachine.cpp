@@ -101,7 +101,9 @@ StateMachine::StateMachine(const SystemState* systemState, Token* parentToken, c
         const_cast<SystemState*>(systemState)->pendingExitDecisions.emplace_back(token, token->decisionRequest);
       }
       else if (type == Observable::Type::MessageDeliveryRequest) {
-        const_cast<SystemState*>(systemState)->pendingMessageDeliveryDecisions.emplace_back(token, token->decisionRequest);
+        // the kind has just been read, so the request is of that kind and carries the header with it
+        const_cast<SystemState*>(systemState)->pendingMessageDeliveryDecisions.emplace_back(
+          token, std::static_pointer_cast<MessageDeliveryRequest>(token->decisionRequest));
       }
     }
 

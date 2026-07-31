@@ -5,6 +5,7 @@
 #include "execution/engine/src/EventDispatcher.h"
 #include "execution/engine/src/Observer.h"
 #include "execution/engine/src/Message.h"
+#include "execution/engine/src/MessageDeliveryRequest.h"
 
 namespace BPMNOS::Execution {
 
@@ -22,7 +23,9 @@ public:
   using EventDispatcher::notice;
   void notice(const Observable* observable) override;
 private:
-  auto_list< std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest>, auto_list< std::weak_ptr<const Message> >, const BPMNOS::Values > messageDeliveryRequests;
+  /// Requests awaiting a delivery, each with the messages found to match it. The header a request is
+  /// matched by is the request's own, so it is not kept here.
+  auto_list< std::weak_ptr<const Token>, std::weak_ptr<const MessageDeliveryRequest>, auto_list< std::weak_ptr<const Message> > > messageDeliveryRequests;
   auto_list< std::weak_ptr<const Message> > messages;
 };
 
