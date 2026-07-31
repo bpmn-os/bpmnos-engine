@@ -1309,9 +1309,10 @@ void Token::awaitEntryEvent() {
 void Token::awaitChoiceEvent() {
   auto systemState = const_cast<SystemState*>(owner->systemState);
   decisionRequest = std::make_shared<DecisionRequest>( this, Observable::Type::ChoiceRequest );
-  owner->systemState->engine->notify(decisionRequest.get());
+  // the pending decision is held before it is announced, so that an observer being told of a request finds
+  // the system state already holding it
   systemState->pendingChoiceDecisions.emplace_back( weak_from_this(), decisionRequest );
-
+  owner->systemState->engine->notify(decisionRequest.get());
 }
 
 void Token::awaitTaskCompletionEvent() {
@@ -1324,17 +1325,16 @@ void Token::awaitExitEvent() {
 //std::cerr << "awaitExitEvent" << std::endl;
   auto systemState = const_cast<SystemState*>(owner->systemState);
   decisionRequest = std::make_shared<DecisionRequest>( this, Observable::Type::ExitRequest );
-  owner->systemState->engine->notify(decisionRequest.get());
   systemState->pendingExitDecisions.emplace_back( weak_from_this(), decisionRequest );
-
+  owner->systemState->engine->notify(decisionRequest.get());
 }
 
 void Token::awaitMessageDelivery() {
 //std::cerr << "awaitMessageDelivery" << std::endl;
   auto systemState = const_cast<SystemState*>(owner->systemState);
   decisionRequest = std::make_shared<DecisionRequest>( this, Observable::Type::MessageDeliveryRequest );
-  owner->systemState->engine->notify(decisionRequest.get());
   systemState->pendingMessageDeliveryDecisions.emplace_back( weak_from_this(), decisionRequest );
+  owner->systemState->engine->notify(decisionRequest.get());
 }
 
 void Token::awaitTimer(BPMNOS::number time) {
