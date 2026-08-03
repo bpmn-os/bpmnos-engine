@@ -147,11 +147,13 @@ class BPMNOS::Execution::Candidates&lt; WeakPtrs &gt;</div><p>Iterating (<code>f
 <div class="dynheader">
 Inheritance diagram for BPMNOS::Execution::Candidates&lt; WeakPtrs &gt;:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classBPMNOS_1_1Execution_1_1Candidates__inherit__graph.svg" width="190" height="439"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classBPMNOS_1_1Execution_1_1Candidates__inherit__graph.svg" width="190" height="479"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:a917ee88a5d167e5d22503343c7e83660" id="r_a917ee88a5d167e5d22503343c7e83660"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Execution_1_1Candidates.html#a917ee88a5d167e5d22503343c7e83660">Candidates</a> (std::shared_ptr&lt; <a class="el" href="classBPMNOS_1_1Execution_1_1Evaluator.html">Evaluator</a> &gt; <a class="el" href="classBPMNOS_1_1Execution_1_1Candidates.html#abf67ad86b7fd9b6f6b9182e2409de648">evaluator</a>)</td></tr>
+<tr class="separator:a917ee88a5d167e5d22503343c7e83660"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a88ed665d85399b5c67f768362bb892b9" id="r_a88ed665d85399b5c67f768362bb892b9"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Execution_1_1Candidates.html#a88ed665d85399b5c67f768362bb892b9">~Candidates</a> ()=default</td></tr>
 <tr class="separator:a88ed665d85399b5c67f768362bb892b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5159342208cfd3301796af0df507b3f0" id="r_a5159342208cfd3301796af0df507b3f0"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Execution_1_1Candidates.html#a5159342208cfd3301796af0df507b3f0">connect</a> (<a class="el" href="classBPMNOS_1_1Execution_1_1Notifier.html">Notifier</a> *)</td></tr>
@@ -186,6 +188,9 @@ Protected Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
+<tr class="memitem:abf67ad86b7fd9b6f6b9182e2409de648" id="r_abf67ad86b7fd9b6f6b9182e2409de648"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classBPMNOS_1_1Execution_1_1Evaluator.html">Evaluator</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Execution_1_1Candidates.html#abf67ad86b7fd9b6f6b9182e2409de648">evaluator</a></td></tr>
+<tr class="memdesc:abf67ad86b7fd9b6f6b9182e2409de648"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluates every candidate; owned here, so a decision built with it is never built through a dangling one.  <br /></td></tr>
+<tr class="separator:abf67ad86b7fd9b6f6b9182e2409de648"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:add9eaa54e1680f4026abfc3823a3dfa6" id="r_add9eaa54e1680f4026abfc3823a3dfa6"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classBPMNOS_1_1Execution_1_1SystemState.html">SystemState</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Execution_1_1Candidates.html#add9eaa54e1680f4026abfc3823a3dfa6">systemState</a> = nullptr</td></tr>
 <tr class="memdesc:add9eaa54e1680f4026abfc3823a3dfa6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Per-run system state (bound by notice).  <br /></td></tr>
 <tr class="separator:add9eaa54e1680f4026abfc3823a3dfa6"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -197,6 +202,37 @@ Protected Attributes</h2></td></tr>
 <tr class="separator:aa7f49b1e37902df64d4340d8faa6ecc8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a917ee88a5d167e5d22503343c7e83660" name="a917ee88a5d167e5d22503343c7e83660"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a917ee88a5d167e5d22503343c7e83660">&#9670;&#160;</a></span>Candidates()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename... WeakPtrs&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classBPMNOS_1_1Execution_1_1Candidates.html">BPMNOS::Execution::Candidates</a>&lt; WeakPtrs &gt;::Candidates </td>
+          <td>(</td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classBPMNOS_1_1Execution_1_1Evaluator.html">Evaluator</a> &gt;&#160;</td>
+          <td class="paramname"><em>evaluator</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>The evaluator every candidate of this collection is evaluated through, owned here because this is where it is read: the collection builds its decisions with it and holds it for as long as it may. </p>
+
+<p class="definition">Definition at line <a class="el" href="Candidates_8h_source.html#l00037">37</a> of file <a class="el" href="Candidates_8h_source.html">Candidates.h</a>.</p>
+
+</div>
+</div>
 <a id="a88ed665d85399b5c67f768362bb892b9" name="a88ed665d85399b5c67f768362bb892b9"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a88ed665d85399b5c67f768362bb892b9">&#9670;&#160;</a></span>~Candidates()</h2>
 
@@ -261,7 +297,7 @@ template&lt;typename... WeakPtrs&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Candidates_8h_source.html#l00062">62</a> of file <a class="el" href="Candidates_8h_source.html">Candidates.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Candidates_8h_source.html#l00065">65</a> of file <a class="el" href="Candidates_8h_source.html">Candidates.h</a>.</p>
 
 </div>
 </div>
@@ -301,7 +337,7 @@ template&lt;typename... WeakPtrs&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Candidates_8h_source.html#l00056">56</a> of file <a class="el" href="Candidates_8h_source.html">Candidates.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Candidates_8h_source.html#l00059">59</a> of file <a class="el" href="Candidates_8h_source.html">Candidates.h</a>.</p>
 
 </div>
 </div>
@@ -330,7 +366,7 @@ template&lt;typename... WeakPtrs&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Candidates_8h_source.html#l00048">48</a> of file <a class="el" href="Candidates_8h_source.html">Candidates.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Candidates_8h_source.html#l00051">51</a> of file <a class="el" href="Candidates_8h_source.html">Candidates.h</a>.</p>
 
 </div>
 </div>
@@ -359,7 +395,7 @@ template&lt;typename... WeakPtrs&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Candidates_8h_source.html#l00070">70</a> of file <a class="el" href="Candidates_8h_source.html">Candidates.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Candidates_8h_source.html#l00073">73</a> of file <a class="el" href="Candidates_8h_source.html">Candidates.h</a>.</p>
 
 </div>
 </div>
@@ -391,7 +427,7 @@ template&lt;typename... WeakPtrs&gt; </div>
 
 <p>Reimplemented in <a class="el" href="classBPMNOS_1_1Execution_1_1FirstBisectionalChoice.html#a5d6fe7c104c88081dacb23d2c057207a">BPMNOS::Execution::FirstBisectionalChoice</a>, <a class="el" href="classBPMNOS_1_1Execution_1_1FirstEnumeratedChoice.html#aa135e18e1cc56992da9f0afe28615f63">BPMNOS::Execution::FirstEnumeratedChoice</a>, <a class="el" href="classBPMNOS_1_1Execution_1_1FirstFeasibleEntry.html#a4c453fdfde4e70743faca163a4f5f574">BPMNOS::Execution::FirstFeasibleEntry</a>, <a class="el" href="classBPMNOS_1_1Execution_1_1FirstFeasibleExit.html#a1b760c864a37bf0c5d39aac59b75dc59">BPMNOS::Execution::FirstFeasibleExit</a>, <a class="el" href="classBPMNOS_1_1Execution_1_1MessageDeliveries.html#a4f74f710ff546a3a8dbd50d4f6eab8f0">BPMNOS::Execution::MessageDeliveries</a>, and <a class="el" href="classBPMNOS_1_1Execution_1_1SequentialEntries.html#a83dc36902b183149467e299cebb943b2">BPMNOS::Execution::SequentialEntries</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Candidates_8h_source.html#l00038">38</a> of file <a class="el" href="Candidates_8h_source.html">Candidates.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Candidates_8h_source.html#l00041">41</a> of file <a class="el" href="Candidates_8h_source.html">Candidates.h</a>.</p>
 
 </div>
 </div>
@@ -420,7 +456,7 @@ template&lt;typename... WeakPtrs&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Candidates_8h_source.html#l00049">49</a> of file <a class="el" href="Candidates_8h_source.html">Candidates.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Candidates_8h_source.html#l00052">52</a> of file <a class="el" href="Candidates_8h_source.html">Candidates.h</a>.</p>
 
 </div>
 </div>
@@ -483,7 +519,7 @@ template&lt;typename... WeakPtrs&gt; </div>
 
 <p>Reimplemented in <a class="el" href="classBPMNOS_1_1Execution_1_1FirstFeasibleEntry.html#a137d48ed44f0bf3ccc0ca94f68356501">BPMNOS::Execution::FirstFeasibleEntry</a>, <a class="el" href="classBPMNOS_1_1Execution_1_1FirstFeasibleExit.html#a034f2c0434a555ab075b88c6c667d404">BPMNOS::Execution::FirstFeasibleExit</a>, <a class="el" href="classBPMNOS_1_1Execution_1_1MessageDeliveries.html#a37db7d86ac38b2eba286cb26dfe310a4">BPMNOS::Execution::MessageDeliveries</a>, and <a class="el" href="classBPMNOS_1_1Execution_1_1SequentialEntries.html#ab82ef9ca27df9ec50b3cac1500188e00">BPMNOS::Execution::SequentialEntries</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Candidates_8h_source.html#l00041">41</a> of file <a class="el" href="Candidates_8h_source.html">Candidates.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Candidates_8h_source.html#l00044">44</a> of file <a class="el" href="Candidates_8h_source.html">Candidates.h</a>.</p>
 
 </div>
 </div>
@@ -510,7 +546,7 @@ template&lt;typename... WeakPtrs&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Candidates_8h_source.html#l00076">76</a> of file <a class="el" href="Candidates_8h_source.html">Candidates.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Candidates_8h_source.html#l00080">80</a> of file <a class="el" href="Candidates_8h_source.html">Candidates.h</a>.</p>
 
 </div>
 </div>
@@ -536,7 +572,33 @@ template&lt;typename... WeakPtrs&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Candidates_8h_source.html#l00077">77</a> of file <a class="el" href="Candidates_8h_source.html">Candidates.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Candidates_8h_source.html#l00081">81</a> of file <a class="el" href="Candidates_8h_source.html">Candidates.h</a>.</p>
+
+</div>
+</div>
+<a id="abf67ad86b7fd9b6f6b9182e2409de648" name="abf67ad86b7fd9b6f6b9182e2409de648"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abf67ad86b7fd9b6f6b9182e2409de648">&#9670;&#160;</a></span>evaluator</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename... WeakPtrs&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::shared_ptr&lt;<a class="el" href="classBPMNOS_1_1Execution_1_1Evaluator.html">Evaluator</a>&gt; <a class="el" href="classBPMNOS_1_1Execution_1_1Candidates.html">BPMNOS::Execution::Candidates</a>&lt; WeakPtrs &gt;::evaluator</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Candidates_8h_source.html#l00078">78</a> of file <a class="el" href="Candidates_8h_source.html">Candidates.h</a>.</p>
 
 </div>
 </div>
@@ -562,7 +624,7 @@ template&lt;typename... WeakPtrs&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Candidates_8h_source.html#l00075">75</a> of file <a class="el" href="Candidates_8h_source.html">Candidates.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Candidates_8h_source.html#l00079">79</a> of file <a class="el" href="Candidates_8h_source.html">Candidates.h</a>.</p>
 
 </div>
 </div>

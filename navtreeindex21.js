@@ -1,17 +1,5 @@
 var NAVTREEINDEX21 =
 {
-"truck_driver_scheduling_problem.html#endevent-tripendevent":[7,2,0,16],
-"truck_driver_scheduling_problem.html#endevent-tripendeventbreak":[7,2,0,29],
-"truck_driver_scheduling_problem.html#endevent-tripendeventrest":[7,2,0,30],
-"truck_driver_scheduling_problem.html#endevent-waitendevent":[7,2,0,41],
-"truck_driver_scheduling_problem.html#exclusivegateway-arrivalgateway":[7,2,0,14],
-"truck_driver_scheduling_problem.html#exclusivegateway-tripgateway":[7,2,0,26],
-"truck_driver_scheduling_problem.html#exclusivegateway-visitgateway":[7,2,0,10],
-"truck_driver_scheduling_problem.html#exclusivegateway-waitbeforevisitgateway":[7,2,0,9],
-"truck_driver_scheduling_problem.html#exclusivegateway-waitgateway_1":[7,2,0,39],
-"truck_driver_scheduling_problem.html#exclusivegateway-waitgateway_2":[7,2,0,44],
-"truck_driver_scheduling_problem.html#gatekeeper-10":[7,2,0,33,0],
-"truck_driver_scheduling_problem.html#gatekeeper-11":[7,2,0,34,0],
 "truck_driver_scheduling_problem.html#gatekeeper-12":[7,2,0,45,0],
 "truck_driver_scheduling_problem.html#gatekeeper-13":[7,2,0,46,0],
 "truck_driver_scheduling_problem.html#gatekeeper-14":[7,2,0,47,0],

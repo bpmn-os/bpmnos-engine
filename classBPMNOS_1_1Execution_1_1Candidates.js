@@ -1,5 +1,6 @@
 var classBPMNOS_1_1Execution_1_1Candidates =
 [
+    [ "Candidates", "classBPMNOS_1_1Execution_1_1Candidates.html#a917ee88a5d167e5d22503343c7e83660", null ],
     [ "~Candidates", "classBPMNOS_1_1Execution_1_1Candidates.html#a88ed665d85399b5c67f768362bb892b9", null ],
     [ "addCandidate", "classBPMNOS_1_1Execution_1_1Candidates.html#aebc0cc7b8a299b74536090155d58b3ee", null ],
     [ "addDecision", "classBPMNOS_1_1Execution_1_1Candidates.html#a5634e380ecc3efe31bd43c0d9901de32", null ],
@@ -11,5 +12,6 @@ var classBPMNOS_1_1Execution_1_1Candidates =
     [ "notice", "classBPMNOS_1_1Execution_1_1Candidates.html#ae6efff720a42809c4d70378169524975", null ],
     [ "candidates", "classBPMNOS_1_1Execution_1_1Candidates.html#a9a01232dd0f812f036c210d8ae85565d", null ],
     [ "decisions", "classBPMNOS_1_1Execution_1_1Candidates.html#aa7f49b1e37902df64d4340d8faa6ecc8", null ],
+    [ "evaluator", "classBPMNOS_1_1Execution_1_1Candidates.html#abf67ad86b7fd9b6f6b9182e2409de648", null ],
     [ "systemState", "classBPMNOS_1_1Execution_1_1Candidates.html#add9eaa54e1680f4026abfc3823a3dfa6", null ]
 ];

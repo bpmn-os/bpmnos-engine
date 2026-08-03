@@ -97,7 +97,7 @@ var searchData=
   ['globalvaluemap_94',['globalValueMap',['../classBPMNOS_1_1Model_1_1DataProvider.html#acf5053ae6b0cc2c3136ed0020ba05549',1,'BPMNOS::Model::DataProvider']]],
   ['graph_95',['graph',['../classBPMNOS_1_1Execution_1_1FlattenedGraph_1_1Vertex.html#ada2b722ae464298da3b04e076d9c3493',1,'BPMNOS::Execution::FlattenedGraph::Vertex']]],
   ['greedy_20controller_96',['Greedy controller',['../controller.html#greedy-controller',1,'']]],
-  ['greedycontroller_97',['greedycontroller',['../classBPMNOS_1_1Execution_1_1GreedyController.html',1,'BPMNOS::Execution::GreedyController'],['../classBPMNOS_1_1Execution_1_1GreedyController.html#a17de474df3b9316bb8e3552db0665b13',1,'BPMNOS::Execution::GreedyController::GreedyController()']]],
+  ['greedycontroller_97',['greedycontroller',['../classBPMNOS_1_1Execution_1_1GreedyController.html',1,'BPMNOS::Execution::GreedyController'],['../classBPMNOS_1_1Execution_1_1GreedyController.html#ad5b4e69bac8da454ffdc40f54497a2f9',1,'BPMNOS::Execution::GreedyController::GreedyController()']]],
   ['greedycontroller_2ecpp_98',['GreedyController.cpp',['../GreedyController_8cpp.html',1,'']]],
   ['greedycontroller_2eh_99',['GreedyController.h',['../GreedyController_8h.html',1,'']]],
   ['greedydispatcher_100',['greedydispatcher',['../classBPMNOS_1_1Execution_1_1GreedyDispatcher.html#a4ca8968ea213989b058279b1558e7c74',1,'BPMNOS::Execution::GreedyDispatcher::GreedyDispatcher()'],['../classBPMNOS_1_1Execution_1_1GreedyDispatcher.html',1,'BPMNOS::Execution::GreedyDispatcher&lt; Candidates &gt;']]],
