@@ -26,9 +26,10 @@ class Notifier;
  */
 class CompetingCandidates {
 public:
-  CompetingCandidates(Evaluator* evaluator)
+  /// Hands a share to each of the two collections it merges and keeps none: the evaluator is read by them.
+  CompetingCandidates(std::shared_ptr<Evaluator> evaluator)
     : sequentialEntries(evaluator)
-    , messageDeliveries(evaluator)
+    , messageDeliveries(std::move(evaluator))
   {
   }
 

@@ -22,8 +22,8 @@ SCENARIO( "Guided knapsack problem", "[examples][knapsack_problem]" ) {
     WHEN( "The engine is started with the guided controller" ) {
       Execution::Engine engine;
 
-      Execution::GuidedEvaluator evaluator;
-      Execution::GreedyController controller(&evaluator);
+      auto evaluator = std::make_shared<Execution::GuidedEvaluator>();
+      Execution::GreedyController controller(evaluator);
       controller.connect(&engine);
       
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;
@@ -55,8 +55,8 @@ SCENARIO( "Guided knapsack problem", "[examples][knapsack_problem]" ) {
     WHEN( "The engine is started with the guided controller and greedy decisions" ) {
       Execution::Engine engine;
 
-      Execution::GuidedEvaluator evaluator;
-      Execution::GreedyController controller(&evaluator);
+      auto evaluator = std::make_shared<Execution::GuidedEvaluator>();
+      Execution::GreedyController controller(evaluator);
       controller.connect(&engine);
       
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;

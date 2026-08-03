@@ -45,11 +45,11 @@ SCENARIO( "Travelling salesperson problem", "[examples][travelling_salesperson_p
     }
     WHEN( "The engine is started with a best-first policy" ) {
       Execution::Engine engine;
-      Execution::LocalEvaluator evaluator;
+      auto evaluator = std::make_shared<Execution::LocalEvaluator>();
       
 //      Execution::InstantEntry entryHandler;
-      Execution::GreedyDispatcher<Execution::FirstFeasibleEntry> entryHandler(&evaluator);
-      Execution::GreedyDispatcher<Execution::SequentialEntries> sequentialEntryHandler(&evaluator);
+      Execution::GreedyDispatcher<Execution::FirstFeasibleEntry> entryHandler(evaluator);
+      Execution::GreedyDispatcher<Execution::SequentialEntries> sequentialEntryHandler(evaluator);
       Execution::FirstMatchingMessageDelivery messageHandler;
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;
       Execution::InstantExit exitHandler;
@@ -79,8 +79,8 @@ SCENARIO( "Travelling salesperson problem", "[examples][travelling_salesperson_p
     WHEN( "The engine is started with the greedy controller" ) {
       Execution::Engine engine;
 
-      Execution::LocalEvaluator evaluator;
-      Execution::GreedyController controller(&evaluator);
+      auto evaluator = std::make_shared<Execution::LocalEvaluator>();
+      Execution::GreedyController controller(evaluator);
       controller.connect(&engine);
       
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;

@@ -5,11 +5,11 @@
 
 using namespace BPMNOS::Execution;
 
-SeededGreedyController::SeededGreedyController(const BPMNOS::Execution::FlattenedGraph* flattenedGraph, Evaluator* evaluator)
+SeededGreedyController::SeededGreedyController(const BPMNOS::Execution::FlattenedGraph* flattenedGraph, std::shared_ptr<Evaluator> evaluator)
   : SeededController(flattenedGraph)
-  , evaluator(evaluator)
+  , evaluator(std::move(evaluator))
 {
-  choiceDispatcher = std::make_unique<FirstBisectionalChoice>(evaluator);
+  choiceDispatcher = std::make_unique<FirstBisectionalChoice>(this->evaluator);
 }
 
 void SeededGreedyController::notice(const Observable* observable) {
@@ -27,7 +27,7 @@ void SeededGreedyController::notice(const Observable* observable) {
 
 std::shared_ptr<Event> SeededGreedyController::createEntryEvent([[maybe_unused]] const SystemState* systemState, const Token* token, [[maybe_unused]] const Vertex* vertex) {
   // instant entry ( if feasible )
-  auto decision = std::make_shared<EntryDecision>(token->decisionRequest.get(), evaluator);
+  auto decision = std::make_shared<EntryDecision>(token->decisionRequest.get(), evaluator.get());
   if ( decision->evaluate() ) {
     return decision;
   }
@@ -36,7 +36,7 @@ std::shared_ptr<Event> SeededGreedyController::createEntryEvent([[maybe_unused]]
 
 std::shared_ptr<Event> SeededGreedyController::createExitEvent([[maybe_unused]] const SystemState* systemState, const Token* token, [[maybe_unused]] const Vertex* vertex) {
   // instant exit ( if feasible )
-  auto decision = std::make_shared<ExitDecision>(token->decisionRequest.get(), evaluator);
+  auto decision = std::make_shared<ExitDecision>(token->decisionRequest.get(), evaluator.get());
   if ( decision->evaluate() ) {
     return decision;
   }
@@ -80,7 +80,7 @@ std::shared_ptr<Event> SeededGreedyController::createMessageDeliveryEvent([[mayb
   // evaluate message candidates
   std::shared_ptr<MessageDeliveryDecision> best = nullptr;
   for ( auto& message : candidates ) {
-    auto decision = std::make_shared<MessageDeliveryDecision>(token->decisionRequest.get(), message.get(), evaluator);
+    auto decision = std::make_shared<MessageDeliveryDecision>(token->decisionRequest.get(), message.get(), evaluator.get());
     if (
       decision->evaluate() &&
       ( !best || best->reward().value() < decision->reward().value() )

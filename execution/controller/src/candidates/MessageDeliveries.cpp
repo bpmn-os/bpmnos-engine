@@ -8,8 +8,8 @@
 
 using namespace BPMNOS::Execution;
 
-MessageDeliveries::MessageDeliveries(Evaluator* evaluator)
-  : evaluator(evaluator)
+MessageDeliveries::MessageDeliveries(std::shared_ptr<Evaluator> evaluator)
+  : CachedCandidates(std::move(evaluator))
 {
 }
 
@@ -44,7 +44,7 @@ void MessageDeliveries::notice(const Observable* observable) {
         std::ranges::contains(senderCandidates, message->origin) &&
         message->matches(recipientHeader)
       ) {
-        auto decision = std::make_shared<MessageDeliveryDecision>(request, message.get(), evaluator);
+        auto decision = std::make_shared<MessageDeliveryDecision>(request, message.get(), evaluator.get());
         addDecision( request->token->weak_from_this(), request->weak_from_this(), message_ptr, decision );
       }
     }
@@ -63,7 +63,7 @@ void MessageDeliveries::notice(const Observable* observable) {
           auto request = request_ptr.lock();
           assert( request );
           if ( message->matches(request->recipientHeader) ) {
-            auto decision = std::make_shared<MessageDeliveryDecision>(request.get(), message, evaluator);
+            auto decision = std::make_shared<MessageDeliveryDecision>(request.get(), message, evaluator.get());
             addDecision( token_ptr, request_ptr, message->weak_from_this(), decision );
           }
         }

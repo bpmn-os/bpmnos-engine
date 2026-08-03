@@ -11,9 +11,8 @@
 
 using namespace BPMNOS::Execution;
 
-GreedyController::GreedyController(Evaluator* evaluator, Config config)
-  : evaluator(evaluator)
-  , config(config)
+GreedyController::GreedyController(std::shared_ptr<Evaluator> evaluator, Config config)
+  : config(config)
 {
   // Decisions come from Candidates collections, each owned by a generic GreedyDispatcher (templated on the
   // collection type), tried in priority order. Exit, entry, and direct message delivery are unambiguous;

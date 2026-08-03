@@ -17,7 +17,7 @@ namespace BPMNOS::Execution {
  */
 class SeededGreedyController : public SeededController {
 public:
-  SeededGreedyController(const BPMNOS::Execution::FlattenedGraph* flattenedGraph, Evaluator* evaluator);
+  SeededGreedyController(const BPMNOS::Execution::FlattenedGraph* flattenedGraph, std::shared_ptr<Evaluator> evaluator);
   using EventDispatcher::notice;
   void notice(const Observable* observable) override;
   std::shared_ptr<Event> createEntryEvent(const SystemState* systemState, const Token* token, const Vertex* vertex) override;
@@ -27,7 +27,7 @@ public:
 protected:
   auto_list< std::weak_ptr<const Message> > messages;
   std::unique_ptr<FirstBisectionalChoice> choiceDispatcher;
-  Evaluator* evaluator;
+  std::shared_ptr<Evaluator> evaluator;   ///< Kept because this controller builds decisions itself.
 };
 
 } // namespace BPMNOS::Execution

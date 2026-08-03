@@ -118,12 +118,12 @@ int main(int argc, char* argv[]) {
     return nullptr;
   };
 
-  auto createEvaluator = [&args]() -> std::unique_ptr<BPMNOS::Execution::Evaluator> {
+  auto createEvaluator = [&args]() -> std::shared_ptr<BPMNOS::Execution::Evaluator> {
     if (args.evaluatorName == "local") {
-      return std::make_unique<BPMNOS::Execution::LocalEvaluator>();
+      return std::make_shared<BPMNOS::Execution::LocalEvaluator>();
     }
     else if (args.evaluatorName == "guided") {
-      return std::make_unique<BPMNOS::Execution::GuidedEvaluator>();
+      return std::make_shared<BPMNOS::Execution::GuidedEvaluator>();
     }
     else {
       std::cerr << "Error: unknown evaluator.\n";
@@ -141,7 +141,7 @@ int main(int argc, char* argv[]) {
   BPMNOS::Execution::Engine engine;
 
   auto evaluator = createEvaluator();
-  BPMNOS::Execution::GreedyController controller(evaluator.get(), { .bisection = args.bisection });
+  BPMNOS::Execution::GreedyController controller(evaluator, { .bisection = args.bisection });
   controller.connect(&engine);
       
   BPMNOS::Execution::TimeWarp timeHandler;

@@ -17,12 +17,11 @@ namespace BPMNOS::Execution {
  */
 class SequentialEntries : public CachedCandidates< std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest> > {
 public:
-  SequentialEntries(Evaluator* evaluator);
+  SequentialEntries(std::shared_ptr<Evaluator> evaluator);
   void connect(Notifier* notifier) override;
   void notice(const Observable* observable) override;
 protected:
   void evaluateCandidates() override;
-  Evaluator* evaluator;
 };
 
 } // namespace BPMNOS::Execution

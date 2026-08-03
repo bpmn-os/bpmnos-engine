@@ -17,12 +17,11 @@ namespace BPMNOS::Execution {
  */
 class FirstFeasibleExit : public CachedCandidates< std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest> > {
 public:
-  FirstFeasibleExit(Evaluator* evaluator);
+  FirstFeasibleExit(std::shared_ptr<Evaluator> evaluator);
   void connect(Notifier* notifier) override;
   void notice(const Observable* observable) override;
 protected:
   void evaluateCandidates() override;
-  Evaluator* evaluator;
 };
 
 } // namespace BPMNOS::Execution

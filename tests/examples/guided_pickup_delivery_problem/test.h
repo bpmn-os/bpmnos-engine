@@ -31,8 +31,8 @@ SCENARIO( "Guided pickup delivery problem", "[examples][pickup_delivery_problem]
 
     Execution::Engine engine;
 
-    Execution::GuidedEvaluator evaluator;
-    Execution::GreedyController controller(&evaluator);
+    auto evaluator = std::make_shared<Execution::GuidedEvaluator>();
+    Execution::GreedyController controller(evaluator);
     controller.connect(&engine);
       
 //    Execution::MyopicMessageTaskTerminator messageTaskTerminator;
@@ -97,8 +97,8 @@ SCENARIO( "Guided pickup delivery problem", "[examples][pickup_delivery_problem]
 
     Execution::Engine engine;
 
-    Execution::GuidedEvaluator evaluator;
-    Execution::GreedyController controller(&evaluator);
+    auto evaluator = std::make_shared<Execution::GuidedEvaluator>();
+    Execution::GreedyController controller(evaluator);
     controller.connect(&engine);
       
 //    Execution::MyopicMessageTaskTerminator messageTaskTerminator;
@@ -167,8 +167,8 @@ SCENARIO( "Guided pickup delivery problem", "[examples][pickup_delivery_problem]
 
     Execution::Engine engine;
 
-    Execution::GuidedEvaluator evaluator;
-    Execution::GreedyController controller(&evaluator);
+    auto evaluator = std::make_shared<Execution::GuidedEvaluator>();
+    Execution::GreedyController controller(evaluator);
     controller.connect(&engine);
       
 //    Execution::MyopicMessageTaskTerminator messageTaskTerminator;

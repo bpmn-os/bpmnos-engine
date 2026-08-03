@@ -16,8 +16,8 @@ SCENARIO( "Decision task with enumeration", "[execution][decisiontask]" ) {
       Execution::Engine engine;
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
-      Execution::LocalEvaluator evaluator;
-      Execution::GreedyDispatcher<Execution::FirstEnumeratedChoice> choiceHandler(&evaluator);
+      auto evaluator = std::make_shared<Execution::LocalEvaluator>();
+      Execution::GreedyDispatcher<Execution::FirstEnumeratedChoice> choiceHandler(evaluator);
       Execution::TimeWarp timeHandler;
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
@@ -51,8 +51,8 @@ SCENARIO( "Decision task with enumeration", "[execution][decisiontask]" ) {
       Execution::Engine engine;
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
-      Execution::LocalEvaluator evaluator;
-      Execution::GreedyDispatcher<Execution::FirstEnumeratedChoice> choiceHandler(&evaluator);
+      auto evaluator = std::make_shared<Execution::LocalEvaluator>();
+      Execution::GreedyDispatcher<Execution::FirstEnumeratedChoice> choiceHandler(evaluator);
       Execution::TimeWarp timeHandler;
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
@@ -89,8 +89,8 @@ SCENARIO( "Decision task with bounds", "[execution][decisiontask]" ) {
       Execution::Engine engine;
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
-      Execution::LocalEvaluator evaluator;
-      Execution::GreedyDispatcher<Execution::FirstEnumeratedChoice> choiceHandler(&evaluator);
+      auto evaluator = std::make_shared<Execution::LocalEvaluator>();
+      Execution::GreedyDispatcher<Execution::FirstEnumeratedChoice> choiceHandler(evaluator);
       Execution::TimeWarp timeHandler;
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
@@ -124,8 +124,8 @@ SCENARIO( "Decision task with bounds", "[execution][decisiontask]" ) {
       Execution::Engine engine;
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
-      Execution::LocalEvaluator evaluator;
-      Execution::GreedyDispatcher<Execution::FirstEnumeratedChoice> choiceHandler(&evaluator);
+      auto evaluator = std::make_shared<Execution::LocalEvaluator>();
+      Execution::GreedyDispatcher<Execution::FirstEnumeratedChoice> choiceHandler(evaluator);
       Execution::TimeWarp timeHandler;
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);

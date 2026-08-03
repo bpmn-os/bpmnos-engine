@@ -18,8 +18,8 @@ SCENARIO( "Truck driver scheduling problem", "[examples][truck_driver_scheduling
     WHEN( "The engine is started with the guided controller" ) {
       Execution::Engine engine;
 
-      Execution::GuidedEvaluator evaluator;
-      Execution::GreedyController controller(&evaluator);
+      auto evaluator = std::make_shared<Execution::GuidedEvaluator>();
+      Execution::GreedyController controller(evaluator);
       controller.connect(&engine);
       
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;
@@ -68,8 +68,8 @@ SCENARIO( "Truck driver scheduling problem", "[examples][truck_driver_scheduling
     WHEN( "The engine is started with the guided controller" ) {
       Execution::Engine engine;
 
-      Execution::GuidedEvaluator evaluator;
-      Execution::GreedyController controller(&evaluator);
+      auto evaluator = std::make_shared<Execution::GuidedEvaluator>();
+      Execution::GreedyController controller(evaluator);
       controller.connect(&engine);
       
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;
@@ -118,8 +118,8 @@ SCENARIO( "Truck driver scheduling problem", "[examples][truck_driver_scheduling
     WHEN( "The engine is started with the guided greedy controller" ) {
       Execution::Engine engine;
 
-      Execution::GuidedEvaluator evaluator;
-      Execution::GreedyController controller(&evaluator);
+      auto evaluator = std::make_shared<Execution::GuidedEvaluator>();
+      Execution::GreedyController controller(evaluator);
       controller.connect(&engine);
       
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;

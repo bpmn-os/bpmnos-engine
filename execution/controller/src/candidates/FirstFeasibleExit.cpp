@@ -6,8 +6,8 @@
 
 using namespace BPMNOS::Execution;
 
-FirstFeasibleExit::FirstFeasibleExit(Evaluator* evaluator)
-  : evaluator(evaluator)
+FirstFeasibleExit::FirstFeasibleExit(std::shared_ptr<Evaluator> evaluator)
+  : CachedCandidates(std::move(evaluator))
 {
 }
 
@@ -23,7 +23,7 @@ void FirstFeasibleExit::notice(const Observable* observable) {
   if ( observable->getObservableType() == Observable::Type::ExitRequest ) {
     assert( dynamic_cast<const DecisionRequest*>(observable) );
     auto request = static_cast<const DecisionRequest*>(observable);
-    auto decision = std::make_shared<ExitDecision>(request, evaluator);
+    auto decision = std::make_shared<ExitDecision>(request, evaluator.get());
     addDecision( request->token->weak_from_this(), request->weak_from_this(), decision );
   }
   else if ( observable->getObservableType() == Observable::Type::SystemState ) {

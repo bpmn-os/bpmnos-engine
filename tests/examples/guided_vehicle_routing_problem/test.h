@@ -32,8 +32,8 @@ SCENARIO( "Guided vehicle routing problem", "[examples][vehicle_routing_problem]
 
     Execution::Engine engine;
 
-    Execution::GuidedEvaluator evaluator;
-    Execution::GreedyController controller(&evaluator);
+    auto evaluator = std::make_shared<Execution::GuidedEvaluator>();
+    Execution::GreedyController controller(evaluator);
     controller.connect(&engine);
       
 //    Execution::MyopicMessageTaskTerminator messageTaskTerminator;

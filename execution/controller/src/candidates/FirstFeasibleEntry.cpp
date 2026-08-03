@@ -7,8 +7,8 @@
 
 using namespace BPMNOS::Execution;
 
-FirstFeasibleEntry::FirstFeasibleEntry(Evaluator* evaluator, Config config)
-  : evaluator(evaluator)
+FirstFeasibleEntry::FirstFeasibleEntry(std::shared_ptr<Evaluator> evaluator, Config config)
+  : CachedCandidates(std::move(evaluator))
   , config(config)
 {
 }
@@ -32,7 +32,7 @@ void FirstFeasibleEntry::notice(const Observable* observable) {
         return;
       }
     }
-    auto decision = std::make_shared<EntryDecision>(request, evaluator);
+    auto decision = std::make_shared<EntryDecision>(request, evaluator.get());
     addDecision( request->token->weak_from_this(), request->weak_from_this(), decision );
   }
   else if ( observable->getObservableType() == Observable::Type::SystemState ) {

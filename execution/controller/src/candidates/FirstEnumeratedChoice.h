@@ -21,12 +21,11 @@ namespace BPMNOS::Execution {
  */
 class FirstEnumeratedChoice : public Candidates< std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest> > {
 public:
-  FirstEnumeratedChoice(Evaluator* evaluator);
+  FirstEnumeratedChoice(std::shared_ptr<Evaluator> evaluator);
   void connect(Notifier* notifier) override;
   std::shared_ptr<Decision> determineBestChoices(std::shared_ptr<const DecisionRequest> request);
 protected:
   void evaluateCandidates() override;
-  Evaluator* evaluator;
 };
 
 } // namespace BPMNOS::Execution

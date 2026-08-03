@@ -17,8 +17,8 @@ SCENARIO( "Earliest arrival problem", "[examples][earliest_arrival_problem]" ) {
     WHEN( "The engine is started with the greedy controller" ) {
       Execution::Engine engine;
 
-      Execution::GuidedEvaluator evaluator;
-      Execution::GreedyController controller(&evaluator);
+      auto evaluator = std::make_shared<Execution::GuidedEvaluator>();
+      Execution::GreedyController controller(evaluator);
       controller.connect(&engine);
       
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;

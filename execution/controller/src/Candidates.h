@@ -32,6 +32,9 @@ class Notifier;
 template <typename... WeakPtrs>
 class Candidates : public Observer {
 public:
+  /// The evaluator every candidate of this collection is evaluated through, owned here because this is
+  /// where it is read: the collection builds its decisions with it and holds it for as long as it may.
+  Candidates(std::shared_ptr<Evaluator> evaluator) : evaluator(std::move(evaluator)) {}
   virtual ~Candidates() = default;
 
   /// Subscriptions are made by the specializations; the base does nothing.
@@ -72,6 +75,7 @@ protected:
     decisions.clear();
   }
 
+  std::shared_ptr<Evaluator> evaluator; ///< Evaluates every candidate; owned here, so a decision built with it is never built through a dangling one.
   const SystemState* systemState = nullptr; ///< Per-run system state (bound by notice).
   auto_set< double, descending, WeakPtrs..., std::weak_ptr<Event>, std::weak_ptr<Evaluation> > candidates; ///< Reward-ordered candidate decisions, descending (best first; infeasible last); holds only weak references.
   auto_list< WeakPtrs..., std::shared_ptr<Decision> > decisions; ///< Sole owner of the decisions referenced by `candidates`.

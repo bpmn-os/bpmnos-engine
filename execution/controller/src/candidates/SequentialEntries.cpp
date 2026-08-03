@@ -7,8 +7,8 @@
 
 using namespace BPMNOS::Execution;
 
-SequentialEntries::SequentialEntries(Evaluator* evaluator)
-  : evaluator(evaluator)
+SequentialEntries::SequentialEntries(std::shared_ptr<Evaluator> evaluator)
+  : CachedCandidates(std::move(evaluator))
 {
 }
 
@@ -29,7 +29,7 @@ void SequentialEntries::notice(const Observable* observable) {
       // only entries of sequential ad-hoc subprocess children are handled here
       return;
     }
-    auto decision = std::make_shared<EntryDecision>(request, evaluator);
+    auto decision = std::make_shared<EntryDecision>(request, evaluator.get());
     addDecision( request->token->weak_from_this(), request->weak_from_this(), decision );
   }
   else if ( observable->getObservableType() == Observable::Type::SystemState ) {

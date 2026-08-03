@@ -50,7 +50,6 @@ public:
   void synchronizeSolution(const Token* token);
 
 protected:
-  Evaluator* evaluator;
   std::shared_ptr<TerminationEvent> terminationEvent;
   std::shared_ptr<Event> dispatchEvent(const SystemState* systemState) override;
   Config config;

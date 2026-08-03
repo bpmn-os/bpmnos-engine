@@ -29,7 +29,8 @@ namespace BPMNOS::Execution {
 template <typename... WeakPtrs>
 class CachedCandidates : public Candidates<WeakPtrs...> {
 public:
-  CachedCandidates();
+  /// Takes the evaluator only to forward it to the base, which owns it.
+  CachedCandidates(std::shared_ptr<Evaluator> evaluator);
 
   /// Callback evaluating one pending decision; returns an event to dispatch (stopping the evaluation) or nullptr to continue.
   using Evaluate = std::function< std::shared_ptr<Event>(WeakPtrs..., std::shared_ptr<Decision>) >;

@@ -7,7 +7,8 @@
 using namespace BPMNOS::Execution;
 
 template <typename... WeakPtrs>
-CachedCandidates<WeakPtrs...>::CachedCandidates()
+CachedCandidates<WeakPtrs...>::CachedCandidates(std::shared_ptr<Evaluator> evaluator)
+  : Candidates<WeakPtrs...>(std::move(evaluator))
 {
   timestamp = std::numeric_limits<BPMNOS::number>::lowest();
 }

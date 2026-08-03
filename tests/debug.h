@@ -26,8 +26,8 @@ SCENARIO( "Guided knapsack problem", "[examples][knapsack_problem]" ) {
       Execution::Engine engine1;
       completionHandler1.connect(&engine1);
 
-      Execution::GuidedEvaluator evaluator1;
-      Execution::GreedyController controller1(&evaluator1);
+      auto evaluator1 = std::make_shared<Execution::GuidedEvaluator>();
+      Execution::GreedyController controller1(evaluator1);
       controller1.connect(&engine1);
       
       Execution::MyopicMessageTaskTerminator messageTaskTerminator1;
@@ -61,8 +61,8 @@ SCENARIO( "Guided knapsack problem", "[examples][knapsack_problem]" ) {
       Execution::Engine engine2;
       completionHandler2.connect(&engine2);
 
-      Execution::GuidedEvaluator evaluator2;
-      Execution::GreedyController controller2(&evaluator2);
+      auto evaluator2 = std::make_shared<Execution::GuidedEvaluator>();
+      Execution::GreedyController controller2(evaluator2);
       controller2.connect(&engine2);
       
       Execution::MyopicMessageTaskTerminator messageTaskTerminator2;

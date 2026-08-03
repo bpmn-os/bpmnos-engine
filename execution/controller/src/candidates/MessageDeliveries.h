@@ -20,13 +20,12 @@ namespace BPMNOS::Execution {
  */
 class MessageDeliveries : public CachedCandidates< std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest>, std::weak_ptr<const Message> > {
 public:
-  MessageDeliveries(Evaluator* evaluator);
+  MessageDeliveries(std::shared_ptr<Evaluator> evaluator);
   void connect(Notifier* notifier) override;
   void notice(const Observable* observable) override;
   void clear() override;
 protected:
   void evaluateCandidates() override;
-  Evaluator* evaluator;
 private:
   /// Requests awaiting a delivery. The header a request is matched by is the request's own.
   auto_list< std::weak_ptr<const Token>, std::weak_ptr<const MessageDeliveryRequest> > requests;

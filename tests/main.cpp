@@ -134,8 +134,8 @@ SCENARIO( "Event-based gateway with two timer events - SCIP solver", "[cpsolver]
 
       // First, run through execution engine to get feasible solution
       Execution::FlattenedGraph flattenedGraph( scenario.get() );
-      Execution::GuidedEvaluator evaluator;
-      Execution::SeededGreedyController controller( &flattenedGraph, &evaluator );
+      auto evaluator = std::make_shared<Execution::GuidedEvaluator>();
+      Execution::SeededGreedyController controller( &flattenedGraph, evaluator );
 
       Execution::Engine engine;
       controller.connect( &engine );

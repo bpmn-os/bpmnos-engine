@@ -42,8 +42,8 @@ SCENARIO( "GreedyController terminates when resumed from an installed system sta
       // Resume against the original, already-revealed scenario, so taskCompletionStatus is correct and any
       // stall is in the engine's resume logic rather than scenario disclosure.
       Execution::Engine resumed;
-      Execution::GuidedEvaluator evaluator;
-      Execution::GreedyController controller(&evaluator);
+      auto evaluator = std::make_shared<Execution::GuidedEvaluator>();
+      Execution::GreedyController controller(evaluator);
       controller.connect(&resumed);
       Execution::TimeWarp resumedTimeHandler;
       resumedTimeHandler.connect(&resumed);
@@ -60,7 +60,7 @@ SCENARIO( "GreedyController terminates when resumed from an installed system sta
       }
       AND_THEN( "MessageDeliveries rebuilt from the copied state still offers three deliveries" ) {
         Execution::Notifier notifier;
-        Execution::MessageDeliveries copyCandidates(&evaluator);
+        Execution::MessageDeliveries copyCandidates(evaluator);
         copyCandidates.connect(&notifier);
         notifier.notify(copiedState);
         REQUIRE( feasibleCount(collect(copyCandidates)) == 3 );
@@ -110,8 +110,8 @@ SCENARIO( "GreedyController terminates when resumed from a minimal one-job state
 
     WHEN( "The state is installed into a fresh engine and resumed under the greedy controller" ) {
       Execution::Engine resumed;
-      Execution::GuidedEvaluator evaluator;
-      Execution::GreedyController controller(&evaluator);
+      auto evaluator = std::make_shared<Execution::GuidedEvaluator>();
+      Execution::GreedyController controller(evaluator);
       controller.connect(&resumed);
       Execution::TimeWarp resumedTimeHandler;
       resumedTimeHandler.connect(&resumed);
@@ -164,8 +164,8 @@ SCENARIO( "GreedyController terminates when resumed from a one-machine two-job s
 
     WHEN( "The state is installed into a fresh engine and resumed under the greedy controller" ) {
       Execution::Engine resumed;
-      Execution::GuidedEvaluator evaluator;
-      Execution::GreedyController controller(&evaluator);
+      auto evaluator = std::make_shared<Execution::GuidedEvaluator>();
+      Execution::GreedyController controller(evaluator);
       controller.connect(&resumed);
       Execution::TimeWarp resumedTimeHandler;
       resumedTimeHandler.connect(&resumed);
@@ -220,8 +220,8 @@ SCENARIO( "GreedyController terminates when resumed from a one-order two-sequent
       // resume path is at fault rather than the test's expectation.
       auto baselineScenario = dataProvider.createScenario();
       Execution::Engine baseline;
-      Execution::GuidedEvaluator evaluator;
-      Execution::GreedyController controller(&evaluator);
+      auto evaluator = std::make_shared<Execution::GuidedEvaluator>();
+      Execution::GreedyController controller(evaluator);
       controller.connect(&baseline);
       Execution::TimeWarp baselineTimeHandler;
       baselineTimeHandler.connect(&baseline);
@@ -239,8 +239,8 @@ SCENARIO( "GreedyController terminates when resumed from a one-order two-sequent
 
     WHEN( "The state is installed into a fresh engine and resumed under the greedy controller" ) {
       Execution::Engine resumed;
-      Execution::GuidedEvaluator evaluator;
-      Execution::GreedyController controller(&evaluator);
+      auto evaluator = std::make_shared<Execution::GuidedEvaluator>();
+      Execution::GreedyController controller(evaluator);
       controller.connect(&resumed);
       Execution::TimeWarp resumedTimeHandler;
       resumedTimeHandler.connect(&resumed);

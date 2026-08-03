@@ -38,8 +38,8 @@ SCENARIO( "MessageDeliveries rebuilds its candidates from a SystemState notice",
     Execution::InstantEntry entryHandler;
     Execution::InstantExit exitHandler;
     Execution::TimeWarp timeHandler;
-    Execution::LocalEvaluator evaluator;
-    Execution::MessageDeliveries incremental(&evaluator);
+    auto evaluator = std::make_shared<Execution::LocalEvaluator>();
+    Execution::MessageDeliveries incremental(evaluator);
     entryHandler.connect(&engine);
     exitHandler.connect(&engine);
     timeHandler.connect(&engine);
@@ -52,7 +52,7 @@ SCENARIO( "MessageDeliveries rebuilds its candidates from a SystemState notice",
 
     WHEN( "A fresh MessageDeliveries collection is rebuilt from the SystemState notice via a plain Notifier" ) {
       Execution::Notifier notifier;
-      Execution::MessageDeliveries rebuilt(&evaluator);
+      Execution::MessageDeliveries rebuilt(evaluator);
       rebuilt.connect(&notifier);
       notifier.notify(systemState);
 
@@ -95,8 +95,8 @@ SCENARIO( "CompetingCandidates rebuilds its merged candidates from a SystemState
     Execution::InstantEntry entryHandler;
     Execution::InstantExit exitHandler;
     Execution::TimeWarp timeHandler;
-    Execution::LocalEvaluator evaluator;
-    Execution::CompetingCandidates incremental(&evaluator);
+    auto evaluator = std::make_shared<Execution::LocalEvaluator>();
+    Execution::CompetingCandidates incremental(evaluator);
     entryHandler.connect(&engine);
     exitHandler.connect(&engine);
     timeHandler.connect(&engine);
@@ -107,7 +107,7 @@ SCENARIO( "CompetingCandidates rebuilds its merged candidates from a SystemState
 
     WHEN( "A fresh CompetingCandidates collection is rebuilt from the SystemState notice" ) {
       Execution::Notifier notifier;
-      Execution::CompetingCandidates rebuilt(&evaluator);
+      Execution::CompetingCandidates rebuilt(evaluator);
       rebuilt.connect(&notifier);
       notifier.notify(systemState);
 
@@ -144,10 +144,10 @@ SCENARIO( "SequentialEntries rebuilds its candidates from a SystemState notice",
     // FirstFeasibleEntry (config.sequential=false) enters the ad-hoc subprocess but skips its sequential
     // children, leaving their entries pending — InstantEntry would have entered them, so it cannot be used here.
     Execution::Engine engine;
-    Execution::LocalEvaluator evaluator;
-    Execution::GreedyDispatcher<Execution::FirstFeasibleEntry> entryHandler(&evaluator);
+    auto evaluator = std::make_shared<Execution::LocalEvaluator>();
+    Execution::GreedyDispatcher<Execution::FirstFeasibleEntry> entryHandler(evaluator);
     Execution::TimeWarp timeHandler;
-    Execution::SequentialEntries incremental(&evaluator);
+    Execution::SequentialEntries incremental(evaluator);
     entryHandler.connect(&engine);
     timeHandler.connect(&engine);
     incremental.connect(&engine);
@@ -158,7 +158,7 @@ SCENARIO( "SequentialEntries rebuilds its candidates from a SystemState notice",
 
     WHEN( "A fresh SequentialEntries collection is rebuilt from the SystemState notice" ) {
       Execution::Notifier notifier;
-      Execution::SequentialEntries rebuilt(&evaluator);
+      Execution::SequentialEntries rebuilt(evaluator);
       rebuilt.connect(&notifier);
       notifier.notify(systemState);
 
@@ -192,8 +192,8 @@ SCENARIO( "FirstFeasibleEntry rebuilds its candidate from a SystemState notice",
 
     Execution::Engine engine;
     Execution::TimeWarp timeHandler;
-    Execution::LocalEvaluator evaluator;
-    Execution::FirstFeasibleEntry incremental(&evaluator);
+    auto evaluator = std::make_shared<Execution::LocalEvaluator>();
+    Execution::FirstFeasibleEntry incremental(evaluator);
     timeHandler.connect(&engine);
     incremental.connect(&engine);
     engine.run(scenario.get(), 0);
@@ -203,7 +203,7 @@ SCENARIO( "FirstFeasibleEntry rebuilds its candidate from a SystemState notice",
 
     WHEN( "A fresh FirstFeasibleEntry collection is rebuilt from the SystemState notice" ) {
       Execution::Notifier notifier;
-      Execution::FirstFeasibleEntry rebuilt(&evaluator);
+      Execution::FirstFeasibleEntry rebuilt(evaluator);
       rebuilt.connect(&notifier);
       notifier.notify(systemState);
 
@@ -234,10 +234,10 @@ SCENARIO( "FirstFeasibleExit rebuilds its candidate from a SystemState notice", 
     // Enter and make the choice instantly, but withhold the exit handler so the exit decision stays pending.
     Execution::Engine engine;
     Execution::InstantEntry entryHandler;
-    Execution::LocalEvaluator evaluator;
-    Execution::GreedyDispatcher<Execution::FirstEnumeratedChoice> choiceHandler(&evaluator);
+    auto evaluator = std::make_shared<Execution::LocalEvaluator>();
+    Execution::GreedyDispatcher<Execution::FirstEnumeratedChoice> choiceHandler(evaluator);
     Execution::TimeWarp timeHandler;
-    Execution::FirstFeasibleExit incremental(&evaluator);
+    Execution::FirstFeasibleExit incremental(evaluator);
     entryHandler.connect(&engine);
     choiceHandler.connect(&engine);
     timeHandler.connect(&engine);
@@ -249,7 +249,7 @@ SCENARIO( "FirstFeasibleExit rebuilds its candidate from a SystemState notice", 
 
     WHEN( "A fresh FirstFeasibleExit collection is rebuilt from the SystemState notice" ) {
       Execution::Notifier notifier;
-      Execution::FirstFeasibleExit rebuilt(&evaluator);
+      Execution::FirstFeasibleExit rebuilt(evaluator);
       rebuilt.connect(&notifier);
       notifier.notify(systemState);
 
@@ -281,8 +281,8 @@ SCENARIO( "FirstEnumeratedChoice rebuilds its candidates from a SystemState noti
     Execution::InstantEntry entryHandler;
     Execution::InstantExit exitHandler;
     Execution::TimeWarp timeHandler;
-    Execution::LocalEvaluator evaluator;
-    Execution::FirstEnumeratedChoice incremental(&evaluator);
+    auto evaluator = std::make_shared<Execution::LocalEvaluator>();
+    Execution::FirstEnumeratedChoice incremental(evaluator);
     entryHandler.connect(&engine);
     exitHandler.connect(&engine);
     timeHandler.connect(&engine);
@@ -294,7 +294,7 @@ SCENARIO( "FirstEnumeratedChoice rebuilds its candidates from a SystemState noti
 
     WHEN( "A fresh FirstEnumeratedChoice collection is rebuilt from the SystemState notice" ) {
       Execution::Notifier notifier;
-      Execution::FirstEnumeratedChoice rebuilt(&evaluator);
+      Execution::FirstEnumeratedChoice rebuilt(evaluator);
       rebuilt.connect(&notifier);
       notifier.notify(systemState);
 
@@ -327,8 +327,8 @@ SCENARIO( "FirstBisectionalChoice rebuilds its candidates from a SystemState not
     Execution::InstantEntry entryHandler;
     Execution::InstantExit exitHandler;
     Execution::TimeWarp timeHandler;
-    Execution::LocalEvaluator evaluator;
-    Execution::FirstBisectionalChoice incremental(&evaluator);
+    auto evaluator = std::make_shared<Execution::LocalEvaluator>();
+    Execution::FirstBisectionalChoice incremental(evaluator);
     entryHandler.connect(&engine);
     exitHandler.connect(&engine);
     timeHandler.connect(&engine);
@@ -340,7 +340,7 @@ SCENARIO( "FirstBisectionalChoice rebuilds its candidates from a SystemState not
 
     WHEN( "A fresh FirstBisectionalChoice collection is rebuilt from the SystemState notice" ) {
       Execution::Notifier notifier;
-      Execution::FirstBisectionalChoice rebuilt(&evaluator);
+      Execution::FirstBisectionalChoice rebuilt(evaluator);
       rebuilt.connect(&notifier);
       notifier.notify(systemState);
 

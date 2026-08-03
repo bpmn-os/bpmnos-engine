@@ -89,8 +89,8 @@ SCENARIO( "Assignment problem", "[examples][assignment_problem]" ) {
     WHEN( "The engine is started with the greedy controller" ) {
       Execution::Engine engine;
 
-      Execution::LocalEvaluator evaluator;
-      Execution::GreedyController controller(&evaluator);
+      auto evaluator = std::make_shared<Execution::LocalEvaluator>();
+      Execution::GreedyController controller(evaluator);
       controller.connect(&engine);
       
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;

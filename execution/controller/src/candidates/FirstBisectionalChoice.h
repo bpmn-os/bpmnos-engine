@@ -27,13 +27,12 @@ namespace BPMNOS::Execution {
  */
 class FirstBisectionalChoice : public Candidates< std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest> > {
 public:
-  FirstBisectionalChoice(Evaluator* evaluator);
+  FirstBisectionalChoice(std::shared_ptr<Evaluator> evaluator);
   void connect(Notifier* notifier) override;
   std::shared_ptr<Decision> determineBestChoices(std::shared_ptr<const DecisionRequest> request);
 
 protected:
   void evaluateCandidates() override;
-  Evaluator* evaluator;
 
 private:
   /// Evaluates the enumerated alternatives and returns the best feasible one (used when bisection does not apply).

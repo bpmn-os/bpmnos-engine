@@ -29,8 +29,8 @@ int main() {
   timeHandler.connect(&engine);
 
   // initialize and connect BPMNOS::Execution::Controller for BPMNOS::Execution::Decision
-  BPMNOS::Execution::GuidedEvaluator evaluator;
-  BPMNOS::Execution::GreedyController controller(&evaluator);
+  auto evaluator = std::make_shared<BPMNOS::Execution::GuidedEvaluator>();
+  BPMNOS::Execution::GreedyController controller(evaluator);
   controller.connect(&engine);
 
   // run engine on scenario
