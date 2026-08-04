@@ -1,7 +1,7 @@
 var searchData=
 [
   ['gatewaydirection_0',['gatewayDirection',['https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1tGateway.html#ad934584f69f7b36d70a7325729821a74',1,'XML::bpmn::tGateway']]],
-  ['global_1',['global',['../classBPMNOS_1_1Model_1_1ExtensionElements.html#a4cf048bb36d14043484480dfb3df3aec',1,'BPMNOS::Model::ExtensionElements']]],
+  ['global_1',['global',['../classBPMNOS_1_1Model_1_1ExtensionElements.html#a4cf048bb36d14043484480dfb3df3aec',1,'BPMNOS::Model::ExtensionElements::global'],['../classBPMNOS_1_1Model_1_1Signal.html#a277f8ea02ee7cfb6bb2f78eafd3ba780',1,'BPMNOS::Model::Signal::global']]],
   ['globalattributes_2',['globalAttributes',['../classBPMNOS_1_1Model_1_1AttributeRegistry.html#ac1c0d42c68cbda8b136288694981097f',1,'BPMNOS::Model::AttributeRegistry']]],
   ['globalmap_3',['globalMap',['../classBPMNOS_1_1Model_1_1AttributeRegistry.html#a68fd4743abe7c517d95b4b7cc1b18b6b',1,'BPMNOS::Model::AttributeRegistry']]],
   ['globalmodifiers_4',['globalModifiers',['../classBPMNOS_1_1Execution_1_1FlattenedGraph.html#a7949ee8089b9e2ba1a737f0db3efc561',1,'BPMNOS::Execution::FlattenedGraph']]],

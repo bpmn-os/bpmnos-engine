@@ -69,7 +69,7 @@ var searchData=
   ['globalusertask_66',['globalUserTask',['https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1globalUserTask.html#abdb4f311da681141b7b744d5aae14e93',1,'XML::bpmn::globalUserTask']]],
   ['greedycontroller_67',['GreedyController',['../classBPMNOS_1_1Execution_1_1GreedyController.html#ad5b4e69bac8da454ffdc40f54497a2f9',1,'BPMNOS::Execution::GreedyController']]],
   ['greedydispatcher_68',['GreedyDispatcher',['../classBPMNOS_1_1Execution_1_1GreedyDispatcher.html#a4ca8968ea213989b058279b1558e7c74',1,'BPMNOS::Execution::GreedyDispatcher']]],
-  ['guidance_69',['guidance',['../classBPMNOS_1_1Model_1_1Guidance.html#ab76e2bfa2dfe1087e61aa4572a0f2cda',1,'BPMNOS::Model::Guidance::Guidance()'],['../classXML_1_1bpmnos_1_1guidance.html#a251d15790955c24dbe443cdb39c40415',1,'XML::bpmnos::guidance::guidance()']]],
+  ['guidance_69',['guidance',['../classXML_1_1bpmnos_1_1guidance.html#a251d15790955c24dbe443cdb39c40415',1,'XML::bpmnos::guidance::guidance()'],['../classBPMNOS_1_1Model_1_1Guidance.html#ab76e2bfa2dfe1087e61aa4572a0f2cda',1,'BPMNOS::Model::Guidance::Guidance()']]],
   ['guidance_3a_3aapply_3c_20bpmnos_3a_3avalues_20_3e_70',['apply&lt; BPMNOS::Values &gt;',['../Guidance_8cpp.html#aac56dc3c72c790d60606ea29a9c925c4',1,'Guidance.cpp']]],
   ['guidance_3a_3agetobjective_3c_20bpmnos_3a_3avalues_20_3e_71',['getObjective&lt; BPMNOS::Values &gt;',['../Guidance_8cpp.html#adcc8edde65add7ccd1ad0f474463308a',1,'Guidance.cpp']]],
   ['guidance_3a_3arestrictionssatisfied_3c_20bpmnos_3a_3avalues_20_3e_72',['restrictionsSatisfied&lt; BPMNOS::Values &gt;',['../Guidance_8cpp.html#af962282e130c93c0058d4b5506210408',1,'Guidance.cpp']]]

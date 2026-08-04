@@ -21,7 +21,7 @@ var searchData=
   ['resourceparameter_18',['resourceParameter',['https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1resourceParameter.html#a69fbcb76a3ad5c10d2eab2359632f9ed',1,'XML::bpmn::resourceParameter']]],
   ['resourceparameterbinding_19',['resourceParameterBinding',['https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1resourceParameterBinding.html#a2c4b9dbe4cf2e2d59349c48a04eb1b86',1,'XML::bpmn::resourceParameterBinding']]],
   ['resourcerole_20',['resourceRole',['https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1resourceRole.html#acee185a526f0c3a2452dab4bf4ca9c8a',1,'XML::bpmn::resourceRole']]],
-  ['restriction_21',['restriction',['../classXML_1_1bpmnos_1_1restriction.html#a4715d7cef69644f624b450e10388c2a9',1,'XML::bpmnos::restriction::restriction()'],['../classBPMNOS_1_1Model_1_1Restriction.html#acc9a4364dbc557e89bee6890d5c6cb65',1,'BPMNOS::Model::Restriction::Restriction()']]],
+  ['restriction_21',['restriction',['../classBPMNOS_1_1Model_1_1Restriction.html#acc9a4364dbc557e89bee6890d5c6cb65',1,'BPMNOS::Model::Restriction::Restriction()'],['../classXML_1_1bpmnos_1_1restriction.html#a4715d7cef69644f624b450e10388c2a9',1,'XML::bpmnos::restriction::restriction()']]],
   ['restriction_3a_3aissatisfied_3c_20bpmnos_3a_3asharedvalues_20_3e_22',['isSatisfied&lt; BPMNOS::SharedValues &gt;',['../Restriction_8cpp.html#a221b4397f29c8f75a096a2275519756b',1,'Restriction.cpp']]],
   ['restriction_3a_3aissatisfied_3c_20bpmnos_3a_3avalues_20_3e_23',['isSatisfied&lt; BPMNOS::Values &gt;',['../Restriction_8cpp.html#a3d2fa85193ca6fa73de13316d7cf04ef',1,'Restriction.cpp']]],
   ['restrictions_24',['restrictions',['../classXML_1_1bpmnos_1_1restrictions.html#a4f1c9ed0f5e4f3e2a5ca70c35f0402bc',1,'XML::bpmnos::restrictions']]],

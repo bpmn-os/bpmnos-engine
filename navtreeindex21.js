@@ -1,5 +1,9 @@
 var NAVTREEINDEX21 =
 {
+"truck_driver_scheduling_problem.html#exclusivegateway-waitgateway_1":[7,2,0,39],
+"truck_driver_scheduling_problem.html#exclusivegateway-waitgateway_2":[7,2,0,44],
+"truck_driver_scheduling_problem.html#gatekeeper-10":[7,2,0,33,0],
+"truck_driver_scheduling_problem.html#gatekeeper-11":[7,2,0,34,0],
 "truck_driver_scheduling_problem.html#gatekeeper-12":[7,2,0,45,0],
 "truck_driver_scheduling_problem.html#gatekeeper-13":[7,2,0,46,0],
 "truck_driver_scheduling_problem.html#gatekeeper-14":[7,2,0,47,0],
