@@ -26,7 +26,7 @@ std::shared_ptr<Event> RandomChoice::dispatchEvent( const SystemState* systemSta
       
       std::vector<BPMNOS::number> choices;
       auto status = token->status;
-      auto data = *token->data;
+      auto data = BPMNOS::Values(*token->data);
       auto globals = token->globals;
       for ( auto& choice : extensionElements->choices ) {
         // make random choice
