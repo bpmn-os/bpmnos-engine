@@ -206,7 +206,7 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const
     }
   }
 
-  // add data attributes and global values modified by choice to dataUpdateOnCompletion
+  // add data attributes and global values modified by choice to dataUpdate
   for ( auto& choice : choices ) {
     if ( choice->attribute->category != Attribute::Category::STATUS ) {
       dataUpdate.attributes.push_back(choice->attribute);
@@ -227,12 +227,15 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const
   }
 
   if ( baseElement->is<XML::bpmn::tReceiveTask>() || baseElement->is<XML::bpmn::tCatchEvent>() ) {
-    // add data attributes modified by message to dataUpdateOnCompletion (global values must not be updated by messages)
+    // add data attributes modified by message to dataUpdate
     for ( auto& messageDefinition : messageDefinitions ) {
       for ( auto& [key,content] : messageDefinition->contentMap ) {
         Attribute* attribute = content->attribute;
-        if ( attribute->category == Attribute::Category::DATA ) {
+        if ( attribute->category != Attribute::Category::STATUS ) {
           dataUpdate.attributes.push_back(attribute);
+        }
+        if ( attribute->category == Attribute::Category::GLOBAL ) {
+          dataUpdate.global = true;
         }
       }
     }

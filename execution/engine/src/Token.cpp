@@ -822,6 +822,17 @@ void Token::advanceToCompleted() {
         }
       }
     }
+
+    if ( node->represents<BPMN::MessageCatchEvent>() && !node->represents<BPMN::ReceiveTask>() ) {
+      if ( auto extensionElements = node->extensionElements->represents<BPMNOS::Model::ExtensionElements>() ) {
+        if ( extensionElements->dataUpdate.global ) {
+          owner->systemState->engine->notify( DataUpdate( extensionElements->dataUpdate.attributes ) );
+        }
+        else {
+          owner->systemState->engine->notify( DataUpdate( owner->root->instance.value(), extensionElements->dataUpdate.attributes ) );
+        }
+      }
+    }
   }
 
 
@@ -1431,12 +1442,7 @@ BPMNOS::VariedValueMap Token::getSignalContent(const BPMNOS::Model::ContentMap& 
   auto& attributeRegistry = getAttributeRegistry();
   VariedValueMap contentValueMap;
   for (auto& [key,contentDefinition] : contentMap) {
-    if ( status[contentDefinition->attribute->index].has_value() ) {
-      contentValueMap.emplace( key, attributeRegistry.getValue(contentDefinition->attribute,status,*data,globals) );
-    }
-    else {
-      contentValueMap.emplace( key, std::nullopt );
-    }
+    contentValueMap.emplace( key, attributeRegistry.getValue(contentDefinition->attribute,status,*data,globals) );
   }
   return contentValueMap;
 }
@@ -1482,7 +1488,12 @@ void Token::setSignalContent(BPMNOS::VariedValueMap& sourceMap) {
   }
 
   // notify about data update
-  owner->systemState->engine->notify( DataUpdate( owner->root->instance.value(), signalDefinition->updatedData ) );
+  if ( signalDefinition->dataUpdate.global ) {
+    owner->systemState->engine->notify( DataUpdate( signalDefinition->dataUpdate.attributes ) );
+  }
+  else {
+    owner->systemState->engine->notify( DataUpdate( owner->root->instance.value(), signalDefinition->dataUpdate.attributes ) );
+  }
 }
 
 

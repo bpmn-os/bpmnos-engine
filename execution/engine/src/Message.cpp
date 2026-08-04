@@ -33,12 +33,7 @@ Message::Message(Token* token, size_t index)
   }
 
   for (auto& [key,contentDefinition] : messageDefinition->contentMap) {
-    if ( token->status[contentDefinition->attribute->index].has_value() ) {
-      contentValueMap.emplace( key, attributeRegistry.getValue(contentDefinition->attribute,token->status,*token->data,token->globals) );
-    }
-    else {
-      contentValueMap.emplace( key, std::nullopt );
-    }
+    contentValueMap.emplace( key, attributeRegistry.getValue(contentDefinition->attribute,token->status,*token->data,token->globals) );
   }
 }
 

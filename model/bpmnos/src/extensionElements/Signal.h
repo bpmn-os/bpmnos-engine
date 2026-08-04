@@ -21,7 +21,7 @@ public:
   const AttributeRegistry& attributeRegistry;
   BPMNOS::number name; ///< Signal name
   ContentMap contentMap; ///< Map allowing to look up contents by their keys.
-  std::vector<const Attribute*> updatedData; ///< Vector containing data attributes that are modified (for catching signal events)
+  struct { std::vector<const Attribute*> attributes; bool global = false; } dataUpdate; ///< Struct containing data attributes that are modified through signal content and a flag indicating whether a global value is changed (for catching signal events)
 };
 
 } // namespace BPMNOS::Model

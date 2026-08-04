@@ -23,14 +23,14 @@ Signal::Signal(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent)
     }
 
     if ( baseElement->is<XML::bpmn::tCatchEvent>() ) {
-      // add data attributes modified by signal to dataUpdateOnCompletion (global values must not be updated by signals)
+      // add data attributes modified by signal content to dataUpdate
       for ( auto& [key,content] : contentMap ) {
         Attribute* attribute = content->attribute;
-        if ( attribute->category == Attribute::Category::DATA ) {
-          updatedData.push_back(attribute);
+        if ( attribute->category != Attribute::Category::STATUS ) {
+          dataUpdate.attributes.push_back(attribute);
         }
-        else if ( attribute->category == Attribute::Category::GLOBAL ) {
-          throw std::runtime_error("Signal: illegal update of global attribute'" + (std::string)attribute->id + "' for content '" + (std::string)content->key + "'.");
+        if ( attribute->category == Attribute::Category::GLOBAL ) {
+          dataUpdate.global = true;
         }
       }
     }
