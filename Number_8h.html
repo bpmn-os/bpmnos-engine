@@ -140,6 +140,7 @@ $(document).ready(function(){initNavTree('Number_8h.html',''); initResizable(); 
 <code>#include &lt;vector&gt;</code><br />
 <code>#include &lt;optional&gt;</code><br />
 <code>#include &lt;functional&gt;</code><br />
+<code>#include &lt;type_traits&gt;</code><br />
 <code>#include &quot;<a class="el" href="Value_8h_source.html">Value.h</a>&quot;</code><br />
 </div>
 <p><a href="Number_8h_source.html">Go to the source code of this file.</a></p>
@@ -167,11 +168,11 @@ Namespaces</h2></td></tr>
 Macros</h2></td></tr>
 <tr class="memitem:ab486aed0519703d6ef82b701072e09bd" id="r_ab486aed0519703d6ef82b701072e09bd"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Number_8h.html#ab486aed0519703d6ef82b701072e09bd">BPMNOS_NUMBER_REP</a>&#160;&#160;&#160;int64_t</td></tr>
 <tr class="separator:ab486aed0519703d6ef82b701072e09bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0a54572729c7428ed52eeaf6ba9f26b6" id="r_a0a54572729c7428ed52eeaf6ba9f26b6"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Number_8h.html#a0a54572729c7428ed52eeaf6ba9f26b6">BPMNOS_NUMBER_SCALE</a>&#160;&#160;&#160;16</td></tr>
+<tr class="memitem:a0a54572729c7428ed52eeaf6ba9f26b6" id="r_a0a54572729c7428ed52eeaf6ba9f26b6"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Number_8h.html#a0a54572729c7428ed52eeaf6ba9f26b6">BPMNOS_NUMBER_SCALE</a>&#160;&#160;&#160;6</td></tr>
 <tr class="separator:a0a54572729c7428ed52eeaf6ba9f26b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac15f81dfc09860464f495814b954da61" id="r_ac15f81dfc09860464f495814b954da61"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Number_8h.html#ac15f81dfc09860464f495814b954da61">BPMNOS_NUMBER_TYPE</a>&#160;&#160;&#160;cnl::scaled_integer&lt; <a class="el" href="Number_8h.html#ab486aed0519703d6ef82b701072e09bd">BPMNOS_NUMBER_REP</a>, cnl::power&lt;-<a class="el" href="Number_8h.html#a0a54572729c7428ed52eeaf6ba9f26b6">BPMNOS_NUMBER_SCALE</a>&gt; &gt;</td></tr>
+<tr class="memitem:ac15f81dfc09860464f495814b954da61" id="r_ac15f81dfc09860464f495814b954da61"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Number_8h.html#ac15f81dfc09860464f495814b954da61">BPMNOS_NUMBER_TYPE</a>&#160;&#160;&#160;cnl::scaled_integer&lt; <a class="el" href="Number_8h.html#ab486aed0519703d6ef82b701072e09bd">BPMNOS_NUMBER_REP</a>, cnl::power&lt;-<a class="el" href="Number_8h.html#a0a54572729c7428ed52eeaf6ba9f26b6">BPMNOS_NUMBER_SCALE</a>,10&gt; &gt;</td></tr>
 <tr class="separator:ac15f81dfc09860464f495814b954da61"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa7fe39708c5a78e837a239f861de5816" id="r_aa7fe39708c5a78e837a239f861de5816"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Number_8h.html#aa7fe39708c5a78e837a239f861de5816">BPMNOS_NUMBER_PRECISION</a>&#160;&#160;&#160;(1.0 / (1 &lt;&lt; <a class="el" href="Number_8h.html#a0a54572729c7428ed52eeaf6ba9f26b6">BPMNOS_NUMBER_SCALE</a>))</td></tr>
+<tr class="memitem:aa7fe39708c5a78e837a239f861de5816" id="r_aa7fe39708c5a78e837a239f861de5816"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Number_8h.html#aa7fe39708c5a78e837a239f861de5816">BPMNOS_NUMBER_PRECISION</a>&#160;&#160;&#160;1e-6</td></tr>
 <tr class="separator:aa7fe39708c5a78e837a239f861de5816"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
@@ -212,12 +213,12 @@ Functions</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define BPMNOS_NUMBER_PRECISION&#160;&#160;&#160;(1.0 / (1 &lt;&lt; <a class="el" href="Number_8h.html#a0a54572729c7428ed52eeaf6ba9f26b6">BPMNOS_NUMBER_SCALE</a>))</td>
+          <td class="memname">#define BPMNOS_NUMBER_PRECISION&#160;&#160;&#160;1e-6</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Number_8h_source.html#l00040">40</a> of file <a class="el" href="Number_8h_source.html">Number.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Number_8h_source.html#l00022">22</a> of file <a class="el" href="Number_8h_source.html">Number.h</a>.</p>
 
 </div>
 </div>
@@ -244,7 +245,7 @@ Functions</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define BPMNOS_NUMBER_SCALE&#160;&#160;&#160;16</td>
+          <td class="memname">#define BPMNOS_NUMBER_SCALE&#160;&#160;&#160;6</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -260,7 +261,7 @@ Functions</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define BPMNOS_NUMBER_TYPE&#160;&#160;&#160;cnl::scaled_integer&lt; <a class="el" href="Number_8h.html#ab486aed0519703d6ef82b701072e09bd">BPMNOS_NUMBER_REP</a>, cnl::power&lt;-<a class="el" href="Number_8h.html#a0a54572729c7428ed52eeaf6ba9f26b6">BPMNOS_NUMBER_SCALE</a>&gt; &gt;</td>
+          <td class="memname">#define BPMNOS_NUMBER_TYPE&#160;&#160;&#160;cnl::scaled_integer&lt; <a class="el" href="Number_8h.html#ab486aed0519703d6ef82b701072e09bd">BPMNOS_NUMBER_REP</a>, cnl::power&lt;-<a class="el" href="Number_8h.html#a0a54572729c7428ed52eeaf6ba9f26b6">BPMNOS_NUMBER_SCALE</a>,10&gt; &gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
