@@ -7,18 +7,21 @@
 #include <vector>
 #include <optional>
 #include <functional>
+#include <type_traits>
 
 #include "Value.h"
 
 //#define BPMNOS_NUMBER_TYPE double
 
-//scaled_integer< int32_t, power<-8> > has max: 8.4 million, and  precision: ~ 0.004
-//scaled_integer< int64_t, power<-16> > has max: 1.4e14, and precision: ~ 0.000015
-
-#ifndef BPMNOS_NUMBER_TYPE
+//scaled_integer< int32_t, power<-3,10> > has max: 2.1 million, and precision: 0.001
+//scaled_integer< int64_t, power<-6,10> > has max: 9.2 trillion, and precision: 0.000001    
+         
 #define BPMNOS_NUMBER_REP int64_t
-#define BPMNOS_NUMBER_SCALE 16
-#define BPMNOS_NUMBER_TYPE cnl::scaled_integer< BPMNOS_NUMBER_REP, cnl::power<-BPMNOS_NUMBER_SCALE> >
+#define BPMNOS_NUMBER_SCALE 6
+#define BPMNOS_NUMBER_TYPE cnl::scaled_integer< BPMNOS_NUMBER_REP, cnl::power<-BPMNOS_NUMBER_SCALE,10> >
+#define BPMNOS_NUMBER_PRECISION 1e-6
+
+
 // Specialize std::hash for BPMNOS_NUMBER_TYPE
 namespace std {
   template <>
@@ -37,12 +40,16 @@ namespace std {
     }
   };
 }
-#define BPMNOS_NUMBER_PRECISION (1.0 / (1 << BPMNOS_NUMBER_SCALE))
-#endif
 
-#ifndef BPMNOS_NUMBER_PRECISION
-#define BPMNOS_NUMBER_PRECISION 1e-6
-#endif
+// Ensure that a number multiplied by a double computes as floating point (fixed-point numbers could overflow) 
+static_assert(
+  std::is_floating_point_v<decltype(BPMNOS_NUMBER_TYPE{} * double{})>,
+  "a number multiplied by a double must be computed in floating point"
+);
+static_assert(
+  std::is_floating_point_v<decltype(double{} * BPMNOS_NUMBER_TYPE{})>,
+  "a double multiplied by a number must be computed in floating point"
+);
 
 
 namespace BPMNOS {
