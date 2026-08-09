@@ -23,7 +23,7 @@ SCENARIO( "SystemState copy with compensation chain", "[systemstate][compensatio
     recorder.subscribe(&engine);
 
     // Run to time 5 - CompensationActivity_2 is in progress (completes at 10)
-    engine.run(scenario.get(), 5);
+    engine.run(scenario.get(), 0, 5);
     const auto* originalState = engine.getSystemState();
 
     // Should have compensation chain: compToken_2 -> compToken_1 -> triggeringToken

@@ -25,7 +25,7 @@ SCENARIO( "A simple request", "[execution][request]" ) {
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get(),2);
+      engine.run(scenario.get(), 0, 2);
       THEN( "The request and the recipient process are completed" ) {
         auto requestLog =recorder.find(nlohmann::json{{"nodeId","Activity_1"},{"state", "COMPLETED"}});
         REQUIRE( requestLog.size() == 1 ); 
@@ -63,7 +63,7 @@ SCENARIO( "A revoked request", "[execution][request]" ) {
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get(),2);
+      engine.run(scenario.get(), 0, 2);
       THEN( "The request is revoked and the recipient process receives the revoke message" ) {
         auto requestLog =recorder.find(nlohmann::json{{"nodeId","Activity_1"},{"state", "COMPLETED"}});
         REQUIRE( requestLog.size() == 0 ); 

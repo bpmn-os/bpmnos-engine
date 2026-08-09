@@ -66,7 +66,7 @@ SCENARIO( "Simple messaging", "[execution][message]" ) {
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get(),0);
+      engine.run(scenario.get(), 0, 0);
       THEN( "Then the message is not delivered" ) {
         REQUIRE( recorder.find(nlohmann::json{{"processId", "Process_1"},{"instanceId", "Instance_1"},{"nodeId", "MessageThrowEvent_1"},{"state", "DONE"}}).size() == 1 );
         REQUIRE( recorder.find(nlohmann::json{{"processId", "Process_2"},{"instanceId", "Instance_X"},{"nodeId", "MessageCatchEvent_2"},{"state", "BUSY"}}).size() == 1 );
@@ -99,7 +99,7 @@ SCENARIO( "Simple messaging", "[execution][message]" ) {
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get(),1);
+      engine.run(scenario.get(), 0, 1);
       THEN( "Then the message is not delivered" ) {
         REQUIRE( recorder.find(nlohmann::json{{"processId", "Process_1"},{"instanceId", "Instance_1"},{"nodeId", "MessageThrowEvent_1"},{"state", "DONE"}}).size() == 1 );
         REQUIRE( recorder.find(nlohmann::json{{"processId", "Process_2"},{"instanceId", "Instance_2"},{"nodeId", "MessageCatchEvent_2"},{"state", "BUSY"}}).size() == 1 );
@@ -133,7 +133,7 @@ SCENARIO( "Simple messaging", "[execution][message]" ) {
       exitHandler.connect(&engine);
       timeHandler.connect(&engine);
       recorder.subscribe(&engine);
-      engine.run(scenario.get(),0);
+      engine.run(scenario.get(), 0, 0);
       THEN( "Then the message is only delivered to one recipient" ) {
         REQUIRE( recorder.find(nlohmann::json{{"processId", "Process_1"},{"instanceId", "Instance_1"},{"nodeId", "MessageThrowEvent_1"},{"state", "DONE"}}).size() == 1 );
         REQUIRE( recorder.find(nlohmann::json{{"nodeId", "MessageCatchEvent_2"},{"state", "BUSY"}}).size() == 2 );
@@ -489,7 +489,7 @@ SCENARIO( "Multi-instance send task", "[execution][message]" ) {
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get(),1);
+      engine.run(scenario.get(), 0, 1);
       THEN( "Then one message is delivered, but send task is not completed" ) {
         REQUIRE( recorder.find(nlohmann::json{{"nodeId", "Activity_1"},{"state", "EXITING"}}).size() == 1 );
         REQUIRE( recorder.find(nlohmann::json{{"nodeId", "Activity_1"},{"state", "DEPARTED"}}).size() == 0 );
@@ -562,7 +562,7 @@ SCENARIO( "Multi-instance receive task", "[execution][message]" ) {
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get(),1);
+      engine.run(scenario.get(), 0, 1);
       THEN( "Then one message is delivered and the receive task is not completed" ) {
         REQUIRE( recorder.find(nlohmann::json{{"nodeId", "Activity_1"},{"state", "EXITING"}}).size() == 1 );
         REQUIRE( recorder.find(nlohmann::json{{"nodeId", "Activity_1"},{"state", "DEPARTED"}}).size() == 0 );

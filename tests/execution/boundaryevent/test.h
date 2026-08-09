@@ -22,7 +22,7 @@ SCENARIO( "Failed task", "[execution][boundaryevent]" ) {
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get(),1);
+      engine.run(scenario.get(), 0, 1);
       THEN( "The dump of the token log is correct" ) {
 
         auto entryLog = recorder.find(nlohmann::json{{"state", "ENTERED"}}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
@@ -76,7 +76,7 @@ SCENARIO( "Failed subprocess", "[execution][boundaryevent]" ) {
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get(),0);
+      engine.run(scenario.get(), 0, 0);
       THEN( "The dump of each entry of the token log is correct" ) {
         auto failureLog = recorder.find(nlohmann::json{{"state", "FAILED"}}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
         REQUIRE( failureLog[0]["nodeId"] == "ErrorEndEvent_1" );

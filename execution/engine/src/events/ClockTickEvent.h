@@ -14,7 +14,21 @@ class SystemState;
  * This event contains a pointer to the system state for observers to access.
  */
 struct ClockTickEvent : Event {
+  /// Schedules the tick one clockTick ahead of the current time.
   ClockTickEvent(const SystemState* systemState);
+
+  /**
+   * @brief Schedules the tick at the given time.
+   *
+   * Only permitted before a run has started, i.e. while the system state stands at the lowest
+   * representable time. During a run the clock must visit every instant, because instances are
+   * instantiated at the instant their instantiation time is reached.
+   *
+   * @param systemState The system state the tick refers to
+   * @param time Time the tick advances to
+   */
+  ClockTickEvent(const SystemState* systemState, BPMNOS::number time);
+
   void processBy(Engine* engine) const override;
 
   /// Stale once live time already reached the scheduled tick time (time must strictly advance).

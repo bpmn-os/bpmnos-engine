@@ -24,7 +24,7 @@ SCENARIO( "SystemState copy with token awaiting signal", "[systemstate][signal]"
 //    Execution::Recorder recorder(std::cerr);
     recorder.subscribe(&engine);
 
-    engine.run(scenario.get(), 0);
+    engine.run(scenario.get(), 0, 0);
     const auto* originalState = engine.getSystemState();
 
     REQUIRE( originalState->tokensAwaitingSignal.count(signalName) == 1 );

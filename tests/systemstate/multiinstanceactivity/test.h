@@ -21,7 +21,7 @@ SCENARIO( "SystemState copy with parallel multi-instance activity", "[systemstat
 //    Execution::Recorder recorder(std::cerr);
     recorder.subscribe(&engine);
 
-    engine.run(scenario.get(), 0);
+    engine.run(scenario.get(), 0, 0);
     const auto* originalState = engine.getSystemState();
 
     // Should have 3 instance tokens and 1 main token (WAITING)
@@ -71,7 +71,7 @@ SCENARIO( "SystemState copy with sequential multi-instance activity", "[systemst
 //    Execution::Recorder recorder(std::cerr);
     recorder.subscribe(&engine);
 
-    engine.run(scenario.get(), 0);
+    engine.run(scenario.get(), 0, 0);
     const auto* originalState = engine.getSystemState();
 
     // Should have instance tokens and sequential waiting chain

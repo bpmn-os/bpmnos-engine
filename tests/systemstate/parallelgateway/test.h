@@ -19,7 +19,7 @@ SCENARIO( "SystemState copy with token awaiting gateway activation", "[systemsta
 //    Execution::Recorder recorder(std::cerr);
     recorder.subscribe(&engine);
 
-    engine.run(scenario.get(), 0);
+    engine.run(scenario.get(), 0, 0);
     const auto* originalState = engine.getSystemState();
 
     // Should have 1 token waiting at Gateway_2

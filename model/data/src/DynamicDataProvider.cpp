@@ -228,7 +228,7 @@ std::unique_ptr<Scenario> DynamicDataProvider::createScenario([[maybe_unused]] u
       scenario->addPendingDisclosure(instanceId, {pending.attribute, pending.disclosureTime, pending.value});
     }
   }
-  // Reveal data disclosed at time 0
-  scenario->revealData(0);
+  // Data disclosed at or before the run's first instant is revealed by the clock tick that opens the run,
+  // which is where the start time is known; a scenario does not know when it will be run
   return scenario;
 }

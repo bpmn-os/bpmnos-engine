@@ -18,7 +18,7 @@ SCENARIO( "SystemState copy with pending event subprocess", "[systemstate][event
     Execution::Recorder recorder;
     recorder.subscribe(&engine);
 
-    engine.run(scenario.get(), 0);
+    engine.run(scenario.get(), 0, 0);
     const auto* originalState = engine.getSystemState();
 
     // Find the context StateMachine (owned by process token)
@@ -85,7 +85,7 @@ SCENARIO( "SystemState copy with interrupting event subprocess", "[systemstate][
     Execution::Recorder recorder;
     recorder.subscribe(&engine);
 
-    engine.run(scenario.get(), 0);
+    engine.run(scenario.get(), 0, 0);
     const auto* originalState = engine.getSystemState();
 
     // Find the context StateMachine
@@ -150,7 +150,7 @@ SCENARIO( "SystemState copy with non-interrupting event subprocess", "[systemsta
     Execution::Recorder recorder;
     recorder.subscribe(&engine);
 
-    engine.run(scenario.get(), 0);
+    engine.run(scenario.get(), 0, 0);
     const auto* originalState = engine.getSystemState();
 
     // Find the context StateMachine

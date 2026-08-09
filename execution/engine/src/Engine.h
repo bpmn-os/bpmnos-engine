@@ -44,13 +44,16 @@ public:
   /**
    * @brief Runs a scenario from the beginning.
    *
-   * Creates a fresh system state and executes until no tokens remain,
-   * no new instantiations are pending, or the timeout is exceeded.
+   * Creates a fresh system state at the given start time and executes until no tokens remain,
+   * no new instantiations are pending, or the end time is exceeded. The start time must not be later
+   * than the scenario's earliest instantiation time, since an instance is instantiated at the instant
+   * its instantiation time is reached and a later start would leave every earlier instance uncreated.
    *
    * @param scenario The scenario to execute
-   * @param timeout Last time to process (engine stops when time >= timeout)
+   * @param startTime Time the run begins at
+   * @param endTime Last time to process (engine stops when time >= endTime)
    */
-  void run(const BPMNOS::Model::Scenario* scenario, BPMNOS::number timeout = std::numeric_limits<BPMNOS::number>::max());
+  void run(const BPMNOS::Model::Scenario* scenario, BPMNOS::number startTime = 0, BPMNOS::number endTime = std::numeric_limits<BPMNOS::number>::max());
 
   /**
    * @brief Initializes the engine's system state with a deep copy of a foreign system state.
@@ -68,9 +71,9 @@ public:
    *
    * Does not create a new state — run() or initializeSystemState() must have established one first.
    *
-   * @param timeout Last time to process (engine stops when time >= timeout)
+   * @param endTime Last time to process (engine stops when time >= endTime)
    */
-  void resume(BPMNOS::number timeout = std::numeric_limits<BPMNOS::number>::max());
+  void resume(BPMNOS::number endTime = std::numeric_limits<BPMNOS::number>::max());
 
   /**
    * @brief Start processing the decision, then continues advancing the existing system state.
@@ -78,9 +81,9 @@ public:
    * Does not create a new state — run() or initializeSystemState() must have established one first.
    *
    * @param decision The decision to process before greedy dispatch resumes
-   * @param timeout Last time to process (engine stops when time >= timeout)
+   * @param endTime Last time to process (engine stops when time >= endTime)
    */
-  void resume(std::shared_ptr<Decision> decision, BPMNOS::number timeout = std::numeric_limits<BPMNOS::number>::max());
+  void resume(std::shared_ptr<Decision> decision, BPMNOS::number endTime = std::numeric_limits<BPMNOS::number>::max());
 
   /**
    * @brief Start processing the event, then continues advancing the existing system state.
@@ -88,11 +91,11 @@ public:
    * Does not create a new state — run() or initializeSystemState() must have established one first.
    *
    * @param event The event to process before greedy dispatch resumes
-   * @param timeout Last time to process (engine stops when time >= timeout)
+   * @param endTime Last time to process (engine stops when time >= endTime)
    */
-  void resume(std::shared_ptr<Event> event, BPMNOS::number timeout = std::numeric_limits<BPMNOS::number>::max());
+  void resume(std::shared_ptr<Event> event, BPMNOS::number endTime = std::numeric_limits<BPMNOS::number>::max());
 private:
-  void run(BPMNOS::number timeout = std::numeric_limits<BPMNOS::number>::max());
+  void run(BPMNOS::number endTime = std::numeric_limits<BPMNOS::number>::max());
 public:
   void process(const ReadyEvent* event);
   void process(const EntryEvent* event);
@@ -155,7 +158,7 @@ protected:
   ReadyHandler readyHandler;
   TaskCompletionHandler taskCompletionHandler;
   
-  bool advance(BPMNOS::number timeout);
+  bool advance(BPMNOS::number endTime);
   bool terminated;
 //  friend void Token::notify() const;
 };

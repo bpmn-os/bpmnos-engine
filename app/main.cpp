@@ -9,18 +9,19 @@
 
 void print_usage() {
   std::cout << "Usage:" << std::endl;
-  std::cout << "\tbpmnos-greedy --model <model file> --data <data file> [--json <json file>] [--provider {static|expected|dynamic|stochastic}] [--seed <number>] [--evaluator {local|guided}] [--folders <folder1> <folder2> ...] [--bisection] [--timeout] [--verbose]" << std::endl;
-  std::cout << "\tbpmnos-greedy -m <model file> -d <data file> [-j <json file>] [-p <provider>]  [-s <number>] [-e <evaluator>] [-f <folder1> <folder2> ...] [--b] [-t <number>] [-v]" << std::endl;
+  std::cout << "\tbpmnos-greedy --model <model file> --data <data file> [--json <json file>] [--provider {static|expected|dynamic|stochastic}] [--seed <number>] [--evaluator {local|guided}] [--folders <folder1> <folder2> ...] [--bisection] [--starttime <number>] [--endtime <number>] [--verbose]" << std::endl;
+  std::cout << "\tbpmnos-greedy -m <model file> -d <data file> [-j <json file>] [-p <provider>]  [-s <number>] [-e <evaluator>] [-f <folder1> <folder2> ...] [--b] [-tmin <number>] [-tmax <number>] [-v]" << std::endl;
   std::cout << std::endl;
   std::cout << "\t-m, --model <model file>:             name of the BPMN model file" << std::endl;
   std::cout << "\t-d, --data <data file>:               name of the CSV file containing the instance data" << std::endl;
   std::cout << "\t-j, --json <json file>:               name of the file for the JSON output" << std::endl;
   std::cout << "\t-p, --provider {static|expected|dynamic|stochastic} (default: stochastic)" << std::endl;
-  std::cout << "\t-s, --seed <number>                   seed for stochastic scenarios (default: random)" << std::endl;
-  std::cout << "\t-e, --evaluator {local|guided} (default: guided)" << std::endl;
+  std::cout << "\t-s, --seed <number>:                  seed for stochastic scenarios (default: random)" << std::endl;
+  std::cout << "\t-e, --evaluator {local|guided}:       evaluator for decisions (default: guided)" << std::endl;
   std::cout << "\t-f, --folders <folder1> <folder2> ...: folders in which lookup tables can be found" << std::endl;
   std::cout << "\t-b, --bisection:                      use bisection for choices" << std::endl;
-  std::cout << "\t-t, --timeout <number>:               simulation time when execution is terminated" << std::endl;
+  std::cout << "\t-tmin, --starttime <number>:          simulation time at which execution begins (default: earliest instantiation)" << std::endl;
+  std::cout << "\t-tmax, --endtime <number>:            simulation time when execution is terminated" << std::endl;
   std::cout << "\t-v, --verbose:                        display the execution log" << std::endl;
   exit(1);
 }
@@ -35,7 +36,8 @@ struct Arguments {
   std::string evaluatorName = "guided";
   std::vector<std::string> folders;
   bool bisection = false;
-  std::optional<BPMNOS::number> timeout;
+  std::optional<BPMNOS::number> tmin;
+  std::optional<BPMNOS::number> tmax;
   bool verbose = false;
 };
 
@@ -71,8 +73,11 @@ Arguments parse_arguments(int argc, char* argv[]) {
     else if ((arg == "--bisection" || arg == "-b")) {
       args.bisection = true;
     }
-    else if ((arg == "--timeout" || arg == "-t") && i + 1 < argc) {
-      args.timeout = BPMNOS::to_number(std::string(argv[++i]),BPMNOS::STRING);
+    else if ((arg == "--starttime" || arg == "-tmin") && i + 1 < argc) {
+      args.tmin = BPMNOS::to_number(std::string(argv[++i]),BPMNOS::STRING);
+    }
+    else if ((arg == "--endtime" || arg == "-tmax") && i + 1 < argc) {
+      args.tmax = BPMNOS::to_number(std::string(argv[++i]),BPMNOS::STRING);
     }
     else if ((arg == "--verbose" || arg == "-v")) {
       args.verbose = true;
@@ -170,11 +175,22 @@ int main(int argc, char* argv[]) {
   BPMNOS::Execution::OutcomeSentinel sentinel;
   sentinel.subscribe(&engine);
 
-  if (args.timeout.has_value()) {
-    engine.run(scenario.get(),args.timeout.value());
+  // a run beginning before its first instance would only tick through empty instants, so the default start
+  // is where the scenario's data starts
+  auto earliestInstantiationTime = scenario->getEarliestInstantiationTime();
+  if (args.tmin.has_value() && args.tmin.value() > earliestInstantiationTime) {
+    // an instance is instantiated at the instant its instantiation time is reached, so a later start
+    // would leave every earlier instance uncreated
+    std::cerr << "Error: start time " << (double)args.tmin.value() << " is later than the earliest instantiation time " << (double)earliestInstantiationTime << "\n";
+    return 1;
+  }
+  auto startTime = args.tmin.value_or( earliestInstantiationTime );
+
+  if (args.tmax.has_value()) {
+    engine.run(scenario.get(), startTime, args.tmax.value());
   }
   else {
-    engine.run(scenario.get());
+    engine.run(scenario.get(), startTime);
   }
   
   logger.reset();

@@ -46,7 +46,7 @@ SCENARIO( "Guided vehicle routing problem", "[examples][vehicle_routing_problem]
     recorder.subscribe(&engine);
 
     WHEN( "The engine is started with the greedy controller" ) {
-      engine.run(scenario.get(),1350);
+      engine.run(scenario.get(), 0, 1350);
       THEN( "Then all pickup and delivery locations are visited" ) {
         // HH-B-K-HH: 296 + 573 + 432 = 1301
         REQUIRE( recorder.objective == -1301 );

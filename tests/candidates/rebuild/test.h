@@ -44,7 +44,7 @@ SCENARIO( "MessageDeliveries rebuilds its candidates from a SystemState notice",
     exitHandler.connect(&engine);
     timeHandler.connect(&engine);
     incremental.connect(&engine);
-    engine.run(scenario.get(), 0);
+    engine.run(scenario.get(), 0, 0);
 
     const auto* systemState = engine.getSystemState();
     REQUIRE( systemState->messages.size() == 3 );
@@ -101,7 +101,7 @@ SCENARIO( "CompetingCandidates rebuilds its merged candidates from a SystemState
     exitHandler.connect(&engine);
     timeHandler.connect(&engine);
     incremental.connect(&engine);
-    engine.run(scenario.get(), 0);
+    engine.run(scenario.get(), 0, 0);
 
     const auto* systemState = engine.getSystemState();
 
@@ -151,7 +151,7 @@ SCENARIO( "SequentialEntries rebuilds its candidates from a SystemState notice",
     entryHandler.connect(&engine);
     timeHandler.connect(&engine);
     incremental.connect(&engine);
-    engine.run(scenario.get(), 0);
+    engine.run(scenario.get(), 0, 0);
 
     const auto* systemState = engine.getSystemState();
     REQUIRE( systemState->pendingEntryDecisions.count() >= 1 );
@@ -196,7 +196,7 @@ SCENARIO( "FirstFeasibleEntry rebuilds its candidate from a SystemState notice",
     Execution::FirstFeasibleEntry incremental(evaluator);
     timeHandler.connect(&engine);
     incremental.connect(&engine);
-    engine.run(scenario.get(), 0);
+    engine.run(scenario.get(), 0, 0);
 
     const auto* systemState = engine.getSystemState();
     REQUIRE( systemState->pendingEntryDecisions.count() == 1 );
@@ -242,7 +242,7 @@ SCENARIO( "FirstFeasibleExit rebuilds its candidate from a SystemState notice", 
     choiceHandler.connect(&engine);
     timeHandler.connect(&engine);
     incremental.connect(&engine);
-    engine.run(scenario.get(), 0);
+    engine.run(scenario.get(), 0, 0);
 
     const auto* systemState = engine.getSystemState();
     REQUIRE( systemState->pendingExitDecisions.count() == 1 );
@@ -287,7 +287,7 @@ SCENARIO( "FirstEnumeratedChoice rebuilds its candidates from a SystemState noti
     exitHandler.connect(&engine);
     timeHandler.connect(&engine);
     incremental.connect(&engine);
-    engine.run(scenario.get(), 0);
+    engine.run(scenario.get(), 0, 0);
 
     const auto* systemState = engine.getSystemState();
     REQUIRE( systemState->pendingChoiceDecisions.count() == 1 );
@@ -333,7 +333,7 @@ SCENARIO( "FirstBisectionalChoice rebuilds its candidates from a SystemState not
     exitHandler.connect(&engine);
     timeHandler.connect(&engine);
     incremental.connect(&engine);
-    engine.run(scenario.get(), 0);
+    engine.run(scenario.get(), 0, 0);
 
     const auto* systemState = engine.getSystemState();
     REQUIRE( systemState->pendingChoiceDecisions.count() == 1 );

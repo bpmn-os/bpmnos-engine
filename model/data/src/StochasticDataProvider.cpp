@@ -335,8 +335,7 @@ std::unique_ptr<Scenario> StochasticDataProvider::createScenario(unsigned int sc
   // Evaluate deferred disclosures with scenario-specific RNG
   scenario->evaluateDeferredDisclosures();
 
-  // Reveal data disclosed at time 0
-  scenario->revealData(0);
-
+  // Data disclosed at or before the run's first instant is revealed by the clock tick that opens the run,
+  // which is where the start time is known; a scenario does not know when it will be run
   return scenario;
 }

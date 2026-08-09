@@ -30,7 +30,7 @@ SCENARIO( "Truck driver scheduling problem", "[examples][truck_driver_scheduling
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get(),1500);
+      engine.run(scenario.get(), 0, 1500);
       THEN( "Then no failure occurs" ) {
         auto failureLog = recorder.find(nlohmann::json{{"state", "FAILED"}});
         REQUIRE( failureLog.size() == 0 );
@@ -80,7 +80,7 @@ SCENARIO( "Truck driver scheduling problem", "[examples][truck_driver_scheduling
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get(),1500);
+      engine.run(scenario.get(), 0, 1500);
       THEN( "Then no failure occurs" ) {
         auto failureLog = recorder.find(nlohmann::json{{"state", "FAILED"}});
         REQUIRE( failureLog.size() == 0 );
@@ -130,7 +130,7 @@ SCENARIO( "Truck driver scheduling problem", "[examples][truck_driver_scheduling
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get(),2000);
+      engine.run(scenario.get(), 0, 2000);
       THEN( "Then no failure occurs" ) {
         auto failureLog = recorder.find(nlohmann::json{{"state", "FAILED"}});
         REQUIRE( failureLog.size() == 0 );

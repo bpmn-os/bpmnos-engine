@@ -20,13 +20,12 @@ void ScenarioUpdater::notice(const Observable* observable) {
     auto event = static_cast<const Event*>(observable);
     if (auto clockTickEvent = event->is<ClockTickEvent>()) {
       auto systemState = clockTickEvent->systemState;
-      auto currentTime = systemState->getTime();
 
       if (auto dynamicScenario = dynamic_cast<const BPMNOS::Model::DynamicScenario*>(systemState->scenario)) {
-        dynamicScenario->revealData(currentTime);
+        dynamicScenario->revealData(clockTickEvent->time);
       }
       else if (auto stochasticScenario = dynamic_cast<const BPMNOS::Model::StochasticScenario*>(systemState->scenario)) {
-        stochasticScenario->revealData(currentTime);
+        stochasticScenario->revealData(clockTickEvent->time);
       }
     }
     return;

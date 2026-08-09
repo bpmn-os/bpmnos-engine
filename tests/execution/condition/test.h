@@ -113,7 +113,7 @@ SCENARIO( "Condition on global attribute", "[execution][condition]" ) {
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get(),1);
+      engine.run(scenario.get(), 0, 1);
       THEN( "The activity is completed and the conditional event is not triggerd" ) {
         auto activityLog =recorder.find(nlohmann::json{{"nodeId","Activity_1"},{"state", "COMPLETED"}});
         REQUIRE( activityLog.size() == 1 ); 
@@ -207,7 +207,7 @@ SCENARIO( "Condition on global attribute", "[execution][condition]" ) {
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get(),1);
+      engine.run(scenario.get(), 0, 1);
       THEN( "The conditional event is not triggerd" ) {
         auto conditionLog =recorder.find(nlohmann::json{{"nodeId","ConditionalEvent_2"},{"state", "COMPLETED"}});
         REQUIRE( conditionLog.size() == 0 ); 

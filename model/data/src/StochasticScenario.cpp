@@ -16,7 +16,7 @@ StochasticScenario::StochasticScenario(
 )
   : Scenario(model, globalValueMap)
   , scenarioSeeds({{0, seed}})
-  , earliestInstantiationTime(std::numeric_limits<BPMNOS::number>::infinity())
+  , earliestInstantiationTime(std::numeric_limits<BPMNOS::number>::max())
   , latestInstantiationTime(std::numeric_limits<BPMNOS::number>::lowest())
 {
 }
@@ -216,7 +216,9 @@ void StochasticScenario::evaluateDeferredDisclosures(BPMNOS::number spawnTime) {
 }
 
 void StochasticScenario::computeInstantiationBounds() {
-  earliestInstantiationTime = std::numeric_limits<BPMNOS::number>::infinity();
+  // the seeds are the neutral elements of the searches below; note that infinity() is zero for a
+  // scaled_integer, so max() is the only usable upper bound
+  earliestInstantiationTime = std::numeric_limits<BPMNOS::number>::max();
   latestInstantiationTime = std::numeric_limits<BPMNOS::number>::lowest();
 
   for (auto& [id, instance] : instances) {

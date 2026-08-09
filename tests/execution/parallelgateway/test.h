@@ -20,7 +20,7 @@ SCENARIO( "Parallel fork", "[execution][parallelgateway]" ) {
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get(),0);
+      engine.run(scenario.get(), 0, 0);
       auto tokenLog = recorder.find(nlohmann::json{}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
       THEN( "The dump of each entry of the token log has 16 entries" ) {        
         REQUIRE( tokenLog.size() == 16 );
@@ -94,7 +94,7 @@ SCENARIO( "Symmetric parallel gateways", "[execution][parallelgateway]" ) {
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get(),0);
+      engine.run(scenario.get(), 0, 0);
       auto tokenLog = recorder.find(nlohmann::json{}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
       THEN( "The dump of each entry of the token log has 33 entries" ) {        
         REQUIRE( tokenLog.size() == 33 );

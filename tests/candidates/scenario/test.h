@@ -21,7 +21,7 @@ SCENARIO( "Scenario records the correct completion timestamp for a BUSY task", "
     entryHandler.connect(&engine);
     exitHandler.connect(&engine);
     timeHandler.connect(&engine);
-    engine.run(scenario.get(), 0);
+    engine.run(scenario.get(), 0, 0);
 
     // Resolve (instanceId, node) from the scenario's own model so the keys match those the scenario stores.
     const BPMN::Node* node = nullptr;

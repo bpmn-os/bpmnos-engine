@@ -46,7 +46,7 @@ SCENARIO( "Vehicle routing problem", "[examples][vehicle_routing_problem]" ) {
     recorder.subscribe(&engine);
 
     WHEN( "The engine is started with the greedy controller" ) {
-      engine.run(scenario.get(),1350);
+      engine.run(scenario.get(), 0, 1350);
       THEN( "Then all process instances complete" ) {
         auto processLog = recorder.find({{"state","COMPLETED"}}, nlohmann::json{{"nodeId",nullptr }, {"event",nullptr },{"decision",nullptr }});
 //std::cerr << processLog.dump() << std::endl;

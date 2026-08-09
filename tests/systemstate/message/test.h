@@ -23,7 +23,7 @@ SCENARIO( "SystemState copy with undelivered message", "[systemstate][message]" 
 //    Execution::Recorder recorder(std::cerr);
     recorder.subscribe(&engine);
 
-    engine.run(scenario.get(), 0);
+    engine.run(scenario.get(), 0, 0);
     const auto* originalState = engine.getSystemState();
 
     // Process_1 completed, message sent but undelivered (no recipient instance)
@@ -89,7 +89,7 @@ SCENARIO( "SystemState copy with delivered message in inbox", "[systemstate][mes
 //    Execution::Recorder recorder(std::cerr);
     recorder.subscribe(&engine);
 
-    engine.run(scenario.get(), 0);
+    engine.run(scenario.get(), 0, 0);
     const auto* originalState = engine.getSystemState();
 
     // Message delivered to recipient's inbox
@@ -154,7 +154,7 @@ SCENARIO( "SystemState copy with SendTask message awaiting delivery", "[systemst
 //    Execution::Recorder recorder(std::cerr);
     recorder.subscribe(&engine);
 
-    engine.run(scenario.get(), 0);
+    engine.run(scenario.get(), 0, 0);
     const auto* originalState = engine.getSystemState();
 
     // SendTask is in BUSY state with message awaiting delivery
@@ -216,7 +216,7 @@ SCENARIO( "SystemState copy with token awaiting boundary event", "[systemstate][
 //    Execution::Recorder recorder(std::cerr);
     recorder.subscribe(&engine);
 
-    engine.run(scenario.get(), 0);
+    engine.run(scenario.get(), 0, 0);
     const auto* originalState = engine.getSystemState();
 
     // Should have boundary event token associated with activity token

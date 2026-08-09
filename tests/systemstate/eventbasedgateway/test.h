@@ -24,7 +24,7 @@ SCENARIO( "SystemState copy with tokens at event-based gateway", "[systemstate][
 //    Execution::Recorder recorder(std::cerr);
     recorder.subscribe(&engine);
 
-    engine.run(scenario.get(), 0);
+    engine.run(scenario.get(), 0, 0);
     const auto* originalState = engine.getSystemState();
 
     // Should have gateway token and 2 event tokens

@@ -80,6 +80,50 @@ SCENARIO( "Trivial executable process", "[execution][process]" ) {
 }
 
 
+SCENARIO( "Executable process starting after time zero", "[execution][process]" ) {
+  const std::string modelFile = "tests/execution/process/Trivial_executable_process.bpmn";
+  REQUIRE_NOTHROW( Model::Model(modelFile) );
+  GIVEN( "A single instance instantiated at time 42" ) {
+
+    std::string csv =
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1; timestamp := 42\n"
+    ;
+
+    Model::StaticDataProvider dataProvider(modelFile,csv);
+    auto scenario = dataProvider.createScenario();
+
+    THEN( "The earliest instantiation is at time 42" ) {
+      REQUIRE( scenario->getEarliestInstantiationTime() == 42 );
+    }
+
+    WHEN( "The engine is run from the earliest instantiation time" ) {
+      Execution::Engine engine;
+      Execution::TimeWarp timeHandler;
+      timeHandler.connect(&engine);
+      Execution::Recorder recorder;
+      recorder.subscribe(&engine);
+      engine.run(scenario.get(), scenario->getEarliestInstantiationTime());
+
+      THEN( "The log opens with the clock tick that starts the run" ) {
+        REQUIRE( recorder.log[0]["event"] == "clocktick" );
+        REQUIRE( recorder.log[0]["time"] == 42 );
+      }
+      THEN( "The instance is instantiated rather than dropped" ) {
+        auto tokenLog = recorder.find(nlohmann::json{}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
+        REQUIRE( tokenLog.size() == 6 );
+        REQUIRE( tokenLog[0]["instanceId"] == "Instance_1" );
+        REQUIRE( tokenLog[0]["state"] == "ENTERED" );
+        REQUIRE( tokenLog[0]["status"]["timestamp"] == 42.0 );
+        REQUIRE( tokenLog[5]["state"] == "DONE" );
+      }
+      THEN( "The run reaches the start time" ) {
+        REQUIRE( engine.getSystemState()->getTime() >= 42 );
+      }
+    }
+  }
+}
+
 SCENARIO( "Simple executable process", "[execution][process]" ) {
   const std::string modelFile = "tests/execution/process/Simple_executable_process.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );

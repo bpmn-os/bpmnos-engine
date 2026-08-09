@@ -33,7 +33,7 @@ SCENARIO( "Bin packing problem", "[examples][bin_packing_problem]" ) {
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get(),2); // TODO: time limit should be removed when strange error below is fixed
+      engine.run(scenario.get(), 0, 2); // TODO: time limit should be removed when strange error below is fixed
 
       THEN( "Then no failure occurs" ) {
         auto failureLog = recorder.find(nlohmann::json{{"state", "FAILED"}});
@@ -96,7 +96,7 @@ SCENARIO( "Bin packing problem", "[examples][bin_packing_problem]" ) {
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get(),10);
+      engine.run(scenario.get(), 0, 10);
       THEN( "Then no failure occurs" ) {
         auto failureLog = recorder.find(nlohmann::json{{"state", "FAILED"}});
         REQUIRE( failureLog.size() == 0 );

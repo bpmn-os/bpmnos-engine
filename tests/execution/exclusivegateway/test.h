@@ -22,7 +22,7 @@ SCENARIO( "Symmetric exclusive gateways", "[execution][exclusivegateway]" ) {
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get(),0);
+      engine.run(scenario.get(), 0, 0);
       THEN( "The dump of each entry of the token log is correct" ) {
         auto gatewayLog = recorder.find(nlohmann::json{{"nodeId","Gateway_1" }}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
         REQUIRE( gatewayLog[0]["state"] == "ARRIVED" );
@@ -34,21 +34,7 @@ SCENARIO( "Symmetric exclusive gateways", "[execution][exclusivegateway]" ) {
         REQUIRE( processLog[1]["state"] == "BUSY" );
         REQUIRE( processLog[2]["state"] == "COMPLETED" );
         REQUIRE( processLog[3]["state"] == "DONE" );
-/*
-        // process
-        REQUIRE( recorder.log[0].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"state\":\"ENTERED\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
-        REQUIRE( recorder.log[1].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"state\":\"BUSY\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
-        // start event
-        REQUIRE( recorder.log[2].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"nodeId\":\"StartEvent_1\",\"state\":\"ENTERED\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
-        REQUIRE( recorder.log[3].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"nodeId\":\"StartEvent_1\",\"sequenceFlowId\":\"Flow_1ra1q8g\",\"state\":\"DEPARTED\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
-        // forking gateway
-        REQUIRE( recorder.log[4].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"nodeId\":\"Gateway_1\",\"sequenceFlowId\":\"Flow_1ra1q8g\",\"state\":\"ARRIVED\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
-        REQUIRE( recorder.log[5].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"nodeId\":\"Gateway_1\",\"state\":\"ENTERED\",\"status\":{\"timestamp\":0.0,\"instance\":\"Instance_1\"}}" );
-        // tasks
-        REQUIRE( recorder.log[6]["state"] == "DEPARTED" );
-        REQUIRE( recorder.log[7]["state"] == "ARRIVED" );
-*/
-        REQUIRE( recorder.log[7]["nodeId"] == "Activity_2" );
+        REQUIRE( recorder.log[8]["nodeId"] == "Activity_2" );
     }
    }
   }
@@ -74,7 +60,7 @@ SCENARIO( "Symmetric exclusive gateways", "[execution][exclusivegateway]" ) {
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get(),10);
+      engine.run(scenario.get(), 0, 10);
       THEN( "The dump of each entry of the token log is correct" ) {
         auto gatewayLog = recorder.find(nlohmann::json{{"nodeId","Gateway_1" }}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
         REQUIRE( gatewayLog[0]["state"] == "ARRIVED" );
@@ -86,21 +72,6 @@ SCENARIO( "Symmetric exclusive gateways", "[execution][exclusivegateway]" ) {
         REQUIRE( processLog[1]["state"] == "BUSY" );
         REQUIRE( processLog[2]["state"] == "FAILING" );
         REQUIRE( processLog[3]["state"] == "FAILED" );
-/*
-        // process
-        REQUIRE( recorder.log[0].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"state\":\"ENTERED\",\"status\":{\"timestamp\":1.0,\"instance\":\"Instance_1\"}}" );
-        REQUIRE( recorder.log[1].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"state\":\"BUSY\",\"status\":{\"timestamp\":1.0,\"instance\":\"Instance_1\"}}" );
-        // start event
-        REQUIRE( recorder.log[2].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"nodeId\":\"StartEvent_1\",\"state\":\"ENTERED\",\"status\":{\"timestamp\":1.0,\"instance\":\"Instance_1\"}}" );
-        REQUIRE( recorder.log[3].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"nodeId\":\"StartEvent_1\",\"sequenceFlowId\":\"Flow_1ra1q8g\",\"state\":\"DEPARTED\",\"status\":{\"timestamp\":1.0,\"instance\":\"Instance_1\"}}" );
-        // forking gateway
-        REQUIRE( recorder.log[4].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"nodeId\":\"Gateway_1\",\"sequenceFlowId\":\"Flow_1ra1q8g\",\"state\":\"ARRIVED\",\"status\":{\"timestamp\":1.0,\"instance\":\"Instance_1\"}}" );
-        REQUIRE( recorder.log[5].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"nodeId\":\"Gateway_1\",\"state\":\"ENTERED\",\"status\":{\"timestamp\":1.0,\"instance\":\"Instance_1\"}}" );
-        REQUIRE( recorder.log[6].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"nodeId\":\"Gateway_1\",\"state\":\"FAILED\",\"status\":{\"timestamp\":1.0,\"instance\":\"Instance_1\"}}" );
-        // process
-        REQUIRE( recorder.log[7].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"state\":\"FAILING\",\"status\":{\"timestamp\":1.0,\"instance\":\"Instance_1\"}}" );
-        REQUIRE( recorder.log[8].dump() == "{\"processId\":\"Process_1\",\"instanceId\":\"Instance_1\",\"state\":\"FAILED\",\"status\":{\"timestamp\":1.0,\"instance\":\"Instance_1\"}}" );
-*/
       }
     }
   }
@@ -126,7 +97,7 @@ SCENARIO( "Symmetric exclusive gateways", "[execution][exclusivegateway]" ) {
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get(),2);
+      engine.run(scenario.get(), 0, 2);
       THEN( "The dump of each entry of the token log is correct" ) {
         auto gatewayLog = recorder.find(nlohmann::json{{"nodeId","Gateway_1" }}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
         REQUIRE( gatewayLog[0]["state"] == "ARRIVED" );

@@ -23,7 +23,7 @@ SCENARIO( "SystemState copy for simple process", "[systemstate][process]" ) {
 //   Execution::Recorder recorder(std::cerr);  // prints for debugging
     recorder.subscribe(&engine);
 
-    engine.run(scenario.get(),0);
+    engine.run(scenario.get(), 0, 0);
     const auto* originalState= engine.getSystemState();
 
     REQUIRE( originalState->instances.size() == 2 );
@@ -89,7 +89,7 @@ SCENARIO( "SystemState copy with token awaiting ready event", "[systemstate][pro
 //    Execution::Recorder recorder(std::cerr);
     recorder.subscribe(&engine);
 
-    engine.run(scenario.get(), 0);
+    engine.run(scenario.get(), 0, 0);
     const auto* originalState = engine.getSystemState();
 
     // Token should be waiting for ready event at Activity_1
@@ -129,8 +129,8 @@ SCENARIO( "Engine resume from stopped state", "[systemstate][process][resume]" )
     Execution::Recorder recorder1;
     recorder1.subscribe(&engine1);
 
-    // Run with timeout - will stop when task is waiting for exit event
-    engine1.run(scenario.get(), 10);
+    // Run with end time - will stop when task is waiting for exit event
+    engine1.run(scenario.get(), 0, 10);
 
     REQUIRE( engine1.getSystemState()->getTime() == 10 );
 

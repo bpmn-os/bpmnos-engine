@@ -22,7 +22,7 @@ SCENARIO( "SystemState copy with SequentialAdHocSubProcess", "[systemstate][adho
     recorder.subscribe(&engine);
 
     // Run without exit handler - first activity stays BUSY, second is pending
-    engine.run(scenario.get(),0);
+    engine.run(scenario.get(), 0, 0);
     const auto* originalState = engine.getSystemState();
 
     // Find the performer token (at AdHocSubProcess node)

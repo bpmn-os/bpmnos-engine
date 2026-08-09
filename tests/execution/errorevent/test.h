@@ -22,14 +22,14 @@ SCENARIO( "Error end event", "[execution][error]" ) {
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get(),0);
+      engine.run(scenario.get(), 0, 0);
       THEN( "The dump of each entry of the recorder log is correct" ) {
         auto errorEventLog = recorder.find(nlohmann::json{{"nodeId","ErrorEvent_1" }});
         REQUIRE( errorEventLog[0]["state"] == "ARRIVED" );
         REQUIRE( errorEventLog[1]["state"] == "ENTERED" );
         REQUIRE( errorEventLog[2]["state"] == "FAILED" );
 
-        auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr }});
+        auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr },{"event",nullptr },{"decision",nullptr }});
         REQUIRE( processLog[0]["state"] == "ENTERED" );
         REQUIRE( processLog[1]["state"] == "BUSY" );
         REQUIRE( processLog[2]["state"] == "FAILING" );

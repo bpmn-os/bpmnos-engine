@@ -23,7 +23,7 @@ SCENARIO( "SystemState copy with compensable subprocess", "[systemstate][compens
     recorder.subscribe(&engine);
 
     // Run until time 5 - SubProcess_1 completed, timer waiting
-    engine.run(scenario.get(), 5);
+    engine.run(scenario.get(), 0, 5);
     const auto* originalState = engine.getSystemState();
 
     // Find the context StateMachine (owned by process token)
@@ -106,7 +106,7 @@ SCENARIO( "SystemState copy with active compensation event subprocess", "[system
     recorder.subscribe(&engine);
 
     // Run until time 15 - timer at 10 fired, compensation triggered, waiting at timer 20
-    engine.run(scenario.get(), 15);
+    engine.run(scenario.get(), 0, 15);
     const auto* originalState = engine.getSystemState();
 
     // Find the context StateMachine (owned by process token)

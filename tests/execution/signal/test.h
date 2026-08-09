@@ -23,7 +23,7 @@ SCENARIO( "Two processes with signal", "[execution][signal]" ) {
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get(),2);
+      engine.run(scenario.get(), 0, 2);
       THEN( "The signal is emitted before it can be received" ) {
         auto recipientLog =recorder.find(nlohmann::json{{"nodeId","SignalEvent_2"},{"state", "COMPLETED"}});
         REQUIRE( recipientLog.size() == 0 ); 

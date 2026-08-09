@@ -33,7 +33,7 @@ SCENARIO( "GreedyController terminates when resumed from an installed system sta
     entryHandler.connect(&engine);
     exitHandler.connect(&engine);
     timeHandler.connect(&engine);
-    engine.run(scenario.get(), 0);
+    engine.run(scenario.get(), 0, 0);
 
     const auto* systemState = engine.getSystemState();
     REQUIRE( systemState->pendingMessageDeliveryDecisions.count() == 3 );
@@ -103,7 +103,7 @@ SCENARIO( "GreedyController terminates when resumed from a minimal one-job state
     entryHandler.connect(&engine);
     exitHandler.connect(&engine);
     timeHandler.connect(&engine);
-    engine.run(scenario.get(), 0);
+    engine.run(scenario.get(), 0, 0);
 
     const auto* systemState = engine.getSystemState();
     REQUIRE( systemState->pendingMessageDeliveryDecisions.count() == 1 );
@@ -157,7 +157,7 @@ SCENARIO( "GreedyController terminates when resumed from a one-machine two-job s
     entryHandler.connect(&engine);
     exitHandler.connect(&engine);
     timeHandler.connect(&engine);
-    engine.run(scenario.get(), 0);
+    engine.run(scenario.get(), 0, 0);
 
     const auto* systemState = engine.getSystemState();
     REQUIRE( systemState->messages.size() == 2 );   // both orders sent their request to Machine1
@@ -209,7 +209,7 @@ SCENARIO( "GreedyController terminates when resumed from a one-order two-sequent
     entryHandler.connect(&engine);
     exitHandler.connect(&engine);
     timeHandler.connect(&engine);
-    engine.run(scenario.get(), 0);
+    engine.run(scenario.get(), 0, 0);
 
     const auto* systemState = engine.getSystemState();
     REQUIRE( systemState->messages.size() == 1 );   // only the first job's request is sent at t=0
@@ -228,7 +228,7 @@ SCENARIO( "GreedyController terminates when resumed from a one-order two-sequent
       Execution::Recorder recorder;
       recorder.subscribe(&baseline);
 
-      baseline.run(baselineScenario.get(), 100);   // finite bound: a non-terminating run stops here
+      baseline.run(baselineScenario.get(), 0, 100);   // finite bound: a non-terminating run stops here
 
       THEN( "Both process instances complete from the start" ) {
         REQUIRE( (double)baseline.getSystemState()->getTime() < 100.0 );
@@ -287,7 +287,7 @@ SCENARIO( "TaskCompletionHandler completes a task that was BUSY when the state w
     timeHandler.connect(&engine);
     Execution::Recorder buildRecorder;
     buildRecorder.subscribe(&engine);
-    engine.run(scenario.get(), 0);
+    engine.run(scenario.get(), 0, 0);
 
     const auto* systemState = engine.getSystemState();
     // Precondition: the task is BUSY (awaiting completion) and has not yet completed at t=0.
@@ -346,7 +346,7 @@ SCENARIO( "InstantDirectMessage delivers a directly-addressed message pending at
     timeHandler.connect(&engine);
     Execution::Recorder buildRecorder;
     buildRecorder.subscribe(&engine);
-    engine.run(scenario.get(), 0);
+    engine.run(scenario.get(), 0, 0);
 
     const auto* systemState = engine.getSystemState();
     // Precondition: the message exists and the receiver is waiting (BUSY), not yet delivered.

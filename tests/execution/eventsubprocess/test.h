@@ -22,7 +22,7 @@ SCENARIO( "Caught error end event", "[execution][eventsubprocess]" ) {
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get(),0);
+      engine.run(scenario.get(), 0, 0);
       THEN( "The dump of each entry of the token log is correct" ) {
 
         auto startEventLog = recorder.find(nlohmann::json{{"nodeId","StartEvent_1" }}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
@@ -203,7 +203,7 @@ SCENARIO( "Caught and rethrown error", "[execution][eventsubprocess]" ) {
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get(),0);
+      engine.run(scenario.get(), 0, 0);
       THEN( "The dump of each entry of the token log is correct" ) {
         auto startEventLog = recorder.find(nlohmann::json{{"nodeId","StartEvent_1" }}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
         REQUIRE( startEventLog[0]["state"] == "ENTERED" );
@@ -259,7 +259,7 @@ SCENARIO( "Non-interrupting escalation throwing error", "[execution][eventsubpro
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get(),0);
+      engine.run(scenario.get(), 0, 0);
       THEN( "The dump of each entry of the token log is correct" ) {
         auto startEventLog = recorder.find(nlohmann::json{{"nodeId","StartEvent_1" }}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
         REQUIRE( startEventLog[0]["state"] == "ENTERED" );
@@ -310,7 +310,7 @@ SCENARIO( "Interrupting escalation throwing error", "[execution][eventsubprocess
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get(),0);
+      engine.run(scenario.get(), 0, 0);
       THEN( "The dump of each entry of the token log is correct" ) {
         auto startEventLog = recorder.find(nlohmann::json{{"nodeId","StartEvent_1" }}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
         REQUIRE( startEventLog[0]["state"] == "ENTERED" );
@@ -375,7 +375,7 @@ SCENARIO( "N-to-1 assignment", "[execution][eventsubprocess]" ) {
     auto scenario = dataProvider.createScenario();
 
     WHEN( "The engine is started with a recorder" ) {
-      engine.run(scenario.get(),0);
+      engine.run(scenario.get(), 0, 0);
       THEN( "The task is started after one message is received" ) {
         auto taskLog = recorder.find(nlohmann::json{{"nodeId","WaitTask" }, {"state","ENTERED" }});
         REQUIRE( taskLog.size() == 1);
@@ -397,7 +397,7 @@ SCENARIO( "N-to-1 assignment", "[execution][eventsubprocess]" ) {
     auto scenario = dataProvider.createScenario();
 
     WHEN( "The engine is started with a recorder" ) {
-      engine.run(scenario.get(),0);
+      engine.run(scenario.get(), 0, 0);
       THEN( "The task is started after one message is received" ) {
         auto taskLog = recorder.find(nlohmann::json{{"nodeId","WaitTask" }, {"state","ENTERED" }});
         REQUIRE( taskLog.size() == 1);
@@ -419,7 +419,7 @@ SCENARIO( "N-to-1 assignment", "[execution][eventsubprocess]" ) {
     auto scenario = dataProvider.createScenario();
 
     WHEN( "The engine is started with a recorder" ) {
-      engine.run(scenario.get(),0);
+      engine.run(scenario.get(), 0, 0);
       THEN( "The task is started after one message is received" ) {
         auto taskLog = recorder.find(nlohmann::json{{"nodeId","WaitTask" }, {"state","ENTERED" }});
         REQUIRE( taskLog.size() == 1);
