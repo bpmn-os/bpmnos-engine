@@ -43,6 +43,16 @@ void Engine::Command::execute() {
   function();
 }
 
+void Engine::processCommands() {
+  while ( commands.size() ) {
+//std::cerr << "execute" << std::endl;
+    // pop before executing, so that a command enqueueing further commands does not extend the list
+    // behind the one being executed
+    auto command = std::move(commands.front());
+    commands.pop_front();
+    command.execute();
+  }
+}
 
 
 void Engine::run(const BPMNOS::Model::Scenario* scenario, BPMNOS::number timeout) {
@@ -97,7 +107,7 @@ void Engine::resume(std::shared_ptr<Event> event, BPMNOS::number timeout) {
     // resuming only to terminate is forbidden
     throw std::logic_error("Engine: TerminationEvent is not allowed for resume");
   }
-  // force the given decision as the first event; the commands it enqueues are executed by advance()
+  // the run continues with the given decision
   notify(event.get());
   event->processBy(this);
   run(timeout);
@@ -113,17 +123,14 @@ void Engine::run(BPMNOS::number timeout) {
 }
 
 bool Engine::advance(BPMNOS::number timeout) {
+  // every enqueued command is executed by whoever enqueued it, so none is outstanding here
+  assert(commands.empty());
+
   // add new instances if time has advanced since last instantiation
   if (lastInstantiationTime < systemState->getTime()) {
     addInstances();
   }
-
-  while ( commands.size() ) {
-//std::cerr << "execute" << std::endl;
-    auto command = std::move(commands.front());
-    commands.pop_front();
-    command.execute();
-  }
+  assert(commands.empty());
 
   // fetch and process all events
   while ( auto event = fetchEvent(systemState.get()) ) {
@@ -139,11 +146,6 @@ bool Engine::advance(BPMNOS::number timeout) {
     }   
     notify(event.get());
     event->processBy(this);
-
-    while ( commands.size() ) {
-      commands.front().execute();
-      commands.pop_front();
-    }
 
     if ( event->is<ClockTickEvent>() ) {
 //std::cerr << "ClockTick" << std::endl;
@@ -178,6 +180,8 @@ void Engine::addInstances() {
     systemState->instances.back()->run(std::move(status));
   }
   lastInstantiationTime = systemState->getTime();
+
+  processCommands();
 }
 
 void Engine::deleteInstance(StateMachine* instance) {
@@ -200,6 +204,9 @@ void Engine::process(const ReadyEvent* event) {
     const_cast<StateMachine*>(token->owner)->createChild(token, scope, std::move(data));
   }
   commands.emplace_back(std::bind(&Token::advanceToReady,token), token);
+  
+  token_ptr.reset();
+  processCommands();
 }
 
 void Engine::process(const EntryEvent* event) {
@@ -219,6 +226,9 @@ void Engine::process(const EntryEvent* event) {
   }
 
   commands.emplace_back(std::bind(&Token::advanceToEntered,token), token);
+
+  token_ptr.reset();
+  processCommands();
 }
 
 void Engine::process(const ChoiceEvent* event) {
@@ -240,6 +250,9 @@ void Engine::process(const ChoiceEvent* event) {
   }
 
   commands.emplace_back(std::bind(&Token::advanceToCompleted,token), token);
+
+  token_ptr.reset();
+  processCommands();
 }
 
 void Engine::process(const CompletionEvent* event) {
@@ -252,6 +265,9 @@ void Engine::process(const CompletionEvent* event) {
   token->status = std::move(event->status);
 
   commands.emplace_back(std::bind(&Token::advanceToCompleted,token), token);
+
+  token_ptr.reset();
+  processCommands();
 }
 
 void Engine::process(const MessageDeliveryEvent* event) {
@@ -279,6 +295,10 @@ void Engine::process(const MessageDeliveryEvent* event) {
     commands.emplace_back(std::bind(&Token::advanceToCompleted,message->waitingToken), message->waitingToken);
   }  
   commands.emplace_back(std::bind(&Token::advanceToCompleted,token), token);
+
+  message_ptr.reset();
+  token_ptr.reset();
+  processCommands();
 }
 
 void Engine::process(const ExitEvent* event) {
@@ -298,6 +318,9 @@ void Engine::process(const ExitEvent* event) {
   }
 
   commands.emplace_back(std::bind(&Token::advanceToExiting,token), token);
+
+  token_ptr.reset();
+  processCommands();
 }
 
 void Engine::process(const ErrorEvent* event) {
@@ -305,6 +328,9 @@ void Engine::process(const ErrorEvent* event) {
   assert( token_ptr );
   Token* token = const_cast<Token*>(token_ptr.get());
   commands.emplace_back(std::bind(&Token::advanceToFailed,token), token);
+
+  token_ptr.reset();
+  processCommands();
 }
 
 void Engine::process([[maybe_unused]] const ClockTickEvent* event) {
@@ -323,6 +349,8 @@ void Engine::process([[maybe_unused]] const ClockTickEvent* event) {
     commands.emplace_back(std::bind(&Token::advanceToCompleted,token.get()), token.get());
     systemState->tokensAwaitingTimer.remove(token.get());
   }
+
+  processCommands();
 }
 
 void Engine::process([[maybe_unused]] const TerminationEvent* event) {

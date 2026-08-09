@@ -141,7 +141,9 @@ protected:
   };
 
   std::list<Command> commands; ///< List of commands to be executed
-  
+
+  void processCommands(); ///< Method executing all enqueued commands, including those enqueued by a command being executed
+
   void addInstances(); ///< Method adding all new instances and advancing tokens as much as possible
 
   void deleteInstance(StateMachine* instance); ///< Method removing completed instance
