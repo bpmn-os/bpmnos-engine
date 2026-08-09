@@ -145,13 +145,17 @@ $(document).ready(function(){initNavTree('structBPMNOS_1_1Execution_1_1ClockTick
 <div class="dynheader">
 Inheritance diagram for BPMNOS::Execution::ClockTickEvent:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="structBPMNOS_1_1Execution_1_1ClockTickEvent__inherit__graph.svg" width="350" height="587"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="structBPMNOS_1_1Execution_1_1ClockTickEvent__inherit__graph.svg" width="350" height="607"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a1d7c6205f2a4bbd45ec42cf5328d4fdf" id="r_a1d7c6205f2a4bbd45ec42cf5328d4fdf"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structBPMNOS_1_1Execution_1_1ClockTickEvent.html#a1d7c6205f2a4bbd45ec42cf5328d4fdf">ClockTickEvent</a> (const <a class="el" href="classBPMNOS_1_1Execution_1_1SystemState.html">SystemState</a> *<a class="el" href="structBPMNOS_1_1Execution_1_1ClockTickEvent.html#a9c29d99657aa832947aa460eebd0ad59">systemState</a>)</td></tr>
+<tr class="memdesc:a1d7c6205f2a4bbd45ec42cf5328d4fdf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Schedules the tick one clockTick ahead of the current time.  <br /></td></tr>
 <tr class="separator:a1d7c6205f2a4bbd45ec42cf5328d4fdf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba22408b91788d0503b284ae1e16a7fb" id="r_aba22408b91788d0503b284ae1e16a7fb"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structBPMNOS_1_1Execution_1_1ClockTickEvent.html#aba22408b91788d0503b284ae1e16a7fb">ClockTickEvent</a> (const <a class="el" href="classBPMNOS_1_1Execution_1_1SystemState.html">SystemState</a> *<a class="el" href="structBPMNOS_1_1Execution_1_1ClockTickEvent.html#a9c29d99657aa832947aa460eebd0ad59">systemState</a>, <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> <a class="el" href="structBPMNOS_1_1Execution_1_1ClockTickEvent.html#a7dc1fa2665b0003947c73e9acab50cfd">time</a>)</td></tr>
+<tr class="memdesc:aba22408b91788d0503b284ae1e16a7fb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Schedules the tick at the given time.  <br /></td></tr>
+<tr class="separator:aba22408b91788d0503b284ae1e16a7fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a075914b6c64831955636bbf19cf6074a" id="r_a075914b6c64831955636bbf19cf6074a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structBPMNOS_1_1Execution_1_1ClockTickEvent.html#a075914b6c64831955636bbf19cf6074a">processBy</a> (<a class="el" href="classBPMNOS_1_1Execution_1_1Engine.html">Engine</a> *engine) const override</td></tr>
 <tr class="separator:a075914b6c64831955636bbf19cf6074a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abba291ddeba5a9fde398a740ae2ed232" id="r_abba291ddeba5a9fde398a740ae2ed232"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structBPMNOS_1_1Execution_1_1ClockTickEvent.html#abba291ddeba5a9fde398a740ae2ed232">expired</a> () const override</td></tr>
@@ -214,7 +218,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a1d7c6205f2a4bbd45ec42cf5328d4fdf" name="a1d7c6205f2a4bbd45ec42cf5328d4fdf"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1d7c6205f2a4bbd45ec42cf5328d4fdf">&#9670;&#160;</a></span>ClockTickEvent()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a1d7c6205f2a4bbd45ec42cf5328d4fdf">&#9670;&#160;</a></span>ClockTickEvent() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -229,7 +233,45 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ClockTickEvent_8cpp_source.html#l00006">6</a> of file <a class="el" href="ClockTickEvent_8cpp_source.html">ClockTickEvent.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ClockTickEvent_8cpp_source.html#l00008">8</a> of file <a class="el" href="ClockTickEvent_8cpp_source.html">ClockTickEvent.cpp</a>.</p>
+
+</div>
+</div>
+<a id="aba22408b91788d0503b284ae1e16a7fb" name="aba22408b91788d0503b284ae1e16a7fb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aba22408b91788d0503b284ae1e16a7fb">&#9670;&#160;</a></span>ClockTickEvent() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">ClockTickEvent::ClockTickEvent </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classBPMNOS_1_1Execution_1_1SystemState.html">SystemState</a> *&#160;</td>
+          <td class="paramname"><em>systemState</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td>
+          <td class="paramname"><em>time</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Only permitted before a run has started, i.e. while the system state stands at the lowest representable time. During a run the clock must visit every instant, because instances are instantiated at the instant their instantiation time is reached.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">systemState</td><td>The system state the tick refers to </td></tr>
+    <tr><td class="paramname">time</td><td>Time the tick advances to </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="ClockTickEvent_8cpp_source.html#l00015">15</a> of file <a class="el" href="ClockTickEvent_8cpp_source.html">ClockTickEvent.cpp</a>.</p>
 
 </div>
 </div>
@@ -259,7 +301,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="structBPMNOS_1_1Execution_1_1Event.html#af9d23e060ebbc89b00ec71229deea4cc">BPMNOS::Execution::Event</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="ClockTickEvent_8cpp_source.html#l00017">17</a> of file <a class="el" href="ClockTickEvent_8cpp_source.html">ClockTickEvent.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ClockTickEvent_8cpp_source.html#l00032">32</a> of file <a class="el" href="ClockTickEvent_8cpp_source.html">ClockTickEvent.cpp</a>.</p>
 
 </div>
 </div>
@@ -288,7 +330,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="structBPMNOS_1_1Execution_1_1Event.html#ab78b9c754adf822e28d877bc736fe40b">BPMNOS::Execution::Event</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="ClockTickEvent_8cpp_source.html#l00023">23</a> of file <a class="el" href="ClockTickEvent_8cpp_source.html">ClockTickEvent.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ClockTickEvent_8cpp_source.html#l00038">38</a> of file <a class="el" href="ClockTickEvent_8cpp_source.html">ClockTickEvent.cpp</a>.</p>
 
 </div>
 </div>
@@ -318,7 +360,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="structBPMNOS_1_1Execution_1_1Event.html#a01aaef0f9014bc6aef34c3ddb47e4743">BPMNOS::Execution::Event</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="ClockTickEvent_8cpp_source.html#l00013">13</a> of file <a class="el" href="ClockTickEvent_8cpp_source.html">ClockTickEvent.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ClockTickEvent_8cpp_source.html#l00028">28</a> of file <a class="el" href="ClockTickEvent_8cpp_source.html">ClockTickEvent.cpp</a>.</p>
 
 </div>
 </div>
@@ -343,7 +385,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ClockTickEvent_8h_source.html#l00025">25</a> of file <a class="el" href="ClockTickEvent_8h_source.html">ClockTickEvent.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ClockTickEvent_8h_source.html#l00039">39</a> of file <a class="el" href="ClockTickEvent_8h_source.html">ClockTickEvent.h</a>.</p>
 
 </div>
 </div>
@@ -359,7 +401,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ClockTickEvent_8h_source.html#l00027">27</a> of file <a class="el" href="ClockTickEvent_8h_source.html">ClockTickEvent.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ClockTickEvent_8h_source.html#l00041">41</a> of file <a class="el" href="ClockTickEvent_8h_source.html">ClockTickEvent.h</a>.</p>
 
 </div>
 </div>
@@ -375,7 +417,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ClockTickEvent_8h_source.html#l00026">26</a> of file <a class="el" href="ClockTickEvent_8h_source.html">ClockTickEvent.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ClockTickEvent_8h_source.html#l00040">40</a> of file <a class="el" href="ClockTickEvent_8h_source.html">ClockTickEvent.h</a>.</p>
 
 </div>
 </div>

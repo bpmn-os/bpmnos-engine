@@ -489,11 +489,10 @@ $(document).ready(function(){initNavTree('StochasticDataProvider_8cpp_source.htm
 <div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span>  <span class="comment">// Evaluate deferred disclosures with scenario-specific RNG</span></div>
 <div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span>  scenario-&gt;evaluateDeferredDisclosures();</div>
 <div class="line"><a id="l00337" name="l00337"></a><span class="lineno">  337</span> </div>
-<div class="line"><a id="l00338" name="l00338"></a><span class="lineno">  338</span>  <span class="comment">// Reveal data disclosed at time 0</span></div>
-<div class="line"><a id="l00339" name="l00339"></a><span class="lineno">  339</span>  scenario-&gt;revealData(0);</div>
-<div class="line"><a id="l00340" name="l00340"></a><span class="lineno">  340</span> </div>
-<div class="line"><a id="l00341" name="l00341"></a><span class="lineno">  341</span>  <span class="keywordflow">return</span> scenario;</div>
-<div class="line"><a id="l00342" name="l00342"></a><span class="lineno">  342</span>}</div>
+<div class="line"><a id="l00338" name="l00338"></a><span class="lineno">  338</span>  <span class="comment">// Data disclosed at or before the run&#39;s first instant is revealed by the clock tick that opens the run,</span></div>
+<div class="line"><a id="l00339" name="l00339"></a><span class="lineno">  339</span>  <span class="comment">// which is where the start time is known; a scenario does not know when it will be run</span></div>
+<div class="line"><a id="l00340" name="l00340"></a><span class="lineno">  340</span>  <span class="keywordflow">return</span> scenario;</div>
+<div class="line"><a id="l00341" name="l00341"></a><span class="lineno">  341</span>}</div>
 </div>
 <div class="ttc" id="aDecisionTask_8h_html"><div class="ttname"><a href="DecisionTask_8h.html">DecisionTask.h</a></div></div>
 <div class="ttc" id="aExtensionElements_8h_html"><div class="ttname"><a href="ExtensionElements_8h.html">ExtensionElements.h</a></div></div>

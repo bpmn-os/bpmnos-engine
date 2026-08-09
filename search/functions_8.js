@@ -1,7 +1,7 @@
 var searchData=
 [
   ['implicitthrowevent_0',['implicitThrowEvent',['https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1implicitThrowEvent.html#af3c80acf786826b3836788e1e898e9b1',1,'XML::bpmn::implicitThrowEvent']]],
-  ['inclusivegateway_1',['inclusivegateway',['https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1inclusiveGateway.html#ae0e1e9e0f60eba825789e641d847f02d',1,'XML::bpmn::inclusiveGateway::inclusiveGateway()'],['https://bpmn-os.github.io/bpmnpp/classBPMN_1_1InclusiveGateway.html#a999decefdcb439ad5bba43cb84ff77b1',1,'BPMN::InclusiveGateway::InclusiveGateway()']]],
+  ['inclusivegateway_1',['inclusivegateway',['https://bpmn-os.github.io/bpmnpp/classBPMN_1_1InclusiveGateway.html#a999decefdcb439ad5bba43cb84ff77b1',1,'BPMN::InclusiveGateway::InclusiveGateway()'],['https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1inclusiveGateway.html#ae0e1e9e0f60eba825789e641d847f02d',1,'XML::bpmn::inclusiveGateway::inclusiveGateway()']]],
   ['initialize_2',['initialize',['https://bpmn-os.github.io/bpmnpp/classBPMN_1_1MessageFlow.html#ac2c0720ea2e339a509289f7fa0cbd933',1,'BPMN::MessageFlow::initialize()'],['../classBPMNOS_1_1Execution_1_1Metronome.html#af20307913d365fffce8b49cd8d9f4e96',1,'BPMNOS::Execution::Metronome::initialize()']]],
   ['initializeexpectedvaluehandle_3',['initializeExpectedValueHandle',['../classBPMNOS_1_1Model_1_1ExpectedValueDataProvider.html#a145a8bafa6ac0f5e45645c7b35277f45',1,'BPMNOS::Model::ExpectedValueDataProvider']]],
   ['initializependingvertices_4',['initializePendingVertices',['../classBPMNOS_1_1Execution_1_1SeededController.html#a5587c14d26fd7e8baaa727581c6452f7',1,'BPMNOS::Execution::SeededController']]],

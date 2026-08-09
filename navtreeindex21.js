@@ -1,5 +1,9 @@
 var NAVTREEINDEX21 =
 {
+"truck_driver_scheduling_problem.html#exclusivegateway-arrivalgateway":[7,2,0,14],
+"truck_driver_scheduling_problem.html#exclusivegateway-tripgateway":[7,2,0,26],
+"truck_driver_scheduling_problem.html#exclusivegateway-visitgateway":[7,2,0,10],
+"truck_driver_scheduling_problem.html#exclusivegateway-waitbeforevisitgateway":[7,2,0,9],
 "truck_driver_scheduling_problem.html#exclusivegateway-waitgateway_1":[7,2,0,39],
 "truck_driver_scheduling_problem.html#exclusivegateway-waitgateway_2":[7,2,0,44],
 "truck_driver_scheduling_problem.html#gatekeeper-10":[7,2,0,33,0],

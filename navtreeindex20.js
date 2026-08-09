@@ -1,5 +1,9 @@
 var NAVTREEINDEX20 =
 {
+"structBPMNOS_1_1Values.html#ada20ddebbd2f33ee1c57b7f41850717a":[9,0,0,12,1],
+"structBPMNOS_1_1is__vector.html":[9,0,0,6],
+"structBPMNOS_1_1is__vector.html":[9,2,0,7],
+"structBPMNOS_1_1is__vector_3_01std_1_1vector_3_01T_00_01Allocator_01_4_01_4.html":[9,0,0,7],
 "structBPMNOS_1_1is__vector_3_01std_1_1vector_3_01T_00_01Allocator_01_4_01_4.html":[9,2,0,8],
 "structstd_1_1hash_3_01BPMNOS__NUMBER__TYPE_01_4.html":[9,0,1,0],
 "structstd_1_1hash_3_01BPMNOS__NUMBER__TYPE_01_4.html":[9,2,1,0],
@@ -245,9 +249,5 @@ var NAVTREEINDEX20 =
 "truck_driver_scheduling_problem.html#endevent-tripendevent":[7,2,0,16],
 "truck_driver_scheduling_problem.html#endevent-tripendeventbreak":[7,2,0,29],
 "truck_driver_scheduling_problem.html#endevent-tripendeventrest":[7,2,0,30],
-"truck_driver_scheduling_problem.html#endevent-waitendevent":[7,2,0,41],
-"truck_driver_scheduling_problem.html#exclusivegateway-arrivalgateway":[7,2,0,14],
-"truck_driver_scheduling_problem.html#exclusivegateway-tripgateway":[7,2,0,26],
-"truck_driver_scheduling_problem.html#exclusivegateway-visitgateway":[7,2,0,10],
-"truck_driver_scheduling_problem.html#exclusivegateway-waitbeforevisitgateway":[7,2,0,9]
+"truck_driver_scheduling_problem.html#endevent-waitendevent":[7,2,0,41]
 };
