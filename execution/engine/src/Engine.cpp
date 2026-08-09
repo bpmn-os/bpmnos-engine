@@ -93,6 +93,10 @@ void Engine::resume(std::shared_ptr<Event> event, BPMNOS::number timeout) {
     // a controller must check Event::expired() before forcing an event; guard against a stale one
     throw std::logic_error("Engine: event to resume is expired");
   }
+  if ( event->is<TerminationEvent>() ) {
+    // resuming only to terminate is forbidden
+    throw std::logic_error("Engine: TerminationEvent is not allowed for resume");
+  }
   // force the given decision as the first event; the commands it enqueues are executed by advance()
   notify(event.get());
   event->processBy(this);
