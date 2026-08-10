@@ -569,7 +569,7 @@ $(document).ready(function(){initNavTree('FlattenedGraph_8cpp_source.html',''); 
 <div class="line"><a id="l00412" name="l00412"></a><span class="lineno">  412</span>    <a class="code hl_variable" href="classBPMNOS_1_1Execution_1_1FlattenedGraph.html#ad82f9443a856c446baab0fb3c3fa18c2">loopIndexAttributes</a>[activity] = std::move(attributes);</div>
 <div class="line"><a id="l00413" name="l00413"></a><span class="lineno">  413</span>  }</div>
 <div class="line"><a id="l00414" name="l00414"></a><span class="lineno">  414</span>  </div>
-<div class="line"><a id="l00415" name="l00415"></a><span class="lineno">  415</span>  <span class="comment">// lambda returning parameter value known at time zero</span></div>
+<div class="line"><a id="l00415" name="l00415"></a><span class="lineno">  415</span>  <span class="comment">// lambda returning parameter value known at the scenario&#39;s earliest instantiation time</span></div>
 <div class="line"><a id="l00416" name="l00416"></a><span class="lineno">  416</span>  <span class="keyword">auto</span> getValue = [&amp;](<a class="code hl_class" href="classBPMNOS_1_1Model_1_1Parameter.html">BPMNOS::Model::Parameter</a>* parameter) -&gt; std::optional&lt;BPMNOS::number&gt; {</div>
 <div class="line"><a id="l00417" name="l00417"></a><span class="lineno">  417</span>    <span class="keywordflow">if</span> ( parameter-&gt;expression ) {</div>
 <div class="line"><a id="l00418" name="l00418"></a><span class="lineno">  418</span><span class="comment">//std::cerr &lt;&lt; parameter-&gt;expression-&gt;expression &lt;&lt; std::endl;</span></div>

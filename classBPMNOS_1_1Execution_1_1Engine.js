@@ -4,10 +4,11 @@ var classBPMNOS_1_1Execution_1_1Engine =
     [ "Engine", "classBPMNOS_1_1Execution_1_1Engine.html#a8c98683b0a3aa28d8ab72a8bcd0d52f2", null ],
     [ "~Engine", "classBPMNOS_1_1Execution_1_1Engine.html#a8ef7030a089ecb30bbfcb9e43094717a", null ],
     [ "addInstances", "classBPMNOS_1_1Execution_1_1Engine.html#ac95bcc651260a6b80a7760676c045d4b", null ],
-    [ "advance", "classBPMNOS_1_1Execution_1_1Engine.html#a06c04640092b0c3d2133b903c022b33c", null ],
+    [ "advance", "classBPMNOS_1_1Execution_1_1Engine.html#a9ddf69a259e7c8e2ea5bb4f8dde198b8", null ],
     [ "deleteInstance", "classBPMNOS_1_1Execution_1_1Engine.html#a415f6cf8a9fa91bbaa2be2107b06e20d", null ],
     [ "getCurrentTime", "classBPMNOS_1_1Execution_1_1Engine.html#ac5a5b02ea3ab9cf0e60cfe9db8216947", null ],
     [ "getSystemState", "classBPMNOS_1_1Execution_1_1Engine.html#a0d14b88ab51088a062d40e8ef1512895", null ],
+    [ "initialize", "classBPMNOS_1_1Execution_1_1Engine.html#a58937f19e57db5a2e8de6fbe5bec053b", null ],
     [ "initializeSystemState", "classBPMNOS_1_1Execution_1_1Engine.html#a572b01d9e882ee742887bf15e9f8bfd7", null ],
     [ "process", "classBPMNOS_1_1Execution_1_1Engine.html#a068606fa95e7e3559667005d1325bbe5", null ],
     [ "process", "classBPMNOS_1_1Execution_1_1Engine.html#af7acf6357bbbcfb0173b442812ecca71", null ],
@@ -32,6 +33,5 @@ var classBPMNOS_1_1Execution_1_1Engine =
     [ "readyHandler", "classBPMNOS_1_1Execution_1_1Engine.html#a12a59c146cc95a9b036f6ff9d8613606", null ],
     [ "scenarioUpdater", "classBPMNOS_1_1Execution_1_1Engine.html#af4575642276a038bee93e7992abf05c6", null ],
     [ "systemState", "classBPMNOS_1_1Execution_1_1Engine.html#a5e98d76367e5157b524beb6fe8e06719", null ],
-    [ "taskCompletionHandler", "classBPMNOS_1_1Execution_1_1Engine.html#a7699e8130684d71e274d60b81ede52e0", null ],
-    [ "terminated", "classBPMNOS_1_1Execution_1_1Engine.html#a40330568615caa61cc440df3c7aa6ee4", null ]
+    [ "taskCompletionHandler", "classBPMNOS_1_1Execution_1_1Engine.html#a7699e8130684d71e274d60b81ede52e0", null ]
 ];
