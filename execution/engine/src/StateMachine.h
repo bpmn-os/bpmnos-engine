@@ -3,7 +3,7 @@
 
 #include <bpmn++.h>
 #include "Token.h"
-#include "model/utility/src/Number.h"
+#include "model/utility/src/Value.h"
 #include "model/data/src/Scenario.h"
 #include "execution/utility/src/auto_list.h"
 

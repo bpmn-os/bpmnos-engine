@@ -2,7 +2,7 @@
 #define BPMNOS_Execution_ExitEvent_H
 
 #include <bpmn++.h>
-#include "model/utility/src/Number.h"
+#include "model/utility/src/Value.h"
 #include "execution/engine/src/Event.h"
 
 namespace BPMNOS::Execution {

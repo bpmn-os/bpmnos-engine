@@ -7,7 +7,7 @@
 #include "Attribute.h"
 #include "AttributeRegistry.h"
 #include "model/utility/src/InputEncoder.h"
-#include "model/utility/src/Number.h"
+#include "model/utility/src/Value.h"
 #include "model/utility/src/StringRegistry.h"
 
 namespace BPMNOS::Model {
@@ -40,7 +40,7 @@ public:
   std::vector<const Attribute*> collections; ///< Vector containing all input collections used by the expression.
   const Attribute* isAttribute() const; ///< Returns pointer to the attribute if and only if expression contains nothing else
   template <typename DataType>
-  std::optional<BPMNOS::number> execute(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const;
+  std::optional<double> execute(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const;
 private:
   LIMEX::Expression<double> getExpression(const std::string& input) const;
   Type getType() const;

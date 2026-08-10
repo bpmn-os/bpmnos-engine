@@ -1,7 +1,7 @@
 #ifndef BPMNOS_Execution_MessageDeliveryRequest_H
 #define BPMNOS_Execution_MessageDeliveryRequest_H
 
-#include "model/utility/src/Number.h"
+#include "model/utility/src/Value.h"
 #include "execution/engine/src/DecisionRequest.h"
 
 namespace BPMNOS::Execution {

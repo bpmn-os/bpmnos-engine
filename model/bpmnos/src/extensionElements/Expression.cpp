@@ -118,19 +118,19 @@ const Attribute* Expression::isAttribute() const {
 }
 
 template <typename DataType>
-std::optional<BPMNOS::number> Expression::execute(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const {
+std::optional<double> Expression::execute(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const {
   if ( type == Type::UNASSIGN ) {
     return std::nullopt;
   }
   if ( type == Type::IS_NULL ) {
     assert(variables.size() == 1);
     auto value = attributeRegistry.getValue(variables[0],status,data,globals);
-    return number( (double)!value.has_value() );
+    return (double)!value.has_value();
   }
   if ( type == Type::IS_NOT_NULL ) {
     assert(variables.size() == 1);
     auto value = attributeRegistry.getValue(variables[0],status,data,globals);
-    return number( (double)value.has_value() );
+    return (double)value.has_value();
   }
 
   // collect variable values
@@ -159,7 +159,7 @@ std::optional<BPMNOS::number> Expression::execute(const BPMNOS::Values& status, 
   }
 
   try {
-    return number(compiled.evaluate(variableValues,collectionValues));
+    return compiled.evaluate(variableValues,collectionValues);
   }
   catch (const std::runtime_error& e) {
     std::string arguments;
@@ -174,6 +174,6 @@ std::optional<BPMNOS::number> Expression::execute(const BPMNOS::Values& status, 
   }
 }
 
-template std::optional<BPMNOS::number> Expression::execute<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data, const BPMNOS::Values& globals) const;
-template std::optional<BPMNOS::number> Expression::execute<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data, const BPMNOS::Values& globals) const;
+template std::optional<double> Expression::execute<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data, const BPMNOS::Values& globals) const;
+template std::optional<double> Expression::execute<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data, const BPMNOS::Values& globals) const;
 

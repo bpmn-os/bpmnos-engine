@@ -1,4 +1,5 @@
 #include "Number.h"
+#include "Value.h"
 #include "Keywords.h"
 #include "StringRegistry.h"
 #include "CollectionRegistry.h"
@@ -73,7 +74,7 @@ number to_number(const std::string& valueString, const ValueType& type) {
   throw std::logic_error("to_number: unknown value type " + std::to_string(static_cast<int>(type)) );
 }
 
-number to_number(const Value& value, const ValueType& type) {
+number to_number(const ValueVariant& value, const ValueType& type) {
   switch ( type ) {
     case ValueType::BOOLEAN:
       if (std::holds_alternative<std::string>(value)) {
@@ -155,6 +156,13 @@ number to_number(const Value& value, const ValueType& type) {
       }
   }
   throw std::logic_error("to_number: unknown value type " + std::to_string(static_cast<int>(type)) );
+}
+
+Value to_value(std::optional<double> result) {
+  if ( !result.has_value() ) {
+    return std::nullopt;
+  }
+  return number(result.value());
 }
 
 std::string to_string(number numericValue, const ValueType& type) {

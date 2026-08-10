@@ -10,8 +10,8 @@ list(APPEND model_utility_SOURCES
 
 list(APPEND model_utility_HEADERS
   Keywords.h
-  Value.h
   Number.h
+  Value.h
   StringRegistry.h
   tuple_map.h
   vector_map.h

@@ -6,7 +6,7 @@
 #include <string>
 #include <bpmn++.h>
 #include "Restriction.h"
-#include "model/utility/src/Number.h"
+#include "model/utility/src/Value.h"
 
 namespace BPMNOS::Model {
 

@@ -423,12 +423,12 @@ void ExtensionElements::computeInitialValues(BPMNOS::number currentTime, BPMNOS:
   status.at(BPMNOS::Model::ExtensionElements::Index::Timestamp) = currentTime;
   for ( auto& attribute : attributes ) {
     if ( attribute->expression ) {
-      attributeRegistry.setValue( attribute.get(), status, data, globals, attribute->expression->execute(status,data,globals) );
+      attributeRegistry.setValue( attribute.get(), status, data, globals, BPMNOS::to_value( attribute->expression->execute(status,data,globals) ) );
     }
   }
   for ( auto& attribute : this->data ) {
     if ( attribute->expression ) {
-      attributeRegistry.setValue( attribute.get(), status, data, globals, attribute->expression->execute(status,data,globals) );
+      attributeRegistry.setValue( attribute.get(), status, data, globals, BPMNOS::to_value( attribute->expression->execute(status,data,globals) ) );
     }
   }
 }

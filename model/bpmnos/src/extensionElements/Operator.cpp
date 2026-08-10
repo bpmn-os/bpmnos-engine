@@ -15,7 +15,7 @@ Operator::Operator(XML::bpmnos::tOperator* operator_, const AttributeRegistry& a
 
 template <typename DataType>
 void Operator::apply(BPMNOS::Values& status, DataType& data, BPMNOS::Values& globals) const {
-  attributeRegistry.setValue( attribute, status, data, globals, expression.execute(status,data,globals) );
+  attributeRegistry.setValue( attribute, status, data, globals, BPMNOS::to_value( expression.execute(status,data,globals) ) );
 }
 
 template void Operator::apply<BPMNOS::Values>(BPMNOS::Values& status, BPMNOS::Values& data, BPMNOS::Values& globals) const;

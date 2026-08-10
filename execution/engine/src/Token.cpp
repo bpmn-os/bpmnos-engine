@@ -692,7 +692,8 @@ void Token::advanceToBusy() {
     if (!trigger->expression) {
       throw std::runtime_error("Token: no trigger given for node '" + node->id + "'");
     }
-    BPMNOS::number time = trigger->expression->execute(status, *data, globals).value_or(owner->systemState->getTime());
+    auto triggerValue = trigger->expression->execute(status, *data, globals);
+    BPMNOS::number time = triggerValue.has_value() ? BPMNOS::number(triggerValue.value()) : owner->systemState->getTime();
 
     if ( time > owner->systemState->getTime() ) {
       awaitTimer(time);
@@ -1464,7 +1465,7 @@ void Token::setSignalContent(BPMNOS::VariedValueMap& sourceMap) {
       }
       else if (std::holds_alternative<std::string>(contentValue)) {
         // use default value of emitter
-        Value value = std::get< std::string >(contentValue);
+        ValueVariant value = std::get< std::string >(contentValue);
         attributeRegistry.setValue(attribute, status, *data, globals, BPMNOS::to_number(value,attribute->type) );
       }
       else {

@@ -1,6 +1,7 @@
 #ifndef BPMNOS_Execution_Recorder_H
 #define BPMNOS_Execution_Recorder_H
 
+#include <optional>
 #include <ostream>
 #include <bpmn++.h>
 #include "execution/engine/src/Engine.h"

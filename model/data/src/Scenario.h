@@ -6,7 +6,7 @@
 #include <map>
 #include <unordered_map>
 #include <bpmn++.h>
-#include "model/utility/src/Number.h"
+#include "model/utility/src/Value.h"
 #include "model/utility/src/StringRegistry.h"
 #include "model/bpmnos/src/Model.h"
 #include "model/bpmnos/src/extensionElements/Attribute.h"

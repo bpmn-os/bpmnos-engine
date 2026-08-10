@@ -6,7 +6,7 @@
 #include <memory>
 #include <bpmn++.h>
 #include "Observable.h"
-#include "model/utility/src/Number.h"
+#include "model/utility/src/Value.h"
 #include "model/bpmnos/src/extensionElements/AttributeRegistry.h"
 #include <nlohmann/json.hpp>
 

@@ -126,7 +126,7 @@ void Guidance::apply(const Scenario* scenario, BPMNOS::number currentTime, const
     status.push_back( scenario->getValue(instanceId, attribute.get(), currentTime ) );
     if ( attribute->expression ) {
       // compute initial value
-      status.back() = attribute->expression->execute(status,data,globals);
+      status.back() = BPMNOS::to_value( attribute->expression->execute(status,data,globals) );
     }
   }
   

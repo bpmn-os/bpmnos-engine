@@ -123,7 +123,7 @@ std::optional<BPMNOS::number> MessageDefinition::getHeaderValue(const std::strin
   std::optional<BPMNOS::number> value;
   auto it = parameterMap.find(key);
   if ( it != parameterMap.end() && it->second->expression ) {
-    value =  it->second->expression->execute(status,data,globals);
+    value = BPMNOS::to_value( it->second->expression->execute(status,data,globals) );
   }
   return value;
 }

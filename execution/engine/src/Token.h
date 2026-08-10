@@ -4,7 +4,7 @@
 #include <bpmn++.h>
 #include "model/bpmnos/src/extensionElements/ExtensionElements.h"
 #include "model/bpmnos/src/extensionElements/Content.h"
-#include "model/utility/src/Number.h"
+#include "model/utility/src/Value.h"
 #include "execution/utility/src/auto_list.h"
 #include "Observable.h"
 #include <nlohmann/json.hpp>

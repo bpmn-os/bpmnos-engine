@@ -7,7 +7,7 @@
 #include <string>
 #include <bpmn++.h>
 #include <variant>
-#include "model/utility/src/Number.h"
+#include "model/utility/src/Value.h"
 #include "model/utility/src/StringRegistry.h"
 #include "model/bpmnos/src/xml/bpmnos/tOperator.h"
 #include "Attribute.h"

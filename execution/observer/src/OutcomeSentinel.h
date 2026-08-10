@@ -1,6 +1,7 @@
 #ifndef BPMNOS_Execution_OutcomeSentinel_H
 #define BPMNOS_Execution_OutcomeSentinel_H
 
+#include <optional>
 #include "execution/engine/src/Engine.h"
 #include "execution/engine/src/Observer.h"
 #include "model/utility/src/Number.h"

@@ -3,7 +3,7 @@
 
 #include <bpmn++.h>
 #include "execution/engine/src/Event.h"
-#include "model/utility/src/Number.h"
+#include "model/utility/src/Value.h"
 
 namespace BPMNOS::Execution {
 

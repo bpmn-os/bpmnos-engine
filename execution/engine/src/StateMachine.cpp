@@ -419,7 +419,7 @@ void StateMachine::createMultiInstanceActivityTokens(Token* token) {
       if (!extensionElements->loopCardinality.value()->expression) {
         return std::nullopt;
       }
-      return extensionElements->loopCardinality.value()->expression->execute(token->status, *token->data, token->globals);
+      return BPMNOS::to_value( extensionElements->loopCardinality.value()->expression->execute(token->status, *token->data, token->globals) );
     };
     // use provided cardinality to determine number of tokens 
     if ( auto loopCardinality = getLoopCardinality();

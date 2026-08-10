@@ -5,7 +5,7 @@
 #include <vector>
 #include <optional>
 #include <bpmn++.h>
-#include "model/utility/src/Number.h"
+#include "model/utility/src/Value.h"
 
 namespace BPMNOS::Model {
 

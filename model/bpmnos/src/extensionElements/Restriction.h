@@ -5,7 +5,7 @@
 #include <unordered_set>
 #include <string>
 #include <bpmn++.h>
-#include "model/utility/src/Number.h"
+#include "model/utility/src/Value.h"
 #include "model/utility/src/StringRegistry.h"
 #include "model/bpmnos/src/xml/bpmnos/tRestriction.h"
 #include "Attribute.h"

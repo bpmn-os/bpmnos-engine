@@ -1,6 +1,7 @@
 #ifndef BPMNOS_Execution_ChoiceEvent_H
 #define BPMNOS_Execution_ChoiceEvent_H
 
+#include <vector>
 #include <bpmn++.h>
 #include "model/utility/src/Number.h"
 #include "execution/engine/src/Event.h"

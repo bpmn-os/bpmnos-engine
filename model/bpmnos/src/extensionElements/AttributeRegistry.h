@@ -6,7 +6,7 @@
 #include <string>
 #include <unordered_map>
 #include <limex.h>
-#include "model/utility/src/Number.h"
+#include "model/utility/src/Value.h"
 
 #include "Attribute.h"
 

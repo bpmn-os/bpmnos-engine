@@ -8,7 +8,7 @@
 #include <limits>
 #include <bpmn++.h>
 #include <limex.h>
-#include "model/utility/src/Number.h"
+#include "model/utility/src/Value.h"
 #include "model/utility/src/StringRegistry.h"
 #include "model/utility/src/Keywords.h"
 #include "model/bpmnos/src/Model.h"

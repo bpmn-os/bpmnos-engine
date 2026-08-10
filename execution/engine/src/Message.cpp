@@ -113,7 +113,7 @@ void Message::apply(const BPMN::FlowNode* node, const BPMNOS::Model::AttributeRe
       }
       else if (std::holds_alternative<std::string>(contentValue)) {
         // use default value of sender
-        Value value = std::get< std::string >(contentValue);
+        ValueVariant value = std::get< std::string >(contentValue);
         attributeRegistry.setValue(attribute, status, data, globals, BPMNOS::to_number(value,attribute->type) );
       }
       else {
