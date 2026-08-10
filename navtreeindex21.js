@@ -1,5 +1,10 @@
 var NAVTREEINDEX21 =
 {
+"truck_driver_scheduling_problem.html#endevent-offdutyendevent":[7,2,0,17],
+"truck_driver_scheduling_problem.html#endevent-tripendevent":[7,2,0,16],
+"truck_driver_scheduling_problem.html#endevent-tripendeventbreak":[7,2,0,29],
+"truck_driver_scheduling_problem.html#endevent-tripendeventrest":[7,2,0,30],
+"truck_driver_scheduling_problem.html#endevent-waitendevent":[7,2,0,41],
 "truck_driver_scheduling_problem.html#exclusivegateway-arrivalgateway":[7,2,0,14],
 "truck_driver_scheduling_problem.html#exclusivegateway-tripgateway":[7,2,0,26],
 "truck_driver_scheduling_problem.html#exclusivegateway-visitgateway":[7,2,0,10],

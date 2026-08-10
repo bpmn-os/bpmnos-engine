@@ -126,17 +126,31 @@ $(document).ready(function(){initNavTree('Value_8h.html',''); initResizable(); }
 
 <div class="header">
   <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
 <a href="#namespaces">Namespaces</a> &#124;
 <a href="#typedef-members">Typedefs</a> &#124;
-<a href="#enum-members">Enumerations</a>  </div>
+<a href="#enum-members">Enumerations</a> &#124;
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">Value.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;string&gt;</code><br />
+<div class="textblock"><code>#include &lt;functional&gt;</code><br />
+<code>#include &lt;optional&gt;</code><br />
+<code>#include &lt;string&gt;</code><br />
+<code>#include &lt;unordered_map&gt;</code><br />
 <code>#include &lt;variant&gt;</code><br />
+<code>#include &lt;vector&gt;</code><br />
+<code>#include &quot;<a class="el" href="Number_8h_source.html">Number.h</a>&quot;</code><br />
 </div>
 <p><a href="Value_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structBPMNOS_1_1SharedValues.html">BPMNOS::SharedValues</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
 Namespaces</h2></td></tr>
 <tr class="memitem:namespaceBPMNOS" id="r_namespaceBPMNOS"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceBPMNOS.html">BPMNOS</a></td></tr>
@@ -144,8 +158,14 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:af94812fcd4800ac0bc6531d40b5331e5" id="r_af94812fcd4800ac0bc6531d40b5331e5"><td class="memItemLeft" align="right" valign="top">typedef std::variant&lt; bool, int, double, std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceBPMNOS.html#af94812fcd4800ac0bc6531d40b5331e5">BPMNOS::Value</a></td></tr>
-<tr class="separator:af94812fcd4800ac0bc6531d40b5331e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4659f00ba6efbedd91ab30d34746723e" id="r_a4659f00ba6efbedd91ab30d34746723e"><td class="memItemLeft" align="right" valign="top">typedef std::variant&lt; bool, int, double, std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceBPMNOS.html#a4659f00ba6efbedd91ab30d34746723e">BPMNOS::ValueVariant</a></td></tr>
+<tr class="separator:a4659f00ba6efbedd91ab30d34746723e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d48010757e20edcdc3786ddeeb53bc7" id="r_a1d48010757e20edcdc3786ddeeb53bc7"><td class="memItemLeft" align="right" valign="top">typedef std::optional&lt; <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">number</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceBPMNOS.html#a1d48010757e20edcdc3786ddeeb53bc7">BPMNOS::Value</a></td></tr>
+<tr class="separator:a1d48010757e20edcdc3786ddeeb53bc7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae68c6e376e0bd3d48fd4b71a39e4de65" id="r_ae68c6e376e0bd3d48fd4b71a39e4de65"><td class="memItemLeft" align="right" valign="top">typedef std::unordered_map&lt; std::string, <a class="el" href="namespaceBPMNOS.html#a1d48010757e20edcdc3786ddeeb53bc7">Value</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceBPMNOS.html#ae68c6e376e0bd3d48fd4b71a39e4de65">BPMNOS::ValueMap</a></td></tr>
+<tr class="separator:ae68c6e376e0bd3d48fd4b71a39e4de65"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8154a7afba82997850e7db218281c8e0" id="r_a8154a7afba82997850e7db218281c8e0"><td class="memItemLeft" align="right" valign="top">typedef std::unordered_map&lt; std::string, std::variant&lt; <a class="el" href="namespaceBPMNOS.html#a1d48010757e20edcdc3786ddeeb53bc7">Value</a>, std::string &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceBPMNOS.html#a8154a7afba82997850e7db218281c8e0">BPMNOS::VariedValueMap</a></td></tr>
+<tr class="separator:a8154a7afba82997850e7db218281c8e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
 Enumerations</h2></td></tr>
@@ -159,6 +179,23 @@ Enumerations</h2></td></tr>
 <br />
  }</td></tr>
 <tr class="separator:abd0d3034519d54779b4df3e9754cd681"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a2d245dee590cfec09f964e60afe635f8" id="r_a2d245dee590cfec09f964e60afe635f8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">number</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceBPMNOS.html#a2d245dee590cfec09f964e60afe635f8">BPMNOS::to_number</a> (const std::string &amp;valueString, const <a class="el" href="namespaceBPMNOS.html#abd0d3034519d54779b4df3e9754cd681">ValueType</a> &amp;type)</td></tr>
+<tr class="memdesc:a2d245dee590cfec09f964e60afe635f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a string to a number.  <br /></td></tr>
+<tr class="separator:a2d245dee590cfec09f964e60afe635f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5269117763b30f65c0d775af63ced178" id="r_a5269117763b30f65c0d775af63ced178"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">number</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceBPMNOS.html#a5269117763b30f65c0d775af63ced178">BPMNOS::to_number</a> (const <a class="el" href="namespaceBPMNOS.html#a4659f00ba6efbedd91ab30d34746723e">ValueVariant</a> &amp;value, const <a class="el" href="namespaceBPMNOS.html#abd0d3034519d54779b4df3e9754cd681">ValueType</a> &amp;type)</td></tr>
+<tr class="memdesc:a5269117763b30f65c0d775af63ced178"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a value as it is written to a number.  <br /></td></tr>
+<tr class="separator:a5269117763b30f65c0d775af63ced178"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac3147cf798e5f6781980bd6187e84419" id="r_ac3147cf798e5f6781980bd6187e84419"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceBPMNOS.html#a1d48010757e20edcdc3786ddeeb53bc7">Value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceBPMNOS.html#ac3147cf798e5f6781980bd6187e84419">BPMNOS::to_value</a> (std::optional&lt; double &gt; result)</td></tr>
+<tr class="memdesc:ac3147cf798e5f6781980bd6187e84419"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts the result of an evaluated expression to a value, keeping an absent result absent.  <br /></td></tr>
+<tr class="separator:ac3147cf798e5f6781980bd6187e84419"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a269154d20cdd420046fe720f2a988566" id="r_a269154d20cdd420046fe720f2a988566"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceBPMNOS.html#a269154d20cdd420046fe720f2a988566">BPMNOS::to_string</a> (<a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">number</a> numberValue, const <a class="el" href="namespaceBPMNOS.html#abd0d3034519d54779b4df3e9754cd681">ValueType</a> &amp;type)</td></tr>
+<tr class="memdesc:a269154d20cdd420046fe720f2a988566"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a number to a string.  <br /></td></tr>
+<tr class="separator:a269154d20cdd420046fe720f2a988566"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5727082403f7d4e23bb5ea2f1709a235" id="r_a5727082403f7d4e23bb5ea2f1709a235"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceBPMNOS.html#a5727082403f7d4e23bb5ea2f1709a235">BPMNOS::mergeValues</a> (const std::vector&lt; <a class="el" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a> &gt; &amp;valueSets)</td></tr>
+<tr class="separator:a5727082403f7d4e23bb5ea2f1709a235"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 </div><!-- doc-content -->
