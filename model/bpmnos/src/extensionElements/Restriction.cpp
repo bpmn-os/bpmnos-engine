@@ -28,7 +28,7 @@ Restriction::Restriction(XML::bpmnos::tRestriction* restriction, const Attribute
 template <typename DataType>
 bool Restriction::isSatisfied(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const {
   auto feasible = expression.execute(status,data,globals);
-  return feasible.has_value() && feasible.value();
+  return feasible.has_value() && (bool)feasible.value();
 }
 
 template bool Restriction::isSatisfied<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data, const BPMNOS::Values& globals) const;

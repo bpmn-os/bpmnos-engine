@@ -1058,7 +1058,7 @@ void Token::advanceToExiting() {
       if (extensionElements->loopCondition.has_value() && extensionElements->loopCondition.value()->expression) {
         auto value = extensionElements->loopCondition.value()->expression->execute(status, *data, globals);
         assert( value.has_value() );
-        if ( !value.value() ) {          
+        if ( !(bool)value.value() ) {
           // do not loop if loop condition is violated
           return false;
         }
