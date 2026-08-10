@@ -18,7 +18,7 @@ class Token;
 /**
  * @brief Represents a graph containing all BPMN nodes that may receive a token during execution of a scenario.
  *
- * For a given @ref BPMNOS::Model::Scenario "scenario", the `FlattenedGraph` class encapsulates a graph containing a vertex for each entry and each exit of a @ref BPMN::Node "node" in a BPMN model. The flattened graph includes all instances known at time zero.
+ * For a given @ref BPMNOS::Model::Scenario "scenario", the `FlattenedGraph` class encapsulates a graph containing a vertex for each entry and each exit of a @ref BPMN::Node "node" in a BPMN model. The flattened graph includes all instances known at the scenario's earliest instantiation time, which is where a run of it begins.
  */
 class FlattenedGraph {
 public:

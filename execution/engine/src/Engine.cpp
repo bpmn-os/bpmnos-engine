@@ -55,7 +55,7 @@ void Engine::processCommands() {
 }
 
 
-void Engine::run(const BPMNOS::Model::Scenario* scenario, BPMNOS::number startTime, BPMNOS::number endTime) {
+void Engine::initialize(const BPMNOS::Model::Scenario* scenario, BPMNOS::number startTime) {
   if ( startTime > scenario->getEarliestInstantiationTime() ) {
     throw std::logic_error("Engine: start time is later than the earliest instantiation time");
   }
@@ -64,8 +64,6 @@ void Engine::run(const BPMNOS::Model::Scenario* scenario, BPMNOS::number startTi
   // advances time to it and time is reached the same way at the first instant as at every later one
   systemState = std::make_unique<SystemState>(this, scenario, std::numeric_limits<BPMNOS::number>::lowest());
   lastInstantiationTime = std::numeric_limits<BPMNOS::number>::lowest();
-  // installing a new state resets the run state and binds the conditional-event observer to it
-  terminated = false;
   commands.clear();
   conditionalEventObserver.connect( systemState.get() );
   // announce the installed state so subscribers (cached candidate sources) reset for the new run
@@ -76,17 +74,16 @@ void Engine::run(const BPMNOS::Model::Scenario* scenario, BPMNOS::number startTi
   ClockTickEvent clockTickEvent(systemState.get(), startTime);
   notify(&clockTickEvent);
   clockTickEvent.processBy(this);
+}
 
+void Engine::run(const BPMNOS::Model::Scenario* scenario, BPMNOS::number startTime, BPMNOS::number endTime) {
+  initialize(scenario, startTime);
   run(endTime);
 }
 
 void Engine::run(BPMNOS::number endTime) {
   // advance all tokens in system state (state setup is done where the state is installed)
-  while ( !terminated && advance(endTime) ) {
-    if ( !systemState->isAlive() ) {
-      break;
-    }
-  }
+  while ( advance(endTime) ) {}
 }
 
 void Engine::initializeSystemState(const BPMNOS::Model::Scenario* scenario, const SystemState* foreignState) {
@@ -95,7 +92,6 @@ void Engine::initializeSystemState(const BPMNOS::Model::Scenario* scenario, cons
   systemState = std::make_unique<SystemState>(this, scenario, foreignState);
   lastInstantiationTime = systemState->getTime();
   // installing a new state resets the run state and binds the conditional-event observer to it
-  terminated = false;
   commands.clear();
   conditionalEventObserver.connect( systemState.get() );
   // announce the initialized state so subscribers can build their data structures
@@ -134,38 +130,43 @@ void Engine::resume(std::shared_ptr<Event> event, BPMNOS::number endTime) {
 }
 
 bool Engine::advance(BPMNOS::number endTime) {
+  if ( !systemState ) {
+    throw std::logic_error("Engine: advance requires an existing system state (call initialize, run or initializeSystemState first)");
+  }
   // every enqueued command is executed by whoever enqueued it, so none is outstanding here
   assert(commands.empty());
 
-  // fetch and process all events
-  while ( auto event = fetchEvent(systemState.get()) ) {
-//std::cerr << "*";
-    if ( event->expired() ) {
-      // the engine assumes only non-expired events are dispatched; a controller that is not safe by
-      // design must check Event::expired() before dispatching. Guard against a stale event here.
-      throw std::logic_error("Engine: event fetched is expired");
-    }
-    // stop before processing clock tick that would exceed endTime
-    if ( auto clockTickEvent = event->is<ClockTickEvent>(); clockTickEvent && clockTickEvent->time > endTime ) {     
-      return false;                                                               
-    }   
-    notify(event.get());
-    event->processBy(this);
-
-    if ( event->is<ClockTickEvent>() ) {
-//std::cerr << "ClockTick" << std::endl;
-      // exit loop to resume
-      return true;
-    }
-
-    if ( event->is<TerminationEvent>() ) {
-      // exit loop to terminate
-      return false;
-    }
+  // fetch and process a single event
+  auto event = fetchEvent(systemState.get());
+  if ( !event ) {
+    // No event available, terminate
+    return false;
   }
 
-  // No event available, terminate
-  return false;
+  if ( event->expired() ) {
+    // the engine assumes only non-expired events are dispatched; a controller that is not safe by
+    // design must check Event::expired() before dispatching. Guard against a stale event here.
+    throw std::logic_error("Engine: event fetched is expired");
+  }
+  // stop before processing clock tick that would exceed endTime
+  if ( auto clockTickEvent = event->is<ClockTickEvent>(); clockTickEvent && clockTickEvent->time > endTime ) {
+    return false;
+  }
+  notify(event.get());
+  event->processBy(this);
+
+  if ( event->is<ClockTickEvent>() ) {
+//std::cerr << "ClockTick" << std::endl;
+    // continue only while the state has something left to advance
+    return systemState->isAlive();
+  }
+
+  if ( event->is<TerminationEvent>() ) {
+    // the run was told to stop
+    return false;
+  }
+
+  return true;
 }
 
 void Engine::addInstances() {
@@ -364,7 +365,6 @@ void Engine::process([[maybe_unused]] const ClockTickEvent* event) {
 }
 
 void Engine::process([[maybe_unused]] const TerminationEvent* event) {
-  terminated = true;
 }
 
 

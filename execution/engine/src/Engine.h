@@ -56,6 +56,20 @@ public:
   void run(const BPMNOS::Model::Scenario* scenario, BPMNOS::number startTime = 0, BPMNOS::number endTime = std::numeric_limits<BPMNOS::number>::max());
 
   /**
+   * @brief Initializes the engine with a fresh system state and advances time to the run's first instant.
+   *
+   * Does not process any further event; call run, resume, or step afterwards. The opening clock tick is
+   * announced like any other, so the record stream states the time the run begins at and deferred data is
+   * disclosed for that instant.
+   *
+   * @param scenario The scenario to execute
+   * @param startTime Time the run begins at; must not be later than the scenario's earliest instantiation
+   *        time, since an instance is instantiated at the instant its instantiation time is reached and a
+   *        later start would leave every earlier instance uncreated
+   */
+  void initialize(const BPMNOS::Model::Scenario* scenario, BPMNOS::number startTime = 0);
+
+  /**
    * @brief Initializes the engine's system state with a deep copy of a foreign system state.
    *
    * Does not run; call resume() afterwards to continue execution. The copy already holds every instance
@@ -94,6 +108,16 @@ public:
    * @param endTime Last time to process (engine stops when time >= endTime)
    */
   void resume(std::shared_ptr<Event> event, BPMNOS::number endTime = std::numeric_limits<BPMNOS::number>::max());
+
+  /**
+   * @brief Advance system state until next event has to be fetched.
+   *
+   * Fetches a single event and advances the system state as far as possible without fetching the next event.
+   *
+   * @param endTime Last time to process (the engine stops before a clock tick beyond it)
+   * @return True if an event was processed and the run may continue.
+   */
+  bool advance(BPMNOS::number endTime = std::numeric_limits<BPMNOS::number>::max());
 private:
   void run(BPMNOS::number endTime = std::numeric_limits<BPMNOS::number>::max());
 public:
@@ -158,8 +182,6 @@ protected:
   ReadyHandler readyHandler;
   TaskCompletionHandler taskCompletionHandler;
   
-  bool advance(BPMNOS::number endTime);
-  bool terminated;
 //  friend void Token::notify() const;
 };
 

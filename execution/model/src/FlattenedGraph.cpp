@@ -412,7 +412,7 @@ void FlattenedGraph::createLoopVertices(BPMNOS::number rootId, BPMNOS::number in
     loopIndexAttributes[activity] = std::move(attributes);
   }
   
-  // lambda returning parameter value known at time zero
+  // lambda returning parameter value known at the scenario's earliest instantiation time
   auto getValue = [&](BPMNOS::Model::Parameter* parameter) -> std::optional<BPMNOS::number> {
     if ( parameter->expression ) {
 //std::cerr << parameter->expression->expression << std::endl;
