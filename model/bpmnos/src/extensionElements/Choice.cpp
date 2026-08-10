@@ -216,20 +216,13 @@ std::vector<BPMNOS::number> Choice::getEnumeration(const BPMNOS::Values& status,
         throw std::runtime_error("Choice: cannot determine discretizer for '" + multipleOf->expression + "'");
       }
     }
-    // The discretizer is kept at the precision it was evaluated at, so that the multiples are multiples of
-    // the step the model states rather than of a step already rounded: a third rounded first would put the
-    // whole grid a millionth below the thirds, and further below with every multiple.
+
     double DELTA = std::abs(discretizer.value());
-    if ( DELTA <= 0.0 ) {
-      throw std::runtime_error("Choice: non-positive discretizer for '" + multipleOf->expression + "'");
+    if ( !(DELTA > 0.0) ) {
+      throw std::runtime_error("Choice: discretizer for '" + multipleOf->expression + "' is not a positive step");
     }
 
-    // The multiples are counted from zero, and each is a value the attribute may take and is therefore
-    // rounded as it is stored. Whether a multiple lies within the bounds is decided on that value and not on
-    // the double it is computed from, the two falling on opposite sides of a bound the value lies exactly
-    // on. The walk starts one multiple below what the bound suggests for the same reason: dividing in
-    // floating point puts a bound that is exactly a multiple just above one, and rounding the quotient up
-    // would step over the bound itself.
+    // The multiples are counted from zero
     for ( double multiple = std::floor((double)LB / DELTA); ; multiple += 1.0 ) {
       BPMNOS::number value = multiple * DELTA;
       if ( value > UB ) {
