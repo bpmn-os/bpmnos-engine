@@ -51,7 +51,6 @@ using namespace BPMNOS;
 #include "execution/task/test.h"
 #include "execution/subprocess/test.h"
 #include "execution/decisiontask/test.h"
-//#include "execution/request/test.h" // TODO: Check allocation id in content of request message
 
 // Expression
 #include "execution/expression/test.h"

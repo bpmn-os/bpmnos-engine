@@ -184,7 +184,7 @@ void StochasticDataProvider::readInstances() {
 
         // For SendTask, ReceiveTask, DecisionTask: timestamp must not be modified (completion time is event-driven)
         if (expression->target.has_value() &&
-            expression->target.value()->name == Keyword::Timestamp &&
+            expression->target.value()->id == Keyword::Timestamp &&
             (node->represents<BPMN::SendTask>() ||
              node->represents<BPMN::ReceiveTask>() ||
              node->represents<DecisionTask>())) {

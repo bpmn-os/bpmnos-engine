@@ -26,10 +26,11 @@ public:
   AttributeRegistry attributeRegistry; ///< Registry allowing to look up all status and data attributes by their names.
   const BPMN::Scope* parent;
 
-//  enum Index { Instance, Timestamp }; ///< Indices for instance and timestamp attribute.
+//  enum Index { Instance, Timestamp, Objective }; ///< Indices for instance and timestamp attribute.
   struct Index {
     static constexpr size_t Instance = 0; 
     static constexpr size_t Timestamp = 0; 
+    static constexpr size_t Objective = 0; 
   };
   
   std::vector< std::unique_ptr<Attribute> > attributes; ///< Vector containing new status attributes declared for the node.

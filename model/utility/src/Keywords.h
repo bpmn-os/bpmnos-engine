@@ -11,6 +11,7 @@ const std::string Undefined = "undefined";
 
 const std::string Timestamp = "Timestamp";
 const std::string Instance = "Instance";
+const std::string Objective = "Objective";
 
 } // BPMNOS::Keyword
 

@@ -29,16 +29,23 @@ public:
 
   std::vector<std::reference_wrapper<XML::bpmnos::tAttribute>> getAttributes(XML::bpmn::tBaseElement* element);
   std::vector<std::reference_wrapper<XML::bpmnos::tAttribute>> getData(XML::bpmn::tBaseElement* element);
-  
-  void createLookupTables(const std::vector<std::string>& folders);                                 ///< Create lookup tables by resolving each referenced source against the folders.
-  void createLookupTables(const std::unordered_map<std::string, std::string>& lookupTableContents);  ///< Create lookup tables from in-memory CSV content keyed by source file name.
-  void build() override;
-  void registerLookupTablesAndGlobals();
+  std::vector<std::reference_wrapper<XML::bpmnos::tAttribute>> getGlobals();
 
-  /// @brief Returns the file names of the lookup tables referenced by the given model.
+  /// @brief Creates the data stores and everything they declare.
+  /// Called by @ref BPMN::Model::build before any process is created, so that the lookup tables a model
+  /// declares are registered as callables and its global attributes exist before an expression naming one
+  /// is compiled.
+  void createDataStores() override;
+
+  void createLookupTables();  ///< Create the lookup tables the data stores declare, and register each as a callable.
+  void createGlobals();       ///< Create the global attributes the data stores declare, the objective first.
+
+  /// @brief Returns the file names of the lookup tables declared by the given model.
   /// @param root The parsed BPMN model tree.
-  /// @return The `source` file name of each referenced lookup table — i.e. the file name under which
+  /// @return The `source` file name of each declared lookup table — i.e. the file name under which
   ///         its CSV content must be provided (the keys expected in the lookup content map).
+  /// @note Reads the `bpmn:dataStore` children of the root, since it is asked before a model is built and
+  ///       therefore before @ref BPMN::Model::dataStores exists.
   /// @throws std::runtime_error if a lookup table source contains a path separator; a source must be a
   ///         bare file name.
   static std::vector<std::string> getLookupTableNames(const XML::XMLObject& root);
@@ -77,6 +84,13 @@ public:
   static bool hasSequentialPerformer(const std::vector< std::reference_wrapper<XML::bpmn::tResourceRole> >& resources);
   
   AttributeRegistry attributeRegistry; ///< Registry allowing to look up all status and data attributes by their names.
+
+  /// The lookup table content a constructor was given, held until the data stores declaring the tables
+  /// exist. A table is declared by a data store, so what it is read from can only be resolved once the
+  /// stores are created, which is after the constructor has run.
+  std::vector<std::string> lookupTableFolders;                                          ///< Folders a source is resolved against, when the model is read from a file.
+  std::optional< std::unordered_map<std::string, std::string> > lookupTableContents;     ///< CSV content per source, when it is supplied in memory.
+
   std::vector< std::unique_ptr<LookupTable> > lookupTables; ///< Vector containing lookup tables declared in model.
   std::vector< std::unique_ptr<Attribute> > attributes; ///< Vector containing new global attributes declared for the model.
 };

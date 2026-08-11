@@ -23,17 +23,17 @@ using namespace BPMNOS::Model;
 
 Model::Model(const std::string filename, const std::vector<std::string> folders)
   : attributeRegistry(limexHandle)
+  , lookupTableFolders(folders)
 {
   root = createRoot(filename);
-  createLookupTables(folders);
   build();
 }
 
 Model::Model(std::unique_ptr<XML::XMLObject> root, std::unordered_map<std::string, std::string> lookupTableContents)
   : attributeRegistry(limexHandle)
+  , lookupTableContents(std::move(lookupTableContents))
 {
   this->root = std::move(root);
-  createLookupTables(lookupTableContents);
   build();
 }
 
@@ -67,30 +67,45 @@ std::vector<std::reference_wrapper<XML::bpmnos::tAttribute>> Model::getData(XML:
   return attributes;
 }
 
+std::vector<std::reference_wrapper<XML::bpmnos::tAttribute>> Model::getGlobals() {
+  std::vector<std::reference_wrapper<XML::bpmnos::tAttribute>> attributes;
+  for ( auto& dataStore : dataStores ) {
+    for ( XML::bpmnos::tAttribute& attribute : getAttributes(dataStore->element) ) {
+      if ( attributes.size() && attribute.id.value.value == BPMNOS::Keyword::Objective ) {
+        // make sure objective attribute is at first position
+        attributes.emplace_back( std::move(attributes[0]) );
+        attributes[0] = std::ref(attribute);
+      }
+      else {
+        attributes.emplace_back( attribute );
+      }
+    }
+  }
+  return attributes;
+}
+
 namespace {
 
-/// @brief Walks the parsed tree and returns the {name, source, header} of every referenced lookup table.
+/// @brief Returns the {name, source, header} of every lookup table a data store declares.
 /// @throws std::runtime_error if a source contains a path separator (a source must be a bare file name).
-std::vector<std::tuple<std::string, std::string, std::string>> collectLookupTables(const XML::XMLObject& root) {
+std::vector<std::tuple<std::string, std::string, std::string>> lookupTablesOf(const XML::bpmn::tDataStore& dataStore) {
   std::vector<std::tuple<std::string, std::string, std::string>> lookups;
-  for ( const XML::bpmn::tDataStoreReference& dataStoreReference : root.find<XML::bpmn::tDataStoreReference>() ) {
-    auto extensionElements = dataStoreReference.getOptionalChild<XML::bpmn::tExtensionElements>();
-    if ( !extensionElements.has_value() ) {
-      continue;
+  auto extensionElements = dataStore.getOptionalChild<XML::bpmn::tExtensionElements>();
+  if ( !extensionElements.has_value() ) {
+    return lookups;
+  }
+  auto tables = extensionElements->get().getOptionalChild<XML::bpmnos::tTables>();
+  if ( !tables.has_value() ) {
+    return lookups;
+  }
+  for ( const XML::bpmnos::tTable& table : tables->get().find<XML::bpmnos::tTable>() ) {
+    std::string name = table.getRequiredAttributeByName("name").value;
+    std::string source = table.getRequiredAttributeByName("source").value;
+    std::string header = table.getRequiredAttributeByName("header").value;
+    if ( source.find('/') != std::string::npos || source.find('\\') != std::string::npos ) {
+      throw std::runtime_error("Model: lookup table source '" + source + "' must be a file name, not a path");
     }
-    auto tables = extensionElements->get().getOptionalChild<XML::bpmnos::tTables>();
-    if ( !tables.has_value() ) {
-      continue;
-    }
-    for ( const XML::bpmnos::tTable& table : tables->get().find<XML::bpmnos::tTable>() ) {
-      std::string name = table.getRequiredAttributeByName("name").value;
-      std::string source = table.getRequiredAttributeByName("source").value;
-      std::string header = table.getRequiredAttributeByName("header").value;
-      if ( source.find('/') != std::string::npos || source.find('\\') != std::string::npos ) {
-        throw std::runtime_error("Model: lookup table source '" + source + "' must be a file name, not a path");
-      }
-      lookups.emplace_back( std::move(name), std::move(source), std::move(header) );
-    }
+    lookups.emplace_back( std::move(name), std::move(source), std::move(header) );
   }
   return lookups;
 }
@@ -99,57 +114,54 @@ std::vector<std::tuple<std::string, std::string, std::string>> collectLookupTabl
 
 std::vector<std::string> Model::getLookupTableNames(const XML::XMLObject& root) {
   std::vector<std::string> names;
-  for ( auto& [name, source, header] : collectLookupTables(root) ) {
-    names.push_back( source );
+  // a data store is a root element, so its declarations are reached without a model having been built
+  for ( const XML::bpmn::tDataStore& dataStore : root.getChildren<XML::bpmn::tDataStore>() ) {
+    for ( auto& [name, source, header] : lookupTablesOf(dataStore) ) {
+      names.push_back( source );
+    }
   }
   return names;
 }
 
-void Model::createLookupTables(const std::vector<std::string>& folders) {
-  // file mode: resolve each referenced source against the folders
-  for ( auto& [name, source, header] : collectLookupTables(*root) ) {
-    lookupTables.push_back( std::make_unique<LookupTable>(name, source, header, folders) );
-  }
+void Model::createDataStores() {
+  BPMN::Model::createDataStores();
+  createLookupTables();   // the tables the stores declare, registered as callables
+  createGlobals();        // the global attributes the stores declare
 }
 
-void Model::createLookupTables(const std::unordered_map<std::string, std::string>& lookupTableContents) {
-  // content mode: resolve each referenced source from the supplied content map
-  for ( auto& [name, source, header] : collectLookupTables(*root) ) {
-    auto it = lookupTableContents.find(source);
-    if ( it == lookupTableContents.end() ) {
-      throw std::runtime_error("Model: content for lookup table '" + source + "' not provided");
-    }
-    lookupTables.push_back( std::make_unique<LookupTable>(name, it->second, header) );
-  }
-}
-
-void Model::build() {
-  registerLookupTablesAndGlobals();   // lookup tables + globals must exist before children are built
-  BPMN::Model::build();
-}
-
-void Model::registerLookupTablesAndGlobals() {
+void Model::createLookupTables() {
   // TODO: make sure that only built in callables exist
-  // register the (already created) lookup tables as callables
-  for ( auto& lookupTable : lookupTables ) {
-    auto table = lookupTable.get();
-    // TODO: should I use shared pointers?
-    limexHandle.addFunction(
-      table->name,
-      [table](const std::vector<double>& args)
-      {
-        return table->at(args);
+  for ( auto& dataStore : dataStores ) {
+    for ( auto& [name, source, header] : lookupTablesOf(*dataStore->element) ) {
+      if ( lookupTableContents.has_value() ) {
+        // content mode: resolve each declared source from the supplied content map
+        auto it = lookupTableContents->find(source);
+        if ( it == lookupTableContents->end() ) {
+          throw std::runtime_error("Model: content for lookup table '" + source + "' not provided");
+        }
+        lookupTables.push_back( std::make_unique<LookupTable>(name, it->second, header) );
       }
-    );
-  }
+      else {
+        // file mode: resolve each declared source against the folders
+        lookupTables.push_back( std::make_unique<LookupTable>(name, source, header, lookupTableFolders) );
+      }
 
-  // create global variables
-  if ( auto collaboration = root->getOptionalChild<XML::bpmn::tCollaboration>();
-    collaboration.has_value()
-  ) {
-    for ( XML::bpmnos::tAttribute& attributeElement : getAttributes(&collaboration.value().get()) ) {
-      attributes.push_back( std::make_unique<Attribute>(&attributeElement, Attribute::Category::GLOBAL, attributeRegistry) );
+      auto table = lookupTables.back().get();
+      // TODO: should I use shared pointers?
+      limexHandle.addFunction(
+        table->name,
+        [table](const std::vector<double>& args)
+        {
+          return table->at(args);
+        }
+      );
     }
+  }
+}
+
+void Model::createGlobals() {
+  for ( XML::bpmnos::tAttribute& attributeElement : getGlobals() ) {
+    attributes.push_back( std::make_unique<Attribute>(&attributeElement, Attribute::Category::GLOBAL, attributeRegistry) );
   }
 }
  

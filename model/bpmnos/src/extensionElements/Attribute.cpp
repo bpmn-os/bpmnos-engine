@@ -23,6 +23,9 @@ Attribute::Attribute(XML::bpmnos::tAttribute* attribute, Attribute::Category cat
   if ( id == Keyword::Instance && index != ExtensionElements::Index::Instance ) {
     throw std::runtime_error("Attribute: instance must be first data attribute");
   }
+  if ( id == Keyword::Objective && index != ExtensionElements::Index::Objective ) {
+    throw std::runtime_error("Attribute: objective must be first global attribute");
+  }
   if ( expression ) {
     // expression requires pointer to target attribute
     const_cast<Expression*>(expression.get())->target = std::make_optional<const Attribute*>(this);
@@ -62,7 +65,7 @@ Attribute::Attribute(XML::bpmnos::tAttribute* attribute, Attribute::Category cat
     weight = 0;
   }
   
-  isImmutable = (id != Keyword::Timestamp);
+  isImmutable = (id != Keyword::Timestamp && id != Keyword::Objective);
 }
 
 std::unique_ptr<const Expression> Attribute::getExpression(std::string& input, AttributeRegistry& attributeRegistry) {
