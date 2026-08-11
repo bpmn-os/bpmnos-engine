@@ -23,14 +23,21 @@ For each attribute the following fields can be provided
 
 ### Global attributes
 
-Global attributes can be defined globally for a @ref XML::bpmn::tCollaboration "collaboration element" as shown in the following example.
+Global attributes can be defined for a @ref XML::bpmn::tDataStore "data store element" as shown in the following example.
 ```xml
-<bpmn2:extensionElements>
-  <bpmnos:attributes>
-    <bpmnos:attribute id="Makespan" name="makespan := 0" type="decimal" objective="minimize" weight="1" />
-  </bpmnos:attributes>
-</bpmn2:extensionElements>
+<bpmn2:dataStore id="DataStore_1">
+  <bpmn2:extensionElements>
+    <bpmnos:attributes>
+      <bpmnos:attribute id="Objective" name="objective := 0" type="decimal" />
+      <bpmnos:attribute id="Makespan" name="makespan := 0" type="decimal" objective="minimize" weight="1" />
+    </bpmnos:attributes>
+  </bpmn2:extensionElements>
+</bpmn2:dataStore>
 ```
+
+An executable model declares a global attribute with the identifier `Objective` holding the objective value of a run, as every process declares a status attribute with the identifier `Timestamp` and a data attribute with the identifier `Instance`. It carries neither an `objective` nor a `weight`, so that it does not contribute to itself.
+
+Global attributes are visible to every process of a model, whether or not a process refers to the data store declaring them.
 
 @note Modifying global attribute values may lead to race conditions.
 
@@ -204,14 +211,17 @@ The trigger for a @ref BPMN::TimerCatchEvent "timer event" can be specified by p
 
 ## Lookup tables
 
-Lookup tables can be made available by adding the following extension elements to a data store reference. 
+Lookup tables can be made available by adding the following extension elements to a @ref XML::bpmn::tDataStore "data store element". 
 ```xml
-<bpmn2:extensionElements>
-  <bpmnos:tables>
-     <bpmnos:table id="Table_0udt1qg" name="costs" source="costs.csv" />
-  </bpmnos:tables>
-</bpmn2:extensionElements>
+<bpmn2:dataStore id="DataStore_2">
+  <bpmn2:extensionElements>
+    <bpmnos:tables>
+      <bpmnos:table id="Table_0udt1qg" name="costs" source="costs.csv" />
+    </bpmnos:tables>
+  </bpmn2:extensionElements>
+</bpmn2:dataStore>
 ```
+The name of a lookup table can be used in every expression of a model, whether or not a process refers to the data store declaring it.
 The parameter `name` specifies the name of the lookup table to be used in expressions. 
 The parameter `source` specifies the filen name of the lookup table. 
 
