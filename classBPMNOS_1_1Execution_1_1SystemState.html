@@ -166,9 +166,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aaf6acfe1831be691428d45a32fd12507" id="r_aaf6acfe1831be691428d45a32fd12507"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Execution_1_1SystemState.html#aaf6acfe1831be691428d45a32fd12507">isAlive</a> () const</td></tr>
 <tr class="memdesc:aaf6acfe1831be691428d45a32fd12507"><td class="mdescLeft">&#160;</td><td class="mdescRight">Function returning true if there are tokens in the system or if there may be new instantiations of tokens.  <br /></td></tr>
 <tr class="separator:aaf6acfe1831be691428d45a32fd12507"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0b41b9fd69551e4f8179e2971dd11289" id="r_a0b41b9fd69551e4f8179e2971dd11289"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Execution_1_1SystemState.html#a0b41b9fd69551e4f8179e2971dd11289">getWeightedObjective</a> () const</td></tr>
-<tr class="memdesc:a0b41b9fd69551e4f8179e2971dd11289"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the total weighted objective value (assuming maximization) accumulated during execution.  <br /></td></tr>
-<tr class="separator:a0b41b9fd69551e4f8179e2971dd11289"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abe8175c87106f4140bf82b2b3c9c19b2" id="r_abe8175c87106f4140bf82b2b3c9c19b2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Execution_1_1SystemState.html#abe8175c87106f4140bf82b2b3c9c19b2">getObjective</a> () const</td></tr>
+<tr class="memdesc:abe8175c87106f4140bf82b2b3c9c19b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the value of the objective global attribute maintained by the run.  <br /></td></tr>
+<tr class="separator:abe8175c87106f4140bf82b2b3c9c19b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3e527d515c98bfce0d3110af7cbd4cb9" id="r_a3e527d515c98bfce0d3110af7cbd4cb9"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Execution_1_1SystemState.html#a3e527d515c98bfce0d3110af7cbd4cb9">getStatusAttributes</a> (const <a class="el" href="classBPMNOS_1_1Execution_1_1StateMachine.html">StateMachine</a> *root, const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a> *node) const</td></tr>
 <tr class="separator:a3e527d515c98bfce0d3110af7cbd4cb9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a88c46519d6b2a2788ca7e4a54b05edce" id="r_a88c46519d6b2a2788ca7e4a54b05edce"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Execution_1_1SystemState.html#a88c46519d6b2a2788ca7e4a54b05edce">getDataAttributes</a> (const <a class="el" href="classBPMNOS_1_1Execution_1_1StateMachine.html">StateMachine</a> *root, const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a> *node) const</td></tr>
@@ -188,9 +188,6 @@ Public Attributes</h2></td></tr>
 <tr class="memitem:a139c50b3da551a3a44f1905fcda097eb" id="r_a139c50b3da551a3a44f1905fcda097eb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Execution_1_1SystemState.html#a139c50b3da551a3a44f1905fcda097eb">currentTime</a></td></tr>
 <tr class="memdesc:a139c50b3da551a3a44f1905fcda097eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Timestamp holding the point in time that the engine is in (this is usually representing now).  <br /></td></tr>
 <tr class="separator:a139c50b3da551a3a44f1905fcda097eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aef98b82d1828986274e7219292ac1127" id="r_aef98b82d1828986274e7219292ac1127"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; const <a class="el" href="classBPMNOS_1_1Model_1_1Attribute.html">BPMNOS::Model::Attribute</a> *, <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Execution_1_1SystemState.html#aef98b82d1828986274e7219292ac1127">contributionsToObjective</a></td></tr>
-<tr class="memdesc:aef98b82d1828986274e7219292ac1127"><td class="mdescLeft">&#160;</td><td class="mdescRight">All contributions that have already been added to the objective.  <br /></td></tr>
-<tr class="separator:aef98b82d1828986274e7219292ac1127"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1c64846417825cd6f6964739142343a7" id="r_a1c64846417825cd6f6964739142343a7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classBPMNOS_1_1Execution_1_1auto__list.html">auto_list</a>&lt; std::weak_ptr&lt; <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html">Token</a> &gt;, std::weak_ptr&lt; <a class="el" href="structBPMNOS_1_1Execution_1_1DecisionRequest.html">DecisionRequest</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Execution_1_1SystemState.html#a1c64846417825cd6f6964739142343a7">pendingEntryDecisions</a></td></tr>
 <tr class="separator:a1c64846417825cd6f6964739142343a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa7242aae7456af850597e13789c1ec83" id="r_aa7242aae7456af850597e13789c1ec83"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classBPMNOS_1_1Execution_1_1auto__list.html">auto_list</a>&lt; std::weak_ptr&lt; <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html">Token</a> &gt;, std::weak_ptr&lt; <a class="el" href="structBPMNOS_1_1Execution_1_1DecisionRequest.html">DecisionRequest</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Execution_1_1SystemState.html#aa7242aae7456af850597e13789c1ec83">pendingChoiceDecisions</a></td></tr>
@@ -390,7 +387,7 @@ Additional Inherited Members</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="SystemState_8cpp_source.html#l00016">16</a> of file <a class="el" href="SystemState_8cpp_source.html">SystemState.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SystemState_8cpp_source.html#l00024">24</a> of file <a class="el" href="SystemState_8cpp_source.html">SystemState.cpp</a>.</p>
 
 </div>
 </div>
@@ -409,7 +406,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SystemState_8cpp_source.html#l00100">100</a> of file <a class="el" href="SystemState_8cpp_source.html">SystemState.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SystemState_8cpp_source.html#l00107">107</a> of file <a class="el" href="SystemState_8cpp_source.html">SystemState.cpp</a>.</p>
 
 </div>
 </div>
@@ -440,7 +437,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SystemState_8cpp_source.html#l00148">148</a> of file <a class="el" href="SystemState_8cpp_source.html">SystemState.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SystemState_8cpp_source.html#l00142">142</a> of file <a class="el" href="SystemState_8cpp_source.html">SystemState.cpp</a>.</p>
 
 </div>
 </div>
@@ -460,7 +457,27 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 <p>A vector representing an instantiation contains a reference to the process, the initial status, and the initial data attribute value </p>
 
-<p class="definition">Definition at line <a class="el" href="SystemState_8cpp_source.html#l00140">140</a> of file <a class="el" href="SystemState_8cpp_source.html">SystemState.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SystemState_8cpp_source.html#l00134">134</a> of file <a class="el" href="SystemState_8cpp_source.html">SystemState.cpp</a>.</p>
+
+</div>
+</div>
+<a id="abe8175c87106f4140bf82b2b3c9c19b2" name="abe8175c87106f4140bf82b2b3c9c19b2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abe8175c87106f4140bf82b2b3c9c19b2">&#9670;&#160;</a></span>getObjective()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> SystemState::getObjective </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>The objective is updated whenever a weighted data or global attribute is written, and when status attributes are accounted at element exit/completion. </p>
+
+<p class="definition">Definition at line <a class="el" href="SystemState_8cpp_source.html#l00130">130</a> of file <a class="el" href="SystemState_8cpp_source.html">SystemState.cpp</a>.</p>
 
 </div>
 </div>
@@ -519,7 +536,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SystemState_8cpp_source.html#l00144">144</a> of file <a class="el" href="SystemState_8cpp_source.html">SystemState.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SystemState_8cpp_source.html#l00138">138</a> of file <a class="el" href="SystemState_8cpp_source.html">SystemState.cpp</a>.</p>
 
 </div>
 </div>
@@ -538,34 +555,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SystemState_8cpp_source.html#l00112">112</a> of file <a class="el" href="SystemState_8cpp_source.html">SystemState.cpp</a>.</p>
-
-</div>
-</div>
-<a id="a0b41b9fd69551e4f8179e2971dd11289" name="a0b41b9fd69551e4f8179e2971dd11289"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0b41b9fd69551e4f8179e2971dd11289">&#9670;&#160;</a></span>getWeightedObjective()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> SystemState::getWeightedObjective </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Global attributes are evaluated upon each call of the method.</p>
-<p>Attributes declared for activities, event-subprocesses, and processes contribute to the objective when</p><ul>
-<li>the activity is exited,</li>
-<li>a compensation activity is completed,</li>
-<li>the event-subprocess shuts down without failure, or</li>
-<li>the process shuts down without failure.</li>
-</ul>
-<p>In all other cases values of attributes declared to contribute to the objective will be ignored. </p>
-
-<p class="definition">Definition at line <a class="el" href="SystemState_8cpp_source.html#l00123">123</a> of file <a class="el" href="SystemState_8cpp_source.html">SystemState.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SystemState_8cpp_source.html#l00119">119</a> of file <a class="el" href="SystemState_8cpp_source.html">SystemState.cpp</a>.</p>
 
 </div>
 </div>
@@ -584,7 +574,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SystemState_8cpp_source.html#l00116">116</a> of file <a class="el" href="SystemState_8cpp_source.html">SystemState.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SystemState_8cpp_source.html#l00123">123</a> of file <a class="el" href="SystemState_8cpp_source.html">SystemState.cpp</a>.</p>
 
 </div>
 </div>
@@ -609,7 +599,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00180">180</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00170">170</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
 
 </div>
 </div>
@@ -633,7 +623,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00177">177</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00167">167</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
 
 </div>
 </div>
@@ -657,7 +647,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00178">178</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00168">168</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
 
 </div>
 </div>
@@ -681,7 +671,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00179">179</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00169">169</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
 
 </div>
 </div>
@@ -699,23 +689,7 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 <p>Used to look up recipient state machines when delivering directed messages. Contains: root process state machines, multi-instance activity state machines, and non-interrupting event subprocess state machines. </p>
 
-<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00109">109</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
-
-</div>
-</div>
-<a id="aef98b82d1828986274e7219292ac1127" name="aef98b82d1828986274e7219292ac1127"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aef98b82d1828986274e7219292ac1127">&#9670;&#160;</a></span>contributionsToObjective</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::unordered_map&lt;const <a class="el" href="classBPMNOS_1_1Model_1_1Attribute.html">BPMNOS::Model::Attribute</a>*, <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&gt; BPMNOS::Execution::SystemState::contributionsToObjective</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00090">90</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00099">99</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
 
 </div>
 </div>
@@ -747,7 +721,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00142">142</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00132">132</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
 
 </div>
 </div>
@@ -763,7 +737,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00154">154</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00144">144</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
 
 </div>
 </div>
@@ -779,7 +753,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00119">119</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00109">109</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
 
 </div>
 </div>
@@ -795,7 +769,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00159">159</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00149">149</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
 
 </div>
 </div>
@@ -811,7 +785,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00137">137</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00127">127</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
 
 </div>
 </div>
@@ -827,7 +801,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00164">164</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00154">154</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
 
 </div>
 </div>
@@ -843,7 +817,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00124">124</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00114">114</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
 
 </div>
 </div>
@@ -859,7 +833,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00094">94</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00084">84</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
 
 </div>
 </div>
@@ -875,7 +849,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00093">93</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00083">83</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
 
 </div>
 </div>
@@ -891,7 +865,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00095">95</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00085">85</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
 
 </div>
 </div>
@@ -907,7 +881,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00097">97</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00087">87</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
 
 </div>
 </div>
@@ -939,7 +913,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00129">129</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00119">119</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
 
 </div>
 </div>
@@ -955,7 +929,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00144">144</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00134">134</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
 
 </div>
 </div>
@@ -971,7 +945,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00139">139</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00129">129</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
 
 </div>
 </div>
@@ -987,7 +961,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00151">151</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00141">141</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
 
 </div>
 </div>
@@ -1003,7 +977,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00152">152</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00142">142</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
 
 </div>
 </div>
@@ -1019,7 +993,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00140">140</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00130">130</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
 
 </div>
 </div>
@@ -1035,7 +1009,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00141">141</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00131">131</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
 
 </div>
 </div>
@@ -1051,7 +1025,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00128">128</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00118">118</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
 
 </div>
 </div>
@@ -1067,7 +1041,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00100">100</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00090">90</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
 
 </div>
 </div>
@@ -1083,7 +1057,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00135">135</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00125">125</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
 
 </div>
 </div>
@@ -1099,7 +1073,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00145">145</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00135">135</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
 
 </div>
 </div>
@@ -1115,7 +1089,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00147">147</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00137">137</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
 
 </div>
 </div>
@@ -1131,7 +1105,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00099">99</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00089">89</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
 
 </div>
 </div>
@@ -1147,7 +1121,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00133">133</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00123">123</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
 
 </div>
 </div>
@@ -1163,7 +1137,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00131">131</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00121">121</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
 
 </div>
 </div>
@@ -1179,7 +1153,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00114">114</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00104">104</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
 
 </div>
 </div>

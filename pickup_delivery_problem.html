@@ -135,15 +135,16 @@ Diagram</h2>
 <p> 
 <object data="Pickup_delivery_problem.svg" type="image/svg+xml" style="max-width: 100%;">Diagram</object>
 </p>
-<h2><a class="anchor" id="globals-117"></a>
+<h2><a class="anchor" id="globals-190"></a>
 Globals</h2>
-<details  open="true">
+<details >
 <summary >
-Owned (2)</summary>
+Inherited (3)</summary>
 <p></p>
 <ul>
-<li><em>integer:</em> <b>requests_expected</b></li>
-<li><em>integer:</em> <b>requests_made</b> (initialized by <code>requests_made := 0</code>)</li>
+<li><em>decimal:</em> <b>objective</b> (from <code>DataStore_1</code>)</li>
+<li><em>integer:</em> <b>requests_expected</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>requests_made</b> (from <code>DataStore_2</code>)</li>
 </ul>
 <p></p>
 </details>
@@ -155,7 +156,7 @@ Lookup tables</h2>
 </ul>
 <h2><a class="anchor" id="customer-process-customerprocess-2"></a>
 Customer process (CustomerProcess)</h2>
-<h3><a class="anchor" id="status-177"></a>
+<h3><a class="anchor" id="status-182"></a>
 Status</h3>
 <details  open="true">
 <summary >
@@ -177,7 +178,7 @@ Owned (12)</summary>
 </ul>
 <p></p>
 </details>
-<h3><a class="anchor" id="data-178"></a>
+<h3><a class="anchor" id="data-183"></a>
 Data</h3>
 <details  open="true">
 <summary >
@@ -188,271 +189,21 @@ Owned (1)</summary>
 </ul>
 <p></p>
 </details>
-<h3><a class="anchor" id="globals-118"></a>
+<h3><a class="anchor" id="globals-191"></a>
 Globals</h3>
 <details >
 <summary >
-Inherited (2)</summary>
+Inherited (3)</summary>
 <p></p>
 <ul>
-<li><em>integer:</em> <b>requests_expected</b> (from <a class="el" href="guided_pickup_delivery_problem.html#collaboration-pickupdeliveryproblem">`PickupDeliveryProblem`</a>)</li>
-<li><em>integer:</em> <b>requests_made</b> (from <a class="el" href="guided_pickup_delivery_problem.html#collaboration-pickupdeliveryproblem">`PickupDeliveryProblem`</a>)</li>
+<li><em>decimal:</em> <b>objective</b> (from <code>DataStore_1</code>)</li>
+<li><em>integer:</em> <b>requests_expected</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>requests_made</b> (from <code>DataStore_2</code>)</li>
 </ul>
 <p></p>
 </details>
 <h2><a class="anchor" id="startevent-starteventcustomer-2"></a>
 StartEvent (StartEventCustomer)</h2>
-<h3><a class="anchor" id="status-178"></a>
-Status</h3>
-<details >
-<summary >
-Inherited (12)</summary>
-<p></p>
-<ul>
-<li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
-<li><em>decimal:</em> <b>quantity</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
-<li><em>string:</em> <b>pickup_location</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
-<li><em>decimal:</em> <b>earliest_pickup</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
-<li><em>decimal:</em> <b>latest_pickup</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
-<li><em>decimal:</em> <b>pickup_duration</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
-<li><em>decimal:</em> <b>late_pickup_penalty</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
-<li><em>string:</em> <b>delivery_location</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
-<li><em>decimal:</em> <b>earliest_delivery</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
-<li><em>decimal:</em> <b>latest_delivery</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
-<li><em>decimal:</em> <b>delivery_duration</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
-<li><em>decimal:</em> <b>late_delivery_penalty</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
-</ul>
-<p></p>
-</details>
-<h3><a class="anchor" id="data-179"></a>
-Data</h3>
-<details >
-<summary >
-Inherited (1)</summary>
-<p></p>
-<ul>
-<li><em>string:</em> <b>instance</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
-</ul>
-<p></p>
-</details>
-<h3><a class="anchor" id="globals-119"></a>
-Globals</h3>
-<details >
-<summary >
-Inherited (2)</summary>
-<p></p>
-<ul>
-<li><em>integer:</em> <b>requests_expected</b> (from <a class="el" href="guided_pickup_delivery_problem.html#collaboration-pickupdeliveryproblem">`PickupDeliveryProblem`</a>)</li>
-<li><em>integer:</em> <b>requests_made</b> (from <a class="el" href="guided_pickup_delivery_problem.html#collaboration-pickupdeliveryproblem">`PickupDeliveryProblem`</a>)</li>
-</ul>
-<p></p>
-</details>
-<h2><a class="anchor" id="intermediatethrowevent-throwshipmentunloaded-1"></a>
-IntermediateThrowEvent (ThrowShipmentUnloaded)</h2>
-<h3><a class="anchor" id="status-179"></a>
-Status</h3>
-<details >
-<summary >
-Inherited (12)</summary>
-<p></p>
-<ul>
-<li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
-<li><em>decimal:</em> <b>quantity</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
-<li><em>string:</em> <b>pickup_location</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
-<li><em>decimal:</em> <b>earliest_pickup</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
-<li><em>decimal:</em> <b>latest_pickup</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
-<li><em>decimal:</em> <b>pickup_duration</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
-<li><em>decimal:</em> <b>late_pickup_penalty</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
-<li><em>string:</em> <b>delivery_location</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
-<li><em>decimal:</em> <b>earliest_delivery</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
-<li><em>decimal:</em> <b>latest_delivery</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
-<li><em>decimal:</em> <b>delivery_duration</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
-<li><em>decimal:</em> <b>late_delivery_penalty</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
-</ul>
-<p></p>
-</details>
-<h3><a class="anchor" id="data-180"></a>
-Data</h3>
-<details >
-<summary >
-Inherited (1)</summary>
-<p></p>
-<ul>
-<li><em>string:</em> <b>instance</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
-</ul>
-<p></p>
-</details>
-<h3><a class="anchor" id="globals-120"></a>
-Globals</h3>
-<details >
-<summary >
-Inherited (2)</summary>
-<p></p>
-<ul>
-<li><em>integer:</em> <b>requests_expected</b> (from <a class="el" href="guided_pickup_delivery_problem.html#collaboration-pickupdeliveryproblem">`PickupDeliveryProblem`</a>)</li>
-<li><em>integer:</em> <b>requests_made</b> (from <a class="el" href="guided_pickup_delivery_problem.html#collaboration-pickupdeliveryproblem">`PickupDeliveryProblem`</a>)</li>
-</ul>
-<p></p>
-</details>
-<h3><a class="anchor" id="message-38"></a>
-Message</h3>
-<h4><a class="anchor" id="name-unloaded-2"></a>
-&lt;em&gt;Name&lt;/em&gt; Unloaded</h4>
-<p><a class="anchor" id="header-0-25"></a> </p><h5>Header (0)</h5>
-<p><a class="anchor" id="content-0-22"></a> </p><h5>Content (0)</h5>
-<h2><a class="anchor" id="endevent-endeventcustomer-2"></a>
-EndEvent (EndEventCustomer)</h2>
-<h3><a class="anchor" id="status-180"></a>
-Status</h3>
-<details >
-<summary >
-Inherited (12)</summary>
-<p></p>
-<ul>
-<li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
-<li><em>decimal:</em> <b>quantity</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
-<li><em>string:</em> <b>pickup_location</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
-<li><em>decimal:</em> <b>earliest_pickup</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
-<li><em>decimal:</em> <b>latest_pickup</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
-<li><em>decimal:</em> <b>pickup_duration</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
-<li><em>decimal:</em> <b>late_pickup_penalty</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
-<li><em>string:</em> <b>delivery_location</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
-<li><em>decimal:</em> <b>earliest_delivery</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
-<li><em>decimal:</em> <b>latest_delivery</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
-<li><em>decimal:</em> <b>delivery_duration</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
-<li><em>decimal:</em> <b>late_delivery_penalty</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
-</ul>
-<p></p>
-</details>
-<h3><a class="anchor" id="data-181"></a>
-Data</h3>
-<details >
-<summary >
-Inherited (1)</summary>
-<p></p>
-<ul>
-<li><em>string:</em> <b>instance</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
-</ul>
-<p></p>
-</details>
-<h3><a class="anchor" id="globals-121"></a>
-Globals</h3>
-<details >
-<summary >
-Inherited (2)</summary>
-<p></p>
-<ul>
-<li><em>integer:</em> <b>requests_expected</b> (from <a class="el" href="guided_pickup_delivery_problem.html#collaboration-pickupdeliveryproblem">`PickupDeliveryProblem`</a>)</li>
-<li><em>integer:</em> <b>requests_made</b> (from <a class="el" href="guided_pickup_delivery_problem.html#collaboration-pickupdeliveryproblem">`PickupDeliveryProblem`</a>)</li>
-</ul>
-<p></p>
-</details>
-<h2><a class="anchor" id="task-unloadactivity-1"></a>
-Task (UnloadActivity)</h2>
-<h3><a class="anchor" id="status-181"></a>
-Status</h3>
-<details >
-<summary >
-Inherited (12)</summary>
-<p></p>
-<ul>
-<li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
-<li><em>decimal:</em> <b>quantity</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
-<li><em>string:</em> <b>pickup_location</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
-<li><em>decimal:</em> <b>earliest_pickup</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
-<li><em>decimal:</em> <b>latest_pickup</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
-<li><em>decimal:</em> <b>pickup_duration</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
-<li><em>decimal:</em> <b>late_pickup_penalty</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
-<li><em>string:</em> <b>delivery_location</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
-<li><em>decimal:</em> <b>earliest_delivery</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
-<li><em>decimal:</em> <b>latest_delivery</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
-<li><em>decimal:</em> <b>delivery_duration</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
-<li><em>decimal:</em> <b>late_delivery_penalty</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
-</ul>
-<p></p>
-</details>
-<h3><a class="anchor" id="data-182"></a>
-Data</h3>
-<details >
-<summary >
-Inherited (1)</summary>
-<p></p>
-<ul>
-<li><em>string:</em> <b>instance</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
-</ul>
-<p></p>
-</details>
-<h3><a class="anchor" id="globals-122"></a>
-Globals</h3>
-<details >
-<summary >
-Inherited (2)</summary>
-<p></p>
-<ul>
-<li><em>integer:</em> <b>requests_expected</b> (from <a class="el" href="guided_pickup_delivery_problem.html#collaboration-pickupdeliveryproblem">`PickupDeliveryProblem`</a>)</li>
-<li><em>integer:</em> <b>requests_made</b> (from <a class="el" href="guided_pickup_delivery_problem.html#collaboration-pickupdeliveryproblem">`PickupDeliveryProblem`</a>)</li>
-</ul>
-<p></p>
-</details>
-<h3><a class="anchor" id="operators-32"></a>
-Operators</h3>
-<ul>
-<li><code>timestamp += delivery_duration</code></li>
-</ul>
-<h2><a class="anchor" id="intermediatecatchevent-deliverywaitevent-1"></a>
-IntermediateCatchEvent (DeliveryWaitEvent)</h2>
-<h3><a class="anchor" id="status-182"></a>
-Status</h3>
-<details >
-<summary >
-Inherited (12)</summary>
-<p></p>
-<ul>
-<li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
-<li><em>decimal:</em> <b>quantity</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
-<li><em>string:</em> <b>pickup_location</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
-<li><em>decimal:</em> <b>earliest_pickup</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
-<li><em>decimal:</em> <b>latest_pickup</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
-<li><em>decimal:</em> <b>pickup_duration</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
-<li><em>decimal:</em> <b>late_pickup_penalty</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
-<li><em>string:</em> <b>delivery_location</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
-<li><em>decimal:</em> <b>earliest_delivery</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
-<li><em>decimal:</em> <b>latest_delivery</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
-<li><em>decimal:</em> <b>delivery_duration</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
-<li><em>decimal:</em> <b>late_delivery_penalty</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
-</ul>
-<p></p>
-</details>
-<h3><a class="anchor" id="data-183"></a>
-Data</h3>
-<details >
-<summary >
-Inherited (1)</summary>
-<p></p>
-<ul>
-<li><em>string:</em> <b>instance</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
-</ul>
-<p></p>
-</details>
-<h3><a class="anchor" id="globals-123"></a>
-Globals</h3>
-<details >
-<summary >
-Inherited (2)</summary>
-<p></p>
-<ul>
-<li><em>integer:</em> <b>requests_expected</b> (from <a class="el" href="guided_pickup_delivery_problem.html#collaboration-pickupdeliveryproblem">`PickupDeliveryProblem`</a>)</li>
-<li><em>integer:</em> <b>requests_made</b> (from <a class="el" href="guided_pickup_delivery_problem.html#collaboration-pickupdeliveryproblem">`PickupDeliveryProblem`</a>)</li>
-</ul>
-<p></p>
-</details>
-<h3><a class="anchor" id="timer-5"></a>
-Timer</h3>
-<ul>
-<li><em>trigger:</em> <code>earliest_delivery</code></li>
-</ul>
-<h2><a class="anchor" id="task-loadactivity-2"></a>
-Task (LoadActivity)</h2>
 <h3><a class="anchor" id="status-183"></a>
 Status</h3>
 <details >
@@ -486,25 +237,21 @@ Inherited (1)</summary>
 </ul>
 <p></p>
 </details>
-<h3><a class="anchor" id="globals-124"></a>
+<h3><a class="anchor" id="globals-192"></a>
 Globals</h3>
 <details >
 <summary >
-Inherited (2)</summary>
+Inherited (3)</summary>
 <p></p>
 <ul>
-<li><em>integer:</em> <b>requests_expected</b> (from <a class="el" href="guided_pickup_delivery_problem.html#collaboration-pickupdeliveryproblem">`PickupDeliveryProblem`</a>)</li>
-<li><em>integer:</em> <b>requests_made</b> (from <a class="el" href="guided_pickup_delivery_problem.html#collaboration-pickupdeliveryproblem">`PickupDeliveryProblem`</a>)</li>
+<li><em>decimal:</em> <b>objective</b> (from <code>DataStore_1</code>)</li>
+<li><em>integer:</em> <b>requests_expected</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>requests_made</b> (from <code>DataStore_2</code>)</li>
 </ul>
 <p></p>
 </details>
-<h3><a class="anchor" id="operators-33"></a>
-Operators</h3>
-<ul>
-<li><code>timestamp += pickup_duration</code></li>
-</ul>
-<h2><a class="anchor" id="intermediatecatchevent-pickupwaitevent-1"></a>
-IntermediateCatchEvent (PickupWaitEvent)</h2>
+<h2><a class="anchor" id="intermediatethrowevent-throwshipmentunloaded-1"></a>
+IntermediateThrowEvent (ThrowShipmentUnloaded)</h2>
 <h3><a class="anchor" id="status-184"></a>
 Status</h3>
 <details >
@@ -538,25 +285,27 @@ Inherited (1)</summary>
 </ul>
 <p></p>
 </details>
-<h3><a class="anchor" id="globals-125"></a>
+<h3><a class="anchor" id="globals-193"></a>
 Globals</h3>
 <details >
 <summary >
-Inherited (2)</summary>
+Inherited (3)</summary>
 <p></p>
 <ul>
-<li><em>integer:</em> <b>requests_expected</b> (from <a class="el" href="guided_pickup_delivery_problem.html#collaboration-pickupdeliveryproblem">`PickupDeliveryProblem`</a>)</li>
-<li><em>integer:</em> <b>requests_made</b> (from <a class="el" href="guided_pickup_delivery_problem.html#collaboration-pickupdeliveryproblem">`PickupDeliveryProblem`</a>)</li>
+<li><em>decimal:</em> <b>objective</b> (from <code>DataStore_1</code>)</li>
+<li><em>integer:</em> <b>requests_expected</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>requests_made</b> (from <code>DataStore_2</code>)</li>
 </ul>
 <p></p>
 </details>
-<h3><a class="anchor" id="timer-6"></a>
-Timer</h3>
-<ul>
-<li><em>trigger:</em> <code>earliest_pickup</code></li>
-</ul>
-<h2><a class="anchor" id="intermediatecatchevent-catchpickuparrival-1"></a>
-IntermediateCatchEvent (CatchPickupArrival)</h2>
+<h3><a class="anchor" id="message-38"></a>
+Message</h3>
+<h4><a class="anchor" id="name-unloaded-2"></a>
+&lt;em&gt;Name&lt;/em&gt; Unloaded</h4>
+<p><a class="anchor" id="header-0-25"></a> </p><h5>Header (0)</h5>
+<p><a class="anchor" id="content-0-22"></a> </p><h5>Content (0)</h5>
+<h2><a class="anchor" id="endevent-endeventcustomer-2"></a>
+EndEvent (EndEventCustomer)</h2>
 <h3><a class="anchor" id="status-185"></a>
 Status</h3>
 <details >
@@ -590,26 +339,21 @@ Inherited (1)</summary>
 </ul>
 <p></p>
 </details>
-<h3><a class="anchor" id="globals-126"></a>
+<h3><a class="anchor" id="globals-194"></a>
 Globals</h3>
 <details >
 <summary >
-Inherited (2)</summary>
+Inherited (3)</summary>
 <p></p>
 <ul>
-<li><em>integer:</em> <b>requests_expected</b> (from <a class="el" href="guided_pickup_delivery_problem.html#collaboration-pickupdeliveryproblem">`PickupDeliveryProblem`</a>)</li>
-<li><em>integer:</em> <b>requests_made</b> (from <a class="el" href="guided_pickup_delivery_problem.html#collaboration-pickupdeliveryproblem">`PickupDeliveryProblem`</a>)</li>
+<li><em>decimal:</em> <b>objective</b> (from <code>DataStore_1</code>)</li>
+<li><em>integer:</em> <b>requests_expected</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>requests_made</b> (from <code>DataStore_2</code>)</li>
 </ul>
 <p></p>
 </details>
-<h3><a class="anchor" id="message-39"></a>
-Message</h3>
-<h4><a class="anchor" id="name-arrival-6"></a>
-&lt;em&gt;Name&lt;/em&gt; Arrival</h4>
-<p><a class="anchor" id="header-0-26"></a> </p><h5>Header (0)</h5>
-<p><a class="anchor" id="content-0-23"></a> </p><h5>Content (0)</h5>
-<h2><a class="anchor" id="intermediatethrowevent-throwshipmentloaded-1"></a>
-IntermediateThrowEvent (ThrowShipmentLoaded)</h2>
+<h2><a class="anchor" id="task-unloadactivity-1"></a>
+Task (UnloadActivity)</h2>
 <h3><a class="anchor" id="status-186"></a>
 Status</h3>
 <details >
@@ -643,26 +387,26 @@ Inherited (1)</summary>
 </ul>
 <p></p>
 </details>
-<h3><a class="anchor" id="globals-127"></a>
+<h3><a class="anchor" id="globals-195"></a>
 Globals</h3>
 <details >
 <summary >
-Inherited (2)</summary>
+Inherited (3)</summary>
 <p></p>
 <ul>
-<li><em>integer:</em> <b>requests_expected</b> (from <a class="el" href="guided_pickup_delivery_problem.html#collaboration-pickupdeliveryproblem">`PickupDeliveryProblem`</a>)</li>
-<li><em>integer:</em> <b>requests_made</b> (from <a class="el" href="guided_pickup_delivery_problem.html#collaboration-pickupdeliveryproblem">`PickupDeliveryProblem`</a>)</li>
+<li><em>decimal:</em> <b>objective</b> (from <code>DataStore_1</code>)</li>
+<li><em>integer:</em> <b>requests_expected</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>requests_made</b> (from <code>DataStore_2</code>)</li>
 </ul>
 <p></p>
 </details>
-<h3><a class="anchor" id="message-40"></a>
-Message</h3>
-<h4><a class="anchor" id="name-loaded-2"></a>
-&lt;em&gt;Name&lt;/em&gt; Loaded</h4>
-<p><a class="anchor" id="header-0-27"></a> </p><h5>Header (0)</h5>
-<p><a class="anchor" id="content-0-24"></a> </p><h5>Content (0)</h5>
-<h2><a class="anchor" id="intermediatecatchevent-catchdestinationarrival-1"></a>
-IntermediateCatchEvent (CatchDestinationArrival)</h2>
+<h3><a class="anchor" id="operators-32"></a>
+Operators</h3>
+<ul>
+<li><code>timestamp += delivery_duration</code></li>
+</ul>
+<h2><a class="anchor" id="intermediatecatchevent-deliverywaitevent-1"></a>
+IntermediateCatchEvent (DeliveryWaitEvent)</h2>
 <h3><a class="anchor" id="status-187"></a>
 Status</h3>
 <details >
@@ -696,26 +440,26 @@ Inherited (1)</summary>
 </ul>
 <p></p>
 </details>
-<h3><a class="anchor" id="globals-128"></a>
+<h3><a class="anchor" id="globals-196"></a>
 Globals</h3>
 <details >
 <summary >
-Inherited (2)</summary>
+Inherited (3)</summary>
 <p></p>
 <ul>
-<li><em>integer:</em> <b>requests_expected</b> (from <a class="el" href="guided_pickup_delivery_problem.html#collaboration-pickupdeliveryproblem">`PickupDeliveryProblem`</a>)</li>
-<li><em>integer:</em> <b>requests_made</b> (from <a class="el" href="guided_pickup_delivery_problem.html#collaboration-pickupdeliveryproblem">`PickupDeliveryProblem`</a>)</li>
+<li><em>decimal:</em> <b>objective</b> (from <code>DataStore_1</code>)</li>
+<li><em>integer:</em> <b>requests_expected</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>requests_made</b> (from <code>DataStore_2</code>)</li>
 </ul>
 <p></p>
 </details>
-<h3><a class="anchor" id="message-41"></a>
-Message</h3>
-<h4><a class="anchor" id="name-arrival-7"></a>
-&lt;em&gt;Name&lt;/em&gt; Arrival</h4>
-<p><a class="anchor" id="header-0-28"></a> </p><h5>Header (0)</h5>
-<p><a class="anchor" id="content-0-25"></a> </p><h5>Content (0)</h5>
-<h2><a class="anchor" id="sendtask-requestactivity-4"></a>
-SendTask (RequestActivity)</h2>
+<h3><a class="anchor" id="timer-5"></a>
+Timer</h3>
+<ul>
+<li><em>trigger:</em> <code>earliest_delivery</code></li>
+</ul>
+<h2><a class="anchor" id="task-loadactivity-2"></a>
+Task (LoadActivity)</h2>
 <h3><a class="anchor" id="status-188"></a>
 Status</h3>
 <details >
@@ -749,15 +493,284 @@ Inherited (1)</summary>
 </ul>
 <p></p>
 </details>
-<h3><a class="anchor" id="globals-129"></a>
+<h3><a class="anchor" id="globals-197"></a>
 Globals</h3>
 <details >
 <summary >
-Inherited (2)</summary>
+Inherited (3)</summary>
 <p></p>
 <ul>
-<li><em>integer:</em> <b>requests_expected</b> (from <a class="el" href="guided_pickup_delivery_problem.html#collaboration-pickupdeliveryproblem">`PickupDeliveryProblem`</a>)</li>
-<li><em>integer:</em> <b>requests_made</b> (from <a class="el" href="guided_pickup_delivery_problem.html#collaboration-pickupdeliveryproblem">`PickupDeliveryProblem`</a>)</li>
+<li><em>decimal:</em> <b>objective</b> (from <code>DataStore_1</code>)</li>
+<li><em>integer:</em> <b>requests_expected</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>requests_made</b> (from <code>DataStore_2</code>)</li>
+</ul>
+<p></p>
+</details>
+<h3><a class="anchor" id="operators-33"></a>
+Operators</h3>
+<ul>
+<li><code>timestamp += pickup_duration</code></li>
+</ul>
+<h2><a class="anchor" id="intermediatecatchevent-pickupwaitevent-1"></a>
+IntermediateCatchEvent (PickupWaitEvent)</h2>
+<h3><a class="anchor" id="status-189"></a>
+Status</h3>
+<details >
+<summary >
+Inherited (12)</summary>
+<p></p>
+<ul>
+<li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+<li><em>decimal:</em> <b>quantity</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+<li><em>string:</em> <b>pickup_location</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+<li><em>decimal:</em> <b>earliest_pickup</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+<li><em>decimal:</em> <b>latest_pickup</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+<li><em>decimal:</em> <b>pickup_duration</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+<li><em>decimal:</em> <b>late_pickup_penalty</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+<li><em>string:</em> <b>delivery_location</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+<li><em>decimal:</em> <b>earliest_delivery</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+<li><em>decimal:</em> <b>latest_delivery</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+<li><em>decimal:</em> <b>delivery_duration</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+<li><em>decimal:</em> <b>late_delivery_penalty</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+</ul>
+<p></p>
+</details>
+<h3><a class="anchor" id="data-190"></a>
+Data</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
+<ul>
+<li><em>string:</em> <b>instance</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+</ul>
+<p></p>
+</details>
+<h3><a class="anchor" id="globals-198"></a>
+Globals</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
+<ul>
+<li><em>decimal:</em> <b>objective</b> (from <code>DataStore_1</code>)</li>
+<li><em>integer:</em> <b>requests_expected</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>requests_made</b> (from <code>DataStore_2</code>)</li>
+</ul>
+<p></p>
+</details>
+<h3><a class="anchor" id="timer-6"></a>
+Timer</h3>
+<ul>
+<li><em>trigger:</em> <code>earliest_pickup</code></li>
+</ul>
+<h2><a class="anchor" id="intermediatecatchevent-catchpickuparrival-1"></a>
+IntermediateCatchEvent (CatchPickupArrival)</h2>
+<h3><a class="anchor" id="status-190"></a>
+Status</h3>
+<details >
+<summary >
+Inherited (12)</summary>
+<p></p>
+<ul>
+<li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+<li><em>decimal:</em> <b>quantity</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+<li><em>string:</em> <b>pickup_location</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+<li><em>decimal:</em> <b>earliest_pickup</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+<li><em>decimal:</em> <b>latest_pickup</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+<li><em>decimal:</em> <b>pickup_duration</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+<li><em>decimal:</em> <b>late_pickup_penalty</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+<li><em>string:</em> <b>delivery_location</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+<li><em>decimal:</em> <b>earliest_delivery</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+<li><em>decimal:</em> <b>latest_delivery</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+<li><em>decimal:</em> <b>delivery_duration</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+<li><em>decimal:</em> <b>late_delivery_penalty</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+</ul>
+<p></p>
+</details>
+<h3><a class="anchor" id="data-191"></a>
+Data</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
+<ul>
+<li><em>string:</em> <b>instance</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+</ul>
+<p></p>
+</details>
+<h3><a class="anchor" id="globals-199"></a>
+Globals</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
+<ul>
+<li><em>decimal:</em> <b>objective</b> (from <code>DataStore_1</code>)</li>
+<li><em>integer:</em> <b>requests_expected</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>requests_made</b> (from <code>DataStore_2</code>)</li>
+</ul>
+<p></p>
+</details>
+<h3><a class="anchor" id="message-39"></a>
+Message</h3>
+<h4><a class="anchor" id="name-arrival-6"></a>
+&lt;em&gt;Name&lt;/em&gt; Arrival</h4>
+<p><a class="anchor" id="header-0-26"></a> </p><h5>Header (0)</h5>
+<p><a class="anchor" id="content-0-23"></a> </p><h5>Content (0)</h5>
+<h2><a class="anchor" id="intermediatethrowevent-throwshipmentloaded-1"></a>
+IntermediateThrowEvent (ThrowShipmentLoaded)</h2>
+<h3><a class="anchor" id="status-191"></a>
+Status</h3>
+<details >
+<summary >
+Inherited (12)</summary>
+<p></p>
+<ul>
+<li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+<li><em>decimal:</em> <b>quantity</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+<li><em>string:</em> <b>pickup_location</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+<li><em>decimal:</em> <b>earliest_pickup</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+<li><em>decimal:</em> <b>latest_pickup</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+<li><em>decimal:</em> <b>pickup_duration</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+<li><em>decimal:</em> <b>late_pickup_penalty</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+<li><em>string:</em> <b>delivery_location</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+<li><em>decimal:</em> <b>earliest_delivery</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+<li><em>decimal:</em> <b>latest_delivery</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+<li><em>decimal:</em> <b>delivery_duration</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+<li><em>decimal:</em> <b>late_delivery_penalty</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+</ul>
+<p></p>
+</details>
+<h3><a class="anchor" id="data-192"></a>
+Data</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
+<ul>
+<li><em>string:</em> <b>instance</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+</ul>
+<p></p>
+</details>
+<h3><a class="anchor" id="globals-200"></a>
+Globals</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
+<ul>
+<li><em>decimal:</em> <b>objective</b> (from <code>DataStore_1</code>)</li>
+<li><em>integer:</em> <b>requests_expected</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>requests_made</b> (from <code>DataStore_2</code>)</li>
+</ul>
+<p></p>
+</details>
+<h3><a class="anchor" id="message-40"></a>
+Message</h3>
+<h4><a class="anchor" id="name-loaded-2"></a>
+&lt;em&gt;Name&lt;/em&gt; Loaded</h4>
+<p><a class="anchor" id="header-0-27"></a> </p><h5>Header (0)</h5>
+<p><a class="anchor" id="content-0-24"></a> </p><h5>Content (0)</h5>
+<h2><a class="anchor" id="intermediatecatchevent-catchdestinationarrival-1"></a>
+IntermediateCatchEvent (CatchDestinationArrival)</h2>
+<h3><a class="anchor" id="status-192"></a>
+Status</h3>
+<details >
+<summary >
+Inherited (12)</summary>
+<p></p>
+<ul>
+<li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+<li><em>decimal:</em> <b>quantity</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+<li><em>string:</em> <b>pickup_location</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+<li><em>decimal:</em> <b>earliest_pickup</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+<li><em>decimal:</em> <b>latest_pickup</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+<li><em>decimal:</em> <b>pickup_duration</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+<li><em>decimal:</em> <b>late_pickup_penalty</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+<li><em>string:</em> <b>delivery_location</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+<li><em>decimal:</em> <b>earliest_delivery</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+<li><em>decimal:</em> <b>latest_delivery</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+<li><em>decimal:</em> <b>delivery_duration</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+<li><em>decimal:</em> <b>late_delivery_penalty</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+</ul>
+<p></p>
+</details>
+<h3><a class="anchor" id="data-193"></a>
+Data</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
+<ul>
+<li><em>string:</em> <b>instance</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+</ul>
+<p></p>
+</details>
+<h3><a class="anchor" id="globals-201"></a>
+Globals</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
+<ul>
+<li><em>decimal:</em> <b>objective</b> (from <code>DataStore_1</code>)</li>
+<li><em>integer:</em> <b>requests_expected</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>requests_made</b> (from <code>DataStore_2</code>)</li>
+</ul>
+<p></p>
+</details>
+<h3><a class="anchor" id="message-41"></a>
+Message</h3>
+<h4><a class="anchor" id="name-arrival-7"></a>
+&lt;em&gt;Name&lt;/em&gt; Arrival</h4>
+<p><a class="anchor" id="header-0-28"></a> </p><h5>Header (0)</h5>
+<p><a class="anchor" id="content-0-25"></a> </p><h5>Content (0)</h5>
+<h2><a class="anchor" id="sendtask-requestactivity-4"></a>
+SendTask (RequestActivity)</h2>
+<h3><a class="anchor" id="status-193"></a>
+Status</h3>
+<details >
+<summary >
+Inherited (12)</summary>
+<p></p>
+<ul>
+<li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+<li><em>decimal:</em> <b>quantity</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+<li><em>string:</em> <b>pickup_location</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+<li><em>decimal:</em> <b>earliest_pickup</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+<li><em>decimal:</em> <b>latest_pickup</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+<li><em>decimal:</em> <b>pickup_duration</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+<li><em>decimal:</em> <b>late_pickup_penalty</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+<li><em>string:</em> <b>delivery_location</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+<li><em>decimal:</em> <b>earliest_delivery</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+<li><em>decimal:</em> <b>latest_delivery</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+<li><em>decimal:</em> <b>delivery_duration</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+<li><em>decimal:</em> <b>late_delivery_penalty</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+</ul>
+<p></p>
+</details>
+<h3><a class="anchor" id="data-194"></a>
+Data</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
+<ul>
+<li><em>string:</em> <b>instance</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+</ul>
+<p></p>
+</details>
+<h3><a class="anchor" id="globals-202"></a>
+Globals</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
+<ul>
+<li><em>decimal:</em> <b>objective</b> (from <code>DataStore_1</code>)</li>
+<li><em>integer:</em> <b>requests_expected</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>requests_made</b> (from <code>DataStore_2</code>)</li>
 </ul>
 <p></p>
 </details>
@@ -781,9 +794,57 @@ Message</h3>
 <li><em>LatePickupPenaty:</em> <b>late_pickup_penalty</b></li>
 <li><em>LateDeliveryPenalty:</em> <b>late_delivery_penalty</b></li>
 </ul>
+<h2><a class="anchor" id="datastorereference-datastorereference_1-5"></a>
+DataStoreReference (DataStoreReference_1)</h2>
+<h3><a class="anchor" id="status-194"></a>
+Status</h3>
+<details >
+<summary >
+Inherited (12)</summary>
+<p></p>
+<ul>
+<li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+<li><em>decimal:</em> <b>quantity</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+<li><em>string:</em> <b>pickup_location</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+<li><em>decimal:</em> <b>earliest_pickup</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+<li><em>decimal:</em> <b>latest_pickup</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+<li><em>decimal:</em> <b>pickup_duration</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+<li><em>decimal:</em> <b>late_pickup_penalty</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+<li><em>string:</em> <b>delivery_location</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+<li><em>decimal:</em> <b>earliest_delivery</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+<li><em>decimal:</em> <b>latest_delivery</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+<li><em>decimal:</em> <b>delivery_duration</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+<li><em>decimal:</em> <b>late_delivery_penalty</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+</ul>
+<p></p>
+</details>
+<h3><a class="anchor" id="data-195"></a>
+Data</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
+<ul>
+<li><em>string:</em> <b>instance</b> (from <a class="el" href="guided_pickup_delivery_problem.html#customer-process-customerprocess">`CustomerProcess`</a>)</li>
+</ul>
+<p></p>
+</details>
+<h3><a class="anchor" id="globals-203"></a>
+Globals</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
+<ul>
+<li><em>decimal:</em> <b>objective</b> (from <code>DataStore_1</code>)</li>
+<li><em>integer:</em> <b>requests_expected</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>requests_made</b> (from <code>DataStore_2</code>)</li>
+</ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="vehicle-process-vehicleprocess-2"></a>
 Vehicle process (VehicleProcess)</h2>
-<h3><a class="anchor" id="status-189"></a>
+<h3><a class="anchor" id="status-195"></a>
 Status</h3>
 <details  open="true">
 <summary >
@@ -794,7 +855,7 @@ Owned (1)</summary>
 </ul>
 <p></p>
 </details>
-<h3><a class="anchor" id="data-190"></a>
+<h3><a class="anchor" id="data-196"></a>
 Data</h3>
 <details  open="true">
 <summary >
@@ -817,21 +878,22 @@ Owned (10)</summary>
 </ul>
 <p></p>
 </details>
-<h3><a class="anchor" id="globals-130"></a>
+<h3><a class="anchor" id="globals-204"></a>
 Globals</h3>
 <details >
 <summary >
-Inherited (2)</summary>
+Inherited (3)</summary>
 <p></p>
 <ul>
-<li><em>integer:</em> <b>requests_expected</b> (from <a class="el" href="guided_pickup_delivery_problem.html#collaboration-pickupdeliveryproblem">`PickupDeliveryProblem`</a>)</li>
-<li><em>integer:</em> <b>requests_made</b> (from <a class="el" href="guided_pickup_delivery_problem.html#collaboration-pickupdeliveryproblem">`PickupDeliveryProblem`</a>)</li>
+<li><em>decimal:</em> <b>objective</b> (from <code>DataStore_1</code>)</li>
+<li><em>integer:</em> <b>requests_expected</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>requests_made</b> (from <code>DataStore_2</code>)</li>
 </ul>
 <p></p>
 </details>
 <h2><a class="anchor" id="subprocess-eventsubprocess-7"></a>
 SubProcess (EventSubProcess)</h2>
-<h3><a class="anchor" id="status-190"></a>
+<h3><a class="anchor" id="status-196"></a>
 Status</h3>
 <details >
 <summary >
@@ -862,421 +924,6 @@ Owned (12)</summary>
 </ul>
 <p></p>
 </details>
-<h3><a class="anchor" id="data-191"></a>
-Data</h3>
-<details >
-<summary >
-Inherited (10)</summary>
-<p></p>
-<ul>
-<li><em>string:</em> <b>instance</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
-<li><em>decimal:</em> <b>load</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
-<li><em>decimal:</em> <b>accumulated_costs</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)<ul>
-<li><code>➔ minimize 1 * accumulated_costs</code></li>
-</ul>
-</li>
-<li><em>decimal:</em> <b>capacity</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
-<li><em>decimal:</em> <b>earliest_availability</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
-<li><em>decimal:</em> <b>latest_availability</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
-<li><em>decimal:</em> <b>overtime_penalty</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
-<li><em>string:</em> <b>depot</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
-<li><em>integer:</em> <b>pending</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
-<li><em>string:</em> <b>location</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
-</ul>
-<p></p>
-</details>
-<h3><a class="anchor" id="globals-131"></a>
-Globals</h3>
-<details >
-<summary >
-Inherited (2)</summary>
-<p></p>
-<ul>
-<li><em>integer:</em> <b>requests_expected</b> (from <a class="el" href="guided_pickup_delivery_problem.html#collaboration-pickupdeliveryproblem">`PickupDeliveryProblem`</a>)</li>
-<li><em>integer:</em> <b>requests_made</b> (from <a class="el" href="guided_pickup_delivery_problem.html#collaboration-pickupdeliveryproblem">`PickupDeliveryProblem`</a>)</li>
-</ul>
-<p></p>
-</details>
-<h3><a class="anchor" id="operators-34"></a>
-Operators</h3>
-<ul>
-<li><code>pending += 1</code></li>
-<li><code>requests_made += 1</code></li>
-</ul>
-<h2><a class="anchor" id="startevent-starteventrequest-2"></a>
-StartEvent (StartEventRequest)</h2>
-<h3><a class="anchor" id="status-191"></a>
-Status</h3>
-<details >
-<summary >
-Inherited (13)</summary>
-<p></p>
-<ul>
-<li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
-<li><em>string:</em> <b>customer</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-<li><em>decimal:</em> <b>quantity</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-<li><em>string:</em> <b>pickup_location</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-<li><em>decimal:</em> <b>earliest_pickup</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-<li><em>decimal:</em> <b>latest_pickup</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-<li><em>decimal:</em> <b>pickup_duration</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-<li><em>decimal:</em> <b>late_pickup_penalty</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-<li><em>string:</em> <b>delivery_location</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-<li><em>decimal:</em> <b>earliest_delivery</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-<li><em>decimal:</em> <b>latest_delivery</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-<li><em>decimal:</em> <b>delivery_duration</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-<li><em>decimal:</em> <b>late_delivery_penalty</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-</ul>
-<p></p>
-</details>
-<h3><a class="anchor" id="data-192"></a>
-Data</h3>
-<details >
-<summary >
-Inherited (10)</summary>
-<p></p>
-<ul>
-<li><em>string:</em> <b>instance</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
-<li><em>decimal:</em> <b>load</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
-<li><em>decimal:</em> <b>accumulated_costs</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)<ul>
-<li><code>➔ minimize 1 * accumulated_costs</code></li>
-</ul>
-</li>
-<li><em>decimal:</em> <b>capacity</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
-<li><em>decimal:</em> <b>earliest_availability</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
-<li><em>decimal:</em> <b>latest_availability</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
-<li><em>decimal:</em> <b>overtime_penalty</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
-<li><em>string:</em> <b>depot</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
-<li><em>integer:</em> <b>pending</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
-<li><em>string:</em> <b>location</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
-</ul>
-<p></p>
-</details>
-<h3><a class="anchor" id="globals-132"></a>
-Globals</h3>
-<details >
-<summary >
-Inherited (2)</summary>
-<p></p>
-<ul>
-<li><em>integer:</em> <b>requests_expected</b> (from <a class="el" href="guided_pickup_delivery_problem.html#collaboration-pickupdeliveryproblem">`PickupDeliveryProblem`</a>)</li>
-<li><em>integer:</em> <b>requests_made</b> (from <a class="el" href="guided_pickup_delivery_problem.html#collaboration-pickupdeliveryproblem">`PickupDeliveryProblem`</a>)</li>
-</ul>
-<p></p>
-</details>
-<h3><a class="anchor" id="message-43"></a>
-Message</h3>
-<h4><a class="anchor" id="name-request-15"></a>
-&lt;em&gt;Name&lt;/em&gt; Request</h4>
-<p><a class="anchor" id="header-0-30"></a> </p><h5>Header (0)</h5>
-<p><a class="anchor" id="content-12-3"></a> </p><h5>Content (12)</h5>
-<ul>
-<li><em>Quantity:</em> <b>quantity</b></li>
-<li><em>PickupLocation:</em> <b>pickup_location</b></li>
-<li><em>DeliveryLocation:</em> <b>delivery_location</b></li>
-<li><em>Customer:</em> <b>customer</b></li>
-<li><em>EarliestPickup:</em> <b>earliest_pickup</b></li>
-<li><em>LatestPickup:</em> <b>latest_pickup</b></li>
-<li><em>DeliveryDuration:</em> <b>delivery_duration</b></li>
-<li><em>EarliestDelivery:</em> <b>earliest_delivery</b></li>
-<li><em>LatestDelivery:</em> <b>latest_delivery</b></li>
-<li><em>LatePickupPenaty:</em> <b>late_pickup_penalty</b></li>
-<li><em>LateDeliveryPenalty:</em> <b>late_delivery_penalty</b></li>
-<li><em>PickupDuration:</em> <b>pickup_duration</b></li>
-</ul>
-<h2><a class="anchor" id="adhocsubprocess-adhocsubprocessrequest-2"></a>
-AdHocSubProcess (AdHocSubProcessRequest)</h2>
-<h3><a class="anchor" id="status-192"></a>
-Status</h3>
-<details >
-<summary >
-Inherited (13)</summary>
-<p></p>
-<ul>
-<li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
-<li><em>string:</em> <b>customer</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-<li><em>decimal:</em> <b>quantity</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-<li><em>string:</em> <b>pickup_location</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-<li><em>decimal:</em> <b>earliest_pickup</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-<li><em>decimal:</em> <b>latest_pickup</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-<li><em>decimal:</em> <b>pickup_duration</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-<li><em>decimal:</em> <b>late_pickup_penalty</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-<li><em>string:</em> <b>delivery_location</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-<li><em>decimal:</em> <b>earliest_delivery</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-<li><em>decimal:</em> <b>latest_delivery</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-<li><em>decimal:</em> <b>delivery_duration</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-<li><em>decimal:</em> <b>late_delivery_penalty</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-</ul>
-<p></p>
-</details>
-<h3><a class="anchor" id="data-193"></a>
-Data</h3>
-<details >
-<summary >
-Inherited (10)</summary>
-<p></p>
-<ul>
-<li><em>string:</em> <b>instance</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
-<li><em>decimal:</em> <b>load</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
-<li><em>decimal:</em> <b>accumulated_costs</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)<ul>
-<li><code>➔ minimize 1 * accumulated_costs</code></li>
-</ul>
-</li>
-<li><em>decimal:</em> <b>capacity</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
-<li><em>decimal:</em> <b>earliest_availability</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
-<li><em>decimal:</em> <b>latest_availability</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
-<li><em>decimal:</em> <b>overtime_penalty</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
-<li><em>string:</em> <b>depot</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
-<li><em>integer:</em> <b>pending</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
-<li><em>string:</em> <b>location</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
-</ul>
-<p></p>
-</details>
-<h3><a class="anchor" id="globals-133"></a>
-Globals</h3>
-<details >
-<summary >
-Inherited (2)</summary>
-<p></p>
-<ul>
-<li><em>integer:</em> <b>requests_expected</b> (from <a class="el" href="guided_pickup_delivery_problem.html#collaboration-pickupdeliveryproblem">`PickupDeliveryProblem`</a>)</li>
-<li><em>integer:</em> <b>requests_made</b> (from <a class="el" href="guided_pickup_delivery_problem.html#collaboration-pickupdeliveryproblem">`PickupDeliveryProblem`</a>)</li>
-</ul>
-<p></p>
-</details>
-<h2><a class="anchor" id="subprocess-pickupactivity-1"></a>
-SubProcess (PickupActivity)</h2>
-<h3><a class="anchor" id="status-193"></a>
-Status</h3>
-<details >
-<summary >
-Inherited (13)</summary>
-<p></p>
-<ul>
-<li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
-<li><em>string:</em> <b>customer</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-<li><em>decimal:</em> <b>quantity</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-<li><em>string:</em> <b>pickup_location</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-<li><em>decimal:</em> <b>earliest_pickup</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-<li><em>decimal:</em> <b>latest_pickup</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-<li><em>decimal:</em> <b>pickup_duration</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-<li><em>decimal:</em> <b>late_pickup_penalty</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-<li><em>string:</em> <b>delivery_location</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-<li><em>decimal:</em> <b>earliest_delivery</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-<li><em>decimal:</em> <b>latest_delivery</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-<li><em>decimal:</em> <b>delivery_duration</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-<li><em>decimal:</em> <b>late_delivery_penalty</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-</ul>
-<p></p>
-</details>
-<h3><a class="anchor" id="data-194"></a>
-Data</h3>
-<details >
-<summary >
-Inherited (10)</summary>
-<p></p>
-<ul>
-<li><em>string:</em> <b>instance</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
-<li><em>decimal:</em> <b>load</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
-<li><em>decimal:</em> <b>accumulated_costs</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)<ul>
-<li><code>➔ minimize 1 * accumulated_costs</code></li>
-</ul>
-</li>
-<li><em>decimal:</em> <b>capacity</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
-<li><em>decimal:</em> <b>earliest_availability</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
-<li><em>decimal:</em> <b>latest_availability</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
-<li><em>decimal:</em> <b>overtime_penalty</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
-<li><em>string:</em> <b>depot</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
-<li><em>integer:</em> <b>pending</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
-<li><em>string:</em> <b>location</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
-</ul>
-<p></p>
-</details>
-<h3><a class="anchor" id="globals-134"></a>
-Globals</h3>
-<details >
-<summary >
-Inherited (2)</summary>
-<p></p>
-<ul>
-<li><em>integer:</em> <b>requests_expected</b> (from <a class="el" href="guided_pickup_delivery_problem.html#collaboration-pickupdeliveryproblem">`PickupDeliveryProblem`</a>)</li>
-<li><em>integer:</em> <b>requests_made</b> (from <a class="el" href="guided_pickup_delivery_problem.html#collaboration-pickupdeliveryproblem">`PickupDeliveryProblem`</a>)</li>
-</ul>
-<p></p>
-</details>
-<h3><a class="anchor" id="entry-restrictions-28"></a>
-Entry restrictions</h3>
-<details  open="true">
-<summary >
-Owned (2)</summary>
-<p></p>
-<ul>
-<li><code>load + quantity &lt;= capacity</code></li>
-<li><code>requests_made == requests_expected</code></li>
-</ul>
-<p></p>
-</details>
-<h2><a class="anchor" id="startevent-starteventpickup-1"></a>
-StartEvent (StartEventPickup)</h2>
-<h3><a class="anchor" id="status-194"></a>
-Status</h3>
-<details >
-<summary >
-Inherited (13)</summary>
-<p></p>
-<ul>
-<li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
-<li><em>string:</em> <b>customer</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-<li><em>decimal:</em> <b>quantity</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-<li><em>string:</em> <b>pickup_location</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-<li><em>decimal:</em> <b>earliest_pickup</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-<li><em>decimal:</em> <b>latest_pickup</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-<li><em>decimal:</em> <b>pickup_duration</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-<li><em>decimal:</em> <b>late_pickup_penalty</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-<li><em>string:</em> <b>delivery_location</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-<li><em>decimal:</em> <b>earliest_delivery</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-<li><em>decimal:</em> <b>latest_delivery</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-<li><em>decimal:</em> <b>delivery_duration</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-<li><em>decimal:</em> <b>late_delivery_penalty</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-</ul>
-<p></p>
-</details>
-<h3><a class="anchor" id="data-195"></a>
-Data</h3>
-<details >
-<summary >
-Inherited (10)</summary>
-<p></p>
-<ul>
-<li><em>string:</em> <b>instance</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
-<li><em>decimal:</em> <b>load</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
-<li><em>decimal:</em> <b>accumulated_costs</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)<ul>
-<li><code>➔ minimize 1 * accumulated_costs</code></li>
-</ul>
-</li>
-<li><em>decimal:</em> <b>capacity</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
-<li><em>decimal:</em> <b>earliest_availability</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
-<li><em>decimal:</em> <b>latest_availability</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
-<li><em>decimal:</em> <b>overtime_penalty</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
-<li><em>string:</em> <b>depot</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
-<li><em>integer:</em> <b>pending</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
-<li><em>string:</em> <b>location</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
-</ul>
-<p></p>
-</details>
-<h3><a class="anchor" id="globals-135"></a>
-Globals</h3>
-<details >
-<summary >
-Inherited (2)</summary>
-<p></p>
-<ul>
-<li><em>integer:</em> <b>requests_expected</b> (from <a class="el" href="guided_pickup_delivery_problem.html#collaboration-pickupdeliveryproblem">`PickupDeliveryProblem`</a>)</li>
-<li><em>integer:</em> <b>requests_made</b> (from <a class="el" href="guided_pickup_delivery_problem.html#collaboration-pickupdeliveryproblem">`PickupDeliveryProblem`</a>)</li>
-</ul>
-<p></p>
-</details>
-<h2><a class="anchor" id="task-pickuptrip-1"></a>
-Task (PickupTrip)</h2>
-<h3><a class="anchor" id="status-195"></a>
-Status</h3>
-<details >
-<summary >
-Inherited (13)</summary>
-<p></p>
-<ul>
-<li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
-<li><em>string:</em> <b>customer</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-<li><em>decimal:</em> <b>quantity</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-<li><em>string:</em> <b>pickup_location</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-<li><em>decimal:</em> <b>earliest_pickup</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-<li><em>decimal:</em> <b>latest_pickup</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-<li><em>decimal:</em> <b>pickup_duration</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-<li><em>decimal:</em> <b>late_pickup_penalty</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-<li><em>string:</em> <b>delivery_location</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-<li><em>decimal:</em> <b>earliest_delivery</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-<li><em>decimal:</em> <b>latest_delivery</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-<li><em>decimal:</em> <b>delivery_duration</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-<li><em>decimal:</em> <b>late_delivery_penalty</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-</ul>
-<p></p>
-</details>
-<details  open="true">
-<summary >
-Owned (2)</summary>
-<p></p>
-<ul>
-<li><em>decimal:</em> <b>costs</b> (initialized by <code>costs := costs(location,pickup_location)</code>)</li>
-<li><em>decimal:</em> <b>duration</b> (initialized by <code>duration := duration(location,pickup_location)</code>)</li>
-</ul>
-<p></p>
-</details>
-<h3><a class="anchor" id="data-196"></a>
-Data</h3>
-<details >
-<summary >
-Inherited (10)</summary>
-<p></p>
-<ul>
-<li><em>string:</em> <b>instance</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
-<li><em>decimal:</em> <b>load</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
-<li><em>decimal:</em> <b>accumulated_costs</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)<ul>
-<li><code>➔ minimize 1 * accumulated_costs</code></li>
-</ul>
-</li>
-<li><em>decimal:</em> <b>capacity</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
-<li><em>decimal:</em> <b>earliest_availability</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
-<li><em>decimal:</em> <b>latest_availability</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
-<li><em>decimal:</em> <b>overtime_penalty</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
-<li><em>string:</em> <b>depot</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
-<li><em>integer:</em> <b>pending</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
-<li><em>string:</em> <b>location</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
-</ul>
-<p></p>
-</details>
-<h3><a class="anchor" id="globals-136"></a>
-Globals</h3>
-<details >
-<summary >
-Inherited (2)</summary>
-<p></p>
-<ul>
-<li><em>integer:</em> <b>requests_expected</b> (from <a class="el" href="guided_pickup_delivery_problem.html#collaboration-pickupdeliveryproblem">`PickupDeliveryProblem`</a>)</li>
-<li><em>integer:</em> <b>requests_made</b> (from <a class="el" href="guided_pickup_delivery_problem.html#collaboration-pickupdeliveryproblem">`PickupDeliveryProblem`</a>)</li>
-</ul>
-<p></p>
-</details>
-<h3><a class="anchor" id="operators-35"></a>
-Operators</h3>
-<ul>
-<li><code>timestamp += duration</code></li>
-<li><code>accumulated_costs += costs + late_pickup_penalty * max{0, timestamp - latest_pickup}</code></li>
-<li><code>location := pickup_location</code></li>
-</ul>
-<h2><a class="anchor" id="intermediatethrowevent-throwpickuparrival-1"></a>
-IntermediateThrowEvent (ThrowPickupArrival)</h2>
-<h3><a class="anchor" id="status-196"></a>
-Status</h3>
-<details >
-<summary >
-Inherited (13)</summary>
-<p></p>
-<ul>
-<li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
-<li><em>string:</em> <b>customer</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-<li><em>decimal:</em> <b>quantity</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-<li><em>string:</em> <b>pickup_location</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-<li><em>decimal:</em> <b>earliest_pickup</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-<li><em>decimal:</em> <b>latest_pickup</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-<li><em>decimal:</em> <b>pickup_duration</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-<li><em>decimal:</em> <b>late_pickup_penalty</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-<li><em>string:</em> <b>delivery_location</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-<li><em>decimal:</em> <b>earliest_delivery</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-<li><em>decimal:</em> <b>latest_delivery</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-<li><em>decimal:</em> <b>delivery_duration</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-<li><em>decimal:</em> <b>late_delivery_penalty</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
-</ul>
-<p></p>
-</details>
 <h3><a class="anchor" id="data-197"></a>
 Data</h3>
 <details >
@@ -1300,29 +947,27 @@ Inherited (10)</summary>
 </ul>
 <p></p>
 </details>
-<h3><a class="anchor" id="globals-137"></a>
+<h3><a class="anchor" id="globals-205"></a>
 Globals</h3>
 <details >
 <summary >
-Inherited (2)</summary>
+Inherited (3)</summary>
 <p></p>
 <ul>
-<li><em>integer:</em> <b>requests_expected</b> (from <a class="el" href="guided_pickup_delivery_problem.html#collaboration-pickupdeliveryproblem">`PickupDeliveryProblem`</a>)</li>
-<li><em>integer:</em> <b>requests_made</b> (from <a class="el" href="guided_pickup_delivery_problem.html#collaboration-pickupdeliveryproblem">`PickupDeliveryProblem`</a>)</li>
+<li><em>decimal:</em> <b>objective</b> (from <code>DataStore_1</code>)</li>
+<li><em>integer:</em> <b>requests_expected</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>requests_made</b> (from <code>DataStore_2</code>)</li>
 </ul>
 <p></p>
 </details>
-<h3><a class="anchor" id="message-44"></a>
-Message</h3>
-<h4><a class="anchor" id="name-arrival-8"></a>
-&lt;em&gt;Name&lt;/em&gt; Arrival</h4>
-<p><a class="anchor" id="header-1-13"></a> </p><h5>Header (1)</h5>
+<h3><a class="anchor" id="operators-34"></a>
+Operators</h3>
 <ul>
-<li><em>recipient:</em> <code>customer</code></li>
+<li><code>pending += 1</code></li>
+<li><code>requests_made += 1</code></li>
 </ul>
-<p><a class="anchor" id="content-0-26"></a> </p><h5>Content (0)</h5>
-<h2><a class="anchor" id="endevent-endeventpickup-1"></a>
-EndEvent (EndEventPickup)</h2>
+<h2><a class="anchor" id="startevent-starteventrequest-2"></a>
+StartEvent (StartEventRequest)</h2>
 <h3><a class="anchor" id="status-197"></a>
 Status</h3>
 <details >
@@ -1369,20 +1014,41 @@ Inherited (10)</summary>
 </ul>
 <p></p>
 </details>
-<h3><a class="anchor" id="globals-138"></a>
+<h3><a class="anchor" id="globals-206"></a>
 Globals</h3>
 <details >
 <summary >
-Inherited (2)</summary>
+Inherited (3)</summary>
 <p></p>
 <ul>
-<li><em>integer:</em> <b>requests_expected</b> (from <a class="el" href="guided_pickup_delivery_problem.html#collaboration-pickupdeliveryproblem">`PickupDeliveryProblem`</a>)</li>
-<li><em>integer:</em> <b>requests_made</b> (from <a class="el" href="guided_pickup_delivery_problem.html#collaboration-pickupdeliveryproblem">`PickupDeliveryProblem`</a>)</li>
+<li><em>decimal:</em> <b>objective</b> (from <code>DataStore_1</code>)</li>
+<li><em>integer:</em> <b>requests_expected</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>requests_made</b> (from <code>DataStore_2</code>)</li>
 </ul>
 <p></p>
 </details>
-<h2><a class="anchor" id="receivetask-loadreceivetask-1"></a>
-ReceiveTask (LoadReceiveTask)</h2>
+<h3><a class="anchor" id="message-43"></a>
+Message</h3>
+<h4><a class="anchor" id="name-request-15"></a>
+&lt;em&gt;Name&lt;/em&gt; Request</h4>
+<p><a class="anchor" id="header-0-30"></a> </p><h5>Header (0)</h5>
+<p><a class="anchor" id="content-12-3"></a> </p><h5>Content (12)</h5>
+<ul>
+<li><em>Quantity:</em> <b>quantity</b></li>
+<li><em>PickupLocation:</em> <b>pickup_location</b></li>
+<li><em>DeliveryLocation:</em> <b>delivery_location</b></li>
+<li><em>Customer:</em> <b>customer</b></li>
+<li><em>EarliestPickup:</em> <b>earliest_pickup</b></li>
+<li><em>LatestPickup:</em> <b>latest_pickup</b></li>
+<li><em>DeliveryDuration:</em> <b>delivery_duration</b></li>
+<li><em>EarliestDelivery:</em> <b>earliest_delivery</b></li>
+<li><em>LatestDelivery:</em> <b>latest_delivery</b></li>
+<li><em>LatePickupPenaty:</em> <b>late_pickup_penalty</b></li>
+<li><em>LateDeliveryPenalty:</em> <b>late_delivery_penalty</b></li>
+<li><em>PickupDuration:</em> <b>pickup_duration</b></li>
+</ul>
+<h2><a class="anchor" id="adhocsubprocess-adhocsubprocessrequest-2"></a>
+AdHocSubProcess (AdHocSubProcessRequest)</h2>
 <h3><a class="anchor" id="status-198"></a>
 Status</h3>
 <details >
@@ -1429,34 +1095,21 @@ Inherited (10)</summary>
 </ul>
 <p></p>
 </details>
-<h3><a class="anchor" id="globals-139"></a>
+<h3><a class="anchor" id="globals-207"></a>
 Globals</h3>
 <details >
 <summary >
-Inherited (2)</summary>
+Inherited (3)</summary>
 <p></p>
 <ul>
-<li><em>integer:</em> <b>requests_expected</b> (from <a class="el" href="guided_pickup_delivery_problem.html#collaboration-pickupdeliveryproblem">`PickupDeliveryProblem`</a>)</li>
-<li><em>integer:</em> <b>requests_made</b> (from <a class="el" href="guided_pickup_delivery_problem.html#collaboration-pickupdeliveryproblem">`PickupDeliveryProblem`</a>)</li>
+<li><em>decimal:</em> <b>objective</b> (from <code>DataStore_1</code>)</li>
+<li><em>integer:</em> <b>requests_expected</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>requests_made</b> (from <code>DataStore_2</code>)</li>
 </ul>
 <p></p>
 </details>
-<h3><a class="anchor" id="message-45"></a>
-Message</h3>
-<h4><a class="anchor" id="name-loaded-3"></a>
-&lt;em&gt;Name&lt;/em&gt; Loaded</h4>
-<p><a class="anchor" id="header-1-14"></a> </p><h5>Header (1)</h5>
-<ul>
-<li><em>sender:</em> <code>customer</code></li>
-</ul>
-<p><a class="anchor" id="content-0-27"></a> </p><h5>Content (0)</h5>
-<h3><a class="anchor" id="operators-36"></a>
-Operators</h3>
-<ul>
-<li><code>load += quantity</code></li>
-</ul>
-<h2><a class="anchor" id="subprocess-deliveryactivity-1"></a>
-SubProcess (DeliveryActivity)</h2>
+<h2><a class="anchor" id="subprocess-pickupactivity-1"></a>
+SubProcess (PickupActivity)</h2>
 <h3><a class="anchor" id="status-199"></a>
 Status</h3>
 <details >
@@ -1503,20 +1156,33 @@ Inherited (10)</summary>
 </ul>
 <p></p>
 </details>
-<h3><a class="anchor" id="globals-140"></a>
+<h3><a class="anchor" id="globals-208"></a>
 Globals</h3>
 <details >
 <summary >
-Inherited (2)</summary>
+Inherited (3)</summary>
 <p></p>
 <ul>
-<li><em>integer:</em> <b>requests_expected</b> (from <a class="el" href="guided_pickup_delivery_problem.html#collaboration-pickupdeliveryproblem">`PickupDeliveryProblem`</a>)</li>
-<li><em>integer:</em> <b>requests_made</b> (from <a class="el" href="guided_pickup_delivery_problem.html#collaboration-pickupdeliveryproblem">`PickupDeliveryProblem`</a>)</li>
+<li><em>decimal:</em> <b>objective</b> (from <code>DataStore_1</code>)</li>
+<li><em>integer:</em> <b>requests_expected</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>requests_made</b> (from <code>DataStore_2</code>)</li>
 </ul>
 <p></p>
 </details>
-<h2><a class="anchor" id="startevent-starteventdelivery-1"></a>
-StartEvent (StartEventDelivery)</h2>
+<h3><a class="anchor" id="entry-restrictions-28"></a>
+Entry restrictions</h3>
+<details  open="true">
+<summary >
+Owned (2)</summary>
+<p></p>
+<ul>
+<li><code>load + quantity &lt;= capacity</code></li>
+<li><code>requests_made == requests_expected</code></li>
+</ul>
+<p></p>
+</details>
+<h2><a class="anchor" id="startevent-starteventpickup-1"></a>
+StartEvent (StartEventPickup)</h2>
 <h3><a class="anchor" id="status-200"></a>
 Status</h3>
 <details >
@@ -1563,20 +1229,21 @@ Inherited (10)</summary>
 </ul>
 <p></p>
 </details>
-<h3><a class="anchor" id="globals-141"></a>
+<h3><a class="anchor" id="globals-209"></a>
 Globals</h3>
 <details >
 <summary >
-Inherited (2)</summary>
+Inherited (3)</summary>
 <p></p>
 <ul>
-<li><em>integer:</em> <b>requests_expected</b> (from <a class="el" href="guided_pickup_delivery_problem.html#collaboration-pickupdeliveryproblem">`PickupDeliveryProblem`</a>)</li>
-<li><em>integer:</em> <b>requests_made</b> (from <a class="el" href="guided_pickup_delivery_problem.html#collaboration-pickupdeliveryproblem">`PickupDeliveryProblem`</a>)</li>
+<li><em>decimal:</em> <b>objective</b> (from <code>DataStore_1</code>)</li>
+<li><em>integer:</em> <b>requests_expected</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>requests_made</b> (from <code>DataStore_2</code>)</li>
 </ul>
 <p></p>
 </details>
-<h2><a class="anchor" id="task-deliverytrip-1"></a>
-Task (DeliveryTrip)</h2>
+<h2><a class="anchor" id="task-pickuptrip-1"></a>
+Task (PickupTrip)</h2>
 <h3><a class="anchor" id="status-201"></a>
 Status</h3>
 <details >
@@ -1605,8 +1272,8 @@ Inherited (13)</summary>
 Owned (2)</summary>
 <p></p>
 <ul>
-<li><em>decimal:</em> <b>costs</b> (initialized by <code>costs := costs(location,delivery_location)</code>)</li>
-<li><em>decimal:</em> <b>duration</b> (initialized by <code>duration := duration(location,delivery_location)</code>)</li>
+<li><em>decimal:</em> <b>costs</b> (initialized by <code>costs := costs(location,pickup_location)</code>)</li>
+<li><em>decimal:</em> <b>duration</b> (initialized by <code>duration := duration(location,pickup_location)</code>)</li>
 </ul>
 <p></p>
 </details>
@@ -1633,27 +1300,28 @@ Inherited (10)</summary>
 </ul>
 <p></p>
 </details>
-<h3><a class="anchor" id="globals-142"></a>
+<h3><a class="anchor" id="globals-210"></a>
 Globals</h3>
 <details >
 <summary >
-Inherited (2)</summary>
+Inherited (3)</summary>
 <p></p>
 <ul>
-<li><em>integer:</em> <b>requests_expected</b> (from <a class="el" href="guided_pickup_delivery_problem.html#collaboration-pickupdeliveryproblem">`PickupDeliveryProblem`</a>)</li>
-<li><em>integer:</em> <b>requests_made</b> (from <a class="el" href="guided_pickup_delivery_problem.html#collaboration-pickupdeliveryproblem">`PickupDeliveryProblem`</a>)</li>
+<li><em>decimal:</em> <b>objective</b> (from <code>DataStore_1</code>)</li>
+<li><em>integer:</em> <b>requests_expected</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>requests_made</b> (from <code>DataStore_2</code>)</li>
 </ul>
 <p></p>
 </details>
-<h3><a class="anchor" id="operators-37"></a>
+<h3><a class="anchor" id="operators-35"></a>
 Operators</h3>
 <ul>
 <li><code>timestamp += duration</code></li>
-<li><code>accumulated_costs += costs + late_delivery_penalty * max{0, timestamp - latest_delivery}</code></li>
-<li><code>location := delivery_location</code></li>
+<li><code>accumulated_costs += costs + late_pickup_penalty * max{0, timestamp - latest_pickup}</code></li>
+<li><code>location := pickup_location</code></li>
 </ul>
-<h2><a class="anchor" id="intermediatethrowevent-catcharrival-1"></a>
-IntermediateThrowEvent (CatchArrival)</h2>
+<h2><a class="anchor" id="intermediatethrowevent-throwpickuparrival-1"></a>
+IntermediateThrowEvent (ThrowPickupArrival)</h2>
 <h3><a class="anchor" id="status-202"></a>
 Status</h3>
 <details >
@@ -1700,29 +1368,30 @@ Inherited (10)</summary>
 </ul>
 <p></p>
 </details>
-<h3><a class="anchor" id="globals-143"></a>
+<h3><a class="anchor" id="globals-211"></a>
 Globals</h3>
 <details >
 <summary >
-Inherited (2)</summary>
+Inherited (3)</summary>
 <p></p>
 <ul>
-<li><em>integer:</em> <b>requests_expected</b> (from <a class="el" href="guided_pickup_delivery_problem.html#collaboration-pickupdeliveryproblem">`PickupDeliveryProblem`</a>)</li>
-<li><em>integer:</em> <b>requests_made</b> (from <a class="el" href="guided_pickup_delivery_problem.html#collaboration-pickupdeliveryproblem">`PickupDeliveryProblem`</a>)</li>
+<li><em>decimal:</em> <b>objective</b> (from <code>DataStore_1</code>)</li>
+<li><em>integer:</em> <b>requests_expected</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>requests_made</b> (from <code>DataStore_2</code>)</li>
 </ul>
 <p></p>
 </details>
-<h3><a class="anchor" id="message-46"></a>
+<h3><a class="anchor" id="message-44"></a>
 Message</h3>
-<h4><a class="anchor" id="name-arrival-9"></a>
+<h4><a class="anchor" id="name-arrival-8"></a>
 &lt;em&gt;Name&lt;/em&gt; Arrival</h4>
-<p><a class="anchor" id="header-1-15"></a> </p><h5>Header (1)</h5>
+<p><a class="anchor" id="header-1-13"></a> </p><h5>Header (1)</h5>
 <ul>
 <li><em>recipient:</em> <code>customer</code></li>
 </ul>
-<p><a class="anchor" id="content-0-28"></a> </p><h5>Content (0)</h5>
-<h2><a class="anchor" id="endevent-endeventdelivery-1"></a>
-EndEvent (EndEventDelivery)</h2>
+<p><a class="anchor" id="content-0-26"></a> </p><h5>Content (0)</h5>
+<h2><a class="anchor" id="endevent-endeventpickup-1"></a>
+EndEvent (EndEventPickup)</h2>
 <h3><a class="anchor" id="status-203"></a>
 Status</h3>
 <details >
@@ -1769,20 +1438,21 @@ Inherited (10)</summary>
 </ul>
 <p></p>
 </details>
-<h3><a class="anchor" id="globals-144"></a>
+<h3><a class="anchor" id="globals-212"></a>
 Globals</h3>
 <details >
 <summary >
-Inherited (2)</summary>
+Inherited (3)</summary>
 <p></p>
 <ul>
-<li><em>integer:</em> <b>requests_expected</b> (from <a class="el" href="guided_pickup_delivery_problem.html#collaboration-pickupdeliveryproblem">`PickupDeliveryProblem`</a>)</li>
-<li><em>integer:</em> <b>requests_made</b> (from <a class="el" href="guided_pickup_delivery_problem.html#collaboration-pickupdeliveryproblem">`PickupDeliveryProblem`</a>)</li>
+<li><em>decimal:</em> <b>objective</b> (from <code>DataStore_1</code>)</li>
+<li><em>integer:</em> <b>requests_expected</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>requests_made</b> (from <code>DataStore_2</code>)</li>
 </ul>
 <p></p>
 </details>
-<h2><a class="anchor" id="receivetask-unloadreceivetask-1"></a>
-ReceiveTask (UnloadReceiveTask)</h2>
+<h2><a class="anchor" id="receivetask-loadreceivetask-1"></a>
+ReceiveTask (LoadReceiveTask)</h2>
 <h3><a class="anchor" id="status-204"></a>
 Status</h3>
 <details >
@@ -1829,35 +1499,35 @@ Inherited (10)</summary>
 </ul>
 <p></p>
 </details>
-<h3><a class="anchor" id="globals-145"></a>
+<h3><a class="anchor" id="globals-213"></a>
 Globals</h3>
 <details >
 <summary >
-Inherited (2)</summary>
+Inherited (3)</summary>
 <p></p>
 <ul>
-<li><em>integer:</em> <b>requests_expected</b> (from <a class="el" href="guided_pickup_delivery_problem.html#collaboration-pickupdeliveryproblem">`PickupDeliveryProblem`</a>)</li>
-<li><em>integer:</em> <b>requests_made</b> (from <a class="el" href="guided_pickup_delivery_problem.html#collaboration-pickupdeliveryproblem">`PickupDeliveryProblem`</a>)</li>
+<li><em>decimal:</em> <b>objective</b> (from <code>DataStore_1</code>)</li>
+<li><em>integer:</em> <b>requests_expected</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>requests_made</b> (from <code>DataStore_2</code>)</li>
 </ul>
 <p></p>
 </details>
-<h3><a class="anchor" id="message-47"></a>
+<h3><a class="anchor" id="message-45"></a>
 Message</h3>
-<h4><a class="anchor" id="name-unloaded-3"></a>
-&lt;em&gt;Name&lt;/em&gt; Unloaded</h4>
-<p><a class="anchor" id="header-1-16"></a> </p><h5>Header (1)</h5>
+<h4><a class="anchor" id="name-loaded-3"></a>
+&lt;em&gt;Name&lt;/em&gt; Loaded</h4>
+<p><a class="anchor" id="header-1-14"></a> </p><h5>Header (1)</h5>
 <ul>
 <li><em>sender:</em> <code>customer</code></li>
 </ul>
-<p><a class="anchor" id="content-0-29"></a> </p><h5>Content (0)</h5>
-<h3><a class="anchor" id="operators-38"></a>
+<p><a class="anchor" id="content-0-27"></a> </p><h5>Content (0)</h5>
+<h3><a class="anchor" id="operators-36"></a>
 Operators</h3>
 <ul>
-<li><code>load -= quantity</code></li>
-<li><code>pending -= 1</code></li>
+<li><code>load += quantity</code></li>
 </ul>
-<h2><a class="anchor" id="endevent-endeventrequest-2"></a>
-EndEvent (EndEventRequest)</h2>
+<h2><a class="anchor" id="subprocess-deliveryactivity-1"></a>
+SubProcess (DeliveryActivity)</h2>
 <h3><a class="anchor" id="status-205"></a>
 Status</h3>
 <details >
@@ -1904,28 +1574,41 @@ Inherited (10)</summary>
 </ul>
 <p></p>
 </details>
-<h3><a class="anchor" id="globals-146"></a>
+<h3><a class="anchor" id="globals-214"></a>
 Globals</h3>
 <details >
 <summary >
-Inherited (2)</summary>
+Inherited (3)</summary>
 <p></p>
 <ul>
-<li><em>integer:</em> <b>requests_expected</b> (from <a class="el" href="guided_pickup_delivery_problem.html#collaboration-pickupdeliveryproblem">`PickupDeliveryProblem`</a>)</li>
-<li><em>integer:</em> <b>requests_made</b> (from <a class="el" href="guided_pickup_delivery_problem.html#collaboration-pickupdeliveryproblem">`PickupDeliveryProblem`</a>)</li>
+<li><em>decimal:</em> <b>objective</b> (from <code>DataStore_1</code>)</li>
+<li><em>integer:</em> <b>requests_expected</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>requests_made</b> (from <code>DataStore_2</code>)</li>
 </ul>
 <p></p>
 </details>
-<h2><a class="anchor" id="dataobjectreference-dataobjectreference_0tut0wl-2"></a>
-DataObjectReference (DataObjectReference_0tut0wl)</h2>
+<h2><a class="anchor" id="startevent-starteventdelivery-1"></a>
+StartEvent (StartEventDelivery)</h2>
 <h3><a class="anchor" id="status-206"></a>
 Status</h3>
 <details >
 <summary >
-Inherited (1)</summary>
+Inherited (13)</summary>
 <p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
+<li><em>string:</em> <b>customer</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+<li><em>decimal:</em> <b>quantity</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+<li><em>string:</em> <b>pickup_location</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+<li><em>decimal:</em> <b>earliest_pickup</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+<li><em>decimal:</em> <b>latest_pickup</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+<li><em>decimal:</em> <b>pickup_duration</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+<li><em>decimal:</em> <b>late_pickup_penalty</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+<li><em>string:</em> <b>delivery_location</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+<li><em>decimal:</em> <b>earliest_delivery</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+<li><em>decimal:</em> <b>latest_delivery</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+<li><em>decimal:</em> <b>delivery_duration</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+<li><em>decimal:</em> <b>late_delivery_penalty</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
 </ul>
 <p></p>
 </details>
@@ -1952,28 +1635,51 @@ Inherited (10)</summary>
 </ul>
 <p></p>
 </details>
-<h3><a class="anchor" id="globals-147"></a>
+<h3><a class="anchor" id="globals-215"></a>
 Globals</h3>
 <details >
 <summary >
-Inherited (2)</summary>
+Inherited (3)</summary>
 <p></p>
 <ul>
-<li><em>integer:</em> <b>requests_expected</b> (from <a class="el" href="guided_pickup_delivery_problem.html#collaboration-pickupdeliveryproblem">`PickupDeliveryProblem`</a>)</li>
-<li><em>integer:</em> <b>requests_made</b> (from <a class="el" href="guided_pickup_delivery_problem.html#collaboration-pickupdeliveryproblem">`PickupDeliveryProblem`</a>)</li>
+<li><em>decimal:</em> <b>objective</b> (from <code>DataStore_1</code>)</li>
+<li><em>integer:</em> <b>requests_expected</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>requests_made</b> (from <code>DataStore_2</code>)</li>
 </ul>
 <p></p>
 </details>
-<h2><a class="anchor" id="startevent-starteventvehicle-2"></a>
-StartEvent (StartEventVehicle)</h2>
+<h2><a class="anchor" id="task-deliverytrip-1"></a>
+Task (DeliveryTrip)</h2>
 <h3><a class="anchor" id="status-207"></a>
 Status</h3>
 <details >
 <summary >
-Inherited (1)</summary>
+Inherited (13)</summary>
 <p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
+<li><em>string:</em> <b>customer</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+<li><em>decimal:</em> <b>quantity</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+<li><em>string:</em> <b>pickup_location</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+<li><em>decimal:</em> <b>earliest_pickup</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+<li><em>decimal:</em> <b>latest_pickup</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+<li><em>decimal:</em> <b>pickup_duration</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+<li><em>decimal:</em> <b>late_pickup_penalty</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+<li><em>string:</em> <b>delivery_location</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+<li><em>decimal:</em> <b>earliest_delivery</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+<li><em>decimal:</em> <b>latest_delivery</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+<li><em>decimal:</em> <b>delivery_duration</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+<li><em>decimal:</em> <b>late_delivery_penalty</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+</ul>
+<p></p>
+</details>
+<details  open="true">
+<summary >
+Owned (2)</summary>
+<p></p>
+<ul>
+<li><em>decimal:</em> <b>costs</b> (initialized by <code>costs := costs(location,delivery_location)</code>)</li>
+<li><em>decimal:</em> <b>duration</b> (initialized by <code>duration := duration(location,delivery_location)</code>)</li>
 </ul>
 <p></p>
 </details>
@@ -2000,28 +1706,48 @@ Inherited (10)</summary>
 </ul>
 <p></p>
 </details>
-<h3><a class="anchor" id="globals-148"></a>
+<h3><a class="anchor" id="globals-216"></a>
 Globals</h3>
 <details >
 <summary >
-Inherited (2)</summary>
+Inherited (3)</summary>
 <p></p>
 <ul>
-<li><em>integer:</em> <b>requests_expected</b> (from <a class="el" href="guided_pickup_delivery_problem.html#collaboration-pickupdeliveryproblem">`PickupDeliveryProblem`</a>)</li>
-<li><em>integer:</em> <b>requests_made</b> (from <a class="el" href="guided_pickup_delivery_problem.html#collaboration-pickupdeliveryproblem">`PickupDeliveryProblem`</a>)</li>
+<li><em>decimal:</em> <b>objective</b> (from <code>DataStore_1</code>)</li>
+<li><em>integer:</em> <b>requests_expected</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>requests_made</b> (from <code>DataStore_2</code>)</li>
 </ul>
 <p></p>
 </details>
-<h2><a class="anchor" id="adhocsubprocess-adhocsubprocessmain-1"></a>
-AdHocSubProcess (AdHocSubProcessMain)</h2>
+<h3><a class="anchor" id="operators-37"></a>
+Operators</h3>
+<ul>
+<li><code>timestamp += duration</code></li>
+<li><code>accumulated_costs += costs + late_delivery_penalty * max{0, timestamp - latest_delivery}</code></li>
+<li><code>location := delivery_location</code></li>
+</ul>
+<h2><a class="anchor" id="intermediatethrowevent-catcharrival-1"></a>
+IntermediateThrowEvent (CatchArrival)</h2>
 <h3><a class="anchor" id="status-208"></a>
 Status</h3>
 <details >
 <summary >
-Inherited (1)</summary>
+Inherited (13)</summary>
 <p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
+<li><em>string:</em> <b>customer</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+<li><em>decimal:</em> <b>quantity</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+<li><em>string:</em> <b>pickup_location</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+<li><em>decimal:</em> <b>earliest_pickup</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+<li><em>decimal:</em> <b>latest_pickup</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+<li><em>decimal:</em> <b>pickup_duration</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+<li><em>decimal:</em> <b>late_pickup_penalty</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+<li><em>string:</em> <b>delivery_location</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+<li><em>decimal:</em> <b>earliest_delivery</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+<li><em>decimal:</em> <b>latest_delivery</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+<li><em>decimal:</em> <b>delivery_duration</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+<li><em>decimal:</em> <b>late_delivery_penalty</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
 </ul>
 <p></p>
 </details>
@@ -2048,38 +1774,50 @@ Inherited (10)</summary>
 </ul>
 <p></p>
 </details>
-<h3><a class="anchor" id="globals-149"></a>
+<h3><a class="anchor" id="globals-217"></a>
 Globals</h3>
 <details >
 <summary >
-Inherited (2)</summary>
+Inherited (3)</summary>
 <p></p>
 <ul>
-<li><em>integer:</em> <b>requests_expected</b> (from <a class="el" href="guided_pickup_delivery_problem.html#collaboration-pickupdeliveryproblem">`PickupDeliveryProblem`</a>)</li>
-<li><em>integer:</em> <b>requests_made</b> (from <a class="el" href="guided_pickup_delivery_problem.html#collaboration-pickupdeliveryproblem">`PickupDeliveryProblem`</a>)</li>
+<li><em>decimal:</em> <b>objective</b> (from <code>DataStore_1</code>)</li>
+<li><em>integer:</em> <b>requests_expected</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>requests_made</b> (from <code>DataStore_2</code>)</li>
 </ul>
 <p></p>
 </details>
-<h2><a class="anchor" id="task-returntrip-2"></a>
-Task (ReturnTrip)</h2>
+<h3><a class="anchor" id="message-46"></a>
+Message</h3>
+<h4><a class="anchor" id="name-arrival-9"></a>
+&lt;em&gt;Name&lt;/em&gt; Arrival</h4>
+<p><a class="anchor" id="header-1-15"></a> </p><h5>Header (1)</h5>
+<ul>
+<li><em>recipient:</em> <code>customer</code></li>
+</ul>
+<p><a class="anchor" id="content-0-28"></a> </p><h5>Content (0)</h5>
+<h2><a class="anchor" id="endevent-endeventdelivery-1"></a>
+EndEvent (EndEventDelivery)</h2>
 <h3><a class="anchor" id="status-209"></a>
 Status</h3>
 <details >
 <summary >
-Inherited (1)</summary>
+Inherited (13)</summary>
 <p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
-</ul>
-<p></p>
-</details>
-<details  open="true">
-<summary >
-Owned (2)</summary>
-<p></p>
-<ul>
-<li><em>decimal:</em> <b>costs</b> (initialized by <code>costs := costs(location,depot)</code>)</li>
-<li><em>decimal:</em> <b>duration</b> (initialized by <code>duration := duration(location,depot)</code>)</li>
+<li><em>string:</em> <b>customer</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+<li><em>decimal:</em> <b>quantity</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+<li><em>string:</em> <b>pickup_location</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+<li><em>decimal:</em> <b>earliest_pickup</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+<li><em>decimal:</em> <b>latest_pickup</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+<li><em>decimal:</em> <b>pickup_duration</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+<li><em>decimal:</em> <b>late_pickup_penalty</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+<li><em>string:</em> <b>delivery_location</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+<li><em>decimal:</em> <b>earliest_delivery</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+<li><em>decimal:</em> <b>latest_delivery</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+<li><em>decimal:</em> <b>delivery_duration</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+<li><em>decimal:</em> <b>late_delivery_penalty</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
 </ul>
 <p></p>
 </details>
@@ -2106,47 +1844,41 @@ Inherited (10)</summary>
 </ul>
 <p></p>
 </details>
-<h3><a class="anchor" id="globals-150"></a>
+<h3><a class="anchor" id="globals-218"></a>
 Globals</h3>
 <details >
 <summary >
-Inherited (2)</summary>
+Inherited (3)</summary>
 <p></p>
 <ul>
-<li><em>integer:</em> <b>requests_expected</b> (from <a class="el" href="guided_pickup_delivery_problem.html#collaboration-pickupdeliveryproblem">`PickupDeliveryProblem`</a>)</li>
-<li><em>integer:</em> <b>requests_made</b> (from <a class="el" href="guided_pickup_delivery_problem.html#collaboration-pickupdeliveryproblem">`PickupDeliveryProblem`</a>)</li>
+<li><em>decimal:</em> <b>objective</b> (from <code>DataStore_1</code>)</li>
+<li><em>integer:</em> <b>requests_expected</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>requests_made</b> (from <code>DataStore_2</code>)</li>
 </ul>
 <p></p>
 </details>
-<h3><a class="anchor" id="entry-restrictions-29"></a>
-Entry restrictions</h3>
-<details  open="true">
-<summary >
-Owned (2)</summary>
-<p></p>
-<ul>
-<li><code>pending == 0</code></li>
-<li><code>requests_made == requests_expected</code></li>
-</ul>
-<p></p>
-</details>
-<h3><a class="anchor" id="operators-39"></a>
-Operators</h3>
-<ul>
-<li><code>timestamp += duration</code></li>
-<li><code>accumulated_costs += costs + overtime_penalty * max{0, timestamp - latest_availability}</code></li>
-<li><code>location := depot</code></li>
-</ul>
-<h2><a class="anchor" id="endevent-endeventvehicle-2"></a>
-EndEvent (EndEventVehicle)</h2>
+<h2><a class="anchor" id="receivetask-unloadreceivetask-1"></a>
+ReceiveTask (UnloadReceiveTask)</h2>
 <h3><a class="anchor" id="status-210"></a>
 Status</h3>
 <details >
 <summary >
-Inherited (1)</summary>
+Inherited (13)</summary>
 <p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
+<li><em>string:</em> <b>customer</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+<li><em>decimal:</em> <b>quantity</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+<li><em>string:</em> <b>pickup_location</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+<li><em>decimal:</em> <b>earliest_pickup</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+<li><em>decimal:</em> <b>latest_pickup</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+<li><em>decimal:</em> <b>pickup_duration</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+<li><em>decimal:</em> <b>late_pickup_penalty</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+<li><em>string:</em> <b>delivery_location</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+<li><em>decimal:</em> <b>earliest_delivery</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+<li><em>decimal:</em> <b>latest_delivery</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+<li><em>decimal:</em> <b>delivery_duration</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+<li><em>decimal:</em> <b>late_delivery_penalty</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
 </ul>
 <p></p>
 </details>
@@ -2173,28 +1905,56 @@ Inherited (10)</summary>
 </ul>
 <p></p>
 </details>
-<h3><a class="anchor" id="globals-151"></a>
+<h3><a class="anchor" id="globals-219"></a>
 Globals</h3>
 <details >
 <summary >
-Inherited (2)</summary>
+Inherited (3)</summary>
 <p></p>
 <ul>
-<li><em>integer:</em> <b>requests_expected</b> (from <a class="el" href="guided_pickup_delivery_problem.html#collaboration-pickupdeliveryproblem">`PickupDeliveryProblem`</a>)</li>
-<li><em>integer:</em> <b>requests_made</b> (from <a class="el" href="guided_pickup_delivery_problem.html#collaboration-pickupdeliveryproblem">`PickupDeliveryProblem`</a>)</li>
+<li><em>decimal:</em> <b>objective</b> (from <code>DataStore_1</code>)</li>
+<li><em>integer:</em> <b>requests_expected</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>requests_made</b> (from <code>DataStore_2</code>)</li>
 </ul>
 <p></p>
 </details>
-<h2><a class="anchor" id="datastorereference-datastorereference_1uwtm3x-1"></a>
-DataStoreReference (DataStoreReference_1uwtm3x)</h2>
+<h3><a class="anchor" id="message-47"></a>
+Message</h3>
+<h4><a class="anchor" id="name-unloaded-3"></a>
+&lt;em&gt;Name&lt;/em&gt; Unloaded</h4>
+<p><a class="anchor" id="header-1-16"></a> </p><h5>Header (1)</h5>
+<ul>
+<li><em>sender:</em> <code>customer</code></li>
+</ul>
+<p><a class="anchor" id="content-0-29"></a> </p><h5>Content (0)</h5>
+<h3><a class="anchor" id="operators-38"></a>
+Operators</h3>
+<ul>
+<li><code>load -= quantity</code></li>
+<li><code>pending -= 1</code></li>
+</ul>
+<h2><a class="anchor" id="endevent-endeventrequest-2"></a>
+EndEvent (EndEventRequest)</h2>
 <h3><a class="anchor" id="status-211"></a>
 Status</h3>
 <details >
 <summary >
-Inherited (1)</summary>
+Inherited (13)</summary>
 <p></p>
 <ul>
 <li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
+<li><em>string:</em> <b>customer</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+<li><em>decimal:</em> <b>quantity</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+<li><em>string:</em> <b>pickup_location</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+<li><em>decimal:</em> <b>earliest_pickup</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+<li><em>decimal:</em> <b>latest_pickup</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+<li><em>decimal:</em> <b>pickup_duration</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+<li><em>decimal:</em> <b>late_pickup_penalty</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+<li><em>string:</em> <b>delivery_location</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+<li><em>decimal:</em> <b>earliest_delivery</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+<li><em>decimal:</em> <b>latest_delivery</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+<li><em>decimal:</em> <b>delivery_duration</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
+<li><em>decimal:</em> <b>late_delivery_penalty</b> (from <a class="el" href="bin_packing_problem.html#subprocess-eventsubprocess">`EventSubProcess`</a>)</li>
 </ul>
 <p></p>
 </details>
@@ -2221,15 +1981,339 @@ Inherited (10)</summary>
 </ul>
 <p></p>
 </details>
-<h3><a class="anchor" id="globals-152"></a>
+<h3><a class="anchor" id="globals-220"></a>
 Globals</h3>
 <details >
 <summary >
-Inherited (2)</summary>
+Inherited (3)</summary>
 <p></p>
 <ul>
-<li><em>integer:</em> <b>requests_expected</b> (from <a class="el" href="guided_pickup_delivery_problem.html#collaboration-pickupdeliveryproblem">`PickupDeliveryProblem`</a>)</li>
-<li><em>integer:</em> <b>requests_made</b> (from <a class="el" href="guided_pickup_delivery_problem.html#collaboration-pickupdeliveryproblem">`PickupDeliveryProblem`</a>)</li>
+<li><em>decimal:</em> <b>objective</b> (from <code>DataStore_1</code>)</li>
+<li><em>integer:</em> <b>requests_expected</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>requests_made</b> (from <code>DataStore_2</code>)</li>
+</ul>
+<p></p>
+</details>
+<h2><a class="anchor" id="dataobjectreference-dataobjectreference_0tut0wl-2"></a>
+DataObjectReference (DataObjectReference_0tut0wl)</h2>
+<h3><a class="anchor" id="status-212"></a>
+Status</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
+<ul>
+<li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
+</ul>
+<p></p>
+</details>
+<h3><a class="anchor" id="data-213"></a>
+Data</h3>
+<details >
+<summary >
+Inherited (10)</summary>
+<p></p>
+<ul>
+<li><em>string:</em> <b>instance</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
+<li><em>decimal:</em> <b>load</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
+<li><em>decimal:</em> <b>accumulated_costs</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)<ul>
+<li><code>➔ minimize 1 * accumulated_costs</code></li>
+</ul>
+</li>
+<li><em>decimal:</em> <b>capacity</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
+<li><em>decimal:</em> <b>earliest_availability</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
+<li><em>decimal:</em> <b>latest_availability</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
+<li><em>decimal:</em> <b>overtime_penalty</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
+<li><em>string:</em> <b>depot</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
+<li><em>integer:</em> <b>pending</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
+<li><em>string:</em> <b>location</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
+</ul>
+<p></p>
+</details>
+<h3><a class="anchor" id="globals-221"></a>
+Globals</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
+<ul>
+<li><em>decimal:</em> <b>objective</b> (from <code>DataStore_1</code>)</li>
+<li><em>integer:</em> <b>requests_expected</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>requests_made</b> (from <code>DataStore_2</code>)</li>
+</ul>
+<p></p>
+</details>
+<h2><a class="anchor" id="startevent-starteventvehicle-2"></a>
+StartEvent (StartEventVehicle)</h2>
+<h3><a class="anchor" id="status-213"></a>
+Status</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
+<ul>
+<li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
+</ul>
+<p></p>
+</details>
+<h3><a class="anchor" id="data-214"></a>
+Data</h3>
+<details >
+<summary >
+Inherited (10)</summary>
+<p></p>
+<ul>
+<li><em>string:</em> <b>instance</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
+<li><em>decimal:</em> <b>load</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
+<li><em>decimal:</em> <b>accumulated_costs</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)<ul>
+<li><code>➔ minimize 1 * accumulated_costs</code></li>
+</ul>
+</li>
+<li><em>decimal:</em> <b>capacity</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
+<li><em>decimal:</em> <b>earliest_availability</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
+<li><em>decimal:</em> <b>latest_availability</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
+<li><em>decimal:</em> <b>overtime_penalty</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
+<li><em>string:</em> <b>depot</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
+<li><em>integer:</em> <b>pending</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
+<li><em>string:</em> <b>location</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
+</ul>
+<p></p>
+</details>
+<h3><a class="anchor" id="globals-222"></a>
+Globals</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
+<ul>
+<li><em>decimal:</em> <b>objective</b> (from <code>DataStore_1</code>)</li>
+<li><em>integer:</em> <b>requests_expected</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>requests_made</b> (from <code>DataStore_2</code>)</li>
+</ul>
+<p></p>
+</details>
+<h2><a class="anchor" id="adhocsubprocess-adhocsubprocessmain-1"></a>
+AdHocSubProcess (AdHocSubProcessMain)</h2>
+<h3><a class="anchor" id="status-214"></a>
+Status</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
+<ul>
+<li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
+</ul>
+<p></p>
+</details>
+<h3><a class="anchor" id="data-215"></a>
+Data</h3>
+<details >
+<summary >
+Inherited (10)</summary>
+<p></p>
+<ul>
+<li><em>string:</em> <b>instance</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
+<li><em>decimal:</em> <b>load</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
+<li><em>decimal:</em> <b>accumulated_costs</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)<ul>
+<li><code>➔ minimize 1 * accumulated_costs</code></li>
+</ul>
+</li>
+<li><em>decimal:</em> <b>capacity</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
+<li><em>decimal:</em> <b>earliest_availability</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
+<li><em>decimal:</em> <b>latest_availability</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
+<li><em>decimal:</em> <b>overtime_penalty</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
+<li><em>string:</em> <b>depot</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
+<li><em>integer:</em> <b>pending</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
+<li><em>string:</em> <b>location</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
+</ul>
+<p></p>
+</details>
+<h3><a class="anchor" id="globals-223"></a>
+Globals</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
+<ul>
+<li><em>decimal:</em> <b>objective</b> (from <code>DataStore_1</code>)</li>
+<li><em>integer:</em> <b>requests_expected</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>requests_made</b> (from <code>DataStore_2</code>)</li>
+</ul>
+<p></p>
+</details>
+<h2><a class="anchor" id="task-returntrip-2"></a>
+Task (ReturnTrip)</h2>
+<h3><a class="anchor" id="status-215"></a>
+Status</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
+<ul>
+<li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
+</ul>
+<p></p>
+</details>
+<details  open="true">
+<summary >
+Owned (2)</summary>
+<p></p>
+<ul>
+<li><em>decimal:</em> <b>costs</b> (initialized by <code>costs := costs(location,depot)</code>)</li>
+<li><em>decimal:</em> <b>duration</b> (initialized by <code>duration := duration(location,depot)</code>)</li>
+</ul>
+<p></p>
+</details>
+<h3><a class="anchor" id="data-216"></a>
+Data</h3>
+<details >
+<summary >
+Inherited (10)</summary>
+<p></p>
+<ul>
+<li><em>string:</em> <b>instance</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
+<li><em>decimal:</em> <b>load</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
+<li><em>decimal:</em> <b>accumulated_costs</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)<ul>
+<li><code>➔ minimize 1 * accumulated_costs</code></li>
+</ul>
+</li>
+<li><em>decimal:</em> <b>capacity</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
+<li><em>decimal:</em> <b>earliest_availability</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
+<li><em>decimal:</em> <b>latest_availability</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
+<li><em>decimal:</em> <b>overtime_penalty</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
+<li><em>string:</em> <b>depot</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
+<li><em>integer:</em> <b>pending</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
+<li><em>string:</em> <b>location</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
+</ul>
+<p></p>
+</details>
+<h3><a class="anchor" id="globals-224"></a>
+Globals</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
+<ul>
+<li><em>decimal:</em> <b>objective</b> (from <code>DataStore_1</code>)</li>
+<li><em>integer:</em> <b>requests_expected</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>requests_made</b> (from <code>DataStore_2</code>)</li>
+</ul>
+<p></p>
+</details>
+<h3><a class="anchor" id="entry-restrictions-29"></a>
+Entry restrictions</h3>
+<details  open="true">
+<summary >
+Owned (2)</summary>
+<p></p>
+<ul>
+<li><code>pending == 0</code></li>
+<li><code>requests_made == requests_expected</code></li>
+</ul>
+<p></p>
+</details>
+<h3><a class="anchor" id="operators-39"></a>
+Operators</h3>
+<ul>
+<li><code>timestamp += duration</code></li>
+<li><code>accumulated_costs += costs + overtime_penalty * max{0, timestamp - latest_availability}</code></li>
+<li><code>location := depot</code></li>
+</ul>
+<h2><a class="anchor" id="endevent-endeventvehicle-2"></a>
+EndEvent (EndEventVehicle)</h2>
+<h3><a class="anchor" id="status-216"></a>
+Status</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
+<ul>
+<li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
+</ul>
+<p></p>
+</details>
+<h3><a class="anchor" id="data-217"></a>
+Data</h3>
+<details >
+<summary >
+Inherited (10)</summary>
+<p></p>
+<ul>
+<li><em>string:</em> <b>instance</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
+<li><em>decimal:</em> <b>load</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
+<li><em>decimal:</em> <b>accumulated_costs</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)<ul>
+<li><code>➔ minimize 1 * accumulated_costs</code></li>
+</ul>
+</li>
+<li><em>decimal:</em> <b>capacity</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
+<li><em>decimal:</em> <b>earliest_availability</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
+<li><em>decimal:</em> <b>latest_availability</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
+<li><em>decimal:</em> <b>overtime_penalty</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
+<li><em>string:</em> <b>depot</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
+<li><em>integer:</em> <b>pending</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
+<li><em>string:</em> <b>location</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
+</ul>
+<p></p>
+</details>
+<h3><a class="anchor" id="globals-225"></a>
+Globals</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
+<ul>
+<li><em>decimal:</em> <b>objective</b> (from <code>DataStore_1</code>)</li>
+<li><em>integer:</em> <b>requests_expected</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>requests_made</b> (from <code>DataStore_2</code>)</li>
+</ul>
+<p></p>
+</details>
+<h2><a class="anchor" id="datastorereference-datastorereference_1uwtm3x-1"></a>
+DataStoreReference (DataStoreReference_1uwtm3x)</h2>
+<h3><a class="anchor" id="status-217"></a>
+Status</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
+<ul>
+<li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
+</ul>
+<p></p>
+</details>
+<h3><a class="anchor" id="data-218"></a>
+Data</h3>
+<details >
+<summary >
+Inherited (10)</summary>
+<p></p>
+<ul>
+<li><em>string:</em> <b>instance</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
+<li><em>decimal:</em> <b>load</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
+<li><em>decimal:</em> <b>accumulated_costs</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)<ul>
+<li><code>➔ minimize 1 * accumulated_costs</code></li>
+</ul>
+</li>
+<li><em>decimal:</em> <b>capacity</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
+<li><em>decimal:</em> <b>earliest_availability</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
+<li><em>decimal:</em> <b>latest_availability</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
+<li><em>decimal:</em> <b>overtime_penalty</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
+<li><em>string:</em> <b>depot</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
+<li><em>integer:</em> <b>pending</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
+<li><em>string:</em> <b>location</b> (from <a class="el" href="guided_pickup_delivery_problem.html#vehicle-process-vehicleprocess">`VehicleProcess`</a>)</li>
+</ul>
+<p></p>
+</details>
+<h3><a class="anchor" id="globals-226"></a>
+Globals</h3>
+<details >
+<summary >
+Inherited (3)</summary>
+<p></p>
+<ul>
+<li><em>decimal:</em> <b>objective</b> (from <code>DataStore_1</code>)</li>
+<li><em>integer:</em> <b>requests_expected</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>requests_made</b> (from <code>DataStore_2</code>)</li>
 </ul>
 <p></p>
 </details>

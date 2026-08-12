@@ -145,12 +145,17 @@ Attributes</h1>
 </ul>
 <h2><a class="anchor" id="global-attributes"></a>
 Global attributes</h2>
-<p>Global attributes can be defined globally for a <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1tCollaboration.html">collaboration element</a> as shown in the following example. </p><div class="fragment"><div class="line">&lt;<span class="keywordtype">bpmn2:extensionElements</span>&gt;</div>
-<div class="line">  &lt;<span class="keywordtype">bpmnos:attributes</span>&gt;</div>
-<div class="line">    &lt;<span class="keywordtype">bpmnos:attribute</span> <span class="keyword">id</span>=<span class="stringliteral">&quot;Makespan&quot;</span> <span class="keyword">name</span>=<span class="stringliteral">&quot;makespan := 0&quot;</span> <span class="keyword">type</span>=<span class="stringliteral">&quot;decimal&quot;</span> <span class="keyword">objective</span>=<span class="stringliteral">&quot;minimize&quot;</span> <span class="keyword">weight</span>=<span class="stringliteral">&quot;1&quot;</span> /&gt;</div>
-<div class="line">  &lt;/<span class="keywordtype">bpmnos:attributes</span>&gt;</div>
-<div class="line">&lt;/<span class="keywordtype">bpmn2:extensionElements</span>&gt;</div>
-</div><!-- fragment --><dl class="section note"><dt>Note</dt><dd>Modifying global attribute values may lead to race conditions.</dd></dl>
+<p>Global attributes can be defined for a <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1tDataStore.html">data store element</a> as shown in the following example. </p><div class="fragment"><div class="line">&lt;<span class="keywordtype">bpmn2:dataStore</span> <span class="keyword">id</span>=<span class="stringliteral">&quot;DataStore_1&quot;</span>&gt;</div>
+<div class="line">  &lt;<span class="keywordtype">bpmn2:extensionElements</span>&gt;</div>
+<div class="line">    &lt;<span class="keywordtype">bpmnos:attributes</span>&gt;</div>
+<div class="line">      &lt;<span class="keywordtype">bpmnos:attribute</span> <span class="keyword">id</span>=<span class="stringliteral">&quot;Objective&quot;</span> <span class="keyword">name</span>=<span class="stringliteral">&quot;objective := 0&quot;</span> <span class="keyword">type</span>=<span class="stringliteral">&quot;decimal&quot;</span> /&gt;</div>
+<div class="line">      &lt;<span class="keywordtype">bpmnos:attribute</span> <span class="keyword">id</span>=<span class="stringliteral">&quot;Makespan&quot;</span> <span class="keyword">name</span>=<span class="stringliteral">&quot;makespan := 0&quot;</span> <span class="keyword">type</span>=<span class="stringliteral">&quot;decimal&quot;</span> <span class="keyword">objective</span>=<span class="stringliteral">&quot;minimize&quot;</span> <span class="keyword">weight</span>=<span class="stringliteral">&quot;1&quot;</span> /&gt;</div>
+<div class="line">    &lt;/<span class="keywordtype">bpmnos:attributes</span>&gt;</div>
+<div class="line">  &lt;/<span class="keywordtype">bpmn2:extensionElements</span>&gt;</div>
+<div class="line">&lt;/<span class="keywordtype">bpmn2:dataStore</span>&gt;</div>
+</div><!-- fragment --><p>An executable model declares a global attribute with the identifier <code>Objective</code> holding the objective value of a run, as every process declares a status attribute with the identifier <code>Timestamp</code> and a data attribute with the identifier <code>Instance</code>. It carries neither an <code>objective</code> nor a <code>weight</code>, so that it does not contribute to itself.</p>
+<p>Global attributes are visible to every process of a model, whether or not a process refers to the data store declaring them.</p>
+<dl class="section note"><dt>Note</dt><dd>Modifying global attribute values may lead to race conditions.</dd></dl>
 <h2><a class="anchor" id="data-attributes"></a>
 Data attributes</h2>
 <p>Data attributes can be defined for a <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1tDataObject.html">data object element</a> as shown in the following example.</p>
@@ -264,12 +269,14 @@ Timer</h1>
 <div class="line">&lt;/<span class="keywordtype">bpmn2:extensionElements</span>&gt;</div>
 </div><!-- fragment --><h1><a class="anchor" id="lookup-tables"></a>
 Lookup tables</h1>
-<p>Lookup tables can be made available by adding the following extension elements to a data store reference. </p><div class="fragment"><div class="line">&lt;<span class="keywordtype">bpmn2:extensionElements</span>&gt;</div>
-<div class="line">  &lt;<span class="keywordtype">bpmnos:tables</span>&gt;</div>
-<div class="line">     &lt;<span class="keywordtype">bpmnos:table</span> <span class="keyword">id</span>=<span class="stringliteral">&quot;Table_0udt1qg&quot;</span> <span class="keyword">name</span>=<span class="stringliteral">&quot;costs&quot;</span> <span class="keyword">source</span>=<span class="stringliteral">&quot;costs.csv&quot;</span> /&gt;</div>
-<div class="line">  &lt;/<span class="keywordtype">bpmnos:tables</span>&gt;</div>
-<div class="line">&lt;/<span class="keywordtype">bpmn2:extensionElements</span>&gt;</div>
-</div><!-- fragment --><p> The parameter <code>name</code> specifies the name of the lookup table to be used in expressions. The parameter <code>source</code> specifies the filen name of the lookup table.</p>
+<p>Lookup tables can be made available by adding the following extension elements to a <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1tDataStore.html">data store element</a>. </p><div class="fragment"><div class="line">&lt;<span class="keywordtype">bpmn2:dataStore</span> <span class="keyword">id</span>=<span class="stringliteral">&quot;DataStore_2&quot;</span>&gt;</div>
+<div class="line">  &lt;<span class="keywordtype">bpmn2:extensionElements</span>&gt;</div>
+<div class="line">    &lt;<span class="keywordtype">bpmnos:tables</span>&gt;</div>
+<div class="line">      &lt;<span class="keywordtype">bpmnos:table</span> <span class="keyword">id</span>=<span class="stringliteral">&quot;Table_0udt1qg&quot;</span> <span class="keyword">name</span>=<span class="stringliteral">&quot;costs&quot;</span> <span class="keyword">source</span>=<span class="stringliteral">&quot;costs.csv&quot;</span> /&gt;</div>
+<div class="line">    &lt;/<span class="keywordtype">bpmnos:tables</span>&gt;</div>
+<div class="line">  &lt;/<span class="keywordtype">bpmn2:extensionElements</span>&gt;</div>
+<div class="line">&lt;/<span class="keywordtype">bpmn2:dataStore</span>&gt;</div>
+</div><!-- fragment --><p> The name of a lookup table can be used in every expression of a model, whether or not a process refers to the data store declaring it. The parameter <code>name</code> specifies the name of the lookup table to be used in expressions. The parameter <code>source</code> specifies the filen name of the lookup table.</p>
 <dl class="section note"><dt>Note</dt><dd>Currently, the only supported source are csv files. </dd></dl>
 <dl class="section user"><dt></dt><dd></dd></dl>
 <dl class="section note"><dt>Note</dt><dd>The folders to search for lookup table files can be provided by adding them to the constructor of the model or data provider.</dd></dl>

@@ -137,25 +137,26 @@ Diagram</h2>
 <p> 
 <object data="Guided_bin_packing_problem.svg" type="image/svg+xml" style="max-width: 100%;">Diagram</object>
 </p>
-<h2><a class="anchor" id="globals-20"></a>
+<h2><a class="anchor" id="globals-41"></a>
 Globals</h2>
-<details  open="true">
+<details >
 <summary >
-Owned (6)</summary>
+Inherited (7)</summary>
 <p></p>
 <ul>
-<li><em>integer:</em> <b>items</b></li>
-<li><em>integer:</em> <b>item_requests</b> (initialized by <code>item_requests := 0</code>)</li>
-<li><em>integer:</em> <b>bins</b></li>
-<li><em>integer:</em> <b>available_bins</b> (initialized by <code>available_bins := 0</code>)</li>
-<li><em>integer:</em> <b>items_included</b> (initialized by <code>items_included := 0</code>)</li>
-<li><em>boolean:</em> <b>blocker</b> (initialized by <code>blocker := false</code>)</li>
+<li><em>decimal:</em> <b>objective</b> (from <code>DataStore_1</code>)</li>
+<li><em>integer:</em> <b>items</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>item_requests</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>bins</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>available_bins</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>items_included</b> (from <code>DataStore_2</code>)</li>
+<li><em>boolean:</em> <b>blocker</b> (from <code>DataStore_2</code>)</li>
 </ul>
 <p></p>
 </details>
 <h2><a class="anchor" id="item-process-itemprocess-1"></a>
 Item process (ItemProcess)</h2>
-<h3><a class="anchor" id="status-38"></a>
+<h3><a class="anchor" id="status-39"></a>
 Status</h3>
 <details  open="true">
 <summary >
@@ -167,7 +168,7 @@ Owned (2)</summary>
 </ul>
 <p></p>
 </details>
-<h3><a class="anchor" id="data-39"></a>
+<h3><a class="anchor" id="data-40"></a>
 Data</h3>
 <details  open="true">
 <summary >
@@ -178,65 +179,25 @@ Owned (1)</summary>
 </ul>
 <p></p>
 </details>
-<h3><a class="anchor" id="globals-21"></a>
+<h3><a class="anchor" id="globals-42"></a>
 Globals</h3>
 <details >
 <summary >
-Inherited (6)</summary>
+Inherited (7)</summary>
 <p></p>
 <ul>
-<li><em>integer:</em> <b>items</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-<li><em>integer:</em> <b>item_requests</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-<li><em>integer:</em> <b>bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-<li><em>integer:</em> <b>available_bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-<li><em>integer:</em> <b>items_included</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-<li><em>boolean:</em> <b>blocker</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>decimal:</em> <b>objective</b> (from <code>DataStore_1</code>)</li>
+<li><em>integer:</em> <b>items</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>item_requests</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>bins</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>available_bins</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>items_included</b> (from <code>DataStore_2</code>)</li>
+<li><em>boolean:</em> <b>blocker</b> (from <code>DataStore_2</code>)</li>
 </ul>
 <p></p>
 </details>
 <h2><a class="anchor" id="startevent-starteventitem-1"></a>
 StartEvent (StartEventItem)</h2>
-<h3><a class="anchor" id="status-39"></a>
-Status</h3>
-<details >
-<summary >
-Inherited (2)</summary>
-<p></p>
-<ul>
-<li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="bin_packing_problem.html#item-process-itemprocess">`ItemProcess`</a>)</li>
-<li><em>decimal:</em> <b>size</b> (from <a class="el" href="bin_packing_problem.html#item-process-itemprocess">`ItemProcess`</a>)</li>
-</ul>
-<p></p>
-</details>
-<h3><a class="anchor" id="data-40"></a>
-Data</h3>
-<details >
-<summary >
-Inherited (1)</summary>
-<p></p>
-<ul>
-<li><em>string:</em> <b>instance</b> (from <a class="el" href="bin_packing_problem.html#item-process-itemprocess">`ItemProcess`</a>)</li>
-</ul>
-<p></p>
-</details>
-<h3><a class="anchor" id="globals-22"></a>
-Globals</h3>
-<details >
-<summary >
-Inherited (6)</summary>
-<p></p>
-<ul>
-<li><em>integer:</em> <b>items</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-<li><em>integer:</em> <b>item_requests</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-<li><em>integer:</em> <b>bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-<li><em>integer:</em> <b>available_bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-<li><em>integer:</em> <b>items_included</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-<li><em>boolean:</em> <b>blocker</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-</ul>
-<p></p>
-</details>
-<h2><a class="anchor" id="endevent-endeventitem-1"></a>
-EndEvent (EndEventItem)</h2>
 <h3><a class="anchor" id="status-40"></a>
 Status</h3>
 <details >
@@ -260,24 +221,25 @@ Inherited (1)</summary>
 </ul>
 <p></p>
 </details>
-<h3><a class="anchor" id="globals-23"></a>
+<h3><a class="anchor" id="globals-43"></a>
 Globals</h3>
 <details >
 <summary >
-Inherited (6)</summary>
+Inherited (7)</summary>
 <p></p>
 <ul>
-<li><em>integer:</em> <b>items</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-<li><em>integer:</em> <b>item_requests</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-<li><em>integer:</em> <b>bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-<li><em>integer:</em> <b>available_bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-<li><em>integer:</em> <b>items_included</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-<li><em>boolean:</em> <b>blocker</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>decimal:</em> <b>objective</b> (from <code>DataStore_1</code>)</li>
+<li><em>integer:</em> <b>items</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>item_requests</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>bins</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>available_bins</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>items_included</b> (from <code>DataStore_2</code>)</li>
+<li><em>boolean:</em> <b>blocker</b> (from <code>DataStore_2</code>)</li>
 </ul>
 <p></p>
 </details>
-<h2><a class="anchor" id="sendtask-requestactivity-1"></a>
-SendTask (RequestActivity)</h2>
+<h2><a class="anchor" id="endevent-endeventitem-1"></a>
+EndEvent (EndEventItem)</h2>
 <h3><a class="anchor" id="status-41"></a>
 Status</h3>
 <details >
@@ -301,19 +263,62 @@ Inherited (1)</summary>
 </ul>
 <p></p>
 </details>
-<h3><a class="anchor" id="globals-24"></a>
+<h3><a class="anchor" id="globals-44"></a>
 Globals</h3>
 <details >
 <summary >
-Inherited (6)</summary>
+Inherited (7)</summary>
 <p></p>
 <ul>
-<li><em>integer:</em> <b>items</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-<li><em>integer:</em> <b>item_requests</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-<li><em>integer:</em> <b>bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-<li><em>integer:</em> <b>available_bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-<li><em>integer:</em> <b>items_included</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-<li><em>boolean:</em> <b>blocker</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>decimal:</em> <b>objective</b> (from <code>DataStore_1</code>)</li>
+<li><em>integer:</em> <b>items</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>item_requests</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>bins</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>available_bins</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>items_included</b> (from <code>DataStore_2</code>)</li>
+<li><em>boolean:</em> <b>blocker</b> (from <code>DataStore_2</code>)</li>
+</ul>
+<p></p>
+</details>
+<h2><a class="anchor" id="sendtask-requestactivity-1"></a>
+SendTask (RequestActivity)</h2>
+<h3><a class="anchor" id="status-42"></a>
+Status</h3>
+<details >
+<summary >
+Inherited (2)</summary>
+<p></p>
+<ul>
+<li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="bin_packing_problem.html#item-process-itemprocess">`ItemProcess`</a>)</li>
+<li><em>decimal:</em> <b>size</b> (from <a class="el" href="bin_packing_problem.html#item-process-itemprocess">`ItemProcess`</a>)</li>
+</ul>
+<p></p>
+</details>
+<h3><a class="anchor" id="data-43"></a>
+Data</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
+<ul>
+<li><em>string:</em> <b>instance</b> (from <a class="el" href="bin_packing_problem.html#item-process-itemprocess">`ItemProcess`</a>)</li>
+</ul>
+<p></p>
+</details>
+<h3><a class="anchor" id="globals-45"></a>
+Globals</h3>
+<details >
+<summary >
+Inherited (7)</summary>
+<p></p>
+<ul>
+<li><em>decimal:</em> <b>objective</b> (from <code>DataStore_1</code>)</li>
+<li><em>integer:</em> <b>items</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>item_requests</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>bins</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>available_bins</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>items_included</b> (from <code>DataStore_2</code>)</li>
+<li><em>boolean:</em> <b>blocker</b> (from <code>DataStore_2</code>)</li>
 </ul>
 <p></p>
 </details>
@@ -332,9 +337,51 @@ Message</h3>
 <li><em>Item:</em> <b>instance</b></li>
 <li><em>Size:</em> <b>size</b></li>
 </ul>
+<h2><a class="anchor" id="datastorereference-datastorereference_1-1"></a>
+DataStoreReference (DataStoreReference_1)</h2>
+<h3><a class="anchor" id="status-43"></a>
+Status</h3>
+<details >
+<summary >
+Inherited (2)</summary>
+<p></p>
+<ul>
+<li><em>decimal:</em> <b>timestamp</b> (from <a class="el" href="bin_packing_problem.html#item-process-itemprocess">`ItemProcess`</a>)</li>
+<li><em>decimal:</em> <b>size</b> (from <a class="el" href="bin_packing_problem.html#item-process-itemprocess">`ItemProcess`</a>)</li>
+</ul>
+<p></p>
+</details>
+<h3><a class="anchor" id="data-44"></a>
+Data</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
+<ul>
+<li><em>string:</em> <b>instance</b> (from <a class="el" href="bin_packing_problem.html#item-process-itemprocess">`ItemProcess`</a>)</li>
+</ul>
+<p></p>
+</details>
+<h3><a class="anchor" id="globals-46"></a>
+Globals</h3>
+<details >
+<summary >
+Inherited (7)</summary>
+<p></p>
+<ul>
+<li><em>decimal:</em> <b>objective</b> (from <code>DataStore_1</code>)</li>
+<li><em>integer:</em> <b>items</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>item_requests</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>bins</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>available_bins</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>items_included</b> (from <code>DataStore_2</code>)</li>
+<li><em>boolean:</em> <b>blocker</b> (from <code>DataStore_2</code>)</li>
+</ul>
+<p></p>
+</details>
 <h2><a class="anchor" id="bin-process-binprocess-1"></a>
 Bin process (BinProcess)</h2>
-<h3><a class="anchor" id="status-42"></a>
+<h3><a class="anchor" id="status-44"></a>
 Status</h3>
 <details  open="true">
 <summary >
@@ -345,7 +392,7 @@ Owned (1)</summary>
 </ul>
 <p></p>
 </details>
-<h3><a class="anchor" id="data-43"></a>
+<h3><a class="anchor" id="data-45"></a>
 Data</h3>
 <details  open="true">
 <summary >
@@ -362,19 +409,20 @@ Owned (4)</summary>
 </ul>
 <p></p>
 </details>
-<h3><a class="anchor" id="globals-25"></a>
+<h3><a class="anchor" id="globals-47"></a>
 Globals</h3>
 <details >
 <summary >
-Inherited (6)</summary>
+Inherited (7)</summary>
 <p></p>
 <ul>
-<li><em>integer:</em> <b>items</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-<li><em>integer:</em> <b>item_requests</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-<li><em>integer:</em> <b>bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-<li><em>integer:</em> <b>available_bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-<li><em>integer:</em> <b>items_included</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-<li><em>boolean:</em> <b>blocker</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>decimal:</em> <b>objective</b> (from <code>DataStore_1</code>)</li>
+<li><em>integer:</em> <b>items</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>item_requests</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>bins</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>available_bins</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>items_included</b> (from <code>DataStore_2</code>)</li>
+<li><em>boolean:</em> <b>blocker</b> (from <code>DataStore_2</code>)</li>
 </ul>
 <p></p>
 </details>
@@ -413,7 +461,7 @@ Owned (1)</summary>
 </details>
 <h2><a class="anchor" id="subprocess-eventsubprocess-1"></a>
 SubProcess (EventSubProcess)</h2>
-<h3><a class="anchor" id="status-43"></a>
+<h3><a class="anchor" id="status-45"></a>
 Status</h3>
 <details >
 <summary >
@@ -434,7 +482,7 @@ Owned (2)</summary>
 </ul>
 <p></p>
 </details>
-<h3><a class="anchor" id="data-44"></a>
+<h3><a class="anchor" id="data-46"></a>
 Data</h3>
 <details >
 <summary >
@@ -451,19 +499,20 @@ Inherited (4)</summary>
 </ul>
 <p></p>
 </details>
-<h3><a class="anchor" id="globals-26"></a>
+<h3><a class="anchor" id="globals-48"></a>
 Globals</h3>
 <details >
 <summary >
-Inherited (6)</summary>
+Inherited (7)</summary>
 <p></p>
 <ul>
-<li><em>integer:</em> <b>items</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-<li><em>integer:</em> <b>item_requests</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-<li><em>integer:</em> <b>bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-<li><em>integer:</em> <b>available_bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-<li><em>integer:</em> <b>items_included</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-<li><em>boolean:</em> <b>blocker</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>decimal:</em> <b>objective</b> (from <code>DataStore_1</code>)</li>
+<li><em>integer:</em> <b>items</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>item_requests</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>bins</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>available_bins</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>items_included</b> (from <code>DataStore_2</code>)</li>
+<li><em>boolean:</em> <b>blocker</b> (from <code>DataStore_2</code>)</li>
 </ul>
 <p></p>
 </details>
@@ -516,7 +565,7 @@ Inherited (1)</summary>
 </details>
 <h2><a class="anchor" id="adhocsubprocess-adhocsubprocess-1"></a>
 AdHocSubProcess (AdHocSubProcess)</h2>
-<h3><a class="anchor" id="status-44"></a>
+<h3><a class="anchor" id="status-46"></a>
 Status</h3>
 <details >
 <summary >
@@ -529,7 +578,7 @@ Inherited (3)</summary>
 </ul>
 <p></p>
 </details>
-<h3><a class="anchor" id="data-45"></a>
+<h3><a class="anchor" id="data-47"></a>
 Data</h3>
 <details >
 <summary >
@@ -546,19 +595,20 @@ Inherited (4)</summary>
 </ul>
 <p></p>
 </details>
-<h3><a class="anchor" id="globals-27"></a>
+<h3><a class="anchor" id="globals-49"></a>
 Globals</h3>
 <details >
 <summary >
-Inherited (6)</summary>
+Inherited (7)</summary>
 <p></p>
 <ul>
-<li><em>integer:</em> <b>items</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-<li><em>integer:</em> <b>item_requests</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-<li><em>integer:</em> <b>bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-<li><em>integer:</em> <b>available_bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-<li><em>integer:</em> <b>items_included</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-<li><em>boolean:</em> <b>blocker</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>decimal:</em> <b>objective</b> (from <code>DataStore_1</code>)</li>
+<li><em>integer:</em> <b>items</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>item_requests</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>bins</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>available_bins</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>items_included</b> (from <code>DataStore_2</code>)</li>
+<li><em>boolean:</em> <b>blocker</b> (from <code>DataStore_2</code>)</li>
 </ul>
 <p></p>
 </details>
@@ -597,7 +647,7 @@ Inherited (1)</summary>
 </details>
 <h2><a class="anchor" id="task-includeitemactivity"></a>
 Task (IncludeItemActivity)</h2>
-<h3><a class="anchor" id="status-45"></a>
+<h3><a class="anchor" id="status-47"></a>
 Status</h3>
 <details >
 <summary >
@@ -610,7 +660,7 @@ Inherited (3)</summary>
 </ul>
 <p></p>
 </details>
-<h3><a class="anchor" id="data-46"></a>
+<h3><a class="anchor" id="data-48"></a>
 Data</h3>
 <details >
 <summary >
@@ -627,19 +677,20 @@ Inherited (4)</summary>
 </ul>
 <p></p>
 </details>
-<h3><a class="anchor" id="globals-28"></a>
+<h3><a class="anchor" id="globals-50"></a>
 Globals</h3>
 <details >
 <summary >
-Inherited (6)</summary>
+Inherited (7)</summary>
 <p></p>
 <ul>
-<li><em>integer:</em> <b>items</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-<li><em>integer:</em> <b>item_requests</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-<li><em>integer:</em> <b>bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-<li><em>integer:</em> <b>available_bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-<li><em>integer:</em> <b>items_included</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-<li><em>boolean:</em> <b>blocker</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>decimal:</em> <b>objective</b> (from <code>DataStore_1</code>)</li>
+<li><em>integer:</em> <b>items</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>item_requests</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>bins</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>available_bins</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>items_included</b> (from <code>DataStore_2</code>)</li>
+<li><em>boolean:</em> <b>blocker</b> (from <code>DataStore_2</code>)</li>
 </ul>
 <p></p>
 </details>
@@ -686,7 +737,7 @@ Inherited (1)</summary>
 </details>
 <h2><a class="anchor" id="endevent-endeventsubprocess-1"></a>
 EndEvent (EndEventSubProcess)</h2>
-<h3><a class="anchor" id="status-46"></a>
+<h3><a class="anchor" id="status-48"></a>
 Status</h3>
 <details >
 <summary >
@@ -699,7 +750,7 @@ Inherited (3)</summary>
 </ul>
 <p></p>
 </details>
-<h3><a class="anchor" id="data-47"></a>
+<h3><a class="anchor" id="data-49"></a>
 Data</h3>
 <details >
 <summary >
@@ -716,19 +767,20 @@ Inherited (4)</summary>
 </ul>
 <p></p>
 </details>
-<h3><a class="anchor" id="globals-29"></a>
+<h3><a class="anchor" id="globals-51"></a>
 Globals</h3>
 <details >
 <summary >
-Inherited (6)</summary>
+Inherited (7)</summary>
 <p></p>
 <ul>
-<li><em>integer:</em> <b>items</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-<li><em>integer:</em> <b>item_requests</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-<li><em>integer:</em> <b>bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-<li><em>integer:</em> <b>available_bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-<li><em>integer:</em> <b>items_included</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-<li><em>boolean:</em> <b>blocker</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>decimal:</em> <b>objective</b> (from <code>DataStore_1</code>)</li>
+<li><em>integer:</em> <b>items</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>item_requests</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>bins</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>available_bins</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>items_included</b> (from <code>DataStore_2</code>)</li>
+<li><em>boolean:</em> <b>blocker</b> (from <code>DataStore_2</code>)</li>
 </ul>
 <p></p>
 </details>
@@ -768,7 +820,7 @@ Inherited (1)</summary>
 <h2><a class="anchor" id="startevent-catchrequestmessage-1"></a>
 StartEvent (CatchRequestMessage)</h2>
 <p>The guidance for the allocation of items to bins requires that all items have sent their request, all bins are available, and that the inclusion of an item will not exceed the capacity. Allocations are made in an order that the item which minimise the residual capacity is chosen first.</p>
-<h3><a class="anchor" id="status-47"></a>
+<h3><a class="anchor" id="status-49"></a>
 Status</h3>
 <details >
 <summary >
@@ -781,7 +833,7 @@ Inherited (3)</summary>
 </ul>
 <p></p>
 </details>
-<h3><a class="anchor" id="data-48"></a>
+<h3><a class="anchor" id="data-50"></a>
 Data</h3>
 <details >
 <summary >
@@ -798,19 +850,20 @@ Inherited (4)</summary>
 </ul>
 <p></p>
 </details>
-<h3><a class="anchor" id="globals-30"></a>
+<h3><a class="anchor" id="globals-52"></a>
 Globals</h3>
 <details >
 <summary >
-Inherited (6)</summary>
+Inherited (7)</summary>
 <p></p>
 <ul>
-<li><em>integer:</em> <b>items</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-<li><em>integer:</em> <b>item_requests</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-<li><em>integer:</em> <b>bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-<li><em>integer:</em> <b>available_bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-<li><em>integer:</em> <b>items_included</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-<li><em>boolean:</em> <b>blocker</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>decimal:</em> <b>objective</b> (from <code>DataStore_1</code>)</li>
+<li><em>integer:</em> <b>items</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>item_requests</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>bins</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>available_bins</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>items_included</b> (from <code>DataStore_2</code>)</li>
+<li><em>boolean:</em> <b>blocker</b> (from <code>DataStore_2</code>)</li>
 </ul>
 <p></p>
 </details>
@@ -882,7 +935,7 @@ Restrictions</h4>
 </ul>
 <h2><a class="anchor" id="endevent-endeventbin-1"></a>
 EndEvent (EndEventBin)</h2>
-<h3><a class="anchor" id="status-48"></a>
+<h3><a class="anchor" id="status-50"></a>
 Status</h3>
 <details >
 <summary >
@@ -893,7 +946,7 @@ Inherited (1)</summary>
 </ul>
 <p></p>
 </details>
-<h3><a class="anchor" id="data-49"></a>
+<h3><a class="anchor" id="data-51"></a>
 Data</h3>
 <details >
 <summary >
@@ -910,19 +963,20 @@ Inherited (4)</summary>
 </ul>
 <p></p>
 </details>
-<h3><a class="anchor" id="globals-31"></a>
+<h3><a class="anchor" id="globals-53"></a>
 Globals</h3>
 <details >
 <summary >
-Inherited (6)</summary>
+Inherited (7)</summary>
 <p></p>
 <ul>
-<li><em>integer:</em> <b>items</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-<li><em>integer:</em> <b>item_requests</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-<li><em>integer:</em> <b>bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-<li><em>integer:</em> <b>available_bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-<li><em>integer:</em> <b>items_included</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-<li><em>boolean:</em> <b>blocker</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>decimal:</em> <b>objective</b> (from <code>DataStore_1</code>)</li>
+<li><em>integer:</em> <b>items</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>item_requests</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>bins</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>available_bins</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>items_included</b> (from <code>DataStore_2</code>)</li>
+<li><em>boolean:</em> <b>blocker</b> (from <code>DataStore_2</code>)</li>
 </ul>
 <p></p>
 </details>
@@ -961,7 +1015,7 @@ Inherited (1)</summary>
 </details>
 <h2><a class="anchor" id="task-waitactivity-1"></a>
 Task (WaitActivity)</h2>
-<h3><a class="anchor" id="status-49"></a>
+<h3><a class="anchor" id="status-51"></a>
 Status</h3>
 <details >
 <summary >
@@ -972,7 +1026,7 @@ Inherited (1)</summary>
 </ul>
 <p></p>
 </details>
-<h3><a class="anchor" id="data-50"></a>
+<h3><a class="anchor" id="data-52"></a>
 Data</h3>
 <details >
 <summary >
@@ -989,19 +1043,20 @@ Inherited (4)</summary>
 </ul>
 <p></p>
 </details>
-<h3><a class="anchor" id="globals-32"></a>
+<h3><a class="anchor" id="globals-54"></a>
 Globals</h3>
 <details >
 <summary >
-Inherited (6)</summary>
+Inherited (7)</summary>
 <p></p>
 <ul>
-<li><em>integer:</em> <b>items</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-<li><em>integer:</em> <b>item_requests</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-<li><em>integer:</em> <b>bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-<li><em>integer:</em> <b>available_bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-<li><em>integer:</em> <b>items_included</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-<li><em>boolean:</em> <b>blocker</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>decimal:</em> <b>objective</b> (from <code>DataStore_1</code>)</li>
+<li><em>integer:</em> <b>items</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>item_requests</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>bins</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>available_bins</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>items_included</b> (from <code>DataStore_2</code>)</li>
+<li><em>boolean:</em> <b>blocker</b> (from <code>DataStore_2</code>)</li>
 </ul>
 <p></p>
 </details>
@@ -1054,7 +1109,7 @@ Owned (1)</summary>
 </details>
 <h2><a class="anchor" id="startevent-startevent-1"></a>
 StartEvent (StartEvent)</h2>
-<h3><a class="anchor" id="status-50"></a>
+<h3><a class="anchor" id="status-52"></a>
 Status</h3>
 <details >
 <summary >
@@ -1065,7 +1120,7 @@ Inherited (1)</summary>
 </ul>
 <p></p>
 </details>
-<h3><a class="anchor" id="data-51"></a>
+<h3><a class="anchor" id="data-53"></a>
 Data</h3>
 <details >
 <summary >
@@ -1082,19 +1137,20 @@ Inherited (4)</summary>
 </ul>
 <p></p>
 </details>
-<h3><a class="anchor" id="globals-33"></a>
+<h3><a class="anchor" id="globals-55"></a>
 Globals</h3>
 <details >
 <summary >
-Inherited (6)</summary>
+Inherited (7)</summary>
 <p></p>
 <ul>
-<li><em>integer:</em> <b>items</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-<li><em>integer:</em> <b>item_requests</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-<li><em>integer:</em> <b>bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-<li><em>integer:</em> <b>available_bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-<li><em>integer:</em> <b>items_included</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-<li><em>boolean:</em> <b>blocker</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>decimal:</em> <b>objective</b> (from <code>DataStore_1</code>)</li>
+<li><em>integer:</em> <b>items</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>item_requests</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>bins</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>available_bins</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>items_included</b> (from <code>DataStore_2</code>)</li>
+<li><em>boolean:</em> <b>blocker</b> (from <code>DataStore_2</code>)</li>
 </ul>
 <p></p>
 </details>
@@ -1133,7 +1189,7 @@ Inherited (1)</summary>
 </details>
 <h2><a class="anchor" id="dataobjectreference-dataobjectreference_04cxu4w-1"></a>
 DataObjectReference (DataObjectReference_04cxu4w)</h2>
-<h3><a class="anchor" id="status-51"></a>
+<h3><a class="anchor" id="status-53"></a>
 Status</h3>
 <details >
 <summary >
@@ -1144,7 +1200,7 @@ Inherited (1)</summary>
 </ul>
 <p></p>
 </details>
-<h3><a class="anchor" id="data-52"></a>
+<h3><a class="anchor" id="data-54"></a>
 Data</h3>
 <details >
 <summary >
@@ -1161,19 +1217,20 @@ Inherited (4)</summary>
 </ul>
 <p></p>
 </details>
-<h3><a class="anchor" id="globals-34"></a>
+<h3><a class="anchor" id="globals-56"></a>
 Globals</h3>
 <details >
 <summary >
-Inherited (6)</summary>
+Inherited (7)</summary>
 <p></p>
 <ul>
-<li><em>integer:</em> <b>items</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-<li><em>integer:</em> <b>item_requests</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-<li><em>integer:</em> <b>bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-<li><em>integer:</em> <b>available_bins</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-<li><em>integer:</em> <b>items_included</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
-<li><em>boolean:</em> <b>blocker</b> (from <a class="el" href="bin_packing_problem.html#collaboration-bin_packing_problem">`Bin_packing_problem`</a>)</li>
+<li><em>decimal:</em> <b>objective</b> (from <code>DataStore_1</code>)</li>
+<li><em>integer:</em> <b>items</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>item_requests</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>bins</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>available_bins</b> (from <code>DataStore_2</code>)</li>
+<li><em>integer:</em> <b>items_included</b> (from <code>DataStore_2</code>)</li>
+<li><em>boolean:</em> <b>blocker</b> (from <code>DataStore_2</code>)</li>
 </ul>
 <p></p>
 </details>

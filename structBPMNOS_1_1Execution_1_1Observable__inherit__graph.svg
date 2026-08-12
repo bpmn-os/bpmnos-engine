@@ -225,23 +225,23 @@
 <text text-anchor="start" x="1255" y="-669.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
 <text text-anchor="start" x="1268" y="-669.5" font-family="Helvetica,sans-Serif" font-size="10.00">currentTime</text>
 <text text-anchor="start" x="1255" y="-654.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="1268" y="-654.5" font-family="Helvetica,sans-Serif" font-size="10.00">contributionsToObjective</text>
+<text text-anchor="start" x="1268" y="-654.5" font-family="Helvetica,sans-Serif" font-size="10.00">pendingEntryDecisions</text>
 <text text-anchor="start" x="1255" y="-639.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="1268" y="-639.5" font-family="Helvetica,sans-Serif" font-size="10.00">pendingEntryDecisions</text>
+<text text-anchor="start" x="1268" y="-639.5" font-family="Helvetica,sans-Serif" font-size="10.00">pendingChoiceDecisions</text>
 <text text-anchor="start" x="1255" y="-624.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="1268" y="-624.5" font-family="Helvetica,sans-Serif" font-size="10.00">pendingChoiceDecisions</text>
+<text text-anchor="start" x="1268" y="-624.5" font-family="Helvetica,sans-Serif" font-size="10.00">pendingExitDecisions</text>
 <text text-anchor="start" x="1255" y="-609.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="1268" y="-609.5" font-family="Helvetica,sans-Serif" font-size="10.00">pendingExitDecisions</text>
+<text text-anchor="start" x="1268" y="-609.5" font-family="Helvetica,sans-Serif" font-size="10.00">pendingMessageDeliveryDecisions</text>
 <text text-anchor="start" x="1255" y="-594.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="1268" y="-594.5" font-family="Helvetica,sans-Serif" font-size="10.00">pendingMessageDeliveryDecisions</text>
+<text text-anchor="start" x="1268" y="-594.5" font-family="Helvetica,sans-Serif" font-size="10.00">tokensAwaitingReadyEvent</text>
 <text text-anchor="start" x="1255" y="-579.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="1268" y="-579.5" font-family="Helvetica,sans-Serif" font-size="10.00">tokensAwaitingReadyEvent</text>
-<text text-anchor="start" x="1255" y="-564.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="1268" y="-564.5" font-family="Helvetica,sans-Serif" font-size="10.00">tokensAwaitingCompletion</text>
-<text text-anchor="start" x="1268" y="-553.5" font-family="Helvetica,sans-Serif" font-size="10.00">Event</text>
+<text text-anchor="start" x="1268" y="-579.5" font-family="Helvetica,sans-Serif" font-size="10.00">tokensAwaitingCompletion</text>
+<text text-anchor="start" x="1268" y="-568.5" font-family="Helvetica,sans-Serif" font-size="10.00">Event</text>
+<text text-anchor="start" x="1255" y="-553.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text text-anchor="start" x="1268" y="-553.5" font-family="Helvetica,sans-Serif" font-size="10.00">archive</text>
 <text text-anchor="start" x="1255" y="-538.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="1268" y="-538.5" font-family="Helvetica,sans-Serif" font-size="10.00">archive</text>
-<text text-anchor="start" x="1268" y="-523.5" font-family="Helvetica,sans-Serif" font-size="10.00">and 21 more...</text>
+<text text-anchor="start" x="1268" y="-538.5" font-family="Helvetica,sans-Serif" font-size="10.00">unsent</text>
+<text text-anchor="start" x="1268" y="-523.5" font-family="Helvetica,sans-Serif" font-size="10.00">and 20 more...</text>
 <text text-anchor="start" x="1255" y="-508.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
 <text text-anchor="start" x="1268" y="-508.5" font-family="Helvetica,sans-Serif" font-size="10.00">getObservableType()</text>
 <text text-anchor="start" x="1255" y="-493.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
@@ -255,7 +255,7 @@
 <text text-anchor="start" x="1255" y="-433.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
 <text text-anchor="start" x="1268" y="-433.5" font-family="Helvetica,sans-Serif" font-size="10.00">isAlive()</text>
 <text text-anchor="start" x="1255" y="-418.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="1268" y="-418.5" font-family="Helvetica,sans-Serif" font-size="10.00">getWeightedObjective()</text>
+<text text-anchor="start" x="1268" y="-418.5" font-family="Helvetica,sans-Serif" font-size="10.00">getObjective()</text>
 <text text-anchor="start" x="1255" y="-403.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
 <text text-anchor="start" x="1268" y="-403.5" font-family="Helvetica,sans-Serif" font-size="10.00">getStatusAttributes()</text>
 <text text-anchor="start" x="1255" y="-388.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
