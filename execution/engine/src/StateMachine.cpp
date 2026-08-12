@@ -4,6 +4,7 @@
 #include "SystemState.h"
 #include "Message.h"
 #include "Event.h"
+#include "DataUpdate.h"
 #include "execution/utility/src/erase.h"
 #include "model/bpmnos/src/extensionElements/ExtensionElements.h"
 #include "model/bpmnos/src/extensionElements/Timer.h"
@@ -29,6 +30,7 @@ StateMachine::StateMachine(const SystemState* systemState, const BPMN::Process* 
 {
   assert( instance.has_value() && instance.value() >= 0 );
   data[BPMNOS::Model::ExtensionElements::Index::Instance] = std::ref(instance);
+  updateObjective();
 }
 
 StateMachine::StateMachine(const SystemState* systemState, const BPMN::Scope* scope, Token* parentToken, Values dataAttributes, std::optional<BPMNOS::number> instance )
@@ -53,6 +55,13 @@ std::cerr << (int)attribute.get().value() << ", ";
 std::cerr << std::endl;
 */
   assert( this->instance.has_value() && this->instance.value() >= 0 );
+
+  if ( scope && !scope->represents<BPMN::EventSubProcess>() ) {
+    // an event subprocess is instantiated when its start event is triggered and not when the state machine
+    // awaiting the trigger is created, so its data is accounted there; a pending event subprocess that is
+    // never triggered instantiates nothing and accounts nothing
+    updateObjective();
+  }
 }
 
 StateMachine::StateMachine(const StateMachine* other)
@@ -797,6 +806,35 @@ void StateMachine::run(Values status) {
   }
 }
 
+void StateMachine::updateObjective() {
+  auto extensionElements = scope->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
+  if ( !extensionElements ) {
+    return;
+  }
+
+
+  // only the data this state machine owns is accounted here. The data of an enclosing scope is reachable
+  // through @ref data but was accounted by the state machine owning it, and the owned values are the tail
+  // of @ref data, everything before them belonging to an ancestor.
+  size_t firstOwned = data.size() - ownedData.size();
+
+  BPMNOS::number DELTA = 0;
+  for ( auto& attribute : extensionElements->data ) {
+    if ( attribute->weight != 0 && attribute->index >= firstOwned ) {
+      if ( auto value = data[attribute->index].get(); value.has_value() ) {
+        DELTA += value.value() * attribute->weight;
+      }
+    }
+  }
+
+  if ( DELTA != 0 ) {
+    auto& globals = const_cast<SystemState*>(systemState)->globals;
+    globals[BPMNOS::Model::ExtensionElements::Index::Objective].value() += DELTA;
+    // dataUpdate indicating that objective has changed
+    systemState->engine->notify( DataUpdate( { extensionElements->attributeRegistry.globalAttributes[BPMNOS::Model::ExtensionElements::Index::Objective] } ) );
+  }
+}
+
 void StateMachine::createChild(Token* parent, const BPMN::Scope* scope, Values data, std::optional<BPMNOS::number> instance) {
 //std::cerr << "Create child from " << this << std::endl;
   parent->owned = std::make_shared<StateMachine>(systemState, scope, parent, std::move(data), instance.value_or( (*parent->data)[BPMNOS::Model::ExtensionElements::Index::Instance].get().value() ) );
@@ -1088,10 +1126,21 @@ void StateMachine::shutdown() {
   BPMNOS::Values mergedStatus = Token::mergeStatus(tokens);
   
   if ( auto eventSubProcess = scope->represents<BPMN::EventSubProcess>() ) {
-    // update global objective
-    assert( scope->extensionElements->as<BPMNOS::Model::ExtensionElements>() );
-    for ( auto& [attribute,value] : scope->extensionElements->as<BPMNOS::Model::ExtensionElements>()->getContributionsToObjective(mergedStatus,data,parentToken->globals) ) {
-      const_cast<SystemState*>(systemState)->contributionsToObjective[attribute] += value;
+    // the status attributes declared for the event subprocess are accounted where it shuts down
+    auto extensionElements = scope->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+    assert( extensionElements );
+    BPMNOS::number DELTA = 0;
+    for ( auto& attribute : extensionElements->attributes ) {
+      if ( attribute->weight != 0 ) {
+        if ( auto value = extensionElements->attributeRegistry.getValue(attribute.get(),mergedStatus,data,parentToken->globals); value.has_value() ) {
+          DELTA += value.value() * attribute->weight;
+        }
+      }
+    }
+    if ( DELTA != 0 ) {
+      parentToken->globals[BPMNOS::Model::ExtensionElements::Index::Objective].value() += DELTA;
+      // dataUpdate indicating that objective has changed
+      engine->notify( DataUpdate( { extensionElements->attributeRegistry.globalAttributes[BPMNOS::Model::ExtensionElements::Index::Objective] } ) );
     }
 
     if (!eventSubProcess->startEvent->isInterrupting ) {

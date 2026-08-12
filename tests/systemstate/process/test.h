@@ -53,7 +53,6 @@ SCENARIO( "SystemState copy for simple process", "[systemstate][process]" ) {
       THEN( "The copy has the same numeric values" ) {
         REQUIRE( copiedState.currentTime == originalState->currentTime );
         REQUIRE( copiedState.globals.size() == originalState->globals.size() );
-        REQUIRE( copiedState.contributionsToObjective == originalState->contributionsToObjective );
       }
 
       THEN( "The copy has the same pending entry decisions" ) {

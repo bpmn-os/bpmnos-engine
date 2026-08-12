@@ -73,22 +73,12 @@ public:
   bool isAlive() const;
 
   /**
-   * @brief Returns the total weighted objective value (assuming maximization) accumulated during execution.
+   * @brief Returns the value of the objective global attribute maintained by the run.
    *
-   * Global attributes are evaluated upon each call of the method.
-   *
-   * Attributes declared for activities, event-subprocesses, and processes contribute to the objective when
-   * - the activity is exited,
-   * - a compensation activity is completed,
-   * - the event-subprocess shuts down without failure, or
-   * - the process shuts down without failure.
-   *
-   * In all other cases values of attributes declared to contribute to the objective will be ignored.
+   * The objective is updated whenever a weighted data or global attribute is written, and when status
+   * attributes are accounted at element exit/completion.
    */
-  BPMNOS::number getWeightedObjective() const;
-
-  std::unordered_map<const BPMNOS::Model::Attribute*, BPMNOS::number> contributionsToObjective; ///< All contributions that have already been added to the objective.
-//  BPMNOS::number contributionsToObjective; ///< All contributions that have already been added to the objective.
+  BPMNOS::number getObjective() const;
   
   auto_list< std::weak_ptr<Token>, std::weak_ptr<DecisionRequest> > pendingEntryDecisions;
   auto_list< std::weak_ptr<Token>, std::weak_ptr<DecisionRequest> > pendingChoiceDecisions;

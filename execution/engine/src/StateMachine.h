@@ -120,6 +120,7 @@ private:
   void registerRecipient(); ///< Register new state machine to allow directed message delivery
   void unregisterRecipient(); ///< Register new state machine id to withdraw directed messages
 
+  void updateObjective(); ///< Updates the objective by the values the data attributes of the scope are created with, these never passing through @ref BPMNOS::Model::AttributeRegistry::setValue
   void createChild(Token* parent, const BPMN::Scope* scope, Values data, std::optional<BPMNOS::number> instance = std::nullopt); ///< Method creating the state machine for a (sub)process
 
   void createCompensationTokenForBoundaryEvent(const BPMN::BoundaryEvent* compensateBoundaryEvent, BPMNOS::Values status); ///< Method creating a compensation token at a compensate boundary event of an activity

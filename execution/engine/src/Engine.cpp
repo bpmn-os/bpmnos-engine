@@ -249,8 +249,13 @@ void Engine::process(const ChoiceEvent* event) {
   assert( extensionElements );
   assert( extensionElements->choices.size() == event->choices.size() );
   // apply choices
+  auto oldObjective = token->globals[BPMNOS::Model::ExtensionElements::Index::Objective];
   for (size_t i = 0; i < extensionElements->choices.size(); i++) {
     extensionElements->attributeRegistry.setValue( extensionElements->choices[i]->attribute, token->status, *token->data, token->globals, event->choices[i] );
+  }
+  if ( token->globals[BPMNOS::Model::ExtensionElements::Index::Objective] != oldObjective ) {
+    // dataUpdate indicating that objective has changed
+    notify( DataUpdate( { extensionElements->attributeRegistry.globalAttributes[BPMNOS::Model::ExtensionElements::Index::Objective] } ) );
   }
 
   commands.emplace_back(std::bind(&Token::advanceToCompleted,token), token);
@@ -285,9 +290,14 @@ void Engine::process(const MessageDeliveryEvent* event) {
   auto message_ptr = event->message.lock();
   assert( message_ptr );
   Message* message = const_cast<Message*>(message_ptr.get());
-  // update token status 
+  // update token status
+  auto oldObjective = token->globals[BPMNOS::Model::ExtensionElements::Index::Objective];
   message->apply(token->node,token->getAttributeRegistry(),token->status,*token->data,token->globals);
-  
+  if ( token->globals[BPMNOS::Model::ExtensionElements::Index::Objective] != oldObjective ) {
+    // dataUpdate indicating that objective has changed
+    notify( DataUpdate( { token->getAttributeRegistry().globalAttributes[BPMNOS::Model::ExtensionElements::Index::Objective] } ) );
+  }
+
   message->state = Message::State::DELIVERED;
   notify(message);
   

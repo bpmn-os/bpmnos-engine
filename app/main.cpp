@@ -196,7 +196,7 @@ int main(int argc, char* argv[]) {
   logger.reset();
   std::cout << "Status: " << BPMNOS::Execution::outcome[(size_t)sentinel.getOutcome()] << std::endl;
   
-  auto objective = (float)engine.getSystemState()->getWeightedObjective();
+  auto objective = (float)engine.getSystemState()->getObjective();
   std::cout << "Objective (maximization): " << objective << std::endl;
   std::cout << "Objective (minimization): " << -objective  << std::endl;
   return 0;

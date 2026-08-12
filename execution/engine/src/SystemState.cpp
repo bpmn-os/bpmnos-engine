@@ -8,16 +8,23 @@ SystemState::SystemState(const Engine* engine, const BPMNOS::Model::Scenario* sc
   : engine(engine)
   , scenario(scenario)
   , currentTime(currentTime)
-  , contributionsToObjective(0)
   , globals(scenario->globals)
 {
+  // the values the globals are created with never pass through setValue, so the objective is seeded with
+  // them here; no data update is notified, the run not having begun and no token being able to observe it
+  for ( auto& attribute : scenario->getModel()->attributes ) {
+    assert( attribute->category == BPMNOS::Model::Attribute::Category::GLOBAL );
+    if ( attribute->weight != 0 && globals[attribute->index].has_value() ) {
+      globals[BPMNOS::Model::ExtensionElements::Index::Objective].value() +=
+        globals[attribute->index].value() * attribute->weight;
+    }
+  }
 }
 
 SystemState::SystemState(const Engine* engine, const BPMNOS::Model::Scenario* scenario, const SystemState* other)
   : engine(engine)
   , scenario(scenario)
   , currentTime(other->currentTime)
-  , contributionsToObjective(other->contributionsToObjective)
   , globals(other->globals)
   , instantiationCounter(other->instantiationCounter)
 {
@@ -120,21 +127,8 @@ bool SystemState::isAlive() const {
   return !instances.empty();
 };
 
-BPMNOS::number SystemState::getWeightedObjective() const {
-  BPMNOS::number result = 0.0;
-  for ( auto& [attribute, value] : contributionsToObjective ) {
-    result += value * attribute->weight;
-  }
-  
-  for ( auto& attribute : scenario->getModel()->attributes ) {
-    assert( attribute->category == BPMNOS::Model::Attribute::Category::GLOBAL );
-    auto value = globals[attribute->index];
-    if ( value.has_value() ) {
-      result += value.value() * attribute->weight;
-    }
-  }
-  
-  return result;
+BPMNOS::number SystemState::getObjective() const {
+  return globals[BPMNOS::Model::ExtensionElements::Index::Objective].value_or(0);
 }
 
 std::vector< std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values> > SystemState::getInstantiations() const {
