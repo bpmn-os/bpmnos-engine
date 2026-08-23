@@ -236,7 +236,7 @@ Message flows restrict the flow of messages to the events or (sub)processes the 
 All messages sent by a node subject to such a restriction may only be delivered to a node subject to the restriction, and vice versa.
 A message sent by a node can also be received by another node if no message flow restricts messaging between the nodes.
 
-## Data
+## @ref BPMN::DataObject "Data objects"
 ![DataObject](BPMN/DataObject.svg)
 @par
 

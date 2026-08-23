@@ -87,6 +87,18 @@ if (BPMNOS_DOCS)
     set(BPMNOS_MODEL_PAGES_DEPENDENCY model_pages)
   endif()
 
+  # The pages below are subpages of one "Models" page, so that they occupy a single entry in the navigation
+  # rather than thirteen top-level ones. The index used to be a checked-in file; it is generated from the
+  # same list as the pages themselves, so that adding a model cannot leave it behind.
+  set(MODEL_INDEX "# Models\n@page models Models\n\n")
+  foreach(page ${MODEL_PAGES})
+    string(REGEX REPLACE "^[^ ]+ +@page +([^ ]+) +(.*)$" "\\1;\\2" entry "${page}")
+    list(GET entry 0 id)
+    list(GET entry 1 title)
+    string(APPEND MODEL_INDEX "- @subpage ${id} \"${title}\"\n")
+  endforeach()
+  file(WRITE ${MODEL_DOC}/main.md "${MODEL_INDEX}")
+
   # Assemble the Doxygen pages from bpmnosdoc's markdown: turn each `![alt](x.svg)` into an inline SVG
   # object (alt may contain spaces, e.g. "Diagram: <sub-process>"), and prepend the `@page id title`.
   add_custom_target(model_pages

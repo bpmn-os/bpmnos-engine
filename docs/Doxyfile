@@ -16,8 +16,7 @@ INPUT             = $(BPMNPP_INCLUDE_PATH)/bpmn++.h model/ execution/ $(BPMNOS_X
                     docs/md/engine \
                     docs/md/controller \
                     docs/md/observer \
-                    $(BPMNOS_MODEL_DOC) \
-                    docs/md/profiles
+                    $(BPMNOS_MODEL_DOC)
 
 EXAMPLE_PATH = examples/
 

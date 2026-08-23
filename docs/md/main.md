@@ -17,87 +17,12 @@ The framework is composed of the components illustrated above:
 
 
 
-## Installation
+## Getting started
 
-You can obtain BPMN-OS from  https://github.com/bpmn-os/bpmnos-engine.
-
-### Dependencies
-
-BPMN-OS requires Xerces-C++ 3.2.x., `bpmn++`, and  `schematic++`.
-
-On Ubuntu Linux Xerces can be installed by
-```sh
-sudo apt install libxerces-c-dev
-```
-
-You can obtain `bpmn++` from https://github.com/bpmn-os/bpmnpp and `schematic++` from https://github.com/rajgoel/schematicpp. Please follow build and install instructions provided by these dependencies.
-
-### Build BPMN-OS
-
-The library is built like a typical CMake project.
-
- A normal build will look something like this (output omitted):
-
-```sh
-mkdir build
-cd build
-cmake ..
-make
-cd ..
- ```
-
-You can use multiple processors to reduce build times
-```sh
-make -j[n]
- ```
-where `[n]` is the number of processors to be used.
-
-### Compiler optimizations
-
-The `NDEBUG` flag can be used to turn on or off compiler optimizations.
-
-To turn on compiler optimizations use
-```
-cmake -DNDEBUG=ON ..
-```
-
-To turn off compiler optimizations use
-```
-cmake -DNDEBUG=OFF ..
-```
-
-This creates a single header file `lib/bpmnos-model.h` and a library `lib/libbpmnos-model.a`. Moreover, an executable `bpmnos-greedy` using these libraries is created in the `bin` folder. An example showing how to use this executable is given in the [example folder](example).
-
-### Tests
-
-To run tests use
-```sh
-make tests
-```
-
-### Documentation
-
-To create the documentation run
-```sh
-make docs
-```
-Doxygen is required to build the documentation.
-
-### Code profiles
-
-To create code profiles for selected examples use
-```sh
-make profiles
-```
-
-Compiler optimizations must be turned off to profile the code.
-
-To create graphs visualising the profiles, `gprof2dot` is required. On Ubuntu Linux `gprof2dot` can be installed by
-```sh
-pipx install gprof2dot
-```
-After creating the code profiles, re-create the documentation to include profiling graphs.
-
+BPMN-OS is obtained from https://github.com/bpmn-os/bpmnos-engine. Its
+[README](https://github.com/bpmn-os/bpmnos-engine#readme) states the requirements and describes how the
+project is configured, built, tested, profiled, documented and installed. The pages that follow document
+the framework itself.
 
 ## License
 

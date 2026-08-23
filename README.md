@@ -49,6 +49,12 @@ To profile the code for selected example use cases, run
 make profiles # (profile)
 ```
 
+Each example is executed by the instrumented `bpmnos-greedy` and its profile is written to `build/profile`
+as a `.dot` and an `.svg`. 
+
+> [!NOTE]
+> Profiling requires `gprof`, which comes with `binutils`, and the graphs additionally require `gprof2dot` and `graphviz`. Run `pipx install gprof2dot` and `sudo apt install graphviz` to install these.
+
 ## Documentation
 
 To generate docs in `build/release/docs/html` folder, run

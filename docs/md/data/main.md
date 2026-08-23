@@ -1,5 +1,5 @@
 # Data provider
-@page data Data provider
+@page dataprovider Data provider
 
 A @ref BPMNOS::Model::DataProvider "data provider" is responsible for creating @ref BPMNOS::Model::Scenario "scenarios" providing access to all known or anticipated process instances and all known or anticipated attribute values.
 

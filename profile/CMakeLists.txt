@@ -1,11 +1,14 @@
-cmake_minimum_required(VERSION 3.26.4)
+# Code profiles are a developer tool, not documentation: each one measures one machine at one moment, and
+# reproducing it needs an instrumented build and a run of every example. They are therefore written to the
+# build tree and no longer copied into the checkout or turned into Doxygen pages. Open them with a browser,
+# for instance `xdg-open build/profile`.
 
-project(profiles)
+if (NOT TARGET bpmnos-greedy)
+  message(FATAL_ERROR "bpmnos: BPMNOS_PROFILE requires the application; configure with -DBPMNOS_APP=ON")
+endif()
 
-# Set folder for the library to be created
-message("-- Profiles will be created in folder: ${CMAKE_CURRENT_SOURCE_DIR}")
-
-get_filename_component(EXAMPLES_DIR "${PROJECT_SOURCE_DIR}/../examples" REALPATH)
+set(EXAMPLES_DIR ${PROJECT_SOURCE_DIR}/examples)
+message("-- Profiles will be created in folder: ${CMAKE_BINARY_DIR}")
 message("-- Profiles will be created from example folder: ${EXAMPLES_DIR}")
 
 set(instances
@@ -16,59 +19,24 @@ set(instances
   job_shop_scheduling_problem/Job_shop_scheduling_problem.bpmn
 )
 
-# Define a custom target to run profile.sh for each instance
+# The instrumented executable must exist before the script runs it, which a POST_BUILD command on a target
+# without dependencies did not ensure: every profile was taken of a binary that was not there.
 add_custom_target(profiles)
+add_dependencies(profiles bpmnos-greedy)
 
-# Iterate over each instance and add a custom command to run the script
 foreach(instance ${instances})
-  # Extract the directory part from the instance path
   get_filename_component(name ${instance} DIRECTORY)
 
   add_custom_command(
     TARGET profiles
     POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E echo "-- Create profile for ${name}"
-#    COMMAND ${CMAKE_COMMAND} -E echo "./profile.sh -m ${EXAMPLES_DIR}/${instance} -d ${EXAMPLES_DIR}/${name}/instance.csv -p ${EXAMPLES_DIR}/${name} profile_${name}" 
-    COMMAND ./profile.sh -m ${EXAMPLES_DIR}/${instance} -d ${EXAMPLES_DIR}/${name}/instance.csv -p ${EXAMPLES_DIR}/${name} profile_${name} 
-    COMMAND ${CMAKE_COMMAND} -E copy profile_${name}.svg  ${PROJECT_SOURCE_DIR}/../docs/images/
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/profile.sh
+            -x $<TARGET_FILE:bpmnos-greedy>
+            -m ${EXAMPLES_DIR}/${instance}
+            -d ${EXAMPLES_DIR}/${name}/instance.csv
+            -p ${EXAMPLES_DIR}/${name}
+            profile_${name}
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
   )
 endforeach()
-
-add_custom_command(
-  TARGET profiles
-  POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E echo "Copy profiles to docs"
-  COMMAND mkdir -p profiles
-  COMMAND ${CMAKE_COMMAND} -E echo "# Code profiles" > profiles/main.md VERBATIM
-  COMMAND ${CMAKE_COMMAND} -E echo "@page profiles Code profiles" >> profiles/main.md VERBATIM
-  WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/../docs/md/
-)
-
-# Iterate over each instance and add link to profile
-foreach(instance ${instances})
-  # Extract the directory part from the instance path
-  get_filename_component(name ${instance} DIRECTORY)
-  string(REPLACE "_" " " model "${name}")
-  add_custom_command(
-    TARGET profiles
-    POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E echo "- @subpage profile_${name}" >> profiles/main.md
-    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/../docs/md
-  )
-  add_custom_command(
-    TARGET profiles
-    POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E echo "# Code profile for the ${model}" > profiles/profile_${name}.md VERBATIM
-    COMMAND ${CMAKE_COMMAND} -E echo "@page profile_${name} Code profile for the ${model}" >> profiles/profile_${name}.md VERBATIM
-    COMMAND ${CMAKE_COMMAND} -E echo "This page contains a code profile for the  @ref ${name} model and this @subpage instance_${name} \"instance\"." >> profiles/profile_${name}.md VERBATIM    
-    COMMAND ${CMAKE_COMMAND} -E echo "" >> profiles/profile_${name}.md VERBATIM    
-    COMMAND ${CMAKE_COMMAND} -E echo "![Code profiling graph](profile_${name}.svg)" >> profiles/profile_${name}.md VERBATIM    
-    COMMAND ${CMAKE_COMMAND} -E echo "# Instance" > profiles/instance_${name}.md VERBATIM
-    COMMAND ${CMAKE_COMMAND} -E echo "@page instance_${name} Instance" >> profiles/instance_${name}.md VERBATIM
-    COMMAND ${CMAKE_COMMAND} -E echo "@include ${name}/instance.csv" >> profiles/instance_${name}.md VERBATIM    
-    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/../docs/md
-  )
-endforeach()
-
-message("-- To include code profiles in documentation run: make docs")

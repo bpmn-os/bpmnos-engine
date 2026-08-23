@@ -1,0 +1,12 @@
+@PACKAGE_INIT@
+
+include(CMakeFindDependencyMacro)
+
+# bpmn++ appears in the engine's interface and is a compiled library, so it is resolved here. cnl, limex
+# and nlohmann/json are header-only and are installed alongside the engine's own headers, so they need
+# nothing: the engine's include directory covers them.
+find_dependency(bpmnpp)
+
+include("${CMAKE_CURRENT_LIST_DIR}/bpmnos-targets.cmake")
+
+check_required_components(bpmnos)
