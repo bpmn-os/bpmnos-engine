@@ -6,10 +6,10 @@ project(bpmnos-greedy)
 set(CMAKE_CXX_STANDARD 23)
 
 # Set the output directory for the binary
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/../bin)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${BPMNOS_BINARY_DIR}/bin)
 
 include_directories(
-  ${PROJECT_SOURCE_DIR}/../lib
+  ${BPMNOS_INCLUDE_DIR}
 )
 
 # Add the executable
@@ -20,9 +20,8 @@ target_link_libraries(bpmnos-greedy
   PRIVATE 
   bpmnos-execution
   bpmnos-model
-  bpmn++
+  bpmnpp::bpmn++
   pthread
-  xerces-c
 )
 
 if (NDEBUG)

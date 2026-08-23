@@ -1,6 +1,3 @@
-model/bpmnos/src/xml
-bin
-lib
 docs/html
 docs/md/models/*/*
 docs/md/profiles/*

@@ -1,11 +1,13 @@
-include("${SOURCE_DIR}/xml/bpmnos/CMakeLists.txt")
+# The generated classes live in XML_DIR, which is in the build tree, while the hand-written sources live in
+# SOURCE_DIR, so the two sets no longer share a prefix and are resolved separately.
+include("${XML_DIR}/bpmnos/CMakeLists.txt")
 
-set(bpmn_HEADERS ${bpmnos_HEADERS})
-set(bpmn_SOURCES ${bpmnos_SOURCES})
-list(TRANSFORM bpmn_HEADERS PREPEND "xml/")
-list(TRANSFORM bpmn_SOURCES PREPEND "xml/")
+set(bpmn_xml_HEADERS ${bpmnos_HEADERS})
+set(bpmn_xml_SOURCES ${bpmnos_SOURCES})
+list(TRANSFORM bpmn_xml_HEADERS PREPEND "${XML_DIR}/")
+list(TRANSFORM bpmn_xml_SOURCES PREPEND "${XML_DIR}/")
 
-list(APPEND bpmn_SOURCES
+set(bpmn_SOURCES
   extensionElements/Attribute.cpp
   extensionElements/AttributeRegistry.cpp
   extensionElements/Parameter.cpp
@@ -27,7 +29,7 @@ list(APPEND bpmn_SOURCES
   Model.cpp
 )
 
-list(APPEND bpmn_HEADERS
+set(bpmn_HEADERS
   extensionElements/Attribute.h
   extensionElements/AttributeRegistry.h
   extensionElements/Parameter.h
@@ -48,3 +50,10 @@ list(APPEND bpmn_HEADERS
   LookupTable.h
   Model.h
 )
+
+# The hand-written sources are relative and resolved against SOURCE_DIR; the xml set goes first, as it did
+# when both were relative, since the amalgamated header is these files concatenated in list order.
+list(TRANSFORM bpmn_SOURCES PREPEND "${SOURCE_DIR}/")
+list(TRANSFORM bpmn_HEADERS PREPEND "${SOURCE_DIR}/")
+list(PREPEND bpmn_SOURCES ${bpmn_xml_SOURCES})
+list(PREPEND bpmn_HEADERS ${bpmn_xml_HEADERS})

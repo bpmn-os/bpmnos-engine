@@ -5,16 +5,13 @@ project(bpmnos-execution)
 # Set the C++ standard
 set(CMAKE_CXX_STANDARD 23)
 
-# Set folder for the library to be created
-set(LIB_DIR "lib" CACHE STRING "Library directory")
-message("-- Library will be created in folder: ${PROJECT_SOURCE_DIR}/../${LIB_DIR}")
+message("-- Library will be created in folder: ${BPMNOS_LIB_DIR}")
 
 include(FetchContent)
 set(FETCHCONTENT_QUIET FALSE)
 
 # Set output directories
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/../${LIB_DIR})
-#set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR})
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${BPMNOS_LIB_DIR})
 
 # Get lists of all headers and sources of utilities
 include("${PROJECT_SOURCE_DIR}/utility/CMakeLists.txt")
@@ -31,19 +28,13 @@ include("${PROJECT_SOURCE_DIR}/model/CMakeLists.txt")
 # Get lists of all headers and sources of controllers
 include("${PROJECT_SOURCE_DIR}/controller/CMakeLists.txt")
 
-find_program(CCACHE_FOUND "ccache")
-set(CCACHE_SUPPORT ON CACHE BOOL "Enable ccache support")
-if (CCACHE_FOUND AND CCACHE_SUPPORT)
-  set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "ccache")
-  set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK "ccache")
-endif()
 
 # Generate the single header file
-set(SINGLE_HEADER_PATH "${PROJECT_SOURCE_DIR}/../${LIB_DIR}/${PROJECT_NAME}.h")
+set(SINGLE_HEADER_PATH "${BPMNOS_INCLUDE_DIR}/${PROJECT_NAME}.h")
 message("-- Header location: ${SINGLE_HEADER_PATH}")
 
 # Create output directory for the library
-file(MAKE_DIRECTORY "${PROJECT_SOURCE_DIR}/../${LIB_DIR}")
+file(MAKE_DIRECTORY "${BPMNOS_INCLUDE_DIR}")
 
 set(ALL_HEADERS
   ${execution_utility_HEADERS}
@@ -60,7 +51,7 @@ add_custom_command(
   OUTPUT "${SINGLE_HEADER_PATH}"
   COMMAND ${CMAKE_COMMAND}
     -DHEADERS="${HEADERS_JOINED}"
-    -DFILENAME=${PROJECT_NAME}.h
+    -DOUTPUT=${SINGLE_HEADER_PATH}
     -P "${PROJECT_SOURCE_DIR}/../single-header.cmake"
   DEPENDS ${ALL_HEADERS}
   COMMENT "Generating single header: ${SINGLE_HEADER_PATH}"
@@ -123,9 +114,33 @@ else()
   )
 endif()
 
+# Anything linking this library includes the amalgamated header, so the library waits for it to be
+# generated. Without this the app could compile before the header existed, which went unnoticed only
+# because the header used to persist in the checkout between builds.
+add_dependencies(${PROJECT_NAME} execution_header)
+
+# A consumer names the same target whether the engine was built in its tree or resolved from a prefix, and
+# inherits the amalgamated header's directory and bpmn++ from it rather than restating either.
+add_library(bpmnos::execution ALIAS ${PROJECT_NAME})
+
+target_include_directories(${PROJECT_NAME}
+  PUBLIC
+    $<BUILD_INTERFACE:${BPMNOS_INCLUDE_DIR}>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+)
+
+target_link_libraries(${PROJECT_NAME} PUBLIC bpmnpp::bpmn++)
+
+target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_23)
+
+include(GNUInstallDirs)
+
 # Install the header files
-install(FILES ${SINGLE_HEADER_PATH} DESTINATION include)
+install(FILES ${SINGLE_HEADER_PATH} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
 # Install the library
-install(TARGETS ${PROJECT_NAME} ARCHIVE DESTINATION lib)
+install(TARGETS ${PROJECT_NAME}
+  EXPORT  bpmnos-targets
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+)
 

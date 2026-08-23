@@ -22,10 +22,10 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0")
 
 add_executable(run_tests EXCLUDE_FROM_ALL main.cpp)
 
-message("-- Include: ${PROJECT_SOURCE_DIR}/lib")
+message("-- Include: ${BPMNOS_INCLUDE_DIR}")
 
 include_directories(
-  ${PROJECT_SOURCE_DIR}/lib
+  ${BPMNOS_INCLUDE_DIR}
 )
 
 if (NDEBUG)
@@ -83,9 +83,8 @@ target_link_libraries(run_tests
   PRIVATE
   bpmnos-execution
   bpmnos-model
-  bpmn++
+  bpmnpp::bpmn++
   pthread
-  xerces-c
   Catch2::Catch2WithMain
 )
 
