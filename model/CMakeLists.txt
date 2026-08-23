@@ -41,6 +41,7 @@ add_custom_command(
   COMMAND ${CMAKE_COMMAND}
     -DHEADERS="${HEADERS_JOINED}"
     -DOUTPUT=${SINGLE_HEADER_PATH}
+    -DPROLOGUE="bpmn++.h"
     -P "${PROJECT_SOURCE_DIR}/../single-header.cmake"
   DEPENDS ${ALL_HEADERS}
   COMMENT "Generating single header: ${SINGLE_HEADER_PATH}"
@@ -125,6 +126,7 @@ add_library(bpmnos::model ALIAS ${PROJECT_NAME})
 target_include_directories(${PROJECT_NAME}
   PUBLIC
     $<BUILD_INTERFACE:${BPMNOS_INCLUDE_DIR}>
+    "$<BUILD_INTERFACE:${BPMNOS_THIRDPARTY_INCLUDE_DIRS}>"
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 

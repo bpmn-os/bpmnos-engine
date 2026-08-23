@@ -9,12 +9,15 @@ else()
   message("-- Compiler optimizations turned off and address sanitizer used")
 endif()
 
-option(BPMNOS_TESTS "Build bpmnos tests" ON)
-if (BPMNOS_TESTS)
-  message("-- Tests are turned on")
-else()
-  message("-- Tests are turned off")
-endif()
+# Optional components are built when the engine is the top-level project and not when it is a dependency,
+# so a consumer neither builds them nor needs their tooling, and declines nothing explicitly. Every
+# consumer used to set BPMNOS_TESTS OFF by hand, and only bpmnos-wasm knew to set DOCUMENTATION as well.
+option(BPMNOS_TESTS "Build bpmnos tests" ${PROJECT_IS_TOP_LEVEL})
+option(BPMNOS_DOCS "Build bpmnos documentation" ${PROJECT_IS_TOP_LEVEL})
+
+# The greedy solver is the engine's own application. It is governed by the same rule, but a consumer may
+# want it: rollout, deep-processes and sea measure their controllers against it and turn it on.
+option(BPMNOS_APP "Build the bpmnos-greedy application" ${PROJECT_IS_TOP_LEVEL})
 
 # Docs-only: configure just the documentation, without building the engine (no cnl/limex/json fetch, no
 # model/execution/app compilation, hence no bpmn++). The `docs` target runs Doxygen over the source and
@@ -140,6 +143,17 @@ include_directories(
   ${json_SOURCE_DIR}
 )
 
+# The amalgamated headers include <cnl/all.h>, <limex.h> and <nlohmann/json.hpp> directly, so a consumer
+# needs these directories. include_directories() above is directory-scoped and reaches only this project,
+# which is why every consumer used to restate the paths by hand; they are carried on the exported targets
+# instead. Their installed counterparts are the engine's own include directory, where these headers are
+# installed alongside it.
+set(BPMNOS_THIRDPARTY_INCLUDE_DIRS
+  ${cnl_SOURCE_DIR}/include
+  ${limex_SOURCE_DIR}
+  ${json_SOURCE_DIR}
+)
+
 # schematic++ generates the BPMN-OS extension classes from xsd/BPMNOS.xsd, and it has to be a runnable
 # binary before this configure finishes rather than merely a target: the generator emits the CMakeLists
 # listing its own output, and model/bpmnos/src/CMakeLists.txt reads that list while configuring. A
@@ -210,7 +224,9 @@ add_subdirectory(execution)
 if(BPMNOS_TESTS)
   add_subdirectory(tests)
 endif()
-add_subdirectory(app)
+if(BPMNOS_APP)
+  add_subdirectory(app)
+endif()
 
 
 # The engine is exported so that a consumer imports bpmnos::model and bpmnos::execution carrying their
@@ -248,6 +264,7 @@ install(FILES
 # directly, so their headers travel with the engine's own.
 install(FILES ${limex_SOURCE_DIR}/limex.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 install(DIRECTORY ${json_SOURCE_DIR}/nlohmann DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+install(DIRECTORY ${cnl_SOURCE_DIR}/include/cnl DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
 endif() # NOT BPMNOS_DOCS_ONLY
 

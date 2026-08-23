@@ -75,3 +75,7 @@ else()
   )  
 endif()
 
+# The greedy solver is installed with the engine, so that a consumer resolving an installed engine has the
+# baseline binary rather than having to build it.
+include(GNUInstallDirs)
+install(TARGETS bpmnos-greedy RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})

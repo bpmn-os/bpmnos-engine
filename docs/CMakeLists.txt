@@ -15,24 +15,30 @@ set(MODEL_PAGES
 )
 
 # Generate the documentation
-set(DOCUMENTATION ON CACHE BOOL "Create documentation")
-if (DOCUMENTATION)
+# An absent renderer disables the documentation rather than the whole configure step. Refusing to
+# configure the engine because an optional target's tooling is missing stopped every consumer that did not
+# know to pass -DDOCUMENTATION=OFF.
+if (BPMNOS_DOCS)
+  find_program(DOXYGEN_FOUND "doxygen")
+  find_program(DOT_FOUND "dot")
+  if (NOT DOXYGEN_FOUND OR NOT DOT_FOUND)
+    message(WARNING "doxygen or graphviz not found; no docs target. "
+                    "To install run: sudo apt install doxygen graphviz")
+    set(BPMNOS_DOCS OFF)
+  endif()
+endif()
+
+# bpmnosdoc renders the example models into the markdown the Doxygen pages are assembled from. Without it
+# the documentation is still built, without those pages.
+if (BPMNOS_DOCS)
   find_program(BPMNOSDOC_FOUND "bpmnosdoc")
   if (NOT BPMNOSDOC_FOUND)
-    message(FATAL_ERROR "bpmnosdoc not found.\n\nInstall it from https://github.com/bpmn-os/bpmnos-js (npm install; npm link)")
+    message(WARNING "bpmnosdoc not found; model pages will be missing from the documentation. "
+                    "Install it from https://github.com/bpmn-os/bpmnos-js (npm install; npm link)")
   endif()
-  find_program(SCHEMATICPP "schematic++")
-  if (NOT SCHEMATICPP)
-    message(FATAL_ERROR "schematic++ not found.\nDownload schematic++ from: https://github.com/bpmn-os/schematicpp")
-  endif()
-  find_program(DOXYGEN_FOUND "doxygen")
-  if (NOT DOXYGEN_FOUND)
-    message(FATAL_ERROR "doxygen not found.\nTo install run: sudo apt install doxygen")
-  endif()
-  find_program(DOT_FOUND "dot")
-  if (NOT DOT_FOUND)
-    message(FATAL_ERROR "dot not found.\nTo install run: sudo apt install graphviz")
-  endif()
+endif()
+
+if (BPMNOS_DOCS)
   include(ExternalProject)
 
   ExternalProject_Add(doxygen-awesome
@@ -45,17 +51,18 @@ if (DOCUMENTATION)
   )
 
   
-  # BPMN-OS extension classes: schematic++ generates them from the XSD into model/bpmnos/src/xml. A full
-  # build does this in model/bpmnos; for a docs-only build (engine not configured) generate them here, as
-  # they are part of the Doxygen INPUT. Only schematic++ is needed, not bpmn++.
-  set(BPMNOS_XML_DIR ${PROJECT_SOURCE_DIR}/model/bpmnos/src/xml)
-  if (NOT EXISTS "${BPMNOS_XML_DIR}")
+  # The extension classes are part of the Doxygen INPUT. A full build generates them into the build tree in
+  # model/bpmnos; a docs-only build does not configure the engine, so they are generated here instead.
+  if (BPMNOS_DOCS_ONLY)
+    set(BPMNOS_XML_DIR ${CMAKE_CURRENT_BINARY_DIR}/xml)
     message("-- Generating BPMN-OS XML classes in: ${BPMNOS_XML_DIR}")
     file(MAKE_DIRECTORY ${BPMNOS_XML_DIR})
     execute_process(
       COMMAND ${SCHEMATICPP} -n bpmnos -o ${BPMNOS_XML_DIR} -i xsd/BPMNOS.xsd
       WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/model/bpmnos
     )
+  else()
+    set(BPMNOS_XML_DIR ${XML_DIR})
   endif()
 
   set(MODEL_SRC ${PROJECT_SOURCE_DIR}/examples)
@@ -71,6 +78,11 @@ if (DOCUMENTATION)
     VERBATIM
   )
 
+  # The model pages exist only when bpmnosdoc rendered them; without it the documentation is built without.
+  if (BPMNOSDOC_FOUND)
+    set(BPMNOS_MODEL_PAGES_DEPENDENCY model_pages)
+  endif()
+
   # Assemble the Doxygen pages from bpmnosdoc's markdown: turn each `![alt](x.svg)` into an inline SVG
   # object (alt may contain spaces, e.g. "Diagram: <sub-process>"), and prepend the `@page id title`.
   add_custom_target(model_pages
@@ -81,20 +93,25 @@ if (DOCUMENTATION)
     DEPENDS model_docs
   )
 
-  # Configure Doxyfile
-  find_path(BPMNPP_INCLUDE_PATH bpmn++.h)
+  # bpmn++'s header is cross-referenced by the documentation. It is no longer installed on the system, so
+  # its location comes from where the engine's build put it rather than from a search.
+  if (TARGET bpmn++)
+    set(BPMNPP_INCLUDE_PATH ${bpmnpp_BINARY_DIR}/include)
+  else()
+    find_path(BPMNPP_INCLUDE_PATH bpmn++.h)
+  endif()
   # Add Doxygen target
   add_custom_target(docs
     COMMAND bash -c "sed -i 's|https://github.com/jothepro/doxygen-awesome-css|https://github.com/bpmn-os/bpmnos-engine|g' ${CMAKE_BINARY_DIR}/doxygen-awesome/doxygen-custom/header.html"
     COMMAND bash -c "echo '<script type=\"module\">import mermaid from \"https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs\"; mermaid.initialize({ startOnLoad: true, theme: \"neutral\" });</script></body></html>' > ${CMAKE_BINARY_DIR}/doxygen-awesome/doxygen-custom/footer.html"
     COMMAND bash -c "curl -s -o ${CMAKE_BINARY_DIR}/bpmnpp.tag https://bpmn-os.github.io/bpmnpp/bpmnpp.tag"
-    COMMAND bash -c "DOXYGEN_AWESOME_DIR=${CMAKE_BINARY_DIR}/doxygen-awesome BPMNPP_INCLUDE_PATH=${BPMNPP_INCLUDE_PATH} BPMNPP_DOCS_PATH=${CMAKE_BINARY_DIR} doxygen docs/Doxyfile 2>&1 | grep -v 'Unsupported xml/html tag <choice>' || true"
+    COMMAND bash -c "DOXYGEN_AWESOME_DIR=${CMAKE_BINARY_DIR}/doxygen-awesome BPMNPP_INCLUDE_PATH=${BPMNPP_INCLUDE_PATH} BPMNOS_XML_DIR=${BPMNOS_XML_DIR} BPMNPP_DOCS_PATH=${CMAKE_BINARY_DIR} doxygen docs/Doxyfile 2>&1 | grep -v 'Unsupported xml/html tag <choice>' || true"
     COMMAND bash -c "sed -i 's|$(\"body\").css({overflow: \"hidden\"});|//$(\"body\").css({overflow: \"hidden\"});|g' docs/html/resize.js"
 # TODO: resize.js: // $("body").css({overflow: "hidden"});
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
     COMMENT "Generating Doxygen documentation (this may take a while)"
     VERBATIM
-    DEPENDS doxygen-awesome model_pages
+    DEPENDS doxygen-awesome ${BPMNOS_MODEL_PAGES_DEPENDENCY}
   )
 
 endif()

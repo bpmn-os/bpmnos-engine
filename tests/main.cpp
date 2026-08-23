@@ -3,8 +3,10 @@
 #include <catch2/reporters/catch_reporter_event_listener.hpp>
 #include <catch2/reporters/catch_reporter_registrars.hpp>
 #define CATCH_CONFIG_NO_THROW
-#include <bpmn++.h>
-#include <bpmnos-model.h>
+// Provided transitively by bpmnos-execution.h, which is self-contained; named here to
+// state what this file uses, and commented out so that it stays a check on that.
+//#include <bpmn++.h>
+//#include <bpmnos-model.h>
 #include <bpmnos-execution.h>
 #include <iostream>
 
