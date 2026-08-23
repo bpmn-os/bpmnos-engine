@@ -118,8 +118,9 @@ if (BPMNOS_DOCS)
     COMMAND bash -c "echo '<script type=\"module\">import mermaid from \"https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs\"; mermaid.initialize({ startOnLoad: true, theme: \"neutral\" });</script></body></html>' > ${CMAKE_BINARY_DIR}/doxygen-awesome/doxygen-custom/footer.html"
     COMMAND bash -c "curl -s -o ${CMAKE_BINARY_DIR}/bpmnpp.tag https://bpmn-os.github.io/bpmnpp/bpmnpp.tag"
     COMMAND bash -c "DOXYGEN_AWESOME_DIR=${CMAKE_BINARY_DIR}/doxygen-awesome BPMNOS_XML_DIR=${BPMNOS_XML_DIR} BPMNOS_DOCS_DIR=${BPMNOS_DOCS_DIR} BPMNOS_MODEL_DOC=${MODEL_DOC} BPMNPP_DOCS_PATH=${CMAKE_BINARY_DIR} doxygen docs/Doxyfile 2>&1 | grep -v 'Unsupported xml/html tag <choice>' || true"
-    COMMAND bash -c "sed -i 's|$(\"body\").css({overflow: \"hidden\"});|//$(\"body\").css({overflow: \"hidden\"});|g' ${HTML_DIR}/resize.js"
-# TODO: resize.js: // $("body").css({overflow: "hidden"});
+    # Doxygen's sidebar script keeps the body from scrolling, which the model pages need. The file is
+    # emitted by some Doxygen versions and not by others, so its absence is not a failure.
+    COMMAND bash -c "test -f ${HTML_DIR}/resize.js && sed -i 's|$(\"body\").css({overflow: \"hidden\"});|//$(\"body\").css({overflow: \"hidden\"});|g' ${HTML_DIR}/resize.js || true"
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
     COMMENT "Generating Doxygen documentation (this may take a while)"
     VERBATIM
