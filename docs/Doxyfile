@@ -8,7 +8,7 @@ PROJECT_BRIEF     = "BPMN for optimization and simulation"
 OUTPUT_DIRECTORY  = $(BPMNOS_DOCS_DIR)
 
 # Input sources
-INPUT             = $(BPMNPP_INCLUDE_PATH)/bpmn++.h model/ execution/ $(BPMNOS_XML_DIR) \ 
+INPUT             = model/ execution/ $(BPMNOS_XML_DIR) \
                     docs/md/main.md \
                     docs/md/logic \
                     docs/md/bpmnos \
@@ -23,7 +23,7 @@ EXAMPLE_PATH = examples/
 RECURSIVE         = YES
 FILE_PATTERNS     = *.h *.cpp *.xsd *.md
 USE_MDFILE_AS_MAINPAGE = docs/md/main.md
-STRIP_FROM_PATH   = $(BPMNPP_INCLUDE_PATH) ./
+STRIP_FROM_PATH   = ./
 IMAGE_PATH        = docs/images
 
 GENERATE_TODOLIST     = YES

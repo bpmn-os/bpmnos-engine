@@ -55,6 +55,10 @@ include_directories("${PROJECT_SOURCE_DIR}/")
 set(BPMNOS_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR})
 set(BPMNOS_LIB_DIR ${BPMNOS_BINARY_DIR}/lib)
 set(BPMNOS_INCLUDE_DIR ${BPMNOS_BINARY_DIR}/include)
+# Where schematic++ writes the BPMN-OS extension classes. Named here rather than in model/bpmnos, because
+# the documentation reads it too and a variable set in one subdirectory is invisible to its sibling: with
+# the definition down there, Doxygen received an empty path and documented none of the generated classes.
+set(BPMNOS_XML_DIR ${BPMNOS_BINARY_DIR}/model/bpmnos/src/xml)
 file(MAKE_DIRECTORY ${BPMNOS_LIB_DIR} ${BPMNOS_INCLUDE_DIR})
 
 # The sources include the generated classes by a path relative to the project root, as

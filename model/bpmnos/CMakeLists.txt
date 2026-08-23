@@ -7,8 +7,9 @@
 # does not overwrite an existing entry, so whichever project configures first would decide both.
 set(SOURCE_DIR "${CMAKE_CURRENT_LIST_DIR}/src")
 
-# The generated classes are build output and belong in the build tree, not in the checkout.
-set(XML_DIR "${BPMNOS_BINARY_DIR}/model/bpmnos/src/xml")
+# The generated classes are build output and belong in the build tree, not in the checkout. The location is
+# decided at the top level, the documentation naming it as well.
+set(XML_DIR "${BPMNOS_XML_DIR}")
 
 # Regenerated on every configure rather than once: guarding this on the directory's existence meant that
 # editing xsd/BPMNOS.xsd changed nothing until someone deleted the directory by hand, and a stale copy

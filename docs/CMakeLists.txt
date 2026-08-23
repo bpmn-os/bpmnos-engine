@@ -61,8 +61,8 @@ if (BPMNOS_DOCS)
       COMMAND ${SCHEMATICPP} -n bpmnos -o ${BPMNOS_XML_DIR} -i xsd/BPMNOS.xsd
       WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/model/bpmnos
     )
-  else()
-    set(BPMNOS_XML_DIR ${XML_DIR})
+  elseif (NOT BPMNOS_XML_DIR)
+    message(FATAL_ERROR "bpmnos: BPMNOS_XML_DIR is empty; the documentation would omit the generated classes.")
   endif()
 
   # Documentation is build output like everything else: the markdown bpmnosdoc renders, the pages assembled
@@ -109,19 +109,15 @@ if (BPMNOS_DOCS)
     DEPENDS model_docs
   )
 
-  # bpmn++'s header is cross-referenced by the documentation. It is no longer installed on the system, so
-  # its location comes from where the engine's build put it rather than from a search.
-  if (TARGET bpmn++)
-    set(BPMNPP_INCLUDE_PATH ${bpmnpp_BINARY_DIR}/include)
-  else()
-    find_path(BPMNPP_INCLUDE_PATH bpmn++.h)
-  endif()
+  # bpmn++ is documented by bpmn++, not here. Its symbols are resolved through the tag file downloaded
+  # below, so that a reference links to https://bpmn-os.github.io/bpmnpp rather than being reproduced in
+  # this site from whichever copy of the header the machine happened to offer.
   # Add Doxygen target
   add_custom_target(docs
     COMMAND bash -c "sed -i 's|https://github.com/jothepro/doxygen-awesome-css|https://github.com/bpmn-os/bpmnos-engine|g' ${CMAKE_BINARY_DIR}/doxygen-awesome/doxygen-custom/header.html"
     COMMAND bash -c "echo '<script type=\"module\">import mermaid from \"https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs\"; mermaid.initialize({ startOnLoad: true, theme: \"neutral\" });</script></body></html>' > ${CMAKE_BINARY_DIR}/doxygen-awesome/doxygen-custom/footer.html"
     COMMAND bash -c "curl -s -o ${CMAKE_BINARY_DIR}/bpmnpp.tag https://bpmn-os.github.io/bpmnpp/bpmnpp.tag"
-    COMMAND bash -c "DOXYGEN_AWESOME_DIR=${CMAKE_BINARY_DIR}/doxygen-awesome BPMNPP_INCLUDE_PATH=${BPMNPP_INCLUDE_PATH} BPMNOS_XML_DIR=${BPMNOS_XML_DIR} BPMNOS_DOCS_DIR=${BPMNOS_DOCS_DIR} BPMNOS_MODEL_DOC=${MODEL_DOC} BPMNPP_DOCS_PATH=${CMAKE_BINARY_DIR} doxygen docs/Doxyfile 2>&1 | grep -v 'Unsupported xml/html tag <choice>' || true"
+    COMMAND bash -c "DOXYGEN_AWESOME_DIR=${CMAKE_BINARY_DIR}/doxygen-awesome BPMNOS_XML_DIR=${BPMNOS_XML_DIR} BPMNOS_DOCS_DIR=${BPMNOS_DOCS_DIR} BPMNOS_MODEL_DOC=${MODEL_DOC} BPMNPP_DOCS_PATH=${CMAKE_BINARY_DIR} doxygen docs/Doxyfile 2>&1 | grep -v 'Unsupported xml/html tag <choice>' || true"
     COMMAND bash -c "sed -i 's|$(\"body\").css({overflow: \"hidden\"});|//$(\"body\").css({overflow: \"hidden\"});|g' ${HTML_DIR}/resize.js"
 # TODO: resize.js: // $("body").css({overflow: "hidden"});
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
