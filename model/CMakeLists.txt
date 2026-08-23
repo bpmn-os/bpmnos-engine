@@ -73,8 +73,12 @@ add_dependencies(bpmnos-model model_header)
 set_target_properties(bpmnos-model PROPERTIES EXPORT_NAME model)
 add_library(bpmnos::model ALIAS bpmnos-model)
 
+# SYSTEM, so that a consumer's warning flags do not apply to these headers. The engine adds cnl, limex and
+# json with include_directories(SYSTEM) for itself and passed them on unmarked, which made a consumer
+# compiling with -Werror -Wpedantic fail inside cnl. The installed directory is marked too: the amalgamated
+# header includes cnl and json, so resolving the engine from a prefix reaches them just the same.
 target_include_directories(bpmnos-model
-  PUBLIC
+  SYSTEM PUBLIC
     $<BUILD_INTERFACE:${BPMNOS_INCLUDE_DIR}>
     "$<BUILD_INTERFACE:${BPMNOS_THIRDPARTY_INCLUDE_DIRS}>"
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
