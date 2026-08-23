@@ -150,6 +150,55 @@ endfunction()
 include(FetchContent)
 set(FETCHCONTENT_QUIET FALSE)
 
+# schematic++ generates the BPMN-OS extension classes from xsd/BPMNOS.xsd, and it has to be a runnable
+# binary before this configure finishes rather than merely a target: the generator emits the CMakeLists
+# listing its own output, and model/bpmnos/src/CMakeLists.txt reads that list while configuring. A
+# FetchContent target would not be built until build time, which is too late, so a copy that cannot be
+# resolved is built here in a sub-build of its own. bpmn++ declares schematic++ as well, for the same
+# reason and for its own schemas. It is resolved outside the guard below because the generated classes are
+# part of the Doxygen input, so a docs-only configure needs it just as the engine build does.
+set(SCHEMATICPP_VERSION 0.8.0)
+# Names schematic++'s branch while its change is unmerged. It becomes v${SCHEMATICPP_VERSION} once tagged.
+set(SCHEMATICPP_REF "dependency-management")
+find_package(schematicpp ${SCHEMATICPP_VERSION} QUIET)
+
+if(schematicpp_FOUND)
+  get_target_property(SCHEMATICPP schematicpp::schematic++ IMPORTED_LOCATION_RELEASE)
+  if(NOT SCHEMATICPP)
+    get_target_property(SCHEMATICPP schematicpp::schematic++ IMPORTED_LOCATION)
+  endif()
+  message(STATUS "bpmnos: using an already-installed schematic++ at ${SCHEMATICPP}")
+else()
+  FetchContent_Declare(schematicpp
+    GIT_REPOSITORY https://github.com/rajgoel/schematicpp.git
+    GIT_TAG        ${SCHEMATICPP_REF}
+    SOURCE_SUBDIR  do-not-add-this-subdirectory
+  )
+  FetchContent_MakeAvailable(schematicpp)
+
+  set(SCHEMATICPP_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR}/schematicpp-host)
+  message(STATUS "bpmnos: building schematic++ for the host in ${SCHEMATICPP_BUILD_DIR}")
+  execute_process(
+    COMMAND ${CMAKE_COMMAND} -S ${schematicpp_SOURCE_DIR} -B ${SCHEMATICPP_BUILD_DIR}
+            -DCMAKE_BUILD_TYPE=Release
+    RESULT_VARIABLE r OUTPUT_QUIET
+  )
+  if(NOT r EQUAL 0)
+    message(FATAL_ERROR "bpmnos: configuring schematic++ failed with ${r}")
+  endif()
+  execute_process(COMMAND ${CMAKE_COMMAND} --build ${SCHEMATICPP_BUILD_DIR} --parallel
+                  RESULT_VARIABLE r OUTPUT_QUIET)
+  if(NOT r EQUAL 0)
+    message(FATAL_ERROR "bpmnos: building schematic++ failed with ${r}")
+  endif()
+
+  # schematic++ links its executable into its own source directory rather than its build directory.
+  set(SCHEMATICPP ${schematicpp_SOURCE_DIR}/schematic++ CACHE FILEPATH "schematic++" FORCE)
+  if(NOT EXISTS ${SCHEMATICPP})
+    message(FATAL_ERROR "bpmnos: schematic++ was built but is not at ${SCHEMATICPP}")
+  endif()
+endif()
+
 if (NOT BPMNOS_DOCS_ONLY)
 
 #  Compositional Numeric Library
@@ -211,54 +260,6 @@ set(BPMNOS_THIRDPARTY_INCLUDE_DIRS
   ${limex_SOURCE_DIR}
   ${json_SOURCE_DIR}
 )
-
-# schematic++ generates the BPMN-OS extension classes from xsd/BPMNOS.xsd, and it has to be a runnable
-# binary before this configure finishes rather than merely a target: the generator emits the CMakeLists
-# listing its own output, and model/bpmnos/src/CMakeLists.txt reads that list while configuring. A
-# FetchContent target would not be built until build time, which is too late, so a copy that cannot be
-# resolved is built here in a sub-build of its own. bpmn++ declares schematic++ as well, for the same
-# reason and for its own schemas.
-set(SCHEMATICPP_VERSION 0.8.0)
-# Names schematic++'s branch while its change is unmerged. It becomes v${SCHEMATICPP_VERSION} once tagged.
-set(SCHEMATICPP_REF "dependency-management")
-find_package(schematicpp ${SCHEMATICPP_VERSION} QUIET)
-
-if(schematicpp_FOUND)
-  get_target_property(SCHEMATICPP schematicpp::schematic++ IMPORTED_LOCATION_RELEASE)
-  if(NOT SCHEMATICPP)
-    get_target_property(SCHEMATICPP schematicpp::schematic++ IMPORTED_LOCATION)
-  endif()
-  message(STATUS "bpmnos: using an already-installed schematic++ at ${SCHEMATICPP}")
-else()
-  FetchContent_Declare(schematicpp
-    GIT_REPOSITORY https://github.com/rajgoel/schematicpp.git
-    GIT_TAG        ${SCHEMATICPP_REF}
-    SOURCE_SUBDIR  do-not-add-this-subdirectory
-  )
-  FetchContent_MakeAvailable(schematicpp)
-
-  set(SCHEMATICPP_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR}/schematicpp-host)
-  message(STATUS "bpmnos: building schematic++ for the host in ${SCHEMATICPP_BUILD_DIR}")
-  execute_process(
-    COMMAND ${CMAKE_COMMAND} -S ${schematicpp_SOURCE_DIR} -B ${SCHEMATICPP_BUILD_DIR}
-            -DCMAKE_BUILD_TYPE=Release
-    RESULT_VARIABLE r OUTPUT_QUIET
-  )
-  if(NOT r EQUAL 0)
-    message(FATAL_ERROR "bpmnos: configuring schematic++ failed with ${r}")
-  endif()
-  execute_process(COMMAND ${CMAKE_COMMAND} --build ${SCHEMATICPP_BUILD_DIR} --parallel
-                  RESULT_VARIABLE r OUTPUT_QUIET)
-  if(NOT r EQUAL 0)
-    message(FATAL_ERROR "bpmnos: building schematic++ failed with ${r}")
-  endif()
-
-  # schematic++ links its executable into its own source directory rather than its build directory.
-  set(SCHEMATICPP ${schematicpp_SOURCE_DIR}/schematic++ CACHE FILEPATH "schematic++" FORCE)
-  if(NOT EXISTS ${SCHEMATICPP})
-    message(FATAL_ERROR "bpmnos: schematic++ was built but is not at ${SCHEMATICPP}")
-  endif()
-endif()
 
 # bpmn++ parses the BPMN model. Declared rather than resolved from the system, so that a build succeeds on
 # a machine with nothing installed. Xerces-C arrives as a usage requirement of its exported target.

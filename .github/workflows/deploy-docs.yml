@@ -1,8 +1,8 @@
 # Build the Doxygen documentation and publish it to GitHub Pages — WITHOUT compiling the engine.
 #
-# Only schematic++ is built: it generates the BPMN-OS schema headers from model/bpmnos/xsd/BPMNOS.xsd,
-# which are part of the Doxygen INPUT. The engine itself is not compiled — `cmake -DBPMNOS_DOCS_ONLY=ON`
-# skips model/execution/app and their dependencies (cnl/limex/json, bpmn++). Cross-references to the
+# Only schematic++ is built, by the configure step itself: it generates the BPMN-OS schema headers from
+# model/bpmnos/xsd/BPMNOS.xsd, which are part of the Doxygen INPUT. The engine itself is not compiled —
+# `cmake -DBPMNOS_DOCS_ONLY=ON` skips model/execution/app and their dependencies (cnl/limex/json, bpmn++). Cross-references to the
 # bpmn++ documentation come from the tag file the docs target downloads. The example-model pages are
 # produced by bpmnosdoc (bpmn-os/bpmnos-js), a headless bpmn-js tool — no bpmn++ / C++ bpmndoc.
 #
@@ -35,14 +35,6 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y doxygen graphviz libxerces-c-dev cmake build-essential git curl wget
-
-      # schematic++ generates the BPMN-OS schema headers from the XSD (needs xerces; a quick build)
-      - name: Build & install schematic++
-        run: |
-          git clone --depth 1 https://github.com/rajgoel/schematicpp.git
-          cmake -S schematicpp -B schematicpp/build
-          cmake --build schematicpp/build --parallel
-          sudo cmake --install schematicpp/build
 
       # Chrome for bpmnosdoc's headless rendering — installed at /usr/bin/google-chrome-stable, where
       # chrome-launcher (used by bpmnosdoc) looks for it.
