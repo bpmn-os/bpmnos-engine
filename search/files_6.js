@@ -22,12 +22,14 @@ var searchData=
   ['greedycontroller_2ecpp_19',['GreedyController.cpp',['../GreedyController_8cpp.html',1,'']]],
   ['greedycontroller_2eh_20',['GreedyController.h',['../GreedyController_8h.html',1,'']]],
   ['greedydispatcher_2eh_21',['GreedyDispatcher.h',['../GreedyDispatcher_8h.html',1,'']]],
-  ['guidance_2ecpp_22',['guidance.cpp',['../Guidance_8cpp.html',1,'(Global Namespace)'],['../guidance_8cpp.html',1,'(Global Namespace)']]],
-  ['guidance_2eh_23',['guidance.h',['../Guidance_8h.html',1,'(Global Namespace)'],['../guidance_8h.html',1,'(Global Namespace)']]],
-  ['guided_5fbin_5fpacking_5fproblem_2emd_24',['Guided_bin_packing_problem.md',['../Guided__bin__packing__problem_8md.html',1,'']]],
-  ['guided_5fknapsack_5fproblem_2emd_25',['Guided_knapsack_problem.md',['../Guided__knapsack__problem_8md.html',1,'']]],
-  ['guided_5fpickup_5fdelivery_5fproblem_2emd_26',['Guided_pickup_delivery_problem.md',['../Guided__pickup__delivery__problem_8md.html',1,'']]],
-  ['guided_5fvehicle_5frouting_5fproblem_2emd_27',['Guided_vehicle_routing_problem.md',['../Guided__vehicle__routing__problem_8md.html',1,'']]],
-  ['guidedevaluator_2ecpp_28',['GuidedEvaluator.cpp',['../GuidedEvaluator_8cpp.html',1,'']]],
-  ['guidedevaluator_2eh_29',['GuidedEvaluator.h',['../GuidedEvaluator_8h.html',1,'']]]
+  ['guidance_2ecpp_22',['Guidance.cpp',['../Guidance_8cpp.html',1,'']]],
+  ['guidance_2ecpp_23',['guidance.cpp',['../guidance_8cpp.html',1,'']]],
+  ['guidance_2eh_24',['Guidance.h',['../Guidance_8h.html',1,'']]],
+  ['guidance_2eh_25',['guidance.h',['../guidance_8h.html',1,'']]],
+  ['guided_5fbin_5fpacking_5fproblem_2emd_26',['Guided_bin_packing_problem.md',['../Guided__bin__packing__problem_8md.html',1,'']]],
+  ['guided_5fknapsack_5fproblem_2emd_27',['Guided_knapsack_problem.md',['../Guided__knapsack__problem_8md.html',1,'']]],
+  ['guided_5fpickup_5fdelivery_5fproblem_2emd_28',['Guided_pickup_delivery_problem.md',['../Guided__pickup__delivery__problem_8md.html',1,'']]],
+  ['guided_5fvehicle_5frouting_5fproblem_2emd_29',['Guided_vehicle_routing_problem.md',['../Guided__vehicle__routing__problem_8md.html',1,'']]],
+  ['guidedevaluator_2ecpp_30',['GuidedEvaluator.cpp',['../GuidedEvaluator_8cpp.html',1,'']]],
+  ['guidedevaluator_2eh_31',['GuidedEvaluator.h',['../GuidedEvaluator_8h.html',1,'']]]
 ];

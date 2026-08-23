@@ -1,7 +1,7 @@
 var classBPMNOS_1_1Model_1_1StochasticDataProvider =
 [
-    [ "DeferredAttribute", "structBPMNOS_1_1Model_1_1StochasticDataProvider_1_1DeferredAttribute.html", "structBPMNOS_1_1Model_1_1StochasticDataProvider_1_1DeferredAttribute" ],
     [ "StochasticInstanceData", "structBPMNOS_1_1Model_1_1StochasticDataProvider_1_1StochasticInstanceData.html", "structBPMNOS_1_1Model_1_1StochasticDataProvider_1_1StochasticInstanceData" ],
+    [ "DeferredAttribute", "structBPMNOS_1_1Model_1_1StochasticDataProvider_1_1DeferredAttribute.html", "structBPMNOS_1_1Model_1_1StochasticDataProvider_1_1DeferredAttribute" ],
     [ "StochasticDataProvider", "classBPMNOS_1_1Model_1_1StochasticDataProvider.html#a1e1ab489622918e35dec0fcfcff06bfa", null ],
     [ "StochasticDataProvider", "classBPMNOS_1_1Model_1_1StochasticDataProvider.html#a301152243e8b7a0330fe093a4ba1e209", null ],
     [ "StochasticDataProvider", "classBPMNOS_1_1Model_1_1StochasticDataProvider.html#a8edf6ea6e2c6e8abead126cbc27e5038", null ],

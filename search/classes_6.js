@@ -11,6 +11,7 @@ var searchData=
   ['globalusertask_8',['globalUserTask',['https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1globalUserTask.html',1,'XML::bpmn']]],
   ['greedycontroller_9',['GreedyController',['../classBPMNOS_1_1Execution_1_1GreedyController.html',1,'BPMNOS::Execution']]],
   ['greedydispatcher_10',['GreedyDispatcher',['../classBPMNOS_1_1Execution_1_1GreedyDispatcher.html',1,'BPMNOS::Execution']]],
-  ['guidance_11',['guidance',['../classBPMNOS_1_1Model_1_1Guidance.html',1,'BPMNOS::Model::Guidance'],['../classXML_1_1bpmnos_1_1guidance.html',1,'XML::bpmnos::guidance']]],
-  ['guidedevaluator_12',['GuidedEvaluator',['../classBPMNOS_1_1Execution_1_1GuidedEvaluator.html',1,'BPMNOS::Execution']]]
+  ['guidance_11',['Guidance',['../classBPMNOS_1_1Model_1_1Guidance.html',1,'BPMNOS::Model']]],
+  ['guidance_12',['guidance',['../classXML_1_1bpmnos_1_1guidance.html',1,'XML::bpmnos']]],
+  ['guidedevaluator_13',['GuidedEvaluator',['../classBPMNOS_1_1Execution_1_1GuidedEvaluator.html',1,'BPMNOS::Execution']]]
 ];

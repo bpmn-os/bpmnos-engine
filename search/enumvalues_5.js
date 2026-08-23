@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['failed_0',['failed',['../classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92dab9e14d9b2886bcff408b85aefa780419',1,'BPMNOS::Execution::Token::FAILED'],['../namespaceBPMNOS_1_1Execution.html#adb8bb72fa058d4b49ebdab0f8c795e48ab9e14d9b2886bcff408b85aefa780419',1,'BPMNOS::Execution::FAILED']]],
+  ['failed_0',['FAILED',['../classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92dab9e14d9b2886bcff408b85aefa780419',1,'BPMNOS::Execution::Token::FAILED'],['../namespaceBPMNOS_1_1Execution.html#adb8bb72fa058d4b49ebdab0f8c795e48ab9e14d9b2886bcff408b85aefa780419',1,'BPMNOS::Execution::FAILED']]],
   ['failing_1',['FAILING',['../classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da04a6fafe393ceb9f5b6ce96aae00c8cb',1,'BPMNOS::Execution::Token']]],
   ['fg_5fblack_2',['FG_BLACK',['../namespaceBPMNOS_1_1Execution_1_1Color.html#a84e60288a7925b003f7ce914018b3f14a3d7100464bdfb89c88f0d20f3d255ab9',1,'BPMNOS::Execution::Color']]],
   ['fg_5fblue_3',['FG_BLUE',['../namespaceBPMNOS_1_1Execution_1_1Color.html#a84e60288a7925b003f7ce914018b3f14a6961743400a45548fa7279c24214c1dc',1,'BPMNOS::Execution::Color']]],
