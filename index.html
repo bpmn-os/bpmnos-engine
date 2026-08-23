@@ -143,44 +143,9 @@ Architecture</div></div>
 <li><b>Controller</b>: The controller is responsible for making all necessary <a class="el" href="classBPMNOS_1_1Execution_1_1Decision.html">decisions</a> during process execution.</li>
 <li><b>Observer</b>: Observers can connect to the execution engine to monitor changes in the execution.</li>
 </ul>
-<h1><a class="anchor" id="installation"></a>
-Installation</h1>
-<p>You can obtain BPMN-OS from <a href="https://github.com/bpmn-os/bpmnos-engine">https://github.com/bpmn-os/bpmnos-engine</a>.</p>
-<h2><a class="anchor" id="dependencies"></a>
-Dependencies</h2>
-<p>BPMN-OS requires Xerces-C++ 3.2.x., <code>bpmn++</code>, and <code>schematic++</code>.</p>
-<p>On Ubuntu Linux Xerces can be installed by </p><div class="fragment"><div class="line">sudo apt install libxerces-c-dev</div>
-</div><!-- fragment --><p>You can obtain <code>bpmn++</code> from <a href="https://github.com/bpmn-os/bpmnpp">https://github.com/bpmn-os/bpmnpp</a> and <code>schematic++</code> from <a href="https://github.com/rajgoel/schematicpp">https://github.com/rajgoel/schematicpp</a>. Please follow build and install instructions provided by these dependencies.</p>
-<h2><a class="anchor" id="build-bpmn-os"></a>
-Build BPMN-OS</h2>
-<p>The library is built like a typical CMake project.</p>
-<p>A normal build will look something like this (output omitted):</p>
-<div class="fragment"><div class="line">mkdir build</div>
-<div class="line">cd build</div>
-<div class="line">cmake ..</div>
-<div class="line">make</div>
-<div class="line">cd ..</div>
-</div><!-- fragment --><p>You can use multiple processors to reduce build times </p><div class="fragment"><div class="line">make -j[n]</div>
-</div><!-- fragment --><p> where <code>[n]</code> is the number of processors to be used.</p>
-<h2><a class="anchor" id="compiler-optimizations"></a>
-Compiler optimizations</h2>
-<p>The <code>NDEBUG</code> flag can be used to turn on or off compiler optimizations.</p>
-<p>To turn on compiler optimizations use </p><div class="fragment"><div class="line">cmake -DNDEBUG=ON ..</div>
-</div><!-- fragment --><p>To turn off compiler optimizations use </p><div class="fragment"><div class="line">cmake -DNDEBUG=OFF ..</div>
-</div><!-- fragment --><p>This creates a single header file <code>lib/bpmnos-model.h</code> and a library <code>lib/libbpmnos-model.a</code>. Moreover, an executable <code>bpmnos-greedy</code> using these libraries is created in the <code>bin</code> folder. An example showing how to use this executable is given in the [example folder](example).</p>
-<h2><a class="anchor" id="tests"></a>
-Tests</h2>
-<p>To run tests use </p><div class="fragment"><div class="line">make tests</div>
-</div><!-- fragment --><h2><a class="anchor" id="documentation"></a>
-Documentation</h2>
-<p>To create the documentation run </p><div class="fragment"><div class="line">make docs</div>
-</div><!-- fragment --><p> Doxygen is required to build the documentation.</p>
-<h2><a class="anchor" id="code-profiles"></a>
-Code profiles</h2>
-<p>To create code profiles for selected examples use </p><div class="fragment"><div class="line">make profiles</div>
-</div><!-- fragment --><p>Compiler optimizations must be turned off to profile the code.</p>
-<p>To create graphs visualising the profiles, <code>gprof2dot</code> is required. On Ubuntu Linux <code>gprof2dot</code> can be installed by </p><div class="fragment"><div class="line">pipx install gprof2dot</div>
-</div><!-- fragment --><p> After creating the code profiles, re-create the documentation to include profiling graphs.</p>
+<h1><a class="anchor" id="getting-started"></a>
+Getting started</h1>
+<p>BPMN-OS is obtained from <a href="https://github.com/bpmn-os/bpmnos-engine">https://github.com/bpmn-os/bpmnos-engine</a>. Its <a href="https://github.com/bpmn-os/bpmnos-engine#readme">README</a> states the requirements and describes how the project is configured, built, tested, profiled, documented and installed. The pages that follow document the framework itself.</p>
 <h1><a class="anchor" id="license"></a>
 License</h1>
 <p><span property="dct:title">BPMN-OS</span> by <span property="cc:attributionName">Asvin Goel</span> is licensed under <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/?ref=chooser-v1" target="_blank" rel="license noopener noreferrer" style="display:inline-block;">CC BY-NC-ND 4.0<img src="https://mirrors.creativecommons.org/presskit/icons/cc.svg?ref=chooser-v1" alt="" style="pointer-events: none; height:22px!important;margin-left:3px;vertical-align:text-bottom;" class="inline"/><img src="https://mirrors.creativecommons.org/presskit/icons/by.svg?ref=chooser-v1" alt="" style="pointer-events: none; height:22px!important;margin-left:3px;vertical-align:text-bottom;" class="inline"/><img src="https://mirrors.creativecommons.org/presskit/icons/nc.svg?ref=chooser-v1" alt="" style="pointer-events: none; height:22px!important;margin-left:3px;vertical-align:text-bottom;" class="inline"/><img src="https://mirrors.creativecommons.org/presskit/icons/nd.svg?ref=chooser-v1" alt="" style="pointer-events: none; height:22px!important;margin-left:3px;vertical-align:text-bottom;" class="inline"/></a></p>
