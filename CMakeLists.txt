@@ -162,8 +162,7 @@ set(FETCHCONTENT_QUIET FALSE)
 # reason and for its own schemas. It is resolved outside the guard below because the generated classes are
 # part of the Doxygen input, so a docs-only configure needs it just as the engine build does.
 set(SCHEMATICPP_VERSION 0.8.0)
-# Names schematic++'s branch while its change is unmerged. It becomes v${SCHEMATICPP_VERSION} once tagged.
-set(SCHEMATICPP_REF "dependency-management")
+set(SCHEMATICPP_REF "v${SCHEMATICPP_VERSION}")
 find_package(schematicpp ${SCHEMATICPP_VERSION} QUIET)
 
 if(schematicpp_FOUND)
@@ -268,8 +267,7 @@ set(BPMNOS_THIRDPARTY_INCLUDE_DIRS
 # bpmn++ parses the BPMN model. Declared rather than resolved from the system, so that a build succeeds on
 # a machine with nothing installed. Xerces-C arrives as a usage requirement of its exported target.
 set(BPMNPP_VERSION 0.1.0)
-# Names bpmn++'s branch while its change is unmerged. It becomes v${BPMNPP_VERSION} once tagged.
-set(BPMNPP_REF "dependency-management")
+set(BPMNPP_REF "v${BPMNPP_VERSION}")
 FetchContent_Declare(bpmnpp
   GIT_REPOSITORY https://github.com/bpmn-os/bpmnpp.git
   GIT_TAG        ${BPMNPP_REF}
