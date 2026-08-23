@@ -1,6 +1,9 @@
 # BPMN-OS
 ## BPMN for optimization and simulation
 
+- **Download:** https://github.com/bpmn-os/bpmnos-engine
+- **Documentation:** https://bpmn-os.github.io/bpmnos-engine
+
 ## Requirements
 
 A C++23 compiler, GCC 15.2 or Clang 18.1.3 or later, CMake 3.26.4 or later, and git.
