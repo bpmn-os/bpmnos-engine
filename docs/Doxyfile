@@ -5,7 +5,7 @@ PROJECT_NAME      = BPMN-OS
 PROJECT_LOGO      = BPMNOS.svg
 PROJECT_BRIEF     = "BPMN for optimization and simulation"
 
-OUTPUT_DIRECTORY  = docs
+OUTPUT_DIRECTORY  = $(BPMNOS_DOCS_DIR)
 
 # Input sources
 INPUT             = $(BPMNPP_INCLUDE_PATH)/bpmn++.h model/ execution/ $(BPMNOS_XML_DIR) \ 
@@ -16,7 +16,7 @@ INPUT             = $(BPMNPP_INCLUDE_PATH)/bpmn++.h model/ execution/ $(BPMNOS_X
                     docs/md/engine \
                     docs/md/controller \
                     docs/md/observer \
-                    docs/md/models \
+                    $(BPMNOS_MODEL_DOC) \
                     docs/md/profiles
 
 EXAMPLE_PATH = examples/

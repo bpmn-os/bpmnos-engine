@@ -72,10 +72,10 @@ jobs:
           cmake -S . -B build -DBPMNOS_DOCS_ONLY=ON
           cmake --build build --target docs
           # drop Doxygen's dot intermediates — not needed to serve the SVGs, and they shrink the site
-          rm -f docs/html/*.md5 docs/html/*.map
+          rm -f build/docs/html/*.md5 build/docs/html/*.map
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs/html
+          publish_dir: ./build/docs/html

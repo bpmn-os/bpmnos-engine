@@ -2,12 +2,30 @@ cmake_minimum_required(VERSION 3.26.4)
 
 project(bpmnos VERSION 0.1.0 LANGUAGES CXX)
 
-option(NDEBUG "Whether compilation uses optimization" ON)
-if (NDEBUG)
-  message("-- Compiler optimizations turned on")
-else()
-  message("-- Compiler optimizations turned off and address sanitizer used")
+# The build type decides optimisation, the NDEBUG macro and debug information, which is what it is for and
+# the only way that macro is defined correctly. The option formerly named NDEBUG did not define it: it is a
+# cache variable, so the optimised build had assertions live unless a consumer happened to pass
+# CMAKE_BUILD_TYPE=Release. Only defaulted when the engine is top-level, so a consumer's choice wins.
+if (PROJECT_IS_TOP_LEVEL AND NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
 endif()
+
+# So that clangd and clang-tidy work without being asked, which matters in a codebase compiled with
+# -Wconversion and -Wsign-conversion against a fixed-point numeric type.
+if (PROJECT_IS_TOP_LEVEL)
+  set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+endif()
+
+# Sanitizing and profiling are separate from the build type and from each other. Formerly both came with
+# NDEBUG=OFF, so a debug build could not be had without profiling, and an optimised build could not be
+# sanitized at all.
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+  set(BPMNOS_SANITIZE_DEFAULT ON)
+else()
+  set(BPMNOS_SANITIZE_DEFAULT OFF)
+endif()
+option(BPMNOS_SANITIZE "Build with the address, undefined and leak sanitizers" ${BPMNOS_SANITIZE_DEFAULT})
+option(BPMNOS_PROFILE "Build with profiling instrumentation" OFF)
 
 # Optional components are built when the engine is the top-level project and not when it is a dependency,
 # so a consumer neither builds them nor needs their tooling, and declines nothing explicitly. Every
@@ -88,6 +106,46 @@ set(BPMNOS_WARNING_FLAGS
   -Wnon-virtual-dtor
   -Wmismatched-tags
 )
+
+# Stated once and applied through bpmnos_compile_options() below. These flags previously appeared in eight
+# near-identical blocks across model, execution, tests and app, differing only by accident: -Wall and the
+# shadow flag exchanged places, -Wno-misleading-indentation appeared in one of them, and the optimisation
+# level was hardcoded, overriding whatever the build type asked for.
+set(BPMNOS_COMPILE_OPTIONS
+  -Werror
+  -pedantic-errors
+  -Wpedantic
+  -Wall
+  -Wextra
+  -Wconversion
+  -Wsign-conversion
+  ${BPMNOS_SHADOW_FLAG}
+  ${BPMNOS_WARNING_FLAGS}
+  ${BPMNOS_MAX_ERRORS_FLAG}
+  -Wno-error=unused-parameter # Remove
+  -Wno-error=unused-variable # Remove
+)
+set(BPMNOS_LINK_OPTIONS "")
+
+if (BPMNOS_SANITIZE)
+  message("-- Sanitizers turned on")
+  list(APPEND BPMNOS_COMPILE_OPTIONS -fsanitize=address,undefined,leak -fno-omit-frame-pointer -g -ggdb3)
+  list(APPEND BPMNOS_LINK_OPTIONS -fsanitize=address,undefined,leak)
+endif()
+
+if (BPMNOS_PROFILE)
+  message("-- Profiling turned on")
+  list(APPEND BPMNOS_COMPILE_OPTIONS -pg)
+  list(APPEND BPMNOS_LINK_OPTIONS -pg)
+endif()
+
+# Applied privately: these are how this project compiles its own sources, not something a consumer inherits.
+function(bpmnos_compile_options target)
+  target_compile_options(${target} PRIVATE ${BPMNOS_COMPILE_OPTIONS})
+  if (BPMNOS_LINK_OPTIONS)
+    target_link_options(${target} PRIVATE ${BPMNOS_LINK_OPTIONS})
+  endif()
+endfunction()
 
 include(FetchContent)
 set(FETCHCONTENT_QUIET FALSE)
@@ -219,6 +277,15 @@ set(FETCHCONTENT_QUIET FALSE)
 
 set(BUILD_TESTING OFF CACHE BOOL "Disable testing")
 
+# Only a release build is installable. A sanitized or profiled archive installed into a prefix would
+# poison every consumer that linked it, and nothing in the installed package records how it was built.
+# This runs before any other install rule, so the attempt stops rather than half-completing.
+install(CODE "
+  if(NOT \"${CMAKE_BUILD_TYPE}\" STREQUAL \"Release\")
+    message(FATAL_ERROR \"bpmnos: only a release build can be installed; this is a ${CMAKE_BUILD_TYPE} build.\")
+  endif()
+")
+
 add_subdirectory(model)
 add_subdirectory(execution)
 if(BPMNOS_TESTS)
@@ -271,7 +338,9 @@ endif() # NOT BPMNOS_DOCS_ONLY
 add_subdirectory(docs)
 
 # Generate code profiles
-if (NOT NDEBUG AND NOT BPMNOS_DOCS_ONLY)
+# The profiles target needs instrumented binaries, which is now an option rather than a side effect of
+# turning optimisation off.
+if (BPMNOS_PROFILE AND NOT BPMNOS_DOCS_ONLY)
   add_subdirectory(profile)
 endif()
 

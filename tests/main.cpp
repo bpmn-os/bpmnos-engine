@@ -14,6 +14,21 @@ class ProgressListener : public Catch::EventListenerBase {
 public:
     using Catch::EventListenerBase::EventListenerBase;
 
+    // Reported from the macros the compiler actually saw, not from what CMake believes it passed, so a run
+    // that silently lost its assertions says so rather than passing quietly.
+    void testRunStarting(Catch::TestRunInfo const&) override {
+#ifdef NDEBUG
+      std::cerr << "assertions DISABLED (NDEBUG defined)";
+#else
+      std::cerr << "assertions enabled";
+#endif
+#if defined(__SANITIZE_ADDRESS__) || (defined(__has_feature) && __has_feature(address_sanitizer))
+      std::cerr << ", sanitizers on" << std::endl;
+#else
+      std::cerr << ", sanitizers off" << std::endl;
+#endif
+    }
+
     void testCaseStarting(Catch::TestCaseInfo const& testInfo) override {
         std::cerr << testInfo.name << " " << std::flush;
     }

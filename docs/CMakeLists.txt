@@ -65,9 +65,13 @@ if (BPMNOS_DOCS)
     set(BPMNOS_XML_DIR ${XML_DIR})
   endif()
 
+  # Documentation is build output like everything else: the markdown bpmnosdoc renders, the pages assembled
+  # from it and the Doxygen html all go to the build tree rather than into the checkout.
   set(MODEL_SRC ${PROJECT_SOURCE_DIR}/examples)
-  set(MODEL_DOC ${PROJECT_SOURCE_DIR}/docs/md/models)
-  set(HTML_DIR ${PROJECT_SOURCE_DIR}/docs/html)
+  set(BPMNOS_DOCS_DIR ${CMAKE_CURRENT_BINARY_DIR})
+  set(MODEL_DOC ${BPMNOS_DOCS_DIR}/md/models)
+  set(HTML_DIR ${BPMNOS_DOCS_DIR}/html)
+  file(MAKE_DIRECTORY ${MODEL_DOC} ${HTML_DIR})
   # bpmnosdoc (bpmn-os/bpmnos-js) renders each example model to SVG and writes a markdown page of its
   # execution data — replacing the former bpmnos2svg + bpmndoc pair, and with it the bpmn++ dependency.
   add_custom_target(model_docs
@@ -105,8 +109,8 @@ if (BPMNOS_DOCS)
     COMMAND bash -c "sed -i 's|https://github.com/jothepro/doxygen-awesome-css|https://github.com/bpmn-os/bpmnos-engine|g' ${CMAKE_BINARY_DIR}/doxygen-awesome/doxygen-custom/header.html"
     COMMAND bash -c "echo '<script type=\"module\">import mermaid from \"https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs\"; mermaid.initialize({ startOnLoad: true, theme: \"neutral\" });</script></body></html>' > ${CMAKE_BINARY_DIR}/doxygen-awesome/doxygen-custom/footer.html"
     COMMAND bash -c "curl -s -o ${CMAKE_BINARY_DIR}/bpmnpp.tag https://bpmn-os.github.io/bpmnpp/bpmnpp.tag"
-    COMMAND bash -c "DOXYGEN_AWESOME_DIR=${CMAKE_BINARY_DIR}/doxygen-awesome BPMNPP_INCLUDE_PATH=${BPMNPP_INCLUDE_PATH} BPMNOS_XML_DIR=${BPMNOS_XML_DIR} BPMNPP_DOCS_PATH=${CMAKE_BINARY_DIR} doxygen docs/Doxyfile 2>&1 | grep -v 'Unsupported xml/html tag <choice>' || true"
-    COMMAND bash -c "sed -i 's|$(\"body\").css({overflow: \"hidden\"});|//$(\"body\").css({overflow: \"hidden\"});|g' docs/html/resize.js"
+    COMMAND bash -c "DOXYGEN_AWESOME_DIR=${CMAKE_BINARY_DIR}/doxygen-awesome BPMNPP_INCLUDE_PATH=${BPMNPP_INCLUDE_PATH} BPMNOS_XML_DIR=${BPMNOS_XML_DIR} BPMNOS_DOCS_DIR=${BPMNOS_DOCS_DIR} BPMNOS_MODEL_DOC=${MODEL_DOC} BPMNPP_DOCS_PATH=${CMAKE_BINARY_DIR} doxygen docs/Doxyfile 2>&1 | grep -v 'Unsupported xml/html tag <choice>' || true"
+    COMMAND bash -c "sed -i 's|$(\"body\").css({overflow: \"hidden\"});|//$(\"body\").css({overflow: \"hidden\"});|g' ${HTML_DIR}/resize.js"
 # TODO: resize.js: // $("body").css({overflow: "hidden"});
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
     COMMENT "Generating Doxygen documentation (this may take a while)"

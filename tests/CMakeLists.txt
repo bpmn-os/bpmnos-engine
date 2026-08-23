@@ -28,56 +28,7 @@ include_directories(
   ${BPMNOS_INCLUDE_DIR}
 )
 
-if (NDEBUG)
-  target_compile_options(run_tests
-    PRIVATE
-    -O3
-    -Werror
-    -pedantic-errors
-    -Wpedantic
-    -Wall
-    ${BPMNOS_SHADOW_FLAG}
-    -Wextra
-    -Wconversion
-    -Wsign-conversion
-    ${BPMNOS_WARNING_FLAGS}
-    ${BPMNOS_MAX_ERRORS_FLAG}
-    -Wno-error=unused-parameter # Remove
-    -Wno-error=unused-variable # Remove
-    -Wno-misleading-indentation
-)
-else()
-  target_compile_options(run_tests
-    PRIVATE
-    -O0
-    -Werror
-    -pedantic-errors
-    -Wpedantic
-    -Wall
-    ${BPMNOS_SHADOW_FLAG}
-    -Wextra
-    -Wconversion
-    -Wsign-conversion
-    ${BPMNOS_WARNING_FLAGS}
-    -fsanitize=address,undefined,leak
-    -fno-omit-frame-pointer
-    -g
-    -ggdb3
-    -pg # Profiling
-    ${BPMNOS_MAX_ERRORS_FLAG}
-    -Wno-error=unused-parameter # Remove
-    -Wno-error=unused-variable # Remove
-    -Wno-misleading-indentation
-  )
-
-  add_link_options(-fsanitize=address,undefined,leak)
-
-  target_link_options(run_tests
-    PRIVATE
-    -fsanitize=address,undefined,leak
-    -pg # Profiling
-  )
-endif()
+bpmnos_compile_options(run_tests)
 
 target_link_libraries(run_tests
   PRIVATE
