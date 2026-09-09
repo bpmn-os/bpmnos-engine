@@ -41,10 +41,11 @@ StochasticScenario::StochasticScenario(StochasticScenario* original, BPMNOS::num
 
   // Settle the realized past before resampling: forking spawns at spawnTime = currentTime + 1, so every
   // disclosure due up to currentTime (= spawnTime - 1) was already revealed to the live run via
-  // disclosureTimes. The pending->past bookkeeping is only flushed by revealData() on a clock tick (which
-  // lags one tick), so move those due disclosures to pastDisclosures here. This preserves their realized
-  // values (they precede the resampling horizon) and upholds the precondition of evaluateDeferredDisclosures.
-  revealData(spawnTime - 1);
+  // disclosureTimes. The pending->past bookkeeping is only flushed on a clock tick, so replay the tick for
+  // that time here to move the due disclosures to pastDisclosures. Replaying is safe because a disclosure
+  // already moved is erased from pendingDisclosures. This preserves their realized values (they precede the
+  // resampling horizon) and upholds the precondition of evaluateDeferredDisclosures.
+  noticeClockTick(spawnTime - 1);
 
   // Resample future items (validates precondition and throws if violated)
   evaluateDeferredDisclosures(spawnTime);
@@ -500,12 +501,12 @@ void StochasticScenario::setTaskCompletionStatus(BPMNOS::number rootId, const BP
   taskCompletionStatus[{instanceId, task}] = std::move(modifiedStatus);
 }
 
-void StochasticScenario::revealData(BPMNOS::number currentTime) const {
+void StochasticScenario::noticeClockTick(BPMNOS::number time) const {
   for (auto& [instanceId, disclosures] : pendingDisclosures) {
     // Process pending disclosures that are due
     for (auto it = disclosures.begin(); it != disclosures.end(); ) {
       auto& [attribute, disclosure] = *it;
-      if (currentTime >= disclosure.disclosureTime) {
+      if (time >= disclosure.disclosureTime) {
         // Move to past disclosures
         pastDisclosures[instanceId][attribute] = std::move(disclosure);
         it = disclosures.erase(it);

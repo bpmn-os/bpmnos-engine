@@ -51,11 +51,11 @@ public:
 
   std::optional<BPMNOS::Values> getActivityReadyStatus(BPMNOS::number rootId, BPMNOS::number instanceId, const BPMN::Node* activity, BPMNOS::number currentTime) const override;
 
+  void noticeClockTick(BPMNOS::number time) const override;
+
   void noticeReadyPending( BPMNOS::number instanceId, const BPMN::Node* node, const Values& status, const SharedValues& data, const Values& globals ) const override;
 
   std::unique_ptr<Scenario> clone() const override { return std::make_unique<DynamicScenario>(*this); }
-
-  void revealData(BPMNOS::number currentTime) const;
 
 protected:
   Values getKnownInitialStatus(const InstanceData*, const BPMNOS::number time) const override;

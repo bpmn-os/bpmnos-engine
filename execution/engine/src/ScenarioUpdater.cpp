@@ -4,8 +4,7 @@
 #include "execution/engine/src/events/ClockTickEvent.h"
 #include "execution/engine/src/SystemState.h"
 #include "model/bpmnos/src/DecisionTask.h"
-#include "model/data/src/DynamicScenario.h"
-#include "model/data/src/StochasticScenario.h"
+#include "model/data/src/Scenario.h"
 
 using namespace BPMNOS::Execution;
 
@@ -15,18 +14,11 @@ void ScenarioUpdater::subscribe(Engine* engine) {
 }
 
 void ScenarioUpdater::notice(const Observable* observable) {
-  // Handle ClockTick events - reveal deferred data
+  // Handle ClockTick events - announce the time the clock is advancing to
   if (observable->getObservableType() == Observable::Type::Event) {
     auto event = static_cast<const Event*>(observable);
     if (auto clockTickEvent = event->is<ClockTickEvent>()) {
-      auto systemState = clockTickEvent->systemState;
-
-      if (auto dynamicScenario = dynamic_cast<const BPMNOS::Model::DynamicScenario*>(systemState->scenario)) {
-        dynamicScenario->revealData(clockTickEvent->time);
-      }
-      else if (auto stochasticScenario = dynamic_cast<const BPMNOS::Model::StochasticScenario*>(systemState->scenario)) {
-        stochasticScenario->revealData(clockTickEvent->time);
-      }
+      clockTickEvent->systemState->scenario->noticeClockTick(clockTickEvent->time);
     }
     return;
   }

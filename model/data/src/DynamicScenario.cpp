@@ -193,14 +193,14 @@ void DynamicScenario::noticeReadyPending(
   activityArrivalStatus[{(size_t)data[ExtensionElements::Index::Instance].get().value(), node}] = status;
 }
 
-void DynamicScenario::revealData(BPMNOS::number currentTime) const {
+void DynamicScenario::noticeClockTick(BPMNOS::number time) const {
   for (auto& [instanceId, pendings] : pendingDisclosures) {
     auto& instance = instances.at(instanceId);
 
     // Process pending disclosures that are due
     auto it = pendings.begin();
     while (it != pendings.end()) {
-      if (currentTime >= it->disclosureTime) {
+      if (time >= it->disclosureTime) {
         // Reveal pre-computed value
         instance.values[it->attribute] = it->value;
         disclosedAttributes.insert({instanceId, it->attribute});

@@ -116,6 +116,16 @@ public:
   std::optional<BPMNOS::Values> getActivityReadyStatus(BPMNOS::number rootId, BPMNOS::number instanceId, const BPMN::Node* activity, BPMNOS::number currentTime) const override;
 
   /**
+   * @brief House keeping of internal data.
+   *
+   * Moves disclosures that are due from the pending to the past disclosures. No data is revealed by this;
+   * disclosures of data are handled by checking node-level disclosureTimes. The bookkeeping is required by
+   * the precondition of @ref evaluateDeferredDisclosures and is therefore only observable when a scenario
+   * is forked.
+   */
+  void noticeClockTick(BPMNOS::number time) const override;
+
+  /**
    * @brief Make scenario aware of a token arriving at an activity.
    *
    * Evaluates READY expressions using the parent scope's context and stores
@@ -130,14 +140,6 @@ public:
    * Uses per-(instance, node) RNG for reproducibility.
    */
   void noticeCompletionPending(BPMNOS::number instanceId, const BPMN::Node* task, const Values& status, const SharedValues& data,     const Values& globals) const override;
-
-  /**
-   * @brief House keeping of internal data.
-   *
-   * This method only does house keeping without actually revealing data.
-   * Disclosures of data are handled by checking node-level disclosureTimes.
-   */
-  void revealData(BPMNOS::number currentTime) const;
 
 private:
   void initializeActivityData(BPMNOS::number instanceId, const BPMN::Node* node, const Values& status, const SharedValues& data, const Values& globals) const;

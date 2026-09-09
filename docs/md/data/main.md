@@ -163,8 +163,9 @@ int main() {
   BPMNOS::Model::DynamicDataProvider dataProvider("diagram.bpmn", "scenario.csv");
   auto scenario = dataProvider.createScenario();
 
-  // During simulation, call revealData() to evaluate deferred initializations
-  // scenario->revealData(currentTime);
+  // During a run the engine announces each clock tick to the scenario, which discloses the
+  // initializations that have become due:
+  // scenario->noticeClockTick(time);
 }
 ```
 

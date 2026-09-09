@@ -90,6 +90,17 @@ public:
   virtual std::optional<BPMNOS::Values> getData(const BPMNOS::number instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const = 0;
 
   /**
+   * @brief Make scenario aware that the clock is advancing to the given time.
+   *
+   * The engine announces a clock tick before it processes it, so at the moment of the call the system
+   * state still holds the preceding time and @p time is the time being advanced to. A scenario that owns
+   * time, such as one observing real life or a world model, does not implement this method.
+   *
+   * @param time The time the clock is advancing to.
+   */
+  virtual void noticeClockTick([[maybe_unused]] BPMNOS::number time) const {}
+
+  /**
    * @brief Make scenario aware of a an activity for which the ready status must be determined.
    *
    * @param instanceId The instance identifier.

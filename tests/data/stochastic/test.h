@@ -326,8 +326,8 @@ SCENARIO( "Stochastic scenario copy constructor", "[data][stochastic][copy]" ) {
       auto* stochasticScenario = dynamic_cast<Model::StochasticScenario*>(scenario.get());
       REQUIRE( stochasticScenario != nullptr );
 
-      // Reveal data up to time 10
-      stochasticScenario->revealData(10);
+      // Announce a clock tick to time 10, settling all disclosures due by then
+      stochasticScenario->noticeClockTick(10);
 
       // Get original values
       auto instances = scenario->getInstances(10);
@@ -399,8 +399,8 @@ SCENARIO( "Stochastic scenario copy constructor", "[data][stochastic][copy]" ) {
       auto scenario = dataProvider.createScenario(0);
       auto* stochasticScenario = dynamic_cast<Model::StochasticScenario*>(scenario.get());
 
-      // Reveal all data
-      stochasticScenario->revealData(10);
+      // Announce a clock tick to time 10, settling all disclosures due by then
+      stochasticScenario->noticeClockTick(10);
 
       // Copy at spawnTime = 11
       Model::StochasticScenario copiedScenario(stochasticScenario, 11, 999);
