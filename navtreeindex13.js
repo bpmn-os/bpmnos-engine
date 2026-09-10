@@ -1,5 +1,9 @@
 var NAVTREEINDEX13 =
 {
+"dataprovider.html#csv-format":[3,0,0],
+"dataprovider.html#csv-format-1":[3,1,0],
+"dataprovider.html#csv-format-2":[3,2,0],
+"dataprovider.html#csv-format-3":[3,3,0],
 "dataprovider.html#disclosure-rules":[3,1,2],
 "dataprovider.html#downward-compatibility":[3,2,7],
 "dataprovider.html#dynamic-data-provider":[3,1],
@@ -245,9 +249,5 @@ var NAVTREEINDEX13 =
 "guided_bin_packing_problem.html#globals-50":[7,5,0,10,2],
 "guided_bin_packing_problem.html#globals-51":[7,5,0,11,2],
 "guided_bin_packing_problem.html#globals-52":[7,5,0,12,2],
-"guided_bin_packing_problem.html#globals-53":[7,5,0,13,2],
-"guided_bin_packing_problem.html#globals-54":[7,5,0,14,2],
-"guided_bin_packing_problem.html#globals-55":[7,5,0,15,2],
-"guided_bin_packing_problem.html#globals-56":[7,5,0,16,2],
-"guided_bin_packing_problem.html#header-0-4":[7,5,0,5,4,0,0]
+"guided_bin_packing_problem.html#globals-53":[7,5,0,13,2]
 };

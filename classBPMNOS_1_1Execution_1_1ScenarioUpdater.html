@@ -131,13 +131,13 @@ $(function(){initNavTree('classBPMNOS_1_1Execution_1_1ScenarioUpdater.html','','
  <a href="#details">More...</a></p>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><ul>
-<li>On ClockTick: calls scenario-&gt;revealData() for deferred disclosure</li>
-<li>On Token ARRIVED/CREATED at Activity: calls scenario-&gt;noticeActivityArrival()</li>
-<li>On Token BUSY at Task: calls scenario-&gt;noticeRunningTask()</li>
+<li>On ClockTick: calls scenario-&gt;noticeClockTick() with the time the clock is advancing to</li>
+<li>On Token ARRIVED/CREATED at Activity: calls scenario-&gt;noticeReadyPending()</li>
+<li>On Token BUSY at Task: calls scenario-&gt;noticeCompletionPending()</li>
 </ul>
-<p>Works with Static, Dynamic, and Stochastic scenarios. </p>
+<p>These are the three notifications a scenario receives. Each is declared on Scenario and defaults to doing nothing, so every scenario is notified and none is required to react. </p>
 
-<p class="definition">Definition at line <a class="el" href="ScenarioUpdater_8h_source.html#l00019">19</a> of file <a class="el" href="ScenarioUpdater_8h_source.html">ScenarioUpdater.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ScenarioUpdater_8h_source.html#l00020">20</a> of file <a class="el" href="ScenarioUpdater_8h_source.html">ScenarioUpdater.h</a>.</p>
 </div>
 <p><code>#include &lt;<a class="el" href="ScenarioUpdater_8h_source.html">ScenarioUpdater.h</a>&gt;</code></p>
 <div class="dynheader">
@@ -206,7 +206,7 @@ Public Member Functions</h2></td></tr>
 
 <p>Implements <a class="el" href="classBPMNOS_1_1Execution_1_1Observer.html#abad9b0df1066c6d65efa8040a71d903b">BPMNOS::Execution::Observer</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="ScenarioUpdater_8cpp_source.html#l00017">17</a> of file <a class="el" href="ScenarioUpdater_8cpp_source.html">ScenarioUpdater.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ScenarioUpdater_8cpp_source.html#l00016">16</a> of file <a class="el" href="ScenarioUpdater_8cpp_source.html">ScenarioUpdater.cpp</a>.</p>
 
 </div>
 </div>
@@ -225,7 +225,7 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ScenarioUpdater_8cpp_source.html#l00012">12</a> of file <a class="el" href="ScenarioUpdater_8cpp_source.html">ScenarioUpdater.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ScenarioUpdater_8cpp_source.html#l00011">11</a> of file <a class="el" href="ScenarioUpdater_8cpp_source.html">ScenarioUpdater.cpp</a>.</p>
 
 </div>
 </div>

@@ -248,8 +248,9 @@ Usage</h2>
 <div class="line">  <a class="code hl_class" href="classBPMNOS_1_1Model_1_1DynamicDataProvider.html">BPMNOS::Model::DynamicDataProvider</a> dataProvider(<span class="stringliteral">&quot;diagram.bpmn&quot;</span>, <span class="stringliteral">&quot;scenario.csv&quot;</span>);</div>
 <div class="line">  <span class="keyword">auto</span> scenario = dataProvider.createScenario();</div>
 <div class="line"> </div>
-<div class="line">  <span class="comment">// During simulation, call revealData() to evaluate deferred initializations</span></div>
-<div class="line">  <span class="comment">// scenario-&gt;revealData(currentTime);</span></div>
+<div class="line">  <span class="comment">// During a run the engine announces each clock tick to the scenario, which discloses the</span></div>
+<div class="line">  <span class="comment">// initializations that have become due:</span></div>
+<div class="line">  <span class="comment">// scenario-&gt;noticeClockTick(time);</span></div>
 <div class="line">}</div>
 <div class="ttc" id="aclassBPMNOS_1_1Model_1_1DynamicDataProvider_html"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1DynamicDataProvider.html">BPMNOS::Model::DynamicDataProvider</a></div><div class="ttdoc">Class representing a data provider for dynamic BPMN instance data.</div><div class="ttdef"><b>Definition</b> <a href="DynamicDataProvider_8h_source.html#l00031">DynamicDataProvider.h:31</a></div></div>
 </div><!-- fragment --><h1 class="doxsection"><a class="anchor" id="stochastic-data-provider"></a>

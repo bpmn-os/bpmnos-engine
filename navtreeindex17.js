@@ -1,5 +1,9 @@
 var NAVTREEINDEX17 =
 {
+"knapsack_problem.html#status-172":[7,2,0,15,0],
+"knapsack_problem.html#status-173":[7,2,0,16,0],
+"knapsack_problem.html#status-174":[7,2,0,17,0],
+"knapsack_problem.html#status-175":[7,2,0,18,0],
 "knapsack_problem.html#status-176":[7,2,0,19,0],
 "knapsack_problem.html#status-177":[7,2,0,20,0],
 "knapsack_problem.html#status-178":[7,2,0,21,0],
@@ -245,9 +249,5 @@ var NAVTREEINDEX17 =
 "pickup_delivery_problem.html#header-0-25":[7,9,0,5,3,0,0],
 "pickup_delivery_problem.html#header-0-26":[7,9,0,11,3,0,0],
 "pickup_delivery_problem.html#header-0-27":[7,9,0,12,3,0,0],
-"pickup_delivery_problem.html#header-0-28":[7,9,0,13,3,0,0],
-"pickup_delivery_problem.html#header-0-29":[7,9,0,14,3,0,0],
-"pickup_delivery_problem.html#header-0-30":[7,9,0,18,3,0,0],
-"pickup_delivery_problem.html#header-1-13":[7,9,0,23,3,0,0],
-"pickup_delivery_problem.html#header-1-14":[7,9,0,25,3,0,0]
+"pickup_delivery_problem.html#header-0-28":[7,9,0,13,3,0,0]
 };

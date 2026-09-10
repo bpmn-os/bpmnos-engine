@@ -2,7 +2,7 @@ var classBPMNOS_1_1Model_1_1StaticScenario =
 [
     [ "StaticScenario", "classBPMNOS_1_1Model_1_1StaticScenario.html#ae862d8c491a424f779ac27e59f21eb7e", null ],
     [ "addInstance", "classBPMNOS_1_1Model_1_1StaticScenario.html#a4dc7c3f03648fe95640ff25d7f719935", null ],
-    [ "clone", "classBPMNOS_1_1Model_1_1StaticScenario.html#aed597db072049d68f9aaf000a9d4e340", null ],
+    [ "clone", "classBPMNOS_1_1Model_1_1StaticScenario.html#af723ec211af4340f9f0ead96e9a87efc", null ],
     [ "getActivityReadyStatus", "classBPMNOS_1_1Model_1_1StaticScenario.html#a74a763831a4187c5112d1a34f2f5c4c4", null ],
     [ "getCreatedInstances", "classBPMNOS_1_1Model_1_1StaticScenario.html#a4828713bec6698a8d15a89225ec6d5f5", null ],
     [ "getCurrentInstantiations", "classBPMNOS_1_1Model_1_1StaticScenario.html#aea0eaef40dd0d721b7592db9f3b7725e", null ],
