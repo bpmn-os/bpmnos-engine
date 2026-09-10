@@ -137,15 +137,10 @@ SCENARIO( "Engine resume from stopped state", "[systemstate][process][resume]" )
     auto activityLog1 = recorder1.find(nlohmann::json{{"nodeId","Activity_1"}}, nlohmann::json{{"event",nullptr},{"decision",nullptr}});
     REQUIRE( activityLog1.back()["state"] == "COMPLETED" );
 
-    WHEN( "A second engine resumes with exit handler and forked scenario" ) {
-      // Fork scenario for continuation
-      auto* stochasticScenario = dynamic_cast<Model::StochasticScenario*>(scenario.get());
-      REQUIRE( stochasticScenario != nullptr );
-      auto forkedScenario = std::make_unique<Model::StochasticScenario>(
-        stochasticScenario,
-        engine1.getSystemState()->getTime() + 1, // next point in time
-        42  // new seed
-      );
+    WHEN( "A second engine resumes with exit handler and a copy of the scenario" ) {
+      // Copy the scenario for continuation, differing from the first engine's run at the next point in
+      // time and taking the first realization other than the one that run itself produced
+      auto copiedScenario = scenario->clone( engine1.getSystemState()->getTime() + 1, 0 );
 
       // Second engine: has exit handler
       Execution::Engine engine2;
@@ -158,8 +153,8 @@ SCENARIO( "Engine resume from stopped state", "[systemstate][process][resume]" )
       Execution::Recorder recorder2;
       recorder2.subscribe(&engine2);
 
-      // Resume from a copy of the first engine's state with forked scenario
-      engine2.initializeSystemState(forkedScenario.get(), engine1.getSystemState());
+      // Resume from a copy of the first engine's state with the copied scenario
+      engine2.initializeSystemState(copiedScenario.get(), engine1.getSystemState());
       engine2.resume();
 
       THEN( "The process completes successfully" ) {
