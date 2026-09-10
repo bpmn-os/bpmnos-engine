@@ -35,9 +35,6 @@ public:
 
   std::optional<BPMNOS::Values> getActivityReadyStatus(BPMNOS::number rootId, BPMNOS::number instanceId, const BPMN::Node* activity, BPMNOS::number currentTime) const override;
 
-
-  void noticeReadyPending( BPMNOS::number instanceId, const BPMN::Node* node, const Values& status, const SharedValues& data, const Values& globals ) const override;
-
   /// A deterministic scenario has a single realization, so both arguments are ignored.
   std::unique_ptr<Scenario> clone([[maybe_unused]] BPMNOS::number spawnTime, [[maybe_unused]] size_t index) const override
   { return std::make_unique<StaticScenario>(*this); }

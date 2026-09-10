@@ -103,19 +103,16 @@ public:
   /**
    * @brief Make scenario aware of a an activity for which the ready status must be determined.
    *
+   * Records the status the activity was reached with in @ref activityArrivalStatus, from which
+   * @ref getActivityReadyStatus determines the ready status.
+   *
    * @param instanceId The instance identifier.
    * @param node The activity node being entered.
    * @param status Parent scope's status attributes.
    * @param data Parent scope's data attributes.
    * @param globals Global attributes.
    */
-  virtual void noticeReadyPending(
-    [[maybe_unused]] BPMNOS::number instanceId,
-    [[maybe_unused]] const BPMN::Node* node,
-    [[maybe_unused]] const Values& status,
-    [[maybe_unused]] const SharedValues& data,
-    [[maybe_unused]] const Values& globals
-  ) const {}
+  virtual void noticeReadyPending(BPMNOS::number instanceId, const BPMN::Node* node, const Values& status, const SharedValues& data, const Values& globals) const;
 
   /**
    * @brief Make scenario aware of a task for which the completion status must be determined.
@@ -127,6 +124,29 @@ public:
    * @param globals Global attributes.
    */
   virtual void noticeCompletionPending(BPMNOS::number rootId, const BPMN::Node* task, const Values& status, const SharedValues& data, const Values& globals) const;
+
+  /**
+   * @brief Make scenario aware that an activity has become ready.
+   *
+   * The arrival status recorded by @ref noticeReadyPending has been used and is discarded, so that
+   * @ref activityArrivalStatus holds exactly the arrivals still awaiting a ready status.
+   *
+   * @param instanceId The instance identifier, disambiguated for event-subprocess and multi-instance
+   *        executions, as @ref noticeReadyPending derives it from the data.
+   * @param node The activity node that became ready.
+   */
+  virtual void noticeReady(BPMNOS::number instanceId, const BPMN::Node* node) const;
+
+  /**
+   * @brief Make scenario aware that a task has completed.
+   *
+   * The status recorded by @ref noticeCompletionPending has been used and is discarded, so that
+   * @ref taskCompletionStatus holds exactly the tasks still awaiting a completion status.
+   *
+   * @param instanceId The instance identifier, disambiguated as for @ref noticeReady.
+   * @param task The task node that completed.
+   */
+  virtual void noticeCompletion(BPMNOS::number instanceId, const BPMN::Node* task) const;
 
   /// @brief Get the completion status for a SendTask, ReceiveTask, and DecisionTask.
   BPMNOS::Values getTaskCompletionStatus(BPMNOS::number rootId, const BPMN::Node* task, const Values& status, const SharedValues& data, const Values& globals) const;

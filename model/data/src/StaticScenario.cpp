@@ -107,16 +107,6 @@ std::optional<BPMNOS::Values> StaticScenario::getData(const BPMNOS::number insta
   return result;
 }
 
-void StaticScenario::noticeReadyPending(
-    [[maybe_unused]] BPMNOS::number rootId,
-    const BPMN::Node* node,
-    const Values& status,
-    const SharedValues& data,
-    [[maybe_unused]] const Values& globals) const {
-  // key by the full instance id (from data) so concurrent executions of one node don't collide
-  activityArrivalStatus[{(size_t)data[ExtensionElements::Index::Instance].get().value(), node}] = status;
-}
-
 std::optional<BPMNOS::Values> StaticScenario::getActivityReadyStatus(
   BPMNOS::number rootId,
   BPMNOS::number instanceId,

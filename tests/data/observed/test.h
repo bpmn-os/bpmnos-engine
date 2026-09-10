@@ -9,18 +9,45 @@
  */
 
 /// Reports what a stochastic world has produced to an observed scenario, and paces an engine to it.
-class World : public Execution::EventDispatcher {
+///
+/// It watches the world's engine rather than interrogating the world's scenario, because a status is
+/// answered and discarded within the step that produces it: by the time the world has advanced to a given
+/// time, nothing is left to ask it about. What a token carries as it reaches READY or COMPLETED is exactly
+/// the status that was determined for it, so the notification is both the earliest and the only reliable
+/// moment to take it.
+class World : public Execution::EventDispatcher, public Execution::Observer {
 public:
   World(Execution::Engine& source, const Model::Scenario* truth, Model::ObservedScenario& observed)
     : source(source), truth(truth), observed(observed)
   {
+    source.addSubscriber(this, Execution::Observable::Type::Token);
+  }
+
+  /// Take the status a token carries at the moment the world determines it.
+  void notice(const Execution::Observable* observable) override {
+    if ( observable->getObservableType() != Execution::Observable::Type::Token ) {
+      return;
+    }
+    auto token = static_cast<const Execution::Token*>(observable);
+    if ( !token->node || !token->node->represents<BPMN::Activity>() ) {
+      return;
+    }
+    if ( token->state == Execution::Token::State::READY ) {
+      pendingReady.push_back({token->getInstanceId(), token->node, token->status});
+    }
+    else if ( token->state == Execution::Token::State::COMPLETED && token->node->represents<BPMN::Task>() ) {
+      pendingCompletion.push_back({token->getInstanceId(), token->node, token->status});
+    }
   }
 
   /// Advance the world to the given time and report everything it has produced by then.
   ///
-  /// Reporting is by node rather than by attribute, because a node's values become knowable together: the
-  /// world answers for a whole node or not at all, and an attribute of a disclosed node that has no value
-  /// is observed to have none, which is not the same as not having been observed.
+  /// Instances and attribute values are read from the world's scenario, which retains them. Statuses come
+  /// from what was noticed while the world advanced, since the scenario no longer holds them.
+  ///
+  /// Values are reported by node rather than by attribute, because a node's values become knowable
+  /// together: the world answers for a whole node or not at all, and an attribute of a disclosed node that
+  /// has no value is observed to have none, which is not the same as not having been observed.
   void report(BPMNOS::number time) {
     source.resume(time);
 
@@ -41,17 +68,18 @@ public:
             observed.observeValue((BPMNOS::number)instance->id, extensionElements->data[i].get(), data->at(i));
           }
         }
-
-        if ( node->represents<BPMN::Activity>() ) {
-          if ( auto ready = truth->getActivityReadyStatus((BPMNOS::number)instance->id, (BPMNOS::number)instance->id, node, time); ready.has_value() ) {
-            observed.observeReadyStatus((BPMNOS::number)instance->id, node, ready.value());
-          }
-          if ( auto completion = truth->getTaskCompletionStatus((BPMNOS::number)instance->id, node, time); completion.has_value() ) {
-            observed.observeCompletionStatus((BPMNOS::number)instance->id, node, completion.value());
-          }
-        }
       }
     }
+
+    for ( auto& [instanceId, node, status] : pendingReady ) {
+      observed.observeReadyStatus(instanceId, node, status);
+    }
+    pendingReady.clear();
+
+    for ( auto& [instanceId, node, status] : pendingCompletion ) {
+      observed.observeCompletionStatus(instanceId, node, status);
+    }
+    pendingCompletion.clear();
   }
 
   /// Releases a tick to the observing engine only once the world has reached the time it advances to, so
@@ -70,6 +98,14 @@ private:
     );
     return nodes;
   }
+
+  struct Noticed {
+    BPMNOS::number instanceId;
+    const BPMN::Node* node;
+    BPMNOS::Values status;
+  };
+  std::vector<Noticed> pendingReady;      ///< Noticed while the world advanced, not yet reported.
+  std::vector<Noticed> pendingCompletion;
 
   Execution::Engine& source;
   const Model::Scenario* truth;
@@ -104,10 +140,11 @@ SCENARIO( "An observed scenario fed from a simulated world", "[data][observed]" 
       Execution::Recorder sourceRecorder;
       sourceRecorder.subscribe(&sourceEngine);
 
-      sourceEngine.initialize(truth.get(), 0);
-
-      // The observing run, clocked by the world so that it cannot outrun it
+      // Subscribed before the world is set running, since initialize already advances tokens and a status
+      // noticed by nobody is a status nothing can report
       World world(sourceEngine, truth.get(), observed);
+
+      sourceEngine.initialize(truth.get(), 0);
       world.report(0);   // the opening tick is issued by initialize, not by the dispatcher
 
       Execution::Engine observingEngine;
@@ -125,6 +162,7 @@ SCENARIO( "An observed scenario fed from a simulated world", "[data][observed]" 
         auto observingLog = observingRecorder.find(nlohmann::json{{"nodeId","Task_2"}}, nlohmann::json{{"event",nullptr},{"decision",nullptr}});
 
         REQUIRE( !sourceLog.empty() );
+        REQUIRE( !observingLog.empty() );
         REQUIRE( sourceLog.back()["state"] == "DEPARTED" );
         REQUIRE( observingLog.back()["state"] == "DEPARTED" );
         REQUIRE( sourceLog.back()["timestamp"] == observingLog.back()["timestamp"] );
@@ -134,6 +172,8 @@ SCENARIO( "An observed scenario fed from a simulated world", "[data][observed]" 
         auto sourceLog = sourceRecorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr},{"event",nullptr},{"decision",nullptr}});
         auto observingLog = observingRecorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr},{"event",nullptr},{"decision",nullptr}});
 
+        REQUIRE( !sourceLog.empty() );
+        REQUIRE( !observingLog.empty() );
         REQUIRE( sourceLog.back()["state"] == "DONE" );
         REQUIRE( observingLog.back()["state"] == "DONE" );
         REQUIRE( sourceLog.back()["timestamp"] == observingLog.back()["timestamp"] );

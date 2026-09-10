@@ -1,4 +1,4 @@
-// Tests that the Scenario stores the correct completion/arrival status for a task — in particular the timestamp,
+// Tests that the Scenario stores the correct completion status for a task — in particular the timestamp,
 // which the task completion handler compares against the current time to decide when to fire a CompletionEvent.
 // A wrong (e.g. spuriously large) timestamp here makes the task never complete and the engine clock-tick.
 
@@ -41,12 +41,6 @@ SCENARIO( "Scenario records the correct completion timestamp for a BUSY task", "
       REQUIRE( completion.has_value() );
       REQUIRE( (*completion)[Timestamp].has_value() );
       REQUIRE( (double)(*completion)[Timestamp].value() == 1.0 );
-    }
-    AND_THEN( "Scenario::activityArrivalStatus exposes the activity as ready at its arrival time t=0" ) {
-      auto ready = scenario->getActivityReadyStatus(instanceId, instanceId, node, 0);
-      REQUIRE( ready.has_value() );
-      REQUIRE( (*ready)[Timestamp].has_value() );
-      REQUIRE( (double)(*ready)[Timestamp].value() == 0.0 );
     }
   }
 }

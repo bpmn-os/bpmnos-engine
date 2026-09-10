@@ -79,10 +79,28 @@ std::unique_ptr<Scenario> Scenario::clone([[maybe_unused]] BPMNOS::number spawnT
   throw std::logic_error("Scenario: clone() is not supported by this scenario type");
 }
 
+void Scenario::noticeReadyPending([[maybe_unused]] BPMNOS::number rootId, const BPMN::Node* node, const Values& status, const SharedValues& data, [[maybe_unused]] const Values& globals) const {
+  // key by the full instance id (carries ^...#k for event-subprocess/multi-instance executions)
+  auto instanceId = (size_t)data[ExtensionElements::Index::Instance].get().value();
+  activityArrivalStatus[{instanceId, node}] = status;
+}
+
 void Scenario::noticeCompletionPending([[maybe_unused]] BPMNOS::number rootId, const BPMN::Node* task, const Values& status, const SharedValues& data, [[maybe_unused]] const Values& globals) const {
   // key by the full instance id (carries ^...#k for event-subprocess/multi-instance executions)
   auto instanceId = (size_t)data[ExtensionElements::Index::Instance].get().value();
   taskCompletionStatus[{instanceId, task}] = status;
+}
+
+void Scenario::noticeReady(BPMNOS::number instanceId, const BPMN::Node* node) const {
+  // an arrival that was never announced must never be discarded, so the caller's guard is asserted here
+  [[maybe_unused]] auto erased = activityArrivalStatus.erase({(size_t)instanceId, node});
+  assert( erased == 1 );
+}
+
+void Scenario::noticeCompletion(BPMNOS::number instanceId, const BPMN::Node* task) const {
+  // as above: only a task whose completion was announced may be discarded
+  [[maybe_unused]] auto erased = taskCompletionStatus.erase({(size_t)instanceId, task});
+  assert( erased == 1 );
 }
 
 BPMNOS::Values Scenario::getTaskCompletionStatus(BPMNOS::number rootId, const BPMN::Node* task, const Values& status, const SharedValues& data, const Values& globals) const {

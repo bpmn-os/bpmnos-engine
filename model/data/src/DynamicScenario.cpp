@@ -154,16 +154,6 @@ void DynamicScenario::addPendingDisclosure(const BPMNOS::number instanceId, Pend
   pendingDisclosures[(size_t)instanceId].push_back(std::move(pending));
 }
 
-void DynamicScenario::noticeReadyPending(
-    [[maybe_unused]] BPMNOS::number rootId,
-    const BPMN::Node* node,
-    const Values& status,
-    const SharedValues& data,
-    [[maybe_unused]] const Values& globals) const {
-  // key by the full instance id (from data) so concurrent executions of one node don't collide
-  activityArrivalStatus[{(size_t)data[ExtensionElements::Index::Instance].get().value(), node}] = status;
-}
-
 void DynamicScenario::noticeClockTick(BPMNOS::number time) const {
   for (auto& [instanceId, pendings] : pendingDisclosures) {
     auto& instance = instances.at(instanceId);

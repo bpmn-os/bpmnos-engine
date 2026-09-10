@@ -47,6 +47,16 @@ void ScenarioUpdater::notice(const Observable* observable) {
       scenario->noticeReadyPending(instanceId, token->node, token->status, *token->data, token->globals);
     }
 
+    // Handle READY at Activity - the arrival status has been used and is no longer owed. The guard
+    // mirrors the one above, so that only an arrival that was announced is discarded.
+    if (
+      token->node->represents<BPMN::Activity>() &&
+      token->state == Token::State::READY &&
+      !token->owner->systemState->tokenAtMultiInstanceActivity.contains(const_cast<Token*>(token))
+    ) {
+      scenario->noticeReady(token->getInstanceId(), token->node);
+    }
+
     // Handle BUSY at Task - notify scenario of running task
     if (
       token->node->represents<BPMN::Task>() &&
@@ -55,8 +65,8 @@ void ScenarioUpdater::notice(const Observable* observable) {
       // Exclude SendTask, ReceiveTask, DecisionTask
       if (
         token->node->represents<BPMN::SendTask>() ||
-        token->node->represents<BPMN::ReceiveTask>() ||
-        token->node->represents<BPMNOS::Model::DecisionTask>()
+        token->node->represents<BPMNOS::Model::DecisionTask>() ||
+        token->node->represents<BPMN::ReceiveTask>()
       ) {
         // completion status is determined by Engine
         return;
@@ -65,6 +75,27 @@ void ScenarioUpdater::notice(const Observable* observable) {
       auto instanceId = token->owner->root->instance.value();
       assert(token->data);
       scenario->noticeCompletionPending(instanceId, token->node, token->status, *token->data, token->globals);
+    }
+
+    // Handle COMPLETED at Task - the completion status has been used and is no longer owed. The
+    // announcement came from either of two places, so the guard is not the one used for BUSY above:
+    // this updater announces every task that is not a send, receive or decision task, while
+    // Token::advanceToCompleted announces every send task and every receive or decision task that
+    // carries extension elements. A receive or decision task without them is announced by neither.
+    if (
+      token->node->represents<BPMN::Task>() &&
+      token->state == Token::State::COMPLETED
+    ) {
+      bool announced =
+        token->node->represents<BPMN::SendTask>() ||
+        (
+          ( token->node->represents<BPMN::ReceiveTask>() || token->node->represents<BPMNOS::Model::DecisionTask>() )
+          ? (bool)token->node->extensionElements->represents<BPMNOS::Model::ExtensionElements>()
+          : true
+        );
+      if ( announced ) {
+        scenario->noticeCompletion(token->getInstanceId(), token->node);
+      }
     }
   }
 }
