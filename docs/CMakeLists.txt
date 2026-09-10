@@ -28,6 +28,40 @@ if (BPMNOS_DOCS)
   endif()
 endif()
 
+# PlantUML renders the component and state machine diagrams, which graphviz cannot draw. The jar is
+# downloaded and pinned rather than resolved from the system, because the distribution packages are years
+# behind: the version Debian ships renders the 2019 palette and rejects the theme directive outright, so a
+# site built against it would look nothing like one built anywhere else. Java is all that is needed, and
+# without it the documentation is still built, without those diagrams.
+set(PLANTUML_VERSION 1.2025.2)
+if (BPMNOS_DOCS)
+  find_program(JAVA_FOUND "java")
+  if (NOT JAVA_FOUND)
+    message(WARNING "java not found; UML diagrams will be missing from the documentation. "
+                    "To install run: sudo apt install default-jre-headless")
+    set(PLANTUML_JAR "")
+  else()
+    set(PLANTUML_JAR ${CMAKE_BINARY_DIR}/plantuml-${PLANTUML_VERSION}.jar)
+    if (NOT EXISTS ${PLANTUML_JAR})
+      message("-- Downloading PlantUML ${PLANTUML_VERSION}")
+      file(DOWNLOAD
+        https://github.com/plantuml/plantuml/releases/download/v${PLANTUML_VERSION}/plantuml-${PLANTUML_VERSION}.jar
+        ${PLANTUML_JAR}
+        SHOW_PROGRESS
+        STATUS PLANTUML_DOWNLOAD_STATUS
+      )
+      list(GET PLANTUML_DOWNLOAD_STATUS 0 PLANTUML_DOWNLOAD_CODE)
+      if (NOT PLANTUML_DOWNLOAD_CODE EQUAL 0)
+        list(GET PLANTUML_DOWNLOAD_STATUS 1 PLANTUML_DOWNLOAD_MESSAGE)
+        message(WARNING "PlantUML could not be downloaded (${PLANTUML_DOWNLOAD_MESSAGE}); "
+                        "UML diagrams will be missing from the documentation.")
+        file(REMOVE ${PLANTUML_JAR})
+        set(PLANTUML_JAR "")
+      endif()
+    endif()
+  endif()
+endif()
+
 # bpmnosdoc renders the example models into the markdown the Doxygen pages are assembled from. Without it
 # the documentation is still built, without those pages.
 if (BPMNOS_DOCS)
@@ -117,7 +151,7 @@ if (BPMNOS_DOCS)
     COMMAND bash -c "sed -i 's|https://github.com/jothepro/doxygen-awesome-css|https://github.com/bpmn-os/bpmnos-engine|g' ${CMAKE_BINARY_DIR}/doxygen-awesome/doxygen-custom/header.html"
     COMMAND bash -c "echo '<script type=\"module\">import mermaid from \"https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs\"; mermaid.initialize({ startOnLoad: true, theme: \"neutral\" });</script></body></html>' > ${CMAKE_BINARY_DIR}/doxygen-awesome/doxygen-custom/footer.html"
     COMMAND bash -c "curl -s -o ${CMAKE_BINARY_DIR}/bpmnpp.tag https://bpmn-os.github.io/bpmnpp/bpmnpp.tag"
-    COMMAND bash -c "DOXYGEN_AWESOME_DIR=${CMAKE_BINARY_DIR}/doxygen-awesome BPMNOS_XML_DIR=${BPMNOS_XML_DIR} BPMNOS_DOCS_DIR=${BPMNOS_DOCS_DIR} BPMNOS_MODEL_DOC=${MODEL_DOC} BPMNPP_DOCS_PATH=${CMAKE_BINARY_DIR} doxygen docs/Doxyfile 2>&1 | grep -v 'Unsupported xml/html tag <choice>' || true"
+    COMMAND bash -c "PLANTUML_JAR_PATH=${PLANTUML_JAR} DOXYGEN_AWESOME_DIR=${CMAKE_BINARY_DIR}/doxygen-awesome BPMNOS_XML_DIR=${BPMNOS_XML_DIR} BPMNOS_DOCS_DIR=${BPMNOS_DOCS_DIR} BPMNOS_MODEL_DOC=${MODEL_DOC} BPMNPP_DOCS_PATH=${CMAKE_BINARY_DIR} doxygen docs/Doxyfile 2>&1 | grep -v 'Unsupported xml/html tag <choice>' || true"
     # Doxygen's sidebar script keeps the body from scrolling, which the model pages need. The file is
     # emitted by some Doxygen versions and not by others, so its absence is not a failure.
     COMMAND bash -c "test -f ${HTML_DIR}/resize.js && sed -i 's|$(\"body\").css({overflow: \"hidden\"});|//$(\"body\").css({overflow: \"hidden\"});|g' ${HTML_DIR}/resize.js || true"

@@ -5,12 +5,25 @@
 
 BPMN-OS is a framework for optimisation and simulation of business processes. It is based on [BPMN 2.0](http://www.omg.org/spec/BPMN/2.0/) and uses the built-in extension mechanism to provide data relevant for optimisation and simulation.
 
-![Architecture](images/Architecture.svg)
+@startuml
+skinparam nodesep 5
+left to right direction
+
+[Model provider] -- Model
+[Model provider] -- Scenario
+Model <.. [Execution engine] : use
+Scenario <.. [Execution engine] : use
+
+[Execution engine] ..> Event : apply
+Event -- [Controller] 
+
+[Execution engine] -- Observable
+Observable <.. [Observer] : notice
+@enduml
 
 The framework is composed of the components illustrated above:
 
-- **Model provider**: The model provider reads a @ref BPMNOS::Model::Model "BPMN model" containing extension elements required for optimisation and simulation.
-- **Data provider**: The data provider creates instances of the processes with respective instance data. It creates a @ref BPMNOS::Model::Scenario "scenario" that can be run by the execution engine.
+- **Model provider**: The model provider reads a @ref BPMNOS::Model::Model "BPMN model" containing the extension elements required for optimisation and simulation, and yields the @ref BPMNOS::Model::Scenario "scenario" the execution engine runs on. A @ref BPMNOS::Model::DataProvider "data provider" creates a scenario from instance data given before the run, whereas an @ref BPMNOS::Model::ObservedScenario "observed scenario" is told what is observed of a world while the run proceeds.
 - **Execution engine**: The execution engine maintains a @ref BPMNOS::Execution::SystemState "system state" containing @ref BPMNOS::Execution::StateMachine "state machines" for each BPMN element with a @ref BPMN::Scope "scope" and all @ref BPMNOS::Execution::Token "tokens" within the scope. It automatically advances all tokens as far as possible and waits for the dispatch of @ref BPMNOS::Execution::Event "events" and @ref BPMNOS::Execution::Decision "decisions" made by the controller.
 - **Controller**: The controller is responsible for making all necessary @ref BPMNOS::Execution::Decision "decisions" during process execution.
 - **Observer**: Observers can connect to the execution engine to monitor changes in the execution.

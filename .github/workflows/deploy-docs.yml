@@ -34,7 +34,7 @@ jobs:
       - name: System packages
         run: |
           sudo apt-get update
-          sudo apt-get install -y doxygen graphviz libxerces-c-dev cmake build-essential git curl wget
+          sudo apt-get install -y doxygen graphviz default-jre-headless libxerces-c-dev cmake build-essential git curl wget
 
       # Chrome for bpmnosdoc's headless rendering — installed at /usr/bin/google-chrome-stable, where
       # chrome-launcher (used by bpmnosdoc) looks for it.

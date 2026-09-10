@@ -12,7 +12,6 @@ INPUT             = model/ execution/ $(BPMNOS_XML_DIR) \
                     docs/md/main.md \
                     docs/md/logic \
                     docs/md/bpmnos \
-                    docs/md/data \
                     docs/md/engine \
                     docs/md/controller \
                     docs/md/observer \
@@ -58,6 +57,12 @@ REPEAT_BRIEF          = NO
 
 HAVE_DOT              = YES
 DOT_IMAGE_FORMAT      = svg
+
+# PlantUML draws what dot cannot, notably component and state machine diagrams. The jar is located by
+# CMake and passed in; an empty path leaves Doxygen to warn at each @startuml rather than to fail, so a
+# machine without it still builds the documentation.
+PLANTUML_JAR_PATH     = $(PLANTUML_JAR_PATH)
+PLANTUML_CFG_FILE     = docs/plantuml.cfg
 
 GENERATE_TREEVIEW     = YES
 DISABLE_INDEX         = NO
