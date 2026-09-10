@@ -73,43 +73,14 @@ BPMNOS::Values StaticScenario::getKnownInitialData(const Scenario::InstanceData*
   return result;
 }
 
-std::optional<BPMNOS::number> StaticScenario::getValue(const Scenario::InstanceData* instance, const BPMNOS::Model::Attribute* attribute, [[maybe_unused]] const BPMNOS::number currentTime) const {
+std::optional<BPMNOS::number> StaticScenario::getValue(const Scenario::InstanceData* instance, const BPMNOS::Model::Attribute* attribute, const BPMNOS::number currentTime) const {
   if ( attribute->expression && attribute->expression->type == Expression::Type::ASSIGN ) {
-    // Value is computed from an expression
-    std::vector<double> variableValues;
-    for ( auto input : attribute->expression->variables ) {
-      if ( !input->isImmutable ) {
-        return std::nullopt;
-      }
-      auto value = getValue(instance, input, currentTime);
-      if ( !value.has_value() ) {
-        return std::nullopt;
-      }
-      variableValues.push_back( (double)value.value() );
-    }
-
-    std::vector<std::vector<double>> collectionValues;
-    for ( auto input : attribute->expression->collections ) {
-      if ( !input->isImmutable ) {
-        return std::nullopt;
-      }
-      collectionValues.push_back( {} );
-      auto collection = getValue(instance, input, currentTime);
-      if ( !collection.has_value() ) {
-        return std::nullopt;
-      }
-      for ( auto value : collectionRegistry[(size_t)collection.value()] ) {
-        collectionValues.back().push_back( value );
-      }
-    }
-
-    return number(attribute->expression->compiled.evaluate(variableValues, collectionValues));
+    // Value is computed from an expression declared in the model
+    return getAssignedValue(instance, attribute, currentTime);
   }
-  else {
-    // Return stored value directly
-    if ( instance->values.contains(attribute) ) {
-      return instance->values.at(attribute);
-    }
+  // Return stored value directly
+  if ( instance->values.contains(attribute) ) {
+    return instance->values.at(attribute);
   }
   return std::nullopt;
 }
@@ -150,7 +121,7 @@ std::optional<BPMNOS::Values> StaticScenario::getActivityReadyStatus(
   BPMNOS::number rootId,
   BPMNOS::number instanceId,
   const BPMN::Node* activity,
-  [[maybe_unused]] BPMNOS::number currentTime
+  BPMNOS::number currentTime
 ) const {
   // status keyed by full instance id; declared instance/values keyed by root id
   auto key = std::make_pair((size_t)instanceId, activity);

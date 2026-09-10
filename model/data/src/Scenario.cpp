@@ -1,6 +1,8 @@
 #include "Scenario.h"
 #include "model/bpmnos/src/extensionElements/ExtensionElements.h"
 #include "model/bpmnos/src/extensionElements/Expression.h"
+#include "model/utility/src/CollectionRegistry.h"
+#include <cassert>
 
 using namespace BPMNOS::Model;
 
@@ -38,6 +40,39 @@ BPMNOS::Values Scenario::evaluateGlobals(const std::unordered_map<const Attribut
   }
 
   return result;
+}
+
+std::optional<BPMNOS::number> Scenario::getAssignedValue(const InstanceData* instance, const Attribute* attribute, BPMNOS::number currentTime) const {
+  assert( attribute->expression && attribute->expression->type == Expression::Type::ASSIGN );
+
+  std::vector<double> variableValues;
+  for ( auto input : attribute->expression->variables ) {
+    if ( !input->isImmutable ) {
+      return std::nullopt;
+    }
+    auto value = getValue(instance, input, currentTime);
+    if ( !value.has_value() ) {
+      return std::nullopt;
+    }
+    variableValues.push_back( (double)value.value() );
+  }
+
+  std::vector<std::vector<double>> collectionValues;
+  for ( auto input : attribute->expression->collections ) {
+    if ( !input->isImmutable ) {
+      return std::nullopt;
+    }
+    collectionValues.push_back( {} );
+    auto collection = getValue(instance, input, currentTime);
+    if ( !collection.has_value() ) {
+      return std::nullopt;
+    }
+    for ( auto value : collectionRegistry[(size_t)collection.value()] ) {
+      collectionValues.back().push_back( value );
+    }
+  }
+
+  return number(attribute->expression->compiled.evaluate(variableValues, collectionValues));
 }
 
 std::unique_ptr<Scenario> Scenario::clone([[maybe_unused]] BPMNOS::number spawnTime, [[maybe_unused]] size_t index) const {

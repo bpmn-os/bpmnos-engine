@@ -128,7 +128,7 @@ public:
    */
   virtual void noticeCompletionPending(BPMNOS::number rootId, const BPMN::Node* task, const Values& status, const SharedValues& data, const Values& globals) const;
 
-  /// @brief Get the completion status for a SendTask, ReceiveTask, and Decisiontask.
+  /// @brief Get the completion status for a SendTask, ReceiveTask, and DecisionTask.
   BPMNOS::Values getTaskCompletionStatus(BPMNOS::number rootId, const BPMN::Node* task, const Values& status, const SharedValues& data, const Values& globals) const;
 
   /**
@@ -187,6 +187,17 @@ protected:
 
   /// Evaluate global attributes (CSV-provided + model expressions).
   Values evaluateGlobals(const std::unordered_map<const Attribute*, BPMNOS::number>& globalValueMap);
+
+  /// @brief Evaluate an attribute that the model declares by assignment expression.
+  ///
+  /// Such an attribute carries its own initialization in the model, so its value is computed from other
+  /// attributes of the same instance rather than supplied with the instance data, and the computation is
+  /// therefore the same for every scenario. Inputs are fetched through @ref getValue, so each scenario
+  /// supplies them from its own storage.
+  ///
+  /// @return std::nullopt if an input is mutable, and so not knowable before the run, or not yet known.
+  /// @pre The attribute has an expression of type Expression::Type::ASSIGN.
+  std::optional<BPMNOS::number> getAssignedValue(const InstanceData* instance, const Attribute* attribute, BPMNOS::number currentTime) const;
 
   /**
    * @brief Method returning the initial status attributes for process instantiation.
