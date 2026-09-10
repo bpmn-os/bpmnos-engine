@@ -1,27 +1,106 @@
-/**
- * The world here is a stochastic scenario driven by its own engine. A second engine runs on an
- * ObservedScenario that is told only what the world has already produced, and the two runs are compared.
- * Because the world knows what it is going to do and the observing run does not, any divergence is a
- * defect in how observations are reported or answered.
- *
- * The World below is also the smallest complete example of feeding an ObservedScenario: it shows what has
- * to be reported, and when it has to be reported for the engine to be able to proceed.
- */
+class Simulator; // Used to simulate the obserable world
 
-/// Reports what a stochastic world has produced to an observed scenario, and paces an engine to it.
-///
-/// It watches the world's engine rather than interrogating the world's scenario, because a status is
-/// answered and discarded within the step that produces it: by the time the world has advanced to a given
-/// time, nothing is left to ask it about. What a token carries as it reaches READY or COMPLETED is exactly
-/// the status that was determined for it, so the notification is both the earliest and the only reliable
-/// moment to take it.
-class World : public Execution::EventDispatcher, public Execution::Observer {
+/**
+ * The world model feeds an ObservedScenario with what it observes in the world do. The world model also advances time.
+ *
+ * The implementation below uses a Simulator based on a stochastic scenario in a dedicated engine.
+ * The world model observes this simulation to update the ObservedScenario.
+ */
+class WorldModel : public Execution::EventDispatcher {
 public:
-  World(Execution::Engine& source, const Model::Scenario* truth, Model::ObservedScenario& observed)
-    : source(source), truth(truth), observed(observed)
+  WorldModel(const std::string& modelFile, const std::vector<std::string>& folders, const std::string& instances, unsigned int seed);
+  ~WorldModel();
+
+  /// The scenario an engine is run on.
+  Model::ObservedScenario& getScenario() { return observed; }
+
+  /// The world being observed, so that the test can watch it too.
+  Simulator& getSimulator() { return *simulator; }
+
+  /// Set the world running and report what it holds at the given time, before any engine asks for it.
+  void start(BPMNOS::number time);
+
+  /// Releases a tick to the engine only once the world has reached the time it advances to, so the run
+  /// can never get ahead of the world it observes.
+  std::shared_ptr<Execution::Event> dispatchEvent( const Execution::SystemState* systemState ) override;
+
+private:
+  /// Let the world reach the given time, and report everything it has been seen to do by then. An
+  /// instantiation is reported before anything else about that instance, which is all the ordering the
+  /// scenario requires.
+  void report(BPMNOS::number time);
+
+  std::unique_ptr<Simulator> simulator;
+  std::unique_ptr<Model::Model> model;   ///< declared before the scenario, which points at it
+  Model::ObservedScenario observed;
+};
+
+/// What a world has been seen to do since it was last asked.
+struct Observations {
+  struct Instantiation { const BPMN::Process* process; BPMNOS::number instanceId; BPMNOS::number time; };
+  struct Value { BPMNOS::number instanceId; const Model::Attribute* attribute; std::optional<BPMNOS::number> value; };
+  struct Status { BPMNOS::number instanceId; const BPMN::Node* node; BPMNOS::Values status; };
+
+  std::vector<Instantiation> instantiations;
+  std::vector<Value> values;
+  std::vector<Status> readyStatuses;
+  std::vector<Status> completionStatuses;
+};
+
+/// A simulation based on a stochastic scenario running in a dedicated engine.
+class Simulator : public Execution::Observer {
+public:
+  Simulator(const std::string& modelFile, const std::vector<std::string>& folders, const std::string& instances, unsigned int seed)
+    : provider(modelFile, folders, instances, seed)
+    , scenario(provider.createScenario(0))
   {
-    source.addSubscriber(this, Execution::Observable::Type::Token);
+    controller.connect(&engine);
+    timeHandler.connect(&engine);
+    // subscribed before the world is set running, since a status noticed by nobody is a status nothing
+    // can report
+    engine.addSubscriber(this, Execution::Observable::Type::Token);
   }
+
+  /// Set the world running at the given time.
+  void start(BPMNOS::number time) { engine.initialize(scenario.get(), time); }
+
+  /// Let the world reach the given time.
+  void advanceTo(BPMNOS::number time) { engine.resume(time); }
+
+  /// Everything the world has been seen to do up to the given time, and not yet reported.
+  Observations take(BPMNOS::number time) {
+    Observations observations;
+
+    for ( auto instance : scenario->getCreatedInstances(time) ) {
+      observations.instantiations.push_back({instance->process, (BPMNOS::number)instance->id, instance->instantiationTime});
+
+      for ( auto node : nodesWithExtensionElements(instance->process) ) {
+        auto extensionElements = node->extensionElements->as<const Model::ExtensionElements>();
+
+        // Values are taken by node rather than by attribute, because a node's values become knowable
+        // together: the world answers for a whole node or not at all, and an attribute of a node it
+        // answers for that has no value is seen to have none, which is not the same as not being seen.
+        if ( auto status = scenario->getStatus((BPMNOS::number)instance->id, node, time); status.has_value() ) {
+          for ( size_t i = 0; i < extensionElements->attributes.size(); i++ ) {
+            observations.values.push_back({(BPMNOS::number)instance->id, extensionElements->attributes[i].get(), status->at(i)});
+          }
+        }
+        if ( auto data = scenario->getData((BPMNOS::number)instance->id, node, time); data.has_value() ) {
+          for ( size_t i = 0; i < extensionElements->data.size(); i++ ) {
+            observations.values.push_back({(BPMNOS::number)instance->id, extensionElements->data[i].get(), data->at(i)});
+          }
+        }
+      }
+    }
+
+    observations.readyStatuses = std::move(noticedReady);
+    observations.completionStatuses = std::move(noticedCompletion);
+    noticedReady.clear();
+    noticedCompletion.clear();
+    return observations;
+  }
+
+  Execution::Engine& getEngine() { return engine; }
 
   /// Take the status a token carries at the moment the world determines it.
   void notice(const Execution::Observable* observable) override {
@@ -33,89 +112,74 @@ public:
       return;
     }
     if ( token->state == Execution::Token::State::READY ) {
-      pendingReady.push_back({token->getInstanceId(), token->node, token->status});
+      noticedReady.push_back({token->getInstanceId(), token->node, token->status});
     }
     else if ( token->state == Execution::Token::State::COMPLETED && token->node->represents<BPMN::Task>() ) {
-      pendingCompletion.push_back({token->getInstanceId(), token->node, token->status});
+      noticedCompletion.push_back({token->getInstanceId(), token->node, token->status});
     }
-  }
-
-  /// Advance the world to the given time and report everything it has produced by then.
-  ///
-  /// Instances and attribute values are read from the world's scenario, which retains them. Statuses come
-  /// from what was noticed while the world advanced, since the scenario no longer holds them.
-  ///
-  /// Values are reported by node rather than by attribute, because a node's values become knowable
-  /// together: the world answers for a whole node or not at all, and an attribute of a disclosed node that
-  /// has no value is observed to have none, which is not the same as not having been observed.
-  void report(BPMNOS::number time) {
-    source.resume(time);
-
-    for ( auto instance : truth->getCreatedInstances(time) ) {
-      observed.observeInstantiation(instance->process, (BPMNOS::number)instance->id, instance->instantiationTime);
-
-      for ( auto node : nodesWithExtensionElements(instance->process) ) {
-        auto extensionElements = node->extensionElements->as<const Model::ExtensionElements>();
-
-        if ( auto status = truth->getStatus((BPMNOS::number)instance->id, node, time); status.has_value() ) {
-          for ( size_t i = 0; i < extensionElements->attributes.size(); i++ ) {
-            observed.observeValue((BPMNOS::number)instance->id, extensionElements->attributes[i].get(), status->at(i));
-          }
-        }
-
-        if ( auto data = truth->getData((BPMNOS::number)instance->id, node, time); data.has_value() ) {
-          for ( size_t i = 0; i < extensionElements->data.size(); i++ ) {
-            observed.observeValue((BPMNOS::number)instance->id, extensionElements->data[i].get(), data->at(i));
-          }
-        }
-      }
-    }
-
-    for ( auto& [instanceId, node, status] : pendingReady ) {
-      observed.observeReadyStatus(instanceId, node, status);
-    }
-    pendingReady.clear();
-
-    for ( auto& [instanceId, node, status] : pendingCompletion ) {
-      observed.observeCompletionStatus(instanceId, node, status);
-    }
-    pendingCompletion.clear();
-  }
-
-  /// Releases a tick to the observing engine only once the world has reached the time it advances to, so
-  /// the observing run can never get ahead of the world it observes.
-  std::shared_ptr<Execution::Event> dispatchEvent( const Execution::SystemState* systemState ) override {
-    report( systemState->getTime() + Execution::ClockTickEvent::clockTick );
-    return std::make_shared<Execution::ClockTickEvent>(systemState);
   }
 
 private:
   static std::vector<BPMN::Node*> nodesWithExtensionElements(const BPMN::Process* process) {
-    auto nodes = const_cast<BPMN::Process*>(process)->find_all(
+    return const_cast<BPMN::Process*>(process)->find_all(
       [](BPMN::Node* node) {
         return node->extensionElements && node->extensionElements->represents<Model::ExtensionElements>();
       }
     );
-    return nodes;
   }
 
-  struct Noticed {
-    BPMNOS::number instanceId;
-    const BPMN::Node* node;
-    BPMNOS::Values status;
-  };
-  std::vector<Noticed> pendingReady;      ///< Noticed while the world advanced, not yet reported.
-  std::vector<Noticed> pendingCompletion;
+  std::vector<Observations::Status> noticedReady;
+  std::vector<Observations::Status> noticedCompletion;
 
-  Execution::Engine& source;
-  const Model::Scenario* truth;
-  Model::ObservedScenario& observed;
+  Model::StochasticDataProvider provider;
+  std::unique_ptr<Model::Scenario> scenario;   ///< declared before the engine, so it outlives it
+  Execution::Engine engine;
+  Execution::GreedyController controller{std::make_shared<Execution::LocalEvaluator>()};
+  Execution::TimeWarp timeHandler;
 };
+
+inline WorldModel::WorldModel(const std::string& modelFile, const std::vector<std::string>& folders, const std::string& instances, unsigned int seed)
+  : simulator(std::make_unique<Simulator>(modelFile, folders, instances, seed))
+  , model(std::make_unique<Model::Model>(modelFile, folders))
+  , observed(model.get(), {})
+{
+}
+
+/// Defined here rather than defaulted in the class, since destroying the simulator needs its definition.
+inline WorldModel::~WorldModel() = default;
+
+inline void WorldModel::start(BPMNOS::number time) {
+  simulator->start(time);
+  report(time);
+}
+
+inline std::shared_ptr<Execution::Event> WorldModel::dispatchEvent( const Execution::SystemState* systemState ) {
+  report( systemState->getTime() + Execution::ClockTickEvent::clockTick );
+  return std::make_shared<Execution::ClockTickEvent>(systemState);
+}
+
+inline void WorldModel::report(BPMNOS::number time) {
+  simulator->advanceTo(time);
+  auto observations = simulator->take(time);
+
+  for ( auto& [process, instanceId, instantiationTime] : observations.instantiations ) {
+    observed.observeInstantiation(process, instanceId, instantiationTime);
+  }
+  for ( auto& [instanceId, attribute, value] : observations.values ) {
+    observed.observeValue(instanceId, attribute, value);
+  }
+  for ( auto& [instanceId, node, status] : observations.readyStatuses ) {
+    observed.observeReadyStatus(instanceId, node, status);
+  }
+  for ( auto& [instanceId, node, status] : observations.completionStatuses ) {
+    observed.observeCompletionStatus(instanceId, node, status);
+  }
+}
 
 SCENARIO( "An observed scenario fed from a simulated world", "[data][observed]" ) {
   const std::string modelFile = "tests/data/stochastic/Executable_process.bpmn";
 
-  GIVEN( "A stochastic world and an observed scenario of the same model" ) {
+  GIVEN( "A world model reporting what a simulator produces" ) {
     std::string csv =
       "INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE; READY; COMPLETION\n"
       "Instance_1; Process_1; timestamp := 0;;;\n"
@@ -125,73 +189,59 @@ SCENARIO( "An observed scenario fed from a simulated world", "[data][observed]" 
       "Instance_1; Task_2; z := 3;;; timestamp := timestamp + triangular(2,2,2)\n"
     ;
 
-    Model::StochasticDataProvider dataProvider(modelFile, csv, 42);
-    auto truth = dataProvider.createScenario(0);
+    WorldModel world(modelFile, {}, csv, 42);
 
-    Model::ObservedScenario observed(&dataProvider.getModel(), {});
+    WHEN( "an engine runs on what the world reports" ) {
+      Execution::Recorder simulatorRecorder;
+      simulatorRecorder.subscribe(&world.getSimulator().getEngine());
 
-    WHEN( "the world is run and observed, and a second engine runs on the observations" ) {
-      // The world, run to completion by its own engine under a greedy policy
-      Execution::Engine sourceEngine;
-      Execution::GreedyController sourceController(std::make_shared<Execution::LocalEvaluator>());
-      Execution::TimeWarp sourceTimeHandler;
-      sourceController.connect(&sourceEngine);
-      sourceTimeHandler.connect(&sourceEngine);
-      Execution::Recorder sourceRecorder;
-      sourceRecorder.subscribe(&sourceEngine);
+      world.start(0);
 
-      // Subscribed before the world is set running, since initialize already advances tokens and a status
-      // noticed by nobody is a status nothing can report
-      World world(sourceEngine, truth.get(), observed);
-
-      sourceEngine.initialize(truth.get(), 0);
-      world.report(0);   // the opening tick is issued by initialize, not by the dispatcher
-
-      Execution::Engine observingEngine;
-      Execution::GreedyController observingController(std::make_shared<Execution::LocalEvaluator>());
-      observingController.connect(&observingEngine);
-      world.connect(&observingEngine);
-      Execution::Recorder observingRecorder;
-      observingRecorder.subscribe(&observingEngine);
+      Execution::Engine engine;
+      Execution::GreedyController controller(std::make_shared<Execution::LocalEvaluator>());
+      controller.connect(&engine);
+      world.connect(&engine);
+      Execution::Recorder recorder;
+      recorder.subscribe(&engine);
 
       // An observed scenario never reports itself complete, so the run is bounded from outside
-      observingEngine.run(&observed, 0, 20);
+      engine.run(&world.getScenario(), 0, 20);
 
-      THEN( "the observing run reaches the same states as the world" ) {
-        auto sourceLog = sourceRecorder.find(nlohmann::json{{"nodeId","Task_2"}}, nlohmann::json{{"event",nullptr},{"decision",nullptr}});
-        auto observingLog = observingRecorder.find(nlohmann::json{{"nodeId","Task_2"}}, nlohmann::json{{"event",nullptr},{"decision",nullptr}});
+      THEN( "the observing run reaches the same states as the simulated world" ) {
+        auto simulated = simulatorRecorder.find(nlohmann::json{{"nodeId","Task_2"}}, nlohmann::json{{"event",nullptr},{"decision",nullptr}});
+        auto observed = recorder.find(nlohmann::json{{"nodeId","Task_2"}}, nlohmann::json{{"event",nullptr},{"decision",nullptr}});
 
-        REQUIRE( !sourceLog.empty() );
-        REQUIRE( !observingLog.empty() );
-        REQUIRE( sourceLog.back()["state"] == "DEPARTED" );
-        REQUIRE( observingLog.back()["state"] == "DEPARTED" );
-        REQUIRE( sourceLog.back()["timestamp"] == observingLog.back()["timestamp"] );
+        REQUIRE( !simulated.empty() );
+        REQUIRE( !observed.empty() );
+        REQUIRE( simulated.back()["state"] == "DEPARTED" );
+        REQUIRE( observed.back()["state"] == "DEPARTED" );
+        REQUIRE( simulated.back()["timestamp"] == observed.back()["timestamp"] );
       }
 
-      THEN( "the observing run completes the process at the same time as the world" ) {
-        auto sourceLog = sourceRecorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr},{"event",nullptr},{"decision",nullptr}});
-        auto observingLog = observingRecorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr},{"event",nullptr},{"decision",nullptr}});
+      THEN( "the observing run completes the process at the same time as the simulated world" ) {
+        auto simulated = simulatorRecorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr},{"event",nullptr},{"decision",nullptr}});
+        auto observed = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr},{"event",nullptr},{"decision",nullptr}});
 
-        REQUIRE( !sourceLog.empty() );
-        REQUIRE( !observingLog.empty() );
-        REQUIRE( sourceLog.back()["state"] == "DONE" );
-        REQUIRE( observingLog.back()["state"] == "DONE" );
-        REQUIRE( sourceLog.back()["timestamp"] == observingLog.back()["timestamp"] );
+        REQUIRE( !simulated.empty() );
+        REQUIRE( !observed.empty() );
+        REQUIRE( simulated.back()["state"] == "DONE" );
+        REQUIRE( observed.back()["state"] == "DONE" );
+        REQUIRE( simulated.back()["timestamp"] == observed.back()["timestamp"] );
       }
     }
 
     WHEN( "the observed scenario is asked to be copied" ) {
       THEN( "it refuses" ) {
-        REQUIRE_THROWS_AS( observed.clone(1, 0), std::logic_error );
+        REQUIRE_THROWS_AS( world.getScenario().clone(1, 0), std::logic_error );
       }
     }
 
     WHEN( "nothing has been observed" ) {
       THEN( "no instance is known and the scenario is never complete" ) {
-        REQUIRE( observed.getInstances(100).empty() );
-        REQUIRE( observed.getCreatedInstances(100).empty() );
-        REQUIRE( !observed.isCompleted(100) );
-        REQUIRE( observed.getEarliestInstantiationTime() == std::numeric_limits<BPMNOS::number>::max() );
+        REQUIRE( world.getScenario().getInstances(100).empty() );
+        REQUIRE( world.getScenario().getCreatedInstances(100).empty() );
+        REQUIRE( !world.getScenario().isCompleted(100) );
+        REQUIRE( world.getScenario().getEarliestInstantiationTime() == std::numeric_limits<BPMNOS::number>::max() );
       }
     }
   }
