@@ -129,14 +129,12 @@ $(function(){initNavTree('index.html','',''); });
 <div class="textblock"><h1 class="doxsection"><a class="anchor" id="about"></a>
 About</h1>
 <p>BPMN-OS is a framework for optimisation and simulation of business processes. It is based on <a href="http://www.omg.org/spec/BPMN/2.0/">BPMN 2.0</a> and uses the built-in extension mechanism to provide data relevant for optimisation and simulation.</p>
-<div class="image">
-<object type="image/svg+xml" data="Architecture.svg" style="pointer-events: none;"></object>
-<div class="caption">
-Architecture</div></div>
-    <p>The framework is composed of the components illustrated above:</p>
+<div class="plantumlgraph">
+<object type="image/svg+xml" data="inline_umlgraph_1.svg"></object>
+</div>
+<p>The framework is composed of the components illustrated above:</p>
 <ul>
-<li><b>Model provider</b>: The model provider reads a <a class="el" href="classBPMNOS_1_1Model_1_1Model.html">BPMN model</a> containing extension elements required for optimisation and simulation.</li>
-<li><b>Data provider</b>: The data provider creates instances of the processes with respective instance data. It creates a <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html">scenario</a> that can be run by the execution engine.</li>
+<li><b>Model provider</b>: The model provider reads a <a class="el" href="classBPMNOS_1_1Model_1_1Model.html">BPMN model</a> containing the extension elements required for optimisation and simulation, and yields the <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html">scenario</a> the execution engine runs on. A <a class="el" href="classBPMNOS_1_1Model_1_1DataProvider.html">data provider</a> creates a scenario from instance data given before the run, whereas an <a class="el" href="classBPMNOS_1_1Model_1_1ObservedScenario.html">observed scenario</a> is told what is observed of a world while the run proceeds.</li>
 <li><b>Execution engine</b>: The execution engine maintains a <a class="el" href="classBPMNOS_1_1Execution_1_1SystemState.html">system state</a> containing <a class="el" href="classBPMNOS_1_1Execution_1_1StateMachine.html">state machines</a> for each BPMN element with a <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Scope.html">scope</a> and all <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html">tokens</a> within the scope. It automatically advances all tokens as far as possible and waits for the dispatch of <a class="el" href="structBPMNOS_1_1Execution_1_1Event.html">events</a> and <a class="el" href="classBPMNOS_1_1Execution_1_1Decision.html">decisions</a> made by the controller.</li>
 <li><b>Controller</b>: The controller is responsible for making all necessary <a class="el" href="classBPMNOS_1_1Execution_1_1Decision.html">decisions</a> during process execution.</li>
 <li><b>Observer</b>: Observers can connect to the execution engine to monitor changes in the execution.</li>

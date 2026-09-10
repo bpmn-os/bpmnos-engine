@@ -1,7 +1,7 @@
 var searchData=
 [
   ['includeitemactivity_0',['IncludeItemActivity',['../guided_bin_packing_problem.html#task-includeitemactivity',1,'Task (IncludeItemActivity)'],['../guided_knapsack_problem.html#task-includeitemactivity-1',1,'Task (IncludeItemActivity)'],['../knapsack_problem.html#task-includeitemactivity-2',1,'Task (IncludeItemActivity)']]],
-  ['initialization_20and_20modification_1',['Attribute Initialization and Modification',['../dataprovider.html#attribute-initialization-and-modification',1,'']]],
+  ['initialization_20and_20modification_1',['Attribute Initialization and Modification',['../bpmnos.html#attribute-initialization-and-modification',1,'']]],
   ['instance_2',['instance',['../job_shop_scheduling_problem.html#multi-instance',1,'Multi-instance'],['../travelling_salesperson_problem.html#multi-instance-1',1,'Multi-instance'],['../truck_driver_scheduling_problem.html#multi-instance-2',1,'Multi-instance']]],
   ['instance_20activities_3',['Multi-instance activities',['../token_flow_logic_multi_instance_activities.html',1,'execution_logic']]],
   ['instance_20and_20compensation_20activities_4',['instance and compensation activities',['../token_flow_logic_subprocesses.html#subprocesses-and-ad-hoc-subprocesses-excluding-multi-instance-and-compensation-activities',1,'Subprocesses and ad-hoc subprocesses (excluding multi-instance and compensation activities)'],['../token_flow_logic_tasks.html#tasks-excluding-multi-instance-and-compensation-activities',1,'Tasks (excluding multi-instance and compensation activities)']]],

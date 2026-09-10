@@ -164,8 +164,6 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a0b5cdeb92523961e0fcd34efefe840d5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method returning values for all new data attributes.  <br /></td></tr>
 <tr class="memitem:a74a763831a4187c5112d1a34f2f5c4c4" id="r_a74a763831a4187c5112d1a34f2f5c4c4"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a74a763831a4187c5112d1a34f2f5c4c4">getActivityReadyStatus</a> (<a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> rootId, <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> instanceId, const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a> *activity, <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> currentTime) const override</td></tr>
 <tr class="memdesc:a74a763831a4187c5112d1a34f2f5c4c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the ready status for an activity.  <br /></td></tr>
-<tr class="memitem:a49e77e7209b182d74571e45d448b78eb" id="r_a49e77e7209b182d74571e45d448b78eb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a49e77e7209b182d74571e45d448b78eb">noticeReadyPending</a> (<a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> instanceId, const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a> *node, const <a class="el" href="structBPMNOS_1_1Values.html">Values</a> &amp;status, const <a class="el" href="structBPMNOS_1_1SharedValues.html">SharedValues</a> &amp;data, const <a class="el" href="structBPMNOS_1_1Values.html">Values</a> &amp;<a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#af62d210f70ee664720212016cb168742">globals</a>) const override</td></tr>
-<tr class="memdesc:a49e77e7209b182d74571e45d448b78eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Make scenario aware of a an activity for which the ready status must be determined.  <br /></td></tr>
 <tr class="memitem:af723ec211af4340f9f0ead96e9a87efc" id="r_af723ec211af4340f9f0ead96e9a87efc"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#afaac97f810599b3639e0ef85fa68ba22">Scenario</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af723ec211af4340f9f0ead96e9a87efc">clone</a> (<a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> spawnTime, size_t index) const override</td></tr>
 <tr class="memdesc:af723ec211af4340f9f0ead96e9a87efc"><td class="mdescLeft">&#160;</td><td class="mdescRight">A deterministic scenario has a single realization, so both arguments are ignored.  <br /></td></tr>
 <tr class="inherit_header pub_methods_classBPMNOS_1_1Model_1_1Scenario"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classBPMNOS_1_1Model_1_1Scenario')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html">BPMNOS::Model::Scenario</a></td></tr>
@@ -174,10 +172,20 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a97408f773bdc54ecaa99498f99ddbe59 inherit pub_methods_classBPMNOS_1_1Model_1_1Scenario"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method returning the model.  <br /></td></tr>
 <tr class="memitem:a56c9a110e9e7cc4abca6c3c3924785ad inherit pub_methods_classBPMNOS_1_1Model_1_1Scenario" id="r_a56c9a110e9e7cc4abca6c3c3924785ad"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#a56c9a110e9e7cc4abca6c3c3924785ad">noticeClockTick</a> (<a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> time) const</td></tr>
 <tr class="memdesc:a56c9a110e9e7cc4abca6c3c3924785ad inherit pub_methods_classBPMNOS_1_1Model_1_1Scenario"><td class="mdescLeft">&#160;</td><td class="mdescRight">Make scenario aware that the clock is advancing to the given time.  <br /></td></tr>
+<tr class="memitem:a3af5acdd90a12c7e58ccd5438c2f1fcb inherit pub_methods_classBPMNOS_1_1Model_1_1Scenario" id="r_a3af5acdd90a12c7e58ccd5438c2f1fcb"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#a3af5acdd90a12c7e58ccd5438c2f1fcb">noticeReadyPending</a> (<a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> instanceId, const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a> *node, const <a class="el" href="structBPMNOS_1_1Values.html">Values</a> &amp;status, const <a class="el" href="structBPMNOS_1_1SharedValues.html">SharedValues</a> &amp;data, const <a class="el" href="structBPMNOS_1_1Values.html">Values</a> &amp;<a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#af62d210f70ee664720212016cb168742">globals</a>) const</td></tr>
+<tr class="memdesc:a3af5acdd90a12c7e58ccd5438c2f1fcb inherit pub_methods_classBPMNOS_1_1Model_1_1Scenario"><td class="mdescLeft">&#160;</td><td class="mdescRight">Make scenario aware of a an activity for which the ready status must be determined.  <br /></td></tr>
 <tr class="memitem:a3e5662eae1e0e8b2b0db744ed27e44d3 inherit pub_methods_classBPMNOS_1_1Model_1_1Scenario" id="r_a3e5662eae1e0e8b2b0db744ed27e44d3"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#a3e5662eae1e0e8b2b0db744ed27e44d3">noticeCompletionPending</a> (<a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> rootId, const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a> *task, const <a class="el" href="structBPMNOS_1_1Values.html">Values</a> &amp;status, const <a class="el" href="structBPMNOS_1_1SharedValues.html">SharedValues</a> &amp;data, const <a class="el" href="structBPMNOS_1_1Values.html">Values</a> &amp;<a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#af62d210f70ee664720212016cb168742">globals</a>) const</td></tr>
 <tr class="memdesc:a3e5662eae1e0e8b2b0db744ed27e44d3 inherit pub_methods_classBPMNOS_1_1Model_1_1Scenario"><td class="mdescLeft">&#160;</td><td class="mdescRight">Make scenario aware of a task for which the completion status must be determined.  <br /></td></tr>
+<tr class="memitem:a0fad3a062e25bbe1cb17f01be59494c0 inherit pub_methods_classBPMNOS_1_1Model_1_1Scenario" id="r_a0fad3a062e25bbe1cb17f01be59494c0"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#a0fad3a062e25bbe1cb17f01be59494c0">noticeReady</a> (<a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> instanceId, const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a> *node) const</td></tr>
+<tr class="memdesc:a0fad3a062e25bbe1cb17f01be59494c0 inherit pub_methods_classBPMNOS_1_1Model_1_1Scenario"><td class="mdescLeft">&#160;</td><td class="mdescRight">Make scenario aware that an activity has become ready.  <br /></td></tr>
+<tr class="memitem:a5b12bc1a7da8e7572c3a5f827e942855 inherit pub_methods_classBPMNOS_1_1Model_1_1Scenario" id="r_a5b12bc1a7da8e7572c3a5f827e942855"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#a5b12bc1a7da8e7572c3a5f827e942855">noticeCompletion</a> (<a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> instanceId, const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a> *task) const</td></tr>
+<tr class="memdesc:a5b12bc1a7da8e7572c3a5f827e942855 inherit pub_methods_classBPMNOS_1_1Model_1_1Scenario"><td class="mdescLeft">&#160;</td><td class="mdescRight">Make scenario aware that a task has completed.  <br /></td></tr>
+<tr class="memitem:ac191a00a1a389f5e3eabc5c10e26702a inherit pub_methods_classBPMNOS_1_1Model_1_1Scenario" id="r_ac191a00a1a389f5e3eabc5c10e26702a"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#ac191a00a1a389f5e3eabc5c10e26702a">getActivityArrivalStatus</a> (<a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> instanceId, const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a> *node) const</td></tr>
+<tr class="memdesc:ac191a00a1a389f5e3eabc5c10e26702a inherit pub_methods_classBPMNOS_1_1Model_1_1Scenario"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the entry held in <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#ac791dd2bbb091f6977580927e1e1a85b">activityArrivalStatus</a>, or nullptr if none is held.  <br /></td></tr>
+<tr class="memitem:a1c242980516aeeea11b0fd01e7d0101e inherit pub_methods_classBPMNOS_1_1Model_1_1Scenario" id="r_a1c242980516aeeea11b0fd01e7d0101e"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#a1c242980516aeeea11b0fd01e7d0101e">getTaskCompletionStatus</a> (<a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> instanceId, const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a> *task) const</td></tr>
+<tr class="memdesc:a1c242980516aeeea11b0fd01e7d0101e inherit pub_methods_classBPMNOS_1_1Model_1_1Scenario"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the entry held in <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#ac178d5e6cc70be483edfb07b19a91c38">taskCompletionStatus</a>, or nullptr if none is held.  <br /></td></tr>
 <tr class="memitem:aa4cc4fae8a051e6f12f31501ed30b888 inherit pub_methods_classBPMNOS_1_1Model_1_1Scenario" id="r_aa4cc4fae8a051e6f12f31501ed30b888"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#aa4cc4fae8a051e6f12f31501ed30b888">getTaskCompletionStatus</a> (<a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> rootId, const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a> *task, const <a class="el" href="structBPMNOS_1_1Values.html">Values</a> &amp;status, const <a class="el" href="structBPMNOS_1_1SharedValues.html">SharedValues</a> &amp;data, const <a class="el" href="structBPMNOS_1_1Values.html">Values</a> &amp;<a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#af62d210f70ee664720212016cb168742">globals</a>) const</td></tr>
-<tr class="memdesc:aa4cc4fae8a051e6f12f31501ed30b888 inherit pub_methods_classBPMNOS_1_1Model_1_1Scenario"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the completion status for a SendTask, ReceiveTask, and Decisiontask.  <br /></td></tr>
+<tr class="memdesc:aa4cc4fae8a051e6f12f31501ed30b888 inherit pub_methods_classBPMNOS_1_1Model_1_1Scenario"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the completion status for a SendTask, ReceiveTask, and DecisionTask.  <br /></td></tr>
 <tr class="memitem:a18a61c5bb715be08e2108e5b0b84763a inherit pub_methods_classBPMNOS_1_1Model_1_1Scenario" id="r_a18a61c5bb715be08e2108e5b0b84763a"><td class="memItemLeft" align="right" valign="top">virtual std::optional&lt; <a class="el" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#a18a61c5bb715be08e2108e5b0b84763a">getTaskCompletionStatus</a> (<a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> instanceId, const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a> *task, <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> currentTime) const</td></tr>
 <tr class="memdesc:a18a61c5bb715be08e2108e5b0b84763a inherit pub_methods_classBPMNOS_1_1Model_1_1Scenario"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the completion status for a task.  <br /></td></tr>
 </table><table class="memberdecls">
@@ -196,6 +204,8 @@ Protected Member Functions</h2></td></tr>
 <tr class="memdesc:a867b955f4f6c08f46f90f0d62e349aa8 inherit pro_methods_classBPMNOS_1_1Model_1_1Scenario"><td class="mdescLeft">&#160;</td><td class="mdescRight">Protected copy constructor for derived class scenario copying.  <br /></td></tr>
 <tr class="memitem:a675df37fb5e94600f2bfd77dd1537b6d inherit pro_methods_classBPMNOS_1_1Model_1_1Scenario" id="r_a675df37fb5e94600f2bfd77dd1537b6d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structBPMNOS_1_1Values.html">Values</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#a675df37fb5e94600f2bfd77dd1537b6d">evaluateGlobals</a> (const std::unordered_map&lt; const <a class="el" href="classBPMNOS_1_1Model_1_1Attribute.html">Attribute</a> *, <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> &gt; &amp;globalValueMap)</td></tr>
 <tr class="memdesc:a675df37fb5e94600f2bfd77dd1537b6d inherit pro_methods_classBPMNOS_1_1Model_1_1Scenario"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluate global attributes (CSV-provided + model expressions).  <br /></td></tr>
+<tr class="memitem:a78eb7a8362ea6e1c095b3d0dfc1f4d81 inherit pro_methods_classBPMNOS_1_1Model_1_1Scenario" id="r_a78eb7a8362ea6e1c095b3d0dfc1f4d81"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#a78eb7a8362ea6e1c095b3d0dfc1f4d81">getAssignedValue</a> (const <a class="el" href="structBPMNOS_1_1Model_1_1Scenario_1_1InstanceData.html">InstanceData</a> *instance, const <a class="el" href="classBPMNOS_1_1Model_1_1Attribute.html">Attribute</a> *attribute, <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> currentTime) const</td></tr>
+<tr class="memdesc:a78eb7a8362ea6e1c095b3d0dfc1f4d81 inherit pro_methods_classBPMNOS_1_1Model_1_1Scenario"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluate an attribute that the model declares by assignment expression.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pro-attribs" class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
@@ -322,7 +332,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#a687fdf9fd253ed97a342d2ab8fd9649b">BPMNOS::Model::Scenario</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="StaticScenario_8h_source.html#l00042">42</a> of file <a class="el" href="StaticScenario_8h_source.html">StaticScenario.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StaticScenario_8h_source.html#l00039">39</a> of file <a class="el" href="StaticScenario_8h_source.html">StaticScenario.h</a>.</p>
 
 </div>
 </div>
@@ -376,7 +386,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#ab000f8eba25546a04f80f0247d5400bc">BPMNOS::Model::Scenario</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="StaticScenario_8cpp_source.html#l00149">149</a> of file <a class="el" href="StaticScenario_8cpp_source.html">StaticScenario.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StaticScenario_8cpp_source.html#l00110">110</a> of file <a class="el" href="StaticScenario_8cpp_source.html">StaticScenario.cpp</a>.</p>
 
 </div>
 </div>
@@ -473,7 +483,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#ad308a7ed8d89254f5f879258d671827a">BPMNOS::Model::Scenario</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="StaticScenario_8cpp_source.html#l00130">130</a> of file <a class="el" href="StaticScenario_8cpp_source.html">StaticScenario.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StaticScenario_8cpp_source.html#l00101">101</a> of file <a class="el" href="StaticScenario_8cpp_source.html">StaticScenario.cpp</a>.</p>
 
 </div>
 </div>
@@ -638,7 +648,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#a34b2ee3668fe609e0ad072c2441419df">BPMNOS::Model::Scenario</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="StaticScenario_8cpp_source.html#l00121">121</a> of file <a class="el" href="StaticScenario_8cpp_source.html">StaticScenario.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StaticScenario_8cpp_source.html#l00092">92</a> of file <a class="el" href="StaticScenario_8cpp_source.html">StaticScenario.cpp</a>.</p>
 
 </div>
 </div>
@@ -677,7 +687,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#a0ec67037e3574dcc9b3af688a42e736c">BPMNOS::Model::Scenario</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="StaticScenario_8cpp_source.html#l00117">117</a> of file <a class="el" href="StaticScenario_8cpp_source.html">StaticScenario.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StaticScenario_8cpp_source.html#l00088">88</a> of file <a class="el" href="StaticScenario_8cpp_source.html">StaticScenario.cpp</a>.</p>
 
 </div>
 </div>
@@ -746,64 +756,6 @@ Additional Inherited Members</h2></td></tr>
 <p>Implements <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#ad026b6ae8fc0b3c5e2937ccfa3b4e3e2">BPMNOS::Model::Scenario</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="StaticScenario_8cpp_source.html#l00027">27</a> of file <a class="el" href="StaticScenario_8cpp_source.html">StaticScenario.cpp</a>.</p>
-
-</div>
-</div>
-<a id="a49e77e7209b182d74571e45d448b78eb" name="a49e77e7209b182d74571e45d448b78eb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a49e77e7209b182d74571e45d448b78eb">&#9670;&#160;</a></span>noticeReadyPending()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void StaticScenario::noticeReadyPending </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a></td>          <td class="paramname"><span class="paramname"><em>instanceId</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a> *</td>          <td class="paramname"><span class="paramname"><em>node</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="structBPMNOS_1_1Values.html">Values</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>status</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="structBPMNOS_1_1SharedValues.html">SharedValues</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>data</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="structBPMNOS_1_1Values.html">Values</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>globals</em></span>&#160;) const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">instanceId</td><td>The instance identifier. </td></tr>
-    <tr><td class="paramname">node</td><td>The activity node being entered. </td></tr>
-    <tr><td class="paramname">status</td><td>Parent scope's status attributes. </td></tr>
-    <tr><td class="paramname">data</td><td>Parent scope's data attributes. </td></tr>
-    <tr><td class="paramname">globals</td><td>Global attributes. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-<p>Reimplemented from <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#a46005036b881cf65bbca027ef9027eab">BPMNOS::Model::Scenario</a>.</p>
-
-<p class="definition">Definition at line <a class="el" href="StaticScenario_8cpp_source.html#l00139">139</a> of file <a class="el" href="StaticScenario_8cpp_source.html">StaticScenario.cpp</a>.</p>
 
 </div>
 </div>
@@ -889,7 +841,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="StaticScenario_8h_source.html#l00053">53</a> of file <a class="el" href="StaticScenario_8h_source.html">StaticScenario.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StaticScenario_8h_source.html#l00050">50</a> of file <a class="el" href="StaticScenario_8h_source.html">StaticScenario.h</a>.</p>
 
 </div>
 </div>
@@ -913,7 +865,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="StaticScenario_8h_source.html#l00052">52</a> of file <a class="el" href="StaticScenario_8h_source.html">StaticScenario.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StaticScenario_8h_source.html#l00049">49</a> of file <a class="el" href="StaticScenario_8h_source.html">StaticScenario.h</a>.</p>
 
 </div>
 </div>
@@ -937,7 +889,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="StaticScenario_8h_source.html#l00054">54</a> of file <a class="el" href="StaticScenario_8h_source.html">StaticScenario.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StaticScenario_8h_source.html#l00051">51</a> of file <a class="el" href="StaticScenario_8h_source.html">StaticScenario.h</a>.</p>
 
 </div>
 </div>

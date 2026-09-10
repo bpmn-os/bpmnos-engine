@@ -195,6 +195,7 @@ var hierarchy =
     [ "BPMNOS::Model::Restriction", "classBPMNOS_1_1Model_1_1Restriction.html", null ],
     [ "BPMNOS::Model::Scenario", "classBPMNOS_1_1Model_1_1Scenario.html", [
       [ "BPMNOS::Model::DynamicScenario", "classBPMNOS_1_1Model_1_1DynamicScenario.html", null ],
+      [ "BPMNOS::Model::ObservedScenario", "classBPMNOS_1_1Model_1_1ObservedScenario.html", null ],
       [ "BPMNOS::Model::StaticScenario", "classBPMNOS_1_1Model_1_1StaticScenario.html", [
         [ "BPMNOS::Model::ExpectedValueScenario", "classBPMNOS_1_1Model_1_1ExpectedValueScenario.html", null ]
       ] ],

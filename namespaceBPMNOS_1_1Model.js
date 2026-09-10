@@ -27,6 +27,7 @@ var namespaceBPMNOS_1_1Model =
     [ "ExpectedValueDataProvider", "classBPMNOS_1_1Model_1_1ExpectedValueDataProvider.html", "classBPMNOS_1_1Model_1_1ExpectedValueDataProvider" ],
     [ "ExpectedValueScenario", "classBPMNOS_1_1Model_1_1ExpectedValueScenario.html", "classBPMNOS_1_1Model_1_1ExpectedValueScenario" ],
     [ "Input", "structBPMNOS_1_1Model_1_1Input.html", "structBPMNOS_1_1Model_1_1Input" ],
+    [ "ObservedScenario", "classBPMNOS_1_1Model_1_1ObservedScenario.html", "classBPMNOS_1_1Model_1_1ObservedScenario" ],
     [ "Scenario", "classBPMNOS_1_1Model_1_1Scenario.html", "classBPMNOS_1_1Model_1_1Scenario" ],
     [ "StaticDataProvider", "classBPMNOS_1_1Model_1_1StaticDataProvider.html", "classBPMNOS_1_1Model_1_1StaticDataProvider" ],
     [ "StaticScenario", "classBPMNOS_1_1Model_1_1StaticScenario.html", "classBPMNOS_1_1Model_1_1StaticScenario" ],

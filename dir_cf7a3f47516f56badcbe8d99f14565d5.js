@@ -11,6 +11,8 @@ var dir_cf7a3f47516f56badcbe8d99f14565d5 =
     [ "ExpectedValueScenario.cpp", "ExpectedValueScenario_8cpp.html", null ],
     [ "ExpectedValueScenario.h", "ExpectedValueScenario_8h.html", "ExpectedValueScenario_8h" ],
     [ "Input.h", "Input_8h.html", "Input_8h" ],
+    [ "ObservedScenario.cpp", "ObservedScenario_8cpp.html", null ],
+    [ "ObservedScenario.h", "ObservedScenario_8h.html", "ObservedScenario_8h" ],
     [ "Scenario.cpp", "Scenario_8cpp.html", null ],
     [ "Scenario.h", "Scenario_8h.html", "Scenario_8h" ],
     [ "StaticDataProvider.cpp", "StaticDataProvider_8cpp.html", null ],

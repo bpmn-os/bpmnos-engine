@@ -28,39 +28,6 @@ var NAVTREE =
     [ "Introduction", "index.html", "index" ],
     [ "Execution logic", "execution_logic.html", "execution_logic" ],
     [ "Model provider", "bpmnos.html", "bpmnos" ],
-    [ "Data provider", "dataprovider.html", [
-      [ "Static data provider", "dataprovider.html#static-data-provider", [
-        [ "CSV Format", "dataprovider.html#csv-format", null ],
-        [ "Example", "dataprovider.html#example", null ],
-        [ "Global Attributes", "dataprovider.html#global-attributes-1", null ],
-        [ "Expressions", "dataprovider.html#expressions", null ]
-      ] ],
-      [ "Dynamic data provider", "dataprovider.html#dynamic-data-provider", [
-        [ "CSV Format", "dataprovider.html#csv-format-1", null ],
-        [ "Example", "dataprovider.html#example-1", null ],
-        [ "Disclosure Rules", "dataprovider.html#disclosure-rules", null ],
-        [ "Global Attributes", "dataprovider.html#global-attributes-2", null ],
-        [ "Usage", "dataprovider.html#usage", null ]
-      ] ],
-      [ "Stochastic data provider", "dataprovider.html#stochastic-data-provider", [
-        [ "CSV Format", "dataprovider.html#csv-format-2", null ],
-        [ "Random Functions", "dataprovider.html#random-functions", null ],
-        [ "Example", "dataprovider.html#example-2", null ],
-        [ "Expression Evaluation", "dataprovider.html#expression-evaluation", null ],
-        [ "Attribute Initialization and Modification", "dataprovider.html#attribute-initialization-and-modification", null ],
-        [ "Reproducibility", "dataprovider.html#reproducibility", null ],
-        [ "Usage", "dataprovider.html#usage-1", null ],
-        [ "Downward Compatibility", "dataprovider.html#downward-compatibility", null ]
-      ] ],
-      [ "Expected value data provider", "dataprovider.html#expected-value-data-provider", [
-        [ "CSV Format", "dataprovider.html#csv-format-3", null ],
-        [ "Behavior", "dataprovider.html#behavior", null ],
-        [ "Expected Values", "dataprovider.html#expected-values", null ],
-        [ "Example", "dataprovider.html#example-3", null ],
-        [ "Usage", "dataprovider.html#usage-2", null ]
-      ] ],
-      [ "Real-life monitor", "dataprovider.html#real-life-monitor", null ]
-    ] ],
     [ "Execution engine", "engine.html", null ],
     [ "Controller", "controller.html", [
       [ "Greedy controller", "controller.html#greedy-controller", null ],
@@ -85,27 +52,27 @@ var NAVTREEINDEX =
 [
 "AttributeRegistry_8cpp.html",
 "LookupTable_8cpp_source.html",
-"assignment_problem.html#status-7",
-"classBPMNOS_1_1Execution_1_1CompetingCandidates_1_1Iterator.html#ab4764443871333c6ffc821fe7b40da60",
-"classBPMNOS_1_1Execution_1_1FlattenedGraph.html#accd3c74e39c37e640b2fe77be7f1dc9d",
-"classBPMNOS_1_1Execution_1_1Notifier.html#a4b6ff585d9af6de8f36999c57d294ccd",
-"classBPMNOS_1_1Execution_1_1SystemState.html#a3e1914489e4bed4f9f23cdeab34a43dc",
-"classBPMNOS_1_1ExpectedValueFactory.html",
-"classBPMNOS_1_1Model_1_1DynamicScenario.html#ae6b4e14a3348752a8181d423b5992680",
-"classBPMNOS_1_1Model_1_1MessageDefinition.html#a68c605294c66b84c79c77ad12983568aab6612d572c1842e9c8284d4d3bcbad05",
-"classBPMNOS_1_1Model_1_1StaticDataProvider.html#a62fbdf39d10698be9e947c4c2ce259cb",
-"classBPMNOS_1_1tuple__map.html#ad178db7acaf79c5810484205c6e5aaa2",
-"classXML_1_1bpmnos_1_1tDecision.html#a34f17d14404ae1c22bc713a87ac54b11",
-"dataprovider.html#csv-format",
-"guided_bin_packing_problem.html#globals-54",
-"guided_pickup_delivery_problem.html#globals-111",
-"guided_vehicle_routing_problem.html#status-121",
-"knapsack_problem.html#status-172",
-"pickup_delivery_problem.html#header-0-29",
-"structBPMNOS_1_1Execution_1_1Event.html#a250be506a31a28bdd50e1b64b31d47da",
-"structBPMNOS_1_1Model_1_1MessageDefinition_1_1HeaderKey.html#ab279c964a83e21a13d46dc4ec16b6c14",
-"travelling_salesperson_problem.html",
-"vehicle_routing_problem.html#data-263"
+"assignment_problem.html#status-3",
+"classBPMNOS_1_1Execution_1_1Candidates.html#aa7f49b1e37902df64d4340d8faa6ecc8",
+"classBPMNOS_1_1Execution_1_1FirstMatchingMessageDelivery.html#a7d91c49040772ec104525d4edb880946",
+"classBPMNOS_1_1Execution_1_1MessageDeliveries.html#a4f74f710ff546a3a8dbd50d4f6eab8f0",
+"classBPMNOS_1_1Execution_1_1StateMachine.html#a93d66cb2a89b186789d655a08b02674e",
+"classBPMNOS_1_1Execution_1_1auto__list.html#aea456810d68beb1473a4d236ad9592f9",
+"classBPMNOS_1_1Model_1_1DynamicScenario.html#a3cdcb0c8f5acaeeb727e84360a510d55",
+"classBPMNOS_1_1Model_1_1Guidance.html#af4c679fc75ddfd866bcf9b782878512f",
+"classBPMNOS_1_1Model_1_1Scenario.html#a34b2ee3668fe609e0ad072c2441419df",
+"classBPMNOS_1_1Model_1_1StochasticScenario.html#aac1e8a990c8d11bd41e754d1663381fe",
+"classXML_1_1bpmnos_1_1restriction.html#a4715d7cef69644f624b450e10388c2a9",
+"classXML_1_1bpmnos_1_1tStatus.html#a4eefb452b4863dc2ea8fb6d8343015f3",
+"guided_bin_packing_problem.html#completion-restrictions-24",
+"guided_pickup_delivery_problem.html#data-104",
+"guided_vehicle_routing_problem.html#globals-131",
+"knapsack_problem.html#globals-177",
+"pickup_delivery_problem.html#data-213",
+"structBPMNOS_1_1Execution_1_1DataUpdate.html#abf08df996685d1600dd6b35a330f8efc",
+"structBPMNOS_1_1Execution_1_1auto__set_1_1iterator.html#abd4ad13aec89e6f572fbffbc539e8515",
+"tTimer_8h.html",
+"truck_driver_scheduling_problem.html#status-239"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronization';

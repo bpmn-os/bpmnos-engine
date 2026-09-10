@@ -1,0 +1,15 @@
+@startuml inline_umlgraph_1.svg
+skinparam nodesep 5
+left to right direction
+
+[Model provider] -- Model
+[Model provider] -- Scenario
+Model <.. [Execution engine] : use
+Scenario <.. [Execution engine] : use
+
+[Execution engine] ..> Event : apply
+Event -- [Controller] 
+
+[Execution engine] -- Observable
+Observable <.. [Observer] : notice
+@enduml
