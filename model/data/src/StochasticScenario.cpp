@@ -21,7 +21,7 @@ StochasticScenario::StochasticScenario(
 {
 }
 
-StochasticScenario::StochasticScenario(StochasticScenario* original, BPMNOS::number spawnTime, unsigned int seed)
+StochasticScenario::StochasticScenario(const StochasticScenario* original, BPMNOS::number spawnTime, unsigned int seed)
   : Scenario(original)
   , instances(original->instances)
   , disclosureTimes(original->disclosureTimes)
@@ -53,6 +53,14 @@ StochasticScenario::StochasticScenario(StochasticScenario* original, BPMNOS::num
 
 unsigned int StochasticScenario::getSeed() const {
   return scenarioSeeds.back().second;
+}
+
+std::unique_ptr<Scenario> StochasticScenario::clone(BPMNOS::number spawnTime, size_t index) const {
+  // Index zero takes the seed after the current one: the current seed produces the realization this
+  // scenario itself yields, so a copy using it would reproduce the future the live run is going to
+  // realize. Successive indices are successive seeds, so an index selects a realization reproducibly.
+  unsigned int seed = getSeed() + static_cast<unsigned int>(index) + 1u;
+  return std::make_unique<StochasticScenario>(this, spawnTime, seed);
 }
 
 void StochasticScenario::addInstance(const BPMN::Process* process, const BPMNOS::number instanceId) {

@@ -55,7 +55,9 @@ public:
 
   void noticeReadyPending( BPMNOS::number instanceId, const BPMN::Node* node, const Values& status, const SharedValues& data, const Values& globals ) const override;
 
-  std::unique_ptr<Scenario> clone() const override { return std::make_unique<DynamicScenario>(*this); }
+  /// A deterministic scenario has a single realization, so both arguments are ignored.
+  std::unique_ptr<Scenario> clone([[maybe_unused]] BPMNOS::number spawnTime, [[maybe_unused]] size_t index) const override
+  { return std::make_unique<DynamicScenario>(*this); }
 
 protected:
   Values getKnownInitialStatus(const InstanceData*, const BPMNOS::number time) const override;

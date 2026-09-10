@@ -94,7 +94,15 @@ public:
    * @param spawnTime First time point for resampling (systemState->getTime() + 1)
    * @param seed New seed for resampling future values
    */
-  StochasticScenario(StochasticScenario* original, BPMNOS::number spawnTime, unsigned int seed);
+  StochasticScenario(const StochasticScenario* original, BPMNOS::number spawnTime, unsigned int seed);
+
+  /// @brief Returns the @p index -th realization agreeing with this scenario before @p spawnTime.
+  ///
+  /// The seed is derived from @p index rather than supplied, so that the rule governing which seeds a
+  /// copy may use lives here rather than with the caller. Index zero yields the seed after the current
+  /// one: the current seed is the realization this scenario itself produces, and a copy that reproduced
+  /// it would let a lookahead observe the very future the live run is going to realize.
+  std::unique_ptr<Scenario> clone(BPMNOS::number spawnTime, size_t index) const override;
 
   /// Returns the current effective seed (the seed of the most recent scenario copy, or the base seed).
   unsigned int getSeed() const;

@@ -160,10 +160,20 @@ public:
    */
   virtual std::optional<BPMNOS::Values> getActivityReadyStatus(BPMNOS::number rootId, BPMNOS::number instanceId, const BPMN::Node* activity, BPMNOS::number currentTime) const = 0;
 
-  /// @brief Deep-copy this scenario (including the mutable per-run memoization maps), so each rollout
-  /// sub-engine gets its own and parallel runs don't share/race on those maps. Only deterministic
-  /// scenarios override this; the base throws (stochastic scenarios are forked, not cloned).
-  virtual std::unique_ptr<Scenario> clone() const;
+  /// @brief Returns an independent copy of this scenario agreeing with it before @p spawnTime, being the
+  /// @p index -th such copy.
+  ///
+  /// The copy carries its own per-run memoization maps, so that sub-engines exploring alternative
+  /// continuations neither race on them nor overwrite one another's entries. A scenario with a single
+  /// realization ignores both arguments and returns an identical copy, there being nothing to resample.
+  /// A scenario with many realizations returns the @p index -th of them, agreeing with this one before
+  /// @p spawnTime, so that the same index yields the same realization on every call and copies taken at
+  /// different indices are independent. The base throws; a scenario that cannot be copied at all, such as
+  /// one observing a world that cannot be duplicated, leaves it to do so.
+  ///
+  /// @param spawnTime First time point at which a copy may differ from this scenario.
+  /// @param index Selects which realization is returned; ignored where there is only one.
+  virtual std::unique_ptr<Scenario> clone(BPMNOS::number spawnTime, size_t index) const;
 
   const Model* model;  ///< Pointer to the BPMN model.
   BPMNOS::Values globals;

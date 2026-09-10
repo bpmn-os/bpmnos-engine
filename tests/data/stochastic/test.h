@@ -323,11 +323,8 @@ SCENARIO( "Stochastic scenario copy constructor", "[data][stochastic][copy]" ) {
     WHEN( "The scenario is copied after disclosure of x" ) {
       Model::StochasticDataProvider dataProvider(modelFile, csv, 42);
       auto scenario = dataProvider.createScenario(0);
-      auto* stochasticScenario = dynamic_cast<Model::StochasticScenario*>(scenario.get());
-      REQUIRE( stochasticScenario != nullptr );
-
       // Announce a clock tick to time 10, settling all disclosures due by then
-      stochasticScenario->noticeClockTick(10);
+      scenario->noticeClockTick(10);
 
       // Get original values
       auto instances = scenario->getInstances(10);
@@ -338,8 +335,9 @@ SCENARIO( "Stochastic scenario copy constructor", "[data][stochastic][copy]" ) {
       auto originalX = scenario->getValue(instance->id,
         dataProvider.getModel().processes[0]->extensionElements->as<Model::ExtensionElements>()->attributes[1].get(), 10);
 
-      // Copy at spawnTime = 11 with new seed
-      Model::StochasticScenario copiedScenario(stochasticScenario, 11, 999);
+      // Copy at spawnTime = 11, taking the first realization other than this scenario's own
+      auto copy = scenario->clone(11, 0);
+      auto& copiedScenario = *copy;
 
       THEN( "Past values (timestamp, x) are preserved" ) {
         auto copiedInstances = copiedScenario.getInstances(10);
@@ -370,17 +368,17 @@ SCENARIO( "Stochastic scenario copy constructor", "[data][stochastic][copy]" ) {
         auto originalY = scenario->getStatus(instance->id, activity, 15);
         REQUIRE( originalY.has_value() );
 
-        // Keep copying with different seeds until we get a different value
-        unsigned int seed = 1;
+        // Keep copying at different indices until we get a different value
+        size_t index = 0;
         bool foundDifferent = false;
-        while (!foundDifferent && seed < 1000) {
-          Model::StochasticScenario testCopy(stochasticScenario, 11, seed);
-          auto copiedY = testCopy.getStatus(instance->id, activity, 15);
+        while (!foundDifferent && index < 1000) {
+          auto testCopy = scenario->clone(11, index);
+          auto copiedY = testCopy->getStatus(instance->id, activity, 15);
           REQUIRE( copiedY.has_value() );
           if (originalY->at(0).value() != copiedY->at(0).value()) {
             foundDifferent = true;
           }
-          ++seed;
+          ++index;
         }
         REQUIRE( foundDifferent );
       }
@@ -397,13 +395,12 @@ SCENARIO( "Stochastic scenario copy constructor", "[data][stochastic][copy]" ) {
     WHEN( "The scenario is copied" ) {
       Model::StochasticDataProvider dataProvider(modelFile, csv, 42);
       auto scenario = dataProvider.createScenario(0);
-      auto* stochasticScenario = dynamic_cast<Model::StochasticScenario*>(scenario.get());
-
       // Announce a clock tick to time 10, settling all disclosures due by then
-      stochasticScenario->noticeClockTick(10);
+      scenario->noticeClockTick(10);
 
       // Copy at spawnTime = 11
-      Model::StochasticScenario copiedScenario(stochasticScenario, 11, 999);
+      auto copy = scenario->clone(11, 0);
+      auto& copiedScenario = *copy;
 
       THEN( "All values are preserved" ) {
         auto copiedInstances = copiedScenario.getInstances(0);

@@ -40,8 +40,8 @@ BPMNOS::Values Scenario::evaluateGlobals(const std::unordered_map<const Attribut
   return result;
 }
 
-std::unique_ptr<Scenario> Scenario::clone() const {
-  throw std::logic_error("Scenario::clone() is not supported by this scenario type");
+std::unique_ptr<Scenario> Scenario::clone([[maybe_unused]] BPMNOS::number spawnTime, [[maybe_unused]] size_t index) const {
+  throw std::logic_error("Scenario: clone() is not supported by this scenario type");
 }
 
 void Scenario::noticeCompletionPending([[maybe_unused]] BPMNOS::number rootId, const BPMN::Node* task, const Values& status, const SharedValues& data, [[maybe_unused]] const Values& globals) const {

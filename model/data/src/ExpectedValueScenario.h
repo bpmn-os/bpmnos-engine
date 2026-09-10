@@ -26,7 +26,9 @@ public:
     const std::unordered_map<const Attribute*, BPMNOS::number>& globalValueMap
   );
 
-  std::unique_ptr<Scenario> clone() const override { return std::make_unique<ExpectedValueScenario>(*this); }
+  /// A deterministic scenario has a single realization, so both arguments are ignored.
+  std::unique_ptr<Scenario> clone([[maybe_unused]] BPMNOS::number spawnTime, [[maybe_unused]] size_t index) const override
+  { return std::make_unique<ExpectedValueScenario>(*this); }
 };
 
 } // namespace BPMNOS::Model
