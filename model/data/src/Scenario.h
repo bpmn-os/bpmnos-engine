@@ -148,6 +148,12 @@ public:
    */
   virtual void noticeCompletion(BPMNOS::number instanceId, const BPMN::Node* task) const;
 
+  /// @brief Returns the entry held in @ref activityArrivalStatus, or nullptr if none is held.
+  const BPMNOS::Values* getActivityArrivalStatus(BPMNOS::number instanceId, const BPMN::Node* node) const;
+
+  /// @brief Returns the entry held in @ref taskCompletionStatus, or nullptr if none is held.
+  const BPMNOS::Values* getTaskCompletionStatus(BPMNOS::number instanceId, const BPMN::Node* task) const;
+
   /// @brief Get the completion status for a SendTask, ReceiveTask, and DecisionTask.
   BPMNOS::Values getTaskCompletionStatus(BPMNOS::number rootId, const BPMN::Node* task, const Values& status, const SharedValues& data, const Values& globals) const;
 

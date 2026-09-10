@@ -1,7 +1,9 @@
 #include "ObservedScenario.h"
 #include "model/bpmnos/src/extensionElements/ExtensionElements.h"
+#include "model/bpmnos/src/DecisionTask.h"
 #include <limits>
 #include <stdexcept>
+#include <cassert>
 
 using namespace BPMNOS::Model;
 
@@ -19,11 +21,11 @@ void ObservedScenario::observeValue(BPMNOS::number instanceId, const Attribute* 
 }
 
 void ObservedScenario::observeReadyStatus(BPMNOS::number instanceId, const BPMN::Node* activity, BPMNOS::Values status) {
-  readyStatuses[{(size_t)instanceId, activity}] = std::move(status);
+  observedReadyStatus[{(size_t)instanceId, activity}] = std::move(status);
 }
 
 void ObservedScenario::observeCompletionStatus(BPMNOS::number instanceId, const BPMN::Node* task, BPMNOS::Values status) {
-  completionStatuses[{(size_t)instanceId, task}] = std::move(status);
+  observedCompletionStatus[{(size_t)instanceId, task}] = std::move(status);
 }
 
 BPMNOS::number ObservedScenario::getEarliestInstantiationTime() const {
@@ -139,11 +141,32 @@ std::optional<BPMNOS::Values> ObservedScenario::getActivityReadyStatus(
   BPMNOS::number currentTime
 ) const {
   // keyed by the full instance id, so concurrent executions of one activity don't collide
-  return getReportedStatus(readyStatuses, instanceId, activity, currentTime);
+  return getReportedStatus(observedReadyStatus, instanceId, activity, currentTime);
 }
 
 std::optional<BPMNOS::Values> ObservedScenario::getTaskCompletionStatus(BPMNOS::number instanceId, const BPMN::Node* task, BPMNOS::number currentTime) const {
-  return getReportedStatus(completionStatuses, instanceId, task, currentTime);
+  return getReportedStatus(observedCompletionStatus, instanceId, task, currentTime);
+}
+
+void ObservedScenario::noticeReady(BPMNOS::number instanceId, const BPMN::Node* node) const {
+  // the reported status has been used, so only the log of what was observed outlives the run
+  [[maybe_unused]] auto erased = observedReadyStatus.erase({(size_t)instanceId, node});
+  assert( erased == 1 );
+  Scenario::noticeReady(instanceId, node);
+}
+
+void ObservedScenario::noticeCompletion(BPMNOS::number instanceId, const BPMN::Node* task) const {
+  // The completion of a send, receive or decision task is determined by the model rather than observed,
+  // so nothing was reported for it and there is nothing of ours to discard.
+  if (
+    !task->represents<BPMN::SendTask>() &&
+    !task->represents<BPMN::ReceiveTask>() &&
+    !task->represents<DecisionTask>()
+  ) {
+    [[maybe_unused]] auto erased = observedCompletionStatus.erase({(size_t)instanceId, task});
+    assert( erased == 1 );
+  }
+  Scenario::noticeCompletion(instanceId, task);
 }
 
 std::unique_ptr<Scenario> ObservedScenario::clone([[maybe_unused]] BPMNOS::number spawnTime, [[maybe_unused]] size_t index) const {

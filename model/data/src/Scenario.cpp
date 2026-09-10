@@ -103,6 +103,16 @@ void Scenario::noticeCompletion(BPMNOS::number instanceId, const BPMN::Node* tas
   assert( erased == 1 );
 }
 
+const BPMNOS::Values* Scenario::getActivityArrivalStatus(BPMNOS::number instanceId, const BPMN::Node* node) const {
+  auto it = activityArrivalStatus.find({(size_t)instanceId, node});
+  return it != activityArrivalStatus.end() ? &it->second : nullptr;
+}
+
+const BPMNOS::Values* Scenario::getTaskCompletionStatus(BPMNOS::number instanceId, const BPMN::Node* task) const {
+  auto it = taskCompletionStatus.find({(size_t)instanceId, task});
+  return it != taskCompletionStatus.end() ? &it->second : nullptr;
+}
+
 BPMNOS::Values Scenario::getTaskCompletionStatus(BPMNOS::number rootId, const BPMN::Node* task, const Values& status, const SharedValues& data, const Values& globals) const {
   noticeCompletionPending(rootId,task,status,data,globals);
   auto instanceId = (size_t)data[ExtensionElements::Index::Instance].get().value();

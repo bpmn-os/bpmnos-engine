@@ -81,6 +81,12 @@ public:
   /// std::nullopt while none has been reported or its timestamp lies ahead.
   std::optional<BPMNOS::Values> getTaskCompletionStatus(BPMNOS::number instanceId, const BPMN::Node* task, BPMNOS::number currentTime) const override;
 
+  /// @brief Discards the status reported for the activity, which has been used, and then does as the base.
+  void noticeReady(BPMNOS::number instanceId, const BPMN::Node* node) const override;
+
+  /// @brief Discards the status reported for the task, which has been used, and then does as the base.
+  void noticeCompletion(BPMNOS::number instanceId, const BPMN::Node* task) const override;
+
   /// @brief Throws, a world admitting no duplicate of itself.
   std::unique_ptr<Scenario> clone(BPMNOS::number spawnTime, size_t index) const override;
 
@@ -97,8 +103,8 @@ private:
   std::optional<BPMNOS::Values> getReportedStatus(const std::map<std::pair<size_t, const BPMN::Node*>, BPMNOS::Values>& reported, BPMNOS::number instanceId, const BPMN::Node* node, BPMNOS::number currentTime) const;
 
   std::unordered_map<size_t, InstanceData> instances; ///< Log of the instances observed so far.
-  std::map<std::pair<size_t, const BPMN::Node*>, BPMNOS::Values> readyStatuses; ///< Statuses activities were reported ready with.
-  std::map<std::pair<size_t, const BPMN::Node*>, BPMNOS::Values> completionStatuses; ///< Statuses tasks were reported to complete with.
+  mutable std::map<std::pair<size_t, const BPMN::Node*>, BPMNOS::Values> observedReadyStatus; ///< Statuses activities were reported ready with.
+  mutable std::map<std::pair<size_t, const BPMN::Node*>, BPMNOS::Values> observedCompletionStatus; ///< Statuses tasks were reported to complete with.
 };
 
 } // namespace BPMNOS::Model
