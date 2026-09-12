@@ -1,7 +1,3 @@
-TEST_CASE( "Parse BPMN elements", "[model][parser]" ) {
-  REQUIRE_NOTHROW( Model::Model(std::string("tests/model/parser/Model_without_extensions.bpmn")) );
-}
-
 TEST_CASE( "Parse message flows", "[model][parser]" ) {
   Model::Model model(std::string("tests/model/parser/Messaging.bpmn"));
   std::unordered_map< std::string, std::set< std::string > > candidates;

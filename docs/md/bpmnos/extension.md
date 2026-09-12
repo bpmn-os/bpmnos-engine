@@ -173,13 +173,11 @@ For each such element the following fields can be provided
 The following shows an example of an outgoing message definition for a @ref BPMN::SendTask "send task" sending a message with name `Request` to a recipient that must also have a parameter named `machine` having the value of the `machine` attribute. The message content is populated with the values of the `instance` and `duration`  attributes.
 ```xml
 <bpmn2:extensionElements>
-  <bpmnos:messages>
-    <bpmnos:message name="Request">
-      <bpmnos:parameter name="machine" value="machine" />
-      <bpmnos:content key="Order" attribute="instance" />
-      <bpmnos:content key="Duration" attribute="duration" />
-    </bpmnos:message>
-  </bpmnos:messages>
+  <bpmnos:message name="Request">
+    <bpmnos:parameter name="machine" value="machine" />
+    <bpmnos:content key="Order" attribute="instance" />
+    <bpmnos:content key="Duration" attribute="duration" />
+  </bpmnos:message>
 </bpmn2:extensionElements>
 ```
 
@@ -193,10 +191,6 @@ The following shows an example of an incoming message definition for a @ref BPMN
   </bpmnos:message>
 </bpmn2:extensionElements>
 ```
-@note 
-For @ref BPMN::SendTask "send tasks" and @ref BPMN::ReceiveTask "receive tasks"  the `<bpmnos:message>` element must be embedded in a `<bpmnos:message>` container because multiple messages may be defined for multi-instance tasks. 
-For other @ref BPMN::MessageCatchEvent "message catch events" and @ref BPMN::MessageThrowEvent "message throw events" the `<bpmnos:message>` element must **not** be embedded in a `<bpmnos:message>` container. 
-
 
 ## Timer
 The trigger for a @ref BPMN::TimerCatchEvent "timer event" can be specified by providing a parameter with name `trigger` and value being an expression as shown in the following example.

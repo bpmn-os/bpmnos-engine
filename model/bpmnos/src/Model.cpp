@@ -183,18 +183,23 @@ std::unique_ptr<BPMN::FlowNode> Model::createActivity(XML::bpmn::tActivity* acti
   auto baseElement = BPMN::Model::createActivity(activity,parent);
   auto extensionElements = std::make_unique<BPMNOS::Model::ExtensionElements>(activity, parent->extensionElements->as<ExtensionElements>()->attributeRegistry, parent, getData(activity));
 
+  if ( baseElement->represents<BPMN::SendTask>() && !extensionElements->messageDefinition ) {
+    throw std::runtime_error("Model: No message defined for send task '" + baseElement->id + "'");
+  }
+
   if ( baseElement->represents<BPMN::ReceiveTask>() ) {
-    for ( auto& messageDefinition : extensionElements->messageDefinitions ) {
-      for ( auto& [_,content] : messageDefinition->contentMap ) {
-        auto attribute = content->attribute;
-        if ( attribute->category == Attribute::Category::GLOBAL ) {
-          throw std::runtime_error("Model: Message received by task '" + baseElement->id + "' attempts to modify global attribute '" + attribute->id + "'");
-        } 
-        else if ( attribute->category == Attribute::Category::DATA ) {
-          throw std::runtime_error("Model: Message received by task '" + baseElement->id + "' attempts to modify data attribute '" + attribute->id + "'");
-        }
-        attribute->isImmutable = false;
+    if ( !extensionElements->messageDefinition ) {
+      throw std::runtime_error("Model: No message defined for receive task '" + baseElement->id + "'");
+    }
+    for ( auto& [_,content] : extensionElements->messageDefinition->contentMap ) {
+      auto attribute = content->attribute;
+      if ( attribute->category == Attribute::Category::GLOBAL ) {
+        throw std::runtime_error("Model: Message received by task '" + baseElement->id + "' attempts to modify global attribute '" + attribute->id + "'");
       }
+      else if ( attribute->category == Attribute::Category::DATA ) {
+        throw std::runtime_error("Model: Message received by task '" + baseElement->id + "' attempts to modify data attribute '" + attribute->id + "'");
+      }
+      attribute->isImmutable = false;
     }
   }
 
@@ -328,24 +333,26 @@ std::unique_ptr<BPMN::FlowNode> Model::createMessageStartEvent(XML::bpmn::tStart
     });
   };
   
-  for ( auto& messageDefinition : extensionElements->messageDefinitions ) {
-    for ( auto& [_,content] : messageDefinition->contentMap ) {
-      Attribute* attribute = content->attribute;
-      auto parentExtension = parent->extensionElements->as<BPMNOS::Model::ExtensionElements>();
-      if ( attribute->category == Attribute::Category::GLOBAL ) {
-        throw std::runtime_error("Model: Message start event '" + baseElement->id + "' attempts to modify global attribute '" + attribute->id + "'");
+  if ( !extensionElements->messageDefinition ) {
+    throw std::runtime_error("Model: No message defined for message start event '" + baseElement->id + "'");
+  }
+
+  for ( auto& [_,content] : extensionElements->messageDefinition->contentMap ) {
+    Attribute* attribute = content->attribute;
+    auto parentExtension = parent->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+    if ( attribute->category == Attribute::Category::GLOBAL ) {
+      throw std::runtime_error("Model: Message start event '" + baseElement->id + "' attempts to modify global attribute '" + attribute->id + "'");
+    }
+    else if ( attribute->category == Attribute::Category::DATA ) {
+      if ( !contains(parentExtension->data,attribute) ) {
+        throw std::runtime_error("Model: Message start event '" + baseElement->id + "' attempts to modify data attribute '" + attribute->id + "' which is not owned by event-subprocess");
       }
-      else if ( attribute->category == Attribute::Category::DATA ) {
-        if ( !contains(parentExtension->data,attribute) ) {
-          throw std::runtime_error("Model: Message start event '" + baseElement->id + "' attempts to modify data attribute '" + attribute->id + "' which is not owned by event-subprocess");
-        }
-        // data attributes owned by event-subprocesses are considered immutable even if they are modified by the message start event  
-      }
-      else if ( attribute->category == Attribute::Category::STATUS ) {
-        // status attributes owned by event-subprocesses are considered immutable even if they are modified by the message start event  
-        if ( !contains(parentExtension->attributes,attribute) ) {
-          attribute->isImmutable = false;
-        }
+      // data attributes owned by event-subprocesses are considered immutable even if they are modified by the message start event
+    }
+    else if ( attribute->category == Attribute::Category::STATUS ) {
+      // status attributes owned by event-subprocesses are considered immutable even if they are modified by the message start event
+      if ( !contains(parentExtension->attributes,attribute) ) {
+        attribute->isImmutable = false;
       }
     }
   }
@@ -357,17 +364,19 @@ std::unique_ptr<BPMN::FlowNode> Model::createMessageBoundaryEvent(XML::bpmn::tBo
   auto baseElement = BPMN::Model::createMessageBoundaryEvent(boundaryEvent,parent);
   auto extensionElements = std::make_unique<BPMNOS::Model::ExtensionElements>(boundaryEvent,parent->extensionElements->as<ExtensionElements>()->attributeRegistry,parent);
   
-  for ( auto& messageDefinition : extensionElements->messageDefinitions ) {
-    for ( auto& [_,content] : messageDefinition->contentMap ) {
-      Attribute* attribute = content->attribute;
-      if ( attribute->category == Attribute::Category::GLOBAL ) {
-        throw std::runtime_error("Model: Message boundary event '" + baseElement->id + "' attempts to modify global attribute '" + attribute->id + "'");
-      } 
-      else if ( attribute->category == Attribute::Category::DATA ) {
-        throw std::runtime_error("Model: Message boundary event '" + baseElement->id + "' attempts to modify data attribute '" + attribute->id + "'");
-      }
-      attribute->isImmutable = false;
+  if ( !extensionElements->messageDefinition ) {
+    throw std::runtime_error("Model: No message defined for message boundary event '" + baseElement->id + "'");
+  }
+
+  for ( auto& [_,content] : extensionElements->messageDefinition->contentMap ) {
+    Attribute* attribute = content->attribute;
+    if ( attribute->category == Attribute::Category::GLOBAL ) {
+      throw std::runtime_error("Model: Message boundary event '" + baseElement->id + "' attempts to modify global attribute '" + attribute->id + "'");
     }
+    else if ( attribute->category == Attribute::Category::DATA ) {
+      throw std::runtime_error("Model: Message boundary event '" + baseElement->id + "' attempts to modify data attribute '" + attribute->id + "'");
+    }
+    attribute->isImmutable = false;
   }
   // bind attributes, restrictions, and operators to all event subprocesses
   return bind<BPMN::FlowNode>( std::move(baseElement), std::move(extensionElements) );
@@ -377,28 +386,34 @@ std::unique_ptr<BPMN::FlowNode> Model::createMessageCatchEvent(XML::bpmn::tCatch
   auto baseElement = BPMN::Model::createMessageCatchEvent(catchEvent,parent);
   auto extensionElements = std::make_unique<BPMNOS::Model::ExtensionElements>(catchEvent,parent->extensionElements->as<ExtensionElements>()->attributeRegistry,parent);
   
-  for ( auto& messageDefinition : extensionElements->messageDefinitions ) {
-    for ( auto& [_,content] : messageDefinition->contentMap ) {
-      Attribute* attribute = content->attribute;
-      if ( attribute->category == Attribute::Category::GLOBAL ) {
-        throw std::runtime_error("Model: Message catch event '" + baseElement->id + "' attempts to modify global attribute '" + attribute->id + "'");
-      }
-      else if ( attribute->category == Attribute::Category::DATA ) {
-        throw std::runtime_error("Model: Message catch event '" + baseElement->id + "' attempts to modify data attribute '" + attribute->id + "'");
-      }
-      attribute->isImmutable = false;
+  if ( !extensionElements->messageDefinition ) {
+    throw std::runtime_error("Model: No message defined for message catch event '" + baseElement->id + "'");
+  }
+
+  for ( auto& [_,content] : extensionElements->messageDefinition->contentMap ) {
+    Attribute* attribute = content->attribute;
+    if ( attribute->category == Attribute::Category::GLOBAL ) {
+      throw std::runtime_error("Model: Message catch event '" + baseElement->id + "' attempts to modify global attribute '" + attribute->id + "'");
     }
+    else if ( attribute->category == Attribute::Category::DATA ) {
+      throw std::runtime_error("Model: Message catch event '" + baseElement->id + "' attempts to modify data attribute '" + attribute->id + "'");
+    }
+    attribute->isImmutable = false;
   }
   // bind attributes, restrictions, and operators to all event subprocesses
   return bind<BPMN::FlowNode>( std::move(baseElement), std::move(extensionElements) );
 }
 
 std::unique_ptr<BPMN::FlowNode> Model::createMessageThrowEvent(XML::bpmn::tThrowEvent* throwEvent, BPMN::Scope* parent) {
+  auto baseElement = BPMN::Model::createMessageThrowEvent(throwEvent,parent);
+  auto extensionElements = std::make_unique<BPMNOS::Model::ExtensionElements>(throwEvent,parent->extensionElements->as<ExtensionElements>()->attributeRegistry,parent);
+
+  if ( !extensionElements->messageDefinition ) {
+    throw std::runtime_error("Model: No message defined for message throw event '" + baseElement->id + "'");
+  }
+
   // bind message content
-  return bind<BPMN::FlowNode>(
-    BPMN::Model::createMessageThrowEvent(throwEvent,parent),
-    std::make_unique<BPMNOS::Model::ExtensionElements>(throwEvent,parent->extensionElements->as<ExtensionElements>()->attributeRegistry,parent)
-  );
+  return bind<BPMN::FlowNode>( std::move(baseElement), std::move(extensionElements) );
 }
 
 void Model::createMessageFlows() {
@@ -540,44 +555,43 @@ bool Model::messageMayBeThrown( BPMN::Process* sendingProcess, BPMN::FlowNode* t
 
 void Model::createMessageCandidates( BPMN::Process* sendingProcess, BPMN::FlowNode* throwingMessageEvent, BPMN::Process* receivingProcess, BPMN::FlowNode* catchingMessageEvent ) {
   auto senderExtension = throwingMessageEvent->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
-  for ( auto& outgoingMessageDefinition : senderExtension->messageDefinitions ) {
-    auto recipientExtension = catchingMessageEvent->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
-    for ( auto& incomingMessageDefinition : recipientExtension->messageDefinitions) {
+  auto recipientExtension = catchingMessageEvent->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
 
-      assert( outgoingMessageDefinition.get() );
-      assert( incomingMessageDefinition.get() );
+  auto& outgoingMessageDefinition = senderExtension->messageDefinition;
+  auto& incomingMessageDefinition = recipientExtension->messageDefinition;
 
-      if ( outgoingMessageDefinition->name != incomingMessageDefinition->name ) {
-        continue;
-      }
-      if ( outgoingMessageDefinition->header != incomingMessageDefinition->header ) {
-        continue;
-      }
+  assert( outgoingMessageDefinition.get() );
+  assert( incomingMessageDefinition.get() );
 
-      if ( messageMayBeCaught(sendingProcess, throwingMessageEvent, receivingProcess, catchingMessageEvent) &&
-        messageMayBeThrown(sendingProcess, throwingMessageEvent, receivingProcess, catchingMessageEvent)
-      ) {
-        // add message events to collection of candidates of each other
-        if( find(
-            senderExtension->messageCandidates.begin(),
-            senderExtension->messageCandidates.end(),
-            catchingMessageEvent->as<BPMN::FlowNode>()
-          ) == senderExtension->messageCandidates.end()
-        ) {
+  if ( outgoingMessageDefinition->name != incomingMessageDefinition->name ) {
+    return;
+  }
+  if ( outgoingMessageDefinition->header != incomingMessageDefinition->header ) {
+    return;
+  }
+
+  if ( messageMayBeCaught(sendingProcess, throwingMessageEvent, receivingProcess, catchingMessageEvent) &&
+    messageMayBeThrown(sendingProcess, throwingMessageEvent, receivingProcess, catchingMessageEvent)
+  ) {
+    // add message events to collection of candidates of each other
+    if( find(
+        senderExtension->messageCandidates.begin(),
+        senderExtension->messageCandidates.end(),
+        catchingMessageEvent->as<BPMN::FlowNode>()
+      ) == senderExtension->messageCandidates.end()
+    ) {
 //std::cerr << throwingMessageEvent->id << " -> " << catchingMessageEvent->id << std::endl;
-          senderExtension->messageCandidates.push_back(catchingMessageEvent->as<BPMN::FlowNode>());
-        }
+      senderExtension->messageCandidates.push_back(catchingMessageEvent->as<BPMN::FlowNode>());
+    }
 
-        if( find(
-            recipientExtension->messageCandidates.begin(),
-            recipientExtension->messageCandidates.end(),
-            throwingMessageEvent->as<BPMN::FlowNode>()
-          ) == recipientExtension->messageCandidates.end()
-        ) {
+    if( find(
+        recipientExtension->messageCandidates.begin(),
+        recipientExtension->messageCandidates.end(),
+        throwingMessageEvent->as<BPMN::FlowNode>()
+      ) == recipientExtension->messageCandidates.end()
+    ) {
 //std::cerr << throwingMessageEvent->id << " -> " << catchingMessageEvent->id << std::endl;
-          recipientExtension->messageCandidates.push_back(throwingMessageEvent->as<BPMN::FlowNode>());
-        }
-      }
+      recipientExtension->messageCandidates.push_back(throwingMessageEvent->as<BPMN::FlowNode>());
     }
   }
 }

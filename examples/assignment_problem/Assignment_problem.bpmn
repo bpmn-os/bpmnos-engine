@@ -26,11 +26,11 @@ and the total cost that of all assignment is minimised.</bpmn2:documentation>
     <bpmn2:sendTask id="SendRequestTask" name="Send request">
       <bpmn2:documentation>The task creates a message containing the instance identifier of the client and waits until the message is delivered to a server.</bpmn2:documentation>
       <bpmn2:extensionElements>
-        <bpmnos:messages>
+        
           <bpmnos:message name="Message">
             <bpmnos:content key="ClientId" attribute="instance" />
           </bpmnos:message>
-        </bpmnos:messages>
+        
       </bpmn2:extensionElements>
       <bpmn2:incoming>Flow_0v1jo6i</bpmn2:incoming>
       <bpmn2:outgoing>Flow_042bx1h</bpmn2:outgoing>
@@ -62,11 +62,11 @@ and the total cost that of all assignment is minimised.</bpmn2:documentation>
     <bpmn2:receiveTask id="ReceiveRequestTask" name="Receive request">
       <bpmn2:documentation>The task waits for a message from a client. When the message is received, it looks up the cost of the assignment in the table `costs.csv` and sets the `cost` attribute accordingly.</bpmn2:documentation>
       <bpmn2:extensionElements>
-        <bpmnos:messages>
+        
           <bpmnos:message name="Message">
             <bpmnos:content key="ClientId" attribute="client" />
           </bpmnos:message>
-        </bpmnos:messages>
+        
         <bpmnos:status>
           <bpmnos:attributes>
             <bpmnos:attribute id="Attribute_20a021k" type="decimal" name="cost" objective="minimize" weight="1" />

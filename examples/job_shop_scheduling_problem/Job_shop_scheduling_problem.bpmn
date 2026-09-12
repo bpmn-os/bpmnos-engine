@@ -53,13 +53,13 @@
       <bpmn2:sequenceFlow id="Flow_06kzyqb" sourceRef="JobStartEvent" targetRef="SendJobTask" />
       <bpmn2:sendTask id="SendJobTask" name="Send job request">
         <bpmn2:extensionElements>
-          <bpmnos:messages>
+          
             <bpmnos:message name="Request">
               <bpmnos:parameter name="machine" value="machine" />
               <bpmnos:content key="Order" attribute="instance" />
               <bpmnos:content key="Duration" attribute="duration" />
             </bpmnos:message>
-          </bpmnos:messages>
+          
         </bpmn2:extensionElements>
         <bpmn2:incoming>Flow_06kzyqb</bpmn2:incoming>
         <bpmn2:outgoing>Flow_1t871bp</bpmn2:outgoing>
@@ -73,9 +73,9 @@
               <bpmnos:operator id="OperatorMakespan" expression="makespan := timestamp" />
             </bpmnos:operators>
           </bpmnos:status>
-          <bpmnos:messages>
+          
             <bpmnos:message name="Completion" />
-          </bpmnos:messages>
+          
         </bpmn2:extensionElements>
         <bpmn2:incoming>Flow_1t871bp</bpmn2:incoming>
         <bpmn2:outgoing>Flow_05lm3ex</bpmn2:outgoing>

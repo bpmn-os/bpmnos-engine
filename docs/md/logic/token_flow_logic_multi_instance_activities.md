@@ -25,8 +25,7 @@ A token enters @ref BPMNOS::Execution::Token::State::ARRIVED "ARRIVED" state whe
 
 In either state, the token waits for a @ref BPMNOS::Execution::ReadyEvent "ready event" indicating that all relevant data has become known. When the event occurs, the token state is updated to @ref BPMNOS::Execution::Token::State::WAITING "WAITING" after token copies for each activity instance are created as described below.
 
-If a @ref BPMNOS::Model::ExtensionElements::loopCardinality "loop cardinalty parameter" is provided, the respective number of token copies is created.
-If the token is at a multi-instance @ref BPMN::SendTask "send task" or @ref BPMN::ReceiveTask  "receive task", a token copy is created for each @ref BPMNOS::Model::ExtensionElements::messageDefinitions "message definition".
+A @ref BPMNOS::Model::ExtensionElements::loopCardinality "loop cardinalty parameter" must be provided, and the respective number of token copies is created.
 
 If a @ref BPMNOS::Model::ExtensionElements::loopIndex "loop index parameter" is provided, the respective attribute of the *i* th token copy receives the value *i*.
 

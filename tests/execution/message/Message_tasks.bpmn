@@ -18,9 +18,9 @@
     <bpmn2:sequenceFlow id="Flow_0v1jo6i" sourceRef="StartEvent_1" targetRef="SendTask_1" />
     <bpmn2:sendTask id="SendTask_1">
       <bpmn2:extensionElements>
-        <bpmnos:messages>
+        
           <bpmnos:message name="Message" />
-        </bpmnos:messages>
+        
       </bpmn2:extensionElements>
       <bpmn2:incoming>Flow_0v1jo6i</bpmn2:incoming>
       <bpmn2:outgoing>Flow_042bx1h</bpmn2:outgoing>
@@ -50,9 +50,9 @@
     </bpmn2:startEvent>
     <bpmn2:receiveTask id="ReceiveTask_2">
       <bpmn2:extensionElements>
-        <bpmnos:messages>
+        
           <bpmnos:message name="Message" />
-        </bpmnos:messages>
+        
       </bpmn2:extensionElements>
       <bpmn2:incoming>Flow_0k90xwh</bpmn2:incoming>
       <bpmn2:outgoing>Flow_0i6bdzm</bpmn2:outgoing>

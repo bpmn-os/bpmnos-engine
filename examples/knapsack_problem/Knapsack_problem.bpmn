@@ -24,13 +24,13 @@
     <bpmn2:sequenceFlow id="Flow_0ld08n6" sourceRef="StartEventItem" targetRef="SendRequestTask" />
     <bpmn2:sendTask id="SendRequestTask" name="Request">
       <bpmn2:extensionElements>
-        <bpmnos:messages>
+        
           <bpmnos:message name="Request">
             <bpmnos:content key="Item" attribute="instance" />
             <bpmnos:content key="Value" attribute="value" />
             <bpmnos:content key="Weight" attribute="weight" />
           </bpmnos:message>
-        </bpmnos:messages>
+        
       </bpmn2:extensionElements>
       <bpmn2:incoming>Flow_0ld08n6</bpmn2:incoming>
       <bpmn2:outgoing>Flow_1pjmvxc</bpmn2:outgoing>

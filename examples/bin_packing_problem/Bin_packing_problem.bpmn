@@ -31,12 +31,12 @@ I the stochastic case, where actual item size is only revaled when handling the 
     </bpmn2:endEvent>
     <bpmn2:sendTask id="RequestActivity" name="Request">
       <bpmn2:extensionElements>
-        <bpmnos:messages>
+        
           <bpmnos:message name="Request">
             <bpmnos:content key="Item" attribute="instance" />
             <bpmnos:content key="Size" attribute="size" />
           </bpmnos:message>
-        </bpmnos:messages>
+        
         <bpmnos:status />
       </bpmn2:extensionElements>
       <bpmn2:incoming>Flow_1qgy5y7</bpmn2:incoming>

@@ -39,7 +39,7 @@
     <bpmn2:sequenceFlow id="Flow_0cgpzkv" sourceRef="ThrowShipmentHandled" targetRef="EndEventCustomer" />
     <bpmn2:sendTask id="RequestActivity" name="Request">
       <bpmn2:extensionElements>
-        <bpmnos:messages>
+        
           <bpmnos:message name="Request">
             <bpmnos:content key="Quantity" attribute="quantity" />
             <bpmnos:content key="Location" attribute="location" />
@@ -49,7 +49,7 @@
             <bpmnos:content key="LatestVisit" attribute="latest_visit" />
             <bpmnos:content key="LatenessPenaty" attribute="lateness_penalty" />
           </bpmnos:message>
-        </bpmnos:messages>
+        
       </bpmn2:extensionElements>
       <bpmn2:incoming>Flow_03kr6t6</bpmn2:incoming>
       <bpmn2:outgoing>Flow_0t8rjvh</bpmn2:outgoing>

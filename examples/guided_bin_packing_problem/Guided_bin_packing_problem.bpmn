@@ -26,12 +26,12 @@ The model contains guidance on the allocation of items to bins. </bpmn2:document
     <bpmn2:sequenceFlow id="Flow_1aezece" sourceRef="RequestActivity" targetRef="EndEventItem" />
     <bpmn2:sendTask id="RequestActivity" name="Request">
       <bpmn2:extensionElements>
-        <bpmnos:messages>
+        
           <bpmnos:message name="Request">
             <bpmnos:content key="Item" attribute="instance" />
             <bpmnos:content key="Size" attribute="size" />
           </bpmnos:message>
-        </bpmnos:messages>
+        
         <bpmnos:status>
           <bpmnos:operators>
             <bpmnos:operator id="Operator_0pjma63" expression="item_requests += 1" />

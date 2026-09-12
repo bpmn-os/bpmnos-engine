@@ -168,7 +168,7 @@ private:
   BPMNOS::VariedValueMap getSignalContent(const BPMNOS::Model::ContentMap& contentMap); ///< Returns content of signal
   void setSignalContent(BPMNOS::VariedValueMap& sourceMap); // Applies content of signal
   
-  void sendMessage( size_t index = 0 ); 
+  void sendMessage();
 public:
   Token* getSequentialPerformerToken() const; ///< Returns token at sequential performer for tokens at activities within sequential adhoc subprocesses
 private:

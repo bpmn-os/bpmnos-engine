@@ -734,25 +734,10 @@ void Token::advanceToBusy() {
       return;
     }
 
-    if ( auto sendTask = node->represents<BPMN::SendTask>() ) {
+    if ( node->represents<BPMN::SendTask>() ) {
       assert( node->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );
-      auto extensionElements = node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
-      // send message(s)
-      if ( sendTask->loopCharacteristics.has_value() ) {
-        // multi-instance send task requires index to access respective message definition
-        if ( !extensionElements->loopIndex.has_value() || !extensionElements->loopIndex->get()->expression ) {
-          throw std::runtime_error("Token: send task '" + sendTask->id + "' requires status attribute holding loop index");
-        }
-        auto attribute = extensionElements->loopIndex->get()->expression->isAttribute();
-        if ( !status[attribute->index].has_value() ) { 
-          throw std::runtime_error("Token: cannot find loop index for send task '" + sendTask->id + "'");
-        }
-        assert( status[attribute->index].value() >= 1 );
-        sendMessage( (size_t)(int)status[attribute->index].value()-1 );
-      }
-      else {
-        sendMessage();
-      }
+      // send message
+      sendMessage();
       // wait for delivery
       return;
     }
@@ -1406,7 +1391,7 @@ void Token::awaitMessageDelivery() {
   // the token waits, so that a value written meanwhile does not change what the token accepts
   assert( node );
   auto extensionElements = node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
-  auto messageDefinition = extensionElements->getMessageDefinition(status);
+  auto messageDefinition = extensionElements->getMessageDefinition();
   assert( messageDefinition ); // a token awaits a delivery only at a node defining a message
   auto request = std::make_shared<MessageDeliveryRequest>(
     this,
@@ -1553,9 +1538,9 @@ void Token::setSignalContent(BPMNOS::VariedValueMap& sourceMap) {
 }
 
 
-void Token::sendMessage(size_t index) {
+void Token::sendMessage() {
   auto systemState = const_cast<SystemState*>(owner->systemState);
-  systemState->messages.emplace_back(std::make_shared<Message>(this,index));
+  systemState->messages.emplace_back(std::make_shared<Message>(this));
   auto& message = systemState->messages.back();
 
   if ( message->recipient.has_value() ) {

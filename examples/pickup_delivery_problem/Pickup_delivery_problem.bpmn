@@ -127,7 +127,7 @@
     </bpmn2:intermediateCatchEvent>
     <bpmn2:sendTask id="RequestActivity" name="Request">
       <bpmn2:extensionElements>
-        <bpmnos:messages>
+        
           <bpmnos:message name="Request">
             <bpmnos:content key="Quantity" attribute="quantity" />
             <bpmnos:content key="PickupLocation" attribute="pickup_location" />
@@ -142,7 +142,7 @@
             <bpmnos:content key="LatePickupPenaty" attribute="late_pickup_penalty" />
             <bpmnos:content key="LateDeliveryPenalty" attribute="late_delivery_penalty" />
           </bpmnos:message>
-        </bpmnos:messages>
+        
       </bpmn2:extensionElements>
       <bpmn2:incoming>Flow_03kr6t6</bpmn2:incoming>
       <bpmn2:outgoing>Flow_0t8rjvh</bpmn2:outgoing>
@@ -260,11 +260,11 @@
           <bpmn2:sequenceFlow id="Flow_1upnb0u" sourceRef="LoadReceiveTask" targetRef="EndEventPickup" />
           <bpmn2:receiveTask id="LoadReceiveTask" name="Shipment loaded">
             <bpmn2:extensionElements>
-              <bpmnos:messages>
+              
                 <bpmnos:message name="Loaded">
                   <bpmnos:parameter name="sender" value="customer" />
                 </bpmnos:message>
-              </bpmnos:messages>
+              
               <bpmnos:status>
                 <bpmnos:operators>
                   <bpmnos:operator id="Operator_2chf0s1" expression="load += quantity" />
@@ -318,11 +318,11 @@
           <bpmn2:sequenceFlow id="Flow_15hrqrp" sourceRef="CatchArrival" targetRef="UnloadReceiveTask" />
           <bpmn2:receiveTask id="UnloadReceiveTask" name="Shipment unloaded">
             <bpmn2:extensionElements>
-              <bpmnos:messages>
+              
                 <bpmnos:message name="Unloaded">
                   <bpmnos:parameter name="sender" value="customer" />
                 </bpmnos:message>
-              </bpmnos:messages>
+              
               <bpmnos:status>
                 <bpmnos:operators>
                   <bpmnos:operator id="Operator_1chf0s1" expression="load -= quantity" />

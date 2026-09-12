@@ -10,8 +10,8 @@ nlohmann::ordered_json MessageDeliveryRequest::jsonify() const {
 
   assert( token->node );
   auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
-  // the definition that built the header, which for a multi-instance activity is the one its status selects
-  auto messageDefinition = extensionElements->getMessageDefinition(token->status);
+  // the definition that built the header
+  auto messageDefinition = extensionElements->getMessageDefinition();
   assert( messageDefinition );
 
   size_t i = 0;

@@ -441,17 +441,8 @@ void StateMachine::createMultiInstanceActivityTokens(Token* token) {
     }
   }
   
-  if ( extensionElements->messageDefinitions.size() ) {
-    if ( valueMaps.empty() ) {
-      valueMaps.resize(extensionElements->messageDefinitions.size());
-    }
-    else if ( valueMaps.size() != extensionElements->messageDefinitions.size() ) {
-      throw std::runtime_error("StateMachine: cardinality and number of messages inconsistent for multi-instance activity '" + token->node->id +"'" );
-    }
-  }
-
   if ( valueMaps.empty() ) {
-    throw std::runtime_error("StateMachine: no instances created for multi-instance activity '" + token->node->id +"'" );
+    throw std::runtime_error("StateMachine: no cardinality provided for multi-instance activity '" + token->node->id +"'" );
   }
 
   if ( extensionElements->loopIndex.has_value() && extensionElements->loopIndex.value()->expression ) {

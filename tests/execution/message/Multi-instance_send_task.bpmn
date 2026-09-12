@@ -29,16 +29,14 @@
     <bpmn2:sequenceFlow id="Flow_06j6w5t" sourceRef="Activity_1" targetRef="Event_1ri3pd9" />
     <bpmn2:sendTask id="Activity_1">
       <bpmn2:extensionElements>
-        <bpmnos:messages>
-          <bpmnos:message name="Message" />
-          <bpmnos:message name="Message" />
-        </bpmnos:messages>
+        <bpmnos:message name="Message" />
         <bpmnos:status>
           <bpmnos:attributes>
             <bpmnos:attribute id="Index" type="integer" name="index" />
           </bpmnos:attributes>
         </bpmnos:status>
         <bpmnos:loopCharacteristics>
+          <bpmnos:parameter name="cardinality" value="2" />
           <bpmnos:parameter name="index" value="index" />
         </bpmnos:loopCharacteristics>
       </bpmn2:extensionElements>

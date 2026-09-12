@@ -9,7 +9,6 @@
 #include "model/bpmnos/src/xml/bpmnos/tOperator.h"
 #include "model/bpmnos/src/xml/bpmnos/tDecisions.h"
 #include "model/bpmnos/src/xml/bpmnos/tDecision.h"
-#include "model/bpmnos/src/xml/bpmnos/tMessages.h"
 #include "model/bpmnos/src/xml/bpmnos/tMessage.h"
 #include "model/bpmnos/src/xml/bpmnos/tLoopCharacteristics.h"
 #include "model/bpmnos/src/xml/bpmnos/tGuidance.h"
@@ -216,27 +215,22 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const
     }
   }
 
-  // add all message definitions
-  if ( element->getOptionalChild<XML::bpmnos::tMessages>().has_value() ) {
-    for ( XML::bpmnos::tMessage& message : element->getOptionalChild<XML::bpmnos::tMessages>()->get().message ) {
-      messageDefinitions.push_back(std::make_unique<MessageDefinition>(&message,attributeRegistry));
-    }
-  }
-  else if ( auto message = element->getOptionalChild<XML::bpmnos::tMessage>(); message.has_value() ) {
-    messageDefinitions.push_back(std::make_unique<MessageDefinition>(&message->get(),attributeRegistry));
+  // add message definition
+  if ( auto message = element->getOptionalChild<XML::bpmnos::tMessage>(); message.has_value() ) {
+    messageDefinition = std::make_unique<MessageDefinition>(&message->get(),attributeRegistry);
   }
 
-  if ( baseElement->is<XML::bpmn::tReceiveTask>() || baseElement->is<XML::bpmn::tCatchEvent>() ) {
+  if ( messageDefinition &&
+    ( baseElement->is<XML::bpmn::tReceiveTask>() || baseElement->is<XML::bpmn::tCatchEvent>() )
+  ) {
     // add data attributes modified by message to dataUpdate
-    for ( auto& messageDefinition : messageDefinitions ) {
-      for ( auto& [key,content] : messageDefinition->contentMap ) {
-        Attribute* attribute = content->attribute;
-        if ( attribute->category != Attribute::Category::STATUS ) {
-          dataUpdate.attributes.push_back(attribute);
-        }
-        if ( attribute->category == Attribute::Category::GLOBAL ) {
-          dataUpdate.global = true;
-        }
+    for ( auto& [key,content] : messageDefinition->contentMap ) {
+      Attribute* attribute = content->attribute;
+      if ( attribute->category != Attribute::Category::STATUS ) {
+        dataUpdate.attributes.push_back(attribute);
+      }
+      if ( attribute->category == Attribute::Category::GLOBAL ) {
+        dataUpdate.global = true;
       }
     }
   }
@@ -284,36 +278,11 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const
   }
 }
 
-const MessageDefinition* ExtensionElements::getMessageDefinition(size_t index) const {
-  if ( index > messageDefinitions.size() ) {
-    throw std::runtime_error("ExtensionElements: no message definition with index " + std::to_string(index) + " provided for '" +  baseElement->id + "'" );
+const MessageDefinition* ExtensionElements::getMessageDefinition() const {
+  if ( !messageDefinition ) {
+    throw std::runtime_error("ExtensionElements: no message definition provided for '" +  baseElement->id + "'" );
   }
-  return messageDefinitions[index].get();
-}
-
-const MessageDefinition* ExtensionElements::getMessageDefinition(const BPMNOS::Values& status) const {
-  size_t index = 0;
-
-  if ( auto receiveTask = baseElement->represents<BPMN::ReceiveTask>();
-    receiveTask &&
-    receiveTask->loopCharacteristics.has_value()
-  ) {
-    // multi-instance receive task
-    if ( !loopIndex->get()->expression || !loopIndex->get()->expression->isAttribute() || loopIndex->get()->expression->isAttribute()->category != Attribute::Category::STATUS ) {
-      throw std::runtime_error("ExtensionElements: receive task '" + receiveTask->id + "' requires status attribute holding loop index");
-    }
-    size_t attributeIndex = loopIndex->get()->expression->isAttribute()->index;
-    assert( status[attributeIndex].has_value() );
-
-    assert( status[attributeIndex].value() >= 1 );
-    index = (size_t)(int)status[attributeIndex].value() - 1;
-  }
-  
-  if ( index >= messageDefinitions.size() ) {
-    throw std::runtime_error("ExtensionElements: no message definition with index " + std::to_string(index) + " provided for '" +  baseElement->id + "'" );
-  }
-  
-  return messageDefinitions[index].get();
+  return messageDefinition.get();
 }
 
 template <typename DataType>
