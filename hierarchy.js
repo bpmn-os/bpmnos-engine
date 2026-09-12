@@ -242,9 +242,6 @@ var hierarchy =
       [ "XML::bpmnos::tMessage", "classXML_1_1bpmnos_1_1tMessage.html", [
         [ "XML::bpmnos::message", "classXML_1_1bpmnos_1_1message.html", null ]
       ] ],
-      [ "XML::bpmnos::tMessages", "classXML_1_1bpmnos_1_1tMessages.html", [
-        [ "XML::bpmnos::messages", "classXML_1_1bpmnos_1_1messages.html", null ]
-      ] ],
       [ "XML::bpmnos::tOperator", "classXML_1_1bpmnos_1_1tOperator.html", [
         [ "XML::bpmnos::operator_", "classXML_1_1bpmnos_1_1operator__.html", null ]
       ] ],
