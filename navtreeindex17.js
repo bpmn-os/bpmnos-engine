@@ -1,5 +1,7 @@
 var NAVTREEINDEX17 =
 {
+"knapsack_problem.html#globals-166":[6,2,0,1],
+"knapsack_problem.html#globals-167":[6,2,0,2,2],
 "knapsack_problem.html#globals-168":[6,2,0,3,2],
 "knapsack_problem.html#globals-169":[6,2,0,4,2],
 "knapsack_problem.html#globals-170":[6,2,0,5,2],
@@ -247,7 +249,5 @@ var NAVTREEINDEX17 =
 "pickup_delivery_problem.html#data-200":[6,9,0,21,1],
 "pickup_delivery_problem.html#data-201":[6,9,0,22,1],
 "pickup_delivery_problem.html#data-202":[6,9,0,23,1],
-"pickup_delivery_problem.html#data-203":[6,9,0,24,1],
-"pickup_delivery_problem.html#data-204":[6,9,0,25,1],
-"pickup_delivery_problem.html#data-205":[6,9,0,26,1]
+"pickup_delivery_problem.html#data-203":[6,9,0,24,1]
 };

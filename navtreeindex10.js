@@ -95,6 +95,8 @@ var NAVTREEINDEX10 =
 "classBPMNOS_1_1Model_1_1SignalDefinition.html#a26fc0fe6bac4363e0c34db066c5685a0":[7,2,1,0,14,4],
 "classBPMNOS_1_1Model_1_1SignalDefinition.html#a356d8da5023128976f5f3dfe337b8baa":[7,0,0,0,14,3],
 "classBPMNOS_1_1Model_1_1SignalDefinition.html#a356d8da5023128976f5f3dfe337b8baa":[7,2,1,0,14,3],
+"classBPMNOS_1_1Model_1_1SignalDefinition.html#a3f5fbd3e784a2ce2b0f3f8872d6ce668":[7,0,0,0,14,8],
+"classBPMNOS_1_1Model_1_1SignalDefinition.html#a3f5fbd3e784a2ce2b0f3f8872d6ce668":[7,2,1,0,14,8],
 "classBPMNOS_1_1Model_1_1SignalDefinition.html#a3f783c098d817d5b626ee4c412b753bc":[7,0,0,0,14,6],
 "classBPMNOS_1_1Model_1_1SignalDefinition.html#a3f783c098d817d5b626ee4c412b753bc":[7,2,1,0,14,6],
 "classBPMNOS_1_1Model_1_1SignalDefinition.html#a406946b63ccaf8e08561af598b39f308":[7,0,0,0,14,7],
@@ -247,7 +249,5 @@ var NAVTREEINDEX10 =
 "classBPMNOS_1_1Model_1_1StochasticScenario.html#a451cfbcc2e11c8b2e87f806aeca48eb6":[7,2,1,0,34,19],
 "classBPMNOS_1_1Model_1_1StochasticScenario.html#a58c17a9d06638c5cbb49826fbdd11097":[7,0,0,0,34,30],
 "classBPMNOS_1_1Model_1_1StochasticScenario.html#a58c17a9d06638c5cbb49826fbdd11097":[7,2,1,0,34,30],
-"classBPMNOS_1_1Model_1_1StochasticScenario.html#a66960ea2b69cabadf157f5f583110152":[7,0,0,0,34,8],
-"classBPMNOS_1_1Model_1_1StochasticScenario.html#a66960ea2b69cabadf157f5f583110152":[7,2,1,0,34,8],
-"classBPMNOS_1_1Model_1_1StochasticScenario.html#a6a37ea75429cd710eca30124637c4bbd":[7,0,0,0,34,25]
+"classBPMNOS_1_1Model_1_1StochasticScenario.html#a66960ea2b69cabadf157f5f583110152":[7,0,0,0,34,8]
 };

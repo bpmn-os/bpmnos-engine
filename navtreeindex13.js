@@ -1,5 +1,7 @@
 var NAVTREEINDEX13 =
 {
+"classXML_1_1bpmnos_1_1tSignal.html#a9bebd33c1f5691122c38613de41a1e24":[7,2,3,1,31,4],
+"classXML_1_1bpmnos_1_1tSignal.html#ae267a2f9927cd0b8153ee9c840a2b553":[7,0,2,0,31,0],
 "classXML_1_1bpmnos_1_1tSignal.html#ae267a2f9927cd0b8153ee9c840a2b553":[7,2,3,1,31,0],
 "classXML_1_1bpmnos_1_1tStatus.html":[7,0,2,0,32],
 "classXML_1_1bpmnos_1_1tStatus.html":[7,2,3,1,32],
@@ -247,7 +249,5 @@ var NAVTREEINDEX13 =
 "guidance_8h_source.html":[7,3,0,0,1,0,11],
 "guided_bin_packing_problem.html":[6,5],
 "guided_bin_packing_problem.html#adhocsubprocess-adhocsubprocess-1":[6,5,0,9],
-"guided_bin_packing_problem.html#attributes-3":[6,5,0,12,7,0],
-"guided_bin_packing_problem.html#bin-process-binprocess-1":[6,5,0,7],
-"guided_bin_packing_problem.html#collaboration-bin_packing_problem-1":[6,5,0]
+"guided_bin_packing_problem.html#attributes-3":[6,5,0,12,7,0]
 };

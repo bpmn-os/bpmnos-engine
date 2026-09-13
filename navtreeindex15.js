@@ -1,5 +1,7 @@
 var NAVTREEINDEX15 =
 {
+"guided_pickup_delivery_problem.html#content-0-6":[6,10,0,12,3,0,1],
+"guided_pickup_delivery_problem.html#content-0-7":[6,10,0,13,3,0,1],
 "guided_pickup_delivery_problem.html#content-0-8":[6,10,0,23,3,0,1],
 "guided_pickup_delivery_problem.html#content-0-9":[6,10,0,25,3,0,1],
 "guided_pickup_delivery_problem.html#content-12":[6,10,0,14,3,0,1],
@@ -247,7 +249,5 @@ var NAVTREEINDEX15 =
 "guided_vehicle_routing_problem.html#entry-restrictions-27":[6,8,0,17,3],
 "guided_vehicle_routing_problem.html#exit-restrictions-26":[6,8,0,18,4],
 "guided_vehicle_routing_problem.html#globals-118":[6,8,0,1],
-"guided_vehicle_routing_problem.html#globals-119":[6,8,0,3,2],
-"guided_vehicle_routing_problem.html#globals-120":[6,8,0,4,2],
-"guided_vehicle_routing_problem.html#globals-121":[6,8,0,5,2]
+"guided_vehicle_routing_problem.html#globals-119":[6,8,0,3,2]
 };

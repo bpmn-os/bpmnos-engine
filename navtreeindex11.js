@@ -1,5 +1,7 @@
 var NAVTREEINDEX11 =
 {
+"classBPMNOS_1_1Model_1_1StochasticScenario.html#a66960ea2b69cabadf157f5f583110152":[7,2,1,0,34,8],
+"classBPMNOS_1_1Model_1_1StochasticScenario.html#a6a37ea75429cd710eca30124637c4bbd":[7,0,0,0,34,25],
 "classBPMNOS_1_1Model_1_1StochasticScenario.html#a6a37ea75429cd710eca30124637c4bbd":[7,2,1,0,34,25],
 "classBPMNOS_1_1Model_1_1StochasticScenario.html#a6c8e16bfc560050886016fa794ef71e8":[7,0,0,0,34,34],
 "classBPMNOS_1_1Model_1_1StochasticScenario.html#a6c8e16bfc560050886016fa794ef71e8":[7,2,1,0,34,34],
@@ -247,7 +249,5 @@ var NAVTREEINDEX11 =
 "classXML_1_1bpmnos_1_1operator__.html#a100e0c6afd30526073b777009eb9b807":[7,2,3,1,8,2],
 "classXML_1_1bpmnos_1_1operator__.html#a18b014dbaf9996715836947e409c75fb":[7,0,2,0,8,1],
 "classXML_1_1bpmnos_1_1operator__.html#a18b014dbaf9996715836947e409c75fb":[7,2,3,1,8,1],
-"classXML_1_1bpmnos_1_1operator__.html#acdd1db3f2fce322a52112db7e7da69af":[7,0,2,0,8,0],
-"classXML_1_1bpmnos_1_1operator__.html#acdd1db3f2fce322a52112db7e7da69af":[7,2,3,1,8,0],
-"classXML_1_1bpmnos_1_1operators.html":[7,0,2,0,9]
+"classXML_1_1bpmnos_1_1operator__.html#acdd1db3f2fce322a52112db7e7da69af":[7,0,2,0,8,0]
 };

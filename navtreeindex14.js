@@ -1,5 +1,7 @@
 var NAVTREEINDEX14 =
 {
+"guided_bin_packing_problem.html#bin-process-binprocess-1":[6,5,0,7],
+"guided_bin_packing_problem.html#collaboration-bin_packing_problem-1":[6,5,0],
 "guided_bin_packing_problem.html#completion-restrictions-15":[6,5,0,7,4],
 "guided_bin_packing_problem.html#completion-restrictions-16":[6,5,0,8,5],
 "guided_bin_packing_problem.html#completion-restrictions-17":[6,5,0,9,4],
@@ -247,7 +249,5 @@ var NAVTREEINDEX14 =
 "guided_pickup_delivery_problem.html#content-0-10":[6,10,0,29,3,0,1],
 "guided_pickup_delivery_problem.html#content-0-11":[6,10,0,31,3,0,1],
 "guided_pickup_delivery_problem.html#content-0-4":[6,10,0,5,3,0,1],
-"guided_pickup_delivery_problem.html#content-0-5":[6,10,0,11,3,0,1],
-"guided_pickup_delivery_problem.html#content-0-6":[6,10,0,12,3,0,1],
-"guided_pickup_delivery_problem.html#content-0-7":[6,10,0,13,3,0,1]
+"guided_pickup_delivery_problem.html#content-0-5":[6,10,0,11,3,0,1]
 };

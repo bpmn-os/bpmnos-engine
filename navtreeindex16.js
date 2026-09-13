@@ -1,5 +1,7 @@
 var NAVTREEINDEX16 =
 {
+"guided_vehicle_routing_problem.html#globals-120":[6,8,0,4,2],
+"guided_vehicle_routing_problem.html#globals-121":[6,8,0,5,2],
 "guided_vehicle_routing_problem.html#globals-122":[6,8,0,6,2],
 "guided_vehicle_routing_problem.html#globals-123":[6,8,0,7,2],
 "guided_vehicle_routing_problem.html#globals-124":[6,8,0,8,2],
@@ -247,7 +249,5 @@ var NAVTREEINDEX16 =
 "knapsack_problem.html#exclusivegateway-capacitygateway-1":[6,2,0,15],
 "knapsack_problem.html#exit-restrictions-27":[6,2,0,22,3],
 "knapsack_problem.html#gatekeeper-4":[6,2,0,25,0],
-"knapsack_problem.html#gatekeeper-5":[6,2,0,26,0],
-"knapsack_problem.html#globals-166":[6,2,0,1],
-"knapsack_problem.html#globals-167":[6,2,0,2,2]
+"knapsack_problem.html#gatekeeper-5":[6,2,0,26,0]
 };

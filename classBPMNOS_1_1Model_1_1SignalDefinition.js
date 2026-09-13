@@ -7,5 +7,6 @@ var classBPMNOS_1_1Model_1_1SignalDefinition =
     [ "dataUpdate", "classBPMNOS_1_1Model_1_1SignalDefinition.html#a26fc0fe6bac4363e0c34db066c5685a0", null ],
     [ "global", "classBPMNOS_1_1Model_1_1SignalDefinition.html#a70d63bc5b0c3fa3ed7844c581b8a3abe", null ],
     [ "name", "classBPMNOS_1_1Model_1_1SignalDefinition.html#a3f783c098d817d5b626ee4c412b753bc", null ],
-    [ "parent", "classBPMNOS_1_1Model_1_1SignalDefinition.html#a406946b63ccaf8e08561af598b39f308", null ]
+    [ "parent", "classBPMNOS_1_1Model_1_1SignalDefinition.html#a406946b63ccaf8e08561af598b39f308", null ],
+    [ "signal", "classBPMNOS_1_1Model_1_1SignalDefinition.html#a3f5fbd3e784a2ce2b0f3f8872d6ce668", null ]
 ];

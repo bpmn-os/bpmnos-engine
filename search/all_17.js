@@ -96,7 +96,7 @@ var searchData=
   ['shop_20scheduling_20problem_93',['Job shop scheduling problem',['../job_shop_scheduling_problem.html',1,'models']]],
   ['shortreference_94',['shortReference',['../classBPMNOS_1_1Execution_1_1FlattenedGraph_1_1Vertex.html#a747d0325419ac0051585d0dd3e1adb8d',1,'BPMNOS::Execution::FlattenedGraph::Vertex']]],
   ['signal_95',['Signal',['../classBPMNOS_1_1Execution_1_1Signal.html',1,'BPMNOS::Execution::Signal'],['../classBPMNOS_1_1Execution_1_1Signal.html#a7a7649d80356d0e5e80e3173037ef9b4',1,'BPMNOS::Execution::Signal::Signal()'],['../structBPMNOS_1_1Execution_1_1Observable.html#a08cd1bc9081eb51f7fb6bb20578a355ea085fea7abdc5d904fe69a3081efd7398',1,'BPMNOS::Execution::Observable::Signal']]],
-  ['signal_96',['signal',['../classXML_1_1bpmnos_1_1signal.html',1,'XML::bpmnos::signal'],['../structBPMNOS_1_1Execution_1_1Recorder_1_1Config.html#a4be09daacab0b2d21e8a9b47a35f4f17',1,'BPMNOS::Execution::Recorder::Config::signal'],['../classXML_1_1bpmnos_1_1signal.html#a540cf355ac40d5ffe2c79d32c716f384',1,'XML::bpmnos::signal::signal()']]],
+  ['signal_96',['signal',['../classXML_1_1bpmnos_1_1signal.html',1,'XML::bpmnos::signal'],['../classBPMNOS_1_1Model_1_1SignalDefinition.html#a3f5fbd3e784a2ce2b0f3f8872d6ce668',1,'BPMNOS::Model::SignalDefinition::signal'],['../structBPMNOS_1_1Execution_1_1Recorder_1_1Config.html#a4be09daacab0b2d21e8a9b47a35f4f17',1,'BPMNOS::Execution::Recorder::Config::signal'],['../classXML_1_1bpmnos_1_1signal.html#a540cf355ac40d5ffe2c79d32c716f384',1,'XML::bpmnos::signal::signal()']]],
   ['signal_2ecpp_97',['Signal.cpp',['../Signal_8cpp.html',1,'']]],
   ['signal_2ecpp_98',['signal.cpp',['../signal_8cpp.html',1,'']]],
   ['signal_2eh_99',['Signal.h',['../Signal_8h.html',1,'']]],

@@ -1,5 +1,7 @@
 var NAVTREEINDEX22 =
 {
+"truck_driver_scheduling_problem.html#status-231":[6,12,0,8,0],
+"truck_driver_scheduling_problem.html#status-232":[6,12,0,9,1],
 "truck_driver_scheduling_problem.html#status-233":[6,12,0,10,0],
 "truck_driver_scheduling_problem.html#status-234":[6,12,0,11,0],
 "truck_driver_scheduling_problem.html#status-235":[6,12,0,12,0],
