@@ -1,5 +1,15 @@
 var NAVTREEINDEX22 =
 {
+"truck_driver_scheduling_problem.html#status-259":[6,12,0,42,0],
+"truck_driver_scheduling_problem.html#status-260":[6,12,0,43,0],
+"truck_driver_scheduling_problem.html#status-261":[6,12,0,44,0],
+"truck_driver_scheduling_problem.html#status-262":[6,12,0,45,0],
+"truck_driver_scheduling_problem.html#subprocess-customerserviceactivity":[6,12,0,5],
+"truck_driver_scheduling_problem.html#subprocess-offdutyactivity":[6,12,0,16],
+"truck_driver_scheduling_problem.html#subprocess-tripactivity":[6,12,0,12],
+"truck_driver_scheduling_problem.html#subprocess-waitactivity":[6,12,0,9],
+"truck_driver_scheduling_problem.html#task-breakatdestinationduration":[6,12,0,43],
+"truck_driver_scheduling_problem.html#task-breakatdestinationtask":[6,12,0,37],
 "truck_driver_scheduling_problem.html#task-breakduringtripduration":[6,12,0,32],
 "truck_driver_scheduling_problem.html#task-breakduringtriptask":[6,12,0,28],
 "truck_driver_scheduling_problem.html#task-decideatdestinationtask":[6,12,0,39],

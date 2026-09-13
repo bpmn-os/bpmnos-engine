@@ -138,7 +138,7 @@ $(function(){initNavTree('classBPMNOS_1_1Model_1_1Model.html','','classBPMNOS_1_
 <div class="dynheader">
 Inheritance diagram for BPMNOS::Model::Model:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="classBPMNOS_1_1Model_1_1Model__inherit__graph.svg" width="206" height="1030"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="classBPMNOS_1_1Model_1_1Model__inherit__graph.svg" width="238" height="1075"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
@@ -175,6 +175,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a8573e344126eadc5cedfbe204af13184" id="r_a8573e344126eadc5cedfbe204af13184"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1FlowNode.html">BPMN::FlowNode</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8573e344126eadc5cedfbe204af13184">createMessageCatchEvent</a> (<a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1tCatchEvent.html">XML::bpmn::tCatchEvent</a> *catchEvent, <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Scope.html">BPMN::Scope</a> *parent) override</td></tr>
 <tr class="memitem:aa065754817354a9644947a691699a26f" id="r_aa065754817354a9644947a691699a26f"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1FlowNode.html">BPMN::FlowNode</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa065754817354a9644947a691699a26f">createMessageThrowEvent</a> (<a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1tThrowEvent.html">XML::bpmn::tThrowEvent</a> *throwEvent, <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Scope.html">BPMN::Scope</a> *parent) override</td></tr>
 <tr class="memitem:a67dc72cb7893ac3c26d72514fd4c539f" id="r_a67dc72cb7893ac3c26d72514fd4c539f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a67dc72cb7893ac3c26d72514fd4c539f">createMessageFlows</a> () override</td></tr>
+<tr class="memitem:aa1afd3764980cd8228660c8b4b812957" id="r_aa1afd3764980cd8228660c8b4b812957"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa1afd3764980cd8228660c8b4b812957">validateTriggeringMessages</a> ()</td></tr>
+<tr class="memdesc:aa1afd3764980cd8228660c8b4b812957"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validates the rules that keep a message instantiating a process unambiguous.  <br /></td></tr>
 <tr class="memitem:a8290a950854e310e1d649f96bfe2bce2" id="r_a8290a950854e310e1d649f96bfe2bce2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8290a950854e310e1d649f96bfe2bce2">messageMayBeCaught</a> (<a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Process.html">BPMN::Process</a> *sendingProcess, <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1FlowNode.html">BPMN::FlowNode</a> *throwingMessageEvent, <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Process.html">BPMN::Process</a> *receivingProcess, <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1FlowNode.html">BPMN::FlowNode</a> *catchingMessageEvent)</td></tr>
 <tr class="memitem:a72f6bbaafb8b9abeb752da5807a6ebc2" id="r_a72f6bbaafb8b9abeb752da5807a6ebc2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a72f6bbaafb8b9abeb752da5807a6ebc2">messageMayBeThrown</a> (<a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Process.html">BPMN::Process</a> *sendingProcess, <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1FlowNode.html">BPMN::FlowNode</a> *throwingMessageEvent, <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Process.html">BPMN::Process</a> *receivingProcess, <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1FlowNode.html">BPMN::FlowNode</a> *catchingMessageEvent)</td></tr>
 <tr class="memitem:a1b13d1e260dddb088a56e4ad892088ba" id="r_a1b13d1e260dddb088a56e4ad892088ba"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1b13d1e260dddb088a56e4ad892088ba">createMessageCandidates</a> (<a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Process.html">BPMN::Process</a> *sendingProcess, <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1FlowNode.html">BPMN::FlowNode</a> *throwingMessageEvent, <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Process.html">BPMN::Process</a> *receivingProcess, <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1FlowNode.html">BPMN::FlowNode</a> *catchingMessageEvent)</td></tr>
@@ -203,6 +205,10 @@ Public Attributes</h2></td></tr>
 <tr class="memdesc:acb7f29c2ddfcf71341bc6ac2f8b38dd0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vector containing lookup tables declared in model.  <br /></td></tr>
 <tr class="memitem:a630685590da6def6b35c9105e1c9a72f" id="r_a630685590da6def6b35c9105e1c9a72f"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::unique_ptr&lt; <a class="el" href="classBPMNOS_1_1Model_1_1Attribute.html">Attribute</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a630685590da6def6b35c9105e1c9a72f">attributes</a></td></tr>
 <tr class="memdesc:a630685590da6def6b35c9105e1c9a72f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vector containing new global attributes declared for the model.  <br /></td></tr>
+<tr class="memitem:a830b287dadfc43a375479cf198afa3d0" id="r_a830b287dadfc43a375479cf198afa3d0"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>, const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Process.html">BPMN::Process</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a830b287dadfc43a375479cf198afa3d0">processesTriggeredBySignal</a></td></tr>
+<tr class="memdesc:a830b287dadfc43a375479cf198afa3d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Map holding the process instantiated by a signal with a given name.  <br /></td></tr>
+<tr class="memitem:a0aec837f5e4df0f4ae05a6e39a5bba12" id="r_a0aec837f5e4df0f4ae05a6e39a5bba12"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>, const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Process.html">BPMN::Process</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0aec837f5e4df0f4ae05a6e39a5bba12">processesTriggeredByMessage</a></td></tr>
+<tr class="memdesc:a0aec837f5e4df0f4ae05a6e39a5bba12"><td class="mdescLeft">&#160;</td><td class="mdescRight">Map holding the process instantiated by a message with a given name.  <br /></td></tr>
 <tr class="inherit_header pub_attribs_classBPMN_1_1Model"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_attribs_classBPMN_1_1Model')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Attributes inherited from <a class="el"  href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Model.html">BPMN::Model</a></td></tr>
 <tr class="memitem:ada5877c7e82c8bf576d7c1c399b5027a inherit pub_attribs_classBPMN_1_1Model" id="r_ada5877c7e82c8bf576d7c1c399b5027a"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classXML_1_1XMLObject.html">XML::XMLObject</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Model.html#ada5877c7e82c8bf576d7c1c399b5027a">root</a></td></tr>
 <tr class="memitem:ae97882067d8de6deeeb135b8954ef117 inherit pub_attribs_classBPMN_1_1Model" id="r_ae97882067d8de6deeeb135b8954ef117"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::unique_ptr&lt; <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1DataStore.html">DataStore</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Model.html#ae97882067d8de6deeeb135b8954ef117">dataStores</a></td></tr>
@@ -347,7 +353,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Model.html#a901bc56ea971f667b0d51917ba68d791">BPMN::Model</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00182">182</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00185">185</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
 
 </div>
 </div>
@@ -380,7 +386,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Model.html#a15d3036111779f7640e2b5b4f0456355">BPMN::Model</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00225">225</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00228">228</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
 
 </div>
 </div>
@@ -413,7 +419,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Model.html#a800cf54f27eb9a983636bc570aa2e456">BPMN::Model</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00309">309</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00328">328</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
 
 </div>
 </div>
@@ -446,7 +452,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Model.html#ad8d20b00595d29e1105f121ed2811ff1">BPMN::Model</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00317">317</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00336">336</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
 
 </div>
 </div>
@@ -479,7 +485,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Model.html#af864ef6e952c47391aad376a3e92760e">BPMN::Model</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00301">301</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00317">317</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
 
 </div>
 </div>
@@ -541,7 +547,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Model.html#a1ba683c2fc244ae0e4c46dce9b3a822b">BPMN::Model</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00175">175</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00178">178</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
 
 </div>
 </div>
@@ -612,7 +618,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Model.html#a6cf32f688e2cfccf23c251c0e070bf34">BPMN::Model</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00363">363</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00390">390</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
 
 </div>
 </div>
@@ -645,7 +651,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00556">556</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00647">647</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
 
 </div>
 </div>
@@ -678,7 +684,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Model.html#a8cfcf3feff3f4a77151fb4ce6627e69d">BPMN::Model</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00385">385</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00412">412</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
 
 </div>
 </div>
@@ -707,7 +713,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Model.html#ab7b035b0ba64e65d6889e93557efcf26">BPMN::Model</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00419">419</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00446">446</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
 
 </div>
 </div>
@@ -740,7 +746,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Model.html#a81f14eb1a28bb566e043e95bb5625520">BPMN::Model</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00325">325</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00344">344</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
 
 </div>
 </div>
@@ -773,7 +779,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Model.html#a8f28dd0ec2ac55922e215186ecf46a19">BPMN::Model</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00407">407</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00434">434</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
 
 </div>
 </div>
@@ -835,7 +841,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Model.html#ac8e9b7a2bf70f36a490a00e872cbb908">BPMN::Model</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00217">217</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00220">220</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
 
 </div>
 </div>
@@ -868,7 +874,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Model.html#a839bcdc0dc04937a99bac96daac0357f">BPMN::Model</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00277">277</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00293">293</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
 
 </div>
 </div>
@@ -901,7 +907,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Model.html#abc9c11248a249021a7cc0c14e83ec8cc">BPMN::Model</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00285">285</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00301">301</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
 
 </div>
 </div>
@@ -934,7 +940,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Model.html#ad5f11a8f6de7c1d2818f388c8113298f">BPMN::Model</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00269">269</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00275">275</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
 
 </div>
 </div>
@@ -967,7 +973,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Model.html#a59393a65c63050a4a7645fbe827cfbcb">BPMN::Model</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00293">293</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00309">309</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
 
 </div>
 </div>
@@ -1000,7 +1006,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Model.html#af0687836eb6c7fab3be4442de2e1400d">BPMN::Model</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00229">229</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00232">232</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
 
 </div>
 </div>
@@ -1033,7 +1039,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Model.html#adeeb04cda95250f338c31224ec178334">BPMN::Model</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00253">253</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00259">259</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
 
 </div>
 </div>
@@ -1066,7 +1072,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Model.html#a3be74a48e2f26244b7c5cbcfa5981990">BPMN::Model</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00261">261</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00267">267</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
 
 </div>
 </div>
@@ -1099,7 +1105,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Model.html#a15e1bfa0e2d6a8fdfc15917f07f3144d">BPMN::Model</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00245">245</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00248">248</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
 
 </div>
 </div>
@@ -1122,7 +1128,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00451">451</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00542">542</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
 
 </div>
 </div>
@@ -1247,7 +1253,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00599">599</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00690">690</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
 
 </div>
 </div>
@@ -1280,7 +1286,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00472">472</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00563">563</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
 
 </div>
 </div>
@@ -1313,7 +1319,27 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00514">514</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00605">605</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
+
+</div>
+</div>
+<a id="aa1afd3764980cd8228660c8b4b812957" name="aa1afd3764980cd8228660c8b4b812957"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa1afd3764980cd8228660c8b4b812957">&#9670;&#160;</a></span>validateTriggeringMessages()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Model::validateTriggeringMessages </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Called at the end of <a class="el" href="#a67dc72cb7893ac3c26d72514fd4c539f">createMessageFlows</a>, this being the first point at which every process has been read. A triggering message is matched by its name alone, so no other catching element may declare that name, neither side may declare header parameters, and the message must not be thrown within the process it instantiates. </p>
+
+<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00479">479</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
 
 </div>
 </div>
@@ -1330,7 +1356,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Model_8h_source.html#l00086">86</a> of file <a class="el" href="Model_8h_source.html">Model.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Model_8h_source.html#l00095">95</a> of file <a class="el" href="Model_8h_source.html">Model.h</a>.</p>
 
 </div>
 </div>
@@ -1346,7 +1372,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Model_8h_source.html#l00095">95</a> of file <a class="el" href="Model_8h_source.html">Model.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Model_8h_source.html#l00104">104</a> of file <a class="el" href="Model_8h_source.html">Model.h</a>.</p>
 
 </div>
 </div>
@@ -1378,7 +1404,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Model_8h_source.html#l00092">92</a> of file <a class="el" href="Model_8h_source.html">Model.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Model_8h_source.html#l00101">101</a> of file <a class="el" href="Model_8h_source.html">Model.h</a>.</p>
 
 </div>
 </div>
@@ -1395,7 +1421,7 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 <p>The lookup table content a constructor was given, held until the data stores declaring the tables exist. A table is declared by a data store, so what it is read from can only be resolved once the stores are created, which is after the constructor has run. </p>
 
-<p class="definition">Definition at line <a class="el" href="Model_8h_source.html#l00091">91</a> of file <a class="el" href="Model_8h_source.html">Model.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Model_8h_source.html#l00100">100</a> of file <a class="el" href="Model_8h_source.html">Model.h</a>.</p>
 
 </div>
 </div>
@@ -1411,7 +1437,41 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Model_8h_source.html#l00094">94</a> of file <a class="el" href="Model_8h_source.html">Model.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Model_8h_source.html#l00103">103</a> of file <a class="el" href="Model_8h_source.html">Model.h</a>.</p>
+
+</div>
+</div>
+<a id="a0aec837f5e4df0f4ae05a6e39a5bba12" name="a0aec837f5e4df0f4ae05a6e39a5bba12"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0aec837f5e4df0f4ae05a6e39a5bba12">&#9670;&#160;</a></span>processesTriggeredByMessage</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unordered_map&lt; <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>, const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Process.html">BPMN::Process</a>* &gt; BPMNOS::Model::Model::processesTriggeredByMessage</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>The counterpart of <a class="el" href="#a830b287dadfc43a375479cf198afa3d0">processesTriggeredBySignal</a> for messages. A message instantiating a process names no recipient, the instance not existing before the message arrives, so it is matched by its name alone. The name is therefore declared by no catching element other than the start event, which <a class="el" href="#a67dc72cb7893ac3c26d72514fd4c539f">createMessageFlows</a> enforces once every process has been read. </p>
+
+<p class="definition">Definition at line <a class="el" href="Model_8h_source.html#l00119">119</a> of file <a class="el" href="Model_8h_source.html">Model.h</a>.</p>
+
+</div>
+</div>
+<a id="a830b287dadfc43a375479cf198afa3d0" name="a830b287dadfc43a375479cf198afa3d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a830b287dadfc43a375479cf198afa3d0">&#9670;&#160;</a></span>processesTriggeredBySignal</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unordered_map&lt; <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>, const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Process.html">BPMN::Process</a>* &gt; BPMNOS::Model::Model::processesTriggeredBySignal</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>The model-time counterpart of BPMNOS::Execution::SystemState::tokensAwaitingSignal: which tokens await a signal is run state and is held there, whereas which process a signal instantiates is fixed by the model and is held here. </p>
+
+<p class="definition">Definition at line <a class="el" href="Model_8h_source.html#l00111">111</a> of file <a class="el" href="Model_8h_source.html">Model.h</a>.</p>
 
 </div>
 </div>

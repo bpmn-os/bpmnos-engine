@@ -126,16 +126,16 @@ $(function(){initNavTree('token_flow_logic_typed_start_events.html','',''); });
   <div class="headertitle"><div class="title">Typed start events </div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>The state of a token at a typed start event is immediately advanced from <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da7ea8694c832315449be4318681c872f2">ENTERED</a> to <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da802706a9238e2928077f97736854bad4">BUSY</a> and awaits the trigger. If the token is at a <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1MessageStartEvent.html">message start event</a>, the <a class="el" href="classBPMNOS_1_1Model_1_1Content.html">message content</a> is used to update the <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a3048b9edc0543483ae499a0dae5e77a8">status</a> of the token.</p>
-<p>After the start event is triggered, the <a class="el" href="classBPMNOS_1_1Model_1_1ExtensionElements.html#a03519651a03fbdd1680ec5aee033a479">operators</a> of the respective event-subprocess are applied and the state is advanced to <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da8f7afecbc8fbc4cd0f50a57d1172482e">COMPLETED</a>. If the respective <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1EventSubProcess.html">event-subprocesses</a> is interrupting, all other tokens within the scope of the event-subprocess are withdrawn. Otherwise, a new token is created allowing the event-subprocess to be triggered again.</p>
-<p>After completion, the entry scope restrictions of the <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1EventSubProcess.html">BPMN::EventSubProcess</a> are checked. If the restrictions are violated, the state is changed to <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92dab9e14d9b2886bcff408b85aefa780419">FAILED</a>. Otherwise, the token state is changed to <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92daf648cfdf0a03c4aaad51d6d837613ec7">DEPARTED</a> or <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da2ba22e58ca17bb728d522bba36cf8350">DONE</a>.</p>
+<div class="textblock"><p>A token at a typed start event is generated when the trigger occurs, and its state advances from <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da7ea8694c832315449be4318681c872f2">ENTERED</a> through <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da802706a9238e2928077f97736854bad4">BUSY</a> to <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da8f7afecbc8fbc4cd0f50a57d1172482e">COMPLETED</a> instantaneously. The <a class="el" href="classBPMNOS_1_1Model_1_1Content.html">content</a> of the message or signal that triggered it is part of the <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a3048b9edc0543483ae499a0dae5e77a8">status</a> the token is generated with.</p>
+<p>Upon completion, the <a class="el" href="classBPMNOS_1_1Model_1_1ExtensionElements.html#a03519651a03fbdd1680ec5aee033a479">operators</a> of the scope the start event belongs to are applied. If the start event belongs to an interrupting <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1EventSubProcess.html">event-subprocess</a>, all other tokens within the scope of the event-subprocess are withdrawn. If it belongs to a non-interrupting event-subprocess, the event-subprocess may be triggered again. If it belongs to a <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Process.html">process</a>, each trigger creates an instance of that process.</p>
+<p>After completion, the entry scope restrictions of the scope are checked. If the restrictions are violated, the state is changed to <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92dab9e14d9b2886bcff408b85aefa780419">FAILED</a>. Otherwise, the token state is changed to <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92daf648cfdf0a03c4aaad51d6d837613ec7">DEPARTED</a> or <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da2ba22e58ca17bb728d522bba36cf8350">DONE</a>.</p>
 <pre class="mermaid">
 stateDiagram-v2
     state feasibleEntry &lt;&lt;choice&gt;&gt;
     state departure &lt;&lt;choice&gt;&gt;
-    [*] --&gt; ENTERED
+    [*] --&gt; ENTERED: trigger
     ENTERED --&gt; BUSY
-    BUSY --&gt; COMPLETED: trigger
+    BUSY --&gt; COMPLETED
     COMPLETED --&gt; feasibleEntry
     feasibleEntry --&gt; departure: [feasible]
     feasibleEntry --&gt; FAILED: [infeasible]
@@ -144,8 +144,8 @@ stateDiagram-v2
     DEPARTED --&gt; [*]
     DONE --&gt; [*]
     FAILED --&gt; [*]
-</pre><dl class="section attention"><dt>Attention</dt><dd><a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1TypedStartEvent.html">Typed start events</a> are only supported for <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1EventSubProcess.html">event-subprocesses</a>. </dd></dl>
-<dl class="section note"><dt>Note</dt><dd>Operators for event-subprocesses must be instantaneous, i.e. they must not change the timestamp. </dd></dl>
+</pre><dl class="section attention"><dt>Attention</dt><dd><a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1TypedStartEvent.html">Typed start events</a> are supported for <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1EventSubProcess.html">event-subprocesses</a> and, restricted to <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1MessageStartEvent.html">message start events</a> and <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1SignalStartEvent.html">signal start events</a>, for <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Process.html">processes</a>. </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>Operators for elements with a scope must be instantaneous, i.e. they must not change the timestamp. </dd></dl>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
 </div><!-- doc-content -->

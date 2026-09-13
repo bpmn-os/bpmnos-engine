@@ -1,5 +1,15 @@
 var NAVTREEINDEX21 =
 {
+"token_flow_logic_intermediate_catching_events.html":[1,11],
+"token_flow_logic_multi_instance_activities.html":[1,3],
+"token_flow_logic_parallel_gateways.html":[1,6],
+"token_flow_logic_processes.html":[1,0],
+"token_flow_logic_processes.html#busy":[1,0,2],
+"token_flow_logic_processes.html#completed":[1,0,3],
+"token_flow_logic_processes.html#done-1":[1,0,4],
+"token_flow_logic_processes.html#entered":[1,0,1],
+"token_flow_logic_processes.html#failed-1":[1,0,6],
+"token_flow_logic_processes.html#failing":[1,0,5],
 "token_flow_logic_processes.html#token-creation":[1,0,0],
 "token_flow_logic_subprocesses.html":[1,1],
 "token_flow_logic_subprocesses.html#arrived--created-1":[1,1,0,0],
@@ -239,15 +249,5 @@ var NAVTREEINDEX21 =
 "truck_driver_scheduling_problem.html#status-255":[6,12,0,38,0],
 "truck_driver_scheduling_problem.html#status-256":[6,12,0,39,0],
 "truck_driver_scheduling_problem.html#status-257":[6,12,0,40,0],
-"truck_driver_scheduling_problem.html#status-258":[6,12,0,41,0],
-"truck_driver_scheduling_problem.html#status-259":[6,12,0,42,0],
-"truck_driver_scheduling_problem.html#status-260":[6,12,0,43,0],
-"truck_driver_scheduling_problem.html#status-261":[6,12,0,44,0],
-"truck_driver_scheduling_problem.html#status-262":[6,12,0,45,0],
-"truck_driver_scheduling_problem.html#subprocess-customerserviceactivity":[6,12,0,5],
-"truck_driver_scheduling_problem.html#subprocess-offdutyactivity":[6,12,0,16],
-"truck_driver_scheduling_problem.html#subprocess-tripactivity":[6,12,0,12],
-"truck_driver_scheduling_problem.html#subprocess-waitactivity":[6,12,0,9],
-"truck_driver_scheduling_problem.html#task-breakatdestinationduration":[6,12,0,43],
-"truck_driver_scheduling_problem.html#task-breakatdestinationtask":[6,12,0,37]
+"truck_driver_scheduling_problem.html#status-258":[6,12,0,41,0]
 };

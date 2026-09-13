@@ -24,6 +24,8 @@ var classBPMNOS_1_1Execution_1_1Engine =
     [ "resume", "classBPMNOS_1_1Execution_1_1Engine.html#aebc9f4890fa4d29100a5a4bcd32e42ce", null ],
     [ "resume", "classBPMNOS_1_1Execution_1_1Engine.html#a3386ec52e0297442e119b3a815ec11a4", null ],
     [ "run", "classBPMNOS_1_1Execution_1_1Engine.html#a1fc239e7ec06f1dc199b7b4424bfea07", null ],
+    [ "triggerInstance", "classBPMNOS_1_1Execution_1_1Engine.html#aaabf4e00b21647028e1bbc716b4478f1", null ],
+    [ "triggerInstanceByMessage", "classBPMNOS_1_1Execution_1_1Engine.html#a3e0c248e83004ccbdfd4673345452ff5", null ],
     [ "ConditionalEventObserver", "classBPMNOS_1_1Execution_1_1Engine.html#a87500327ae69187f741e942383b5bca8", null ],
     [ "StateMachine", "classBPMNOS_1_1Execution_1_1Engine.html#a97c30032fa6c28eaf8a40b6df6ea97ed", null ],
     [ "Token", "classBPMNOS_1_1Execution_1_1Engine.html#a48f5c1ca47af8dc65eca7e0274de96e2", null ],

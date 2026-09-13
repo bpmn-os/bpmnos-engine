@@ -130,9 +130,10 @@ $(function(){initNavTree('elements.html','',''); });
 <h1 class="doxsection"><a class="anchor" id="ref-bpmnprocess-processes"></a>
 <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Process.html">Processes</a></h1>
 <p><img src="Process.svg" alt="" style="pointer-events: none;" class="inline" title="Process"/>    </p>
-<dl class="section user"><dt></dt><dd>Processes are assumed to have exactly one <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1UntypedStartEvent.html">untyped start event</a> and must be executable (i.e. <span class="tt">isExecutable = true</span>). </dd></dl>
+<dl class="section user"><dt></dt><dd>Processes are assumed to have exactly one start event and must be executable (i.e. <span class="tt">isExecutable = true</span>). A process with an <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1UntypedStartEvent.html">untyped start event</a> is instantiated as the instance data declares, whereas a process with a <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1MessageStartEvent.html">message start event</a> or a <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1SignalStartEvent.html">signal start event</a> is instantiated whenever the message or signal triggering it is thrown. </dd></dl>
 <dl class="section attention"><dt>Attention</dt><dd><ul>
-<li><a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1TypedStartEvent.html">Typed start events</a> and multiple start events are <b>not</b> supported.</li>
+<li>Multiple start events are <b>not</b> supported.</li>
+<li>Of the <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1TypedStartEvent.html">typed start events</a>, only message start events and signal start events are supported for a process.</li>
 <li>Empty pools are <b>not</b> supported, in particular, each <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1tParticipant.html">participant</a> in a <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1tCollaboration.html">collaboration</a> must have a reference to a process.</li>
 </ul>
 </dd></dl>
@@ -233,7 +234,7 @@ Compensation activities</h2>
 <li><a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1CompensateStartEvent.html">Compensate start events</a> <dl class="section user"><dt></dt><dd><img src="CompensateStartEvent.svg" alt="" style="pointer-events: none;" class="inline" title="CompensateStartEvent"/>    </dd></dl>
 </li>
 </ul>
-<dl class="section attention"><dt>Attention</dt><dd>Typed start events are only supported for <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1EventSubProcess.html">event-subprocesses</a>.</dd></dl>
+<dl class="section attention"><dt>Attention</dt><dd>Typed start events are supported for <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1EventSubProcess.html">event-subprocesses</a>, and, restricted to message start events and signal start events, for <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Process.html">processes</a>.</dd></dl>
 </li>
 <li>Intermediate events<ul>
 <li><a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1MessageCatchEvent.html">Message catch events</a> <dl class="section user"><dt></dt><dd><img src="IntermediateMessageCatchEvent.svg" alt="" style="pointer-events: none;" class="inline" title="IntermediateMessageCatchEvent"/>    </dd></dl>

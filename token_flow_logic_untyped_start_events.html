@@ -126,17 +126,25 @@ $(function(){initNavTree('token_flow_logic_untyped_start_events.html','',''); })
   <div class="headertitle"><div class="title">Untyped start events </div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>The state of a token at an untyped start event is immediately advanced to <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da7ea8694c832315449be4318681c872f2">ENTERED</a>. After entry, a token is created for the <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1TypedStartEvent.html">start event</a> of each <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1EventSubProcess.html">event-subprocess</a> within the same <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Scope.html">scope</a>. Then, The state of the token is advanced to <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92daf648cfdf0a03c4aaad51d6d837613ec7">DEPARTED</a> or <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da2ba22e58ca17bb728d522bba36cf8350">DONE</a>.</p>
+<div class="textblock"><p>The state of a token at an untyped start event is immediately advanced to <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da7ea8694c832315449be4318681c872f2">ENTERED</a>. After entry, a token is created for the <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1TypedStartEvent.html">start event</a> of each <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1EventSubProcess.html">event-subprocess</a> within the same <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Scope.html">scope</a>. The state is then advanced to <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da802706a9238e2928077f97736854bad4">BUSY</a>, an untyped start event awaiting no trigger, and on to <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da8f7afecbc8fbc4cd0f50a57d1172482e">COMPLETED</a>.</p>
+<p>Upon completion, the <a class="el" href="classBPMNOS_1_1Model_1_1ExtensionElements.html#a03519651a03fbdd1680ec5aee033a479">operators</a> of the scope the start event belongs to are applied.</p>
+<p>After completion, the entry scope restrictions of the scope are checked. If the restrictions are violated, the state is changed to <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92dab9e14d9b2886bcff408b85aefa780419">FAILED</a>. Otherwise, the token state is changed to <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92daf648cfdf0a03c4aaad51d6d837613ec7">DEPARTED</a> or <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da2ba22e58ca17bb728d522bba36cf8350">DONE</a>.</p>
 <pre class="mermaid">
 stateDiagram-v2
+    state feasibleEntry &lt;&lt;choice&gt;&gt;
     state departure &lt;&lt;choice&gt;&gt;
     [*] --&gt; ENTERED
-    ENTERED --&gt; departure
+    ENTERED --&gt; BUSY
+    BUSY --&gt; COMPLETED
+    COMPLETED --&gt; feasibleEntry
+    feasibleEntry --&gt; departure: [feasible]
+    feasibleEntry --&gt; FAILED: [infeasible]
     departure --&gt; DEPARTED: [outgoing sequence flow]
     departure --&gt; DONE: [no outgoing sequence flow]
     DEPARTED --&gt; [*]
     DONE --&gt; [*]
-</pre><dl class="section note"><dt>Note</dt><dd>Operators are applied and feasibility is checked for the token at the respective (sub)process before the token enters the start event. </dd></dl>
+    FAILED --&gt; [*]
+</pre><dl class="section note"><dt>Note</dt><dd>Operators for elements with a scope must be instantaneous, i.e. they must not change the timestamp. </dd></dl>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
 </div><!-- doc-content -->

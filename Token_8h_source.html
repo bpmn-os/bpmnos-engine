@@ -253,94 +253,100 @@ $(function(){initNavTree('Token_8h_source.html','',''); });
 <div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>  <span class="keywordtype">void</span> advanceFromCreated();</div>
 <div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>  <span class="keywordtype">void</span> advanceToReady();</div>
 <div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>  <span class="keywordtype">void</span> advanceToEntered();</div>
-<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>  <span class="keywordtype">void</span> advanceToIdle();</div>
-<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>  <span class="keywordtype">void</span> advanceToBusy();</div>
-<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span> </div>
-<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>  <span class="keywordtype">void</span> advanceToCompleted();</div>
-<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span> </div>
-<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>  <span class="keywordtype">void</span> advanceToExiting();</div>
-<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>  <span class="keywordtype">void</span> advanceToDone();</div>
-<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>  <span class="keywordtype">void</span> advanceToDeparting();</div>
-<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>  <span class="keywordtype">void</span> advanceToDeparted(<span class="keyword">const</span> <a class="code hl_classRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1SequenceFlow.html">BPMN::SequenceFlow</a>* <a class="code hl_variable" href="classBPMNOS_1_1Execution_1_1Token.html#a7ae562e714c511deb6dfd64c2d3fe483">sequenceFlow</a>);</div>
-<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>  <span class="keywordtype">void</span> advanceToArrived();</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span><span class="comment"></span> </div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span><span class="comment">  /// @brief Applies the given operators to the token and notifies about the values they modify.</span></div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span><span class="comment">  /// @param extensionElements The extension elements holding the operators, i.e. those of the node the</span></div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span><span class="comment">  ///        token is at, or those of the scope it enters.</span></div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span><span class="comment">  /// @note The timestamp must be the current time, which the caller is responsible for.</span></div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>  <span class="keywordtype">void</span> applyOperators(<span class="keyword">const</span> <a class="code hl_class" href="classBPMNOS_1_1Model_1_1ExtensionElements.html">BPMNOS::Model::ExtensionElements</a>* extensionElements);</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>  <span class="keywordtype">void</span> advanceToIdle();</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>  <span class="keywordtype">void</span> advanceToBusy();</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span> </div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>  <span class="keywordtype">void</span> advanceToCompleted();</div>
 <div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span> </div>
-<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>  <span class="keywordtype">void</span> advanceToFailed();</div>
-<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span> </div>
-<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>  <span class="keywordtype">void</span> terminate(); <span class="comment">///&lt; Terminates state machine owned by token</span></div>
-<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span> </div>
-<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>  <span class="keywordtype">void</span> awaitCompensation();</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>  <span class="keywordtype">void</span> advanceToExiting();</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>  <span class="keywordtype">void</span> advanceToDone();</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>  <span class="keywordtype">void</span> advanceToDeparting();</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>  <span class="keywordtype">void</span> advanceToDeparted(<span class="keyword">const</span> <a class="code hl_classRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1SequenceFlow.html">BPMN::SequenceFlow</a>* <a class="code hl_variable" href="classBPMNOS_1_1Execution_1_1Token.html#a7ae562e714c511deb6dfd64c2d3fe483">sequenceFlow</a>);</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>  <span class="keywordtype">void</span> advanceToArrived();</div>
 <div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span> </div>
-<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>  <span class="keywordtype">void</span> awaitReadyEvent(); <span class="comment">///&lt; Wait for ready event for activities</span></div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>  <span class="keywordtype">void</span> advanceToFailed();</div>
 <div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span> </div>
-<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>  <span class="keywordtype">void</span> awaitEntryEvent(); <span class="comment">///&lt; Wait for entry event for activities</span></div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>  <span class="keywordtype">void</span> terminate(); <span class="comment">///&lt; Terminates state machine owned by token</span></div>
 <div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span> </div>
-<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>  <span class="keywordtype">void</span> awaitChoiceEvent(); <span class="comment">///&lt; Wait for choices to be made for decision tasks</span></div>
-<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>  <span class="keywordtype">void</span> awaitTaskCompletionEvent(); <span class="comment">///&lt; Wait for completion event for tasks (except for decision tasks)</span></div>
-<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>  <span class="keywordtype">void</span> awaitExitEvent(); <span class="comment">///&lt; Wait for exit event for activities</span></div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>  <span class="keywordtype">void</span> awaitCompensation();</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span> </div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>  <span class="keywordtype">void</span> awaitReadyEvent(); <span class="comment">///&lt; Wait for ready event for activities</span></div>
 <div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span> </div>
-<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>  <span class="keywordtype">void</span> awaitTimer(<a class="code hl_typedef" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> time); <span class="comment">///&lt; Wait for message trigger at catching timer events</span></div>
-<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>  <span class="keywordtype">void</span> awaitSignal(<a class="code hl_typedef" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> name); <span class="comment">///&lt; Wait for signal with given name at catching signal events</span></div>
-<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>  <span class="keywordtype">void</span> awaitConditions(<a class="code hl_typedef" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> instanceId); <span class="comment">///&lt; Wait for conditions at catching conditional events within root instance</span></div>
-<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>  <span class="keywordtype">void</span> awaitMessageDelivery(); <span class="comment">///&lt; Wait for message delivery event</span></div>
-<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span> </div>
-<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>  <span class="keywordtype">void</span> awaitEventBasedGateway(); <span class="comment">///&lt; Wait for catching event at event-based gateways</span></div>
-<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span> </div>
-<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>  <span class="keywordtype">void</span> awaitGatewayActivation(); <span class="comment">///&lt; Wait for activiation of merging gateway</span></div>
-<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span> </div>
-<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>  <span class="keyword">template</span>&lt;<span class="keyword">typename</span> DecisionType, <span class="keyword">typename</span>... Args&gt;</div>
-<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>  std::shared_ptr&lt;DecisionType&gt; createDecisionRequest(Args&amp;&amp;... args);</div>
-<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    </div>
-<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>  <span class="keywordtype">void</span> withdraw(); <span class="comment">///&lt; Remove token</span></div>
-<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span> </div>
-<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>  <span class="keywordtype">void</span> emitSignal();</div>
-<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>  </div>
-<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>  <a class="code hl_typedef" href="namespaceBPMNOS.html#a8154a7afba82997850e7db218281c8e0">BPMNOS::VariedValueMap</a> getSignalContent(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceBPMNOS_1_1Model.html#a603d366d0bdb8002b19ca0cd32b8a452">BPMNOS::Model::ContentMap</a>&amp; contentMap); <span class="comment">///&lt; Returns content of signal</span></div>
-<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>  <span class="keywordtype">void</span> setSignalContent(<a class="code hl_typedef" href="namespaceBPMNOS.html#a8154a7afba82997850e7db218281c8e0">BPMNOS::VariedValueMap</a>&amp; sourceMap); <span class="comment">// Applies content of signal</span></div>
-<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>  </div>
-<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>  <span class="keywordtype">void</span> sendMessage();</div>
-<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span><span class="keyword">public</span>:</div>
-<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>  <a class="code hl_class" href="classBPMNOS_1_1Execution_1_1Token.html">Token</a>* <a class="code hl_function" href="classBPMNOS_1_1Execution_1_1Token.html#ab24ac923f7b7b73943fcf5b025a4bb17">getSequentialPerformerToken</a>() <span class="keyword">const</span>; <span class="comment">///&lt; Returns token at sequential performer for tokens at activities within sequential adhoc subprocesses</span></div>
-<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span><span class="keyword">private</span>:</div>
-<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>  <span class="keywordtype">void</span> update(<a class="code hl_enumeration" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92d">State</a> newState); <span class="comment">///&lt; Updates token state and timestamp before calling notify()</span></div>
-<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span> </div>
-<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>  <span class="keywordtype">void</span> notify() <span class="keyword">const</span>; <span class="comment">///&lt; Inform all listeners about token update</span></div>
-<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span><span class="comment"></span> </div>
-<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span><span class="comment">  /**</span></div>
-<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span><span class="comment">   * Returns a merged status from the status of each token</span></div>
-<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span><span class="comment">   **/</span></div>
-<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>  <span class="keyword">template</span> &lt;<span class="keyword">typename</span> TokenPtr&gt;</div>
-<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>  <span class="keyword">static</span> <a class="code hl_struct" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a> mergeStatus(<span class="keyword">const</span> std::vector&lt;TokenPtr&gt;&amp; tokens) {</div>
-<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>    assert( !tokens.empty() );</div>
-<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>    <span class="keywordtype">size_t</span> n = tokens.front()-&gt;status.size();</div>
-<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>    <a class="code hl_struct" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a> result;</div>
-<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>    result.resize(n);</div>
-<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>    result[(int)<a class="code hl_variable" href="structBPMNOS_1_1Model_1_1ExtensionElements_1_1Index.html#a61bc17d7595e94a17d8e85a32a48b1d8">BPMNOS::Model::ExtensionElements::Index::Timestamp</a>] = tokens.front()-&gt;status[(int)<a class="code hl_variable" href="structBPMNOS_1_1Model_1_1ExtensionElements_1_1Index.html#a61bc17d7595e94a17d8e85a32a48b1d8">BPMNOS::Model::ExtensionElements::Index::Timestamp</a>];</div>
-<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span> </div>
-<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>    <span class="keywordflow">for</span> ( <span class="keywordtype">size_t</span> i = 0; i &lt; n; i++ ) {</div>
-<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>      <span class="keywordflow">for</span> ( <span class="keyword">auto</span>&amp; token : tokens ) {</div>
-<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>        <span class="keywordflow">if</span> ( i == (<span class="keywordtype">int</span>)<a class="code hl_variable" href="structBPMNOS_1_1Model_1_1ExtensionElements_1_1Index.html#a61bc17d7595e94a17d8e85a32a48b1d8">BPMNOS::Model::ExtensionElements::Index::Timestamp</a> ) {</div>
-<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>          <span class="keywordflow">if</span> ( result[i].value() &lt; token-&gt;status[i].value() ) {</div>
-<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>            result[i] = token-&gt;status[i];</div>
-<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>          }</div>
-<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>        }</div>
-<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> ( !result[i].has_value() ) {</div>
-<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>          result[i] = token-&gt;status[i];</div>
-<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>        }</div>
-<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> ( token-&gt;status[i].has_value() &amp;&amp; token-&gt;status[i].value() != result[i].value() ) {</div>
-<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>          result[i] = std::nullopt;</div>
-<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>          <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>        }</div>
-<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>      }</div>
-<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>    }</div>
-<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>    <span class="keywordflow">return</span> result;</div>
-<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>  }</div>
-<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>};</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>  <span class="keywordtype">void</span> awaitEntryEvent(); <span class="comment">///&lt; Wait for entry event for activities</span></div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span> </div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>  <span class="keywordtype">void</span> awaitChoiceEvent(); <span class="comment">///&lt; Wait for choices to be made for decision tasks</span></div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>  <span class="keywordtype">void</span> awaitTaskCompletionEvent(); <span class="comment">///&lt; Wait for completion event for tasks (except for decision tasks)</span></div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>  <span class="keywordtype">void</span> awaitExitEvent(); <span class="comment">///&lt; Wait for exit event for activities</span></div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span> </div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>  <span class="keywordtype">void</span> awaitTimer(<a class="code hl_typedef" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> time); <span class="comment">///&lt; Wait for message trigger at catching timer events</span></div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>  <span class="keywordtype">void</span> awaitSignal(<a class="code hl_typedef" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> name); <span class="comment">///&lt; Wait for signal with given name at catching signal events</span></div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>  <span class="keywordtype">void</span> awaitConditions(<a class="code hl_typedef" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> instanceId); <span class="comment">///&lt; Wait for conditions at catching conditional events within root instance</span></div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>  <span class="keywordtype">void</span> awaitMessageDelivery(); <span class="comment">///&lt; Wait for message delivery event</span></div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span> </div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>  <span class="keywordtype">void</span> awaitEventBasedGateway(); <span class="comment">///&lt; Wait for catching event at event-based gateways</span></div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span> </div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>  <span class="keywordtype">void</span> awaitGatewayActivation(); <span class="comment">///&lt; Wait for activiation of merging gateway</span></div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span> </div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>  <span class="keyword">template</span>&lt;<span class="keyword">typename</span> DecisionType, <span class="keyword">typename</span>... Args&gt;</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>  std::shared_ptr&lt;DecisionType&gt; createDecisionRequest(Args&amp;&amp;... args);</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>    </div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>  <span class="keywordtype">void</span> withdraw(); <span class="comment">///&lt; Remove token</span></div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span> </div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>  <span class="keywordtype">void</span> emitSignal();</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>  </div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>  <a class="code hl_typedef" href="namespaceBPMNOS.html#a8154a7afba82997850e7db218281c8e0">BPMNOS::VariedValueMap</a> getSignalContent(<span class="keyword">const</span> <a class="code hl_typedef" href="namespaceBPMNOS_1_1Model.html#a603d366d0bdb8002b19ca0cd32b8a452">BPMNOS::Model::ContentMap</a>&amp; contentMap); <span class="comment">///&lt; Returns content of signal</span></div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>  <span class="keywordtype">void</span> setSignalContent(<a class="code hl_typedef" href="namespaceBPMNOS.html#a8154a7afba82997850e7db218281c8e0">BPMNOS::VariedValueMap</a>&amp; sourceMap); <span class="comment">// Applies content of signal</span></div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>  </div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>  <span class="keywordtype">void</span> sendMessage();</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>  <a class="code hl_class" href="classBPMNOS_1_1Execution_1_1Token.html">Token</a>* <a class="code hl_function" href="classBPMNOS_1_1Execution_1_1Token.html#ab24ac923f7b7b73943fcf5b025a4bb17">getSequentialPerformerToken</a>() <span class="keyword">const</span>; <span class="comment">///&lt; Returns token at sequential performer for tokens at activities within sequential adhoc subprocesses</span></div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>  <span class="keywordtype">void</span> update(<a class="code hl_enumeration" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92d">State</a> newState); <span class="comment">///&lt; Updates token state and timestamp before calling notify()</span></div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span> </div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>  <span class="keywordtype">void</span> notify() <span class="keyword">const</span>; <span class="comment">///&lt; Inform all listeners about token update</span></div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span><span class="comment"></span> </div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span><span class="comment">  /**</span></div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span><span class="comment">   * Returns a merged status from the status of each token</span></div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span><span class="comment">   **/</span></div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>  <span class="keyword">template</span> &lt;<span class="keyword">typename</span> TokenPtr&gt;</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>  <span class="keyword">static</span> <a class="code hl_struct" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a> mergeStatus(<span class="keyword">const</span> std::vector&lt;TokenPtr&gt;&amp; tokens) {</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>    assert( !tokens.empty() );</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>    <span class="keywordtype">size_t</span> n = tokens.front()-&gt;status.size();</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>    <a class="code hl_struct" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a> result;</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>    result.resize(n);</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>    result[(int)<a class="code hl_variable" href="structBPMNOS_1_1Model_1_1ExtensionElements_1_1Index.html#a61bc17d7595e94a17d8e85a32a48b1d8">BPMNOS::Model::ExtensionElements::Index::Timestamp</a>] = tokens.front()-&gt;status[(int)<a class="code hl_variable" href="structBPMNOS_1_1Model_1_1ExtensionElements_1_1Index.html#a61bc17d7595e94a17d8e85a32a48b1d8">BPMNOS::Model::ExtensionElements::Index::Timestamp</a>];</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span> </div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>    <span class="keywordflow">for</span> ( <span class="keywordtype">size_t</span> i = 0; i &lt; n; i++ ) {</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>      <span class="keywordflow">for</span> ( <span class="keyword">auto</span>&amp; token : tokens ) {</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>        <span class="keywordflow">if</span> ( i == (<span class="keywordtype">int</span>)<a class="code hl_variable" href="structBPMNOS_1_1Model_1_1ExtensionElements_1_1Index.html#a61bc17d7595e94a17d8e85a32a48b1d8">BPMNOS::Model::ExtensionElements::Index::Timestamp</a> ) {</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>          <span class="keywordflow">if</span> ( result[i].value() &lt; token-&gt;status[i].value() ) {</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>            result[i] = token-&gt;status[i];</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>          }</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>        }</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> ( !result[i].has_value() ) {</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>          result[i] = token-&gt;status[i];</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>        }</div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> ( token-&gt;status[i].has_value() &amp;&amp; token-&gt;status[i].value() != result[i].value() ) {</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>          result[i] = std::nullopt;</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>          <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>        }</div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>      }</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>    }</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>    <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>  }</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>};</div>
 </div>
-<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span> </div>
-<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>} <span class="comment">// namespace BPMNOS::Execution</span></div>
-<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span> </div>
-<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span><span class="preprocessor">#endif </span><span class="comment">// BPMNOS_Execution_Token_H</span></div>
-<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span> </div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span> </div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>} <span class="comment">// namespace BPMNOS::Execution</span></div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span> </div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span><span class="preprocessor">#endif </span><span class="comment">// BPMNOS_Execution_Token_H</span></div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span> </div>
 <div class="ttc" id="aContent_8h_html"><div class="ttname"><a href="Content_8h.html">Content.h</a></div></div>
 <div class="ttc" id="aExtensionElements_8h_html"><div class="ttname"><a href="ExtensionElements_8h.html">ExtensionElements.h</a></div></div>
 <div class="ttc" id="aObservable_8h_html"><div class="ttname"><a href="Observable_8h.html">Observable.h</a></div></div>
@@ -384,7 +390,7 @@ $(function(){initNavTree('Token_8h_source.html','',''); });
 <div class="ttc" id="aclassBPMNOS_1_1Execution_1_1Token_html_a8bb2c234c64a3cbd83208ce588cbe10b"><div class="ttname"><a href="classBPMNOS_1_1Execution_1_1Token.html#a8bb2c234c64a3cbd83208ce588cbe10b">BPMNOS::Execution::Token::completed</a></div><div class="ttdeci">bool completed() const</div><div class="ttdef"><b>Definition</b> <a href="#l00105">Token.h:105</a></div></div>
 <div class="ttc" id="aclassBPMNOS_1_1Execution_1_1Token_html_a9653eaba46d293fa1da9f349c8e126d2"><div class="ttname"><a href="classBPMNOS_1_1Execution_1_1Token.html#a9653eaba46d293fa1da9f349c8e126d2">BPMNOS::Execution::Token::stateName</a></div><div class="ttdeci">static std::string stateName[]</div><div class="ttdef"><b>Definition</b> <a href="#l00050">Token.h:50</a></div></div>
 <div class="ttc" id="aclassBPMNOS_1_1Execution_1_1Token_html_a97c30032fa6c28eaf8a40b6df6ea97ed"><div class="ttname"><a href="classBPMNOS_1_1Execution_1_1Token.html#a97c30032fa6c28eaf8a40b6df6ea97ed">BPMNOS::Execution::Token::StateMachine</a></div><div class="ttdeci">friend class StateMachine</div><div class="ttdef"><b>Definition</b> <a href="#l00038">Token.h:38</a></div></div>
-<div class="ttc" id="aclassBPMNOS_1_1Execution_1_1Token_html_ab24ac923f7b7b73943fcf5b025a4bb17"><div class="ttname"><a href="classBPMNOS_1_1Execution_1_1Token.html#ab24ac923f7b7b73943fcf5b025a4bb17">BPMNOS::Execution::Token::getSequentialPerformerToken</a></div><div class="ttdeci">Token * getSequentialPerformerToken() const</div><div class="ttdoc">Returns token at sequential performer for tokens at activities within sequential adhoc subprocesses.</div><div class="ttdef"><b>Definition</b> <a href="Token_8cpp_source.html#l01574">Token.cpp:1574</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Execution_1_1Token_html_ab24ac923f7b7b73943fcf5b025a4bb17"><div class="ttname"><a href="classBPMNOS_1_1Execution_1_1Token.html#ab24ac923f7b7b73943fcf5b025a4bb17">BPMNOS::Execution::Token::getSequentialPerformerToken</a></div><div class="ttdeci">Token * getSequentialPerformerToken() const</div><div class="ttdoc">Returns token at sequential performer for tokens at activities within sequential adhoc subprocesses.</div><div class="ttdef"><b>Definition</b> <a href="Token_8cpp_source.html#l01609">Token.cpp:1609</a></div></div>
 <div class="ttc" id="aclassBPMNOS_1_1Execution_1_1Token_html_ac0669447261f6ee0ee5677e1d186b610"><div class="ttname"><a href="classBPMNOS_1_1Execution_1_1Token.html#ac0669447261f6ee0ee5677e1d186b610">BPMNOS::Execution::Token::globals</a></div><div class="ttdeci">Values &amp; globals</div><div class="ttdef"><b>Definition</b> <a href="#l00096">Token.h:96</a></div></div>
 <div class="ttc" id="aclassBPMNOS_1_1Execution_1_1Token_html_ac161ab385826d16d918b0922b01311af"><div class="ttname"><a href="classBPMNOS_1_1Execution_1_1Token.html#ac161ab385826d16d918b0922b01311af">BPMNOS::Execution::Token::pendingSequentialEntries</a></div><div class="ttdeci">auto_list&lt; std::weak_ptr&lt; Token &gt; &gt; pendingSequentialEntries</div><div class="ttdoc">List of tokens awaiting an activity entry (only applies if node is a performer referenced by sequenti...</div><div class="ttdef"><b>Definition</b> <a href="#l00099">Token.h:99</a></div></div>
 <div class="ttc" id="aclassBPMNOS_1_1Execution_1_1Token_html_ac43ca6afa13a236e7eaf5e8ec32092b4"><div class="ttname"><a href="classBPMNOS_1_1Execution_1_1Token.html#ac43ca6afa13a236e7eaf5e8ec32092b4">BPMNOS::Execution::Token::ready</a></div><div class="ttdeci">bool ready() const</div><div class="ttdef"><b>Definition</b> <a href="#l00102">Token.h:102</a></div></div>

@@ -134,7 +134,7 @@ $(function(){initNavTree('classBPMNOS_1_1Execution_1_1Engine.html','','classBPMN
 <div class="dynheader">
 Inheritance diagram for BPMNOS::Execution::Engine:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="classBPMNOS_1_1Execution_1_1Engine__inherit__graph.svg" width="336" height="911"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="classBPMNOS_1_1Execution_1_1Engine__inherit__graph.svg" width="336" height="956"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-nested-classes" class="groupheader"><a id="nested-classes" name="nested-classes"></a>
@@ -191,6 +191,10 @@ Protected Member Functions</h2></td></tr>
 <tr class="memdesc:a2607fd4cf0509f86170fa646e1a20fe6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method executing all enqueued commands, including those enqueued by a command being executed.  <br /></td></tr>
 <tr class="memitem:ac95bcc651260a6b80a7760676c045d4b" id="r_ac95bcc651260a6b80a7760676c045d4b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac95bcc651260a6b80a7760676c045d4b">addInstances</a> ()</td></tr>
 <tr class="memdesc:ac95bcc651260a6b80a7760676c045d4b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method adding all new instances and advancing tokens as much as possible.  <br /></td></tr>
+<tr class="memitem:aaabf4e00b21647028e1bbc716b4478f1" id="r_aaabf4e00b21647028e1bbc716b4478f1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aaabf4e00b21647028e1bbc716b4478f1">triggerInstance</a> (const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Process.html">BPMN::Process</a> *<a class="el" href="#a3b5039ca0897110ffac61cedd10758f4">process</a>, <a class="el" href="namespaceBPMNOS.html#a8154a7afba82997850e7db218281c8e0">BPMNOS::VariedValueMap</a> content)</td></tr>
+<tr class="memdesc:aaabf4e00b21647028e1bbc716b4478f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method creating an instance of a process whenever the message or signal triggering it is thrown.  <br /></td></tr>
+<tr class="memitem:a3e0c248e83004ccbdfd4673345452ff5" id="r_a3e0c248e83004ccbdfd4673345452ff5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3e0c248e83004ccbdfd4673345452ff5">triggerInstanceByMessage</a> (const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Process.html">BPMN::Process</a> *<a class="el" href="#a3b5039ca0897110ffac61cedd10758f4">process</a>, std::weak_ptr&lt; <a class="el" href="classBPMNOS_1_1Execution_1_1Message.html">Message</a> &gt; message_ptr)</td></tr>
+<tr class="memdesc:a3e0c248e83004ccbdfd4673345452ff5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method creating an instance of a process from the message triggering it, and consuming that message.  <br /></td></tr>
 <tr class="memitem:a415f6cf8a9fa91bbaa2be2107b06e20d" id="r_a415f6cf8a9fa91bbaa2be2107b06e20d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a415f6cf8a9fa91bbaa2be2107b06e20d">deleteInstance</a> (<a class="el" href="#a97c30032fa6c28eaf8a40b6df6ea97ed">StateMachine</a> *instance)</td></tr>
 <tr class="memdesc:a415f6cf8a9fa91bbaa2be2107b06e20d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method removing completed instance.  <br /></td></tr>
 <tr class="inherit_header pro_methods_classBPMNOS_1_1Execution_1_1EventListener"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_classBPMNOS_1_1Execution_1_1EventListener')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Member Functions inherited from <a class="el" href="classBPMNOS_1_1Execution_1_1EventListener.html">BPMNOS::Execution::EventListener</a></td></tr>
@@ -232,7 +236,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00018">18</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00019">19</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
 
 </div>
 </div>
@@ -251,7 +255,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00027">27</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00028">28</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
 
 </div>
 </div>
@@ -279,7 +283,7 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00172">172</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00262">262</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
 
 </div>
 </div>
@@ -306,7 +310,7 @@ Friends</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>True if an event was processed and the run may continue. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00132">132</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00133">133</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
 
 </div>
 </div>
@@ -333,7 +337,7 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00191">191</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00278">278</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
 
 </div>
 </div>
@@ -352,7 +356,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00381">381</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00468">468</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
 
 </div>
 </div>
@@ -371,7 +375,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00385">385</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00472">472</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
 
 </div>
 </div>
@@ -402,7 +406,7 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00058">58</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00059">59</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
 
 </div>
 </div>
@@ -433,7 +437,7 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00089">89</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00090">90</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
 
 </div>
 </div>
@@ -452,7 +456,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00238">238</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00325">325</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
 
 </div>
 </div>
@@ -471,7 +475,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00350">350</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00437">437</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
 
 </div>
 </div>
@@ -490,7 +494,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00267">267</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00354">354</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
 
 </div>
 </div>
@@ -509,7 +513,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00216">216</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00303">303</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
 
 </div>
 </div>
@@ -528,7 +532,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00340">340</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00427">427</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
 
 </div>
 </div>
@@ -547,7 +551,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00318">318</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00405">405</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
 
 </div>
 </div>
@@ -566,7 +570,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00282">282</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00369">369</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
 
 </div>
 </div>
@@ -585,7 +589,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00196">196</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00283">283</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
 
 </div>
 </div>
@@ -604,7 +608,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00377">377</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00464">464</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
 
 </div>
 </div>
@@ -631,7 +635,7 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00046">46</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00047">47</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
 
 </div>
 </div>
@@ -657,7 +661,7 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00101">101</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00102">102</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
 
 </div>
 </div>
@@ -688,7 +692,7 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00109">109</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00110">110</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
 
 </div>
 </div>
@@ -719,7 +723,7 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00114">114</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00115">115</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
 
 </div>
 </div>
@@ -756,7 +760,71 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00079">79</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00080">80</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
+
+</div>
+</div>
+<a id="aaabf4e00b21647028e1bbc716b4478f1" name="aaabf4e00b21647028e1bbc716b4478f1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaabf4e00b21647028e1bbc716b4478f1">&#9670;&#160;</a></span>triggerInstance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Engine::triggerInstance </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Process.html">BPMN::Process</a> *</td>          <td class="paramname"><span class="paramname"><em>process</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceBPMNOS.html#a8154a7afba82997850e7db218281c8e0">BPMNOS::VariedValueMap</a></td>          <td class="paramname"><span class="paramname"><em>content</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>The identifier is generated, an instance created by a trigger being declared nowhere, and the content of the trigger is applied to the initial status of the instance, which is where it is needed and after which it is of no further concern. </p>
+
+<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00173">173</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a3e0c248e83004ccbdfd4673345452ff5" name="a3e0c248e83004ccbdfd4673345452ff5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3e0c248e83004ccbdfd4673345452ff5">&#9670;&#160;</a></span>triggerInstanceByMessage()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Engine::triggerInstanceByMessage </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Process.html">BPMN::Process</a> *</td>          <td class="paramname"><span class="paramname"><em>process</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::weak_ptr&lt; <a class="el" href="classBPMNOS_1_1Execution_1_1Message.html">Message</a> &gt;</td>          <td class="paramname"><span class="paramname"><em>message_ptr</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>No token awaits a message at the <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1MessageStartEvent.html">message start event</a> of a <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Process.html">process</a>, the instance not existing before the message arrives, so no <a class="el" href="structBPMNOS_1_1Execution_1_1MessageDeliveryRequest.html">MessageDeliveryRequest</a> is created for it and no <a class="el" href="structBPMNOS_1_1Execution_1_1MessageDeliveryEvent.html">MessageDeliveryEvent</a> is ever dispatched. What such an event would do for the message and for the sender is therefore done here: the message is marked as delivered and withdrawn from the message pool, and a token at a <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1SendTask.html">send task</a> awaiting its delivery is completed. </p>
+
+<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00241">241</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
 
 </div>
 </div>
@@ -878,7 +946,7 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Engine_8h_source.html#l00180">180</a> of file <a class="el" href="Engine_8h_source.html">Engine.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8h_source.html#l00199">199</a> of file <a class="el" href="Engine_8h_source.html">Engine.h</a>.</p>
 
 </div>
 </div>
@@ -902,7 +970,7 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Engine_8h_source.html#l00178">178</a> of file <a class="el" href="Engine_8h_source.html">Engine.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8h_source.html#l00197">197</a> of file <a class="el" href="Engine_8h_source.html">Engine.h</a>.</p>
 
 </div>
 </div>
@@ -926,7 +994,7 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Engine_8h_source.html#l00182">182</a> of file <a class="el" href="Engine_8h_source.html">Engine.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8h_source.html#l00201">201</a> of file <a class="el" href="Engine_8h_source.html">Engine.h</a>.</p>
 
 </div>
 </div>
@@ -950,7 +1018,7 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Engine_8h_source.html#l00181">181</a> of file <a class="el" href="Engine_8h_source.html">Engine.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8h_source.html#l00200">200</a> of file <a class="el" href="Engine_8h_source.html">Engine.h</a>.</p>
 
 </div>
 </div>
@@ -974,7 +1042,7 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Engine_8h_source.html#l00179">179</a> of file <a class="el" href="Engine_8h_source.html">Engine.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8h_source.html#l00198">198</a> of file <a class="el" href="Engine_8h_source.html">Engine.h</a>.</p>
 
 </div>
 </div>
@@ -998,7 +1066,7 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Engine_8h_source.html#l00183">183</a> of file <a class="el" href="Engine_8h_source.html">Engine.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8h_source.html#l00202">202</a> of file <a class="el" href="Engine_8h_source.html">Engine.h</a>.</p>
 
 </div>
 </div>
