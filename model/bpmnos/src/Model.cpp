@@ -270,10 +270,20 @@ std::unique_ptr<BPMN::FlowNode> Model::createTimerCatchEvent(XML::bpmn::tCatchEv
 }
 
 std::unique_ptr<BPMN::FlowNode> Model::createSignalStartEvent(XML::bpmn::tStartEvent* startEvent, BPMN::Scope* parent) {
+  auto signal = std::make_unique<Signal>(startEvent,parent);
+
+  if ( auto process = parent->represents<BPMN::Process>() ) {
+    // the process is instantiated whenever a signal with this name is thrown
+    auto [ entry, inserted ] = processesTriggeredBySignal.emplace( signal->name, process );
+    if ( !inserted ) {
+      throw std::runtime_error("Model: signal '" + BPMNOS::to_string(signal->name,STRING) + "' instantiates process '" + entry->second->id + "' and process '" + process->id + "'");
+    }
+  }
+
   // bind signal
   return bind<BPMN::FlowNode>(
     BPMN::Model::createSignalStartEvent(startEvent,parent),
-    std::make_unique<Signal>(startEvent,parent)
+    std::move(signal)
   );
 }
 

@@ -93,6 +93,13 @@ public:
 
   std::vector< std::unique_ptr<LookupTable> > lookupTables; ///< Vector containing lookup tables declared in model.
   std::vector< std::unique_ptr<Attribute> > attributes; ///< Vector containing new global attributes declared for the model.
+
+  /// @brief Map holding the process instantiated by a signal with a given name.
+  ///
+  /// The model-time counterpart of @ref BPMNOS::Execution::SystemState::tokensAwaitingSignal: which
+  /// tokens await a signal is run state and is held there, whereas which process a signal instantiates
+  /// is fixed by the model and is held here.
+  std::unordered_map< BPMNOS::number, const BPMN::Process* > processesTriggeredBySignal;
 };
 
 } // namespace BPMNOS::Model
