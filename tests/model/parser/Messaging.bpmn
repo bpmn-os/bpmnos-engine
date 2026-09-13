@@ -11,7 +11,7 @@
     <bpmn2:messageFlow id="Flow_1w7uld1" sourceRef="Activity_C" targetRef="Participant_B" />
     <bpmn2:messageFlow id="Flow_0n0bg0q" sourceRef="Participant_C" targetRef="Participant_A" />
   </bpmn2:collaboration>
-  <bpmn2:process id="Process_A" isExecutable="false">
+  <bpmn2:process id="Process_A" isExecutable="true">
     <bpmn2:sequenceFlow id="Flow_1331gwy" sourceRef="CatchEvent_A1" targetRef="ThrowEvent_A1" />
     <bpmn2:sequenceFlow id="Flow_0albes8" sourceRef="CatchEvent_A2" targetRef="ThrowEvent_A2" />
     <bpmn2:sequenceFlow id="Flow_1245tlj" sourceRef="ThrowEvent_A1" targetRef="CatchEvent_A2" />
@@ -46,7 +46,7 @@
       <bpmn2:messageEventDefinition id="MessageEventDefinition_0mg3in2" />
     </bpmn2:intermediateCatchEvent>
   </bpmn2:process>
-  <bpmn2:process id="Process_B">
+  <bpmn2:process id="Process_B" isExecutable="true">
     <bpmn2:sequenceFlow id="Flow_0up7xgl" sourceRef="CatchEvent_B1" targetRef="ThrowEvent_B1" />
     <bpmn2:endEvent id="ThrowEvent_B2">
       <bpmn2:extensionElements>
@@ -81,7 +81,7 @@
       <bpmn2:messageEventDefinition id="MessageEventDefinition_0of7nwf" />
     </bpmn2:intermediateCatchEvent>
   </bpmn2:process>
-  <bpmn2:process id="Process_C">
+  <bpmn2:process id="Process_C" isExecutable="true">
     <bpmn2:startEvent id="CatchEvent_C1">
       <bpmn2:extensionElements>
         <bpmnos:message name="Default message" />

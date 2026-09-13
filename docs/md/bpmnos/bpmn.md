@@ -6,9 +6,11 @@ In the following the BPMN element supported by the BPMNOS framework are listed a
 ## @ref BPMN::Process "Processes"
 ![Process](BPMN/Process.svg)
 @par
-Processes are assumed to have exactly one @ref BPMN::UntypedStartEvent "untyped start event" and must be executable (i.e. `isExecutable = true`).
+Processes are assumed to have exactly one start event and must be executable (i.e. `isExecutable = true`).
+A process with an @ref BPMN::UntypedStartEvent "untyped start event" is instantiated as the instance data declares, whereas a process with a @ref BPMN::MessageStartEvent "message start event" or a @ref BPMN::SignalStartEvent "signal start event" is instantiated whenever the message or signal triggering it is thrown.
 @attention
-- @ref BPMN::TypedStartEvent "Typed start events" and multiple start events are **not** supported.
+- Multiple start events are **not** supported.
+- Of the @ref BPMN::TypedStartEvent "typed start events", only message start events and signal start events are supported for a process.
 - Empty pools are **not** supported, in particular, each @ref XML::bpmn::tParticipant "participant" in a @ref XML::bpmn::tCollaboration "collaboration" must have a reference to a process.
 
 ## @ref BPMN::Activity "Activities"
@@ -131,7 +133,7 @@ Supported gateways are @ref BPMN::ExclusiveGateway "exclusive gateways", @ref BP
     ![CompensateStartEvent](BPMN/CompensateStartEvent.svg)
   
   .
-  @attention Typed start events are only supported for @ref BPMN::EventSubProcess "event-subprocesses". 
+  @attention Typed start events are supported for @ref BPMN::EventSubProcess "event-subprocesses", and, restricted to message start events and signal start events, for @ref BPMN::Process "processes". 
   
 - Intermediate events
   - @ref BPMN::MessageCatchEvent "Message catch events"

@@ -173,6 +173,13 @@ protected:
 
   void addInstances(); ///< Method adding all new instances and advancing tokens as much as possible
 
+  /// @brief Method creating an instance of a process whenever the signal triggering it is thrown.
+  ///
+  /// The identifier is generated, an instance created by a trigger being declared nowhere, and the
+  /// content of the signal is applied to the initial status of the instance, which is where it is
+  /// needed and after which it is of no further concern.
+  void triggerInstance(const BPMN::Process* process, BPMNOS::VariedValueMap content);
+
   void deleteInstance(StateMachine* instance); ///< Method removing completed instance
 
   BPMNOS::number lastInstantiationTime; ///< Timestamp when instances were last added (to prevent duplicate additions at same time)

@@ -115,6 +115,15 @@ For each operator the following fields can be provided
 - `id`: a unique identifier, 
 - `expression`: an expression assigning a value to an attribute.
 
+Operators may be provided for @ref BPMN::Process "processes", @ref BPMN::SubProcess "subprocesses", @ref BPMN::EventSubProcess "event-subprocesses", and @ref BPMN::Task "tasks".
+The operators of a task are applied when the task is performed, after its entry restrictions have been checked.
+The operators of an element with a scope are applied to the token at the start event of that scope upon its completion, the scope being instantiated there, and the entry restrictions of the scope are checked thereafter, so that they constrain the status the operators produce.
+A start event has no operators of its own.
+A scope is instantiated as often as it is entered, so the operators of a looped or of a multi-instance subprocess are applied once per iteration and once per instance respectively.
+An @ref BPMN::AdHocSubProcess "ad-hoc subprocess" has no start event and must therefore not declare operators.
+
+@attention Operators for elements with a scope must not modify the `timestamp` attribute, a scope being entered instantaneously and its duration being the duration of what happens within it. The same holds for a @ref BPMN::SendTask "send task", a @ref BPMN::ReceiveTask "receive task" and a @ref BPMNOS::Model::DecisionTask "decision task", each of which completes upon an event of its own. Only a regular task may advance the timestamp, which is how its duration is modelled.
+
 The following shows an example of an operator increasing an attribute value.
   ```xml
   <bpmn2:extensionElements>

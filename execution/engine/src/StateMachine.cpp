@@ -769,7 +769,11 @@ void StateMachine::run(Values status) {
 
   for ( auto token : tokens ) {
     if ( token->node ) {
-      if ( auto startEvent = token->node->represents<BPMN::TypedStartEvent>() ) {
+      // a typed start event of a process belongs to an instance already created by the trigger, with
+      // the status and the identifier it was created with
+      if ( auto startEvent = token->node->represents<BPMN::TypedStartEvent>();
+        startEvent && token->node->parent->represents<BPMN::EventSubProcess>()
+      ) {
         // get new attribute values
         auto values = systemState->getStatusAttributes( root, token->node->parent );
         if ( !values.has_value() ) {

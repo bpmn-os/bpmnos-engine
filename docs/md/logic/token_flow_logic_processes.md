@@ -1,7 +1,10 @@
 # Processes
 @page token_flow_logic_processes Processes
 
-A process instance is created when all data required for the @ref BPMNOS::Model::ExtensionElements::attributes "attributes" defined for the @ref BPMN::Process "process" element, in particular, the instance identifier and the timestamp, become known and the timestamp is reached.
+A process with an @ref BPMN::UntypedStartEvent "untyped start event" is instantiated when all data required for the @ref BPMNOS::Model::ExtensionElements::attributes "attributes" defined for the @ref BPMN::Process "process" element, in particular, the instance identifier and the timestamp, become known and the timestamp is reached.
+
+A process with a @ref BPMN::MessageStartEvent "message start event" or a @ref BPMN::SignalStartEvent "signal start event" is instantiated whenever the message or signal triggering it is thrown, and is declared nowhere. Its instance identifier is generated, and the @ref BPMNOS::Model::Content "content" of the trigger is part of the status the instance is created with. Values that neither the content nor an initial assignment provides are undefined.
+
 Upon instantiation, a @ref BPMNOS::Execution::Token "token" is created which resides at the process element.
 
 A token at a process element changes its state as follows:

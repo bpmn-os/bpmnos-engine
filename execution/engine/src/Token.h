@@ -124,6 +124,12 @@ private:
   void advanceFromCreated();
   void advanceToReady();
   void advanceToEntered();
+
+  /// @brief Applies the given operators to the token and notifies about the values they modify.
+  /// @param extensionElements The extension elements holding the operators, i.e. those of the node the
+  ///        token is at, or those of the scope it enters.
+  /// @note The timestamp must be the current time, which the caller is responsible for.
+  void applyOperators(const BPMNOS::Model::ExtensionElements* extensionElements);
   void advanceToIdle();
   void advanceToBusy();
 

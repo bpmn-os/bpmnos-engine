@@ -167,6 +167,9 @@ void Model::createGlobals() {
  
 std::unique_ptr<BPMN::Process> Model::createProcess(XML::bpmn::tProcess* process) {
   auto baseElement = BPMN::Model::createProcess(process);
+  if ( !baseElement->isExecutable ) {
+    throw std::runtime_error("Model: process '" + baseElement->id + "' must be executable");
+  }
   auto extensionElements = std::make_unique<BPMNOS::Model::ExtensionElements>(process, attributeRegistry, nullptr, getData(process) );
   // bind attributes, restrictions, and operators to all processes
   return bind<BPMN::Process>( std::move(baseElement), std::move(extensionElements) );

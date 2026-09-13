@@ -82,6 +82,7 @@ using namespace BPMNOS;
 // Events
 #include "execution/timer/test.h"
 #include "execution/signal/test.h"
+#include "execution/triggeredprocess/test.h"
 #include "execution/condition/test.h"
 #include "execution/errorevent/test.h"
 #include "execution/escalationevent/test.h"

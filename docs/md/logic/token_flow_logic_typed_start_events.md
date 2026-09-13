@@ -1,14 +1,15 @@
 # Typed start events
 @page token_flow_logic_typed_start_events Typed start events
 
-The state of a token at a typed start event is immediately advanced from @ref BPMNOS::Execution::Token::State::ENTERED "ENTERED" to @ref BPMNOS::Execution::Token::State::BUSY "BUSY" and awaits the trigger.
-If the token is at a @ref BPMN::MessageStartEvent "message start event", the @ref BPMNOS::Model::Content "message content" is used to update the @ref BPMNOS::Execution::Token::status "status" of the token.
+A token at a typed start event is generated when the trigger occurs, and its state advances from @ref BPMNOS::Execution::Token::State::ENTERED "ENTERED" through @ref BPMNOS::Execution::Token::State::BUSY "BUSY" to @ref BPMNOS::Execution::Token::State::COMPLETED "COMPLETED" instantaneously.
+The @ref BPMNOS::Model::Content "content" of the message or signal that triggered it is part of the @ref BPMNOS::Execution::Token::status "status" the token is generated with.
 
-After the start event is triggered, the @ref BPMNOS::Model::ExtensionElements::operators "operators" of the respective event-subprocess are applied and the state is advanced to @ref BPMNOS::Execution::Token::State::COMPLETED "COMPLETED".
-If the respective @ref BPMN::EventSubProcess "event-subprocesses" is interrupting, all other tokens within the scope of the event-subprocess are withdrawn.
-Otherwise, a new token is created allowing the event-subprocess to be triggered again.
+Upon completion, the @ref BPMNOS::Model::ExtensionElements::operators "operators" of the scope the start event belongs to are applied.
+If the start event belongs to an interrupting @ref BPMN::EventSubProcess "event-subprocess", all other tokens within the scope of the event-subprocess are withdrawn.
+If it belongs to a non-interrupting event-subprocess, the event-subprocess may be triggered again.
+If it belongs to a @ref BPMN::Process "process", each trigger creates an instance of that process.
 
-After completion, the entry scope restrictions of the @ref BPMN::EventSubProcess are checked.
+After completion, the entry scope restrictions of the scope are checked.
 If the restrictions are violated, the state is changed to @ref BPMNOS::Execution::Token::State::FAILED "FAILED".
 Otherwise, the token state is changed to @ref BPMNOS::Execution::Token::State::DEPARTED "DEPARTED" or @ref BPMNOS::Execution::Token::State::DONE "DONE".
 
@@ -16,9 +17,9 @@ Otherwise, the token state is changed to @ref BPMNOS::Execution::Token::State::D
 stateDiagram-v2
     state feasibleEntry <<choice>>
     state departure <<choice>>
-    [*] --> ENTERED
+    [*] --> ENTERED: trigger
     ENTERED --> BUSY
-    BUSY --> COMPLETED: trigger
+    BUSY --> COMPLETED
     COMPLETED --> feasibleEntry
     feasibleEntry --> departure: [feasible]
     feasibleEntry --> FAILED: [infeasible]
@@ -30,5 +31,5 @@ stateDiagram-v2
 </pre>
 
 
-@attention @ref BPMN::TypedStartEvent "Typed start events" are only supported for @ref BPMN::EventSubProcess "event-subprocesses".
-@note Operators for event-subprocesses must be instantaneous, i.e. they must not change the timestamp.
+@attention @ref BPMN::TypedStartEvent "Typed start events" are supported for @ref BPMN::EventSubProcess "event-subprocesses" and, restricted to @ref BPMN::MessageStartEvent "message start events" and @ref BPMN::SignalStartEvent "signal start events", for @ref BPMN::Process "processes".
+@note Operators for elements with a scope must be instantaneous, i.e. they must not change the timestamp.

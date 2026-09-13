@@ -25,7 +25,7 @@ SCENARIO( "Event-based gateway with two timer events", "[execution][eventbasedga
       recorder.subscribe(&engine);
       engine.run(scenario.get());
       THEN( "The token at timer 2 is withdrawn" ) {
-        auto completionLog =recorder.find(nlohmann::json{{"state", "COMPLETED"}});
+        auto completionLog =recorder.find(nlohmann::json{{"state", "COMPLETED"}}, nlohmann::json{{"nodeId","StartEvent_1"}});
         REQUIRE( completionLog[0]["nodeId"] == "TimerEvent_1" );
         REQUIRE( completionLog[1]["nodeId"] == "Gateway_1" );
         REQUIRE( completionLog[2]["nodeId"] == nullptr );
@@ -57,7 +57,7 @@ SCENARIO( "Event-based gateway with two timer events", "[execution][eventbasedga
       recorder.subscribe(&engine);
       engine.run(scenario.get());
       THEN( "The token at timer 1 is withdrawn" ) {
-        auto completionLog =recorder.find(nlohmann::json{{"state", "COMPLETED"}});
+        auto completionLog =recorder.find(nlohmann::json{{"state", "COMPLETED"}}, nlohmann::json{{"nodeId","StartEvent_1"}});
         REQUIRE( completionLog[0]["nodeId"] == "TimerEvent_2" );
         REQUIRE( completionLog[1]["nodeId"] == "Gateway_1" );
         REQUIRE( completionLog[2]["nodeId"] == nullptr );

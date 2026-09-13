@@ -17,10 +17,9 @@ bool LocalEvaluator::updateValues(EntryDecision* decision, Values& status, Value
   // make sure that all initial attribute values are up to date
   extensionElements->computeInitialValues(token->owner->systemState->getTime(),status,data,globals);
 
-  // TODO: this shoud not be relevant
-  if ( token->node->represents<BPMN::EventSubProcess>() ) {
-assert(false && "No entry for event-subprocesses");
-    // for event-subprocesses apply operators before checking entry restrictions
+  if ( token->node->represents<BPMN::SubProcess>() ) {
+    // the operators of a scope are applied to the token at its start event, i.e. after the scope is
+    // entered, so its entry restrictions constrain the status they produce
     extensionElements->applyOperators(status,data,globals);
   }
 

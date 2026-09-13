@@ -63,17 +63,19 @@ SCENARIO( "Trivial executable process", "[execution][process]" ) {
       recorder.subscribe(&engine);
       engine.run(scenario.get());
       auto tokenLog = recorder.find(nlohmann::json{}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
-      THEN( "The token log has exactly 6 entries" ) {
-        REQUIRE( tokenLog.size() == 6 );
+      THEN( "The token log has exactly 8 entries" ) {
+        REQUIRE( tokenLog.size() == 8 );
       }
       THEN( "The dump of each entry of the recorder log is correct" ) {
         REQUIRE( tokenLog[0]["state"] == "ENTERED" );
         REQUIRE( tokenLog[1]["state"] == "BUSY" );
         REQUIRE( tokenLog[2]["nodeId"] == "StartEvent_1" );
         REQUIRE( tokenLog[2]["state"] == "ENTERED" );
-        REQUIRE( tokenLog[3]["state"] == "DONE" );
+        REQUIRE( tokenLog[3]["state"] == "BUSY" );
         REQUIRE( tokenLog[4]["state"] == "COMPLETED" );
         REQUIRE( tokenLog[5]["state"] == "DONE" );
+        REQUIRE( tokenLog[6]["state"] == "COMPLETED" );
+        REQUIRE( tokenLog[7]["state"] == "DONE" );
       }
     }
   }
@@ -111,11 +113,11 @@ SCENARIO( "Executable process starting after time zero", "[execution][process]" 
       }
       THEN( "The instance is instantiated rather than dropped" ) {
         auto tokenLog = recorder.find(nlohmann::json{}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
-        REQUIRE( tokenLog.size() == 6 );
+        REQUIRE( tokenLog.size() == 8 );
         REQUIRE( tokenLog[0]["instanceId"] == "Instance_1" );
         REQUIRE( tokenLog[0]["state"] == "ENTERED" );
         REQUIRE( tokenLog[0]["status"]["timestamp"] == 42.0 );
-        REQUIRE( tokenLog[5]["state"] == "DONE" );
+        REQUIRE( tokenLog[7]["state"] == "DONE" );
       }
       THEN( "The run reaches the start time" ) {
         REQUIRE( engine.getSystemState()->getTime() >= 42 );
@@ -150,8 +152,8 @@ SCENARIO( "Simple executable process", "[execution][process]" ) {
       recorder.subscribe(&engine);
       engine.run(scenario.get());
       auto tokenLog = recorder.find(nlohmann::json{}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
-      THEN( "The token log has exactly 16 entries" ) {
-        REQUIRE( tokenLog.size() == 16 );
+      THEN( "The token log has exactly 18 entries" ) {
+        REQUIRE( tokenLog.size() == 18 );
       }
       THEN( "The dump of each entry of the recorder log is correct" ) {
         auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr }, {"event",nullptr },{"decision",nullptr }});
@@ -163,7 +165,9 @@ SCENARIO( "Simple executable process", "[execution][process]" ) {
 
         auto startLog = recorder.find(nlohmann::json{{"nodeId","StartEvent_1" }});
         REQUIRE( startLog[0]["state"] == "ENTERED" );
-        REQUIRE( startLog[1]["state"] == "DEPARTED" );
+        REQUIRE( startLog[1]["state"] == "BUSY" );
+        REQUIRE( startLog[2]["state"] == "COMPLETED" );
+        REQUIRE( startLog[3]["state"] == "DEPARTED" );
 
         auto activityLog = recorder.find(nlohmann::json{{"nodeId","Activity_1" }}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
         REQUIRE( activityLog[0]["state"] == "ARRIVED" );
@@ -371,3 +375,58 @@ SCENARIO( "Constrained executable process", "[execution][process]" ) {
   }
 }
 
+
+SCENARIO( "Process with operators", "[execution][process]" ) {
+  const std::string modelFile = "tests/execution/process/Process_with_operators.bpmn";
+  REQUIRE_NOTHROW( Model::Model(modelFile) );
+
+  GIVEN( "Two instances of the process" ) {
+
+    std::string csv =
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1;\n"
+      "Instance_2; Process_1;\n"
+    ;
+
+    Model::StaticDataProvider dataProvider(modelFile,csv);
+    auto scenario = dataProvider.createScenario();
+
+    WHEN( "The engine is started with a recorder" ) {
+      Execution::Engine engine;
+      Execution::TimeWarp timeHandler;
+      timeHandler.connect(&engine);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
+      recorder.subscribe(&engine);
+      engine.run(scenario.get());
+
+      THEN( "The operators of the process are applied at its start event" ) {
+        auto log = recorder.find(nlohmann::json{{"nodeId","StartEvent_1"},{"state","COMPLETED"}});
+        REQUIRE( log.size() == 2 );
+        REQUIRE( log[0]["status"]["value"] == 42 );
+        REQUIRE( log[1]["status"]["value"] == 42 );
+      }
+
+      THEN( "The global written by an operator accumulates over the instances" ) {
+        auto log = recorder.find(nlohmann::json{{"nodeId","StartEvent_1"},{"state","COMPLETED"}});
+        REQUIRE( log.size() == 2 );
+        REQUIRE( log.back()["globals"]["counter"] == 2 );
+      }
+
+      THEN( "The timestamp is unchanged by the operators" ) {
+        auto log = recorder.find(nlohmann::json{{"nodeId","StartEvent_1"},{"state","COMPLETED"}});
+        REQUIRE( log.front()["status"]["timestamp"] == 0.0 );
+      }
+    }
+  }
+}
+
+SCENARIO( "Process with operator modifying timestamp", "[execution][process]" ) {
+  const std::string modelFile = "tests/execution/process/Process_with_operator_modifying_timestamp.bpmn";
+
+  GIVEN( "A process whose operators modify the timestamp" ) {
+    THEN( "The model is refused, the start event applying them being instantaneous" ) {
+      REQUIRE_THROWS( Model::Model(modelFile) );
+    }
+  }
+}

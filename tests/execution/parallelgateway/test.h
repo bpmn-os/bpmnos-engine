@@ -22,8 +22,8 @@ SCENARIO( "Parallel fork", "[execution][parallelgateway]" ) {
       recorder.subscribe(&engine);
       engine.run(scenario.get(), 0, 0);
       auto tokenLog = recorder.find(nlohmann::json{}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
-      THEN( "The dump of each entry of the token log has 16 entries" ) {        
-        REQUIRE( tokenLog.size() == 16 );
+      THEN( "The dump of each entry of the token log has 18 entries" ) {
+        REQUIRE( tokenLog.size() == 18 );
       }
       THEN( "The dump of each entry of the token log is correct" ) {
         auto gateway1Log = recorder.find(nlohmann::json{{"nodeId","Gateway_1" }}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
@@ -96,8 +96,8 @@ SCENARIO( "Symmetric parallel gateways", "[execution][parallelgateway]" ) {
       recorder.subscribe(&engine);
       engine.run(scenario.get(), 0, 0);
       auto tokenLog = recorder.find(nlohmann::json{}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
-      THEN( "The dump of each entry of the token log has 33 entries" ) {        
-        REQUIRE( tokenLog.size() == 33 );
+      THEN( "The dump of each entry of the token log has 35 entries" ) {
+        REQUIRE( tokenLog.size() == 35 );
       }
       THEN( "The dump of each entry of the token log is correct" ) {
         auto gateway1Log = recorder.find(nlohmann::json{{"nodeId","Gateway_1" }}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});

@@ -5,6 +5,7 @@
 #include "ConditionalEventObserver.h"
 #include "execution/controller/src/Decision.h"
 #include "model/bpmnos/src/extensionElements/ExtensionElements.h"
+#include "model/bpmnos/src/extensionElements/Signal.h"
 #include "model/bpmnos/src/SequentialAdHocSubProcess.h"
 #include "model/bpmnos/src/DecisionTask.h"
 #include "execution/engine/src/events/TimerEvent.h"
@@ -169,18 +170,66 @@ bool Engine::advance(BPMNOS::number endTime) {
   return true;
 }
 
+void Engine::triggerInstance(const BPMN::Process* process, BPMNOS::VariedValueMap content) {
+  auto extensionElements = process->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+  auto& attributeRegistry = extensionElements->attributeRegistry;
+
+  // the identifier is generated, an instance created by a trigger being declared nowhere
+  auto counter = ++systemState->instantiationCounter[process];
+  auto instanceId = process->id + BPMNOS::Model::Scenario::delimiters[1] + std::to_string(counter);
+
+  BPMNOS::Values data( extensionElements->data.size() );
+  data[Model::ExtensionElements::Index::Instance] = BPMNOS::to_number(instanceId,STRING);
+
+  BPMNOS::Values status( extensionElements->attributes.size() );
+  status[Model::ExtensionElements::Index::Timestamp] = systemState->getTime();
+
+  // the content of the trigger is applied to the initial status of the instance, which is where it is
+  // needed and after which it is of no further concern
+  assert( process->startNodes.size() == 1 );
+  assert( process->startNodes.front()->extensionElements->represents<BPMNOS::Model::Signal>() );
+  auto signalDefinition = process->startNodes.front()->extensionElements->as<BPMNOS::Model::Signal>();
+  auto oldObjective = systemState->globals[Model::ExtensionElements::Index::Objective];
+  for ( auto& [key,definition] : signalDefinition->contentMap ) {
+    auto attribute = definition->attribute;
+    auto it = content.find(key);
+    if ( it == content.end() ) {
+      // key in content of start event, but not in content of signal
+      attributeRegistry.setValue(attribute, status, data, systemState->globals, std::nullopt );
+    }
+    else if ( std::holds_alternative< std::optional<BPMNOS::number> >(it->second) ) {
+      attributeRegistry.setValue(attribute, status, data, systemState->globals, std::get< std::optional<BPMNOS::number> >(it->second) );
+    }
+    else {
+      // use default value of emitter
+      ValueVariant value = std::get< std::string >(it->second);
+      attributeRegistry.setValue(attribute, status, data, systemState->globals, BPMNOS::to_number(value,attribute->type) );
+    }
+  }
+
+  if ( systemState->globals[Model::ExtensionElements::Index::Objective] != oldObjective ) {
+    // dataUpdate indicating that objective has changed
+    notify( DataUpdate( { attributeRegistry.globalAttributes[Model::ExtensionElements::Index::Objective] } ) );
+  }
+
+  if ( signalDefinition->dataUpdate.global ) {
+    // notify about data update; the instance does not exist yet, so only a global update can be reported
+    notify( DataUpdate( signalDefinition->dataUpdate.attributes ) );
+  }
+
+  systemState->instances.push_back(std::make_shared<StateMachine>(systemState.get(),process,std::move(data)));
+  systemState->instances.back()->run(std::move(status));
+}
+
 void Engine::addInstances() {
   for (auto& [process,status,data] : systemState->getInstantiations() ) {
-    if ( !process->isExecutable ) {
-      throw std::runtime_error("Engine: process '" + process->id + "' is not executable");
-    }
     if ( !data[Model::ExtensionElements::Index::Instance].has_value() ) {
       throw std::runtime_error("Engine: instance of process '" + process->id + "' has no id");
     }
     if ( !status[Model::ExtensionElements::Index::Timestamp].has_value() ) {
       throw std::runtime_error("Engine: instance of process '" + process->id + "' has no timestamp");
     }
-    systemState->instantiationCounter++;
+    systemState->instantiationCounter[process]++;
     systemState->instances.push_back(std::make_shared<StateMachine>(systemState.get(),process,std::move(data)));
     // run instance and advance token
     systemState->instances.back()->run(std::move(status));

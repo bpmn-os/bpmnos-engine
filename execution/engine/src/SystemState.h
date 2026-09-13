@@ -173,7 +173,7 @@ private:
 
 
   void increaseTimeTo(BPMNOS::number time);
-  size_t instantiationCounter;
+  std::unordered_map< const BPMN::Process*, size_t > instantiationCounter; ///< Counter of the instances created for each process, used to disambiguate the identifier of an instance created by a trigger
 };
 
 } // namespace BPMNOS::Execution

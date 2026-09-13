@@ -266,7 +266,7 @@ set(BPMNOS_THIRDPARTY_INCLUDE_DIRS
 
 # bpmn++ parses the BPMN model. Declared rather than resolved from the system, so that a build succeeds on
 # a machine with nothing installed. Xerces-C arrives as a usage requirement of its exported target.
-set(BPMNPP_VERSION 0.1.0)
+set(BPMNPP_VERSION 0.1.1)
 set(BPMNPP_REF "v${BPMNPP_VERSION}")
 FetchContent_Declare(bpmnpp
   GIT_REPOSITORY https://github.com/bpmn-os/bpmnpp.git

@@ -143,18 +143,6 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const
 
     // add all operators
     if ( status->get().operators.has_value() ) {
-      if ( baseElement->is<XML::bpmn::tProcess>() ) {
-          throw std::runtime_error("ExtensionElements: process '"+  (std::string)baseElement->id.value().get().value + "' must not have operators");
-      }
-
-      if (
-        baseElement->is<XML::bpmn::tSubProcess>() && 
-        baseElement->is<XML::bpmn::tSubProcess>()->triggeredByEvent.has_value() &&
-        !(bool)baseElement->is<XML::bpmn::tSubProcess>()->triggeredByEvent.value().get().value
-      ) {
-          throw std::runtime_error("ExtensionElements: subprocess '"+  (std::string)baseElement->id.value().get().value + "' must not have operators");
-      } 
-    
       for ( XML::bpmnos::tOperator& operator_ : status->get().operators.value().get().operator_ ) {
         try {
           operators.push_back( std::make_unique<Operator>(&operator_,attributeRegistry) );
@@ -174,7 +162,30 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const
           operatorDependencies.insert(input);
         }
       }
-    }    
+
+      if ( !isInstantaneous ) {
+        // the operators of a scope are applied to the token at its start event, which is instantaneous,
+        // and the duration of a scope is the duration of what happens within it
+        if ( baseElement->is<XML::bpmn::tProcess>() || baseElement->is<XML::bpmn::tSubProcess>() ) {
+          throw std::runtime_error("ExtensionElements: operators of scope '" + (std::string)baseElement->id.value().get().value + "' must not modify timestamp");
+        }
+
+        // a send task completes when its message is delivered, a receive task when a message is
+        // delivered to it, and a decision task when the choices are made, so none of them may advance
+        // the timestamp by an operator of its own
+        bool isDecisionTask = false;
+        if ( auto task = baseElement->is<XML::bpmn::tTask>() ) {
+          if ( const auto& type = task->getOptionalAttributeByName("type");
+            type.has_value() && type->get().xmlns == "https://bpmnos.telematique.eu"
+          ) {
+            isDecisionTask = ( type->get().value.value == "Decision" );
+          }
+        }
+        if ( baseElement->is<XML::bpmn::tSendTask>() || baseElement->is<XML::bpmn::tReceiveTask>() || isDecisionTask ) {
+          throw std::runtime_error("ExtensionElements: operators of task '" + (std::string)baseElement->id.value().get().value + "' must not modify timestamp");
+        }
+      }
+    }
 
     // add all choices to be made
     if ( status->get().decisions.has_value() ) {

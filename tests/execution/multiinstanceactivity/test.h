@@ -359,3 +359,39 @@ SCENARIO( "Sequential multi instance subprocess with escalation", "[execution][m
   }
 }
 
+
+SCENARIO( "Multi-instance subprocess with operators", "[execution][multiinstanceactivity]" ) {
+  const std::string modelFile = "tests/execution/multiinstanceactivity/Multi-instance_subprocess_with_operators.bpmn";
+  REQUIRE_NOTHROW( Model::Model(modelFile) );
+
+  GIVEN( "A single instance with a cardinality of 3" ) {
+
+    std::string csv =
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1;\n"
+    ;
+
+    Model::StaticDataProvider dataProvider(modelFile,csv);
+    auto scenario = dataProvider.createScenario();
+
+    WHEN( "The engine is started with a recorder" ) {
+      Execution::Engine engine;
+      Execution::InstantEntry entryHandler;
+      Execution::InstantExit exitHandler;
+      Execution::TimeWarp timeHandler;
+      entryHandler.connect(&engine);
+      exitHandler.connect(&engine);
+      timeHandler.connect(&engine);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
+      recorder.subscribe(&engine);
+      engine.run(scenario.get());
+
+      THEN( "The operators of the multi-instance activity are applied once per instance" ) {
+        auto startLog = recorder.find(nlohmann::json{{"nodeId","StartEvent_2"},{"state", "COMPLETED"}});
+        REQUIRE( startLog.size() == 3 );
+        REQUIRE( startLog.back()["globals"]["counter"] == 3 );
+      }
+    }
+  }
+}

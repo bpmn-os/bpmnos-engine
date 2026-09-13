@@ -24,8 +24,8 @@ SCENARIO( "Intermediate escalation", "[execution][escalation]" ) {
       recorder.subscribe(&engine);
       engine.run(scenario.get());
       auto tokenLog = recorder.find(nlohmann::json{}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
-      THEN( "The token log has exactly 20 entries" ) {
-        REQUIRE( tokenLog.size() == 20 );
+      THEN( "The token log has exactly 22 entries" ) {
+        REQUIRE( tokenLog.size() == 22 );
       }
       THEN( "The dump of each entry of the token log is correct" ) {
         auto escalationEventLog = recorder.find(nlohmann::json{{"nodeId","EscalationEvent_1" }}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});

@@ -478,8 +478,11 @@ void Token::advanceToEntered() {
   auto engine = const_cast<Engine*>(owner->systemState->engine);
 
 
-  if ( node && node->represents<BPMN::UntypedStartEvent>() ) {
-    // initiate event subprocesses after entering untyped start event
+  if ( node && ( node->represents<BPMN::UntypedStartEvent>() ||
+    ( node->represents<BPMN::TypedStartEvent>() && node->parent->represents<BPMN::Process>() ) )
+  ) {
+    // initiate event subprocesses after entering the start event of the scope; a process instantiated by
+    // a trigger has a typed start event in place of an untyped one
     auto stateMachine = const_cast<StateMachine*>(owner);
     engine->commands.emplace_back(std::bind(&StateMachine::initiateEventSubprocesses,stateMachine,this), this);
   }
@@ -518,11 +521,11 @@ void Token::advanceToEntered() {
     // advance to busy state
     engine->commands.emplace_back(std::bind(&Token::advanceToBusy,this), this);
   }
-  else if ( node->represents<BPMN::CatchEvent>() && !node->represents<BPMN::UntypedStartEvent>()
-  ) {
+  else if ( node->represents<BPMN::CatchEvent>() ) {
 //std::cerr << "advance to busy state" << std::endl;
-    // tokens entering a catching event automatically
-    // advance to busy state
+    // tokens entering a catching event automatically advance to busy state; an untyped start event
+    // awaits no trigger, but passes through the same states so that the operators of the scope it
+    // starts are applied where every scope applies them
     engine->commands.emplace_back(std::bind(&Token::advanceToBusy,this), this);
   }
   else if ( node->represents<BPMN::EventBasedGateway>() ) {
@@ -601,31 +604,13 @@ void Token::advanceToBusy() {
       && !node->represents<BPMN::ReceiveTask>()
       && !node->represents<BPMNOS::Model::DecisionTask>()
     ) {
-    if ( auto extensionElements = node->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
-       extensionElements && extensionElements->operators.size()
-    ) {
-      // apply operators for regular tasks (if timestamp is in the future, updated status is an expectation)
-      auto now = owner->systemState->getTime();
-      status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = now;
-      auto oldObjective = globals[BPMNOS::Model::ExtensionElements::Index::Objective];
-      extensionElements->applyOperators(status,*data,globals);
-      if ( globals[BPMNOS::Model::ExtensionElements::Index::Objective] != oldObjective ) {
-        // dataUpdate indicating that objective has changed
-        owner->systemState->engine->notify( DataUpdate( { extensionElements->attributeRegistry.globalAttributes[BPMNOS::Model::ExtensionElements::Index::Objective] } ) );
-      }
-      if ( !status[BPMNOS::Model::ExtensionElements::Index::Timestamp].has_value() ) {
-        throw std::runtime_error("Token: timestamp at node '" + node->id + "' is deleted");
-      }
-      if ( node->represents<BPMN::SendTask>() && status[BPMNOS::Model::ExtensionElements::Index::Timestamp].value() != now) {
-        throw std::runtime_error("Token: Operators for task '" + node->id + "' attempt to modify timestamp");
-      }
-      // notify about data update
-      if ( extensionElements->dataUpdate.global ) {
-        owner->systemState->engine->notify( DataUpdate( extensionElements->dataUpdate.attributes ) );
-      }
-      else {
-        owner->systemState->engine->notify( DataUpdate( owner->root->instance.value(), extensionElements->dataUpdate.attributes ) );
-      }
+    // apply operators for regular tasks (if timestamp is in the future, updated status is an expectation)
+    auto now = owner->systemState->getTime();
+    status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = now;
+    applyOperators( node->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );
+
+    if ( !status[BPMNOS::Model::ExtensionElements::Index::Timestamp].has_value() ) {
+      throw std::runtime_error("Token: timestamp at node '" + node->id + "' is deleted");
     }
   }
     
@@ -690,6 +675,17 @@ void Token::advanceToBusy() {
     // token will automatically be copied and forwarded along each sequence flow
     auto engine = const_cast<Engine*>(owner->systemState->engine);
     engine->commands.emplace_back(std::bind(&Token::advanceToDeparting,this), this);
+  }
+  else if ( node->represents<BPMN::UntypedStartEvent>() ) {
+    // an untyped start event awaits no trigger and completes at once
+    auto engine = const_cast<Engine*>(owner->systemState->engine);
+    engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,this), this);
+  }
+  else if ( node->represents<BPMN::TypedStartEvent>() && node->parent->represents<BPMN::Process>() ) {
+    // the instance exists because the start event was triggered, and the content of the trigger is
+    // already part of the status it was created with, so the token does not await a trigger of its own
+    auto engine = const_cast<Engine*>(owner->systemState->engine);
+    engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,this), this);
   }
   else if ( node->represents<BPMN::TimerCatchEvent>() ) {
     // determine time
@@ -772,9 +768,6 @@ void Token::advanceToCompleted() {
       node->represents<BPMNOS::Model::DecisionTask>()
     ) {
       if ( auto extensionElements = node->extensionElements->represents<BPMNOS::Model::ExtensionElements>() ) {
-        if ( !extensionElements->isInstantaneous ) {
-          throw std::runtime_error("Token: Operators for task '" + node->id + "' attempt to modify timestamp");
-        }
         auto oldObjective = globals[BPMNOS::Model::ExtensionElements::Index::Objective];
         extensionElements->applyOperators(status,*data,globals);
         if ( globals[BPMNOS::Model::ExtensionElements::Index::Objective] != oldObjective ) {
@@ -798,32 +791,15 @@ void Token::advanceToCompleted() {
       auto scenario = owner->systemState->scenario;
       status = scenario->getTaskCompletionStatus(owner->root->instance.value(),node,status,*data,globals);
     }
-    // operators of event subprocesses are applied on completion of typed start event
-    else if ( node->represents<BPMN::TypedStartEvent>() ) {
-      auto eventSubProcess = node->parent->represents<BPMN::EventSubProcess>();
-      if ( !eventSubProcess ) {
-        throw std::runtime_error("Token: typed start event must belong to event subprocess");
-      }
-      if ( auto extensionElements = eventSubProcess->extensionElements->represents<BPMNOS::Model::ExtensionElements>() ) {
-        if ( !extensionElements->isInstantaneous ) {
-          throw std::runtime_error("Token: Operators for event-subprocess '" + eventSubProcess->id + "' attempt to modify timestamp");
-        }
-        // the event subprocess is instantiated here, so the objective values is updated here
+    // a start event has no operators of its own; the token at it applies the operators of the scope it
+    // starts, the scope being entered here
+    else if ( node->represents<BPMN::UntypedStartEvent>() || node->represents<BPMN::TypedStartEvent>() ) {
+      if ( node->parent->represents<BPMN::EventSubProcess>() ) {
+        // the event subprocess is instantiated here, so the objective value is updated here; a process or
+        // subprocess accounted its objective when its state machine was created
         const_cast<StateMachine*>(owner)->updateObjective();
-        auto oldObjective = globals[BPMNOS::Model::ExtensionElements::Index::Objective];
-        extensionElements->applyOperators(status,*data,globals);
-        if ( globals[BPMNOS::Model::ExtensionElements::Index::Objective] != oldObjective ) {
-          // dataUpdate indicating that objective has changed
-          owner->systemState->engine->notify( DataUpdate( { extensionElements->attributeRegistry.globalAttributes[BPMNOS::Model::ExtensionElements::Index::Objective] } ) );
-        }
-        // notify about data update
-        if ( extensionElements->dataUpdate.global ) {
-          owner->systemState->engine->notify( DataUpdate( extensionElements->dataUpdate.attributes ) );
-        }
-        else {
-          owner->systemState->engine->notify( DataUpdate( owner->root->instance.value(), extensionElements->dataUpdate.attributes ) );
-        }
       }
+      applyOperators( node->parent->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );
     }
 
     if ( node->represents<BPMN::MessageCatchEvent>() && !node->represents<BPMN::ReceiveTask>() ) {
@@ -937,11 +913,26 @@ void Token::advanceToCompleted() {
     else if ( node->represents<BPMN::CompensateStartEvent>() ) {
       // nothing do
     } 
+    else if ( node->represents<BPMN::UntypedStartEvent>() ||
+      ( node->represents<BPMN::TypedStartEvent>() && node->parent->represents<BPMN::Process>() )
+    ) {
+      // there is no pending scope to promote and no further instance to arm, so only the entry
+      // restrictions of the scope are checked, against the status its operators have just produced
+      auto extensionElements = node->parent->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+      if ( !extensionElements->feasibleEntry(status,*data,globals) ) {
+        engine->commands.emplace_back(std::bind(&Token::advanceToFailed,this), this);
+      }
+      else if ( node->outgoing.empty() ) {
+        engine->commands.emplace_back(std::bind(&Token::advanceToDone,this), this);
+      }
+      else {
+        advanceToDeparting();
+      }
+      return;
+    }
     else if ( auto startEvent = node->represents<BPMN::TypedStartEvent>() ) {
       // event subprocess is triggered
-      if ( !node->parent->represents<BPMN::EventSubProcess>() ) {
-        throw std::runtime_error("Token: typed start event must belong to event subprocess");
-      }
+      assert( node->parent->represents<BPMN::EventSubProcess>() );
       auto context = const_cast<StateMachine*>(owner->parentToken->owned.get());
 
 /*
@@ -1448,16 +1439,41 @@ void Token::withdraw() {
   }
 }
 
+void Token::applyOperators(const BPMNOS::Model::ExtensionElements* extensionElements) {
+  assert( status[BPMNOS::Model::ExtensionElements::Index::Timestamp] == owner->systemState->getTime() );
+
+  if ( !extensionElements || !extensionElements->operators.size() ) {
+    return;
+  }
+
+  auto oldObjective = globals[BPMNOS::Model::ExtensionElements::Index::Objective];
+  extensionElements->applyOperators(status,*data,globals);
+
+  if ( globals[BPMNOS::Model::ExtensionElements::Index::Objective] != oldObjective ) {
+    // dataUpdate indicating that objective has changed
+    owner->systemState->engine->notify( DataUpdate( { extensionElements->attributeRegistry.globalAttributes[BPMNOS::Model::ExtensionElements::Index::Objective] } ) );
+  }
+
+  // notify about data update
+  if ( extensionElements->dataUpdate.global ) {
+    owner->systemState->engine->notify( DataUpdate( extensionElements->dataUpdate.attributes ) );
+  }
+  else {
+    owner->systemState->engine->notify( DataUpdate( owner->root->instance.value(), extensionElements->dataUpdate.attributes ) );
+  }
+}
+
 void Token::emitSignal() {
   auto systemState = const_cast<SystemState*>(owner->systemState);
   assert( node->extensionElements->represents<BPMNOS::Model::Signal>() );
   auto signalDefinition = node->extensionElements->as<BPMNOS::Model::Signal>();
 
+  // determine signal content before it is received anywhere; a recipient writing a global would
+  // otherwise change what a later reader of the content obtains
+  VariedValueMap contentValueMap = getSignalContent(signalDefinition->contentMap);
+
   auto& waitingTokens = systemState->tokensAwaitingSignal[signalDefinition->name];
   if ( !waitingTokens.empty() ) {
-    // determine signal content
-    VariedValueMap contentValueMap = getSignalContent(signalDefinition->contentMap);
-
     for ( auto& [token_ptr] : waitingTokens ) {
       auto token = token_ptr.lock();
       assert( token );
@@ -1469,6 +1485,15 @@ void Token::emitSignal() {
       engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,token.get()), token.get());
     }
     waitingTokens.clear();
+  }
+
+  // instantiate the process the signal triggers, if any
+  auto& processesTriggeredBySignal = systemState->scenario->getModel()->processesTriggeredBySignal;
+  if ( auto it = processesTriggeredBySignal.find(signalDefinition->name); it != processesTriggeredBySignal.end() ) {
+    auto engine = const_cast<Engine*>(owner->systemState->engine);
+    // the instantiation is enqueued rather than performed here, so that a process throwing the signal
+    // instantiating it does not recurse through the stack of the throwing token
+    engine->commands.emplace_back( std::bind(&Engine::triggerInstance, engine, it->second, contentValueMap) );
   }
 }
 

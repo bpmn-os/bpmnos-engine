@@ -35,7 +35,7 @@ SCENARIO( "Failed task", "[execution][boundaryevent]" ) {
         auto failureLog = recorder.find(nlohmann::json{{"state", "FAILED"}});
         REQUIRE( failureLog[0]["nodeId"] == "Activity_1" );
 
-        auto completionLog = recorder.find(nlohmann::json{{"state", "COMPLETED"}}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
+        auto completionLog = recorder.find(nlohmann::json{{"state", "COMPLETED"}}, nlohmann::json{{"event",nullptr },{"decision",nullptr },{"nodeId","StartEvent_1"}});
         REQUIRE( completionLog[0]["nodeId"] == "Activity_1" );
         REQUIRE( completionLog[1]["nodeId"] == "BoundaryEvent_1" );
         REQUIRE( completionLog[2]["nodeId"] == nullptr );
@@ -85,10 +85,11 @@ SCENARIO( "Failed subprocess", "[execution][boundaryevent]" ) {
         auto withdrawnLog = recorder.find(nlohmann::json{{"state", "WITHDRAWN"}}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
         REQUIRE( withdrawnLog[0]["nodeId"] == "BoundaryEvent_2" );
 
-        auto completionLog = recorder.find(nlohmann::json{{"state", "COMPLETED"}}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
-        REQUIRE( completionLog[0]["nodeId"] == "BoundaryEvent_2" );
-        REQUIRE( completionLog[1]["nodeId"] == "BoundaryEvent_1" );
-        REQUIRE( completionLog[2]["nodeId"] == nullptr );
+        auto completionLog = recorder.find(nlohmann::json{{"state", "COMPLETED"}}, nlohmann::json{{"event",nullptr },{"decision",nullptr },{"nodeId","StartEvent_1"}});
+        REQUIRE( completionLog[0]["nodeId"] == "StartEvent_2" );
+        REQUIRE( completionLog[1]["nodeId"] == "BoundaryEvent_2" );
+        REQUIRE( completionLog[2]["nodeId"] == "BoundaryEvent_1" );
+        REQUIRE( completionLog[3]["nodeId"] == nullptr );
 
         auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr },{"event",nullptr },{"decision",nullptr }});
         REQUIRE( processLog[0]["state"] == "ENTERED" );
