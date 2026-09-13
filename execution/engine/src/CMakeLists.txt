@@ -1,6 +1,7 @@
 list(APPEND engine_SOURCES
   Notifier.cpp
   Message.cpp
+  Signal.cpp
   MessageDeliveryRequest.cpp
   Token.cpp
   ConditionalEventObserver.cpp
@@ -30,6 +31,7 @@ list(APPEND engine_HEADERS
   Observer.h
   Notifier.h
   Message.h
+  Signal.h
   Token.h
   SequentialPerformerUpdate.h
   DataUpdate.h

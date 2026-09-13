@@ -26,7 +26,12 @@ SCENARIO( "Two processes with signal", "[execution][signal]" ) {
       engine.run(scenario.get(), 0, 2);
       THEN( "The signal is emitted before it can be received" ) {
         auto recipientLog =recorder.find(nlohmann::json{{"nodeId","SignalEvent_2"},{"state", "COMPLETED"}});
-        REQUIRE( recipientLog.size() == 0 ); 
+        REQUIRE( recipientLog.size() == 0 );
+      }
+      AND_THEN( "The signal is recorded although nobody receives it" ) {
+        auto signalLog = recorder.find(nlohmann::json{{"name","Signal"}});
+        REQUIRE( signalLog.size() == 1 );
+        REQUIRE( !signalLog.front()["content"]["Emitter"].is_null() );
       }
     }
 
@@ -53,8 +58,13 @@ SCENARIO( "Two processes with signal", "[execution][signal]" ) {
       engine.run(scenario.get());
       THEN( "The signal is received" ) {
         auto recipientLog =recorder.find(nlohmann::json{{"nodeId","SignalEvent_2"},{"state", "COMPLETED"}});
-        REQUIRE( recipientLog.size() == 1 ); 
-        REQUIRE( recipientLog.front()["status"]["emitter"] == "Instance_1" ); 
+        REQUIRE( recipientLog.size() == 1 );
+        REQUIRE( recipientLog.front()["status"]["emitter"] == "Instance_1" );
+      }
+      AND_THEN( "The signal is recorded once, with the content it carries" ) {
+        auto signalLog = recorder.find(nlohmann::json{{"name","Signal"}});
+        REQUIRE( signalLog.size() == 1 );
+        REQUIRE( !signalLog.front()["content"]["Emitter"].is_null() );
       }
     }
 
@@ -82,9 +92,12 @@ SCENARIO( "Two processes with signal", "[execution][signal]" ) {
       engine.run(scenario.get());
       THEN( "The signal is received by both recipients" ) {
         auto recipientLog =recorder.find(nlohmann::json{{"nodeId","SignalEvent_2"},{"state", "COMPLETED"}});
-        REQUIRE( recipientLog.size() == 2 ); 
-        REQUIRE( recipientLog.front()["status"]["emitter"] == "Instance_1" ); 
-        REQUIRE( recipientLog.back()["status"]["emitter"] == "Instance_1" ); 
+        REQUIRE( recipientLog.size() == 2 );
+        REQUIRE( recipientLog.front()["status"]["emitter"] == "Instance_1" );
+        REQUIRE( recipientLog.back()["status"]["emitter"] == "Instance_1" );
+      }
+      AND_THEN( "One signal is recorded, however many receive it" ) {
+        REQUIRE( recorder.find(nlohmann::json{{"name","Signal"}}).size() == 1 );
       }
     }
 
@@ -113,8 +126,13 @@ SCENARIO( "Two processes with signal", "[execution][signal]" ) {
       engine.run(scenario.get());
       THEN( "The one of the signals is received by both recipients" ) {
         auto recipientLog =recorder.find(nlohmann::json{{"nodeId","SignalEvent_2"},{"state", "COMPLETED"}});
-        REQUIRE( recipientLog.size() == 2 ); 
+        REQUIRE( recipientLog.size() == 2 );
         REQUIRE( recipientLog.front()["status"]["emitter"] == recipientLog.back()["status"]["emitter"] );
+      }
+      AND_THEN( "Each emitter records a signal of its own, the second reaching nobody" ) {
+        auto signalLog = recorder.find(nlohmann::json{{"name","Signal"}});
+        REQUIRE( signalLog.size() == 2 );
+        REQUIRE( signalLog.front()["content"]["Emitter"] != signalLog.back()["content"]["Emitter"] );
       }
     }
 

@@ -1,6 +1,7 @@
 #include "Recorder.h"
 #include "execution/engine/src/StateMachine.h"
 #include "execution/engine/src/SystemState.h"
+#include "execution/engine/src/Signal.h"
 
 using namespace BPMNOS::Execution;
 
@@ -71,6 +72,9 @@ void Recorder::subscribe(Engine* engine) {
   if ( config.message ) {
     engine->addSubscriber(this, Execution::Observable::Type::Message);
   }
+  if ( config.signal ) {
+    engine->addSubscriber(this, Execution::Observable::Type::Signal);
+  }
 }
 
 void Recorder::notice(const Observable* observable) {
@@ -85,6 +89,10 @@ void Recorder::notice(const Observable* observable) {
   else if ( observable->getObservableType() ==  Execution::Observable::Type::Message ) {
     auto message = static_cast<const Message*>(observable);
     record( message->jsonify(), "message", Color::FG_LIGHT_YELLOW );
+  }
+  else if ( observable->getObservableType() ==  Execution::Observable::Type::Signal ) {
+    auto signal = static_cast<const Signal*>(observable);
+    record( signal->jsonify(), "signal", Color::FG_YELLOW );
   }
 
 };

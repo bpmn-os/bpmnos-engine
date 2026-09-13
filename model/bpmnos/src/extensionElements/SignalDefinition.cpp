@@ -1,4 +1,4 @@
-#include "Signal.h"
+#include "SignalDefinition.h"
 #include "ExtensionElements.h"
 #include "model/utility/src/Keywords.h"
 #include "model/bpmnos/src/xml/bpmnos/tSignal.h"
@@ -7,7 +7,7 @@
 
 using namespace BPMNOS::Model;
 
-Signal::Signal(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent)
+SignalDefinition::SignalDefinition(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent)
   : BPMN::ExtensionElements( baseElement ) 
   , parent(parent)
   , attributeRegistry(parent->extensionElements->as<BPMNOS::Model::ExtensionElements>()->attributeRegistry)

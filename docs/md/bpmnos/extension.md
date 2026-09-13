@@ -208,6 +208,26 @@ Several elements may throw it, each instantiating a process of its own, and a mu
 A process cannot send itself a message, a message flow connecting two participants, so the message must be thrown outside the process it instantiates.
 The instance receives a generated identifier and is created with the content of the message in its status.
 
+## Signals
+@ref BPMNOS::Model::SignalDefinition "Signals" can be used to broadcast a @ref BPMNOS::Model::Content "content" to whoever is listening for them.
+
+For @ref BPMN::SignalThrowEvent "signal throw events" and @ref BPMN::SignalCatchEvent "signal catch events" a `<bpmnos:signal>` element must be provided with field `name` representing a name of the signal, and it may contain one or more `<bpmnos:content>` elements defining the content the signal carries, each with the fields `key` and `attribute` that a message content has.
+
+A signal has no header and no parameters, and this is what distinguishes it from a message. A message is delivered to one recipient, which is chosen among those a message flow and a matching header admit; a signal is broadcast to every element waiting for a signal of that name at the moment it is thrown, and to none if nothing is waiting, in which case it is simply lost. It states no sender and no recipient, so a model that wants the thrower known declares it as part of the content, as the following example does.
+
+```xml
+<bpmn2:extensionElements>
+  <bpmnos:signal name="Cancellation">
+    <bpmnos:content key="Origin" attribute="instance" />
+    <bpmnos:content key="Reason" attribute="reason" />
+  </bpmnos:signal>
+</bpmn2:extensionElements>
+```
+
+The content is read from the attributes of the throwing element when the signal is thrown, and it is fixed at that moment, so that a recipient modifying a global attribute cannot change what another recipient receives. Each recipient declares under the same key the attribute the value is written to, and those attributes need not be named alike, which is what the key is for. A key a recipient declares but the signal does not carry leaves that attribute undefined.
+
+A signal may also instantiate a process, which it does where the process has a @ref BPMN::SignalStartEvent "signal start event". Such a process is instantiated whenever a signal of that name is thrown, including by itself, the specification giving no ground to forbid a process instantiating itself where a signal rather than a message carries the trigger. An unguarded re-throw does not terminate.
+
 ## Timer
 The trigger for a @ref BPMN::TimerCatchEvent "timer event" can be specified by providing a parameter with name `trigger` and value being an expression as shown in the following example.
 

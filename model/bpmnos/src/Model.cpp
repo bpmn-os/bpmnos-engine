@@ -8,7 +8,7 @@
 #include "extensionElements/ExtensionElements.h"
 #include "extensionElements/Gatekeeper.h"
 #include "extensionElements/Timer.h"
-#include "extensionElements/Signal.h"
+#include "extensionElements/SignalDefinition.h"
 #include "extensionElements/Conditions.h"
 #include "extensionElements/MessageDefinition.h"
 #include "DecisionTask.h"
@@ -273,7 +273,7 @@ std::unique_ptr<BPMN::FlowNode> Model::createTimerCatchEvent(XML::bpmn::tCatchEv
 }
 
 std::unique_ptr<BPMN::FlowNode> Model::createSignalStartEvent(XML::bpmn::tStartEvent* startEvent, BPMN::Scope* parent) {
-  auto signal = std::make_unique<Signal>(startEvent,parent);
+  auto signal = std::make_unique<SignalDefinition>(startEvent,parent);
 
   if ( auto process = parent->represents<BPMN::Process>() ) {
     // the process is instantiated whenever a signal with this name is thrown
@@ -294,7 +294,7 @@ std::unique_ptr<BPMN::FlowNode> Model::createSignalBoundaryEvent(XML::bpmn::tBou
   // bind signal
   return bind<BPMN::FlowNode>(
     BPMN::Model::createSignalBoundaryEvent(boundaryEvent,parent),
-    std::make_unique<Signal>(boundaryEvent,parent)
+    std::make_unique<SignalDefinition>(boundaryEvent,parent)
   );
 }
 
@@ -302,7 +302,7 @@ std::unique_ptr<BPMN::FlowNode> Model::createSignalCatchEvent(XML::bpmn::tCatchE
   // bind signal
   return bind<BPMN::FlowNode>(
     BPMN::Model::createSignalCatchEvent(catchEvent,parent),
-    std::make_unique<Signal>(catchEvent,parent)
+    std::make_unique<SignalDefinition>(catchEvent,parent)
   );
 }
 
@@ -310,7 +310,7 @@ std::unique_ptr<BPMN::FlowNode> Model::createSignalThrowEvent(XML::bpmn::tThrowE
   // bind signal
   return bind<BPMN::FlowNode>(
     BPMN::Model::createSignalThrowEvent(throwEvent,parent),
-    std::make_unique<Signal>(throwEvent,parent)
+    std::make_unique<SignalDefinition>(throwEvent,parent)
   );
 }
 

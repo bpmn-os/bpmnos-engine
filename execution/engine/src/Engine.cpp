@@ -5,7 +5,7 @@
 #include "ConditionalEventObserver.h"
 #include "execution/controller/src/Decision.h"
 #include "model/bpmnos/src/extensionElements/ExtensionElements.h"
-#include "model/bpmnos/src/extensionElements/Signal.h"
+#include "model/bpmnos/src/extensionElements/SignalDefinition.h"
 #include "model/bpmnos/src/SequentialAdHocSubProcess.h"
 #include "model/bpmnos/src/DecisionTask.h"
 #include "execution/engine/src/events/TimerEvent.h"
@@ -170,6 +170,32 @@ bool Engine::advance(BPMNOS::number endTime) {
   return true;
 }
 
+void Engine::broadcastSignal(Signal signal) {
+  // the signal is announced before it is delivered anywhere, so that what is observed is the signal
+  // rather than what it causes
+  notify(&signal);
+
+  auto& waitingTokens = systemState->tokensAwaitingSignal[signal.name];
+  for ( auto& [token_ptr] : waitingTokens ) {
+    auto token = token_ptr.lock();
+    assert( token );
+    // receive signal content
+    token->setSignalContent(signal.content);
+
+    // advance receiving token
+    commands.emplace_back(std::bind(&Token::advanceToCompleted,token.get()), token.get());
+  }
+  waitingTokens.clear();
+
+  // instantiate the process the signal triggers, if any
+  auto& processesTriggeredBySignal = systemState->scenario->getModel()->processesTriggeredBySignal;
+  if ( auto it = processesTriggeredBySignal.find(signal.name); it != processesTriggeredBySignal.end() ) {
+    // the instantiation is enqueued rather than performed here, so that a process throwing the signal
+    // instantiating it does not recurse through the stack of the broadcast
+    commands.emplace_back( std::bind(&Engine::triggerInstance, this, it->second, signal.content) );
+  }
+}
+
 void Engine::triggerInstance(const BPMN::Process* process, BPMNOS::VariedValueMap content) {
   auto extensionElements = process->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   auto& attributeRegistry = extensionElements->attributeRegistry;
@@ -194,7 +220,7 @@ void Engine::triggerInstance(const BPMN::Process* process, BPMNOS::VariedValueMa
   const BPMNOS::Model::ContentMap* contentMap;
   const std::vector<const BPMNOS::Model::Attribute*>* dataUpdateAttributes;
   bool dataUpdateIsGlobal;
-  if ( auto signalDefinition = startNode->extensionElements->represents<BPMNOS::Model::Signal>() ) {
+  if ( auto signalDefinition = startNode->extensionElements->represents<BPMNOS::Model::SignalDefinition>() ) {
     contentMap = &signalDefinition->contentMap;
     dataUpdateAttributes = &signalDefinition->dataUpdate.attributes;
     dataUpdateIsGlobal = signalDefinition->dataUpdate.global;

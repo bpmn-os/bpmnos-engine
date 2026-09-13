@@ -1,5 +1,5 @@
-#ifndef BPMNOS_Model_Signal_H
-#define BPMNOS_Model_Signal_H
+#ifndef BPMNOS_Model_SignalDefinition_H
+#define BPMNOS_Model_SignalDefinition_H
 
 #include <memory>
 #include <vector>
@@ -12,11 +12,14 @@
 namespace BPMNOS::Model {
 
 /**
- * @brief Class holding extension elements representing the definition of signal events 
+ * @brief Class holding extension elements representing the definition of signal events
+ *
+ * The counterpart of @ref MessageDefinition for signals. It is what a node declares; the signal a run
+ * broadcasts is @ref BPMNOS::Execution::Signal.
  **/
-class Signal : public BPMN::ExtensionElements {
+class SignalDefinition : public BPMN::ExtensionElements {
 public:
-  Signal(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent);
+  SignalDefinition(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent);
   const BPMN::Scope* parent;
   const AttributeRegistry& attributeRegistry;
   BPMNOS::number name; ///< Signal name
@@ -26,4 +29,4 @@ public:
 
 } // namespace BPMNOS::Model
 
-#endif // BPMNOS_Model_Signal_H
+#endif // BPMNOS_Model_SignalDefinition_H

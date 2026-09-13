@@ -9,7 +9,7 @@
 #include "model/bpmnos/src/extensionElements/Gatekeeper.h"
 #include "model/bpmnos/src/extensionElements/MessageDefinition.h"
 #include "model/bpmnos/src/extensionElements/Timer.h"
-#include "model/bpmnos/src/extensionElements/Signal.h"
+#include "model/bpmnos/src/extensionElements/SignalDefinition.h"
 #include "model/bpmnos/src/extensionElements/Conditions.h"
 #include "model/bpmnos/src/SequentialAdHocSubProcess.h"
 #include "model/bpmnos/src/DecisionTask.h"
@@ -706,8 +706,8 @@ void Token::advanceToBusy() {
   }
   else if ( node->represents<BPMN::SignalCatchEvent>() ) {
     // determine signal name
-    assert( node->extensionElements->represents<BPMNOS::Model::Signal>() );
-    awaitSignal( node->extensionElements->as<BPMNOS::Model::Signal>()->name );
+    assert( node->extensionElements->represents<BPMNOS::Model::SignalDefinition>() );
+    awaitSignal( node->extensionElements->as<BPMNOS::Model::SignalDefinition>()->name );
   }
   else if ( node->represents<BPMN::ConditionalCatchEvent>() ) {
     // determine conditions
@@ -1464,37 +1464,17 @@ void Token::applyOperators(const BPMNOS::Model::ExtensionElements* extensionElem
 }
 
 void Token::emitSignal() {
-  auto systemState = const_cast<SystemState*>(owner->systemState);
-  assert( node->extensionElements->represents<BPMNOS::Model::Signal>() );
-  auto signalDefinition = node->extensionElements->as<BPMNOS::Model::Signal>();
+  assert( node->extensionElements->represents<BPMNOS::Model::SignalDefinition>() );
+  auto signalDefinition = node->extensionElements->as<BPMNOS::Model::SignalDefinition>();
 
   // determine signal content before it is received anywhere; a recipient writing a global would
   // otherwise change what a later reader of the content obtains
-  VariedValueMap contentValueMap = getSignalContent(signalDefinition->contentMap);
+  Signal signal( signalDefinition->name, getSignalContent(signalDefinition->contentMap) );
 
-  auto& waitingTokens = systemState->tokensAwaitingSignal[signalDefinition->name];
-  if ( !waitingTokens.empty() ) {
-    for ( auto& [token_ptr] : waitingTokens ) {
-      auto token = token_ptr.lock();
-      assert( token );
-      // receive signal content
-      token->setSignalContent(contentValueMap);
-      
-      // advance receiving token
-      auto engine = const_cast<Engine*>(owner->systemState->engine);
-      engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,token.get()), token.get());
-    }
-    waitingTokens.clear();
-  }
-
-  // instantiate the process the signal triggers, if any
-  auto& processesTriggeredBySignal = systemState->scenario->getModel()->processesTriggeredBySignal;
-  if ( auto it = processesTriggeredBySignal.find(signalDefinition->name); it != processesTriggeredBySignal.end() ) {
-    auto engine = const_cast<Engine*>(owner->systemState->engine);
-    // the instantiation is enqueued rather than performed here, so that a process throwing the signal
-    // instantiating it does not recurse through the stack of the throwing token
-    engine->commands.emplace_back( std::bind(&Engine::triggerInstance, engine, it->second, contentValueMap) );
-  }
+  // the broadcast is enqueued so that token advances already scheduled are made before the signal is
+  // delivered: a token on its way to a catching signal event when the signal is thrown still receives it
+  auto engine = const_cast<Engine*>(owner->systemState->engine);
+  engine->commands.emplace_back( std::bind(&Engine::broadcastSignal, engine, std::move(signal)) );
 }
 
 BPMNOS::VariedValueMap Token::getSignalContent(const BPMNOS::Model::ContentMap& contentMap) {
@@ -1508,8 +1488,8 @@ BPMNOS::VariedValueMap Token::getSignalContent(const BPMNOS::Model::ContentMap& 
 
 void Token::setSignalContent(BPMNOS::VariedValueMap& sourceMap) {
   auto& attributeRegistry = getAttributeRegistry();
-  assert( node->extensionElements->represents<BPMNOS::Model::Signal>() );
-  auto signalDefinition = node->extensionElements->as<BPMNOS::Model::Signal>();
+  assert( node->extensionElements->represents<BPMNOS::Model::SignalDefinition>() );
+  auto signalDefinition = node->extensionElements->as<BPMNOS::Model::SignalDefinition>();
 
   auto oldObjective = globals[BPMNOS::Model::ExtensionElements::Index::Objective];
 

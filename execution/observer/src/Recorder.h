@@ -56,6 +56,7 @@ public:
     bool token = true; ///< If true, record token observables.
     bool event = true; ///< If true, record event observables.
     bool message = true; ///< If true, record message observables.
+    bool signal = true; ///< If true, record signal observables.
     bool tagged = false; ///< If true, wrap each entry as {"<type>": payload} in both the stream and the in-memory log.
     size_t maxSize = std::numeric_limits<size_t>::max();
   };

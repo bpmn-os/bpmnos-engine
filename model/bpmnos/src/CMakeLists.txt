@@ -21,7 +21,7 @@ set(bpmn_SOURCES
   extensionElements/ExtensionElements.cpp
   extensionElements/Gatekeeper.cpp
   extensionElements/Timer.cpp
-  extensionElements/Signal.cpp
+  extensionElements/SignalDefinition.cpp
   extensionElements/Conditions.cpp
   DecisionTask.cpp
   SequentialAdHocSubProcess.cpp
@@ -43,7 +43,7 @@ set(bpmn_HEADERS
   extensionElements/ExtensionElements.h
   extensionElements/Gatekeeper.h
   extensionElements/Timer.h
-  extensionElements/Signal.h
+  extensionElements/SignalDefinition.h
   extensionElements/Conditions.h
   DecisionTask.h
   SequentialAdHocSubProcess.h

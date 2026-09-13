@@ -8,7 +8,7 @@
 #include "execution/utility/src/erase.h"
 #include "model/bpmnos/src/extensionElements/ExtensionElements.h"
 #include "model/bpmnos/src/extensionElements/Timer.h"
-#include "model/bpmnos/src/extensionElements/Signal.h"
+#include "model/bpmnos/src/extensionElements/SignalDefinition.h"
 #include "model/bpmnos/src/DecisionTask.h"
 #include "model/bpmnos/src/SequentialAdHocSubProcess.h"
 #include "model/utility/src/CollectionRegistry.h"
@@ -133,7 +133,7 @@ StateMachine::StateMachine(const SystemState* systemState, Token* parentToken, c
       token->node && token->node->represents<BPMN::SignalCatchEvent>() && 
       token->state == Token::State::BUSY
     ) {
-      auto signalName = token->node->extensionElements->as<BPMNOS::Model::Signal>()->name;
+      auto signalName = token->node->extensionElements->as<BPMNOS::Model::SignalDefinition>()->name;
       assert(other->systemState->tokensAwaitingSignal.at(signalName).find(otherToken.get()) != other->systemState->tokensAwaitingSignal.at(signalName).end());
       const_cast<SystemState*>(systemState)->tokensAwaitingSignal[signalName].emplace_back(token);
     }

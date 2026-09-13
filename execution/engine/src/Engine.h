@@ -17,6 +17,7 @@
 //#include "Notifier.h"
 #include "Mediator.h"
 #include "EventDispatcher.h"
+#include "Signal.h"
 #include "SystemState.h"
 #include "ConditionalEventObserver.h"
 #include "ScenarioUpdater.h"
@@ -172,6 +173,17 @@ protected:
   void processCommands(); ///< Method executing all enqueued commands, including those enqueued by a command being executed
 
   void addInstances(); ///< Method adding all new instances and advancing tokens as much as possible
+
+  /// @brief Method broadcasting a signal to every token awaiting it and instantiating the process it
+  /// triggers, if any.
+  ///
+  /// The signal is announced before it is delivered anywhere, so that what is observed is the signal
+  /// rather than what it causes. It is taken by value because it is broadcast from a command and the
+  /// content it carries is fixed where the signal arises.
+  ///
+  /// Called for a signal thrown at a @ref BPMN::SignalThrowEvent "signal throw event" and for one the
+  /// environment raises, so that a signal from outside reaches recipients exactly as one from inside.
+  void broadcastSignal(Signal signal);
 
   /// @brief Method creating an instance of a process whenever the message or signal triggering it is
   /// thrown.
