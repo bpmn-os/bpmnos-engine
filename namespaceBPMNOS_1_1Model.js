@@ -14,7 +14,7 @@ var namespaceBPMNOS_1_1Model =
     [ "Operator", "classBPMNOS_1_1Model_1_1Operator.html", "classBPMNOS_1_1Model_1_1Operator" ],
     [ "Parameter", "classBPMNOS_1_1Model_1_1Parameter.html", "classBPMNOS_1_1Model_1_1Parameter" ],
     [ "Restriction", "classBPMNOS_1_1Model_1_1Restriction.html", "classBPMNOS_1_1Model_1_1Restriction" ],
-    [ "Signal", "classBPMNOS_1_1Model_1_1Signal.html", "classBPMNOS_1_1Model_1_1Signal" ],
+    [ "SignalDefinition", "classBPMNOS_1_1Model_1_1SignalDefinition.html", "classBPMNOS_1_1Model_1_1SignalDefinition" ],
     [ "Timer", "classBPMNOS_1_1Model_1_1Timer.html", "classBPMNOS_1_1Model_1_1Timer" ],
     [ "LookupTable", "classBPMNOS_1_1Model_1_1LookupTable.html", "classBPMNOS_1_1Model_1_1LookupTable" ],
     [ "Model", "classBPMNOS_1_1Model_1_1Model.html", "classBPMNOS_1_1Model_1_1Model" ],

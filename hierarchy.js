@@ -51,7 +51,7 @@ var hierarchy =
         [ "BPMNOS::Model::Conditions", "classBPMNOS_1_1Model_1_1Conditions.html", null ],
         [ "BPMNOS::Model::ExtensionElements", "classBPMNOS_1_1Model_1_1ExtensionElements.html", null ],
         [ "BPMNOS::Model::Gatekeeper", "classBPMNOS_1_1Model_1_1Gatekeeper.html", null ],
-        [ "BPMNOS::Model::Signal", "classBPMNOS_1_1Model_1_1Signal.html", null ],
+        [ "BPMNOS::Model::SignalDefinition", "classBPMNOS_1_1Model_1_1SignalDefinition.html", null ],
         [ "BPMNOS::Model::Timer", "classBPMNOS_1_1Model_1_1Timer.html", null ]
       ] ]
     ] ],
@@ -156,6 +156,7 @@ var hierarchy =
       [ "BPMNOS::Execution::Event", "structBPMNOS_1_1Execution_1_1Event.html", null ],
       [ "BPMNOS::Execution::Message", "classBPMNOS_1_1Execution_1_1Message.html", null ],
       [ "BPMNOS::Execution::SequentialPerformerUpdate", "structBPMNOS_1_1Execution_1_1SequentialPerformerUpdate.html", null ],
+      [ "BPMNOS::Execution::Signal", "classBPMNOS_1_1Execution_1_1Signal.html", null ],
       [ "BPMNOS::Execution::SystemState", "classBPMNOS_1_1Execution_1_1SystemState.html", null ],
       [ "BPMNOS::Execution::Token", "classBPMNOS_1_1Execution_1_1Token.html", null ]
     ] ],

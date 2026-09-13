@@ -59,6 +59,7 @@ var namespaceBPMNOS_1_1Execution =
     [ "ReadyHandler", "classBPMNOS_1_1Execution_1_1ReadyHandler.html", "classBPMNOS_1_1Execution_1_1ReadyHandler" ],
     [ "ScenarioUpdater", "classBPMNOS_1_1Execution_1_1ScenarioUpdater.html", "classBPMNOS_1_1Execution_1_1ScenarioUpdater" ],
     [ "SequentialPerformerUpdate", "structBPMNOS_1_1Execution_1_1SequentialPerformerUpdate.html", "structBPMNOS_1_1Execution_1_1SequentialPerformerUpdate" ],
+    [ "Signal", "classBPMNOS_1_1Execution_1_1Signal.html", "classBPMNOS_1_1Execution_1_1Signal" ],
     [ "StateMachine", "classBPMNOS_1_1Execution_1_1StateMachine.html", "classBPMNOS_1_1Execution_1_1StateMachine" ],
     [ "SystemState", "classBPMNOS_1_1Execution_1_1SystemState.html", "classBPMNOS_1_1Execution_1_1SystemState" ],
     [ "TaskCompletionHandler", "classBPMNOS_1_1Execution_1_1TaskCompletionHandler.html", "classBPMNOS_1_1Execution_1_1TaskCompletionHandler" ],

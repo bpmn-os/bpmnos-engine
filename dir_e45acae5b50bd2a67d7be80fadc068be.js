@@ -26,8 +26,8 @@ var dir_e45acae5b50bd2a67d7be80fadc068be =
     [ "Parameter.h", "Parameter_8h.html", "Parameter_8h" ],
     [ "Restriction.cpp", "Restriction_8cpp.html", "Restriction_8cpp" ],
     [ "Restriction.h", "Restriction_8h.html", "Restriction_8h" ],
-    [ "Signal.cpp", "Signal_8cpp.html", null ],
-    [ "Signal.h", "Signal_8h.html", "Signal_8h" ],
+    [ "SignalDefinition.cpp", "SignalDefinition_8cpp.html", null ],
+    [ "SignalDefinition.h", "SignalDefinition_8h.html", "SignalDefinition_8h" ],
     [ "Timer.cpp", "Timer_8cpp.html", "Timer_8cpp" ],
     [ "Timer.h", "Timer_8h.html", "Timer_8h" ]
 ];

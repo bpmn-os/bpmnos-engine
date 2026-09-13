@@ -66,6 +66,7 @@ var bpmnos =
       [ "Operators", "extension.html#operators", null ],
       [ "Choices", "extension.html#choices", null ],
       [ "Messages", "extension.html#messages", null ],
+      [ "Signals", "extension.html#signals", null ],
       [ "Timer", "extension.html#timer", null ],
       [ "Lookup tables", "extension.html#lookup-tables", null ],
       [ "Loop parameters", "extension.html#loop-parameters", null ]

@@ -3,6 +3,7 @@ var structBPMNOS_1_1Execution_1_1Observable =
     [ "Type", "structBPMNOS_1_1Execution_1_1Observable.html#a08cd1bc9081eb51f7fb6bb20578a355e", [
       [ "Token", "structBPMNOS_1_1Execution_1_1Observable.html#a08cd1bc9081eb51f7fb6bb20578a355ea459a6f79ad9b13cbcb5f692d2cc7a94d", null ],
       [ "Message", "structBPMNOS_1_1Execution_1_1Observable.html#a08cd1bc9081eb51f7fb6bb20578a355ea4c2a8fe7eaf24721cc7a9f0175115bd4", null ],
+      [ "Signal", "structBPMNOS_1_1Execution_1_1Observable.html#a08cd1bc9081eb51f7fb6bb20578a355ea085fea7abdc5d904fe69a3081efd7398", null ],
       [ "SequentialPerformerUpdate", "structBPMNOS_1_1Execution_1_1Observable.html#a08cd1bc9081eb51f7fb6bb20578a355ea350506f13aa1da865abe455e016959d2", null ],
       [ "Event", "structBPMNOS_1_1Execution_1_1Observable.html#a08cd1bc9081eb51f7fb6bb20578a355eaa4ecfc70574394990cf17bd83df499f7", null ],
       [ "DataUpdate", "structBPMNOS_1_1Execution_1_1Observable.html#a08cd1bc9081eb51f7fb6bb20578a355eabdef9b5db70adcb68299408edc20dee2", null ],

@@ -27,6 +27,8 @@ var dir_7f4c9645bfb3b292a5e871b2a5839622 =
     [ "ScenarioUpdater.cpp", "ScenarioUpdater_8cpp.html", null ],
     [ "ScenarioUpdater.h", "ScenarioUpdater_8h.html", "ScenarioUpdater_8h" ],
     [ "SequentialPerformerUpdate.h", "SequentialPerformerUpdate_8h.html", "SequentialPerformerUpdate_8h" ],
+    [ "Signal.cpp", "Signal_8cpp.html", null ],
+    [ "Signal.h", "Signal_8h.html", "Signal_8h" ],
     [ "StateMachine.cpp", "StateMachine_8cpp.html", null ],
     [ "StateMachine.h", "StateMachine_8h.html", "StateMachine_8h" ],
     [ "SystemState.cpp", "SystemState_8cpp.html", null ],

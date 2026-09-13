@@ -126,9 +126,27 @@ $(function(){initNavTree('observer.html','',''); });
   <div class="headertitle"><div class="title">Observer </div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><dl class="todo"><dt><b><a class="el" href="todo.html#_todo000001">Todo</a></b></dt><dd>Describe observers. </dd></dl>
+<div class="textblock"><p>An <a class="el" href="classBPMNOS_1_1Execution_1_1Observer.html">observer</a> connects to the <a class="el" href="classBPMNOS_1_1Execution_1_1Engine.html">execution engine</a> to watch a run without influencing it. It implements a single method, <a class="el" href="classBPMNOS_1_1Execution_1_1Observer.html#abad9b0df1066c6d65efa8040a71d903b">notice</a>, which the engine calls with an <a class="el" href="structBPMNOS_1_1Execution_1_1Observable.html">observable</a>, and it receives only the kinds of observable it subscribes to. An observer makes no decisions; a component that does is a <a class="el" href="controller.html">controller</a>.</p>
+<h1 class="doxsection"><a class="anchor" id="what-can-be-observed"></a>
+What can be observed</h1>
+<p>A <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html">token</a> is reported whenever its <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#ad3d143002b2a548bdeac6404fc97bc1e">state</a> changes, which is how the progress of a run is followed.</p>
+<p>A <a class="el" href="classBPMNOS_1_1Execution_1_1Message.html">message</a> is reported when it is created by a throwing element, when it is delivered to a recipient, and when it is withdrawn because neither can happen any more. Its header and its content are reported with it.</p>
+<p>A <a class="el" href="classBPMNOS_1_1Execution_1_1Signal.html">signal</a> is reported when it is broadcast, whether it was thrown within the model or raised by the environment, and it is reported once however many elements receive it and also when none does. It names the signal and the content it carries. Unlike a message it names no sender, a signal being broadcast without correlation, so a model that wants the origin known declares it as part of the content.</p>
+<p>A <a class="el" href="structBPMNOS_1_1Execution_1_1DataUpdate.html">data update</a> is reported whenever attribute values change, naming the instance and the attributes concerned, or naming no instance where the values are global. It is the mechanism by which the engine itself learns of changes, driving conditional events and the invalidation of cached candidate evaluations.</p>
+<p>An <a class="el" href="structBPMNOS_1_1Execution_1_1Event.html">event</a> is reported when the engine processes it, a <a class="el" href="structBPMNOS_1_1Execution_1_1DecisionRequest.html">decision request</a> when the engine needs a decision of a given kind, and a <a class="el" href="structBPMNOS_1_1Execution_1_1SequentialPerformerUpdate.html">sequential performer update</a> when a performer becomes busy or idle. The <a class="el" href="classBPMNOS_1_1Execution_1_1SystemState.html">system state</a> is reported when one is installed, which lets an observer holding state of its own rebuild from it.</p>
+<h1 class="doxsection"><a class="anchor" id="the-recorder"></a>
+The recorder</h1>
+<p>The <a class="el" href="classBPMNOS_1_1Execution_1_1Recorder.html">recorder</a> is the observer the tests use. It keeps a JSON log of what it notices and optionally writes it to a stream as the run proceeds. Which kinds it records is configurable, and by default it records tokens, events, messages and signals. Each entry is the observable rendered as JSON, and <a class="el" href="classBPMNOS_1_1Execution_1_1Recorder.html#a0866fc0cf8a9b6581f400048bfea7bae">find</a> selects the entries matching a set of keys and values, which is how a test states what a run must have done.</p>
+<p>An observer must be subscribed before a run starts, because what nobody noticed is not kept and cannot be asked for afterwards. </p>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
 </div><!-- doc-content -->
+<div id="page-nav" class="page-nav-panel">
+<div id="page-nav-resize-handle"></div>
+<div id="page-nav-tree">
+<div id="page-nav-contents">
+</div><!-- page-nav-contents -->
+</div><!-- page-nav-tree -->
+</div><!-- page-nav -->
 </div><!-- container -->
 <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs"; mermaid.initialize({ startOnLoad: true, theme: "neutral" });</script></body></html>

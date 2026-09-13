@@ -7,5 +7,6 @@ var searchData=
   ['waitgateway_5f1_4',['ExclusiveGateway (WaitGateway_1)',['../truck_driver_scheduling_problem.html#exclusivegateway-waitgateway_1',1,'']]],
   ['waitgateway_5f2_5',['ExclusiveGateway (WaitGateway_2)',['../truck_driver_scheduling_problem.html#exclusivegateway-waitgateway_2',1,'']]],
   ['waiting_6',['WAITING',['../token_flow_logic_multi_instance_activities.html#waiting',1,'']]],
-  ['waitstartevent_7',['StartEvent (WaitStartEvent)',['../truck_driver_scheduling_problem.html#startevent-waitstartevent',1,'']]]
+  ['waitstartevent_7',['StartEvent (WaitStartEvent)',['../truck_driver_scheduling_problem.html#startevent-waitstartevent',1,'']]],
+  ['what_20can_20be_20observed_8',['What can be observed',['../observer.html#what-can-be-observed',1,'']]]
 ];

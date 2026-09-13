@@ -137,7 +137,9 @@ stateDiagram-v2
     departure --&gt; DONE: [no outgoing sequence flow]
     DEPARTED --&gt; [*]
     DONE --&gt; [*]
-</pre><dl class="section note"><dt>Note</dt><dd>For <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1SendTask.html">send tasks</a>, the token flow logic described in <a class="el" href="token_flow_logic_tasks.html">Tasks</a> applies. </dd></dl>
+</pre><dl class="section note"><dt>Note</dt><dd>For <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1SendTask.html">send tasks</a>, the token flow logic described in <a class="el" href="token_flow_logic_tasks.html">Tasks</a> applies. </dd>
+<dd>
+A token at a <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1SignalThrowEvent.html">signal throw event</a> departs without waiting for anything, a signal being broadcast rather than delivered to a recipient. The signal it raises is announced and then delivered to the tokens waiting for it, which are those waiting when the broadcast is made rather than at the instant the throwing token departed, so a token that was itself on its way to a <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1SignalCatchEvent.html">signal catch event</a> still receives it. </dd></dl>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
 </div><!-- doc-content -->
