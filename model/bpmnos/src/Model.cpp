@@ -243,6 +243,9 @@ std::unique_ptr<BPMN::FlowNode> Model::createTask(XML::bpmn::tTask* task, BPMN::
 
 
 std::unique_ptr<BPMN::FlowNode> Model::createTimerStartEvent(XML::bpmn::tStartEvent* startEvent, BPMN::Scope* parent) {
+  if ( parent->represents<BPMN::Process>() ) {
+    throw std::runtime_error("Model: timer start event of process '" + parent->id + "' is not supported");
+  }
   // bind timer
   return bind<BPMN::FlowNode>(
     BPMN::Model::createTimerStartEvent(startEvent,parent),
@@ -299,6 +302,9 @@ std::unique_ptr<BPMN::FlowNode> Model::createSignalThrowEvent(XML::bpmn::tThrowE
 }
 
 std::unique_ptr<BPMN::FlowNode> Model::createConditionalStartEvent(XML::bpmn::tStartEvent* startEvent, BPMN::Scope* parent) {
+  if ( parent->represents<BPMN::Process>() ) {
+    throw std::runtime_error("Model: conditional start event of process '" + parent->id + "' is not supported");
+  }
   // bind conditions
   return bind<BPMN::FlowNode>(
     BPMN::Model::createConditionalStartEvent(startEvent,parent),
