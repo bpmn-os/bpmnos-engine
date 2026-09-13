@@ -173,12 +173,24 @@ protected:
 
   void addInstances(); ///< Method adding all new instances and advancing tokens as much as possible
 
-  /// @brief Method creating an instance of a process whenever the signal triggering it is thrown.
+  /// @brief Method creating an instance of a process whenever the message or signal triggering it is
+  /// thrown.
   ///
   /// The identifier is generated, an instance created by a trigger being declared nowhere, and the
-  /// content of the signal is applied to the initial status of the instance, which is where it is
+  /// content of the trigger is applied to the initial status of the instance, which is where it is
   /// needed and after which it is of no further concern.
   void triggerInstance(const BPMN::Process* process, BPMNOS::VariedValueMap content);
+
+  /// @brief Method creating an instance of a process from the message triggering it, and consuming that
+  /// message.
+  ///
+  /// No token awaits a message at the @ref BPMN::MessageStartEvent "message start event" of a
+  /// @ref BPMN::Process "process", the instance not existing before the message arrives, so no
+  /// @ref MessageDeliveryRequest is created for it and no @ref MessageDeliveryEvent is ever dispatched.
+  /// What such an event would do for the message and for the sender is therefore done here: the message
+  /// is marked as delivered and withdrawn from the message pool, and a token at a
+  /// @ref BPMN::SendTask "send task" awaiting its delivery is completed.
+  void triggerInstanceByMessage(const BPMN::Process* process, std::weak_ptr<Message> message_ptr);
 
   void deleteInstance(StateMachine* instance); ///< Method removing completed instance
 

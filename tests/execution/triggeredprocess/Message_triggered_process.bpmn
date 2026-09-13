@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:bpmnos="https://bpmnos.telematique.eu" id="sample-diagram" targetNamespace="http://bpmn.io/schema/bpmn" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd">
+  <bpmn2:collaboration id="Collaboration_1">
+    <bpmn2:participant id="Participant_1" processRef="ThrowEventEmitter" />
+    <bpmn2:participant id="Participant_2" processRef="SendTaskEmitter" />
+    <bpmn2:participant id="Participant_3" processRef="MultiSendEmitter" />
+    <bpmn2:participant id="Participant_4" processRef="OtherEmitter" />
+    <bpmn2:participant id="Participant_5" processRef="Triggered" />
+  </bpmn2:collaboration>
+  <bpmn2:process id="ThrowEventEmitter" isExecutable="true">
+    <bpmn2:extensionElements>
+      <bpmnos:status>
+        <bpmnos:attributes>
+          <bpmnos:attribute id="Timestamp" type="decimal" name="timestamp" />
+          <bpmnos:attribute id="Amount" type="integer" name="amount" />
+        </bpmnos:attributes>
+      </bpmnos:status>
+    </bpmn2:extensionElements>
+    <bpmn2:startEvent id="StartEvent_1">
+      <bpmn2:outgoing>Flow_1</bpmn2:outgoing>
+    </bpmn2:startEvent>
+    <bpmn2:sequenceFlow id="Flow_1" sourceRef="StartEvent_1" targetRef="ThrowEvent_1" />
+    <bpmn2:endEvent id="ThrowEvent_1">
+      <bpmn2:extensionElements>
+        <bpmnos:message name="Trigger">
+          <bpmnos:content key="Amount" attribute="amount" />
+        </bpmnos:message>
+      </bpmn2:extensionElements>
+      <bpmn2:incoming>Flow_1</bpmn2:incoming>
+      <bpmn2:messageEventDefinition id="MessageEventDefinition_1" />
+    </bpmn2:endEvent>
+    <bpmn2:dataObject id="DataObject_1">
+      <bpmn2:extensionElements>
+        <bpmnos:attributes>
+          <bpmnos:attribute id="Instance" type="string" name="instance" />
+        </bpmnos:attributes>
+      </bpmn2:extensionElements>
+    </bpmn2:dataObject>
+  </bpmn2:process>
+  <bpmn2:process id="SendTaskEmitter" isExecutable="true">
+    <bpmn2:extensionElements>
+      <bpmnos:status>
+        <bpmnos:attributes>
+          <bpmnos:attribute id="Timestamp" type="decimal" name="timestamp" />
+          <bpmnos:attribute id="Amount" type="integer" name="amount" />
+        </bpmnos:attributes>
+      </bpmnos:status>
+    </bpmn2:extensionElements>
+    <bpmn2:startEvent id="StartEvent_2">
+      <bpmn2:outgoing>Flow_2</bpmn2:outgoing>
+    </bpmn2:startEvent>
+    <bpmn2:sequenceFlow id="Flow_2" sourceRef="StartEvent_2" targetRef="SendTask_1" />
+    <bpmn2:sendTask id="SendTask_1">
+      <bpmn2:extensionElements>
+        <bpmnos:message name="Trigger">
+          <bpmnos:content key="Amount" attribute="amount" />
+        </bpmnos:message>
+      </bpmn2:extensionElements>
+      <bpmn2:incoming>Flow_2</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_3</bpmn2:outgoing>
+    </bpmn2:sendTask>
+    <bpmn2:sequenceFlow id="Flow_3" sourceRef="SendTask_1" targetRef="EndEvent_2" />
+    <bpmn2:endEvent id="EndEvent_2">
+      <bpmn2:incoming>Flow_3</bpmn2:incoming>
+    </bpmn2:endEvent>
+    <bpmn2:dataObject id="DataObject_2">
+      <bpmn2:extensionElements>
+        <bpmnos:attributes>
+          <bpmnos:attribute id="Instance" type="string" name="instance" />
+        </bpmnos:attributes>
+      </bpmn2:extensionElements>
+    </bpmn2:dataObject>
+  </bpmn2:process>
+  <bpmn2:process id="MultiSendEmitter" isExecutable="true">
+    <bpmn2:extensionElements>
+      <bpmnos:status>
+        <bpmnos:attributes>
+          <bpmnos:attribute id="Timestamp" type="decimal" name="timestamp" />
+        </bpmnos:attributes>
+      </bpmnos:status>
+    </bpmn2:extensionElements>
+    <bpmn2:startEvent id="StartEvent_3">
+      <bpmn2:outgoing>Flow_4</bpmn2:outgoing>
+    </bpmn2:startEvent>
+    <bpmn2:sequenceFlow id="Flow_4" sourceRef="StartEvent_3" targetRef="MultiSendTask_1" />
+    <bpmn2:sendTask id="MultiSendTask_1">
+      <bpmn2:extensionElements>
+        <bpmnos:message name="Trigger">
+          <bpmnos:content key="Amount" attribute="index" />
+        </bpmnos:message>
+        <bpmnos:status>
+          <bpmnos:attributes>
+            <bpmnos:attribute id="Index" type="integer" name="index" />
+          </bpmnos:attributes>
+        </bpmnos:status>
+        <bpmnos:loopCharacteristics>
+          <bpmnos:parameter name="cardinality" value="2" />
+          <bpmnos:parameter name="index" value="index" />
+        </bpmnos:loopCharacteristics>
+      </bpmn2:extensionElements>
+      <bpmn2:incoming>Flow_4</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_5</bpmn2:outgoing>
+      <bpmn2:multiInstanceLoopCharacteristics />
+    </bpmn2:sendTask>
+    <bpmn2:sequenceFlow id="Flow_5" sourceRef="MultiSendTask_1" targetRef="EndEvent_3" />
+    <bpmn2:endEvent id="EndEvent_3">
+      <bpmn2:incoming>Flow_5</bpmn2:incoming>
+    </bpmn2:endEvent>
+    <bpmn2:dataObject id="DataObject_3">
+      <bpmn2:extensionElements>
+        <bpmnos:attributes>
+          <bpmnos:attribute id="Instance" type="string" name="instance" />
+        </bpmnos:attributes>
+      </bpmn2:extensionElements>
+    </bpmn2:dataObject>
+  </bpmn2:process>
+  <bpmn2:process id="OtherEmitter" isExecutable="true">
+    <bpmn2:extensionElements>
+      <bpmnos:status>
+        <bpmnos:attributes>
+          <bpmnos:attribute id="Timestamp" type="decimal" name="timestamp" />
+          <bpmnos:attribute id="Amount" type="integer" name="amount" />
+        </bpmnos:attributes>
+      </bpmnos:status>
+    </bpmn2:extensionElements>
+    <bpmn2:startEvent id="StartEvent_4">
+      <bpmn2:outgoing>Flow_6</bpmn2:outgoing>
+    </bpmn2:startEvent>
+    <bpmn2:sequenceFlow id="Flow_6" sourceRef="StartEvent_4" targetRef="ThrowEvent_2" />
+    <bpmn2:endEvent id="ThrowEvent_2">
+      <bpmn2:extensionElements>
+        <bpmnos:message name="Other">
+          <bpmnos:content key="Amount" attribute="amount" />
+        </bpmnos:message>
+      </bpmn2:extensionElements>
+      <bpmn2:incoming>Flow_6</bpmn2:incoming>
+      <bpmn2:messageEventDefinition id="MessageEventDefinition_2" />
+    </bpmn2:endEvent>
+    <bpmn2:dataObject id="DataObject_4">
+      <bpmn2:extensionElements>
+        <bpmnos:attributes>
+          <bpmnos:attribute id="Instance" type="string" name="instance" />
+        </bpmnos:attributes>
+      </bpmn2:extensionElements>
+    </bpmn2:dataObject>
+  </bpmn2:process>
+  <bpmn2:process id="Triggered" isExecutable="true">
+    <bpmn2:extensionElements>
+      <bpmnos:status>
+        <bpmnos:attributes>
+          <bpmnos:attribute id="Timestamp" type="decimal" name="timestamp" />
+          <bpmnos:attribute id="Received" type="integer" name="received" />
+        </bpmnos:attributes>
+        <bpmnos:operators>
+          <bpmnos:operator id="Operator_1" expression="total := total + received" />
+          <bpmnos:operator id="Operator_2" expression="instantiations := instantiations + 1" />
+        </bpmnos:operators>
+      </bpmnos:status>
+    </bpmn2:extensionElements>
+    <bpmn2:startEvent id="MessageStartEvent">
+      <bpmn2:extensionElements>
+        <bpmnos:message name="Trigger">
+          <bpmnos:content key="Amount" attribute="received" />
+        </bpmnos:message>
+      </bpmn2:extensionElements>
+      <bpmn2:messageEventDefinition id="MessageEventDefinition_3" />
+    </bpmn2:startEvent>
+    <bpmn2:dataObject id="DataObject_5">
+      <bpmn2:extensionElements>
+        <bpmnos:attributes>
+          <bpmnos:attribute id="Instance" type="string" name="instance" />
+        </bpmnos:attributes>
+      </bpmn2:extensionElements>
+    </bpmn2:dataObject>
+  </bpmn2:process>
+  <bpmn2:dataStore id="DataStore_1">
+    <bpmn2:extensionElements>
+      <bpmnos:attributes>
+        <bpmnos:attribute id="Objective" type="decimal" name="objective := 0" />
+        <bpmnos:attribute id="Total" type="integer" name="total := 0" />
+        <bpmnos:attribute id="Instantiations" type="integer" name="instantiations := 0" />
+      </bpmnos:attributes>
+    </bpmn2:extensionElements>
+  </bpmn2:dataStore>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_1">
+      <bpmndi:BPMNShape id="Participant_1_di" bpmnElement="Participant_1" isHorizontal="true">
+        <dc:Bounds x="150" y="80" width="500" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="StartEvent_1_di" bpmnElement="StartEvent_1">
+        <dc:Bounds x="212" y="142" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ThrowEvent_1_di" bpmnElement="ThrowEvent_1">
+        <dc:Bounds x="352" y="142" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1_di" bpmnElement="Flow_1">
+        <di:waypoint x="248" y="160" />
+        <di:waypoint x="352" y="160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Participant_2_di" bpmnElement="Participant_2" isHorizontal="true">
+        <dc:Bounds x="150" y="280" width="500" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="StartEvent_2_di" bpmnElement="StartEvent_2">
+        <dc:Bounds x="212" y="342" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SendTask_1_di" bpmnElement="SendTask_1">
+        <dc:Bounds x="310" y="320" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_2_di" bpmnElement="EndEvent_2">
+        <dc:Bounds x="472" y="342" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_2_di" bpmnElement="Flow_2">
+        <di:waypoint x="248" y="360" />
+        <di:waypoint x="310" y="360" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_3_di" bpmnElement="Flow_3">
+        <di:waypoint x="410" y="360" />
+        <di:waypoint x="472" y="360" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Participant_3_di" bpmnElement="Participant_3" isHorizontal="true">
+        <dc:Bounds x="150" y="480" width="500" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="StartEvent_3_di" bpmnElement="StartEvent_3">
+        <dc:Bounds x="212" y="542" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="MultiSendTask_1_di" bpmnElement="MultiSendTask_1">
+        <dc:Bounds x="310" y="520" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_3_di" bpmnElement="EndEvent_3">
+        <dc:Bounds x="472" y="542" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_4_di" bpmnElement="Flow_4">
+        <di:waypoint x="248" y="560" />
+        <di:waypoint x="310" y="560" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_5_di" bpmnElement="Flow_5">
+        <di:waypoint x="410" y="560" />
+        <di:waypoint x="472" y="560" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Participant_4_di" bpmnElement="Participant_4" isHorizontal="true">
+        <dc:Bounds x="150" y="680" width="500" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="StartEvent_4_di" bpmnElement="StartEvent_4">
+        <dc:Bounds x="212" y="742" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ThrowEvent_2_di" bpmnElement="ThrowEvent_2">
+        <dc:Bounds x="352" y="742" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_6_di" bpmnElement="Flow_6">
+        <di:waypoint x="248" y="760" />
+        <di:waypoint x="352" y="760" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Participant_5_di" bpmnElement="Participant_5" isHorizontal="true">
+        <dc:Bounds x="150" y="880" width="500" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="MessageStartEvent_di" bpmnElement="MessageStartEvent">
+        <dc:Bounds x="212" y="942" width="36" height="36" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn2:definitions>

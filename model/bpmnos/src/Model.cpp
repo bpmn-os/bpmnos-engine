@@ -356,6 +356,14 @@ std::unique_ptr<BPMN::FlowNode> Model::createMessageStartEvent(XML::bpmn::tStart
     throw std::runtime_error("Model: No message defined for message start event '" + baseElement->id + "'");
   }
 
+  if ( auto process = parent->represents<BPMN::Process>() ) {
+    // the process is instantiated whenever a message with this name is thrown
+    auto [ entry, inserted ] = processesTriggeredByMessage.emplace( extensionElements->messageDefinition->name, process );
+    if ( !inserted ) {
+      throw std::runtime_error("Model: message '" + BPMNOS::to_string(extensionElements->messageDefinition->name,STRING) + "' instantiates process '" + entry->second->id + "' and process '" + process->id + "'");
+    }
+  }
+
   for ( auto& [_,content] : extensionElements->messageDefinition->contentMap ) {
     Attribute* attribute = content->attribute;
     auto parentExtension = parent->extensionElements->as<BPMNOS::Model::ExtensionElements>();
@@ -364,7 +372,7 @@ std::unique_ptr<BPMN::FlowNode> Model::createMessageStartEvent(XML::bpmn::tStart
     }
     else if ( attribute->category == Attribute::Category::DATA ) {
       if ( !contains(parentExtension->data,attribute) ) {
-        throw std::runtime_error("Model: Message start event '" + baseElement->id + "' attempts to modify data attribute '" + attribute->id + "' which is not owned by event-subprocess");
+        throw std::runtime_error("Model: Message start event '" + baseElement->id + "' attempts to modify data attribute '" + attribute->id + "' which is not owned by the scope it starts");
       }
       // data attributes owned by event-subprocesses are considered immutable even if they are modified by the message start event
     }
@@ -465,6 +473,70 @@ void Model::createMessageFlows() {
     }
   }
 
+  validateTriggeringMessages();
+}
+
+void Model::validateTriggeringMessages() {
+  if ( processesTriggeredByMessage.empty() ) {
+    return;
+  }
+
+  // A message instantiating a process is matched by its name alone, there being no instance to address
+  // before the message arrives. The rules below keep that match unambiguous, and keep what the model
+  // states about a message and what the engine does with it the same thing. They are checked here because
+  // this is the first point at which every process has been read.
+
+  // the standard keys "name", "sender", and "recipient" every message definition holds
+  constexpr size_t standardHeaderKeys = size_t(MessageDefinition::Index::Recipient) + 1;
+
+  for ( auto& process : processes ) {
+    for ( auto node : process->find_all( [](const BPMN::Node* node) { return node->represents<BPMN::MessageCatchEvent>(); } ) ) {
+      auto catchingMessageEvent = node->as<BPMN::FlowNode>();
+      auto messageDefinition = catchingMessageEvent->extensionElements->as<ExtensionElements>()->getMessageDefinition();
+      auto it = processesTriggeredByMessage.find( messageDefinition->name );
+      if ( it == processesTriggeredByMessage.end() ) {
+        continue;
+      }
+      auto name = BPMNOS::to_string(messageDefinition->name,STRING);
+
+      if ( !catchingMessageEvent->represents<BPMN::MessageStartEvent>() || catchingMessageEvent->parent->represents<BPMN::Process>() != it->second ) {
+        // the name would be matched by this element as well, and the engine has no decision in which to
+        // choose between instantiating the process and delivering the message here
+        throw std::runtime_error("Model: message '" + name + "' instantiates process '" + it->second->id + "' and is caught by '" + catchingMessageEvent->id + "'");
+      }
+
+      if ( !messageDefinition->parameterMap.empty() ) {
+        // the message is matched by its name, so a header parameter would remain unread
+        throw std::runtime_error("Model: message start event '" + catchingMessageEvent->id + "' of process '" + it->second->id + "' must not have header parameters");
+      }
+    }
+
+    for ( auto node : process->find_all( [](const BPMN::Node* node) { return node->represents<BPMN::MessageThrowEvent>(); } ) ) {
+      auto throwingMessageEvent = node->as<BPMN::FlowNode>();
+      auto messageDefinition = throwingMessageEvent->extensionElements->as<ExtensionElements>()->getMessageDefinition();
+      auto it = processesTriggeredByMessage.find( messageDefinition->name );
+      if ( it == processesTriggeredByMessage.end() ) {
+        continue;
+      }
+      auto name = BPMNOS::to_string(messageDefinition->name,STRING);
+
+      if ( process.get() == it->second ) {
+        // a message flow connects two participants, so a process cannot send itself a message
+        throw std::runtime_error("Model: message '" + name + "' instantiating process '" + it->second->id + "' must not be thrown by '" + throwingMessageEvent->id + "' of that process");
+      }
+
+      if ( messageDefinition->header.size() > standardHeaderKeys ) {
+        // the start event has no header parameters, so a header key here would prevent the two from ever
+        // becoming candidates of each other while the message instantiated the process regardless
+        throw std::runtime_error("Model: message '" + name + "' thrown by '" + throwingMessageEvent->id + "' instantiates process '" + it->second->id + "' and must not have header parameters");
+      }
+
+      if ( messageDefinition->parameterMap.contains("recipient") ) {
+        // the instance is created by this message and cannot have been named before it is thrown
+        throw std::runtime_error("Model: message '" + name + "' thrown by '" + throwingMessageEvent->id + "' instantiates process '" + it->second->id + "' and must not state a recipient");
+      }
+    }
+  }
 }
 
 std::vector<BPMN::MessageFlow*>& Model::determineMessageFlows(BPMN::FlowNode* messageEvent, auto getMessageFlows) {

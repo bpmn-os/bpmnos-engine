@@ -201,6 +201,13 @@ The following shows an example of an incoming message definition for a @ref BPMN
 </bpmn2:extensionElements>
 ```
 
+A message may also instantiate a process, which it does where the process has a @ref BPMN::MessageStartEvent "message start event".
+Such a message names no recipient, the instance not existing before the message arrives, and is matched by its name alone.
+No element other than that start event may therefore catch a message of that name, and neither the start event nor any element throwing the message may state header parameters or a recipient.
+Several elements may throw it, each instantiating a process of its own, and a multi-instance @ref BPMN::SendTask "send task" instantiates one process per instance.
+A process cannot send itself a message, a message flow connecting two participants, so the message must be thrown outside the process it instantiates.
+The instance receives a generated identifier and is created with the content of the message in its status.
+
 ## Timer
 The trigger for a @ref BPMN::TimerCatchEvent "timer event" can be specified by providing a parameter with name `trigger` and value being an expression as shown in the following example.
 

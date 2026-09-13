@@ -36,3 +36,31 @@ TEST_CASE( "Parse message flows", "[model][parser]" ) {
   REQUIRE( candidates["ThrowEvent_C2"] == std::set< std::string >({"CatchEvent_A1"}) );
 
 }
+
+TEST_CASE( "Refuse a message instantiating a process that is caught elsewhere", "[model][parser]" ) {
+  REQUIRE_THROWS_WITH(
+    Model::Model(std::string("tests/model/parser/Triggering_message_caught_elsewhere.bpmn")),
+    "Model: message 'Trigger' instantiates process 'Triggered' and is caught by 'CatchEvent_1'"
+  );
+}
+
+TEST_CASE( "Refuse header parameters at a message start event of a process", "[model][parser]" ) {
+  REQUIRE_THROWS_WITH(
+    Model::Model(std::string("tests/model/parser/Triggering_message_with_header.bpmn")),
+    "Model: message start event 'MessageStartEvent' of process 'Triggered' must not have header parameters"
+  );
+}
+
+TEST_CASE( "Refuse header parameters at a node throwing a message instantiating a process", "[model][parser]" ) {
+  REQUIRE_THROWS_WITH(
+    Model::Model(std::string("tests/model/parser/Triggering_message_thrown_with_header.bpmn")),
+    "Model: message 'Trigger' thrown by 'ThrowEvent_1' instantiates process 'Triggered' and must not have header parameters"
+  );
+}
+
+TEST_CASE( "Refuse a message thrown within the process it instantiates", "[model][parser]" ) {
+  REQUIRE_THROWS_WITH(
+    Model::Model(std::string("tests/model/parser/Triggering_message_thrown_within_process.bpmn")),
+    "Model: message 'Trigger' instantiating process 'Triggered' must not be thrown by 'ThrowEvent_1' of that process"
+  );
+}

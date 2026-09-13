@@ -76,6 +76,15 @@ public:
   std::unique_ptr<BPMN::FlowNode> createMessageThrowEvent(XML::bpmn::tThrowEvent* throwEvent, BPMN::Scope* parent) override;
 
   void createMessageFlows() override;
+
+  /// @brief Validates the rules that keep a message instantiating a process unambiguous.
+  ///
+  /// Called at the end of @ref createMessageFlows, this being the first point at which every process has
+  /// been read. A triggering message is matched by its name alone, so no other catching element may
+  /// declare that name, neither side may declare header parameters, and the message must not be thrown
+  /// within the process it instantiates.
+  void validateTriggeringMessages();
+
   bool messageMayBeCaught( BPMN::Process* sendingProcess, BPMN::FlowNode* throwingMessageEvent, BPMN::Process* receivingProcess, BPMN::FlowNode* catchingMessageEvent );
   bool messageMayBeThrown( BPMN::Process* sendingProcess, BPMN::FlowNode* throwingMessageEvent, BPMN::Process* receivingProcess, BPMN::FlowNode* catchingMessageEvent );
   void createMessageCandidates( BPMN::Process* sendingProcess, BPMN::FlowNode* throwingMessageEvent, BPMN::Process* receivingProcess, BPMN::FlowNode* catchingMessageEvent );
@@ -100,6 +109,14 @@ public:
   /// tokens await a signal is run state and is held there, whereas which process a signal instantiates
   /// is fixed by the model and is held here.
   std::unordered_map< BPMNOS::number, const BPMN::Process* > processesTriggeredBySignal;
+
+  /// @brief Map holding the process instantiated by a message with a given name.
+  ///
+  /// The counterpart of @ref processesTriggeredBySignal for messages. A message instantiating a process
+  /// names no recipient, the instance not existing before the message arrives, so it is matched by its
+  /// name alone. The name is therefore declared by no catching element other than the start event, which
+  /// @ref createMessageFlows enforces once every process has been read.
+  std::unordered_map< BPMNOS::number, const BPMN::Process* > processesTriggeredByMessage;
 };
 
 } // namespace BPMNOS::Model

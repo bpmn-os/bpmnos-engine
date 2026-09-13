@@ -187,14 +187,31 @@ void Engine::triggerInstance(const BPMN::Process* process, BPMNOS::VariedValueMa
   // the content of the trigger is applied to the initial status of the instance, which is where it is
   // needed and after which it is of no further concern
   assert( process->startNodes.size() == 1 );
-  assert( process->startNodes.front()->extensionElements->represents<BPMNOS::Model::Signal>() );
-  auto signalDefinition = process->startNodes.front()->extensionElements->as<BPMNOS::Model::Signal>();
+  auto startNode = process->startNodes.front();
+
+  // a signal start event holds its definition as its extension elements, whereas a message start event
+  // holds extension elements carrying a message definition
+  const BPMNOS::Model::ContentMap* contentMap;
+  const std::vector<const BPMNOS::Model::Attribute*>* dataUpdateAttributes;
+  bool dataUpdateIsGlobal;
+  if ( auto signalDefinition = startNode->extensionElements->represents<BPMNOS::Model::Signal>() ) {
+    contentMap = &signalDefinition->contentMap;
+    dataUpdateAttributes = &signalDefinition->dataUpdate.attributes;
+    dataUpdateIsGlobal = signalDefinition->dataUpdate.global;
+  }
+  else {
+    auto startNodeExtensionElements = startNode->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+    contentMap = &startNodeExtensionElements->getMessageDefinition()->contentMap;
+    dataUpdateAttributes = &startNodeExtensionElements->dataUpdate.attributes;
+    dataUpdateIsGlobal = startNodeExtensionElements->dataUpdate.global;
+  }
+
   auto oldObjective = systemState->globals[Model::ExtensionElements::Index::Objective];
-  for ( auto& [key,definition] : signalDefinition->contentMap ) {
+  for ( auto& [key,definition] : *contentMap ) {
     auto attribute = definition->attribute;
     auto it = content.find(key);
     if ( it == content.end() ) {
-      // key in content of start event, but not in content of signal
+      // key in content of start event, but not in content of the trigger
       attributeRegistry.setValue(attribute, status, data, systemState->globals, std::nullopt );
     }
     else if ( std::holds_alternative< std::optional<BPMNOS::number> >(it->second) ) {
@@ -212,13 +229,34 @@ void Engine::triggerInstance(const BPMN::Process* process, BPMNOS::VariedValueMa
     notify( DataUpdate( { attributeRegistry.globalAttributes[Model::ExtensionElements::Index::Objective] } ) );
   }
 
-  if ( signalDefinition->dataUpdate.global ) {
+  if ( dataUpdateIsGlobal ) {
     // notify about data update; the instance does not exist yet, so only a global update can be reported
-    notify( DataUpdate( signalDefinition->dataUpdate.attributes ) );
+    notify( DataUpdate( *dataUpdateAttributes ) );
   }
 
   systemState->instances.push_back(std::make_shared<StateMachine>(systemState.get(),process,std::move(data)));
   systemState->instances.back()->run(std::move(status));
+}
+
+void Engine::triggerInstanceByMessage(const BPMN::Process* process, std::weak_ptr<Message> message_ptr) {
+  auto message = message_ptr.lock();
+  if ( !message ) {
+    // the message was withdrawn before it could be consumed
+    return;
+  }
+
+  triggerInstance( process, message->contentValueMap );
+
+  // the message is consumed here, no delivery event being dispatched for a message instantiating a process
+  message->state = Message::State::DELIVERED;
+  notify(message.get());
+  erase_ptr<Message>(systemState->messages,message.get());
+
+  if ( message->waitingToken ) {
+    // send task is completed
+    systemState->messageAwaitingDelivery.erase( message->waitingToken );
+    commands.emplace_back(std::bind(&Token::advanceToCompleted,message->waitingToken), message->waitingToken);
+  }
 }
 
 void Engine::addInstances() {

@@ -1590,11 +1590,21 @@ void Token::sendMessage() {
   if ( node->represents<BPMN::SendTask>() ) {
     systemState->messageAwaitingDelivery[this] = message->weak_from_this();
   }
-  
+
   // message->state = Message::State::CREATED;
   owner->systemState->engine->notify(message.get());
 
-} 
+  // instantiate the process the message triggers, if any
+  auto& processesTriggeredByMessage = systemState->scenario->getModel()->processesTriggeredByMessage;
+  auto messageDefinition = node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->getMessageDefinition();
+  if ( auto it = processesTriggeredByMessage.find(messageDefinition->name); it != processesTriggeredByMessage.end() ) {
+    auto engine = const_cast<Engine*>(owner->systemState->engine);
+    // the instantiation is enqueued rather than performed here, so that a triggered process throwing a
+    // trigger of its own does not recurse through the stack of the throwing token; it consumes the
+    // message, no delivery decision being made for a message instantiating a process
+    engine->commands.emplace_back( std::bind(&Engine::triggerInstanceByMessage, engine, it->second, message->weak_from_this()) );
+  }
+}
 
 Token* Token::getSequentialPerformerToken() const {
   auto adHocSubProcess = node->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>();
