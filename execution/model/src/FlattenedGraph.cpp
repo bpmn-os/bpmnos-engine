@@ -136,6 +136,14 @@ nlohmann::ordered_json FlattenedGraph::jsonify() const {
 
 void FlattenedGraph::addInstance( const BPMNOS::Model::Scenario::InstanceData* instance ) {
 //std::cerr << "Add instance: " << instance->id << std::endl;
+  // a process instantiated by a trigger is instantiated as often as the trigger occurs, which is not
+  // known before the run
+  for ( auto& startNode : instance->process->startNodes ) {
+    if ( auto startEvent = startNode->represents<BPMN::TypedStartEvent>() ) {
+      throw std::runtime_error("FlattenedGraph: Typed start event '" + startEvent->id + "' of process '" + instance->process->id + "' is not supported");
+    }
+  }
+
   // create process vertices
   auto [ entry, exit ] = createVertexPair(instance->id, instance->id, {}, instance->process, std::nullopt);
   initialVertices.push_back(entry);
