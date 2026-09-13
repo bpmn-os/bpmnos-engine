@@ -37,3 +37,5 @@ int main() {
   engine.run(scenario.get());
 }
 ```
+
+@ref BPMNOS::Execution::Engine::injectSignal "injectSignal" allows a caller to raise a @ref BPMNOS::Execution::Signal "signal" that did not arise in the model, which is how an environment reaches into a run. It is delivered like a signal thrown within the model and does not advance time.

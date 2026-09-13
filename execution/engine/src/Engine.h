@@ -132,6 +132,21 @@ public:
   void process([[maybe_unused]] const ClockTickEvent* event);
   void process([[maybe_unused]] const TerminationEvent* event);
 
+  /**
+   * @brief Broadcasts a signal that did not arise in the model.
+   *
+   * The way the environment raises a signal in a run. The signal is delivered to the tokens waiting for
+   * it when the broadcast is made rather than when this is called, exactly as a signal thrown within the
+   * model is, and time is not advanced, so a signal may be raised between two things happening at one
+   * instant.
+   *
+   * Must not be called from within the engine, which enqueues the broadcast instead; this is an entry
+   * point for whatever drives the run from outside and it returns once the engine has settled.
+   *
+   * @param signal The signal to broadcast.
+   */
+  void injectSignal(Signal signal);
+
 /**
  * @brief Returns the timestamp the engine is in.
  */

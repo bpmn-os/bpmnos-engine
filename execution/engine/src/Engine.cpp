@@ -170,6 +170,14 @@ bool Engine::advance(BPMNOS::number endTime) {
   return true;
 }
 
+void Engine::injectSignal(Signal signal) {
+  // enqueued rather than broadcast here, so that a signal from outside is delivered to the same tokens a
+  // signal thrown within the model would reach, and processed here, so that the engine settles before
+  // control returns to whoever raised it
+  commands.emplace_back( std::bind(&Engine::broadcastSignal, this, std::move(signal)) );
+  processCommands();
+}
+
 void Engine::broadcastSignal(Signal signal) {
   // the signal is announced before it is delivered anywhere, so that what is observed is the signal
   // rather than what it causes
