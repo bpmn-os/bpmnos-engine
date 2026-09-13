@@ -64,3 +64,10 @@ TEST_CASE( "Refuse a message thrown within the process it instantiates", "[model
     "Model: message 'Trigger' instantiating process 'Triggered' must not be thrown by 'ThrowEvent_1' of that process"
   );
 }
+
+TEST_CASE( "Refuse a signal event without a signal definition", "[model][parser]" ) {
+  REQUIRE_THROWS_WITH(
+    Model::Model(std::string("tests/model/parser/Signal_without_definition.bpmn")),
+    "Model: No signal defined for signal throw event 'ThrowEvent_1'"
+  );
+}

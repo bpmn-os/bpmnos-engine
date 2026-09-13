@@ -273,45 +273,59 @@ std::unique_ptr<BPMN::FlowNode> Model::createTimerCatchEvent(XML::bpmn::tCatchEv
 }
 
 std::unique_ptr<BPMN::FlowNode> Model::createSignalStartEvent(XML::bpmn::tStartEvent* startEvent, BPMN::Scope* parent) {
-  auto signal = std::make_unique<SignalDefinition>(startEvent,parent);
+  auto baseElement = BPMN::Model::createSignalStartEvent(startEvent,parent);
+  auto definition = std::make_unique<SignalDefinition>(startEvent,parent);
+
+  if ( !definition->signal ) {
+    throw std::runtime_error("Model: No signal defined for signal start event '" + baseElement->id + "'");
+  }
 
   if ( auto process = parent->represents<BPMN::Process>() ) {
     // the process is instantiated whenever a signal with this name is thrown
-    auto [ entry, inserted ] = processesTriggeredBySignal.emplace( signal->name, process );
+    auto [ entry, inserted ] = processesTriggeredBySignal.emplace( definition->name, process );
     if ( !inserted ) {
-      throw std::runtime_error("Model: signal '" + BPMNOS::to_string(signal->name,STRING) + "' instantiates process '" + entry->second->id + "' and process '" + process->id + "'");
+      throw std::runtime_error("Model: signal '" + BPMNOS::to_string(definition->name,STRING) + "' instantiates process '" + entry->second->id + "' and process '" + process->id + "'");
     }
   }
 
   // bind signal
-  return bind<BPMN::FlowNode>(
-    BPMN::Model::createSignalStartEvent(startEvent,parent),
-    std::move(signal)
-  );
+  return bind<BPMN::FlowNode>( std::move(baseElement), std::move(definition) );
 }
 
 std::unique_ptr<BPMN::FlowNode> Model::createSignalBoundaryEvent(XML::bpmn::tBoundaryEvent* boundaryEvent, BPMN::Scope* parent) {
+  auto baseElement = BPMN::Model::createSignalBoundaryEvent(boundaryEvent,parent);
+  auto definition = std::make_unique<SignalDefinition>(boundaryEvent,parent);
+
+  if ( !definition->signal ) {
+    throw std::runtime_error("Model: No signal defined for signal boundary event '" + baseElement->id + "'");
+  }
+
   // bind signal
-  return bind<BPMN::FlowNode>(
-    BPMN::Model::createSignalBoundaryEvent(boundaryEvent,parent),
-    std::make_unique<SignalDefinition>(boundaryEvent,parent)
-  );
+  return bind<BPMN::FlowNode>( std::move(baseElement), std::move(definition) );
 }
 
 std::unique_ptr<BPMN::FlowNode> Model::createSignalCatchEvent(XML::bpmn::tCatchEvent* catchEvent, BPMN::Scope* parent) {
+  auto baseElement = BPMN::Model::createSignalCatchEvent(catchEvent,parent);
+  auto definition = std::make_unique<SignalDefinition>(catchEvent,parent);
+
+  if ( !definition->signal ) {
+    throw std::runtime_error("Model: No signal defined for signal catch event '" + baseElement->id + "'");
+  }
+
   // bind signal
-  return bind<BPMN::FlowNode>(
-    BPMN::Model::createSignalCatchEvent(catchEvent,parent),
-    std::make_unique<SignalDefinition>(catchEvent,parent)
-  );
+  return bind<BPMN::FlowNode>( std::move(baseElement), std::move(definition) );
 }
 
 std::unique_ptr<BPMN::FlowNode> Model::createSignalThrowEvent(XML::bpmn::tThrowEvent* throwEvent, BPMN::Scope* parent) {
+  auto baseElement = BPMN::Model::createSignalThrowEvent(throwEvent,parent);
+  auto definition = std::make_unique<SignalDefinition>(throwEvent,parent);
+
+  if ( !definition->signal ) {
+    throw std::runtime_error("Model: No signal defined for signal throw event '" + baseElement->id + "'");
+  }
+
   // bind signal
-  return bind<BPMN::FlowNode>(
-    BPMN::Model::createSignalThrowEvent(throwEvent,parent),
-    std::make_unique<SignalDefinition>(throwEvent,parent)
-  );
+  return bind<BPMN::FlowNode>( std::move(baseElement), std::move(definition) );
 }
 
 std::unique_ptr<BPMN::FlowNode> Model::createConditionalStartEvent(XML::bpmn::tStartEvent* startEvent, BPMN::Scope* parent) {

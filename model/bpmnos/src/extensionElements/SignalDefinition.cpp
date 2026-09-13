@@ -8,17 +8,19 @@
 using namespace BPMNOS::Model;
 
 SignalDefinition::SignalDefinition(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent)
-  : BPMN::ExtensionElements( baseElement ) 
+  : BPMN::ExtensionElements( baseElement )
   , parent(parent)
   , attributeRegistry(parent->extensionElements->as<BPMNOS::Model::ExtensionElements>()->attributeRegistry)
+  , signal(nullptr)
 {
   if ( !element ) return;
-  
+
   // get signal definition
-  if ( auto signal = element->getOptionalChild<XML::bpmnos::tSignal>(); signal.has_value() ) {
-    name = BPMNOS::to_number(signal.value().get().name.value.value,STRING);
-  
-    for ( XML::bpmnos::tContent& content : signal.value().get().content ) {
+  if ( auto definition = element->getOptionalChild<XML::bpmnos::tSignal>(); definition.has_value() ) {
+    signal = &definition.value().get();
+    name = BPMNOS::to_number(signal->name.value.value,STRING);
+
+    for ( XML::bpmnos::tContent& content : signal->content ) {
       contentMap.emplace(content.key.value.value,std::make_unique<Content>(&content,attributeRegistry));
     }
 
