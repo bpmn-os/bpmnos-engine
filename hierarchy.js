@@ -111,8 +111,6 @@ var hierarchy =
       [ "BPMNOS::Execution::MyopicDecisionTaskTerminator", "classBPMNOS_1_1Execution_1_1MyopicDecisionTaskTerminator.html", null ],
       [ "BPMNOS::Execution::MyopicMessageTaskTerminator", "classBPMNOS_1_1Execution_1_1MyopicMessageTaskTerminator.html", null ],
       [ "BPMNOS::Execution::RandomChoice", "classBPMNOS_1_1Execution_1_1RandomChoice.html", null ],
-      [ "BPMNOS::Execution::ReadyHandler", "classBPMNOS_1_1Execution_1_1ReadyHandler.html", null ],
-      [ "BPMNOS::Execution::TaskCompletionHandler", "classBPMNOS_1_1Execution_1_1TaskCompletionHandler.html", null ],
       [ "BPMNOS::Execution::TimeWarp", "classBPMNOS_1_1Execution_1_1TimeWarp.html", null ]
     ] ],
     [ "BPMNOS::Execution::EventListener", "classBPMNOS_1_1Execution_1_1EventListener.html", [
@@ -183,10 +181,7 @@ var hierarchy =
       [ "BPMNOS::Execution::InstantDirectMessage", "classBPMNOS_1_1Execution_1_1InstantDirectMessage.html", null ],
       [ "BPMNOS::Execution::MyopicMessageTaskTerminator", "classBPMNOS_1_1Execution_1_1MyopicMessageTaskTerminator.html", null ],
       [ "BPMNOS::Execution::OutcomeSentinel", "classBPMNOS_1_1Execution_1_1OutcomeSentinel.html", null ],
-      [ "BPMNOS::Execution::ReadyHandler", "classBPMNOS_1_1Execution_1_1ReadyHandler.html", null ],
-      [ "BPMNOS::Execution::Recorder", "classBPMNOS_1_1Execution_1_1Recorder.html", null ],
-      [ "BPMNOS::Execution::ScenarioUpdater", "classBPMNOS_1_1Execution_1_1ScenarioUpdater.html", null ],
-      [ "BPMNOS::Execution::TaskCompletionHandler", "classBPMNOS_1_1Execution_1_1TaskCompletionHandler.html", null ]
+      [ "BPMNOS::Execution::Recorder", "classBPMNOS_1_1Execution_1_1Recorder.html", null ]
     ] ],
     [ "BPMNOS::Model::Operator", "classBPMNOS_1_1Model_1_1Operator.html", null ],
     [ "BPMNOS::Execution::SeededController::pair_hash", "structBPMNOS_1_1Execution_1_1SeededController_1_1pair__hash.html", null ],
