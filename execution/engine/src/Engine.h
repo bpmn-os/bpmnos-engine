@@ -20,9 +20,7 @@
 #include "Signal.h"
 #include "SystemState.h"
 #include "ConditionalEventObserver.h"
-#include "ScenarioUpdater.h"
-#include "ReadyHandler.h"
-#include "TaskCompletionHandler.h"
+#include "Environment.h"
 
 namespace BPMNOS::Execution {
 
@@ -224,9 +222,7 @@ protected:
   BPMNOS::number lastInstantiationTime; ///< Timestamp when instances were last added (to prevent duplicate additions at same time)
   std::unique_ptr<SystemState> systemState;
   ConditionalEventObserver conditionalEventObserver;
-  ScenarioUpdater scenarioUpdater;
-  ReadyHandler readyHandler;
-  TaskCompletionHandler taskCompletionHandler;
+  Environment environment;
   
 //  friend void Token::notify() const;
 };

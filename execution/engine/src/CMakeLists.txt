@@ -5,9 +5,7 @@ list(APPEND engine_SOURCES
   MessageDeliveryRequest.cpp
   Token.cpp
   ConditionalEventObserver.cpp
-  ScenarioUpdater.cpp
-  ReadyHandler.cpp
-  TaskCompletionHandler.cpp
+  Environment.cpp
   Event.cpp
   events/TerminationEvent.cpp
   events/ClockTickEvent.cpp
@@ -54,8 +52,6 @@ list(APPEND engine_HEADERS
   EventDispatcher.h
   EventListener.h
   Mediator.h
-  ScenarioUpdater.h
-  ReadyHandler.h
-  TaskCompletionHandler.h
+  Environment.h
   Engine.h
 )

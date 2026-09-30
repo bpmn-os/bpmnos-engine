@@ -261,12 +261,12 @@ SCENARIO( "GreedyController terminates when resumed from a one-order two-sequent
   }
 }
 
-SCENARIO( "TaskCompletionHandler completes a task that was BUSY when the state was installed", "[candidates][resume][taskcompletion]" ) {
+SCENARIO( "The environment completes a task that was BUSY when the state was installed", "[candidates][resume][taskcompletion]" ) {
   // Minimal, message-free reproduction of the resume stall. A plain task goes BUSY at t=0 with its completion
   // scheduled at t=1. If the state is installed into a fresh engine and resumed, the task must still complete.
-  // The completion time is "revealed" into the scenario's taskCompletionStatus by the ScenarioUpdater on a live
+  // The completion time is "revealed" into the scenario's taskCompletionStatus by the Environment on a live
   // Token-BUSY notice; the SystemState copy constructs the BUSY token without re-emitting that notice, so if the
-  // reveal is not reconstructed on install the TaskCompletionHandler waits forever and the engine clock-ticks.
+  // reveal is not reconstructed on install the environment waits forever and the engine clock-ticks.
   const std::string modelFile = "tests/execution/task/Task_with_linear_expression.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
 

@@ -20,9 +20,7 @@ Engine::Engine()
 {
   lastInstantiationTime = std::numeric_limits<BPMNOS::number>::lowest();
   addSubscriber(&conditionalEventObserver, Observable::Type::DataUpdate);
-  addSubscriber(&scenarioUpdater, Observable::Type::Event, Observable::Type::Token);
-  readyHandler.connect(this);
-  taskCompletionHandler.connect(this);
+  environment.connect(this);
 }
 
 Engine::~Engine()
