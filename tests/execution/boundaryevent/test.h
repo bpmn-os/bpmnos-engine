@@ -42,11 +42,13 @@ SCENARIO( "Failed task", "[execution][boundaryevent]" ) {
 
 
         auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr },{"event",nullptr },{"decision",nullptr }});
-        REQUIRE( processLog[0]["state"] == "ENTERED" );
-        REQUIRE( processLog[1]["state"] == "BUSY" );
-        REQUIRE( processLog[2]["state"] == "COMPLETED" );
-        REQUIRE( processLog[3]["state"] == "DONE" );
-        REQUIRE( processLog[3]["status"]["timestamp"] == 1.0 );
+        REQUIRE( processLog[0]["state"] == "CREATED" );
+        REQUIRE( processLog[1]["state"] == "READY" );
+        REQUIRE( processLog[2]["state"] == "ENTERED" );
+        REQUIRE( processLog[3]["state"] == "BUSY" );
+        REQUIRE( processLog[4]["state"] == "COMPLETED" );
+        REQUIRE( processLog[5]["state"] == "DONE" );
+        REQUIRE( processLog[5]["status"]["timestamp"] == 1.0 );
       }
     }
   }
@@ -92,10 +94,12 @@ SCENARIO( "Failed subprocess", "[execution][boundaryevent]" ) {
         REQUIRE( completionLog[3]["nodeId"] == nullptr );
 
         auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr },{"event",nullptr },{"decision",nullptr }});
-        REQUIRE( processLog[0]["state"] == "ENTERED" );
-        REQUIRE( processLog[1]["state"] == "BUSY" );
-        REQUIRE( processLog[2]["state"] == "COMPLETED" );
-        REQUIRE( processLog[3]["state"] == "DONE" );
+        REQUIRE( processLog[0]["state"] == "CREATED" );
+        REQUIRE( processLog[1]["state"] == "READY" );
+        REQUIRE( processLog[2]["state"] == "ENTERED" );
+        REQUIRE( processLog[3]["state"] == "BUSY" );
+        REQUIRE( processLog[4]["state"] == "COMPLETED" );
+        REQUIRE( processLog[5]["state"] == "DONE" );
       }
     }
   }

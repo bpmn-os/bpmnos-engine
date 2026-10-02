@@ -25,7 +25,10 @@ nlohmann::ordered_json ReadyEvent::jsonify() const {
   }
   jsonObject["processId"] = token->owner->process->id;
   jsonObject["instanceId"] = BPMNOS::to_string((*token->data)[BPMNOS::Model::ExtensionElements::Index::Instance].get().value(),STRING);
-  jsonObject["nodeId"] = token->node->id;
+  if ( token->node ) {
+    // the token at a process resides at no node
+    jsonObject["nodeId"] = token->node->id;
+  }
 
   return jsonObject;
 }

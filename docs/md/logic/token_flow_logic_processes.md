@@ -5,7 +5,7 @@ A process with an @ref BPMN::UntypedStartEvent "untyped start event" is instanti
 
 A process with a @ref BPMN::MessageStartEvent "message start event" or a @ref BPMN::SignalStartEvent "signal start event" is instantiated whenever the message or signal triggering it is thrown, and is declared nowhere. Its instance identifier is generated, and the @ref BPMNOS::Model::Content "content" of the trigger is part of the status the instance is created with. Values that neither the content nor an initial assignment provides are undefined.
 
-Upon instantiation, a @ref BPMNOS::Execution::Token "token" is created which resides at the process element.
+Upon instantiation, a @ref BPMNOS::Execution::Token "token" is created which resides at the process element and holds the status the instance is created with. The instance is started when this token becomes ready.
 
 A token at a process element changes its state as follows:
 
@@ -13,7 +13,10 @@ A token at a process element changes its state as follows:
 stateDiagram-v2
     state feasibleEntry <<choice>>
     state feasibleExit <<choice>>
-    [*] --> ENTERED
+    [*] --> CREATED: [instantiated]
+    [*] --> READY: [triggered]
+    CREATED --> READY
+    READY --> ENTERED
     ENTERED --> feasibleEntry
     feasibleEntry --> BUSY: [feasible]
     feasibleEntry --> FAILED: [infeasible]
@@ -28,12 +31,18 @@ stateDiagram-v2
 </pre>
 
 
-## Token creation
+## CREATED
 
-After initialization, the @ref BPMNOS::Execution::Token::state "state" of the process token is immediately set to @ref BPMNOS::Execution::Token::State::ENTERED "ENTERED".
+The token of an instance created by the data provider is in @ref BPMNOS::Execution::Token::State::CREATED "CREATED" state and awaits a @ref BPMNOS::Execution::ReadyEvent "ready event", which the @ref BPMNOS::Execution::Environment "environment" dispatches at the instant of instantiation, carrying the status and data the instance is created with, before any ready event for an activity. Processing the ready event replaces the @ref BPMNOS::Execution::Token::status "status" of the token and the data of the instance by the values it carries, sets the timestamp to the current time, and creates the state machine owning the tokens flowing through the process.
+
+## READY
+
+A process token in @ref BPMNOS::Execution::Token::State::READY "READY" state enters the process without an entry decision, and its @ref BPMNOS::Execution::Token::state "state" is immediately set to @ref BPMNOS::Execution::Token::State::ENTERED "ENTERED".
+The token of an instance created by a trigger receives no ready event: the trigger being the condition for the start, the state machine owning the tokens flowing through the process is created at once and the token is set to @ref BPMNOS::Execution::Token::State::READY "READY" upon creation.
 
 ## ENTERED
-Upon entry, the initial assignment of @ref BPMNOS::Model::Attribute "attributes" are conducted in the order of attribute definitions.
+Upon entry, the instance becomes addressable by messages, and messages sent to it before are received.
+The initial assignment of @ref BPMNOS::Model::Attribute "attributes" are conducted in the order of attribute definitions.
 Feasibility of the @ref BPMNOS::Execution::Token::status "token status" is validated.
 If any of the @ref BPMNOS::Model::ExtensionElements::restrictions "restrictions" is violated, the @ref BPMNOS::Execution::Token::state "token state" is updated to @ref BPMNOS::Execution::Token::State::FAILED "FAILED".
 Otherwise,

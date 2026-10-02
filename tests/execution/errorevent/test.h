@@ -30,10 +30,12 @@ SCENARIO( "Error end event", "[execution][error]" ) {
         REQUIRE( errorEventLog[2]["state"] == "FAILED" );
 
         auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr },{"event",nullptr },{"decision",nullptr }});
-        REQUIRE( processLog[0]["state"] == "ENTERED" );
-        REQUIRE( processLog[1]["state"] == "BUSY" );
-        REQUIRE( processLog[2]["state"] == "FAILING" );
-        REQUIRE( processLog[3]["state"] == "FAILED" );
+        REQUIRE( processLog[0]["state"] == "CREATED" );
+        REQUIRE( processLog[1]["state"] == "READY" );
+        REQUIRE( processLog[2]["state"] == "ENTERED" );
+        REQUIRE( processLog[3]["state"] == "BUSY" );
+        REQUIRE( processLog[4]["state"] == "FAILING" );
+        REQUIRE( processLog[5]["state"] == "FAILED" );
 
 /*
         size_t i=0;

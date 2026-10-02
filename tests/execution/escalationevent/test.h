@@ -24,8 +24,8 @@ SCENARIO( "Intermediate escalation", "[execution][escalation]" ) {
       recorder.subscribe(&engine);
       engine.run(scenario.get());
       auto tokenLog = recorder.find(nlohmann::json{}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
-      THEN( "The token log has exactly 22 entries" ) {
-        REQUIRE( tokenLog.size() == 22 );
+      THEN( "The token log has exactly 24 entries" ) {
+        REQUIRE( tokenLog.size() == 24 );
       }
       THEN( "The dump of each entry of the token log is correct" ) {
         auto escalationEventLog = recorder.find(nlohmann::json{{"nodeId","EscalationEvent_1" }}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
@@ -35,13 +35,15 @@ SCENARIO( "Intermediate escalation", "[execution][escalation]" ) {
         REQUIRE( escalationEventLog[2]["state"] == "DEPARTED" );
 
         auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr },{"event",nullptr },{"decision",nullptr }});
-        REQUIRE( processLog[0]["state"] == "ENTERED" );
-        REQUIRE( processLog[1]["state"] == "BUSY" );
-        REQUIRE( processLog[1]["status"]["timestamp"] == 0.0);
-        REQUIRE( processLog[2]["state"] == "BUSY" );
-        REQUIRE( processLog[2]["status"]["timestamp"] == 1.0);
-        REQUIRE( processLog[3]["state"] == "COMPLETED" );
-        REQUIRE( processLog[4]["state"] == "DONE" );
+        REQUIRE( processLog[0]["state"] == "CREATED" );
+        REQUIRE( processLog[1]["state"] == "READY" );
+        REQUIRE( processLog[2]["state"] == "ENTERED" );
+        REQUIRE( processLog[3]["state"] == "BUSY" );
+        REQUIRE( processLog[3]["status"]["timestamp"] == 0.0);
+        REQUIRE( processLog[4]["state"] == "BUSY" );
+        REQUIRE( processLog[4]["status"]["timestamp"] == 1.0);
+        REQUIRE( processLog[5]["state"] == "COMPLETED" );
+        REQUIRE( processLog[6]["state"] == "DONE" );
       }
     }
   }

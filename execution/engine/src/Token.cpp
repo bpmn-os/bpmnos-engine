@@ -354,8 +354,9 @@ bool Token::exitIsFeasible() const {
 void Token::advanceFromCreated() {
 //std::cerr << "advanceFromCreated: " << jsonify().dump() << std::endl;
   if ( !node ) {
-    // tokens at process advance to entered
-    advanceToEntered();
+    // the token at a process awaits the ready event starting the instance
+    notify();
+    awaitReadyEvent();
     return;
   }
 
@@ -371,6 +372,13 @@ void Token::advanceFromCreated() {
 
 void Token::advanceToReady() {
 //std::cerr << "advanceToReady: " << jsonify().dump() << std::endl;
+  if ( !node ) {
+    // the token at a process enters without an entry decision
+    update(State::READY);
+    advanceToEntered();
+    return;
+  }
+
   if ( status[BPMNOS::Model::ExtensionElements::Index::Timestamp] > owner->systemState->getTime() ) {
     throw std::runtime_error("Token: ready timestamp at node '" + node->id + "' is larger than current time");
   }
@@ -462,6 +470,13 @@ void Token::advanceToEntered() {
   
   update(State::ENTERED);
 //std::cerr << "updatedToEntered" << std::endl;
+
+  if ( !node ) {
+    // register the state machine of the process instance
+    auto stateMachine = const_cast<StateMachine*>(owner);
+    const_cast<SystemState*>(owner->systemState)->archive[ (long unsigned int)stateMachine->instance.value() ] = stateMachine->weak_from_this();
+    stateMachine->registerRecipient();
+  }
 
   if ( const BPMN::Activity* activity = (node ? node->represents<BPMN::Activity>() : nullptr);
     activity && 

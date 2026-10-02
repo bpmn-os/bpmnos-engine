@@ -75,12 +75,14 @@ SCENARIO( "Sequential adhoc subprocesses with common performer", "[execution][ad
       engine.run(scenario.get());
       THEN( "The dump of each entry of the token log is correct" ) {
         auto processLog = recorder.find(nlohmann::json{},nlohmann::json{{"nodeId",nullptr},{"event",nullptr },{"decision",nullptr }});
-        REQUIRE( processLog[0]["state"] == "ENTERED" );
-        REQUIRE( processLog[0]["data"]["x"] == 0 );
-        REQUIRE( processLog[1]["state"] == "BUSY" );
-        REQUIRE( processLog[2]["data"]["x"] == 2 );
-        REQUIRE( processLog[2]["state"] == "COMPLETED" );
-        REQUIRE( processLog[3]["state"] == "DONE" );
+        REQUIRE( processLog[0]["state"] == "CREATED" );
+        REQUIRE( processLog[1]["state"] == "READY" );
+        REQUIRE( processLog[2]["state"] == "ENTERED" );
+        REQUIRE( processLog[2]["data"]["x"] == 0 );
+        REQUIRE( processLog[3]["state"] == "BUSY" );
+        REQUIRE( processLog[4]["data"]["x"] == 2 );
+        REQUIRE( processLog[4]["state"] == "COMPLETED" );
+        REQUIRE( processLog[5]["state"] == "DONE" );
 
         auto completionLog = recorder.find(nlohmann::json{{"state", "COMPLETED"}}, nlohmann::json{{"event",nullptr },{"decision",nullptr },{"nodeId","StartEvent_1"}});
         REQUIRE( (completionLog[0]["nodeId"] == "Activity_1" || completionLog[0]["nodeId"] == "Activity_2") );

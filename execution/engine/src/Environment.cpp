@@ -58,6 +58,12 @@ void Environment::notice(const Observable* observable) {
     auto scenario = token->owner->systemState->scenario;
 
     if (!token->node) {
+      // Handle CREATED at Process - the status and data the instance was created with are complete, so
+      // the ready event is determined at once. Pending events are dispatched before the awaiting tokens
+      // are checked, so the instance starts before any activity becomes ready at this instant.
+      if (token->state == Token::State::CREATED) {
+        pendingReadyEvents.emplace_back(const_cast<Token*>(token)->weak_from_this(), getReadyEvent(token, token->owner->systemState));
+      }
       return;
     }
 
@@ -165,6 +171,11 @@ void Environment::notice(const Observable* observable) {
 }
 
 std::shared_ptr<Event> Environment::getReadyEvent(const Token* token, const SystemState* systemState) {
+  if (!token->node) {
+    // the token at a process is ready with the status and data the instance was created with
+    return std::make_shared<ReadyEvent>(const_cast<Token*>(token), token->status, BPMNOS::Values(*token->data));
+  }
+
   auto rootId = token->owner->root->instance.value();
   auto instanceId = token->getInstanceId();
   auto currentTime = systemState->getTime();

@@ -185,7 +185,7 @@ protected:
 
   void processCommands(); ///< Method executing all enqueued commands, including those enqueued by a command being executed
 
-  void addInstances(); ///< Method adding all new instances and advancing tokens as much as possible
+  void addInstances(); ///< Method creating all new instances, whose tokens at the process await the ready event starting them
 
   /// @brief Method broadcasting a signal to every token awaiting it and instantiating the process it
   /// triggers, if any.
@@ -203,7 +203,8 @@ protected:
   ///
   /// The identifier is generated, an instance created by a trigger being declared nowhere, and the
   /// content of the trigger is applied to the initial status of the instance, which is where it is
-  /// needed and after which it is of no further concern.
+  /// needed and after which it is of no further concern. The trigger being the condition for the start,
+  /// the instance is started at once rather than upon a @ref ReadyEvent.
   void triggerInstance(const BPMN::Process* process, BPMNOS::VariedValueMap content);
 
   /// @brief Method creating an instance of a process from the message triggering it, and consuming that

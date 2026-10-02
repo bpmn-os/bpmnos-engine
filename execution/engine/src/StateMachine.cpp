@@ -18,7 +18,7 @@
 
 using namespace BPMNOS::Execution;
 
-StateMachine::StateMachine(const SystemState* systemState, const BPMN::Process* process, Values dataAttributes)
+StateMachine::StateMachine(const SystemState* systemState, const BPMN::Process* process, Values dataAttributes, Values status)
   : systemState(systemState)
   , process(process)
   , scope(process)
@@ -29,8 +29,14 @@ StateMachine::StateMachine(const SystemState* systemState, const BPMN::Process* 
   , data(SharedValues(ownedData))
 {
   assert( instance.has_value() && instance.value() >= 0 );
+  assert( status.size() >= 1 );
+  assert( status[BPMNOS::Model::ExtensionElements::Index::Timestamp].has_value() );
   data[BPMNOS::Model::ExtensionElements::Index::Instance] = std::ref(instance);
   updateObjective();
+
+  // the token at the process holds the status; it is advanced once the state machine is stored in the
+  // system state, since advancing notifies observers
+  tokens.push_back( std::make_shared<Token>(this,nullptr,std::move(status)) );
 }
 
 StateMachine::StateMachine(const SystemState* systemState, const BPMN::Scope* scope, Token* parentToken, Values dataAttributes, std::optional<BPMNOS::number> instance )
@@ -742,29 +748,16 @@ void StateMachine::unregisterRecipient() {
 
 
 void StateMachine::run(Values status) {
+  // the state machine of a process creates its token on construction
+  assert( parentToken );
   assert( status.size() >= 1 );
   assert( data.size() >= 1 );
   assert( data[BPMNOS::Model::ExtensionElements::Index::Instance].get().has_value() );
   assert( status[BPMNOS::Model::ExtensionElements::Index::Timestamp].has_value() );
 
 //std::cerr << "Run " << scope->id << "/" << this << "/" << parentToken << std::endl;
-  if ( !parentToken ) {
-    // state machine without parent token represents a process
-//std::cerr << "Start process " << process->id << std::endl;
-    auto instanceId = (long unsigned int)data[BPMNOS::Model::ExtensionElements::Index::Instance].get().value();
-    const_cast<SystemState*>(systemState)->archive[ instanceId ] = weak_from_this();
-
-    tokens.push_back( std::make_shared<Token>(this,nullptr,std::move(status)) );
-    registerRecipient();
-
-    // create child that will own tokens flowing through the process
-    createChild(tokens.back().get(),scope, {});
-
-  }
-  else {
-    for ( auto startNode : scope->startNodes ) {
-      tokens.push_back( std::make_shared<Token>(this,startNode,std::move(status)) );
-    }
+  for ( auto startNode : scope->startNodes ) {
+    tokens.push_back( std::make_shared<Token>(this,startNode,std::move(status)) );
   }
 
   for ( auto token : tokens ) {

@@ -36,14 +36,16 @@ public:
   /**
    * @brief Constructs a root StateMachine for a process instance.
    *
-   * Creates the top-level state machine that represents a running process instance.
+   * Creates the top-level state machine that represents a process instance, together with the token at
+   * the process, which holds the status. The instance is started when that token becomes ready.
    * This constructor is used when instantiating a new process.
    *
    * @param systemState The system state this state machine belongs to
    * @param process The BPMN process definition
    * @param dataAttributes Initial data attribute values for the process
+   * @param status Initial status attribute values for the process
    */
-  StateMachine(const SystemState* systemState, const BPMN::Process* process, Values dataAttributes);
+  StateMachine(const SystemState* systemState, const BPMN::Process* process, Values dataAttributes, Values status);
 
   /**
    * @brief Constructs a child StateMachine for a scope within a process.
@@ -108,7 +110,7 @@ public:
   Tokens compensableSubProcesses; ///< Container holding tokens owning completed subprocesses with a compensation event subprocess
 
   Tokens getCompensationTokens(const BPMN::Activity* activity = nullptr) const; ///< Returns the compensation tokens for a given activity or for all activities
-  void run(Values status); ///< Create initial token and advance it.
+  void run(Values status); ///< Create the initial tokens of the scope of a child state machine and advance them.
 
 private:
   friend class Engine;

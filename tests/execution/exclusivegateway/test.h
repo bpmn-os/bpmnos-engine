@@ -30,11 +30,13 @@ SCENARIO( "Symmetric exclusive gateways", "[execution][exclusivegateway]" ) {
         REQUIRE( gatewayLog[2]["state"] == "DEPARTED" );
 
         auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr },{"event",nullptr },{"decision",nullptr }});
-        REQUIRE( processLog[0]["state"] == "ENTERED" );
-        REQUIRE( processLog[1]["state"] == "BUSY" );
-        REQUIRE( processLog[2]["state"] == "COMPLETED" );
-        REQUIRE( processLog[3]["state"] == "DONE" );
-        REQUIRE( recorder.log[10]["nodeId"] == "Activity_2" );
+        REQUIRE( processLog[0]["state"] == "CREATED" );
+        REQUIRE( processLog[1]["state"] == "READY" );
+        REQUIRE( processLog[2]["state"] == "ENTERED" );
+        REQUIRE( processLog[3]["state"] == "BUSY" );
+        REQUIRE( processLog[4]["state"] == "COMPLETED" );
+        REQUIRE( processLog[5]["state"] == "DONE" );
+        REQUIRE( recorder.log[13]["nodeId"] == "Activity_2" );
     }
    }
   }
@@ -68,10 +70,12 @@ SCENARIO( "Symmetric exclusive gateways", "[execution][exclusivegateway]" ) {
         REQUIRE( gatewayLog[2]["state"] == "FAILED" );
 
         auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr },{"event",nullptr },{"decision",nullptr }});
-        REQUIRE( processLog[0]["state"] == "ENTERED" );
-        REQUIRE( processLog[1]["state"] == "BUSY" );
-        REQUIRE( processLog[2]["state"] == "FAILING" );
-        REQUIRE( processLog[3]["state"] == "FAILED" );
+        REQUIRE( processLog[0]["state"] == "CREATED" );
+        REQUIRE( processLog[1]["state"] == "READY" );
+        REQUIRE( processLog[2]["state"] == "ENTERED" );
+        REQUIRE( processLog[3]["state"] == "BUSY" );
+        REQUIRE( processLog[4]["state"] == "FAILING" );
+        REQUIRE( processLog[5]["state"] == "FAILED" );
       }
     }
   }
@@ -105,13 +109,15 @@ SCENARIO( "Symmetric exclusive gateways", "[execution][exclusivegateway]" ) {
         REQUIRE( gatewayLog[2]["state"] == "DEPARTED" );
 
         auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr },{"event",nullptr },{"decision",nullptr }});
-        REQUIRE( processLog[0]["state"] == "ENTERED" );
-        REQUIRE( processLog[1]["state"] == "BUSY" );
-        REQUIRE( processLog[2]["state"] == "COMPLETED" );
-        REQUIRE( processLog[3]["state"] == "DONE" );
+        REQUIRE( processLog[0]["state"] == "CREATED" );
+        REQUIRE( processLog[1]["state"] == "READY" );
+        REQUIRE( processLog[2]["state"] == "ENTERED" );
+        REQUIRE( processLog[3]["state"] == "BUSY" );
+        REQUIRE( processLog[4]["state"] == "COMPLETED" );
+        REQUIRE( processLog[5]["state"] == "DONE" );
 
         auto tokenLog = recorder.find(nlohmann::json{}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
-        REQUIRE( tokenLog[9]["nodeId"] == "Activity_1" );
+        REQUIRE( tokenLog[11]["nodeId"] == "Activity_1" );
       }
     }
   }

@@ -43,10 +43,12 @@ SCENARIO( "Caught error end event", "[execution][eventsubprocess]" ) {
         REQUIRE( errorEndEventLog[2]["state"] == "FAILED" );
 
         auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr },{"event",nullptr },{"decision",nullptr }});
-        REQUIRE( processLog[0]["state"] == "ENTERED" );
-        REQUIRE( processLog[1]["state"] == "BUSY" );
-        REQUIRE( processLog[2]["state"] == "COMPLETED" );
-        REQUIRE( processLog[3]["state"] == "DONE" );
+        REQUIRE( processLog[0]["state"] == "CREATED" );
+        REQUIRE( processLog[1]["state"] == "READY" );
+        REQUIRE( processLog[2]["state"] == "ENTERED" );
+        REQUIRE( processLog[3]["state"] == "BUSY" );
+        REQUIRE( processLog[4]["state"] == "COMPLETED" );
+        REQUIRE( processLog[5]["state"] == "DONE" );
 
       }
     }
@@ -108,10 +110,12 @@ SCENARIO( "Interrupting escalation", "[execution][eventsubprocess]" ) {
         REQUIRE( activityLog[6]["state"] == "DEPARTED" );
 
         auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr },{"event",nullptr },{"decision",nullptr }});
-        REQUIRE( processLog[0]["state"] == "ENTERED" );
-        REQUIRE( processLog[1]["state"] == "BUSY" );
-        REQUIRE( processLog[2]["state"] == "COMPLETED" );
-        REQUIRE( processLog[3]["state"] == "DONE" );
+        REQUIRE( processLog[0]["state"] == "CREATED" );
+        REQUIRE( processLog[1]["state"] == "READY" );
+        REQUIRE( processLog[2]["state"] == "ENTERED" );
+        REQUIRE( processLog[3]["state"] == "BUSY" );
+        REQUIRE( processLog[4]["state"] == "COMPLETED" );
+        REQUIRE( processLog[5]["state"] == "DONE" );
       }
     }
   }
@@ -175,10 +179,12 @@ SCENARIO( "Non-interrupting escalation", "[execution][eventsubprocess]" ) {
         REQUIRE( activityLog[6]["state"] == "DEPARTED" );
         
         auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr },{"event",nullptr },{"decision",nullptr }});
-        REQUIRE( processLog[0]["state"] == "ENTERED" );
-        REQUIRE( processLog[1]["state"] == "BUSY" );
-        REQUIRE( processLog[2]["state"] == "COMPLETED" );
-        REQUIRE( processLog[3]["state"] == "DONE" );
+        REQUIRE( processLog[0]["state"] == "CREATED" );
+        REQUIRE( processLog[1]["state"] == "READY" );
+        REQUIRE( processLog[2]["state"] == "ENTERED" );
+        REQUIRE( processLog[3]["state"] == "BUSY" );
+        REQUIRE( processLog[4]["state"] == "COMPLETED" );
+        REQUIRE( processLog[5]["state"] == "DONE" );
 
       }
     }
@@ -234,10 +240,12 @@ SCENARIO( "Caught and rethrown error", "[execution][eventsubprocess]" ) {
         REQUIRE( errorEndEvent2Log[2]["state"] == "FAILED" );
 
         auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr },{"event",nullptr },{"decision",nullptr }});
-        REQUIRE( processLog[0]["state"] == "ENTERED" );
-        REQUIRE( processLog[1]["state"] == "BUSY" );
-        REQUIRE( processLog[2]["state"] == "FAILING" );
-        REQUIRE( processLog[3]["state"] == "FAILED" );
+        REQUIRE( processLog[0]["state"] == "CREATED" );
+        REQUIRE( processLog[1]["state"] == "READY" );
+        REQUIRE( processLog[2]["state"] == "ENTERED" );
+        REQUIRE( processLog[3]["state"] == "BUSY" );
+        REQUIRE( processLog[4]["state"] == "FAILING" );
+        REQUIRE( processLog[5]["state"] == "FAILED" );
       }
     }
   }
@@ -287,10 +295,12 @@ SCENARIO( "Non-interrupting escalation throwing error", "[execution][eventsubpro
         REQUIRE( errorEndEventLog[2]["state"] == "FAILED" );
 
         auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr },{"event",nullptr },{"decision",nullptr }});
-        REQUIRE( processLog[0]["state"] == "ENTERED" );
-        REQUIRE( processLog[1]["state"] == "BUSY" );
-        REQUIRE( processLog[2]["state"] == "FAILING" );
-        REQUIRE( processLog[3]["state"] == "FAILED" );
+        REQUIRE( processLog[0]["state"] == "CREATED" );
+        REQUIRE( processLog[1]["state"] == "READY" );
+        REQUIRE( processLog[2]["state"] == "ENTERED" );
+        REQUIRE( processLog[3]["state"] == "BUSY" );
+        REQUIRE( processLog[4]["state"] == "FAILING" );
+        REQUIRE( processLog[5]["state"] == "FAILED" );
       }
     }
   }
@@ -347,10 +357,12 @@ SCENARIO( "Interrupting escalation throwing error", "[execution][eventsubprocess
         REQUIRE( escalationEndEventLog[2]["state"] == "WITHDRAWN" );
 
         auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr },{"event",nullptr },{"decision",nullptr }});
-        REQUIRE( processLog[0]["state"] == "ENTERED" );
-        REQUIRE( processLog[1]["state"] == "BUSY" );
-        REQUIRE( processLog[2]["state"] == "FAILING" );
-        REQUIRE( processLog[3]["state"] == "FAILED" );
+        REQUIRE( processLog[0]["state"] == "CREATED" );
+        REQUIRE( processLog[1]["state"] == "READY" );
+        REQUIRE( processLog[2]["state"] == "ENTERED" );
+        REQUIRE( processLog[3]["state"] == "BUSY" );
+        REQUIRE( processLog[4]["state"] == "FAILING" );
+        REQUIRE( processLog[5]["state"] == "FAILED" );
       }
     }
   }

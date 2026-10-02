@@ -24,15 +24,17 @@ SCENARIO( "Empty executable subprocess", "[execution][subprocess]" ) {
       recorder.subscribe(&engine);
       engine.run(scenario.get());
       auto tokenLog = recorder.find(nlohmann::json{}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
-      THEN( "The token log has exactly 18 entries" ) {
-        REQUIRE( tokenLog.size() == 18 );
+      THEN( "The token log has exactly 20 entries" ) {
+        REQUIRE( tokenLog.size() == 20 );
       }
       THEN( "The dump of each entry of the recorder log is correct" ) {
         auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr },{"event",nullptr },{"decision",nullptr }});
-        REQUIRE( processLog[0]["state"] == "ENTERED" );
-        REQUIRE( processLog[1]["state"] == "BUSY" );
-        REQUIRE( processLog[2]["state"] == "COMPLETED" );
-        REQUIRE( processLog[3]["state"] == "DONE" );
+        REQUIRE( processLog[0]["state"] == "CREATED" );
+        REQUIRE( processLog[1]["state"] == "READY" );
+        REQUIRE( processLog[2]["state"] == "ENTERED" );
+        REQUIRE( processLog[3]["state"] == "BUSY" );
+        REQUIRE( processLog[4]["state"] == "COMPLETED" );
+        REQUIRE( processLog[5]["state"] == "DONE" );
 
         auto startLog = recorder.find(nlohmann::json{{"nodeId","StartEvent_1" }}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
         REQUIRE( startLog[0]["state"] == "ENTERED" );
@@ -84,15 +86,17 @@ SCENARIO( "Trivial executable subprocess", "[execution][subprocess]" ) {
       recorder.subscribe(&engine);
       engine.run(scenario.get());
       auto tokenLog = recorder.find(nlohmann::json{}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
-      THEN( "The token log has exactly 22 entries" ) {
-        REQUIRE( tokenLog.size() == 22 );
+      THEN( "The token log has exactly 24 entries" ) {
+        REQUIRE( tokenLog.size() == 24 );
       }
       THEN( "The dump of each entry of the token log is correct" ) {
         auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr },{"event",nullptr },{"decision",nullptr }});
-        REQUIRE( processLog[0]["state"] == "ENTERED" );
-        REQUIRE( processLog[1]["state"] == "BUSY" );
-        REQUIRE( processLog[2]["state"] == "COMPLETED" );
-        REQUIRE( processLog[3]["state"] == "DONE" );
+        REQUIRE( processLog[0]["state"] == "CREATED" );
+        REQUIRE( processLog[1]["state"] == "READY" );
+        REQUIRE( processLog[2]["state"] == "ENTERED" );
+        REQUIRE( processLog[3]["state"] == "BUSY" );
+        REQUIRE( processLog[4]["state"] == "COMPLETED" );
+        REQUIRE( processLog[5]["state"] == "DONE" );
 
         auto startEvent1Log = recorder.find(nlohmann::json{{"nodeId","StartEvent_1" }}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
         REQUIRE( startEvent1Log[0]["state"] == "ENTERED" );

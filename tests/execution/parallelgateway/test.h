@@ -22,8 +22,8 @@ SCENARIO( "Parallel fork", "[execution][parallelgateway]" ) {
       recorder.subscribe(&engine);
       engine.run(scenario.get(), 0, 0);
       auto tokenLog = recorder.find(nlohmann::json{}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
-      THEN( "The dump of each entry of the token log has 18 entries" ) {
-        REQUIRE( tokenLog.size() == 18 );
+      THEN( "The dump of each entry of the token log has 20 entries" ) {
+        REQUIRE( tokenLog.size() == 20 );
       }
       THEN( "The dump of each entry of the token log is correct" ) {
         auto gateway1Log = recorder.find(nlohmann::json{{"nodeId","Gateway_1" }}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
@@ -34,10 +34,12 @@ SCENARIO( "Parallel fork", "[execution][parallelgateway]" ) {
         REQUIRE( gateway1Log[3]["sequenceFlowId"] != gateway1Log[2]["sequenceFlowId"] );
 
         auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr },{"event",nullptr },{"decision",nullptr }});
-        REQUIRE( processLog[0]["state"] == "ENTERED" );
-        REQUIRE( processLog[1]["state"] == "BUSY" );
-        REQUIRE( processLog[2]["state"] == "COMPLETED" );
-        REQUIRE( processLog[3]["state"] == "DONE" );
+        REQUIRE( processLog[0]["state"] == "CREATED" );
+        REQUIRE( processLog[1]["state"] == "READY" );
+        REQUIRE( processLog[2]["state"] == "ENTERED" );
+        REQUIRE( processLog[3]["state"] == "BUSY" );
+        REQUIRE( processLog[4]["state"] == "COMPLETED" );
+        REQUIRE( processLog[5]["state"] == "DONE" );
 /*
         size_t i = 0;
         // process
@@ -96,8 +98,8 @@ SCENARIO( "Symmetric parallel gateways", "[execution][parallelgateway]" ) {
       recorder.subscribe(&engine);
       engine.run(scenario.get(), 0, 0);
       auto tokenLog = recorder.find(nlohmann::json{}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
-      THEN( "The dump of each entry of the token log has 35 entries" ) {
-        REQUIRE( tokenLog.size() == 35 );
+      THEN( "The dump of each entry of the token log has 37 entries" ) {
+        REQUIRE( tokenLog.size() == 37 );
       }
       THEN( "The dump of each entry of the token log is correct" ) {
         auto gateway1Log = recorder.find(nlohmann::json{{"nodeId","Gateway_1" }}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
@@ -116,10 +118,12 @@ SCENARIO( "Symmetric parallel gateways", "[execution][parallelgateway]" ) {
         REQUIRE( gateway2Log[5]["state"] == "DEPARTED" );
         
         auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr },{"event",nullptr },{"decision",nullptr }});
-        REQUIRE( processLog[0]["state"] == "ENTERED" );
-        REQUIRE( processLog[1]["state"] == "BUSY" );
-        REQUIRE( processLog[2]["state"] == "COMPLETED" );
-        REQUIRE( processLog[3]["state"] == "DONE" );
+        REQUIRE( processLog[0]["state"] == "CREATED" );
+        REQUIRE( processLog[1]["state"] == "READY" );
+        REQUIRE( processLog[2]["state"] == "ENTERED" );
+        REQUIRE( processLog[3]["state"] == "BUSY" );
+        REQUIRE( processLog[4]["state"] == "COMPLETED" );
+        REQUIRE( processLog[5]["state"] == "DONE" );
     }
    }
   }
