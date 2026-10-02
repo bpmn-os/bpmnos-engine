@@ -351,24 +351,6 @@ std::vector<const Scenario::InstanceData*> StochasticScenario::getInstances(cons
   return result;
 }
 
-std::vector<std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values>> StochasticScenario::getCurrentInstantiations(const BPMNOS::number currentTime) const {
-  std::vector<std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values>> result;
-  for (auto& [id, instance] : instances) {
-    BPMNOS::number effectiveInstantiationTime = instance.instantiationTime;
-    if (disclosureTimes.contains(instance.id) && disclosureTimes.at(instance.id).contains(instance.process)) {
-      effectiveInstantiationTime = std::max( effectiveInstantiationTime,                                             disclosureTimes.at(instance.id).at(instance.process) );
-    }
-    if (effectiveInstantiationTime == currentTime) {
-      auto status = getKnownInitialStatus(&instance, currentTime);
-      if (effectiveInstantiationTime > instance.instantiationTime) {
-        status[ExtensionElements::Index::Timestamp] = currentTime;
-      }
-      result.push_back({instance.process, std::move(status), getKnownInitialData(&instance, currentTime)});
-    }
-  }
-  return result;
-}
-
 std::vector< std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values> > StochasticScenario::getKnownInstantiations(const BPMNOS::number previous, const BPMNOS::number currentTime) const {
   std::vector< std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values> > result;
   for ( auto& [id, instance] : instances ) {

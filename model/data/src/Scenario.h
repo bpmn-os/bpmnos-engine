@@ -47,11 +47,6 @@ public:
   virtual bool isCompleted(const BPMNOS::number currentTime) const = 0;
 
   /**
-   * @brief Method returning a vector of all instances that are to be instantiated at the given time.
-   */
-  virtual std::vector< std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values> > getCurrentInstantiations(const BPMNOS::number currentTime) const = 0;
-
-  /**
    * @brief Method returning the process, status and data of all instances becoming known.
    *
    * An instance becomes known at the time at which the scenario makes it known. The method returns every
@@ -253,16 +248,15 @@ protected:
   /**
    * @brief Method returning the initial status attributes for process instantiation.
    *
-   * Used internally by getCurrentInstantiations, getKnownInstantiations and getProcessReadyStatus to get
-   * process-level status attributes.
+   * Used internally by getKnownInstantiations and getProcessReadyStatus to get process-level status
+   * attributes.
    */
   virtual Values getKnownInitialStatus(const InstanceData*, const BPMNOS::number time) const = 0;
 
   /**
    * @brief Method returning the initial data attributes for process instantiation.
    *
-   * Used internally by getCurrentInstantiations and getKnownInstantiations to get process-level data
-   * attributes.
+   * Used internally by getKnownInstantiations to get process-level data attributes.
    */
   virtual Values getKnownInitialData(const InstanceData*, const BPMNOS::number time) const = 0;
 

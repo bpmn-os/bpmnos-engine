@@ -430,15 +430,6 @@ SCENARIO( "Known and ready instances of a stochastic scenario", "[data][stochast
     Model::StochasticDataProvider dataProvider(modelFile, csv);
     auto scenario = dataProvider.createScenario();
 
-    auto instantiationOf = [&scenario](BPMNOS::number instanceId, BPMNOS::number t) {
-      for ( auto& instantiation : scenario->getCurrentInstantiations(t) ) {
-        if ( std::get<2>(instantiation)[Model::ExtensionElements::Index::Instance].value() == instanceId ) {
-          return std::optional(instantiation);
-        }
-      }
-      return std::optional<std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values>>();
-    };
-
     WHEN( "The known instances are queried at every instant of a run starting at time 3" ) {
       std::map<BPMNOS::number, BPMNOS::number> reported; // instance -> time at which it is reported
       bool reportedTwice = false;
@@ -466,18 +457,16 @@ SCENARIO( "Known and ready instances of a stochastic scenario", "[data][stochast
         REQUIRE( !scenario->getProcessReadyStatus(BPMNOS::to_number(std::string("Instance_2"),STRING), 9).has_value() );
         REQUIRE( !scenario->getProcessReadyStatus(BPMNOS::to_number(std::string("Instance_3"),STRING), 19).has_value() );
       }
-      THEN( "It equals the instantiation at the effective instantiation time" ) {
+      THEN( "It is given at the effective instantiation time together with the data of the process" ) {
+        auto process = scenario->getModel()->processes.front().get();
         for ( auto [name, t] : std::vector< std::pair<std::string, int> >{ {"Instance_1", 15}, {"Instance_2", 10}, {"Instance_3", 20} } ) {
           auto instanceId = BPMNOS::to_number(name,STRING);
-          auto instantiation = instantiationOf(instanceId, t);
-          REQUIRE( instantiation.has_value() );
-          auto& [process,status,data] = instantiation.value();
           auto readyStatus = scenario->getProcessReadyStatus(instanceId, t);
           REQUIRE( readyStatus.has_value() );
-          REQUIRE( readyStatus.value() == status );
+          REQUIRE( readyStatus.value()[Model::ExtensionElements::Index::Timestamp].value() == t );
           auto readyData = scenario->getData(instanceId, process, t);
           REQUIRE( readyData.has_value() );
-          REQUIRE( readyData.value() == data );
+          REQUIRE( readyData.value()[Model::ExtensionElements::Index::Instance].value() == instanceId );
         }
       }
     }

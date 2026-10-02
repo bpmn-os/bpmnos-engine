@@ -58,28 +58,6 @@ std::vector< const Scenario::InstanceData* > DynamicScenario::getInstances(const
   return result;
 }
 
-std::vector< std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values> > DynamicScenario::getCurrentInstantiations(const BPMNOS::number currentTime) const {
-  std::vector< std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values> > result;
-  for ( auto& [id, instance] : instances ) {
-    // Effective instantiation time is max(instantiationTime, processDisclosure).
-    // If process data disclosure is later than instantiation time, instantiation is delayed
-    // until all process data is disclosed.
-    BPMNOS::number effectiveInstantiationTime = instance.instantiationTime;
-    if ( disclosure.contains(instance.id) && disclosure.at(instance.id).contains(instance.process) ) {
-      effectiveInstantiationTime = std::max(effectiveInstantiationTime, disclosure.at(instance.id).at(instance.process));
-    }
-    if ( effectiveInstantiationTime == currentTime ) {
-      auto status = getKnownInitialStatus(&instance, currentTime);
-      // If instantiation was delayed due to disclosure, update timestamp to reflect actual instantiation time
-      if ( effectiveInstantiationTime > instance.instantiationTime ) {
-        status[ExtensionElements::Index::Timestamp] = currentTime;
-      }
-      result.push_back({instance.process, std::move(status), getKnownInitialData(&instance, currentTime)});
-    }
-  }
-  return result;
-}
-
 std::vector< std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values> > DynamicScenario::getKnownInstantiations(const BPMNOS::number previous, const BPMNOS::number currentTime) const {
   std::vector< std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values> > result;
   for ( auto& [id, instance] : instances ) {
@@ -133,7 +111,7 @@ BPMNOS::Values DynamicScenario::getKnownInitialData(const Scenario::InstanceData
 }
 
 std::optional<BPMNOS::number> DynamicScenario::getValue(const Scenario::InstanceData* instance, const BPMNOS::Model::Attribute* attribute, const BPMNOS::number currentTime) const {
-  // Node-level disclosure is checked by caller (getCurrentInstantiations, getStatus, getData)
+  // Node-level disclosure is checked by caller (getKnownInstantiations, getProcessReadyStatus, getStatus, getData)
   if ( attribute->expression && attribute->expression->type == Expression::Type::ASSIGN ) {
     // Value is computed from an expression declared in the model
     return getAssignedValue(instance, attribute, currentTime);

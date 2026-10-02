@@ -31,7 +31,7 @@ SCENARIO( "Trivial executable process", "[data][static]" ) {
       THEN( "The instantiation data is correct" ) {
         std::string instanceId = "Instance_1";
         BPMNOS::number timestamp = 0;
-        auto instantiations = scenario->getCurrentInstantiations(0);
+        auto instantiations = scenario->getKnownInstantiations(std::numeric_limits<BPMNOS::number>::lowest(), 0);
         REQUIRE( instantiations.size() == 1 );
         auto& [process,status,data] = instantiations.front();
         REQUIRE( status.size() == 1 );
@@ -72,13 +72,14 @@ SCENARIO( "Trivial executable process", "[data][static]" ) {
         auto anticipatedInstances = scenario->getInstances(42);
         REQUIRE( anticipatedInstances.size() == 1 );
       }
-      THEN( "Exactly one instantiation is known to occur at time 42" ) {
-        auto instantiations = scenario->getCurrentInstantiations(42);
-        REQUIRE( instantiations.size() == 1 );
+      THEN( "The instance starts at time 42" ) {
+        auto instanceId = BPMNOS::to_number(std::string("Instance_1"),STRING);
+        REQUIRE( !scenario->getProcessReadyStatus(instanceId, 41).has_value() );
+        REQUIRE( scenario->getProcessReadyStatus(instanceId, 42).has_value() );
       }
-      THEN( "No instantiation is known to occur at time 0" ) {
-        auto instantiations = scenario->getCurrentInstantiations(0);
-        REQUIRE( instantiations.size() == 0 );
+      THEN( "The instance does not start at time 0" ) {
+        auto instanceId = BPMNOS::to_number(std::string("Instance_1"),STRING);
+        REQUIRE( !scenario->getProcessReadyStatus(instanceId, 0).has_value() );
       }
       THEN( "The model data is correct" ) {
         auto instances = scenario->getInstances(0);
@@ -95,8 +96,12 @@ SCENARIO( "Trivial executable process", "[data][static]" ) {
       THEN( "The instantiation data of the first instance is correct" ) {
         std::string instanceId = "Instance_1";
         BPMNOS::number timestamp = 42;
-        auto instantiations = scenario->getCurrentInstantiations(timestamp);
-        auto& [process,status,data] = instantiations.front();
+        auto instantiations = scenario->getKnownInstantiations(std::numeric_limits<BPMNOS::number>::lowest(), 0);
+        auto it = std::ranges::find_if(instantiations, [&instanceId](auto& instantiation) {
+          return std::get<2>(instantiation)[Model::ExtensionElements::Index::Instance].value() == BPMNOS::to_number(instanceId,STRING);
+        });
+        REQUIRE( it != instantiations.end() );
+        auto& [process,status,data] = *it;
         REQUIRE( status.size() == 1 );
         REQUIRE( data.size() == 1 );
         REQUIRE( data[Model::ExtensionElements::Index::Instance].value() == BPMNOS::to_number(instanceId,STRING) );
@@ -140,23 +145,25 @@ SCENARIO( "Trivial executable process", "[data][static]" ) {
         auto anticipatedInstances = scenario->getInstances(0);
         REQUIRE( anticipatedInstances.size() == 2 );
       }
-      THEN( "Exactly one instantiation is known to occur at time 42" ) {
-        auto instantiations = scenario->getCurrentInstantiations(42);
-        REQUIRE( instantiations.size() == 1 );
+      THEN( "The first instance starts at time 42" ) {
+        auto instanceId = BPMNOS::to_number(std::string("Instance_1"),STRING);
+        REQUIRE( !scenario->getProcessReadyStatus(instanceId, 15).has_value() );
+        REQUIRE( !scenario->getProcessReadyStatus(instanceId, 41).has_value() );
+        REQUIRE( scenario->getProcessReadyStatus(instanceId, 42).has_value() );
       }
-      THEN( "Exactly one instantiation is known to occur at time 0" ) {
-        auto instantiations = scenario->getCurrentInstantiations(0);
-        REQUIRE( instantiations.size() == 1 );
-      }
-      THEN( "No instantiation is known to occur at time 15" ) {
-        auto instantiations = scenario->getCurrentInstantiations(15);
-        REQUIRE( instantiations.size() == 0 );
+      THEN( "The second instance starts at time 0" ) {
+        auto instanceId = BPMNOS::to_number(std::string("Instance_2"),STRING);
+        REQUIRE( scenario->getProcessReadyStatus(instanceId, 0).has_value() );
       }
       THEN( "The instantiation data of the first instance is correct" ) {
         std::string instanceId = "Instance_1";
         BPMNOS::number timestamp = 42;
-        auto instantiations = scenario->getCurrentInstantiations(timestamp);
-        auto& [process,status,data] = instantiations.front();
+        auto instantiations = scenario->getKnownInstantiations(std::numeric_limits<BPMNOS::number>::lowest(), 0);
+        auto it = std::ranges::find_if(instantiations, [&instanceId](auto& instantiation) {
+          return std::get<2>(instantiation)[Model::ExtensionElements::Index::Instance].value() == BPMNOS::to_number(instanceId,STRING);
+        });
+        REQUIRE( it != instantiations.end() );
+        auto& [process,status,data] = *it;
         REQUIRE( status.size() == 1 );
         REQUIRE( data.size() == 1 );
         REQUIRE( data[Model::ExtensionElements::Index::Instance].value() == BPMNOS::to_number(instanceId,STRING) );
@@ -203,16 +210,14 @@ SCENARIO( "Known and ready instances of a static scenario", "[data][static]" ) {
       THEN( "It is absent before the instantiation time" ) {
         REQUIRE( !scenario->getProcessReadyStatus(instanceId, 41).has_value() );
       }
-      THEN( "It equals the instantiation at the instantiation time" ) {
-        auto instantiations = scenario->getCurrentInstantiations(42);
-        REQUIRE( instantiations.size() == 1 );
-        auto& [process,status,data] = instantiations.front();
+      THEN( "It is given at the instantiation time together with the data of the process" ) {
+        auto process = scenario->getModel()->processes.front().get();
         auto readyStatus = scenario->getProcessReadyStatus(instanceId, 42);
         REQUIRE( readyStatus.has_value() );
-        REQUIRE( readyStatus.value() == status );
+        REQUIRE( readyStatus.value()[Model::ExtensionElements::Index::Timestamp].value() == 42 );
         auto readyData = scenario->getData(instanceId, process, 42);
         REQUIRE( readyData.has_value() );
-        REQUIRE( readyData.value() == data );
+        REQUIRE( readyData.value()[Model::ExtensionElements::Index::Instance].value() == instanceId );
       }
     }
   }

@@ -52,16 +52,6 @@ std::vector< const Scenario::InstanceData* > ObservedScenario::getInstances(cons
   return getCreatedInstances(currentTime);
 }
 
-std::vector< std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values> > ObservedScenario::getCurrentInstantiations(const BPMNOS::number currentTime) const {
-  std::vector< std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values> > result;
-  for ( auto& [id, instance] : instances ) {
-    if ( instance.instantiationTime == currentTime ) {
-      result.push_back({instance.process, getKnownInitialStatus(&instance, currentTime), getKnownInitialData(&instance, currentTime)});
-    }
-  }
-  return result;
-}
-
 std::vector< std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values> > ObservedScenario::getKnownInstantiations(const BPMNOS::number previous, const BPMNOS::number currentTime) const {
   std::vector< std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values> > result;
   for ( auto& [id, instance] : instances ) {

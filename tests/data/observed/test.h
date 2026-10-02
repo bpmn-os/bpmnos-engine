@@ -293,17 +293,14 @@ SCENARIO( "Known and ready instances of an observed scenario", "[data][observed]
         REQUIRE( !scenario.getProcessReadyStatus(instanceId1, 6).has_value() );
         REQUIRE( !scenario.getProcessReadyStatus(instanceId2, 11).has_value() );
       }
-      THEN( "It equals the instantiation at the instantiation time" ) {
+      THEN( "It is given at the instantiation time together with the data of the process" ) {
         for ( auto [instanceId, t] : std::vector< std::pair<BPMNOS::number, int> >{ {instanceId1, 7}, {instanceId2, 12} } ) {
-          auto instantiations = scenario.getCurrentInstantiations(t);
-          REQUIRE( instantiations.size() == 1 );
-          auto& [instantiatedProcess,status,data] = instantiations.front();
           auto readyStatus = scenario.getProcessReadyStatus(instanceId, t);
           REQUIRE( readyStatus.has_value() );
-          REQUIRE( readyStatus.value() == status );
-          auto readyData = scenario.getData(instanceId, instantiatedProcess, t);
+          REQUIRE( readyStatus.value()[Model::ExtensionElements::Index::Timestamp].value() == t );
+          auto readyData = scenario.getData(instanceId, process, t);
           REQUIRE( readyData.has_value() );
-          REQUIRE( readyData.value() == data );
+          REQUIRE( readyData.value()[Model::ExtensionElements::Index::Instance].value() == instanceId );
         }
       }
     }
