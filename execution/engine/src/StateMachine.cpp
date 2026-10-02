@@ -158,10 +158,14 @@ StateMachine::StateMachine(const SystemState* systemState, Token* parentToken, c
     // Multi-instance instance tokens may also sit in CREATED state (sequential copies awaiting
     // their predecessor), but they receive no ready event of their own and are instead
     // reconstructed via the multi-instance containers below; exclude them here.
+    // The token at a process instance that is created but not yet started awaits its ready event too.
     if (
-      token->node && token->node->represents<BPMN::Activity>() &&
-      (token->state == Token::State::CREATED || token->state == Token::State::ARRIVED) &&
-      !other->systemState->tokenAtMultiInstanceActivity.contains(otherToken.get())
+      (
+        token->node && token->node->represents<BPMN::Activity>() &&
+        (token->state == Token::State::CREATED || token->state == Token::State::ARRIVED) &&
+        !other->systemState->tokenAtMultiInstanceActivity.contains(otherToken.get())
+      ) ||
+      ( !token->node && token->state == Token::State::CREATED )
     ) {
       assert(other->systemState->tokensAwaitingReadyEvent.find(otherToken.get()) != other->systemState->tokensAwaitingReadyEvent.end());
       const_cast<SystemState*>(systemState)->tokensAwaitingReadyEvent.emplace_back(token);

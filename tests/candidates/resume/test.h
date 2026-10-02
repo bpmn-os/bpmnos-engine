@@ -377,3 +377,56 @@ SCENARIO( "InstantDirectMessage delivers a directly-addressed message pending at
     }
   }
 }
+
+SCENARIO( "An instance created but not started when the state was installed is started", "[candidates][resume][instantiation]" ) {
+  const std::string modelFile = "tests/execution/process/Simple_executable_process.bpmn";
+  REQUIRE_NOTHROW( Model::Model(modelFile) );
+
+  GIVEN( "A state in which an instance awaits the ready event starting it" ) {
+    std::string csv =
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1; timestamp := 0\n"
+    ;
+    Model::StaticDataProvider dataProvider(modelFile, csv);
+    auto scenario = dataProvider.createScenario();
+
+    Execution::Engine engine;
+    Execution::TimeWarp timeHandler;
+    timeHandler.connect(&engine);
+    // the opening clock tick creates the instance, whose ready event is not yet dispatched
+    engine.initialize(scenario.get(), 0);
+
+    const auto* systemState = engine.getSystemState();
+    REQUIRE( systemState->instances.size() == 1 );
+    REQUIRE( systemState->instances.front()->tokens.front()->state == Execution::Token::State::CREATED );
+
+    WHEN( "The state is installed into a fresh engine and resumed" ) {
+      Execution::Engine resumed;
+      Execution::InstantEntry entryHandler;
+      Execution::InstantExit exitHandler;
+      Execution::TimeWarp resumedTimeHandler;
+      entryHandler.connect(&resumed);
+      exitHandler.connect(&resumed);
+      resumedTimeHandler.connect(&resumed);
+      Execution::Recorder recorder;
+      recorder.subscribe(&resumed);
+
+      resumed.initializeSystemState(scenario.get(), systemState);
+
+      THEN( "The copied state lists the token at the process as awaiting its ready event" ) {
+        const auto* copiedState = resumed.getSystemState();
+        REQUIRE( copiedState->instances.size() == 1 );
+        REQUIRE( copiedState->instances.front()->tokens.front()->state == Execution::Token::State::CREATED );
+        REQUIRE( copiedState->tokensAwaitingReadyEvent.count() == 1 );
+      }
+
+      THEN( "The instance is started and completes" ) {
+        resumed.resume(100);
+        auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr}, {"event",nullptr}, {"decision",nullptr}});
+        REQUIRE( processLog.size() >= 2 );
+        REQUIRE( processLog.front()["state"] == "READY" );
+        REQUIRE( processLog.back()["state"] == "DONE" );
+      }
+    }
+  }
+}
