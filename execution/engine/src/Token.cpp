@@ -373,6 +373,8 @@ void Token::advanceFromCreated() {
 void Token::advanceToReady() {
 //std::cerr << "advanceToReady: " << jsonify().dump() << std::endl;
   if ( !node ) {
+    // the data the instance is started with is accounted in the objective
+    const_cast<StateMachine*>(owner)->updateObjective();
     // the token at a process enters without an entry decision
     update(State::READY);
     advanceToEntered();

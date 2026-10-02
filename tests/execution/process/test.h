@@ -544,3 +544,53 @@ SCENARIO( "Executable process created when it becomes known", "[execution][proce
     }
   }
 }
+
+SCENARIO( "Executable process known before its start", "[execution][process]" ) {
+  const std::string modelFile = "tests/execution/process/Process_with_weighted_data.bpmn";
+  REQUIRE_NOTHROW( Model::Model(modelFile) );
+  GIVEN( "A static instance with weighted data instantiated at time 10" ) {
+
+    std::string csv =
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1; timestamp := 10\n"
+      "Instance_1; Process_1; cost := 7\n"
+    ;
+
+    Model::StaticDataProvider dataProvider(modelFile,csv);
+    auto scenario = dataProvider.createScenario();
+
+    WHEN( "The engine is run until time 5" ) {
+      Execution::Engine engine;
+      Execution::InstantEntry entryHandler;
+      Execution::InstantExit exitHandler;
+      Execution::TimeWarp timeHandler;
+      entryHandler.connect(&engine);
+      exitHandler.connect(&engine);
+      timeHandler.connect(&engine);
+      Execution::Recorder recorder;
+      recorder.subscribe(&engine);
+      engine.run(scenario.get(), 0, 5);
+      auto systemState = engine.getSystemState();
+
+      THEN( "The instance is known but raises no decision request" ) {
+        REQUIRE( systemState->instances.size() == 1 );
+        REQUIRE( systemState->instances.front()->tokens.front()->state == Execution::Token::State::CREATED );
+        REQUIRE( recorder.find(nlohmann::json{{"decision",nullptr}}).empty() );
+        REQUIRE( systemState->pendingEntryDecisions.empty() );
+        REQUIRE( systemState->pendingExitDecisions.empty() );
+      }
+
+      THEN( "The data of the instance is not yet accounted in the objective" ) {
+        REQUIRE( systemState->getObjective() == 0 );
+      }
+
+      WHEN( "The engine is resumed until time 10" ) {
+        engine.resume(10);
+
+        THEN( "The data of the instance is accounted in the objective from its start" ) {
+          REQUIRE( systemState->getObjective() == -7 );
+        }
+      }
+    }
+  }
+}

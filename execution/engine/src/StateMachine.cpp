@@ -32,7 +32,8 @@ StateMachine::StateMachine(const SystemState* systemState, const BPMN::Process* 
   assert( status.size() >= 1 );
   assert( status[BPMNOS::Model::ExtensionElements::Index::Timestamp].has_value() );
   data[BPMNOS::Model::ExtensionElements::Index::Instance] = std::ref(instance);
-  updateObjective();
+  // the data of the instance is accounted in the objective when the instance is started, since the data
+  // may change until then
 
   // the token at the process holds the status; it is advanced once the state machine is stored in the
   // system state, since advancing notifies observers

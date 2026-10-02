@@ -37,6 +37,7 @@ The token of an instance created by the data provider is in @ref BPMNOS::Executi
 
 ## READY
 
+When a process token becomes @ref BPMNOS::Execution::Token::State::READY "READY", the weighted data attributes of the instance are accounted in the objective, so that an instance contributes to the objective from its start and with the data it is started with.
 A process token in @ref BPMNOS::Execution::Token::State::READY "READY" state enters the process without an entry decision, and its @ref BPMNOS::Execution::Token::state "state" is immediately set to @ref BPMNOS::Execution::Token::State::ENTERED "ENTERED".
 The token of an instance created by a trigger receives no ready event: the trigger being the condition for the start, the state machine owning the tokens flowing through the process is created at once and the token is set to @ref BPMNOS::Execution::Token::State::READY "READY" upon creation.
 
