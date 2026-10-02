@@ -25,8 +25,6 @@ list(APPEND controller_SOURCES
   dispatcher/MyopicMessageTaskTerminator.cpp
   Controller.cpp
   GreedyController.cpp
-  SeededController.cpp
-  SeededGreedyController.cpp
 )
 
 list(APPEND controller_HEADERS
@@ -60,6 +58,4 @@ list(APPEND controller_HEADERS
   dispatcher/MyopicMessageTaskTerminator.h
   Controller.h
   GreedyController.h
-  SeededController.h
-  SeededGreedyController.h
 )

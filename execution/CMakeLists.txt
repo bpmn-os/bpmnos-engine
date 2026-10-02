@@ -19,9 +19,6 @@ include("${CMAKE_CURRENT_SOURCE_DIR}/engine/CMakeLists.txt")
 # Get lists of all headers and sources of observers
 include("${CMAKE_CURRENT_SOURCE_DIR}/observer/CMakeLists.txt")
 
-# Get lists of all headers and sources of execution model
-include("${CMAKE_CURRENT_SOURCE_DIR}/model/CMakeLists.txt")
-
 # Get lists of all headers and sources of controllers
 include("${CMAKE_CURRENT_SOURCE_DIR}/controller/CMakeLists.txt")
 
@@ -36,7 +33,6 @@ file(MAKE_DIRECTORY "${BPMNOS_INCLUDE_DIR}")
 set(ALL_HEADERS
   ${execution_utility_HEADERS}
   ${engine_HEADERS}
-  ${executionmodel_HEADERS}
   ${observer_HEADERS}
   ${controller_HEADERS}
 )
@@ -61,7 +57,7 @@ add_custom_target(execution_header ALL
   DEPENDS "${SINGLE_HEADER_PATH}"
 )
 
-add_library(bpmnos-execution STATIC ${execution_utility_SOURCES} ${engine_SOURCES} ${executionmodel_SOURCES} ${observer_SOURCES} ${controller_SOURCES})
+add_library(bpmnos-execution STATIC ${execution_utility_SOURCES} ${engine_SOURCES} ${observer_SOURCES} ${controller_SOURCES})
 
 bpmnos_compile_options(bpmnos-execution)
 
