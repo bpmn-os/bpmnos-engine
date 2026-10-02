@@ -139,7 +139,7 @@ $(function(){initNavTree('classBPMNOS_1_1Model_1_1ObservedScenario.html','','cla
 <div class="dynheader">
 Inheritance diagram for BPMNOS::Model::ObservedScenario:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="classBPMNOS_1_1Model_1_1ObservedScenario__inherit__graph.svg" width="252" height="1220"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="classBPMNOS_1_1Model_1_1ObservedScenario__inherit__graph.svg" width="252" height="1176"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
@@ -150,8 +150,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:abc4eae328488d0d7b28de2c516c7354e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the largest representable time, no instantiation being known in advance.  <br /></td></tr>
 <tr class="memitem:aab16fb2ef97e375d6556616f317f33c5" id="r_aab16fb2ef97e375d6556616f317f33c5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aab16fb2ef97e375d6556616f317f33c5">isCompleted</a> (const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> currentTime) const override</td></tr>
 <tr class="memdesc:aab16fb2ef97e375d6556616f317f33c5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns false, an observed world never being exhausted; a run ends when it is told to.  <br /></td></tr>
-<tr class="memitem:a35255e13a10b00fc9adb4bd1cbc7f859" id="r_a35255e13a10b00fc9adb4bd1cbc7f859"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::tuple&lt; const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Process.html">BPMN::Process</a> *, <a class="el" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a>, <a class="el" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a35255e13a10b00fc9adb4bd1cbc7f859">getCurrentInstantiations</a> (const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> currentTime) const override</td></tr>
-<tr class="memdesc:a35255e13a10b00fc9adb4bd1cbc7f859"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method returning a vector of all instances that are to be instantiated at the given time.  <br /></td></tr>
+<tr class="memitem:ac8ca7d8bb0303b5b5d75d768f139ecc0" id="r_ac8ca7d8bb0303b5b5d75d768f139ecc0"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::tuple&lt; const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Process.html">BPMN::Process</a> *, <a class="el" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a>, <a class="el" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac8ca7d8bb0303b5b5d75d768f139ecc0">getKnownInstantiations</a> (const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> previous, const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> currentTime) const override</td></tr>
+<tr class="memdesc:ac8ca7d8bb0303b5b5d75d768f139ecc0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method returning the process, status and data of all instances becoming known.  <br /></td></tr>
+<tr class="memitem:a2ca9345711b2ab8d7eb1fcd133fdc24c" id="r_a2ca9345711b2ab8d7eb1fcd133fdc24c"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2ca9345711b2ab8d7eb1fcd133fdc24c">getProcessReadyStatus</a> (const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> instanceId, const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> currentTime) const override</td></tr>
+<tr class="memdesc:a2ca9345711b2ab8d7eb1fcd133fdc24c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method returning the status of the process of an instance once it is ready to start.  <br /></td></tr>
+<tr class="memitem:a649e3fc2fb0f74b420d2fa1039f3709b" id="r_a649e3fc2fb0f74b420d2fa1039f3709b"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::pair&lt; <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>, <a class="el" href="namespaceBPMNOS.html#a8154a7afba82997850e7db218281c8e0">BPMNOS::VariedValueMap</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a649e3fc2fb0f74b420d2fa1039f3709b">getSignals</a> (const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> previous, const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> currentTime) const override</td></tr>
+<tr class="memdesc:a649e3fc2fb0f74b420d2fa1039f3709b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method returning the name and content of all signals raised by the environment.  <br /></td></tr>
 <tr class="memitem:addf59bbd098175dab76b8b6b7a9c1675" id="r_addf59bbd098175dab76b8b6b7a9c1675"><td class="memItemLeft" align="right" valign="top">std::vector&lt; const <a class="el" href="structBPMNOS_1_1Model_1_1Scenario_1_1InstanceData.html">InstanceData</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#addf59bbd098175dab76b8b6b7a9c1675">getCreatedInstances</a> (const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> currentTime) const override</td></tr>
 <tr class="memdesc:addf59bbd098175dab76b8b6b7a9c1675"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method returning a vector of all instances that have been created until the given time.  <br /></td></tr>
 <tr class="memitem:aa1f4f1c7a5bd10c1cb5e1e9335bbc65d" id="r_aa1f4f1c7a5bd10c1cb5e1e9335bbc65d"><td class="memItemLeft" align="right" valign="top">std::vector&lt; const <a class="el" href="structBPMNOS_1_1Model_1_1Scenario_1_1InstanceData.html">InstanceData</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa1f4f1c7a5bd10c1cb5e1e9335bbc65d">getInstances</a> (const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> currentTime) const override</td></tr>
@@ -181,6 +185,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:ad2522b16b41610b917ab3618d875b557"><td class="mdescLeft">&#160;</td><td class="mdescRight">Report that an instance of the given process was created at the given time.  <br /></td></tr>
 <tr class="memitem:a5b0958d553b81e4185b5ce6751aaa068" id="r_a5b0958d553b81e4185b5ce6751aaa068"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5b0958d553b81e4185b5ce6751aaa068">observeValue</a> (<a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> instanceId, const <a class="el" href="classBPMNOS_1_1Model_1_1Attribute.html">Attribute</a> *attribute, std::optional&lt; <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> &gt; value)</td></tr>
 <tr class="memdesc:a5b0958d553b81e4185b5ce6751aaa068"><td class="mdescLeft">&#160;</td><td class="mdescRight">Report the value of an attribute of an instance.  <br /></td></tr>
+<tr class="memitem:a50d6bd169add4e6d24e3eba51dbea497" id="r_a50d6bd169add4e6d24e3eba51dbea497"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a50d6bd169add4e6d24e3eba51dbea497">observeSignal</a> (<a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> name, <a class="el" href="namespaceBPMNOS.html#a8154a7afba82997850e7db218281c8e0">BPMNOS::VariedValueMap</a> content, <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> time)</td></tr>
+<tr class="memdesc:a50d6bd169add4e6d24e3eba51dbea497"><td class="mdescLeft">&#160;</td><td class="mdescRight">Report that a signal with the given name and content was raised at the given time.  <br /></td></tr>
 <tr class="memitem:a7c5e75b176a7d1d426a340d153e26952" id="r_a7c5e75b176a7d1d426a340d153e26952"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7c5e75b176a7d1d426a340d153e26952">observeReadyStatus</a> (<a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> instanceId, const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a> *activity, <a class="el" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a> status)</td></tr>
 <tr class="memdesc:a7c5e75b176a7d1d426a340d153e26952"><td class="mdescLeft">&#160;</td><td class="mdescRight">Report the status an activity is ready with.  <br /></td></tr>
 <tr class="memitem:a9fa86e4ddb31dd41f5f2dca61aec3c82" id="r_a9fa86e4ddb31dd41f5f2dca61aec3c82"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9fa86e4ddb31dd41f5f2dca61aec3c82">observeCompletionStatus</a> (<a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> instanceId, const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a> *task, <a class="el" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a> status)</td></tr>
@@ -294,7 +300,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#a687fdf9fd253ed97a342d2ab8fd9649b">BPMNOS::Model::Scenario</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="ObservedScenario_8cpp_source.html#l00172">172</a> of file <a class="el" href="ObservedScenario_8cpp_source.html">ObservedScenario.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ObservedScenario_8cpp_source.html#l00201">201</a> of file <a class="el" href="ObservedScenario_8cpp_source.html">ObservedScenario.cpp</a>.</p>
 
 </div>
 </div>
@@ -337,7 +343,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#ab000f8eba25546a04f80f0247d5400bc">BPMNOS::Model::Scenario</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="ObservedScenario_8cpp_source.html#l00137">137</a> of file <a class="el" href="ObservedScenario_8cpp_source.html">ObservedScenario.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ObservedScenario_8cpp_source.html#l00166">166</a> of file <a class="el" href="ObservedScenario_8cpp_source.html">ObservedScenario.cpp</a>.</p>
 
 </div>
 </div>
@@ -366,36 +372,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#a3ecee7232616785c7aaf481994d64a8d">BPMNOS::Model::Scenario</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="ObservedScenario_8cpp_source.html#l00040">40</a> of file <a class="el" href="ObservedScenario_8cpp_source.html">ObservedScenario.cpp</a>.</p>
-
-</div>
-</div>
-<a id="a35255e13a10b00fc9adb4bd1cbc7f859" name="a35255e13a10b00fc9adb4bd1cbc7f859"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a35255e13a10b00fc9adb4bd1cbc7f859">&#9670;&#160;</a></span>getCurrentInstantiations()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::vector&lt; std::tuple&lt; const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Process.html">BPMN::Process</a> *, <a class="el" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a>, <a class="el" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a> &gt; &gt; ObservedScenario::getCurrentInstantiations </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a></td>          <td class="paramname"><span class="paramname"><em>currentTime</em></span></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Implements <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#adb46b1bf8f7f6236f2ded3451fb154df">BPMNOS::Model::Scenario</a>.</p>
-
-<p class="definition">Definition at line <a class="el" href="ObservedScenario_8cpp_source.html#l00055">55</a> of file <a class="el" href="ObservedScenario_8cpp_source.html">ObservedScenario.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ObservedScenario_8cpp_source.html#l00044">44</a> of file <a class="el" href="ObservedScenario_8cpp_source.html">ObservedScenario.cpp</a>.</p>
 
 </div>
 </div>
@@ -434,7 +411,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#ad308a7ed8d89254f5f879258d671827a">BPMNOS::Model::Scenario</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="ObservedScenario_8cpp_source.html#l00115">115</a> of file <a class="el" href="ObservedScenario_8cpp_source.html">ObservedScenario.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ObservedScenario_8cpp_source.html#l00144">144</a> of file <a class="el" href="ObservedScenario_8cpp_source.html">ObservedScenario.cpp</a>.</p>
 
 </div>
 </div>
@@ -463,7 +440,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#a0b0ea9975eb5e6c7ec306c6126c6cdaf">BPMNOS::Model::Scenario</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="ObservedScenario_8cpp_source.html#l00031">31</a> of file <a class="el" href="ObservedScenario_8cpp_source.html">ObservedScenario.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ObservedScenario_8cpp_source.html#l00035">35</a> of file <a class="el" href="ObservedScenario_8cpp_source.html">ObservedScenario.cpp</a>.</p>
 
 </div>
 </div>
@@ -492,7 +469,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#afd54fe067dea011d4b07339e5beb3547">BPMNOS::Model::Scenario</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="ObservedScenario_8cpp_source.html#l00050">50</a> of file <a class="el" href="ObservedScenario_8cpp_source.html">ObservedScenario.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ObservedScenario_8cpp_source.html#l00054">54</a> of file <a class="el" href="ObservedScenario_8cpp_source.html">ObservedScenario.cpp</a>.</p>
 
 </div>
 </div>
@@ -522,11 +499,11 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Used internally by getCurrentInstantiations to get process-level data attributes. </p>
+<p>Used internally by getKnownInstantiations to get process-level data attributes. </p>
 
 <p>Implements <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#adac2f750cf089c8402d2e76bd5432d35">BPMNOS::Model::Scenario</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="ObservedScenario_8cpp_source.html#l00073">73</a> of file <a class="el" href="ObservedScenario_8cpp_source.html">ObservedScenario.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ObservedScenario_8cpp_source.html#l00102">102</a> of file <a class="el" href="ObservedScenario_8cpp_source.html">ObservedScenario.cpp</a>.</p>
 
 </div>
 </div>
@@ -556,11 +533,134 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Used internally by getCurrentInstantiations to get process-level status attributes. </p>
+<p>Used internally by getKnownInstantiations and getProcessReadyStatus to get process-level status attributes. </p>
 
 <p>Implements <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#af95f252ea0217ae66c98f7c2844610af">BPMNOS::Model::Scenario</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="ObservedScenario_8cpp_source.html#l00065">65</a> of file <a class="el" href="ObservedScenario_8cpp_source.html">ObservedScenario.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ObservedScenario_8cpp_source.html#l00094">94</a> of file <a class="el" href="ObservedScenario_8cpp_source.html">ObservedScenario.cpp</a>.</p>
+
+</div>
+</div>
+<a id="ac8ca7d8bb0303b5b5d75d768f139ecc0" name="ac8ca7d8bb0303b5b5d75d768f139ecc0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac8ca7d8bb0303b5b5d75d768f139ecc0">&#9670;&#160;</a></span>getKnownInstantiations()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; std::tuple&lt; const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Process.html">BPMN::Process</a> *, <a class="el" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a>, <a class="el" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a> &gt; &gt; ObservedScenario::getKnownInstantiations </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a></td>          <td class="paramname"><span class="paramname"><em>previous</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a></td>          <td class="paramname"><span class="paramname"><em>currentTime</em></span>&#160;) const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>An instance becomes known at the time at which the scenario makes it known. The method returns every instance whose known time lies after <code class="param">previous</code> and not after <code class="param">currentTime</code> and, if <code class="param">previous</code> is the lowest representable value, every instance whose known time is not after <code class="param">currentTime</code>. Status and data are given as far as they are disclosed at <code class="param">currentTime</code>.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">previous</td><td>The time up to which instances have been reported before. </td></tr>
+    <tr><td class="paramname">currentTime</td><td>The current time. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Implements <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#a2fd68cd2ca255a78813fc18d1d32c002">BPMNOS::Model::Scenario</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="ObservedScenario_8cpp_source.html#l00059">59</a> of file <a class="el" href="ObservedScenario_8cpp_source.html">ObservedScenario.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a2ca9345711b2ab8d7eb1fcd133fdc24c" name="a2ca9345711b2ab8d7eb1fcd133fdc24c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2ca9345711b2ab8d7eb1fcd133fdc24c">&#9670;&#160;</a></span>getProcessReadyStatus()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt; <a class="el" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a> &gt; ObservedScenario::getProcessReadyStatus </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a></td>          <td class="paramname"><span class="paramname"><em>instanceId</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a></td>          <td class="paramname"><span class="paramname"><em>currentTime</em></span>&#160;) const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>The status is returned once <code class="param">currentTime</code> has reached the effective instantiation time of the instance, and std::nullopt before. If the start is delayed beyond the instantiation time by the disclosure of the process data, the timestamp is the effective instantiation time.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">instanceId</td><td>The instance identifier. </td></tr>
+    <tr><td class="paramname">currentTime</td><td>The current time. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Implements <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#a301a9b117bc6a357a2421ba9d1b66270">BPMNOS::Model::Scenario</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="ObservedScenario_8cpp_source.html#l00073">73</a> of file <a class="el" href="ObservedScenario_8cpp_source.html">ObservedScenario.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a649e3fc2fb0f74b420d2fa1039f3709b" name="a649e3fc2fb0f74b420d2fa1039f3709b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a649e3fc2fb0f74b420d2fa1039f3709b">&#9670;&#160;</a></span>getSignals()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; std::pair&lt; <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>, <a class="el" href="namespaceBPMNOS.html#a8154a7afba82997850e7db218281c8e0">BPMNOS::VariedValueMap</a> &gt; &gt; ObservedScenario::getSignals </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a></td>          <td class="paramname"><span class="paramname"><em>previous</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a></td>          <td class="paramname"><span class="paramname"><em>currentTime</em></span>&#160;) const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>The method returns every signal raised after <code class="param">previous</code> and not after <code class="param">currentTime</code> and, if <code class="param">previous</code> is the lowest representable value, every signal raised not after <code class="param">currentTime</code>. A scenario raises no signal unless it says otherwise.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">previous</td><td>The time up to which signals have been reported before. </td></tr>
+    <tr><td class="paramname">currentTime</td><td>The current time. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Reimplemented from <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#acabdacb2237f6394fbe82711ee507d06">BPMNOS::Model::Scenario</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="ObservedScenario_8cpp_source.html#l00081">81</a> of file <a class="el" href="ObservedScenario_8cpp_source.html">ObservedScenario.cpp</a>.</p>
 
 </div>
 </div>
@@ -599,7 +699,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#a34b2ee3668fe609e0ad072c2441419df">BPMNOS::Model::Scenario</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="ObservedScenario_8cpp_source.html#l00110">110</a> of file <a class="el" href="ObservedScenario_8cpp_source.html">ObservedScenario.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ObservedScenario_8cpp_source.html#l00139">139</a> of file <a class="el" href="ObservedScenario_8cpp_source.html">ObservedScenario.cpp</a>.</p>
 
 </div>
 </div>
@@ -637,7 +737,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#a18a61c5bb715be08e2108e5b0b84763a">BPMNOS::Model::Scenario</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="ObservedScenario_8cpp_source.html#l00147">147</a> of file <a class="el" href="ObservedScenario_8cpp_source.html">ObservedScenario.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ObservedScenario_8cpp_source.html#l00176">176</a> of file <a class="el" href="ObservedScenario_8cpp_source.html">ObservedScenario.cpp</a>.</p>
 
 </div>
 </div>
@@ -676,7 +776,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#a0ec67037e3574dcc9b3af688a42e736c">BPMNOS::Model::Scenario</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="ObservedScenario_8cpp_source.html#l00094">94</a> of file <a class="el" href="ObservedScenario_8cpp_source.html">ObservedScenario.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ObservedScenario_8cpp_source.html#l00123">123</a> of file <a class="el" href="ObservedScenario_8cpp_source.html">ObservedScenario.cpp</a>.</p>
 
 </div>
 </div>
@@ -715,7 +815,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#a23e900832113250d19dd1c3016b8a135">BPMNOS::Model::Scenario</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="ObservedScenario_8cpp_source.html#l00081">81</a> of file <a class="el" href="ObservedScenario_8cpp_source.html">ObservedScenario.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ObservedScenario_8cpp_source.html#l00110">110</a> of file <a class="el" href="ObservedScenario_8cpp_source.html">ObservedScenario.cpp</a>.</p>
 
 </div>
 </div>
@@ -744,7 +844,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#ad026b6ae8fc0b3c5e2937ccfa3b4e3e2">BPMNOS::Model::Scenario</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="ObservedScenario_8cpp_source.html#l00036">36</a> of file <a class="el" href="ObservedScenario_8cpp_source.html">ObservedScenario.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ObservedScenario_8cpp_source.html#l00040">40</a> of file <a class="el" href="ObservedScenario_8cpp_source.html">ObservedScenario.cpp</a>.</p>
 
 </div>
 </div>
@@ -777,7 +877,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#a5b12bc1a7da8e7572c3a5f827e942855">BPMNOS::Model::Scenario</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="ObservedScenario_8cpp_source.html#l00158">158</a> of file <a class="el" href="ObservedScenario_8cpp_source.html">ObservedScenario.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ObservedScenario_8cpp_source.html#l00187">187</a> of file <a class="el" href="ObservedScenario_8cpp_source.html">ObservedScenario.cpp</a>.</p>
 
 </div>
 </div>
@@ -810,7 +910,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#a0fad3a062e25bbe1cb17f01be59494c0">BPMNOS::Model::Scenario</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="ObservedScenario_8cpp_source.html#l00151">151</a> of file <a class="el" href="ObservedScenario_8cpp_source.html">ObservedScenario.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ObservedScenario_8cpp_source.html#l00180">180</a> of file <a class="el" href="ObservedScenario_8cpp_source.html">ObservedScenario.cpp</a>.</p>
 
 </div>
 </div>
@@ -846,7 +946,7 @@ Additional Inherited Members</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="ObservedScenario_8cpp_source.html#l00027">27</a> of file <a class="el" href="ObservedScenario_8cpp_source.html">ObservedScenario.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ObservedScenario_8cpp_source.html#l00031">31</a> of file <a class="el" href="ObservedScenario_8cpp_source.html">ObservedScenario.cpp</a>.</p>
 
 </div>
 </div>
@@ -909,6 +1009,34 @@ Additional Inherited Members</h2></td></tr>
   </table>
   </dd>
 </dl>
+
+<p class="definition">Definition at line <a class="el" href="ObservedScenario_8cpp_source.html#l00027">27</a> of file <a class="el" href="ObservedScenario_8cpp_source.html">ObservedScenario.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a50d6bd169add4e6d24e3eba51dbea497" name="a50d6bd169add4e6d24e3eba51dbea497"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a50d6bd169add4e6d24e3eba51dbea497">&#9670;&#160;</a></span>observeSignal()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ObservedScenario::observeSignal </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a></td>          <td class="paramname"><span class="paramname"><em>name</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceBPMNOS.html#a8154a7afba82997850e7db218281c8e0">BPMNOS::VariedValueMap</a></td>          <td class="paramname"><span class="paramname"><em>content</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a></td>          <td class="paramname"><span class="paramname"><em>time</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
 
 <p class="definition">Definition at line <a class="el" href="ObservedScenario_8cpp_source.html#l00023">23</a> of file <a class="el" href="ObservedScenario_8cpp_source.html">ObservedScenario.cpp</a>.</p>
 

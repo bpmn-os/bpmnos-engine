@@ -4,12 +4,14 @@ var classBPMNOS_1_1Model_1_1ObservedScenario =
     [ "clone", "classBPMNOS_1_1Model_1_1ObservedScenario.html#abcad8d8c410fe42d26e0ac2299ea4cbb", null ],
     [ "getActivityReadyStatus", "classBPMNOS_1_1Model_1_1ObservedScenario.html#a2ee2e7bb848a0603823c3edb72d334f8", null ],
     [ "getCreatedInstances", "classBPMNOS_1_1Model_1_1ObservedScenario.html#addf59bbd098175dab76b8b6b7a9c1675", null ],
-    [ "getCurrentInstantiations", "classBPMNOS_1_1Model_1_1ObservedScenario.html#a35255e13a10b00fc9adb4bd1cbc7f859", null ],
     [ "getData", "classBPMNOS_1_1Model_1_1ObservedScenario.html#adf7e1b1fbcaffe5e71ecd7240394965e", null ],
     [ "getEarliestInstantiationTime", "classBPMNOS_1_1Model_1_1ObservedScenario.html#abc4eae328488d0d7b28de2c516c7354e", null ],
     [ "getInstances", "classBPMNOS_1_1Model_1_1ObservedScenario.html#aa1f4f1c7a5bd10c1cb5e1e9335bbc65d", null ],
     [ "getKnownInitialData", "classBPMNOS_1_1Model_1_1ObservedScenario.html#a9af3798e89a8c57699c956d9cf4c1eeb", null ],
     [ "getKnownInitialStatus", "classBPMNOS_1_1Model_1_1ObservedScenario.html#af932aa1855bed8d92f0e8d7443fbdf2c", null ],
+    [ "getKnownInstantiations", "classBPMNOS_1_1Model_1_1ObservedScenario.html#ac8ca7d8bb0303b5b5d75d768f139ecc0", null ],
+    [ "getProcessReadyStatus", "classBPMNOS_1_1Model_1_1ObservedScenario.html#a2ca9345711b2ab8d7eb1fcd133fdc24c", null ],
+    [ "getSignals", "classBPMNOS_1_1Model_1_1ObservedScenario.html#a649e3fc2fb0f74b420d2fa1039f3709b", null ],
     [ "getStatus", "classBPMNOS_1_1Model_1_1ObservedScenario.html#aa510f451b8a06a78e3c5bc67985d51db", null ],
     [ "getTaskCompletionStatus", "classBPMNOS_1_1Model_1_1ObservedScenario.html#a940e1e4b51574db6c3b4fde373af0cd2", null ],
     [ "getValue", "classBPMNOS_1_1Model_1_1ObservedScenario.html#abcc757a3ad7b5e2e6933310cb797e7e3", null ],
@@ -20,5 +22,6 @@ var classBPMNOS_1_1Model_1_1ObservedScenario =
     [ "observeCompletionStatus", "classBPMNOS_1_1Model_1_1ObservedScenario.html#a9fa86e4ddb31dd41f5f2dca61aec3c82", null ],
     [ "observeInstantiation", "classBPMNOS_1_1Model_1_1ObservedScenario.html#ad2522b16b41610b917ab3618d875b557", null ],
     [ "observeReadyStatus", "classBPMNOS_1_1Model_1_1ObservedScenario.html#a7c5e75b176a7d1d426a340d153e26952", null ],
+    [ "observeSignal", "classBPMNOS_1_1Model_1_1ObservedScenario.html#a50d6bd169add4e6d24e3eba51dbea497", null ],
     [ "observeValue", "classBPMNOS_1_1Model_1_1ObservedScenario.html#a5b0958d553b81e4185b5ce6751aaa068", null ]
 ];

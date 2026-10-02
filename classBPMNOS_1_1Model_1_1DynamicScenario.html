@@ -134,7 +134,7 @@ $(function(){initNavTree('classBPMNOS_1_1Model_1_1DynamicScenario.html','','clas
 <div class="dynheader">
 Inheritance diagram for BPMNOS::Model::DynamicScenario:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="classBPMNOS_1_1Model_1_1DynamicScenario__inherit__graph.svg" width="248" height="1198"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="classBPMNOS_1_1Model_1_1DynamicScenario__inherit__graph.svg" width="248" height="1220"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
@@ -144,8 +144,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a0c431fded59cab7d7af9142373a2726b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method returning the time of the earliest instantiation.  <br /></td></tr>
 <tr class="memitem:a9820d84293212c838b479fbb169838ef" id="r_a9820d84293212c838b479fbb169838ef"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9820d84293212c838b479fbb169838ef">isCompleted</a> (const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> currentTime) const override</td></tr>
 <tr class="memdesc:a9820d84293212c838b479fbb169838ef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method returning true if the currentTime exceeds the completion time.  <br /></td></tr>
-<tr class="memitem:a9793964864df63d7932134a9def6ac3e" id="r_a9793964864df63d7932134a9def6ac3e"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::tuple&lt; const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Process.html">BPMN::Process</a> *, <a class="el" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a>, <a class="el" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9793964864df63d7932134a9def6ac3e">getCurrentInstantiations</a> (const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> currentTime) const override</td></tr>
-<tr class="memdesc:a9793964864df63d7932134a9def6ac3e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method returning a vector of all instances that are to be instantiated at the given time.  <br /></td></tr>
+<tr class="memitem:aac062679e3954628fbf8e7c5a5261f12" id="r_aac062679e3954628fbf8e7c5a5261f12"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::tuple&lt; const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Process.html">BPMN::Process</a> *, <a class="el" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a>, <a class="el" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aac062679e3954628fbf8e7c5a5261f12">getKnownInstantiations</a> (const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> previous, const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> currentTime) const override</td></tr>
+<tr class="memdesc:aac062679e3954628fbf8e7c5a5261f12"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method returning the process, status and data of all instances becoming known.  <br /></td></tr>
+<tr class="memitem:a5b6f04dc5924a2616db46c7ec73d0c89" id="r_a5b6f04dc5924a2616db46c7ec73d0c89"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5b6f04dc5924a2616db46c7ec73d0c89">getProcessReadyStatus</a> (const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> instanceId, const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> currentTime) const override</td></tr>
+<tr class="memdesc:a5b6f04dc5924a2616db46c7ec73d0c89"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method returning the status of the process of an instance once it is ready to start.  <br /></td></tr>
 <tr class="memitem:ac3da66dedcff9e532bd0d485e158797e" id="r_ac3da66dedcff9e532bd0d485e158797e"><td class="memItemLeft" align="right" valign="top">std::vector&lt; const <a class="el" href="structBPMNOS_1_1Model_1_1Scenario_1_1InstanceData.html">InstanceData</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac3da66dedcff9e532bd0d485e158797e">getCreatedInstances</a> (const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> currentTime) const override</td></tr>
 <tr class="memdesc:ac3da66dedcff9e532bd0d485e158797e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method returning a vector of all instances that have been created until the given time.  <br /></td></tr>
 <tr class="memitem:a6cc72da0fb34c4bd115f9454bf623f78" id="r_a6cc72da0fb34c4bd115f9454bf623f78"><td class="memItemLeft" align="right" valign="top">std::vector&lt; const <a class="el" href="structBPMNOS_1_1Model_1_1Scenario_1_1InstanceData.html">InstanceData</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6cc72da0fb34c4bd115f9454bf623f78">getInstances</a> (const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> currentTime) const override</td></tr>
@@ -168,6 +170,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a7bea7a2629d08c9be4ff7bbb620f23b0 inherit pub_methods_classBPMNOS_1_1Model_1_1Scenario" id="r_a7bea7a2629d08c9be4ff7bbb620f23b0"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#a7bea7a2629d08c9be4ff7bbb620f23b0">~Scenario</a> ()=default</td></tr>
 <tr class="memitem:a97408f773bdc54ecaa99498f99ddbe59 inherit pub_methods_classBPMNOS_1_1Model_1_1Scenario" id="r_a97408f773bdc54ecaa99498f99ddbe59"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classBPMNOS_1_1Model_1_1Model.html">Model</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#a97408f773bdc54ecaa99498f99ddbe59">getModel</a> () const</td></tr>
 <tr class="memdesc:a97408f773bdc54ecaa99498f99ddbe59 inherit pub_methods_classBPMNOS_1_1Model_1_1Scenario"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method returning the model.  <br /></td></tr>
+<tr class="memitem:acabdacb2237f6394fbe82711ee507d06 inherit pub_methods_classBPMNOS_1_1Model_1_1Scenario" id="r_acabdacb2237f6394fbe82711ee507d06"><td class="memItemLeft" align="right" valign="top">virtual std::vector&lt; std::pair&lt; <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>, <a class="el" href="namespaceBPMNOS.html#a8154a7afba82997850e7db218281c8e0">BPMNOS::VariedValueMap</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#acabdacb2237f6394fbe82711ee507d06">getSignals</a> (const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> previous, const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> currentTime) const</td></tr>
+<tr class="memdesc:acabdacb2237f6394fbe82711ee507d06 inherit pub_methods_classBPMNOS_1_1Model_1_1Scenario"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method returning the name and content of all signals raised by the environment.  <br /></td></tr>
 <tr class="memitem:a3af5acdd90a12c7e58ccd5438c2f1fcb inherit pub_methods_classBPMNOS_1_1Model_1_1Scenario" id="r_a3af5acdd90a12c7e58ccd5438c2f1fcb"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#a3af5acdd90a12c7e58ccd5438c2f1fcb">noticeReadyPending</a> (<a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> instanceId, const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a> *node, const <a class="el" href="structBPMNOS_1_1Values.html">Values</a> &amp;status, const <a class="el" href="structBPMNOS_1_1SharedValues.html">SharedValues</a> &amp;data, const <a class="el" href="structBPMNOS_1_1Values.html">Values</a> &amp;<a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#af62d210f70ee664720212016cb168742">globals</a>) const</td></tr>
 <tr class="memdesc:a3af5acdd90a12c7e58ccd5438c2f1fcb inherit pub_methods_classBPMNOS_1_1Model_1_1Scenario"><td class="mdescLeft">&#160;</td><td class="mdescRight">Make scenario aware of a an activity for which the ready status must be determined.  <br /></td></tr>
 <tr class="memitem:a3e5662eae1e0e8b2b0db744ed27e44d3 inherit pub_methods_classBPMNOS_1_1Model_1_1Scenario" id="r_a3e5662eae1e0e8b2b0db744ed27e44d3"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#a3e5662eae1e0e8b2b0db744ed27e44d3">noticeCompletionPending</a> (<a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> rootId, const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a> *task, const <a class="el" href="structBPMNOS_1_1Values.html">Values</a> &amp;status, const <a class="el" href="structBPMNOS_1_1SharedValues.html">SharedValues</a> &amp;data, const <a class="el" href="structBPMNOS_1_1Values.html">Values</a> &amp;<a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#af62d210f70ee664720212016cb168742">globals</a>) const</td></tr>
@@ -266,7 +270,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="DynamicScenario_8cpp_source.html#l00008">8</a> of file <a class="el" href="DynamicScenario_8cpp_source.html">DynamicScenario.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DynamicScenario_8cpp_source.html#l00009">9</a> of file <a class="el" href="DynamicScenario_8cpp_source.html">DynamicScenario.cpp</a>.</p>
 
 </div>
 </div>
@@ -303,7 +307,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="DynamicScenario_8cpp_source.html#l00015">15</a> of file <a class="el" href="DynamicScenario_8cpp_source.html">DynamicScenario.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DynamicScenario_8cpp_source.html#l00016">16</a> of file <a class="el" href="DynamicScenario_8cpp_source.html">DynamicScenario.cpp</a>.</p>
 
 </div>
 </div>
@@ -334,7 +338,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="DynamicScenario_8cpp_source.html#l00153">153</a> of file <a class="el" href="DynamicScenario_8cpp_source.html">DynamicScenario.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DynamicScenario_8cpp_source.html#l00168">168</a> of file <a class="el" href="DynamicScenario_8cpp_source.html">DynamicScenario.cpp</a>.</p>
 
 </div>
 </div>
@@ -367,7 +371,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#a687fdf9fd253ed97a342d2ab8fd9649b">BPMNOS::Model::Scenario</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="DynamicScenario_8h_source.html#l00057">57</a> of file <a class="el" href="DynamicScenario_8h_source.html">DynamicScenario.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DynamicScenario_8h_source.html#l00058">58</a> of file <a class="el" href="DynamicScenario_8h_source.html">DynamicScenario.h</a>.</p>
 
 </div>
 </div>
@@ -421,7 +425,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#ab000f8eba25546a04f80f0247d5400bc">BPMNOS::Model::Scenario</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="DynamicScenario_8cpp_source.html#l00177">177</a> of file <a class="el" href="DynamicScenario_8cpp_source.html">DynamicScenario.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DynamicScenario_8cpp_source.html#l00192">192</a> of file <a class="el" href="DynamicScenario_8cpp_source.html">DynamicScenario.cpp</a>.</p>
 
 </div>
 </div>
@@ -450,36 +454,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#a3ecee7232616785c7aaf481994d64a8d">BPMNOS::Model::Scenario</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="DynamicScenario_8cpp_source.html#l00035">35</a> of file <a class="el" href="DynamicScenario_8cpp_source.html">DynamicScenario.cpp</a>.</p>
-
-</div>
-</div>
-<a id="a9793964864df63d7932134a9def6ac3e" name="a9793964864df63d7932134a9def6ac3e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9793964864df63d7932134a9def6ac3e">&#9670;&#160;</a></span>getCurrentInstantiations()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::vector&lt; std::tuple&lt; const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Process.html">BPMN::Process</a> *, <a class="el" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a>, <a class="el" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a> &gt; &gt; DynamicScenario::getCurrentInstantiations </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a></td>          <td class="paramname"><span class="paramname"><em>currentTime</em></span></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Implements <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#adb46b1bf8f7f6236f2ded3451fb154df">BPMNOS::Model::Scenario</a>.</p>
-
-<p class="definition">Definition at line <a class="el" href="DynamicScenario_8cpp_source.html#l00060">60</a> of file <a class="el" href="DynamicScenario_8cpp_source.html">DynamicScenario.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DynamicScenario_8cpp_source.html#l00036">36</a> of file <a class="el" href="DynamicScenario_8cpp_source.html">DynamicScenario.cpp</a>.</p>
 
 </div>
 </div>
@@ -518,7 +493,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#ad308a7ed8d89254f5f879258d671827a">BPMNOS::Model::Scenario</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="DynamicScenario_8cpp_source.html#l00138">138</a> of file <a class="el" href="DynamicScenario_8cpp_source.html">DynamicScenario.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DynamicScenario_8cpp_source.html#l00153">153</a> of file <a class="el" href="DynamicScenario_8cpp_source.html">DynamicScenario.cpp</a>.</p>
 
 </div>
 </div>
@@ -547,7 +522,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#a0b0ea9975eb5e6c7ec306c6126c6cdaf">BPMNOS::Model::Scenario</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="DynamicScenario_8cpp_source.html#l00027">27</a> of file <a class="el" href="DynamicScenario_8cpp_source.html">DynamicScenario.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DynamicScenario_8cpp_source.html#l00028">28</a> of file <a class="el" href="DynamicScenario_8cpp_source.html">DynamicScenario.cpp</a>.</p>
 
 </div>
 </div>
@@ -576,7 +551,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#afd54fe067dea011d4b07339e5beb3547">BPMNOS::Model::Scenario</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="DynamicScenario_8cpp_source.html#l00045">45</a> of file <a class="el" href="DynamicScenario_8cpp_source.html">DynamicScenario.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DynamicScenario_8cpp_source.html#l00046">46</a> of file <a class="el" href="DynamicScenario_8cpp_source.html">DynamicScenario.cpp</a>.</p>
 
 </div>
 </div>
@@ -606,11 +581,11 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Used internally by getCurrentInstantiations to get process-level data attributes. </p>
+<p>Used internally by getKnownInstantiations to get process-level data attributes. </p>
 
 <p>Implements <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#adac2f750cf089c8402d2e76bd5432d35">BPMNOS::Model::Scenario</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="DynamicScenario_8cpp_source.html#l00090">90</a> of file <a class="el" href="DynamicScenario_8cpp_source.html">DynamicScenario.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DynamicScenario_8cpp_source.html#l00105">105</a> of file <a class="el" href="DynamicScenario_8cpp_source.html">DynamicScenario.cpp</a>.</p>
 
 </div>
 </div>
@@ -640,11 +615,93 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Used internally by getCurrentInstantiations to get process-level status attributes. </p>
+<p>Used internally by getKnownInstantiations and getProcessReadyStatus to get process-level status attributes. </p>
 
 <p>Implements <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#af95f252ea0217ae66c98f7c2844610af">BPMNOS::Model::Scenario</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="DynamicScenario_8cpp_source.html#l00082">82</a> of file <a class="el" href="DynamicScenario_8cpp_source.html">DynamicScenario.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DynamicScenario_8cpp_source.html#l00097">97</a> of file <a class="el" href="DynamicScenario_8cpp_source.html">DynamicScenario.cpp</a>.</p>
+
+</div>
+</div>
+<a id="aac062679e3954628fbf8e7c5a5261f12" name="aac062679e3954628fbf8e7c5a5261f12"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac062679e3954628fbf8e7c5a5261f12">&#9670;&#160;</a></span>getKnownInstantiations()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; std::tuple&lt; const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Process.html">BPMN::Process</a> *, <a class="el" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a>, <a class="el" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a> &gt; &gt; DynamicScenario::getKnownInstantiations </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a></td>          <td class="paramname"><span class="paramname"><em>previous</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a></td>          <td class="paramname"><span class="paramname"><em>currentTime</em></span>&#160;) const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>An instance becomes known at the time at which the scenario makes it known. The method returns every instance whose known time lies after <code class="param">previous</code> and not after <code class="param">currentTime</code> and, if <code class="param">previous</code> is the lowest representable value, every instance whose known time is not after <code class="param">currentTime</code>. Status and data are given as far as they are disclosed at <code class="param">currentTime</code>.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">previous</td><td>The time up to which instances have been reported before. </td></tr>
+    <tr><td class="paramname">currentTime</td><td>The current time. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Implements <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#a2fd68cd2ca255a78813fc18d1d32c002">BPMNOS::Model::Scenario</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="DynamicScenario_8cpp_source.html#l00061">61</a> of file <a class="el" href="DynamicScenario_8cpp_source.html">DynamicScenario.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a5b6f04dc5924a2616db46c7ec73d0c89" name="a5b6f04dc5924a2616db46c7ec73d0c89"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5b6f04dc5924a2616db46c7ec73d0c89">&#9670;&#160;</a></span>getProcessReadyStatus()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt; <a class="el" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a> &gt; DynamicScenario::getProcessReadyStatus </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a></td>          <td class="paramname"><span class="paramname"><em>instanceId</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a></td>          <td class="paramname"><span class="paramname"><em>currentTime</em></span>&#160;) const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>The status is returned once <code class="param">currentTime</code> has reached the effective instantiation time of the instance, and std::nullopt before. If the start is delayed beyond the instantiation time by the disclosure of the process data, the timestamp is the effective instantiation time.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">instanceId</td><td>The instance identifier. </td></tr>
+    <tr><td class="paramname">currentTime</td><td>The current time. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Implements <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#a301a9b117bc6a357a2421ba9d1b66270">BPMNOS::Model::Scenario</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="DynamicScenario_8cpp_source.html#l00079">79</a> of file <a class="el" href="DynamicScenario_8cpp_source.html">DynamicScenario.cpp</a>.</p>
 
 </div>
 </div>
@@ -683,7 +740,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#a34b2ee3668fe609e0ad072c2441419df">BPMNOS::Model::Scenario</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="DynamicScenario_8cpp_source.html#l00123">123</a> of file <a class="el" href="DynamicScenario_8cpp_source.html">DynamicScenario.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DynamicScenario_8cpp_source.html#l00138">138</a> of file <a class="el" href="DynamicScenario_8cpp_source.html">DynamicScenario.cpp</a>.</p>
 
 </div>
 </div>
@@ -722,7 +779,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#a0ec67037e3574dcc9b3af688a42e736c">BPMNOS::Model::Scenario</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="DynamicScenario_8cpp_source.html#l00119">119</a> of file <a class="el" href="DynamicScenario_8cpp_source.html">DynamicScenario.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DynamicScenario_8cpp_source.html#l00134">134</a> of file <a class="el" href="DynamicScenario_8cpp_source.html">DynamicScenario.cpp</a>.</p>
 
 </div>
 </div>
@@ -761,7 +818,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#a23e900832113250d19dd1c3016b8a135">BPMNOS::Model::Scenario</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="DynamicScenario_8cpp_source.html#l00098">98</a> of file <a class="el" href="DynamicScenario_8cpp_source.html">DynamicScenario.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DynamicScenario_8cpp_source.html#l00113">113</a> of file <a class="el" href="DynamicScenario_8cpp_source.html">DynamicScenario.cpp</a>.</p>
 
 </div>
 </div>
@@ -790,7 +847,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#ad026b6ae8fc0b3c5e2937ccfa3b4e3e2">BPMNOS::Model::Scenario</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="DynamicScenario_8cpp_source.html#l00031">31</a> of file <a class="el" href="DynamicScenario_8cpp_source.html">DynamicScenario.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DynamicScenario_8cpp_source.html#l00032">32</a> of file <a class="el" href="DynamicScenario_8cpp_source.html">DynamicScenario.cpp</a>.</p>
 
 </div>
 </div>
@@ -826,7 +883,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#a56c9a110e9e7cc4abca6c3c3924785ad">BPMNOS::Model::Scenario</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="DynamicScenario_8cpp_source.html#l00157">157</a> of file <a class="el" href="DynamicScenario_8cpp_source.html">DynamicScenario.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DynamicScenario_8cpp_source.html#l00172">172</a> of file <a class="el" href="DynamicScenario_8cpp_source.html">DynamicScenario.cpp</a>.</p>
 
 </div>
 </div>
@@ -862,7 +919,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="DynamicScenario_8cpp_source.html#l00023">23</a> of file <a class="el" href="DynamicScenario_8cpp_source.html">DynamicScenario.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DynamicScenario_8cpp_source.html#l00024">24</a> of file <a class="el" href="DynamicScenario_8cpp_source.html">DynamicScenario.cpp</a>.</p>
 
 </div>
 </div>
@@ -898,7 +955,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="DynamicScenario_8cpp_source.html#l00019">19</a> of file <a class="el" href="DynamicScenario_8cpp_source.html">DynamicScenario.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DynamicScenario_8cpp_source.html#l00020">20</a> of file <a class="el" href="DynamicScenario_8cpp_source.html">DynamicScenario.cpp</a>.</p>
 
 </div>
 </div>
@@ -948,7 +1005,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="DynamicScenario_8h_source.html#l00072">72</a> of file <a class="el" href="DynamicScenario_8h_source.html">DynamicScenario.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DynamicScenario_8h_source.html#l00073">73</a> of file <a class="el" href="DynamicScenario_8h_source.html">DynamicScenario.h</a>.</p>
 
 </div>
 </div>
@@ -972,7 +1029,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="DynamicScenario_8h_source.html#l00070">70</a> of file <a class="el" href="DynamicScenario_8h_source.html">DynamicScenario.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DynamicScenario_8h_source.html#l00071">71</a> of file <a class="el" href="DynamicScenario_8h_source.html">DynamicScenario.h</a>.</p>
 
 </div>
 </div>
@@ -996,7 +1053,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="DynamicScenario_8h_source.html#l00073">73</a> of file <a class="el" href="DynamicScenario_8h_source.html">DynamicScenario.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DynamicScenario_8h_source.html#l00074">74</a> of file <a class="el" href="DynamicScenario_8h_source.html">DynamicScenario.h</a>.</p>
 
 </div>
 </div>
@@ -1020,7 +1077,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="DynamicScenario_8h_source.html#l00069">69</a> of file <a class="el" href="DynamicScenario_8h_source.html">DynamicScenario.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DynamicScenario_8h_source.html#l00070">70</a> of file <a class="el" href="DynamicScenario_8h_source.html">DynamicScenario.h</a>.</p>
 
 </div>
 </div>
@@ -1044,7 +1101,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="DynamicScenario_8h_source.html#l00074">74</a> of file <a class="el" href="DynamicScenario_8h_source.html">DynamicScenario.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DynamicScenario_8h_source.html#l00075">75</a> of file <a class="el" href="DynamicScenario_8h_source.html">DynamicScenario.h</a>.</p>
 
 </div>
 </div>
@@ -1068,7 +1125,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="DynamicScenario_8h_source.html#l00071">71</a> of file <a class="el" href="DynamicScenario_8h_source.html">DynamicScenario.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DynamicScenario_8h_source.html#l00072">72</a> of file <a class="el" href="DynamicScenario_8h_source.html">DynamicScenario.h</a>.</p>
 
 </div>
 </div>

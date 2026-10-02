@@ -128,13 +128,13 @@ $(function(){initNavTree('classBPMNOS_1_1Execution_1_1Engine.html','','classBPMN
 <div class="contents">
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="Engine_8h_source.html#l00033">33</a> of file <a class="el" href="Engine_8h_source.html">Engine.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8h_source.html#l00035">35</a> of file <a class="el" href="Engine_8h_source.html">Engine.h</a>.</p>
 </div>
 <p><code>#include &lt;<a class="el" href="Engine_8h_source.html">Engine.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for BPMNOS::Execution::Engine:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="classBPMNOS_1_1Execution_1_1Engine__inherit__graph.svg" width="336" height="934"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="classBPMNOS_1_1Execution_1_1Engine__inherit__graph.svg" width="336" height="888"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-nested-classes" class="groupheader"><a id="nested-classes" name="nested-classes"></a>
@@ -160,6 +160,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a3386ec52e0297442e119b3a815ec11a4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start processing the event, then continues advancing the existing system state.  <br /></td></tr>
 <tr class="memitem:a9ddf69a259e7c8e2ea5bb4f8dde198b8" id="r_a9ddf69a259e7c8e2ea5bb4f8dde198b8"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9ddf69a259e7c8e2ea5bb4f8dde198b8">advance</a> (<a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> endTime=std::numeric_limits&lt; <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> &gt;::max())</td></tr>
 <tr class="memdesc:a9ddf69a259e7c8e2ea5bb4f8dde198b8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advance system state until next event has to be fetched.  <br /></td></tr>
+<tr class="memitem:affae530a5f53632e69009a936c70ebf7" id="r_affae530a5f53632e69009a936c70ebf7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#affae530a5f53632e69009a936c70ebf7">process</a> (const <a class="el" href="structBPMNOS_1_1Execution_1_1InstantiationEvent.html">InstantiationEvent</a> *event)</td></tr>
+<tr class="memitem:a4d688926a707379eaef2f66b4d6cc255" id="r_a4d688926a707379eaef2f66b4d6cc255"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4d688926a707379eaef2f66b4d6cc255">process</a> (const <a class="el" href="structBPMNOS_1_1Execution_1_1SignalBroadcastEvent.html">SignalBroadcastEvent</a> *event)</td></tr>
 <tr class="memitem:a3b5039ca0897110ffac61cedd10758f4" id="r_a3b5039ca0897110ffac61cedd10758f4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3b5039ca0897110ffac61cedd10758f4">process</a> (const <a class="el" href="structBPMNOS_1_1Execution_1_1ReadyEvent.html">ReadyEvent</a> *event)</td></tr>
 <tr class="memitem:a246433cf16c877c68d2a95dde8d69bef" id="r_a246433cf16c877c68d2a95dde8d69bef"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a246433cf16c877c68d2a95dde8d69bef">process</a> (const <a class="el" href="structBPMNOS_1_1Execution_1_1EntryEvent.html">EntryEvent</a> *event)</td></tr>
 <tr class="memitem:a068606fa95e7e3559667005d1325bbe5" id="r_a068606fa95e7e3559667005d1325bbe5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a068606fa95e7e3559667005d1325bbe5">process</a> (const <a class="el" href="structBPMNOS_1_1Execution_1_1ChoiceEvent.html">ChoiceEvent</a> *event)</td></tr>
@@ -169,8 +171,6 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a5856f2d72ad29a758855f8e39d5a14e4" id="r_a5856f2d72ad29a758855f8e39d5a14e4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5856f2d72ad29a758855f8e39d5a14e4">process</a> (const <a class="el" href="structBPMNOS_1_1Execution_1_1ErrorEvent.html">ErrorEvent</a> *event)</td></tr>
 <tr class="memitem:af7acf6357bbbcfb0173b442812ecca71" id="r_af7acf6357bbbcfb0173b442812ecca71"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af7acf6357bbbcfb0173b442812ecca71">process</a> (const <a class="el" href="structBPMNOS_1_1Execution_1_1ClockTickEvent.html">ClockTickEvent</a> *event)</td></tr>
 <tr class="memitem:a4358f5d446e9d476d3aa5186ddb2460a" id="r_a4358f5d446e9d476d3aa5186ddb2460a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4358f5d446e9d476d3aa5186ddb2460a">process</a> (const <a class="el" href="structBPMNOS_1_1Execution_1_1TerminationEvent.html">TerminationEvent</a> *event)</td></tr>
-<tr class="memitem:ad94e5348e3b96e88035d63ea97e26e16" id="r_ad94e5348e3b96e88035d63ea97e26e16"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad94e5348e3b96e88035d63ea97e26e16">injectSignal</a> (<a class="el" href="classBPMNOS_1_1Execution_1_1Signal.html">Signal</a> signal)</td></tr>
-<tr class="memdesc:ad94e5348e3b96e88035d63ea97e26e16"><td class="mdescLeft">&#160;</td><td class="mdescRight">Broadcasts a signal that did not arise in the model.  <br /></td></tr>
 <tr class="memitem:ac5a5b02ea3ab9cf0e60cfe9db8216947" id="r_ac5a5b02ea3ab9cf0e60cfe9db8216947"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac5a5b02ea3ab9cf0e60cfe9db8216947">getCurrentTime</a> () const</td></tr>
 <tr class="memdesc:ac5a5b02ea3ab9cf0e60cfe9db8216947"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the timestamp the engine is in.  <br /></td></tr>
 <tr class="memitem:a0d14b88ab51088a062d40e8ef1512895" id="r_a0d14b88ab51088a062d40e8ef1512895"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classBPMNOS_1_1Execution_1_1SystemState.html">SystemState</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0d14b88ab51088a062d40e8ef1512895">getSystemState</a> () const</td></tr>
@@ -191,13 +191,11 @@ Public Member Functions</h2></td></tr>
 Protected Member Functions</h2></td></tr>
 <tr class="memitem:a2607fd4cf0509f86170fa646e1a20fe6" id="r_a2607fd4cf0509f86170fa646e1a20fe6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2607fd4cf0509f86170fa646e1a20fe6">processCommands</a> ()</td></tr>
 <tr class="memdesc:a2607fd4cf0509f86170fa646e1a20fe6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method executing all enqueued commands, including those enqueued by a command being executed.  <br /></td></tr>
-<tr class="memitem:ac95bcc651260a6b80a7760676c045d4b" id="r_ac95bcc651260a6b80a7760676c045d4b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac95bcc651260a6b80a7760676c045d4b">addInstances</a> ()</td></tr>
-<tr class="memdesc:ac95bcc651260a6b80a7760676c045d4b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method adding all new instances and advancing tokens as much as possible.  <br /></td></tr>
 <tr class="memitem:a9473451e148eb4c5f82d3631eab1e837" id="r_a9473451e148eb4c5f82d3631eab1e837"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9473451e148eb4c5f82d3631eab1e837">broadcastSignal</a> (<a class="el" href="classBPMNOS_1_1Execution_1_1Signal.html">Signal</a> signal)</td></tr>
 <tr class="memdesc:a9473451e148eb4c5f82d3631eab1e837"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method broadcasting a signal to every token awaiting it and instantiating the process it triggers, if any.  <br /></td></tr>
-<tr class="memitem:aaabf4e00b21647028e1bbc716b4478f1" id="r_aaabf4e00b21647028e1bbc716b4478f1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aaabf4e00b21647028e1bbc716b4478f1">triggerInstance</a> (const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Process.html">BPMN::Process</a> *<a class="el" href="#a3b5039ca0897110ffac61cedd10758f4">process</a>, <a class="el" href="namespaceBPMNOS.html#a8154a7afba82997850e7db218281c8e0">BPMNOS::VariedValueMap</a> content)</td></tr>
+<tr class="memitem:aaabf4e00b21647028e1bbc716b4478f1" id="r_aaabf4e00b21647028e1bbc716b4478f1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aaabf4e00b21647028e1bbc716b4478f1">triggerInstance</a> (const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Process.html">BPMN::Process</a> *<a class="el" href="#affae530a5f53632e69009a936c70ebf7">process</a>, <a class="el" href="namespaceBPMNOS.html#a8154a7afba82997850e7db218281c8e0">BPMNOS::VariedValueMap</a> content)</td></tr>
 <tr class="memdesc:aaabf4e00b21647028e1bbc716b4478f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method creating an instance of a process whenever the message or signal triggering it is thrown.  <br /></td></tr>
-<tr class="memitem:a3e0c248e83004ccbdfd4673345452ff5" id="r_a3e0c248e83004ccbdfd4673345452ff5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3e0c248e83004ccbdfd4673345452ff5">triggerInstanceByMessage</a> (const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Process.html">BPMN::Process</a> *<a class="el" href="#a3b5039ca0897110ffac61cedd10758f4">process</a>, std::weak_ptr&lt; <a class="el" href="classBPMNOS_1_1Execution_1_1Message.html">Message</a> &gt; message_ptr)</td></tr>
+<tr class="memitem:a3e0c248e83004ccbdfd4673345452ff5" id="r_a3e0c248e83004ccbdfd4673345452ff5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3e0c248e83004ccbdfd4673345452ff5">triggerInstanceByMessage</a> (const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Process.html">BPMN::Process</a> *<a class="el" href="#affae530a5f53632e69009a936c70ebf7">process</a>, std::weak_ptr&lt; <a class="el" href="classBPMNOS_1_1Execution_1_1Message.html">Message</a> &gt; message_ptr)</td></tr>
 <tr class="memdesc:a3e0c248e83004ccbdfd4673345452ff5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method creating an instance of a process from the message triggering it, and consuming that message.  <br /></td></tr>
 <tr class="memitem:a415f6cf8a9fa91bbaa2be2107b06e20d" id="r_a415f6cf8a9fa91bbaa2be2107b06e20d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a415f6cf8a9fa91bbaa2be2107b06e20d">deleteInstance</a> (<a class="el" href="#a97c30032fa6c28eaf8a40b6df6ea97ed">StateMachine</a> *instance)</td></tr>
 <tr class="memdesc:a415f6cf8a9fa91bbaa2be2107b06e20d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method removing completed instance.  <br /></td></tr>
@@ -208,11 +206,9 @@ Protected Member Functions</h2></td></tr>
 Protected Attributes</h2></td></tr>
 <tr class="memitem:a9730e2ab8656afa24dd85e5c37d45c31" id="r_a9730e2ab8656afa24dd85e5c37d45c31"><td class="memItemLeft" align="right" valign="top">std::list&lt; <a class="el" href="classBPMNOS_1_1Execution_1_1Engine_1_1Command.html">Command</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9730e2ab8656afa24dd85e5c37d45c31">commands</a></td></tr>
 <tr class="memdesc:a9730e2ab8656afa24dd85e5c37d45c31"><td class="mdescLeft">&#160;</td><td class="mdescRight">List of commands to be executed.  <br /></td></tr>
-<tr class="memitem:a5980f12eeb09fbbd73b5ac44fcc4046d" id="r_a5980f12eeb09fbbd73b5ac44fcc4046d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5980f12eeb09fbbd73b5ac44fcc4046d">lastInstantiationTime</a></td></tr>
-<tr class="memdesc:a5980f12eeb09fbbd73b5ac44fcc4046d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Timestamp when instances were last added (to prevent duplicate additions at same time).  <br /></td></tr>
 <tr class="memitem:a5e98d76367e5157b524beb6fe8e06719" id="r_a5e98d76367e5157b524beb6fe8e06719"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classBPMNOS_1_1Execution_1_1SystemState.html">SystemState</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5e98d76367e5157b524beb6fe8e06719">systemState</a></td></tr>
 <tr class="memitem:a56d3ab43b31ba1b4f666d0ccf1dbc908" id="r_a56d3ab43b31ba1b4f666d0ccf1dbc908"><td class="memItemLeft" align="right" valign="top"><a class="el" href="#a87500327ae69187f741e942383b5bca8">ConditionalEventObserver</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a56d3ab43b31ba1b4f666d0ccf1dbc908">conditionalEventObserver</a></td></tr>
-<tr class="memitem:a4a7050860a704ef24e0a43bb90e8a0a3" id="r_a4a7050860a704ef24e0a43bb90e8a0a3"><td class="memItemLeft" align="right" valign="top">Environment&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4a7050860a704ef24e0a43bb90e8a0a3">environment</a></td></tr>
+<tr class="memitem:a4a7050860a704ef24e0a43bb90e8a0a3" id="r_a4a7050860a704ef24e0a43bb90e8a0a3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classBPMNOS_1_1Execution_1_1Environment.html">Environment</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4a7050860a704ef24e0a43bb90e8a0a3">environment</a></td></tr>
 <tr class="inherit_header pro_attribs_classBPMNOS_1_1Execution_1_1EventListener"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_attribs_classBPMNOS_1_1Execution_1_1EventListener')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Attributes inherited from <a class="el" href="classBPMNOS_1_1Execution_1_1EventListener.html">BPMNOS::Execution::EventListener</a></td></tr>
 <tr class="memitem:aa59ffe0a43029708961451edcbcb4587 inherit pro_attribs_classBPMNOS_1_1Execution_1_1EventListener" id="r_aa59ffe0a43029708961451edcbcb4587"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classBPMNOS_1_1Execution_1_1EventDispatcher.html">EventDispatcher</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Execution_1_1EventListener.html#aa59ffe0a43029708961451edcbcb4587">eventDispatchers</a></td></tr>
 </table><table class="memberdecls">
@@ -257,38 +253,11 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00026">26</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00025">25</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
 
 </div>
 </div>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
-<a id="ac95bcc651260a6b80a7760676c045d4b" name="ac95bcc651260a6b80a7760676c045d4b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac95bcc651260a6b80a7760676c045d4b">&#9670;&#160;</a></span>addInstances()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void Engine::addInstances </td>
-          <td>(</td>
-          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00294">294</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
-
-</div>
-</div>
 <a id="a9ddf69a259e7c8e2ea5bb4f8dde198b8" name="a9ddf69a259e7c8e2ea5bb4f8dde198b8"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a9ddf69a259e7c8e2ea5bb4f8dde198b8">&#9670;&#160;</a></span>advance()</h2>
 
@@ -312,7 +281,7 @@ Friends</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>True if an event was processed and the run may continue. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00131">131</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00128">128</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
 
 </div>
 </div>
@@ -339,9 +308,9 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 <p>The signal is announced before it is delivered anywhere, so that what is observed is the signal rather than what it causes. It is taken by value because it is broadcast from a command and the content it carries is fixed where the signal arises.</p>
-<p>Called for a signal thrown at a <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1SignalThrowEvent.html">signal throw event</a> and for one the environment raises, so that a signal from outside reaches recipients exactly as one from inside. </p>
+<p>Called for a signal thrown at a <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1SignalThrowEvent.html">signal throw event</a> and for one the environment raises through a <a class="el" href="structBPMNOS_1_1Execution_1_1SignalBroadcastEvent.html">SignalBroadcastEvent</a>, so that a signal from outside reaches recipients exactly as one from inside. </p>
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00179">179</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00168">168</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
 
 </div>
 </div>
@@ -368,7 +337,7 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00310">310</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00307">307</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
 
 </div>
 </div>
@@ -387,7 +356,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00500">500</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00509">509</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
 
 </div>
 </div>
@@ -406,7 +375,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00504">504</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00513">513</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
 
 </div>
 </div>
@@ -437,7 +406,7 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00057">57</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00056">56</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
 
 </div>
 </div>
@@ -468,39 +437,12 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00088">88</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
-
-</div>
-</div>
-<a id="ad94e5348e3b96e88035d63ea97e26e16" name="ad94e5348e3b96e88035d63ea97e26e16"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad94e5348e3b96e88035d63ea97e26e16">&#9670;&#160;</a></span>injectSignal()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void Engine::injectSignal </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="classBPMNOS_1_1Execution_1_1Signal.html">Signal</a></td>          <td class="paramname"><span class="paramname"><em>signal</em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>The way the environment raises a signal in a run. The signal is delivered to the tokens waiting for it when the broadcast is made rather than when this is called, exactly as a signal thrown within the model is, and time is not advanced, so a signal may be raised between two things happening at one instant.</p>
-<p>Must not be called from within the engine, which enqueues the broadcast instead; this is an entry point for whatever drives the run from outside and it returns once the engine has settled.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">signal</td><td>The signal to broadcast. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00171">171</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00086">86</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
 
 </div>
 </div>
 <a id="a068606fa95e7e3559667005d1325bbe5" name="a068606fa95e7e3559667005d1325bbe5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a068606fa95e7e3559667005d1325bbe5">&#9670;&#160;</a></span>process() <span class="overload">[1/9]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a068606fa95e7e3559667005d1325bbe5">&#9670;&#160;</a></span>process() <span class="overload">[1/11]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -514,12 +456,12 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00357">357</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00372">372</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
 
 </div>
 </div>
 <a id="af7acf6357bbbcfb0173b442812ecca71" name="af7acf6357bbbcfb0173b442812ecca71"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af7acf6357bbbcfb0173b442812ecca71">&#9670;&#160;</a></span>process() <span class="overload">[2/9]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#af7acf6357bbbcfb0173b442812ecca71">&#9670;&#160;</a></span>process() <span class="overload">[2/11]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -533,12 +475,12 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00469">469</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00484">484</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
 
 </div>
 </div>
 <a id="ae51d0f3fcfc6362e8e00e2d96e292918" name="ae51d0f3fcfc6362e8e00e2d96e292918"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae51d0f3fcfc6362e8e00e2d96e292918">&#9670;&#160;</a></span>process() <span class="overload">[3/9]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ae51d0f3fcfc6362e8e00e2d96e292918">&#9670;&#160;</a></span>process() <span class="overload">[3/11]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -552,12 +494,12 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00386">386</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00401">401</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
 
 </div>
 </div>
 <a id="a246433cf16c877c68d2a95dde8d69bef" name="a246433cf16c877c68d2a95dde8d69bef"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a246433cf16c877c68d2a95dde8d69bef">&#9670;&#160;</a></span>process() <span class="overload">[4/9]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a246433cf16c877c68d2a95dde8d69bef">&#9670;&#160;</a></span>process() <span class="overload">[4/11]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -571,12 +513,12 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00335">335</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00350">350</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
 
 </div>
 </div>
 <a id="a5856f2d72ad29a758855f8e39d5a14e4" name="a5856f2d72ad29a758855f8e39d5a14e4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5856f2d72ad29a758855f8e39d5a14e4">&#9670;&#160;</a></span>process() <span class="overload">[5/9]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a5856f2d72ad29a758855f8e39d5a14e4">&#9670;&#160;</a></span>process() <span class="overload">[5/11]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -590,12 +532,12 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00459">459</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00474">474</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
 
 </div>
 </div>
 <a id="a2a5a10f7fa73b5e01d5d47eea7f88bb4" name="a2a5a10f7fa73b5e01d5d47eea7f88bb4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2a5a10f7fa73b5e01d5d47eea7f88bb4">&#9670;&#160;</a></span>process() <span class="overload">[6/9]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a2a5a10f7fa73b5e01d5d47eea7f88bb4">&#9670;&#160;</a></span>process() <span class="overload">[6/11]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -609,12 +551,31 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00437">437</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00452">452</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
+
+</div>
+</div>
+<a id="affae530a5f53632e69009a936c70ebf7" name="affae530a5f53632e69009a936c70ebf7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#affae530a5f53632e69009a936c70ebf7">&#9670;&#160;</a></span>process() <span class="overload">[7/11]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Engine::process </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structBPMNOS_1_1Execution_1_1InstantiationEvent.html">InstantiationEvent</a> *</td>          <td class="paramname"><span class="paramname"><em>event</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00289">289</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
 
 </div>
 </div>
 <a id="ab6ff84aec2833e195bb5e18172deba97" name="ab6ff84aec2833e195bb5e18172deba97"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab6ff84aec2833e195bb5e18172deba97">&#9670;&#160;</a></span>process() <span class="overload">[7/9]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ab6ff84aec2833e195bb5e18172deba97">&#9670;&#160;</a></span>process() <span class="overload">[8/11]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -628,12 +589,12 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00401">401</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00416">416</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
 
 </div>
 </div>
 <a id="a3b5039ca0897110ffac61cedd10758f4" name="a3b5039ca0897110ffac61cedd10758f4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3b5039ca0897110ffac61cedd10758f4">&#9670;&#160;</a></span>process() <span class="overload">[8/9]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b5039ca0897110ffac61cedd10758f4">&#9670;&#160;</a></span>process() <span class="overload">[9/11]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -647,12 +608,31 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00315">315</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00318">318</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a4d688926a707379eaef2f66b4d6cc255" name="a4d688926a707379eaef2f66b4d6cc255"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4d688926a707379eaef2f66b4d6cc255">&#9670;&#160;</a></span>process() <span class="overload">[10/11]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Engine::process </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structBPMNOS_1_1Execution_1_1SignalBroadcastEvent.html">SignalBroadcastEvent</a> *</td>          <td class="paramname"><span class="paramname"><em>event</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00312">312</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
 
 </div>
 </div>
 <a id="a4358f5d446e9d476d3aa5186ddb2460a" name="a4358f5d446e9d476d3aa5186ddb2460a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4358f5d446e9d476d3aa5186ddb2460a">&#9670;&#160;</a></span>process() <span class="overload">[9/9]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a4358f5d446e9d476d3aa5186ddb2460a">&#9670;&#160;</a></span>process() <span class="overload">[11/11]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -666,7 +646,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00496">496</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00505">505</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
 
 </div>
 </div>
@@ -693,7 +673,7 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00045">45</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00044">44</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
 
 </div>
 </div>
@@ -719,7 +699,7 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00100">100</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00097">97</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
 
 </div>
 </div>
@@ -750,7 +730,7 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00108">108</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00105">105</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
 
 </div>
 </div>
@@ -781,7 +761,7 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00113">113</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00110">110</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
 
 </div>
 </div>
@@ -818,7 +798,7 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00078">78</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00076">76</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
 
 </div>
 </div>
@@ -848,9 +828,9 @@ Friends</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>The identifier is generated, an instance created by a trigger being declared nowhere, and the content of the trigger is applied to the initial status of the instance, which is where it is needed and after which it is of no further concern. </p>
+<p>The identifier is generated, an instance created by a trigger being declared nowhere, and the content of the trigger is applied to the initial status of the instance, which is where it is needed and after which it is of no further concern. The trigger being the condition for the start, the instance is started at once rather than upon a <a class="el" href="structBPMNOS_1_1Execution_1_1ReadyEvent.html">ReadyEvent</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00205">205</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00194">194</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
 
 </div>
 </div>
@@ -882,7 +862,7 @@ Friends</h2></td></tr>
 </div><div class="memdoc">
 <p>No token awaits a message at the <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1MessageStartEvent.html">message start event</a> of a <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Process.html">process</a>, the instance not existing before the message arrives, so no <a class="el" href="structBPMNOS_1_1Execution_1_1MessageDeliveryRequest.html">MessageDeliveryRequest</a> is created for it and no <a class="el" href="structBPMNOS_1_1Execution_1_1MessageDeliveryEvent.html">MessageDeliveryEvent</a> is ever dispatched. What such an event would do for the message and for the sender is therefore done here: the message is marked as delivered and withdrawn from the message pool, and a token at a <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1SendTask.html">send task</a> awaiting its delivery is completed. </p>
 
-<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00273">273</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8cpp_source.html#l00268">268</a> of file <a class="el" href="Engine_8cpp_source.html">Engine.cpp</a>.</p>
 
 </div>
 </div>
@@ -907,7 +887,7 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Engine_8h_source.html#l00036">36</a> of file <a class="el" href="Engine_8h_source.html">Engine.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8h_source.html#l00038">38</a> of file <a class="el" href="Engine_8h_source.html">Engine.h</a>.</p>
 
 </div>
 </div>
@@ -931,7 +911,7 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Engine_8h_source.html#l00035">35</a> of file <a class="el" href="Engine_8h_source.html">Engine.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8h_source.html#l00037">37</a> of file <a class="el" href="Engine_8h_source.html">Engine.h</a>.</p>
 
 </div>
 </div>
@@ -955,7 +935,7 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Engine_8h_source.html#l00034">34</a> of file <a class="el" href="Engine_8h_source.html">Engine.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8h_source.html#l00036">36</a> of file <a class="el" href="Engine_8h_source.html">Engine.h</a>.</p>
 
 </div>
 </div>
@@ -980,7 +960,7 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Engine_8h_source.html#l00184">184</a> of file <a class="el" href="Engine_8h_source.html">Engine.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8h_source.html#l00173">173</a> of file <a class="el" href="Engine_8h_source.html">Engine.h</a>.</p>
 
 </div>
 </div>
@@ -1004,7 +984,7 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Engine_8h_source.html#l00224">224</a> of file <a class="el" href="Engine_8h_source.html">Engine.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8h_source.html#l00212">212</a> of file <a class="el" href="Engine_8h_source.html">Engine.h</a>.</p>
 
 </div>
 </div>
@@ -1018,7 +998,7 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">Environment BPMNOS::Execution::Engine::environment</td>
+          <td class="memname"><a class="el" href="classBPMNOS_1_1Execution_1_1Environment.html">Environment</a> BPMNOS::Execution::Engine::environment</td>
         </tr>
       </table>
   </td>
@@ -1028,31 +1008,7 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Engine_8h_source.html#l00225">225</a> of file <a class="el" href="Engine_8h_source.html">Engine.h</a>.</p>
-
-</div>
-</div>
-<a id="a5980f12eeb09fbbd73b5ac44fcc4046d" name="a5980f12eeb09fbbd73b5ac44fcc4046d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5980f12eeb09fbbd73b5ac44fcc4046d">&#9670;&#160;</a></span>lastInstantiationTime</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> BPMNOS::Execution::Engine::lastInstantiationTime</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="Engine_8h_source.html#l00222">222</a> of file <a class="el" href="Engine_8h_source.html">Engine.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8h_source.html#l00213">213</a> of file <a class="el" href="Engine_8h_source.html">Engine.h</a>.</p>
 
 </div>
 </div>
@@ -1076,7 +1032,7 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Engine_8h_source.html#l00223">223</a> of file <a class="el" href="Engine_8h_source.html">Engine.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Engine_8h_source.html#l00211">211</a> of file <a class="el" href="Engine_8h_source.html">Engine.h</a>.</p>
 
 </div>
 </div>

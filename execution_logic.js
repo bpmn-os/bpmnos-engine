@@ -1,7 +1,8 @@
 var execution_logic =
 [
     [ "Processes", "token_flow_logic_processes.html", [
-      [ "Token creation", "token_flow_logic_processes.html#token-creation", null ],
+      [ "CREATED", "token_flow_logic_processes.html#created", null ],
+      [ "READY", "token_flow_logic_processes.html#ready", null ],
       [ "ENTERED", "token_flow_logic_processes.html#entered", null ],
       [ "BUSY", "token_flow_logic_processes.html#busy", null ],
       [ "COMPLETED", "token_flow_logic_processes.html#completed", null ],
@@ -12,7 +13,7 @@ var execution_logic =
     [ "Subprocesses and ad-hoc subprocesses", "token_flow_logic_subprocesses.html", [
       [ "Subprocesses and ad-hoc subprocesses (excluding multi-instance and compensation activities)", "token_flow_logic_subprocesses.html#subprocesses-and-ad-hoc-subprocesses-excluding-multi-instance-and-compensation-activities", [
         [ "ARRIVED / CREATED", "token_flow_logic_subprocesses.html#arrived--created-1", null ],
-        [ "READY", "token_flow_logic_subprocesses.html#ready", null ],
+        [ "READY", "token_flow_logic_subprocesses.html#ready-1", null ],
         [ "ENTERED", "token_flow_logic_subprocesses.html#entered-1", null ],
         [ "BUSY", "token_flow_logic_subprocesses.html#busy-1", null ],
         [ "COMPLETED", "token_flow_logic_subprocesses.html#completed-1", null ],
@@ -26,7 +27,7 @@ var execution_logic =
     [ "Tasks", "token_flow_logic_tasks.html", [
       [ "Tasks (excluding multi-instance and compensation activities)", "token_flow_logic_tasks.html#tasks-excluding-multi-instance-and-compensation-activities", [
         [ "ARRIVED / CREATED", "token_flow_logic_tasks.html#arrived--created-2", null ],
-        [ "READY", "token_flow_logic_tasks.html#ready-1", null ],
+        [ "READY", "token_flow_logic_tasks.html#ready-2", null ],
         [ "ENTERED", "token_flow_logic_tasks.html#entered-2", null ],
         [ "BUSY", "token_flow_logic_tasks.html#busy-2", null ],
         [ "COMPLETED", "token_flow_logic_tasks.html#completed-2", null ],

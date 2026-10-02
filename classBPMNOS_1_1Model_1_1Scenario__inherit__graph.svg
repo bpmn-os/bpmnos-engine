@@ -12,56 +12,56 @@
 <g id="Node000001" class="node">
 <title>Node1</title>
 <g id="a_Node000001"><a xlink:title="Abstract base class for scenarios holding data for all BPMN instances.">
-<polygon fill="#999999" stroke="none" points="455.25,-1207 309,-1207 309,-805 455.25,-805 455.25,-1207"/>
+<polygon fill="#999999" stroke="none" points="453.75,-1207 310.5,-1207 310.5,-805 453.75,-805 453.75,-1207"/>
 <text xml:space="preserve" text-anchor="start" x="318.75" y="-1193.5" font-family="Helvetica,sans-Serif" font-size="10.00">BPMNOS::Model::Scenario</text>
-<text xml:space="preserve" text-anchor="start" x="313" y="-1176.75" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="325.25" y="-1176.75" font-family="Helvetica,sans-Serif" font-size="10.00">model</text>
-<text xml:space="preserve" text-anchor="start" x="313" y="-1160" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="325.25" y="-1160" font-family="Helvetica,sans-Serif" font-size="10.00">globals</text>
-<text xml:space="preserve" text-anchor="start" x="313" y="-1143.25" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="325.25" y="-1143.25" font-family="Helvetica,sans-Serif" font-size="10.00">delimiters</text>
-<text xml:space="preserve" text-anchor="start" x="313" y="-1126.5" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text xml:space="preserve" text-anchor="start" x="325.25" y="-1126.5" font-family="Helvetica,sans-Serif" font-size="10.00">taskCompletionStatus</text>
-<text xml:space="preserve" text-anchor="start" x="313" y="-1109.75" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text xml:space="preserve" text-anchor="start" x="325.25" y="-1109.75" font-family="Helvetica,sans-Serif" font-size="10.00">activityArrivalStatus</text>
-<text xml:space="preserve" text-anchor="start" x="313" y="-1093" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="325.25" y="-1093" font-family="Helvetica,sans-Serif" font-size="10.00">~Scenario()</text>
-<text xml:space="preserve" text-anchor="start" x="313" y="-1076.25" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="325.25" y="-1076.25" font-family="Helvetica,sans-Serif" font-size="10.00">getModel()</text>
-<text xml:space="preserve" text-anchor="start" x="313" y="-1059.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="325.25" y="-1059.5" font-family="Helvetica,sans-Serif" font-size="10.00">getEarliestInstantiation</text>
-<text xml:space="preserve" text-anchor="start" x="325.25" y="-1046.75" font-family="Helvetica,sans-Serif" font-size="10.00">Time()</text>
-<text xml:space="preserve" text-anchor="start" x="313" y="-1030" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="325.25" y="-1030" font-family="Helvetica,sans-Serif" font-size="10.00">isCompleted()</text>
-<text xml:space="preserve" text-anchor="start" x="313" y="-1013.25" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="325.25" y="-1013.25" font-family="Helvetica,sans-Serif" font-size="10.00">getCurrentInstantiations()</text>
-<text xml:space="preserve" text-anchor="start" x="313" y="-996.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="325.25" y="-996.5" font-family="Helvetica,sans-Serif" font-size="10.00">getCreatedInstances()</text>
-<text xml:space="preserve" text-anchor="start" x="313" y="-979.75" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="325.25" y="-979.75" font-family="Helvetica,sans-Serif" font-size="10.00">getInstances()</text>
-<text xml:space="preserve" text-anchor="start" x="313" y="-963" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="325.25" y="-963" font-family="Helvetica,sans-Serif" font-size="10.00">getValue()</text>
-<text xml:space="preserve" text-anchor="start" x="313" y="-946.25" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="325.25" y="-946.25" font-family="Helvetica,sans-Serif" font-size="10.00">getValue()</text>
-<text xml:space="preserve" text-anchor="start" x="313" y="-929.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="325.25" y="-929.5" font-family="Helvetica,sans-Serif" font-size="10.00">getStatus()</text>
-<text xml:space="preserve" text-anchor="start" x="325.25" y="-912.75" font-family="Helvetica,sans-Serif" font-size="10.00">and 12 more...</text>
-<text xml:space="preserve" text-anchor="start" x="313" y="-896" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text xml:space="preserve" text-anchor="start" x="325.25" y="-896" font-family="Helvetica,sans-Serif" font-size="10.00">Scenario()</text>
-<text xml:space="preserve" text-anchor="start" x="313" y="-879.25" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text xml:space="preserve" text-anchor="start" x="325.25" y="-879.25" font-family="Helvetica,sans-Serif" font-size="10.00">Scenario()</text>
-<text xml:space="preserve" text-anchor="start" x="313" y="-862.5" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text xml:space="preserve" text-anchor="start" x="325.25" y="-862.5" font-family="Helvetica,sans-Serif" font-size="10.00">evaluateGlobals()</text>
-<text xml:space="preserve" text-anchor="start" x="313" y="-845.75" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text xml:space="preserve" text-anchor="start" x="325.25" y="-845.75" font-family="Helvetica,sans-Serif" font-size="10.00">getAssignedValue()</text>
-<text xml:space="preserve" text-anchor="start" x="313" y="-829" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text xml:space="preserve" text-anchor="start" x="325.25" y="-829" font-family="Helvetica,sans-Serif" font-size="10.00">getKnownInitialStatus()</text>
-<text xml:space="preserve" text-anchor="start" x="313" y="-812.25" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text xml:space="preserve" text-anchor="start" x="325.25" y="-812.25" font-family="Helvetica,sans-Serif" font-size="10.00">getKnownInitialData()</text>
-<polygon fill="#666666" stroke="#666666" points="309,-1188.25 309,-1188.25 455.25,-1188.25 455.25,-1188.25 309,-1188.25"/>
-<polygon fill="#666666" stroke="#666666" points="309,-1104.5 309,-1104.5 323.25,-1104.5 323.25,-1104.5 309,-1104.5"/>
-<polygon fill="#666666" stroke="#666666" points="323.25,-1104.5 323.25,-1104.5 455.25,-1104.5 455.25,-1104.5 323.25,-1104.5"/>
-<polygon fill="none" stroke="#666666" points="309,-805 309,-1207 455.25,-1207 455.25,-805 309,-805"/>
+<text xml:space="preserve" text-anchor="start" x="314.5" y="-1176.75" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="326.75" y="-1176.75" font-family="Helvetica,sans-Serif" font-size="10.00">model</text>
+<text xml:space="preserve" text-anchor="start" x="314.5" y="-1160" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="326.75" y="-1160" font-family="Helvetica,sans-Serif" font-size="10.00">globals</text>
+<text xml:space="preserve" text-anchor="start" x="314.5" y="-1143.25" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="326.75" y="-1143.25" font-family="Helvetica,sans-Serif" font-size="10.00">delimiters</text>
+<text xml:space="preserve" text-anchor="start" x="314.5" y="-1126.5" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
+<text xml:space="preserve" text-anchor="start" x="326.75" y="-1126.5" font-family="Helvetica,sans-Serif" font-size="10.00">taskCompletionStatus</text>
+<text xml:space="preserve" text-anchor="start" x="314.5" y="-1109.75" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
+<text xml:space="preserve" text-anchor="start" x="326.75" y="-1109.75" font-family="Helvetica,sans-Serif" font-size="10.00">activityArrivalStatus</text>
+<text xml:space="preserve" text-anchor="start" x="314.5" y="-1093" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="326.75" y="-1093" font-family="Helvetica,sans-Serif" font-size="10.00">~Scenario()</text>
+<text xml:space="preserve" text-anchor="start" x="314.5" y="-1076.25" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="326.75" y="-1076.25" font-family="Helvetica,sans-Serif" font-size="10.00">getModel()</text>
+<text xml:space="preserve" text-anchor="start" x="314.5" y="-1059.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="326.75" y="-1059.5" font-family="Helvetica,sans-Serif" font-size="10.00">getEarliestInstantiation</text>
+<text xml:space="preserve" text-anchor="start" x="326.75" y="-1046.75" font-family="Helvetica,sans-Serif" font-size="10.00">Time()</text>
+<text xml:space="preserve" text-anchor="start" x="314.5" y="-1030" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="326.75" y="-1030" font-family="Helvetica,sans-Serif" font-size="10.00">isCompleted()</text>
+<text xml:space="preserve" text-anchor="start" x="314.5" y="-1013.25" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="326.75" y="-1013.25" font-family="Helvetica,sans-Serif" font-size="10.00">getKnownInstantiations()</text>
+<text xml:space="preserve" text-anchor="start" x="314.5" y="-996.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="326.75" y="-996.5" font-family="Helvetica,sans-Serif" font-size="10.00">getProcessReadyStatus()</text>
+<text xml:space="preserve" text-anchor="start" x="314.5" y="-979.75" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="326.75" y="-979.75" font-family="Helvetica,sans-Serif" font-size="10.00">getSignals()</text>
+<text xml:space="preserve" text-anchor="start" x="314.5" y="-963" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="326.75" y="-963" font-family="Helvetica,sans-Serif" font-size="10.00">getCreatedInstances()</text>
+<text xml:space="preserve" text-anchor="start" x="314.5" y="-946.25" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="326.75" y="-946.25" font-family="Helvetica,sans-Serif" font-size="10.00">getInstances()</text>
+<text xml:space="preserve" text-anchor="start" x="314.5" y="-929.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="326.75" y="-929.5" font-family="Helvetica,sans-Serif" font-size="10.00">getValue()</text>
+<text xml:space="preserve" text-anchor="start" x="326.75" y="-912.75" font-family="Helvetica,sans-Serif" font-size="10.00">and 14 more...</text>
+<text xml:space="preserve" text-anchor="start" x="314.5" y="-896" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
+<text xml:space="preserve" text-anchor="start" x="326.75" y="-896" font-family="Helvetica,sans-Serif" font-size="10.00">Scenario()</text>
+<text xml:space="preserve" text-anchor="start" x="314.5" y="-879.25" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
+<text xml:space="preserve" text-anchor="start" x="326.75" y="-879.25" font-family="Helvetica,sans-Serif" font-size="10.00">Scenario()</text>
+<text xml:space="preserve" text-anchor="start" x="314.5" y="-862.5" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
+<text xml:space="preserve" text-anchor="start" x="326.75" y="-862.5" font-family="Helvetica,sans-Serif" font-size="10.00">evaluateGlobals()</text>
+<text xml:space="preserve" text-anchor="start" x="314.5" y="-845.75" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
+<text xml:space="preserve" text-anchor="start" x="326.75" y="-845.75" font-family="Helvetica,sans-Serif" font-size="10.00">getAssignedValue()</text>
+<text xml:space="preserve" text-anchor="start" x="314.5" y="-829" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
+<text xml:space="preserve" text-anchor="start" x="326.75" y="-829" font-family="Helvetica,sans-Serif" font-size="10.00">getKnownInitialStatus()</text>
+<text xml:space="preserve" text-anchor="start" x="314.5" y="-812.25" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
+<text xml:space="preserve" text-anchor="start" x="326.75" y="-812.25" font-family="Helvetica,sans-Serif" font-size="10.00">getKnownInitialData()</text>
+<polygon fill="#666666" stroke="#666666" points="310.5,-1188.25 310.5,-1188.25 453.75,-1188.25 453.75,-1188.25 310.5,-1188.25"/>
+<polygon fill="#666666" stroke="#666666" points="310.5,-1104.5 310.5,-1104.5 324.75,-1104.5 324.75,-1104.5 310.5,-1104.5"/>
+<polygon fill="#666666" stroke="#666666" points="324.75,-1104.5 324.75,-1104.5 453.75,-1104.5 453.75,-1104.5 324.75,-1104.5"/>
+<polygon fill="none" stroke="#666666" points="310.5,-805 310.5,-1207 453.75,-1207 453.75,-805 310.5,-805"/>
 </a>
 </g>
 </g>
@@ -69,63 +69,65 @@
 <g id="Node000002" class="node">
 <title>Node2</title>
 <g id="a_Node000002"><a xlink:href="classBPMNOS_1_1Model_1_1DynamicScenario.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="none" points="178.25,-670.5 0,-670.5 0,-218.25 178.25,-218.25 178.25,-670.5"/>
-<text xml:space="preserve" text-anchor="start" x="4" y="-657" font-family="Helvetica,sans-Serif" font-size="10.00">BPMNOS::Model::DynamicScenario</text>
-<text xml:space="preserve" text-anchor="start" x="12" y="-640.25" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text xml:space="preserve" text-anchor="start" x="32.25" y="-640.25" font-family="Helvetica,sans-Serif" font-size="10.00">instances</text>
-<text xml:space="preserve" text-anchor="start" x="12" y="-623.5" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text xml:space="preserve" text-anchor="start" x="32.25" y="-623.5" font-family="Helvetica,sans-Serif" font-size="10.00">disclosure</text>
-<text xml:space="preserve" text-anchor="start" x="12" y="-606.75" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text xml:space="preserve" text-anchor="start" x="32.25" y="-606.75" font-family="Helvetica,sans-Serif" font-size="10.00">pendingDisclosures</text>
-<text xml:space="preserve" text-anchor="start" x="12" y="-590" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text xml:space="preserve" text-anchor="start" x="32.25" y="-590" font-family="Helvetica,sans-Serif" font-size="10.00">disclosedAttributes</text>
-<text xml:space="preserve" text-anchor="start" x="12" y="-573.25" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text xml:space="preserve" text-anchor="start" x="32.25" y="-573.25" font-family="Helvetica,sans-Serif" font-size="10.00">earliestInstantiationTime</text>
-<text xml:space="preserve" text-anchor="start" x="12" y="-556.5" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text xml:space="preserve" text-anchor="start" x="32.25" y="-556.5" font-family="Helvetica,sans-Serif" font-size="10.00">latestInstantiationTime</text>
-<text xml:space="preserve" text-anchor="start" x="12" y="-539.75" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="32.25" y="-539.75" font-family="Helvetica,sans-Serif" font-size="10.00">DynamicScenario()</text>
-<text xml:space="preserve" text-anchor="start" x="12" y="-523" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="32.25" y="-523" font-family="Helvetica,sans-Serif" font-size="10.00">getEarliestInstantiation</text>
-<text xml:space="preserve" text-anchor="start" x="32.25" y="-510.25" font-family="Helvetica,sans-Serif" font-size="10.00">Time()</text>
-<text xml:space="preserve" text-anchor="start" x="12" y="-493.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="32.25" y="-493.5" font-family="Helvetica,sans-Serif" font-size="10.00">isCompleted()</text>
-<text xml:space="preserve" text-anchor="start" x="12" y="-476.75" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="32.25" y="-476.75" font-family="Helvetica,sans-Serif" font-size="10.00">getCurrentInstantiations()</text>
-<text xml:space="preserve" text-anchor="start" x="12" y="-460" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="32.25" y="-460" font-family="Helvetica,sans-Serif" font-size="10.00">getCreatedInstances()</text>
-<text xml:space="preserve" text-anchor="start" x="12" y="-443.25" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="32.25" y="-443.25" font-family="Helvetica,sans-Serif" font-size="10.00">getInstances()</text>
-<text xml:space="preserve" text-anchor="start" x="12" y="-426.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="32.25" y="-426.5" font-family="Helvetica,sans-Serif" font-size="10.00">getValue()</text>
-<text xml:space="preserve" text-anchor="start" x="12" y="-409.75" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="32.25" y="-409.75" font-family="Helvetica,sans-Serif" font-size="10.00">getValue()</text>
-<text xml:space="preserve" text-anchor="start" x="12" y="-393" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="32.25" y="-393" font-family="Helvetica,sans-Serif" font-size="10.00">getStatus()</text>
-<text xml:space="preserve" text-anchor="start" x="12" y="-376.25" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="32.25" y="-376.25" font-family="Helvetica,sans-Serif" font-size="10.00">getData()</text>
-<text xml:space="preserve" text-anchor="start" x="12" y="-359.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="32.25" y="-359.5" font-family="Helvetica,sans-Serif" font-size="10.00">getActivityReadyStatus()</text>
-<text xml:space="preserve" text-anchor="start" x="12" y="-342.75" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="32.25" y="-342.75" font-family="Helvetica,sans-Serif" font-size="10.00">noticeClockTick()</text>
-<text xml:space="preserve" text-anchor="start" x="12" y="-326" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="32.25" y="-326" font-family="Helvetica,sans-Serif" font-size="10.00">clone()</text>
-<text xml:space="preserve" text-anchor="start" x="12" y="-309.25" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text xml:space="preserve" text-anchor="start" x="32.25" y="-309.25" font-family="Helvetica,sans-Serif" font-size="10.00">getKnownInitialStatus()</text>
-<text xml:space="preserve" text-anchor="start" x="12" y="-292.5" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text xml:space="preserve" text-anchor="start" x="32.25" y="-292.5" font-family="Helvetica,sans-Serif" font-size="10.00">getKnownInitialData()</text>
-<text xml:space="preserve" text-anchor="start" x="12" y="-275.75" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text xml:space="preserve" text-anchor="start" x="32.25" y="-275.75" font-family="Helvetica,sans-Serif" font-size="10.00">addInstance()</text>
-<text xml:space="preserve" text-anchor="start" x="12" y="-259" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text xml:space="preserve" text-anchor="start" x="32.25" y="-259" font-family="Helvetica,sans-Serif" font-size="10.00">setValue()</text>
-<text xml:space="preserve" text-anchor="start" x="12" y="-242.25" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text xml:space="preserve" text-anchor="start" x="32.25" y="-242.25" font-family="Helvetica,sans-Serif" font-size="10.00">setDisclosure()</text>
-<text xml:space="preserve" text-anchor="start" x="12" y="-225.5" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text xml:space="preserve" text-anchor="start" x="32.25" y="-225.5" font-family="Helvetica,sans-Serif" font-size="10.00">addPendingDisclosure()</text>
-<polygon fill="#666666" stroke="#666666" points="0,-651.75 0,-651.75 178.25,-651.75 178.25,-651.75 0,-651.75"/>
-<polygon fill="#666666" stroke="#666666" points="0,-551.25 0,-551.25 30.25,-551.25 30.25,-551.25 0,-551.25"/>
-<polygon fill="#666666" stroke="#666666" points="30.25,-551.25 30.25,-551.25 178.25,-551.25 178.25,-551.25 30.25,-551.25"/>
-<polygon fill="none" stroke="#666666" points="0,-218.25 0,-670.5 178.25,-670.5 178.25,-218.25 0,-218.25"/>
+<polygon fill="white" stroke="none" points="178.25,-678.88 0,-678.88 0,-209.87 178.25,-209.87 178.25,-678.88"/>
+<text xml:space="preserve" text-anchor="start" x="4" y="-665.38" font-family="Helvetica,sans-Serif" font-size="10.00">BPMNOS::Model::DynamicScenario</text>
+<text xml:space="preserve" text-anchor="start" x="12.75" y="-648.62" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
+<text xml:space="preserve" text-anchor="start" x="33.75" y="-648.62" font-family="Helvetica,sans-Serif" font-size="10.00">instances</text>
+<text xml:space="preserve" text-anchor="start" x="12.75" y="-631.88" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
+<text xml:space="preserve" text-anchor="start" x="33.75" y="-631.88" font-family="Helvetica,sans-Serif" font-size="10.00">disclosure</text>
+<text xml:space="preserve" text-anchor="start" x="12.75" y="-615.12" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
+<text xml:space="preserve" text-anchor="start" x="33.75" y="-615.12" font-family="Helvetica,sans-Serif" font-size="10.00">pendingDisclosures</text>
+<text xml:space="preserve" text-anchor="start" x="12.75" y="-598.38" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
+<text xml:space="preserve" text-anchor="start" x="33.75" y="-598.38" font-family="Helvetica,sans-Serif" font-size="10.00">disclosedAttributes</text>
+<text xml:space="preserve" text-anchor="start" x="12.75" y="-581.62" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
+<text xml:space="preserve" text-anchor="start" x="33.75" y="-581.62" font-family="Helvetica,sans-Serif" font-size="10.00">earliestInstantiationTime</text>
+<text xml:space="preserve" text-anchor="start" x="12.75" y="-564.88" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
+<text xml:space="preserve" text-anchor="start" x="33.75" y="-564.88" font-family="Helvetica,sans-Serif" font-size="10.00">latestInstantiationTime</text>
+<text xml:space="preserve" text-anchor="start" x="12.75" y="-548.12" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="33.75" y="-548.12" font-family="Helvetica,sans-Serif" font-size="10.00">DynamicScenario()</text>
+<text xml:space="preserve" text-anchor="start" x="12.75" y="-531.38" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="33.75" y="-531.38" font-family="Helvetica,sans-Serif" font-size="10.00">getEarliestInstantiation</text>
+<text xml:space="preserve" text-anchor="start" x="33.75" y="-518.62" font-family="Helvetica,sans-Serif" font-size="10.00">Time()</text>
+<text xml:space="preserve" text-anchor="start" x="12.75" y="-501.88" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="33.75" y="-501.88" font-family="Helvetica,sans-Serif" font-size="10.00">isCompleted()</text>
+<text xml:space="preserve" text-anchor="start" x="12.75" y="-485.12" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="33.75" y="-485.12" font-family="Helvetica,sans-Serif" font-size="10.00">getKnownInstantiations()</text>
+<text xml:space="preserve" text-anchor="start" x="12.75" y="-468.38" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="33.75" y="-468.38" font-family="Helvetica,sans-Serif" font-size="10.00">getProcessReadyStatus()</text>
+<text xml:space="preserve" text-anchor="start" x="12.75" y="-451.62" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="33.75" y="-451.62" font-family="Helvetica,sans-Serif" font-size="10.00">getCreatedInstances()</text>
+<text xml:space="preserve" text-anchor="start" x="12.75" y="-434.88" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="33.75" y="-434.88" font-family="Helvetica,sans-Serif" font-size="10.00">getInstances()</text>
+<text xml:space="preserve" text-anchor="start" x="12.75" y="-418.12" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="33.75" y="-418.12" font-family="Helvetica,sans-Serif" font-size="10.00">getValue()</text>
+<text xml:space="preserve" text-anchor="start" x="12.75" y="-401.38" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="33.75" y="-401.38" font-family="Helvetica,sans-Serif" font-size="10.00">getValue()</text>
+<text xml:space="preserve" text-anchor="start" x="12.75" y="-384.62" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="33.75" y="-384.62" font-family="Helvetica,sans-Serif" font-size="10.00">getStatus()</text>
+<text xml:space="preserve" text-anchor="start" x="12.75" y="-367.88" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="33.75" y="-367.88" font-family="Helvetica,sans-Serif" font-size="10.00">getData()</text>
+<text xml:space="preserve" text-anchor="start" x="12.75" y="-351.12" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="33.75" y="-351.12" font-family="Helvetica,sans-Serif" font-size="10.00">getActivityReadyStatus()</text>
+<text xml:space="preserve" text-anchor="start" x="12.75" y="-334.38" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="33.75" y="-334.38" font-family="Helvetica,sans-Serif" font-size="10.00">noticeClockTick()</text>
+<text xml:space="preserve" text-anchor="start" x="12.75" y="-317.62" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="33.75" y="-317.62" font-family="Helvetica,sans-Serif" font-size="10.00">clone()</text>
+<text xml:space="preserve" text-anchor="start" x="12.75" y="-300.88" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
+<text xml:space="preserve" text-anchor="start" x="33.75" y="-300.88" font-family="Helvetica,sans-Serif" font-size="10.00">getKnownInitialStatus()</text>
+<text xml:space="preserve" text-anchor="start" x="12.75" y="-284.12" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
+<text xml:space="preserve" text-anchor="start" x="33.75" y="-284.12" font-family="Helvetica,sans-Serif" font-size="10.00">getKnownInitialData()</text>
+<text xml:space="preserve" text-anchor="start" x="12.75" y="-267.38" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
+<text xml:space="preserve" text-anchor="start" x="33.75" y="-267.38" font-family="Helvetica,sans-Serif" font-size="10.00">addInstance()</text>
+<text xml:space="preserve" text-anchor="start" x="12.75" y="-250.62" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
+<text xml:space="preserve" text-anchor="start" x="33.75" y="-250.62" font-family="Helvetica,sans-Serif" font-size="10.00">setValue()</text>
+<text xml:space="preserve" text-anchor="start" x="12.75" y="-233.88" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
+<text xml:space="preserve" text-anchor="start" x="33.75" y="-233.88" font-family="Helvetica,sans-Serif" font-size="10.00">setDisclosure()</text>
+<text xml:space="preserve" text-anchor="start" x="12.75" y="-217.12" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
+<text xml:space="preserve" text-anchor="start" x="33.75" y="-217.12" font-family="Helvetica,sans-Serif" font-size="10.00">addPendingDisclosure()</text>
+<polygon fill="#666666" stroke="#666666" points="0,-660.12 0,-660.12 178.25,-660.12 178.25,-660.12 0,-660.12"/>
+<polygon fill="#666666" stroke="#666666" points="0,-559.62 0,-559.62 31.75,-559.62 31.75,-559.62 0,-559.62"/>
+<polygon fill="#666666" stroke="#666666" points="31.75,-559.62 31.75,-559.62 178.25,-559.62 178.25,-559.62 31.75,-559.62"/>
+<polygon fill="none" stroke="#666666" points="0,-209.88 0,-678.88 178.25,-678.88 178.25,-209.88 0,-209.88"/>
 </a>
 </g>
 </g>
@@ -133,8 +135,8 @@
 <g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
 <g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M301.48,-924.04C262.35,-881.01 217.39,-825.42 187.12,-769 170.62,-738.22 156.49,-704.26 144.52,-670.27"/>
-<polygon fill="none" stroke="#63b8ff" points="298.85,-926.36 308.19,-931.36 304.01,-921.63 298.85,-926.36"/>
+<path fill="none" stroke="#63b8ff" d="M303.09,-925.81C263.59,-882.54 217.81,-826.2 187.12,-769 172,-740.81 158.88,-709.95 147.59,-678.84"/>
+<polygon fill="none" stroke="#63b8ff" points="300.27,-927.92 309.62,-932.9 305.42,-923.18 300.27,-927.92"/>
 </a>
 </g>
 </g>
@@ -142,63 +144,58 @@
 <g id="Node000003" class="node">
 <title>Node3</title>
 <g id="a_Node000003"><a xlink:href="classBPMNOS_1_1Model_1_1ObservedScenario.html" target="_top" xlink:title="A scenario whose data is observed while the run proceeds.">
-<polygon fill="white" stroke="none" points="377.75,-678.88 196.5,-678.88 196.5,-209.87 377.75,-209.87 377.75,-678.88"/>
-<text xml:space="preserve" text-anchor="start" x="200.5" y="-665.38" font-family="Helvetica,sans-Serif" font-size="10.00">BPMNOS::Model::ObservedScenario</text>
-<text xml:space="preserve" text-anchor="start" x="285.62" y="-648.62" font-family="Helvetica,sans-Serif" font-size="10.00"> </text>
-<text xml:space="preserve" text-anchor="start" x="207.38" y="-631.88" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="226.5" y="-631.88" font-family="Helvetica,sans-Serif" font-size="10.00">ObservedScenario()</text>
+<polygon fill="white" stroke="none" points="377.75,-662.12 196.5,-662.12 196.5,-226.62 377.75,-226.62 377.75,-662.12"/>
+<text xml:space="preserve" text-anchor="start" x="200.5" y="-648.62" font-family="Helvetica,sans-Serif" font-size="10.00">BPMNOS::Model::ObservedScenario</text>
+<text xml:space="preserve" text-anchor="start" x="285.62" y="-631.88" font-family="Helvetica,sans-Serif" font-size="10.00"> </text>
 <text xml:space="preserve" text-anchor="start" x="207.38" y="-615.12" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="226.5" y="-615.12" font-family="Helvetica,sans-Serif" font-size="10.00">getEarliestInstantiation</text>
-<text xml:space="preserve" text-anchor="start" x="226.5" y="-602.38" font-family="Helvetica,sans-Serif" font-size="10.00">Time()</text>
-<text xml:space="preserve" text-anchor="start" x="207.38" y="-585.62" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="226.5" y="-585.62" font-family="Helvetica,sans-Serif" font-size="10.00">isCompleted()</text>
+<text xml:space="preserve" text-anchor="start" x="226.5" y="-615.12" font-family="Helvetica,sans-Serif" font-size="10.00">ObservedScenario()</text>
+<text xml:space="preserve" text-anchor="start" x="207.38" y="-598.38" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="226.5" y="-598.38" font-family="Helvetica,sans-Serif" font-size="10.00">getEarliestInstantiation</text>
+<text xml:space="preserve" text-anchor="start" x="226.5" y="-585.62" font-family="Helvetica,sans-Serif" font-size="10.00">Time()</text>
 <text xml:space="preserve" text-anchor="start" x="207.38" y="-568.88" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="226.5" y="-568.88" font-family="Helvetica,sans-Serif" font-size="10.00">getCurrentInstantiations()</text>
+<text xml:space="preserve" text-anchor="start" x="226.5" y="-568.88" font-family="Helvetica,sans-Serif" font-size="10.00">isCompleted()</text>
 <text xml:space="preserve" text-anchor="start" x="207.38" y="-552.12" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="226.5" y="-552.12" font-family="Helvetica,sans-Serif" font-size="10.00">getCreatedInstances()</text>
+<text xml:space="preserve" text-anchor="start" x="226.5" y="-552.12" font-family="Helvetica,sans-Serif" font-size="10.00">getKnownInstantiations()</text>
 <text xml:space="preserve" text-anchor="start" x="207.38" y="-535.38" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="226.5" y="-535.38" font-family="Helvetica,sans-Serif" font-size="10.00">getInstances()</text>
+<text xml:space="preserve" text-anchor="start" x="226.5" y="-535.38" font-family="Helvetica,sans-Serif" font-size="10.00">getProcessReadyStatus()</text>
 <text xml:space="preserve" text-anchor="start" x="207.38" y="-518.62" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="226.5" y="-518.62" font-family="Helvetica,sans-Serif" font-size="10.00">getValue()</text>
+<text xml:space="preserve" text-anchor="start" x="226.5" y="-518.62" font-family="Helvetica,sans-Serif" font-size="10.00">getSignals()</text>
 <text xml:space="preserve" text-anchor="start" x="207.38" y="-501.88" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="226.5" y="-501.88" font-family="Helvetica,sans-Serif" font-size="10.00">getValue()</text>
+<text xml:space="preserve" text-anchor="start" x="226.5" y="-501.88" font-family="Helvetica,sans-Serif" font-size="10.00">getCreatedInstances()</text>
 <text xml:space="preserve" text-anchor="start" x="207.38" y="-485.12" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="226.5" y="-485.12" font-family="Helvetica,sans-Serif" font-size="10.00">getStatus()</text>
+<text xml:space="preserve" text-anchor="start" x="226.5" y="-485.12" font-family="Helvetica,sans-Serif" font-size="10.00">getInstances()</text>
 <text xml:space="preserve" text-anchor="start" x="207.38" y="-468.38" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="226.5" y="-468.38" font-family="Helvetica,sans-Serif" font-size="10.00">getData()</text>
+<text xml:space="preserve" text-anchor="start" x="226.5" y="-468.38" font-family="Helvetica,sans-Serif" font-size="10.00">getValue()</text>
 <text xml:space="preserve" text-anchor="start" x="207.38" y="-451.62" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="226.5" y="-451.62" font-family="Helvetica,sans-Serif" font-size="10.00">getActivityReadyStatus()</text>
-<text xml:space="preserve" text-anchor="start" x="207.38" y="-434.88" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="226.5" y="-434.88" font-family="Helvetica,sans-Serif" font-size="10.00">getTaskCompletionStatus()</text>
+<text xml:space="preserve" text-anchor="start" x="226.5" y="-451.62" font-family="Helvetica,sans-Serif" font-size="10.00">getValue()</text>
+<text xml:space="preserve" text-anchor="start" x="226.5" y="-434.88" font-family="Helvetica,sans-Serif" font-size="10.00">and 7 more...</text>
 <text xml:space="preserve" text-anchor="start" x="207.38" y="-418.12" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="226.5" y="-418.12" font-family="Helvetica,sans-Serif" font-size="10.00">noticeReady()</text>
+<text xml:space="preserve" text-anchor="start" x="226.5" y="-418.12" font-family="Helvetica,sans-Serif" font-size="10.00">observeInstantiation()</text>
 <text xml:space="preserve" text-anchor="start" x="207.38" y="-401.38" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="226.5" y="-401.38" font-family="Helvetica,sans-Serif" font-size="10.00">noticeCompletion()</text>
+<text xml:space="preserve" text-anchor="start" x="226.5" y="-401.38" font-family="Helvetica,sans-Serif" font-size="10.00">observeValue()</text>
 <text xml:space="preserve" text-anchor="start" x="207.38" y="-384.62" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="226.5" y="-384.62" font-family="Helvetica,sans-Serif" font-size="10.00">clone()</text>
+<text xml:space="preserve" text-anchor="start" x="226.5" y="-384.62" font-family="Helvetica,sans-Serif" font-size="10.00">observeSignal()</text>
 <text xml:space="preserve" text-anchor="start" x="207.38" y="-367.88" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="226.5" y="-367.88" font-family="Helvetica,sans-Serif" font-size="10.00">observeInstantiation()</text>
+<text xml:space="preserve" text-anchor="start" x="226.5" y="-367.88" font-family="Helvetica,sans-Serif" font-size="10.00">observeReadyStatus()</text>
 <text xml:space="preserve" text-anchor="start" x="207.38" y="-351.12" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="226.5" y="-351.12" font-family="Helvetica,sans-Serif" font-size="10.00">observeValue()</text>
-<text xml:space="preserve" text-anchor="start" x="207.38" y="-334.38" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="226.5" y="-334.38" font-family="Helvetica,sans-Serif" font-size="10.00">observeReadyStatus()</text>
-<text xml:space="preserve" text-anchor="start" x="207.38" y="-317.62" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="226.5" y="-317.62" font-family="Helvetica,sans-Serif" font-size="10.00">observeCompletionStatus()</text>
-<text xml:space="preserve" text-anchor="start" x="207.38" y="-300.88" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text xml:space="preserve" text-anchor="start" x="226.5" y="-300.88" font-family="Helvetica,sans-Serif" font-size="10.00">getKnownInitialStatus()</text>
-<text xml:space="preserve" text-anchor="start" x="207.38" y="-284.12" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text xml:space="preserve" text-anchor="start" x="226.5" y="-284.12" font-family="Helvetica,sans-Serif" font-size="10.00">getKnownInitialData()</text>
+<text xml:space="preserve" text-anchor="start" x="226.5" y="-351.12" font-family="Helvetica,sans-Serif" font-size="10.00">observeCompletionStatus()</text>
+<text xml:space="preserve" text-anchor="start" x="207.38" y="-334.38" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
+<text xml:space="preserve" text-anchor="start" x="226.5" y="-334.38" font-family="Helvetica,sans-Serif" font-size="10.00">getKnownInitialStatus()</text>
+<text xml:space="preserve" text-anchor="start" x="207.38" y="-317.62" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
+<text xml:space="preserve" text-anchor="start" x="226.5" y="-317.62" font-family="Helvetica,sans-Serif" font-size="10.00">getKnownInitialData()</text>
+<text xml:space="preserve" text-anchor="start" x="208.88" y="-300.88" font-family="Helvetica,sans-Serif" font-size="10.00">*</text>
+<text xml:space="preserve" text-anchor="start" x="226.5" y="-300.88" font-family="Helvetica,sans-Serif" font-size="10.00">observeInstantiation()</text>
+<text xml:space="preserve" text-anchor="start" x="208.88" y="-284.12" font-family="Helvetica,sans-Serif" font-size="10.00">*</text>
+<text xml:space="preserve" text-anchor="start" x="226.5" y="-284.12" font-family="Helvetica,sans-Serif" font-size="10.00">observeValue()</text>
 <text xml:space="preserve" text-anchor="start" x="208.88" y="-267.38" font-family="Helvetica,sans-Serif" font-size="10.00">*</text>
-<text xml:space="preserve" text-anchor="start" x="226.5" y="-267.38" font-family="Helvetica,sans-Serif" font-size="10.00">observeInstantiation()</text>
+<text xml:space="preserve" text-anchor="start" x="226.5" y="-267.38" font-family="Helvetica,sans-Serif" font-size="10.00">observeSignal()</text>
 <text xml:space="preserve" text-anchor="start" x="208.88" y="-250.62" font-family="Helvetica,sans-Serif" font-size="10.00">*</text>
-<text xml:space="preserve" text-anchor="start" x="226.5" y="-250.62" font-family="Helvetica,sans-Serif" font-size="10.00">observeValue()</text>
+<text xml:space="preserve" text-anchor="start" x="226.5" y="-250.62" font-family="Helvetica,sans-Serif" font-size="10.00">observeReadyStatus()</text>
 <text xml:space="preserve" text-anchor="start" x="208.88" y="-233.88" font-family="Helvetica,sans-Serif" font-size="10.00">*</text>
-<text xml:space="preserve" text-anchor="start" x="226.5" y="-233.88" font-family="Helvetica,sans-Serif" font-size="10.00">observeReadyStatus()</text>
-<text xml:space="preserve" text-anchor="start" x="208.88" y="-217.12" font-family="Helvetica,sans-Serif" font-size="10.00">*</text>
-<text xml:space="preserve" text-anchor="start" x="226.5" y="-217.12" font-family="Helvetica,sans-Serif" font-size="10.00">observeCompletionStatus()</text>
-<polygon fill="#666666" stroke="#666666" points="196.5,-660.12 196.5,-660.12 377.75,-660.12 377.75,-660.12 196.5,-660.12"/>
+<text xml:space="preserve" text-anchor="start" x="226.5" y="-233.88" font-family="Helvetica,sans-Serif" font-size="10.00">observeCompletionStatus()</text>
 <polygon fill="#666666" stroke="#666666" points="196.5,-643.38 196.5,-643.38 377.75,-643.38 377.75,-643.38 196.5,-643.38"/>
-<polygon fill="none" stroke="#666666" points="196.5,-209.88 196.5,-678.88 377.75,-678.88 377.75,-209.88 196.5,-209.88"/>
+<polygon fill="#666666" stroke="#666666" points="196.5,-626.62 196.5,-626.62 377.75,-626.62 377.75,-626.62 196.5,-626.62"/>
+<polygon fill="none" stroke="#666666" points="196.5,-226.62 196.5,-662.12 377.75,-662.12 377.75,-226.62 196.5,-226.62"/>
 </a>
 </g>
 </g>
@@ -206,7 +203,7 @@
 <g id="edge2_Node000001_Node000003" class="edge">
 <title>Node1&#45;&gt;Node3</title>
 <g id="a_edge2_Node000001_Node000003"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M346.35,-794.23C339.95,-756.57 333.26,-717.13 326.76,-678.87"/>
+<path fill="none" stroke="#63b8ff" d="M346.33,-794.11C339,-750.94 331.27,-705.42 323.91,-662.05"/>
 <polygon fill="none" stroke="#63b8ff" points="342.85,-794.57 347.98,-803.84 349.75,-793.4 342.85,-794.57"/>
 </a>
 </g>
@@ -215,51 +212,53 @@
 <g id="Node000004" class="node">
 <title>Node4</title>
 <g id="a_Node000004"><a xlink:href="classBPMNOS_1_1Model_1_1StaticScenario.html" target="_top" xlink:title="A scenario implementation where all data is known from the start.">
-<polygon fill="white" stroke="none" points="558.38,-620.25 395.88,-620.25 395.88,-268.5 558.38,-268.5 558.38,-620.25"/>
-<text xml:space="preserve" text-anchor="start" x="399.88" y="-606.75" font-family="Helvetica,sans-Serif" font-size="10.00">BPMNOS::Model::StaticScenario</text>
-<text xml:space="preserve" text-anchor="start" x="403.94" y="-590" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text xml:space="preserve" text-anchor="start" x="420.25" y="-590" font-family="Helvetica,sans-Serif" font-size="10.00">instances</text>
-<text xml:space="preserve" text-anchor="start" x="403.94" y="-573.25" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text xml:space="preserve" text-anchor="start" x="420.25" y="-573.25" font-family="Helvetica,sans-Serif" font-size="10.00">earliestInstantiationTime</text>
-<text xml:space="preserve" text-anchor="start" x="403.94" y="-556.5" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text xml:space="preserve" text-anchor="start" x="420.25" y="-556.5" font-family="Helvetica,sans-Serif" font-size="10.00">latestInstantiationTime</text>
-<text xml:space="preserve" text-anchor="start" x="403.94" y="-539.75" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="420.25" y="-539.75" font-family="Helvetica,sans-Serif" font-size="10.00">StaticScenario()</text>
-<text xml:space="preserve" text-anchor="start" x="403.94" y="-523" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="420.25" y="-523" font-family="Helvetica,sans-Serif" font-size="10.00">getEarliestInstantiation</text>
-<text xml:space="preserve" text-anchor="start" x="420.25" y="-510.25" font-family="Helvetica,sans-Serif" font-size="10.00">Time()</text>
-<text xml:space="preserve" text-anchor="start" x="403.94" y="-493.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="420.25" y="-493.5" font-family="Helvetica,sans-Serif" font-size="10.00">isCompleted()</text>
-<text xml:space="preserve" text-anchor="start" x="403.94" y="-476.75" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="420.25" y="-476.75" font-family="Helvetica,sans-Serif" font-size="10.00">getCurrentInstantiations()</text>
-<text xml:space="preserve" text-anchor="start" x="403.94" y="-460" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="420.25" y="-460" font-family="Helvetica,sans-Serif" font-size="10.00">getCreatedInstances()</text>
-<text xml:space="preserve" text-anchor="start" x="403.94" y="-443.25" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="420.25" y="-443.25" font-family="Helvetica,sans-Serif" font-size="10.00">getInstances()</text>
-<text xml:space="preserve" text-anchor="start" x="403.94" y="-426.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="420.25" y="-426.5" font-family="Helvetica,sans-Serif" font-size="10.00">getValue()</text>
-<text xml:space="preserve" text-anchor="start" x="403.94" y="-409.75" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="420.25" y="-409.75" font-family="Helvetica,sans-Serif" font-size="10.00">getValue()</text>
-<text xml:space="preserve" text-anchor="start" x="403.94" y="-393" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="420.25" y="-393" font-family="Helvetica,sans-Serif" font-size="10.00">getStatus()</text>
-<text xml:space="preserve" text-anchor="start" x="403.94" y="-376.25" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="420.25" y="-376.25" font-family="Helvetica,sans-Serif" font-size="10.00">getData()</text>
-<text xml:space="preserve" text-anchor="start" x="403.94" y="-359.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="420.25" y="-359.5" font-family="Helvetica,sans-Serif" font-size="10.00">getActivityReadyStatus()</text>
-<text xml:space="preserve" text-anchor="start" x="403.94" y="-342.75" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="420.25" y="-342.75" font-family="Helvetica,sans-Serif" font-size="10.00">clone()</text>
-<text xml:space="preserve" text-anchor="start" x="403.94" y="-326" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text xml:space="preserve" text-anchor="start" x="420.25" y="-326" font-family="Helvetica,sans-Serif" font-size="10.00">getKnownInitialStatus()</text>
-<text xml:space="preserve" text-anchor="start" x="403.94" y="-309.25" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text xml:space="preserve" text-anchor="start" x="420.25" y="-309.25" font-family="Helvetica,sans-Serif" font-size="10.00">getKnownInitialData()</text>
-<text xml:space="preserve" text-anchor="start" x="403.94" y="-292.5" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text xml:space="preserve" text-anchor="start" x="420.25" y="-292.5" font-family="Helvetica,sans-Serif" font-size="10.00">addInstance()</text>
-<text xml:space="preserve" text-anchor="start" x="403.94" y="-275.75" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text xml:space="preserve" text-anchor="start" x="420.25" y="-275.75" font-family="Helvetica,sans-Serif" font-size="10.00">setValue()</text>
-<polygon fill="#666666" stroke="#666666" points="395.88,-601.5 395.88,-601.5 558.38,-601.5 558.38,-601.5 395.88,-601.5"/>
-<polygon fill="#666666" stroke="#666666" points="395.88,-551.25 395.88,-551.25 418.25,-551.25 418.25,-551.25 395.88,-551.25"/>
-<polygon fill="#666666" stroke="#666666" points="418.25,-551.25 418.25,-551.25 558.38,-551.25 558.38,-551.25 418.25,-551.25"/>
-<polygon fill="none" stroke="#666666" points="395.88,-268.5 395.88,-620.25 558.38,-620.25 558.38,-268.5 395.88,-268.5"/>
+<polygon fill="white" stroke="none" points="558.38,-628.62 395.88,-628.62 395.88,-260.12 558.38,-260.12 558.38,-628.62"/>
+<text xml:space="preserve" text-anchor="start" x="399.88" y="-615.12" font-family="Helvetica,sans-Serif" font-size="10.00">BPMNOS::Model::StaticScenario</text>
+<text xml:space="preserve" text-anchor="start" x="404.69" y="-598.38" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
+<text xml:space="preserve" text-anchor="start" x="421.75" y="-598.38" font-family="Helvetica,sans-Serif" font-size="10.00">instances</text>
+<text xml:space="preserve" text-anchor="start" x="404.69" y="-581.62" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
+<text xml:space="preserve" text-anchor="start" x="421.75" y="-581.62" font-family="Helvetica,sans-Serif" font-size="10.00">earliestInstantiationTime</text>
+<text xml:space="preserve" text-anchor="start" x="404.69" y="-564.88" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
+<text xml:space="preserve" text-anchor="start" x="421.75" y="-564.88" font-family="Helvetica,sans-Serif" font-size="10.00">latestInstantiationTime</text>
+<text xml:space="preserve" text-anchor="start" x="404.69" y="-548.12" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="421.75" y="-548.12" font-family="Helvetica,sans-Serif" font-size="10.00">StaticScenario()</text>
+<text xml:space="preserve" text-anchor="start" x="404.69" y="-531.38" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="421.75" y="-531.38" font-family="Helvetica,sans-Serif" font-size="10.00">getEarliestInstantiation</text>
+<text xml:space="preserve" text-anchor="start" x="421.75" y="-518.62" font-family="Helvetica,sans-Serif" font-size="10.00">Time()</text>
+<text xml:space="preserve" text-anchor="start" x="404.69" y="-501.88" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="421.75" y="-501.88" font-family="Helvetica,sans-Serif" font-size="10.00">isCompleted()</text>
+<text xml:space="preserve" text-anchor="start" x="404.69" y="-485.12" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="421.75" y="-485.12" font-family="Helvetica,sans-Serif" font-size="10.00">getKnownInstantiations()</text>
+<text xml:space="preserve" text-anchor="start" x="404.69" y="-468.38" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="421.75" y="-468.38" font-family="Helvetica,sans-Serif" font-size="10.00">getProcessReadyStatus()</text>
+<text xml:space="preserve" text-anchor="start" x="404.69" y="-451.62" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="421.75" y="-451.62" font-family="Helvetica,sans-Serif" font-size="10.00">getCreatedInstances()</text>
+<text xml:space="preserve" text-anchor="start" x="404.69" y="-434.88" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="421.75" y="-434.88" font-family="Helvetica,sans-Serif" font-size="10.00">getInstances()</text>
+<text xml:space="preserve" text-anchor="start" x="404.69" y="-418.12" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="421.75" y="-418.12" font-family="Helvetica,sans-Serif" font-size="10.00">getValue()</text>
+<text xml:space="preserve" text-anchor="start" x="404.69" y="-401.38" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="421.75" y="-401.38" font-family="Helvetica,sans-Serif" font-size="10.00">getValue()</text>
+<text xml:space="preserve" text-anchor="start" x="404.69" y="-384.62" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="421.75" y="-384.62" font-family="Helvetica,sans-Serif" font-size="10.00">getStatus()</text>
+<text xml:space="preserve" text-anchor="start" x="404.69" y="-367.88" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="421.75" y="-367.88" font-family="Helvetica,sans-Serif" font-size="10.00">getData()</text>
+<text xml:space="preserve" text-anchor="start" x="404.69" y="-351.12" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="421.75" y="-351.12" font-family="Helvetica,sans-Serif" font-size="10.00">getActivityReadyStatus()</text>
+<text xml:space="preserve" text-anchor="start" x="404.69" y="-334.38" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="421.75" y="-334.38" font-family="Helvetica,sans-Serif" font-size="10.00">clone()</text>
+<text xml:space="preserve" text-anchor="start" x="404.69" y="-317.62" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
+<text xml:space="preserve" text-anchor="start" x="421.75" y="-317.62" font-family="Helvetica,sans-Serif" font-size="10.00">getKnownInitialStatus()</text>
+<text xml:space="preserve" text-anchor="start" x="404.69" y="-300.88" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
+<text xml:space="preserve" text-anchor="start" x="421.75" y="-300.88" font-family="Helvetica,sans-Serif" font-size="10.00">getKnownInitialData()</text>
+<text xml:space="preserve" text-anchor="start" x="404.69" y="-284.12" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
+<text xml:space="preserve" text-anchor="start" x="421.75" y="-284.12" font-family="Helvetica,sans-Serif" font-size="10.00">addInstance()</text>
+<text xml:space="preserve" text-anchor="start" x="404.69" y="-267.38" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
+<text xml:space="preserve" text-anchor="start" x="421.75" y="-267.38" font-family="Helvetica,sans-Serif" font-size="10.00">setValue()</text>
+<polygon fill="#666666" stroke="#666666" points="395.88,-609.88 395.88,-609.88 558.38,-609.88 558.38,-609.88 395.88,-609.88"/>
+<polygon fill="#666666" stroke="#666666" points="395.88,-559.62 395.88,-559.62 419.75,-559.62 419.75,-559.62 395.88,-559.62"/>
+<polygon fill="#666666" stroke="#666666" points="419.75,-559.62 419.75,-559.62 558.38,-559.62 558.38,-559.62 419.75,-559.62"/>
+<polygon fill="none" stroke="#666666" points="395.88,-260.12 395.88,-628.62 558.38,-628.62 558.38,-260.12 395.88,-260.12"/>
 </a>
 </g>
 </g>
@@ -267,7 +266,7 @@
 <g id="edge3_Node000001_Node000004" class="edge">
 <title>Node1&#45;&gt;Node4</title>
 <g id="a_edge3_Node000001_Node000004"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M417.9,-794.27C427.66,-736.78 438.12,-675.13 447.5,-619.9"/>
+<path fill="none" stroke="#63b8ff" d="M417.93,-794.11C427.19,-739.51 437.09,-681.19 446.09,-628.17"/>
 <polygon fill="none" stroke="#63b8ff" points="414.5,-793.4 416.27,-803.84 421.4,-794.57 414.5,-793.4"/>
 </a>
 </g>
@@ -321,14 +320,14 @@
 <text xml:space="preserve" text-anchor="start" x="580.38" y="-395" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
 <text xml:space="preserve" text-anchor="start" x="592.62" y="-395" font-family="Helvetica,sans-Serif" font-size="10.00">isCompleted()</text>
 <text xml:space="preserve" text-anchor="start" x="580.38" y="-378.25" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="592.62" y="-378.25" font-family="Helvetica,sans-Serif" font-size="10.00">getCurrentInstantiations()</text>
+<text xml:space="preserve" text-anchor="start" x="592.62" y="-378.25" font-family="Helvetica,sans-Serif" font-size="10.00">getKnownInstantiations()</text>
 <text xml:space="preserve" text-anchor="start" x="580.38" y="-361.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="592.62" y="-361.5" font-family="Helvetica,sans-Serif" font-size="10.00">getCreatedInstances()</text>
+<text xml:space="preserve" text-anchor="start" x="592.62" y="-361.5" font-family="Helvetica,sans-Serif" font-size="10.00">getProcessReadyStatus()</text>
 <text xml:space="preserve" text-anchor="start" x="580.38" y="-344.75" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="592.62" y="-344.75" font-family="Helvetica,sans-Serif" font-size="10.00">getInstances()</text>
+<text xml:space="preserve" text-anchor="start" x="592.62" y="-344.75" font-family="Helvetica,sans-Serif" font-size="10.00">getCreatedInstances()</text>
 <text xml:space="preserve" text-anchor="start" x="580.38" y="-328" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="592.62" y="-328" font-family="Helvetica,sans-Serif" font-size="10.00">getValue()</text>
-<text xml:space="preserve" text-anchor="start" x="592.62" y="-311.25" font-family="Helvetica,sans-Serif" font-size="10.00">and 7 more...</text>
+<text xml:space="preserve" text-anchor="start" x="592.62" y="-328" font-family="Helvetica,sans-Serif" font-size="10.00">getInstances()</text>
+<text xml:space="preserve" text-anchor="start" x="592.62" y="-311.25" font-family="Helvetica,sans-Serif" font-size="10.00">and 8 more...</text>
 <text xml:space="preserve" text-anchor="start" x="580.38" y="-294.5" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
 <text xml:space="preserve" text-anchor="start" x="592.62" y="-294.5" font-family="Helvetica,sans-Serif" font-size="10.00">getKnownInitialStatus()</text>
 <text xml:space="preserve" text-anchor="start" x="580.38" y="-277.75" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
@@ -362,8 +361,8 @@
 <g id="edge5_Node000001_Node000006" class="edge">
 <title>Node1&#45;&gt;Node6</title>
 <g id="a_edge5_Node000001_Node000006"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M462.65,-918.94C498.84,-876.46 539.52,-822.85 567.12,-769 570.33,-762.75 573.44,-756.38 576.46,-749.91"/>
-<polygon fill="none" stroke="#63b8ff" points="460.09,-916.54 456.23,-926.41 465.4,-921.1 460.09,-916.54"/>
+<path fill="none" stroke="#63b8ff" d="M461.12,-920.72C497.69,-877.97 539.13,-823.61 567.12,-769 570.33,-762.75 573.44,-756.38 576.46,-749.91"/>
+<polygon fill="none" stroke="#63b8ff" points="458.51,-918.39 454.63,-928.25 463.81,-922.96 458.51,-918.39"/>
 </a>
 </g>
 </g>
@@ -389,8 +388,8 @@
 <g id="edge4_Node000004_Node000005" class="edge">
 <title>Node4&#45;&gt;Node5</title>
 <g id="a_edge4_Node000004_Node000005"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M477.12,-257.29C477.12,-192.05 477.12,-124.79 477.12,-83.41"/>
-<polygon fill="none" stroke="#63b8ff" points="473.63,-257.07 477.13,-267.07 480.63,-257.07 473.63,-257.07"/>
+<path fill="none" stroke="#63b8ff" d="M477.12,-249.15C477.12,-186.54 477.12,-123.15 477.12,-83.48"/>
+<polygon fill="none" stroke="#63b8ff" points="473.63,-248.9 477.13,-258.9 480.63,-248.9 473.63,-248.9"/>
 </a>
 </g>
 </g>

@@ -171,7 +171,7 @@ stateDiagram-v2
 ARRIVED / CREATED</h2>
 <p>A token enters <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92daecf81265919ceb1222992d59f5e66300">ARRIVED</a> state when it arrives via an incoming sequence flow, or <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da98690bf632c29c17c9e4c5a64069903c">CREATED</a> state when the activity has no incoming sequence flows (e.g., activities in ad-hoc subprocesses).</p>
 <p>In either state, the token waits for a <a class="el" href="structBPMNOS_1_1Execution_1_1ReadyEvent.html">ready event</a> indicating that all relevant data has become known. When the event occurs the token state is updated to <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da2baa69eafc7204f3bd8648eba580c489">READY</a>.</p>
-<h2 class="doxsection"><a class="anchor" id="ready-1"></a>
+<h2 class="doxsection"><a class="anchor" id="ready-2"></a>
 READY</h2>
 <p>A token in <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da2baa69eafc7204f3bd8648eba580c489">READY</a> state waits for an <a class="el" href="structBPMNOS_1_1Execution_1_1EntryEvent.html">entry event</a> indicating that a decision is made to start with the activity. When the event occurs the token state is updated to <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da7ea8694c832315449be4318681c872f2">ENTERED</a>.</p>
 <h2 class="doxsection"><a class="anchor" id="entered-2"></a>

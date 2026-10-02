@@ -4,7 +4,6 @@ var classBPMNOS_1_1Execution_1_1SystemState =
     [ "SystemState", "classBPMNOS_1_1Execution_1_1SystemState.html#ae59e021f178a55a23dee6685422ee131", null ],
     [ "~SystemState", "classBPMNOS_1_1Execution_1_1SystemState.html#ab4c21aebd95542b0f0afc18b9b8bf413", null ],
     [ "getDataAttributes", "classBPMNOS_1_1Execution_1_1SystemState.html#a88c46519d6b2a2788ca7e4a54b05edce", null ],
-    [ "getInstantiations", "classBPMNOS_1_1Execution_1_1SystemState.html#ac85ff342e886f9ebff334635d13b7c8f", null ],
     [ "getObjective", "classBPMNOS_1_1Execution_1_1SystemState.html#abe8175c87106f4140bf82b2b3c9c19b2", null ],
     [ "getObservableType", "classBPMNOS_1_1Execution_1_1SystemState.html#a053f71e5ba28c94a1396f6bf91fd3cf3", null ],
     [ "getStatusAttributes", "classBPMNOS_1_1Execution_1_1SystemState.html#a3e527d515c98bfce0d3110af7cbd4cb9", null ],
