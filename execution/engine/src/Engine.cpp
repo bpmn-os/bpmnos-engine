@@ -298,7 +298,8 @@ void Engine::triggerInstanceByMessage(const BPMN::Process* process, std::weak_pt
 }
 
 void Engine::addInstances() {
-  for (auto& [process,status,data] : systemState->getInstantiations() ) {
+  // the instances becoming known since the instances were last added
+  for (auto& [process,status,data] : systemState->getInstantiations(lastInstantiationTime) ) {
     if ( !data[Model::ExtensionElements::Index::Instance].has_value() ) {
       throw std::runtime_error("Engine: instance of process '" + process->id + "' has no id");
     }

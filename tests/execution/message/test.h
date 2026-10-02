@@ -249,13 +249,14 @@ SCENARIO( "Message tasks", "[execution][message]" ) {
 
   GIVEN( "Throwing instance waiting for recipient" ) {
 
+    // the recipient becomes known only at its instantiation time, so the sender waits for no known instance
     std::string csv =
-      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
-      "Instance_1; Process_1; timestamp := 0\n"
-      "Instance_2; Process_2; timestamp := 1\n"
+      "INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE\n"
+      "Instance_1; Process_1; timestamp := 0; 0\n"
+      "Instance_2; Process_2; timestamp := 1; 1\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv);
+    Model::DynamicDataProvider dataProvider(modelFile,csv);
     auto scenario = dataProvider.createScenario();
 
     WHEN( "The engine is started with a recorder" ) {
@@ -276,8 +277,10 @@ SCENARIO( "Message tasks", "[execution][message]" ) {
       engine.run(scenario.get());
       THEN( "Both message tasks fail" ) {
         auto completionLog1 = recorder.find(nlohmann::json{{"processId", "Process_1"},{"state", "FAILED"}});
+        REQUIRE( !completionLog1.empty() );
         REQUIRE( completionLog1.back()["status"]["timestamp"] == 0.0 );
         auto completionLog2 = recorder.find(nlohmann::json{{"processId", "Process_2"},{"state", "FAILED"}});
+        REQUIRE( !completionLog2.empty() );
         REQUIRE( completionLog2.back()["status"]["timestamp"] == 1.0 );
       }
     }

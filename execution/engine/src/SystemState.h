@@ -157,11 +157,12 @@ public:
   std::optional<BPMNOS::Values> getDataAttributes(const StateMachine* root, const BPMN::Node* node) const;
 
   /**
-   * @brief Method returning a vector of all instantiations at the given time.
+   * @brief Method returning a vector of all instances becoming known after the given time and not after the current time.
    *
    * A vector representing an instantiation contains a reference to the process, the initial status, and the initial data attribute value
+   * as far as disclosed. If the given time is the lowest representable value, all instances known by the current time are returned.
    */
-  std::vector< std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values> > getInstantiations() const;
+  std::vector< std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values> > getInstantiations(BPMNOS::number previous) const;
 
 private:
   friend class Engine;

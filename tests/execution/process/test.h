@@ -491,3 +491,56 @@ SCENARIO( "Executable process created and started in two steps", "[execution][pr
     }
   }
 }
+
+SCENARIO( "Executable process created when it becomes known", "[execution][process]" ) {
+  const std::string modelFile = "tests/execution/process/Simple_executable_process.bpmn";
+  REQUIRE_NOTHROW( Model::Model(modelFile) );
+  GIVEN( "A dynamic instance disclosed at time 5 and instantiated at time 10" ) {
+
+    std::string csv =
+      "INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE\n"
+      "Instance_1; Process_1; timestamp := 10; 5\n"
+    ;
+
+    Model::DynamicDataProvider dataProvider(modelFile,csv);
+    auto scenario = dataProvider.createScenario();
+
+    WHEN( "The engine is run until time 5" ) {
+      Execution::Engine engine;
+      Execution::InstantEntry entryHandler;
+      Execution::InstantExit exitHandler;
+      Execution::TimeWarp timeHandler;
+      entryHandler.connect(&engine);
+      exitHandler.connect(&engine);
+      timeHandler.connect(&engine);
+      Execution::Recorder recorder;
+      recorder.subscribe(&engine);
+      engine.run(scenario.get(), 0, 5);
+      auto systemState = engine.getSystemState();
+
+      THEN( "The instance is created but not started" ) {
+        REQUIRE( systemState->instances.size() == 1 );
+        auto token = systemState->instances.front()->tokens.front().get();
+        REQUIRE( token->state == Execution::Token::State::CREATED );
+        REQUIRE( token->owned == nullptr );
+        auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr }, {"event",nullptr },{"decision",nullptr }});
+        REQUIRE( processLog.size() == 1 );
+        REQUIRE( processLog[0]["state"] == "CREATED" );
+      }
+
+      WHEN( "The engine is resumed until time 10" ) {
+        engine.resume(10);
+
+        THEN( "The instance is started at time 10" ) {
+          auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr }, {"event",nullptr },{"decision",nullptr }});
+          REQUIRE( processLog.size() >= 3 );
+          REQUIRE( processLog[0]["state"] == "CREATED" );
+          REQUIRE( processLog[1]["state"] == "READY" );
+          REQUIRE( processLog[1]["status"]["timestamp"] == 10.0 );
+          REQUIRE( processLog[2]["state"] == "ENTERED" );
+          REQUIRE( processLog[2]["status"]["timestamp"] == 10.0 );
+        }
+      }
+    }
+  }
+}

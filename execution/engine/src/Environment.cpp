@@ -29,10 +29,16 @@ void Environment::notice(const Observable* observable) {
     // ready or completion event
     auto systemState = static_cast<const SystemState*>(observable);
     lastReadyCheckTime = std::numeric_limits<BPMNOS::number>::lowest();
+    processTokensAwaitingReadyEvent.clear();
     tokensAwaitingReadyEvent.clear();
     pendingReadyEvents.clear();
     for (auto& [token_ptr] : systemState->tokensAwaitingReadyEvent) {
-      tokensAwaitingReadyEvent.emplace_back(token_ptr);
+      if (auto token = token_ptr.lock(); token && !token->node) {
+        processTokensAwaitingReadyEvent.emplace_back(token_ptr);
+      }
+      else {
+        tokensAwaitingReadyEvent.emplace_back(token_ptr);
+      }
     }
     lastCompletionCheckTime = std::numeric_limits<BPMNOS::number>::lowest();
     tokensAwaitingCompletionEvent.clear();
@@ -58,11 +64,24 @@ void Environment::notice(const Observable* observable) {
     auto scenario = token->owner->systemState->scenario;
 
     if (!token->node) {
-      // Handle CREATED at Process - the status and data the instance was created with are complete, so
-      // the ready event is determined at once. Pending events are dispatched before the awaiting tokens
-      // are checked, so the instance starts before any activity becomes ready at this instant.
+      // Handle CREATED at Process - await the ready event starting the instance. Tokens at processes are
+      // checked before those at activities, so an instance starts before any activity becomes ready at
+      // the same instant.
       if (token->state == Token::State::CREATED) {
-        pendingReadyEvents.emplace_back(const_cast<Token*>(token)->weak_from_this(), getReadyEvent(token, token->owner->systemState));
+        auto systemState = token->owner->systemState;
+        auto token_ptr = const_cast<Token*>(token)->weak_from_this();
+        // If we've already checked at this time, check new token immediately
+        if (lastReadyCheckTime == systemState->getTime()) {
+          if (auto event = getReadyEvent(token, systemState)) {
+            pendingReadyEvents.emplace_back(token_ptr, event);
+          }
+          else {
+            processTokensAwaitingReadyEvent.emplace_back(token_ptr);
+          }
+        }
+        else {
+          processTokensAwaitingReadyEvent.emplace_back(token_ptr);
+        }
       }
       return;
     }
@@ -172,8 +191,14 @@ void Environment::notice(const Observable* observable) {
 
 std::shared_ptr<Event> Environment::getReadyEvent(const Token* token, const SystemState* systemState) {
   if (!token->node) {
-    // the token at a process is ready with the status and data the instance was created with
-    return std::make_shared<ReadyEvent>(const_cast<Token*>(token), token->status, BPMNOS::Values(*token->data));
+    // the token at a process is ready once the scenario discloses the status and data of the process
+    auto instanceId = token->owner->root->instance.value();
+    auto status = systemState->scenario->getProcessReadyStatus(instanceId, systemState->getTime());
+    auto data = systemState->getDataAttributes(token->owner->root, token->owner->process);
+    if (status.has_value() && data.has_value()) {
+      return std::make_shared<ReadyEvent>(const_cast<Token*>(token), std::move(*status), std::move(*data));
+    }
+    return nullptr;
   }
 
   auto rootId = token->owner->root->instance.value();
@@ -212,8 +237,20 @@ std::shared_ptr<Event> Environment::dispatchReadyEvent(const SystemState* system
   }
   lastReadyCheckTime = currentTime;
 
-  // Check all awaiting tokens
+  // Check all awaiting tokens, those at processes first
   std::vector<Token*> readyTokens;
+  for (auto& [token_ptr] : processTokensAwaitingReadyEvent) {
+    if (auto token = token_ptr.lock()) {
+      if (auto event = getReadyEvent(token.get(), systemState)) {
+        readyTokens.push_back(token.get());
+        pendingReadyEvents.emplace_back(token, event);
+      }
+    }
+  }
+  for (auto* token : readyTokens) {
+    processTokensAwaitingReadyEvent.remove(token);
+  }
+  readyTokens.clear();
   for (auto& [token_ptr] : tokensAwaitingReadyEvent) {
     if (auto token = token_ptr.lock()) {
       if (auto event = getReadyEvent(token.get(), systemState)) {
