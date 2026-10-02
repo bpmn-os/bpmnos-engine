@@ -5,6 +5,7 @@
 #include "EventDispatcher.h"
 #include "Observer.h"
 #include "execution/utility/src/auto_list.h"
+#include <list>
 #include "model/utility/src/Number.h"
 
 namespace BPMNOS::Execution {
@@ -25,7 +26,9 @@ class Token;
  * Each notification is declared on Scenario and defaults to doing nothing, so every scenario is notified
  * and none is required to react.
  *
- * It dispatches a ready event for the token at a created process instance once the scenario discloses
+ * It dispatches an instantiation event for every process instance becoming known, as determined by
+ * getKnownInstantiations(), before any other event. It dispatches a ready event for the token at a created
+ * process instance once the scenario discloses
  * the status of the process at its instantiation time, as determined by getProcessReadyStatus() and
  * getDataAttributes(), before any ready event for an activity at the same instant, a ready event for a
  * token that has arrived at an activity once the scenario discloses the status and data the activity requires, as
@@ -43,10 +46,15 @@ public:
   std::shared_ptr<Event> dispatchEvent(const SystemState* systemState) override;
 
 private:
+  std::shared_ptr<Event> dispatchInstantiationEvent(const SystemState* systemState);
   std::shared_ptr<Event> getReadyEvent(const Token* token, const SystemState* systemState);
   std::shared_ptr<Event> dispatchReadyEvent(const SystemState* systemState);
   std::shared_ptr<Event> getCompletionEvent(const Token* token, const SystemState* systemState);
   std::shared_ptr<Event> dispatchCompletionEvent(const SystemState* systemState);
+
+  std::list<std::shared_ptr<Event>> pendingInstantiationEvents; ///< Instantiation events determined but not yet dispatched
+  BPMNOS::number previousTime; ///< Time the state held before the last clock tick, after which instances become known
+  bool instantiationsDue; ///< Whether the instances becoming known at the current time are yet to be determined
 
   auto_list<std::weak_ptr<Token>> processTokensAwaitingReadyEvent; ///< Tokens at created process instances, checked before those at activities
   auto_list<std::weak_ptr<Token>> tokensAwaitingReadyEvent;

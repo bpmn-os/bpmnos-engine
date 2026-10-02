@@ -8,6 +8,7 @@
 #include "events/TerminationEvent.h"
 #include "events/ClockTickEvent.h"
 #include "events/ErrorEvent.h"
+#include "events/InstantiationEvent.h"
 #include "events/ReadyEvent.h"
 #include "events/EntryEvent.h"
 #include "events/ChoiceEvent.h"
@@ -120,6 +121,7 @@ public:
 private:
   void run(BPMNOS::number endTime = std::numeric_limits<BPMNOS::number>::max());
 public:
+  void process(const InstantiationEvent* event);
   void process(const ReadyEvent* event);
   void process(const EntryEvent* event);
   void process(const ChoiceEvent* event);
@@ -185,8 +187,6 @@ protected:
 
   void processCommands(); ///< Method executing all enqueued commands, including those enqueued by a command being executed
 
-  void addInstances(); ///< Method creating all new instances, whose tokens at the process await the ready event starting them
-
   /// @brief Method broadcasting a signal to every token awaiting it and instantiating the process it
   /// triggers, if any.
   ///
@@ -220,7 +220,6 @@ protected:
 
   void deleteInstance(StateMachine* instance); ///< Method removing completed instance
 
-  BPMNOS::number lastInstantiationTime; ///< Timestamp when instances were last added (to prevent duplicate additions at same time)
   std::unique_ptr<SystemState> systemState;
   ConditionalEventObserver conditionalEventObserver;
   Environment environment;

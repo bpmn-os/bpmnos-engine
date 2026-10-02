@@ -10,6 +10,7 @@ list(APPEND engine_SOURCES
   events/TerminationEvent.cpp
   events/ClockTickEvent.cpp
   events/ErrorEvent.cpp
+  events/InstantiationEvent.cpp
   events/ReadyEvent.cpp
   events/EntryEvent.cpp
   events/ChoiceEvent.cpp
@@ -40,6 +41,7 @@ list(APPEND engine_HEADERS
   events/TerminationEvent.h
   events/ClockTickEvent.h
   events/ErrorEvent.h
+  events/InstantiationEvent.h
   events/ReadyEvent.h
   events/EntryEvent.h
   events/ChoiceEvent.h

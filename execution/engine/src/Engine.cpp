@@ -18,7 +18,6 @@ using namespace BPMNOS::Execution;
 
 Engine::Engine()
 {
-  lastInstantiationTime = std::numeric_limits<BPMNOS::number>::lowest();
   addSubscriber(&conditionalEventObserver, Observable::Type::DataUpdate);
   environment.connect(this);
 }
@@ -62,7 +61,6 @@ void Engine::initialize(const BPMNOS::Model::Scenario* scenario, BPMNOS::number 
   // create initial system state before the first instant of the run, so that the opening clock tick
   // advances time to it and time is reached the same way at the first instant as at every later one
   systemState = std::make_unique<SystemState>(this, scenario, std::numeric_limits<BPMNOS::number>::lowest());
-  lastInstantiationTime = std::numeric_limits<BPMNOS::number>::lowest();
   commands.clear();
   conditionalEventObserver.connect( systemState.get() );
   // announce the installed state so subscribers (cached candidate sources) reset for the new run
@@ -87,9 +85,8 @@ void Engine::run(BPMNOS::number endTime) {
 
 void Engine::initializeSystemState(const BPMNOS::Model::Scenario* scenario, const SystemState* foreignState) {
   // install a deep copy of the foreign state as this engine's own state; the copy already holds every
-  // instance due up to its current time, so the instantiation watermark starts at that time
+  // instance known up to its current time
   systemState = std::make_unique<SystemState>(this, scenario, foreignState);
-  lastInstantiationTime = systemState->getTime();
   // installing a new state resets the run state and binds the conditional-event observer to it
   commands.clear();
   conditionalEventObserver.connect( systemState.get() );
@@ -297,21 +294,22 @@ void Engine::triggerInstanceByMessage(const BPMN::Process* process, std::weak_pt
   }
 }
 
-void Engine::addInstances() {
-  // the instances becoming known since the instances were last added
-  for (auto& [process,status,data] : systemState->getInstantiations(lastInstantiationTime) ) {
-    if ( !data[Model::ExtensionElements::Index::Instance].has_value() ) {
-      throw std::runtime_error("Engine: instance of process '" + process->id + "' has no id");
-    }
-    if ( !status[Model::ExtensionElements::Index::Timestamp].has_value() ) {
-      throw std::runtime_error("Engine: instance of process '" + process->id + "' has no timestamp");
-    }
-    systemState->instantiationCounter[process]++;
-    systemState->instances.push_back(std::make_shared<StateMachine>(systemState.get(),process,std::move(data),std::move(status)));
-    // the token at the process awaits the ready event starting the instance
-    systemState->instances.back()->tokens.front()->advanceFromCreated();
+void Engine::process(const InstantiationEvent* event) {
+  auto process = event->process;
+  auto& status = const_cast<InstantiationEvent*>(event)->status;
+  auto& data = const_cast<InstantiationEvent*>(event)->data;
+  if ( !data[Model::ExtensionElements::Index::Instance].has_value() ) {
+    throw std::runtime_error("Engine: instance of process '" + process->id + "' has no id");
   }
-  lastInstantiationTime = systemState->getTime();
+  if ( !status[Model::ExtensionElements::Index::Timestamp].has_value() ) {
+    throw std::runtime_error("Engine: instance of process '" + process->id + "' has no timestamp");
+  }
+  systemState->instantiationCounter[process]++;
+  systemState->instances.push_back(std::make_shared<StateMachine>(systemState.get(),process,std::move(data),std::move(status)));
+  // the token at the process awaits the ready event starting the instance
+  systemState->instances.back()->tokens.front()->advanceFromCreated();
+
+  processCommands();
 }
 
 void Engine::deleteInstance(StateMachine* instance) {
@@ -488,12 +486,6 @@ void Engine::process(const ErrorEvent* event) {
 void Engine::process([[maybe_unused]] const ClockTickEvent* event) {
 //std::cerr << "ClockTickEvent " << std::endl;
   systemState->increaseTimeTo(event->time);
-
-  // add new instances that have become due at the new time; instantiation is caused by time advancing,
-  // and time advances here and nowhere else
-  if (lastInstantiationTime < systemState->getTime()) {
-    addInstances();
-  }
 
   // trigger tokens awaiting timer
   while ( !systemState->tokensAwaitingTimer.empty() ) {

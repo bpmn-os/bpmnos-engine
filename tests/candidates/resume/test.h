@@ -393,8 +393,10 @@ SCENARIO( "An instance created but not started when the state was installed is s
     Execution::Engine engine;
     Execution::TimeWarp timeHandler;
     timeHandler.connect(&engine);
-    // the opening clock tick creates the instance, whose ready event is not yet dispatched
+    // the instantiation event following the opening clock tick creates the instance, whose ready event is
+    // not yet dispatched
     engine.initialize(scenario.get(), 0);
+    REQUIRE( engine.advance() );
 
     const auto* systemState = engine.getSystemState();
     REQUIRE( systemState->instances.size() == 1 );

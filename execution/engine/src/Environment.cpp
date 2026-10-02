@@ -3,6 +3,7 @@
 #include "execution/engine/src/Token.h"
 #include "execution/engine/src/events/ClockTickEvent.h"
 #include "execution/engine/src/SystemState.h"
+#include "execution/engine/src/events/InstantiationEvent.h"
 #include "execution/engine/src/events/ReadyEvent.h"
 #include "execution/engine/src/events/CompletionEvent.h"
 #include "model/bpmnos/src/DecisionTask.h"
@@ -13,7 +14,9 @@
 using namespace BPMNOS::Execution;
 
 Environment::Environment()
-  : lastReadyCheckTime(std::numeric_limits<BPMNOS::number>::lowest())
+  : previousTime(std::numeric_limits<BPMNOS::number>::lowest())
+  , instantiationsDue(false)
+  , lastReadyCheckTime(std::numeric_limits<BPMNOS::number>::lowest())
   , lastCompletionCheckTime(std::numeric_limits<BPMNOS::number>::lowest())
 {
 }
@@ -28,6 +31,10 @@ void Environment::notice(const Observable* observable) {
     // a freshly installed state (e.g. on resume): reset and rebuild from the tokens it lists as awaiting a
     // ready or completion event
     auto systemState = static_cast<const SystemState*>(observable);
+    // the state holds every instance known up to its time, those becoming known later are determined at
+    // the next clock tick
+    pendingInstantiationEvents.clear();
+    instantiationsDue = false;
     lastReadyCheckTime = std::numeric_limits<BPMNOS::number>::lowest();
     processTokensAwaitingReadyEvent.clear();
     tokensAwaitingReadyEvent.clear();
@@ -54,6 +61,9 @@ void Environment::notice(const Observable* observable) {
     auto event = static_cast<const Event*>(observable);
     if (auto clockTickEvent = event->is<ClockTickEvent>()) {
       clockTickEvent->systemState->scenario->noticeClockTick(clockTickEvent->time);
+      // the tick is announced before time advances, so the state still holds the previous time
+      previousTime = clockTickEvent->systemState->getTime();
+      instantiationsDue = true;
     }
     return;
   }
@@ -215,10 +225,30 @@ std::shared_ptr<Event> Environment::getReadyEvent(const Token* token, const Syst
 }
 
 std::shared_ptr<Event> Environment::dispatchEvent(const SystemState* systemState) {
+  // instances are created before any ready event is determined, so that their tokens are checked too
+  if (auto event = dispatchInstantiationEvent(systemState)) {
+    return event;
+  }
   if (auto event = dispatchReadyEvent(systemState)) {
     return event;
   }
   return dispatchCompletionEvent(systemState);
+}
+
+std::shared_ptr<Event> Environment::dispatchInstantiationEvent(const SystemState* systemState) {
+  if (instantiationsDue) {
+    instantiationsDue = false;
+    for (auto& [process, status, data] : systemState->scenario->getKnownInstantiations(previousTime, systemState->getTime())) {
+      pendingInstantiationEvents.push_back(std::make_shared<InstantiationEvent>(process, std::move(status), std::move(data)));
+    }
+  }
+
+  if (pendingInstantiationEvents.empty()) {
+    return nullptr;
+  }
+  auto event = pendingInstantiationEvents.front();
+  pendingInstantiationEvents.pop_front();
+  return event;
 }
 
 std::shared_ptr<Event> Environment::dispatchReadyEvent(const SystemState* systemState) {

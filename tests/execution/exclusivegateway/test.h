@@ -36,7 +36,7 @@ SCENARIO( "Symmetric exclusive gateways", "[execution][exclusivegateway]" ) {
         REQUIRE( processLog[3]["state"] == "BUSY" );
         REQUIRE( processLog[4]["state"] == "COMPLETED" );
         REQUIRE( processLog[5]["state"] == "DONE" );
-        REQUIRE( recorder.log[13]["nodeId"] == "Activity_2" );
+        REQUIRE( recorder.log[14]["nodeId"] == "Activity_2" );
     }
    }
   }

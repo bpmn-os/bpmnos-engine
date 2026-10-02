@@ -131,10 +131,6 @@ BPMNOS::number SystemState::getObjective() const {
   return globals[BPMNOS::Model::ExtensionElements::Index::Objective].value_or(0);
 }
 
-std::vector< std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values> > SystemState::getInstantiations(BPMNOS::number previous) const {
-  return scenario->getKnownInstantiations(previous, currentTime);
-}
-
 std::optional<BPMNOS::Values> SystemState::getStatusAttributes(const StateMachine* root, const BPMN::Node* node) const {
   return scenario->getStatus(root->instance.value(), node, currentTime);
 }

@@ -458,12 +458,24 @@ SCENARIO( "Executable process created and started in two steps", "[execution][pr
     Model::StaticDataProvider dataProvider(modelFile,csv);
     auto scenario = dataProvider.createScenario();
 
-    WHEN( "The engine is initialized at the instantiation time" ) {
+    WHEN( "The engine is initialized at the instantiation time and advances by the instantiation event" ) {
       Execution::Engine engine;
       Execution::TimeWarp timeHandler;
       timeHandler.connect(&engine);
+      Execution::Recorder recorder;
+      recorder.subscribe(&engine);
       engine.initialize(scenario.get(), scenario->getEarliestInstantiationTime());
       auto systemState = engine.getSystemState();
+      REQUIRE( systemState->instances.empty() );
+      REQUIRE( engine.advance() );
+
+      THEN( "The instantiation event is dispatched before the token at the process is created" ) {
+        REQUIRE( recorder.log[0]["event"] == "clocktick" );
+        REQUIRE( recorder.log[1]["event"] == "instantiation" );
+        REQUIRE( recorder.log[1]["processId"] == "Process_1" );
+        REQUIRE( recorder.log[1]["instanceId"] == "Instance_1" );
+        REQUIRE( recorder.log[2]["state"] == "CREATED" );
+      }
 
       THEN( "The instance is created but not started" ) {
         REQUIRE( systemState->instances.size() == 1 );

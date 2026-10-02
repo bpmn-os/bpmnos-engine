@@ -4,7 +4,7 @@
 The execution engine is responsible for running a BPMN model instance. It requires a data provider, several @ref BPMNOS::Execution::EventDispatcher "event dispatchers" to provide execution relevant information during runtime, and a @ref BPMNOS::Execution::Controller "controller" making decisions during execution.
 
 The engine internally handles:
-- Ready events, task completion events and scenario data updates via @ref BPMNOS::Execution::Environment "Environment"
+- Instantiation events, ready events, task completion events and scenario data updates via @ref BPMNOS::Execution::Environment "Environment"
 
 Below is an example using
 a @ref BPMNOS::Model::StaticDataProvider "static data provider" to obtain a scenario,
