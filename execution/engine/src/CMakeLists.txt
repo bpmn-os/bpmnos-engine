@@ -11,6 +11,7 @@ list(APPEND engine_SOURCES
   events/ClockTickEvent.cpp
   events/ErrorEvent.cpp
   events/InstantiationEvent.cpp
+  events/SignalBroadcastEvent.cpp
   events/ReadyEvent.cpp
   events/EntryEvent.cpp
   events/ChoiceEvent.cpp
@@ -42,6 +43,7 @@ list(APPEND engine_HEADERS
   events/ClockTickEvent.h
   events/ErrorEvent.h
   events/InstantiationEvent.h
+  events/SignalBroadcastEvent.h
   events/ReadyEvent.h
   events/EntryEvent.h
   events/ChoiceEvent.h

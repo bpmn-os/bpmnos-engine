@@ -39,6 +39,9 @@ public:
   /// @brief Report the value of an attribute of an instance.
   void observeValue(BPMNOS::number instanceId, const Attribute* attribute, std::optional<BPMNOS::number> value);
 
+  /// @brief Report that a signal with the given name and content was raised at the given time.
+  void observeSignal(BPMNOS::number name, BPMNOS::VariedValueMap content, BPMNOS::number time);
+
   /// @brief Report the status an activity is ready with.
   ///
   /// @param instanceId The instance identifier the activity belongs to.
@@ -64,6 +67,7 @@ public:
 
   std::vector< std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values> > getKnownInstantiations(const BPMNOS::number previous, const BPMNOS::number currentTime) const override;
   std::optional<BPMNOS::Values> getProcessReadyStatus(const BPMNOS::number instanceId, const BPMNOS::number currentTime) const override;
+  std::vector< std::pair<BPMNOS::number, BPMNOS::VariedValueMap> > getSignals(const BPMNOS::number previous, const BPMNOS::number currentTime) const override;
 
   std::vector< const InstanceData* > getCreatedInstances(const BPMNOS::number currentTime) const override;
   std::vector< const InstanceData* > getInstances(const BPMNOS::number currentTime) const override;
@@ -104,6 +108,7 @@ private:
   std::optional<BPMNOS::Values> getReportedStatus(const std::map<std::pair<size_t, const BPMN::Node*>, BPMNOS::Values>& reported, BPMNOS::number instanceId, const BPMN::Node* node, BPMNOS::number currentTime) const;
 
   std::unordered_map<size_t, InstanceData> instances; ///< Log of the instances observed so far.
+  std::vector< std::tuple<BPMNOS::number, BPMNOS::number, BPMNOS::VariedValueMap> > observedSignals; ///< Time, name and content of the signals observed so far.
   mutable std::map<std::pair<size_t, const BPMN::Node*>, BPMNOS::Values> observedReadyStatus; ///< Statuses activities were reported ready with.
   mutable std::map<std::pair<size_t, const BPMN::Node*>, BPMNOS::Values> observedCompletionStatus; ///< Statuses tasks were reported to complete with.
 };

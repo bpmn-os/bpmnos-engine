@@ -9,6 +9,7 @@
 #include "events/ClockTickEvent.h"
 #include "events/ErrorEvent.h"
 #include "events/InstantiationEvent.h"
+#include "events/SignalBroadcastEvent.h"
 #include "events/ReadyEvent.h"
 #include "events/EntryEvent.h"
 #include "events/ChoiceEvent.h"
@@ -122,6 +123,7 @@ private:
   void run(BPMNOS::number endTime = std::numeric_limits<BPMNOS::number>::max());
 public:
   void process(const InstantiationEvent* event);
+  void process(const SignalBroadcastEvent* event);
   void process(const ReadyEvent* event);
   void process(const EntryEvent* event);
   void process(const ChoiceEvent* event);
@@ -131,21 +133,6 @@ public:
   void process(const ErrorEvent* event);
   void process([[maybe_unused]] const ClockTickEvent* event);
   void process([[maybe_unused]] const TerminationEvent* event);
-
-  /**
-   * @brief Broadcasts a signal that did not arise in the model.
-   *
-   * The way the environment raises a signal in a run. The signal is delivered to the tokens waiting for
-   * it when the broadcast is made rather than when this is called, exactly as a signal thrown within the
-   * model is, and time is not advanced, so a signal may be raised between two things happening at one
-   * instant.
-   *
-   * Must not be called from within the engine, which enqueues the broadcast instead; this is an entry
-   * point for whatever drives the run from outside and it returns once the engine has settled.
-   *
-   * @param signal The signal to broadcast.
-   */
-  void injectSignal(Signal signal);
 
 /**
  * @brief Returns the timestamp the engine is in.
@@ -195,7 +182,8 @@ protected:
   /// content it carries is fixed where the signal arises.
   ///
   /// Called for a signal thrown at a @ref BPMN::SignalThrowEvent "signal throw event" and for one the
-  /// environment raises, so that a signal from outside reaches recipients exactly as one from inside.
+  /// environment raises through a @ref SignalBroadcastEvent, so that a signal from outside reaches
+  /// recipients exactly as one from inside.
   void broadcastSignal(Signal signal);
 
   /// @brief Method creating an instance of a process whenever the message or signal triggering it is

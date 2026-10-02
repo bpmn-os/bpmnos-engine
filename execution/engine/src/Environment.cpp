@@ -4,6 +4,7 @@
 #include "execution/engine/src/events/ClockTickEvent.h"
 #include "execution/engine/src/SystemState.h"
 #include "execution/engine/src/events/InstantiationEvent.h"
+#include "execution/engine/src/events/SignalBroadcastEvent.h"
 #include "execution/engine/src/events/ReadyEvent.h"
 #include "execution/engine/src/events/CompletionEvent.h"
 #include "model/bpmnos/src/DecisionTask.h"
@@ -16,6 +17,7 @@ using namespace BPMNOS::Execution;
 Environment::Environment()
   : previousTime(std::numeric_limits<BPMNOS::number>::lowest())
   , instantiationsDue(false)
+  , signalsDue(false)
   , lastReadyCheckTime(std::numeric_limits<BPMNOS::number>::lowest())
   , lastCompletionCheckTime(std::numeric_limits<BPMNOS::number>::lowest())
 {
@@ -35,6 +37,8 @@ void Environment::notice(const Observable* observable) {
     // the next clock tick
     pendingInstantiationEvents.clear();
     instantiationsDue = false;
+    pendingSignalBroadcastEvents.clear();
+    signalsDue = false;
     lastReadyCheckTime = std::numeric_limits<BPMNOS::number>::lowest();
     processTokensAwaitingReadyEvent.clear();
     tokensAwaitingReadyEvent.clear();
@@ -64,6 +68,7 @@ void Environment::notice(const Observable* observable) {
       // the tick is announced before time advances, so the state still holds the previous time
       previousTime = clockTickEvent->systemState->getTime();
       instantiationsDue = true;
+      signalsDue = true;
     }
     return;
   }
@@ -232,7 +237,11 @@ std::shared_ptr<Event> Environment::dispatchEvent(const SystemState* systemState
   if (auto event = dispatchReadyEvent(systemState)) {
     return event;
   }
-  return dispatchCompletionEvent(systemState);
+  if (auto event = dispatchCompletionEvent(systemState)) {
+    return event;
+  }
+  // signals are raised once everything else the environment supplies at this instant has been processed
+  return dispatchSignalBroadcastEvent(systemState);
 }
 
 std::shared_ptr<Event> Environment::dispatchInstantiationEvent(const SystemState* systemState) {
@@ -248,6 +257,22 @@ std::shared_ptr<Event> Environment::dispatchInstantiationEvent(const SystemState
   }
   auto event = pendingInstantiationEvents.front();
   pendingInstantiationEvents.pop_front();
+  return event;
+}
+
+std::shared_ptr<Event> Environment::dispatchSignalBroadcastEvent(const SystemState* systemState) {
+  if (signalsDue) {
+    signalsDue = false;
+    for (auto& [name, content] : systemState->scenario->getSignals(previousTime, systemState->getTime())) {
+      pendingSignalBroadcastEvents.push_back(std::make_shared<SignalBroadcastEvent>(Signal(name, std::move(content))));
+    }
+  }
+
+  if (pendingSignalBroadcastEvents.empty()) {
+    return nullptr;
+  }
+  auto event = pendingSignalBroadcastEvents.front();
+  pendingSignalBroadcastEvents.pop_front();
   return event;
 }
 

@@ -37,4 +37,4 @@ int main() {
 }
 ```
 
-@ref BPMNOS::Execution::Engine::injectSignal "injectSignal" allows a caller to raise a @ref BPMNOS::Execution::Signal "signal" that did not arise in the model, which is how an environment reaches into a run. It is delivered like a signal thrown within the model and does not advance time.
+A @ref BPMNOS::Execution::Signal "signal" that does not arise in the model is raised by the environment: the @ref BPMNOS::Execution::Environment "environment" dispatches a @ref BPMNOS::Execution::SignalBroadcastEvent "signal broadcast event" for every signal the scenario reports, and processing the event delivers the signal like one thrown within the model, without advancing time. An @ref BPMNOS::Model::ObservedScenario "observed scenario" reports the signals it is told about through @ref BPMNOS::Model::ObservedScenario::observeSignal "observeSignal".

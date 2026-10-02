@@ -75,6 +75,10 @@ std::optional<BPMNOS::number> Scenario::getAssignedValue(const InstanceData* ins
   return number(attribute->expression->compiled.evaluate(variableValues, collectionValues));
 }
 
+std::vector< std::pair<BPMNOS::number, BPMNOS::VariedValueMap> > Scenario::getSignals([[maybe_unused]] const BPMNOS::number previous, [[maybe_unused]] const BPMNOS::number currentTime) const {
+  return {};
+}
+
 std::unique_ptr<Scenario> Scenario::clone([[maybe_unused]] BPMNOS::number spawnTime, [[maybe_unused]] size_t index) const {
   throw std::logic_error("Scenario: clone() is not supported by this scenario type");
 }

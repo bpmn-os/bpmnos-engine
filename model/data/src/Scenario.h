@@ -72,6 +72,18 @@ public:
   virtual std::optional<BPMNOS::Values> getProcessReadyStatus(const BPMNOS::number instanceId, const BPMNOS::number currentTime) const = 0;
 
   /**
+   * @brief Method returning the name and content of all signals raised by the environment.
+   *
+   * The method returns every signal raised after @p previous and not after @p currentTime and, if
+   * @p previous is the lowest representable value, every signal raised not after @p currentTime. A scenario
+   * raises no signal unless it says otherwise.
+   *
+   * @param previous The time up to which signals have been reported before.
+   * @param currentTime The current time.
+   */
+  virtual std::vector< std::pair<BPMNOS::number, BPMNOS::VariedValueMap> > getSignals(const BPMNOS::number previous, const BPMNOS::number currentTime) const;
+
+  /**
    * @brief Method returning a vector of all instances that have been created until the given time.
    */
   virtual std::vector< const InstanceData* > getCreatedInstances(const BPMNOS::number currentTime) const = 0;

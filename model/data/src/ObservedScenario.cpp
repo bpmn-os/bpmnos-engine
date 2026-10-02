@@ -20,6 +20,10 @@ void ObservedScenario::observeValue(BPMNOS::number instanceId, const Attribute* 
   instances.at((size_t)instanceId).values[attribute] = value;
 }
 
+void ObservedScenario::observeSignal(BPMNOS::number name, BPMNOS::VariedValueMap content, BPMNOS::number time) {
+  observedSignals.emplace_back(time, name, std::move(content));
+}
+
 void ObservedScenario::observeReadyStatus(BPMNOS::number instanceId, const BPMN::Node* activity, BPMNOS::Values status) {
   observedReadyStatus[{(size_t)instanceId, activity}] = std::move(status);
 }
@@ -72,6 +76,19 @@ std::optional<BPMNOS::Values> ObservedScenario::getProcessReadyStatus(const BPMN
     return std::nullopt;
   }
   return getKnownInitialStatus(&instance, currentTime);
+}
+
+std::vector< std::pair<BPMNOS::number, BPMNOS::VariedValueMap> > ObservedScenario::getSignals(const BPMNOS::number previous, const BPMNOS::number currentTime) const {
+  std::vector< std::pair<BPMNOS::number, BPMNOS::VariedValueMap> > result;
+  for ( auto& [time, name, content] : observedSignals ) {
+    if (
+      time <= currentTime &&
+      ( previous == std::numeric_limits<BPMNOS::number>::lowest() || time > previous )
+    ) {
+      result.emplace_back(name, content);
+    }
+  }
+  return result;
 }
 
 BPMNOS::Values ObservedScenario::getKnownInitialStatus(const Scenario::InstanceData* instance, const BPMNOS::number currentTime) const {
