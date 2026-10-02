@@ -16,9 +16,5 @@ var dir_27f4e9a048a42a026fab81ac122a06f3 =
     [ "Evaluator.h", "Evaluator_8h.html", "Evaluator_8h" ],
     [ "GreedyController.cpp", "GreedyController_8cpp.html", null ],
     [ "GreedyController.h", "GreedyController_8h.html", "GreedyController_8h" ],
-    [ "GreedyDispatcher.h", "GreedyDispatcher_8h.html", "GreedyDispatcher_8h" ],
-    [ "SeededController.cpp", "SeededController_8cpp.html", null ],
-    [ "SeededController.h", "SeededController_8h.html", "SeededController_8h" ],
-    [ "SeededGreedyController.cpp", "SeededGreedyController_8cpp.html", null ],
-    [ "SeededGreedyController.h", "SeededGreedyController_8h.html", "SeededGreedyController_8h" ]
+    [ "GreedyDispatcher.h", "GreedyDispatcher_8h.html", "GreedyDispatcher_8h" ]
 ];

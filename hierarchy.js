@@ -12,7 +12,6 @@ var hierarchy =
     [ "BPMNOS::Execution::FirstFeasibleEntry::Config", "structBPMNOS_1_1Execution_1_1FirstFeasibleEntry_1_1Config.html", null ],
     [ "BPMNOS::Execution::GreedyController::Config", "structBPMNOS_1_1Execution_1_1GreedyController_1_1Config.html", null ],
     [ "BPMNOS::Execution::Recorder::Config", "structBPMNOS_1_1Execution_1_1Recorder_1_1Config.html", null ],
-    [ "BPMNOS::Execution::SeededController::Config", "structBPMNOS_1_1Execution_1_1SeededController_1_1Config.html", null ],
     [ "BPMNOS::Model::Content", "classBPMNOS_1_1Model_1_1Content.html", null ],
     [ "BPMNOS::CSVReader", "classBPMNOS_1_1CSVReader.html", null ],
     [ "BPMNOS::Model::DataProvider", "classBPMNOS_1_1Model_1_1DataProvider.html", [
@@ -99,10 +98,7 @@ var hierarchy =
     ] ],
     [ "BPMNOS::Execution::EventDispatcher", "classBPMNOS_1_1Execution_1_1EventDispatcher.html", [
       [ "BPMNOS::Execution::Controller", "classBPMNOS_1_1Execution_1_1Controller.html", [
-        [ "BPMNOS::Execution::GreedyController", "classBPMNOS_1_1Execution_1_1GreedyController.html", null ],
-        [ "BPMNOS::Execution::SeededController", "classBPMNOS_1_1Execution_1_1SeededController.html", [
-          [ "BPMNOS::Execution::SeededGreedyController", "classBPMNOS_1_1Execution_1_1SeededGreedyController.html", null ]
-        ] ]
+        [ "BPMNOS::Execution::GreedyController", "classBPMNOS_1_1Execution_1_1GreedyController.html", null ]
       ] ],
       [ "BPMNOS::Execution::Environment", "classBPMNOS_1_1Execution_1_1Environment.html", null ],
       [ "BPMNOS::Execution::FirstMatchingMessageDelivery", "classBPMNOS_1_1Execution_1_1FirstMatchingMessageDelivery.html", null ],
@@ -130,7 +126,6 @@ var hierarchy =
       [ "BPMNOS::Execution::is_weak_ptr< T >", "structBPMNOS_1_1Execution_1_1is__weak__ptr.html", null ],
       [ "BPMNOS::is_vector< T >", "structBPMNOS_1_1is__vector.html", null ]
     ] ],
-    [ "BPMNOS::Execution::FlattenedGraph", "classBPMNOS_1_1Execution_1_1FlattenedGraph.html", null ],
     [ "BPMNOS::Model::Guidance", "classBPMNOS_1_1Model_1_1Guidance.html", null ],
     [ "std::hash&lt; BPMNOS_NUMBER_TYPE &gt;", "structstd_1_1hash_3_01BPMNOS__NUMBER__TYPE_01_4.html", null ],
     [ "std::hash&lt; const BPMNOS_NUMBER_TYPE &gt;", "structstd_1_1hash_3_01const_01BPMNOS__NUMBER__TYPE_01_4.html", null ],
@@ -188,7 +183,6 @@ var hierarchy =
       [ "BPMNOS::Execution::Recorder", "classBPMNOS_1_1Execution_1_1Recorder.html", null ]
     ] ],
     [ "BPMNOS::Model::Operator", "classBPMNOS_1_1Model_1_1Operator.html", null ],
-    [ "BPMNOS::Execution::SeededController::pair_hash", "structBPMNOS_1_1Execution_1_1SeededController_1_1pair__hash.html", null ],
     [ "BPMNOS::Model::Parameter", "classBPMNOS_1_1Model_1_1Parameter.html", null ],
     [ "BPMNOS::Model::PendingDisclosure", "structBPMNOS_1_1Model_1_1PendingDisclosure.html", null ],
     [ "BPMNOS::RandomDistributionFactory", "classBPMNOS_1_1RandomDistributionFactory.html", null ],
@@ -216,7 +210,6 @@ var hierarchy =
       [ "BPMNOS::Values", "structBPMNOS_1_1Values.html", null ]
     ] ],
     [ "BPMNOS::vector_map&lt; Key, Value &gt;", "classBPMNOS_1_1vector__map.html", null ],
-    [ "BPMNOS::Execution::FlattenedGraph::Vertex", "classBPMNOS_1_1Execution_1_1FlattenedGraph_1_1Vertex.html", null ],
     [ "XML::XMLObject", "https://bpmn-os.github.io/bpmnpp/classXML_1_1XMLObject.html", [
       [ "XML::bpmnos::tAttribute", "classXML_1_1bpmnos_1_1tAttribute.html", [
         [ "XML::bpmnos::attribute", "classXML_1_1bpmnos_1_1attribute.html", null ]
