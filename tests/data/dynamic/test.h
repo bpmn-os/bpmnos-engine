@@ -66,3 +66,70 @@ SCENARIO( "Dynamic data provider", "[data][dynamic]" ) {
   }
 
 }
+
+SCENARIO( "Known and ready instances of a dynamic scenario", "[data][dynamic]" ) {
+  const std::string modelFile = "tests/data/dynamic/Executable_process.bpmn";
+  REQUIRE_NOTHROW( Model::Model(modelFile) );
+  GIVEN( "Instances disclosed before, after, and at the outset of their instantiation" ) {
+    std::string csv =
+      "INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE\n"
+      "Instance_1; Process_1; timestamp := 15; 5\n"
+      "Instance_2; Process_1; timestamp := 5; 10\n"
+      "Instance_3; Process_1; timestamp := 20; 0\n"
+    ;
+    Model::DynamicDataProvider dataProvider(modelFile, csv);
+    auto scenario = dataProvider.createScenario();
+
+    auto instantiationOf = [&scenario](BPMNOS::number instanceId, BPMNOS::number t) {
+      for ( auto& instantiation : scenario->getCurrentInstantiations(t) ) {
+        if ( std::get<2>(instantiation)[Model::ExtensionElements::Index::Instance].value() == instanceId ) {
+          return std::optional(instantiation);
+        }
+      }
+      return std::optional<std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values>>();
+    };
+
+    WHEN( "The known instances are queried at every instant of a run starting at time 3" ) {
+      std::map<BPMNOS::number, BPMNOS::number> reported; // instance -> time at which it is reported
+      bool reportedTwice = false;
+      auto previous = std::numeric_limits<BPMNOS::number>::lowest();
+      for ( BPMNOS::number t = 3; t <= 30; t = t + 1 ) {
+        for ( auto& [process,status,data] : scenario->getKnownInstantiations(previous, t) ) {
+          auto instanceId = data[Model::ExtensionElements::Index::Instance].value();
+          reportedTwice = reportedTwice || reported.contains(instanceId);
+          reported[instanceId] = t;
+        }
+        previous = t;
+      }
+      THEN( "Every instance is reported exactly once, at its disclosure or by the first call" ) {
+        REQUIRE( !reportedTwice );
+        REQUIRE( reported.size() == 3 );
+        REQUIRE( reported.at(BPMNOS::to_number(std::string("Instance_1"),STRING)) == 5 );
+        REQUIRE( reported.at(BPMNOS::to_number(std::string("Instance_2"),STRING)) == 10 );
+        REQUIRE( reported.at(BPMNOS::to_number(std::string("Instance_3"),STRING)) == 3 );
+      }
+    }
+
+    WHEN( "The ready status is queried" ) {
+      THEN( "It is absent before the effective instantiation time" ) {
+        REQUIRE( !scenario->getProcessReadyStatus(BPMNOS::to_number(std::string("Instance_1"),STRING), 14).has_value() );
+        REQUIRE( !scenario->getProcessReadyStatus(BPMNOS::to_number(std::string("Instance_2"),STRING), 9).has_value() );
+        REQUIRE( !scenario->getProcessReadyStatus(BPMNOS::to_number(std::string("Instance_3"),STRING), 19).has_value() );
+      }
+      THEN( "It equals the instantiation at the effective instantiation time" ) {
+        for ( auto [name, t] : std::vector< std::pair<std::string, int> >{ {"Instance_1", 15}, {"Instance_2", 10}, {"Instance_3", 20} } ) {
+          auto instanceId = BPMNOS::to_number(name,STRING);
+          auto instantiation = instantiationOf(instanceId, t);
+          REQUIRE( instantiation.has_value() );
+          auto& [process,status,data] = instantiation.value();
+          auto readyStatus = scenario->getProcessReadyStatus(instanceId, t);
+          REQUIRE( readyStatus.has_value() );
+          REQUIRE( readyStatus.value() == status );
+          auto readyData = scenario->getData(instanceId, process, t);
+          REQUIRE( readyData.has_value() );
+          REQUIRE( readyData.value() == data );
+        }
+      }
+    }
+  }
+}

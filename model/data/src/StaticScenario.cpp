@@ -2,6 +2,7 @@
 #include "model/utility/src/CollectionRegistry.h"
 #include "model/utility/src/StringRegistry.h"
 #include "model/bpmnos/src/extensionElements/ExtensionElements.h"
+#include <limits>
 
 using namespace BPMNOS::Model;
 
@@ -55,6 +56,26 @@ std::vector< std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values> > 
     }
   }
   return result;
+}
+
+std::vector< std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values> > StaticScenario::getKnownInstantiations(const BPMNOS::number previous, const BPMNOS::number currentTime) const {
+  std::vector< std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values> > result;
+  if ( previous != std::numeric_limits<BPMNOS::number>::lowest() ) {
+    // all instances are known from the outset and are reported by the first call
+    return result;
+  }
+  for ( auto& [id, instance] : instances ) {
+    result.push_back({instance.process, getKnownInitialStatus(&instance, currentTime), getKnownInitialData(&instance, currentTime)});
+  }
+  return result;
+}
+
+std::optional<BPMNOS::Values> StaticScenario::getProcessReadyStatus(const BPMNOS::number instanceId, const BPMNOS::number currentTime) const {
+  auto& instance = instances.at((size_t)instanceId);
+  if ( currentTime < instance.instantiationTime ) {
+    return std::nullopt;
+  }
+  return getKnownInitialStatus(&instance, currentTime);
 }
 
 BPMNOS::Values StaticScenario::getKnownInitialStatus(const Scenario::InstanceData* instance, const BPMNOS::number currentTime) const {

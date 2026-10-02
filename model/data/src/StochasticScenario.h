@@ -111,6 +111,8 @@ public:
   bool isCompleted(const BPMNOS::number currentTime) const override;
 
   std::vector<std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values>> getCurrentInstantiations(const BPMNOS::number currentTime) const override;
+  std::vector<std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values>> getKnownInstantiations(const BPMNOS::number previous, const BPMNOS::number currentTime) const override;
+  std::optional<BPMNOS::Values> getProcessReadyStatus(const BPMNOS::number instanceId, const BPMNOS::number currentTime) const override;
 
   std::vector<const InstanceData*> getCreatedInstances(const BPMNOS::number currentTime) const override;
   std::vector<const InstanceData*> getInstances(const BPMNOS::number currentTime) const override;

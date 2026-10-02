@@ -246,3 +246,66 @@ SCENARIO( "An observed scenario fed from a simulated world", "[data][observed]" 
     }
   }
 }
+
+SCENARIO( "Known and ready instances of an observed scenario", "[data][observed]" ) {
+  const std::string modelFile = "tests/data/dynamic/Executable_process.bpmn";
+  REQUIRE_NOTHROW( Model::Model(modelFile) );
+  GIVEN( "Two observed instantiations" ) {
+    Model::Model model(modelFile);
+    Model::ObservedScenario scenario(&model, {});
+    auto process = model.processes.front().get();
+    auto instanceId1 = BPMNOS::to_number(std::string("Instance_1"),STRING);
+    auto instanceId2 = BPMNOS::to_number(std::string("Instance_2"),STRING);
+    // the values of the process are observed together with the instantiation, the data of an observed
+    // instance being disclosed only once every data attribute has been observed
+    auto extensionElements = process->extensionElements->as<Model::ExtensionElements>();
+    for ( auto [instanceId, instantiationTime] : std::vector< std::pair<BPMNOS::number, int> >{ {instanceId1, 7}, {instanceId2, 12} } ) {
+      scenario.observeInstantiation(process, instanceId, instantiationTime);
+      for ( auto& attribute : extensionElements->data ) {
+        bool isInstance = ( attribute.get() == extensionElements->data[Model::ExtensionElements::Index::Instance].get() );
+        scenario.observeValue(instanceId, attribute.get(), isInstance ? std::optional<BPMNOS::number>(instanceId) : std::nullopt);
+      }
+      scenario.observeValue(instanceId, extensionElements->attributes[Model::ExtensionElements::Index::Timestamp].get(), BPMNOS::number(instantiationTime));
+    }
+
+    WHEN( "The known instances are queried at every instant of a run starting at time 0" ) {
+      std::map<BPMNOS::number, BPMNOS::number> reported; // instance -> time at which it is reported
+      bool reportedTwice = false;
+      auto previous = std::numeric_limits<BPMNOS::number>::lowest();
+      for ( BPMNOS::number t = 0; t <= 20; t = t + 1 ) {
+        for ( auto& [knownProcess,status,data] : scenario.getKnownInstantiations(previous, t) ) {
+          auto instanceId = data[Model::ExtensionElements::Index::Instance].value();
+          reportedTwice = reportedTwice || reported.contains(instanceId);
+          reported[instanceId] = t;
+        }
+        previous = t;
+      }
+      THEN( "Every instance is reported exactly once, at its instantiation" ) {
+        REQUIRE( !reportedTwice );
+        REQUIRE( reported.size() == 2 );
+        REQUIRE( reported.at(instanceId1) == 7 );
+        REQUIRE( reported.at(instanceId2) == 12 );
+      }
+    }
+
+    WHEN( "The ready status is queried" ) {
+      THEN( "It is absent before the instantiation time" ) {
+        REQUIRE( !scenario.getProcessReadyStatus(instanceId1, 6).has_value() );
+        REQUIRE( !scenario.getProcessReadyStatus(instanceId2, 11).has_value() );
+      }
+      THEN( "It equals the instantiation at the instantiation time" ) {
+        for ( auto [instanceId, t] : std::vector< std::pair<BPMNOS::number, int> >{ {instanceId1, 7}, {instanceId2, 12} } ) {
+          auto instantiations = scenario.getCurrentInstantiations(t);
+          REQUIRE( instantiations.size() == 1 );
+          auto& [instantiatedProcess,status,data] = instantiations.front();
+          auto readyStatus = scenario.getProcessReadyStatus(instanceId, t);
+          REQUIRE( readyStatus.has_value() );
+          REQUIRE( readyStatus.value() == status );
+          auto readyData = scenario.getData(instanceId, instantiatedProcess, t);
+          REQUIRE( readyData.has_value() );
+          REQUIRE( readyData.value() == data );
+        }
+      }
+    }
+  }
+}

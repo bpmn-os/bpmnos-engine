@@ -6,6 +6,7 @@
 #include <cmath>
 #include <functional>
 #include <stdexcept>
+#include <limits>
 
 using namespace BPMNOS::Model;
 
@@ -366,6 +367,42 @@ std::vector<std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values>> St
     }
   }
   return result;
+}
+
+std::vector< std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values> > StochasticScenario::getKnownInstantiations(const BPMNOS::number previous, const BPMNOS::number currentTime) const {
+  std::vector< std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values> > result;
+  for ( auto& [id, instance] : instances ) {
+    // Instance is known when process disclosure time is reached
+    BPMNOS::number processDisclosure = 0;
+    if ( disclosureTimes.contains(instance.id) && disclosureTimes.at(instance.id).contains(instance.process) ) {
+      processDisclosure = disclosureTimes.at(instance.id).at(instance.process);
+    }
+    if (
+      processDisclosure <= currentTime &&
+      ( previous == std::numeric_limits<BPMNOS::number>::lowest() || processDisclosure > previous )
+    ) {
+      result.push_back({instance.process, getKnownInitialStatus(&instance, currentTime), getKnownInitialData(&instance, currentTime)});
+    }
+  }
+  return result;
+}
+
+std::optional<BPMNOS::Values> StochasticScenario::getProcessReadyStatus(const BPMNOS::number instanceId, const BPMNOS::number currentTime) const {
+  auto& instance = instances.at((size_t)instanceId);
+  // Effective instantiation time is max(instantiationTime, processDisclosure).
+  BPMNOS::number effectiveInstantiationTime = instance.instantiationTime;
+  if ( disclosureTimes.contains(instance.id) && disclosureTimes.at(instance.id).contains(instance.process) ) {
+    effectiveInstantiationTime = std::max(effectiveInstantiationTime, disclosureTimes.at(instance.id).at(instance.process));
+  }
+  if ( currentTime < effectiveInstantiationTime ) {
+    return std::nullopt;
+  }
+  auto status = getKnownInitialStatus(&instance, currentTime);
+  // If instantiation was delayed due to disclosure, the timestamp reflects the actual instantiation time
+  if ( effectiveInstantiationTime > instance.instantiationTime ) {
+    status[ExtensionElements::Index::Timestamp] = effectiveInstantiationTime;
+  }
+  return status;
 }
 
 BPMNOS::Values StochasticScenario::getKnownInitialStatus(const Scenario::InstanceData* instance, const BPMNOS::number currentTime) const {

@@ -52,6 +52,31 @@ public:
   virtual std::vector< std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values> > getCurrentInstantiations(const BPMNOS::number currentTime) const = 0;
 
   /**
+   * @brief Method returning the process, status and data of all instances becoming known.
+   *
+   * An instance becomes known at the time at which the scenario makes it known. The method returns every
+   * instance whose known time lies after @p previous and not after @p currentTime and, if @p previous is
+   * the lowest representable value, every instance whose known time is not after @p currentTime. Status
+   * and data are given as far as they are disclosed at @p currentTime.
+   *
+   * @param previous The time up to which instances have been reported before.
+   * @param currentTime The current time.
+   */
+  virtual std::vector< std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values> > getKnownInstantiations(const BPMNOS::number previous, const BPMNOS::number currentTime) const = 0;
+
+  /**
+   * @brief Method returning the status of the process of an instance once it is ready to start.
+   *
+   * The status is returned once @p currentTime has reached the effective instantiation time of the
+   * instance, and std::nullopt before. If the start is delayed beyond the instantiation time by the
+   * disclosure of the process data, the timestamp is the effective instantiation time.
+   *
+   * @param instanceId The instance identifier.
+   * @param currentTime The current time.
+   */
+  virtual std::optional<BPMNOS::Values> getProcessReadyStatus(const BPMNOS::number instanceId, const BPMNOS::number currentTime) const = 0;
+
+  /**
    * @brief Method returning a vector of all instances that have been created until the given time.
    */
   virtual std::vector< const InstanceData* > getCreatedInstances(const BPMNOS::number currentTime) const = 0;
@@ -228,14 +253,16 @@ protected:
   /**
    * @brief Method returning the initial status attributes for process instantiation.
    *
-   * Used internally by getCurrentInstantiations to get process-level status attributes.
+   * Used internally by getCurrentInstantiations, getKnownInstantiations and getProcessReadyStatus to get
+   * process-level status attributes.
    */
   virtual Values getKnownInitialStatus(const InstanceData*, const BPMNOS::number time) const = 0;
 
   /**
    * @brief Method returning the initial data attributes for process instantiation.
    *
-   * Used internally by getCurrentInstantiations to get process-level data attributes.
+   * Used internally by getCurrentInstantiations and getKnownInstantiations to get process-level data
+   * attributes.
    */
   virtual Values getKnownInitialData(const InstanceData*, const BPMNOS::number time) const = 0;
 

@@ -62,6 +62,28 @@ std::vector< std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values> > 
   return result;
 }
 
+std::vector< std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values> > ObservedScenario::getKnownInstantiations(const BPMNOS::number previous, const BPMNOS::number currentTime) const {
+  std::vector< std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values> > result;
+  for ( auto& [id, instance] : instances ) {
+    // Nothing is known beyond what has been observed, so an instance is known when it is created
+    if (
+      instance.instantiationTime <= currentTime &&
+      ( previous == std::numeric_limits<BPMNOS::number>::lowest() || instance.instantiationTime > previous )
+    ) {
+      result.push_back({instance.process, getKnownInitialStatus(&instance, currentTime), getKnownInitialData(&instance, currentTime)});
+    }
+  }
+  return result;
+}
+
+std::optional<BPMNOS::Values> ObservedScenario::getProcessReadyStatus(const BPMNOS::number instanceId, const BPMNOS::number currentTime) const {
+  auto& instance = instances.at((size_t)instanceId);
+  if ( currentTime < instance.instantiationTime ) {
+    return std::nullopt;
+  }
+  return getKnownInitialStatus(&instance, currentTime);
+}
+
 BPMNOS::Values ObservedScenario::getKnownInitialStatus(const Scenario::InstanceData* instance, const BPMNOS::number currentTime) const {
   BPMNOS::Values result;
   for ( auto& attribute : instance->process->extensionElements->as<const ExtensionElements>()->attributes ) {

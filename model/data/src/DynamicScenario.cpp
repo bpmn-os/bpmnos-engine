@@ -2,6 +2,7 @@
 #include "model/utility/src/CollectionRegistry.h"
 #include "model/utility/src/StringRegistry.h"
 #include "model/bpmnos/src/extensionElements/ExtensionElements.h"
+#include <limits>
 
 using namespace BPMNOS::Model;
 
@@ -77,6 +78,42 @@ std::vector< std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values> > 
     }
   }
   return result;
+}
+
+std::vector< std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values> > DynamicScenario::getKnownInstantiations(const BPMNOS::number previous, const BPMNOS::number currentTime) const {
+  std::vector< std::tuple<const BPMN::Process*, BPMNOS::Values, BPMNOS::Values> > result;
+  for ( auto& [id, instance] : instances ) {
+    // Instance is known when process disclosure time is reached
+    BPMNOS::number processDisclosure = 0;
+    if ( disclosure.contains(instance.id) && disclosure.at(instance.id).contains(instance.process) ) {
+      processDisclosure = disclosure.at(instance.id).at(instance.process);
+    }
+    if (
+      processDisclosure <= currentTime &&
+      ( previous == std::numeric_limits<BPMNOS::number>::lowest() || processDisclosure > previous )
+    ) {
+      result.push_back({instance.process, getKnownInitialStatus(&instance, currentTime), getKnownInitialData(&instance, currentTime)});
+    }
+  }
+  return result;
+}
+
+std::optional<BPMNOS::Values> DynamicScenario::getProcessReadyStatus(const BPMNOS::number instanceId, const BPMNOS::number currentTime) const {
+  auto& instance = instances.at((size_t)instanceId);
+  // Effective instantiation time is max(instantiationTime, processDisclosure).
+  BPMNOS::number effectiveInstantiationTime = instance.instantiationTime;
+  if ( disclosure.contains(instance.id) && disclosure.at(instance.id).contains(instance.process) ) {
+    effectiveInstantiationTime = std::max(effectiveInstantiationTime, disclosure.at(instance.id).at(instance.process));
+  }
+  if ( currentTime < effectiveInstantiationTime ) {
+    return std::nullopt;
+  }
+  auto status = getKnownInitialStatus(&instance, currentTime);
+  // If instantiation was delayed due to disclosure, the timestamp reflects the actual instantiation time
+  if ( effectiveInstantiationTime > instance.instantiationTime ) {
+    status[ExtensionElements::Index::Timestamp] = effectiveInstantiationTime;
+  }
+  return status;
 }
 
 BPMNOS::Values DynamicScenario::getKnownInitialStatus(const Scenario::InstanceData* instance, const BPMNOS::number currentTime) const {

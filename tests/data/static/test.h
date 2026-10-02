@@ -165,3 +165,55 @@ SCENARIO( "Trivial executable process", "[data][static]" ) {
     }
   }
 }
+
+SCENARIO( "Known and ready instances of a static scenario", "[data][static]" ) {
+  const std::string modelFile = "tests/data/static/Executable_process.bpmn";
+  REQUIRE_NOTHROW( Model::Model(modelFile) );
+  GIVEN( "Two instances with different instantiation times" ) {
+    std::string csv =
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1; timestamp := 0\n"
+      "Instance_2; Process_1; timestamp := 42\n"
+    ;
+    Model::StaticDataProvider dataProvider(modelFile,csv);
+    auto scenario = dataProvider.createScenario();
+
+    WHEN( "The known instances are queried at every instant of a run starting at time 0" ) {
+      std::map<BPMNOS::number, BPMNOS::number> reported; // instance -> time at which it is reported
+      bool reportedTwice = false;
+      auto previous = std::numeric_limits<BPMNOS::number>::lowest();
+      for ( BPMNOS::number t = 0; t <= 50; t = t + 1 ) {
+        for ( auto& [process,status,data] : scenario->getKnownInstantiations(previous, t) ) {
+          auto instanceId = data[Model::ExtensionElements::Index::Instance].value();
+          reportedTwice = reportedTwice || reported.contains(instanceId);
+          reported[instanceId] = t;
+        }
+        previous = t;
+      }
+      THEN( "Every instance is reported exactly once, by the first call" ) {
+        REQUIRE( !reportedTwice );
+        REQUIRE( reported.size() == 2 );
+        REQUIRE( reported.at(BPMNOS::to_number(std::string("Instance_1"),STRING)) == 0 );
+        REQUIRE( reported.at(BPMNOS::to_number(std::string("Instance_2"),STRING)) == 0 );
+      }
+    }
+
+    WHEN( "The ready status is queried" ) {
+      auto instanceId = BPMNOS::to_number(std::string("Instance_2"),STRING);
+      THEN( "It is absent before the instantiation time" ) {
+        REQUIRE( !scenario->getProcessReadyStatus(instanceId, 41).has_value() );
+      }
+      THEN( "It equals the instantiation at the instantiation time" ) {
+        auto instantiations = scenario->getCurrentInstantiations(42);
+        REQUIRE( instantiations.size() == 1 );
+        auto& [process,status,data] = instantiations.front();
+        auto readyStatus = scenario->getProcessReadyStatus(instanceId, 42);
+        REQUIRE( readyStatus.has_value() );
+        REQUIRE( readyStatus.value() == status );
+        auto readyData = scenario->getData(instanceId, process, 42);
+        REQUIRE( readyData.has_value() );
+        REQUIRE( readyData.value() == data );
+      }
+    }
+  }
+}
