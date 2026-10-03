@@ -1596,7 +1596,7 @@ void Token::sendMessage() {
   owner->systemState->engine->notify(message.get());
 
   // instantiate the process the message triggers, if any
-  auto& processesTriggeredByMessage = systemState->scenario->getModel()->processesTriggeredByMessage;
+  auto& processesTriggeredByMessage = systemState->engine->getModel()->processesTriggeredByMessage;
   auto messageDefinition = node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->getMessageDefinition();
   if ( auto it = processesTriggeredByMessage.find(messageDefinition->name); it != processesTriggeredByMessage.end() ) {
     auto engine = const_cast<Engine*>(owner->systemState->engine);

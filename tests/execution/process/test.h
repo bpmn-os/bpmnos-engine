@@ -606,3 +606,57 @@ SCENARIO( "Executable process known before its start", "[execution][process]" ) 
     }
   }
 }
+
+SCENARIO( "Engine refusing a scenario of another model", "[execution][process]" ) {
+  const std::string modelFile = "tests/execution/process/Empty_executable_process.bpmn";
+
+  GIVEN( "Two data providers each parsing the model file" ) {
+
+    std::string csv =
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1;\n"
+    ;
+
+    Model::StaticDataProvider dataProvider(modelFile,csv);
+    Model::StaticDataProvider otherDataProvider(modelFile,csv);
+    auto scenario = dataProvider.createScenario();
+    auto otherScenario = otherDataProvider.createScenario();
+
+    WHEN( "The engine is constructed with the model of the first data provider" ) {
+      Execution::Engine engine(dataProvider.getModel());
+      Execution::TimeWarp timeHandler;
+      timeHandler.connect(&engine);
+
+      THEN( "The engine executes the model of the first data provider" ) {
+        REQUIRE( engine.getModel() == dataProvider.getModel().get() );
+      }
+      THEN( "The engine runs a scenario of the first data provider" ) {
+        REQUIRE_NOTHROW( engine.run(scenario.get()) );
+      }
+      THEN( "The engine refuses to run a scenario of the second data provider" ) {
+        REQUIRE_THROWS_AS( engine.run(otherScenario.get()), std::invalid_argument );
+      }
+      THEN( "The engine refuses to install a system state with a scenario of the second data provider" ) {
+        Execution::Engine sourceEngine(dataProvider.getModel());
+        Execution::TimeWarp sourceTimeHandler;
+        sourceTimeHandler.connect(&sourceEngine);
+        sourceEngine.run(scenario.get());
+        REQUIRE_THROWS_AS( engine.initializeSystemState(otherScenario.get(), sourceEngine.getSystemState()), std::invalid_argument );
+      }
+    }
+
+    WHEN( "The engine is constructed without a model and runs a scenario of the first data provider" ) {
+      Execution::Engine engine;
+      Execution::TimeWarp timeHandler;
+      timeHandler.connect(&engine);
+      engine.run(scenario.get());
+
+      THEN( "The engine executes the model of the first data provider" ) {
+        REQUIRE( engine.getModel() == dataProvider.getModel().get() );
+      }
+      THEN( "The engine refuses to run a scenario of the second data provider" ) {
+        REQUIRE_THROWS_AS( engine.run(otherScenario.get()), std::invalid_argument );
+      }
+    }
+  }
+}

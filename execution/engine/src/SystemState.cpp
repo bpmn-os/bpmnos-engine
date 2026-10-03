@@ -12,7 +12,7 @@ SystemState::SystemState(const Engine* engine, const BPMNOS::Model::Scenario* sc
 {
   // the values the globals are created with never pass through setValue, so the objective is seeded with
   // them here; no data update is notified, the run not having begun and no token being able to observe it
-  for ( auto& attribute : scenario->getModel()->attributes ) {
+  for ( auto& attribute : engine->getModel()->attributes ) {
     assert( attribute->category == BPMNOS::Model::Attribute::Category::GLOBAL );
     if ( attribute->weight != 0 && globals[attribute->index].has_value() ) {
       globals[BPMNOS::Model::ExtensionElements::Index::Objective].value() +=

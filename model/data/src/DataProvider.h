@@ -45,7 +45,11 @@ public:
    */
   DataProvider(std::unique_ptr<XML::XMLObject> model, std::unordered_map<std::string, std::string> lookupTables);
   virtual ~DataProvider() = 0;
-  const Model& getModel() const;
+
+  /**
+   * @brief Method returning the model, whose ownership the caller may share.
+   */
+  std::shared_ptr<const Model> getModel() const;
 
   virtual std::unique_ptr<Scenario> createScenario(unsigned int scenarioId = 0) = 0;
 
@@ -55,7 +59,7 @@ private:
   explicit DataProvider(std::unique_ptr<Model> model);
 
 protected:
-  std::unique_ptr<Model> model;  ///< Pointer to the BPMN model.
+  std::shared_ptr<const Model> model;  ///< Pointer to the BPMN model, whose ownership may be shared.
 
   DataInput attributes; ///< Map holding all attributes in the model with keys being the process (or nullptr for global attributes) and attribute id. TODO: Remove when old CSV format support is removed.
 

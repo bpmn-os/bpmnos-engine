@@ -79,8 +79,8 @@ DataProvider::DataProvider(std::unique_ptr<Model> builtModel)
 
 DataProvider::~DataProvider() {}
 
-const Model& DataProvider::getModel() const {
-  return *model;
+std::shared_ptr<const Model> DataProvider::getModel() const {
+  return model;
 }
 
 BPMN::Node* DataProvider::findNode(const std::string& nodeId) const {

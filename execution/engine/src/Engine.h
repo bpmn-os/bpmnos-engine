@@ -38,6 +38,19 @@ class Engine : public Mediator {
   friend class ConditionalEventObserver;
 //  friend void EventDispatcher::subscribe(Engine* engine);
 public:
+  /**
+   * @brief Constructs an engine executing the given model for its whole lifetime.
+   *
+   * The engine shares ownership of the model and accepts only scenarios of it.
+   */
+  Engine(std::shared_ptr<const BPMNOS::Model::Model> model);
+
+  /**
+   * @brief Constructs an engine without a model, which takes the model of the first scenario it is given.
+   *
+   * The engine then shares no ownership of the model, which must outlive it, and accepts only scenarios of
+   * that model.
+   */
   Engine();
   ~Engine();
 public:
@@ -53,6 +66,7 @@ public:
    * @param scenario The scenario to execute
    * @param startTime Time the run begins at
    * @param endTime Last time to process (engine stops when time >= endTime)
+   * @throws std::invalid_argument if the scenario is not one of the model of the engine
    */
   void run(const BPMNOS::Model::Scenario* scenario, BPMNOS::number startTime = 0, BPMNOS::number endTime = std::numeric_limits<BPMNOS::number>::max());
 
@@ -67,6 +81,7 @@ public:
    * @param startTime Time the run begins at; must not be later than the scenario's earliest instantiation
    *        time, since an instance is instantiated at the instant its instantiation time is reached and a
    *        later start would leave every earlier instance uncreated
+   * @throws std::invalid_argument if the scenario is not one of the model of the engine
    */
   void initialize(const BPMNOS::Model::Scenario* scenario, BPMNOS::number startTime = 0);
 
@@ -78,6 +93,7 @@ public:
    *
    * @param scenario The scenario to use (may be forked from the original)
    * @param foreignState The system state to copy
+   * @throws std::invalid_argument if the scenario is not one of the model of the engine
    */
   void initializeSystemState(const BPMNOS::Model::Scenario* scenario, const SystemState* foreignState);
 
@@ -133,6 +149,11 @@ public:
   void process(const ErrorEvent* event);
   void process([[maybe_unused]] const ClockTickEvent* event);
   void process([[maybe_unused]] const TerminationEvent* event);
+
+/**
+ * @brief Returns the model the engine executes, or nullptr if it has not yet been given a scenario.
+ */
+  const BPMNOS::Model::Model* getModel() const;
 
 /**
  * @brief Returns the timestamp the engine is in.
@@ -207,6 +228,13 @@ protected:
   void triggerInstanceByMessage(const BPMN::Process* process, std::weak_ptr<Message> message_ptr);
 
   void deleteInstance(StateMachine* instance); ///< Method removing completed instance
+
+  /// @brief Method taking the model of the scenario if the engine has none, and refusing a scenario of
+  /// another model.
+  void acceptScenario(const BPMNOS::Model::Scenario* scenario);
+
+  std::shared_ptr<const BPMNOS::Model::Model> sharedModel; ///< The model, if the engine shares its ownership
+  const BPMNOS::Model::Model* model = nullptr; ///< The model the engine executes
 
   std::unique_ptr<SystemState> systemState;
   ConditionalEventObserver conditionalEventObserver;

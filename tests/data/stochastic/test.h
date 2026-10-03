@@ -142,7 +142,7 @@ SCENARIO( "Stochastic data provider", "[data][stochastic]" ) {
 
       auto instance1 = instances1[0];
       auto instance2 = instances2[0];
-      auto& process = dataProvider.getModel().processes[0];
+      auto& process = dataProvider.getModel()->processes[0];
       auto activity = process->find([](BPMN::Node* n) { return n->id == "Activity_1"; });
 
       Values status = {0, 1};
@@ -173,7 +173,7 @@ SCENARIO( "Stochastic data provider", "[data][stochastic]" ) {
 
       auto instance1 = instances1[0];
       auto instance2 = instances2[0];
-      auto& process = dataProvider.getModel().processes[0];
+      auto& process = dataProvider.getModel()->processes[0];
       auto activity = process->find([](BPMN::Node* n) { return n->id == "Activity_1"; });
 
       Values status = {0, 1};
@@ -219,7 +219,7 @@ SCENARIO( "Stochastic data provider", "[data][stochastic]" ) {
       REQUIRE( instances.size() == 1 );
       auto instance = instances[0];
 
-      auto& process = dataProvider.getModel().processes[0];
+      auto& process = dataProvider.getModel()->processes[0];
       auto activity = process->find([](BPMN::Node* n) { return n->id == "Activity_1"; });
       auto task = process->find([](BPMN::Node* n) { return n->id == "Task_2"; });
       REQUIRE( activity != nullptr );
@@ -276,7 +276,7 @@ SCENARIO( "Stochastic data provider", "[data][stochastic]" ) {
       REQUIRE( instances.size() == 1 );
       auto instance = instances[0];
 
-      auto& process = dataProvider.getModel().processes[0];
+      auto& process = dataProvider.getModel()->processes[0];
       auto activity = process->find([](BPMN::Node* n) { return n->id == "Activity_1"; });
       auto task = process->find([](BPMN::Node* n) { return n->id == "Task_2"; });
 
@@ -331,9 +331,9 @@ SCENARIO( "Stochastic scenario copy constructor", "[data][stochastic][copy]" ) {
       REQUIRE( instances.size() == 1 );
       auto instance = instances[0];
       auto originalTimestamp = scenario->getValue(instance->id,
-        dataProvider.getModel().processes[0]->extensionElements->as<Model::ExtensionElements>()->attributes[0].get(), 10);
+        dataProvider.getModel()->processes[0]->extensionElements->as<Model::ExtensionElements>()->attributes[0].get(), 10);
       auto originalX = scenario->getValue(instance->id,
-        dataProvider.getModel().processes[0]->extensionElements->as<Model::ExtensionElements>()->attributes[1].get(), 10);
+        dataProvider.getModel()->processes[0]->extensionElements->as<Model::ExtensionElements>()->attributes[1].get(), 10);
 
       // Copy at spawnTime = 11, taking the first realization other than this scenario's own
       auto copy = scenario->clone(11, 0);
@@ -345,9 +345,9 @@ SCENARIO( "Stochastic scenario copy constructor", "[data][stochastic][copy]" ) {
         auto copiedInstance = copiedInstances[0];
 
         auto copiedTimestamp = copiedScenario.getValue(copiedInstance->id,
-          dataProvider.getModel().processes[0]->extensionElements->as<Model::ExtensionElements>()->attributes[0].get(), 10);
+          dataProvider.getModel()->processes[0]->extensionElements->as<Model::ExtensionElements>()->attributes[0].get(), 10);
         auto copiedX = copiedScenario.getValue(copiedInstance->id,
-          dataProvider.getModel().processes[0]->extensionElements->as<Model::ExtensionElements>()->attributes[1].get(), 10);
+          dataProvider.getModel()->processes[0]->extensionElements->as<Model::ExtensionElements>()->attributes[1].get(), 10);
 
         REQUIRE( originalTimestamp.has_value() );
         REQUIRE( copiedTimestamp.has_value() );
@@ -360,7 +360,7 @@ SCENARIO( "Stochastic scenario copy constructor", "[data][stochastic][copy]" ) {
 
       THEN( "Future values (y) are resampled" ) {
         // y has disclosure time 15, so it should be resampled
-        auto& process = dataProvider.getModel().processes[0];
+        auto& process = dataProvider.getModel()->processes[0];
         auto activity = process->find([](BPMN::Node* n) { return n->id == "Activity_1"; });
         REQUIRE( activity != nullptr );
 
@@ -408,7 +408,7 @@ SCENARIO( "Stochastic scenario copy constructor", "[data][stochastic][copy]" ) {
         auto copiedInstance = copiedInstances[0];
 
         auto copiedX = copiedScenario.getValue(copiedInstance->id,
-          dataProvider.getModel().processes[0]->extensionElements->as<Model::ExtensionElements>()->attributes[1].get(), 0);
+          dataProvider.getModel()->processes[0]->extensionElements->as<Model::ExtensionElements>()->attributes[1].get(), 0);
         REQUIRE( copiedX.has_value() );
         REQUIRE( copiedX.value() == 42 );
       }

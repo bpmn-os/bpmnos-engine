@@ -16,6 +16,13 @@
 
 using namespace BPMNOS::Execution;
 
+Engine::Engine(std::shared_ptr<const BPMNOS::Model::Model> model)
+  : Engine()
+{
+  sharedModel = std::move(model);
+  this->model = sharedModel.get();
+}
+
 Engine::Engine()
 {
   addSubscriber(&conditionalEventObserver, Observable::Type::DataUpdate);
@@ -53,7 +60,21 @@ void Engine::processCommands() {
 }
 
 
+void Engine::acceptScenario(const BPMNOS::Model::Scenario* scenario) {
+  if ( !model ) {
+    model = scenario->getModel();
+  }
+  else if ( scenario->getModel() != model ) {
+    throw std::invalid_argument("Engine: the scenario is not one of the model of the engine");
+  }
+}
+
+const BPMNOS::Model::Model* Engine::getModel() const {
+  return model;
+}
+
 void Engine::initialize(const BPMNOS::Model::Scenario* scenario, BPMNOS::number startTime) {
+  acceptScenario(scenario);
   if ( startTime > scenario->getEarliestInstantiationTime() ) {
     throw std::logic_error("Engine: start time is later than the earliest instantiation time");
   }
@@ -84,6 +105,7 @@ void Engine::run(BPMNOS::number endTime) {
 }
 
 void Engine::initializeSystemState(const BPMNOS::Model::Scenario* scenario, const SystemState* foreignState) {
+  acceptScenario(scenario);
   // install a deep copy of the foreign state as this engine's own state; the copy already holds every
   // instance known up to its current time
   systemState = std::make_unique<SystemState>(this, scenario, foreignState);
@@ -183,7 +205,7 @@ void Engine::broadcastSignal(Signal signal) {
   waitingTokens.clear();
 
   // instantiate the process the signal triggers, if any
-  auto& processesTriggeredBySignal = systemState->scenario->getModel()->processesTriggeredBySignal;
+  auto& processesTriggeredBySignal = model->processesTriggeredBySignal;
   if ( auto it = processesTriggeredBySignal.find(signal.name); it != processesTriggeredBySignal.end() ) {
     // the instantiation is enqueued rather than performed here, so that a process throwing the signal
     // instantiating it does not recurse through the stack of the broadcast
