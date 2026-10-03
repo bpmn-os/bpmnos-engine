@@ -454,3 +454,39 @@ SCENARIO( "N-to-1 assignment", "[execution][eventsubprocess]" ) {
   }
 }
 
+
+SCENARIO( "Event subprocess with an attribute assigned by the model", "[execution][eventsubprocess]" ) {
+  const std::string modelFile = "tests/execution/eventsubprocess/Non-interrupting_escalation_with_attribute.bpmn";
+  REQUIRE_NOTHROW( Model::Model(modelFile) );
+  GIVEN( "A single instance with no input values" ) {
+
+    std::string csv =
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1;\n"
+    ;
+
+    Model::StaticDataProvider dataProvider(modelFile,csv);
+    auto scenario = dataProvider.createScenario();
+
+    WHEN( "The engine is started with a recorder" ) {
+      Execution::Engine engine;
+      Execution::InstantEntry entryHandler;
+      Execution::InstantExit exitHandler;
+      Execution::TimeWarp timeHandler;
+      entryHandler.connect(&engine);
+      exitHandler.connect(&engine);
+      timeHandler.connect(&engine);
+      Execution::Recorder recorder;
+      recorder.subscribe(&engine);
+      engine.run(scenario.get());
+
+      THEN( "The attribute takes the value the model assigns when the event subprocess is triggered" ) {
+        auto startLog = recorder.find(nlohmann::json{{"nodeId","EscalationStartEvent_1"},{"state","COMPLETED"}}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
+        REQUIRE( startLog.size() == 2 );
+        for ( auto& entry : startLog ) {
+          REQUIRE( entry["status"]["triggered"] == entry["status"]["timestamp"].get<double>() + 100 );
+        }
+      }
+    }
+  }
+}

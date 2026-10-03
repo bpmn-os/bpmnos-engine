@@ -193,6 +193,7 @@ void StochasticDataProvider::readInstances() {
 
       // Handle READY expression (valid for all Activity types)
       if (!readyExpression.empty()) {
+        rejectInternalScope(node);
         if (!node->represents<BPMN::Activity>()) {
           throw std::runtime_error("StochasticDataProvider: '" + nodeId + "' is not an activity (ready expressions are only allowed for activities)");
         }

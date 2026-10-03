@@ -154,9 +154,19 @@ void DataProvider::evaluateGlobal(const std::string& initializationString,
   globalValueMap[attribute] = convertedValue;
 }
 
+void DataProvider::rejectInternalScope(const BPMN::Node* node) {
+  // the engine creates event subprocesses and compensation activities itself, with the values the model
+  // assigns to their attributes, so the data may give them none
+  auto activity = node->represents<BPMN::Activity>();
+  if ( node->represents<BPMN::EventSubProcess>() || ( activity && activity->isForCompensation ) ) {
+    throw std::runtime_error("DataProvider: no values may be given for event subprocess or compensation activity '" + node->id + "'");
+  }
+}
+
 std::pair<const Attribute*, std::string> DataProvider::lookupAttribute(
     const BPMN::Node* node,
     const std::string& initializationString) const {
+  rejectInternalScope(node);
   auto [attributeName, expressionString] = parseInitialization(initializationString);
 
   auto extensionElements = node->extensionElements->as<ExtensionElements>();

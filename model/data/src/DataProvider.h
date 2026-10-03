@@ -85,6 +85,14 @@ protected:
       const std::string& initializationString) const;
 
   /**
+   * @brief Throw if the node is an event subprocess or a compensation activity.
+   *
+   * The engine creates such scopes itself and gives them the values the model assigns to their
+   * attributes, so the data may give them no values.
+   */
+  static void rejectInternalScope(const BPMN::Node* node);
+
+  /**
    * @brief Evaluate a global attribute initialization from CSV.
    *
    * Parses the initialization string, finds the global attribute, validates it

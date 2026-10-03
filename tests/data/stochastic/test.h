@@ -472,3 +472,39 @@ SCENARIO( "Known and ready instances of a stochastic scenario", "[data][stochast
     }
   }
 }
+
+SCENARIO( "Stochastic data for scopes created by the engine", "[data][stochastic]" ) {
+  GIVEN( "A value for an attribute of an event subprocess" ) {
+    const std::string modelFile = "tests/execution/eventsubprocess/Non-interrupting_escalation.bpmn";
+    std::string csv =
+      "INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE; READY; COMPLETION\n"
+      "Instance_1; Process_1;;;;\n"
+      "Instance_1; EventSubProcess_1; timestamp := 1;;;\n"
+    ;
+    THEN( "The data provider rejects it" ) {
+      REQUIRE_THROWS( Model::StochasticDataProvider(modelFile,csv) );
+    }
+  }
+  GIVEN( "A value for an attribute of a compensation activity" ) {
+    const std::string modelFile = "tests/execution/compensationactivity/Compensation_task.bpmn";
+    std::string csv =
+      "INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE; READY; COMPLETION\n"
+      "Instance_1; Process_1;;;;\n"
+      "Instance_1; CompensationActivity_1; timestamp := 1;;;\n"
+    ;
+    THEN( "The data provider rejects it" ) {
+      REQUIRE_THROWS( Model::StochasticDataProvider(modelFile,csv) );
+    }
+  }
+  GIVEN( "A ready expression for an event subprocess" ) {
+    const std::string modelFile = "tests/execution/eventsubprocess/Non-interrupting_escalation.bpmn";
+    std::string csv =
+      "INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE; READY; COMPLETION\n"
+      "Instance_1; Process_1;;;;\n"
+      "Instance_1; EventSubProcess_1;;; timestamp := 1;\n"
+    ;
+    THEN( "The data provider rejects it" ) {
+      REQUIRE_THROWS( Model::StochasticDataProvider(modelFile,csv) );
+    }
+  }
+}

@@ -222,3 +222,28 @@ SCENARIO( "Known and ready instances of a static scenario", "[data][static]" ) {
     }
   }
 }
+
+SCENARIO( "Static data for scopes created by the engine", "[data][static]" ) {
+  GIVEN( "A value for an attribute of an event subprocess" ) {
+    const std::string modelFile = "tests/execution/eventsubprocess/Non-interrupting_escalation.bpmn";
+    std::string csv =
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1;\n"
+      "Instance_1; EventSubProcess_1; timestamp := 1\n"
+    ;
+    THEN( "The data provider rejects it" ) {
+      REQUIRE_THROWS( Model::StaticDataProvider(modelFile,csv) );
+    }
+  }
+  GIVEN( "A value for an attribute of a compensation activity" ) {
+    const std::string modelFile = "tests/execution/compensationactivity/Compensation_task.bpmn";
+    std::string csv =
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1;\n"
+      "Instance_1; CompensationActivity_1; timestamp := 1\n"
+    ;
+    THEN( "The data provider rejects it" ) {
+      REQUIRE_THROWS( Model::StaticDataProvider(modelFile,csv) );
+    }
+  }
+}

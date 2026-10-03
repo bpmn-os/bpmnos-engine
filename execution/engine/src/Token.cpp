@@ -187,7 +187,12 @@ const BPMNOS::Model::AttributeRegistry& Token::getAttributeRegistry() const {
     return extensionElements->attributeRegistry;
   }
 
-  // return attribute registry of parent for nodes without extension elements
+  // return attribute registry of the scope containing a node without extension elements, which for the
+  // start event of an event subprocess is the event subprocess rather than the scope of the parent token
+  if ( auto extensionElements = node->parent->extensionElements->represents<const BPMNOS::Model::ExtensionElements>() ) {
+    return extensionElements->attributeRegistry;
+  }
+
   if ( !owner->parentToken ) {
     throw std::runtime_error("Token: cannot determine attribute registry");
   }
@@ -806,8 +811,13 @@ void Token::advanceToCompleted() {
     // starts, the scope being entered here
     else if ( node->represents<BPMN::UntypedStartEvent>() || node->represents<BPMN::TypedStartEvent>() ) {
       if ( node->parent->represents<BPMN::EventSubProcess>() ) {
-        // the event subprocess is instantiated here, so the objective value is updated here; a process or
-        // subprocess accounted its objective when its state machine was created
+        // the event subprocess is instantiated here, so the values the model assigns to its attributes are
+        // computed here, its data and status being internal, and the objective value is updated here; a
+        // process or subprocess accounted its objective when its state machine was created
+        if ( auto extensionElements = node->parent->extensionElements->represents<BPMNOS::Model::ExtensionElements>() ) {
+          // the timestamp of the token is kept, the event subprocess being triggered at it
+          extensionElements->computeInitialValues(status[BPMNOS::Model::ExtensionElements::Index::Timestamp].value(),status,*data,globals);
+        }
         const_cast<StateMachine*>(owner)->updateObjective();
       }
       applyOperators( node->parent->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );

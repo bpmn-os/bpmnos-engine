@@ -413,14 +413,30 @@ void StateMachine::initiateBoundaryEvent(Token* token, const BPMN::FlowNode* nod
   createdToken->advanceToEntered();
 }
 
+void StateMachine::takeTriggeringStatus(Token* eventToken, const Values& status) {
+  // the token triggering an event subprocess belongs to an enclosing scope, so the status it hands over
+  // holds values for the attributes of the enclosing scopes only, possibly followed by values of a nested
+  // scope it was raised in; the status of the start token keeps its layout, the attributes of the event
+  // subprocess remaining undefined until the model assigns values to them when it is triggered
+  auto extensionElements = eventToken->node->parent->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
+  auto ownAttributes = extensionElements ? extensionElements->attributes.size() : 0;
+  auto statusSize = eventToken->status.size();
+  eventToken->status = status;
+  eventToken->status.resize( statusSize - ownAttributes );
+  eventToken->status.resize( statusSize );
+}
+
+BPMNOS::Values StateMachine::undefinedData(const BPMN::Node* node) {
+  auto extensionElements = node->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
+  return Values( extensionElements ? extensionElements->data.size() : 0 );
+}
+
 void StateMachine::initiateEventSubprocesses(Token* token) {
 //std::cerr << "initiate " << scope->eventSubProcesses.size() << " eventSubprocesses for token at " << (token->node ? token->node->id : process->id ) << "/" << parentToken << "/" << token << " owned by " << token->owner << std::endl;
   for ( auto& eventSubProcess : scope->eventSubProcesses ) {
-    auto data = systemState->getDataAttributes(root,eventSubProcess);
-    if ( !data.has_value() ) {
-      throw std::runtime_error("StateMachine: required data at '" + eventSubProcess->id +"' not yet available" );
-    }
-    pendingEventSubProcesses.push_back(std::make_shared<StateMachine>( systemState, eventSubProcess, parentToken, std::move(data.value()) ) );
+    // the data of an event subprocess is internal: it is undefined until the model assigns values to it
+    // when the event subprocess is triggered
+    pendingEventSubProcesses.push_back(std::make_shared<StateMachine>( systemState, eventSubProcess, parentToken, undefinedData(eventSubProcess) ) );
     auto pendingEventSubProcess = pendingEventSubProcesses.back().get();
 //std::cerr << "Pending event subprocess has parent: " << pendingEventSubProcess->parentToken->jsonify().dump() << std::endl;
 
@@ -485,14 +501,13 @@ void StateMachine::createMultiInstanceActivityTokens(Token* token) {
 
     tokens.push_back( std::make_shared<Token>( token ) );
     if ( auto scope = token->node->represents<BPMN::Scope>() ) {
-      // create state machine for each multi-instance subprocess
-      auto data = systemState->getDataAttributes(root,token->node);     
-      if ( !data.has_value() ) {
-        throw std::runtime_error("StateMachine: required data at '" + token->node->id +"' not yet available" );
-      }
+      // create state machine for each multi-instance subprocess with the data the main token received with
+      // its ready event
+      assert( token->owned );
+      Values data = token->owned->ownedData;
 
       // create child state machine with disambiguated instance identifier
-      createChild( tokens.back().get(), scope, std::move(data.value()), BPMNOS::to_number(instanceId,BPMNOS::ValueType::STRING) );
+      createChild( tokens.back().get(), scope, std::move(data), BPMNOS::to_number(instanceId,BPMNOS::ValueType::STRING) );
       // ensure that data is set appropriately
       tokens.back()->data = &tokens.back()->owned->data;
 //std::cerr << "MI:" << instanceId << "/" << tokens.back()->jsonify() << std::endl;      
@@ -772,13 +787,10 @@ void StateMachine::run(Values status) {
       if ( auto startEvent = token->node->represents<BPMN::TypedStartEvent>();
         startEvent && token->node->parent->represents<BPMN::EventSubProcess>()
       ) {
-        // get new attribute values
-        auto values = systemState->getStatusAttributes( root, token->node->parent );
-        if ( !values.has_value() ) {
-          throw std::runtime_error("StateMachine: status of event subprocess '" + token->node->parent->id + "' not known at initialization");
-        }
-        
-        token->status.insert(token->status.end(), values.value().begin(), values.value().end());
+        // the status attributes of the event subprocess are internal: they are undefined until the model
+        // assigns values to them when the event subprocess is triggered
+        auto extensionElements = token->node->parent->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
+        token->status.resize( token->status.size() + ( extensionElements ? extensionElements->attributes.size() : 0 ) );
 
         if ( !startEvent->isInterrupting ) {
           // token instantiates non-interrupting event subprocess
@@ -842,12 +854,9 @@ void StateMachine::createCompensationTokenForBoundaryEvent(const BPMN::BoundaryE
 
 void StateMachine::createCompensationEventSubProcess(const BPMN::EventSubProcess* eventSubProcess, BPMNOS::Values status) {
 //std::cerr << "createCompensationEventSubProcess: " << eventSubProcess->id << "/" << scope->id << "/" << parentToken->owner->scope->id <<std::endl;
-  // create state machine for compensation event subprocess
-  auto data = systemState->getDataAttributes(root,eventSubProcess);
-  if ( !data.has_value() ) {
-    throw std::runtime_error("StateMachine: required data at '" + eventSubProcess->id +"' not yet available" );
-  }
-  compensationEventSubProcesses.push_back(std::make_shared<StateMachine>( systemState, eventSubProcess, parentToken, std::move(data.value()) ) );
+  // create state machine for compensation event subprocess, whose data is internal and undefined until the
+  // model assigns values to it when its start event completes
+  compensationEventSubProcesses.push_back(std::make_shared<StateMachine>( systemState, eventSubProcess, parentToken, undefinedData(eventSubProcess) ) );
   // create token at start event of compensation event subprocess
   std::shared_ptr<Token> compensationToken = std::make_shared<Token>(compensationEventSubProcesses.back().get(), eventSubProcess->startEvent, status );
   compensationToken->update(Token::State::BUSY);
@@ -863,11 +872,9 @@ void StateMachine::compensateActivity(Token* token) {
     token->node = compensationActivity;
     auto engine = const_cast<Engine*>(systemState->engine);
     if ( auto scope = token->node->represents<BPMN::Scope>() ) {
-      auto data = systemState->getDataAttributes(root,token->node);
-      if ( !data.has_value() ) {
-        throw std::runtime_error("StateMachine: required data at '" + token->node->id +"' not yet available" );
-      }
-      createChild( token, scope, std::move(data.value()) );
+      // the data of a compensation activity is internal: it is undefined until the model assigns values to
+      // it when the activity is entered
+      createChild( token, scope, undefinedData(scope) );
     }
     engine->commands.emplace_back(std::bind(&Token::advanceToEntered,token), token);
   }
@@ -968,7 +975,7 @@ void StateMachine::handleEscalation(Token* token) {
     // trigger event subprocess
     auto eventToken = it->get()->tokens.front().get();
 //std::cerr << "found event-subprocess catching escalation:" << eventToken << "/" << eventToken->owner << std::endl;
-    eventToken->status = token->status;
+    takeTriggeringStatus(eventToken, token->status);
     eventToken->advanceToCompleted();
 
     return;
@@ -1058,7 +1065,7 @@ void StateMachine::handleFailure(Token* token) {
     // trigger event subprocess
     auto eventToken = it->get()->tokens.front().get();
     // update status of event token with that of current token
-    eventToken->status = token->status;
+    takeTriggeringStatus(eventToken, token->status);
     // remove all tokens
     clearObsoleteTokens();
     engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,eventToken), eventToken);

@@ -32,7 +32,7 @@ declared under, together with an already parsed model. @ref BPMNOS::Model::Model
 
 A @ref BPMNOS::Model::Scenario "scenario" gives the execution engine access to the process instances of a run and to the values of their attributes. It is obtained in one of two ways.
 
-A @ref BPMNOS::Model::DataProvider "data provider" creates one from instance data supplied before the run, providing access to all known or anticipated process instances and all known or anticipated attribute values. Four are available, differing in what is known when, and are described below.
+A @ref BPMNOS::Model::DataProvider "data provider" creates one from instance data supplied before the run, providing access to all known or anticipated process instances and all known or anticipated attribute values. Four are available, differing in what is known when, and are described below. The data may give no values to the attributes of an @ref BPMN::EventSubProcess "event subprocess" or of a compensation activity: the engine creates such scopes itself and gives them the values the model assigns, and a data provider rejects a row naming such a node in its INITIALIZATION column or, for the stochastic data provider, its READY column.
 
 An @ref BPMNOS::Model::ObservedScenario "observed scenario" is created by whatever observes a world and is told what that world does while the run proceeds. Nothing is known in advance of it, and it is likewise described below.
 
@@ -284,8 +284,8 @@ If both attempt to initialize the same attribute, an error is thrown.
 
 Both READY and COMPLETION modifications are local to the activity/task scope and do not affect parent scope values.
 
-**Limitation - Event Subprocesses**:
-CSV-provided READY and COMPLETION expressions for event subprocesses are disallowed unless they produce deterministic (equal) values for all triggerings. Use model expressions for event subprocess behavior that may vary between triggerings.
+**Limitation - Event Subprocesses and Compensation Activities**:
+CSV-provided INITIALIZATION and READY expressions for an event subprocess or a compensation activity are rejected. Use model expressions for the attributes of such scopes, which are evaluated when an event subprocess is triggered or a compensation activity is entered.
 
 ### Reproducibility
 
