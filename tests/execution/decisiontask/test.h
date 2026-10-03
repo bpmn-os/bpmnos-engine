@@ -109,12 +109,12 @@ SCENARIO( "Decision task with bounds", "[execution][decisiontask]" ) {
     }
   }
 
-  GIVEN( "A stochastic instance with init, disclosure, ready, and completion" ) {
+  GIVEN( "A stochastic instance with init, disclosure, and ready" ) {
 
     std::string csv =
       "INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE; READY; COMPLETION\n"
       "Instance_1; Process_1;;;;\n"
-      "Instance_1; Activity_1; square := triangular(0,0,0); triangular(5,5,5); square := triangular(2,2,2); square := 2 * choice\n"
+      "Instance_1; Activity_1; square := triangular(0,0,0); triangular(5,5,5); square := triangular(2,2,2);\n"
     ;
 
     Model::StochasticDataProvider dataProvider(modelFile,csv);
@@ -142,11 +142,23 @@ SCENARIO( "Decision task with bounds", "[execution][decisiontask]" ) {
         REQUIRE( activityLog[0]["status"]["timestamp"] == 5 );
         REQUIRE( activityLog[0]["status"]["square"] == 2 );
       }
-      THEN( "The completion expression is applied" ) {
+      THEN( "The choice is made" ) {
         auto activityLog = recorder.find(nlohmann::json{{"nodeId","Activity_1" },{"state","COMPLETED"}});
         REQUIRE( activityLog[0]["status"]["choice"] == -1 );
-        REQUIRE( activityLog[0]["status"]["square"] == -2 );
       }
+    }
+  }
+
+  GIVEN( "A stochastic instance with a completion expression for the decision task" ) {
+
+    std::string csv =
+      "INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE; READY; COMPLETION\n"
+      "Instance_1; Process_1;;;;\n"
+      "Instance_1; Activity_1; square := triangular(0,0,0); triangular(5,5,5); square := triangular(2,2,2); square := 2 * choice\n"
+    ;
+
+    THEN( "The data provider rejects the completion expression" ) {
+      REQUIRE_THROWS( Model::StochasticDataProvider(modelFile,csv) );
     }
   }
 }

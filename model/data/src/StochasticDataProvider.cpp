@@ -166,9 +166,15 @@ void StochasticDataProvider::readInstances() {
         disclosureTimes[instanceId][process] = 0;
       }
 
-      // Handle COMPLETION expression (valid for all Task types)
+      // Handle COMPLETION expression (valid for tasks other than send, receive and decision tasks, whose
+      // completion is determined by the model)
       if (!completionExpression.empty()) {
-        if (!node->represents<BPMN::Task>()) {
+        if (
+          !node->represents<BPMN::Task>() ||
+          node->represents<BPMN::SendTask>() ||
+          node->represents<BPMN::ReceiveTask>() ||
+          node->represents<DecisionTask>()
+        ) {
           throw std::runtime_error("StochasticDataProvider: completion expressions are not allowed for node '" + nodeId + "'");
         }
 
@@ -180,15 +186,6 @@ void StochasticDataProvider::readInstances() {
         if (expression->target.has_value() &&
             expression->target.value()->category != BPMNOS::Model::Attribute::Category::STATUS) {
           throw std::runtime_error("StochasticDataProvider: completion expression for '" + nodeId + "' attempts to modify non-status attribute '" +  expression->target.value()->name + "'");
-        }
-
-        // For SendTask, ReceiveTask, DecisionTask: timestamp must not be modified (completion time is event-driven)
-        if (expression->target.has_value() &&
-            expression->target.value()->id == Keyword::Timestamp &&
-            (node->represents<BPMN::SendTask>() ||
-             node->represents<BPMN::ReceiveTask>() ||
-             node->represents<DecisionTask>())) {
-          throw std::runtime_error("StochasticDataProvider: completion expression must not modify timestamp for '" + nodeId + "'");
         }
 
         completionExpressions[instanceId][node].push_back(std::move(expression));

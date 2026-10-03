@@ -117,16 +117,6 @@ const BPMNOS::Values* Scenario::getTaskCompletionStatus(BPMNOS::number instanceI
   return it != taskCompletionStatus.end() ? &it->second : nullptr;
 }
 
-BPMNOS::Values Scenario::getTaskCompletionStatus(BPMNOS::number rootId, const BPMN::Node* task, const Values& status, const SharedValues& data, const Values& globals) const {
-  noticeCompletionPending(rootId,task,status,data,globals);
-  auto instanceId = (size_t)data[ExtensionElements::Index::Instance].get().value();
-  Values& completionStatus = taskCompletionStatus[{instanceId, task}];
-  if ( status[ExtensionElements::Index::Timestamp] != completionStatus[ExtensionElements::Index::Timestamp] ) {
-    throw std::runtime_error("Scenario: illegal change of completion time for node '" + task->id + "'");
-  }
-  return completionStatus;
-}
-
 std::optional<BPMNOS::Values> Scenario::getTaskCompletionStatus(
     BPMNOS::number instanceId,
     const BPMN::Node* task,

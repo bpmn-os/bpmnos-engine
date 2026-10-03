@@ -779,7 +779,9 @@ void Token::advanceToCompleted() {
   status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = owner->systemState->getTime();
   
   if ( node ) {
-    // operators of send task, receive task, and decision task are applied on completion
+    // the completion status of a send, receive or decision task is determined here alone and not by the
+    // scenario: a send task completes with the status it was busy with, its operators having been applied
+    // before the message was sent, and the operators of a receive or decision task are applied on completion
     if (
       node->represents<BPMN::ReceiveTask>() ||
       node->represents<BPMNOS::Model::DecisionTask>()
@@ -798,15 +800,7 @@ void Token::advanceToCompleted() {
         else {
           owner->systemState->engine->notify( DataUpdate( owner->root->instance.value(), extensionElements->dataUpdate.attributes ) );
         }
-        // get final task completion status
-        auto scenario = owner->systemState->scenario;
-        status = scenario->getTaskCompletionStatus(owner->root->instance.value(),node,status,*data,globals);
       }
-    }
-    else if ( node->represents<BPMN::SendTask>() ) {
-      // get final task completion status
-      auto scenario = owner->systemState->scenario;
-      status = scenario->getTaskCompletionStatus(owner->root->instance.value(),node,status,*data,globals);
     }
     // a start event has no operators of its own; the token at it applies the operators of the scope it
     // starts, the scope being entered here
