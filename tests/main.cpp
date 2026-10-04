@@ -62,7 +62,6 @@ using namespace BPMNOS;
 #include "data/static/test.h"
 #include "data/dynamic/test.h"
 #include "data/stochastic/test.h"
-#include "data/observed/test.h"
 /* Execution engine */
 // Process
 #include "execution/process/test.h"

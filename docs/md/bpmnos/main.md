@@ -30,11 +30,7 @@ declared under, together with an already parsed model. @ref BPMNOS::Model::Model
 
 ## Scenario
 
-A @ref BPMNOS::Model::Scenario "scenario" gives the execution engine access to the process instances of a run and to the values of their attributes. It is obtained in one of two ways.
-
-A @ref BPMNOS::Model::DataProvider "data provider" creates one from instance data supplied before the run, providing access to all known or anticipated process instances and all known or anticipated attribute values. Four are available, differing in what is known when, and are described below. The data may give no values to the attributes of an @ref BPMN::EventSubProcess "event subprocess" or of a compensation activity: the engine creates such scopes itself and gives them the values the model assigns, and a data provider rejects a row naming such a node in its INITIALIZATION column or, for the stochastic data provider, its READY column.
-
-An @ref BPMNOS::Model::ObservedScenario "observed scenario" is created by whatever observes a world and is told what that world does while the run proceeds. Nothing is known in advance of it, and it is likewise described below.
+A @ref BPMNOS::Model::Scenario "scenario" gives the execution engine access to the process instances of a run and to the values of their attributes. It is obtained from a @ref BPMNOS::Model::DataProvider "data provider", which creates one from instance data supplied before the run, providing access to all known or anticipated process instances and all known or anticipated attribute values. Four are available, differing in what is known when, and are described below. The data may give no values to the attributes of an @ref BPMN::EventSubProcess "event subprocess" or of a compensation activity: the engine creates such scopes itself and gives them the values the model assigns, and a data provider rejects a row naming such a node in its INITIALIZATION column or, for the stochastic data provider, its READY column.
 
 ## Static data provider
 
@@ -369,42 +365,3 @@ int main() {
   auto scenario = dataProvider.createScenario();
 }
 ```
-
-## Observed scenario
-
-The @ref BPMNOS::Model::ObservedScenario "observed scenario" is used where nothing is known in advance, whether the world being run against is real life or a simulation of it. It holds a log of what has been reported to it and answers every query from that log, reporting `std::nullopt` for anything not yet observed, upon which the engine waits and asks again at the next clock tick.
-
-### Reporting
-
-Whatever observes the world reports through four methods. @ref BPMNOS::Model::ObservedScenario::observeInstantiation "observeInstantiation" reports that an instance of a process was created at a given time, and must precede anything else reported about that instance. @ref BPMNOS::Model::ObservedScenario::observeValue "observeValue" reports the value of one of its attributes; a value reported as `std::nullopt` is observed to be undefined, which is not the same as not having been observed at all. @ref BPMNOS::Model::ObservedScenario::observeReadyStatus "observeReadyStatus" and @ref BPMNOS::Model::ObservedScenario::observeCompletionStatus "observeCompletionStatus" report the status an activity became ready with and the status a task completed with.
-
-A reported status is the complete status of the node, being the values of every attribute declared from the process down to the node itself, in that order. It is returned once the clock reaches the timestamp it carries, so either may be reported before it is due.
-
-The initial values of global attributes are supplied to the constructor rather than reported. Globals change thereafter through the engine, as operators modify them, and are never observed again.
-
-The completion of a send task, receive task or decision task is determined by the model rather than observed, and is neither reported nor expected.
-
-### Owning time
-
-A report has to reach the scenario before the engine asks for it, so whatever observes the world also issues the clock ticks, in place of a @ref BPMNOS::Execution::TimeWarp "time warp" or a @ref BPMNOS::Execution::Metronome "metronome". Everything the world has done by an instant is reported, and only then is the tick that advances to that instant released, so that the run never gets ahead of the world it observes. For this reason @ref BPMNOS::Model::Scenario::noticeClockTick "noticeClockTick" is not implemented.
-
-An observed scenario never reports itself complete, since a world is never exhausted, so a run against it is bounded from outside by an end time or terminated by an event. It admits no duplicate of itself either, a world not being copyable, so @ref BPMNOS::Model::Scenario::clone "clone" throws.
-
-### Usage
-
-```cpp
-#include <bpmnos-model.h>
-
-int main() {
-  auto model = std::make_unique<BPMNOS::Model::Model>("diagram.bpmn");
-  BPMNOS::Model::ObservedScenario scenario(model.get(), {});
-
-  // Whatever observes the world reports what it sees, before the engine is advanced to that instant:
-  // scenario.observeInstantiation(process, instanceId, time);
-  // scenario.observeValue(instanceId, attribute, value);
-  // scenario.observeReadyStatus(instanceId, activity, status);
-  // scenario.observeCompletionStatus(instanceId, task, status);
-}
-```
-
-@note A scenario refers to its model by pointer and does not extend its lifetime, so the model must outlive every scenario taken from it.

@@ -4,7 +4,6 @@ list(APPEND data_SOURCES
   ExpectedValueScenario.cpp
   DynamicScenario.cpp
   StochasticScenario.cpp
-  ObservedScenario.cpp
   DataProvider.cpp
   StaticDataProvider.cpp
   ExpectedValueDataProvider.cpp
@@ -18,7 +17,6 @@ list(APPEND data_HEADERS
   ExpectedValueScenario.h
   DynamicScenario.h
   StochasticScenario.h
-  ObservedScenario.h
   Input.h
   DataProvider.h
   StaticDataProvider.h
