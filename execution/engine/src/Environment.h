@@ -1,74 +1,40 @@
 #ifndef BPMNOS_Execution_Environment_H
 #define BPMNOS_Execution_Environment_H
 
-#include <bpmn++.h>
 #include "EventDispatcher.h"
 #include "Observer.h"
-#include "execution/utility/src/auto_list.h"
-#include <list>
-#include "model/utility/src/Number.h"
+#include "execution/data/src/DataProvider.h"
+#include "execution/data/src/Scenario.h"
 
 namespace BPMNOS::Execution {
-
-class Token;
 
 /**
  * @brief Class connecting a run to the scenario it executes.
  *
- * The environment observes the engine and dispatches the events the scenario supplies. It reports the
- * progress of the run to the scenario:
- * - On ClockTick: calls scenario->noticeClockTick() with the time the clock is advancing to
- * - On Token ARRIVED/CREATED at Activity: calls scenario->noticeReadyPending()
- * - On Token READY at Activity: calls scenario->noticeReady()
- * - On Token BUSY at Task: calls scenario->noticeCompletionPending()
- * - On Token COMPLETED at Task: calls scenario->noticeCompletion()
- *
- * Each notification is declared on Scenario and defaults to doing nothing, so every scenario is notified
- * and none is required to react.
- *
- * It dispatches an instantiation event for every process instance becoming known, as determined by
- * getKnownInstantiations(), before any other event, and a signal broadcast event for every signal the
- * scenario reports, as determined by getSignals(), once no other event of the environment is due at the
- * same instant. It dispatches a ready event for the token at a created
- * process instance once the scenario discloses
- * the status of the process at its instantiation time, as determined by getProcessReadyStatus() and
- * getDataAttributes(), before any ready event for an activity at the same instant, a ready event for a
- * token that has arrived at an activity once the scenario discloses the status and data the activity requires, as
- * determined by getActivityReadyStatus() and getDataAttributes(), and a completion event for a token that is busy at a task once the scenario
- * discloses its completion status, as determined by getTaskCompletionStatus(). Send, receive and
- * decision tasks are excluded, since they complete through other events.
+ * The environment observes the engine and forwards every notification it receives, including the
+ * installation of a system state, to the data provider of the scenario of the run, together with the
+ * scenario and its queue of enqueued events. It forwards every request of the engine for an event as
+ * well, and then answers it with the first enqueued event. The queue is first in, first out, and the
+ * environment never reorders it, so the events are dispatched in the order in which the data provider
+ * enqueues them. It owns the scenario of the run, which the engine hands to it whenever a run is
+ * initialised or a system state is installed.
  */
 class Environment : public EventDispatcher, public Observer {
 public:
-  Environment();
-
   void connect(Mediator* mediator) override;
   using EventDispatcher::notice;
   void notice(const Observable* observable) override;
   std::shared_ptr<Event> dispatchEvent(const SystemState* systemState) override;
 
+  /**
+   * @brief Method taking ownership of the scenario of the run, which must be set before the system state of
+   * the run is announced.
+   */
+  void setScenario(std::unique_ptr<Scenario> scenario);
+
 private:
-  std::shared_ptr<Event> dispatchInstantiationEvent(const SystemState* systemState);
-  std::shared_ptr<Event> dispatchSignalBroadcastEvent(const SystemState* systemState);
-  std::shared_ptr<Event> getReadyEvent(const Token* token, const SystemState* systemState);
-  std::shared_ptr<Event> dispatchReadyEvent(const SystemState* systemState);
-  std::shared_ptr<Event> getCompletionEvent(const Token* token, const SystemState* systemState);
-  std::shared_ptr<Event> dispatchCompletionEvent(const SystemState* systemState);
-
-  std::list<std::shared_ptr<Event>> pendingInstantiationEvents; ///< Instantiation events determined but not yet dispatched
-  BPMNOS::number previousTime; ///< Time the state held before the last clock tick, after which instances become known
-  bool instantiationsDue; ///< Whether the instances becoming known at the current time are yet to be determined
-  std::list<std::shared_ptr<Event>> pendingSignalBroadcastEvents; ///< Signal broadcast events determined but not yet dispatched
-  bool signalsDue; ///< Whether the signals raised at the current time are yet to be determined
-
-  auto_list<std::weak_ptr<Token>> processTokensAwaitingReadyEvent; ///< Tokens at created process instances, checked before those at activities
-  auto_list<std::weak_ptr<Token>> tokensAwaitingReadyEvent;
-  auto_list<std::weak_ptr<Token>, std::shared_ptr<Event>> pendingReadyEvents;
-  BPMNOS::number lastReadyCheckTime;
-
-  auto_list<std::weak_ptr<Token>> tokensAwaitingCompletionEvent;
-  auto_list<std::weak_ptr<Token>, std::shared_ptr<Event>> pendingCompletionEvents;
-  BPMNOS::number lastCompletionCheckTime;
+  std::unique_ptr<Scenario> scenario; ///< The scenario of the run
+  EventQueue enqueuedEvents; ///< Events enqueued but not yet dispatched, first in, first out
 };
 
 } // namespace BPMNOS::Execution

@@ -10,6 +10,7 @@
 #include "model/bpmnos/src/DecisionTask.h"
 #include "execution/engine/src/events/TimerEvent.h"
 #include "execution/utility/src/erase.h"
+#include "execution/data/src/LegacyDataProvider.h" // TRANSITIONAL: see the entry points taking a Model::Scenario
 #include <cassert>
 #include <limits>
 #include <stdexcept>
@@ -82,6 +83,9 @@ void Engine::initialize(const BPMNOS::Model::Scenario* scenario, BPMNOS::number 
   // create initial system state before the first instant of the run, so that the opening clock tick
   // advances time to it and time is reached the same way at the first instant as at every later one
   systemState = std::make_unique<SystemState>(this, scenario, std::numeric_limits<BPMNOS::number>::lowest());
+  // TRANSITIONAL: the scenario is wrapped here until callers pass a scenario of a data provider themselves;
+  // removed with the entry points taking a Model::Scenario
+  environment.setScenario(LegacyDataProvider::wrap(scenario));
   commands.clear();
   conditionalEventObserver.connect( systemState.get() );
   // announce the installed state so subscribers (cached candidate sources) reset for the new run
@@ -109,6 +113,9 @@ void Engine::initializeSystemState(const BPMNOS::Model::Scenario* scenario, cons
   // install a deep copy of the foreign state as this engine's own state; the copy already holds every
   // instance known up to its current time
   systemState = std::make_unique<SystemState>(this, scenario, foreignState);
+  // TRANSITIONAL: the scenario is wrapped here until callers pass a scenario of a data provider themselves;
+  // removed with the entry points taking a Model::Scenario
+  environment.setScenario(LegacyDataProvider::wrap(scenario));
   // installing a new state resets the run state and binds the conditional-event observer to it
   commands.clear();
   conditionalEventObserver.connect( systemState.get() );

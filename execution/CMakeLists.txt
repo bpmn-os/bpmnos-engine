@@ -13,6 +13,9 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${BPMNOS_LIB_DIR})
 # Get lists of all headers and sources of utilities
 include("${CMAKE_CURRENT_SOURCE_DIR}/utility/CMakeLists.txt")
 
+# Get lists of all headers and sources of the data providers
+include("${CMAKE_CURRENT_SOURCE_DIR}/data/CMakeLists.txt")
+
 # Get lists of all headers and sources of BPMN engine
 include("${CMAKE_CURRENT_SOURCE_DIR}/engine/CMakeLists.txt")
 
@@ -32,6 +35,7 @@ file(MAKE_DIRECTORY "${BPMNOS_INCLUDE_DIR}")
 
 set(ALL_HEADERS
   ${execution_utility_HEADERS}
+  ${execution_data_HEADERS}
   ${engine_HEADERS}
   ${observer_HEADERS}
   ${controller_HEADERS}
@@ -57,7 +61,7 @@ add_custom_target(execution_header ALL
   DEPENDS "${SINGLE_HEADER_PATH}"
 )
 
-add_library(bpmnos-execution STATIC ${execution_utility_SOURCES} ${engine_SOURCES} ${observer_SOURCES} ${controller_SOURCES})
+add_library(bpmnos-execution STATIC ${execution_utility_SOURCES} ${execution_data_SOURCES} ${engine_SOURCES} ${observer_SOURCES} ${controller_SOURCES})
 
 bpmnos_compile_options(bpmnos-execution)
 
