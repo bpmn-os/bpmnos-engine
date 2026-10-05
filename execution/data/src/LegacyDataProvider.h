@@ -28,7 +28,7 @@ class Token;
  * Each notification is declared on Model::Scenario and defaults to doing nothing, so every scenario is
  * notified and none is required to react.
  *
- * At every request of the engine for an event it enqueues at most one event, determined in the following
+ * Asked to dispatch an event, it enqueues at most one event, determined in the following
  * order. An instantiation event for every process instance becoming known, as determined by
  * getKnownInstantiations(), comes before any other event. A ready event for the token at a created process
  * instance follows once the scenario discloses the status of the process at its instantiation time, as
@@ -40,6 +40,11 @@ class Token;
  * tasks are excluded, since they complete through other events. A signal broadcast event for every signal
  * the scenario reports, as determined by getSignals(), comes once no other event is due at the same
  * instant.
+ *
+ * Asked to advance, it enqueues a clock tick as specified for every data provider. Asked to dispatch an
+ * event for the first time after a clock tick has been processed, it enqueues a termination event instead of anything
+ * else if the system state is no longer alive, that is, if the scenario is completed and no instance is
+ * left.
  */
 class LegacyDataProvider : public DataProvider {
 public:
@@ -66,7 +71,14 @@ public:
     auto_list<std::weak_ptr<Token>> tokensAwaitingCompletionEvent;
     auto_list<std::weak_ptr<Token>, std::shared_ptr<Event>> pendingCompletionEvents;
     BPMNOS::number lastCompletionCheckTime;
+
+    bool clockTickProcessed; ///< Whether a clock tick has been processed since events were last dispatched
   };
+
+  /**
+   * @param clockTickDuration Milliseconds of wall-clock time between two clock ticks, zero meaning none.
+   */
+  LegacyDataProvider(unsigned int clockTickDuration = 0);
 
   /**
    * @brief Method creating a scenario wrapping the given scenario, which must outlive it, together with the
@@ -74,8 +86,14 @@ public:
    */
   static std::unique_ptr<Scenario> wrap(const BPMNOS::Model::Scenario* scenario);
 
+  /**
+   * @brief Method creating a scenario of this data provider wrapping the given scenario, which must outlive
+   * it. The data provider must be held through a shared pointer.
+   */
+  std::unique_ptr<Scenario> createScenario(const BPMNOS::Model::Scenario* scenario) const;
+
   void notice(const Observable* observable, Execution::Scenario& scenario, EventQueue& queue) const override;
-  void request(const SystemState* systemState, Execution::Scenario& scenario, EventQueue& queue) const override;
+  void dispatchEvent(const SystemState* systemState, Execution::Scenario& scenario, EventQueue& queue) const override;
 
 private:
   std::shared_ptr<Event> determineEvent(const SystemState* systemState, Scenario& scenario) const;

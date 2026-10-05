@@ -7,6 +7,7 @@
 #include "execution/engine/src/events/SignalBroadcastEvent.h"
 #include "execution/engine/src/events/ReadyEvent.h"
 #include "execution/engine/src/events/CompletionEvent.h"
+#include "execution/engine/src/events/TerminationEvent.h"
 #include "model/bpmnos/src/DecisionTask.h"
 #include <cassert>
 #include <limits>
@@ -21,15 +22,33 @@ LegacyDataProvider::Scenario::Scenario(std::shared_ptr<const LegacyDataProvider>
   , signalsDue(false)
   , lastReadyCheckTime(std::numeric_limits<BPMNOS::number>::lowest())
   , lastCompletionCheckTime(std::numeric_limits<BPMNOS::number>::lowest())
+  , clockTickProcessed(false)
+{
+}
+
+LegacyDataProvider::LegacyDataProvider(unsigned int clockTickDuration)
+  : DataProvider(clockTickDuration)
 {
 }
 
 std::unique_ptr<LegacyDataProvider::Scenario> LegacyDataProvider::wrap(const BPMNOS::Model::Scenario* scenario) {
-  return std::make_unique<Scenario>(std::make_shared<const LegacyDataProvider>(), scenario);
+  return std::make_shared<const LegacyDataProvider>()->createScenario(scenario);
 }
 
-void LegacyDataProvider::request(const SystemState* systemState, Execution::Scenario& executionScenario, EventQueue& queue) const {
+std::unique_ptr<LegacyDataProvider::Scenario> LegacyDataProvider::createScenario(const BPMNOS::Model::Scenario* scenario) const {
+  return std::make_unique<Scenario>(std::static_pointer_cast<const LegacyDataProvider>(shared_from_this()), scenario);
+}
+
+void LegacyDataProvider::dispatchEvent(const SystemState* systemState, Execution::Scenario& executionScenario, EventQueue& queue) const {
   auto& record = static_cast<Scenario&>(executionScenario);
+  if ( record.clockTickProcessed ) {
+    record.clockTickProcessed = false;
+    if ( !systemState->isAlive() ) {
+      // the run ends once a clock tick leaves the scenario completed and no instance
+      queue.push_back(std::make_shared<TerminationEvent>());
+      return;
+    }
+  }
   if (auto event = determineEvent(systemState, record)) {
     queue.push_back(event);
   }
@@ -77,6 +96,8 @@ void LegacyDataProvider::notice(const Observable* observable, Execution::Scenari
       record.previousTime = clockTickEvent->systemState->getTime();
       record.instantiationsDue = true;
       record.signalsDue = true;
+      // the clock tick is announced before it is processed, so it has been processed when events are next dispatched
+      record.clockTickProcessed = true;
     }
     return;
   }

@@ -1,5 +1,6 @@
 list(APPEND execution_data_SOURCES
   Scenario.cpp
+  DataProvider.cpp
   LegacyDataProvider.cpp
 )
 

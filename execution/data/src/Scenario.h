@@ -2,6 +2,7 @@
 #define BPMNOS_Execution_Scenario_H
 
 #include <memory>
+#include <chrono>
 
 namespace BPMNOS::Execution {
 
@@ -19,6 +20,8 @@ public:
   virtual ~Scenario() = default;
 
   const std::shared_ptr<const DataProvider> dataProvider; ///< The data provider that created the scenario
+
+  std::chrono::steady_clock::time_point previousClockTick; ///< Wall-clock time at which the previous clock tick was enqueued
 protected:
   Scenario(std::shared_ptr<const DataProvider> dataProvider);
 };

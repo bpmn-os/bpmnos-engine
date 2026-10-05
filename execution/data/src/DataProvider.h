@@ -18,13 +18,27 @@ typedef std::deque< std::shared_ptr<Event> > EventQueue; ///< Events enqueued fo
  *
  * A data provider holds no state of a run: everything it records about a run is held by the scenario of
  * the run, which it is given with every call, so that one data provider serves every scenario it creates.
- * Through the environment it is notified of everything the engine announces and of every request of the
- * engine for an event, and it enqueues the events the environment then dispatches in the order in which
- * they are enqueued.
+ * Through the environment it is notified of everything the engine announces, asked for the events due at
+ * the current time, and asked to advance, and it enqueues the events the environment then dispatches in
+ * the order in which they are enqueued.
+ *
+ * A data provider decides whether time advances. When it is asked to advance, neither it nor the
+ * controller having supplied an event at the current time, the base enqueues the next clock tick. A data
+ * provider that has to keep time regardless of the controller, such as one observing the real world,
+ * enqueues its clock ticks when asked for the events due at the current time instead. With a clock
+ * tick duration of zero it does so at once; otherwise it does so once the wall clock has reached the given
+ * number of milliseconds after the previous clock tick, and supplies nothing before. A data provider never
+ * blocks, since the controller may decide while time does not advance.
  */
 class DataProvider : public std::enable_shared_from_this<DataProvider> {
 public:
+  /**
+   * @param clockTickDuration Milliseconds of wall-clock time between two clock ticks, zero meaning none.
+   */
+  DataProvider(unsigned int clockTickDuration = 0);
   virtual ~DataProvider() = default;
+
+  const unsigned int clockTickDuration; ///< Milliseconds of wall-clock time between two clock ticks
 
   /**
    * @brief Method notifying the data provider of a notification of the engine, including the
@@ -33,10 +47,18 @@ public:
   virtual void notice(const Observable* observable, Scenario& scenario, EventQueue& queue) const = 0;
 
   /**
-   * @brief Method notifying the data provider of a request of the engine for an event, before the
-   * request is answered with the first enqueued event.
+   * @brief Method enqueuing the events due at the current time, called at the beginning of every round of
+   * the engine.
    */
-  virtual void request(const SystemState* systemState, Scenario& scenario, EventQueue& queue) const = 0;
+  virtual void dispatchEvent(const SystemState* systemState, Scenario& scenario, EventQueue& queue) const = 0;
+
+  /**
+   * @brief Method letting the data provider advance, if it has not done so already, called when neither
+   * the data provider nor the controller has supplied an event at the current time.
+   *
+   * The base enqueues the next clock tick once it is due.
+   */
+  virtual void advance(const SystemState* systemState, Scenario& scenario, EventQueue& queue) const;
 };
 
 } // namespace BPMNOS::Execution

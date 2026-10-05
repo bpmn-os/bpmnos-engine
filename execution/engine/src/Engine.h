@@ -4,6 +4,7 @@
 #include <set>
 #include <vector>
 #include <list>
+#include <chrono>
 #include "Event.h"
 #include "events/TerminationEvent.h"
 #include "events/ClockTickEvent.h"
@@ -23,6 +24,7 @@
 #include "SystemState.h"
 #include "ConditionalEventObserver.h"
 #include "Environment.h"
+#include "execution/data/src/LegacyDataProvider.h"
 
 namespace BPMNOS::Execution {
 
@@ -38,6 +40,8 @@ class Engine : public Mediator {
   friend class ConditionalEventObserver;
 //  friend void EventDispatcher::subscribe(Engine* engine);
 public:
+  static constexpr std::chrono::milliseconds SLEEP{1}; ///< Pause after a round yielding no event, bounding the rate at which the engine asks in vain
+
   /**
    * @brief Constructs an engine executing the given model for its whole lifetime.
    *
@@ -58,8 +62,8 @@ public:
   /**
    * @brief Runs a scenario from the beginning.
    *
-   * Creates a fresh system state at the given start time and executes until no tokens remain,
-   * no new instantiations are pending, or the end time is exceeded. The start time must not be later
+   * Creates a fresh system state at the given start time and executes until a termination event is
+   * processed or the end time is exceeded. The start time must not be later
    * than the scenario's earliest instantiation time, since an instance is instantiated at the instant
    * its instantiation time is reached and a later start would leave every earlier instance uncreated.
    *
@@ -69,6 +73,10 @@ public:
    * @throws std::invalid_argument if the scenario is not one of the model of the engine
    */
   void run(const BPMNOS::Model::Scenario* scenario, BPMNOS::number startTime = 0, BPMNOS::number endTime = std::numeric_limits<BPMNOS::number>::max());
+
+  /// @brief TRANSITIONAL: runs a scenario of a legacy data provider, removed with the entry points taking a
+  /// Model::Scenario.
+  void run(std::unique_ptr<LegacyDataProvider::Scenario> scenario, BPMNOS::number startTime = 0, BPMNOS::number endTime = std::numeric_limits<BPMNOS::number>::max());
 
   /**
    * @brief Initializes the engine with a fresh system state and advances time to the run's first instant.
@@ -85,6 +93,10 @@ public:
    */
   void initialize(const BPMNOS::Model::Scenario* scenario, BPMNOS::number startTime = 0);
 
+  /// @brief TRANSITIONAL: initializes the engine with a scenario of a legacy data provider, removed with the
+  /// entry points taking a Model::Scenario.
+  void initialize(std::unique_ptr<LegacyDataProvider::Scenario> scenario, BPMNOS::number startTime = 0);
+
   /**
    * @brief Initializes the engine's system state with a deep copy of a foreign system state.
    *
@@ -96,6 +108,10 @@ public:
    * @throws std::invalid_argument if the scenario is not one of the model of the engine
    */
   void initializeSystemState(const BPMNOS::Model::Scenario* scenario, const SystemState* foreignState);
+
+  /// @brief TRANSITIONAL: installs a foreign system state with a scenario of a legacy data provider, removed
+  /// with the entry points taking a Model::Scenario.
+  void initializeSystemState(std::unique_ptr<LegacyDataProvider::Scenario> scenario, const SystemState* foreignState);
 
   /**
    * @brief Continues advancing the engine's existing system state.
@@ -129,10 +145,14 @@ public:
   /**
    * @brief Advance system state until next event has to be fetched.
    *
-   * Fetches a single event and advances the system state as far as possible without fetching the next event.
+   * Performs one round, asking the environment for an event, then the dispatchers of the controller, and
+   * notifying the environment if neither supplied one, and advances the system state by the event obtained
+   * as far as possible without fetching the next event. If the round yields no event, it pauses for a moment
+   * and returns without processing one.
    *
    * @param endTime Last time to process (the engine stops before a clock tick beyond it)
-   * @return True if an event was processed and the run may continue.
+   * @return False once a termination event has been processed or a clock tick beyond the end time is
+   * fetched, and true otherwise.
    */
   bool advance(BPMNOS::number endTime = std::numeric_limits<BPMNOS::number>::max());
 private:

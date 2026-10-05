@@ -11,7 +11,6 @@ void Environment::setScenario(std::unique_ptr<Scenario> scenario) {
 
 void Environment::connect(Mediator* mediator) {
   mediator->addSubscriber(this, Observable::Type::Event, Observable::Type::Token, Observable::Type::SystemState);
-  EventDispatcher::connect(mediator);
 }
 
 void Environment::notice(const Observable* observable) {
@@ -25,7 +24,17 @@ void Environment::notice(const Observable* observable) {
 
 std::shared_ptr<Event> Environment::dispatchEvent(const SystemState* systemState) {
   assert(scenario);
-  scenario->dataProvider->request(systemState, *scenario, enqueuedEvents);
+  scenario->dataProvider->dispatchEvent(systemState, *scenario, enqueuedEvents);
+  return dequeueEvent();
+}
+
+std::shared_ptr<Event> Environment::advance(const SystemState* systemState) {
+  assert(scenario);
+  scenario->dataProvider->advance(systemState, *scenario, enqueuedEvents);
+  return dequeueEvent();
+}
+
+std::shared_ptr<Event> Environment::dequeueEvent() {
   if (enqueuedEvents.empty()) {
     return nullptr;
   }

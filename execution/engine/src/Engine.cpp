@@ -14,6 +14,8 @@
 #include <cassert>
 #include <limits>
 #include <stdexcept>
+#include <thread>
+#include <chrono>
 
 using namespace BPMNOS::Execution;
 
@@ -75,6 +77,13 @@ const BPMNOS::Model::Model* Engine::getModel() const {
 }
 
 void Engine::initialize(const BPMNOS::Model::Scenario* scenario, BPMNOS::number startTime) {
+  // TRANSITIONAL: the scenario is wrapped here until callers pass a scenario of a data provider themselves;
+  // removed with the entry points taking a Model::Scenario
+  initialize(LegacyDataProvider::wrap(scenario), startTime);
+}
+
+void Engine::initialize(std::unique_ptr<LegacyDataProvider::Scenario> legacyScenario, BPMNOS::number startTime) {
+  auto scenario = legacyScenario->scenario;
   acceptScenario(scenario);
   if ( startTime > scenario->getEarliestInstantiationTime() ) {
     throw std::logic_error("Engine: start time is later than the earliest instantiation time");
@@ -83,9 +92,7 @@ void Engine::initialize(const BPMNOS::Model::Scenario* scenario, BPMNOS::number 
   // create initial system state before the first instant of the run, so that the opening clock tick
   // advances time to it and time is reached the same way at the first instant as at every later one
   systemState = std::make_unique<SystemState>(this, scenario, std::numeric_limits<BPMNOS::number>::lowest());
-  // TRANSITIONAL: the scenario is wrapped here until callers pass a scenario of a data provider themselves;
-  // removed with the entry points taking a Model::Scenario
-  environment.setScenario(LegacyDataProvider::wrap(scenario));
+  environment.setScenario(std::move(legacyScenario));
   commands.clear();
   conditionalEventObserver.connect( systemState.get() );
   // announce the installed state so subscribers (cached candidate sources) reset for the new run
@@ -103,19 +110,29 @@ void Engine::run(const BPMNOS::Model::Scenario* scenario, BPMNOS::number startTi
   run(endTime);
 }
 
+void Engine::run(std::unique_ptr<LegacyDataProvider::Scenario> scenario, BPMNOS::number startTime, BPMNOS::number endTime) {
+  initialize(std::move(scenario), startTime);
+  run(endTime);
+}
+
 void Engine::run(BPMNOS::number endTime) {
   // advance all tokens in system state (state setup is done where the state is installed)
   while ( advance(endTime) ) {}
 }
 
 void Engine::initializeSystemState(const BPMNOS::Model::Scenario* scenario, const SystemState* foreignState) {
+  // TRANSITIONAL: the scenario is wrapped here until callers pass a scenario of a data provider themselves;
+  // removed with the entry points taking a Model::Scenario
+  initializeSystemState(LegacyDataProvider::wrap(scenario), foreignState);
+}
+
+void Engine::initializeSystemState(std::unique_ptr<LegacyDataProvider::Scenario> legacyScenario, const SystemState* foreignState) {
+  auto scenario = legacyScenario->scenario;
   acceptScenario(scenario);
   // install a deep copy of the foreign state as this engine's own state; the copy already holds every
   // instance known up to its current time
   systemState = std::make_unique<SystemState>(this, scenario, foreignState);
-  // TRANSITIONAL: the scenario is wrapped here until callers pass a scenario of a data provider themselves;
-  // removed with the entry points taking a Model::Scenario
-  environment.setScenario(LegacyDataProvider::wrap(scenario));
+  environment.setScenario(std::move(legacyScenario));
   // installing a new state resets the run state and binds the conditional-event observer to it
   commands.clear();
   conditionalEventObserver.connect( systemState.get() );
@@ -161,11 +178,20 @@ bool Engine::advance(BPMNOS::number endTime) {
   // every enqueued command is executed by whoever enqueued it, so none is outstanding here
   assert(commands.empty());
 
-  // fetch and process a single event
-  auto event = fetchEvent(systemState.get());
+  // a round asks the environment for an event due at the current time, then the dispatchers of the
+  // controller, and, if neither supplies one, asks the environment to advance
+  auto event = environment.dispatchEvent(systemState.get());
   if ( !event ) {
-    // No event available, terminate
-    return false;
+    event = fetchEvent(systemState.get());
+  }
+  if ( !event ) {
+    event = environment.advance(systemState.get());
+  }
+  if ( !event ) {
+    // the run waits for the wall clock or for events from outside the run; pause for a moment, so that the
+    // engine does not ask in vain at full speed
+    std::this_thread::sleep_for(SLEEP);
+    return true;
   }
 
   if ( event->expired() ) {
@@ -173,18 +199,13 @@ bool Engine::advance(BPMNOS::number endTime) {
     // design must check Event::expired() before dispatching. Guard against a stale event here.
     throw std::logic_error("Engine: event fetched is expired");
   }
-  // stop before processing clock tick that would exceed endTime
+  // TRANSITIONAL: stop before processing a clock tick that would exceed endTime; removed once the end time is
+  // set on the data provider
   if ( auto clockTickEvent = event->is<ClockTickEvent>(); clockTickEvent && clockTickEvent->time > endTime ) {
     return false;
   }
   notify(event.get());
   event->processBy(this);
-
-  if ( event->is<ClockTickEvent>() ) {
-//std::cerr << "ClockTick" << std::endl;
-    // continue only while the state has something left to advance
-    return systemState->isAlive();
-  }
 
   if ( event->is<TerminationEvent>() ) {
     // the run was told to stop
