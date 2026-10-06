@@ -14,7 +14,6 @@
 
 namespace BPMNOS::Model {
 
-class Scenario;
 
 class Guidance {
 public:
@@ -30,8 +29,14 @@ public:
   
   std::set<const Attribute*> dependencies;
 
+  /**
+   * @brief Method appending the attributes of the guidance to the status and applying the operators.
+   *
+   * The attributes take only the values the model assigns to them, so each is appended undefined, or with
+   * the value of its expression if it has one.
+   */
   template <typename DataType>
-  void apply(const Scenario* scenario, BPMNOS::number currentTime, const BPMNOS::number instanceId, BPMNOS::Values& status, DataType& data, BPMNOS::Values& globals) const;
+  void apply(BPMNOS::Values& status, DataType& data, BPMNOS::Values& globals) const;
 
   template <typename DataType>
   BPMNOS::number getObjective(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const;

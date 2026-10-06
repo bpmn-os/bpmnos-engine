@@ -50,28 +50,6 @@ DataProvider::DataProvider(std::unique_ptr<Model> builtModel)
       for ( auto& attribute : extensionElements->data ) {
         attributes[process.get()].emplace(attribute->id,attribute.get());
       }
-      
-      // add all guiding attributes
-      if ( extensionElements->entryGuidance.has_value() ) {
-        for ( auto& attribute : extensionElements->entryGuidance.value()->attributes ) {
-          attributes[process.get()].emplace(attribute->id,attribute.get());
-        }
-      }
-      if ( extensionElements->exitGuidance.has_value() ) {
-        for ( auto& attribute : extensionElements->exitGuidance.value()->attributes ) {
-          attributes[process.get()].emplace(attribute->id,attribute.get());
-        }
-      }
-      if ( extensionElements->choiceGuidance.has_value() ) {
-        for ( auto& attribute : extensionElements->choiceGuidance.value()->attributes ) {
-          attributes[process.get()].emplace(attribute->id,attribute.get());
-        }
-      }
-      if ( extensionElements->messageDeliveryGuidance.has_value() ) {
-        for ( auto& attribute : extensionElements->messageDeliveryGuidance.value()->attributes ) {
-          attributes[process.get()].emplace(attribute->id,attribute.get());
-        }
-      }
     }
   }
 
@@ -171,6 +149,13 @@ std::pair<const Attribute*, std::string> DataProvider::lookupAttribute(
 
   auto extensionElements = node->extensionElements->as<ExtensionElements>();
   if (!extensionElements->attributeRegistry.contains(attributeName)) {
+    // the attributes a guidance declares take only the values the model assigns to them
+    for ( auto guidance : { &extensionElements->entryGuidance, &extensionElements->exitGuidance, &extensionElements->choiceGuidance, &extensionElements->messageDeliveryGuidance } ) {
+      if ( guidance->has_value() && guidance->value()->attributeRegistry.contains(attributeName) ) {
+        throw std::runtime_error("DataProvider: attribute '" + attributeName + "' of node '" + node->id +
+                                 "' belongs to a guidance and takes no value from the data");
+      }
+    }
     throw std::runtime_error("DataProvider: node '" + node->id +
                              "' has no attribute '" + attributeName + "'");
   }

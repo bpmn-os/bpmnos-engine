@@ -101,13 +101,6 @@ public:
   virtual std::optional<BPMNOS::number> getValue(const Scenario::InstanceData* instance, const BPMNOS::Model::Attribute* attribute, const BPMNOS::number currentTime) const = 0;
 
   /**
-   * @brief Method returning a value of an attribute.
-   *
-   * If the attribute value is not yet known, the method returns std::nullopt.
-   */
-  virtual std::optional<BPMNOS::number> getValue(const BPMNOS::number instanceId, const BPMNOS::Model::Attribute* attribute, const BPMNOS::number currentTime) const = 0;
-
-  /**
    * @brief Method returning values for all new status attributes.
    *
    * If at least one attribute value is not yet known, the method returns std::nullopt.

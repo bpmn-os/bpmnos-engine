@@ -131,10 +131,6 @@ std::optional<BPMNOS::number> DynamicScenario::getValue(const Scenario::Instance
   return std::nullopt;
 }
 
-std::optional<BPMNOS::number> DynamicScenario::getValue(const BPMNOS::number instanceId, const BPMNOS::Model::Attribute* attribute, const BPMNOS::number currentTime) const {
-  return getValue(&instances.at((size_t)instanceId), attribute, currentTime);
-}
-
 std::optional<BPMNOS::Values> DynamicScenario::getStatus(const BPMNOS::number instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const {
   auto& instance = instances.at((size_t)instanceId);
   // Check if node data is disclosed

@@ -41,4 +41,4 @@ The @ref BPMNOS::Execution::Evaluator "evaluator" is responsible for determining
 The @ref BPMNOS::Execution::LocalEvaluator "Local evaluator" makes local observations to evaluate a decision.
 
 ### Guided evaluator
-The @ref BPMNOS::Execution::GuidedEvaluator "Guided evaluator" makes local observations and includes @ref BPMNOS::Model::Guidance "guidance" provided with the model to evaluate a decision.
+The @ref BPMNOS::Execution::GuidedEvaluator "Guided evaluator" makes local observations and includes @ref BPMNOS::Model::Guidance "guidance" provided with the model to evaluate a decision. The attributes a guidance declares take only the values the model assigns to them, by expression or by the operators of the guidance, and a data provider rejects a value given for them in the data.

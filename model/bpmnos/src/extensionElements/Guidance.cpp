@@ -1,5 +1,4 @@
 #include "Guidance.h"
-#include "model/data/src/Scenario.h"
 #include "model/bpmnos/src/xml/bpmnos/tAttribute.h"
 #include "model/bpmnos/src/xml/bpmnos/tRestrictions.h"
 #include "model/bpmnos/src/xml/bpmnos/tRestriction.h"
@@ -120,10 +119,10 @@ template bool Guidance::restrictionsSatisfied<BPMNOS::Values>(const BPMNOS::Valu
 
 
 template <typename DataType>
-void Guidance::apply(const Scenario* scenario, BPMNOS::number currentTime, const BPMNOS::number instanceId, BPMNOS::Values& status, DataType& data, BPMNOS::Values& globals) const {
+void Guidance::apply(BPMNOS::Values& status, DataType& data, BPMNOS::Values& globals) const {
 
   for ( auto& attribute : attributes ) {
-    status.push_back( scenario->getValue(instanceId, attribute.get(), currentTime ) );
+    status.push_back( std::nullopt );
     if ( attribute->expression ) {
       // compute initial value
       status.back() = BPMNOS::to_value( attribute->expression->execute(status,data,globals) );
@@ -136,6 +135,6 @@ void Guidance::apply(const Scenario* scenario, BPMNOS::number currentTime, const
   }
 }
 
-template void Guidance::apply<BPMNOS::Values>(const Scenario* scenario, BPMNOS::number currentTime, const BPMNOS::number instanceId, BPMNOS::Values& status, BPMNOS::Values& data, BPMNOS::Values& globals) const;
-//template void Guidance::apply<BPMNOS::SharedValues>(const Scenario* scenario, BPMNOS::number currentTime, const BPMNOS::number instanceId, const BPMN::FlowNode* node, BPMNOS::Values& status, BPMNOS::SharedValues& data, BPMNOS::Values& globals) const;
+template void Guidance::apply<BPMNOS::Values>(BPMNOS::Values& status, BPMNOS::Values& data, BPMNOS::Values& globals) const;
+//template void Guidance::apply<BPMNOS::SharedValues>(BPMNOS::Values& status, BPMNOS::SharedValues& data, BPMNOS::Values& globals) const;
 

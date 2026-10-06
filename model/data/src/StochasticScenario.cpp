@@ -414,10 +414,6 @@ std::optional<BPMNOS::number> StochasticScenario::getValue( const Scenario::Inst
   return std::nullopt;
 }
 
-std::optional<BPMNOS::number> StochasticScenario::getValue(const BPMNOS::number instanceId, const BPMNOS::Model::Attribute* attribute, const BPMNOS::number currentTime) const {
-  return getValue(&instances.at((size_t)instanceId), attribute, currentTime);
-}
-
 std::optional<BPMNOS::Values> StochasticScenario::getStatus(const BPMNOS::number instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const {
   auto& instance = instances.at((size_t)instanceId);
   if (disclosureTimes.contains(instance.id) && disclosureTimes.at(instance.id).contains(node)) {

@@ -147,3 +147,17 @@ SCENARIO( "Dynamic data for scopes created by the engine", "[data][dynamic]" ) {
     }
   }
 }
+
+SCENARIO( "Dynamic data for guidance attributes", "[data][dynamic]" ) {
+  GIVEN( "A value for an attribute of a guidance" ) {
+    const std::string modelFile = "examples/bin_packing_problem/Bin_packing_problem.bpmn";
+    std::string csv =
+      "INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE\n"
+      "Bin1; BinProcess; capacity := 40.0;\n"
+      "Bin1; CatchRequestMessage; fill_rate := 0.5; 0\n"
+    ;
+    THEN( "The data provider rejects it" ) {
+      REQUIRE_THROWS_WITH( Model::DynamicDataProvider(modelFile,csv), Catch::Matchers::ContainsSubstring("guidance") );
+    }
+  }
+}

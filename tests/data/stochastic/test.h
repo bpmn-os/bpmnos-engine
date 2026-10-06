@@ -330,9 +330,9 @@ SCENARIO( "Stochastic scenario copy constructor", "[data][stochastic][copy]" ) {
       auto instances = scenario->getInstances(10);
       REQUIRE( instances.size() == 1 );
       auto instance = instances[0];
-      auto originalTimestamp = scenario->getValue(instance->id,
+      auto originalTimestamp = scenario->getValue(instance,
         dataProvider.getModel()->processes[0]->extensionElements->as<Model::ExtensionElements>()->attributes[0].get(), 10);
-      auto originalX = scenario->getValue(instance->id,
+      auto originalX = scenario->getValue(instance,
         dataProvider.getModel()->processes[0]->extensionElements->as<Model::ExtensionElements>()->attributes[1].get(), 10);
 
       // Copy at spawnTime = 11, taking the first realization other than this scenario's own
@@ -344,9 +344,9 @@ SCENARIO( "Stochastic scenario copy constructor", "[data][stochastic][copy]" ) {
         REQUIRE( copiedInstances.size() == 1 );
         auto copiedInstance = copiedInstances[0];
 
-        auto copiedTimestamp = copiedScenario.getValue(copiedInstance->id,
+        auto copiedTimestamp = copiedScenario.getValue(copiedInstance,
           dataProvider.getModel()->processes[0]->extensionElements->as<Model::ExtensionElements>()->attributes[0].get(), 10);
-        auto copiedX = copiedScenario.getValue(copiedInstance->id,
+        auto copiedX = copiedScenario.getValue(copiedInstance,
           dataProvider.getModel()->processes[0]->extensionElements->as<Model::ExtensionElements>()->attributes[1].get(), 10);
 
         REQUIRE( originalTimestamp.has_value() );
@@ -407,7 +407,7 @@ SCENARIO( "Stochastic scenario copy constructor", "[data][stochastic][copy]" ) {
         REQUIRE( copiedInstances.size() == 1 );
         auto copiedInstance = copiedInstances[0];
 
-        auto copiedX = copiedScenario.getValue(copiedInstance->id,
+        auto copiedX = copiedScenario.getValue(copiedInstance,
           dataProvider.getModel()->processes[0]->extensionElements->as<Model::ExtensionElements>()->attributes[1].get(), 0);
         REQUIRE( copiedX.has_value() );
         REQUIRE( copiedX.value() == 42 );
@@ -505,6 +505,20 @@ SCENARIO( "Stochastic data for scopes created by the engine", "[data][stochastic
     ;
     THEN( "The data provider rejects it" ) {
       REQUIRE_THROWS( Model::StochasticDataProvider(modelFile,csv) );
+    }
+  }
+}
+
+SCENARIO( "Stochastic data for guidance attributes", "[data][stochastic]" ) {
+  GIVEN( "A value for an attribute of a guidance" ) {
+    const std::string modelFile = "examples/bin_packing_problem/Bin_packing_problem.bpmn";
+    std::string csv =
+      "INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE; READY; COMPLETION\n"
+      "Bin1; BinProcess; capacity := 40.0;;;\n"
+      "Bin1; CatchRequestMessage; fill_rate := 0.5;;;\n"
+    ;
+    THEN( "The data provider rejects it" ) {
+      REQUIRE_THROWS_WITH( Model::StochasticDataProvider(modelFile,csv), Catch::Matchers::ContainsSubstring("guidance") );
     }
   }
 }

@@ -96,10 +96,6 @@ std::optional<BPMNOS::number> StaticScenario::getValue(const Scenario::InstanceD
   return std::nullopt;
 }
 
-std::optional<BPMNOS::number> StaticScenario::getValue(const BPMNOS::number instanceId, const BPMNOS::Model::Attribute* attribute, const BPMNOS::number currentTime) const {
-  return getValue(&instances.at((size_t)instanceId), attribute, currentTime);
-}
-
 std::optional<BPMNOS::Values> StaticScenario::getStatus(const BPMNOS::number instanceId, const BPMN::Node* node, const BPMNOS::number currentTime) const {
   auto& instance = instances.at((size_t)instanceId);
   Values result;
