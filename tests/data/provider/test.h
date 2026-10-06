@@ -6,8 +6,8 @@
  */
 class TestDataProvider : public Execution::LegacyDataProvider {
 public:
-  TestDataProvider(unsigned int clockTickDuration, std::optional<BPMNOS::number> terminationTime = std::nullopt)
-    : LegacyDataProvider(clockTickDuration)
+  TestDataProvider(const Model::Model* model, unsigned int clockTickDuration, std::optional<BPMNOS::number> terminationTime = std::nullopt)
+    : LegacyDataProvider(model, clockTickDuration)
     , terminationTime(terminationTime)
   {
   }
@@ -48,7 +48,7 @@ SCENARIO( "Clock ticks and termination supplied by the data provider", "[data][p
     referenceEngine.run(modelScenario.get());
 
     WHEN( "The engine runs without a clock dispatcher on a data provider without clock tick duration" ) {
-      auto dataProvider = std::make_shared<const TestDataProvider>(0);
+      auto dataProvider = std::make_shared<const TestDataProvider>(modelScenario->getModel(), 0);
       Execution::Engine engine;
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
@@ -70,7 +70,7 @@ SCENARIO( "Clock ticks and termination supplied by the data provider", "[data][p
 
     WHEN( "The engine runs without a clock dispatcher on a data provider with a clock tick duration" ) {
       const unsigned int clockTickDuration = 20;
-      auto dataProvider = std::make_shared<const TestDataProvider>(clockTickDuration);
+      auto dataProvider = std::make_shared<const TestDataProvider>(modelScenario->getModel(), clockTickDuration);
       Execution::Engine engine;
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
@@ -96,7 +96,7 @@ SCENARIO( "Clock ticks and termination supplied by the data provider", "[data][p
     }
 
     WHEN( "The engine runs on a data provider terminating the run at time 5" ) {
-      auto dataProvider = std::make_shared<const TestDataProvider>(0, 5);
+      auto dataProvider = std::make_shared<const TestDataProvider>(modelScenario->getModel(), 0, 5);
       Execution::Engine engine;
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
@@ -137,7 +137,7 @@ SCENARIO( "No clock tick before the first request to the controller after instal
     REQUIRE_FALSE( sourceEngine.getSystemState()->pendingEntryDecisions.empty() );
 
     WHEN( "The system state is installed in an engine without a clock dispatcher and the engine advances" ) {
-      auto dataProvider = std::make_shared<const TestDataProvider>(0);
+      auto dataProvider = std::make_shared<const TestDataProvider>(modelScenario->getModel(), 0);
       Execution::Engine engine;
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;

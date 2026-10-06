@@ -32,7 +32,8 @@ SCENARIO( "SystemState copy for simple process", "[systemstate][process]" ) {
     WHEN( "SystemState is copied" ) {
       auto scenarioCopy = dataProvider.createScenario();
       //
-      Execution::SystemState copiedState(&engine, scenarioCopy.get(), originalState);
+      auto wrappedScenarioCopy = Execution::LegacyDataProvider::wrap(scenarioCopy.get());
+      Execution::SystemState copiedState(&engine, wrappedScenarioCopy.get(), originalState);
 
       THEN( "The copy has the same number of instances" ) {
         REQUIRE( copiedState.instances.size() == originalState->instances.size() );
@@ -96,7 +97,8 @@ SCENARIO( "SystemState copy with token awaiting ready event", "[systemstate][pro
 
     WHEN( "SystemState is copied" ) {
       auto scenarioCopy = dataProvider.createScenario();
-      Execution::SystemState copiedState(&engine, scenarioCopy.get(), originalState);
+      auto wrappedScenarioCopy = Execution::LegacyDataProvider::wrap(scenarioCopy.get());
+      Execution::SystemState copiedState(&engine, wrappedScenarioCopy.get(), originalState);
 
       THEN( "The copy has the same tokens awaiting ready event" ) {
         REQUIRE( copiedState.tokensAwaitingReadyEvent.count() ==

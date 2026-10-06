@@ -35,7 +35,8 @@ SCENARIO( "SystemState copy with undelivered message", "[systemstate][message]" 
 
     WHEN( "SystemState is copied" ) {
       auto scenarioCopy = dataProvider.createScenario();
-      Execution::SystemState copiedState(&engine, scenarioCopy.get(), originalState);
+      auto wrappedScenarioCopy = Execution::LegacyDataProvider::wrap(scenarioCopy.get());
+      Execution::SystemState copiedState(&engine, wrappedScenarioCopy.get(), originalState);
 
       THEN( "The message is copied" ) {
         REQUIRE( copiedState.messages.size() == originalState->messages.size() );
@@ -99,7 +100,8 @@ SCENARIO( "SystemState copy with delivered message in inbox", "[systemstate][mes
 
     WHEN( "SystemState is copied" ) {
       auto scenarioCopy = dataProvider.createScenario();
-      Execution::SystemState copiedState(&engine, scenarioCopy.get(), originalState);
+      auto wrappedScenarioCopy = Execution::LegacyDataProvider::wrap(scenarioCopy.get());
+      Execution::SystemState copiedState(&engine, wrappedScenarioCopy.get(), originalState);
 
       THEN( "The inbox container is populated" ) {
         REQUIRE( copiedState.inbox.size() == originalState->inbox.size() );
@@ -164,7 +166,8 @@ SCENARIO( "SystemState copy with SendTask message awaiting delivery", "[systemst
 
     WHEN( "SystemState is copied" ) {
       auto scenarioCopy = dataProvider.createScenario();
-      Execution::SystemState copiedState(&engine, scenarioCopy.get(), originalState);
+      auto wrappedScenarioCopy = Execution::LegacyDataProvider::wrap(scenarioCopy.get());
+      Execution::SystemState copiedState(&engine, wrappedScenarioCopy.get(), originalState);
 
       THEN( "The message is copied" ) {
         REQUIRE( copiedState.messages.size() == originalState->messages.size() );
@@ -225,7 +228,8 @@ SCENARIO( "SystemState copy with token awaiting boundary event", "[systemstate][
 
     WHEN( "SystemState is copied" ) {
       auto scenarioCopy = dataProvider.createScenario();
-      Execution::SystemState copiedState(&engine, scenarioCopy.get(), originalState);
+      auto wrappedScenarioCopy = Execution::LegacyDataProvider::wrap(scenarioCopy.get());
+      Execution::SystemState copiedState(&engine, wrappedScenarioCopy.get(), originalState);
 
       THEN( "The copy has the same boundary event mappings" ) {
         REQUIRE( copiedState.tokenAssociatedToBoundaryEventToken.size() ==

@@ -35,7 +35,8 @@ SCENARIO( "SystemState copy with tokens at event-based gateway", "[systemstate][
 
     WHEN( "SystemState is copied" ) {
       auto scenarioCopy = dataProvider.createScenario();
-      Execution::SystemState copiedState(&engine, scenarioCopy.get(), originalState);
+      auto wrappedScenarioCopy = Execution::LegacyDataProvider::wrap(scenarioCopy.get());
+      Execution::SystemState copiedState(&engine, wrappedScenarioCopy.get(), originalState);
 
       THEN( "The copy has the same event-based gateway mappings" ) {
         REQUIRE( copiedState.tokensAwaitingEvent.size() ==

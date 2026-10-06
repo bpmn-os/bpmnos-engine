@@ -29,7 +29,8 @@ SCENARIO( "SystemState copy with token awaiting timer", "[systemstate][timer]" )
 
     WHEN( "SystemState is copied" ) {
       auto scenarioCopy = dataProvider.createScenario();
-      Execution::SystemState copiedState(&engine, scenarioCopy.get(), originalState);
+      auto wrappedScenarioCopy = Execution::LegacyDataProvider::wrap(scenarioCopy.get());
+      Execution::SystemState copiedState(&engine, wrappedScenarioCopy.get(), originalState);
 
       THEN( "The copy has the same tokens awaiting timer" ) {
         REQUIRE( copiedState.tokensAwaitingTimer.count() == originalState->tokensAwaitingTimer.count() );

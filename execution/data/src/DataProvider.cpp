@@ -5,9 +5,14 @@
 
 using namespace BPMNOS::Execution;
 
-DataProvider::DataProvider(unsigned int clockTickDuration)
+DataProvider::DataProvider(const BPMNOS::Model::Model* model, unsigned int clockTickDuration)
   : clockTickDuration(clockTickDuration)
+  , model(model)
 {
+}
+
+const BPMNOS::Model::Model* DataProvider::getModel() const {
+  return model;
 }
 
 void DataProvider::advance(const SystemState* systemState, Scenario& scenario, EventQueue& queue) const {

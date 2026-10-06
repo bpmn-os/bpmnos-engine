@@ -31,7 +31,8 @@ SCENARIO( "SystemState copy with compensation chain", "[systemstate][compensatio
 
     WHEN( "SystemState is copied" ) {
       auto scenarioCopy = dataProvider.createScenario();
-      Execution::SystemState copiedState(&engine, scenarioCopy.get(), originalState);
+      auto wrappedScenarioCopy = Execution::LegacyDataProvider::wrap(scenarioCopy.get());
+      Execution::SystemState copiedState(&engine, wrappedScenarioCopy.get(), originalState);
 
       THEN( "The copy has the same tokenAwaitingCompensationActivity mappings" ) {
         REQUIRE( copiedState.tokenAwaitingCompensationActivity.size() ==

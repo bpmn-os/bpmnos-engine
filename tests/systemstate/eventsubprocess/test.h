@@ -37,7 +37,8 @@ SCENARIO( "SystemState copy with pending event subprocess", "[systemstate][event
 
     WHEN( "SystemState is copied" ) {
       auto scenarioCopy = dataProvider.createScenario();
-      Execution::SystemState copiedState(&engine, scenarioCopy.get(), originalState);
+      auto wrappedScenarioCopy = Execution::LegacyDataProvider::wrap(scenarioCopy.get());
+      Execution::SystemState copiedState(&engine, wrappedScenarioCopy.get(), originalState);
 
       THEN( "The copy has the same pending event subprocess" ) {
         const Execution::StateMachine* copiedContext = nullptr;
@@ -104,7 +105,8 @@ SCENARIO( "SystemState copy with interrupting event subprocess", "[systemstate][
 
     WHEN( "SystemState is copied" ) {
       auto scenarioCopy = dataProvider.createScenario();
-      Execution::SystemState copiedState(&engine, scenarioCopy.get(), originalState);
+      auto wrappedScenarioCopy = Execution::LegacyDataProvider::wrap(scenarioCopy.get());
+      Execution::SystemState copiedState(&engine, wrappedScenarioCopy.get(), originalState);
 
       THEN( "The copy has the interrupting event subprocess" ) {
         const Execution::StateMachine* copiedContext = nullptr;
@@ -169,7 +171,8 @@ SCENARIO( "SystemState copy with non-interrupting event subprocess", "[systemsta
 
     WHEN( "SystemState is copied" ) {
       auto scenarioCopy = dataProvider.createScenario();
-      Execution::SystemState copiedState(&engine, scenarioCopy.get(), originalState);
+      auto wrappedScenarioCopy = Execution::LegacyDataProvider::wrap(scenarioCopy.get());
+      Execution::SystemState copiedState(&engine, wrappedScenarioCopy.get(), originalState);
 
       THEN( "The copy has the non-interrupting event subprocess" ) {
         const Execution::StateMachine* copiedContext = nullptr;

@@ -33,7 +33,8 @@ SCENARIO( "SystemState copy with parallel multi-instance activity", "[systemstat
 
     WHEN( "SystemState is copied" ) {
       auto scenarioCopy = dataProvider.createScenario();
-      Execution::SystemState copiedState(&engine, scenarioCopy.get(), originalState);
+      auto wrappedScenarioCopy = Execution::LegacyDataProvider::wrap(scenarioCopy.get());
+      Execution::SystemState copiedState(&engine, wrappedScenarioCopy.get(), originalState);
 
       THEN( "The copy has the same multi-instance mappings" ) {
         REQUIRE( copiedState.tokenAtMultiInstanceActivity.size() ==
@@ -82,7 +83,8 @@ SCENARIO( "SystemState copy with sequential multi-instance activity", "[systemst
 
     WHEN( "SystemState is copied" ) {
       auto scenarioCopy = dataProvider.createScenario();
-      Execution::SystemState copiedState(&engine, scenarioCopy.get(), originalState);
+      auto wrappedScenarioCopy = Execution::LegacyDataProvider::wrap(scenarioCopy.get());
+      Execution::SystemState copiedState(&engine, wrappedScenarioCopy.get(), originalState);
 
       THEN( "The copy has the same multi-instance mappings" ) {
         REQUIRE( copiedState.tokenAtMultiInstanceActivity.size() ==

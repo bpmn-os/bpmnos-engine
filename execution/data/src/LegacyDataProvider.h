@@ -32,10 +32,10 @@ class Token;
  * order. An instantiation event for every process instance becoming known, as determined by
  * getKnownInstantiations(), comes before any other event. A ready event for the token at a created process
  * instance follows once the scenario discloses the status of the process at its instantiation time, as
- * determined by getProcessReadyStatus() and getDataAttributes(), before any ready event for an activity at
+ * determined by getProcessReadyStatus() and getData(), before any ready event for an activity at
  * the same instant. A ready event for a token that has arrived at an activity follows once the scenario
  * discloses the status and data the activity requires, as determined by getActivityReadyStatus() and
- * getDataAttributes(), and a completion event for a token that is busy at a task once the scenario
+ * getData(), and a completion event for a token that is busy at a task once the scenario
  * discloses its completion status, as determined by getTaskCompletionStatus(). Send, receive and decision
  * tasks are excluded, since they complete through other events. A signal broadcast event for every signal
  * the scenario reports, as determined by getSignals(), comes once no other event is due at the same
@@ -76,9 +76,10 @@ public:
   };
 
   /**
+   * @param model The model of the scenarios the data provider wraps.
    * @param clockTickDuration Milliseconds of wall-clock time between two clock ticks, zero meaning none.
    */
-  LegacyDataProvider(unsigned int clockTickDuration = 0);
+  LegacyDataProvider(const BPMNOS::Model::Model* model, unsigned int clockTickDuration = 0);
 
   /**
    * @brief Method creating a scenario wrapping the given scenario, which must outlive it, together with the
@@ -92,8 +93,16 @@ public:
    */
   std::unique_ptr<Scenario> createScenario(const BPMNOS::Model::Scenario* scenario) const;
 
+  BPMNOS::Values getGlobals(const Execution::Scenario& scenario) const override;
+  BPMNOS::number getEarliestInstantiationTime(const Execution::Scenario& scenario) const override;
+
   void notice(const Observable* observable, Execution::Scenario& scenario, EventQueue& queue) const override;
   void dispatchEvent(const SystemState* systemState, Execution::Scenario& scenario, EventQueue& queue) const override;
+
+  /**
+   * @brief Method returning true while the wrapped scenario is not completed or an instance is left.
+   */
+  static bool isAlive(const SystemState* systemState, const Scenario& scenario);
 
 private:
   std::shared_ptr<Event> determineEvent(const SystemState* systemState, Scenario& scenario) const;

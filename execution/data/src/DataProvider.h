@@ -3,6 +3,8 @@
 
 #include <deque>
 #include <memory>
+#include "model/bpmnos/src/Model.h"
+#include "model/utility/src/Value.h"
 
 namespace BPMNOS::Execution {
 
@@ -33,10 +35,26 @@ typedef std::deque< std::shared_ptr<Event> > EventQueue; ///< Events enqueued fo
 class DataProvider : public std::enable_shared_from_this<DataProvider> {
 public:
   /**
+   * @param model The model the data provider is built on.
    * @param clockTickDuration Milliseconds of wall-clock time between two clock ticks, zero meaning none.
    */
-  DataProvider(unsigned int clockTickDuration = 0);
+  DataProvider(const BPMNOS::Model::Model* model, unsigned int clockTickDuration = 0);
   virtual ~DataProvider() = default;
+
+  /**
+   * @brief Method returning the model the data provider is built on.
+   */
+  const BPMNOS::Model::Model* getModel() const;
+
+  /**
+   * @brief Method returning the values of the global attributes at the beginning of a run on the scenario.
+   */
+  virtual BPMNOS::Values getGlobals(const Scenario& scenario) const = 0;
+
+  /**
+   * @brief Method returning the earliest time at which an instance of the scenario is instantiated.
+   */
+  virtual BPMNOS::number getEarliestInstantiationTime(const Scenario& scenario) const = 0;
 
   const unsigned int clockTickDuration; ///< Milliseconds of wall-clock time between two clock ticks
 
@@ -59,6 +77,9 @@ public:
    * The base enqueues the next clock tick once it is due.
    */
   virtual void advance(const SystemState* systemState, Scenario& scenario, EventQueue& queue) const;
+
+private:
+  const BPMNOS::Model::Model* model; ///< The model the data provider is built on
 };
 
 } // namespace BPMNOS::Execution

@@ -10,6 +10,7 @@
 #include "execution/engine/src/events/TerminationEvent.h"
 #include "model/bpmnos/src/DecisionTask.h"
 #include <cassert>
+#include <stdexcept>
 #include <limits>
 
 using namespace BPMNOS::Execution;
@@ -26,24 +27,42 @@ LegacyDataProvider::Scenario::Scenario(std::shared_ptr<const LegacyDataProvider>
 {
 }
 
-LegacyDataProvider::LegacyDataProvider(unsigned int clockTickDuration)
-  : DataProvider(clockTickDuration)
+LegacyDataProvider::LegacyDataProvider(const BPMNOS::Model::Model* model, unsigned int clockTickDuration)
+  : DataProvider(model, clockTickDuration)
 {
 }
 
 std::unique_ptr<LegacyDataProvider::Scenario> LegacyDataProvider::wrap(const BPMNOS::Model::Scenario* scenario) {
-  return std::make_shared<const LegacyDataProvider>()->createScenario(scenario);
+  return std::make_shared<const LegacyDataProvider>(scenario->getModel())->createScenario(scenario);
 }
 
 std::unique_ptr<LegacyDataProvider::Scenario> LegacyDataProvider::createScenario(const BPMNOS::Model::Scenario* scenario) const {
+  if ( scenario->getModel() != getModel() ) {
+    throw std::invalid_argument("LegacyDataProvider: the scenario is not one of the model of the data provider");
+  }
   return std::make_unique<Scenario>(std::static_pointer_cast<const LegacyDataProvider>(shared_from_this()), scenario);
+}
+
+BPMNOS::Values LegacyDataProvider::getGlobals(const Execution::Scenario& executionScenario) const {
+  return static_cast<const Scenario&>(executionScenario).scenario->globals;
+}
+
+BPMNOS::number LegacyDataProvider::getEarliestInstantiationTime(const Execution::Scenario& executionScenario) const {
+  return static_cast<const Scenario&>(executionScenario).scenario->getEarliestInstantiationTime();
+}
+
+bool LegacyDataProvider::isAlive(const SystemState* systemState, const Scenario& scenario) {
+  if ( !scenario.scenario->isCompleted(systemState->getTime()) ) {
+    return true;
+  }
+  return !systemState->instances.empty();
 }
 
 void LegacyDataProvider::dispatchEvent(const SystemState* systemState, Execution::Scenario& executionScenario, EventQueue& queue) const {
   auto& record = static_cast<Scenario&>(executionScenario);
   if ( record.clockTickProcessed ) {
     record.clockTickProcessed = false;
-    if ( !systemState->isAlive() ) {
+    if ( !isAlive(systemState, record) ) {
       // the run ends once a clock tick leaves the scenario completed and no instance
       queue.push_back(std::make_shared<TerminationEvent>());
       return;
@@ -230,7 +249,7 @@ std::shared_ptr<Event> LegacyDataProvider::getReadyEvent(const Token* token, con
     // the token at a process is ready once the scenario discloses the status and data of the process
     auto instanceId = token->owner->root->instance.value();
     auto status = record.scenario->getProcessReadyStatus(instanceId, systemState->getTime());
-    auto data = systemState->getDataAttributes(token->owner->root, token->owner->process);
+    auto data = record.scenario->getData(token->owner->root->instance.value(), token->owner->process, systemState->getTime());
     if (status.has_value() && data.has_value()) {
       return std::make_shared<ReadyEvent>(const_cast<Token*>(token), std::move(*status), std::move(*data));
     }
@@ -242,7 +261,7 @@ std::shared_ptr<Event> LegacyDataProvider::getReadyEvent(const Token* token, con
   auto currentTime = systemState->getTime();
 
   auto status = record.scenario->getActivityReadyStatus(rootId, instanceId, token->node, currentTime);
-  auto data = systemState->getDataAttributes(token->owner->root, token->node);
+  auto data = record.scenario->getData(token->owner->root->instance.value(), token->node, systemState->getTime());
 
   if (status.has_value() && data.has_value()) {
     return std::make_shared<ReadyEvent>(const_cast<Token*>(token), std::move(*status), std::move(*data));

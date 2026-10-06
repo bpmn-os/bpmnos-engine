@@ -251,7 +251,7 @@ protected:
 
   /// @brief Method taking the model of the scenario if the engine has none, and refusing a scenario of
   /// another model.
-  void acceptScenario(const BPMNOS::Model::Scenario* scenario);
+  void acceptScenario(const Scenario* scenario);
 
   std::shared_ptr<const BPMNOS::Model::Model> sharedModel; ///< The model, if the engine shares its ownership
   const BPMNOS::Model::Model* model = nullptr; ///< The model the engine executes

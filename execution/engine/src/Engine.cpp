@@ -63,11 +63,11 @@ void Engine::processCommands() {
 }
 
 
-void Engine::acceptScenario(const BPMNOS::Model::Scenario* scenario) {
+void Engine::acceptScenario(const Scenario* scenario) {
   if ( !model ) {
-    model = scenario->getModel();
+    model = scenario->dataProvider->getModel();
   }
-  else if ( scenario->getModel() != model ) {
+  else if ( scenario->dataProvider->getModel() != model ) {
     throw std::invalid_argument("Engine: the scenario is not one of the model of the engine");
   }
 }
@@ -83,9 +83,9 @@ void Engine::initialize(const BPMNOS::Model::Scenario* scenario, BPMNOS::number 
 }
 
 void Engine::initialize(std::unique_ptr<LegacyDataProvider::Scenario> legacyScenario, BPMNOS::number startTime) {
-  auto scenario = legacyScenario->scenario;
+  const Scenario* scenario = legacyScenario.get();
   acceptScenario(scenario);
-  if ( startTime > scenario->getEarliestInstantiationTime() ) {
+  if ( startTime > scenario->dataProvider->getEarliestInstantiationTime(*scenario) ) {
     throw std::logic_error("Engine: start time is later than the earliest instantiation time");
   }
 
@@ -127,7 +127,7 @@ void Engine::initializeSystemState(const BPMNOS::Model::Scenario* scenario, cons
 }
 
 void Engine::initializeSystemState(std::unique_ptr<LegacyDataProvider::Scenario> legacyScenario, const SystemState* foreignState) {
-  auto scenario = legacyScenario->scenario;
+  const Scenario* scenario = legacyScenario.get();
   acceptScenario(scenario);
   // install a deep copy of the foreign state as this engine's own state; the copy already holds every
   // instance known up to its current time

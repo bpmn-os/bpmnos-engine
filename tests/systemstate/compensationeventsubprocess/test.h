@@ -47,7 +47,8 @@ SCENARIO( "SystemState copy with compensable subprocess", "[systemstate][compens
 
     WHEN( "SystemState is copied" ) {
       auto scenarioCopy = dataProvider.createScenario();
-      Execution::SystemState copiedState(&engine, scenarioCopy.get(), originalState);
+      auto wrappedScenarioCopy = Execution::LegacyDataProvider::wrap(scenarioCopy.get());
+      Execution::SystemState copiedState(&engine, wrappedScenarioCopy.get(), originalState);
 
       THEN( "The copy has the compensable subprocess" ) {
         const Execution::StateMachine* copiedContext = nullptr;
@@ -131,7 +132,8 @@ SCENARIO( "SystemState copy with active compensation event subprocess", "[system
 
     WHEN( "SystemState is copied" ) {
       auto scenarioCopy = dataProvider.createScenario();
-      Execution::SystemState copiedState(&engine, scenarioCopy.get(), originalState);
+      auto wrappedScenarioCopy = Execution::LegacyDataProvider::wrap(scenarioCopy.get());
+      Execution::SystemState copiedState(&engine, wrappedScenarioCopy.get(), originalState);
 
       THEN( "The copy has the compensation event subprocess" ) {
         // Find copied context StateMachine

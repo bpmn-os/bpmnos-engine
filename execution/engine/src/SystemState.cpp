@@ -1,14 +1,15 @@
 #include "SystemState.h"
 #include "Engine.h"
+#include "execution/data/src/DataProvider.h"
 #include "execution/utility/src/erase.h"
 
 using namespace BPMNOS::Execution;
 
-SystemState::SystemState(const Engine* engine, const BPMNOS::Model::Scenario* scenario, BPMNOS::number currentTime)
+SystemState::SystemState(const Engine* engine, const Scenario* scenario, BPMNOS::number currentTime)
   : engine(engine)
   , scenario(scenario)
   , currentTime(currentTime)
-  , globals(scenario->globals)
+  , globals(scenario->dataProvider->getGlobals(*scenario))
 {
   // the values the globals are created with never pass through setValue, so the objective is seeded with
   // them here; no data update is notified, the run not having begun and no token being able to observe it
@@ -21,7 +22,7 @@ SystemState::SystemState(const Engine* engine, const BPMNOS::Model::Scenario* sc
   }
 }
 
-SystemState::SystemState(const Engine* engine, const BPMNOS::Model::Scenario* scenario, const SystemState* other)
+SystemState::SystemState(const Engine* engine, const Scenario* scenario, const SystemState* other)
   : engine(engine)
   , scenario(scenario)
   , currentTime(other->currentTime)
@@ -120,19 +121,8 @@ BPMNOS::number SystemState::getTime() const {
   return currentTime;
 }
 
-bool SystemState::isAlive() const {
-  if ( !scenario->isCompleted(getTime()) ) {
-    return true;
-  }
-  return !instances.empty();
-};
-
 BPMNOS::number SystemState::getObjective() const {
   return globals[BPMNOS::Model::ExtensionElements::Index::Objective].value_or(0);
-}
-
-std::optional<BPMNOS::Values> SystemState::getDataAttributes(const StateMachine* root, const BPMN::Node* node) const {
-  return scenario->getData(root->instance.value(), node, currentTime);
 }
 
 void SystemState::increaseTimeTo(BPMNOS::number time) {

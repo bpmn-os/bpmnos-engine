@@ -8,7 +8,7 @@
 #include "execution/engine/src/Observable.h"
 #include "execution/utility/src/auto_list.h"
 #include "execution/utility/src/auto_set.h"
-#include "model/data/src/Scenario.h"
+#include "execution/data/src/Scenario.h"
 #include <set>
 #include <queue>
 
@@ -32,10 +32,10 @@ public:
    * @brief Constructs a new SystemState for executing a scenario.
    *
    * @param engine The engine that will execute this state
-   * @param scenario The scenario providing instantiation and attribute data
+   * @param scenario The scenario of the run, whose data provider supplies the global values
    * @param currentTime The initial simulation time (default: 0)
    */
-  SystemState(const Engine* engine, const BPMNOS::Model::Scenario* scenario, BPMNOS::number currentTime = 0);
+  SystemState(const Engine* engine, const Scenario* scenario, BPMNOS::number currentTime = 0);
 
   /**
    * @brief Copy constructor for cloning a SystemState to a different Engine/Scenario.
@@ -48,14 +48,14 @@ public:
    * @param scenario The new scenario this copy belongs to
    * @param other The source SystemState to copy from
    */
-  SystemState(const Engine* engine, const BPMNOS::Model::Scenario* scenario, const SystemState* other);
+  SystemState(const Engine* engine, const Scenario* scenario, const SystemState* other);
 
   ~SystemState();
 
   /**
-   * @brief Pointer to the corresponding scenario.
+   * @brief Pointer to the scenario of the run.
    */
-  const BPMNOS::Model::Scenario* scenario;
+  const Scenario* scenario;
 
   /**
    * @brief Timestamp holding the point in time that the engine is in (this is usually representing now).
@@ -66,11 +66,6 @@ public:
    * @brief Function returning the current time.
    */
   BPMNOS::number getTime() const;
-
-  /**
-   * @brief Function returning true if there are tokens in the system or if there may be new instantiations of tokens.
-   */
-  bool isAlive() const;
 
   /**
    * @brief Returns the value of the objective global attribute maintained by the run.
@@ -152,8 +147,6 @@ public:
    * @brief Container holding all messages created by a throwing message event.
    */
   Messages messages;
-
-  std::optional<BPMNOS::Values> getDataAttributes(const StateMachine* root, const BPMN::Node* node) const;
 
 private:
   friend class Engine;

@@ -50,7 +50,8 @@ SCENARIO( "SystemState copy with SequentialAdHocSubProcess", "[systemstate][adho
 
     WHEN( "SystemState is copied" ) {
       auto scenarioCopy = dataProvider.createScenario();
-      Execution::SystemState copiedState(&engine, scenarioCopy.get(), originalState);
+      auto wrappedScenarioCopy = Execution::LegacyDataProvider::wrap(scenarioCopy.get());
+      Execution::SystemState copiedState(&engine, wrappedScenarioCopy.get(), originalState);
 
       THEN( "The copy has the same performing and pendingSequentialEntries" ) {
         // Find the copied performer token
