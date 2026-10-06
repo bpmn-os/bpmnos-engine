@@ -17,11 +17,12 @@ SCENARIO( "Job shop schedulng problem", "[examples][job_shop_scheduling_problem]
       "Order3; OrderProcess; durations := [4,3]\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
     WHEN( "The engine is started with the guided controller" ) {
-      Execution::Engine engine;
+      Execution::Engine engine(model);
 
       auto evaluator = std::make_shared<Execution::GuidedEvaluator>();
       Execution::GreedyController controller(evaluator);
@@ -29,13 +30,11 @@ SCENARIO( "Job shop schedulng problem", "[examples][job_shop_scheduling_problem]
       
 //      Execution::MyopicMessageTaskTerminator messageTaskTerminator;
 //      messageTaskTerminator.connect(&engine);
-      Execution::TimeWarp timeHandler;
-      timeHandler.connect(&engine);
 
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get());
+      engine.run(std::move(scenario));
       THEN( "Then no failure occurs" ) {
         auto failureLog = recorder.find(nlohmann::json{{"state", "FAILED"}});
         REQUIRE( failureLog.size() == 0 );

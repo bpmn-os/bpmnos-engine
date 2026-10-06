@@ -8,21 +8,20 @@ SCENARIO( "Compensate throw event without compensations", "[execution][compensat
       "Instance_1; Process_1;\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
     WHEN( "The engine is started with a recorder" ) {
-      Execution::Engine engine;
+      Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
-      Execution::TimeWarp timeHandler;
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
-      timeHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get());
+      engine.run(std::move(scenario));
       THEN( "Then the nodes change their states in the correct order" ) {
         auto entryLog = recorder.find(nlohmann::json{{"state", "ENTERED"}});
         REQUIRE( entryLog[0]["nodeId"] == nullptr );
@@ -48,21 +47,20 @@ SCENARIO( "Task with unused compensation task", "[execution][compensation]" ) {
       "Instance_1; Process_1;\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
     WHEN( "The engine is started with a recorder" ) {
-      Execution::Engine engine;
+      Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
-      Execution::TimeWarp timeHandler;
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
-      timeHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get());
+      engine.run(std::move(scenario));
       THEN( "Then the nodes change their states in the correct order" ) {
         auto entryLog = recorder.find(nlohmann::json{{"state", "ENTERED"}});
         REQUIRE( entryLog[0]["nodeId"] == nullptr );
@@ -93,21 +91,20 @@ SCENARIO( "Task with compensation task", "[execution][compensation]" ) {
       "Instance_1; Process_1;\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
     WHEN( "The engine is started with a recorder" ) {
-      Execution::Engine engine;
+      Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
-      Execution::TimeWarp timeHandler;
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
-      timeHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get());
+      engine.run(std::move(scenario));
       THEN( "Then the nodes change their states in the correct order" ) {
         auto entryLog = recorder.find(nlohmann::json{{"state", "ENTERED"}});
         REQUIRE( entryLog[0]["nodeId"] == nullptr );
@@ -137,21 +134,20 @@ SCENARIO( "Task with compensation triggered by error", "[execution][compensation
       "Instance_1; Process_1;\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
     WHEN( "The engine is started with a recorder" ) {
-      Execution::Engine engine;
+      Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
-      Execution::TimeWarp timeHandler;
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
-      timeHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get());
+      engine.run(std::move(scenario));
       THEN( "Then the nodes change their states in the correct order" ) {
         auto entryLog = recorder.find(nlohmann::json{{"state", "ENTERED"}});
         REQUIRE( entryLog[0]["nodeId"] == nullptr );
@@ -183,21 +179,20 @@ SCENARIO( "Task with compensation subprocess", "[execution][compensation]" ) {
       "Instance_1; Process_1;\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
     WHEN( "The engine is started with a recorder" ) {
-      Execution::Engine engine;
+      Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
-      Execution::TimeWarp timeHandler;
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
-      timeHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get());
+      engine.run(std::move(scenario));
       THEN( "Then the nodes change their states in the correct order" ) {
         auto entryLog = recorder.find(nlohmann::json{{"state", "ENTERED"}});
         REQUIRE( entryLog[0]["nodeId"] == nullptr );
@@ -228,21 +223,20 @@ SCENARIO( "Named task with compensation task", "[execution][compensation]" ) {
       "Instance_1; Process_1;\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
     WHEN( "The engine is started with a recorder" ) {
-      Execution::Engine engine;
+      Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
-      Execution::TimeWarp timeHandler;
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
-      timeHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get());
+      engine.run(std::move(scenario));
       THEN( "Then the nodes change their states in the correct order" ) {
         auto entryLog = recorder.find(nlohmann::json{{"state", "ENTERED"}});
         REQUIRE( entryLog[0]["nodeId"] == nullptr );
@@ -272,21 +266,20 @@ SCENARIO( "Multi instance compensation", "[execution][compensation][multiinstanc
       "Instance_1; Process_1;\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
     WHEN( "The engine is started with a recorder" ) {
-      Execution::Engine engine;
+      Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
-      Execution::TimeWarp timeHandler;
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
-      timeHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get());
+      engine.run(std::move(scenario));
       THEN( "The dump of each entry of the recorder log is correct" ) {
         auto waitingLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "WAITING"}});
         REQUIRE( waitingLog.size() == 1 );
@@ -330,23 +323,22 @@ SCENARIO( "Compensation of  multi instance activity", "[execution][compensation]
       "Instance_1; Process_1;\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
     WHEN( "The engine is started with a recorder" ) {
-      Execution::Engine engine;
+      Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
-      Execution::TimeWarp timeHandler;
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
-      timeHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-//      engine.run(scenario.get());
+//      engine.run(std::move(scenario));
       THEN( "The engine throws an error" ) {
-        REQUIRE_THROWS( engine.run(scenario.get()) );
+        REQUIRE_THROWS( engine.run(std::move(scenario)) );
       }
     }
   }
@@ -362,21 +354,20 @@ SCENARIO( "Failing compensations of  multi instance activity", "[execution][comp
       "Instance_1; Process_1;\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
     WHEN( "The engine is started with a recorder" ) {
-      Execution::Engine engine;
+      Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
-      Execution::TimeWarp timeHandler;
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
-      timeHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get());
+      engine.run(std::move(scenario));
       THEN( "The dump of each entry of the recorder log is correct" ) {
 //        REQUIRE_THROWS( engine.run(scenario.get()) );
         auto compensationLog = recorder.find(nlohmann::json{{"nodeId","CompensationActivity_1"}});
@@ -407,21 +398,20 @@ SCENARIO( "Two compensations triggered in reverse order", "[execution][compensat
       "Instance_1; Process_1; timestamp := 0\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
     WHEN( "The engine is started with a recorder" ) {
-      Execution::Engine engine;
+      Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
-      Execution::TimeWarp timeHandler;
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
-      timeHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get());
+      engine.run(std::move(scenario));
       THEN( "Compensations execute in reverse order (Activity_2 first, then Activity_1)" ) {
         auto entryLog = recorder.find(nlohmann::json{{"state", "ENTERED"}});
         REQUIRE( entryLog[0]["nodeId"] == nullptr );

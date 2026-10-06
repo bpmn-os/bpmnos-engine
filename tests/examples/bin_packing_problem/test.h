@@ -16,24 +16,24 @@ SCENARIO( "Bin packing problem", "[examples][bin_packing_problem]" ) {
       "Item3; ItemProcess; size := 22.0\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
     WHEN( "The engine is started with the guided controller" ) {
-      Execution::Engine engine;
+      Execution::Engine engine(model);
 
       auto evaluator = std::make_shared<Execution::GuidedEvaluator>();
       Execution::GreedyController controller(evaluator);
       controller.connect(&engine);
       
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;
-      Execution::TimeWarp timeHandler;
       messageTaskTerminator.connect(&engine);
-      timeHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get(), 0, 2); // TODO: time limit should be removed when strange error below is fixed
+      dataProvider->setEndTime(2);
+      engine.run(std::move(scenario), 0); // TODO: time limit should be removed when strange error below is fixed
 
       THEN( "Then no failure occurs" ) {
         auto failureLog = recorder.find(nlohmann::json{{"state", "FAILED"}});
@@ -78,25 +78,25 @@ SCENARIO( "Bin packing problem", "[examples][bin_packing_problem]" ) {
       "Item4; ItemProcess; size := 43.0\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
     WHEN( "The engine is started with the guided controller" ) {
-      Execution::Engine engine;
+      Execution::Engine engine(model);
 
       auto evaluator = std::make_shared<Execution::GuidedEvaluator>();
       Execution::GreedyController controller(evaluator);
       controller.connect(&engine);
       
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;
-      Execution::TimeWarp timeHandler;
       messageTaskTerminator.connect(&engine);
-      timeHandler.connect(&engine);
 
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get(), 0, 10);
+      dataProvider->setEndTime(10);
+      engine.run(std::move(scenario), 0);
       THEN( "Then no failure occurs" ) {
         auto failureLog = recorder.find(nlohmann::json{{"state", "FAILED"}});
         REQUIRE( failureLog.size() == 0 );

@@ -23,34 +23,32 @@ SCENARIO( "GreedyController terminates when resumed from an installed system sta
       "Order3; OrderProcess; machines := [\"Machine2\",\"Machine3\"]\n"
       "Order3; OrderProcess; durations := [4,3]\n"
     ;
-    Model::StaticDataProvider dataProvider(modelFile, csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
-    Execution::Engine engine;
+    Execution::Engine engine(model);
     Execution::InstantEntry entryHandler;
     Execution::InstantExit exitHandler;
-    Execution::TimeWarp timeHandler;
     entryHandler.connect(&engine);
     exitHandler.connect(&engine);
-    timeHandler.connect(&engine);
-    engine.run(scenario.get(), 0, 0);
+    dataProvider->setEndTime(0);
+    engine.run(std::move(scenario), 0);
 
     const auto* systemState = engine.getSystemState();
     REQUIRE( systemState->pendingMessageDeliveryDecisions.count() == 3 );
 
     WHEN( "The state is installed into a fresh engine and resumed under the greedy controller" ) {
-      // Resume against the original, already-revealed scenario, so taskCompletionStatus is correct and any
-      // stall is in the engine's resume logic rather than scenario disclosure.
-      Execution::Engine resumed;
+      // Resume on a new scenario of the data provider, which determines anew the events the installed state
+      // awaits, so that any stall is in the engine's resume logic.
+      Execution::Engine resumed(model);
       auto evaluator = std::make_shared<Execution::GuidedEvaluator>();
       Execution::GreedyController controller(evaluator);
       controller.connect(&resumed);
-      Execution::TimeWarp resumedTimeHandler;
-      resumedTimeHandler.connect(&resumed);
       Execution::Recorder recorder;
       recorder.subscribe(&resumed);
 
-      resumed.initializeSystemState(scenario.get(), systemState);
+      resumed.initializeSystemState(dataProvider->createScenario(), systemState);
 
       // Localize the defect: does the *copied* state still carry the deliveries the candidate rebuild needs?
       const auto* copiedState = resumed.getSystemState();
@@ -66,7 +64,8 @@ SCENARIO( "GreedyController terminates when resumed from an installed system sta
         REQUIRE( feasibleCount(collect(copyCandidates)) == 3 );
       }
 
-      resumed.resume(100);   // finite bound: a livelock stops here instead of hanging
+      dataProvider->setEndTime(100);
+      resumed.resume();   // finite bound: a livelock stops here instead of hanging
 
       THEN( "The run reaches a real end state well before the time bound" ) {
         REQUIRE( (double)resumed.getSystemState()->getTime() < 100.0 );
@@ -93,33 +92,32 @@ SCENARIO( "GreedyController terminates when resumed from a minimal one-job state
       "Order1; OrderProcess; machines := [\"Machine1\"]\n"
       "Order1; OrderProcess; durations := [2]\n"
     ;
-    Model::StaticDataProvider dataProvider(modelFile, csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
-    Execution::Engine engine;
+    Execution::Engine engine(model);
     Execution::InstantEntry entryHandler;
     Execution::InstantExit exitHandler;
-    Execution::TimeWarp timeHandler;
     entryHandler.connect(&engine);
     exitHandler.connect(&engine);
-    timeHandler.connect(&engine);
-    engine.run(scenario.get(), 0, 0);
+    dataProvider->setEndTime(0);
+    engine.run(std::move(scenario), 0);
 
     const auto* systemState = engine.getSystemState();
     REQUIRE( systemState->pendingMessageDeliveryDecisions.count() == 1 );
 
     WHEN( "The state is installed into a fresh engine and resumed under the greedy controller" ) {
-      Execution::Engine resumed;
+      Execution::Engine resumed(model);
       auto evaluator = std::make_shared<Execution::GuidedEvaluator>();
       Execution::GreedyController controller(evaluator);
       controller.connect(&resumed);
-      Execution::TimeWarp resumedTimeHandler;
-      resumedTimeHandler.connect(&resumed);
       Execution::Recorder recorder;
       recorder.subscribe(&resumed);
 
-      resumed.initializeSystemState(scenario.get(), systemState);
-      resumed.resume(100);
+      resumed.initializeSystemState(dataProvider->createScenario(), systemState);
+      dataProvider->setEndTime(100);
+      resumed.resume();
 
       THEN( "The run reaches a real end state well before the time bound" ) {
         REQUIRE( (double)resumed.getSystemState()->getTime() < 100.0 );
@@ -147,33 +145,32 @@ SCENARIO( "GreedyController terminates when resumed from a one-machine two-job s
       "Order2; OrderProcess; machines := [\"Machine1\"]\n"
       "Order2; OrderProcess; durations := [3]\n"
     ;
-    Model::StaticDataProvider dataProvider(modelFile, csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
-    Execution::Engine engine;
+    Execution::Engine engine(model);
     Execution::InstantEntry entryHandler;
     Execution::InstantExit exitHandler;
-    Execution::TimeWarp timeHandler;
     entryHandler.connect(&engine);
     exitHandler.connect(&engine);
-    timeHandler.connect(&engine);
-    engine.run(scenario.get(), 0, 0);
+    dataProvider->setEndTime(0);
+    engine.run(std::move(scenario), 0);
 
     const auto* systemState = engine.getSystemState();
     REQUIRE( systemState->messages.size() == 2 );   // both orders sent their request to Machine1
 
     WHEN( "The state is installed into a fresh engine and resumed under the greedy controller" ) {
-      Execution::Engine resumed;
+      Execution::Engine resumed(model);
       auto evaluator = std::make_shared<Execution::GuidedEvaluator>();
       Execution::GreedyController controller(evaluator);
       controller.connect(&resumed);
-      Execution::TimeWarp resumedTimeHandler;
-      resumedTimeHandler.connect(&resumed);
       Execution::Recorder recorder;
       recorder.subscribe(&resumed);
 
-      resumed.initializeSystemState(scenario.get(), systemState);
-      resumed.resume(100);
+      resumed.initializeSystemState(dataProvider->createScenario(), systemState);
+      dataProvider->setEndTime(100);
+      resumed.resume();
 
       THEN( "The run reaches a real end state well before the time bound" ) {
         REQUIRE( (double)resumed.getSystemState()->getTime() < 100.0 );
@@ -199,17 +196,17 @@ SCENARIO( "GreedyController terminates when resumed from a one-order two-sequent
       "Order1; OrderProcess; machines := [\"Machine1\",\"Machine1\"]\n"
       "Order1; OrderProcess; durations := [2,3]\n"
     ;
-    Model::StaticDataProvider dataProvider(modelFile, csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
-    Execution::Engine engine;
+    Execution::Engine engine(model);
     Execution::InstantEntry entryHandler;
     Execution::InstantExit exitHandler;
-    Execution::TimeWarp timeHandler;
     entryHandler.connect(&engine);
     exitHandler.connect(&engine);
-    timeHandler.connect(&engine);
-    engine.run(scenario.get(), 0, 0);
+    dataProvider->setEndTime(0);
+    engine.run(std::move(scenario), 0);
 
     const auto* systemState = engine.getSystemState();
     REQUIRE( systemState->messages.size() == 1 );   // only the first job's request is sent at t=0
@@ -218,17 +215,16 @@ SCENARIO( "GreedyController terminates when resumed from a one-order two-sequent
       // Validates that the expected outcome below is correct independent of the install/resume path: a plain
       // greedy run of this model completes both instances. If this passes but the resumed run does not, the
       // resume path is at fault rather than the test's expectation.
-      auto baselineScenario = dataProvider.createScenario();
-      Execution::Engine baseline;
+      auto baselineScenario = dataProvider->createScenario();
+      Execution::Engine baseline(model);
       auto evaluator = std::make_shared<Execution::GuidedEvaluator>();
       Execution::GreedyController controller(evaluator);
       controller.connect(&baseline);
-      Execution::TimeWarp baselineTimeHandler;
-      baselineTimeHandler.connect(&baseline);
       Execution::Recorder recorder;
       recorder.subscribe(&baseline);
 
-      baseline.run(baselineScenario.get(), 0, 100);   // finite bound: a non-terminating run stops here
+      dataProvider->setEndTime(100);
+      baseline.run(std::move(baselineScenario), 0);   // finite bound: a non-terminating run stops here
 
       THEN( "Both process instances complete from the start" ) {
         REQUIRE( (double)baseline.getSystemState()->getTime() < 100.0 );
@@ -238,17 +234,16 @@ SCENARIO( "GreedyController terminates when resumed from a one-order two-sequent
     }
 
     WHEN( "The state is installed into a fresh engine and resumed under the greedy controller" ) {
-      Execution::Engine resumed;
+      Execution::Engine resumed(model);
       auto evaluator = std::make_shared<Execution::GuidedEvaluator>();
       Execution::GreedyController controller(evaluator);
       controller.connect(&resumed);
-      Execution::TimeWarp resumedTimeHandler;
-      resumedTimeHandler.connect(&resumed);
       Execution::Recorder recorder;
       recorder.subscribe(&resumed);
 
-      resumed.initializeSystemState(scenario.get(), systemState);
-      resumed.resume(100);
+      resumed.initializeSystemState(dataProvider->createScenario(), systemState);
+      dataProvider->setEndTime(100);
+      resumed.resume();
 
       THEN( "The run reaches a real end state well before the time bound" ) {
         REQUIRE( (double)resumed.getSystemState()->getTime() < 100.0 );
@@ -264,9 +259,9 @@ SCENARIO( "GreedyController terminates when resumed from a one-order two-sequent
 SCENARIO( "The environment completes a task that was BUSY when the state was installed", "[candidates][resume][taskcompletion]" ) {
   // Minimal, message-free reproduction of the resume stall. A plain task goes BUSY at t=0 with its completion
   // scheduled at t=1. If the state is installed into a fresh engine and resumed, the task must still complete.
-  // The completion time is "revealed" into the scenario's taskCompletionStatus by the Environment on a live
-  // Token-BUSY notice; the SystemState copy constructs the BUSY token without re-emitting that notice, so if the
-  // reveal is not reconstructed on install the environment waits forever and the engine clock-ticks.
+  // The completion of a busy task is scheduled by the data provider when the token becomes busy; the SystemState
+  // copy constructs the BUSY token without re-emitting that notification, so if the completion is not
+  // determined anew on install the run waits forever and the engine advances time.
   const std::string modelFile = "tests/execution/task/Task_with_linear_expression.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
 
@@ -275,19 +270,19 @@ SCENARIO( "The environment completes a task that was BUSY when the state was ins
       "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
       "Instance_1; Process_1;\n"
     ;
-    Model::StaticDataProvider dataProvider(modelFile, csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
-    Execution::Engine engine;
+    Execution::Engine engine(model);
     Execution::InstantEntry entryHandler;
     Execution::InstantExit exitHandler;
-    Execution::TimeWarp timeHandler;
     entryHandler.connect(&engine);
     exitHandler.connect(&engine);
-    timeHandler.connect(&engine);
     Execution::Recorder buildRecorder;
     buildRecorder.subscribe(&engine);
-    engine.run(scenario.get(), 0, 0);
+    dataProvider->setEndTime(0);
+    engine.run(std::move(scenario), 0);
 
     const auto* systemState = engine.getSystemState();
     // Precondition: the task is BUSY (awaiting completion) and has not yet completed at t=0.
@@ -295,20 +290,19 @@ SCENARIO( "The environment completes a task that was BUSY when the state was ins
     REQUIRE( buildRecorder.find(nlohmann::json{{"nodeId","Activity_1"},{"state","COMPLETED"}}).size() == 0 );
 
     WHEN( "The state is installed into a fresh engine and resumed" ) {
-      // Resume against the original scenario; its taskCompletionStatus already holds Activity_1's completion,
-      // so this isolates the engine's resume logic from scenario disclosure.
-      Execution::Engine resumed;
+      // Resume on a new scenario of the data provider, which schedules the completion of the busy task anew
+      // when the state is installed.
+      Execution::Engine resumed(model);
       Execution::InstantEntry resumedEntry;
       Execution::InstantExit resumedExit;
-      Execution::TimeWarp resumedTimeHandler;
       resumedEntry.connect(&resumed);
       resumedExit.connect(&resumed);
-      resumedTimeHandler.connect(&resumed);
       Execution::Recorder recorder;
       recorder.subscribe(&resumed);
 
-      resumed.initializeSystemState(scenario.get(), systemState);
-      resumed.resume(100);   // finite bound: a stall stops here instead of hanging
+      resumed.initializeSystemState(dataProvider->createScenario(), systemState);
+      dataProvider->setEndTime(100);
+      resumed.resume();   // finite bound: a stall stops here instead of hanging
 
       THEN( "The task completes rather than the engine clock-ticking to the time bound" ) {
         REQUIRE( (double)resumed.getSystemState()->getTime() < 100.0 );
@@ -333,20 +327,20 @@ SCENARIO( "InstantDirectMessage delivers a directly-addressed message pending at
       "Instance_1; Process_1; timestamp := 0\n"
       "Instance_2; Process_2; timestamp := 0\n"
     ;
-    Model::StaticDataProvider dataProvider(modelFile, csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
     // No message handler: the throw creates the message and the catch event waits (delivery pending).
-    Execution::Engine engine;
+    Execution::Engine engine(model);
     Execution::InstantEntry entryHandler;
     Execution::InstantExit exitHandler;
-    Execution::TimeWarp timeHandler;
     entryHandler.connect(&engine);
     exitHandler.connect(&engine);
-    timeHandler.connect(&engine);
     Execution::Recorder buildRecorder;
     buildRecorder.subscribe(&engine);
-    engine.run(scenario.get(), 0, 0);
+    dataProvider->setEndTime(0);
+    engine.run(std::move(scenario), 0);
 
     const auto* systemState = engine.getSystemState();
     // Precondition: the message exists and the receiver is waiting (BUSY), not yet delivered.
@@ -355,20 +349,19 @@ SCENARIO( "InstantDirectMessage delivers a directly-addressed message pending at
     REQUIRE( buildRecorder.find(nlohmann::json{{"nodeId","MessageCatchEvent_2"},{"state","COMPLETED"}}).size() == 0 );
 
     WHEN( "The state is installed into a fresh engine with an InstantDirectMessage handler and resumed" ) {
-      Execution::Engine resumed;
+      Execution::Engine resumed(model);
       Execution::InstantEntry resumedEntry;
       Execution::InstantExit resumedExit;
       Execution::InstantDirectMessage messageHandler;
-      Execution::TimeWarp resumedTimeHandler;
       resumedEntry.connect(&resumed);
       resumedExit.connect(&resumed);
       messageHandler.connect(&resumed);
-      resumedTimeHandler.connect(&resumed);
       Execution::Recorder recorder;
       recorder.subscribe(&resumed);
 
-      resumed.initializeSystemState(scenario.get(), systemState);
-      resumed.resume(100);   // finite bound: a non-delivery stall stops here instead of hanging
+      resumed.initializeSystemState(dataProvider->createScenario(), systemState);
+      dataProvider->setEndTime(100);
+      resumed.resume();   // finite bound: a non-delivery stall stops here instead of hanging
 
       THEN( "The pending message is delivered: the receiver completes before the time bound" ) {
         REQUIRE( (double)resumed.getSystemState()->getTime() < 100.0 );
@@ -387,15 +380,14 @@ SCENARIO( "An instance created but not started when the state was installed is s
       "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
       "Instance_1; Process_1; timestamp := 0\n"
     ;
-    Model::StaticDataProvider dataProvider(modelFile, csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
-    Execution::Engine engine;
-    Execution::TimeWarp timeHandler;
-    timeHandler.connect(&engine);
+    Execution::Engine engine(model);
     // the instantiation event following the opening clock tick creates the instance, whose ready event is
     // not yet dispatched
-    engine.initialize(scenario.get(), 0);
+    engine.initialize(std::move(scenario), 0);
     REQUIRE( engine.advance() );
 
     const auto* systemState = engine.getSystemState();
@@ -403,17 +395,15 @@ SCENARIO( "An instance created but not started when the state was installed is s
     REQUIRE( systemState->instances.front()->tokens.front()->state == Execution::Token::State::CREATED );
 
     WHEN( "The state is installed into a fresh engine and resumed" ) {
-      Execution::Engine resumed;
+      Execution::Engine resumed(model);
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
-      Execution::TimeWarp resumedTimeHandler;
       entryHandler.connect(&resumed);
       exitHandler.connect(&resumed);
-      resumedTimeHandler.connect(&resumed);
       Execution::Recorder recorder;
       recorder.subscribe(&resumed);
 
-      resumed.initializeSystemState(scenario.get(), systemState);
+      resumed.initializeSystemState(dataProvider->createScenario(), systemState);
 
       THEN( "The copied state lists the token at the process as awaiting its ready event" ) {
         const auto* copiedState = resumed.getSystemState();
@@ -423,7 +413,8 @@ SCENARIO( "An instance created but not started when the state was installed is s
       }
 
       THEN( "The instance is started and completes" ) {
-        resumed.resume(100);
+        dataProvider->setEndTime(100);
+        resumed.resume();
         auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr}, {"event",nullptr}, {"decision",nullptr}});
         REQUIRE( processLog.size() >= 2 );
         REQUIRE( processLog.front()["state"] == "READY" );

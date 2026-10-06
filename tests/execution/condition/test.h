@@ -9,20 +9,19 @@ SCENARIO( "Condition on data attribute", "[execution][condition]" ) {
         "Instance_1; Process_1;\n"
       ;
 
-      Model::StaticDataProvider dataProvider(modelFile,csv);
-      auto scenario = dataProvider.createScenario();
+      auto model = std::make_shared<const Model::Model>(modelFile);
+      auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+      auto scenario = dataProvider->createScenario();
 
-      Execution::Engine engine;
+      Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
-      Execution::TimeWarp timeHandler;
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
-      timeHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get());
+      engine.run(std::move(scenario));
       THEN( "The activity is completed and the conditional event is not triggerd" ) {
         auto activityLog =recorder.find(nlohmann::json{{"nodeId","Activity_1"},{"state", "COMPLETED"}});
         REQUIRE( activityLog.size() == 1 ); 
@@ -37,20 +36,19 @@ SCENARIO( "Condition on data attribute", "[execution][condition]" ) {
         "Instance_1; Process_1; condition := false\n"
       ;
 
-      Model::StaticDataProvider dataProvider(modelFile,csv);
-      auto scenario = dataProvider.createScenario();
+      auto model = std::make_shared<const Model::Model>(modelFile);
+      auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+      auto scenario = dataProvider->createScenario();
 
-      Execution::Engine engine;
+      Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
-      Execution::TimeWarp timeHandler;
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
-      timeHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get());
+      engine.run(std::move(scenario));
       THEN( "The activity is completed and the conditional event is triggerd" ) {
         auto activityLog =recorder.find(nlohmann::json{{"nodeId","Activity_1"},{"state", "BUSY"}});
         REQUIRE( activityLog.size() == 1 ); 
@@ -65,20 +63,19 @@ SCENARIO( "Condition on data attribute", "[execution][condition]" ) {
         "Instance_1; Process_1; condition := true\n"
       ;
 
-      Model::StaticDataProvider dataProvider(modelFile,csv);
-      auto scenario = dataProvider.createScenario();
+      auto model = std::make_shared<const Model::Model>(modelFile);
+      auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+      auto scenario = dataProvider->createScenario();
 
-      Execution::Engine engine;
+      Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
-      Execution::TimeWarp timeHandler;
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
-      timeHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get());
+      engine.run(std::move(scenario));
       THEN( "The activity is withdrawn and the conditional event is triggerd" ) {
         auto activityLog =recorder.find(nlohmann::json{{"nodeId","Activity_1"},{"state", "BUSY"}});
         REQUIRE( activityLog.size() == 0 ); 
@@ -100,20 +97,20 @@ SCENARIO( "Condition on global attribute", "[execution][condition]" ) {
         "Instance_2; Process_2;\n"
       ;
 
-      Model::StaticDataProvider dataProvider(modelFile,csv);
-      auto scenario = dataProvider.createScenario();
+      auto model = std::make_shared<const Model::Model>(modelFile);
+      auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+      auto scenario = dataProvider->createScenario();
 
-      Execution::Engine engine;
+      Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
-      Execution::TimeWarp timeHandler;
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
-      timeHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get(), 0, 1);
+      dataProvider->setEndTime(1);
+      engine.run(std::move(scenario));
       THEN( "The activity is completed and the conditional event is not triggerd" ) {
         auto activityLog =recorder.find(nlohmann::json{{"nodeId","Activity_1"},{"state", "COMPLETED"}});
         REQUIRE( activityLog.size() == 1 ); 
@@ -130,20 +127,19 @@ SCENARIO( "Condition on global attribute", "[execution][condition]" ) {
         "Instance_2; Process_2;\n"
       ;
 
-      Model::StaticDataProvider dataProvider(modelFile,csv);
-      auto scenario = dataProvider.createScenario();
+      auto model = std::make_shared<const Model::Model>(modelFile);
+      auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+      auto scenario = dataProvider->createScenario();
 
-      Execution::Engine engine;
+      Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
-      Execution::TimeWarp timeHandler;
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
-      timeHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get());
+      engine.run(std::move(scenario));
       THEN( "The conditional event is triggerd" ) {
         auto activityLog =recorder.find(nlohmann::json{{"nodeId","Activity_1"},{"state", "COMPLETED"}});
         REQUIRE( activityLog.size() == 1 ); 
@@ -160,20 +156,19 @@ SCENARIO( "Condition on global attribute", "[execution][condition]" ) {
         "Instance_2; Process_2;\n"
       ;
 
-      Model::StaticDataProvider dataProvider(modelFile,csv);
-      auto scenario = dataProvider.createScenario();
+      auto model = std::make_shared<const Model::Model>(modelFile);
+      auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+      auto scenario = dataProvider->createScenario();
 
-      Execution::Engine engine;
+      Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
-      Execution::TimeWarp timeHandler;
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
-      timeHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get());
+      engine.run(std::move(scenario));
       THEN( "The conditional event is triggerd" ) {
         auto activityLog =recorder.find(nlohmann::json{{"nodeId","Activity_1"},{"state", "COMPLETED"}});
         REQUIRE( activityLog.size() == 1 ); 
@@ -194,20 +189,20 @@ SCENARIO( "Condition on global attribute", "[execution][condition]" ) {
         "Instance_1; Process_2;\n"
       ;
 
-      Model::StaticDataProvider dataProvider(modelFile,csv);
-      auto scenario = dataProvider.createScenario();
+      auto model = std::make_shared<const Model::Model>(modelFile);
+      auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+      auto scenario = dataProvider->createScenario();
 
-      Execution::Engine engine;
+      Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
-      Execution::TimeWarp timeHandler;
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
-      timeHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get(), 0, 1);
+      dataProvider->setEndTime(1);
+      engine.run(std::move(scenario));
       THEN( "The conditional event is not triggerd" ) {
         auto conditionLog =recorder.find(nlohmann::json{{"nodeId","ConditionalEvent_2"},{"state", "COMPLETED"}});
         REQUIRE( conditionLog.size() == 0 ); 
@@ -221,20 +216,19 @@ SCENARIO( "Condition on global attribute", "[execution][condition]" ) {
         "Instance_1; Process_2;\n"
       ;
 
-      Model::StaticDataProvider dataProvider(modelFile,csv);
-      auto scenario = dataProvider.createScenario();
+      auto model = std::make_shared<const Model::Model>(modelFile);
+      auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+      auto scenario = dataProvider->createScenario();
 
-      Execution::Engine engine;
+      Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
-      Execution::TimeWarp timeHandler;
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
-      timeHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get());
+      engine.run(std::move(scenario));
       THEN( "The conditional event is triggerd" ) {
         auto conditionLog =recorder.find(nlohmann::json{{"nodeId","ConditionalEvent_2"},{"state", "COMPLETED"}});
         REQUIRE( conditionLog.size() == 1 ); 

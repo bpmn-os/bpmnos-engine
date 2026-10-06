@@ -10,21 +10,21 @@ SCENARIO( "SystemState copy with tokens at event-based gateway", "[systemstate][
       "Instance_1; Process_1; trigger2 := 20\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile, csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
-    Execution::Engine engine;
+    Execution::Engine engine(model);
     Execution::InstantEntry entryHandler;
     Execution::InstantExit exitHandler;
-    Execution::TimeWarp timeHandler;
     entryHandler.connect(&engine);
     exitHandler.connect(&engine);
-    timeHandler.connect(&engine);
     Execution::Recorder recorder;
 //    Execution::Recorder recorder(std::cerr);
     recorder.subscribe(&engine);
 
-    engine.run(scenario.get(), 0, 0);
+    dataProvider->setEndTime(0);
+    engine.run(std::move(scenario), 0);
     const auto* originalState = engine.getSystemState();
 
     // Should have gateway token and 2 event tokens
@@ -34,9 +34,8 @@ SCENARIO( "SystemState copy with tokens at event-based gateway", "[systemstate][
     REQUIRE( originalState->tokenAtEventBasedGateway.size() == 2 );
 
     WHEN( "SystemState is copied" ) {
-      auto scenarioCopy = dataProvider.createScenario();
-      auto wrappedScenarioCopy = Execution::LegacyDataProvider::wrap(scenarioCopy.get());
-      Execution::SystemState copiedState(&engine, wrappedScenarioCopy.get(), originalState);
+      auto scenarioCopy = dataProvider->createScenario();
+      Execution::SystemState copiedState(&engine, scenarioCopy.get(), originalState);
 
       THEN( "The copy has the same event-based gateway mappings" ) {
         REQUIRE( copiedState.tokensAwaitingEvent.size() ==

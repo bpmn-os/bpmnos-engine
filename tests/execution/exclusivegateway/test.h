@@ -8,21 +8,21 @@ SCENARIO( "Symmetric exclusive gateways", "[execution][exclusivegateway]" ) {
       "Instance_1; Process_1; timestamp := 0\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
     WHEN( "The engine is started with a recorder" ) {
-      Execution::Engine engine;
+      Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
-      Execution::TimeWarp timeHandler;
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
-      timeHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get(), 0, 0);
+      dataProvider->setEndTime(0);
+      engine.run(std::move(scenario));
       THEN( "The dump of each entry of the token log is correct" ) {
         auto gatewayLog = recorder.find(nlohmann::json{{"nodeId","Gateway_1" }}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
         REQUIRE( gatewayLog[0]["state"] == "ARRIVED" );
@@ -48,21 +48,21 @@ SCENARIO( "Symmetric exclusive gateways", "[execution][exclusivegateway]" ) {
       "Instance_1; Process_1; timestamp := 1\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
     WHEN( "The engine is started with a recorder" ) {
-      Execution::Engine engine;
+      Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
-      Execution::TimeWarp timeHandler;
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
-      timeHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get(), 0, 10);
+      dataProvider->setEndTime(10);
+      engine.run(std::move(scenario));
       THEN( "The dump of each entry of the token log is correct" ) {
         auto gatewayLog = recorder.find(nlohmann::json{{"nodeId","Gateway_1" }}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
         REQUIRE( gatewayLog[0]["state"] == "ARRIVED" );
@@ -87,21 +87,21 @@ SCENARIO( "Symmetric exclusive gateways", "[execution][exclusivegateway]" ) {
       "Instance_1; Process_1; timestamp := 2\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
     WHEN( "The engine is started with a recorder" ) {
-      Execution::Engine engine;
+      Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
-      Execution::TimeWarp timeHandler;
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
-      timeHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get(), 0, 2);
+      dataProvider->setEndTime(2);
+      engine.run(std::move(scenario));
       THEN( "The dump of each entry of the token log is correct" ) {
         auto gatewayLog = recorder.find(nlohmann::json{{"nodeId","Gateway_1" }}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
         REQUIRE( gatewayLog[0]["state"] == "ARRIVED" );

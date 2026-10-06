@@ -26,10 +26,11 @@ SCENARIO( "Pickup delivery problem", "[examples][pickup_delivery_problem]" ) {
       "Customer1; CustomerProcess; late_delivery_penalty := 0\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,folders,csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile, folders);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
-    Execution::Engine engine;
+    Execution::Engine engine(model);
 
     auto evaluator = std::make_shared<Execution::LocalEvaluator>();
     Execution::GreedyController controller(evaluator);
@@ -37,15 +38,13 @@ SCENARIO( "Pickup delivery problem", "[examples][pickup_delivery_problem]" ) {
       
 //    Execution::MyopicMessageTaskTerminator messageTaskTerminator;
 //    messageTaskTerminator.connect(&engine);
-    Execution::TimeWarp timeHandler;
-    timeHandler.connect(&engine);
 
     Execution::Recorder recorder;
 //    Execution::Recorder recorder(std::cerr);
     recorder.subscribe(&engine);
 
     WHEN( "The engine is started with the greedy controller" ) {
-      engine.run(scenario.get());
+      engine.run(std::move(scenario));
       THEN( "Then all vehicle process instances complete" ) {
         auto log = recorder.find({{"processId","VehicleProcess" },{"state","COMPLETED"}}, nlohmann::json{{"nodeId",nullptr }, {"event",nullptr }, {"decision",nullptr }});
 //std::cerr << log.dump() << std::endl;
@@ -93,10 +92,11 @@ SCENARIO( "Pickup delivery problem", "[examples][pickup_delivery_problem]" ) {
       "Customer2; CustomerProcess; late_delivery_penalty := 0\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,folders,csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile, folders);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
-    Execution::Engine engine;
+    Execution::Engine engine(model);
 
     auto evaluator = std::make_shared<Execution::LocalEvaluator>();
     Execution::GreedyController controller(evaluator);
@@ -104,15 +104,13 @@ SCENARIO( "Pickup delivery problem", "[examples][pickup_delivery_problem]" ) {
       
 //    Execution::MyopicMessageTaskTerminator messageTaskTerminator;
 //    messageTaskTerminator.connect(&engine);
-    Execution::TimeWarp timeHandler;
-    timeHandler.connect(&engine);
 
     Execution::Recorder recorder;
 //    Execution::Recorder recorder(std::cerr);
     recorder.subscribe(&engine);
 
     WHEN( "The engine is started with the greedy controller" ) {
-      engine.run(scenario.get());
+      engine.run(std::move(scenario));
       THEN( "Then all vehicle process instances complete" ) {
         auto log = recorder.find({{"processId","VehicleProcess" },{"state","COMPLETED"}}, nlohmann::json{{"nodeId",nullptr }, {"event",nullptr }, {"decision",nullptr }});
 //std::cerr << log.dump() << std::endl;

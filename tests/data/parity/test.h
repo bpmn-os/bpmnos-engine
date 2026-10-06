@@ -61,8 +61,6 @@ nlohmann::ordered_json runOnExistingDataProvider(const std::string& modelFile, c
   for ( auto& dispatcher : dispatchers ) {
     dispatcher->connect(&engine);
   }
-  Execution::TimeWarp timeHandler;
-  timeHandler.connect(&engine);
   Execution::Recorder recorder;
   recorder.subscribe(&engine);
   engine.run(scenario.get(), 0, parityEndTime);

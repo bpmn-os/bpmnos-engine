@@ -62,13 +62,13 @@ public:
    * @brief Runs a scenario from the beginning.
    *
    * Creates a fresh system state at the given start time and executes until a termination event is
-   * processed or the end time is exceeded. The start time must not be later
+   * processed, which happens at the latest when nothing is left to do at the end time. The start time must not be later
    * than the scenario's earliest instantiation time, since an instance is instantiated at the instant
    * its instantiation time is reached and a later start would leave every earlier instance uncreated.
    *
    * @param scenario The scenario to execute
    * @param startTime Time the run begins at
-   * @param endTime Last time to process (engine stops when time >= endTime)
+   * @param endTime Time at which the run ends once nothing is left to do
    * @throws std::invalid_argument if the scenario is not one of the model of the engine
    */
   void run(const BPMNOS::Model::Scenario* scenario, BPMNOS::number startTime = 0, BPMNOS::number endTime = std::numeric_limits<BPMNOS::number>::max());
@@ -78,10 +78,9 @@ public:
    *
    * @param scenario The scenario to execute, created by a data provider built on the model of the engine
    * @param startTime Time the run begins at
-   * @param endTime Last time to process (engine stops when time >= endTime)
    * @throws std::invalid_argument if the scenario is not one of the model of the engine
    */
-  void run(std::unique_ptr<Scenario> scenario, BPMNOS::number startTime = 0, BPMNOS::number endTime = std::numeric_limits<BPMNOS::number>::max());
+  void run(std::unique_ptr<Scenario> scenario, BPMNOS::number startTime = 0);
 
   /**
    * @brief Initializes the engine with a fresh system state and advances time to the run's first instant.
@@ -134,10 +133,8 @@ public:
    * @brief Continues advancing the engine's existing system state.
    *
    * Does not create a new state — run() or initializeSystemState() must have established one first.
-   *
-   * @param endTime Last time to process (engine stops when time >= endTime)
    */
-  void resume(BPMNOS::number endTime = std::numeric_limits<BPMNOS::number>::max());
+  void resume();
 
   /**
    * @brief Start processing the decision, then continues advancing the existing system state.
@@ -145,9 +142,8 @@ public:
    * Does not create a new state — run() or initializeSystemState() must have established one first.
    *
    * @param decision The decision to process before greedy dispatch resumes
-   * @param endTime Last time to process (engine stops when time >= endTime)
    */
-  void resume(std::shared_ptr<Decision> decision, BPMNOS::number endTime = std::numeric_limits<BPMNOS::number>::max());
+  void resume(std::shared_ptr<Decision> decision);
 
   /**
    * @brief Start processing the event, then continues advancing the existing system state.
@@ -155,9 +151,8 @@ public:
    * Does not create a new state — run() or initializeSystemState() must have established one first.
    *
    * @param event The event to process before greedy dispatch resumes
-   * @param endTime Last time to process (engine stops when time >= endTime)
    */
-  void resume(std::shared_ptr<Event> event, BPMNOS::number endTime = std::numeric_limits<BPMNOS::number>::max());
+  void resume(std::shared_ptr<Event> event);
 
   /**
    * @brief Advance system state until next event has to be fetched.
@@ -167,14 +162,12 @@ public:
    * as far as possible without fetching the next event. If the round yields no event, it pauses for a moment
    * and returns without processing one.
    *
-   * @param endTime Last time to process (the engine stops before a clock tick beyond it)
-   * @return False once a termination event has been processed or a clock tick beyond the end time is
-   * fetched, and true otherwise.
+   * @return False once a termination event has been processed, and true otherwise.
    */
-  bool advance(BPMNOS::number endTime = std::numeric_limits<BPMNOS::number>::max());
+  bool advance();
 private:
   /// @brief Calls advance until it returns false.
-  void loop(BPMNOS::number endTime = std::numeric_limits<BPMNOS::number>::max());
+  void loop();
 public:
   void process(const InstantiationEvent* event);
   void process(const SignalBroadcastEvent* event);

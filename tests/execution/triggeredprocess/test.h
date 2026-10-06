@@ -9,17 +9,16 @@ SCENARIO( "Signal triggered process with operators", "[execution][triggeredproce
       "Instance_1; Emitter; amount := 0\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
     WHEN( "The emitter throws a signal nothing else awaits" ) {
-      Execution::Engine engine;
-      Execution::TimeWarp timeHandler;
-      timeHandler.connect(&engine);
+      Execution::Engine engine(model);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get());
+      engine.run(std::move(scenario));
 
       THEN( "An instance of the triggered process is created nonetheless" ) {
         auto log = recorder.find(nlohmann::json{{"processId","Triggered"},{"nodeId","SignalStartEvent"},{"state","COMPLETED"}});
@@ -35,17 +34,16 @@ SCENARIO( "Signal triggered process with operators", "[execution][triggeredproce
       "Instance_1; OtherEmitter; amount := 3\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
     WHEN( "The engine is started with a recorder" ) {
-      Execution::Engine engine;
-      Execution::TimeWarp timeHandler;
-      timeHandler.connect(&engine);
+      Execution::Engine engine(model);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get());
+      engine.run(std::move(scenario));
 
       THEN( "The emitter completes" ) {
         REQUIRE( recorder.find(nlohmann::json{{"processId","OtherEmitter"},{"nodeId","ThrowEvent_2"},{"state","DONE"}}).size() == 1 );
@@ -72,17 +70,16 @@ SCENARIO( "Signal triggered process with operators", "[execution][triggeredproce
       "Instance_2; Emitter; amount := 5\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
     WHEN( "The engine is started with a recorder" ) {
-      Execution::Engine engine;
-      Execution::TimeWarp timeHandler;
-      timeHandler.connect(&engine);
+      Execution::Engine engine(model);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get());
+      engine.run(std::move(scenario));
 
       auto log = recorder.find(nlohmann::json{{"processId","Triggered"},{"nodeId","SignalStartEvent"},{"state","COMPLETED"}});
 
@@ -123,21 +120,20 @@ SCENARIO( "Message triggered process", "[execution][triggeredprocess]" ) {
       "Instance_1; ThrowEventEmitter; amount := 7\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
     WHEN( "The engine is started without any message handler" ) {
-      Execution::Engine engine;
+      Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
-      Execution::TimeWarp timeHandler;
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
-      timeHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get());
+      engine.run(std::move(scenario));
 
       auto log = recorder.find(nlohmann::json{{"processId","Triggered"},{"nodeId","MessageStartEvent"},{"state","COMPLETED"}});
 
@@ -176,21 +172,20 @@ SCENARIO( "Message triggered process", "[execution][triggeredprocess]" ) {
       "Instance_2; ThrowEventEmitter; amount := 5\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
     WHEN( "The engine is started without any message handler" ) {
-      Execution::Engine engine;
+      Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
-      Execution::TimeWarp timeHandler;
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
-      timeHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get());
+      engine.run(std::move(scenario));
 
       auto log = recorder.find(nlohmann::json{{"processId","Triggered"},{"nodeId","MessageStartEvent"},{"state","COMPLETED"}});
 
@@ -226,21 +221,20 @@ SCENARIO( "Message triggered process", "[execution][triggeredprocess]" ) {
       "Instance_1; SendTaskEmitter; amount := 3\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
     WHEN( "The engine is started without any message handler" ) {
-      Execution::Engine engine;
+      Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
-      Execution::TimeWarp timeHandler;
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
-      timeHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get());
+      engine.run(std::move(scenario));
 
       THEN( "An instance of the triggered process is created" ) {
         auto log = recorder.find(nlohmann::json{{"processId","Triggered"},{"nodeId","MessageStartEvent"},{"state","COMPLETED"}});
@@ -266,21 +260,20 @@ SCENARIO( "Message triggered process", "[execution][triggeredprocess]" ) {
       "Instance_1; MultiSendEmitter; timestamp := 0\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
     WHEN( "The engine is started without any message handler" ) {
-      Execution::Engine engine;
+      Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
-      Execution::TimeWarp timeHandler;
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
-      timeHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get());
+      engine.run(std::move(scenario));
 
       auto log = recorder.find(nlohmann::json{{"processId","Triggered"},{"nodeId","MessageStartEvent"},{"state","COMPLETED"}});
 
@@ -311,21 +304,20 @@ SCENARIO( "Message triggered process", "[execution][triggeredprocess]" ) {
       "Instance_1; OtherEmitter; amount := 3\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
     WHEN( "The engine is started without any message handler" ) {
-      Execution::Engine engine;
+      Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
-      Execution::TimeWarp timeHandler;
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
-      timeHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get());
+      engine.run(std::move(scenario));
 
       THEN( "The emitter completes" ) {
         REQUIRE( recorder.find(nlohmann::json{{"processId","OtherEmitter"},{"nodeId","ThrowEvent_2"},{"state","DONE"}}).size() == 1 );

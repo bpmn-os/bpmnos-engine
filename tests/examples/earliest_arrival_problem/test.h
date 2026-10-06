@@ -11,25 +11,24 @@ SCENARIO( "Earliest arrival problem", "[examples][earliest_arrival_problem]" ) {
       "Instance1; EarliestArrival_Process; final_location := \"Destination\"\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,folders,csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile, folders);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
     WHEN( "The engine is started with the greedy controller" ) {
-      Execution::Engine engine;
+      Execution::Engine engine(model);
 
       auto evaluator = std::make_shared<Execution::GuidedEvaluator>();
       Execution::GreedyController controller(evaluator);
       controller.connect(&engine);
       
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;
-      Execution::TimeWarp timeHandler;
       messageTaskTerminator.connect(&engine);
-      timeHandler.connect(&engine);
 
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get());
+      engine.run(std::move(scenario));
       THEN( "Then locations are visited in the heuristic order" ) {
         auto travelLog = recorder.find(nlohmann::json{{"nodeId", "Travel"},{"state", "COMPLETED"}});
         REQUIRE( travelLog[0]["status"]["current_location"] == "Location1" );

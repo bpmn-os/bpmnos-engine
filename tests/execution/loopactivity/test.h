@@ -11,20 +11,19 @@ SCENARIO( "Loop task", "[execution][loopactivity]" ) {
         "Instance_1; LoopActivity_1; maximum := 2\n"
       ;
 
-      Model::StaticDataProvider dataProvider(modelFile,csv);
-      auto scenario = dataProvider.createScenario();
+      auto model = std::make_shared<const Model::Model>(modelFile);
+      auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+      auto scenario = dataProvider->createScenario();
 
-      Execution::Engine engine;
+      Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
-      Execution::TimeWarp timeHandler;
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
-      timeHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get());
+      engine.run(std::move(scenario));
       THEN( "The loop activity is performed twice" ) {
         auto entryLog = recorder.find(nlohmann::json{{"nodeId","LoopActivity_1"},{"state", "ENTERED"}});
         REQUIRE( entryLog.size() == 2 );
@@ -41,20 +40,19 @@ SCENARIO( "Loop task", "[execution][loopactivity]" ) {
         "Instance_1; LoopActivity_1; maximum := 4\n"
       ;
 
-      Model::StaticDataProvider dataProvider(modelFile,csv);
-      auto scenario = dataProvider.createScenario();
+      auto model = std::make_shared<const Model::Model>(modelFile);
+      auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+      auto scenario = dataProvider->createScenario();
 
-      Execution::Engine engine;
+      Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
-      Execution::TimeWarp timeHandler;
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
-      timeHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get());
+      engine.run(std::move(scenario));
       THEN( "The loop activity is performed as long as the loop condition holds" ) {
         auto entryLog = recorder.find(nlohmann::json{{"nodeId","LoopActivity_1"},{"state", "ENTERED"}});
         REQUIRE( entryLog.size() == 3 );
@@ -79,20 +77,19 @@ SCENARIO( "Loop subprocess", "[execution][loopactivity]" ) {
         "Instance_1; LoopActivity_1; maximum := 2\n"
       ;
 
-      Model::StaticDataProvider dataProvider(modelFile,csv);
-      auto scenario = dataProvider.createScenario();
+      auto model = std::make_shared<const Model::Model>(modelFile);
+      auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+      auto scenario = dataProvider->createScenario();
 
-      Execution::Engine engine;
+      Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
-      Execution::TimeWarp timeHandler;
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
-      timeHandler.connect(&engine);
     Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get());
+      engine.run(std::move(scenario));
       THEN( "The loop activity is performed twice" ) {
         auto entryLog = recorder.find(nlohmann::json{{"nodeId","LoopActivity_1"},{"state", "ENTERED"}});
         REQUIRE( entryLog.size() == 2 );
@@ -109,20 +106,19 @@ SCENARIO( "Loop subprocess", "[execution][loopactivity]" ) {
         "Instance_1; LoopActivity_1; maximum := 4\n"
       ;
 
-      Model::StaticDataProvider dataProvider(modelFile,csv);
-      auto scenario = dataProvider.createScenario();
+      auto model = std::make_shared<const Model::Model>(modelFile);
+      auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+      auto scenario = dataProvider->createScenario();
 
-      Execution::Engine engine;
+      Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
-      Execution::TimeWarp timeHandler;
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
-      timeHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get());
+      engine.run(std::move(scenario));
       THEN( "The loop activity is performed as long as the loop condition holds" ) {
         auto entryLog = recorder.find(nlohmann::json{{"nodeId","LoopActivity_1"},{"state", "ENTERED"}});
         REQUIRE( entryLog.size() == 3 );
@@ -147,21 +143,20 @@ SCENARIO( "Loop subprocess with operators", "[execution][loopactivity]" ) {
       "Instance_1; LoopActivity_1; maximum := 3\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
     WHEN( "The engine is started with a recorder" ) {
-      Execution::Engine engine;
+      Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
-      Execution::TimeWarp timeHandler;
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
-      timeHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get());
+      engine.run(std::move(scenario));
 
       THEN( "The loop activity is entered three times" ) {
         auto entryLog = recorder.find(nlohmann::json{{"nodeId","LoopActivity_1"},{"state", "ENTERED"}});

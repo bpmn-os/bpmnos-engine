@@ -9,17 +9,16 @@ SCENARIO( "Empty executable process", "[execution][process]" ) {
       "Instance_1; Process_1;\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
     WHEN( "The engine is started with a recorder" ) {
-      Execution::Engine engine;
-      Execution::TimeWarp timeHandler;
-      timeHandler.connect(&engine);
+      Execution::Engine engine(model);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get());
+      engine.run(std::move(scenario));
       auto tokenLog = recorder.find(nlohmann::json{}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
       THEN( "The token log has exactly 6 entries" ) {
         REQUIRE( tokenLog.size() == 6 );
@@ -53,17 +52,16 @@ SCENARIO( "Trivial executable process", "[execution][process]" ) {
       "Instance_1; Process_1;\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
     WHEN( "The engine is started with a recorder" ) {
-      Execution::Engine engine;
-      Execution::TimeWarp timeHandler;
-      timeHandler.connect(&engine);
+      Execution::Engine engine(model);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get());
+      engine.run(std::move(scenario));
       auto tokenLog = recorder.find(nlohmann::json{}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
       THEN( "The token log has exactly 10 entries" ) {
         REQUIRE( tokenLog.size() == 10 );
@@ -96,20 +94,20 @@ SCENARIO( "Executable process starting after time zero", "[execution][process]" 
       "Instance_1; Process_1; timestamp := 42\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
     THEN( "The earliest instantiation is at time 42" ) {
-      REQUIRE( scenario->getEarliestInstantiationTime() == 42 );
+      REQUIRE( dataProvider->getEarliestInstantiationTime(*scenario) == 42 );
     }
 
     WHEN( "The engine is run from the earliest instantiation time" ) {
-      Execution::Engine engine;
-      Execution::TimeWarp timeHandler;
-      timeHandler.connect(&engine);
+      Execution::Engine engine(model);
       Execution::Recorder recorder;
       recorder.subscribe(&engine);
-      engine.run(scenario.get(), scenario->getEarliestInstantiationTime());
+      auto startTime = dataProvider->getEarliestInstantiationTime(*scenario);
+      engine.run(std::move(scenario), startTime);
 
       THEN( "The log opens with the clock tick that starts the run" ) {
         REQUIRE( recorder.log[0]["event"] == "clocktick" );
@@ -142,21 +140,20 @@ SCENARIO( "Simple executable process", "[execution][process]" ) {
       "Instance_1; Process_1; timestamp := 5\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
     WHEN( "The engine is started with a recorder" ) {
-      Execution::Engine engine;
+      Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
-      Execution::TimeWarp timeHandler;
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
-      timeHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get());
+      engine.run(std::move(scenario));
       auto tokenLog = recorder.find(nlohmann::json{}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
       THEN( "The token log has exactly 20 entries" ) {
         REQUIRE( tokenLog.size() == 20 );
@@ -201,21 +198,20 @@ SCENARIO( "Simple executable process", "[execution][process]" ) {
       "Instance_1; Process_1; timestamp := 10; 5\n"
     ;
 
-    Model::DynamicDataProvider dataProvider(modelFile,csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::DynamicDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
     WHEN( "The engine is started" ) {
-      Execution::Engine engine;
+      Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
-      Execution::TimeWarp timeHandler;
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
-      timeHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get());
+      engine.run(std::move(scenario));
       THEN( "The start is deferred correctly" ) {
         auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr }, {"event",nullptr },{"decision",nullptr }});
         REQUIRE( processLog[2]["state"] == "ENTERED" );
@@ -231,21 +227,20 @@ SCENARIO( "Simple executable process", "[execution][process]" ) {
       "Instance_1; Process_1; timestamp := triangular(10,10,10); triangular(5,5,5)\n"
     ;
 
-    Model::StochasticDataProvider dataProvider(modelFile,csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StochasticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
     WHEN( "The engine is started" ) {
-      Execution::Engine engine;
+      Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
-      Execution::TimeWarp timeHandler;
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
-      timeHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get());
+      engine.run(std::move(scenario));
       
       THEN( "The start is deferred correctly" ) {
         auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr }, {"event",nullptr },{"decision",nullptr }});
@@ -262,21 +257,20 @@ SCENARIO( "Simple executable process", "[execution][process]" ) {
       "Instance_1; Process_1; timestamp := triangular(10,10,10); triangular(5,5,5)\n"
     ;
 
-    Model::ExpectedValueDataProvider dataProvider(modelFile,csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::ExpectedValueDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
     WHEN( "The engine is started" ) {
-      Execution::Engine engine;
+      Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
-      Execution::TimeWarp timeHandler;
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
-      timeHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get());
+      engine.run(std::move(scenario));
       
       THEN( "The start is deferred correctly" ) {
         auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr }, {"event",nullptr },{"decision",nullptr }});
@@ -297,19 +291,18 @@ SCENARIO( "Constrained executable process", "[execution][process]" ) {
         "Instance_1; Process_1; timestamp := 0\n"
       ;
 
-      Model::StaticDataProvider dataProvider(modelFile,csv);
-      auto scenario = dataProvider.createScenario();
-      Execution::Engine engine;
+      auto model = std::make_shared<const Model::Model>(modelFile);
+      auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+      auto scenario = dataProvider->createScenario();
+      Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
-      Execution::TimeWarp timeHandler;
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
-      timeHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get());
+      engine.run(std::move(scenario));
       THEN( "The process completes without failure" ) {
         auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr }, {"event",nullptr },{"decision",nullptr }});
         REQUIRE( processLog[0]["state"] == "CREATED" );
@@ -327,19 +320,18 @@ SCENARIO( "Constrained executable process", "[execution][process]" ) {
         "Instance_1; Process_1; timestamp := 2\n"
       ;
 
-      Model::StaticDataProvider dataProvider(modelFile,csv);
-      auto scenario = dataProvider.createScenario();
-      Execution::Engine engine;
+      auto model = std::make_shared<const Model::Model>(modelFile);
+      auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+      auto scenario = dataProvider->createScenario();
+      Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
-      Execution::TimeWarp timeHandler;
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
-      timeHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get());
+      engine.run(std::move(scenario));
       THEN( "The process fails after entry" ) {
         auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr }, {"event",nullptr },{"decision",nullptr }});
         REQUIRE( processLog[0]["state"] == "CREATED" );
@@ -355,19 +347,18 @@ SCENARIO( "Constrained executable process", "[execution][process]" ) {
         "Instance_1; Process_1; timestamp := 1\n"
       ;
 
-      Model::StaticDataProvider dataProvider(modelFile,csv);
-      auto scenario = dataProvider.createScenario();
-      Execution::Engine engine;
+      auto model = std::make_shared<const Model::Model>(modelFile);
+      auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+      auto scenario = dataProvider->createScenario();
+      Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
-      Execution::TimeWarp timeHandler;
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
-      timeHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get());
+      engine.run(std::move(scenario));
       THEN( "The process fails after completion" ) {
         auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr }, {"event",nullptr },{"decision",nullptr }});
         REQUIRE( processLog[0]["state"] == "CREATED" );
@@ -402,17 +393,16 @@ SCENARIO( "Process with operators", "[execution][process]" ) {
       "Instance_2; Process_1;\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
     WHEN( "The engine is started with a recorder" ) {
-      Execution::Engine engine;
-      Execution::TimeWarp timeHandler;
-      timeHandler.connect(&engine);
+      Execution::Engine engine(model);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get());
+      engine.run(std::move(scenario));
 
       THEN( "The operators of the process are applied at its start event" ) {
         auto log = recorder.find(nlohmann::json{{"nodeId","StartEvent_1"},{"state","COMPLETED"}});
@@ -455,16 +445,16 @@ SCENARIO( "Executable process created and started in two steps", "[execution][pr
       "Instance_1; Process_1; timestamp := 5\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
     WHEN( "The engine is initialized at the instantiation time and advances by the instantiation event" ) {
-      Execution::Engine engine;
-      Execution::TimeWarp timeHandler;
-      timeHandler.connect(&engine);
+      Execution::Engine engine(model);
       Execution::Recorder recorder;
       recorder.subscribe(&engine);
-      engine.initialize(scenario.get(), scenario->getEarliestInstantiationTime());
+      auto startTime = dataProvider->getEarliestInstantiationTime(*scenario);
+      engine.initialize(std::move(scenario), startTime);
       auto systemState = engine.getSystemState();
       REQUIRE( systemState->instances.empty() );
       REQUIRE( engine.advance() );
@@ -514,20 +504,20 @@ SCENARIO( "Executable process created when it becomes known", "[execution][proce
       "Instance_1; Process_1; timestamp := 10; 5\n"
     ;
 
-    Model::DynamicDataProvider dataProvider(modelFile,csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::DynamicDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
     WHEN( "The engine is run until time 5" ) {
-      Execution::Engine engine;
+      Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
-      Execution::TimeWarp timeHandler;
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
-      timeHandler.connect(&engine);
       Execution::Recorder recorder;
       recorder.subscribe(&engine);
-      engine.run(scenario.get(), 0, 5);
+      dataProvider->setEndTime(5);
+      engine.run(std::move(scenario));
       auto systemState = engine.getSystemState();
 
       THEN( "The instance is created but not started" ) {
@@ -541,7 +531,8 @@ SCENARIO( "Executable process created when it becomes known", "[execution][proce
       }
 
       WHEN( "The engine is resumed until time 10" ) {
-        engine.resume(10);
+        dataProvider->setEndTime(10);
+        engine.resume();
 
         THEN( "The instance is started at time 10" ) {
           auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr }, {"event",nullptr },{"decision",nullptr }});
@@ -568,20 +559,20 @@ SCENARIO( "Executable process known before its start", "[execution][process]" ) 
       "Instance_1; Process_1; cost := 7\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
     WHEN( "The engine is run until time 5" ) {
-      Execution::Engine engine;
+      Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
-      Execution::TimeWarp timeHandler;
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
-      timeHandler.connect(&engine);
       Execution::Recorder recorder;
       recorder.subscribe(&engine);
-      engine.run(scenario.get(), 0, 5);
+      dataProvider->setEndTime(5);
+      engine.run(std::move(scenario));
       auto systemState = engine.getSystemState();
 
       THEN( "The instance is known but raises no decision request" ) {
@@ -597,7 +588,8 @@ SCENARIO( "Executable process known before its start", "[execution][process]" ) 
       }
 
       WHEN( "The engine is resumed until time 10" ) {
-        engine.resume(10);
+        dataProvider->setEndTime(10);
+        engine.resume();
 
         THEN( "The data of the instance is accounted in the objective from its start" ) {
           REQUIRE( systemState->getObjective() == -7 );
@@ -610,52 +602,46 @@ SCENARIO( "Executable process known before its start", "[execution][process]" ) 
 SCENARIO( "Engine refusing a scenario of another model", "[execution][process]" ) {
   const std::string modelFile = "tests/execution/process/Empty_executable_process.bpmn";
 
-  GIVEN( "Two data providers each parsing the model file" ) {
+  GIVEN( "Two data providers each built on a model parsed from the model file" ) {
 
     std::string csv =
       "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
       "Instance_1; Process_1;\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv);
-    Model::StaticDataProvider otherDataProvider(modelFile,csv);
-    auto scenario = dataProvider.createScenario();
-    auto otherScenario = otherDataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto otherModel = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto otherDataProvider = std::make_shared<Execution::StaticDataProvider>(otherModel, csv);
 
     WHEN( "The engine is constructed with the model of the first data provider" ) {
-      Execution::Engine engine(dataProvider.getModel());
-      Execution::TimeWarp timeHandler;
-      timeHandler.connect(&engine);
+      Execution::Engine engine(model);
 
       THEN( "The engine executes the model of the first data provider" ) {
-        REQUIRE( engine.getModel() == dataProvider.getModel().get() );
+        REQUIRE( engine.getModel() == model.get() );
       }
       THEN( "The engine runs a scenario of the first data provider" ) {
-        REQUIRE_NOTHROW( engine.run(scenario.get()) );
+        REQUIRE_NOTHROW( engine.run(dataProvider->createScenario()) );
       }
       THEN( "The engine refuses to run a scenario of the second data provider" ) {
-        REQUIRE_THROWS_AS( engine.run(otherScenario.get()), std::invalid_argument );
+        REQUIRE_THROWS_AS( engine.run(otherDataProvider->createScenario()), std::invalid_argument );
       }
       THEN( "The engine refuses to install a system state with a scenario of the second data provider" ) {
-        Execution::Engine sourceEngine(dataProvider.getModel());
-        Execution::TimeWarp sourceTimeHandler;
-        sourceTimeHandler.connect(&sourceEngine);
-        sourceEngine.run(scenario.get());
-        REQUIRE_THROWS_AS( engine.initializeSystemState(otherScenario.get(), sourceEngine.getSystemState()), std::invalid_argument );
+        Execution::Engine sourceEngine(model);
+        sourceEngine.run(dataProvider->createScenario());
+        REQUIRE_THROWS_AS( engine.initializeSystemState(otherDataProvider->createScenario(), sourceEngine.getSystemState()), std::invalid_argument );
       }
     }
 
     WHEN( "The engine is constructed without a model and runs a scenario of the first data provider" ) {
       Execution::Engine engine;
-      Execution::TimeWarp timeHandler;
-      timeHandler.connect(&engine);
-      engine.run(scenario.get());
+      engine.run(dataProvider->createScenario());
 
       THEN( "The engine executes the model of the first data provider" ) {
-        REQUIRE( engine.getModel() == dataProvider.getModel().get() );
+        REQUIRE( engine.getModel() == model.get() );
       }
       THEN( "The engine refuses to run a scenario of the second data provider" ) {
-        REQUIRE_THROWS_AS( engine.run(otherScenario.get()), std::invalid_argument );
+        REQUIRE_THROWS_AS( engine.run(otherDataProvider->createScenario()), std::invalid_argument );
       }
     }
   }

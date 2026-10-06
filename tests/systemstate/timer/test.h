@@ -8,29 +8,28 @@ SCENARIO( "SystemState copy with token awaiting timer", "[systemstate][timer]" )
       "Instance_1; Process_1; trigger := 10\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile, csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
-    Execution::Engine engine;
+    Execution::Engine engine(model);
     Execution::InstantEntry entryHandler;
     Execution::InstantExit exitHandler;
-    Execution::TimeWarp timeHandler;
     entryHandler.connect(&engine);
     exitHandler.connect(&engine);
-    timeHandler.connect(&engine);
     Execution::Recorder recorder;
 //    Execution::Recorder recorder(std::cerr);
     recorder.subscribe(&engine);
 
-    engine.run(scenario.get(), 0, 0);
+    dataProvider->setEndTime(0);
+    engine.run(std::move(scenario), 0);
     const auto* originalState = engine.getSystemState();
 
     REQUIRE( originalState->tokensAwaitingTimer.count() == 1 );
 
     WHEN( "SystemState is copied" ) {
-      auto scenarioCopy = dataProvider.createScenario();
-      auto wrappedScenarioCopy = Execution::LegacyDataProvider::wrap(scenarioCopy.get());
-      Execution::SystemState copiedState(&engine, wrappedScenarioCopy.get(), originalState);
+      auto scenarioCopy = dataProvider->createScenario();
+      Execution::SystemState copiedState(&engine, scenarioCopy.get(), originalState);
 
       THEN( "The copy has the same tokens awaiting timer" ) {
         REQUIRE( copiedState.tokensAwaitingTimer.count() == originalState->tokensAwaitingTimer.count() );

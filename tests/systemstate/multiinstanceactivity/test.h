@@ -8,20 +8,20 @@ SCENARIO( "SystemState copy with parallel multi-instance activity", "[systemstat
       "Instance_1; Process_1; timestamp := 0\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile, csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
-    Execution::Engine engine;
+    Execution::Engine engine(model);
     Execution::InstantEntry entryHandler;
     // No exit handler - tasks stay in BUSY state
-    Execution::TimeWarp timeHandler;
     entryHandler.connect(&engine);
-    timeHandler.connect(&engine);
     Execution::Recorder recorder;
 //    Execution::Recorder recorder(std::cerr);
     recorder.subscribe(&engine);
 
-    engine.run(scenario.get(), 0, 0);
+    dataProvider->setEndTime(0);
+    engine.run(std::move(scenario), 0);
     const auto* originalState = engine.getSystemState();
 
     // Should have 3 instance tokens and 1 main token (WAITING)
@@ -32,9 +32,8 @@ SCENARIO( "SystemState copy with parallel multi-instance activity", "[systemstat
     REQUIRE( mainToken->state == Execution::Token::State::WAITING );
 
     WHEN( "SystemState is copied" ) {
-      auto scenarioCopy = dataProvider.createScenario();
-      auto wrappedScenarioCopy = Execution::LegacyDataProvider::wrap(scenarioCopy.get());
-      Execution::SystemState copiedState(&engine, wrappedScenarioCopy.get(), originalState);
+      auto scenarioCopy = dataProvider->createScenario();
+      Execution::SystemState copiedState(&engine, scenarioCopy.get(), originalState);
 
       THEN( "The copy has the same multi-instance mappings" ) {
         REQUIRE( copiedState.tokenAtMultiInstanceActivity.size() ==
@@ -59,20 +58,20 @@ SCENARIO( "SystemState copy with sequential multi-instance activity", "[systemst
       "Instance_1; Process_1; timestamp := 0\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile, csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
-    Execution::Engine engine;
+    Execution::Engine engine(model);
     Execution::InstantEntry entryHandler;
     // No exit handler - first task stays in BUSY state, others wait
-    Execution::TimeWarp timeHandler;
     entryHandler.connect(&engine);
-    timeHandler.connect(&engine);
     Execution::Recorder recorder;
 //    Execution::Recorder recorder(std::cerr);
     recorder.subscribe(&engine);
 
-    engine.run(scenario.get(), 0, 0);
+    dataProvider->setEndTime(0);
+    engine.run(std::move(scenario), 0);
     const auto* originalState = engine.getSystemState();
 
     // Should have instance tokens and sequential waiting chain
@@ -82,9 +81,8 @@ SCENARIO( "SystemState copy with sequential multi-instance activity", "[systemst
     REQUIRE( originalState->tokenAwaitingMultiInstanceExit.size() == 2 );
 
     WHEN( "SystemState is copied" ) {
-      auto scenarioCopy = dataProvider.createScenario();
-      auto wrappedScenarioCopy = Execution::LegacyDataProvider::wrap(scenarioCopy.get());
-      Execution::SystemState copiedState(&engine, wrappedScenarioCopy.get(), originalState);
+      auto scenarioCopy = dataProvider->createScenario();
+      Execution::SystemState copiedState(&engine, scenarioCopy.get(), originalState);
 
       THEN( "The copy has the same multi-instance mappings" ) {
         REQUIRE( copiedState.tokenAtMultiInstanceActivity.size() ==

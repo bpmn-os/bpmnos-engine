@@ -9,31 +9,30 @@ SCENARIO( "SystemState copy for simple process", "[systemstate][process]" ) {
       "Instance_2; Process_1; timestamp := 0\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile, csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
-    Execution::Engine engine;
+    Execution::Engine engine(model);
     Execution::InstantEntry entryHandler;
     Execution::InstantExit exitHandler;
-    Execution::TimeWarp timeHandler;
 //    entryHandler.connect(&engine); // disabled to stall process
     exitHandler.connect(&engine);
-    timeHandler.connect(&engine);
     Execution::Recorder recorder;
 //   Execution::Recorder recorder(std::cerr);  // prints for debugging
     recorder.subscribe(&engine);
 
-    engine.run(scenario.get(), 0, 0);
+    dataProvider->setEndTime(0);
+    engine.run(std::move(scenario), 0);
     const auto* originalState= engine.getSystemState();
 
     REQUIRE( originalState->instances.size() == 2 );
     REQUIRE( originalState->pendingEntryDecisions.count() == 2 );
 
     WHEN( "SystemState is copied" ) {
-      auto scenarioCopy = dataProvider.createScenario();
+      auto scenarioCopy = dataProvider->createScenario();
       //
-      auto wrappedScenarioCopy = Execution::LegacyDataProvider::wrap(scenarioCopy.get());
-      Execution::SystemState copiedState(&engine, wrappedScenarioCopy.get(), originalState);
+      Execution::SystemState copiedState(&engine, scenarioCopy.get(), originalState);
 
       THEN( "The copy has the same number of instances" ) {
         REQUIRE( copiedState.instances.size() == originalState->instances.size() );
@@ -75,30 +74,29 @@ SCENARIO( "SystemState copy with token awaiting ready event", "[systemstate][pro
       "Instance_1; Activity_1; data := 0; 10\n"
     ;
 
-    Model::DynamicDataProvider dataProvider(modelFile, csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::DynamicDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
-    Execution::Engine engine;
+    Execution::Engine engine(model);
     Execution::InstantEntry entryHandler;
     Execution::InstantExit exitHandler;
-    Execution::TimeWarp timeHandler;
     entryHandler.connect(&engine);
     exitHandler.connect(&engine);
-    timeHandler.connect(&engine);
     Execution::Recorder recorder;
 //    Execution::Recorder recorder(std::cerr);
     recorder.subscribe(&engine);
 
-    engine.run(scenario.get(), 0, 0);
+    dataProvider->setEndTime(0);
+    engine.run(std::move(scenario), 0);
     const auto* originalState = engine.getSystemState();
 
     // Token should be waiting for ready event at Activity_1
     REQUIRE( originalState->tokensAwaitingReadyEvent.count() == 1 );
 
     WHEN( "SystemState is copied" ) {
-      auto scenarioCopy = dataProvider.createScenario();
-      auto wrappedScenarioCopy = Execution::LegacyDataProvider::wrap(scenarioCopy.get());
-      Execution::SystemState copiedState(&engine, wrappedScenarioCopy.get(), originalState);
+      auto scenarioCopy = dataProvider->createScenario();
+      Execution::SystemState copiedState(&engine, scenarioCopy.get(), originalState);
 
       THEN( "The copy has the same tokens awaiting ready event" ) {
         REQUIRE( copiedState.tokensAwaitingReadyEvent.count() ==
@@ -124,9 +122,7 @@ SCENARIO( "Engine resume from stopped state", "[systemstate][process][resume]" )
     // First engine: entry handler but NO exit handler
     Execution::Engine engine1;
     Execution::InstantEntry entryHandler1;
-    Execution::TimeWarp timeHandler1;
     entryHandler1.connect(&engine1);
-    timeHandler1.connect(&engine1);
     Execution::Recorder recorder1;
     recorder1.subscribe(&engine1);
 

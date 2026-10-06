@@ -8,17 +8,17 @@ SCENARIO( "SystemState copy with pending event subprocess", "[systemstate][event
       "Instance_1; Process_1;\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile, csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
-    Execution::Engine engine;
+    Execution::Engine engine(model);
     // No entry handler - Activity_1 blocks, escalation never thrown
-    Execution::TimeWarp timeHandler;
-    timeHandler.connect(&engine);
     Execution::Recorder recorder;
     recorder.subscribe(&engine);
 
-    engine.run(scenario.get(), 0, 0);
+    dataProvider->setEndTime(0);
+    engine.run(std::move(scenario), 0);
     const auto* originalState = engine.getSystemState();
 
     // Find the context StateMachine (owned by process token)
@@ -36,9 +36,8 @@ SCENARIO( "SystemState copy with pending event subprocess", "[systemstate][event
     REQUIRE( originalContext->pendingEventSubProcesses.size() == 1 );
 
     WHEN( "SystemState is copied" ) {
-      auto scenarioCopy = dataProvider.createScenario();
-      auto wrappedScenarioCopy = Execution::LegacyDataProvider::wrap(scenarioCopy.get());
-      Execution::SystemState copiedState(&engine, wrappedScenarioCopy.get(), originalState);
+      auto scenarioCopy = dataProvider->createScenario();
+      Execution::SystemState copiedState(&engine, scenarioCopy.get(), originalState);
 
       THEN( "The copy has the same pending event subprocess" ) {
         const Execution::StateMachine* copiedContext = nullptr;
@@ -74,19 +73,19 @@ SCENARIO( "SystemState copy with interrupting event subprocess", "[systemstate][
       "Instance_1; Process_1;\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile, csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
-    Execution::Engine engine;
+    Execution::Engine engine(model);
     Execution::InstantEntry entryHandler;
     // No exit handler - Activity_1 in event subprocess stays BUSY
-    Execution::TimeWarp timeHandler;
     entryHandler.connect(&engine);
-    timeHandler.connect(&engine);
     Execution::Recorder recorder;
     recorder.subscribe(&engine);
 
-    engine.run(scenario.get(), 0, 0);
+    dataProvider->setEndTime(0);
+    engine.run(std::move(scenario), 0);
     const auto* originalState = engine.getSystemState();
 
     // Find the context StateMachine
@@ -104,9 +103,8 @@ SCENARIO( "SystemState copy with interrupting event subprocess", "[systemstate][
     REQUIRE( originalContext->interruptingEventSubProcess != nullptr );
 
     WHEN( "SystemState is copied" ) {
-      auto scenarioCopy = dataProvider.createScenario();
-      auto wrappedScenarioCopy = Execution::LegacyDataProvider::wrap(scenarioCopy.get());
-      Execution::SystemState copiedState(&engine, wrappedScenarioCopy.get(), originalState);
+      auto scenarioCopy = dataProvider->createScenario();
+      Execution::SystemState copiedState(&engine, scenarioCopy.get(), originalState);
 
       THEN( "The copy has the interrupting event subprocess" ) {
         const Execution::StateMachine* copiedContext = nullptr;
@@ -140,19 +138,19 @@ SCENARIO( "SystemState copy with non-interrupting event subprocess", "[systemsta
       "Instance_1; Process_1;\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile, csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
-    Execution::Engine engine;
+    Execution::Engine engine(model);
     Execution::InstantEntry entryHandler;
     // No exit handler - Activity_1 in event subprocess stays BUSY
-    Execution::TimeWarp timeHandler;
     entryHandler.connect(&engine);
-    timeHandler.connect(&engine);
     Execution::Recorder recorder;
     recorder.subscribe(&engine);
 
-    engine.run(scenario.get(), 0, 0);
+    dataProvider->setEndTime(0);
+    engine.run(std::move(scenario), 0);
     const auto* originalState = engine.getSystemState();
 
     // Find the context StateMachine
@@ -170,9 +168,8 @@ SCENARIO( "SystemState copy with non-interrupting event subprocess", "[systemsta
     REQUIRE( originalContext->nonInterruptingEventSubProcesses.size() == 1 );
 
     WHEN( "SystemState is copied" ) {
-      auto scenarioCopy = dataProvider.createScenario();
-      auto wrappedScenarioCopy = Execution::LegacyDataProvider::wrap(scenarioCopy.get());
-      Execution::SystemState copiedState(&engine, wrappedScenarioCopy.get(), originalState);
+      auto scenarioCopy = dataProvider->createScenario();
+      Execution::SystemState copiedState(&engine, scenarioCopy.get(), originalState);
 
       THEN( "The copy has the non-interrupting event subprocess" ) {
         const Execution::StateMachine* copiedContext = nullptr;

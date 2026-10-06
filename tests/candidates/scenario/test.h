@@ -17,10 +17,8 @@ SCENARIO( "Scenario records the correct completion timestamp for a BUSY task", "
     Execution::Engine engine;
     Execution::InstantEntry entryHandler;
     Execution::InstantExit exitHandler;
-    Execution::TimeWarp timeHandler;
     entryHandler.connect(&engine);
     exitHandler.connect(&engine);
-    timeHandler.connect(&engine);
     engine.run(scenario.get(), 0, 0);
 
     // Resolve (instanceId, node) from the scenario's own model so the keys match those the scenario stores.

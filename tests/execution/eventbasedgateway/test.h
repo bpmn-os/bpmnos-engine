@@ -10,20 +10,19 @@ SCENARIO( "Event-based gateway with two timer events", "[execution][eventbasedga
         "Instance_1; Process_1; trigger2 := 2\n"
       ;
 
-      Model::StaticDataProvider dataProvider(modelFile,csv);
-      auto scenario = dataProvider.createScenario();
+      auto model = std::make_shared<const Model::Model>(modelFile);
+      auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+      auto scenario = dataProvider->createScenario();
 
-      Execution::Engine engine;
+      Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
-      Execution::TimeWarp timeHandler;
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
-      timeHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get());
+      engine.run(std::move(scenario));
       THEN( "The token at timer 2 is withdrawn" ) {
         auto completionLog =recorder.find(nlohmann::json{{"state", "COMPLETED"}}, nlohmann::json{{"nodeId","StartEvent_1"}});
         REQUIRE( completionLog[0]["nodeId"] == "TimerEvent_1" );
@@ -42,20 +41,19 @@ SCENARIO( "Event-based gateway with two timer events", "[execution][eventbasedga
         "Instance_1; Process_1; trigger2 := 1\n"
       ;
 
-      Model::StaticDataProvider dataProvider(modelFile,csv);
-      auto scenario = dataProvider.createScenario();
+      auto model = std::make_shared<const Model::Model>(modelFile);
+      auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+      auto scenario = dataProvider->createScenario();
 
-      Execution::Engine engine;
+      Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
-      Execution::TimeWarp timeHandler;
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
-      timeHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get());
+      engine.run(std::move(scenario));
       THEN( "The token at timer 1 is withdrawn" ) {
         auto completionLog =recorder.find(nlohmann::json{{"state", "COMPLETED"}}, nlohmann::json{{"nodeId","StartEvent_1"}});
         REQUIRE( completionLog[0]["nodeId"] == "TimerEvent_2" );

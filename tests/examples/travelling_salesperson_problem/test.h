@@ -12,27 +12,26 @@ SCENARIO( "Travelling salesperson problem", "[examples][travelling_salesperson_p
       "Instance1; TravellingSalesperson_Process; locations := [\"Munich\",\"Berlin\",\"Cologne\"]\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,folders,csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile, folders);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
     WHEN( "The engine is started with a first-come-first-serve policy" ) {
-      Execution::Engine engine;
+      Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
 //      Execution::FirstComeFirstServedSequentialEntry sequentialEntryHandler;
       Execution::FirstMatchingMessageDelivery messageHandler;
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;
       Execution::InstantExit exitHandler;
-      Execution::TimeWarp timeHandler;
 //      sequentialEntryHandler.connect(&engine);
       messageHandler.connect(&engine);
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
       messageTaskTerminator.connect(&engine);
-      timeHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get());
+      engine.run(std::move(scenario));
       THEN( "Then locations are visited in any order" ) {
         auto visitLog = recorder.find(nlohmann::json{{"nodeId", "VisitLocation"},{"state", "ENTERED"}});
         REQUIRE( visitLog.size() == 3 );
@@ -44,7 +43,7 @@ SCENARIO( "Travelling salesperson problem", "[examples][travelling_salesperson_p
       }
     }
     WHEN( "The engine is started with a best-first policy" ) {
-      Execution::Engine engine;
+      Execution::Engine engine(model);
       auto evaluator = std::make_shared<Execution::LocalEvaluator>();
       
 //      Execution::InstantEntry entryHandler;
@@ -53,7 +52,6 @@ SCENARIO( "Travelling salesperson problem", "[examples][travelling_salesperson_p
       Execution::FirstMatchingMessageDelivery messageHandler;
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;
       Execution::InstantExit exitHandler;
-      Execution::TimeWarp timeHandler;
       
       
       sequentialEntryHandler.connect(&engine);
@@ -62,12 +60,11 @@ SCENARIO( "Travelling salesperson problem", "[examples][travelling_salesperson_p
       exitHandler.connect(&engine);
 
       messageTaskTerminator.connect(&engine);
-      timeHandler.connect(&engine);
 
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get());
+      engine.run(std::move(scenario));
       THEN( "Then locations are visited in the nearest-neighbour order" ) {
         auto visitLog = recorder.find(nlohmann::json{{"nodeId", "VisitLocation"},{"state", "ENTERED"}});
         REQUIRE( visitLog[0]["status"]["location"] == "Berlin" );
@@ -77,21 +74,19 @@ SCENARIO( "Travelling salesperson problem", "[examples][travelling_salesperson_p
     }
 
     WHEN( "The engine is started with the greedy controller" ) {
-      Execution::Engine engine;
+      Execution::Engine engine(model);
 
       auto evaluator = std::make_shared<Execution::LocalEvaluator>();
       Execution::GreedyController controller(evaluator);
       controller.connect(&engine);
       
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;
-      Execution::TimeWarp timeHandler;
       messageTaskTerminator.connect(&engine);
-      timeHandler.connect(&engine);
 
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get());
+      engine.run(std::move(scenario));
       THEN( "Then locations are visited in the nearest-neighbour order" ) {
         auto visitLog = recorder.find(nlohmann::json{{"nodeId", "VisitLocation"},{"state", "ENTERED"}});
         REQUIRE( visitLog[0]["status"]["location"] == "Berlin" );

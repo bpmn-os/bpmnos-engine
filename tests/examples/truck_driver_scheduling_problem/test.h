@@ -12,25 +12,25 @@ SCENARIO( "Truck driver scheduling problem", "[examples][truck_driver_scheduling
       "Driver1; TruckDriverProcess; latest_visits := [1440,1440]\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
     WHEN( "The engine is started with the guided controller" ) {
-      Execution::Engine engine;
+      Execution::Engine engine(model);
 
       auto evaluator = std::make_shared<Execution::GuidedEvaluator>();
       Execution::GreedyController controller(evaluator);
       controller.connect(&engine);
       
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;
-      Execution::TimeWarp timeHandler;
       messageTaskTerminator.connect(&engine);
-      timeHandler.connect(&engine);
 
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get(), 0, 1500);
+      dataProvider->setEndTime(1500);
+      engine.run(std::move(scenario), 0);
       THEN( "Then no failure occurs" ) {
         auto failureLog = recorder.find(nlohmann::json{{"state", "FAILED"}});
         REQUIRE( failureLog.size() == 0 );
@@ -62,25 +62,25 @@ SCENARIO( "Truck driver scheduling problem", "[examples][truck_driver_scheduling
     // Solution: D8h, B½, D½, R10 ,S½ => 19½
     // Solution: D8h, R10, D½, S½ => 19h
 
-    Model::StaticDataProvider dataProvider(modelFile,csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
     WHEN( "The engine is started with the guided controller" ) {
-      Execution::Engine engine;
+      Execution::Engine engine(model);
 
       auto evaluator = std::make_shared<Execution::GuidedEvaluator>();
       Execution::GreedyController controller(evaluator);
       controller.connect(&engine);
       
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;
-      Execution::TimeWarp timeHandler;
       messageTaskTerminator.connect(&engine);
-      timeHandler.connect(&engine);
 
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get(), 0, 1500);
+      dataProvider->setEndTime(1500);
+      engine.run(std::move(scenario), 0);
       THEN( "Then no failure occurs" ) {
         auto failureLog = recorder.find(nlohmann::json{{"state", "FAILED"}});
         REQUIRE( failureLog.size() == 0 );
@@ -112,25 +112,25 @@ SCENARIO( "Truck driver scheduling problem", "[examples][truck_driver_scheduling
     // Solution: D6, W4, S½, B½, D1, R10, D3, S½ => 27½h
     // Solution: D6, R10, S½, D6, S½ => 23h
 
-    Model::StaticDataProvider dataProvider(modelFile,csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
     WHEN( "The engine is started with the guided greedy controller" ) {
-      Execution::Engine engine;
+      Execution::Engine engine(model);
 
       auto evaluator = std::make_shared<Execution::GuidedEvaluator>();
       Execution::GreedyController controller(evaluator);
       controller.connect(&engine);
       
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;
-      Execution::TimeWarp timeHandler;
       messageTaskTerminator.connect(&engine);
-      timeHandler.connect(&engine);
 
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get(), 0, 2000);
+      dataProvider->setEndTime(2000);
+      engine.run(std::move(scenario), 0);
       THEN( "Then no failure occurs" ) {
         auto failureLog = recorder.find(nlohmann::json{{"state", "FAILED"}});
         REQUIRE( failureLog.size() == 0 );

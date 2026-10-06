@@ -2,6 +2,7 @@
 #define BPMNOS_Execution_LegacyDataProvider_H
 
 #include <list>
+#include <limits>
 #include <bpmn++.h>
 #include "DataProvider.h"
 #include "Scenario.h"
@@ -78,14 +79,15 @@ public:
   /**
    * @param model The model of the scenarios the data provider wraps.
    * @param clockTickDuration Milliseconds of wall-clock time between two clock ticks, zero meaning none.
+   * @param endTime The time at which a run ends once nothing is left to do.
    */
-  LegacyDataProvider(const BPMNOS::Model::Model* model, unsigned int clockTickDuration = 0);
+  LegacyDataProvider(const BPMNOS::Model::Model* model, unsigned int clockTickDuration = 0, BPMNOS::number endTime = std::numeric_limits<BPMNOS::number>::max());
 
   /**
    * @brief Method creating a scenario wrapping the given scenario, which must outlive it, together with the
    * data provider it is held by.
    */
-  static std::unique_ptr<Scenario> wrap(const BPMNOS::Model::Scenario* scenario);
+  static std::unique_ptr<Scenario> wrap(const BPMNOS::Model::Scenario* scenario, BPMNOS::number endTime = std::numeric_limits<BPMNOS::number>::max());
 
   /**
    * @brief Method creating a scenario of this data provider wrapping the given scenario, which must outlive
@@ -97,6 +99,7 @@ public:
   BPMNOS::number getEarliestInstantiationTime(const Execution::Scenario& scenario) const override;
 
   void notice(const Observable* observable, Execution::Scenario& scenario, EventQueue& queue) const override;
+  void advance(const SystemState* systemState, Execution::Scenario& scenario, EventQueue& queue) const override;
   void dispatchEvent(const SystemState* systemState, Execution::Scenario& scenario, EventQueue& queue) const override;
 
   /**
@@ -105,6 +108,8 @@ public:
   static bool isAlive(const SystemState* systemState, const Scenario& scenario);
 
 private:
+  const BPMNOS::number endTime; ///< The time at which a run ends once nothing is left to do
+
   std::shared_ptr<Event> determineEvent(const SystemState* systemState, Scenario& scenario) const;
   std::shared_ptr<Event> dispatchInstantiationEvent(const SystemState* systemState, Scenario& scenario) const;
   std::shared_ptr<Event> dispatchSignalBroadcastEvent(const SystemState* systemState, Scenario& scenario) const;

@@ -9,20 +9,19 @@ SCENARIO( "Simple process with timer", "[execution][timer]" ) {
         "Instance_1; Process_1; trigger := 10\n"
       ;
 
-      Model::StaticDataProvider dataProvider(modelFile,csv);
-      auto scenario = dataProvider.createScenario();
+      auto model = std::make_shared<const Model::Model>(modelFile);
+      auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+      auto scenario = dataProvider->createScenario();
 
-      Execution::Engine engine;
+      Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
-      Execution::TimeWarp timeHandler;
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
-      timeHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get());
+      engine.run(std::move(scenario));
       THEN( "The timer is triggered at the given time" ) {
         auto timerLog =recorder.find(nlohmann::json{{"nodeId","TimerEvent_1"},{"state", "COMPLETED"}});
         REQUIRE( timerLog.front()["status"]["timestamp"] == 10.0 ); 

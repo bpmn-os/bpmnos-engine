@@ -29,22 +29,22 @@ SCENARIO( "MessageDeliveries rebuilds its candidates from a SystemState notice",
       "Order3; OrderProcess; machines := [\"Machine2\",\"Machine3\"]\n"
       "Order3; OrderProcess; durations := [4,3]\n"
     ;
-    Model::StaticDataProvider dataProvider(modelFile, csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
     // Drive the state to t=0 with instant entry/exit and no message handler, so the requests are created and
     // their deliveries stay pending. A MessageDeliveries collection observes incrementally during this run.
-    Execution::Engine engine;
+    Execution::Engine engine(model);
     Execution::InstantEntry entryHandler;
     Execution::InstantExit exitHandler;
-    Execution::TimeWarp timeHandler;
     auto evaluator = std::make_shared<Execution::LocalEvaluator>();
     Execution::MessageDeliveries incremental(evaluator);
     entryHandler.connect(&engine);
     exitHandler.connect(&engine);
-    timeHandler.connect(&engine);
     incremental.connect(&engine);
-    engine.run(scenario.get(), 0, 0);
+    dataProvider->setEndTime(0);
+    engine.run(std::move(scenario), 0);
 
     const auto* systemState = engine.getSystemState();
     REQUIRE( systemState->messages.size() == 3 );
@@ -88,20 +88,20 @@ SCENARIO( "CompetingCandidates rebuilds its merged candidates from a SystemState
       "Order3; OrderProcess; machines := [\"Machine2\",\"Machine3\"]\n"
       "Order3; OrderProcess; durations := [4,3]\n"
     ;
-    Model::StaticDataProvider dataProvider(modelFile, csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
-    Execution::Engine engine;
+    Execution::Engine engine(model);
     Execution::InstantEntry entryHandler;
     Execution::InstantExit exitHandler;
-    Execution::TimeWarp timeHandler;
     auto evaluator = std::make_shared<Execution::LocalEvaluator>();
     Execution::CompetingCandidates incremental(evaluator);
     entryHandler.connect(&engine);
     exitHandler.connect(&engine);
-    timeHandler.connect(&engine);
     incremental.connect(&engine);
-    engine.run(scenario.get(), 0, 0);
+    dataProvider->setEndTime(0);
+    engine.run(std::move(scenario), 0);
 
     const auto* systemState = engine.getSystemState();
 
@@ -138,20 +138,20 @@ SCENARIO( "SequentialEntries rebuilds its candidates from a SystemState notice",
       "Instance1; TravellingSalesperson_Process; origin := \"Hamburg\"\n"
       "Instance1; TravellingSalesperson_Process; locations := [\"Munich\",\"Berlin\",\"Cologne\"]\n"
     ;
-    Model::StaticDataProvider dataProvider(modelFile, folders, csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile, folders);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
     // FirstFeasibleEntry (config.sequential=false) enters the ad-hoc subprocess but skips its sequential
     // children, leaving their entries pending — InstantEntry would have entered them, so it cannot be used here.
-    Execution::Engine engine;
+    Execution::Engine engine(model);
     auto evaluator = std::make_shared<Execution::LocalEvaluator>();
     Execution::GreedyDispatcher<Execution::FirstFeasibleEntry> entryHandler(evaluator);
-    Execution::TimeWarp timeHandler;
     Execution::SequentialEntries incremental(evaluator);
     entryHandler.connect(&engine);
-    timeHandler.connect(&engine);
     incremental.connect(&engine);
-    engine.run(scenario.get(), 0, 0);
+    dataProvider->setEndTime(0);
+    engine.run(std::move(scenario), 0);
 
     const auto* systemState = engine.getSystemState();
     REQUIRE( systemState->pendingEntryDecisions.count() >= 1 );
@@ -187,16 +187,16 @@ SCENARIO( "FirstFeasibleEntry rebuilds its candidate from a SystemState notice",
       "Instance_1; Process_1;\n"
       "Instance_1; Activity_1; x := 4\n"
     ;
-    Model::StaticDataProvider dataProvider(modelFile, csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
-    Execution::Engine engine;
-    Execution::TimeWarp timeHandler;
+    Execution::Engine engine(model);
     auto evaluator = std::make_shared<Execution::LocalEvaluator>();
     Execution::FirstFeasibleEntry incremental(evaluator);
-    timeHandler.connect(&engine);
     incremental.connect(&engine);
-    engine.run(scenario.get(), 0, 0);
+    dataProvider->setEndTime(0);
+    engine.run(std::move(scenario), 0);
 
     const auto* systemState = engine.getSystemState();
     REQUIRE( systemState->pendingEntryDecisions.count() == 1 );
@@ -228,21 +228,21 @@ SCENARIO( "FirstFeasibleExit rebuilds its candidate from a SystemState notice", 
       "Instance_1; Process_1;\n"
       "Instance_1; Activity_1; x := 4\n"
     ;
-    Model::StaticDataProvider dataProvider(modelFile, csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
     // Enter and make the choice instantly, but withhold the exit handler so the exit decision stays pending.
-    Execution::Engine engine;
+    Execution::Engine engine(model);
     Execution::InstantEntry entryHandler;
     auto evaluator = std::make_shared<Execution::LocalEvaluator>();
     Execution::GreedyDispatcher<Execution::FirstEnumeratedChoice> choiceHandler(evaluator);
-    Execution::TimeWarp timeHandler;
     Execution::FirstFeasibleExit incremental(evaluator);
     entryHandler.connect(&engine);
     choiceHandler.connect(&engine);
-    timeHandler.connect(&engine);
     incremental.connect(&engine);
-    engine.run(scenario.get(), 0, 0);
+    dataProvider->setEndTime(0);
+    engine.run(std::move(scenario), 0);
 
     const auto* systemState = engine.getSystemState();
     REQUIRE( systemState->pendingExitDecisions.count() == 1 );
@@ -274,20 +274,20 @@ SCENARIO( "FirstEnumeratedChoice rebuilds its candidates from a SystemState noti
       "Instance_1; Process_1;\n"
       "Instance_1; Activity_1; x := 4\n"
     ;
-    Model::StaticDataProvider dataProvider(modelFile, csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
-    Execution::Engine engine;
+    Execution::Engine engine(model);
     Execution::InstantEntry entryHandler;
     Execution::InstantExit exitHandler;
-    Execution::TimeWarp timeHandler;
     auto evaluator = std::make_shared<Execution::LocalEvaluator>();
     Execution::FirstEnumeratedChoice incremental(evaluator);
     entryHandler.connect(&engine);
     exitHandler.connect(&engine);
-    timeHandler.connect(&engine);
     incremental.connect(&engine);
-    engine.run(scenario.get(), 0, 0);
+    dataProvider->setEndTime(0);
+    engine.run(std::move(scenario), 0);
 
     const auto* systemState = engine.getSystemState();
     REQUIRE( systemState->pendingChoiceDecisions.count() == 1 );
@@ -320,20 +320,20 @@ SCENARIO( "FirstBisectionalChoice rebuilds its candidates from a SystemState not
       "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
       "Instance_1; Process_1;\n"
     ;
-    Model::StaticDataProvider dataProvider(modelFile, csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
-    Execution::Engine engine;
+    Execution::Engine engine(model);
     Execution::InstantEntry entryHandler;
     Execution::InstantExit exitHandler;
-    Execution::TimeWarp timeHandler;
     auto evaluator = std::make_shared<Execution::LocalEvaluator>();
     Execution::FirstBisectionalChoice incremental(evaluator);
     entryHandler.connect(&engine);
     exitHandler.connect(&engine);
-    timeHandler.connect(&engine);
     incremental.connect(&engine);
-    engine.run(scenario.get(), 0, 0);
+    dataProvider->setEndTime(0);
+    engine.run(std::move(scenario), 0);
 
     const auto* systemState = engine.getSystemState();
     REQUIRE( systemState->pendingChoiceDecisions.count() == 1 );

@@ -105,18 +105,20 @@ void Engine::initialize(std::unique_ptr<Scenario> scenario, BPMNOS::number start
 }
 
 void Engine::run(const BPMNOS::Model::Scenario* scenario, BPMNOS::number startTime, BPMNOS::number endTime) {
-  initialize(scenario, startTime);
-  loop(endTime);
+  // TRANSITIONAL: the scenario is wrapped here, together with the end time, until callers pass a scenario of
+  // a data provider themselves; removed with the entry points taking a Model::Scenario
+  initialize(LegacyDataProvider::wrap(scenario, endTime), startTime);
+  loop();
 }
 
-void Engine::run(std::unique_ptr<Scenario> scenario, BPMNOS::number startTime, BPMNOS::number endTime) {
+void Engine::run(std::unique_ptr<Scenario> scenario, BPMNOS::number startTime) {
   initialize(std::move(scenario), startTime);
-  loop(endTime);
+  loop();
 }
 
-void Engine::loop(BPMNOS::number endTime) {
+void Engine::loop() {
   // advance all tokens in system state (state setup is done where the state is installed)
-  while ( advance(endTime) ) {}
+  while ( advance() ) {}
 }
 
 void Engine::initializeSystemState(const BPMNOS::Model::Scenario* scenario, const SystemState* foreignState) {
@@ -138,20 +140,20 @@ void Engine::initializeSystemState(std::unique_ptr<Scenario> scenario, const Sys
   notify( systemState.get() );
 }
 
-void Engine::resume(BPMNOS::number endTime) {
+void Engine::resume() {
   if ( !systemState ) {
     throw std::logic_error("Engine: resume requires an existing system state (call run or initializeSystemState first)");
   }
   // continue advancing the existing system state (no new state is created)
-  loop(endTime);
+  loop();
 }
 
-void Engine::resume(std::shared_ptr<Decision> decision, BPMNOS::number endTime) {
-  resume(std::shared_ptr<Event>(decision), endTime);
+void Engine::resume(std::shared_ptr<Decision> decision) {
+  resume(std::shared_ptr<Event>(decision));
 }
 
 
-void Engine::resume(std::shared_ptr<Event> event, BPMNOS::number endTime) {
+void Engine::resume(std::shared_ptr<Event> event) {
   if ( !systemState ) {
     throw std::logic_error("Engine: resume requires an existing system state (call run or initializeSystemState first)");
   }
@@ -166,10 +168,10 @@ void Engine::resume(std::shared_ptr<Event> event, BPMNOS::number endTime) {
   // the run continues with the given decision
   notify(event.get());
   event->processBy(this);
-  loop(endTime);
+  loop();
 }
 
-bool Engine::advance(BPMNOS::number endTime) {
+bool Engine::advance() {
   if ( !systemState ) {
     throw std::logic_error("Engine: advance requires an existing system state (call initialize, run or initializeSystemState first)");
   }
@@ -196,11 +198,6 @@ bool Engine::advance(BPMNOS::number endTime) {
     // the engine assumes only non-expired events are dispatched; a controller that is not safe by
     // design must check Event::expired() before dispatching. Guard against a stale event here.
     throw std::logic_error("Engine: event fetched is expired");
-  }
-  // TRANSITIONAL: stop before processing a clock tick that would exceed endTime; removed once the end time is
-  // set on the data provider
-  if ( auto clockTickEvent = event->is<ClockTickEvent>(); clockTickEvent && clockTickEvent->time > endTime ) {
-    return false;
   }
   notify(event.get());
   event->processBy(this);

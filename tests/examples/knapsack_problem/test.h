@@ -16,27 +16,26 @@ SCENARIO( "Knapsack problem", "[examples][knapsack_problem]" ) {
       "Item3; ItemProcess; value := 120\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
     WHEN( "The engine is started with naive dispatcher" ) {
-      Execution::Engine engine;
+      Execution::Engine engine(model);
       Execution::InstantEntry parallelEntryHandler;
 //      Execution::FirstComeFirstServedSequentialEntry sequentialEntryHandler;
       Execution::FirstMatchingMessageDelivery messageHandler;
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;
       Execution::InstantExit exitHandler;
-      Execution::TimeWarp timeHandler;
       messageHandler.connect(&engine);
       parallelEntryHandler.connect(&engine);
 //      sequentialEntryHandler.connect(&engine);
       exitHandler.connect(&engine);
       messageTaskTerminator.connect(&engine);
-      timeHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get());
+      engine.run(std::move(scenario));
       THEN( "The run terminates without failure and some items are accepted, some are rejected" ) {
         auto failureLog = recorder.find(nlohmann::json{{"nodeId", "SendRequestTask"},{"state", "FAILED"}});
         REQUIRE( failureLog.size() == 0 );

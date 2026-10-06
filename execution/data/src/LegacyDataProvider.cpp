@@ -27,13 +27,23 @@ LegacyDataProvider::Scenario::Scenario(std::shared_ptr<const LegacyDataProvider>
 {
 }
 
-LegacyDataProvider::LegacyDataProvider(const BPMNOS::Model::Model* model, unsigned int clockTickDuration)
+LegacyDataProvider::LegacyDataProvider(const BPMNOS::Model::Model* model, unsigned int clockTickDuration, BPMNOS::number endTime)
   : DataProvider(model, clockTickDuration)
+  , endTime(endTime)
 {
 }
 
-std::unique_ptr<LegacyDataProvider::Scenario> LegacyDataProvider::wrap(const BPMNOS::Model::Scenario* scenario) {
-  return std::make_shared<const LegacyDataProvider>(scenario->getModel())->createScenario(scenario);
+std::unique_ptr<LegacyDataProvider::Scenario> LegacyDataProvider::wrap(const BPMNOS::Model::Scenario* scenario, BPMNOS::number endTime) {
+  return std::make_shared<const LegacyDataProvider>(scenario->getModel(), 0, endTime)->createScenario(scenario);
+}
+
+void LegacyDataProvider::advance(const SystemState* systemState, Execution::Scenario& scenario, EventQueue& queue) const {
+  if ( systemState->getTime() >= endTime ) {
+    // nothing is left to do at the end time
+    queue.push_back(std::make_shared<TerminationEvent>());
+    return;
+  }
+  DataProvider::advance(systemState, scenario, queue);
 }
 
 std::unique_ptr<LegacyDataProvider::Scenario> LegacyDataProvider::createScenario(const BPMNOS::Model::Scenario* scenario) const {

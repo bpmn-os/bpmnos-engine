@@ -8,21 +8,21 @@ SCENARIO( "SystemState copy with SequentialAdHocSubProcess", "[systemstate][adho
       "Instance_1; Process_1;\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile, csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
-    Execution::Engine engine;
+    Execution::Engine engine(model);
     Execution::InstantEntry entryHandler;
     // No exit handler to keep activities alive
-    Execution::TimeWarp timeHandler;
     entryHandler.connect(&engine);
-    timeHandler.connect(&engine);
     Execution::Recorder recorder;
 //    Execution::Recorder recorder(std::cerr);
     recorder.subscribe(&engine);
 
     // Run without exit handler - first activity stays BUSY, second is pending
-    engine.run(scenario.get(), 0, 0);
+    dataProvider->setEndTime(0);
+    engine.run(std::move(scenario), 0);
     const auto* originalState = engine.getSystemState();
 
     // Find the performer token (at AdHocSubProcess node)
@@ -49,9 +49,8 @@ SCENARIO( "SystemState copy with SequentialAdHocSubProcess", "[systemstate][adho
     REQUIRE( originalPerformerToken->pendingSequentialEntries.count() == 1 );
 
     WHEN( "SystemState is copied" ) {
-      auto scenarioCopy = dataProvider.createScenario();
-      auto wrappedScenarioCopy = Execution::LegacyDataProvider::wrap(scenarioCopy.get());
-      Execution::SystemState copiedState(&engine, wrappedScenarioCopy.get(), originalState);
+      auto scenarioCopy = dataProvider->createScenario();
+      Execution::SystemState copiedState(&engine, scenarioCopy.get(), originalState);
 
       THEN( "The copy has the same performing and pendingSequentialEntries" ) {
         // Find the copied performer token

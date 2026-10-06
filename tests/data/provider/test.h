@@ -129,10 +129,8 @@ SCENARIO( "No clock tick before the first request to the controller after instal
     Model::StaticDataProvider modelDataProvider(modelFile,csv);
     auto modelScenario = modelDataProvider.createScenario();
 
-    // without an entry handler the token awaits the entry decision, and the run stops before time 1
+    // without an entry handler the token awaits the entry decision, and the run ends at time 0
     Execution::Engine sourceEngine;
-    Execution::TimeWarp timeHandler;
-    timeHandler.connect(&sourceEngine);
     sourceEngine.run(modelScenario.get(), 0, 0);
     REQUIRE_FALSE( sourceEngine.getSystemState()->pendingEntryDecisions.empty() );
 

@@ -8,21 +8,21 @@ SCENARIO( "Caught error end event", "[execution][eventsubprocess]" ) {
       "Instance_1; Process_1;\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
     WHEN( "The engine is started with a recorder" ) {
-      Execution::Engine engine;
+      Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
-      Execution::TimeWarp timeHandler;
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
-      timeHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get(), 0, 0);
+      dataProvider->setEndTime(0);
+      engine.run(std::move(scenario));
       THEN( "The dump of each entry of the token log is correct" ) {
 
         auto startEventLog = recorder.find(nlohmann::json{{"nodeId","StartEvent_1" }}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
@@ -65,21 +65,20 @@ SCENARIO( "Interrupting escalation", "[execution][eventsubprocess]" ) {
       "Instance_1; Process_1;\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
     WHEN( "The engine is started with a recorder" ) {
-      Execution::Engine engine;
+      Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
-      Execution::TimeWarp timeHandler;
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
-      timeHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get());
+      engine.run(std::move(scenario));
       THEN( "The dump of each entry of the recorder log is correct" ) {
         auto startEventLog = recorder.find(nlohmann::json{{"nodeId","StartEvent_1" }}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
         REQUIRE( startEventLog[0]["state"] == "ENTERED" );
@@ -131,21 +130,20 @@ SCENARIO( "Non-interrupting escalation", "[execution][eventsubprocess]" ) {
       "Instance_1; Process_1;\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
     WHEN( "The engine is started with a recorder" ) {
-      Execution::Engine engine;
+      Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
-      Execution::TimeWarp timeHandler;
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
-      timeHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get());
+      engine.run(std::move(scenario));
       THEN( "The dump of each entry of the token log is correct" ) {
         auto startEventLog = recorder.find(nlohmann::json{{"nodeId","StartEvent_1" }}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
         REQUIRE( startEventLog[0]["state"] == "ENTERED" );
@@ -201,21 +199,21 @@ SCENARIO( "Caught and rethrown error", "[execution][eventsubprocess]" ) {
       "Instance_1; Process_1;\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
     WHEN( "The engine is started with a recorder" ) {
-      Execution::Engine engine;
+      Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
-      Execution::TimeWarp timeHandler;
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
-      timeHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get(), 0, 0);
+      dataProvider->setEndTime(0);
+      engine.run(std::move(scenario));
       THEN( "The dump of each entry of the token log is correct" ) {
         auto startEventLog = recorder.find(nlohmann::json{{"nodeId","StartEvent_1" }}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
         REQUIRE( startEventLog[0]["state"] == "ENTERED" );
@@ -261,21 +259,21 @@ SCENARIO( "Non-interrupting escalation throwing error", "[execution][eventsubpro
       "Instance_1; Process_1;\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
     WHEN( "The engine is started with a recorder" ) {
-      Execution::Engine engine;
+      Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
-      Execution::TimeWarp timeHandler;
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
-      timeHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get(), 0, 0);
+      dataProvider->setEndTime(0);
+      engine.run(std::move(scenario));
       THEN( "The dump of each entry of the token log is correct" ) {
         auto startEventLog = recorder.find(nlohmann::json{{"nodeId","StartEvent_1" }}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
         REQUIRE( startEventLog[0]["state"] == "ENTERED" );
@@ -316,21 +314,21 @@ SCENARIO( "Interrupting escalation throwing error", "[execution][eventsubprocess
       "Instance_1; Process_1;\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
     WHEN( "The engine is started with a recorder" ) {
-      Execution::Engine engine;
+      Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
-      Execution::TimeWarp timeHandler;
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
-      timeHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
-      engine.run(scenario.get(), 0, 0);
+      dataProvider->setEndTime(0);
+      engine.run(std::move(scenario));
       THEN( "The dump of each entry of the token log is correct" ) {
         auto startEventLog = recorder.find(nlohmann::json{{"nodeId","StartEvent_1" }}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
         REQUIRE( startEventLog[0]["state"] == "ENTERED" );
@@ -371,8 +369,9 @@ SCENARIO( "Interrupting escalation throwing error", "[execution][eventsubprocess
 SCENARIO( "N-to-1 assignment", "[execution][eventsubprocess]" ) {
   const std::string modelFile = "tests/execution/eventsubprocess/N-to-1-assignment.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
+  auto model = std::make_shared<const Model::Model>(modelFile);
 
-  Execution::Engine engine;
+  Execution::Engine engine(model);
 
   auto evaluator = std::make_shared<Execution::GuidedEvaluator>();
   Execution::GreedyController controller(evaluator);
@@ -380,8 +379,6 @@ SCENARIO( "N-to-1 assignment", "[execution][eventsubprocess]" ) {
       
 //    Execution::MyopicMessageTaskTerminator messageTaskTerminator;
 //    messageTaskTerminator.connect(&engine);
-  Execution::TimeWarp timeHandler;
-  timeHandler.connect(&engine);
 
   Execution::Recorder recorder;
 //  Execution::Recorder recorder(std::cerr);
@@ -395,11 +392,12 @@ SCENARIO( "N-to-1 assignment", "[execution][eventsubprocess]" ) {
       "Instance_1; Process_2;\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv);
-    auto scenario = dataProvider.createScenario();
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
     WHEN( "The engine is started with a recorder" ) {
-      engine.run(scenario.get(), 0, 0);
+      dataProvider->setEndTime(0);
+      engine.run(std::move(scenario));
       THEN( "The task is started after one message is received" ) {
         auto taskLog = recorder.find(nlohmann::json{{"nodeId","WaitTask" }, {"state","ENTERED" }});
         REQUIRE( taskLog.size() == 1);
@@ -417,11 +415,12 @@ SCENARIO( "N-to-1 assignment", "[execution][eventsubprocess]" ) {
       "Instance_2; Process_2;\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv);
-    auto scenario = dataProvider.createScenario();
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
     WHEN( "The engine is started with a recorder" ) {
-      engine.run(scenario.get(), 0, 0);
+      dataProvider->setEndTime(0);
+      engine.run(std::move(scenario));
       THEN( "The task is started after one message is received" ) {
         auto taskLog = recorder.find(nlohmann::json{{"nodeId","WaitTask" }, {"state","ENTERED" }});
         REQUIRE( taskLog.size() == 1);
@@ -439,11 +438,12 @@ SCENARIO( "N-to-1 assignment", "[execution][eventsubprocess]" ) {
       "Instance_2; Process_2;\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv);
-    auto scenario = dataProvider.createScenario();
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
     WHEN( "The engine is started with a recorder" ) {
-      engine.run(scenario.get(), 0, 0);
+      dataProvider->setEndTime(0);
+      engine.run(std::move(scenario));
       THEN( "The task is started after one message is received" ) {
         auto taskLog = recorder.find(nlohmann::json{{"nodeId","WaitTask" }, {"state","ENTERED" }});
         REQUIRE( taskLog.size() == 1);
@@ -465,20 +465,19 @@ SCENARIO( "Event subprocess with an attribute assigned by the model", "[executio
       "Instance_1; Process_1;\n"
     ;
 
-    Model::StaticDataProvider dataProvider(modelFile,csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
 
     WHEN( "The engine is started with a recorder" ) {
-      Execution::Engine engine;
+      Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
-      Execution::TimeWarp timeHandler;
       entryHandler.connect(&engine);
       exitHandler.connect(&engine);
-      timeHandler.connect(&engine);
       Execution::Recorder recorder;
       recorder.subscribe(&engine);
-      engine.run(scenario.get());
+      engine.run(std::move(scenario));
 
       THEN( "The attribute takes the value the model assigns when the event subprocess is triggered" ) {
         auto startLog = recorder.find(nlohmann::json{{"nodeId","EscalationStartEvent_1"},{"state","COMPLETED"}}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
