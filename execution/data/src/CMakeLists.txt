@@ -5,6 +5,7 @@ list(APPEND execution_data_SOURCES
   InstanceDataReader.cpp
   StaticDataProvider.cpp
   ExpectedValueDataProvider.cpp
+  DynamicDataProvider.cpp
 )
 
 list(APPEND execution_data_HEADERS
@@ -14,4 +15,5 @@ list(APPEND execution_data_HEADERS
   InstanceDataReader.h
   StaticDataProvider.h
   ExpectedValueDataProvider.h
+  DynamicDataProvider.h
 )

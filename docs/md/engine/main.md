@@ -45,6 +45,8 @@ The @ref BPMNOS::Execution::StaticDataProvider "static data provider" reads inst
 
 The @ref BPMNOS::Execution::ExpectedValueDataProvider "expected value data provider" proceeds as the static data provider, but reads a table that may also have the columns `DISCLOSURE`, `READY` and `COMPLETION`, which it ignores, and evaluates every initialization with the expected values of its random functions.
 
+The @ref BPMNOS::Execution::DynamicDataProvider "dynamic data provider" proceeds as the static data provider for data disclosed during a run. Its table may have the column `DISCLOSURE`, an expression giving the time, rounded up, at which the value of its row is disclosed. The disclosure time of a node is the latest disclosure of its rows and of the scope containing it. An instance becomes known at the disclosure time of its process, its process becomes ready at its instantiation time but not before, and a token arriving at an activity becomes ready at the disclosure time of the activity but not before.
+
 ```cpp
 auto model = std::make_shared<const BPMNOS::Model::Model>("diagram.bpmn");
 auto dataProvider = std::make_shared<BPMNOS::Execution::StaticDataProvider>(model, "scenario.csv");

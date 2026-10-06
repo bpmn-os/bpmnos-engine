@@ -12,6 +12,7 @@
 #include <limex.h>
 #include "DataProvider.h"
 #include "Scenario.h"
+#include "InstanceDataReader.h"
 #include "model/bpmnos/src/Model.h"
 #include "model/bpmnos/src/extensionElements/Attribute.h"
 #include "model/utility/src/Number.h"
@@ -25,15 +26,16 @@ class Token;
  * @brief Data provider for instance data known from the start of a run.
  *
  * The data is read from a CSV table with the columns `INSTANCE_ID`, `NODE_ID` and `INITIALIZATION`. Every
- * instance is instantiated when the first @ref ClockTickEvent of a run is announced, and its process becomes
+ * instance is instantiated at the first instant of a run, and its process becomes
  * ready at its instantiation time, which is the timestamp of the instance rounded up. A token arriving at an
  * activity becomes ready at once, with the status it arrived with followed by the values of the activity, and
  * a task other than a send, receive or decision task completes with the status it became busy with at the
  * timestamp of that status. An event due later is scheduled and enqueued when the @ref ClockTickEvent
- * advancing to its time is announced. A run ends when nothing is left to do and no instance is left, or when
- * nothing is left to do at the end time.
+ * advancing to its time is announced. A run ends when nothing is left to do, no instance is left and no event
+ * is scheduled, or when nothing is left to do at the end time.
  *
- * The timing of every kind of event is given by a virtual method, which a derived data provider may override.
+ * The time at which every kind of event becomes due is given by a virtual method, which a derived data
+ * provider may override.
  */
 class StaticDataProvider : public DataProvider {
 public:
@@ -80,29 +82,27 @@ protected:
   StaticDataProvider(std::shared_ptr<const BPMNOS::Model::Model> model, unsigned int clockTickDuration);
 
   /**
-   * @brief Method reading the instance data with the given columns, evaluating every initialization at
-   * once with the given handle and ignoring every further column.
+   * @brief Method reading the instance data with the given columns, giving every row of an instance to
+   * @ref readValue and evaluating every global value with the given handle.
    */
   void readInstances(const std::string& instanceFileOrString, const std::vector<std::string>& columns, const LIMEX::Handle<double>& handle);
 
-  /// @brief Method enqueuing the instantiation events of a run, called when its first @ref ClockTickEvent
-  /// is announced, every instance being instantiated at once.
-  virtual void instantiate(Scenario& scenario, EventQueue& queue, BPMNOS::number time) const;
+  /**
+   * @brief Method reading a row of an instance, evaluating its initialization at once with the given handle
+   * and ignoring every further column.
+   */
+  virtual void readValue(InstanceDataReader& reader, const InstanceDataReader::Row& row, const LIMEX::Handle<double>& handle);
 
-  /// @brief Method scheduling the ready event of the token at a created instance for its instantiation time.
-  virtual void readyProcess(Scenario& scenario, EventQueue& queue, const Token* token) const;
+  /// @brief Method returning the time at which an instance becomes known, which is the start of the run.
+  virtual BPMNOS::number getKnownTime(size_t instanceId) const;
 
-  /// @brief Method enqueuing the ready event of a token arriving at an activity at once.
-  virtual void readyActivity(Scenario& scenario, EventQueue& queue, const Token* token) const;
+  /// @brief Method returning the time at which the process of an instance becomes ready, which is its
+  /// instantiation time.
+  virtual BPMNOS::number getProcessReadyTime(size_t instanceId) const;
 
-  /// @brief Method scheduling the completion event of a busy task for the timestamp of its status.
-  virtual void completeTask(Scenario& scenario, EventQueue& queue, const Token* token) const;
-
-  /// @brief Method returning true if no instance becomes known after @p time, which holds for every time.
-  virtual bool isExhausted(const Scenario& scenario, BPMNOS::number time) const;
-
-  /// @brief Method enqueuing an event at once if it is due at @p currentTime and scheduling it otherwise.
-  static void schedule(Scenario& scenario, EventQueue& queue, BPMNOS::number dueTime, BPMNOS::number currentTime, std::shared_ptr<Event> event);
+  /// @brief Method returning the time at which a token of an instance arriving at an activity becomes
+  /// ready at the earliest, which is the start of the run, so that it becomes ready at once.
+  virtual BPMNOS::number getActivityReadyTime(size_t instanceId, const BPMN::Node* activity) const;
 
   /// @brief Method returning the value of an attribute of an instance, computed from the values of the
   /// instance if the model assigns it, and std::nullopt if it is not known.
@@ -126,8 +126,13 @@ protected:
   const std::shared_ptr<const BPMNOS::Model::Model> sharedModel; ///< The model, whose ownership the data provider shares
   std::unordered_map<size_t, Instance> instances; ///< The instances by their identifier
   BPMNOS::Values globals; ///< The values of the global attributes at the start of a run
-  BPMNOS::number earliestInstantiationTime = std::numeric_limits<BPMNOS::number>::max();
   BPMNOS::number endTime = std::numeric_limits<BPMNOS::number>::max();
+
+private:
+  void readyProcess(Scenario& scenario, EventQueue& queue, const Token* token) const;
+  void readyActivity(Scenario& scenario, EventQueue& queue, const Token* token) const;
+  void completeTask(Scenario& scenario, EventQueue& queue, const Token* token) const;
+  static void schedule(Scenario& scenario, EventQueue& queue, BPMNOS::number dueTime, BPMNOS::number currentTime, std::shared_ptr<Event> event);
 };
 
 } // namespace BPMNOS::Execution

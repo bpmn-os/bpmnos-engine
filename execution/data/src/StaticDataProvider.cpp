@@ -1,5 +1,4 @@
 #include "StaticDataProvider.h"
-#include "InstanceDataReader.h"
 #include "execution/engine/src/Token.h"
 #include "execution/engine/src/StateMachine.h"
 #include "execution/engine/src/SystemState.h"
@@ -40,9 +39,8 @@ void StaticDataProvider::readInstances(const std::string& instanceFileOrString, 
     if ( !row.node ) {
       reader.evaluateGlobal(row.initialization, handle);
     }
-    else if ( !row.initialization.empty() ) {
-      auto [attribute, expression] = reader.lookupAttribute(row.node, row.initialization);
-      reader.setValue(row.instanceId, attribute, reader.evaluate(row.instanceId, row.node, expression, attribute->type, handle));
+    else {
+      readValue(reader, row, handle);
     }
   }
 
@@ -67,8 +65,14 @@ void StaticDataProvider::readInstances(const std::string& instanceFileOrString, 
     auto timestampAttribute = process->extensionElements->as<BPMNOS::Model::ExtensionElements>()->attributes[BPMNOS::Model::ExtensionElements::Index::Timestamp].get();
     // instances are instantiated at integral times
     auto instantiationTime = BPMNOS::number(std::ceil((double)values.at(timestampAttribute)));
-    earliestInstantiationTime = std::min(earliestInstantiationTime, instantiationTime);
     instances[instanceId] = Instance{process, std::move(values), instantiationTime};
+  }
+}
+
+void StaticDataProvider::readValue(InstanceDataReader& reader, const InstanceDataReader::Row& row, const LIMEX::Handle<double>& handle) {
+  if ( !row.initialization.empty() ) {
+    auto [attribute, expression] = reader.lookupAttribute(row.node, row.initialization);
+    reader.setValue(row.instanceId, attribute, reader.evaluate(row.instanceId, row.node, expression, attribute->type, handle));
   }
 }
 
@@ -89,6 +93,10 @@ BPMNOS::Values StaticDataProvider::getGlobals([[maybe_unused]] const Execution::
 }
 
 BPMNOS::number StaticDataProvider::getEarliestInstantiationTime([[maybe_unused]] const Execution::Scenario& scenario) const {
+  auto earliestInstantiationTime = std::numeric_limits<BPMNOS::number>::max();
+  for ( auto& [instanceId, instance] : instances ) {
+    earliestInstantiationTime = std::min(earliestInstantiationTime, getProcessReadyTime(instanceId));
+  }
   return earliestInstantiationTime;
 }
 
@@ -96,9 +104,18 @@ void StaticDataProvider::notice(const Observable* observable, Execution::Scenari
   auto& scenario = static_cast<Scenario&>(executionScenario);
 
   if ( observable->getObservableType() == Observable::Type::SystemState ) {
-    // an installed state holds every instance known up to its time; the events it awaits are determined anew
+    // the state of a run not yet begun holds no instance, an installed state every instance known up to its
+    // time; the instances not yet held are instantiated when they become known, and the events the tokens
+    // await are determined anew
     auto systemState = static_cast<const SystemState*>(observable);
+    bool runBegun = ( systemState->getTime() != std::numeric_limits<BPMNOS::number>::lowest() );
     scenario.scheduledEvents.clear();
+    for ( auto& [instanceId, instance] : instances ) {
+      if ( !runBegun || getKnownTime(instanceId) > systemState->getTime() ) {
+        auto event = std::make_shared<InstantiationEvent>(instance.process, getStatus(instanceId, instance.process), getData(instanceId, instance.process));
+        schedule(scenario, queue, getKnownTime(instanceId), systemState->getTime(), std::move(event));
+      }
+    }
     for ( auto& [token_ptr] : systemState->tokensAwaitingReadyEvent ) {
       if ( auto token = token_ptr.lock() ) {
         if ( token->node ) {
@@ -119,10 +136,6 @@ void StaticDataProvider::notice(const Observable* observable, Execution::Scenari
 
   if ( observable->getObservableType() == Observable::Type::Event ) {
     if ( auto clockTickEvent = static_cast<const Event*>(observable)->is<ClockTickEvent>() ) {
-      if ( clockTickEvent->systemState->getTime() == std::numeric_limits<BPMNOS::number>::lowest() ) {
-        // the first clock tick event of a run
-        instantiate(scenario, queue, clockTickEvent->time);
-      }
       // the events due by the time the clock advances to are released in the order of their times
       auto end = scenario.scheduledEvents.upper_bound(clockTickEvent->time);
       for ( auto it = scenario.scheduledEvents.begin(); it != end; ++it ) {
@@ -176,7 +189,7 @@ void StaticDataProvider::advance(const SystemState* systemState, Execution::Scen
   auto& scenario = static_cast<Scenario&>(executionScenario);
   if (
     systemState->getTime() >= endTime ||
-    ( systemState->instances.empty() && scenario.scheduledEvents.empty() && isExhausted(scenario, systemState->getTime()) )
+    ( systemState->instances.empty() && scenario.scheduledEvents.empty() )
   ) {
     queue.push_back(std::make_shared<TerminationEvent>());
     return;
@@ -184,36 +197,39 @@ void StaticDataProvider::advance(const SystemState* systemState, Execution::Scen
   DataProvider::advance(systemState, scenario, queue);
 }
 
-void StaticDataProvider::instantiate([[maybe_unused]] Scenario& scenario, EventQueue& queue, [[maybe_unused]] BPMNOS::number time) const {
-  for ( auto& [instanceId, instance] : instances ) {
-    queue.push_back(std::make_shared<InstantiationEvent>(instance.process, getStatus(instanceId, instance.process), getData(instanceId, instance.process)));
-  }
+BPMNOS::number StaticDataProvider::getKnownTime([[maybe_unused]] size_t instanceId) const {
+  return std::numeric_limits<BPMNOS::number>::lowest();
+}
+
+BPMNOS::number StaticDataProvider::getProcessReadyTime(size_t instanceId) const {
+  return instances.at(instanceId).instantiationTime;
+}
+
+BPMNOS::number StaticDataProvider::getActivityReadyTime([[maybe_unused]] size_t instanceId, [[maybe_unused]] const BPMN::Node* activity) const {
+  return std::numeric_limits<BPMNOS::number>::lowest();
 }
 
 void StaticDataProvider::readyProcess(Scenario& scenario, EventQueue& queue, const Token* token) const {
   auto instanceId = (size_t)token->owner->root->instance.value();
   auto& instance = instances.at(instanceId);
   auto event = std::make_shared<ReadyEvent>(token, getStatus(instanceId, instance.process), getData(instanceId, instance.process));
-  schedule(scenario, queue, instance.instantiationTime, token->owner->systemState->getTime(), std::move(event));
+  schedule(scenario, queue, getProcessReadyTime(instanceId), token->owner->systemState->getTime(), std::move(event));
 }
 
-void StaticDataProvider::readyActivity([[maybe_unused]] Scenario& scenario, EventQueue& queue, const Token* token) const {
+void StaticDataProvider::readyActivity(Scenario& scenario, EventQueue& queue, const Token* token) const {
   // the values of the activity are given for the instance of the process the token belongs to
   auto instanceId = (size_t)token->owner->root->instance.value();
   auto status = token->status;
   for ( auto value : getStatus(instanceId, token->node) ) {
     status.push_back(value);
   }
-  queue.push_back(std::make_shared<ReadyEvent>(token, std::move(status), getData(instanceId, token->node)));
+  auto event = std::make_shared<ReadyEvent>(token, std::move(status), getData(instanceId, token->node));
+  schedule(scenario, queue, getActivityReadyTime(instanceId, token->node), token->owner->systemState->getTime(), std::move(event));
 }
 
 void StaticDataProvider::completeTask(Scenario& scenario, EventQueue& queue, const Token* token) const {
   auto dueTime = token->status[BPMNOS::Model::ExtensionElements::Index::Timestamp].value();
   schedule(scenario, queue, dueTime, token->owner->systemState->getTime(), std::make_shared<CompletionEvent>(token, token->status));
-}
-
-bool StaticDataProvider::isExhausted([[maybe_unused]] const Scenario& scenario, [[maybe_unused]] BPMNOS::number time) const {
-  return true;
 }
 
 void StaticDataProvider::schedule(Scenario& scenario, EventQueue& queue, BPMNOS::number dueTime, BPMNOS::number currentTime, std::shared_ptr<Event> event) {
