@@ -6,6 +6,7 @@ list(APPEND execution_data_SOURCES
   StaticDataProvider.cpp
   ExpectedValueDataProvider.cpp
   DynamicDataProvider.cpp
+  StochasticDataProvider.cpp
 )
 
 list(APPEND execution_data_HEADERS
@@ -16,4 +17,5 @@ list(APPEND execution_data_HEADERS
   StaticDataProvider.h
   ExpectedValueDataProvider.h
   DynamicDataProvider.h
+  StochasticDataProvider.h
 )

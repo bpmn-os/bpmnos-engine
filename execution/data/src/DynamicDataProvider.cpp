@@ -10,6 +10,11 @@ DynamicDataProvider::DynamicDataProvider(std::shared_ptr<const BPMNOS::Model::Mo
   readInstances(instanceFileOrString, { "INSTANCE_ID", "NODE_ID", "INITIALIZATION", "DISCLOSURE" }, sharedModel->limexHandle);
 }
 
+DynamicDataProvider::DynamicDataProvider(std::shared_ptr<const BPMNOS::Model::Model> model, unsigned int clockTickDuration)
+  : StaticDataProvider(std::move(model), clockTickDuration)
+{
+}
+
 void DynamicDataProvider::readValue(InstanceDataReader& reader, const InstanceDataReader::Row& row, const LIMEX::Handle<double>& handle) {
   enum { DISCLOSURE };
   auto& disclosure = row.cells[DISCLOSURE];
@@ -45,18 +50,22 @@ void DynamicDataProvider::readValue(InstanceDataReader& reader, const InstanceDa
   }
 }
 
-BPMNOS::number DynamicDataProvider::getKnownTime(size_t instanceId) const {
-  return disclosureTimes.at(instanceId).at(instances.at(instanceId).process);
+const std::unordered_map<const BPMN::Node*, BPMNOS::number>& DynamicDataProvider::getDisclosureTimes([[maybe_unused]] const Scenario& scenario, size_t instanceId) const {
+  return disclosureTimes.at(instanceId);
 }
 
-BPMNOS::number DynamicDataProvider::getProcessReadyTime(size_t instanceId) const {
-  return std::max(StaticDataProvider::getProcessReadyTime(instanceId), getKnownTime(instanceId));
+BPMNOS::number DynamicDataProvider::getKnownTime(const Scenario& scenario, size_t instanceId) const {
+  return getDisclosureTimes(scenario, instanceId).at(instances.at(instanceId).process);
 }
 
-BPMNOS::number DynamicDataProvider::getActivityReadyTime(size_t instanceId, const BPMN::Node* activity) const {
-  auto& nodeDisclosureTimes = disclosureTimes.at(instanceId);
+BPMNOS::number DynamicDataProvider::getProcessReadyTime(const Scenario& scenario, size_t instanceId) const {
+  return std::max(StaticDataProvider::getProcessReadyTime(scenario, instanceId), getKnownTime(scenario, instanceId));
+}
+
+BPMNOS::number DynamicDataProvider::getActivityReadyTime(const Scenario& scenario, size_t instanceId, const BPMN::Node* activity, const BPMNOS::Values& readyStatus) const {
+  auto& nodeDisclosureTimes = getDisclosureTimes(scenario, instanceId);
   if ( auto it = nodeDisclosureTimes.find(activity); it != nodeDisclosureTimes.end() ) {
-    return it->second;
+    return std::max(it->second, StaticDataProvider::getActivityReadyTime(scenario, instanceId, activity, readyStatus));
   }
-  return StaticDataProvider::getActivityReadyTime(instanceId, activity);
+  return StaticDataProvider::getActivityReadyTime(scenario, instanceId, activity, readyStatus);
 }

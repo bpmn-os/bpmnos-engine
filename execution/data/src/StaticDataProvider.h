@@ -93,26 +93,37 @@ protected:
    */
   virtual void readValue(InstanceDataReader& reader, const InstanceDataReader::Row& row, const LIMEX::Handle<double>& handle);
 
+  /// @brief Method returning the values of the attributes of an instance, which are those read.
+  virtual const std::unordered_map<const BPMNOS::Model::Attribute*, BPMNOS::number>& getInstanceValues(const Scenario& scenario, size_t instanceId) const;
+
   /// @brief Method returning the time at which an instance becomes known, which is the start of the run.
-  virtual BPMNOS::number getKnownTime(size_t instanceId) const;
+  virtual BPMNOS::number getKnownTime(const Scenario& scenario, size_t instanceId) const;
 
   /// @brief Method returning the time at which the process of an instance becomes ready, which is its
   /// instantiation time.
-  virtual BPMNOS::number getProcessReadyTime(size_t instanceId) const;
+  virtual BPMNOS::number getProcessReadyTime(const Scenario& scenario, size_t instanceId) const;
 
-  /// @brief Method returning the time at which a token of an instance arriving at an activity becomes
-  /// ready at the earliest, which is the start of the run, so that it becomes ready at once.
-  virtual BPMNOS::number getActivityReadyTime(size_t instanceId, const BPMN::Node* activity) const;
+  /// @brief Method returning the status a token arriving at an activity becomes ready with, which is the
+  /// status it arrived with followed by the values of the activity.
+  virtual BPMNOS::Values getActivityReadyStatus(Scenario& scenario, const Token* token) const;
+
+  /// @brief Method returning the time at which a token of an instance arriving at an activity becomes ready
+  /// with the given status, which is the start of the run, so that it becomes ready at once.
+  virtual BPMNOS::number getActivityReadyTime(const Scenario& scenario, size_t instanceId, const BPMN::Node* activity, const BPMNOS::Values& readyStatus) const;
+
+  /// @brief Method returning the status a busy task completes with at its timestamp, which is the status it
+  /// became busy with.
+  virtual BPMNOS::Values getCompletionStatus(Scenario& scenario, const Token* token) const;
 
   /// @brief Method returning the value of an attribute of an instance, computed from the values of the
   /// instance if the model assigns it, and std::nullopt if it is not known.
-  std::optional<BPMNOS::number> getValue(size_t instanceId, const BPMNOS::Model::Attribute* attribute) const;
+  std::optional<BPMNOS::number> getValue(const Scenario& scenario, size_t instanceId, const BPMNOS::Model::Attribute* attribute) const;
 
   /// @brief Method returning the values of the status attributes a node declares.
-  BPMNOS::Values getStatus(size_t instanceId, const BPMN::Node* node) const;
+  BPMNOS::Values getStatus(const Scenario& scenario, size_t instanceId, const BPMN::Node* node) const;
 
   /// @brief Method returning the values of the data attributes a node declares.
-  BPMNOS::Values getData(size_t instanceId, const BPMN::Node* node) const;
+  BPMNOS::Values getData(const Scenario& scenario, size_t instanceId, const BPMN::Node* node) const;
 
   /**
    * @brief Instance data read.

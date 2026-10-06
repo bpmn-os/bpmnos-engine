@@ -47,6 +47,8 @@ The @ref BPMNOS::Execution::ExpectedValueDataProvider "expected value data provi
 
 The @ref BPMNOS::Execution::DynamicDataProvider "dynamic data provider" proceeds as the static data provider for data disclosed during a run. Its table may have the column `DISCLOSURE`, an expression giving the time, rounded up, at which the value of its row is disclosed. The disclosure time of a node is the latest disclosure of its rows and of the scope containing it. An instance becomes known at the disclosure time of its process, its process becomes ready at its instantiation time but not before, and a token arriving at an activity becomes ready at the disclosure time of the activity but not before.
 
+The @ref BPMNOS::Execution::StochasticDataProvider "stochastic data provider" samples the instance data from expressions with random functions. Its table may also have the columns `READY` and `COMPLETION`, expressions assigning a status attribute of an activity and of a task. The global values are sampled once, with the seed of the data provider, and the initializations and disclosures of the instances are sampled for every scenario, with the seed of the data provider plus the realisation the scenario is created for. A run proceeds as on the dynamic data provider, except that a token arriving at an activity becomes ready with the status the ready expressions give, once its timestamp is reached, and a task completes with the status the completion expressions give.
+
 ```cpp
 auto model = std::make_shared<const BPMNOS::Model::Model>("diagram.bpmn");
 auto dataProvider = std::make_shared<BPMNOS::Execution::StaticDataProvider>(model, "scenario.csv");
