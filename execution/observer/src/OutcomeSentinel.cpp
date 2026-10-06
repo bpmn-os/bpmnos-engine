@@ -27,7 +27,8 @@ void OutcomeSentinel::notice(const Observable* observable) {
   }
   else if ( observable->getObservableType() ==  Execution::Observable::Type::Event ) {
     auto event = static_cast<const Event*>(observable);
-    if ( event->is<TerminationEvent>() ) {
+    if ( event->is<TerminationEvent>() && runningInstances ) {
+      // every run ends with a termination event, which terminates the run only if instances are still running
       firstObservation = Outcome::TERMINATED;
     }
   }

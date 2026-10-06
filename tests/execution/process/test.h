@@ -634,3 +634,39 @@ SCENARIO( "Engine refusing a scenario of another model", "[execution][process]" 
     }
   }
 }
+
+SCENARIO( "Outcome of a run", "[execution][process][outcome]" ) {
+  auto model = std::make_shared<const Model::Model>("tests/execution/timer/Timer.bpmn");
+  std::string csv =
+    "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+    "Instance_1; Process_1; trigger := 10\n"
+  ;
+
+  GIVEN( "A single instance whose timer is triggered at time 10" ) {
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    Execution::Engine engine(model);
+    Execution::InstantEntry entryHandler;
+    Execution::InstantExit exitHandler;
+    entryHandler.connect(&engine);
+    exitHandler.connect(&engine);
+    Execution::OutcomeSentinel sentinel;
+    sentinel.subscribe(&engine);
+
+    WHEN( "The run ends once nothing is left to do" ) {
+      engine.run(dataProvider->createScenario());
+
+      THEN( "The run is completed" ) {
+        REQUIRE( sentinel.getOutcome() == Execution::Outcome::COMPLETED );
+      }
+    }
+
+    WHEN( "The run ends at the end time 5, with the instance still running" ) {
+      dataProvider->setEndTime(5);
+      engine.run(dataProvider->createScenario());
+
+      THEN( "The run is terminated" ) {
+        REQUIRE( sentinel.getOutcome() == Execution::Outcome::TERMINATED );
+      }
+    }
+  }
+}
