@@ -20,6 +20,6 @@ public:
   const std::string delimiters;
 };
 
-} // namespace BPMNOS::Model
+} // namespace BPMNOS
 
 #endif // BPMNOS_LookupTable_H
