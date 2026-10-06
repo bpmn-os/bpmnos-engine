@@ -67,6 +67,7 @@ using namespace BPMNOS;
 #include "data/expectedvalueprovider/test.h"
 #include "data/dynamicprovider/test.h"
 #include "data/stochasticprovider/test.h"
+#include "data/parity/test.h"
 #include "data/provider/test.h"
 /* Execution engine */
 // Process
@@ -133,10 +134,6 @@ using namespace BPMNOS;
 #include "examples/pickup_delivery_problem/test.h"
 
 // TODO: Shaped examples
-//#include "examples/guided_bin_packing_problem/test.h"
-//#include "examples/guided_knapsack_problem/test.h"
-//#include "examples/guided_vehicle_routing_problem/test.h" 
-//#include "examples/guided_pickup_delivery_problem/test.h"
 
 #endif // ALL_TESTS
 
@@ -144,7 +141,6 @@ using namespace BPMNOS;
 
 //#include "cpmodel/test.h"
 //#include "cpsolver/test.h"
-//#include "debug.h"
 //#include "examples/knapsack_problem/test.h"
 //#include "cp/examples/knapsack_problem/test.h"
 //#include "cp/examples/bin_packing_problem/test.h"

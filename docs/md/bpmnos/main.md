@@ -123,7 +123,7 @@ int main() {
     "Instance_2; BinProcess; capacity := 40\n"
   ;
 
-  BPMNOS::Model::StaticDataProvider dataProvider("examples/bin_packing_problem/Guided_bin_packing_problem.bpmn",csv);
+  BPMNOS::Model::StaticDataProvider dataProvider("examples/bin_packing_problem/Bin_packing_problem.bpmn",csv);
   auto scenario = dataProvider.createScenario();
 }
 ```

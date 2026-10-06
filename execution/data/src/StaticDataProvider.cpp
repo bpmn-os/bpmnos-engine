@@ -273,7 +273,7 @@ std::optional<BPMNOS::number> StaticDataProvider::getValue(const Scenario& scena
       if ( !collection.has_value() ) {
         return std::nullopt;
       }
-      collectionValues.emplace_back(collectionRegistry[(size_t)collection.value()].begin(), collectionRegistry[(size_t)collection.value()].end());
+      collectionValues.push_back(collectionRegistry[(size_t)collection.value()]);
     }
     return BPMNOS::number(attribute->expression->compiled.evaluate(variableValues, collectionValues));
   }
