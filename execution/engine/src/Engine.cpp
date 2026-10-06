@@ -57,7 +57,7 @@ void Engine::processCommands() {
 
 
 void Engine::acceptScenario(const Scenario* scenario) {
-  if ( scenario->dataProvider->getModel() != model.get() ) {
+  if ( scenario->dataProvider->getModel() != model ) {
     throw std::invalid_argument("Engine: the scenario is not one of the model of the engine");
   }
 }

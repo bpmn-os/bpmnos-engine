@@ -16,8 +16,8 @@ std::unique_ptr<Scenario> DataProvider::forkScenario([[maybe_unused]] const Scen
   throw std::logic_error("DataProvider: the scenario cannot be forked");
 }
 
-const BPMNOS::Model::Model* DataProvider::getModel() const {
-  return model.get();
+const std::shared_ptr<const BPMNOS::Model::Model>& DataProvider::getModel() const {
+  return model;
 }
 
 void DataProvider::advance(const SystemState* systemState, Scenario& scenario, EventQueue& queue) const {

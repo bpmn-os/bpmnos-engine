@@ -42,9 +42,10 @@ public:
   virtual ~DataProvider() = default;
 
   /**
-   * @brief Method returning the model the data provider is built on.
+   * @brief Method returning the model the data provider is built on, whose ownership it shares, so that an
+   * engine executing a scenario of the data provider can be constructed with it.
    */
-  const BPMNOS::Model::Model* getModel() const;
+  const std::shared_ptr<const BPMNOS::Model::Model>& getModel() const;
 
   /**
    * @brief Method creating the scenario of a run for the given realisation, which a data provider with a

@@ -52,6 +52,6 @@ BPMNOS::Execution::Engine engine(model);
 engine.run(dataProvider->createScenario());
 ```
 
-The engine executes a single model for its whole lifetime and shares its ownership with the data provider, which returns it by @ref BPMNOS::Execution::DataProvider::getModel "getModel". The engine refuses with `std::invalid_argument` a scenario created by a data provider built on another model, even if that model was parsed from the same file. Tokens, state machines and the system state reach the model through the engine.
+The engine executes a single model for its whole lifetime and shares its ownership with the data provider, which returns the shared pointer by @ref BPMNOS::Execution::DataProvider::getModel "getModel", so that an engine executing a scenario of a data provider, such as an engine running a fork, can be constructed with the model of that data provider. The engine refuses with `std::invalid_argument` a scenario created by a data provider built on another model, even if that model was parsed from the same file. Tokens, state machines and the system state reach the model through the engine.
 
 A @ref BPMNOS::Execution::Signal "signal" that does not arise in the model is raised by the environment: the @ref BPMNOS::Execution::Environment "environment" dispatches a @ref BPMNOS::Execution::SignalBroadcastEvent "signal broadcast event" for every signal the scenario reports, and processing the event delivers the signal like one thrown within the model, without advancing time.
