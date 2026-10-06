@@ -20,7 +20,7 @@ struct Mediator;
  * due at the current time, and, if neither it nor the controller supplies one, asks it to advance. It
  * forwards both to the data provider as well, and answers each with the first enqueued event. The queue
  * is first in, first out, and the environment never reorders it, so the events are dispatched in the order
- * in which the data provider enqueues them. It owns the scenario of the run, which the engine hands to it whenever a run is
+ * in which the data provider enqueues them; an event that has expired while it was enqueued is discarded. It owns the scenario of the run, which the engine hands to it whenever a run is
  * initialised or a system state is installed.
  */
 class Environment : public Observer {

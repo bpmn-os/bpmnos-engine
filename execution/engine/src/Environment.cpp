@@ -35,6 +35,10 @@ std::shared_ptr<Event> Environment::advance(const SystemState* systemState) {
 }
 
 std::shared_ptr<Event> Environment::dequeueEvent() {
+  // an event may have expired while it was enqueued, for instance when its token was withdrawn
+  while ( !enqueuedEvents.empty() && enqueuedEvents.front()->expired() ) {
+    enqueuedEvents.pop_front();
+  }
   if (enqueuedEvents.empty()) {
     return nullptr;
   }

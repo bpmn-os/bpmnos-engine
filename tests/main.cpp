@@ -63,6 +63,7 @@ using namespace BPMNOS;
 #include "data/dynamic/test.h"
 #include "data/stochastic/test.h"
 #include "data/reader/test.h"
+#include "data/staticprovider/test.h"
 #include "data/provider/test.h"
 /* Execution engine */
 // Process
