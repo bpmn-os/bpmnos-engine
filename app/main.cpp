@@ -105,25 +105,33 @@ int main(int argc, char* argv[]) {
 
   Arguments args = parse_arguments(argc, argv);
 
-  auto createDataProvider = [&args]() -> std::unique_ptr<BPMNOS::Model::DataProvider> {
-    if (args.providerName == "static") {
-      return std::make_unique<BPMNOS::Model::StaticDataProvider>(args.modelFile,args.folders,args.dataFile);
-    }
-    else if (args.providerName == "expected") {
-      return std::make_unique<BPMNOS::Model::ExpectedValueDataProvider>(args.modelFile,args.folders,args.dataFile);
-    }
-    else if (args.providerName == "dynamic") {
-      return std::make_unique<BPMNOS::Model::DynamicDataProvider>(args.modelFile,args.folders,args.dataFile);
-    }
-    else if (args.providerName == "stochastic") {
-      return std::make_unique<BPMNOS::Model::StochasticDataProvider>(args.modelFile,args.folders,args.dataFile, args.seed);
-    }
-    else {
-      std::cerr << "Error: unknown data provider.\n";
-      print_usage();
-    }
-    return nullptr;
-  };
+  auto model = std::make_shared<const BPMNOS::Model::Model>(args.modelFile, args.folders);
+
+  // the data provider and the scenario of the run, which a stochastic data provider creates for its first
+  // realisation
+  std::shared_ptr<BPMNOS::Execution::StaticDataProvider> dataProvider;
+  std::unique_ptr<BPMNOS::Execution::Scenario> scenario;
+  if (args.providerName == "static") {
+    dataProvider = std::make_shared<BPMNOS::Execution::StaticDataProvider>(model, args.dataFile);
+    scenario = dataProvider->createScenario();
+  }
+  else if (args.providerName == "expected") {
+    dataProvider = std::make_shared<BPMNOS::Execution::ExpectedValueDataProvider>(model, args.dataFile);
+    scenario = dataProvider->createScenario();
+  }
+  else if (args.providerName == "dynamic") {
+    dataProvider = std::make_shared<BPMNOS::Execution::DynamicDataProvider>(model, args.dataFile);
+    scenario = dataProvider->createScenario();
+  }
+  else if (args.providerName == "stochastic") {
+    auto stochasticDataProvider = std::make_shared<BPMNOS::Execution::StochasticDataProvider>(model, args.dataFile, args.seed);
+    scenario = stochasticDataProvider->createScenario();
+    dataProvider = std::move(stochasticDataProvider);
+  }
+  else {
+    std::cerr << "Error: unknown data provider.\n";
+    print_usage();
+  }
 
   auto createEvaluator = [&args]() -> std::shared_ptr<BPMNOS::Execution::Evaluator> {
     if (args.evaluatorName == "local") {
@@ -139,20 +147,15 @@ int main(int argc, char* argv[]) {
     return nullptr;
   };
   
-  auto dataProvider = createDataProvider();
   if (args.providerName == "stochastic") {
     std::cout << "Seed: " << args.seed  << std::endl;
   }
-  auto scenario = dataProvider->createScenario();
 
-  BPMNOS::Execution::Engine engine;
+  BPMNOS::Execution::Engine engine(model);
 
   auto evaluator = createEvaluator();
   BPMNOS::Execution::GreedyController controller(evaluator, { .bisection = args.bisection });
   controller.connect(&engine);
-      
-  BPMNOS::Execution::TimeWarp timeHandler;
-  timeHandler.connect(&engine);
 
 
   std::ofstream jsonStream;
@@ -179,7 +182,7 @@ int main(int argc, char* argv[]) {
 
   // a run beginning before its first instance would only tick through empty instants, so the default start
   // is where the scenario's data starts
-  auto earliestInstantiationTime = scenario->getEarliestInstantiationTime();
+  auto earliestInstantiationTime = dataProvider->getEarliestInstantiationTime(*scenario);
   if (args.tmin.has_value() && args.tmin.value() > earliestInstantiationTime) {
     // an instance is instantiated at the instant its instantiation time is reached, so a later start
     // would leave every earlier instance uncreated
@@ -189,11 +192,9 @@ int main(int argc, char* argv[]) {
   auto startTime = args.tmin.value_or( earliestInstantiationTime );
 
   if (args.tmax.has_value()) {
-    engine.run(scenario.get(), startTime, args.tmax.value());
+    dataProvider->setEndTime(args.tmax.value());
   }
-  else {
-    engine.run(scenario.get(), startTime);
-  }
+  engine.run(std::move(scenario), startTime);
   
   logger.reset();
   std::cout << "Status: " << BPMNOS::Execution::outcome[(size_t)sentinel.getOutcome()] << std::endl;

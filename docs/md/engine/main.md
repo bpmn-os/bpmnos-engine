@@ -7,8 +7,7 @@ The engine internally handles:
 - Instantiation events, ready events, task completion events and scenario data updates via @ref BPMNOS::Execution::Environment "Environment"
 
 Below is an example using
-a @ref BPMNOS::Model::StaticDataProvider "static data provider" to obtain a scenario,
-a @ref BPMNOS::Execution::TimeWarp "time warp handler", to trigger the advancement of the simulation time,
+a @ref BPMNOS::Execution::StaticDataProvider "static data provider" to obtain a scenario, which also advances the simulation time,
 and a @ref BPMNOS::Execution::GreedyController "greedy controller" using a @ref BPMNOS::Execution::GuidedEvaluator "guided evaluator".
 
 ```cpp
@@ -17,23 +16,19 @@ and a @ref BPMNOS::Execution::GreedyController "greedy controller" using a @ref 
 
 int main() {
   // load model and instances
-  BPMNOS::Model::StaticDataProvider dataProvider("diagram.bpmn","scenario.csv");
-  auto scenario = dataProvider.createScenario();
+  auto model = std::make_shared<const BPMNOS::Model::Model>("diagram.bpmn");
+  auto dataProvider = std::make_shared<BPMNOS::Execution::StaticDataProvider>(model, "scenario.csv");
 
-  // initialize execution engine with the model of the data provider
-  BPMNOS::Execution::Engine engine(dataProvider.getModel());
-
-  // initialize and connect BPMNOS::Execution::EventDispatcher for BPMNOS::Execution::ClockTickEvent
-  BPMNOS::Execution::TimeWarp timeHandler;
-  timeHandler.connect(&engine);
+  // initialize execution engine with the model
+  BPMNOS::Execution::Engine engine(model);
 
   // initialize and connect BPMNOS::Execution::Controller for BPMNOS::Execution::Decision
   auto evaluator = std::make_shared<BPMNOS::Execution::GuidedEvaluator>();
   BPMNOS::Execution::GreedyController controller(evaluator);
   controller.connect(&engine);
 
-  // run engine on scenario
-  engine.run(scenario.get());
+  // run engine on a scenario of the data provider
+  engine.run(dataProvider->createScenario());
 }
 ```
 
