@@ -24,7 +24,6 @@
 #include "SystemState.h"
 #include "ConditionalEventObserver.h"
 #include "Environment.h"
-#include "execution/data/src/LegacyDataProvider.h"
 
 namespace BPMNOS::Execution {
 
@@ -74,9 +73,15 @@ public:
    */
   void run(const BPMNOS::Model::Scenario* scenario, BPMNOS::number startTime = 0, BPMNOS::number endTime = std::numeric_limits<BPMNOS::number>::max());
 
-  /// @brief TRANSITIONAL: runs a scenario of a legacy data provider, removed with the entry points taking a
-  /// Model::Scenario.
-  void run(std::unique_ptr<LegacyDataProvider::Scenario> scenario, BPMNOS::number startTime = 0, BPMNOS::number endTime = std::numeric_limits<BPMNOS::number>::max());
+  /**
+   * @brief Runs a scenario of a data provider from the beginning, the engine taking ownership of it.
+   *
+   * @param scenario The scenario to execute, created by a data provider built on the model of the engine
+   * @param startTime Time the run begins at
+   * @param endTime Last time to process (engine stops when time >= endTime)
+   * @throws std::invalid_argument if the scenario is not one of the model of the engine
+   */
+  void run(std::unique_ptr<Scenario> scenario, BPMNOS::number startTime = 0, BPMNOS::number endTime = std::numeric_limits<BPMNOS::number>::max());
 
   /**
    * @brief Initializes the engine with a fresh system state and advances time to the run's first instant.
@@ -93,9 +98,15 @@ public:
    */
   void initialize(const BPMNOS::Model::Scenario* scenario, BPMNOS::number startTime = 0);
 
-  /// @brief TRANSITIONAL: initializes the engine with a scenario of a legacy data provider, removed with the
-  /// entry points taking a Model::Scenario.
-  void initialize(std::unique_ptr<LegacyDataProvider::Scenario> scenario, BPMNOS::number startTime = 0);
+  /**
+   * @brief Initializes the engine with a fresh system state for a scenario of a data provider, the engine
+   * taking ownership of it, and advances time to the run's first instant.
+   *
+   * @param scenario The scenario to execute, created by a data provider built on the model of the engine
+   * @param startTime Time the run begins at; must not be later than the earliest instantiation time
+   * @throws std::invalid_argument if the scenario is not one of the model of the engine
+   */
+  void initialize(std::unique_ptr<Scenario> scenario, BPMNOS::number startTime = 0);
 
   /**
    * @brief Initializes the engine's system state with a deep copy of a foreign system state.
@@ -109,9 +120,15 @@ public:
    */
   void initializeSystemState(const BPMNOS::Model::Scenario* scenario, const SystemState* foreignState);
 
-  /// @brief TRANSITIONAL: installs a foreign system state with a scenario of a legacy data provider, removed
-  /// with the entry points taking a Model::Scenario.
-  void initializeSystemState(std::unique_ptr<LegacyDataProvider::Scenario> scenario, const SystemState* foreignState);
+  /**
+   * @brief Initializes the engine's system state with a deep copy of a foreign system state and a scenario
+   * of a data provider, the engine taking ownership of it.
+   *
+   * @param scenario The scenario to continue on, created by a data provider built on the model of the engine
+   * @param foreignState The system state to copy
+   * @throws std::invalid_argument if the scenario is not one of the model of the engine
+   */
+  void initializeSystemState(std::unique_ptr<Scenario> scenario, const SystemState* foreignState);
 
   /**
    * @brief Continues advancing the engine's existing system state.
@@ -156,7 +173,8 @@ public:
    */
   bool advance(BPMNOS::number endTime = std::numeric_limits<BPMNOS::number>::max());
 private:
-  void run(BPMNOS::number endTime = std::numeric_limits<BPMNOS::number>::max());
+  /// @brief Calls advance until it returns false.
+  void loop(BPMNOS::number endTime = std::numeric_limits<BPMNOS::number>::max());
 public:
   void process(const InstantiationEvent* event);
   void process(const SignalBroadcastEvent* event);

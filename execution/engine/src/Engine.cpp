@@ -82,17 +82,16 @@ void Engine::initialize(const BPMNOS::Model::Scenario* scenario, BPMNOS::number 
   initialize(LegacyDataProvider::wrap(scenario), startTime);
 }
 
-void Engine::initialize(std::unique_ptr<LegacyDataProvider::Scenario> legacyScenario, BPMNOS::number startTime) {
-  const Scenario* scenario = legacyScenario.get();
-  acceptScenario(scenario);
+void Engine::initialize(std::unique_ptr<Scenario> scenario, BPMNOS::number startTime) {
+  acceptScenario(scenario.get());
   if ( startTime > scenario->dataProvider->getEarliestInstantiationTime(*scenario) ) {
     throw std::logic_error("Engine: start time is later than the earliest instantiation time");
   }
 
   // create initial system state before the first instant of the run, so that the opening clock tick
   // advances time to it and time is reached the same way at the first instant as at every later one
-  systemState = std::make_unique<SystemState>(this, scenario, std::numeric_limits<BPMNOS::number>::lowest());
-  environment.setScenario(std::move(legacyScenario));
+  systemState = std::make_unique<SystemState>(this, scenario.get(), std::numeric_limits<BPMNOS::number>::lowest());
+  environment.setScenario(std::move(scenario));
   commands.clear();
   conditionalEventObserver.connect( systemState.get() );
   // announce the installed state so subscribers (cached candidate sources) reset for the new run
@@ -107,15 +106,15 @@ void Engine::initialize(std::unique_ptr<LegacyDataProvider::Scenario> legacyScen
 
 void Engine::run(const BPMNOS::Model::Scenario* scenario, BPMNOS::number startTime, BPMNOS::number endTime) {
   initialize(scenario, startTime);
-  run(endTime);
+  loop(endTime);
 }
 
-void Engine::run(std::unique_ptr<LegacyDataProvider::Scenario> scenario, BPMNOS::number startTime, BPMNOS::number endTime) {
+void Engine::run(std::unique_ptr<Scenario> scenario, BPMNOS::number startTime, BPMNOS::number endTime) {
   initialize(std::move(scenario), startTime);
-  run(endTime);
+  loop(endTime);
 }
 
-void Engine::run(BPMNOS::number endTime) {
+void Engine::loop(BPMNOS::number endTime) {
   // advance all tokens in system state (state setup is done where the state is installed)
   while ( advance(endTime) ) {}
 }
@@ -126,13 +125,12 @@ void Engine::initializeSystemState(const BPMNOS::Model::Scenario* scenario, cons
   initializeSystemState(LegacyDataProvider::wrap(scenario), foreignState);
 }
 
-void Engine::initializeSystemState(std::unique_ptr<LegacyDataProvider::Scenario> legacyScenario, const SystemState* foreignState) {
-  const Scenario* scenario = legacyScenario.get();
-  acceptScenario(scenario);
+void Engine::initializeSystemState(std::unique_ptr<Scenario> scenario, const SystemState* foreignState) {
+  acceptScenario(scenario.get());
   // install a deep copy of the foreign state as this engine's own state; the copy already holds every
   // instance known up to its current time
-  systemState = std::make_unique<SystemState>(this, scenario, foreignState);
-  environment.setScenario(std::move(legacyScenario));
+  systemState = std::make_unique<SystemState>(this, scenario.get(), foreignState);
+  environment.setScenario(std::move(scenario));
   // installing a new state resets the run state and binds the conditional-event observer to it
   commands.clear();
   conditionalEventObserver.connect( systemState.get() );
@@ -145,7 +143,7 @@ void Engine::resume(BPMNOS::number endTime) {
     throw std::logic_error("Engine: resume requires an existing system state (call run or initializeSystemState first)");
   }
   // continue advancing the existing system state (no new state is created)
-  run(endTime);
+  loop(endTime);
 }
 
 void Engine::resume(std::shared_ptr<Decision> decision, BPMNOS::number endTime) {
@@ -168,7 +166,7 @@ void Engine::resume(std::shared_ptr<Event> event, BPMNOS::number endTime) {
   // the run continues with the given decision
   notify(event.get());
   event->processBy(this);
-  run(endTime);
+  loop(endTime);
 }
 
 bool Engine::advance(BPMNOS::number endTime) {
