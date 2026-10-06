@@ -4,6 +4,7 @@ list(APPEND execution_data_SOURCES
   LegacyDataProvider.cpp
   InstanceDataReader.cpp
   StaticDataProvider.cpp
+  ExpectedValueDataProvider.cpp
 )
 
 list(APPEND execution_data_HEADERS
@@ -12,4 +13,5 @@ list(APPEND execution_data_HEADERS
   LegacyDataProvider.h
   InstanceDataReader.h
   StaticDataProvider.h
+  ExpectedValueDataProvider.h
 )

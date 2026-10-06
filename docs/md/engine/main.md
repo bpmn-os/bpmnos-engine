@@ -43,6 +43,8 @@ Every round of the engine first asks the environment to dispatch an event due at
 
 The @ref BPMNOS::Execution::StaticDataProvider "static data provider" reads instance data known from the start of a run from a CSV table with the columns `INSTANCE_ID`, `NODE_ID` and `INITIALIZATION`. Every instance is instantiated at the first instant of a run and its process becomes ready at its instantiation time; a token arriving at an activity becomes ready at once, and a task completes with the status it became busy with at the timestamp of that status. Events due later are scheduled and enqueued when the @ref BPMNOS::Execution::ClockTickEvent "clock tick event" advancing to their time is announced, and an event that has expired before it is dispatched is discarded. A run ends when nothing is left to do and no instance is left, or when nothing is left to do at the end time set by @ref BPMNOS::Execution::StaticDataProvider::setEndTime "setEndTime"; a run ended at the end time continues when the end time is raised and the run is resumed.
 
+The @ref BPMNOS::Execution::ExpectedValueDataProvider "expected value data provider" proceeds as the static data provider, but reads a table that may also have the columns `DISCLOSURE`, `READY` and `COMPLETION`, which it ignores, and evaluates every initialization with the expected values of its random functions.
+
 ```cpp
 auto model = std::make_shared<const BPMNOS::Model::Model>("diagram.bpmn");
 auto dataProvider = std::make_shared<BPMNOS::Execution::StaticDataProvider>(model, "scenario.csv");
