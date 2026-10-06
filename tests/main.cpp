@@ -59,16 +59,12 @@ using namespace BPMNOS;
 #include "model/encoder/test.h"
 #include "model/parser/test.h"
 /* Data provider */
-#include "data/static/test.h"
-#include "data/dynamic/test.h"
-#include "data/stochastic/test.h"
 #include "data/reader/test.h"
 #include "data/staticprovider/test.h"
 #include "data/expectedvalueprovider/test.h"
 #include "data/dynamicprovider/test.h"
 #include "data/stochasticprovider/test.h"
 #include "data/forking/test.h"
-#include "data/parity/test.h"
 #include "data/provider/test.h"
 /* Execution engine */
 // Process

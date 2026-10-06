@@ -89,15 +89,14 @@ SCENARIO( "Static data provider", "[data][static]" ) {
   }
 
   GIVEN( "A single instance with a task whose duration is given by a linear expression" ) {
-    const std::string modelFile = "tests/execution/task/Task_with_linear_expression.bpmn";
-    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto model = std::make_shared<const Model::Model>("tests/execution/task/Task_with_linear_expression.bpmn");
     std::string csv =
       "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
       "Instance_1; Process_1;\n"
     ;
     auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
 
-    WHEN( "The engine runs on a scenario of the data provider and on a scenario of the existing data provider" ) {
+    WHEN( "The engine runs on a scenario of the data provider" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
       Execution::InstantExit exitHandler;
@@ -107,23 +106,12 @@ SCENARIO( "Static data provider", "[data][static]" ) {
       recorder.subscribe(&engine);
       engine.run(dataProvider->createScenario());
 
-      Model::StaticDataProvider existingDataProvider(modelFile,csv);
-      auto existingScenario = existingDataProvider.createScenario();
-      Execution::Engine existingEngine;
-      Execution::InstantEntry existingEntryHandler;
-      Execution::InstantExit existingExitHandler;
-      Execution::TimeWarp timeHandler;
-      existingEntryHandler.connect(&existingEngine);
-      existingExitHandler.connect(&existingEngine);
-      timeHandler.connect(&existingEngine);
-      Execution::Recorder existingRecorder;
-      existingRecorder.subscribe(&existingEngine);
-      existingEngine.run(existingScenario.get());
-
-      THEN( "The tokens pass through the same states with the same values" ) {
-        auto tokenLog = recorder.find(nlohmann::json{}, nlohmann::json{{"event",nullptr},{"decision",nullptr}});
-        auto existingTokenLog = existingRecorder.find(nlohmann::json{}, nlohmann::json{{"event",nullptr},{"decision",nullptr}});
-        REQUIRE( tokenLog == existingTokenLog );
+      THEN( "The task completes at time 1, the timestamp its operator gives the status it becomes busy with" ) {
+        auto completionLog = recorder.find(nlohmann::json{{"nodeId","Activity_1"},{"state","COMPLETED"}});
+        REQUIRE( completionLog.size() == 1 );
+        REQUIRE( completionLog.front()["status"]["timestamp"] == 1.0 );
+        auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr},{"event",nullptr},{"decision",nullptr}});
+        REQUIRE( processLog.back()["state"] == "DONE" );
       }
     }
   }

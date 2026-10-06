@@ -14,8 +14,6 @@ list(APPEND controller_SOURCES
   candidates/MessageDeliveries.cpp
   candidates/FirstEnumeratedChoice.cpp
   candidates/FirstBisectionalChoice.cpp
-  dispatcher/TimeWarp.cpp
-  dispatcher/Metronome.cpp
   dispatcher/InstantEntry.cpp
   dispatcher/InstantExit.cpp
   dispatcher/InstantDirectMessage.cpp
@@ -47,8 +45,6 @@ list(APPEND controller_HEADERS
   candidates/FirstEnumeratedChoice.h
   candidates/FirstBisectionalChoice.h
   GreedyDispatcher.h
-  dispatcher/TimeWarp.h
-  dispatcher/Metronome.h
   dispatcher/InstantEntry.h
   dispatcher/InstantExit.h
   dispatcher/InstantDirectMessage.h

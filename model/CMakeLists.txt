@@ -13,9 +13,6 @@ include("${CMAKE_CURRENT_SOURCE_DIR}/utility/CMakeLists.txt")
 # Get lists of all headers and sources of BPMN parser
 include("${CMAKE_CURRENT_SOURCE_DIR}/bpmnos/CMakeLists.txt")
 
-# Get lists of all headers and sources of data reader
-include("${CMAKE_CURRENT_SOURCE_DIR}/data/CMakeLists.txt")
-
 
 # Generate the single header file
 set(SINGLE_HEADER_PATH "${BPMNOS_INCLUDE_DIR}/bpmnos-model.h")
@@ -27,7 +24,6 @@ file(MAKE_DIRECTORY "${BPMNOS_INCLUDE_DIR}")
 set(ALL_HEADERS
   ${model_utility_HEADERS}
   ${bpmn_HEADERS}
-  ${data_HEADERS}
 )
 string(JOIN " " HEADERS_JOINED ${ALL_HEADERS})
 #message("-- Header files to be joined: ${HEADERS_JOINED}")
@@ -50,7 +46,7 @@ add_custom_target(model_header ALL
   DEPENDS "${SINGLE_HEADER_PATH}"
 )
 
-add_library(bpmnos-model STATIC ${model_utility_SOURCES} ${bpmn_SOURCES} ${data_SOURCES})
+add_library(bpmnos-model STATIC ${model_utility_SOURCES} ${bpmn_SOURCES})
 
 # Delete xml directory when running `make clean`
 set_property(

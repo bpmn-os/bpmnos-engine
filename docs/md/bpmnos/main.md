@@ -1,8 +1,8 @@
 # Model provider
 @page bpmnos Model provider
 
-The model provider reads a BPMN model and yields the @ref BPMNOS::Model::Scenario "scenario" that the
-@ref BPMNOS::Execution::Engine "execution engine" runs on.
+The model provider reads a BPMN model, on which a data provider builds the
+@ref BPMNOS::Execution::Scenario "scenario" that the @ref BPMNOS::Execution::Engine "execution engine" runs on.
 
 ## BPMN model
 
@@ -30,19 +30,20 @@ declared under, together with an already parsed model. @ref BPMNOS::Model::Model
 
 ## Scenario
 
-A @ref BPMNOS::Model::Scenario "scenario" gives the execution engine access to the process instances of a run and to the values of their attributes. It is obtained from a @ref BPMNOS::Model::DataProvider "data provider", which creates one from instance data supplied before the run, providing access to all known or anticipated process instances and all known or anticipated attribute values. Four are available, differing in what is known when, and are described below. The data may give no values to the attributes of an @ref BPMN::EventSubProcess "event subprocess" or of a compensation activity: the engine creates such scopes itself and gives them the values the model assigns, and a data provider rejects a row naming such a node in its INITIALIZATION column or, for the stochastic data provider, its READY column. The data may give no values to the attributes of a @ref BPMNOS::Model::Guidance "guidance" either, which take only the values the model assigns to them.
+A @ref BPMNOS::Execution::Scenario "scenario" holds what a run on a model needs to know of its environment: the process instances and the values of their attributes, and the times at which these become known. It is created by a @ref BPMNOS::Execution::DataProvider "data provider" from instance data supplied before the run, and the data provider enqueues the events the scenario gives rise to during the run, as described in the documentation of the @ref engine "execution engine". Four data providers are available, differing in what is known when, and are described below. The data may give no values to the attributes of an @ref BPMN::EventSubProcess "event subprocess" or of a compensation activity: the engine creates such scopes itself and gives them the values the model assigns, and a data provider rejects a row naming such a node in its INITIALIZATION column or, for the stochastic data provider, its READY column. The data may give no values to the attributes of a @ref BPMNOS::Model::Guidance "guidance" either, which take only the values the model assigns to them.
 
 ## Static data provider
 
-The @ref BPMNOS::Model::StaticDataProvider "static data provider" can be used in situations where all instances and all initialization values of attributes are either known or undefined.
+The @ref BPMNOS::Execution::StaticDataProvider "static data provider" can be used in situations where all instances and all initialization values of attributes are either known or undefined.
 
 Below is a minimal example creating a scenario containing instances of a BPMN model.
 ```cpp
-#include <bpmnos-model.h>
+#include <bpmnos-execution.h>
 
 int main() {
-  BPMNOS::Model::StaticDataProvider dataProvider("diagram.bpmn","scenario.csv");
-  auto scenario = dataProvider.createScenario();
+  auto model = std::make_shared<const BPMNOS::Model::Model>("diagram.bpmn");
+  auto dataProvider = std::make_shared<BPMNOS::Execution::StaticDataProvider>(model, "scenario.csv");
+  auto scenario = dataProvider->createScenario();
 }
 ```
 
@@ -109,7 +110,7 @@ Values provided for `string` attributes must be quoted, values provided for `boo
 Alternatively, the instance data may be provided by a string as shown in below example.
 
 ```cpp
-#include <bpmnos-model.h>
+#include <bpmnos-execution.h>
 #include <string>
 
 int main() {
@@ -123,14 +124,15 @@ int main() {
     "Instance_2; BinProcess; capacity := 40\n"
   ;
 
-  BPMNOS::Model::StaticDataProvider dataProvider("examples/bin_packing_problem/Bin_packing_problem.bpmn",csv);
-  auto scenario = dataProvider.createScenario();
+  auto model = std::make_shared<const BPMNOS::Model::Model>("examples/bin_packing_problem/Bin_packing_problem.bpmn");
+  auto dataProvider = std::make_shared<BPMNOS::Execution::StaticDataProvider>(model, csv);
+  auto scenario = dataProvider->createScenario();
 }
 ```
 
 ## Dynamic data provider
 
-The @ref BPMNOS::Model::DynamicDataProvider "dynamic data provider" supports scenarios where attribute values may be disclosed at different points in time. This is useful for modeling situations with uncertain or gradually revealed information.
+The @ref BPMNOS::Execution::DynamicDataProvider "dynamic data provider" supports scenarios where attribute values may be disclosed at different points in time. This is useful for modeling situations with uncertain or gradually revealed information.
 
 ### CSV Format
 
@@ -186,21 +188,18 @@ Global attributes must not have a disclosure time (must be immediately available
 ### Usage
 
 ```cpp
-#include <bpmnos-model.h>
+#include <bpmnos-execution.h>
 
 int main() {
-  BPMNOS::Model::DynamicDataProvider dataProvider("diagram.bpmn", "scenario.csv");
-  auto scenario = dataProvider.createScenario();
-
-  // During a run the engine announces each clock tick to the scenario, which discloses the
-  // initializations that have become due:
-  // scenario->noticeClockTick(time);
+  auto model = std::make_shared<const BPMNOS::Model::Model>("diagram.bpmn");
+  auto dataProvider = std::make_shared<BPMNOS::Execution::DynamicDataProvider>(model, "scenario.csv");
+  auto scenario = dataProvider->createScenario();
 }
 ```
 
 ## Stochastic data provider
 
-The @ref BPMNOS::Model::StochasticDataProvider "stochastic data provider" extends dynamic scenarios with support for random functions, stochastic arrival initialization, and stochastic task completion.
+The @ref BPMNOS::Execution::StochasticDataProvider "stochastic data provider" extends dynamic scenarios with support for random functions, stochastic arrival initialization, and stochastic task completion.
 
 ### CSV Format
 
@@ -293,31 +292,27 @@ Each (instance, node) pair has its own random number generator seeded from the s
 ### Usage
 
 ```cpp
-#include <bpmnos-model.h>
+#include <bpmnos-execution.h>
 
 int main() {
   unsigned int seed = 42;
-  BPMNOS::Model::StochasticDataProvider dataProvider("diagram.bpmn", "scenario.csv", seed);
-  auto scenario = dataProvider.createScenario();
+  auto model = std::make_shared<const BPMNOS::Model::Model>("diagram.bpmn");
+  auto dataProvider = std::make_shared<BPMNOS::Execution::StochasticDataProvider>(model, "scenario.csv", seed);
+  auto scenario = dataProvider->createScenario();
 }
 ```
 
 ### Downward Compatibility
 
-StochasticDataProvider is downward compatible with the following CSV formats:
-- 3-column (Static): INSTANCE_ID; NODE_ID; INITIALIZATION
-- 4-column (Dynamic): + DISCLOSURE
-- 6-column (Stochastic): + READY; COMPLETION
-
-Note: There is no 5-column format. Use 6 columns with empty READY or COMPLETION as needed.
+The stochastic data provider accepts every table whose header consists of the first three or more of its six columns in their order, so that a table of the static or the dynamic data provider is read as well, and a column that is missing gives no value to any row.
 
 ## Expected value data provider
 
-The @ref BPMNOS::Model::ExpectedValueDataProvider "expected value data provider" accepts dynamic and stochastic CSV formats but uses expected values instead of random sampling. All data is disclosed at time 0, regardless of the DISCLOSURE column values.
+The @ref BPMNOS::Execution::ExpectedValueDataProvider "expected value data provider" accepts dynamic and stochastic CSV formats but uses expected values instead of random sampling. All data is disclosed at time 0, regardless of the DISCLOSURE column values.
 
 ### CSV Format
 
-The expected value data provider accepts CSV files with 3, 4, or 6 columns:
+The expected value data provider accepts every table whose header consists of the first three or more of the following columns in their order:
 
 ```plaintext
 INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE; READY; COMPLETION
@@ -358,10 +353,11 @@ With expected values, `duration` will be `(8 + 12) / 2 = 10`.
 ### Usage
 
 ```cpp
-#include <bpmnos-model.h>
+#include <bpmnos-execution.h>
 
 int main() {
-  BPMNOS::Model::ExpectedValueDataProvider dataProvider("diagram.bpmn", "scenario.csv");
-  auto scenario = dataProvider.createScenario();
+  auto model = std::make_shared<const BPMNOS::Model::Model>("diagram.bpmn");
+  auto dataProvider = std::make_shared<BPMNOS::Execution::ExpectedValueDataProvider>(model, "scenario.csv");
+  auto scenario = dataProvider->createScenario();
 }
 ```

@@ -497,7 +497,7 @@ void StateMachine::createMultiInstanceActivityTokens(Token* token) {
   for ( auto valueMap : valueMaps ) {
     counter++;
     // disambiguate instance id
-    auto instanceId = BPMNOS::to_string(this->data[BPMNOS::Model::ExtensionElements::Index::Instance].get().value(),STRING) + BPMNOS::Model::Scenario::delimiters[0] + token->node->id + BPMNOS::Model::Scenario::delimiters[1] +  std::to_string(counter);
+    auto instanceId = BPMNOS::to_string(this->data[BPMNOS::Model::ExtensionElements::Index::Instance].get().value(),STRING) + StateMachine::delimiters[0] + token->node->id + StateMachine::delimiters[1] +  std::to_string(counter);
 
     tokens.push_back( std::make_shared<Token>( token ) );
     if ( auto scope = token->node->represents<BPMN::Scope>() ) {
@@ -798,7 +798,7 @@ void StateMachine::run(Values status) {
           auto context = const_cast<StateMachine*>(parentToken->owned.get());
           auto counter = ++context->instantiations[token->node];
           // disambiguate instance id
-          auto instanceId = BPMNOS::to_string((*parentToken->data)[BPMNOS::Model::ExtensionElements::Index::Instance].get().value(),STRING) + BPMNOS::Model::Scenario::delimiters[0] + scope->id + BPMNOS::Model::Scenario::delimiters[1] + std::to_string(counter);
+          auto instanceId = BPMNOS::to_string((*parentToken->data)[BPMNOS::Model::ExtensionElements::Index::Instance].get().value(),STRING) + StateMachine::delimiters[0] + scope->id + StateMachine::delimiters[1] + std::to_string(counter);
           data[BPMNOS::Model::ExtensionElements::Index::Instance].get() = BPMNOS::to_number(instanceId,BPMNOS::ValueType::STRING);
           const_cast<SystemState*>(systemState)->archive[ (long unsigned int)data[BPMNOS::Model::ExtensionElements::Index::Instance].get().value() ] = weak_from_this();
           registerRecipient();

@@ -6,9 +6,9 @@
 
 using namespace BPMNOS::Execution;
 
-DataProvider::DataProvider(const BPMNOS::Model::Model* model, unsigned int clockTickDuration)
+DataProvider::DataProvider(std::shared_ptr<const BPMNOS::Model::Model> model, unsigned int clockTickDuration)
   : clockTickDuration(clockTickDuration)
-  , model(model)
+  , model(std::move(model))
 {
 }
 
@@ -17,7 +17,7 @@ std::unique_ptr<Scenario> DataProvider::forkScenario([[maybe_unused]] const Scen
 }
 
 const BPMNOS::Model::Model* DataProvider::getModel() const {
-  return model;
+  return model.get();
 }
 
 void DataProvider::advance(const SystemState* systemState, Scenario& scenario, EventQueue& queue) const {

@@ -24,17 +24,16 @@ StaticDataProvider::Scenario::Scenario(std::shared_ptr<const StaticDataProvider>
 StaticDataProvider::StaticDataProvider(std::shared_ptr<const BPMNOS::Model::Model> model, const std::string& instanceFileOrString, unsigned int clockTickDuration)
   : StaticDataProvider(std::move(model), clockTickDuration)
 {
-  readInstances(instanceFileOrString, { "INSTANCE_ID", "NODE_ID", "INITIALIZATION" }, sharedModel->limexHandle);
+  readInstances(instanceFileOrString, { "INSTANCE_ID", "NODE_ID", "INITIALIZATION" }, this->model->limexHandle);
 }
 
 StaticDataProvider::StaticDataProvider(std::shared_ptr<const BPMNOS::Model::Model> model, unsigned int clockTickDuration)
-  : DataProvider(model.get(), clockTickDuration)
-  , sharedModel(std::move(model))
+  : DataProvider(std::move(model), clockTickDuration)
 {
 }
 
 void StaticDataProvider::readInstances(const std::string& instanceFileOrString, const std::vector<std::string>& columns, const LIMEX::Handle<double>& handle) {
-  InstanceDataReader reader(sharedModel.get(), instanceFileOrString, columns);
+  InstanceDataReader reader(this->model.get(), instanceFileOrString, columns);
   for ( auto& row : reader.rows ) {
     if ( !row.node ) {
       reader.evaluateGlobal(row.initialization, handle);
@@ -45,11 +44,11 @@ void StaticDataProvider::readInstances(const std::string& instanceFileOrString, 
   }
 
   // the globals given are completed by those the model assigns
-  globals = BPMNOS::Values(sharedModel->attributes.size());
+  globals = BPMNOS::Values(this->model->attributes.size());
   for ( auto& [attribute, value] : reader.globals ) {
     globals[attribute->index] = value;
   }
-  for ( auto& attribute : sharedModel->attributes ) {
+  for ( auto& attribute : this->model->attributes ) {
     if ( attribute->expression && !globals[attribute->index].has_value() ) {
       auto value = attribute->expression->execute(BPMNOS::Values{}, BPMNOS::Values{}, globals);
       if ( !value.has_value() ) {

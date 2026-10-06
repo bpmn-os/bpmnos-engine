@@ -35,10 +35,10 @@ typedef std::deque< std::shared_ptr<Event> > EventQueue; ///< Events enqueued fo
 class DataProvider : public std::enable_shared_from_this<DataProvider> {
 public:
   /**
-   * @param model The model the data provider is built on.
+   * @param model The model the data provider is built on, whose ownership it shares.
    * @param clockTickDuration Milliseconds of wall-clock time between two clock ticks, zero meaning none.
    */
-  DataProvider(const BPMNOS::Model::Model* model, unsigned int clockTickDuration = 0);
+  DataProvider(std::shared_ptr<const BPMNOS::Model::Model> model, unsigned int clockTickDuration = 0);
   virtual ~DataProvider() = default;
 
   /**
@@ -92,8 +92,8 @@ public:
    */
   virtual void advance(const SystemState* systemState, Scenario& scenario, EventQueue& queue) const;
 
-private:
-  const BPMNOS::Model::Model* model; ///< The model the data provider is built on
+protected:
+  const std::shared_ptr<const BPMNOS::Model::Model> model; ///< The model the data provider is built on, whose ownership it shares
 };
 
 } // namespace BPMNOS::Execution

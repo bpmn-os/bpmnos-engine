@@ -1,5 +1,5 @@
 SCENARIO( "Events of the dynamic data provider", "[data][dynamic]" ) {
-  auto model = std::make_shared<const Model::Model>("tests/data/dynamic/Executable_process.bpmn");
+  auto model = std::make_shared<const Model::Model>("tests/data/dynamicprovider/Executable_process.bpmn");
 
   GIVEN( "An instance disclosed at time 10 with timestamp 15, whose activity is disclosed at time 20" ) {
     std::string csv =

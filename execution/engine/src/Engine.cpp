@@ -10,7 +10,6 @@
 #include "model/bpmnos/src/DecisionTask.h"
 #include "execution/engine/src/events/TimerEvent.h"
 #include "execution/utility/src/erase.h"
-#include "execution/data/src/LegacyDataProvider.h" // TRANSITIONAL: see the entry points taking a Model::Scenario
 #include <cassert>
 #include <limits>
 #include <stdexcept>
@@ -20,13 +19,7 @@
 using namespace BPMNOS::Execution;
 
 Engine::Engine(std::shared_ptr<const BPMNOS::Model::Model> model)
-  : Engine()
-{
-  sharedModel = std::move(model);
-  this->model = sharedModel.get();
-}
-
-Engine::Engine()
+  : model(std::move(model))
 {
   addSubscriber(&conditionalEventObserver, Observable::Type::DataUpdate);
   environment.connect(this);
@@ -64,22 +57,13 @@ void Engine::processCommands() {
 
 
 void Engine::acceptScenario(const Scenario* scenario) {
-  if ( !model ) {
-    model = scenario->dataProvider->getModel();
-  }
-  else if ( scenario->dataProvider->getModel() != model ) {
+  if ( scenario->dataProvider->getModel() != model.get() ) {
     throw std::invalid_argument("Engine: the scenario is not one of the model of the engine");
   }
 }
 
 const BPMNOS::Model::Model* Engine::getModel() const {
-  return model;
-}
-
-void Engine::initialize(const BPMNOS::Model::Scenario* scenario, BPMNOS::number startTime) {
-  // TRANSITIONAL: the scenario is wrapped here until callers pass a scenario of a data provider themselves;
-  // removed with the entry points taking a Model::Scenario
-  initialize(LegacyDataProvider::wrap(scenario), startTime);
+  return model.get();
 }
 
 void Engine::initialize(std::unique_ptr<Scenario> scenario, BPMNOS::number startTime) {
@@ -104,13 +88,6 @@ void Engine::initialize(std::unique_ptr<Scenario> scenario, BPMNOS::number start
   clockTickEvent.processBy(this);
 }
 
-void Engine::run(const BPMNOS::Model::Scenario* scenario, BPMNOS::number startTime, BPMNOS::number endTime) {
-  // TRANSITIONAL: the scenario is wrapped here, together with the end time, until callers pass a scenario of
-  // a data provider themselves; removed with the entry points taking a Model::Scenario
-  initialize(LegacyDataProvider::wrap(scenario, endTime), startTime);
-  loop();
-}
-
 void Engine::run(std::unique_ptr<Scenario> scenario, BPMNOS::number startTime) {
   initialize(std::move(scenario), startTime);
   loop();
@@ -119,12 +96,6 @@ void Engine::run(std::unique_ptr<Scenario> scenario, BPMNOS::number startTime) {
 void Engine::loop() {
   // advance all tokens in system state (state setup is done where the state is installed)
   while ( advance() ) {}
-}
-
-void Engine::initializeSystemState(const BPMNOS::Model::Scenario* scenario, const SystemState* foreignState) {
-  // TRANSITIONAL: the scenario is wrapped here until callers pass a scenario of a data provider themselves;
-  // removed with the entry points taking a Model::Scenario
-  initializeSystemState(LegacyDataProvider::wrap(scenario), foreignState);
 }
 
 void Engine::initializeSystemState(std::unique_ptr<Scenario> scenario, const SystemState* foreignState) {
@@ -242,7 +213,7 @@ void Engine::triggerInstance(const BPMN::Process* process, BPMNOS::VariedValueMa
 
   // the identifier is generated, an instance created by a trigger being declared nowhere
   auto counter = ++systemState->instantiationCounter[process];
-  auto instanceId = process->id + BPMNOS::Model::Scenario::delimiters[1] + std::to_string(counter);
+  auto instanceId = process->id + StateMachine::delimiters[1] + std::to_string(counter);
 
   BPMNOS::Values data( extensionElements->data.size() );
   data[Model::ExtensionElements::Index::Instance] = BPMNOS::to_number(instanceId,STRING);

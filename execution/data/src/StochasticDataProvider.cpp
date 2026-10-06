@@ -45,7 +45,7 @@ StochasticDataProvider::StochasticDataProvider(std::shared_ptr<const BPMNOS::Mod
   : DynamicDataProvider(std::move(model), clockTickDuration)
   , seed(seed)
 {
-  for ( auto& lookupTable : sharedModel->lookupTables ) {
+  for ( auto& lookupTable : this->model->lookupTables ) {
     auto table = lookupTable.get();
     handle.addFunction(table->name, [table](const std::vector<double>& args) {
       return table->at(args);

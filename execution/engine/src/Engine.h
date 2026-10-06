@@ -48,33 +48,16 @@ public:
    */
   Engine(std::shared_ptr<const BPMNOS::Model::Model> model);
 
-  /**
-   * @brief Constructs an engine without a model, which takes the model of the first scenario it is given.
-   *
-   * The engine then shares no ownership of the model, which must outlive it, and accepts only scenarios of
-   * that model.
-   */
-  Engine();
   ~Engine();
 public:
 
   /**
-   * @brief Runs a scenario from the beginning.
+   * @brief Runs a scenario of a data provider from the beginning, the engine taking ownership of it.
    *
    * Creates a fresh system state at the given start time and executes until a termination event is
-   * processed, which happens at the latest when nothing is left to do at the end time. The start time must not be later
-   * than the scenario's earliest instantiation time, since an instance is instantiated at the instant
-   * its instantiation time is reached and a later start would leave every earlier instance uncreated.
-   *
-   * @param scenario The scenario to execute
-   * @param startTime Time the run begins at
-   * @param endTime Time at which the run ends once nothing is left to do
-   * @throws std::invalid_argument if the scenario is not one of the model of the engine
-   */
-  void run(const BPMNOS::Model::Scenario* scenario, BPMNOS::number startTime = 0, BPMNOS::number endTime = std::numeric_limits<BPMNOS::number>::max());
-
-  /**
-   * @brief Runs a scenario of a data provider from the beginning, the engine taking ownership of it.
+   * processed. The start time must not be later than the earliest instantiation time, since an instance is
+   * instantiated at the instant its instantiation time is reached and a later start would leave every
+   * earlier instance uncreated.
    *
    * @param scenario The scenario to execute, created by a data provider built on the model of the engine
    * @param startTime Time the run begins at
@@ -83,23 +66,11 @@ public:
   void run(std::unique_ptr<Scenario> scenario, BPMNOS::number startTime = 0);
 
   /**
-   * @brief Initializes the engine with a fresh system state and advances time to the run's first instant.
-   *
-   * Does not process any further event; call run, resume, or step afterwards. The opening clock tick is
-   * announced like any other, so the record stream states the time the run begins at and deferred data is
-   * disclosed for that instant.
-   *
-   * @param scenario The scenario to execute
-   * @param startTime Time the run begins at; must not be later than the scenario's earliest instantiation
-   *        time, since an instance is instantiated at the instant its instantiation time is reached and a
-   *        later start would leave every earlier instance uncreated
-   * @throws std::invalid_argument if the scenario is not one of the model of the engine
-   */
-  void initialize(const BPMNOS::Model::Scenario* scenario, BPMNOS::number startTime = 0);
-
-  /**
    * @brief Initializes the engine with a fresh system state for a scenario of a data provider, the engine
    * taking ownership of it, and advances time to the run's first instant.
+   *
+   * Does not process any further event; call resume or advance afterwards. The opening clock tick is
+   * announced like any other, so the record stream states the time the run begins at.
    *
    * @param scenario The scenario to execute, created by a data provider built on the model of the engine
    * @param startTime Time the run begins at; must not be later than the earliest instantiation time
@@ -108,20 +79,11 @@ public:
   void initialize(std::unique_ptr<Scenario> scenario, BPMNOS::number startTime = 0);
 
   /**
-   * @brief Initializes the engine's system state with a deep copy of a foreign system state.
-   *
-   * Does not run; call resume() afterwards to continue execution. The copy already holds every instance
-   * due up to its current time, so the instantiation watermark starts at that time.
-   *
-   * @param scenario The scenario to use (may be forked from the original)
-   * @param foreignState The system state to copy
-   * @throws std::invalid_argument if the scenario is not one of the model of the engine
-   */
-  void initializeSystemState(const BPMNOS::Model::Scenario* scenario, const SystemState* foreignState);
-
-  /**
    * @brief Initializes the engine's system state with a deep copy of a foreign system state and a scenario
    * of a data provider, the engine taking ownership of it.
+   *
+   * Does not run; call resume() afterwards to continue execution. The scenario is a fork or a new scenario
+   * of the data provider of the run the foreign state belongs to.
    *
    * @param scenario The scenario to continue on, created by a data provider built on the model of the engine
    * @param foreignState The system state to copy
@@ -260,12 +222,10 @@ protected:
 
   void deleteInstance(StateMachine* instance); ///< Method removing completed instance
 
-  /// @brief Method taking the model of the scenario if the engine has none, and refusing a scenario of
-  /// another model.
+  /// @brief Method refusing a scenario of another model.
   void acceptScenario(const Scenario* scenario);
 
-  std::shared_ptr<const BPMNOS::Model::Model> sharedModel; ///< The model, if the engine shares its ownership
-  const BPMNOS::Model::Model* model = nullptr; ///< The model the engine executes
+  const std::shared_ptr<const BPMNOS::Model::Model> model; ///< The model the engine executes, whose ownership it shares
 
   std::unique_ptr<SystemState> systemState;
   ConditionalEventObserver conditionalEventObserver;

@@ -4,7 +4,6 @@
 #include <bpmn++.h>
 #include "Token.h"
 #include "model/utility/src/Value.h"
-#include "model/data/src/Scenario.h"
 #include "execution/utility/src/auto_list.h"
 
 namespace BPMNOS::Execution {
@@ -33,6 +32,7 @@ class SystemState;
  */
 class StateMachine : public std::enable_shared_from_this<StateMachine> {
 public:
+  static constexpr char delimiters[] = {'^','#'}; ///< Delimiters used for disambiguation of identifiers of non-interrupting event subprocesses, multi-instance activities and instances created by a trigger
   /**
    * @brief Constructs a root StateMachine for a process instance.
    *

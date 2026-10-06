@@ -632,17 +632,5 @@ SCENARIO( "Engine refusing a scenario of another model", "[execution][process]" 
         REQUIRE_THROWS_AS( engine.initializeSystemState(otherDataProvider->createScenario(), sourceEngine.getSystemState()), std::invalid_argument );
       }
     }
-
-    WHEN( "The engine is constructed without a model and runs a scenario of the first data provider" ) {
-      Execution::Engine engine;
-      engine.run(dataProvider->createScenario());
-
-      THEN( "The engine executes the model of the first data provider" ) {
-        REQUIRE( engine.getModel() == model.get() );
-      }
-      THEN( "The engine refuses to run a scenario of the second data provider" ) {
-        REQUIRE_THROWS_AS( engine.run(otherDataProvider->createScenario()), std::invalid_argument );
-      }
-    }
   }
 }

@@ -1,7 +1,7 @@
 # Processes
 @page token_flow_logic_processes Processes
 
-A process with an @ref BPMN::UntypedStartEvent "untyped start event" is instantiated when the instance becomes known to the @ref BPMNOS::Model::Scenario "scenario", and is started when all data required for the @ref BPMNOS::Model::ExtensionElements::attributes "attributes" defined for the @ref BPMN::Process "process" element, in particular, the instance identifier and the timestamp, are disclosed and the timestamp is reached.
+A process with an @ref BPMN::UntypedStartEvent "untyped start event" is instantiated when the instance becomes known to the @ref BPMNOS::Execution::Scenario "scenario", and is started when all data required for the @ref BPMNOS::Model::ExtensionElements::attributes "attributes" defined for the @ref BPMN::Process "process" element, in particular, the instance identifier and the timestamp, are disclosed and the timestamp is reached.
 
 A process with a @ref BPMN::MessageStartEvent "message start event" or a @ref BPMN::SignalStartEvent "signal start event" is instantiated whenever the message or signal triggering it is thrown, and is declared nowhere. Its instance identifier is generated, and the @ref BPMNOS::Model::Content "content" of the trigger is part of the status the instance is created with. Values that neither the content nor an initial assignment provides are undefined.
 

@@ -135,7 +135,6 @@ protected:
     BPMNOS::number instantiationTime;
   };
 
-  const std::shared_ptr<const BPMNOS::Model::Model> sharedModel; ///< The model, whose ownership the data provider shares
   std::unordered_map<size_t, Instance> instances; ///< The instances by their identifier
   BPMNOS::Values globals; ///< The values of the global attributes at the start of a run
   BPMNOS::number endTime = std::numeric_limits<BPMNOS::number>::max();
