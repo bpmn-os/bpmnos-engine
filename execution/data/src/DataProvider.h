@@ -57,7 +57,8 @@ public:
    * @brief Method creating the scenario of a fork of a run, which agrees with the scenario of the run before
    * the instant following its current time and is the realisation with the given index thereafter.
    *
-   * The base refuses to fork, a data provider whose future is certain having nothing to fork.
+   * The base returns a new scenario, which is the fork of a run of a data provider whose future is certain,
+   * since such a fork cannot differ from the run.
    */
   virtual std::unique_ptr<Scenario> forkScenario(const Scenario& scenario, unsigned int index) const;
 

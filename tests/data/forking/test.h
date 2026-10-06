@@ -13,16 +13,57 @@ SCENARIO( "Scenarios created by a data provider held through its base", "[data][
       REQUIRE( dynamic_cast<Execution::StochasticDataProvider::Scenario*>(scenario.get()) != nullptr );
     }
   }
+}
+
+SCENARIO( "Forks of a deterministic run", "[data][forking]" ) {
+  auto model = std::make_shared<const Model::Model>("tests/execution/task/Task_with_linear_expression.bpmn");
 
   GIVEN( "A static and a dynamic data provider" ) {
-    auto staticDataProvider = std::make_shared<Execution::StaticDataProvider>(model, "INSTANCE_ID; NODE_ID; INITIALIZATION\nInstance_1; Process_1;\n");
-    auto dynamicDataProvider = std::make_shared<Execution::DynamicDataProvider>(model, "INSTANCE_ID; NODE_ID; INITIALIZATION\nInstance_1; Process_1;\n");
+    std::string csv =
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1;\n"
+    ;
+    std::vector<std::shared_ptr<Execution::StaticDataProvider>> dataProviders = {
+      std::make_shared<Execution::StaticDataProvider>(model, csv),
+      std::make_shared<Execution::DynamicDataProvider>(model, csv)
+    };
 
-    THEN( "Neither forks a scenario, their future being certain" ) {
-      auto staticScenario = staticDataProvider->createScenario();
-      auto dynamicScenario = dynamicDataProvider->createScenario();
-      REQUIRE_THROWS( staticDataProvider->forkScenario(*staticScenario, 0) );
-      REQUIRE_THROWS( dynamicDataProvider->forkScenario(*dynamicScenario, 0) );
+    // the token log of a run of the scenario from the given state, or from the start
+    auto tokenLog = [&](std::unique_ptr<Execution::Scenario> scenario, const Execution::SystemState* state) {
+      Execution::Engine engine(model);
+      Execution::InstantEntry entryHandler;
+      Execution::InstantExit exitHandler;
+      entryHandler.connect(&engine);
+      exitHandler.connect(&engine);
+      Execution::Recorder recorder;
+      recorder.subscribe(&engine);
+      if ( state ) {
+        engine.initializeSystemState(std::move(scenario), state);
+        engine.resume();
+      }
+      else {
+        engine.run(std::move(scenario));
+      }
+      return recorder.find(nlohmann::json{{"nodeId","Activity_1"}}, nlohmann::json{{"event",nullptr},{"decision",nullptr}});
+    };
+
+    THEN( "The fork of a run stopped while the task is busy realises the same events as the run" ) {
+      for ( auto& dataProvider : dataProviders ) {
+        Execution::Engine engine(model);
+        Execution::InstantEntry entryHandler;
+        Execution::InstantExit exitHandler;
+        entryHandler.connect(&engine);
+        exitHandler.connect(&engine);
+        dataProvider->setEndTime(0);
+        engine.run(dataProvider->createScenario());
+        dataProvider->setEndTime(std::numeric_limits<BPMNOS::number>::max());
+
+        auto runLog = tokenLog(dataProvider->createScenario(), nullptr);
+        auto forkLog = tokenLog(dataProvider->forkScenario(*engine.getSystemState()->scenario, 1), engine.getSystemState());
+        REQUIRE_FALSE( forkLog.empty() );
+        REQUIRE( forkLog.back()["state"] == "DEPARTED" );
+        REQUIRE( forkLog.back()["status"] == runLog.back()["status"] );
+      }
     }
   }
 }

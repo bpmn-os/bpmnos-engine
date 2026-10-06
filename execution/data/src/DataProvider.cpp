@@ -2,7 +2,6 @@
 #include "Scenario.h"
 #include "execution/engine/src/SystemState.h"
 #include "execution/engine/src/events/ClockTickEvent.h"
-#include <stdexcept>
 
 using namespace BPMNOS::Execution;
 
@@ -13,7 +12,8 @@ DataProvider::DataProvider(std::shared_ptr<const BPMNOS::Model::Model> model, un
 }
 
 std::unique_ptr<Scenario> DataProvider::forkScenario([[maybe_unused]] const Scenario& scenario, [[maybe_unused]] unsigned int index) const {
-  throw std::logic_error("DataProvider: the scenario cannot be forked");
+  // the future of the run is certain, so that its fork is a new scenario
+  return createScenario();
 }
 
 const std::shared_ptr<const BPMNOS::Model::Model>& DataProvider::getModel() const {
