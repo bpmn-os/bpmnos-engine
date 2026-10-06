@@ -5,6 +5,7 @@
 #include "model/bpmnos/src/extensionElements/ExtensionElements.h"
 #include "model/utility/src/InputEncoder.h"
 #include <cmath>
+#include <limits>
 #include <functional>
 #include <stdexcept>
 
@@ -114,49 +115,93 @@ void StochasticDataProvider::readValue(InstanceDataReader& reader, const Instanc
   });
 }
 
-std::unique_ptr<StochasticDataProvider::Scenario> StochasticDataProvider::createScenario(unsigned int realisation) const {
+std::unique_ptr<BPMNOS::Execution::Scenario> StochasticDataProvider::createScenario(unsigned int realisation) const {
   auto scenario = std::make_unique<Scenario>(std::static_pointer_cast<const StochasticDataProvider>(shared_from_this()), seed + realisation);
+  sample(*scenario, nullptr, std::numeric_limits<BPMNOS::number>::lowest());
+  return scenario;
+}
+
+std::unique_ptr<BPMNOS::Execution::Scenario> StochasticDataProvider::forkScenario(const Execution::Scenario& scenario, unsigned int index) const {
+  auto& original = static_cast<const Scenario&>(scenario);
+  auto fork = std::make_unique<Scenario>(std::static_pointer_cast<const StochasticDataProvider>(shared_from_this()), original.seed + index + 1);
+  // the fork agrees with the run before the instant following its current time
+  sample(*fork, &original, original.time + 1);
+  return fork;
+}
+
+void StochasticDataProvider::sample(Scenario& scenario, const Scenario* original, BPMNOS::number spawnTime) const {
   for ( auto& [instanceId, instance] : instances ) {
-    scenario->values[instanceId] = instance.values;
-    scenario->instantiationTimes[instanceId] = instance.instantiationTime;
-    scenario->disclosureTimes[instanceId][instance.process] = 0;
+    scenario.values[instanceId] = instance.values;
+    scenario.instantiationTimes[instanceId] = instance.instantiationTime;
+    scenario.disclosureTimes[instanceId][instance.process] = 0;
   }
 
   // the initializations are sampled in the order of the rows, so that each may refer to those before it
-  for ( auto& initialization : initializations ) {
-    auto& values = scenario->values.at(initialization.instanceId);
-    auto& attributeRegistry = initialization.node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->attributeRegistry;
-    BPMNOS::Values status(attributeRegistry.statusAttributes.size());
-    BPMNOS::Values data(attributeRegistry.dataAttributes.size());
-    for ( auto& [attribute, value] : values ) {
-      if ( attribute->category == BPMNOS::Model::Attribute::Category::STATUS && attribute->index < status.size() && attributeRegistry.contains(attribute) ) {
-        status[attribute->index] = value;
-      }
-      else if ( attribute->category == BPMNOS::Model::Attribute::Category::DATA && attribute->index < data.size() && attributeRegistry.contains(attribute) ) {
-        data[attribute->index] = value;
-      }
-    }
-
-    randomDistributionFactory.setCurrentRng(&scenario->getRandomNumberGenerator(initialization.instanceId, initialization.node));
-    auto value = convert(initialization.value->execute(status, data, globals).value_or(0), initialization.attribute->type);
-    values[initialization.attribute] = value;
-    if ( initialization.attribute->category == BPMNOS::Model::Attribute::Category::STATUS ) {
-      status[initialization.attribute->index] = value;
-    }
-    else if ( initialization.attribute->category == BPMNOS::Model::Attribute::Category::DATA ) {
-      data[initialization.attribute->index] = value;
-    }
-    auto disclosureTime = BPMNOS::number(std::ceil(initialization.disclosure->execute(status, data, globals).value_or(0)));
-    randomDistributionFactory.setCurrentRng(nullptr);
-
+  for ( size_t k = 0; k < initializations.size(); k++ ) {
+    auto& initialization = initializations[k];
+    auto& values = scenario.values.at(initialization.instanceId);
     auto process = instances.at(initialization.instanceId).process;
-    if ( initialization.attribute == process->extensionElements->as<BPMNOS::Model::ExtensionElements>()->attributes[BPMNOS::Model::ExtensionElements::Index::Timestamp].get() ) {
+    bool isTimestamp = ( initialization.attribute == process->extensionElements->as<BPMNOS::Model::ExtensionElements>()->attributes[BPMNOS::Model::ExtensionElements::Index::Timestamp].get() );
+
+    BPMNOS::number value;
+    BPMNOS::number disclosureTime;
+    if ( original && original->initializationDisclosureTimes[k] < spawnTime ) {
+      // the initialization was disclosed before the spawn time, so the fork keeps it
+      value = original->values.at(initialization.instanceId).at(initialization.attribute);
+      disclosureTime = original->initializationDisclosureTimes[k];
+    }
+    else {
+      auto& attributeRegistry = initialization.node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->attributeRegistry;
+      BPMNOS::Values status(attributeRegistry.statusAttributes.size());
+      BPMNOS::Values data(attributeRegistry.dataAttributes.size());
+      for ( auto& [attribute, attributeValue] : values ) {
+        if ( attribute->category == BPMNOS::Model::Attribute::Category::STATUS && attribute->index < status.size() && attributeRegistry.contains(attribute) ) {
+          status[attribute->index] = attributeValue;
+        }
+        else if ( attribute->category == BPMNOS::Model::Attribute::Category::DATA && attribute->index < data.size() && attributeRegistry.contains(attribute) ) {
+          data[attribute->index] = attributeValue;
+        }
+      }
+
+      randomDistributionFactory.setCurrentRng(&scenario.getRandomNumberGenerator(initialization.instanceId, initialization.node));
+      auto evaluate = [&]() {
+        return convert(initialization.value->execute(status, data, globals).value_or(0), initialization.attribute->type);
+      };
+      value = evaluate();
+      if ( isTimestamp ) {
+        // a fork samples a timestamp before the spawn time again, and sets it to the spawn time at last
+        for ( int tries = 1; value < spawnTime && tries < maxResamplingTries; tries++ ) {
+          value = evaluate();
+        }
+        value = std::max(value, spawnTime);
+      }
+      if ( initialization.attribute->category == BPMNOS::Model::Attribute::Category::STATUS ) {
+        status[initialization.attribute->index] = value;
+      }
+      else if ( initialization.attribute->category == BPMNOS::Model::Attribute::Category::DATA ) {
+        data[initialization.attribute->index] = value;
+      }
+      auto evaluateDisclosure = [&]() {
+        return BPMNOS::number(std::ceil(initialization.disclosure->execute(status, data, globals).value_or(0)));
+      };
+      disclosureTime = evaluateDisclosure();
+      // a fork samples a disclosure time before the spawn time again, and sets it to the spawn time at last
+      for ( int tries = 1; disclosureTime < spawnTime && tries < maxResamplingTries; tries++ ) {
+        disclosureTime = evaluateDisclosure();
+      }
+      disclosureTime = std::max(disclosureTime, spawnTime);
+      randomDistributionFactory.setCurrentRng(nullptr);
+    }
+
+    values[initialization.attribute] = value;
+    scenario.initializationDisclosureTimes.push_back(disclosureTime);
+    if ( isTimestamp ) {
       // instances are instantiated at integral times
-      scenario->instantiationTimes[initialization.instanceId] = BPMNOS::number(std::ceil((double)value));
+      scenario.instantiationTimes[initialization.instanceId] = BPMNOS::number(std::ceil((double)value));
     }
 
     // the disclosure time of a node is at least that of the scope containing it
-    auto& nodeDisclosureTimes = scenario->disclosureTimes.at(initialization.instanceId);
+    auto& nodeDisclosureTimes = scenario.disclosureTimes.at(initialization.instanceId);
     if ( auto childNode = initialization.node->represents<BPMN::ChildNode>() ) {
       if ( auto scope = nodeDisclosureTimes.find(childNode->parent); scope != nodeDisclosureTimes.end() ) {
         disclosureTime = std::max(disclosureTime, scope->second);
@@ -167,7 +212,6 @@ std::unique_ptr<StochasticDataProvider::Scenario> StochasticDataProvider::create
       it->second = std::max(it->second, disclosureTime);
     }
   }
-  return scenario;
 }
 
 const std::unordered_map<const BPMNOS::Model::Attribute*, BPMNOS::number>& StochasticDataProvider::getInstanceValues(const StaticDataProvider::Scenario& scenario, size_t instanceId) const {

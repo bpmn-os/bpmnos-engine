@@ -67,6 +67,7 @@ using namespace BPMNOS;
 #include "data/expectedvalueprovider/test.h"
 #include "data/dynamicprovider/test.h"
 #include "data/stochasticprovider/test.h"
+#include "data/forking/test.h"
 #include "data/parity/test.h"
 #include "data/provider/test.h"
 /* Execution engine */

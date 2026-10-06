@@ -116,18 +116,19 @@ SCENARIO( "Engine resume from stopped state", "[systemstate][process][resume]" )
       "Instance_1; Process_1; timestamp := 0\n"
     ;
 
-    Model::StochasticDataProvider dataProvider(modelFile, csv);
-    auto scenario = dataProvider.createScenario();
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StochasticDataProvider>(model, csv);
 
     // First engine: entry handler but NO exit handler
-    Execution::Engine engine1;
+    Execution::Engine engine1(model);
     Execution::InstantEntry entryHandler1;
     entryHandler1.connect(&engine1);
     Execution::Recorder recorder1;
     recorder1.subscribe(&engine1);
 
     // Run with end time - will stop when task is waiting for exit event
-    engine1.run(scenario.get(), 0, 10);
+    dataProvider->setEndTime(10);
+    engine1.run(dataProvider->createScenario(), 0);
 
     REQUIRE( engine1.getSystemState()->getTime() == 10 );
 
@@ -135,24 +136,23 @@ SCENARIO( "Engine resume from stopped state", "[systemstate][process][resume]" )
     auto activityLog1 = recorder1.find(nlohmann::json{{"nodeId","Activity_1"}}, nlohmann::json{{"event",nullptr},{"decision",nullptr}});
     REQUIRE( activityLog1.back()["state"] == "COMPLETED" );
 
-    WHEN( "A second engine resumes with exit handler and a copy of the scenario" ) {
-      // Copy the scenario for continuation, differing from the first engine's run at the next point in
-      // time and taking the first realization other than the one that run itself produced
-      auto copiedScenario = scenario->clone( engine1.getSystemState()->getTime() + 1, 0 );
+    WHEN( "A second engine resumes with exit handler and a fork of the scenario" ) {
+      // Fork the scenario of the first engine's run, which differs from it at the next point in time and
+      // takes the first realization other than the one that run itself produced
+      auto fork = dataProvider->forkScenario(*engine1.getSystemState()->scenario, 0);
 
       // Second engine: has exit handler
-      Execution::Engine engine2;
+      Execution::Engine engine2(model);
       Execution::InstantEntry entryHandler2;
       Execution::InstantExit exitHandler2;
-      Execution::TimeWarp timeHandler2;
       entryHandler2.connect(&engine2);
       exitHandler2.connect(&engine2);
-      timeHandler2.connect(&engine2);
       Execution::Recorder recorder2;
       recorder2.subscribe(&engine2);
 
-      // Resume from a copy of the first engine's state with the copied scenario
-      engine2.initializeSystemState(copiedScenario.get(), engine1.getSystemState());
+      // Resume from a copy of the first engine's state with the fork, the end time being lifted
+      dataProvider->setEndTime(std::numeric_limits<BPMNOS::number>::max());
+      engine2.initializeSystemState(std::move(fork), engine1.getSystemState());
       engine2.resume();
 
       THEN( "The process completes successfully" ) {

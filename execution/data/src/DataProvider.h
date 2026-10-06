@@ -47,6 +47,20 @@ public:
   const BPMNOS::Model::Model* getModel() const;
 
   /**
+   * @brief Method creating the scenario of a run for the given realisation, which a data provider with a
+   * single realisation ignores.
+   */
+  virtual std::unique_ptr<Scenario> createScenario(unsigned int realisation = 0) const = 0;
+
+  /**
+   * @brief Method creating the scenario of a fork of a run, which agrees with the scenario of the run before
+   * the instant following its current time and is the realisation with the given index thereafter.
+   *
+   * The base refuses to fork, a data provider whose future is certain having nothing to fork.
+   */
+  virtual std::unique_ptr<Scenario> forkScenario(const Scenario& scenario, unsigned int index) const;
+
+  /**
    * @brief Method returning the values of the global attributes at the beginning of a run on the scenario.
    */
   virtual BPMNOS::Values getGlobals(const Scenario& scenario) const = 0;

@@ -53,6 +53,10 @@ std::unique_ptr<LegacyDataProvider::Scenario> LegacyDataProvider::createScenario
   return std::make_unique<Scenario>(std::static_pointer_cast<const LegacyDataProvider>(shared_from_this()), scenario);
 }
 
+std::unique_ptr<BPMNOS::Execution::Scenario> LegacyDataProvider::createScenario([[maybe_unused]] unsigned int realisation) const {
+  throw std::logic_error("LegacyDataProvider: a scenario is created by wrapping a Model::Scenario");
+}
+
 BPMNOS::Values LegacyDataProvider::getGlobals(const Execution::Scenario& executionScenario) const {
   return static_cast<const Scenario&>(executionScenario).scenario->globals;
 }

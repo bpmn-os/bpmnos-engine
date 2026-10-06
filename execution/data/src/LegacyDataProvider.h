@@ -95,6 +95,11 @@ public:
    */
   std::unique_ptr<Scenario> createScenario(const BPMNOS::Model::Scenario* scenario) const;
 
+  /**
+   * @brief Method refusing to create a scenario other than by wrapping a Model::Scenario.
+   */
+  std::unique_ptr<Execution::Scenario> createScenario(unsigned int realisation = 0) const override;
+
   BPMNOS::Values getGlobals(const Execution::Scenario& scenario) const override;
   BPMNOS::number getEarliestInstantiationTime(const Execution::Scenario& scenario) const override;
 

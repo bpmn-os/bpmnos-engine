@@ -184,7 +184,7 @@ public:
   {
   }
 
-  std::unique_ptr<Scenario> createScenario() const {
+  std::unique_ptr<Execution::Scenario> createScenario([[maybe_unused]] unsigned int realisation = 0) const override {
     return std::make_unique<Scenario>(std::static_pointer_cast<const ScriptedDataProvider>(shared_from_this()));
   }
 

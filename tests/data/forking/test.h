@@ -1,0 +1,135 @@
+SCENARIO( "Scenarios created by a data provider held through its base", "[data][forking]" ) {
+  auto model = std::make_shared<const Model::Model>("tests/execution/process/Empty_executable_process.bpmn");
+  std::string csv =
+    "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+    "Instance_1; Process_1; timestamp := uniform(0,100)\n"
+  ;
+
+  GIVEN( "A stochastic data provider held as a static data provider" ) {
+    std::shared_ptr<Execution::StaticDataProvider> dataProvider = std::make_shared<Execution::StochasticDataProvider>(model, csv);
+
+    THEN( "It creates a scenario of the stochastic data provider" ) {
+      auto scenario = dataProvider->createScenario();
+      REQUIRE( dynamic_cast<Execution::StochasticDataProvider::Scenario*>(scenario.get()) != nullptr );
+    }
+  }
+
+  GIVEN( "A static and a dynamic data provider" ) {
+    auto staticDataProvider = std::make_shared<Execution::StaticDataProvider>(model, "INSTANCE_ID; NODE_ID; INITIALIZATION\nInstance_1; Process_1;\n");
+    auto dynamicDataProvider = std::make_shared<Execution::DynamicDataProvider>(model, "INSTANCE_ID; NODE_ID; INITIALIZATION\nInstance_1; Process_1;\n");
+
+    THEN( "Neither forks a scenario, their future being certain" ) {
+      auto staticScenario = staticDataProvider->createScenario();
+      auto dynamicScenario = dynamicDataProvider->createScenario();
+      REQUIRE_THROWS( staticDataProvider->forkScenario(*staticScenario, 0) );
+      REQUIRE_THROWS( dynamicDataProvider->forkScenario(*dynamicScenario, 0) );
+    }
+  }
+}
+
+SCENARIO( "Forks of a stochastic run", "[data][forking]" ) {
+  auto model = std::make_shared<const Model::Model>("tests/execution/process/Empty_executable_process.bpmn");
+
+  GIVEN( "Instances with random timestamps, of which one is disclosed before the spawn time" ) {
+    std::string csv =
+      "INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE\n"
+      "Instance_0; Process_1; timestamp := uniform(20,100); 5\n"
+      "Instance_1; Process_1; timestamp := uniform(20,100); 15\n"
+      "Instance_2; Process_1; timestamp := uniform(20,100); 15\n"
+      "Instance_3; Process_1; timestamp := uniform(20,100); 15\n"
+      "Instance_4; Process_1; timestamp := uniform(20,100); 15\n"
+    ;
+    auto dataProvider = std::make_shared<Execution::StochasticDataProvider>(model, csv, 7);
+
+    // the run stops at time 10, so that the spawn time of a fork is 11
+    Execution::Engine engine(model);
+    dataProvider->setEndTime(10);
+    engine.run(dataProvider->createScenario());
+    REQUIRE( engine.getSystemState()->getTime() == 10 );
+    dataProvider->setEndTime(std::numeric_limits<BPMNOS::number>::max());
+
+    // the times at which the processes of the instances become ready when a fork with the given index is run
+    auto readyTimes = [&](unsigned int index) {
+      Execution::Engine forkEngine(model);
+      Execution::Recorder recorder;
+      recorder.subscribe(&forkEngine);
+      forkEngine.initializeSystemState(dataProvider->forkScenario(*engine.getSystemState()->scenario, index), engine.getSystemState());
+      forkEngine.resume();
+      std::map<std::string, double> result;
+      for ( auto& entry : recorder.find(nlohmann::json{{"state","READY"}}, nlohmann::json{{"nodeId",nullptr}}) ) {
+        result[entry["instanceId"].get<std::string>()] = entry["status"]["timestamp"].get<double>();
+      }
+      return result;
+    };
+
+    WHEN( "Forks are run" ) {
+      auto first = readyTimes(0);
+      auto second = readyTimes(0);
+      auto other = readyTimes(1);
+
+      THEN( "Every instance is started in every fork" ) {
+        REQUIRE( first.size() == 5 );
+        REQUIRE( other.size() == 5 );
+      }
+      THEN( "Forks with one index realise the same events" ) {
+        REQUIRE( first == second );
+      }
+      THEN( "Forks with different indices agree before the spawn time" ) {
+        REQUIRE( first.at("Instance_0") == other.at("Instance_0") );
+      }
+      THEN( "Forks with different indices differ after the spawn time" ) {
+        REQUIRE( first != other );
+      }
+    }
+  }
+
+  GIVEN( "A task whose completion is random" ) {
+    auto taskModel = std::make_shared<const Model::Model>("tests/execution/task/Task_with_linear_expression.bpmn");
+    std::string csv =
+      "INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE; READY; COMPLETION\n"
+      "Instance_1; Process_1;;;;\n"
+      "Instance_1; Activity_1;;;; timestamp := timestamp + uniform(10,1000)\n"
+    ;
+    auto dataProvider = std::make_shared<Execution::StochasticDataProvider>(taskModel, csv, 7);
+
+    // the time at which the task completes when a scenario is run from the given state, or from the start
+    auto completionTime = [&](std::unique_ptr<Execution::Scenario> scenario, const Execution::SystemState* state) {
+      Execution::Engine taskEngine(taskModel);
+      Execution::InstantEntry entryHandler;
+      Execution::InstantExit exitHandler;
+      entryHandler.connect(&taskEngine);
+      exitHandler.connect(&taskEngine);
+      Execution::Recorder recorder;
+      recorder.subscribe(&taskEngine);
+      if ( state ) {
+        taskEngine.initializeSystemState(std::move(scenario), state);
+        taskEngine.resume();
+      }
+      else {
+        taskEngine.run(std::move(scenario));
+      }
+      auto completionLog = recorder.find(nlohmann::json{{"nodeId","Activity_1"},{"state","COMPLETED"}});
+      REQUIRE( completionLog.size() == 1 );
+      return completionLog.front()["status"]["timestamp"].get<double>();
+    };
+
+    WHEN( "The run stops while the task is busy and is forked" ) {
+      Execution::Engine engine(taskModel);
+      Execution::InstantEntry entryHandler;
+      Execution::InstantExit exitHandler;
+      entryHandler.connect(&engine);
+      exitHandler.connect(&engine);
+      dataProvider->setEndTime(5);
+      engine.run(dataProvider->createScenario());
+      REQUIRE( engine.getSystemState()->getTime() == 5 );
+      dataProvider->setEndTime(std::numeric_limits<BPMNOS::number>::max());
+
+      auto runCompletion = completionTime(dataProvider->createScenario(), nullptr);
+      auto forkCompletion = completionTime(dataProvider->forkScenario(*engine.getSystemState()->scenario, 0), engine.getSystemState());
+
+      THEN( "The task completes differently in the fork than in the run it is forked from" ) {
+        REQUIRE( forkCompletion != runCompletion );
+      }
+    }
+  }
+}

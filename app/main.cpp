@@ -107,31 +107,24 @@ int main(int argc, char* argv[]) {
 
   auto model = std::make_shared<const BPMNOS::Model::Model>(args.modelFile, args.folders);
 
-  // the data provider and the scenario of the run, which a stochastic data provider creates for its first
-  // realisation
   std::shared_ptr<BPMNOS::Execution::StaticDataProvider> dataProvider;
-  std::unique_ptr<BPMNOS::Execution::Scenario> scenario;
   if (args.providerName == "static") {
     dataProvider = std::make_shared<BPMNOS::Execution::StaticDataProvider>(model, args.dataFile);
-    scenario = dataProvider->createScenario();
   }
   else if (args.providerName == "expected") {
     dataProvider = std::make_shared<BPMNOS::Execution::ExpectedValueDataProvider>(model, args.dataFile);
-    scenario = dataProvider->createScenario();
   }
   else if (args.providerName == "dynamic") {
     dataProvider = std::make_shared<BPMNOS::Execution::DynamicDataProvider>(model, args.dataFile);
-    scenario = dataProvider->createScenario();
   }
   else if (args.providerName == "stochastic") {
-    auto stochasticDataProvider = std::make_shared<BPMNOS::Execution::StochasticDataProvider>(model, args.dataFile, args.seed);
-    scenario = stochasticDataProvider->createScenario();
-    dataProvider = std::move(stochasticDataProvider);
+    dataProvider = std::make_shared<BPMNOS::Execution::StochasticDataProvider>(model, args.dataFile, args.seed);
   }
   else {
     std::cerr << "Error: unknown data provider.\n";
     print_usage();
   }
+  auto scenario = dataProvider->createScenario();
 
   auto createEvaluator = [&args]() -> std::shared_ptr<BPMNOS::Execution::Evaluator> {
     if (args.evaluatorName == "local") {

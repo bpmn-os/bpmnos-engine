@@ -47,6 +47,7 @@ public:
     Scenario(std::shared_ptr<const StaticDataProvider> dataProvider);
 
     std::multimap<BPMNOS::number, std::shared_ptr<Event>> scheduledEvents; ///< Events due later, by the time they are due
+    BPMNOS::number time = std::numeric_limits<BPMNOS::number>::lowest(); ///< The current time of the run
   };
 
   /**
@@ -59,7 +60,7 @@ public:
   /**
    * @brief Method creating the scenario of a run. A static data provider has a single realisation.
    */
-  std::unique_ptr<Scenario> createScenario() const;
+  std::unique_ptr<Execution::Scenario> createScenario(unsigned int realisation = 0) const override;
 
   /**
    * @brief Method setting the end time, at which a run ends once nothing is left to do.

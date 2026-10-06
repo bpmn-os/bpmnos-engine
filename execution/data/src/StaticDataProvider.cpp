@@ -76,7 +76,7 @@ void StaticDataProvider::readValue(InstanceDataReader& reader, const InstanceDat
   }
 }
 
-std::unique_ptr<StaticDataProvider::Scenario> StaticDataProvider::createScenario() const {
+std::unique_ptr<BPMNOS::Execution::Scenario> StaticDataProvider::createScenario([[maybe_unused]] unsigned int realisation) const {
   return std::make_unique<Scenario>(std::static_pointer_cast<const StaticDataProvider>(shared_from_this()));
 }
 
@@ -108,6 +108,7 @@ void StaticDataProvider::notice(const Observable* observable, Execution::Scenari
     // time; the instances not yet held are instantiated when they become known, and the events the tokens
     // await are determined anew
     auto systemState = static_cast<const SystemState*>(observable);
+    scenario.time = systemState->getTime();
     bool runBegun = ( systemState->getTime() != std::numeric_limits<BPMNOS::number>::lowest() );
     scenario.scheduledEvents.clear();
     for ( auto& [instanceId, instance] : instances ) {
@@ -136,6 +137,7 @@ void StaticDataProvider::notice(const Observable* observable, Execution::Scenari
 
   if ( observable->getObservableType() == Observable::Type::Event ) {
     if ( auto clockTickEvent = static_cast<const Event*>(observable)->is<ClockTickEvent>() ) {
+      scenario.time = clockTickEvent->time;
       // the events due by the time the clock advances to are released in the order of their times
       auto end = scenario.scheduledEvents.upper_bound(clockTickEvent->time);
       for ( auto it = scenario.scheduledEvents.begin(); it != end; ++it ) {
