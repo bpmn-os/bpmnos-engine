@@ -20,9 +20,10 @@ public:
   /**
    * @param model The model the data provider is built on.
    * @param instanceFileOrString The name of the CSV file holding the instance data or its content.
-   * @param clockTickDuration Milliseconds of wall-clock time between two clock ticks, zero meaning none.
+   * @param clockTickDuration Wall-clock time between two clock ticks, zero advancing time at once and
+   *        std::chrono::milliseconds::max() never.
    */
-  ExpectedValueDataProvider(std::shared_ptr<const BPMNOS::Model::Model> model, const std::string& instanceFileOrString, unsigned int clockTickDuration = 0);
+  ExpectedValueDataProvider(std::shared_ptr<const BPMNOS::Model::Model> model, const std::string& instanceFileOrString, std::chrono::milliseconds clockTickDuration = std::chrono::milliseconds::zero());
 };
 
 } // namespace BPMNOS::Execution

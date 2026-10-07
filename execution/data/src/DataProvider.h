@@ -1,6 +1,7 @@
 #ifndef BPMNOS_Execution_DataProvider_H
 #define BPMNOS_Execution_DataProvider_H
 
+#include <chrono>
 #include <deque>
 #include <memory>
 #include "model/bpmnos/src/Model.h"
@@ -36,9 +37,10 @@ class DataProvider : public std::enable_shared_from_this<DataProvider> {
 public:
   /**
    * @param model The model the data provider is built on, whose ownership it shares.
-   * @param clockTickDuration Milliseconds of wall-clock time between two clock ticks, zero meaning none.
+   * @param clockTickDuration Wall-clock time between two clock ticks, zero advancing time at once and
+   *        std::chrono::milliseconds::max() never.
    */
-  DataProvider(std::shared_ptr<const BPMNOS::Model::Model> model, unsigned int clockTickDuration = 0);
+  DataProvider(std::shared_ptr<const BPMNOS::Model::Model> model, std::chrono::milliseconds clockTickDuration = std::chrono::milliseconds::zero());
   virtual ~DataProvider() = default;
 
   /**
@@ -72,7 +74,7 @@ public:
    */
   virtual BPMNOS::number getEarliestInstantiationTime(const Scenario& scenario) const = 0;
 
-  const unsigned int clockTickDuration; ///< Milliseconds of wall-clock time between two clock ticks
+  const std::chrono::milliseconds clockTickDuration; ///< Wall-clock time between two clock ticks, zero advancing time at once and the maximum never
 
   /**
    * @brief Method notifying the data provider of a notification of the engine, including the

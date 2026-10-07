@@ -53,9 +53,10 @@ public:
   /**
    * @param model The model the data provider is built on.
    * @param instanceFileOrString The name of the CSV file holding the instance data or its content.
-   * @param clockTickDuration Milliseconds of wall-clock time between two clock ticks, zero meaning none.
+   * @param clockTickDuration Wall-clock time between two clock ticks, zero advancing time at once and
+   *        std::chrono::milliseconds::max() never.
    */
-  StaticDataProvider(std::shared_ptr<const BPMNOS::Model::Model> model, const std::string& instanceFileOrString, unsigned int clockTickDuration = 0);
+  StaticDataProvider(std::shared_ptr<const BPMNOS::Model::Model> model, const std::string& instanceFileOrString, std::chrono::milliseconds clockTickDuration = std::chrono::milliseconds::zero());
 
   /**
    * @brief Method creating the scenario of a run. A static data provider has a single realisation.
@@ -80,7 +81,7 @@ protected:
   /**
    * @brief Constructor for a derived data provider, which reads the instance data itself.
    */
-  StaticDataProvider(std::shared_ptr<const BPMNOS::Model::Model> model, unsigned int clockTickDuration);
+  StaticDataProvider(std::shared_ptr<const BPMNOS::Model::Model> model, std::chrono::milliseconds clockTickDuration);
 
   /**
    * @brief Method reading the instance data with the given columns, giving every row of an instance to

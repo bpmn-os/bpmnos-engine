@@ -42,7 +42,7 @@ std::mt19937& StochasticDataProvider::Scenario::getRandomNumberGenerator(size_t 
   return it->second;
 }
 
-StochasticDataProvider::StochasticDataProvider(std::shared_ptr<const BPMNOS::Model::Model> model, const std::string& instanceFileOrString, unsigned int seed, unsigned int clockTickDuration)
+StochasticDataProvider::StochasticDataProvider(std::shared_ptr<const BPMNOS::Model::Model> model, const std::string& instanceFileOrString, unsigned int seed, std::chrono::milliseconds clockTickDuration)
   : DynamicDataProvider(std::move(model), clockTickDuration)
   , seed(seed)
 {

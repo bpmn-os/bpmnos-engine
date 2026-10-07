@@ -29,7 +29,7 @@ SCENARIO( "Clock ticks and termination supplied by the data provider", "[data][p
     }
 
     WHEN( "The engine runs on a data provider with a clock tick duration" ) {
-      const unsigned int clockTickDuration = 20;
+      const std::chrono::milliseconds clockTickDuration{20};
       auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv, clockTickDuration);
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
@@ -41,7 +41,7 @@ SCENARIO( "Clock ticks and termination supplied by the data provider", "[data][p
       auto scenario = dataProvider->createScenario();
       auto start = std::chrono::steady_clock::now();
       engine.run(std::move(scenario));
-      auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start).count();
+      auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start);
 
       THEN( "Every decision of the controller is processed before the next clock tick, as without a clock tick duration" ) {
         REQUIRE( recorder.log == referenceRecorder.log );
@@ -51,7 +51,7 @@ SCENARIO( "Clock ticks and termination supplied by the data provider", "[data][p
         // after the previous one
         auto clockTicks = recorder.find(nlohmann::json{{"event","clocktick"}}).size();
         REQUIRE( clockTicks > 2 );
-        REQUIRE( (size_t)elapsed >= ( clockTicks - 2 ) * clockTickDuration );
+        REQUIRE( elapsed >= static_cast<std::chrono::milliseconds::rep>( clockTicks - 2 ) * clockTickDuration );
       }
     }
 
@@ -73,6 +73,84 @@ SCENARIO( "Clock ticks and termination supplied by the data provider", "[data][p
         REQUIRE( engine.getSystemState()->instances.size() == 1 );
         auto timerLog = recorder.find(nlohmann::json{{"nodeId","TimerEvent_1"},{"state","COMPLETED"}});
         REQUIRE( timerLog.empty() );
+      }
+    }
+  }
+}
+
+/**
+ * Dispatcher supplying a given number of clock ticks, one whenever it is asked, as a caller holding time
+ * advances it.
+ */
+class ClockTicks : public Execution::EventDispatcher {
+public:
+  ClockTicks(unsigned int count)
+    : remaining(count)
+  {
+  }
+
+  std::shared_ptr<Execution::Event> dispatchEvent(const Execution::SystemState* systemState) override {
+    if ( remaining == 0 ) {
+      return nullptr;
+    }
+    remaining--;
+    return std::make_shared<Execution::ClockTickEvent>(systemState);
+  }
+
+  unsigned int remaining;
+};
+
+SCENARIO( "Time held by the data provider", "[data][provider]" ) {
+  auto model = std::make_shared<const Model::Model>("tests/execution/timer/Timer.bpmn");
+
+  GIVEN( "A single instance whose timer is triggered at time 10 and a data provider never advancing time itself" ) {
+    std::string csv =
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1; trigger := 10\n"
+    ;
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv, std::chrono::milliseconds::max());
+
+    WHEN( "The engine advances without a dispatcher supplying clock ticks" ) {
+      Execution::Engine engine(model);
+      Execution::InstantEntry entryHandler;
+      Execution::InstantExit exitHandler;
+      entryHandler.connect(&engine);
+      exitHandler.connect(&engine);
+      Execution::Recorder recorder;
+      recorder.subscribe(&engine);
+      engine.initialize(dataProvider->createScenario());
+      for ( int round = 0; round < 20; round++ ) {
+        REQUIRE( engine.advance() );
+      }
+
+      THEN( "Time stands still at the beginning of the run" ) {
+        REQUIRE( engine.getCurrentTime() == 0 );
+        // the opening clock tick is processed by the engine itself
+        REQUIRE( recorder.find(nlohmann::json{{"event","clocktick"}}).size() == 1 );
+        REQUIRE( recorder.find(nlohmann::json{{"nodeId","TimerEvent_1"},{"state","COMPLETED"}}).empty() );
+      }
+    }
+
+    WHEN( "A dispatcher supplies ten clock ticks" ) {
+      Execution::Engine engine(model);
+      Execution::InstantEntry entryHandler;
+      Execution::InstantExit exitHandler;
+      ClockTicks clockTicks(10);
+      entryHandler.connect(&engine);
+      exitHandler.connect(&engine);
+      clockTicks.connect(&engine);
+      Execution::Recorder recorder;
+      recorder.subscribe(&engine);
+      engine.run(dataProvider->createScenario());
+
+      THEN( "The clock ticks advance time to the timer, which is triggered" ) {
+        auto timerLog = recorder.find(nlohmann::json{{"nodeId","TimerEvent_1"},{"state","COMPLETED"}});
+        REQUIRE( timerLog.size() == 1 );
+        REQUIRE( timerLog.front()["status"]["timestamp"] == 10.0 );
+      }
+      THEN( "The run ends once nothing is left, although the data provider never advances time itself" ) {
+        REQUIRE( recorder.log.back()["event"] == "termination" );
+        REQUIRE( engine.getCurrentTime() == 10 );
       }
     }
   }

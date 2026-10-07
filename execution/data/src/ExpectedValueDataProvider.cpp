@@ -3,7 +3,7 @@
 
 using namespace BPMNOS::Execution;
 
-ExpectedValueDataProvider::ExpectedValueDataProvider(std::shared_ptr<const BPMNOS::Model::Model> model, const std::string& instanceFileOrString, unsigned int clockTickDuration)
+ExpectedValueDataProvider::ExpectedValueDataProvider(std::shared_ptr<const BPMNOS::Model::Model> model, const std::string& instanceFileOrString, std::chrono::milliseconds clockTickDuration)
   : StaticDataProvider(std::move(model), clockTickDuration)
 {
   // the expressions are evaluated with the lookup tables of the model and the expected values of the

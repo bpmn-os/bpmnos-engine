@@ -69,9 +69,10 @@ public:
    * @param model The model the data provider is built on.
    * @param instanceFileOrString The name of the CSV file holding the instance data or its content.
    * @param seed The seed of the data provider.
-   * @param clockTickDuration Milliseconds of wall-clock time between two clock ticks, zero meaning none.
+   * @param clockTickDuration Wall-clock time between two clock ticks, zero advancing time at once and
+   *        std::chrono::milliseconds::max() never.
    */
-  StochasticDataProvider(std::shared_ptr<const BPMNOS::Model::Model> model, const std::string& instanceFileOrString, unsigned int seed = 0, unsigned int clockTickDuration = 0);
+  StochasticDataProvider(std::shared_ptr<const BPMNOS::Model::Model> model, const std::string& instanceFileOrString, unsigned int seed = 0, std::chrono::milliseconds clockTickDuration = std::chrono::milliseconds::zero());
 
   /**
    * @brief Method creating the scenario of a run for the given realisation, whose seed is the seed of the

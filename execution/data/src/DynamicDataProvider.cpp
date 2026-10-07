@@ -4,13 +4,13 @@
 
 using namespace BPMNOS::Execution;
 
-DynamicDataProvider::DynamicDataProvider(std::shared_ptr<const BPMNOS::Model::Model> model, const std::string& instanceFileOrString, unsigned int clockTickDuration)
+DynamicDataProvider::DynamicDataProvider(std::shared_ptr<const BPMNOS::Model::Model> model, const std::string& instanceFileOrString, std::chrono::milliseconds clockTickDuration)
   : StaticDataProvider(std::move(model), clockTickDuration)
 {
   readInstances(instanceFileOrString, { "INSTANCE_ID", "NODE_ID", "INITIALIZATION", "DISCLOSURE" }, this->model->limexHandle);
 }
 
-DynamicDataProvider::DynamicDataProvider(std::shared_ptr<const BPMNOS::Model::Model> model, unsigned int clockTickDuration)
+DynamicDataProvider::DynamicDataProvider(std::shared_ptr<const BPMNOS::Model::Model> model, std::chrono::milliseconds clockTickDuration)
   : StaticDataProvider(std::move(model), clockTickDuration)
 {
 }

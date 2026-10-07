@@ -25,15 +25,16 @@ public:
   /**
    * @param model The model the data provider is built on.
    * @param instanceFileOrString The name of the CSV file holding the instance data or its content.
-   * @param clockTickDuration Milliseconds of wall-clock time between two clock ticks, zero meaning none.
+   * @param clockTickDuration Wall-clock time between two clock ticks, zero advancing time at once and
+   *        std::chrono::milliseconds::max() never.
    */
-  DynamicDataProvider(std::shared_ptr<const BPMNOS::Model::Model> model, const std::string& instanceFileOrString, unsigned int clockTickDuration = 0);
+  DynamicDataProvider(std::shared_ptr<const BPMNOS::Model::Model> model, const std::string& instanceFileOrString, std::chrono::milliseconds clockTickDuration = std::chrono::milliseconds::zero());
 
 protected:
   /**
    * @brief Constructor for a derived data provider, which reads the instance data itself.
    */
-  DynamicDataProvider(std::shared_ptr<const BPMNOS::Model::Model> model, unsigned int clockTickDuration);
+  DynamicDataProvider(std::shared_ptr<const BPMNOS::Model::Model> model, std::chrono::milliseconds clockTickDuration);
 
   void readValue(InstanceDataReader& reader, const InstanceDataReader::Row& row, const LIMEX::Handle<double>& handle) override;
   BPMNOS::number getKnownTime(const Scenario& scenario, size_t instanceId) const override;

@@ -5,7 +5,7 @@
 
 using namespace BPMNOS::Execution;
 
-DataProvider::DataProvider(std::shared_ptr<const BPMNOS::Model::Model> model, unsigned int clockTickDuration)
+DataProvider::DataProvider(std::shared_ptr<const BPMNOS::Model::Model> model, std::chrono::milliseconds clockTickDuration)
   : clockTickDuration(clockTickDuration)
   , model(std::move(model))
 {
@@ -22,7 +22,9 @@ const std::shared_ptr<const BPMNOS::Model::Model>& DataProvider::getModel() cons
 
 void DataProvider::advance(const SystemState* systemState, Scenario& scenario, EventQueue& queue) const {
   auto now = std::chrono::steady_clock::now();
-  if ( now < scenario.previousClockTick + std::chrono::milliseconds(clockTickDuration) ) {
+  // the elapsed time is compared in milliseconds rather than the duration added to the previous clock tick,
+  // so that the maximum duration, with which the data provider never advances time itself, cannot overflow
+  if ( std::chrono::duration_cast<std::chrono::milliseconds>(now - scenario.previousClockTick) < clockTickDuration ) {
     // the clock tick is not yet due; the controller may still decide meanwhile
     return;
   }
