@@ -4,6 +4,7 @@
 #include "model/bpmnos/src/DecisionTask.h"
 #include "model/bpmnos/src/extensionElements/ExtensionElements.h"
 #include "model/utility/src/InputEncoder.h"
+#include <algorithm>
 #include <cmath>
 #include <limits>
 #include <functional>
@@ -125,8 +126,7 @@ std::unique_ptr<BPMNOS::Execution::Scenario> StochasticDataProvider::forkScenari
   auto& original = static_cast<const Scenario&>(scenario);
   auto fork = std::make_unique<Scenario>(std::static_pointer_cast<const StochasticDataProvider>(shared_from_this()), original.seed + index + 1);
   // the fork agrees with the run before the instant following its current time
-  fork->spawnTime = original.time + 1;
-  sample(*fork, &original, fork->spawnTime);
+  sample(*fork, &original, original.time + 1);
   return fork;
 }
 
@@ -227,9 +227,9 @@ BPMNOS::number StochasticDataProvider::getProcessReadyTime(const StaticDataProvi
   return std::max(static_cast<const Scenario&>(scenario).instantiationTimes.at(instanceId), getKnownTime(scenario, instanceId));
 }
 
-BPMNOS::Values StochasticDataProvider::getActivityReadyStatus(StaticDataProvider::Scenario& scenario, const Token* token) const {
-  auto status = DynamicDataProvider::getActivityReadyStatus(scenario, token);
-  apply(static_cast<Scenario&>(scenario), readyExpressions, (size_t)token->owner->root->instance.value(), token->node, status, *token->data, token->globals);
+BPMNOS::Values StochasticDataProvider::getActivityReadyStatus(StaticDataProvider::Scenario& scenario, const Token* token, BPMNOS::number earliest) const {
+  auto status = DynamicDataProvider::getActivityReadyStatus(scenario, token, earliest);
+  computeStatus(static_cast<Scenario&>(scenario), readyExpressions, (size_t)token->owner->root->instance.value(), token->node, status, *token->data, token->globals, earliest);
   return status;
 }
 
@@ -238,13 +238,13 @@ BPMNOS::number StochasticDataProvider::getActivityReadyTime(const StaticDataProv
   return std::max(DynamicDataProvider::getActivityReadyTime(scenario, instanceId, activity, readyStatus), readyStatus[BPMNOS::Model::ExtensionElements::Index::Timestamp].value());
 }
 
-BPMNOS::Values StochasticDataProvider::getCompletionStatus(StaticDataProvider::Scenario& scenario, const Token* token) const {
-  auto status = DynamicDataProvider::getCompletionStatus(scenario, token);
-  apply(static_cast<Scenario&>(scenario), completionExpressions, (size_t)token->owner->root->instance.value(), token->node, status, *token->data, token->globals);
+BPMNOS::Values StochasticDataProvider::getCompletionStatus(StaticDataProvider::Scenario& scenario, const Token* token, BPMNOS::number earliest) const {
+  auto status = DynamicDataProvider::getCompletionStatus(scenario, token, earliest);
+  computeStatus(static_cast<Scenario&>(scenario), completionExpressions, (size_t)token->owner->root->instance.value(), token->node, status, *token->data, token->globals, earliest);
   return status;
 }
 
-void StochasticDataProvider::apply(Scenario& scenario, const Expressions& expressions, size_t instanceId, const BPMN::Node* node, BPMNOS::Values& status, const BPMNOS::SharedValues& data, const BPMNOS::Values& globals) const {
+void StochasticDataProvider::computeStatus(Scenario& scenario, const Expressions& expressions, size_t instanceId, const BPMN::Node* node, BPMNOS::Values& status, const BPMNOS::SharedValues& data, const BPMNOS::Values& globals, BPMNOS::number earliest) const {
   auto instanceExpressions = expressions.find(instanceId);
   if ( instanceExpressions == expressions.end() ) {
     return;
@@ -265,17 +265,23 @@ void StochasticDataProvider::apply(Scenario& scenario, const Expressions& expres
     }
   };
   evaluate();
-  // a fork samples a status before the spawn time again, and sets its timestamp to the spawn time at last,
-  // since the token has neither become ready nor completed before
+  // a status computed anew for a token awaiting its event in an installed system state is sampled again
+  // while its timestamp precedes the time of that state, and its timestamp is then set to that time, since
+  // the event has not happened before; a status computed otherwise has the lowest number as earliest time
   constexpr auto Timestamp = BPMNOS::Model::ExtensionElements::Index::Timestamp;
-  auto beforeSpawnTime = [&]() {
-    return status[Timestamp].has_value() && status[Timestamp].value() < scenario.spawnTime;
+  auto tooEarly = [&]() {
+    return status[Timestamp].has_value() && status[Timestamp].value() < earliest;
   };
-  for ( int tries = 1; beforeSpawnTime() && tries < maxResamplingTries; tries++ ) {
+  // sampling again can change the timestamp only if an expression assigns it
+  bool timestampSampled = std::ranges::any_of(nodeExpressions->second, [](auto& expression) {
+    auto target = expression->target.value();
+    return target->category == BPMNOS::Model::Attribute::Category::STATUS && target->index == Timestamp;
+  });
+  for ( int tries = 1; timestampSampled && tooEarly() && tries < maxResamplingTries; tries++ ) {
     evaluate();
   }
-  if ( beforeSpawnTime() ) {
-    status[Timestamp] = scenario.spawnTime;
+  if ( tooEarly() ) {
+    status[Timestamp] = earliest;
   }
   randomDistributionFactory.setCurrentRng(nullptr);
 }

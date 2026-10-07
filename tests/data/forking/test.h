@@ -124,7 +124,7 @@ SCENARIO( "Forks of a stochastic run", "[data][forking]" ) {
     }
   }
 
-  GIVEN( "A task whose completion may lie before the spawn time of a fork" ) {
+  GIVEN( "A task whose completion sampled anew may lie before the current time of the run" ) {
     auto taskModel = std::make_shared<const Model::Model>("tests/execution/task/Task_with_linear_expression.bpmn");
     std::string csv =
       "INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE; READY; COMPLETION\n"
@@ -167,11 +167,47 @@ SCENARIO( "Forks of a stochastic run", "[data][forking]" ) {
         }
       }
 
-      THEN( "Every fork completes the task at or after the spawn time" ) {
+      THEN( "Every fork completes the task not before the current time of the run" ) {
         REQUIRE_FALSE( completionTimes.empty() );
         for ( auto completionTime : completionTimes ) {
-          REQUIRE( completionTime >= 501 );
+          REQUIRE( completionTime >= 500 );
         }
+      }
+    }
+  }
+
+  GIVEN( "A task without duration becoming busy in a fork" ) {
+    auto taskModel = std::make_shared<const Model::Model>("tests/execution/process/Simple_executable_process.bpmn");
+    std::string csv =
+      "INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE; READY; COMPLETION\n"
+      "Instance_1; Process_1;;;;\n"
+      "Instance_1; Activity_1;;;; timestamp := timestamp\n"
+    ;
+    auto dataProvider = std::make_shared<Execution::StochasticDataProvider>(taskModel, csv, 7);
+
+    WHEN( "A run stops at time 0 with the token awaiting the decision to enter the task and is forked" ) {
+      // without an entry handler the token awaits the entry decision, and the run ends at time 0
+      Execution::Engine engine(taskModel);
+      dataProvider->setEndTime(0);
+      engine.run(dataProvider->createScenario());
+      REQUIRE_FALSE( engine.getSystemState()->pendingEntryDecisions.empty() );
+      dataProvider->setEndTime(std::numeric_limits<BPMNOS::number>::max());
+
+      Execution::Engine forkEngine(taskModel);
+      Execution::InstantEntry entryHandler;
+      Execution::InstantExit exitHandler;
+      entryHandler.connect(&forkEngine);
+      exitHandler.connect(&forkEngine);
+      Execution::Recorder recorder;
+      recorder.subscribe(&forkEngine);
+      forkEngine.initializeSystemState(dataProvider->forkScenario(*engine.getSystemState()->scenario, 0), engine.getSystemState());
+      forkEngine.resume();
+
+      THEN( "The task entered in the fork completes at the current time, as in any run" ) {
+        auto completionLog = recorder.find(nlohmann::json{{"nodeId","Activity_1"},{"state","COMPLETED"}});
+        REQUIRE( completionLog.size() == 1 );
+        REQUIRE( completionLog.front()["status"]["timestamp"] == 0.0 );
+        REQUIRE( recorder.find(nlohmann::json{{"event","clocktick"}}).empty() );
       }
     }
   }

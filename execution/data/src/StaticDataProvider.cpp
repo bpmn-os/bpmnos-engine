@@ -119,7 +119,7 @@ void StaticDataProvider::notice(const Observable* observable, Execution::Scenari
     for ( auto& [token_ptr] : systemState->tokensAwaitingReadyEvent ) {
       if ( auto token = token_ptr.lock() ) {
         if ( token->node ) {
-          readyActivity(scenario, queue, token.get());
+          readyActivity(scenario, queue, token.get(), systemState->getTime());
         }
         else {
           readyProcess(scenario, queue, token.get());
@@ -128,7 +128,7 @@ void StaticDataProvider::notice(const Observable* observable, Execution::Scenari
     }
     for ( auto element : systemState->tokensAwaitingCompletionEvent ) {
       if ( auto token = std::get<1>(element).lock() ) {
-        completeTask(scenario, queue, token.get());
+        completeTask(scenario, queue, token.get(), systemState->getTime());
       }
     }
     return;
@@ -166,7 +166,7 @@ void StaticDataProvider::notice(const Observable* observable, Execution::Scenari
     ( token->state == Token::State::ARRIVED || token->state == Token::State::CREATED ) &&
     !token->owner->systemState->tokenAtMultiInstanceActivity.contains(const_cast<Token*>(token))
   ) {
-    readyActivity(scenario, queue, token);
+    readyActivity(scenario, queue, token, std::numeric_limits<BPMNOS::number>::lowest());
     return;
   }
 
@@ -178,7 +178,7 @@ void StaticDataProvider::notice(const Observable* observable, Execution::Scenari
     !token->node->represents<BPMN::ReceiveTask>() &&
     !token->node->represents<BPMNOS::Model::DecisionTask>()
   ) {
-    completeTask(scenario, queue, token);
+    completeTask(scenario, queue, token, std::numeric_limits<BPMNOS::number>::lowest());
   }
 }
 
@@ -210,7 +210,7 @@ BPMNOS::number StaticDataProvider::getProcessReadyTime([[maybe_unused]] const Sc
   return instances.at(instanceId).instantiationTime;
 }
 
-BPMNOS::Values StaticDataProvider::getActivityReadyStatus(Scenario& scenario, const Token* token) const {
+BPMNOS::Values StaticDataProvider::getActivityReadyStatus(Scenario& scenario, const Token* token, [[maybe_unused]] BPMNOS::number earliest) const {
   // the values of the activity are given for the instance of the process the token belongs to
   auto status = token->status;
   for ( auto value : getStatus(scenario, (size_t)token->owner->root->instance.value(), token->node) ) {
@@ -223,7 +223,7 @@ BPMNOS::number StaticDataProvider::getActivityReadyTime([[maybe_unused]] const S
   return std::numeric_limits<BPMNOS::number>::lowest();
 }
 
-BPMNOS::Values StaticDataProvider::getCompletionStatus([[maybe_unused]] Scenario& scenario, const Token* token) const {
+BPMNOS::Values StaticDataProvider::getCompletionStatus([[maybe_unused]] Scenario& scenario, const Token* token, [[maybe_unused]] BPMNOS::number earliest) const {
   return token->status;
 }
 
@@ -234,16 +234,16 @@ void StaticDataProvider::readyProcess(Scenario& scenario, EventQueue& queue, con
   schedule(scenario, queue, getProcessReadyTime(scenario, instanceId), token->owner->systemState->getTime(), std::move(event));
 }
 
-void StaticDataProvider::readyActivity(Scenario& scenario, EventQueue& queue, const Token* token) const {
+void StaticDataProvider::readyActivity(Scenario& scenario, EventQueue& queue, const Token* token, BPMNOS::number earliest) const {
   auto instanceId = (size_t)token->owner->root->instance.value();
-  auto status = getActivityReadyStatus(scenario, token);
+  auto status = getActivityReadyStatus(scenario, token, earliest);
   auto dueTime = getActivityReadyTime(scenario, instanceId, token->node, status);
   auto event = std::make_shared<ReadyEvent>(token, std::move(status), getData(scenario, instanceId, token->node));
   schedule(scenario, queue, dueTime, token->owner->systemState->getTime(), std::move(event));
 }
 
-void StaticDataProvider::completeTask(Scenario& scenario, EventQueue& queue, const Token* token) const {
-  auto status = getCompletionStatus(scenario, token);
+void StaticDataProvider::completeTask(Scenario& scenario, EventQueue& queue, const Token* token, BPMNOS::number earliest) const {
+  auto status = getCompletionStatus(scenario, token, earliest);
   auto dueTime = status[BPMNOS::Model::ExtensionElements::Index::Timestamp].value();
   schedule(scenario, queue, dueTime, token->owner->systemState->getTime(), std::make_shared<CompletionEvent>(token, std::move(status)));
 }

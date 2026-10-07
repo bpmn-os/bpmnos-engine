@@ -106,7 +106,12 @@ protected:
 
   /// @brief Method returning the status a token arriving at an activity becomes ready with, which is the
   /// status it arrived with followed by the values of the activity.
-  virtual BPMNOS::Values getActivityReadyStatus(Scenario& scenario, const Token* token) const;
+  ///
+  /// The status of a token awaiting its ready event in an installed system state is computed anew, and its
+  /// timestamp must not precede the given time, which is the time of that state; for a token arriving at the
+  /// activity, the given time is the lowest number. A status that cannot differ from one realisation to
+  /// another is not affected by it.
+  virtual BPMNOS::Values getActivityReadyStatus(Scenario& scenario, const Token* token, BPMNOS::number earliest) const;
 
   /// @brief Method returning the time at which a token of an instance arriving at an activity becomes ready
   /// with the given status, which is the start of the run, so that it becomes ready at once.
@@ -114,7 +119,10 @@ protected:
 
   /// @brief Method returning the status a busy task completes with at its timestamp, which is the status it
   /// became busy with.
-  virtual BPMNOS::Values getCompletionStatus(Scenario& scenario, const Token* token) const;
+  ///
+  /// The given time is that of @ref getActivityReadyStatus for a token awaiting its completion event in an
+  /// installed system state, and the lowest number for a task becoming busy.
+  virtual BPMNOS::Values getCompletionStatus(Scenario& scenario, const Token* token, BPMNOS::number earliest) const;
 
   /// @brief Method returning the value of an attribute of an instance, computed from the values of the
   /// instance if the model assigns it, and std::nullopt if it is not known.
@@ -141,8 +149,8 @@ protected:
 
 private:
   void readyProcess(Scenario& scenario, EventQueue& queue, const Token* token) const;
-  void readyActivity(Scenario& scenario, EventQueue& queue, const Token* token) const;
-  void completeTask(Scenario& scenario, EventQueue& queue, const Token* token) const;
+  void readyActivity(Scenario& scenario, EventQueue& queue, const Token* token, BPMNOS::number earliest) const;
+  void completeTask(Scenario& scenario, EventQueue& queue, const Token* token, BPMNOS::number earliest) const;
   static void schedule(Scenario& scenario, EventQueue& queue, BPMNOS::number dueTime, BPMNOS::number currentTime, std::shared_ptr<Event> event);
 };
 

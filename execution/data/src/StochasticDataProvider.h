@@ -29,17 +29,20 @@ namespace BPMNOS::Execution {
  * completes with. Every random expression of an instance and a node is evaluated with a random number
  * generator of its own.
  *
- * A fork of a run with seed `r` and index `i` has the seed `r + i + 1`. It keeps every initialization
- * disclosed before the instant following the current time of the run, its spawn time, and samples every
- * other initialization and disclosure anew. The statuses the tokens of the installed state become ready
- * and complete with are sampled anew when the state is installed. A fork thus samples every event due at or
- * after the spawn time given that it is not due before, a timestamp or disclosure time of an initialization
- * and the timestamp of a ready or completion status before the spawn time being sampled again up to
- * @ref maxResamplingTries times and then set to the spawn time.
+ * A fork of a run with seed `r` and index `i` has the seed `r + i + 1`. It keeps what the run has revealed
+ * and samples everything else anew. The initializations are disclosed with clock ticks, so that the fork
+ * of a run at time `t` keeps every initialization disclosed by `t` and samples every other one anew, its
+ * timestamp and disclosure time being sampled again up to @ref maxResamplingTries times while they precede
+ * `t + 1` and then set to `t + 1`. The tokens awaiting their ready or completion event in the installed
+ * system state are those whose statuses have not been revealed, and these statuses are computed anew when
+ * the state is installed, a timestamp being sampled again up to @ref maxResamplingTries times while it
+ * precedes `t`, if one of the expressions assigns it, and then set to `t`. A timestamp of `t` is admissible,
+ * since an event of an instant may follow a decision of that instant. A status computed for a token arriving
+ * at an activity or becoming busy at a task is computed as in any run.
  */
 class StochasticDataProvider : public DynamicDataProvider {
 public:
-  /// @brief The number of times a timestamp or disclosure time of a fork before the spawn time is sampled.
+  /// @brief The number of times a timestamp or disclosure time sampled anew for a fork is sampled at most.
   static constexpr int maxResamplingTries = 4;
 
   /**
@@ -50,7 +53,6 @@ public:
     Scenario(std::shared_ptr<const StochasticDataProvider> dataProvider, unsigned int seed);
 
     const unsigned int seed; ///< The seed of the realisation
-    BPMNOS::number spawnTime = std::numeric_limits<BPMNOS::number>::lowest(); ///< The time from which a fork differs from the run it is forked from, the lowest number for a scenario that is no fork
     std::unordered_map<size_t, std::unordered_map<const BPMNOS::Model::Attribute*, BPMNOS::number>> values; ///< The values sampled for each instance
     std::unordered_map<size_t, BPMNOS::number> instantiationTimes; ///< The instantiation time sampled for each instance
     std::unordered_map<size_t, std::unordered_map<const BPMN::Node*, BPMNOS::number>> disclosureTimes; ///< The disclosure times sampled for each instance
@@ -84,9 +86,9 @@ protected:
   const std::unordered_map<const BPMNOS::Model::Attribute*, BPMNOS::number>& getInstanceValues(const StaticDataProvider::Scenario& scenario, size_t instanceId) const override;
   const std::unordered_map<const BPMN::Node*, BPMNOS::number>& getDisclosureTimes(const StaticDataProvider::Scenario& scenario, size_t instanceId) const override;
   BPMNOS::number getProcessReadyTime(const StaticDataProvider::Scenario& scenario, size_t instanceId) const override;
-  BPMNOS::Values getActivityReadyStatus(StaticDataProvider::Scenario& scenario, const Token* token) const override;
+  BPMNOS::Values getActivityReadyStatus(StaticDataProvider::Scenario& scenario, const Token* token, BPMNOS::number earliest) const override;
   BPMNOS::number getActivityReadyTime(const StaticDataProvider::Scenario& scenario, size_t instanceId, const BPMN::Node* activity, const BPMNOS::Values& readyStatus) const override;
-  BPMNOS::Values getCompletionStatus(StaticDataProvider::Scenario& scenario, const Token* token) const override;
+  BPMNOS::Values getCompletionStatus(StaticDataProvider::Scenario& scenario, const Token* token, BPMNOS::number earliest) const override;
 
 private:
   /**
@@ -109,8 +111,10 @@ private:
   /// fork disclosed before the spawn time.
   void sample(Scenario& scenario, const Scenario* original, BPMNOS::number spawnTime) const;
 
-  /// @brief Method applying the given expressions of an instance and a node to a status.
-  void apply(Scenario& scenario, const Expressions& expressions, size_t instanceId, const BPMN::Node* node, BPMNOS::Values& status, const BPMNOS::SharedValues& data, const BPMNOS::Values& globals) const;
+  /// @brief Method computing a status by evaluating the given expressions of an instance and a node on it,
+  /// sampling it again while its timestamp precedes the given time if an expression assigns the timestamp,
+  /// and setting the timestamp to the given time at last.
+  void computeStatus(Scenario& scenario, const Expressions& expressions, size_t instanceId, const BPMN::Node* node, BPMNOS::Values& status, const BPMNOS::SharedValues& data, const BPMNOS::Values& globals, BPMNOS::number earliest) const;
 
   const unsigned int seed;
   mutable BPMNOS::RandomDistributionFactory randomDistributionFactory; ///< The factory of the random functions, whose random number generator is set for every evaluation
