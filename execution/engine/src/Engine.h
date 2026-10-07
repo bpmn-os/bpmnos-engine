@@ -5,6 +5,8 @@
 #include <vector>
 #include <list>
 #include <chrono>
+#include <functional>
+#include <thread>
 #include "Event.h"
 #include "events/TerminationEvent.h"
 #include "events/ClockTickEvent.h"
@@ -39,7 +41,17 @@ class Engine : public Mediator {
   friend class ConditionalEventObserver;
 //  friend void EventDispatcher::subscribe(Engine* engine);
 public:
-  static constexpr std::chrono::milliseconds SLEEP{1}; ///< Pause after a round yielding no event, bounding the rate at which the engine asks in vain
+  static constexpr std::chrono::milliseconds SLEEP{1}; ///< Duration for which the engine sleeps by default while it waits, bounding the rate at which it asks in vain
+
+  /**
+   * @brief Function called whenever a round yields no event, the engine then waiting for an event from
+   * outside the run, from the wall clock, a caller or a controller deciding later.
+   *
+   * By default it sleeps for @ref SLEEP. A caller driving the run on the same thread sets a function giving
+   * it its turn before the run, in which it may read the system state and enqueue events, which the next
+   * round processes, but neither advances nor resumes the run. Each engine holds its own function.
+   */
+  std::function<void()> wait = [] { std::this_thread::sleep_for(SLEEP); };
 
   /**
    * @brief Constructs an engine executing the given model for its whole lifetime.

@@ -1,4 +1,5 @@
 #include <chrono>
+#include <deque>
 
 SCENARIO( "Clock ticks and termination supplied by the data provider", "[data][provider]" ) {
   auto model = std::make_shared<const Model::Model>("tests/execution/timer/Timer.bpmn");
@@ -151,6 +152,97 @@ SCENARIO( "Time held by the data provider", "[data][provider]" ) {
       THEN( "The run ends once nothing is left, although the data provider never advances time itself" ) {
         REQUIRE( recorder.log.back()["event"] == "termination" );
         REQUIRE( engine.getCurrentTime() == 10 );
+      }
+    }
+  }
+}
+
+/**
+ * Dispatcher supplying the events a caller has enqueued, in the order in which they were enqueued.
+ */
+class QueuedEvents : public Execution::EventDispatcher {
+public:
+  std::shared_ptr<Execution::Event> dispatchEvent([[maybe_unused]] const Execution::SystemState* systemState) override {
+    if ( events.empty() ) {
+      return nullptr;
+    }
+    auto event = events.front();
+    events.pop_front();
+    return event;
+  }
+
+  std::deque<std::shared_ptr<Execution::Event>> events;
+};
+
+SCENARIO( "A caller acting while the engine waits", "[data][provider]" ) {
+  auto model = std::make_shared<const Model::Model>("tests/execution/timer/Timer.bpmn");
+
+  GIVEN( "A single instance whose timer is triggered at time 10 and a data provider never advancing time itself" ) {
+    std::string csv =
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1; trigger := 10\n"
+    ;
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv, std::chrono::milliseconds::max());
+    Execution::Engine engine(model);
+    Execution::InstantEntry entryHandler;
+    Execution::InstantExit exitHandler;
+    QueuedEvents queuedEvents;
+    entryHandler.connect(&engine);
+    exitHandler.connect(&engine);
+    queuedEvents.connect(&engine);
+    Execution::Recorder recorder;
+    recorder.subscribe(&engine);
+
+    // the caller advances time by one clock tick whenever the engine waits
+    unsigned int waits = 0;
+    auto tick = [&]() {
+      waits++;
+      queuedEvents.events.push_back(std::make_shared<Execution::ClockTickEvent>(engine.getSystemState()));
+    };
+
+    WHEN( "The caller enqueues a clock tick whenever the engine waits" ) {
+      engine.wait = tick;
+      engine.run(dataProvider->createScenario());
+
+      THEN( "The engine waits instead of sleeping, and every clock tick enqueued is processed in the following round" ) {
+        REQUIRE( waits == 10 );
+        auto timerLog = recorder.find(nlohmann::json{{"nodeId","TimerEvent_1"},{"state","COMPLETED"}});
+        REQUIRE( timerLog.size() == 1 );
+        REQUIRE( timerLog.front()["status"]["timestamp"] == 10.0 );
+      }
+      THEN( "The run ends once nothing is left" ) {
+        REQUIRE( recorder.log.back()["event"] == "termination" );
+        REQUIRE( engine.getCurrentTime() == 10 );
+      }
+    }
+
+    WHEN( "The caller enqueues a termination event the first time the engine waits" ) {
+      engine.wait = [&]() {
+        waits++;
+        queuedEvents.events.push_back(std::make_shared<Execution::TerminationEvent>());
+      };
+      engine.run(dataProvider->createScenario());
+
+      THEN( "The run ends with the instance still running" ) {
+        REQUIRE( waits == 1 );
+        REQUIRE( engine.getCurrentTime() == 0 );
+        REQUIRE( engine.getSystemState()->instances.size() == 1 );
+        REQUIRE( recorder.find(nlohmann::json{{"nodeId","TimerEvent_1"},{"state","COMPLETED"}}).empty() );
+      }
+
+      AND_WHEN( "The run is resumed with the caller enqueuing clock ticks" ) {
+        waits = 0;
+        engine.wait = tick;
+        engine.resume();
+
+        THEN( "The run continues from where it ended until nothing is left" ) {
+          REQUIRE( waits == 10 );
+          auto timerLog = recorder.find(nlohmann::json{{"nodeId","TimerEvent_1"},{"state","COMPLETED"}});
+          REQUIRE( timerLog.size() == 1 );
+          REQUIRE( timerLog.front()["status"]["timestamp"] == 10.0 );
+          REQUIRE( recorder.find(nlohmann::json{{"event","termination"}}).size() == 2 );
+          REQUIRE( engine.getCurrentTime() == 10 );
+        }
       }
     }
   }

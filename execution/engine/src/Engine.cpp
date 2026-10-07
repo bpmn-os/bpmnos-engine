@@ -159,9 +159,8 @@ bool Engine::advance() {
     event = environment.advance(systemState.get());
   }
   if ( !event ) {
-    // the run waits for the wall clock or for events from outside the run; pause for a moment, so that the
-    // engine does not ask in vain at full speed
-    std::this_thread::sleep_for(SLEEP);
+    // the run waits for the wall clock or for events from outside the run
+    wait();
     return true;
   }
 
