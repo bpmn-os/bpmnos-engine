@@ -1,7 +1,7 @@
 var searchData=
 [
   ['maximum_0',['maximum',['https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1tParticipantMultiplicity.html#ae5b97ebd5d74be864323a2b1586a58b8',1,'XML::bpmn::tParticipantMultiplicity']]],
-  ['maxresamplingtries_1',['maxResamplingTries',['../classBPMNOS_1_1Model_1_1StochasticScenario.html#a25625bbe3d2b80a4711ce8676ae1da6e',1,'BPMNOS::Model::StochasticScenario']]],
+  ['maxresamplingtries_1',['maxResamplingTries',['../classBPMNOS_1_1Execution_1_1StochasticDataProvider.html#ab43f981afe6b4ed7e0b79e99d0d19630',1,'BPMNOS::Execution::StochasticDataProvider']]],
   ['maxsize_2',['maxSize',['../structBPMNOS_1_1Execution_1_1Recorder_1_1Config.html#a19caa606996a8b39c76f19092bbf422f',1,'BPMNOS::Execution::Recorder::Config']]],
   ['message_3',['message',['../structBPMNOS_1_1Execution_1_1MessageDeliveryEvent.html#a8b441077f89ae6b5d2fa737b9c72aaec',1,'BPMNOS::Execution::MessageDeliveryEvent::message'],['../structBPMNOS_1_1Execution_1_1Recorder_1_1Config.html#ae23e2b5976a711ba611a501934760d38',1,'BPMNOS::Execution::Recorder::Config::message']]],
   ['messageawaitingdelivery_4',['messageAwaitingDelivery',['../classBPMNOS_1_1Execution_1_1SystemState.html#ade9c9bade1009bfa05bbe613fd9ff1f2',1,'BPMNOS::Execution::SystemState']]],
@@ -17,7 +17,7 @@ var searchData=
   ['messages_14',['messages',['../classBPMNOS_1_1Execution_1_1SystemState.html#a64ceec1f752fa8e44d6877a341bbe7d0',1,'BPMNOS::Execution::SystemState']]],
   ['method_15',['method',['https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1tTransaction.html#af14b2f020315add44ab4d3883eb216e3',1,'XML::bpmn::tTransaction']]],
   ['minimum_16',['minimum',['https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1tParticipantMultiplicity.html#aaa754a33e994abdb5614f7243ef2740e',1,'XML::bpmn::tParticipantMultiplicity']]],
-  ['model_17',['model',['../classBPMNOS_1_1Model_1_1DataProvider.html#afcc5033d8c547ef6ffeb35c31241171a',1,'BPMNOS::Model::DataProvider::model'],['../structBPMNOS_1_1Model_1_1Input.html#af66d0d2021fccb083cb2cf225082aaa8',1,'BPMNOS::Model::Input::model'],['../classBPMNOS_1_1Model_1_1Scenario.html#aee0bb548aaa629e088cfc0f83493646b',1,'BPMNOS::Model::Scenario::model']]],
+  ['model_17',['model',['../classBPMNOS_1_1Execution_1_1DataProvider.html#a1ee135e62b41f4990a3c0f5c45d15cd1',1,'BPMNOS::Execution::DataProvider::model'],['../classBPMNOS_1_1Execution_1_1InstanceDataReader.html#aa19dcdd1c74ccd47bd33aabac5dc5d1d',1,'BPMNOS::Execution::InstanceDataReader::model'],['../classBPMNOS_1_1Execution_1_1Engine.html#a5ee671f39a15e60e9c94c8e053c900c7',1,'BPMNOS::Execution::Engine::model']]],
   ['monitoring_18',['monitoring',['https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1tFlowElement.html#a0fd08e31ff35235c8d6c7cf584c7891d',1,'XML::bpmn::tFlowElement::monitoring'],['https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1tProcess.html#aa9524c36d73d66ef53523ed35a29e432',1,'XML::bpmn::tProcess::monitoring']]],
   ['multipleof_19',['multipleOf',['../classBPMNOS_1_1Model_1_1Choice.html#accc42e85628b71549f1482d51147f40b',1,'BPMNOS::Model::Choice']]],
   ['mustunderstand_20',['mustUnderstand',['https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1tExtension.html#a65aba39fb7dfb87b9d014d1afa49ca28',1,'XML::bpmn::tExtension']]]

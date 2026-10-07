@@ -256,15 +256,15 @@
 <text xml:space="preserve" text-anchor="start" x="1406.5" y="-612" font-family="Helvetica,sans-Serif" font-size="10.00">Environment</text>
 <text xml:space="preserve" text-anchor="start" x="1436.12" y="-595.25" font-family="Helvetica,sans-Serif" font-size="10.00"> </text>
 <text xml:space="preserve" text-anchor="start" x="1389.94" y="-578.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="1405.5" y="-578.5" font-family="Helvetica,sans-Serif" font-size="10.00">Environment()</text>
+<text xml:space="preserve" text-anchor="start" x="1405.5" y="-578.5" font-family="Helvetica,sans-Serif" font-size="10.00">connect()</text>
 <text xml:space="preserve" text-anchor="start" x="1389.94" y="-561.75" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="1405.5" y="-561.75" font-family="Helvetica,sans-Serif" font-size="10.00">connect()</text>
+<text xml:space="preserve" text-anchor="start" x="1405.5" y="-561.75" font-family="Helvetica,sans-Serif" font-size="10.00">notice()</text>
 <text xml:space="preserve" text-anchor="start" x="1389.94" y="-545" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="1405.5" y="-545" font-family="Helvetica,sans-Serif" font-size="10.00">notice()</text>
+<text xml:space="preserve" text-anchor="start" x="1405.5" y="-545" font-family="Helvetica,sans-Serif" font-size="10.00">dispatchEvent()</text>
 <text xml:space="preserve" text-anchor="start" x="1389.94" y="-528.25" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="1405.5" y="-528.25" font-family="Helvetica,sans-Serif" font-size="10.00">dispatchEvent()</text>
+<text xml:space="preserve" text-anchor="start" x="1405.5" y="-528.25" font-family="Helvetica,sans-Serif" font-size="10.00">advance()</text>
 <text xml:space="preserve" text-anchor="start" x="1389.94" y="-511.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="1405.5" y="-511.5" font-family="Helvetica,sans-Serif" font-size="10.00">notice()</text>
+<text xml:space="preserve" text-anchor="start" x="1405.5" y="-511.5" font-family="Helvetica,sans-Serif" font-size="10.00">setScenario()</text>
 <polygon fill="#666666" stroke="#666666" points="1382.62,-606.75 1382.62,-606.75 1492.62,-606.75 1492.62,-606.75 1382.62,-606.75"/>
 <polygon fill="#666666" stroke="#666666" points="1382.62,-590 1382.62,-590 1492.62,-590 1492.62,-590 1382.62,-590"/>
 <polygon fill="none" stroke="#666666" points="1382.62,-504.25 1382.62,-638.25 1492.62,-638.25 1492.62,-504.25 1382.62,-504.25"/>

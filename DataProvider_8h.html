@@ -16,7 +16,7 @@
 <meta name="twitter:title" content="Doxygen Awesome" />
 <meta name="twitter:description" content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
 <!-- END twitter metadata -->
-<title>BPMN-OS: model/data/src/DataProvider.h File Reference</title>
+<title>BPMN-OS: execution/data/src/DataProvider.h File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
@@ -126,34 +126,28 @@ $(function(){initNavTree('DataProvider_8h.html','',''); });
   <div class="headertitle"><div class="title">DataProvider.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;cassert&gt;</code><br />
-<code>#include &lt;string&gt;</code><br />
+<div class="textblock"><code>#include &lt;chrono&gt;</code><br />
+<code>#include &lt;deque&gt;</code><br />
 <code>#include &lt;memory&gt;</code><br />
-<code>#include &lt;unordered_map&gt;</code><br />
-<code>#include &lt;limits&gt;</code><br />
-<code>#include &lt;bpmn++.h&gt;</code><br />
-<code>#include &lt;limex.h&gt;</code><br />
-<code>#include &quot;<a class="el" href="Value_8h_source.html">model/utility/src/Value.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="StringRegistry_8h_source.html">model/utility/src/StringRegistry.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="Keywords_8h_source.html">model/utility/src/Keywords.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="Model_8h_source.html">model/bpmnos/src/Model.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="Attribute_8h_source.html">model/bpmnos/src/extensionElements/Attribute.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="ExtensionElements_8h_source.html">model/bpmnos/src/extensionElements/ExtensionElements.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="Expression_8h_source.html">model/bpmnos/src/extensionElements/Expression.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="Input_8h_source.html">Input.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="Scenario_8h_source.html">Scenario.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Value_8h_source.html">model/utility/src/Value.h</a>&quot;</code><br />
 </div>
 <p><a href="DataProvider_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-nested-classes" class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:BPMNOS_3A_3AModel_3A_3ADataProvider" id="r_BPMNOS_3A_3AModel_3A_3ADataProvider"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1DataProvider.html">BPMNOS::Model::DataProvider</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Abstract base class representing a data provider for BPMN instance data.  <a href="classBPMNOS_1_1Model_1_1DataProvider.html#details">More...</a><br /></td></tr>
+<tr class="memitem:BPMNOS_3A_3AExecution_3A_3ADataProvider" id="r_BPMNOS_3A_3AExecution_3A_3ADataProvider"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Execution_1_1DataProvider.html">BPMNOS::Execution::DataProvider</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Base class of the data providers feeding the environment of a run with events.  <a href="classBPMNOS_1_1Execution_1_1DataProvider.html#details">More...</a><br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-namespaces" class="groupheader"><a id="namespaces" name="namespaces"></a>
 Namespaces</h2></td></tr>
 <tr class="memitem:BPMNOS" id="r_BPMNOS"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceBPMNOS.html">BPMNOS</a></td></tr>
-<tr class="memitem:BPMNOS_3A_3AModel" id="r_BPMNOS_3A_3AModel"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceBPMNOS_1_1Model.html">BPMNOS::Model</a></td></tr>
+<tr class="memitem:BPMNOS_3A_3AExecution" id="r_BPMNOS_3A_3AExecution"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceBPMNOS_1_1Execution.html">BPMNOS::Execution</a></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-typedef-members" class="groupheader"><a id="typedef-members" name="typedef-members"></a>
+Typedefs</h2></td></tr>
+<tr class="memitem:af0a8c22a6083269eb5259dca0328efec" id="r_af0a8c22a6083269eb5259dca0328efec"><td class="memItemLeft" align="right" valign="top">typedef std::deque&lt; std::shared_ptr&lt; <a class="el" href="structBPMNOS_1_1Execution_1_1Event.html">Event</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceBPMNOS_1_1Execution.html#af0a8c22a6083269eb5259dca0328efec">BPMNOS::Execution::EventQueue</a></td></tr>
+<tr class="memdesc:af0a8c22a6083269eb5259dca0328efec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Events enqueued for the engine, first in, first out.  <br /></td></tr>
 </table>
 </div><!-- contents -->
 </div><!-- doc-content -->

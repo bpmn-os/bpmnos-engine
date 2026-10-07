@@ -137,13 +137,13 @@ $(function(){initNavTree('classBPMNOS_1_1Execution_1_1StateMachine.html','','cla
 Inclusive gateways are not yet supported.</dd></dl>
 <dl class="section attention"><dt>Attention</dt><dd>Event subprocesses within event subprocesses are not yet tested (and may not be supported). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="StateMachine_8h_source.html#l00034">34</a> of file <a class="el" href="StateMachine_8h_source.html">StateMachine.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StateMachine_8h_source.html#l00033">33</a> of file <a class="el" href="StateMachine_8h_source.html">StateMachine.h</a>.</p>
 </div>
 <p><code>#include &lt;<a class="el" href="StateMachine_8h_source.html">StateMachine.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for BPMNOS::Execution::StateMachine:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="classBPMNOS_1_1Execution_1_1StateMachine__inherit__graph.svg" width="264" height="707"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="classBPMNOS_1_1Execution_1_1StateMachine__inherit__graph.svg" width="264" height="730"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
@@ -195,6 +195,11 @@ Public Attributes</h2></td></tr>
 <tr class="memdesc:a69d3406e8777554204dbefc4453c48a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Container with state machines created for a compensation event subprocesses of a child subprocess.  <br /></td></tr>
 <tr class="memitem:af436f1dfaad385d1e6ab88804fb17ab7" id="r_af436f1dfaad385d1e6ab88804fb17ab7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceBPMNOS_1_1Execution.html#aecc76732c42d9421b8b0d48ec878c527">Tokens</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af436f1dfaad385d1e6ab88804fb17ab7">compensableSubProcesses</a></td></tr>
 <tr class="memdesc:af436f1dfaad385d1e6ab88804fb17ab7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Container holding tokens owning completed subprocesses with a compensation event subprocess.  <br /></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-static-attribs" class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
+Static Public Attributes</h2></td></tr>
+<tr class="memitem:a7c3084eba26e65ee6c49105c1f9c6f3b" id="r_a7c3084eba26e65ee6c49105c1f9c6f3b"><td class="memItemLeft" align="right" valign="top">static constexpr char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7c3084eba26e65ee6c49105c1f9c6f3b">delimiters</a> [] = {'^','#'}</td></tr>
+<tr class="memdesc:a7c3084eba26e65ee6c49105c1f9c6f3b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Delimiters used for disambiguation of identifiers of non-interrupting event subprocesses, multi-instance activities and instances created by a trigger.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-friends" class="groupheader"><a id="friends" name="friends"></a>
 Friends</h2></td></tr>
@@ -393,7 +398,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="StateMachine_8cpp_source.html#l01233">1233</a> of file <a class="el" href="StateMachine_8cpp_source.html">StateMachine.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StateMachine_8cpp_source.html#l01240">1240</a> of file <a class="el" href="StateMachine_8cpp_source.html">StateMachine.cpp</a>.</p>
 
 </div>
 </div>
@@ -431,7 +436,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="StateMachine_8cpp_source.html#l00755">755</a> of file <a class="el" href="StateMachine_8cpp_source.html">StateMachine.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StateMachine_8cpp_source.html#l00770">770</a> of file <a class="el" href="StateMachine_8cpp_source.html">StateMachine.cpp</a>.</p>
 
 </div>
 </div>
@@ -570,6 +575,30 @@ Friends</h2></td></tr>
 </div><div class="memdoc">
 
 <p class="definition">Definition at line <a class="el" href="StateMachine_8h_source.html#l00101">101</a> of file <a class="el" href="StateMachine_8h_source.html">StateMachine.h</a>.</p>
+
+</div>
+</div>
+<a id="a7c3084eba26e65ee6c49105c1f9c6f3b" name="a7c3084eba26e65ee6c49105c1f9c6f3b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7c3084eba26e65ee6c49105c1f9c6f3b">&#9670;&#160;</a></span>delimiters</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">char BPMNOS::Execution::StateMachine::delimiters[] = {'^','#'}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span><span class="mlabel constexpr">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="StateMachine_8h_source.html#l00035">35</a> of file <a class="el" href="StateMachine_8h_source.html">StateMachine.h</a>.</p>
 
 </div>
 </div>

@@ -126,7 +126,7 @@ $(function(){initNavTree('bpmnos.html','',''); });
   <div class="headertitle"><div class="title">Model provider </div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>The model provider reads a BPMN model and yields the <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html">scenario</a> that the <a class="el" href="classBPMNOS_1_1Execution_1_1Engine.html">execution engine</a> runs on.</p>
+<div class="textblock"><p>The model provider reads a BPMN model, on which a data provider builds the <a class="el" href="classBPMNOS_1_1Execution_1_1Scenario.html">scenario</a> that the <a class="el" href="classBPMNOS_1_1Execution_1_1Engine.html">execution engine</a> runs on.</p>
 <h1 class="doxsection"><a class="anchor" id="bpmn-model"></a>
 BPMN model</h1>
 <p>The <a class="el" href="classBPMNOS_1_1Model_1_1Model.html">BPMNOS::Model::Model</a> class can be used to read a BPMN file with respective extension elements for optimisation and simulation. All elements of a BPMN process or collaboration diagram can be read, however, not all elements are considered by the <a class="el" href="classBPMNOS_1_1Execution_1_1Engine.html">execution engine</a>. An overview over the supported BPMN elements and the extension for optimisation and simulation is provided in</p><ul>
@@ -144,19 +144,17 @@ BPMN model</h1>
 </div><!-- fragment --><p>Alternatively the content of each lookup table is supplied directly, keyed by the source file name it is declared under, together with an already parsed model. <a class="el" href="classBPMNOS_1_1Model_1_1Model.html#a1460d1ac6fd1593968aa5f5343eb2dbc">getLookupTableNames</a> states which names a model expects.</p>
 <h1 class="doxsection"><a class="anchor" id="scenario"></a>
 Scenario</h1>
-<p>A <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html">scenario</a> gives the execution engine access to the process instances of a run and to the values of their attributes. It is obtained in one of two ways.</p>
-<p>A <a class="el" href="classBPMNOS_1_1Model_1_1DataProvider.html">data provider</a> creates one from instance data supplied before the run, providing access to all known or anticipated process instances and all known or anticipated attribute values. Four are available, differing in what is known when, and are described below.</p>
-<p>An <a class="el" href="classBPMNOS_1_1Model_1_1ObservedScenario.html">observed scenario</a> is created by whatever observes a world and is told what that world does while the run proceeds. Nothing is known in advance of it, and it is likewise described below.</p>
+<p>A <a class="el" href="classBPMNOS_1_1Execution_1_1Scenario.html">scenario</a> holds what a run on a model needs to know of its environment: the process instances and the values of their attributes, and the times at which these become known. It is created by a <a class="el" href="classBPMNOS_1_1Execution_1_1DataProvider.html">data provider</a> from instance data supplied before the run, and the data provider enqueues the events the scenario gives rise to during the run, as described in the documentation of the <a class="el" href="engine.html">execution engine</a>. Four data providers are available, differing in what is known when, and are described below. The data may give no values to the attributes of an <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1EventSubProcess.html">event subprocess</a> or of a compensation activity: the engine creates such scopes itself and gives them the values the model assigns, and a data provider rejects a row naming such a node in its INITIALIZATION column or, for the stochastic data provider, its READY column. The data may give no values to the attributes of a <a class="el" href="classBPMNOS_1_1Model_1_1Guidance.html">guidance</a> either, which take only the values the model assigns to them.</p>
 <h1 class="doxsection"><a class="anchor" id="static-data-provider"></a>
 Static data provider</h1>
-<p>The <a class="el" href="classBPMNOS_1_1Model_1_1StaticDataProvider.html">static data provider</a> can be used in situations where all instances and all initialization values of attributes are either known or undefined.</p>
-<p>Below is a minimal example creating a scenario containing instances of a BPMN model. </p><div class="fragment"><div class="line"><span class="preprocessor">#include &lt;bpmnos-model.h&gt;</span></div>
+<p>The <a class="el" href="classBPMNOS_1_1Execution_1_1StaticDataProvider.html">static data provider</a> can be used in situations where all instances and all initialization values of attributes are either known or undefined.</p>
+<p>Below is a minimal example creating a scenario containing instances of a BPMN model. </p><div class="fragment"><div class="line"><span class="preprocessor">#include &lt;bpmnos-execution.h&gt;</span></div>
 <div class="line"> </div>
 <div class="line"><span class="keywordtype">int</span> main() {</div>
-<div class="line">  <a class="code hl_class" href="classBPMNOS_1_1Model_1_1StaticDataProvider.html">BPMNOS::Model::StaticDataProvider</a> dataProvider(<span class="stringliteral">&quot;diagram.bpmn&quot;</span>,<span class="stringliteral">&quot;scenario.csv&quot;</span>);</div>
-<div class="line">  <span class="keyword">auto</span> scenario = dataProvider.createScenario();</div>
+<div class="line">  <span class="keyword">auto</span> model = std::make_shared&lt;const BPMNOS::Model::Model&gt;(<span class="stringliteral">&quot;diagram.bpmn&quot;</span>);</div>
+<div class="line">  <span class="keyword">auto</span> dataProvider = std::make_shared&lt;BPMNOS::Execution::StaticDataProvider&gt;(model, <span class="stringliteral">&quot;scenario.csv&quot;</span>);</div>
+<div class="line">  <span class="keyword">auto</span> scenario = dataProvider-&gt;createScenario();</div>
 <div class="line">}</div>
-<div class="ttc" id="aclassBPMNOS_1_1Model_1_1StaticDataProvider_html"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1StaticDataProvider.html">BPMNOS::Model::StaticDataProvider</a></div><div class="ttdoc">Class representing a data provider for static BPMN instance data.</div><div class="ttdef"><b>Definition</b> <a href="StaticDataProvider_8h_source.html#l00017">StaticDataProvider.h:17</a></div></div>
 </div><!-- fragment --><h2 class="doxsection"><a class="anchor" id="csv-format"></a>
 CSV Format</h2>
 <p>The static data provider uses a CSV file with three columns:</p>
@@ -201,7 +199,7 @@ Expressions</h2>
 </div><!-- fragment --><p><b>Note:</b> INITIALIZATION expressions can reference any attributes previously parse-time evaluated in earlier CSV rows (globals or instance attributes). Referenced attributes must be available in the node's attributeRegistry. Row order determines which attributes are available for reference.</p>
 <p>Values provided for <span class="tt">string</span> attributes must be quoted, values provided for <span class="tt">boolean</span> attributes must be <span class="tt">true</span> or <span class="tt">false</span>, and values provided for <span class="tt">collection</span> attributes must be embraced in square brackets.</p>
 <p>Alternatively, the instance data may be provided by a string as shown in below example.</p>
-<div class="fragment"><div class="line"><span class="preprocessor">#include &lt;bpmnos-model.h&gt;</span></div>
+<div class="fragment"><div class="line"><span class="preprocessor">#include &lt;bpmnos-execution.h&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &lt;string&gt;</span></div>
 <div class="line"> </div>
 <div class="line"><span class="keywordtype">int</span> main() {</div>
@@ -215,12 +213,13 @@ Expressions</h2>
 <div class="line">    <span class="stringliteral">&quot;Instance_2; BinProcess; capacity := 40\n&quot;</span></div>
 <div class="line">  ;</div>
 <div class="line"> </div>
-<div class="line">  <a class="code hl_class" href="classBPMNOS_1_1Model_1_1StaticDataProvider.html">BPMNOS::Model::StaticDataProvider</a> dataProvider(<span class="stringliteral">&quot;examples/bin_packing_problem/Guided_bin_packing_problem.bpmn&quot;</span>,csv);</div>
-<div class="line">  <span class="keyword">auto</span> scenario = dataProvider.createScenario();</div>
+<div class="line">  <span class="keyword">auto</span> model = std::make_shared&lt;const BPMNOS::Model::Model&gt;(<span class="stringliteral">&quot;examples/bin_packing_problem/Bin_packing_problem.bpmn&quot;</span>);</div>
+<div class="line">  <span class="keyword">auto</span> dataProvider = std::make_shared&lt;BPMNOS::Execution::StaticDataProvider&gt;(model, csv);</div>
+<div class="line">  <span class="keyword">auto</span> scenario = dataProvider-&gt;createScenario();</div>
 <div class="line">}</div>
 </div><!-- fragment --><h1 class="doxsection"><a class="anchor" id="dynamic-data-provider"></a>
 Dynamic data provider</h1>
-<p>The <a class="el" href="classBPMNOS_1_1Model_1_1DynamicDataProvider.html">dynamic data provider</a> supports scenarios where attribute values may be disclosed at different points in time. This is useful for modeling situations with uncertain or gradually revealed information.</p>
+<p>The <a class="el" href="classBPMNOS_1_1Execution_1_1DynamicDataProvider.html">dynamic data provider</a> supports scenarios where attribute values may be disclosed at different points in time. This is useful for modeling situations with uncertain or gradually revealed information.</p>
 <h2 class="doxsection"><a class="anchor" id="csv-format-1"></a>
 CSV Format</h2>
 <p>The dynamic data provider uses a CSV file with four columns:</p>
@@ -262,20 +261,16 @@ Global Attributes</h2>
 </div><!-- fragment --><p>Global attributes must not have a disclosure time (must be immediately available).</p>
 <h2 class="doxsection"><a class="anchor" id="usage"></a>
 Usage</h2>
-<div class="fragment"><div class="line"><span class="preprocessor">#include &lt;bpmnos-model.h&gt;</span></div>
+<div class="fragment"><div class="line"><span class="preprocessor">#include &lt;bpmnos-execution.h&gt;</span></div>
 <div class="line"> </div>
 <div class="line"><span class="keywordtype">int</span> main() {</div>
-<div class="line">  <a class="code hl_class" href="classBPMNOS_1_1Model_1_1DynamicDataProvider.html">BPMNOS::Model::DynamicDataProvider</a> dataProvider(<span class="stringliteral">&quot;diagram.bpmn&quot;</span>, <span class="stringliteral">&quot;scenario.csv&quot;</span>);</div>
-<div class="line">  <span class="keyword">auto</span> scenario = dataProvider.createScenario();</div>
-<div class="line"> </div>
-<div class="line">  <span class="comment">// During a run the engine announces each clock tick to the scenario, which discloses the</span></div>
-<div class="line">  <span class="comment">// initializations that have become due:</span></div>
-<div class="line">  <span class="comment">// scenario-&gt;noticeClockTick(time);</span></div>
+<div class="line">  <span class="keyword">auto</span> model = std::make_shared&lt;const BPMNOS::Model::Model&gt;(<span class="stringliteral">&quot;diagram.bpmn&quot;</span>);</div>
+<div class="line">  <span class="keyword">auto</span> dataProvider = std::make_shared&lt;BPMNOS::Execution::DynamicDataProvider&gt;(model, <span class="stringliteral">&quot;scenario.csv&quot;</span>);</div>
+<div class="line">  <span class="keyword">auto</span> scenario = dataProvider-&gt;createScenario();</div>
 <div class="line">}</div>
-<div class="ttc" id="aclassBPMNOS_1_1Model_1_1DynamicDataProvider_html"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1DynamicDataProvider.html">BPMNOS::Model::DynamicDataProvider</a></div><div class="ttdoc">Class representing a data provider for dynamic BPMN instance data.</div><div class="ttdef"><b>Definition</b> <a href="DynamicDataProvider_8h_source.html#l00031">DynamicDataProvider.h:31</a></div></div>
 </div><!-- fragment --><h1 class="doxsection"><a class="anchor" id="stochastic-data-provider"></a>
 Stochastic data provider</h1>
-<p>The <a class="el" href="classBPMNOS_1_1Model_1_1StochasticDataProvider.html">stochastic data provider</a> extends dynamic scenarios with support for random functions, stochastic arrival initialization, and stochastic task completion.</p>
+<p>The <a class="el" href="classBPMNOS_1_1Execution_1_1StochasticDataProvider.html">stochastic data provider</a> extends dynamic scenarios with support for random functions, stochastic arrival initialization, and stochastic task completion.</p>
 <h2 class="doxsection"><a class="anchor" id="csv-format-2"></a>
 CSV Format</h2>
 <p>The stochastic data provider uses a CSV file with up to six columns:</p>
@@ -355,7 +350,7 @@ Attribute Initialization and Modification</h2>
 <li>COMPLETION expressions can modify any status attribute, including those with model expressions (model expressions run at ready time, COMPLETION runs later)</li>
 </ul>
 <p>Both READY and COMPLETION modifications are local to the activity/task scope and do not affect parent scope values.</p>
-<p><b>Limitation - Event Subprocesses</b>: CSV-provided READY and COMPLETION expressions for event subprocesses are disallowed unless they produce deterministic (equal) values for all triggerings. Use model expressions for event subprocess behavior that may vary between triggerings.</p>
+<p><b>Limitation - Event Subprocesses and Compensation Activities</b>: CSV-provided INITIALIZATION and READY expressions for an event subprocess or a compensation activity are rejected. Use model expressions for the attributes of such scopes, which are evaluated when an event subprocess is triggered or a compensation activity is entered.</p>
 <h2 class="doxsection"><a class="anchor" id="reproducibility"></a>
 Reproducibility</h2>
 <p>Each (instance, node) pair has its own random number generator seeded from the scenario seed combined with the instance ID and node ID hash. This ensures:</p><ul>
@@ -365,28 +360,23 @@ Reproducibility</h2>
 </ul>
 <h2 class="doxsection"><a class="anchor" id="usage-1"></a>
 Usage</h2>
-<div class="fragment"><div class="line"><span class="preprocessor">#include &lt;bpmnos-model.h&gt;</span></div>
+<div class="fragment"><div class="line"><span class="preprocessor">#include &lt;bpmnos-execution.h&gt;</span></div>
 <div class="line"> </div>
 <div class="line"><span class="keywordtype">int</span> main() {</div>
 <div class="line">  <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> seed = 42;</div>
-<div class="line">  <a class="code hl_class" href="classBPMNOS_1_1Model_1_1StochasticDataProvider.html">BPMNOS::Model::StochasticDataProvider</a> dataProvider(<span class="stringliteral">&quot;diagram.bpmn&quot;</span>, <span class="stringliteral">&quot;scenario.csv&quot;</span>, seed);</div>
-<div class="line">  <span class="keyword">auto</span> scenario = dataProvider.createScenario();</div>
+<div class="line">  <span class="keyword">auto</span> model = std::make_shared&lt;const BPMNOS::Model::Model&gt;(<span class="stringliteral">&quot;diagram.bpmn&quot;</span>);</div>
+<div class="line">  <span class="keyword">auto</span> dataProvider = std::make_shared&lt;BPMNOS::Execution::StochasticDataProvider&gt;(model, <span class="stringliteral">&quot;scenario.csv&quot;</span>, seed);</div>
+<div class="line">  <span class="keyword">auto</span> scenario = dataProvider-&gt;createScenario();</div>
 <div class="line">}</div>
-<div class="ttc" id="aclassBPMNOS_1_1Model_1_1StochasticDataProvider_html"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1StochasticDataProvider.html">BPMNOS::Model::StochasticDataProvider</a></div><div class="ttdoc">Data provider supporting stochastic behavior.</div><div class="ttdef"><b>Definition</b> <a href="StochasticDataProvider_8h_source.html#l00034">StochasticDataProvider.h:34</a></div></div>
 </div><!-- fragment --><h2 class="doxsection"><a class="anchor" id="downward-compatibility"></a>
 Downward Compatibility</h2>
-<p>StochasticDataProvider is downward compatible with the following CSV formats:</p><ul>
-<li>3-column (Static): INSTANCE_ID; NODE_ID; INITIALIZATION</li>
-<li>4-column (Dynamic): + DISCLOSURE</li>
-<li>6-column (Stochastic): + READY; COMPLETION</li>
-</ul>
-<p>Note: There is no 5-column format. Use 6 columns with empty READY or COMPLETION as needed.</p>
+<p>The stochastic data provider accepts every table whose header consists of the first three or more of its six columns in their order, so that a table of the static or the dynamic data provider is read as well, and a column that is missing gives no value to any row.</p>
 <h1 class="doxsection"><a class="anchor" id="expected-value-data-provider"></a>
 Expected value data provider</h1>
-<p>The <a class="el" href="classBPMNOS_1_1Model_1_1ExpectedValueDataProvider.html">expected value data provider</a> accepts dynamic and stochastic CSV formats but uses expected values instead of random sampling. All data is disclosed at time 0, regardless of the DISCLOSURE column values.</p>
+<p>The <a class="el" href="classBPMNOS_1_1Execution_1_1ExpectedValueDataProvider.html">expected value data provider</a> accepts dynamic and stochastic CSV formats but uses expected values instead of random sampling. All data is disclosed at time 0, regardless of the DISCLOSURE column values.</p>
 <h2 class="doxsection"><a class="anchor" id="csv-format-3"></a>
 CSV Format</h2>
-<p>The expected value data provider accepts CSV files with 3, 4, or 6 columns:</p>
+<p>The expected value data provider accepts every table whose header consists of the first three or more of the following columns in their order:</p>
 <div class="fragment"><div class="line">INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE; READY; COMPLETION</div>
 </div><!-- fragment --><h2 class="doxsection"><a class="anchor" id="behavior"></a>
 Behavior</h2>
@@ -430,43 +420,14 @@ Example</h2>
 </div><!-- fragment --><p>With expected values, <span class="tt">duration</span> will be <span class="tt">(8 + 12) / 2 = 10</span>.</p>
 <h2 class="doxsection"><a class="anchor" id="usage-2"></a>
 Usage</h2>
-<div class="fragment"><div class="line"><span class="preprocessor">#include &lt;bpmnos-model.h&gt;</span></div>
+<div class="fragment"><div class="line"><span class="preprocessor">#include &lt;bpmnos-execution.h&gt;</span></div>
 <div class="line"> </div>
 <div class="line"><span class="keywordtype">int</span> main() {</div>
-<div class="line">  <a class="code hl_class" href="classBPMNOS_1_1Model_1_1ExpectedValueDataProvider.html">BPMNOS::Model::ExpectedValueDataProvider</a> dataProvider(<span class="stringliteral">&quot;diagram.bpmn&quot;</span>, <span class="stringliteral">&quot;scenario.csv&quot;</span>);</div>
-<div class="line">  <span class="keyword">auto</span> scenario = dataProvider.createScenario();</div>
+<div class="line">  <span class="keyword">auto</span> model = std::make_shared&lt;const BPMNOS::Model::Model&gt;(<span class="stringliteral">&quot;diagram.bpmn&quot;</span>);</div>
+<div class="line">  <span class="keyword">auto</span> dataProvider = std::make_shared&lt;BPMNOS::Execution::ExpectedValueDataProvider&gt;(model, <span class="stringliteral">&quot;scenario.csv&quot;</span>);</div>
+<div class="line">  <span class="keyword">auto</span> scenario = dataProvider-&gt;createScenario();</div>
 <div class="line">}</div>
-<div class="ttc" id="aclassBPMNOS_1_1Model_1_1ExpectedValueDataProvider_html"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1ExpectedValueDataProvider.html">BPMNOS::Model::ExpectedValueDataProvider</a></div><div class="ttdoc">Data provider that accepts stochastic CSV format but uses expected values.</div><div class="ttdef"><b>Definition</b> <a href="ExpectedValueDataProvider_8h_source.html#l00024">ExpectedValueDataProvider.h:24</a></div></div>
-</div><!-- fragment --><h1 class="doxsection"><a class="anchor" id="observed-scenario"></a>
-Observed scenario</h1>
-<p>The <a class="el" href="classBPMNOS_1_1Model_1_1ObservedScenario.html">observed scenario</a> is used where nothing is known in advance, whether the world being run against is real life or a simulation of it. It holds a log of what has been reported to it and answers every query from that log, reporting <span class="tt">std::nullopt</span> for anything not yet observed, upon which the engine waits and asks again at the next clock tick.</p>
-<h2 class="doxsection"><a class="anchor" id="reporting"></a>
-Reporting</h2>
-<p>Whatever observes the world reports through four methods. <a class="el" href="classBPMNOS_1_1Model_1_1ObservedScenario.html#ad2522b16b41610b917ab3618d875b557">observeInstantiation</a> reports that an instance of a process was created at a given time, and must precede anything else reported about that instance. <a class="el" href="classBPMNOS_1_1Model_1_1ObservedScenario.html#a5b0958d553b81e4185b5ce6751aaa068">observeValue</a> reports the value of one of its attributes; a value reported as <span class="tt">std::nullopt</span> is observed to be undefined, which is not the same as not having been observed at all. <a class="el" href="classBPMNOS_1_1Model_1_1ObservedScenario.html#a7c5e75b176a7d1d426a340d153e26952">observeReadyStatus</a> and <a class="el" href="classBPMNOS_1_1Model_1_1ObservedScenario.html#a9fa86e4ddb31dd41f5f2dca61aec3c82">observeCompletionStatus</a> report the status an activity became ready with and the status a task completed with.</p>
-<p>A reported status is the complete status of the node, being the values of every attribute declared from the process down to the node itself, in that order. It is returned once the clock reaches the timestamp it carries, so either may be reported before it is due.</p>
-<p>The initial values of global attributes are supplied to the constructor rather than reported. Globals change thereafter through the engine, as operators modify them, and are never observed again.</p>
-<p>The completion of a send task, receive task or decision task is determined by the model rather than observed, and is neither reported nor expected.</p>
-<h2 class="doxsection"><a class="anchor" id="owning-time"></a>
-Owning time</h2>
-<p>A report has to reach the scenario before the engine asks for it, so whatever observes the world also issues the clock ticks, in place of a <a class="el" href="classBPMNOS_1_1Execution_1_1TimeWarp.html">time warp</a> or a <a class="el" href="classBPMNOS_1_1Execution_1_1Metronome.html">metronome</a>. Everything the world has done by an instant is reported, and only then is the tick that advances to that instant released, so that the run never gets ahead of the world it observes. For this reason <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#a56c9a110e9e7cc4abca6c3c3924785ad">noticeClockTick</a> is not implemented.</p>
-<p>An observed scenario never reports itself complete, since a world is never exhausted, so a run against it is bounded from outside by an end time or terminated by an event. It admits no duplicate of itself either, a world not being copyable, so <a class="el" href="classBPMNOS_1_1Model_1_1Scenario.html#a687fdf9fd253ed97a342d2ab8fd9649b">clone</a> throws.</p>
-<h2 class="doxsection"><a class="anchor" id="usage-3"></a>
-Usage</h2>
-<div class="fragment"><div class="line"><span class="preprocessor">#include &lt;bpmnos-model.h&gt;</span></div>
-<div class="line"> </div>
-<div class="line"><span class="keywordtype">int</span> main() {</div>
-<div class="line">  <span class="keyword">auto</span> model = std::make_unique&lt;BPMNOS::Model::Model&gt;(<span class="stringliteral">&quot;diagram.bpmn&quot;</span>);</div>
-<div class="line">  <a class="code hl_class" href="classBPMNOS_1_1Model_1_1ObservedScenario.html">BPMNOS::Model::ObservedScenario</a> scenario(model.get(), {});</div>
-<div class="line"> </div>
-<div class="line">  <span class="comment">// Whatever observes the world reports what it sees, before the engine is advanced to that instant:</span></div>
-<div class="line">  <span class="comment">// scenario.observeInstantiation(process, instanceId, time);</span></div>
-<div class="line">  <span class="comment">// scenario.observeValue(instanceId, attribute, value);</span></div>
-<div class="line">  <span class="comment">// scenario.observeReadyStatus(instanceId, activity, status);</span></div>
-<div class="line">  <span class="comment">// scenario.observeCompletionStatus(instanceId, task, status);</span></div>
-<div class="line">}</div>
-<div class="ttc" id="aclassBPMNOS_1_1Model_1_1ObservedScenario_html"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1ObservedScenario.html">BPMNOS::Model::ObservedScenario</a></div><div class="ttdoc">A scenario whose data is observed while the run proceeds.</div><div class="ttdef"><b>Definition</b> <a href="ObservedScenario_8h_source.html#l00019">ObservedScenario.h:19</a></div></div>
-</div><!-- fragment --><dl class="section note"><dt>Note</dt><dd>A scenario refers to its model by pointer and does not extend its lifetime, so the model must outlive every scenario taken from it. </dd></dl>
-</div></div><!-- contents -->
+</div><!-- fragment --> </div></div><!-- contents -->
 </div><!-- PageDoc -->
 </div><!-- doc-content -->
 <div id="page-nav" class="page-nav-panel">

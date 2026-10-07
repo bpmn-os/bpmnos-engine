@@ -8,7 +8,6 @@ var searchData=
   ['participantmultiplicity_5',['participantMultiplicity',['https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1participantMultiplicity.html',1,'XML::bpmn']]],
   ['partnerentity_6',['partnerEntity',['https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1partnerEntity.html',1,'XML::bpmn']]],
   ['partnerrole_7',['partnerRole',['https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1partnerRole.html',1,'XML::bpmn']]],
-  ['pendingdisclosure_8',['PendingDisclosure',['../structBPMNOS_1_1Model_1_1PendingDisclosure.html',1,'BPMNOS::Model']]],
-  ['potentialowner_9',['potentialOwner',['https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1potentialOwner.html',1,'XML::bpmn']]],
-  ['process_10',['Process',['https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Process.html',1,'BPMN']]]
+  ['potentialowner_8',['potentialOwner',['https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1potentialOwner.html',1,'XML::bpmn']]],
+  ['process_9',['Process',['https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Process.html',1,'BPMN']]]
 ];

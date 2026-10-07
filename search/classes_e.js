@@ -13,5 +13,6 @@ var searchData=
   ['restriction_10',['Restriction',['../classBPMNOS_1_1Model_1_1Restriction.html',1,'BPMNOS::Model']]],
   ['restriction_11',['restriction',['../classXML_1_1bpmnos_1_1restriction.html',1,'XML::bpmnos']]],
   ['restrictions_12',['restrictions',['../classXML_1_1bpmnos_1_1restrictions.html',1,'XML::bpmnos']]],
-  ['rootelement_13',['rootElement',['https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1rootElement.html',1,'XML::bpmn']]]
+  ['rootelement_13',['rootElement',['https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1rootElement.html',1,'XML::bpmn']]],
+  ['row_14',['Row',['../structBPMNOS_1_1Execution_1_1InstanceDataReader_1_1Row.html',1,'BPMNOS::Execution::InstanceDataReader']]]
 ];

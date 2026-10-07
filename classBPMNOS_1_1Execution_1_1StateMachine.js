@@ -15,6 +15,7 @@ var classBPMNOS_1_1Execution_1_1StateMachine =
     [ "compensationEventSubProcesses", "classBPMNOS_1_1Execution_1_1StateMachine.html#a69d3406e8777554204dbefc4453c48a2", null ],
     [ "compensationTokens", "classBPMNOS_1_1Execution_1_1StateMachine.html#ac9bb473e1f9af6dda5a2b5fc9cfb3eb5", null ],
     [ "data", "classBPMNOS_1_1Execution_1_1StateMachine.html#ae9bbbb3a4155dc58477a62e72862733a", null ],
+    [ "delimiters", "classBPMNOS_1_1Execution_1_1StateMachine.html#a7c3084eba26e65ee6c49105c1f9c6f3b", null ],
     [ "instance", "classBPMNOS_1_1Execution_1_1StateMachine.html#aac88c761bd7c8f852d73ccfa9dce393a", null ],
     [ "interruptingEventSubProcess", "classBPMNOS_1_1Execution_1_1StateMachine.html#a835cbb364e0c8aa50cc6493b3cce2c47", null ],
     [ "nonInterruptingEventSubProcesses", "classBPMNOS_1_1Execution_1_1StateMachine.html#a71d2a2f191e2c4e62dc346e0aac0c817", null ],

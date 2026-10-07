@@ -171,16 +171,12 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dispatches an entry event for the first token awaiting entry, without checking feasibility.  <a href="classBPMNOS_1_1Execution_1_1InstantEntry.html#details">More...</a><br /></td></tr>
 <tr class="memitem:InstantExit" id="r_InstantExit"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Execution_1_1InstantExit.html">InstantExit</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dispatches an exit event for the first token awaiting exit, without checking feasibility.  <a href="classBPMNOS_1_1Execution_1_1InstantExit.html#details">More...</a><br /></td></tr>
-<tr class="memitem:Metronome" id="r_Metronome"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Execution_1_1Metronome.html">Metronome</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Class creating a clock tick event each time fetchEvent() after sleeping in order to synchronize with real time.  <a href="classBPMNOS_1_1Execution_1_1Metronome.html#details">More...</a><br /></td></tr>
 <tr class="memitem:MyopicDecisionTaskTerminator" id="r_MyopicDecisionTaskTerminator"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Execution_1_1MyopicDecisionTaskTerminator.html">MyopicDecisionTaskTerminator</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Class creating an error event for a token at a decision task if no choice has been made.  <a href="classBPMNOS_1_1Execution_1_1MyopicDecisionTaskTerminator.html#details">More...</a><br /></td></tr>
 <tr class="memitem:MyopicMessageTaskTerminator" id="r_MyopicMessageTaskTerminator"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Execution_1_1MyopicMessageTaskTerminator.html">MyopicMessageTaskTerminator</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Class creating an error event for a token at a message task if the message can not be delivered.  <a href="classBPMNOS_1_1Execution_1_1MyopicMessageTaskTerminator.html#details">More...</a><br /></td></tr>
 <tr class="memitem:RandomChoice" id="r_RandomChoice"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Execution_1_1RandomChoice.html">RandomChoice</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Class creating a random choice event for a token at a decision task.  <a href="classBPMNOS_1_1Execution_1_1RandomChoice.html#details">More...</a><br /></td></tr>
-<tr class="memitem:TimeWarp" id="r_TimeWarp"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Execution_1_1TimeWarp.html">TimeWarp</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Class creating a clock tick event each time fetchEvent() is called.  <a href="classBPMNOS_1_1Execution_1_1TimeWarp.html#details">More...</a><br /></td></tr>
 <tr class="memitem:Evaluation" id="r_Evaluation"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structBPMNOS_1_1Execution_1_1Evaluation.html">Evaluation</a></td></tr>
 <tr class="memitem:Evaluator" id="r_Evaluator"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Execution_1_1Evaluator.html">Evaluator</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents an abstract base class for an evaluator determining feasibility and reward of a decision.  <a href="classBPMNOS_1_1Execution_1_1Evaluator.html#details">More...</a><br /></td></tr>
@@ -192,6 +188,20 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A controller dispatching the first feasible decision in priority order.  <a href="classBPMNOS_1_1Execution_1_1GreedyController.html#details">More...</a><br /></td></tr>
 <tr class="memitem:GreedyDispatcher" id="r_GreedyDispatcher"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Execution_1_1GreedyDispatcher.html">GreedyDispatcher</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generic greedy policy dispatcher owning a concrete Candidates collection.  <a href="classBPMNOS_1_1Execution_1_1GreedyDispatcher.html#details">More...</a><br /></td></tr>
+<tr class="memitem:DataProvider" id="r_DataProvider"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Execution_1_1DataProvider.html">DataProvider</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Base class of the data providers feeding the environment of a run with events.  <a href="classBPMNOS_1_1Execution_1_1DataProvider.html#details">More...</a><br /></td></tr>
+<tr class="memitem:DynamicDataProvider" id="r_DynamicDataProvider"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Execution_1_1DynamicDataProvider.html">DynamicDataProvider</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Data provider for instance data disclosed during a run.  <a href="classBPMNOS_1_1Execution_1_1DynamicDataProvider.html#details">More...</a><br /></td></tr>
+<tr class="memitem:ExpectedValueDataProvider" id="r_ExpectedValueDataProvider"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Execution_1_1ExpectedValueDataProvider.html">ExpectedValueDataProvider</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Data provider replacing every random expression of the instance data by its expected value.  <a href="classBPMNOS_1_1Execution_1_1ExpectedValueDataProvider.html#details">More...</a><br /></td></tr>
+<tr class="memitem:InstanceDataReader" id="r_InstanceDataReader"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Execution_1_1InstanceDataReader.html">InstanceDataReader</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Class reading the instance data of a data provider from a CSV table.  <a href="classBPMNOS_1_1Execution_1_1InstanceDataReader.html#details">More...</a><br /></td></tr>
+<tr class="memitem:Scenario" id="r_Scenario"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Execution_1_1Scenario.html">Scenario</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Base class of the scenarios the data providers create.  <a href="classBPMNOS_1_1Execution_1_1Scenario.html#details">More...</a><br /></td></tr>
+<tr class="memitem:StaticDataProvider" id="r_StaticDataProvider"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Execution_1_1StaticDataProvider.html">StaticDataProvider</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Data provider for instance data known from the start of a run.  <a href="classBPMNOS_1_1Execution_1_1StaticDataProvider.html#details">More...</a><br /></td></tr>
+<tr class="memitem:StochasticDataProvider" id="r_StochasticDataProvider"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Execution_1_1StochasticDataProvider.html">StochasticDataProvider</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Data provider sampling the instance data of a run from random expressions.  <a href="classBPMNOS_1_1Execution_1_1StochasticDataProvider.html#details">More...</a><br /></td></tr>
 <tr class="memitem:ConditionalEventObserver" id="r_ConditionalEventObserver"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Execution_1_1ConditionalEventObserver.html">ConditionalEventObserver</a></td></tr>
 <tr class="memitem:DataUpdate" id="r_DataUpdate"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structBPMNOS_1_1Execution_1_1DataUpdate.html">DataUpdate</a></td></tr>
 <tr class="memitem:DecisionRequest" id="r_DecisionRequest"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structBPMNOS_1_1Execution_1_1DecisionRequest.html">DecisionRequest</a></td></tr>
@@ -260,6 +270,8 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-typedef-members" class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
+<tr class="memitem:af0a8c22a6083269eb5259dca0328efec" id="r_af0a8c22a6083269eb5259dca0328efec"><td class="memItemLeft" align="right" valign="top">typedef std::deque&lt; std::shared_ptr&lt; <a class="el" href="structBPMNOS_1_1Execution_1_1Event.html">Event</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af0a8c22a6083269eb5259dca0328efec">EventQueue</a></td></tr>
+<tr class="memdesc:af0a8c22a6083269eb5259dca0328efec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Events enqueued for the engine, first in, first out.  <br /></td></tr>
 <tr class="memitem:a2864b447c1d139500bb2362bac8d0322" id="r_a2864b447c1d139500bb2362bac8d0322"><td class="memItemLeft" align="right" valign="top">typedef std::vector&lt; std::shared_ptr&lt; <a class="el" href="classBPMNOS_1_1Execution_1_1Message.html">Message</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2864b447c1d139500bb2362bac8d0322">Messages</a></td></tr>
 <tr class="memitem:ad98f556d6ed417172ef01fc7d0e88658" id="r_ad98f556d6ed417172ef01fc7d0e88658"><td class="memItemLeft" align="right" valign="top">typedef std::vector&lt; std::shared_ptr&lt; <a class="el" href="classBPMNOS_1_1Execution_1_1StateMachine.html">StateMachine</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad98f556d6ed417172ef01fc7d0e88658">StateMachines</a></td></tr>
 <tr class="memitem:aecc76732c42d9421b8b0d48ec878c527" id="r_aecc76732c42d9421b8b0d48ec878c527"><td class="memItemLeft" align="right" valign="top">typedef std::vector&lt; std::shared_ptr&lt; <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html">Token</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aecc76732c42d9421b8b0d48ec878c527">Tokens</a></td></tr>
@@ -295,6 +307,22 @@ Variables</h2></td></tr>
 <tr class="memitem:a9cbd31179ee05a68ce9fb58409d7d8b7" id="r_a9cbd31179ee05a68ce9fb58409d7d8b7"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9cbd31179ee05a68ce9fb58409d7d8b7">outcome</a> [] = { &quot;COMPLETED&quot;, &quot;FAILED&quot;, &quot;TERMINATED&quot;, &quot;INCOMPLETE&quot; }</td></tr>
 </table>
 <a name="doc-typedef-members" id="doc-typedef-members"></a><h2 id="header-doc-typedef-members" class="groupheader">Typedef Documentation</h2>
+<a id="af0a8c22a6083269eb5259dca0328efec" name="af0a8c22a6083269eb5259dca0328efec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af0a8c22a6083269eb5259dca0328efec">&#9670;&#160;</a></span>EventQueue</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef std::deque&lt; std::shared_ptr&lt;<a class="el" href="structBPMNOS_1_1Execution_1_1Event.html">Event</a>&gt; &gt; <a class="el" href="#af0a8c22a6083269eb5259dca0328efec">BPMNOS::Execution::EventQueue</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="DataProvider_8h_source.html#l00017">17</a> of file <a class="el" href="DataProvider_8h_source.html">DataProvider.h</a>.</p>
+
+</div>
+</div>
 <a id="a2864b447c1d139500bb2362bac8d0322" name="a2864b447c1d139500bb2362bac8d0322"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a2864b447c1d139500bb2362bac8d0322">&#9670;&#160;</a></span>Messages</h2>
 
@@ -323,7 +351,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="StateMachine_8h_source.html#l00013">13</a> of file <a class="el" href="StateMachine_8h_source.html">StateMachine.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StateMachine_8h_source.html#l00012">12</a> of file <a class="el" href="StateMachine_8h_source.html">StateMachine.h</a>.</p>
 
 </div>
 </div>

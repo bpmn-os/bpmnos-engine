@@ -32,11 +32,6 @@ var bpmnos =
       [ "Example", "bpmnos.html#example-3", null ],
       [ "Usage", "bpmnos.html#usage-2", null ]
     ] ],
-    [ "Observed scenario", "bpmnos.html#observed-scenario", [
-      [ "Reporting", "bpmnos.html#reporting", null ],
-      [ "Owning time", "bpmnos.html#owning-time", null ],
-      [ "Usage", "bpmnos.html#usage-3", null ]
-    ] ],
     [ "BPMN elements", "elements.html", [
       [ "<a class=\"elRef\" href=\"https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Process.html\">Processes</a>", "elements.html#ref-bpmnprocess-processes", null ],
       [ "<a class=\"elRef\" href=\"https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Activity.html\">Activities</a>", "elements.html#ref-bpmnactivity-activities", [

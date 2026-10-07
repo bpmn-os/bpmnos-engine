@@ -6,7 +6,6 @@ var dir_5020890d0da222eace0f0d6e8406ec77 =
     [ "CSVReader.h", "CSVReader_8h.html", "CSVReader_8h" ],
     [ "ExpectedValueFactory.cpp", "ExpectedValueFactory_8cpp.html", null ],
     [ "ExpectedValueFactory.h", "ExpectedValueFactory_8h.html", "ExpectedValueFactory_8h" ],
-    [ "getDelimiter.h", "getDelimiter_8h.html", "getDelimiter_8h" ],
     [ "InputEncoder.cpp", "InputEncoder_8cpp.html", null ],
     [ "InputEncoder.h", "InputEncoder_8h.html", "InputEncoder_8h" ],
     [ "Keywords.h", "Keywords_8h.html", "Keywords_8h" ],

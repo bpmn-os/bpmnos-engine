@@ -14,18 +14,7 @@ var hierarchy =
     [ "BPMNOS::Execution::Recorder::Config", "structBPMNOS_1_1Execution_1_1Recorder_1_1Config.html", null ],
     [ "BPMNOS::Model::Content", "classBPMNOS_1_1Model_1_1Content.html", null ],
     [ "BPMNOS::CSVReader", "classBPMNOS_1_1CSVReader.html", null ],
-    [ "BPMNOS::Model::DataProvider", "classBPMNOS_1_1Model_1_1DataProvider.html", [
-      [ "BPMNOS::Model::DynamicDataProvider", "classBPMNOS_1_1Model_1_1DynamicDataProvider.html", null ],
-      [ "BPMNOS::Model::StaticDataProvider", "classBPMNOS_1_1Model_1_1StaticDataProvider.html", [
-        [ "BPMNOS::Model::ExpectedValueDataProvider", "classBPMNOS_1_1Model_1_1ExpectedValueDataProvider.html", null ]
-      ] ],
-      [ "BPMNOS::Model::StochasticDataProvider", "classBPMNOS_1_1Model_1_1StochasticDataProvider.html", null ]
-    ] ],
-    [ "BPMNOS::Model::StochasticDataProvider::DeferredAttribute", "structBPMNOS_1_1Model_1_1StochasticDataProvider_1_1DeferredAttribute.html", null ],
-    [ "BPMNOS::Model::DeferredDisclosure", "structBPMNOS_1_1Model_1_1DeferredDisclosure.html", null ],
-    [ "BPMNOS::Model::DeferredInitialization", "structBPMNOS_1_1Model_1_1DeferredInitialization.html", null ],
     [ "BPMNOS::Execution::descending", "structBPMNOS_1_1Execution_1_1descending.html", null ],
-    [ "BPMNOS::Model::DynamicDataProvider::DynamicInstanceData", "structBPMNOS_1_1Model_1_1DynamicDataProvider_1_1DynamicInstanceData.html", null ],
     [ "BPMN::Element", "https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Element.html", [
       [ "BPMN::BaseElement", "https://bpmn-os.github.io/bpmnpp/classBPMN_1_1BaseElement.html", [
         [ "BPMN::Node", "https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html", [
@@ -55,6 +44,14 @@ var hierarchy =
       ] ]
     ] ],
     [ "std::enable_shared_from_this", null, [
+      [ "BPMNOS::Execution::DataProvider", "classBPMNOS_1_1Execution_1_1DataProvider.html", [
+        [ "BPMNOS::Execution::StaticDataProvider", "classBPMNOS_1_1Execution_1_1StaticDataProvider.html", [
+          [ "BPMNOS::Execution::DynamicDataProvider", "classBPMNOS_1_1Execution_1_1DynamicDataProvider.html", [
+            [ "BPMNOS::Execution::StochasticDataProvider", "classBPMNOS_1_1Execution_1_1StochasticDataProvider.html", null ]
+          ] ],
+          [ "BPMNOS::Execution::ExpectedValueDataProvider", "classBPMNOS_1_1Execution_1_1ExpectedValueDataProvider.html", null ]
+        ] ]
+      ] ],
       [ "BPMNOS::Execution::DecisionRequest", "structBPMNOS_1_1Execution_1_1DecisionRequest.html", [
         [ "BPMNOS::Execution::MessageDeliveryRequest", "structBPMNOS_1_1Execution_1_1MessageDeliveryRequest.html", null ]
       ] ],
@@ -100,17 +97,14 @@ var hierarchy =
       [ "BPMNOS::Execution::Controller", "classBPMNOS_1_1Execution_1_1Controller.html", [
         [ "BPMNOS::Execution::GreedyController", "classBPMNOS_1_1Execution_1_1GreedyController.html", null ]
       ] ],
-      [ "BPMNOS::Execution::Environment", "classBPMNOS_1_1Execution_1_1Environment.html", null ],
       [ "BPMNOS::Execution::FirstMatchingMessageDelivery", "classBPMNOS_1_1Execution_1_1FirstMatchingMessageDelivery.html", null ],
       [ "BPMNOS::Execution::GreedyDispatcher< Candidates >", "classBPMNOS_1_1Execution_1_1GreedyDispatcher.html", null ],
       [ "BPMNOS::Execution::InstantDirectMessage", "classBPMNOS_1_1Execution_1_1InstantDirectMessage.html", null ],
       [ "BPMNOS::Execution::InstantEntry", "classBPMNOS_1_1Execution_1_1InstantEntry.html", null ],
       [ "BPMNOS::Execution::InstantExit", "classBPMNOS_1_1Execution_1_1InstantExit.html", null ],
-      [ "BPMNOS::Execution::Metronome", "classBPMNOS_1_1Execution_1_1Metronome.html", null ],
       [ "BPMNOS::Execution::MyopicDecisionTaskTerminator", "classBPMNOS_1_1Execution_1_1MyopicDecisionTaskTerminator.html", null ],
       [ "BPMNOS::Execution::MyopicMessageTaskTerminator", "classBPMNOS_1_1Execution_1_1MyopicMessageTaskTerminator.html", null ],
-      [ "BPMNOS::Execution::RandomChoice", "classBPMNOS_1_1Execution_1_1RandomChoice.html", null ],
-      [ "BPMNOS::Execution::TimeWarp", "classBPMNOS_1_1Execution_1_1TimeWarp.html", null ]
+      [ "BPMNOS::Execution::RandomChoice", "classBPMNOS_1_1Execution_1_1RandomChoice.html", null ]
     ] ],
     [ "BPMNOS::Execution::EventListener", "classBPMNOS_1_1Execution_1_1EventListener.html", [
       [ "BPMNOS::Execution::Mediator", "structBPMNOS_1_1Execution_1_1Mediator.html", [
@@ -131,9 +125,9 @@ var hierarchy =
     [ "std::hash&lt; const BPMNOS_NUMBER_TYPE &gt;", "structstd_1_1hash_3_01const_01BPMNOS__NUMBER__TYPE_01_4.html", null ],
     [ "BPMNOS::Model::MessageDefinition::HeaderKey", "structBPMNOS_1_1Model_1_1MessageDefinition_1_1HeaderKey.html", null ],
     [ "BPMNOS::Model::ExtensionElements::Index", "structBPMNOS_1_1Model_1_1ExtensionElements_1_1Index.html", null ],
-    [ "BPMNOS::Model::Input", "structBPMNOS_1_1Model_1_1Input.html", null ],
     [ "BPMNOS::InputEncoder", "classBPMNOS_1_1InputEncoder.html", null ],
-    [ "BPMNOS::Model::Scenario::InstanceData", "structBPMNOS_1_1Model_1_1Scenario_1_1InstanceData.html", null ],
+    [ "BPMNOS::Execution::StaticDataProvider::Instance", "structBPMNOS_1_1Execution_1_1StaticDataProvider_1_1Instance.html", null ],
+    [ "BPMNOS::Execution::InstanceDataReader", "classBPMNOS_1_1Execution_1_1InstanceDataReader.html", null ],
     [ "BPMNOS::Execution::CompetingCandidates::Iterator", "classBPMNOS_1_1Execution_1_1CompetingCandidates_1_1Iterator.html", null ],
     [ "BPMNOS::Execution::auto_list&lt; U &gt;::iterator", "structBPMNOS_1_1Execution_1_1auto__list_1_1iterator.html", null ],
     [ "BPMNOS::Execution::auto_set&lt; V, Compare, U &gt;::iterator", "structBPMNOS_1_1Execution_1_1auto__set_1_1iterator.html", null ],
@@ -184,21 +178,15 @@ var hierarchy =
     ] ],
     [ "BPMNOS::Model::Operator", "classBPMNOS_1_1Model_1_1Operator.html", null ],
     [ "BPMNOS::Model::Parameter", "classBPMNOS_1_1Model_1_1Parameter.html", null ],
-    [ "BPMNOS::Model::PendingDisclosure", "structBPMNOS_1_1Model_1_1PendingDisclosure.html", null ],
     [ "BPMNOS::RandomDistributionFactory", "classBPMNOS_1_1RandomDistributionFactory.html", null ],
     [ "BPMNOS::Model::Restriction", "classBPMNOS_1_1Model_1_1Restriction.html", null ],
-    [ "BPMNOS::Model::Scenario", "classBPMNOS_1_1Model_1_1Scenario.html", [
-      [ "BPMNOS::Model::DynamicScenario", "classBPMNOS_1_1Model_1_1DynamicScenario.html", null ],
-      [ "BPMNOS::Model::ObservedScenario", "classBPMNOS_1_1Model_1_1ObservedScenario.html", null ],
-      [ "BPMNOS::Model::StaticScenario", "classBPMNOS_1_1Model_1_1StaticScenario.html", [
-        [ "BPMNOS::Model::ExpectedValueScenario", "classBPMNOS_1_1Model_1_1ExpectedValueScenario.html", null ]
-      ] ],
-      [ "BPMNOS::Model::StochasticScenario", "classBPMNOS_1_1Model_1_1StochasticScenario.html", null ]
+    [ "BPMNOS::Execution::InstanceDataReader::Row", "structBPMNOS_1_1Execution_1_1InstanceDataReader_1_1Row.html", null ],
+    [ "BPMNOS::Execution::Scenario", "classBPMNOS_1_1Execution_1_1Scenario.html", [
+      [ "BPMNOS::Execution::StaticDataProvider::Scenario", "classBPMNOS_1_1Execution_1_1StaticDataProvider_1_1Scenario.html", [
+        [ "BPMNOS::Execution::StochasticDataProvider::Scenario", "classBPMNOS_1_1Execution_1_1StochasticDataProvider_1_1Scenario.html", null ]
+      ] ]
     ] ],
     [ "BPMNOS::Execution::CompetingCandidates::Sentinel", "structBPMNOS_1_1Execution_1_1CompetingCandidates_1_1Sentinel.html", null ],
-    [ "BPMNOS::Model::StaticDataProvider::StaticInstanceData", "structBPMNOS_1_1Model_1_1StaticDataProvider_1_1StaticInstanceData.html", null ],
-    [ "BPMNOS::Model::StochasticDataProvider::StochasticInstanceData", "structBPMNOS_1_1Model_1_1StochasticDataProvider_1_1StochasticInstanceData.html", null ],
-    [ "BPMNOS::Model::StochasticPendingDisclosure", "structBPMNOS_1_1Model_1_1StochasticPendingDisclosure.html", null ],
     [ "BPMNOS::StringRegistry", "structBPMNOS_1_1StringRegistry.html", null ],
     [ "std::true_type", null, [
       [ "BPMNOS::Execution::is_weak_ptr< std::weak_ptr< T > >", "structBPMNOS_1_1Execution_1_1is__weak__ptr_3_01std_1_1weak__ptr_3_01T_01_4_01_4.html", null ],
