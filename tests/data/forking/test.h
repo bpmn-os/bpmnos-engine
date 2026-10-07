@@ -124,6 +124,58 @@ SCENARIO( "Forks of a stochastic run", "[data][forking]" ) {
     }
   }
 
+  GIVEN( "A task whose completion may lie before the spawn time of a fork" ) {
+    auto taskModel = std::make_shared<const Model::Model>("tests/execution/task/Task_with_linear_expression.bpmn");
+    std::string csv =
+      "INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE; READY; COMPLETION\n"
+      "Instance_1; Process_1;;;;\n"
+      "Instance_1; Activity_1;;;; timestamp := timestamp + uniform(0,1000)\n"
+    ;
+
+    WHEN( "Runs stopped at time 500 while the task is busy are forked" ) {
+      // the completion times of the forks of every run, among runs with several seeds, still busy at time 500
+      std::vector<double> completionTimes;
+      for ( unsigned int seed = 1; seed <= 20; seed++ ) {
+        auto dataProvider = std::make_shared<Execution::StochasticDataProvider>(taskModel, csv, seed);
+        Execution::Engine engine(taskModel);
+        Execution::InstantEntry entryHandler;
+        Execution::InstantExit exitHandler;
+        entryHandler.connect(&engine);
+        exitHandler.connect(&engine);
+        Execution::Recorder recorder;
+        recorder.subscribe(&engine);
+        dataProvider->setEndTime(500);
+        engine.run(dataProvider->createScenario());
+        if ( !recorder.find(nlohmann::json{{"nodeId","Activity_1"},{"state","COMPLETED"}}).empty() ) {
+          // the task completed before time 500
+          continue;
+        }
+        dataProvider->setEndTime(std::numeric_limits<BPMNOS::number>::max());
+        for ( unsigned int index = 0; index < 10; index++ ) {
+          Execution::Engine forkEngine(taskModel);
+          Execution::InstantEntry forkEntryHandler;
+          Execution::InstantExit forkExitHandler;
+          forkEntryHandler.connect(&forkEngine);
+          forkExitHandler.connect(&forkEngine);
+          Execution::Recorder forkRecorder;
+          forkRecorder.subscribe(&forkEngine);
+          forkEngine.initializeSystemState(dataProvider->forkScenario(*engine.getSystemState()->scenario, index), engine.getSystemState());
+          forkEngine.resume();
+          auto completionLog = forkRecorder.find(nlohmann::json{{"nodeId","Activity_1"},{"state","COMPLETED"}});
+          REQUIRE( completionLog.size() == 1 );
+          completionTimes.push_back(completionLog.front()["status"]["timestamp"].get<double>());
+        }
+      }
+
+      THEN( "Every fork completes the task at or after the spawn time" ) {
+        REQUIRE_FALSE( completionTimes.empty() );
+        for ( auto completionTime : completionTimes ) {
+          REQUIRE( completionTime >= 501 );
+        }
+      }
+    }
+  }
+
   GIVEN( "A task whose completion is random" ) {
     auto taskModel = std::make_shared<const Model::Model>("tests/execution/task/Task_with_linear_expression.bpmn");
     std::string csv =

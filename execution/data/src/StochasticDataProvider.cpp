@@ -125,7 +125,8 @@ std::unique_ptr<BPMNOS::Execution::Scenario> StochasticDataProvider::forkScenari
   auto& original = static_cast<const Scenario&>(scenario);
   auto fork = std::make_unique<Scenario>(std::static_pointer_cast<const StochasticDataProvider>(shared_from_this()), original.seed + index + 1);
   // the fork agrees with the run before the instant following its current time
-  sample(*fork, &original, original.time + 1);
+  fork->spawnTime = original.time + 1;
+  sample(*fork, &original, fork->spawnTime);
   return fork;
 }
 
@@ -253,11 +254,28 @@ void StochasticDataProvider::apply(Scenario& scenario, const Expressions& expres
     return;
   }
   randomDistributionFactory.setCurrentRng(&scenario.getRandomNumberGenerator(instanceId, node));
-  for ( auto& expression : nodeExpressions->second ) {
-    if ( auto value = expression->execute(status, data, globals) ) {
-      auto target = expression->target.value();
-      status[target->index] = convert(value.value(), target->type);
+  const auto initialStatus = status;
+  auto evaluate = [&]() {
+    status = initialStatus;
+    for ( auto& expression : nodeExpressions->second ) {
+      if ( auto value = expression->execute(status, data, globals) ) {
+        auto target = expression->target.value();
+        status[target->index] = convert(value.value(), target->type);
+      }
     }
+  };
+  evaluate();
+  // a fork samples a status before the spawn time again, and sets its timestamp to the spawn time at last,
+  // since the token has neither become ready nor completed before
+  constexpr auto Timestamp = BPMNOS::Model::ExtensionElements::Index::Timestamp;
+  auto beforeSpawnTime = [&]() {
+    return status[Timestamp].has_value() && status[Timestamp].value() < scenario.spawnTime;
+  };
+  for ( int tries = 1; beforeSpawnTime() && tries < maxResamplingTries; tries++ ) {
+    evaluate();
+  }
+  if ( beforeSpawnTime() ) {
+    status[Timestamp] = scenario.spawnTime;
   }
   randomDistributionFactory.setCurrentRng(nullptr);
 }

@@ -1,6 +1,7 @@
 #ifndef BPMNOS_Execution_StochasticDataProvider_H
 #define BPMNOS_Execution_StochasticDataProvider_H
 
+#include <limits>
 #include <map>
 #include <memory>
 #include <random>
@@ -30,24 +31,26 @@ namespace BPMNOS::Execution {
  *
  * A fork of a run with seed `r` and index `i` has the seed `r + i + 1`. It keeps every initialization
  * disclosed before the instant following the current time of the run, its spawn time, and samples every
- * other initialization and disclosure anew, a timestamp or disclosure time before the spawn time being
- * sampled again up to @ref maxResamplingTries times and then set to the spawn time. The statuses the
- * tokens of the installed state become ready and complete with are sampled anew when the state is
- * installed.
+ * other initialization and disclosure anew. The statuses the tokens of the installed state become ready
+ * and complete with are sampled anew when the state is installed. A fork thus samples every event due at or
+ * after the spawn time given that it is not due before, a timestamp or disclosure time of an initialization
+ * and the timestamp of a ready or completion status before the spawn time being sampled again up to
+ * @ref maxResamplingTries times and then set to the spawn time.
  */
 class StochasticDataProvider : public DynamicDataProvider {
 public:
-  /**
-   * @brief Scenario holding a realisation of the instance data.
-   */
   /// @brief The number of times a timestamp or disclosure time of a fork before the spawn time is sampled.
   static constexpr int maxResamplingTries = 4;
 
+  /**
+   * @brief Scenario holding a realisation of the instance data.
+   */
   class Scenario : public StaticDataProvider::Scenario {
   public:
     Scenario(std::shared_ptr<const StochasticDataProvider> dataProvider, unsigned int seed);
 
     const unsigned int seed; ///< The seed of the realisation
+    BPMNOS::number spawnTime = std::numeric_limits<BPMNOS::number>::lowest(); ///< The time from which a fork differs from the run it is forked from, the lowest number for a scenario that is no fork
     std::unordered_map<size_t, std::unordered_map<const BPMNOS::Model::Attribute*, BPMNOS::number>> values; ///< The values sampled for each instance
     std::unordered_map<size_t, BPMNOS::number> instantiationTimes; ///< The instantiation time sampled for each instance
     std::unordered_map<size_t, std::unordered_map<const BPMN::Node*, BPMNOS::number>> disclosureTimes; ///< The disclosure times sampled for each instance
