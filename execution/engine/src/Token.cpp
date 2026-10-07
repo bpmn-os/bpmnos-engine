@@ -785,7 +785,7 @@ void Token::advanceToCompleted() {
   
   if ( node ) {
     // the completion status of a send, receive or decision task is determined here alone and not by the
-    // scenario: a send task completes with the status it was busy with, its operators having been applied
+    // data provider: a send task completes with the status it was busy with, its operators having been applied
     // before the message was sent, and the operators of a receive or decision task are applied on completion
     if (
       node->represents<BPMN::ReceiveTask>() ||

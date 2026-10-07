@@ -11,8 +11,8 @@ namespace BPMNOS::Execution {
  * @brief Represents the event of a signal raised by the environment.
  *
  * Processing the event broadcasts the signal exactly as a signal thrown within the model is broadcast.
- * The event is dispatched by the @ref Environment for the signals the scenario reports, whereas a signal
- * thrown within the model is broadcast without an event.
+ * The event is dispatched by the @ref Environment for the signals a data provider enqueues, whereas a
+ * signal thrown within the model is broadcast without an event.
  */
 struct SignalBroadcastEvent : Event {
   SignalBroadcastEvent(Signal signal);

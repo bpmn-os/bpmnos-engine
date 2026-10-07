@@ -20,6 +20,5 @@ list(APPEND model_utility_HEADERS
   InputEncoder.h
   RandomDistributionFactory.h
   ExpectedValueFactory.h
-  getDelimiter.h
   string_utility.h
 )
