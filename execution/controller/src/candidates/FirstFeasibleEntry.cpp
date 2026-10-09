@@ -26,8 +26,8 @@ void FirstFeasibleEntry::notice(const Observable* observable) {
     assert( dynamic_cast<const DecisionRequest*>(observable) );
     auto request = static_cast<const DecisionRequest*>(observable);
     if ( !config.sequential ) {
-      assert( request->token->node->parent );
-      if ( request->token->node->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() ) {
+      assert( request->token->node->as<BPMN::FlowNode>()->parent );
+      if ( request->token->node->as<BPMN::FlowNode>()->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() ) {
         // entries of sequential ad-hoc subprocess children are left to a competing source
         return;
       }

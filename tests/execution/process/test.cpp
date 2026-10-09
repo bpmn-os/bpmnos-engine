@@ -474,7 +474,7 @@ SCENARIO( "Executable process created and started in two steps", "[execution][pr
         auto instance = systemState->instances.front().get();
         REQUIRE( instance->tokens.size() == 1 );
         auto token = instance->tokens.front().get();
-        REQUIRE( token->node == nullptr );
+        REQUIRE( token->node->represents<BPMN::Process>() );
         REQUIRE( token->state == Execution::Token::State::CREATED );
         REQUIRE( token->owned == nullptr );
         REQUIRE( !systemState->archive.contains( (long unsigned int)instance->instance.value() ) );

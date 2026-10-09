@@ -20,7 +20,6 @@ using namespace BPMNOS::Execution;
 
 StateMachine::StateMachine(const SystemState* systemState, const BPMN::Process* process, Values dataAttributes, Values status)
   : systemState(systemState)
-  , process(process)
   , scope(process)
   , root(this)
   , instance( dataAttributes.size() ? dataAttributes[BPMNOS::Model::ExtensionElements::Index::Instance] : -1 )
@@ -37,12 +36,11 @@ StateMachine::StateMachine(const SystemState* systemState, const BPMN::Process* 
 
   // the token at the process holds the status; it is advanced once the state machine is stored in the
   // system state, since advancing notifies observers
-  tokens.push_back( std::make_shared<Token>(this,nullptr,std::move(status)) );
+  tokens.push_back( std::make_shared<Token>(this,process,std::move(status)) );
 }
 
 StateMachine::StateMachine(const SystemState* systemState, const BPMN::Scope* scope, Token* parentToken, Values dataAttributes, std::optional<BPMNOS::number> instance )
   : systemState(systemState)
-  , process(parentToken->owner->process)
   , scope(scope)
   , root(parentToken->owner->root)
   , instance(instance.value_or( (*parentToken->data)[BPMNOS::Model::ExtensionElements::Index::Instance].get().value() ) )
@@ -73,7 +71,6 @@ std::cerr << std::endl;
 
 StateMachine::StateMachine(const StateMachine* other)
   : systemState(other->systemState)
-  , process(other->process)
   , scope(other->scope)
   , root(other->root)
   , instance( other->instance )
@@ -87,7 +84,6 @@ StateMachine::StateMachine(const StateMachine* other)
 
 StateMachine::StateMachine(const SystemState* systemState, Token* parentToken, const StateMachine* other)
   : systemState(systemState)
-  , process(other->process)
   , scope(other->scope)
   , root(parentToken ? parentToken->owner->root : this)
   , instance(other->instance)
@@ -125,7 +121,6 @@ StateMachine::StateMachine(const SystemState* systemState, Token* parentToken, c
 
     // Populate tokensAwaitingTimer
     if (
-      token->node && 
       token->node->represents<BPMN::TimerCatchEvent>() && 
       token->state == Token::State::BUSY
     ) {
@@ -137,7 +132,7 @@ StateMachine::StateMachine(const SystemState* systemState, Token* parentToken, c
 
     // Populate tokensAwaitingSignal
     if (
-      token->node && token->node->represents<BPMN::SignalCatchEvent>() && 
+      token->node->represents<BPMN::SignalCatchEvent>() && 
       token->state == Token::State::BUSY
     ) {
       auto signalName = token->node->extensionElements->as<BPMNOS::Model::SignalDefinition>()->name;
@@ -147,7 +142,6 @@ StateMachine::StateMachine(const SystemState* systemState, Token* parentToken, c
 
     // Populate tokensAwaitingCondition
     if (
-      token->node && 
       token->node->represents<BPMN::ConditionalCatchEvent>() && 
       token->state == Token::State::BUSY
     ) {
@@ -162,11 +156,11 @@ StateMachine::StateMachine(const SystemState* systemState, Token* parentToken, c
     // The token at a process instance that is created but not yet started awaits its ready event too.
     if (
       (
-        token->node && token->node->represents<BPMN::Activity>() &&
+        token->node->represents<BPMN::Activity>() &&
         (token->state == Token::State::CREATED || token->state == Token::State::ARRIVED) &&
         !other->systemState->tokenAtMultiInstanceActivity.contains(otherToken.get())
       ) ||
-      ( !token->node && token->state == Token::State::CREATED )
+      ( token->node->represents<BPMN::Process>() && token->state == Token::State::CREATED )
     ) {
       assert(other->systemState->tokensAwaitingReadyEvent.find(otherToken.get()) != other->systemState->tokensAwaitingReadyEvent.end());
       const_cast<SystemState*>(systemState)->tokensAwaitingReadyEvent.emplace_back(token);
@@ -174,7 +168,7 @@ StateMachine::StateMachine(const SystemState* systemState, Token* parentToken, c
 
     // Populate tokensAwaitingCompletionEvent
     if (
-      token->node && token->node->represents<BPMN::Task>() &&
+      token->node->represents<BPMN::Task>() &&
       !token->node->represents<BPMN::ReceiveTask>() &&
       !token->node->represents<BPMN::SendTask>() &&
       !token->node->represents<BPMNOS::Model::DecisionTask>() &&
@@ -188,7 +182,7 @@ StateMachine::StateMachine(const SystemState* systemState, Token* parentToken, c
     // Create message for SendTask tokens awaiting delivery
     // (outbox, unsent, inbox are populated at the end of SystemState copy constructor)
     if (
-      token->node && token->node->represents<BPMN::SendTask>() &&
+      token->node->represents<BPMN::SendTask>() &&
       token->state == Token::State::BUSY
     ) {
       assert(other->systemState->messageAwaitingDelivery.contains(otherToken.get()));
@@ -202,13 +196,13 @@ StateMachine::StateMachine(const SystemState* systemState, Token* parentToken, c
 
     // Populate boundary event containers
     if (
-      token->node && token->node->represents<BPMN::BoundaryEvent>() &&
+      token->node->represents<BPMN::BoundaryEvent>() &&
       !token->node->represents<BPMN::CompensateBoundaryEvent>() &&
       token->state == Token::State::BUSY
     ) {
       auto it = other->systemState->tokenAssociatedToBoundaryEventToken.find(otherToken.get());
       assert(it != other->systemState->tokenAssociatedToBoundaryEventToken.end());
-      const BPMN::FlowNode* activityNode = it->second->node;
+      const BPMN::Node* activityNode = it->second->node;
 
       auto activityIt = std::ranges::find_if(tokens, [activityNode](const auto& t) { return t->node == activityNode; });
       assert(activityIt != tokens.end());
@@ -220,14 +214,14 @@ StateMachine::StateMachine(const SystemState* systemState, Token* parentToken, c
 
     // Populate event-based gateway containers
     if (
-      token->node && token->node->represents<BPMN::CatchEvent>() &&
+      token->node->represents<BPMN::CatchEvent>() &&
       token->state == Token::State::BUSY &&
-      !token->node->incoming.empty() &&
-      token->node->incoming.front()->source->represents<BPMN::EventBasedGateway>()
+      !token->node->as<BPMN::FlowNode>()->incoming.empty() &&
+      token->node->as<BPMN::FlowNode>()->incoming.front()->source->represents<BPMN::EventBasedGateway>()
     ) {
       assert(other->systemState->tokenAtEventBasedGateway.find(otherToken.get()) !=
              other->systemState->tokenAtEventBasedGateway.end());
-      const BPMN::FlowNode* gatewayNode = token->node->incoming.front()->source;
+      const BPMN::FlowNode* gatewayNode = token->node->as<BPMN::FlowNode>()->incoming.front()->source;
 
       auto gatewayIt = std::ranges::find_if(tokens, [gatewayNode](const auto& t) { return t->node == gatewayNode; });
       assert(gatewayIt != tokens.end());
@@ -243,13 +237,13 @@ StateMachine::StateMachine(const SystemState* systemState, Token* parentToken, c
       token->state == Token::State::WAITING &&
       token->node->represents<BPMN::Gateway>() &&
       !token->node->represents<BPMN::ExclusiveGateway>() &&
-      token->node->incoming.size() > 1
+      token->node->as<BPMN::FlowNode>()->incoming.size() > 1
     ) {
       assert(other->systemState->tokensAwaitingGatewayActivation.contains(const_cast<StateMachine*>(other)));
-      assert(other->systemState->tokensAwaitingGatewayActivation.at(const_cast<StateMachine*>(other)).contains(otherToken->node));
-      assert(std::ranges::contains(other->systemState->tokensAwaitingGatewayActivation.at(const_cast<StateMachine*>(other)).at(otherToken->node), otherToken.get()));
+      assert(other->systemState->tokensAwaitingGatewayActivation.at(const_cast<StateMachine*>(other)).contains(otherToken->node->as<BPMN::FlowNode>()));
+      assert(std::ranges::contains(other->systemState->tokensAwaitingGatewayActivation.at(const_cast<StateMachine*>(other)).at(otherToken->node->as<BPMN::FlowNode>()), otherToken.get()));
 
-      const_cast<SystemState*>(systemState)->tokensAwaitingGatewayActivation[const_cast<StateMachine*>(this)][token->node].push_back(token.get());
+      const_cast<SystemState*>(systemState)->tokensAwaitingGatewayActivation[const_cast<StateMachine*>(this)][token->node->as<BPMN::FlowNode>()].push_back(token.get());
     }
 
     // Populate multi-instance containers (tokenAtMultiInstanceActivity & tokensAtActivityInstance)
@@ -272,9 +266,8 @@ StateMachine::StateMachine(const SystemState* systemState, Token* parentToken, c
 
     // Populate performing and pendingSequentialEntries for activities in SequentialAdHocSubProcess
     if (
-      token->node && token->node->parent &&
       token->node->represents<BPMN::Activity>() &&
-      token->node->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>()
+      token->node->as<BPMN::FlowNode>()->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>()
     ) {
       Token* performerToken = token->getSequentialPerformerToken();
       Token* otherPerformerToken = otherToken->getSequentialPerformerToken();
@@ -313,7 +306,7 @@ StateMachine::StateMachine(const SystemState* systemState, Token* parentToken, c
   }
 
   // Populate tokenAwaitingCompensationActivity - after tokens and compensationTokens copied
-  auto findTokenByNode = [&](const BPMN::FlowNode* node) -> Token* {
+  auto findTokenByNode = [&](const BPMN::Node* node) -> Token* {
     for (const auto& token : tokens) {
       if (token->node == node) return token.get();
     }
@@ -418,7 +411,7 @@ void StateMachine::takeTriggeringStatus(Token* eventToken, const Values& status)
   // holds values for the attributes of the enclosing scopes only, possibly followed by values of a nested
   // scope it was raised in; the status of the start token keeps its layout, the attributes of the event
   // subprocess remaining undefined until the model assigns values to them when it is triggered
-  auto extensionElements = eventToken->node->parent->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
+  auto extensionElements = eventToken->node->as<BPMN::FlowNode>()->parent->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
   auto ownAttributes = extensionElements ? extensionElements->attributes.size() : 0;
   auto statusSize = eventToken->status.size();
   eventToken->status = status;
@@ -432,7 +425,7 @@ BPMNOS::Values StateMachine::undefinedData(const BPMN::Node* node) {
 }
 
 void StateMachine::initiateEventSubprocesses(Token* token) {
-//std::cerr << "initiate " << scope->eventSubProcesses.size() << " eventSubprocesses for token at " << (token->node ? token->node->id : process->id ) << "/" << parentToken << "/" << token << " owned by " << token->owner << std::endl;
+//std::cerr << "initiate " << scope->eventSubProcesses.size() << " eventSubprocesses for token at " << token->node->id << "/" << parentToken << "/" << token << " owned by " << token->owner << std::endl;
   for ( auto& eventSubProcess : scope->eventSubProcesses ) {
     // the data of an event subprocess is internal: it is undefined until the model assigns values to it
     // when the event subprocess is triggered
@@ -621,7 +614,7 @@ void StateMachine::deleteMultiInstanceActivityToken(Token* token) {
       }
 
       // advance main token
-      if ( mainToken->node->outgoing.empty() ) {
+      if ( mainToken->node->as<BPMN::FlowNode>()->outgoing.empty() ) {
         engine->commands.emplace_back(std::bind(&Token::advanceToDone,mainToken), mainToken);
       }
       else {
@@ -781,22 +774,22 @@ void StateMachine::run(Values status) {
   }
 
   for ( auto token : tokens ) {
-    if ( token->node ) {
+    if ( auto flowNode = token->node->represents<BPMN::FlowNode>() ) {
       // a typed start event of a process belongs to an instance already created by the trigger, with
       // the status and the identifier it was created with
       if ( auto startEvent = token->node->represents<BPMN::TypedStartEvent>();
-        startEvent && token->node->parent->represents<BPMN::EventSubProcess>()
+        startEvent && flowNode->parent->represents<BPMN::EventSubProcess>()
       ) {
         // the status attributes of the event subprocess are internal: they are undefined until the model
         // assigns values to them when the event subprocess is triggered
-        auto extensionElements = token->node->parent->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
+        auto extensionElements = flowNode->parent->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
         token->status.resize( token->status.size() + ( extensionElements ? extensionElements->attributes.size() : 0 ) );
 
         if ( !startEvent->isInterrupting ) {
           // token instantiates non-interrupting event subprocess
           // get instantiation counter from context
           auto context = const_cast<StateMachine*>(parentToken->owned.get());
-          auto counter = ++context->instantiations[token->node];
+          auto counter = ++context->instantiations[flowNode];
           // disambiguate instance id
           auto instanceId = BPMNOS::to_string((*parentToken->data)[BPMNOS::Model::ExtensionElements::Index::Instance].get().value(),STRING) + StateMachine::delimiters[0] + scope->id + StateMachine::delimiters[1] + std::to_string(counter);
           data[BPMNOS::Model::ExtensionElements::Index::Instance].get() = BPMNOS::to_number(instanceId,BPMNOS::ValueType::STRING);
@@ -923,13 +916,13 @@ void StateMachine::createMergedToken(const BPMN::FlowNode* gateway) {
 void StateMachine::handleDivergingGateway(Token* token) {
   if ( token->node->represents<BPMN::ParallelGateway>() ) {
     // create token copies and advance them
-    createTokenCopies(token, token->node->outgoing);
+    createTokenCopies(token, token->node->as<BPMN::FlowNode>()->outgoing);
     // remove original token
     erase_ptr<Token>(tokens,token);
   }
   else if ( token->node->represents<BPMN::EventBasedGateway>() ) {
     // create token copies and advance them
-    auto tokenCopies = createTokenCopies(token, token->node->outgoing);
+    auto tokenCopies = createTokenCopies(token, token->node->as<BPMN::FlowNode>()->outgoing);
     auto& tokenAtEventBasedGateway = const_cast<SystemState*>(systemState)->tokenAtEventBasedGateway;
     auto& tokensAwaitingEvent = const_cast<SystemState*>(systemState)->tokensAwaitingEvent;
 
@@ -959,7 +952,7 @@ void StateMachine::handleEventBasedGatewayActivation(Token* token) {
 }
 
 void StateMachine::handleEscalation(Token* token) {
-//std::cerr << "handleEscalation " << (token->node ? token->node->id : process->id ) << std::endl;
+//std::cerr << "handleEscalation " << token->node->id << std::endl;
   if ( !parentToken ) {
     return;
   }
@@ -995,7 +988,7 @@ void StateMachine::handleEscalation(Token* token) {
   }
 
   // find escalation boundary event
-  if ( token->node ) {
+  if ( token->node->represents<BPMN::FlowNode>() ) {
     auto& tokensAwaitingBoundaryEvent = const_cast<SystemState*>(systemState)->tokensAwaitingBoundaryEvent[token];
     for ( auto eventToken : tokensAwaitingBoundaryEvent) {
       if ( eventToken->node->represents<BPMN::EscalationBoundaryEvent>() ) {
@@ -1017,14 +1010,14 @@ void StateMachine::handleEscalation(Token* token) {
 }
 
 void StateMachine::handleFailure(Token* token) {
-//std::cerr << scope->id << " handles failure at " << (token->node ? token->node->id : process->id ) << "/" << parentToken << "/" << token << std::endl;
+//std::cerr << scope->id << " handles failure at " << token->node->id << "/" << parentToken << "/" << token << std::endl;
   auto engine = const_cast<Engine*>(systemState->engine);
 
 //  assert( !token->owned );
 
 //std::cerr << "check whether failure is caught" << std::endl;
 
-  if ( token->node ) {
+  if ( token->node->represents<BPMN::FlowNode>() ) {
     if ( auto activity = token->node->represents<BPMN::Activity>() ) {
       if ( activity->isForCompensation ) {
         // compensation activity failed, clear all other compensations
@@ -1045,7 +1038,7 @@ void StateMachine::handleFailure(Token* token) {
   }
 
   // find error boundary event at token node
-  if ( token->node ) {
+  if ( token->node->represents<BPMN::FlowNode>() ) {
     auto& tokensAwaitingBoundaryEvent = const_cast<SystemState*>(systemState)->tokensAwaitingBoundaryEvent[token];
     for ( auto eventToken : tokensAwaitingBoundaryEvent) {
       if ( eventToken->node->represents<BPMN::ErrorBoundaryEvent>() ) {

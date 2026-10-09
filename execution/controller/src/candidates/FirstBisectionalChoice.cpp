@@ -37,7 +37,7 @@ std::shared_ptr<Decision> FirstBisectionalChoice::determineBestChoices(std::shar
   this->clearDecisions();
 
   auto token = request->token;
-  assert( token->node );
+  assert( token->node->represents<BPMN::FlowNode>() );
   assert( token->node->represents<BPMNOS::Model::DecisionTask>() );
   assert( token->node->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );
   auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();

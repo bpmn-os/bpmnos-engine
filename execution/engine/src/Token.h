@@ -43,19 +43,19 @@ public:
   constexpr Type getObservableType() const override { return Type::Token; };
   const StateMachine* owner; ///< State machine owning the token
   std::shared_ptr<StateMachine> owned; ///< State machine owned by the token
-  const BPMN::FlowNode* node; ///< Flow node where the token resides (nullptr for process-level tokens)
+  const BPMN::Node* node; ///< Node where the token resides: a flow node, or the process for a process-level token
   const BPMN::SequenceFlow* sequenceFlow; ///< Sequence flow being traversed (only set in DEPARTED/ARRIVED states)
   enum class State { CREATED, READY, ENTERED, BUSY, COMPLETED, EXITING, DEPARTED, ARRIVED, WAITING, DONE, FAILED, FAILING, WITHDRAWN }; ///< The states that a token can be in
   const BPMNOS::Model::AttributeRegistry& getAttributeRegistry() const;
   static inline std::string stateName[] = { "CREATED", "READY", "ENTERED", "BUSY", "COMPLETED", "EXITING", "DEPARTED", "ARRIVED", "WAITING", "DONE", "FAILED", "FAILING", "WITHDRAWN" };
   /**
-   * @brief Constructs a new token at a flow node.
+   * @brief Constructs a new token at a node.
    *
    * @param owner The StateMachine this token belongs to
-   * @param node The flow node where the token is created
+   * @param node The node where the token is created: a flow node, or the process for a process-level token
    * @param status Initial status values for the token
    */
-  Token(const StateMachine* owner, const BPMN::FlowNode* node, const Values& status);
+  Token(const StateMachine* owner, const BPMN::Node* node, const Values& status);
 
   /**
    * @brief Copy constructor for multi-instance activities (same owner).

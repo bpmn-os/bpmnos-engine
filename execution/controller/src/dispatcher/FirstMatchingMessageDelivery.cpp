@@ -21,7 +21,7 @@ void FirstMatchingMessageDelivery::connect(Mediator* mediator) {
 void FirstMatchingMessageDelivery::notice(const Observable* observable) {
   if ( observable->getObservableType() == Observable::Type::MessageDeliveryRequest ) {
     auto request = static_cast<const MessageDeliveryRequest*>(observable);
-    assert(request->token->node);
+    assert( request->token->node->represents<BPMN::FlowNode>() );
     auto& recipientHeader = request->recipientHeader;
     auto senderCandidates = request->token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->messageCandidates;
     auto_list< std::weak_ptr<const Message> > candidates;

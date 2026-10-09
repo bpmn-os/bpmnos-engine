@@ -125,7 +125,7 @@ void StaticDataProvider::notice(const Observable* observable, Execution::Scenari
     }
     for ( auto& [token_ptr] : systemState->tokensAwaitingReadyEvent ) {
       if ( auto token = token_ptr.lock() ) {
-        if ( token->node ) {
+        if ( token->node->represents<BPMN::FlowNode>() ) {
           readyActivity(scenario, queue, token.get(), systemState->getTime());
         }
         else {
@@ -159,7 +159,7 @@ void StaticDataProvider::notice(const Observable* observable, Execution::Scenari
   }
   auto token = static_cast<const Token*>(observable);
 
-  if ( !token->node ) {
+  if ( token->node->represents<BPMN::Process>() ) {
     if ( token->state == Token::State::CREATED ) {
       readyProcess(scenario, queue, token);
     }

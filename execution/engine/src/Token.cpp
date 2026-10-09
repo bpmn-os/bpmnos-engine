@@ -20,7 +20,7 @@
 
 using namespace BPMNOS::Execution;
 
-Token::Token(const StateMachine* owner, const BPMN::FlowNode* node, const Values& status)
+Token::Token(const StateMachine* owner, const BPMN::Node* node, const Values& status)
   : owner(owner)
   , owned(nullptr)
   , node(node)
@@ -95,9 +95,9 @@ Token::Token(StateMachine* owner, const Token* other)
 }
 
 Token::~Token() {
-//std::cerr << "~Token(" << (node ? node->id : owner->process->id ) << "/" << this << ")" << std::endl;
+//std::cerr << "~Token(" << node->id << "/" << this << ")" << std::endl;
   auto systemState = const_cast<SystemState*>(owner->systemState);
-  if ( node) {
+  if ( node->represents<BPMN::FlowNode>() ) {
     if ( auto activity = node->represents<BPMN::Activity>(); activity && !activity->boundaryEvents.empty() ) {
       auto engine = const_cast<Engine*>(owner->systemState->engine);
       auto stateMachine = const_cast<StateMachine*>(owner);
@@ -179,17 +179,13 @@ Token::~Token() {
 
 
 const BPMNOS::Model::AttributeRegistry& Token::getAttributeRegistry() const {
-  if ( !node ) {
-    return owner->process->extensionElements->as<const BPMNOS::Model::ExtensionElements>()->attributeRegistry;
-  }
-
   if ( auto extensionElements = node->extensionElements->represents<const BPMNOS::Model::ExtensionElements>() ) {
     return extensionElements->attributeRegistry;
   }
 
   // return attribute registry of the scope containing a node without extension elements, which for the
   // start event of an event subprocess is the event subprocess rather than the scope of the parent token
-  if ( auto extensionElements = node->parent->extensionElements->represents<const BPMNOS::Model::ExtensionElements>() ) {
+  if ( auto extensionElements = node->as<BPMN::FlowNode>()->parent->extensionElements->represents<const BPMNOS::Model::ExtensionElements>() ) {
     return extensionElements->attributeRegistry;
   }
 
@@ -206,9 +202,9 @@ BPMNOS::number Token::getInstanceId() const {
 
 nlohmann::ordered_json Token::jsonify() const {
   nlohmann::ordered_json jsonObject;
-  jsonObject["processId"] = owner->process->id;
+  jsonObject["processId"] = owner->root->scope->id;
   jsonObject["instanceId"] = BPMNOS::to_string(getInstanceId(),STRING);
-  if ( node ) {
+  if ( node->represents<BPMN::FlowNode>() ) {
     jsonObject["nodeId"] = node->id;
   }
   if ( sequenceFlow ) {
@@ -324,41 +320,23 @@ nlohmann::ordered_json Token::jsonify() const {
 
 
 bool Token::entryIsFeasible() const {
-  if ( !node ) {
-//std::cerr << stateName[(int)state] << "/" << owner->scope->id <<std::endl;
-    assert( owner->process->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );
-    return owner->process->extensionElements->as<BPMNOS::Model::ExtensionElements>()->feasibleEntry(status,*data,globals);
-  }
-
   assert( node->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );
   return node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->feasibleEntry(status,*data,globals);
 }
 
 bool Token::completionIsFeasible() const {
-  if ( !node ) {
-//std::cerr << stateName[(int)state] << "/" << owner->scope->id <<std::endl;
-    assert( owner->process->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );
-    return owner->process->extensionElements->as<BPMNOS::Model::ExtensionElements>()->feasibleCompletion(status,*data,globals);
-  }
-
   assert( node->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );
   return node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->feasibleCompletion(status,*data,globals);
 }
 
 bool Token::exitIsFeasible() const {
-  if ( !node ) {
-//std::cerr << stateName[(int)state] << "/" << owner->scope->id <<std::endl;
-    assert( owner->process->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );
-    return owner->process->extensionElements->as<BPMNOS::Model::ExtensionElements>()->feasibleExit(status,*data,globals);
-  }
-
   assert( node->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );
   return node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->feasibleExit(status,*data,globals);
 }
 
 void Token::advanceFromCreated() {
 //std::cerr << "advanceFromCreated: " << jsonify().dump() << std::endl;
-  if ( !node ) {
+  if ( node->represents<BPMN::Process>() ) {
     // the token at a process awaits the ready event starting the instance
     notify();
     awaitReadyEvent();
@@ -377,7 +355,7 @@ void Token::advanceFromCreated() {
 
 void Token::advanceToReady() {
 //std::cerr << "advanceToReady: " << jsonify().dump() << std::endl;
-  if ( !node ) {
+  if ( node->represents<BPMN::Process>() ) {
     // the data the instance is started with is accounted in the objective
     const_cast<StateMachine*>(owner)->updateObjective();
     // the token at a process enters without an entry decision
@@ -426,17 +404,16 @@ void Token::advanceToEntered() {
 //std::cerr << "advanceToEntered: " << jsonify().dump() << std::endl;
 
   if ( status[BPMNOS::Model::ExtensionElements::Index::Timestamp] > owner->systemState->getTime() ) {
-    if ( node ) {
+    if ( node->represents<BPMN::FlowNode>() ) {
       throw std::runtime_error("Token: entry timestamp at node '" + node->id + "' is larger than current time");
     }
     else {
-      throw std::runtime_error("Token: entry timestamp for process '" + owner->process->id + "' is larger than current time");
+      throw std::runtime_error("Token: entry timestamp for process '" + node->id + "' is larger than current time");
     }
   }
 
-  if ( !node ) {
-//std::cerr << "!node" << std::endl;
-    auto extensionElements = owner->process->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
+  if ( node->represents<BPMN::Process>() ) {
+    auto extensionElements = node->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
     assert( extensionElements );
 
     computeInitialValues( extensionElements );
@@ -478,14 +455,14 @@ void Token::advanceToEntered() {
   update(State::ENTERED);
 //std::cerr << "updatedToEntered" << std::endl;
 
-  if ( !node ) {
+  if ( node->represents<BPMN::Process>() ) {
     // register the state machine of the process instance
     auto stateMachine = const_cast<StateMachine*>(owner);
     const_cast<SystemState*>(owner->systemState)->archive[ (long unsigned int)stateMachine->instance.value() ] = stateMachine->weak_from_this();
     stateMachine->registerRecipient();
   }
 
-  if ( const BPMN::Activity* activity = (node ? node->represents<BPMN::Activity>() : nullptr);
+  if ( const BPMN::Activity* activity = node->represents<BPMN::Activity>();
     activity && 
     activity->loopCharacteristics.has_value() &&
     owned
@@ -500,8 +477,9 @@ void Token::advanceToEntered() {
   auto engine = const_cast<Engine*>(owner->systemState->engine);
 
 
-  if ( node && ( node->represents<BPMN::UntypedStartEvent>() ||
-    ( node->represents<BPMN::TypedStartEvent>() && node->parent->represents<BPMN::Process>() ) )
+  if ( auto flowNode = node->represents<BPMN::FlowNode>();
+    flowNode && ( node->represents<BPMN::UntypedStartEvent>() ||
+    ( node->represents<BPMN::TypedStartEvent>() && flowNode->parent->represents<BPMN::Process>() ) )
   ) {
     // initiate event subprocesses after entering the start event of the scope; a process instantiated by
     // a trigger has a typed start event in place of an untyped one
@@ -513,7 +491,7 @@ void Token::advanceToEntered() {
   // only check feasibility for processes and activities
   // feasibility of all other tokens must have been validated before
   // (also for newly created or merged tokens)
-  if ( !node ) {
+  if ( node->represents<BPMN::Process>() ) {
     // check restrictions
     if ( !entryIsFeasible() ) {
       engine->commands.emplace_back(std::bind(&Token::advanceToFailed,this), this);
@@ -576,7 +554,7 @@ void Token::advanceToEntered() {
     else if ( auto compensateThrowEvent = node->represents<BPMN::CompensateThrowEvent>() ) {
       auto context = const_cast<StateMachine*>(owner->parentToken->owned.get());
 
-      if ( auto eventSubProcess = node->parent->represents<BPMN::EventSubProcess>();
+      if ( auto eventSubProcess = node->as<BPMN::FlowNode>()->parent->represents<BPMN::EventSubProcess>();
         eventSubProcess && eventSubProcess->startEvent->represents<BPMN::CompensateStartEvent>()
       ) {
 //std::cerr << "try to update context " << context->compensableSubProcesses.size() << std::endl;
@@ -609,7 +587,7 @@ void Token::advanceToEntered() {
 
     // tokens entering any other node automatically advance to done or
     // departed state
-    if ( node->outgoing.empty() ) {
+    if ( node->as<BPMN::FlowNode>()->outgoing.empty() ) {
       engine->commands.emplace_back(std::bind(&Token::advanceToDone,this), this);
       return;
     }
@@ -621,7 +599,6 @@ void Token::advanceToBusy() {
 //std::cerr << "advanceToBusy: " << jsonify().dump() << std::endl;
 
   if ( 
-      node &&
       node->represents<BPMN::Task>()
       && !node->represents<BPMN::ReceiveTask>()
       && !node->represents<BPMNOS::Model::DecisionTask>()
@@ -638,9 +615,9 @@ void Token::advanceToBusy() {
     
   update(State::BUSY);
 
-  if ( !node ) {
+  if ( node->represents<BPMN::Process>() ) {
     // token is at process
-    auto scope = owner->process->as<BPMN::Scope>();
+    auto scope = node->as<BPMN::Scope>();
     if ( scope->startNodes.empty() ) {
       auto engine = const_cast<Engine*>(owner->systemState->engine);
       engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,this), this);
@@ -703,7 +680,7 @@ void Token::advanceToBusy() {
     auto engine = const_cast<Engine*>(owner->systemState->engine);
     engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,this), this);
   }
-  else if ( node->represents<BPMN::TypedStartEvent>() && node->parent->represents<BPMN::Process>() ) {
+  else if ( node->represents<BPMN::TypedStartEvent>() && node->as<BPMN::FlowNode>()->parent->represents<BPMN::Process>() ) {
     // the instance exists because the start event was triggered, and the content of the trigger is
     // already part of the status it was created with, so the token does not await a trigger of its own
     auto engine = const_cast<Engine*>(owner->systemState->engine);
@@ -773,17 +750,17 @@ void Token::advanceToCompleted(const Values& statusUpdate) {
 
 void Token::advanceToCompleted() {
   if ( status[BPMNOS::Model::ExtensionElements::Index::Timestamp] > owner->systemState->getTime() ) {
-    if ( node ) {
+    if ( node->represents<BPMN::FlowNode>() ) {
       throw std::runtime_error("Token: completion timestamp at node '" + node->id + "' is larger than current time");
     }
     else {
-      throw std::runtime_error("Token: completion timestamp for process '" + owner->process->id + "' is larger than current time");
+      throw std::runtime_error("Token: completion timestamp for process '" + node->id + "' is larger than current time");
     }
   }
 
   status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = owner->systemState->getTime();
   
-  if ( node ) {
+  if ( auto flowNode = node->represents<BPMN::FlowNode>() ) {
     // the completion status of a send, receive or decision task is determined here alone and not by the
     // data provider: a send task completes with the status it was busy with, its operators having been applied
     // before the message was sent, and the operators of a receive or decision task are applied on completion
@@ -810,17 +787,17 @@ void Token::advanceToCompleted() {
     // a start event has no operators of its own; the token at it applies the operators of the scope it
     // starts, the scope being entered here
     else if ( node->represents<BPMN::UntypedStartEvent>() || node->represents<BPMN::TypedStartEvent>() ) {
-      if ( node->parent->represents<BPMN::EventSubProcess>() ) {
+      if ( flowNode->parent->represents<BPMN::EventSubProcess>() ) {
         // the event subprocess is instantiated here, so the values the model assigns to its attributes are
         // computed here, its data and status being internal, and the objective value is updated here; a
         // process or subprocess accounted its objective when its state machine was created
-        if ( auto extensionElements = node->parent->extensionElements->represents<BPMNOS::Model::ExtensionElements>() ) {
+        if ( auto extensionElements = flowNode->parent->extensionElements->represents<BPMNOS::Model::ExtensionElements>() ) {
           // the timestamp of the token is kept, the event subprocess being triggered at it
           extensionElements->computeInitialValues(status[BPMNOS::Model::ExtensionElements::Index::Timestamp].value(),status,*data,globals);
         }
         const_cast<StateMachine*>(owner)->updateObjective();
       }
-      applyOperators( node->parent->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );
+      applyOperators( flowNode->parent->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );
     }
 
     if ( node->represents<BPMN::MessageCatchEvent>() && !node->represents<BPMN::ReceiveTask>() ) {
@@ -840,7 +817,7 @@ void Token::advanceToCompleted() {
 
   auto engine = const_cast<Engine*>(owner->systemState->engine);
 
-  if ( !node ) {
+  if ( node->represents<BPMN::Process>() ) {
 //std::cerr << "check restrictions" << std::endl;
   // check restrictions
     if ( !completionIsFeasible() ) {
@@ -913,7 +890,7 @@ void Token::advanceToCompleted() {
     }
     else if ( auto compensateBoundaryEvent = node->represents<BPMN::CompensateBoundaryEvent>(); compensateBoundaryEvent ) {
 //assert( owner->parentToken->node->represents<BPMN::Scope>() );    
-//std::cerr << "token is compensateBoundaryEvent: " << node->id << "/" << stateName[(int)state] << "/" << ( owner->parentToken->node ? owner->parentToken->node->id : owner->scope->id) << "/" << this  << "/" << owner <<std::endl;
+//std::cerr << "token is compensateBoundaryEvent: " << node->id << "/" << stateName[(int)state] << "/" << owner->parentToken->node->id << "/" << this  << "/" << owner <<std::endl;
       engine->commands.emplace_back(std::bind(&StateMachine::compensateActivity,const_cast<StateMachine*>(owner),this), this);
       return;
     }
@@ -928,22 +905,22 @@ void Token::advanceToCompleted() {
       }
       else {
         // create new token at boundary event
-        engine->commands.emplace_back(std::bind(&StateMachine::initiateBoundaryEvent,stateMachine,tokenAtActivity,node), tokenAtActivity);
+        engine->commands.emplace_back(std::bind(&StateMachine::initiateBoundaryEvent,stateMachine,tokenAtActivity,node->as<BPMN::FlowNode>()), tokenAtActivity);
       }
     }
     else if ( node->represents<BPMN::CompensateStartEvent>() ) {
       // nothing do
     } 
     else if ( node->represents<BPMN::UntypedStartEvent>() ||
-      ( node->represents<BPMN::TypedStartEvent>() && node->parent->represents<BPMN::Process>() )
+      ( node->represents<BPMN::TypedStartEvent>() && node->as<BPMN::FlowNode>()->parent->represents<BPMN::Process>() )
     ) {
       // there is no pending scope to promote and no further instance to arm, so only the entry
       // restrictions of the scope are checked, against the status its operators have just produced
-      auto extensionElements = node->parent->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+      auto extensionElements = node->as<BPMN::FlowNode>()->parent->extensionElements->as<BPMNOS::Model::ExtensionElements>();
       if ( !extensionElements->feasibleEntry(status,*data,globals) ) {
         engine->commands.emplace_back(std::bind(&Token::advanceToFailed,this), this);
       }
-      else if ( node->outgoing.empty() ) {
+      else if ( node->as<BPMN::FlowNode>()->outgoing.empty() ) {
         engine->commands.emplace_back(std::bind(&Token::advanceToDone,this), this);
       }
       else {
@@ -953,7 +930,7 @@ void Token::advanceToCompleted() {
     }
     else if ( auto startEvent = node->represents<BPMN::TypedStartEvent>() ) {
       // event subprocess is triggered
-      assert( node->parent->represents<BPMN::EventSubProcess>() );
+      assert( node->as<BPMN::FlowNode>()->parent->represents<BPMN::EventSubProcess>() );
       auto context = const_cast<StateMachine*>(owner->parentToken->owned.get());
 
 /*
@@ -1013,13 +990,13 @@ std::cerr << "Context: " << context << " at " << context->scope->id << " has " <
       
       // check entry scope restrictions of event-subprocess
 //std::cerr << "check entry scope restrictions of event-subprocess" << std::endl;
-      assert( node->parent->represents<BPMN::EventSubProcess>()->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );
-      auto eventSubProcess = node->parent;
+      assert( node->as<BPMN::FlowNode>()->parent->represents<BPMN::EventSubProcess>()->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );
+      auto eventSubProcess = node->as<BPMN::FlowNode>()->parent;
       auto extensionElements = eventSubProcess->represents<BPMN::EventSubProcess>()->extensionElements->as<BPMNOS::Model::ExtensionElements>();
       if ( !extensionElements->feasibleEntry(status,*data,globals) ) {
         engine->commands.emplace_back(std::bind(&Token::advanceToFailed,this), this);
       }
-      else if ( node->outgoing.empty() ) {
+      else if ( node->as<BPMN::FlowNode>()->outgoing.empty() ) {
         engine->commands.emplace_back(std::bind(&Token::advanceToDone,this), this);
       }
       else {
@@ -1029,15 +1006,15 @@ std::cerr << "Context: " << context << " at " << context->scope->id << " has " <
     }
     else if ( auto catchEvent = node->represents<BPMN::CatchEvent>();
       catchEvent &&
-      node->incoming.size() == 1 &&
-      node->incoming.front()->source->represents<BPMN::EventBasedGateway>()
+      node->as<BPMN::FlowNode>()->incoming.size() == 1 &&
+      node->as<BPMN::FlowNode>()->incoming.front()->source->represents<BPMN::EventBasedGateway>()
     ) {
       engine->commands.emplace_back(std::bind(&StateMachine::handleEventBasedGatewayActivation,const_cast<StateMachine*>(owner),this), this);
     }
   }
 
 
-  if ( !node || node->outgoing.empty() ) {
+  if ( node->represents<BPMN::Process>() || node->as<BPMN::FlowNode>()->outgoing.empty() ) {
 //std::cerr << "done: " << jsonify().dump() <<  std::endl;
     engine->commands.emplace_back(std::bind(&Token::advanceToDone,this), this);
     return;
@@ -1160,7 +1137,7 @@ void Token::advanceToExiting() {
     owned.reset();  
   }
 
-  if ( node->outgoing.empty() ) {
+  if ( node->as<BPMN::FlowNode>()->outgoing.empty() ) {
     engine->commands.emplace_back(std::bind(&Token::advanceToDone,this), this);
     return;
   }
@@ -1171,7 +1148,9 @@ void Token::advanceToDone() {
 //std::cerr << "advanceToDone: " << jsonify().dump() << std::endl;
   update(State::DONE);
 
-  if ( node && node->parent && node->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() ) {
+  if ( auto flowNode = node->represents<BPMN::FlowNode>();
+    flowNode && flowNode->parent && flowNode->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>()
+  ) {
     auto engine = const_cast<Engine*>(owner->systemState->engine);
     auto stateMachine = const_cast<StateMachine*>(owner);
     engine->commands.emplace_back(std::bind(&StateMachine::deleteAdHocSubProcessToken,stateMachine,this), this);
@@ -1183,9 +1162,9 @@ void Token::advanceToDone() {
 void Token::advanceToDeparting() {
 //std::cerr << "advanceToDeparting: " /*<< jsonify().dump()*/ << std::endl;
 
-  if ( node->outgoing.size() == 1 ) {
+  if ( node->as<BPMN::FlowNode>()->outgoing.size() == 1 ) {
     auto engine = const_cast<Engine*>(owner->systemState->engine);
-    engine->commands.emplace_back(std::bind(&Token::advanceToDeparted,this,node->outgoing.front()), this);
+    engine->commands.emplace_back(std::bind(&Token::advanceToDeparted,this,node->as<BPMN::FlowNode>()->outgoing.front()), this);
     return;
   }
 
@@ -1194,7 +1173,7 @@ void Token::advanceToDeparting() {
   }
 
   if ( auto exclusiveGateway = node->represents<BPMN::ExclusiveGateway>() ) {
-    for ( auto sequenceFlow : node->outgoing ) {
+    for ( auto sequenceFlow : node->as<BPMN::FlowNode>()->outgoing ) {
       if ( sequenceFlow != exclusiveGateway->defaultFlow ) {
         // check gatekeeper conditions
         if ( auto gatekeeper = sequenceFlow->extensionElements->as<BPMNOS::Model::Gatekeeper>() ) {
@@ -1220,7 +1199,7 @@ void Token::advanceToDeparting() {
       engine->commands.emplace_back(std::bind(&Token::advanceToFailed,this), this);
     }
   }
-  else if ( node->outgoing.size() > 1 ) {
+  else if ( node->as<BPMN::FlowNode>()->outgoing.size() > 1 ) {
     // non-exclusive diverging gateway
     auto engine = const_cast<Engine*>(owner->systemState->engine);
     engine->commands.emplace_back(std::bind(&StateMachine::handleDivergingGateway,const_cast<StateMachine*>(owner),this), this);
@@ -1240,7 +1219,7 @@ void Token::advanceToArrived() {
   node = sequenceFlow->target;
   update(State::ARRIVED);
 
-  if ( node->incoming.size() > 1 && !node->represents<BPMN::ExclusiveGateway>() ) {
+  if ( node->as<BPMN::FlowNode>()->incoming.size() > 1 && !node->represents<BPMN::ExclusiveGateway>() ) {
     if ( !node->represents<BPMN::Gateway>() ) {
       throw std::runtime_error("Token: implicit join at node '" + node->id + "'");
     }
@@ -1248,7 +1227,7 @@ void Token::advanceToArrived() {
 
     awaitGatewayActivation();
 
-    const_cast<StateMachine*>(owner)->attemptGatewayActivation(node);
+    const_cast<StateMachine*>(owner)->attemptGatewayActivation(node->as<BPMN::FlowNode>());
 
     return;
   }
@@ -1292,7 +1271,7 @@ void Token::advanceToFailed() {
 }
 
 void Token::terminate() {
-//std::cerr << "terminate " << (node ? node->id : owner->scope->id ) << std::endl;
+//std::cerr << "terminate " << node->id << std::endl;
   auto engine = const_cast<Engine*>(owner->systemState->engine);
 
   assert(owned);
@@ -1355,7 +1334,7 @@ void Token::awaitEntryEvent() {
 //std::cerr << "awaitEntryEvent" << std::endl;
 
   auto systemState = const_cast<SystemState*>(owner->systemState);
-  if ( node->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() ) {
+  if ( node->as<BPMN::FlowNode>()->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() ) {
     auto tokenAtSequentialPerformer = getSequentialPerformerToken();
 //std::cerr << "Token: " << tokenAtSequentialPerformer->jsonify() << "  pendingSequentialEntries add " << jsonify() << std::endl;
     tokenAtSequentialPerformer->pendingSequentialEntries.emplace_back(weak_from_this());
@@ -1401,7 +1380,7 @@ void Token::awaitMessageDelivery() {
   auto systemState = const_cast<SystemState*>(owner->systemState);
   // the header a message is matched against is what this token presents now, and it is kept for as long as
   // the token waits, so that a value written meanwhile does not change what the token accepts
-  assert( node );
+  assert( node->represents<BPMN::FlowNode>() );
   auto extensionElements = node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   auto messageDefinition = extensionElements->getMessageDefinition();
   assert( messageDefinition ); // a token awaits a delivery only at a node defining a message
@@ -1434,10 +1413,10 @@ void Token::awaitGatewayActivation() {
 
   auto systemState = const_cast<SystemState*>(owner->systemState);
   auto stateMachine = const_cast<StateMachine*>(owner);
-  auto gatewayIt = systemState->tokensAwaitingGatewayActivation[stateMachine].find(node);
+  auto gatewayIt = systemState->tokensAwaitingGatewayActivation[stateMachine].find(node->as<BPMN::FlowNode>());
   if (gatewayIt == systemState->tokensAwaitingGatewayActivation[stateMachine].end()) {
     // The key is not found, so insert a new entry and get an iterator to it.
-    gatewayIt = systemState->tokensAwaitingGatewayActivation[stateMachine].insert({node,{}}).first;
+    gatewayIt = systemState->tokensAwaitingGatewayActivation[stateMachine].insert({node->as<BPMN::FlowNode>(),{}}).first;
   }
 
   auto& [key,tokens] = *gatewayIt;
@@ -1580,12 +1559,12 @@ void Token::sendMessage() {
     else if ( auto stateMachine = it->second.lock() ) {
 //std::cerr << "Message sent from " << node->id << std::endl;
       systemState->inbox[stateMachine.get()].emplace_back(message->weak_from_this());
-      systemState->outbox[node].emplace_back(message->weak_from_this());
+      systemState->outbox[node->as<BPMN::FlowNode>()].emplace_back(message->weak_from_this());
     }
   }
   else {
 //std::cerr << "Message sent from " << node->id << std::endl;
-    systemState->outbox[node].emplace_back(message->weak_from_this());
+    systemState->outbox[node->as<BPMN::FlowNode>()].emplace_back(message->weak_from_this());
   }
 
   if ( node->represents<BPMN::SendTask>() ) {
@@ -1608,11 +1587,11 @@ void Token::sendMessage() {
 }
 
 Token* Token::getSequentialPerformerToken() const {
-  auto adHocSubProcess = node->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>();
+  auto adHocSubProcess = node->as<BPMN::FlowNode>()->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>();
   assert( adHocSubProcess );
 
   Token* sequentialPerfomerToken = owner->parentToken;
-  while (sequentialPerfomerToken->node && sequentialPerfomerToken->node != adHocSubProcess->performer) {
+  while ( sequentialPerfomerToken->node->represents<BPMN::FlowNode>() && sequentialPerfomerToken->node != adHocSubProcess->performer ) {
     sequentialPerfomerToken = sequentialPerfomerToken->owner->parentToken;
   }
   return sequentialPerfomerToken;

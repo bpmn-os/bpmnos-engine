@@ -15,7 +15,7 @@ struct CandidateInfo {
 
 inline std::string tokenTag(const BPMNOS::Execution::Token* token) {
   if ( !token ) return "null";
-  std::string node = token->node ? token->node->id : std::string("(process)");
+  std::string node = token->node->represents<BPMN::Process>() ? std::string("(process)") : token->node->id;
   return std::to_string((double)token->getInstanceId()) + "@" + node;
 }
 

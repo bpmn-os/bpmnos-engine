@@ -62,7 +62,7 @@ std::shared_ptr<Event> MyopicMessageTaskTerminator::dispatchEvent( [[maybe_unuse
 void MyopicMessageTaskTerminator::notice(const Observable* observable) {
   assert( dynamic_cast<const DecisionRequest*>(observable) );
   auto request = static_cast<const DecisionRequest*>(observable);
-  assert( request->token->node );
+  assert( request->token->node->represents<BPMN::FlowNode>() );
   if ( observable->getObservableType() == Observable::Type::MessageDeliveryRequest &&
     request->token->node->represents<const BPMN::ReceiveTask>()
   ) {

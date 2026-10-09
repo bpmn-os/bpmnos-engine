@@ -8,7 +8,7 @@ using namespace BPMNOS::Execution;
 nlohmann::ordered_json MessageDeliveryRequest::jsonify() const {
   auto jsonObject = DecisionRequest::jsonify();
 
-  assert( token->node );
+  assert( token->node->represents<BPMN::FlowNode>() );
   auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   // the definition that built the header
   auto messageDefinition = extensionElements->getMessageDefinition();

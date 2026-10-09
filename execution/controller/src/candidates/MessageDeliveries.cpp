@@ -31,7 +31,7 @@ void MessageDeliveries::clear() {
 void MessageDeliveries::notice(const Observable* observable) {
   if ( observable->getObservableType() == Observable::Type::MessageDeliveryRequest ) {
     auto request = static_cast<const MessageDeliveryRequest*>(observable);
-    assert(request->token->node);
+    assert( request->token->node->represents<BPMN::FlowNode>() );
 
     auto& recipientHeader = request->recipientHeader;
     requests.emplace_back( request->token->weak_from_this(), std::static_pointer_cast<const MessageDeliveryRequest>(request->shared_from_this()) );

@@ -23,10 +23,10 @@ nlohmann::ordered_json ReadyEvent::jsonify() const {
     jsonObject["expired"] = true;
     return jsonObject;
   }
-  jsonObject["processId"] = token->owner->process->id;
+  jsonObject["processId"] = token->owner->root->scope->id;
   jsonObject["instanceId"] = BPMNOS::to_string((*token->data)[BPMNOS::Model::ExtensionElements::Index::Instance].get().value(),STRING);
-  if ( token->node ) {
-    // the token at a process resides at no node
+  if ( token->node->represents<BPMN::FlowNode>() ) {
+    // the node of the token at a process is the process, which is reported as the process
     jsonObject["nodeId"] = token->node->id;
   }
 

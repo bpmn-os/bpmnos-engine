@@ -322,7 +322,7 @@ public:
   void notice(const Execution::Observable* observable, Execution::Scenario& scenario, [[maybe_unused]] Execution::EventQueue& queue) const override {
     if ( observable->getObservableType() == Execution::Observable::Type::Token ) {
       auto token = static_cast<const Execution::Token*>(observable);
-      if ( !token->node && token->state == Execution::Token::State::CREATED ) {
+      if ( token->node->represents<BPMN::Process>() && token->state == Execution::Token::State::CREATED ) {
         static_cast<Scenario&>(scenario).tokensAwaitingReadyEvent.push_back(token->weak_from_this());
       }
     }

@@ -21,7 +21,7 @@ nlohmann::ordered_json TimerEvent::jsonify() const {
     jsonObject["expired"] = true;
     return jsonObject;
   }
-  jsonObject["processId"] = token->owner->process->id;
+  jsonObject["processId"] = token->owner->root->scope->id;
   jsonObject["instanceId"] = BPMNOS::to_string((*token->data)[BPMNOS::Model::ExtensionElements::Index::Instance].get().value(),STRING);
   jsonObject["nodeId"] = token->node->id;
 

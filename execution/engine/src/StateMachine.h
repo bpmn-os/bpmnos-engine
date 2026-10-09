@@ -21,7 +21,7 @@ class SystemState;
  * @par Ownership Hierarchy
  * All (sub)processes containing flow tokens are owned by a token via Token::owned.
  * Root state machines (in SystemState::instances) only hold a single process-level
- * token (node=nullptr). That token owns the child state machine containing the actual
+ * token, whose node is the process. That token owns the child state machine containing the actual
  * flow tokens. Subprocesses follow the same pattern: a token at the subprocess node
  * owns a child state machine with the subprocess's flow tokens.
  *
@@ -91,9 +91,8 @@ public:
   Values getData(const BPMN::Scope* scope);
 
   const SystemState* systemState; ///< Pointer to the system state this state machine belongs to.
-  const BPMN::Process* process; ///< Pointer to the top-level process.
   const BPMN::Scope* scope; ///< Pointer to the current scope.
-  const StateMachine* root; ///< Pointer to the root state machine
+  const StateMachine* root; ///< Pointer to the root state machine, whose scope is the process
   std::optional<BPMNOS::number> instance; ///< Numeric representation of instance id (TODO: can we const this?)
 
   Token* parentToken; ///< Token that owns this state machine (nullptr for root process state machines).

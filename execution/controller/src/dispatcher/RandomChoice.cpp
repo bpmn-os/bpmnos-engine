@@ -18,7 +18,7 @@ std::shared_ptr<Event> RandomChoice::dispatchEvent( const SystemState* systemSta
       assert( request );
       auto token = request->token;
       assert( token );
-      assert( token->node );
+      assert( token->node->represents<BPMN::FlowNode>() );
       assert( token->node->represents<BPMNOS::Model::DecisionTask>() );
       assert( token->node->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );
       

@@ -80,17 +80,17 @@ bool LocalEvaluator::updateValues(MessageDeliveryDecision* decision, Values& sta
   if ( status[BPMNOS::Model::ExtensionElements::Index::Timestamp].value() < now ) {
     status[BPMNOS::Model::ExtensionElements::Index::Timestamp].value() = now;
   }
-  assert( token->node );
-  assert( token->node->parent );
+  assert( token->node->represents<BPMN::FlowNode>() );
+  assert( token->node->as<BPMN::FlowNode>()->parent );
   auto extensionElements = 
     token->node->represents<BPMN::MessageStartEvent>() ?
-    token->node->parent->extensionElements->as<BPMNOS::Model::ExtensionElements>() :
+    token->node->as<BPMN::FlowNode>()->parent->extensionElements->as<BPMNOS::Model::ExtensionElements>() :
     token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>()
   ;
   assert(extensionElements);
   assert( dynamic_cast<const MessageDeliveryEvent*>(decision) );
   auto message = static_cast<const MessageDeliveryEvent*>(decision)->message.lock();
-  message->apply(token->node,token->getAttributeRegistry(),status,data,globals);
+  message->apply(token->node->as<BPMN::FlowNode>(),token->getAttributeRegistry(),status,data,globals);
   extensionElements->applyOperators(status,data,globals);
 
   // check feasibility
@@ -270,7 +270,7 @@ std::set<const BPMNOS::Model::Attribute*> LocalEvaluator::getDependencies(Messag
     dependencies.insert(extensionElements->operatorDependencies.begin(), extensionElements->operatorDependencies.end());
   }
   else if ( token->node->represents<BPMN::MessageStartEvent>() ) {
-    auto eventSubProcess = token->node->parent;
+    auto eventSubProcess = token->node->as<BPMN::FlowNode>()->parent;
     auto extensionElements = eventSubProcess->extensionElements->as<BPMNOS::Model::ExtensionElements>();
     assert(extensionElements);
     dependencies.insert(extensionElements->entryDependencies.begin(), extensionElements->entryDependencies.end());

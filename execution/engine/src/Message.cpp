@@ -17,7 +17,7 @@ Message::Message(const Message* other, Token* waitingToken)
 
 Message::Message(Token* token)
   : state(State::CREATED)
-  , origin(token->node)
+  , origin(token->node->as<BPMN::FlowNode>())
   , waitingToken(nullptr)
 {
   if ( token->node->represents<BPMN::SendTask>() ) {

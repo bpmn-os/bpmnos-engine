@@ -24,8 +24,8 @@ void SequentialEntries::notice(const Observable* observable) {
   if ( observable->getObservableType() == Observable::Type::EntryRequest ) {
     assert( dynamic_cast<const DecisionRequest*>(observable) );
     auto request = static_cast<const DecisionRequest*>(observable);
-    assert( request->token->node->parent );
-    if ( !request->token->node->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() ) {
+    assert( request->token->node->as<BPMN::FlowNode>()->parent );
+    if ( !request->token->node->as<BPMN::FlowNode>()->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() ) {
       // only entries of sequential ad-hoc subprocess children are handled here
       return;
     }

@@ -12,7 +12,7 @@ void OutcomeSentinel::notice(const Observable* observable) {
   
   if ( observable->getObservableType() ==  Execution::Observable::Type::Token ) {
     auto token = static_cast<const Token*>(observable);
-    if ( !token->node ) {
+    if ( token->node->represents<BPMN::Process>() ) {
       // token for process
       if ( token->state == Token::State::ENTERED ) {
         runningInstances++;

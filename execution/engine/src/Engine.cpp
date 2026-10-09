@@ -340,7 +340,7 @@ void Engine::process(const ReadyEvent* event) {
   token->status = std::move(status);
   token->status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = systemState->currentTime;
 
-  if ( !token->node ) {
+  if ( auto process = token->node->represents<BPMN::Process>() ) {
     // the token at a process starts the instance: the data owned by the state machine of the process is
     // replaced element by element, so that the references to it remain valid, and the child owning the
     // tokens flowing through the process is created
@@ -350,7 +350,7 @@ void Engine::process(const ReadyEvent* event) {
     for ( size_t i = 0; i < data.size(); i++ ) {
       stateMachine->data[i].get() = data[i];
     }
-    stateMachine->createChild(token, stateMachine->process, {});
+    stateMachine->createChild(token, process, {});
   }
   else if ( auto scope = token->node->represents<BPMN::Scope>() ) {
     auto& data = const_cast<ReadyEvent*>(event)->dataAttributes;
@@ -369,7 +369,7 @@ void Engine::process(const EntryEvent* event) {
   Token* token = const_cast<Token*>(token_ptr.get());
   token->decisionRequest.reset();
   token->status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = systemState->currentTime;
-  if ( token->node->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() ) {
+  if ( token->node->as<BPMN::FlowNode>()->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() ) {
     token->occupySequentialPerformer();
   }
 
@@ -391,7 +391,6 @@ void Engine::process(const ChoiceEvent* event) {
   Token* token = const_cast<Token*>(token_ptr.get());
   token->decisionRequest.reset();
   token->status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = systemState->currentTime;
-  assert( token->node );
   assert( token->node->represents<BPMNOS::Model::DecisionTask>() );
 
   auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
@@ -434,14 +433,14 @@ void Engine::process(const MessageDeliveryEvent* event) {
   Token* token = const_cast<Token*>(token_ptr.get());
   token->decisionRequest.reset();
   token->status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = systemState->currentTime;
-  assert( token->node );
+  assert( token->node->represents<BPMN::FlowNode>() );
 
   auto message_ptr = event->message.lock();
   assert( message_ptr );
   Message* message = const_cast<Message*>(message_ptr.get());
   // update token status
   auto oldObjective = token->globals[BPMNOS::Model::ExtensionElements::Index::Objective];
-  message->apply(token->node,token->getAttributeRegistry(),token->status,*token->data,token->globals);
+  message->apply(token->node->as<BPMN::FlowNode>(),token->getAttributeRegistry(),token->status,*token->data,token->globals);
   if ( token->globals[BPMNOS::Model::ExtensionElements::Index::Objective] != oldObjective ) {
     // dataUpdate indicating that objective has changed
     notify( DataUpdate( { token->getAttributeRegistry().globalAttributes[BPMNOS::Model::ExtensionElements::Index::Objective] } ) );
@@ -471,7 +470,7 @@ void Engine::process(const ExitEvent* event) {
   Token* token = const_cast<Token*>(token_ptr.get());
   token->decisionRequest.reset();
 
-  if ( token->node->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() ) {
+  if ( token->node->as<BPMN::FlowNode>()->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() ) {
     token->releaseSequentialPerformer();
   }
 
