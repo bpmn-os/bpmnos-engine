@@ -836,12 +836,7 @@ void StateMachine::updateObjective() {
     }
   }
 
-  if ( DELTA != 0 ) {
-    auto& globals = const_cast<SystemState*>(systemState)->globals;
-    globals[BPMNOS::Model::ExtensionElements::Index::Objective].value() += DELTA;
-    // dataUpdate indicating that objective has changed
-    systemState->engine->notify( DataUpdate( { extensionElements->attributeRegistry.globalAttributes[BPMNOS::Model::ExtensionElements::Index::Objective] } ) );
-  }
+  const_cast<Engine*>(systemState->engine)->addToObjective(DELTA);
 }
 
 void StateMachine::createChild(Token* parent, const BPMN::Scope* scope, Values data, std::optional<BPMNOS::number> instance) {
@@ -1139,11 +1134,7 @@ void StateMachine::shutdown() {
         }
       }
     }
-    if ( DELTA != 0 ) {
-      parentToken->globals[BPMNOS::Model::ExtensionElements::Index::Objective].value() += DELTA;
-      // dataUpdate indicating that objective has changed
-      engine->notify( DataUpdate( { extensionElements->attributeRegistry.globalAttributes[BPMNOS::Model::ExtensionElements::Index::Objective] } ) );
-    }
+    engine->addToObjective(DELTA);
 
     if (!eventSubProcess->startEvent->isInterrupting ) {
       // delete non-interrupting event subprocess

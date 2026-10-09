@@ -28,14 +28,13 @@ Global attributes can be defined for a @ref XML::bpmn::tDataStore "data store el
 <bpmn2:dataStore id="DataStore_1">
   <bpmn2:extensionElements>
     <bpmnos:attributes>
-      <bpmnos:attribute id="Objective" name="objective := 0" type="decimal" />
       <bpmnos:attribute id="Makespan" name="makespan := 0" type="decimal" objective="minimize" weight="1" />
     </bpmnos:attributes>
   </bpmn2:extensionElements>
 </bpmn2:dataStore>
 ```
 
-An executable model declares a global attribute with the identifier `Objective` holding the objective value of a run, as every process declares a status attribute with the identifier `Timestamp` and a data attribute with the identifier `Instance`. It carries neither an `objective` nor a `weight`, so that it does not contribute to itself.
+The objective value of a run is held by the @ref BPMNOS::Execution::SystemState "system state" and is not an attribute. It is the sum of the values of all weighted attributes multiplied by their weights: a global or data attribute contributes from its creation on and by every change of its value, and a status attribute contributes with its final value when its scope ends. Every change of the objective is announced by the @ref BPMNOS::Execution::Objective "objective" notification. A global attribute with the identifier `Objective`, which earlier versions required, is an ordinary global attribute without further meaning.
 
 Global attributes are visible to every process of a model, whether or not a process refers to the data store declaring them.
 

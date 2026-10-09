@@ -29,8 +29,12 @@ public:
 
   std::optional<BPMNOS::number> getValue(const Attribute* attribute, const Values& status, const Values& data, const Values& globals) const;
   std::optional<BPMNOS::number> getValue(const Attribute* attribute, const Values& status, const SharedValues& data, const Values& globals) const;
-  void setValue(const Attribute* attribute, Values& status, Values& data, Values& globals, std::optional<BPMNOS::number> value) const;
-  void setValue(const Attribute* attribute, Values& status, SharedValues& data, Values& globals, std::optional<BPMNOS::number> value) const;
+  /// @brief Method setting the value of an attribute and returning the change of the objective, which is the
+  /// change of the value times the weight of the attribute for a data or global attribute and zero otherwise,
+  /// the previous value being available here and nowhere later.
+  BPMNOS::number setValue(const Attribute* attribute, Values& status, Values& data, Values& globals, std::optional<BPMNOS::number> value) const;
+  /// @copydoc setValue(const Attribute*, Values&, Values&, Values&, std::optional<BPMNOS::number>) const
+  BPMNOS::number setValue(const Attribute* attribute, Values& status, SharedValues& data, Values& globals, std::optional<BPMNOS::number> value) const;
 private:
   friend class Attribute;
   void add(Attribute* attribute);

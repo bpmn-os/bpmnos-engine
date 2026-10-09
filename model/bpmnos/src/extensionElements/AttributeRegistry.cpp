@@ -102,71 +102,45 @@ std::optional<BPMNOS::number> AttributeRegistry::getValue(const Attribute* attri
   }
 }
 
-void AttributeRegistry::setValue(const Attribute* attribute, Values& status, Values& data, Values& globals, std::optional<BPMNOS::number> value) const {
+BPMNOS::number AttributeRegistry::setValue(const Attribute* attribute, Values& status, Values& data, Values& globals, std::optional<BPMNOS::number> value) const {
   if ( attribute->category == Attribute::Category::STATUS ) {
     assert(attribute->index < status.size());
     status[attribute->index] = value;
+    // a status attribute is accounted in the objective when its scope ends
+    return 0;
   }
   else if ( attribute->category == Attribute::Category::DATA ) {
     assert(attribute->index < data.size());
-    if ( attribute->weight != 0 ) {
-      // a data attribute contributing to the objective moves it by what it changed by, as a global does,
-      // the previous value being available here and nowhere later
-      auto previous = data[attribute->index];
-      data[attribute->index] = value;
-      globals[ExtensionElements::Index::Objective].value() +=
-        ( value.value_or(0) - previous.value_or(0) ) * attribute->weight;
-    }
-    else {
-      data[attribute->index] = value;
-    }
+    auto previous = data[attribute->index];
+    data[attribute->index] = value;
+    return ( value.value_or(0) - previous.value_or(0) ) * attribute->weight;
   }
   else /* if ( attribute->category == Attribute::Category::GLOBAL )*/ {
     assert(attribute->index < globals.size());
-    if ( attribute->weight != 0 ) {
-      // a global contributing to the objective moves it by what it changed by, the previous value being
-      // available here and nowhere later; the objective carries no weight and does not count towards itself
-      auto previous = globals[attribute->index];
-      globals[attribute->index] = value;
-      globals[ExtensionElements::Index::Objective].value() +=
-        ( value.value_or(0) - previous.value_or(0) ) * attribute->weight;
-    }
-    else {
-      globals[attribute->index] = value;
-    }
+    auto previous = globals[attribute->index];
+    globals[attribute->index] = value;
+    return ( value.value_or(0) - previous.value_or(0) ) * attribute->weight;
   }
 }
 
-void AttributeRegistry::setValue(const Attribute* attribute, Values& status, SharedValues& data, Values& globals, std::optional<BPMNOS::number> value) const {
+BPMNOS::number AttributeRegistry::setValue(const Attribute* attribute, Values& status, SharedValues& data, Values& globals, std::optional<BPMNOS::number> value) const {
   if ( attribute->category == Attribute::Category::STATUS ) {
     assert(attribute->index < status.size());
     status[attribute->index] = value;
+    // a status attribute is accounted in the objective when its scope ends
+    return 0;
   }
   else if ( attribute->category == Attribute::Category::DATA ) {
     assert(attribute->index < data.size());
-    if ( attribute->weight != 0 ) {
-      // as above, writing through the reference into the storage of the scope owning the data object
-      auto previous = data[attribute->index].get();
-      data[attribute->index].get() = value;
-      globals[ExtensionElements::Index::Objective].value() +=
-        ( value.value_or(0) - previous.value_or(0) ) * attribute->weight;
-    }
-    else {
-      data[attribute->index].get() = value;
-    }
+    // writing through the reference into the storage of the scope owning the data object
+    auto previous = data[attribute->index].get();
+    data[attribute->index].get() = value;
+    return ( value.value_or(0) - previous.value_or(0) ) * attribute->weight;
   }
   else /* if ( attribute->category == Attribute::Category::GLOBAL )*/ {
     assert(attribute->index < globals.size());
-    if ( attribute->weight != 0 ) {
-      // a global contributing to the objective moves it by what it changed by, the previous value being
-      // available here and nowhere later; the objective carries no weight and does not count towards itself
-      auto previous = globals[attribute->index];
-      globals[attribute->index] = value;
-      globals[ExtensionElements::Index::Objective].value() +=
-        ( value.value_or(0) - previous.value_or(0) ) * attribute->weight;
-    }
-    else {
-      globals[attribute->index] = value;
-    }
+    auto previous = globals[attribute->index];
+    globals[attribute->index] = value;
+    return ( value.value_or(0) - previous.value_or(0) ) * attribute->weight;
   }
 }

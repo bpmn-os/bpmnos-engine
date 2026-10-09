@@ -234,6 +234,8 @@ protected:
 
   void deleteInstance(Token* token); ///< Method removing the token at the process of a completed or failed instance, together with the state machine of the instance
 
+  void addToObjective(BPMNOS::number change); ///< Method adding a change to the objective of the system state and notifying the new objective if the change is not zero
+
   /// @brief Method refusing a scenario of another model.
   void acceptScenario(const Scenario* scenario);
 

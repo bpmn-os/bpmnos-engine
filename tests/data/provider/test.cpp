@@ -363,9 +363,7 @@ public:
   }
 
   BPMNOS::Values getGlobals([[maybe_unused]] const Execution::Scenario& scenario) const override {
-    BPMNOS::Values globals(model->attributes.size());
-    globals[Model::ExtensionElements::Index::Objective] = 0;
-    return globals;
+    return BPMNOS::Values(model->attributes.size());
   }
 
   BPMNOS::number getEarliestInstantiationTime([[maybe_unused]] const Execution::Scenario& scenario) const override {

@@ -71,14 +71,7 @@ std::vector<std::reference_wrapper<XML::bpmnos::tAttribute>> Model::getGlobals()
   std::vector<std::reference_wrapper<XML::bpmnos::tAttribute>> attributes;
   for ( auto& dataStore : dataStores ) {
     for ( XML::bpmnos::tAttribute& attribute : getAttributes(dataStore->element) ) {
-      if ( attributes.size() && attribute.id.value.value == BPMNOS::Keyword::Objective ) {
-        // make sure objective attribute is at first position
-        attributes.emplace_back( std::move(attributes[0]) );
-        attributes[0] = std::ref(attribute);
-      }
-      else {
-        attributes.emplace_back( attribute );
-      }
+      attributes.emplace_back( attribute );
     }
   }
   return attributes;

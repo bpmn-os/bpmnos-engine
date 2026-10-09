@@ -398,7 +398,7 @@ void Token::advanceToReady() {
 }
 
 void Token::computeInitialValues( const BPMNOS::Model::ExtensionElements* extensionElements ) {
-  extensionElements->computeInitialValues(owner->systemState->currentTime,status,*data,globals);
+  const_cast<Engine*>(owner->systemState->engine)->addToObjective( extensionElements->computeInitialValues(owner->systemState->currentTime,status,*data,globals) );
 }
 
 void Token::advanceToEntered() {
@@ -435,11 +435,11 @@ void Token::advanceToEntered() {
           auto attribute = extensionElements->loopIndex.value()->expression->isAttribute();
           if ( auto index = attributeRegistry.getValue( attribute, status, *data, globals); index.has_value() ) {
             // increment existing value 
-            attributeRegistry.setValue(attribute, status, *data, globals, (unsigned int)index.value() + 1);
+            const_cast<Engine*>(owner->systemState->engine)->addToObjective( attributeRegistry.setValue(attribute, status, *data, globals, (unsigned int)index.value() + 1) );
           }
           else {
             // initialize non-existing value 
-            attributeRegistry.setValue(attribute, status, *data, globals, 1);
+            const_cast<Engine*>(owner->systemState->engine)->addToObjective( attributeRegistry.setValue(attribute, status, *data, globals, 1) );
           }
         }
         else if ( extensionElements->loopMaximum.has_value() ) {
@@ -769,12 +769,7 @@ void Token::advanceToCompleted() {
       node->represents<BPMNOS::Model::DecisionTask>()
     ) {
       if ( auto extensionElements = node->extensionElements->represents<BPMNOS::Model::ExtensionElements>() ) {
-        auto oldObjective = globals[BPMNOS::Model::ExtensionElements::Index::Objective];
-        extensionElements->applyOperators(status,*data,globals);
-        if ( globals[BPMNOS::Model::ExtensionElements::Index::Objective] != oldObjective ) {
-          // dataUpdate indicating that objective has changed
-          owner->systemState->engine->notify( DataUpdate( { extensionElements->attributeRegistry.globalAttributes[BPMNOS::Model::ExtensionElements::Index::Objective] } ) );
-        }
+        const_cast<Engine*>(owner->systemState->engine)->addToObjective( extensionElements->applyOperators(status,*data,globals) );
         // notify about data update
         if ( extensionElements->dataUpdate.global ) {
           owner->systemState->engine->notify( DataUpdate( extensionElements->dataUpdate.attributes ) );
@@ -793,7 +788,7 @@ void Token::advanceToCompleted() {
         // process or subprocess accounted its objective when its state machine was created
         if ( auto extensionElements = flowNode->parent->extensionElements->represents<BPMNOS::Model::ExtensionElements>() ) {
           // the timestamp of the token is kept, the event subprocess being triggered at it
-          extensionElements->computeInitialValues(status[BPMNOS::Model::ExtensionElements::Index::Timestamp].value(),status,*data,globals);
+          const_cast<Engine*>(owner->systemState->engine)->addToObjective( extensionElements->computeInitialValues(status[BPMNOS::Model::ExtensionElements::Index::Timestamp].value(),status,*data,globals) );
         }
         const_cast<StateMachine*>(owner)->updateObjective();
       }
@@ -836,11 +831,7 @@ void Token::advanceToCompleted() {
         }
       }
     }
-    if ( DELTA != 0 ) {
-      globals[BPMNOS::Model::ExtensionElements::Index::Objective].value() += DELTA;
-      // dataUpdate indicating that objective has changed
-      engine->notify( DataUpdate( { extensionElements->attributeRegistry.globalAttributes[BPMNOS::Model::ExtensionElements::Index::Objective] } ) );
-    }
+    engine->addToObjective(DELTA);
   }
   else {
     if ( auto activity = node->represents<BPMN::Activity>() ) {
@@ -872,11 +863,7 @@ void Token::advanceToCompleted() {
             }
           }
         }
-        if ( DELTA != 0 ) {
-          globals[BPMNOS::Model::ExtensionElements::Index::Objective].value() += DELTA;
-          // dataUpdate indicating that objective has changed
-          engine->notify( DataUpdate( { extensionElements->attributeRegistry.globalAttributes[BPMNOS::Model::ExtensionElements::Index::Objective] } ) );
-        }
+        engine->addToObjective(DELTA);
       }
       else {
         // check restrictions
@@ -1051,11 +1038,7 @@ void Token::advanceToExiting() {
         }
       }
     }
-    if ( DELTA != 0 ) {
-      globals[BPMNOS::Model::ExtensionElements::Index::Objective].value() += DELTA;
-      // dataUpdate indicating that objective has changed
-      owner->systemState->engine->notify( DataUpdate( { extensionElements->attributeRegistry.globalAttributes[BPMNOS::Model::ExtensionElements::Index::Objective] } ) );
-    }
+    const_cast<Engine*>(owner->systemState->engine)->addToObjective(DELTA);
 //std::cerr << "objective updated" << std::endl;
   }
     
@@ -1461,13 +1444,7 @@ void Token::applyOperators(const BPMNOS::Model::ExtensionElements* extensionElem
     return;
   }
 
-  auto oldObjective = globals[BPMNOS::Model::ExtensionElements::Index::Objective];
-  extensionElements->applyOperators(status,*data,globals);
-
-  if ( globals[BPMNOS::Model::ExtensionElements::Index::Objective] != oldObjective ) {
-    // dataUpdate indicating that objective has changed
-    owner->systemState->engine->notify( DataUpdate( { extensionElements->attributeRegistry.globalAttributes[BPMNOS::Model::ExtensionElements::Index::Objective] } ) );
-  }
+  const_cast<Engine*>(owner->systemState->engine)->addToObjective( extensionElements->applyOperators(status,*data,globals) );
 
   // notify about data update
   if ( extensionElements->dataUpdate.global ) {
@@ -1506,7 +1483,7 @@ void Token::setSignalContent(BPMNOS::VariedValueMap& sourceMap) {
   assert( node->extensionElements->represents<BPMNOS::Model::SignalDefinition>() );
   auto signalDefinition = node->extensionElements->as<BPMNOS::Model::SignalDefinition>();
 
-  auto oldObjective = globals[BPMNOS::Model::ExtensionElements::Index::Objective];
+  BPMNOS::number objectiveChange = 0;
 
   size_t counter = 0;
   for (auto& [key,contentValue] : sourceMap) {
@@ -1516,15 +1493,15 @@ void Token::setSignalContent(BPMNOS::VariedValueMap& sourceMap) {
 //std::cerr << "Attribute: " << attribute.name << "/" << attribute.index << std::endl;
       if ( std::holds_alternative< std::optional<number> >(contentValue) && std::get< std::optional<number> >(contentValue).has_value() ) {
         // use attribute value of signal
-        attributeRegistry.setValue(attribute, status, *data, globals, std::get< std::optional<number> >(contentValue).value() );
+        objectiveChange += attributeRegistry.setValue(attribute, status, *data, globals, std::get< std::optional<number> >(contentValue).value() );
       }
       else if (std::holds_alternative<std::string>(contentValue)) {
         // use default value of emitter
         ValueVariant value = std::get< std::string >(contentValue);
-        attributeRegistry.setValue(attribute, status, *data, globals, BPMNOS::to_number(value,attribute->type) );
+        objectiveChange += attributeRegistry.setValue(attribute, status, *data, globals, BPMNOS::to_number(value,attribute->type) );
       }
       else {
-        attributeRegistry.setValue(attribute, status, *data, globals, std::nullopt );
+        objectiveChange += attributeRegistry.setValue(attribute, status, *data, globals, std::nullopt );
       }
     }
     else {
@@ -1538,15 +1515,12 @@ void Token::setSignalContent(BPMNOS::VariedValueMap& sourceMap) {
     for (auto& [key,definition] : signalDefinition->contentMap) {
       if ( !sourceMap.contains(key) ) {
         // key in recipient content, but not in message content
-        attributeRegistry.setValue(definition->attribute, status, *data, globals, std::nullopt );
+        objectiveChange += attributeRegistry.setValue(definition->attribute, status, *data, globals, std::nullopt );
       }
     }
   }
 
-  if ( globals[BPMNOS::Model::ExtensionElements::Index::Objective] != oldObjective ) {
-    // dataUpdate indicating that objective has changed
-    owner->systemState->engine->notify( DataUpdate( { attributeRegistry.globalAttributes[BPMNOS::Model::ExtensionElements::Index::Objective] } ) );
-  }
+  const_cast<Engine*>(owner->systemState->engine)->addToObjective(objectiveChange);
 
   // notify about data update
   if ( signalDefinition->dataUpdate.global ) {

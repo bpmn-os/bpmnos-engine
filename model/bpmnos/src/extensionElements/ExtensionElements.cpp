@@ -399,33 +399,37 @@ template bool ExtensionElements::fullScopeRestrictionsSatisfied<BPMNOS::Values>(
 template bool ExtensionElements::fullScopeRestrictionsSatisfied<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data, const BPMNOS::Values& globals) const;
 
 template <typename DataType>
-void ExtensionElements::computeInitialValues(BPMNOS::number currentTime, BPMNOS::Values& status, DataType& data, BPMNOS::Values& globals) const {
+BPMNOS::number ExtensionElements::computeInitialValues(BPMNOS::number currentTime, BPMNOS::Values& status, DataType& data, BPMNOS::Values& globals) const {
+  BPMNOS::number change = 0;
   status.at(BPMNOS::Model::ExtensionElements::Index::Timestamp) = currentTime;
   for ( auto& attribute : attributes ) {
     if ( attribute->expression ) {
-      attributeRegistry.setValue( attribute.get(), status, data, globals, BPMNOS::to_value( attribute->expression->execute(status,data,globals) ) );
+      change += attributeRegistry.setValue( attribute.get(), status, data, globals, BPMNOS::to_value( attribute->expression->execute(status,data,globals) ) );
     }
   }
   for ( auto& attribute : this->data ) {
     if ( attribute->expression ) {
-      attributeRegistry.setValue( attribute.get(), status, data, globals, BPMNOS::to_value( attribute->expression->execute(status,data,globals) ) );
+      change += attributeRegistry.setValue( attribute.get(), status, data, globals, BPMNOS::to_value( attribute->expression->execute(status,data,globals) ) );
     }
   }
+  return change;
 }
 
-template void ExtensionElements::computeInitialValues<BPMNOS::Values>(BPMNOS::number currentTime, Values& status, BPMNOS::Values& data, BPMNOS::Values& globals) const;
-template void ExtensionElements::computeInitialValues<BPMNOS::SharedValues>(BPMNOS::number currentTime, Values& status, BPMNOS::SharedValues& data, BPMNOS::Values& globals) const;
+template BPMNOS::number ExtensionElements::computeInitialValues<BPMNOS::Values>(BPMNOS::number currentTime, Values& status, BPMNOS::Values& data, BPMNOS::Values& globals) const;
+template BPMNOS::number ExtensionElements::computeInitialValues<BPMNOS::SharedValues>(BPMNOS::number currentTime, Values& status, BPMNOS::SharedValues& data, BPMNOS::Values& globals) const;
 
 
 template <typename DataType>
-void ExtensionElements::applyOperators(BPMNOS::Values& status, DataType& data, BPMNOS::Values& globals) const {
+BPMNOS::number ExtensionElements::applyOperators(BPMNOS::Values& status, DataType& data, BPMNOS::Values& globals) const {
+  BPMNOS::number change = 0;
   for ( auto& operator_ : operators ) {
-    operator_->apply(status,data,globals);
+    change += operator_->apply(status,data,globals);
   }
+  return change;
 }
 
-template void ExtensionElements::applyOperators<BPMNOS::Values>(Values& status, BPMNOS::Values& data, BPMNOS::Values& globals) const;
-template void ExtensionElements::applyOperators<BPMNOS::SharedValues>(Values& status, BPMNOS::SharedValues& data, BPMNOS::Values& globals) const;
+template BPMNOS::number ExtensionElements::applyOperators<BPMNOS::Values>(Values& status, BPMNOS::Values& data, BPMNOS::Values& globals) const;
+template BPMNOS::number ExtensionElements::applyOperators<BPMNOS::SharedValues>(Values& status, BPMNOS::SharedValues& data, BPMNOS::Values& globals) const;
 
 template <typename DataType>
 BPMNOS::number ExtensionElements::getObjective(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const {

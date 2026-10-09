@@ -2,6 +2,7 @@
 #include "Token.h"
 #include "StateMachine.h"
 #include "SequentialPerformerUpdate.h"
+#include "Objective.h"
 #include "ConditionalEventObserver.h"
 #include "execution/controller/src/Decision.h"
 #include "model/bpmnos/src/extensionElements/ExtensionElements.h"
@@ -242,28 +243,25 @@ void Engine::triggerInstance(const BPMN::Process* process, BPMNOS::VariedValueMa
     dataUpdateIsGlobal = startNodeExtensionElements->dataUpdate.global;
   }
 
-  auto oldObjective = systemState->globals[Model::ExtensionElements::Index::Objective];
+  BPMNOS::number objectiveChange = 0;
   for ( auto& [key,definition] : *contentMap ) {
     auto attribute = definition->attribute;
     auto it = content.find(key);
     if ( it == content.end() ) {
       // key in content of start event, but not in content of the trigger
-      attributeRegistry.setValue(attribute, status, data, systemState->globals, std::nullopt );
+      objectiveChange += attributeRegistry.setValue(attribute, status, data, systemState->globals, std::nullopt );
     }
     else if ( std::holds_alternative< std::optional<BPMNOS::number> >(it->second) ) {
-      attributeRegistry.setValue(attribute, status, data, systemState->globals, std::get< std::optional<BPMNOS::number> >(it->second) );
+      objectiveChange += attributeRegistry.setValue(attribute, status, data, systemState->globals, std::get< std::optional<BPMNOS::number> >(it->second) );
     }
     else {
       // use default value of emitter
       ValueVariant value = std::get< std::string >(it->second);
-      attributeRegistry.setValue(attribute, status, data, systemState->globals, BPMNOS::to_number(value,attribute->type) );
+      objectiveChange += attributeRegistry.setValue(attribute, status, data, systemState->globals, BPMNOS::to_number(value,attribute->type) );
     }
   }
 
-  if ( systemState->globals[Model::ExtensionElements::Index::Objective] != oldObjective ) {
-    // dataUpdate indicating that objective has changed
-    notify( DataUpdate( { attributeRegistry.globalAttributes[Model::ExtensionElements::Index::Objective] } ) );
-  }
+  addToObjective(objectiveChange);
 
   if ( dataUpdateIsGlobal ) {
     // notify about data update; the instance does not exist yet, so only a global update can be reported
@@ -313,6 +311,13 @@ void Engine::process(const InstantiationEvent* event) {
   token->advanceFromCreated();
 
   processCommands();
+}
+
+void Engine::addToObjective(BPMNOS::number change) {
+  if ( change != 0 ) {
+    systemState->objective += change;
+    notify( Objective(systemState->objective) );
+  }
 }
 
 void Engine::deleteInstance(Token* token) {
@@ -394,14 +399,11 @@ void Engine::process(const ChoiceEvent* event) {
   assert( extensionElements );
   assert( extensionElements->choices.size() == event->choices.size() );
   // apply choices
-  auto oldObjective = token->globals[BPMNOS::Model::ExtensionElements::Index::Objective];
+  BPMNOS::number objectiveChange = 0;
   for (size_t i = 0; i < extensionElements->choices.size(); i++) {
-    extensionElements->attributeRegistry.setValue( extensionElements->choices[i]->attribute, token->status, *token->data, token->globals, event->choices[i] );
+    objectiveChange += extensionElements->attributeRegistry.setValue( extensionElements->choices[i]->attribute, token->status, *token->data, token->globals, event->choices[i] );
   }
-  if ( token->globals[BPMNOS::Model::ExtensionElements::Index::Objective] != oldObjective ) {
-    // dataUpdate indicating that objective has changed
-    notify( DataUpdate( { extensionElements->attributeRegistry.globalAttributes[BPMNOS::Model::ExtensionElements::Index::Objective] } ) );
-  }
+  addToObjective(objectiveChange);
 
   commands.emplace_back(std::bind(&Token::advanceToCompleted,token), token);
 
@@ -436,12 +438,7 @@ void Engine::process(const MessageDeliveryEvent* event) {
   assert( message_ptr );
   Message* message = const_cast<Message*>(message_ptr.get());
   // update token status
-  auto oldObjective = token->globals[BPMNOS::Model::ExtensionElements::Index::Objective];
-  message->apply(token->node->as<BPMN::FlowNode>(),token->getAttributeRegistry(),token->status,*token->data,token->globals);
-  if ( token->globals[BPMNOS::Model::ExtensionElements::Index::Objective] != oldObjective ) {
-    // dataUpdate indicating that objective has changed
-    notify( DataUpdate( { token->getAttributeRegistry().globalAttributes[BPMNOS::Model::ExtensionElements::Index::Objective] } ) );
-  }
+  addToObjective( message->apply(token->node->as<BPMN::FlowNode>(),token->getAttributeRegistry(),token->status,*token->data,token->globals) );
 
   message->state = Message::State::DELIVERED;
   notify(message);

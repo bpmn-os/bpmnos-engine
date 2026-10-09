@@ -28,8 +28,9 @@ public:
   const AttributeRegistry& attributeRegistry;
   Attribute* attribute; ///< The status or data attribute to be modified by the operator
 
+  /// @brief Method applying the operator and returning the change of the objective.
   template <typename DataType>
-  void apply(BPMNOS::Values& status, DataType& data, BPMNOS::Values& globals) const;
+  BPMNOS::number apply(BPMNOS::Values& status, DataType& data, BPMNOS::Values& globals) const;
 
   /// Returns a pointer of type T of the node.
   template<typename T> T* is() {

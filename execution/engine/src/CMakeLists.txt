@@ -35,6 +35,7 @@ list(APPEND engine_HEADERS
   Token.h
   SequentialPerformerUpdate.h
   DataUpdate.h
+  Objective.h
   ConditionalEventObserver.h
   DecisionRequest.h
   MessageDeliveryRequest.h

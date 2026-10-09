@@ -10,15 +10,15 @@ SystemState::SystemState(const Engine* engine, const Scenario* scenario, BPMNOS:
   , scenario(scenario)
   , currentTime(currentTime)
   , globals(scenario->dataProvider->getGlobals(*scenario))
+  , objective(0)
   , globalStateMachine(std::make_shared<StateMachine>(this))
 {
   // the values the globals are created with never pass through setValue, so the objective is seeded with
-  // them here; no data update is notified, the run not having begun and no token being able to observe it
+  // them here; no change is notified, the run not having begun and no token being able to observe it
   for ( auto& attribute : engine->getModel()->attributes ) {
     assert( attribute->category == BPMNOS::Model::Attribute::Category::GLOBAL );
     if ( attribute->weight != 0 && globals[attribute->index].has_value() ) {
-      globals[BPMNOS::Model::ExtensionElements::Index::Objective].value() +=
-        globals[attribute->index].value() * attribute->weight;
+      objective += globals[attribute->index].value() * attribute->weight;
     }
   }
 }
@@ -28,6 +28,7 @@ SystemState::SystemState(const Engine* engine, const Scenario* scenario, const S
   , scenario(scenario)
   , currentTime(other->currentTime)
   , globals(other->globals)
+  , objective(other->objective)
   , instantiationCounter(other->instantiationCounter)
 {
   // Copy the global state machine, which copies the token at the process of each instance together with
@@ -125,7 +126,7 @@ BPMNOS::number SystemState::getTime() const {
 }
 
 BPMNOS::number SystemState::getObjective() const {
-  return globals[BPMNOS::Model::ExtensionElements::Index::Objective].value_or(0);
+  return objective;
 }
 
 void SystemState::increaseTimeTo(BPMNOS::number time) {

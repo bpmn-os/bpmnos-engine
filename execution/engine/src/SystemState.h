@@ -139,6 +139,13 @@ public:
   BPMNOS::Values globals;
 
   /**
+   * @brief The objective of the run: the sum of the weighted values of the global attributes, of the data
+   * attributes of every scope created so far, and of the final status attributes of every scope that has
+   * ended.
+   */
+  BPMNOS::number objective;
+
+  /**
    * @brief The global state machine, holding a token at the process of each running instance, which owns
    * the state machine of the instance.
    */

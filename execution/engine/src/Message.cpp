@@ -98,9 +98,10 @@ nlohmann::ordered_json Message::jsonify() const {
 
 
 template <typename DataType>
-void Message::apply(const BPMN::FlowNode* node, const BPMNOS::Model::AttributeRegistry& attributeRegistry, BPMNOS::Values& status, DataType& data, BPMNOS::Values& globals) const {
+BPMNOS::number Message::apply(const BPMN::FlowNode* node, const BPMNOS::Model::AttributeRegistry& attributeRegistry, BPMNOS::Values& status, DataType& data, BPMNOS::Values& globals) const {
   auto& targetContentDefinition = node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->getMessageDefinition()->contentMap;
 
+  BPMNOS::number objectiveChange = 0;
   size_t counter = 0;
   for (auto& [key,contentValue] : contentValueMap) {
     if ( auto it = targetContentDefinition.find(key); it != targetContentDefinition.end() ) {
@@ -109,15 +110,15 @@ void Message::apply(const BPMN::FlowNode* node, const BPMNOS::Model::AttributeRe
 //std::cerr << "Attribute: " << attribute.name << "/" << attribute.index << std::endl;
       if ( std::holds_alternative< std::optional<number> >(contentValue) && std::get< std::optional<number> >(contentValue).has_value() ) {
         // use attribute value sent in message
-        attributeRegistry.setValue(attribute, status, data, globals, std::get< std::optional<number> >(contentValue).value() );
+        objectiveChange += attributeRegistry.setValue(attribute, status, data, globals, std::get< std::optional<number> >(contentValue).value() );
       }
       else if (std::holds_alternative<std::string>(contentValue)) {
         // use default value of sender
         ValueVariant value = std::get< std::string >(contentValue);
-        attributeRegistry.setValue(attribute, status, data, globals, BPMNOS::to_number(value,attribute->type) );
+        objectiveChange += attributeRegistry.setValue(attribute, status, data, globals, BPMNOS::to_number(value,attribute->type) );
       }
       else {
-        attributeRegistry.setValue(attribute, status, data, globals, std::nullopt );
+        objectiveChange += attributeRegistry.setValue(attribute, status, data, globals, std::nullopt );
       }
     }
     else {
@@ -131,12 +132,13 @@ void Message::apply(const BPMN::FlowNode* node, const BPMNOS::Model::AttributeRe
     for (auto& [key,definition] : targetContentDefinition) {
       if ( !contentValueMap.contains(key) ) {
         // key in recipient content, but not in message content
-        attributeRegistry.setValue(definition->attribute, status, data, globals, std::nullopt );
+        objectiveChange += attributeRegistry.setValue(definition->attribute, status, data, globals, std::nullopt );
       }
     }
   }
+  return objectiveChange;
 }
 
-template void Message::apply<BPMNOS::Values>(const BPMN::FlowNode* node, const BPMNOS::Model::AttributeRegistry& attributeRegistry, BPMNOS::Values& status, Values& data, BPMNOS::Values& globals) const;
-template void Message::apply<BPMNOS::SharedValues>(const BPMN::FlowNode* node, const BPMNOS::Model::AttributeRegistry& attributeRegistry, BPMNOS::Values& status, SharedValues& data, BPMNOS::Values& globals) const;
+template BPMNOS::number Message::apply<BPMNOS::Values>(const BPMN::FlowNode* node, const BPMNOS::Model::AttributeRegistry& attributeRegistry, BPMNOS::Values& status, Values& data, BPMNOS::Values& globals) const;
+template BPMNOS::number Message::apply<BPMNOS::SharedValues>(const BPMN::FlowNode* node, const BPMNOS::Model::AttributeRegistry& attributeRegistry, BPMNOS::Values& status, SharedValues& data, BPMNOS::Values& globals) const;
 

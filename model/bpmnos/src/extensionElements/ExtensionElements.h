@@ -26,11 +26,10 @@ public:
   AttributeRegistry attributeRegistry; ///< Registry allowing to look up all status and data attributes by their names.
   const BPMN::Scope* parent;
 
-//  enum Index { Instance, Timestamp, Objective }; ///< Indices for instance and timestamp attribute.
+  /// Indices of the instance among the data attributes and of the timestamp among the status attributes.
   struct Index {
     static constexpr size_t Instance = 0; 
     static constexpr size_t Timestamp = 0; 
-    static constexpr size_t Objective = 0; 
   };
   
   std::vector< std::unique_ptr<Attribute> > attributes; ///< Vector containing new status attributes declared for the node.
@@ -79,11 +78,13 @@ public:
   
   bool isInstantaneous; ///< Boolean indicating whether operators may modify timestamp.
 
+  /// @brief Method computing the values the model assigns and returning the change of the objective.
   template <typename DataType>
-  void computeInitialValues(BPMNOS::number currentTime, BPMNOS::Values& status, DataType& data, BPMNOS::Values& globals) const;
+  BPMNOS::number computeInitialValues(BPMNOS::number currentTime, BPMNOS::Values& status, DataType& data, BPMNOS::Values& globals) const;
 
+  /// @brief Method applying the operators and returning the change of the objective.
   template <typename DataType>
-  void applyOperators(BPMNOS::Values& status, DataType& data, BPMNOS::Values& globals) const;
+  BPMNOS::number applyOperators(BPMNOS::Values& status, DataType& data, BPMNOS::Values& globals) const;
 
   template <typename DataType>
   BPMNOS::number getObjective(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const; ///< Returns the total objective of all attributes provided.
