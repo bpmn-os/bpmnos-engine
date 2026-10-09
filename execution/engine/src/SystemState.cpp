@@ -10,6 +10,7 @@ SystemState::SystemState(const Engine* engine, const Scenario* scenario, BPMNOS:
   , scenario(scenario)
   , currentTime(currentTime)
   , globals(scenario->dataProvider->getGlobals(*scenario))
+  , globalStateMachine(std::make_shared<StateMachine>(this))
 {
   // the values the globals are created with never pass through setValue, so the objective is seeded with
   // them here; no data update is notified, the run not having begun and no token being able to observe it
@@ -29,14 +30,16 @@ SystemState::SystemState(const Engine* engine, const Scenario* scenario, const S
   , globals(other->globals)
   , instantiationCounter(other->instantiationCounter)
 {
-  // Copy root state machine instances
-  for (const auto& otherInstance : other->instances) {
-    instances.push_back(std::make_shared<StateMachine>(this, nullptr, otherInstance.get()));
+  // Copy the global state machine, which copies the token at the process of each instance together with
+  // the state machine of the instance it owns
+  globalStateMachine = std::make_shared<StateMachine>(this, nullptr, other->globalStateMachine.get());
 
-    // Populate archive
+  // Populate archive with the state machines of the instances, the tokens being copied in their order
+  for ( size_t i = 0; i < globalStateMachine->tokens.size(); i++ ) {
+    auto otherInstance = other->globalStateMachine->tokens[i]->owned.get();
     auto key = (long unsigned int)otherInstance->instance.value();
-    if (other->archive.contains(key) && other->archive.at(key).lock().get() == otherInstance.get()) {
-      archive[key] = instances.back();
+    if (other->archive.contains(key) && other->archive.at(key).lock().get() == otherInstance) {
+      archive[key] = globalStateMachine->tokens[i]->owned;
     }
   }
 

@@ -72,7 +72,7 @@ SCENARIO( "Clock ticks and termination supplied by the data provider", "[data][p
       THEN( "The run ends when the termination event is processed, with the instance still running" ) {
         REQUIRE( recorder.log.back()["event"] == "termination" );
         REQUIRE( engine.getCurrentTime() == 5 );
-        REQUIRE( engine.getSystemState()->instances.size() == 1 );
+        REQUIRE( engine.getSystemState()->globalStateMachine->tokens.size() == 1 );
         auto timerLog = recorder.find(nlohmann::json{{"nodeId","TimerEvent_1"},{"state","COMPLETED"}});
         REQUIRE( timerLog.empty() );
       }
@@ -227,7 +227,7 @@ SCENARIO( "A caller acting while the engine waits", "[data][provider]" ) {
       THEN( "The run ends with the instance still running" ) {
         REQUIRE( waits == 1 );
         REQUIRE( engine.getCurrentTime() == 0 );
-        REQUIRE( engine.getSystemState()->instances.size() == 1 );
+        REQUIRE( engine.getSystemState()->globalStateMachine->tokens.size() == 1 );
         REQUIRE( recorder.find(nlohmann::json{{"nodeId","TimerEvent_1"},{"state","COMPLETED"}}).empty() );
       }
 

@@ -19,13 +19,11 @@ class SystemState;
  * This class manages all tokens for BPMN execution of a given scope.
  *
  * @par Ownership Hierarchy
- * All (sub)processes containing flow tokens are owned by a token via Token::owned.
- * Root state machines (in SystemState::instances) only hold a single process-level
- * token, whose node is the process. That token owns the child state machine containing the actual
- * flow tokens. Subprocesses follow the same pattern: a token at the subprocess node
- * owns a child state machine with the subprocess's flow tokens.
- *
- * @note A state machine without @ref parentToken represents a @ref BPMN::Process.
+ * The global state machine of a system state has no scope and no @ref parentToken. Its tokens are the
+ * process-level tokens, one for each process instance, whose node is the process. Each of them owns the
+ * state machine of its process instance, which holds the data of the instance and the flow tokens, and
+ * which is the @ref root of every state machine within the instance. Subprocesses follow the same pattern:
+ * a token at the subprocess node owns a child state machine with the subprocess's flow tokens.
  * @note Inclusive gateways are not yet supported.
  *
  * @attention Event subprocesses within event subprocesses are not yet tested (and may not be supported).
@@ -34,18 +32,12 @@ class StateMachine : public std::enable_shared_from_this<StateMachine> {
 public:
   static constexpr char delimiters[] = {'^','#'}; ///< Delimiters used for disambiguation of identifiers of non-interrupting event subprocesses, multi-instance activities and instances created by a trigger
   /**
-   * @brief Constructs a root StateMachine for a process instance.
-   *
-   * Creates the top-level state machine that represents a process instance, together with the token at
-   * the process, which holds the status. The instance is started when that token becomes ready.
-   * This constructor is used when instantiating a new process.
+   * @brief Constructs the global state machine of a system state, which holds a token for each process
+   * instance and has neither a scope nor a parent token.
    *
    * @param systemState The system state this state machine belongs to
-   * @param process The BPMN process definition
-   * @param dataAttributes Initial data attribute values for the process
-   * @param status Initial status attribute values for the process
    */
-  StateMachine(const SystemState* systemState, const BPMN::Process* process, Values dataAttributes, Values status);
+  StateMachine(const SystemState* systemState);
 
   /**
    * @brief Constructs a child StateMachine for a scope within a process.
@@ -81,21 +73,23 @@ public:
    * are NOT copied by this constructor (handled in subsequent copy phases).
    *
    * @param systemState The new system state this copy belongs to
-   * @param parentToken The new parent token (nullptr for root state machines)
+   * @param parentToken The new parent token (nullptr for the global state machine)
    * @param other The source StateMachine to copy from
+   * @param context The copied context of an event subprocess, which copies its event subprocesses before the
+   *        parent token owns it (nullptr for any other state machine)
    */
-  StateMachine(const SystemState* systemState, Token* parentToken, const StateMachine* other);
+  StateMachine(const SystemState* systemState, Token* parentToken, const StateMachine* other, const StateMachine* context = nullptr);
 
   ~StateMachine();
 
   Values getData(const BPMN::Scope* scope);
 
   const SystemState* systemState; ///< Pointer to the system state this state machine belongs to.
-  const BPMN::Scope* scope; ///< Pointer to the current scope.
-  const StateMachine* root; ///< Pointer to the root state machine, whose scope is the process
+  const BPMN::Scope* scope; ///< Pointer to the current scope (nullptr for the global state machine).
+  const StateMachine* root; ///< Pointer to the state machine of the process instance, whose scope is the process (nullptr for the global state machine)
   std::optional<BPMNOS::number> instance; ///< Numeric representation of instance id (TODO: can we const this?)
 
-  Token* parentToken; ///< Token that owns this state machine (nullptr for root process state machines).
+  Token* parentToken; ///< Token that owns this state machine (nullptr for the global state machine).
   Values ownedData; ///< Container holding data attributes owned by the state machine.
   SharedValues data; ///< Container holding references to all data attributes.
 
@@ -119,7 +113,12 @@ private:
   std::map< const BPMN::FlowNode*, unsigned int > instantiations; ///< Instantiation counter for start events of non-interrupting event subprocesses
 
   void registerRecipient(); ///< Register new state machine to allow directed message delivery
-  void unregisterRecipient(); ///< Register new state machine id to withdraw directed messages
+  void unregisterRecipient(); ///< Withdraw the directed messages of a non-interrupting event subprocess
+  void withdrawMessages(); ///< Withdraw the messages directed to the state machine
+
+  /// @brief Method creating a process-level token in the global state machine, together with the state
+  /// machine of the process instance it owns, which holds the data of the instance.
+  Token* createInstance(const BPMN::Process* process, Values data, Values status);
 
   void updateObjective(); ///< Updates the objective by the values the data attributes of the scope are created with, these never passing through @ref BPMNOS::Model::AttributeRegistry::setValue
   void createChild(Token* parent, const BPMN::Scope* scope, Values data, std::optional<BPMNOS::number> instance = std::nullopt); ///< Method creating the state machine for a (sub)process

@@ -270,13 +270,9 @@ void Engine::triggerInstance(const BPMN::Process* process, BPMNOS::VariedValueMa
     notify( DataUpdate( *dataUpdateAttributes ) );
   }
 
-  systemState->instances.push_back(std::make_shared<StateMachine>(systemState.get(),process,std::move(data),std::move(status)));
-
   // the trigger is the condition for the start, so the instance is started at once and not upon a ready
-  // event: the child is created and the token at the process advances through READY
-  auto instance = systemState->instances.back().get();
-  auto token = instance->tokens.front().get();
-  instance->createChild(token, process, {});
+  // event: the token at the process advances through READY
+  auto token = systemState->globalStateMachine->createInstance(process, std::move(data), std::move(status));
   token->advanceToReady();
 }
 
@@ -312,16 +308,19 @@ void Engine::process(const InstantiationEvent* event) {
     throw std::runtime_error("Engine: instance of process '" + process->id + "' has no timestamp");
   }
   systemState->instantiationCounter[process]++;
-  systemState->instances.push_back(std::make_shared<StateMachine>(systemState.get(),process,std::move(data),std::move(status)));
+  auto token = systemState->globalStateMachine->createInstance(process, std::move(data), std::move(status));
   // the token at the process awaits the ready event starting the instance
-  systemState->instances.back()->tokens.front()->advanceFromCreated();
+  token->advanceFromCreated();
 
   processCommands();
 }
 
-void Engine::deleteInstance(StateMachine* instance) {
+void Engine::deleteInstance(Token* token) {
 //std::cerr << "deleteInstance" << std::endl;
-  erase_ptr<StateMachine>(systemState->instances,instance);
+  // the messages directed to the instance can no longer be received, and the token at the process is
+  // removed together with the state machine of the instance it owns
+  token->owned->withdrawMessages();
+  erase_ptr<Token>(systemState->globalStateMachine->tokens,token);
 }
 
 void Engine::process(const SignalBroadcastEvent* event) {
@@ -340,17 +339,15 @@ void Engine::process(const ReadyEvent* event) {
   token->status = std::move(status);
   token->status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = systemState->currentTime;
 
-  if ( auto process = token->node->represents<BPMN::Process>() ) {
-    // the token at a process starts the instance: the data owned by the state machine of the process is
-    // replaced element by element, so that the references to it remain valid, and the child owning the
-    // tokens flowing through the process is created
-    auto stateMachine = const_cast<StateMachine*>(token->owner);
+  if ( token->node->represents<BPMN::Process>() ) {
+    // the token at a process starts the instance: the data owned by the state machine of the instance is
+    // replaced element by element, so that the references to it remain valid
+    auto stateMachine = token->owned.get();
     auto& data = const_cast<ReadyEvent*>(event)->dataAttributes;
     assert( data.size() == stateMachine->data.size() );
     for ( size_t i = 0; i < data.size(); i++ ) {
       stateMachine->data[i].get() = data[i];
     }
-    stateMachine->createChild(token, process, {});
   }
   else if ( auto scope = token->node->represents<BPMN::Scope>() ) {
     auto& data = const_cast<ReadyEvent*>(event)->dataAttributes;

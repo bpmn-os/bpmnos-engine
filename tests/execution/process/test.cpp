@@ -458,7 +458,7 @@ SCENARIO( "Executable process created and started in two steps", "[execution][pr
       auto startTime = dataProvider->getEarliestInstantiationTime(*scenario);
       engine.initialize(std::move(scenario), startTime);
       auto systemState = engine.getSystemState();
-      REQUIRE( systemState->instances.empty() );
+      REQUIRE( systemState->globalStateMachine->tokens.empty() );
       REQUIRE( engine.advance() );
 
       THEN( "The instantiation event is dispatched before the token at the process is created" ) {
@@ -470,26 +470,25 @@ SCENARIO( "Executable process created and started in two steps", "[execution][pr
       }
 
       THEN( "The instance is created but not started" ) {
-        REQUIRE( systemState->instances.size() == 1 );
-        auto instance = systemState->instances.front().get();
-        REQUIRE( instance->tokens.size() == 1 );
-        auto token = instance->tokens.front().get();
+        REQUIRE( systemState->globalStateMachine->tokens.size() == 1 );
+        auto token = systemState->globalStateMachine->tokens.front().get();
         REQUIRE( token->node->represents<BPMN::Process>() );
         REQUIRE( token->state == Execution::Token::State::CREATED );
-        REQUIRE( token->owned == nullptr );
-        REQUIRE( !systemState->archive.contains( (long unsigned int)instance->instance.value() ) );
+        // the state machine of the instance holds its data from the instantiation on, but no token
+        REQUIRE( token->owned != nullptr );
+        REQUIRE( token->owned->tokens.empty() );
+        REQUIRE( !systemState->archive.contains( (long unsigned int)token->owned->instance.value() ) );
       }
 
       WHEN( "The engine advances by the ready event" ) {
         REQUIRE( engine.advance() );
 
         THEN( "The instance is started" ) {
-          REQUIRE( systemState->instances.size() == 1 );
-          auto instance = systemState->instances.front().get();
-          auto token = instance->tokens.front().get();
+          REQUIRE( systemState->globalStateMachine->tokens.size() == 1 );
+          auto token = systemState->globalStateMachine->tokens.front().get();
           REQUIRE( token->state == Execution::Token::State::BUSY );
           REQUIRE( token->owned != nullptr );
-          REQUIRE( systemState->archive.contains( (long unsigned int)instance->instance.value() ) );
+          REQUIRE( systemState->archive.contains( (long unsigned int)token->owned->instance.value() ) );
         }
       }
     }
@@ -523,10 +522,10 @@ SCENARIO( "Executable process created when it becomes known", "[execution][proce
       auto systemState = engine.getSystemState();
 
       THEN( "The instance is created but not started" ) {
-        REQUIRE( systemState->instances.size() == 1 );
-        auto token = systemState->instances.front()->tokens.front().get();
+        REQUIRE( systemState->globalStateMachine->tokens.size() == 1 );
+        auto token = systemState->globalStateMachine->tokens.front().get();
         REQUIRE( token->state == Execution::Token::State::CREATED );
-        REQUIRE( token->owned == nullptr );
+        REQUIRE( token->owned->tokens.empty() );
         auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr }, {"event",nullptr },{"decision",nullptr }});
         REQUIRE( processLog.size() == 1 );
         REQUIRE( processLog[0]["state"] == "CREATED" );
@@ -578,8 +577,8 @@ SCENARIO( "Executable process known before its start", "[execution][process]" ) 
       auto systemState = engine.getSystemState();
 
       THEN( "The instance is known but raises no decision request" ) {
-        REQUIRE( systemState->instances.size() == 1 );
-        REQUIRE( systemState->instances.front()->tokens.front()->state == Execution::Token::State::CREATED );
+        REQUIRE( systemState->globalStateMachine->tokens.size() == 1 );
+        REQUIRE( systemState->globalStateMachine->tokens.front()->state == Execution::Token::State::CREATED );
         REQUIRE( recorder.find(nlohmann::json{{"decision",nullptr}}).empty() );
         REQUIRE( systemState->pendingEntryDecisions.empty() );
         REQUIRE( systemState->pendingExitDecisions.empty() );

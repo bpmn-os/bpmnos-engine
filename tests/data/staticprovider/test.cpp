@@ -31,7 +31,7 @@ SCENARIO( "Static data provider", "[data][static]" ) {
       }
       THEN( "The run ends with a termination event once no instance is left" ) {
         REQUIRE( recorder.log.back()["event"] == "termination" );
-        REQUIRE( engine.getSystemState()->instances.empty() );
+        REQUIRE( engine.getSystemState()->globalStateMachine->tokens.empty() );
       }
     }
 
@@ -49,7 +49,7 @@ SCENARIO( "Static data provider", "[data][static]" ) {
       THEN( "The run ends at time 5 with the instance still running" ) {
         REQUIRE( recorder.log.back()["event"] == "termination" );
         REQUIRE( engine.getCurrentTime() == 5 );
-        REQUIRE( engine.getSystemState()->instances.size() == 1 );
+        REQUIRE( engine.getSystemState()->globalStateMachine->tokens.size() == 1 );
       }
 
       AND_WHEN( "The end time is raised and the run is resumed" ) {
@@ -60,7 +60,7 @@ SCENARIO( "Static data provider", "[data][static]" ) {
           auto timerLog = recorder.find(nlohmann::json{{"nodeId","TimerEvent_1"},{"state","COMPLETED"}});
           REQUIRE( timerLog.size() == 1 );
           REQUIRE( timerLog.front()["status"]["timestamp"] == 10.0 );
-          REQUIRE( engine.getSystemState()->instances.empty() );
+          REQUIRE( engine.getSystemState()->globalStateMachine->tokens.empty() );
         }
       }
     }

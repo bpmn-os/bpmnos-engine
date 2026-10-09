@@ -566,3 +566,100 @@ SCENARIO( "Multi-instance receive task", "[execution][message]" ) {
   }
 
 }
+
+SCENARIO( "Message directed to an instance that ends without receiving it", "[execution][message]" ) {
+  const std::string modelFile = "tests/execution/message/Message_to_ending_instance.bpmn";
+  REQUIRE_NOTHROW( Model::Model(modelFile) );
+
+  // no dispatcher delivers messages, so the message directed to the recipient stays in its inbox until the
+  // recipient ends
+
+  // the position in the log of the first entry matching the given predicate
+  auto position = [](const Execution::Recorder& recorder, auto predicate) {
+    for ( size_t i = 0; i < recorder.log.size(); i++ ) {
+      if ( predicate(recorder.log[i]) ) {
+        return i;
+      }
+    }
+    return recorder.log.size();
+  };
+  auto isWithdrawnMessage = [](const nlohmann::ordered_json& entry) {
+    return entry.contains("origin") && entry["origin"] == "MessageEndEvent_1" && entry["state"] == "WITHDRAWN";
+  };
+
+  GIVEN( "A recipient completing at time 2" ) {
+    std::string csv =
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1; timestamp := 0\n"
+      "Instance_2; Process_2; timestamp := 0\n"
+      "Instance_2; Process_2; duration := 2\n"
+      "Instance_2; Process_2; deadline := 10\n"
+    ;
+
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+
+    WHEN( "The engine is started" ) {
+      Execution::Engine engine(model);
+      Execution::InstantEntry entryHandler;
+      Execution::InstantExit exitHandler;
+      entryHandler.connect(&engine);
+      exitHandler.connect(&engine);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
+      recorder.subscribe(&engine);
+      engine.run(dataProvider->createScenario());
+
+      THEN( "The message is withdrawn once the recipient is done" ) {
+        auto done = position(recorder, [](const nlohmann::ordered_json& entry) {
+          return entry.contains("instanceId") && entry["instanceId"] == "Instance_2" && !entry.contains("nodeId") &&
+            !entry.contains("event") && !entry.contains("decision") && entry["state"] == "DONE";
+        });
+        auto withdrawn = position(recorder, isWithdrawnMessage);
+        REQUIRE( done < recorder.log.size() );
+        REQUIRE( withdrawn < recorder.log.size() );
+        REQUIRE( done < withdrawn );
+        REQUIRE( engine.getSystemState()->messages.empty() );
+        REQUIRE( engine.getSystemState()->globalStateMachine->tokens.empty() );
+      }
+    }
+  }
+
+  GIVEN( "A recipient missing its deadline at time 2" ) {
+    std::string csv =
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1; timestamp := 0\n"
+      "Instance_2; Process_2; timestamp := 0\n"
+      "Instance_2; Process_2; duration := 2\n"
+      "Instance_2; Process_2; deadline := 1\n"
+    ;
+
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+
+    WHEN( "The engine is started" ) {
+      Execution::Engine engine(model);
+      Execution::InstantEntry entryHandler;
+      Execution::InstantExit exitHandler;
+      entryHandler.connect(&engine);
+      exitHandler.connect(&engine);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
+      recorder.subscribe(&engine);
+      engine.run(dataProvider->createScenario());
+
+      THEN( "The message is withdrawn once the recipient has failed" ) {
+        auto failed = position(recorder, [](const nlohmann::ordered_json& entry) {
+          return entry.contains("instanceId") && entry["instanceId"] == "Instance_2" && !entry.contains("nodeId") &&
+            !entry.contains("event") && !entry.contains("decision") && entry["state"] == "FAILED";
+        });
+        auto withdrawn = position(recorder, isWithdrawnMessage);
+        REQUIRE( failed < recorder.log.size() );
+        REQUIRE( withdrawn < recorder.log.size() );
+        REQUIRE( failed < withdrawn );
+        REQUIRE( engine.getSystemState()->messages.empty() );
+        REQUIRE( engine.getSystemState()->globalStateMachine->tokens.empty() );
+      }
+    }
+  }
+}

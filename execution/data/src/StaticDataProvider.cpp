@@ -197,7 +197,7 @@ void StaticDataProvider::advance(const SystemState* systemState, Execution::Scen
   auto& scenario = static_cast<Scenario&>(executionScenario);
   if (
     systemState->getTime() >= endTime ||
-    ( systemState->instances.empty() && scenario.scheduledEvents.empty() )
+    ( systemState->globalStateMachine->tokens.empty() && scenario.scheduledEvents.empty() )
   ) {
     queue.push_back(std::make_shared<TerminationEvent>());
     return;
@@ -239,7 +239,7 @@ BPMNOS::Values StaticDataProvider::getCompletionStatus([[maybe_unused]] Scenario
 }
 
 void StaticDataProvider::readyProcess(Scenario& scenario, EventQueue& queue, const Token* token) const {
-  auto instanceId = (size_t)token->owner->root->instance.value();
+  auto instanceId = (size_t)token->getInstanceId();
   auto process = getInstance(instanceId).process;
   auto event = std::make_shared<ReadyEvent>(token, getStatus(scenario, instanceId, process), getData(scenario, instanceId, process));
   schedule(scenario, queue, getProcessReadyTime(scenario, instanceId), token->owner->systemState->getTime(), std::move(event));

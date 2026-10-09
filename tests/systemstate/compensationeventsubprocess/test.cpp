@@ -30,14 +30,11 @@ SCENARIO( "SystemState copy with compensable subprocess", "[systemstate][compens
 
     // Find the context StateMachine (owned by process token)
     const Execution::StateMachine* originalContext = nullptr;
-    for (const auto& instance : originalState->instances) {
-      for (const auto& processToken : instance->tokens) {
-        if (processToken->owned) {
-          originalContext = processToken->owned.get();
-          break;
-        }
+    for (const auto& processToken : originalState->globalStateMachine->tokens) {
+      if (processToken->owned) {
+        originalContext = processToken->owned.get();
+        break;
       }
-      if (originalContext) break;
     }
     REQUIRE( originalContext != nullptr );
     REQUIRE( originalContext->compensableSubProcesses.size() == 1 );
@@ -53,14 +50,11 @@ SCENARIO( "SystemState copy with compensable subprocess", "[systemstate][compens
 
       THEN( "The copy has the compensable subprocess" ) {
         const Execution::StateMachine* copiedContext = nullptr;
-        for (const auto& instance : copiedState.instances) {
-          for (const auto& processToken : instance->tokens) {
-            if (processToken->owned) {
-              copiedContext = processToken->owned.get();
-              break;
-            }
+        for (const auto& processToken : copiedState.globalStateMachine->tokens) {
+          if (processToken->owned) {
+            copiedContext = processToken->owned.get();
+            break;
           }
-          if (copiedContext) break;
         }
         REQUIRE( copiedContext != nullptr );
         REQUIRE( copiedContext->compensableSubProcesses.size() ==
@@ -113,14 +107,11 @@ SCENARIO( "SystemState copy with active compensation event subprocess", "[system
 
     // Find the context StateMachine (owned by process token)
     const Execution::StateMachine* originalContext = nullptr;
-    for (const auto& instance : originalState->instances) {
-      for (const auto& processToken : instance->tokens) {
-        if (processToken->owned) {
-          originalContext = processToken->owned.get();
-          break;
-        }
+    for (const auto& processToken : originalState->globalStateMachine->tokens) {
+      if (processToken->owned) {
+        originalContext = processToken->owned.get();
+        break;
       }
-      if (originalContext) break;
     }
     REQUIRE( originalContext != nullptr );
     REQUIRE( originalContext->compensationEventSubProcesses.size() == 1 );
@@ -138,14 +129,11 @@ SCENARIO( "SystemState copy with active compensation event subprocess", "[system
       THEN( "The copy has the compensation event subprocess" ) {
         // Find copied context StateMachine
         const Execution::StateMachine* copiedContext = nullptr;
-        for (const auto& instance : copiedState.instances) {
-          for (const auto& processToken : instance->tokens) {
-            if (processToken->owned) {
-              copiedContext = processToken->owned.get();
-              break;
-            }
+        for (const auto& processToken : copiedState.globalStateMachine->tokens) {
+          if (processToken->owned) {
+            copiedContext = processToken->owned.get();
+            break;
           }
-          if (copiedContext) break;
         }
         REQUIRE( copiedContext != nullptr );
         REQUIRE( copiedContext->compensationEventSubProcesses.size() ==

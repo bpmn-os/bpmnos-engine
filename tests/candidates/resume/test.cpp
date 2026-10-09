@@ -392,8 +392,8 @@ SCENARIO( "An instance created but not started when the state was installed is s
     REQUIRE( engine.advance() );
 
     const auto* systemState = engine.getSystemState();
-    REQUIRE( systemState->instances.size() == 1 );
-    REQUIRE( systemState->instances.front()->tokens.front()->state == Execution::Token::State::CREATED );
+    REQUIRE( systemState->globalStateMachine->tokens.size() == 1 );
+    REQUIRE( systemState->globalStateMachine->tokens.front()->state == Execution::Token::State::CREATED );
 
     WHEN( "The state is installed into a fresh engine and resumed" ) {
       Execution::Engine resumed(model);
@@ -408,8 +408,8 @@ SCENARIO( "An instance created but not started when the state was installed is s
 
       THEN( "The copied state lists the token at the process as awaiting its ready event" ) {
         const auto* copiedState = resumed.getSystemState();
-        REQUIRE( copiedState->instances.size() == 1 );
-        REQUIRE( copiedState->instances.front()->tokens.front()->state == Execution::Token::State::CREATED );
+        REQUIRE( copiedState->globalStateMachine->tokens.size() == 1 );
+        REQUIRE( copiedState->globalStateMachine->tokens.front()->state == Execution::Token::State::CREATED );
         REQUIRE( copiedState->tokensAwaitingReadyEvent.count() == 1 );
       }
 

@@ -232,7 +232,7 @@ protected:
   /// @ref BPMN::SendTask "send task" awaiting its delivery is completed.
   void triggerInstanceByMessage(const BPMN::Process* process, std::weak_ptr<Message> message_ptr);
 
-  void deleteInstance(StateMachine* instance); ///< Method removing completed instance
+  void deleteInstance(Token* token); ///< Method removing the token at the process of a completed or failed instance, together with the state machine of the instance
 
   /// @brief Method refusing a scenario of another model.
   void acceptScenario(const Scenario* scenario);

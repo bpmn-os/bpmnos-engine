@@ -491,3 +491,76 @@ SCENARIO( "Event subprocess with an attribute assigned by the model", "[executio
     }
   }
 }
+
+SCENARIO( "Event subprocess within a subprocess with data", "[execution][eventsubprocess]" ) {
+  const std::string modelFile = "tests/execution/eventsubprocess/Subprocess_with_data_and_event_subprocess.bpmn";
+  REQUIRE_NOTHROW( Model::Model(modelFile) );
+  GIVEN( "A single instance whose subprocess escalates at time 1" ) {
+
+    std::string csv =
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1; timestamp := 0\n"
+    ;
+
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+
+    WHEN( "The engine is started with a recorder" ) {
+      Execution::Engine engine(model);
+      Execution::InstantEntry entryHandler;
+      Execution::InstantExit exitHandler;
+      entryHandler.connect(&engine);
+      exitHandler.connect(&engine);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
+      recorder.subscribe(&engine);
+      engine.run(dataProvider->createScenario());
+
+      THEN( "The event subprocess reads the data of the subprocess it belongs to" ) {
+        auto startLog = recorder.find(nlohmann::json{{"nodeId","EscalationStartEvent_1"},{"state","COMPLETED"}}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
+        REQUIRE( startLog.size() == 1 );
+        REQUIRE( startLog[0]["status"]["received"] == 7 );
+      }
+      THEN( "The process completes" ) {
+        auto processLog = recorder.find(nlohmann::json{{"state","DONE"}}, nlohmann::json{{"nodeId",nullptr }, {"event",nullptr },{"decision",nullptr }});
+        REQUIRE( processLog.size() == 1 );
+      }
+    }
+
+    WHEN( "The system state is copied while the event subprocess is pending and the run is resumed" ) {
+      Execution::Engine engine(model);
+      Execution::InstantEntry entryHandler;
+      Execution::InstantExit exitHandler;
+      entryHandler.connect(&engine);
+      exitHandler.connect(&engine);
+      dataProvider->setEndTime(0);
+      engine.run(dataProvider->createScenario(), 0);
+
+      Execution::Engine resumed(model);
+      Execution::InstantEntry resumedEntryHandler;
+      Execution::InstantExit resumedExitHandler;
+      resumedEntryHandler.connect(&resumed);
+      resumedExitHandler.connect(&resumed);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
+      recorder.subscribe(&resumed);
+      resumed.initializeSystemState(dataProvider->createScenario(), engine.getSystemState());
+      // a finite time bound turns a run that does not end into a failed assertion instead of a hang
+      dataProvider->setEndTime(100);
+      resumed.resume();
+
+      THEN( "The run ends well before the time bound" ) {
+        REQUIRE( (double)resumed.getSystemState()->getTime() < 100.0 );
+      }
+      THEN( "The copied event subprocess reads the data of the subprocess it belongs to" ) {
+        auto startLog = recorder.find(nlohmann::json{{"nodeId","EscalationStartEvent_1"},{"state","COMPLETED"}}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
+        REQUIRE( startLog.size() == 1 );
+        REQUIRE( startLog[0]["status"]["received"] == 7 );
+      }
+      THEN( "The process completes" ) {
+        auto processLog = recorder.find(nlohmann::json{{"state","DONE"}}, nlohmann::json{{"nodeId",nullptr }, {"event",nullptr },{"decision",nullptr }});
+        REQUIRE( processLog.size() == 1 );
+      }
+    }
+  }
+}

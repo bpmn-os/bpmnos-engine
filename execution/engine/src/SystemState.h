@@ -88,7 +88,7 @@ public:
    * @brief Maps instance identifiers to state machines for message routing.
    *
    * Used to look up recipient state machines when delivering directed messages.
-   * Contains: root process state machines, multi-instance activity state machines,
+   * Contains: state machines of process instances, multi-instance activity state machines,
    * and non-interrupting event subprocess state machines.
    */
   std::unordered_map< long unsigned int, std::weak_ptr<StateMachine> > archive;
@@ -139,9 +139,10 @@ public:
   BPMNOS::Values globals;
 
   /**
-   * @brief Container holding a state machine for each running instance.
+   * @brief The global state machine, holding a token at the process of each running instance, which owns
+   * the state machine of the instance.
    */
-  StateMachines instances;
+  std::shared_ptr<StateMachine> globalStateMachine;
 
   /**
    * @brief Container holding all messages created by a throwing message event.

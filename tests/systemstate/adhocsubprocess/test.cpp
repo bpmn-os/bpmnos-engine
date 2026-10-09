@@ -28,19 +28,16 @@ SCENARIO( "SystemState copy with SequentialAdHocSubProcess", "[systemstate][adho
     const auto* originalState = engine.getSystemState();
 
     // Find the performer token (at AdHocSubProcess node)
-    // Hierarchy: instance -> process token (node=null) -> owned -> AdHocSubProcess token
+    // Hierarchy: global state machine -> process token (node = process) -> owned -> AdHocSubProcess token
     Execution::Token* originalPerformerToken = nullptr;
-    for (const auto& instance : originalState->instances) {
-      for (const auto& processToken : instance->tokens) {
-        if (processToken->owned) {
-          for (const auto& token : processToken->owned->tokens) {
-            if (token->node && token->node->id == "AdHocSubProcess_1") {
-              originalPerformerToken = token.get();
-              break;
-            }
+    for (const auto& processToken : originalState->globalStateMachine->tokens) {
+      if (processToken->owned) {
+        for (const auto& token : processToken->owned->tokens) {
+          if (token->node->id == "AdHocSubProcess_1") {
+            originalPerformerToken = token.get();
+            break;
           }
         }
-        if (originalPerformerToken) break;
       }
       if (originalPerformerToken) break;
     }
@@ -57,17 +54,14 @@ SCENARIO( "SystemState copy with SequentialAdHocSubProcess", "[systemstate][adho
       THEN( "The copy has the same performing and pendingSequentialEntries" ) {
         // Find the copied performer token
         Execution::Token* copiedPerformerToken = nullptr;
-        for (const auto& instance : copiedState.instances) {
-          for (const auto& processToken : instance->tokens) {
-            if (processToken->owned) {
-              for (const auto& token : processToken->owned->tokens) {
-                if (token->node && token->node->id == "AdHocSubProcess_1") {
-                  copiedPerformerToken = token.get();
-                  break;
-                }
+        for (const auto& processToken : copiedState.globalStateMachine->tokens) {
+          if (processToken->owned) {
+            for (const auto& token : processToken->owned->tokens) {
+              if (token->node->id == "AdHocSubProcess_1") {
+                copiedPerformerToken = token.get();
+                break;
               }
             }
-            if (copiedPerformerToken) break;
           }
           if (copiedPerformerToken) break;
         }

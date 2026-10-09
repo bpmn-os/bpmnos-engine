@@ -202,7 +202,8 @@ BPMNOS::number Token::getInstanceId() const {
 
 nlohmann::ordered_json Token::jsonify() const {
   nlohmann::ordered_json jsonObject;
-  jsonObject["processId"] = owner->root->scope->id;
+  // the token at a process belongs to the global state machine, which has no process
+  jsonObject["processId"] = ( owner->root ? owner->root->scope : node )->id;
   jsonObject["instanceId"] = BPMNOS::to_string(getInstanceId(),STRING);
   if ( node->represents<BPMN::FlowNode>() ) {
     jsonObject["nodeId"] = node->id;
@@ -357,7 +358,7 @@ void Token::advanceToReady() {
 //std::cerr << "advanceToReady: " << jsonify().dump() << std::endl;
   if ( node->represents<BPMN::Process>() ) {
     // the data the instance is started with is accounted in the objective
-    const_cast<StateMachine*>(owner)->updateObjective();
+    owned->updateObjective();
     // the token at a process enters without an entry decision
     update(State::READY);
     advanceToEntered();
@@ -457,9 +458,8 @@ void Token::advanceToEntered() {
 
   if ( node->represents<BPMN::Process>() ) {
     // register the state machine of the process instance
-    auto stateMachine = const_cast<StateMachine*>(owner);
-    const_cast<SystemState*>(owner->systemState)->archive[ (long unsigned int)stateMachine->instance.value() ] = stateMachine->weak_from_this();
-    stateMachine->registerRecipient();
+    const_cast<SystemState*>(owner->systemState)->archive[ (long unsigned int)owned->instance.value() ] = owned->weak_from_this();
+    owned->registerRecipient();
   }
 
   if ( const BPMN::Activity* activity = node->represents<BPMN::Activity>();
@@ -827,7 +827,7 @@ void Token::advanceToCompleted() {
     }
 
     // the objective is updated with the final status attributes declared for the process
-    auto extensionElements = owner->scope->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+    auto extensionElements = node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
     BPMNOS::number DELTA = 0;
     for ( auto& attribute : extensionElements->attributes ) {
       if ( attribute->weight != 0 ) {
@@ -1156,6 +1156,14 @@ void Token::advanceToDone() {
     engine->commands.emplace_back(std::bind(&StateMachine::deleteAdHocSubProcessToken,stateMachine,this), this);
     return;
   }
+
+  if ( node->represents<BPMN::Process>() ) {
+    // the instance is complete and its token is removed from the global state machine
+    auto engine = const_cast<Engine*>(owner->systemState->engine);
+    engine->commands.emplace_back(std::bind(&Engine::deleteInstance,engine,this), this);
+    return;
+  }
+
   const_cast<StateMachine*>(owner)->attemptShutdown();
 }
 
@@ -1248,7 +1256,11 @@ void Token::advanceToFailed() {
  
   if ( owned ) {
 //std::cerr << "Use data of scope " << owner->scope->id << std::endl;
-    data = &const_cast<StateMachine*>(owner)->data;
+    if ( node->represents<BPMN::FlowNode>() ) {
+      // the data of the token at a process is held by the state machine of the instance until the instance
+      // is deleted
+      data = &const_cast<StateMachine*>(owner)->data;
+    }
 
     if ( !owned->scope ) {
       owned.reset(); 
@@ -1285,8 +1297,11 @@ void Token::terminate() {
     return;
   }
 
-  // delete state machine
-  owned.reset();
+  if ( node->represents<BPMN::FlowNode>() ) {
+    // delete state machine; the state machine of a process instance holds the data of the instance and is
+    // deleted with the instance
+    owned.reset();
+  }
   
   // all compensations have been completed, now handle failure
   engine->commands.emplace_back(std::bind(&Token::update,this,Token::State::FAILED), this);
