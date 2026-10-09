@@ -118,25 +118,25 @@ const Attribute* Expression::isAttribute() const {
 }
 
 template <typename DataType>
-std::optional<double> Expression::execute(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const {
+std::optional<double> Expression::execute(const BPMNOS::Values& status, const DataType& data) const {
   if ( type == Type::UNASSIGN ) {
     return std::nullopt;
   }
   if ( type == Type::IS_NULL ) {
     assert(variables.size() == 1);
-    auto value = attributeRegistry.getValue(variables[0],status,data,globals);
+    auto value = attributeRegistry.getValue(variables[0],status,data);
     return (double)!value.has_value();
   }
   if ( type == Type::IS_NOT_NULL ) {
     assert(variables.size() == 1);
-    auto value = attributeRegistry.getValue(variables[0],status,data,globals);
+    auto value = attributeRegistry.getValue(variables[0],status,data);
     return (double)value.has_value();
   }
 
   // collect variable values
   std::vector< double > variableValues;
   for ( auto attribute : variables ) {
-    auto value = attributeRegistry.getValue(attribute,status,data,globals);
+    auto value = attributeRegistry.getValue(attribute,status,data);
     if ( !value.has_value() ) {
       // return nullopt because required attribute value is not given
       return std::nullopt;
@@ -148,7 +148,7 @@ std::optional<double> Expression::execute(const BPMNOS::Values& status, const Da
   std::vector< std::vector< double > > collectionValues;
   for ( auto attribute : collections ) {
     collectionValues.push_back( {} );
-    auto collection = attributeRegistry.getValue(attribute,status,data,globals);
+    auto collection = attributeRegistry.getValue(attribute,status,data);
     if ( !collection.has_value() ) {
       // return nullopt because required collection is not given
       return std::nullopt;
@@ -166,7 +166,7 @@ std::optional<double> Expression::execute(const BPMNOS::Values& status, const Da
     for ( auto attribute : variables ) {
       if (attribute != variables.front()) arguments += ", ";
       arguments += attribute->name + " = ";
-      auto value = attributeRegistry.getValue(attribute,status,data,globals);
+      auto value = attributeRegistry.getValue(attribute,status,data);
       assert( value.has_value() );
       arguments += BPMNOS::to_string(value.value(),attribute->type);
     }
@@ -174,6 +174,6 @@ std::optional<double> Expression::execute(const BPMNOS::Values& status, const Da
   }
 }
 
-template std::optional<double> Expression::execute<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data, const BPMNOS::Values& globals) const;
-template std::optional<double> Expression::execute<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data, const BPMNOS::Values& globals) const;
+template std::optional<double> Expression::execute<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data) const;
+template std::optional<double> Expression::execute<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data) const;
 

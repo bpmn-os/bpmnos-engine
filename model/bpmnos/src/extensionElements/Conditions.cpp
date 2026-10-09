@@ -29,14 +29,14 @@ Conditions::Conditions(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent
 }
 
 template <typename DataType>
-bool Conditions::conditionsSatisfied(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const {
+bool Conditions::conditionsSatisfied(const BPMNOS::Values& status, const DataType& data) const {
   for ( auto& condition : conditions ) {
-    if ( !condition->isSatisfied(status,data,globals) ) {
+    if ( !condition->isSatisfied(status,data) ) {
       return false; 
     }
   }
   return true; 
 }
 
-template bool Conditions::conditionsSatisfied<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data, const BPMNOS::Values& globals) const;
-template bool Conditions::conditionsSatisfied<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data, const BPMNOS::Values& globals) const;
+template bool Conditions::conditionsSatisfied<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data) const;
+template bool Conditions::conditionsSatisfied<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data) const;

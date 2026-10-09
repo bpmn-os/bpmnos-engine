@@ -103,6 +103,10 @@ public:
   std::vector< std::unique_ptr<LookupTable> > lookupTables; ///< Vector containing lookup tables declared in model.
   std::vector< std::unique_ptr<Attribute> > attributes; ///< Vector containing new global attributes declared for the model.
 
+  /// The index of the instance in the data of every scope: the global attributes are the data attributes with
+  /// indices below it, and every process declares the instance as its first data attribute, at this index.
+  size_t instanceIndex;
+
   /// @brief Map holding the process instantiated by a signal with a given name.
   ///
   /// The model-time counterpart of @ref BPMNOS::Execution::SystemState::tokensAwaitingSignal: which

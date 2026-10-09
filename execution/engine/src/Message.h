@@ -36,7 +36,7 @@ public:
   bool matches(const BPMNOS::Values& otherHeader) const; ///< Returns true if headers have the same size and all values that are defined are the same.
 
   template <typename DataType>
-  BPMNOS::number apply(const BPMN::FlowNode* node, const BPMNOS::Model::AttributeRegistry& attributeRegistry, BPMNOS::Values& status, DataType& data, BPMNOS::Values& globals) const; ///< Updates the status at a node based on the message content and returns the change of the objective.
+  BPMNOS::number apply(const BPMN::FlowNode* node, const BPMNOS::Model::AttributeRegistry& attributeRegistry, BPMNOS::Values& status, DataType& data) const; ///< Updates the status at a node based on the message content and returns the change of the objective.
 
   nlohmann::ordered_json jsonify() const;
 };

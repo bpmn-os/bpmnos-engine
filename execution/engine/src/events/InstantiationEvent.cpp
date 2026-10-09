@@ -25,8 +25,8 @@ nlohmann::ordered_json InstantiationEvent::jsonify() const {
 
   jsonObject["event"] = "instantiation";
   jsonObject["processId"] = process->id;
-  if ( data.size() > BPMNOS::Model::ExtensionElements::Index::Instance && data[BPMNOS::Model::ExtensionElements::Index::Instance].has_value() ) {
-    jsonObject["instanceId"] = BPMNOS::to_string(data[BPMNOS::Model::ExtensionElements::Index::Instance].value(),STRING);
+  if ( data.size() > BPMNOS::Model::ExtensionElements::Position::Instance && data[BPMNOS::Model::ExtensionElements::Position::Instance].has_value() ) {
+    jsonObject["instanceId"] = BPMNOS::to_string(data[BPMNOS::Model::ExtensionElements::Position::Instance].value(),STRING);
   }
 
   return jsonObject;

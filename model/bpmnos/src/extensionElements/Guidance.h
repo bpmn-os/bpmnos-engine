@@ -36,13 +36,13 @@ public:
    * the value of its expression if it has one.
    */
   template <typename DataType>
-  void apply(BPMNOS::Values& status, DataType& data, BPMNOS::Values& globals) const;
+  void apply(BPMNOS::Values& status, DataType& data) const;
 
   template <typename DataType>
-  BPMNOS::number getObjective(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const;
+  BPMNOS::number getObjective(const BPMNOS::Values& status, const DataType& data) const;
 
   template <typename DataType>
-  bool restrictionsSatisfied(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const;
+  bool restrictionsSatisfied(const BPMNOS::Values& status, const DataType& data) const;
 
 };
 

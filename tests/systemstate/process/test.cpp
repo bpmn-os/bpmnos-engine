@@ -28,7 +28,7 @@ SCENARIO( "SystemState copy for simple process", "[systemstate][process]" ) {
     engine.run(std::move(scenario), 0);
     const auto* originalState= engine.getSystemState();
 
-    REQUIRE( originalState->globalStateMachine->tokens.size() == 2 );
+    REQUIRE( originalState->stateMachine->tokens.size() == 2 );
     REQUIRE( originalState->pendingEntryDecisions.count() == 2 );
 
     WHEN( "SystemState is copied" ) {
@@ -37,7 +37,7 @@ SCENARIO( "SystemState copy for simple process", "[systemstate][process]" ) {
       Execution::SystemState copiedState(&engine, scenarioCopy.get(), originalState);
 
       THEN( "The copy has the same number of instances" ) {
-        REQUIRE( copiedState.globalStateMachine->tokens.size() == originalState->globalStateMachine->tokens.size() );
+        REQUIRE( copiedState.stateMachine->tokens.size() == originalState->stateMachine->tokens.size() );
       }
       THEN( "The archive has the same number of active entries" ) {
         // Lambda to count active (non-expired) archive entries
@@ -54,7 +54,7 @@ SCENARIO( "SystemState copy for simple process", "[systemstate][process]" ) {
 
       THEN( "The copy has the same numeric values" ) {
         REQUIRE( copiedState.currentTime == originalState->currentTime );
-        REQUIRE( copiedState.globals.size() == originalState->globals.size() );
+        REQUIRE( copiedState.stateMachine->ownedData.size() == originalState->stateMachine->ownedData.size() );
       }
 
       THEN( "The copy has the same pending entry decisions" ) {

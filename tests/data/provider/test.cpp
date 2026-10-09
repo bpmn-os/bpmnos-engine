@@ -72,7 +72,7 @@ SCENARIO( "Clock ticks and termination supplied by the data provider", "[data][p
       THEN( "The run ends when the termination event is processed, with the instance still running" ) {
         REQUIRE( recorder.log.back()["event"] == "termination" );
         REQUIRE( engine.getCurrentTime() == 5 );
-        REQUIRE( engine.getSystemState()->globalStateMachine->tokens.size() == 1 );
+        REQUIRE( engine.getSystemState()->stateMachine->tokens.size() == 1 );
         auto timerLog = recorder.find(nlohmann::json{{"nodeId","TimerEvent_1"},{"state","COMPLETED"}});
         REQUIRE( timerLog.empty() );
       }
@@ -227,7 +227,7 @@ SCENARIO( "A caller acting while the engine waits", "[data][provider]" ) {
       THEN( "The run ends with the instance still running" ) {
         REQUIRE( waits == 1 );
         REQUIRE( engine.getCurrentTime() == 0 );
-        REQUIRE( engine.getSystemState()->globalStateMachine->tokens.size() == 1 );
+        REQUIRE( engine.getSystemState()->stateMachine->tokens.size() == 1 );
         REQUIRE( recorder.find(nlohmann::json{{"nodeId","TimerEvent_1"},{"state","COMPLETED"}}).empty() );
       }
 
@@ -336,7 +336,7 @@ public:
       BPMNOS::Values status(extensionElements->attributes.size());
       status[Model::ExtensionElements::Index::Timestamp] = systemState->getTime();
       BPMNOS::Values data(extensionElements->data.size());
-      data[Model::ExtensionElements::Index::Instance] = instanceId;
+      data[Model::ExtensionElements::Position::Instance] = instanceId;
       queue.push_back(std::make_shared<Execution::InstantiationEvent>(process, status, data));
       return;
     }
@@ -344,7 +344,7 @@ public:
       if ( auto token = token_ptr.lock() ) {
         BPMNOS::Values status(extensionElements->attributes.size());
         BPMNOS::Values data(extensionElements->data.size());
-        data[Model::ExtensionElements::Index::Instance] = instanceId;
+        data[Model::ExtensionElements::Position::Instance] = instanceId;
         queue.push_back(std::make_shared<Execution::ReadyEvent>(token.get(), status, data));
       }
     }

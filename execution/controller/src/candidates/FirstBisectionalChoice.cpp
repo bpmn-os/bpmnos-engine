@@ -73,7 +73,7 @@ std::shared_ptr<Decision> FirstBisectionalChoice::bestEnumeratedChoice(std::shar
   auto token = request->token;
   auto decisionTask = token->node->as<BPMNOS::Model::DecisionTask>();
 
-  auto alternativeChoices = decisionTask->enumerateAlternatives(token->status, *token->data, token->globals);
+  auto alternativeChoices = decisionTask->enumerateAlternatives(token->status, *token->data);
   std::shared_ptr<Decision> bestDecision = nullptr;
   for ( auto& choices : alternativeChoices ) {
     auto decision = std::make_shared<ChoiceDecision>(request.get(), std::move(choices), evaluator.get());
@@ -204,7 +204,7 @@ std::shared_ptr<Decision> FirstBisectionalChoice::discreteBisection(std::shared_
 
   // Set member state for this search
   token = request->token;
-  values = choice->getEnumeration(token->status, *token->data, token->globals);
+  values = choice->getEnumeration(token->status, *token->data);
   best = { npos, nullptr };
 
   if ( values.empty() ) {

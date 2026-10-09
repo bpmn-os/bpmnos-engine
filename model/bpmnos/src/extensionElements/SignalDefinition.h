@@ -26,7 +26,7 @@ public:
   XML::bpmnos::tSignal* signal; ///< The `<bpmnos:signal>` element the signal is declared by, or nullptr where the node declares none.
   BPMNOS::number name; ///< Signal name
   ContentMap contentMap; ///< Map allowing to look up contents by their keys.
-  struct { std::vector<const Attribute*> attributes; bool global = false; } dataUpdate; ///< Struct containing data attributes that are modified through signal content and a flag indicating whether a global value is changed (for catching signal events)
+  struct { std::vector<const Attribute*> attributes; } dataUpdate; ///< Struct containing the data attributes, global or not, that are modified through signal content (for catching signal events)
 };
 
 } // namespace BPMNOS::Model

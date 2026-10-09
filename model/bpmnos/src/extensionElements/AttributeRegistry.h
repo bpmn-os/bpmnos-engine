@@ -18,23 +18,21 @@ public:
   const LIMEX::Handle<double>& limexHandle;
 
   std::vector<Attribute*> statusAttributes;
-  std::vector<Attribute*> dataAttributes;
-  std::vector<Attribute*> globalAttributes;
+  std::vector<Attribute*> dataAttributes; ///< The data attributes, the global attributes of the model first
   std::unordered_map< std::string, Attribute*> statusMap;
   std::unordered_map< std::string, Attribute*> dataMap;
-  std::unordered_map< std::string, Attribute*> globalMap;
   Attribute* operator[](const std::string& name) const;
   bool contains(const std::string& name) const;
   bool contains(const Attribute* attribute) const;
 
-  std::optional<BPMNOS::number> getValue(const Attribute* attribute, const Values& status, const Values& data, const Values& globals) const;
-  std::optional<BPMNOS::number> getValue(const Attribute* attribute, const Values& status, const SharedValues& data, const Values& globals) const;
+  std::optional<BPMNOS::number> getValue(const Attribute* attribute, const Values& status, const Values& data) const;
+  std::optional<BPMNOS::number> getValue(const Attribute* attribute, const Values& status, const SharedValues& data) const;
   /// @brief Method setting the value of an attribute and returning the change of the objective, which is the
-  /// change of the value times the weight of the attribute for a data or global attribute and zero otherwise,
+  /// change of the value times the weight of the attribute for a data attribute and zero for a status attribute,
   /// the previous value being available here and nowhere later.
-  BPMNOS::number setValue(const Attribute* attribute, Values& status, Values& data, Values& globals, std::optional<BPMNOS::number> value) const;
-  /// @copydoc setValue(const Attribute*, Values&, Values&, Values&, std::optional<BPMNOS::number>) const
-  BPMNOS::number setValue(const Attribute* attribute, Values& status, SharedValues& data, Values& globals, std::optional<BPMNOS::number> value) const;
+  BPMNOS::number setValue(const Attribute* attribute, Values& status, Values& data, std::optional<BPMNOS::number> value) const;
+  /// @copydoc setValue(const Attribute*, Values&, Values&, std::optional<BPMNOS::number>) const
+  BPMNOS::number setValue(const Attribute* attribute, Values& status, SharedValues& data, std::optional<BPMNOS::number> value) const;
 private:
   friend class Attribute;
   void add(Attribute* attribute);

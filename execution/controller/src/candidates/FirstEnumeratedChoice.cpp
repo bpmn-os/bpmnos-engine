@@ -43,7 +43,7 @@ std::shared_ptr<Decision> FirstEnumeratedChoice::determineBestChoices(std::share
   auto token_ptr = token->weak_from_this();
   auto request_ptr = request->weak_from_this();
 
-  auto alternativeChoices = decisionTask->enumerateAlternatives(token->status, *token->data, token->globals);
+  auto alternativeChoices = decisionTask->enumerateAlternatives(token->status, *token->data);
   std::shared_ptr<Decision> bestDecision = nullptr;
   for ( auto& choices : alternativeChoices ) {
     auto decision = std::make_shared<ChoiceDecision>(request.get(), std::move(choices), evaluator.get());

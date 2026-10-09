@@ -18,7 +18,7 @@ public:
   void notice(const Observable* observable) override;
 protected:
   SystemState* systemState;
-  void triggerConditionalEvent(const DataUpdate* dataUpdate, auto_list< std::weak_ptr<Token> >& waitingTokens);
+  void triggerConditionalEvent(const std::vector<const BPMNOS::Model::Attribute*>& attributes, auto_list< std::weak_ptr<Token> >& waitingTokens);
 };
 
 } // namespace BPMNOS::Execution

@@ -21,7 +21,7 @@ public:
   std::vector< std::unique_ptr<Restriction> > conditions;
 
   template <typename DataType>
-  bool conditionsSatisfied(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const;
+  bool conditionsSatisfied(const BPMNOS::Values& status, const DataType& data) const;
 };
 
 

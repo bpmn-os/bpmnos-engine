@@ -620,7 +620,7 @@ SCENARIO( "Message directed to an instance that ends without receiving it", "[ex
         REQUIRE( withdrawn < recorder.log.size() );
         REQUIRE( done < withdrawn );
         REQUIRE( engine.getSystemState()->messages.empty() );
-        REQUIRE( engine.getSystemState()->globalStateMachine->tokens.empty() );
+        REQUIRE( engine.getSystemState()->stateMachine->tokens.empty() );
       }
     }
   }
@@ -658,7 +658,7 @@ SCENARIO( "Message directed to an instance that ends without receiving it", "[ex
         REQUIRE( withdrawn < recorder.log.size() );
         REQUIRE( failed < withdrawn );
         REQUIRE( engine.getSystemState()->messages.empty() );
-        REQUIRE( engine.getSystemState()->globalStateMachine->tokens.empty() );
+        REQUIRE( engine.getSystemState()->stateMachine->tokens.empty() );
       }
     }
   }

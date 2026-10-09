@@ -9,14 +9,13 @@ SystemState::SystemState(const Engine* engine, const Scenario* scenario, BPMNOS:
   : engine(engine)
   , scenario(scenario)
   , currentTime(currentTime)
-  , globals(scenario->dataProvider->getGlobals(*scenario))
   , objective(0)
-  , globalStateMachine(std::make_shared<StateMachine>(this))
+  , stateMachine(std::make_shared<StateMachine>(this, scenario->dataProvider->getGlobals(*scenario)))
 {
   // the values the globals are created with never pass through setValue, so the objective is seeded with
   // them here; no change is notified, the run not having begun and no token being able to observe it
+  auto& globals = stateMachine->ownedData;
   for ( auto& attribute : engine->getModel()->attributes ) {
-    assert( attribute->category == BPMNOS::Model::Attribute::Category::GLOBAL );
     if ( attribute->weight != 0 && globals[attribute->index].has_value() ) {
       objective += globals[attribute->index].value() * attribute->weight;
     }
@@ -27,20 +26,19 @@ SystemState::SystemState(const Engine* engine, const Scenario* scenario, const S
   : engine(engine)
   , scenario(scenario)
   , currentTime(other->currentTime)
-  , globals(other->globals)
   , objective(other->objective)
   , instantiationCounter(other->instantiationCounter)
 {
   // Copy the global state machine, which copies the token at the process of each instance together with
   // the state machine of the instance it owns
-  globalStateMachine = std::make_shared<StateMachine>(this, nullptr, other->globalStateMachine.get());
+  stateMachine = std::make_shared<StateMachine>(this, nullptr, other->stateMachine.get());
 
   // Populate archive with the state machines of the instances, the tokens being copied in their order
-  for ( size_t i = 0; i < globalStateMachine->tokens.size(); i++ ) {
-    auto otherInstance = other->globalStateMachine->tokens[i]->owned.get();
+  for ( size_t i = 0; i < stateMachine->tokens.size(); i++ ) {
+    auto otherInstance = other->stateMachine->tokens[i]->owned.get();
     auto key = (long unsigned int)otherInstance->instance.value();
     if (other->archive.contains(key) && other->archive.at(key).lock().get() == otherInstance) {
-      archive[key] = globalStateMachine->tokens[i]->owned;
+      archive[key] = stateMachine->tokens[i]->owned;
     }
   }
 

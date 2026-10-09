@@ -31,10 +31,10 @@ public:
   std::set<const Attribute*> dependencies; // set of attribute used as input to lower bound, upper bound, or enumeration
 
   template <typename DataType>
-  std::pair<BPMNOS::number,BPMNOS::number> getBounds(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const; ///< Returns the minimal and maximal value the attribute may take.
+  std::pair<BPMNOS::number,BPMNOS::number> getBounds(const BPMNOS::Values& status, const DataType& data) const; ///< Returns the minimal and maximal value the attribute may take.
 
   template <typename DataType>
-  std::vector<BPMNOS::number> getEnumeration(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const; ///< Returns the allowed values the attribute may take.
+  std::vector<BPMNOS::number> getEnumeration(const BPMNOS::Values& status, const DataType& data) const; ///< Returns the allowed values the attribute may take.
 private:
   void parseEnumeration(const std::string& input);
   void parseBounds(const std::string& input);

@@ -9,13 +9,18 @@
 namespace BPMNOS::Execution {
 
 
+/**
+ * @brief Notification that data attributes were written by a token of an instance.
+ *
+ * A written attribute concerns that instance alone, unless it is a global attribute, whose index is below the
+ * instance index of the model and which concerns every instance; an observer decides this by the index of each
+ * attribute.
+ */
 struct DataUpdate : Observable {
   constexpr Type getObservableType() const override { return Type::DataUpdate; };
-  DataUpdate(const std::vector<const BPMNOS::Model::Attribute*>& attributes) : instanceId(-1), attributes(attributes) {}
   DataUpdate(const BPMNOS::number instanceId, const std::vector<const BPMNOS::Model::Attribute*>& attributes) : instanceId(instanceId), attributes(attributes) { assert(instanceId >= 0); }
   const BPMNOS::number instanceId;
   const std::vector<const BPMNOS::Model::Attribute*>& attributes;
-  bool global() const { return instanceId < 0; };
 };
 
 } // namespace BPMNOS::Execution

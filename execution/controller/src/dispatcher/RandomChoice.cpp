@@ -27,15 +27,14 @@ std::shared_ptr<Event> RandomChoice::dispatchEvent( const SystemState* systemSta
       std::vector<BPMNOS::number> choices;
       auto status = token->status;
       auto data = BPMNOS::Values(*token->data);
-      auto globals = token->globals;
       for ( auto& choice : extensionElements->choices ) {
         // make random choice
         if ( !choice->enumeration.empty() || choice->multipleOf ) {
-          auto values = choice->getEnumeration(status,data,globals);
+          auto values = choice->getEnumeration(status,data);
           if ( values.size() ) {
             std::uniform_int_distribution<> random_distribution(0,(int)values.size()-1);
             choices.push_back( values[ (size_t)random_distribution(randomGenerator) ] );
-            choice->attributeRegistry.setValue(choice->attribute, status, data, globals, choices.back());
+            choice->attributeRegistry.setValue(choice->attribute, status, data, choices.back());
           }
           else {
             choices.clear();
@@ -43,7 +42,7 @@ std::shared_ptr<Event> RandomChoice::dispatchEvent( const SystemState* systemSta
           }
         }
         else if ( choice->lowerBound.has_value() && choice->upperBound.has_value() ) {
-          auto [min,max] = choice->getBounds(status,data,globals);
+          auto [min,max] = choice->getBounds(status,data);
           if ( min > max ) {
             choices.clear();
             break;
@@ -51,12 +50,12 @@ std::shared_ptr<Event> RandomChoice::dispatchEvent( const SystemState* systemSta
           if ( choice->attribute->type == DECIMAL ) {
             std::uniform_real_distribution<> random_distribution((double)min,(double)max);
             choices.push_back( BPMNOS::to_number( random_distribution(randomGenerator), DECIMAL ) );
-            choice->attributeRegistry.setValue(choice->attribute, status, data, globals, choices.back());
+            choice->attributeRegistry.setValue(choice->attribute, status, data, choices.back());
           }
           else {
             std::uniform_int_distribution<> random_distribution((int)min,(int)max);
             choices.push_back( BPMNOS::to_number( random_distribution(randomGenerator), INTEGER ) );
-            choice->attributeRegistry.setValue(choice->attribute, status, data, globals, choices.back());
+            choice->attributeRegistry.setValue(choice->attribute, status, data, choices.back());
           }
         }
         else {

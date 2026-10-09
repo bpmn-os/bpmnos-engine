@@ -54,6 +54,9 @@ std::vector<std::reference_wrapper<XML::bpmnos::tAttribute>> Model::getData(XML:
   auto dataObjects = element->getChildren<XML::bpmn::tDataObject>();
   for ( XML::bpmn::tDataObject& dataObject : dataObjects ) {
     for ( XML::bpmnos::tAttribute& attribute : getAttributes(&dataObject) ) {
+      if ( attribute.id.value.value == BPMNOS::Keyword::Instance && !element->is<XML::bpmn::tProcess>() ) {
+        throw std::runtime_error("Model: only a process may declare the instance attribute");
+      }
       if ( attributes.size() && attribute.id.value.value == BPMNOS::Keyword::Instance ) {
         // make sure instance attribute is at first position
         attributes.emplace_back( std::move(attributes[0]) );
@@ -153,9 +156,11 @@ void Model::createLookupTables() {
 }
 
 void Model::createGlobals() {
+  // the global attributes are the first data attributes, which every scope inherits
   for ( XML::bpmnos::tAttribute& attributeElement : getGlobals() ) {
-    attributes.push_back( std::make_unique<Attribute>(&attributeElement, Attribute::Category::GLOBAL, attributeRegistry) );
+    attributes.push_back( std::make_unique<Attribute>(&attributeElement, Attribute::Category::DATA, attributeRegistry) );
   }
+  instanceIndex = attributes.size();
 }
  
 std::unique_ptr<BPMN::Process> Model::createProcess(XML::bpmn::tProcess* process) {
@@ -164,6 +169,12 @@ std::unique_ptr<BPMN::Process> Model::createProcess(XML::bpmn::tProcess* process
     throw std::runtime_error("Model: process '" + baseElement->id + "' must be executable");
   }
   auto extensionElements = std::make_unique<BPMNOS::Model::ExtensionElements>(process, attributeRegistry, nullptr, getData(process) );
+  if ( extensionElements->data.empty() ||
+    extensionElements->data[ExtensionElements::Position::Instance]->id != BPMNOS::Keyword::Instance ||
+    extensionElements->data[ExtensionElements::Position::Instance]->index != instanceIndex
+  ) {
+    throw std::runtime_error("Model: instance must be first data attribute of process '" + baseElement->id + "'");
+  }
   // bind attributes, restrictions, and operators to all processes
   return bind<BPMN::Process>( std::move(baseElement), std::move(extensionElements) );
 }
@@ -189,7 +200,7 @@ std::unique_ptr<BPMN::FlowNode> Model::createActivity(XML::bpmn::tActivity* acti
     }
     for ( auto& [_,content] : extensionElements->messageDefinition->contentMap ) {
       auto attribute = content->attribute;
-      if ( attribute->category == Attribute::Category::GLOBAL ) {
+      if ( attribute->category == Attribute::Category::DATA && attribute->index < instanceIndex ) {
         throw std::runtime_error("Model: Message received by task '" + baseElement->id + "' attempts to modify global attribute '" + attribute->id + "'");
       }
       else if ( attribute->category == Attribute::Category::DATA ) {
@@ -374,7 +385,7 @@ std::unique_ptr<BPMN::FlowNode> Model::createMessageStartEvent(XML::bpmn::tStart
   for ( auto& [_,content] : extensionElements->messageDefinition->contentMap ) {
     Attribute* attribute = content->attribute;
     auto parentExtension = parent->extensionElements->as<BPMNOS::Model::ExtensionElements>();
-    if ( attribute->category == Attribute::Category::GLOBAL ) {
+    if ( attribute->category == Attribute::Category::DATA && attribute->index < instanceIndex ) {
       throw std::runtime_error("Model: Message start event '" + baseElement->id + "' attempts to modify global attribute '" + attribute->id + "'");
     }
     else if ( attribute->category == Attribute::Category::DATA ) {
@@ -404,7 +415,7 @@ std::unique_ptr<BPMN::FlowNode> Model::createMessageBoundaryEvent(XML::bpmn::tBo
 
   for ( auto& [_,content] : extensionElements->messageDefinition->contentMap ) {
     Attribute* attribute = content->attribute;
-    if ( attribute->category == Attribute::Category::GLOBAL ) {
+    if ( attribute->category == Attribute::Category::DATA && attribute->index < instanceIndex ) {
       throw std::runtime_error("Model: Message boundary event '" + baseElement->id + "' attempts to modify global attribute '" + attribute->id + "'");
     }
     else if ( attribute->category == Attribute::Category::DATA ) {
@@ -426,7 +437,7 @@ std::unique_ptr<BPMN::FlowNode> Model::createMessageCatchEvent(XML::bpmn::tCatch
 
   for ( auto& [_,content] : extensionElements->messageDefinition->contentMap ) {
     Attribute* attribute = content->attribute;
-    if ( attribute->category == Attribute::Category::GLOBAL ) {
+    if ( attribute->category == Attribute::Category::DATA && attribute->index < instanceIndex ) {
       throw std::runtime_error("Model: Message catch event '" + baseElement->id + "' attempts to modify global attribute '" + attribute->id + "'");
     }
     else if ( attribute->category == Attribute::Category::DATA ) {

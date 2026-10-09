@@ -27,13 +27,13 @@ Message::Message(Token* token)
 
   auto& attributeRegistry = token->getAttributeRegistry();
 
-  header = messageDefinition->getSenderHeader(attributeRegistry,token->status,*token->data,token->globals);
+  header = messageDefinition->getSenderHeader(attributeRegistry,token->status,*token->data,token->getInstanceId());
   if ( header[ BPMNOS::Model::MessageDefinition::Index::Recipient ].has_value() ) {
     recipient = header[ BPMNOS::Model::MessageDefinition::Index::Recipient ].value();
   }
 
   for (auto& [key,contentDefinition] : messageDefinition->contentMap) {
-    contentValueMap.emplace( key, attributeRegistry.getValue(contentDefinition->attribute,token->status,*token->data,token->globals) );
+    contentValueMap.emplace( key, attributeRegistry.getValue(contentDefinition->attribute,token->status,*token->data) );
   }
 }
 
@@ -98,7 +98,7 @@ nlohmann::ordered_json Message::jsonify() const {
 
 
 template <typename DataType>
-BPMNOS::number Message::apply(const BPMN::FlowNode* node, const BPMNOS::Model::AttributeRegistry& attributeRegistry, BPMNOS::Values& status, DataType& data, BPMNOS::Values& globals) const {
+BPMNOS::number Message::apply(const BPMN::FlowNode* node, const BPMNOS::Model::AttributeRegistry& attributeRegistry, BPMNOS::Values& status, DataType& data) const {
   auto& targetContentDefinition = node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->getMessageDefinition()->contentMap;
 
   BPMNOS::number objectiveChange = 0;
@@ -110,15 +110,15 @@ BPMNOS::number Message::apply(const BPMN::FlowNode* node, const BPMNOS::Model::A
 //std::cerr << "Attribute: " << attribute.name << "/" << attribute.index << std::endl;
       if ( std::holds_alternative< std::optional<number> >(contentValue) && std::get< std::optional<number> >(contentValue).has_value() ) {
         // use attribute value sent in message
-        objectiveChange += attributeRegistry.setValue(attribute, status, data, globals, std::get< std::optional<number> >(contentValue).value() );
+        objectiveChange += attributeRegistry.setValue(attribute, status, data, std::get< std::optional<number> >(contentValue).value() );
       }
       else if (std::holds_alternative<std::string>(contentValue)) {
         // use default value of sender
         ValueVariant value = std::get< std::string >(contentValue);
-        objectiveChange += attributeRegistry.setValue(attribute, status, data, globals, BPMNOS::to_number(value,attribute->type) );
+        objectiveChange += attributeRegistry.setValue(attribute, status, data, BPMNOS::to_number(value,attribute->type) );
       }
       else {
-        objectiveChange += attributeRegistry.setValue(attribute, status, data, globals, std::nullopt );
+        objectiveChange += attributeRegistry.setValue(attribute, status, data, std::nullopt );
       }
     }
     else {
@@ -132,13 +132,13 @@ BPMNOS::number Message::apply(const BPMN::FlowNode* node, const BPMNOS::Model::A
     for (auto& [key,definition] : targetContentDefinition) {
       if ( !contentValueMap.contains(key) ) {
         // key in recipient content, but not in message content
-        objectiveChange += attributeRegistry.setValue(definition->attribute, status, data, globals, std::nullopt );
+        objectiveChange += attributeRegistry.setValue(definition->attribute, status, data, std::nullopt );
       }
     }
   }
   return objectiveChange;
 }
 
-template BPMNOS::number Message::apply<BPMNOS::Values>(const BPMN::FlowNode* node, const BPMNOS::Model::AttributeRegistry& attributeRegistry, BPMNOS::Values& status, Values& data, BPMNOS::Values& globals) const;
-template BPMNOS::number Message::apply<BPMNOS::SharedValues>(const BPMN::FlowNode* node, const BPMNOS::Model::AttributeRegistry& attributeRegistry, BPMNOS::Values& status, SharedValues& data, BPMNOS::Values& globals) const;
+template BPMNOS::number Message::apply<BPMNOS::Values>(const BPMN::FlowNode* node, const BPMNOS::Model::AttributeRegistry& attributeRegistry, BPMNOS::Values& status, Values& data) const;
+template BPMNOS::number Message::apply<BPMNOS::SharedValues>(const BPMN::FlowNode* node, const BPMNOS::Model::AttributeRegistry& attributeRegistry, BPMNOS::Values& status, SharedValues& data) const;
 

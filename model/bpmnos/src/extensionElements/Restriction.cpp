@@ -26,10 +26,10 @@ Restriction::Restriction(XML::bpmnos::tRestriction* restriction, const Attribute
 }
 
 template <typename DataType>
-bool Restriction::isSatisfied(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const {
-  auto feasible = expression.execute(status,data,globals);
+bool Restriction::isSatisfied(const BPMNOS::Values& status, const DataType& data) const {
+  auto feasible = expression.execute(status,data);
   return feasible.has_value() && (bool)feasible.value();
 }
 
-template bool Restriction::isSatisfied<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data, const BPMNOS::Values& globals) const;
-template bool Restriction::isSatisfied<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data, const BPMNOS::Values& globals) const;
+template bool Restriction::isSatisfied<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data) const;
+template bool Restriction::isSatisfied<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data) const;

@@ -159,6 +159,8 @@ void StochasticDataProvider::sample(Scenario& scenario, const Scenario* original
       auto& attributeRegistry = initialization.node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->attributeRegistry;
       BPMNOS::Values status(attributeRegistry.statusAttributes.size());
       BPMNOS::Values data(attributeRegistry.dataAttributes.size());
+      // the global attributes are the first data attributes
+      std::copy(globals.begin(), globals.end(), data.begin());
       for ( auto& [attribute, attributeValue] : values ) {
         if ( attribute->category == BPMNOS::Model::Attribute::Category::STATUS && attribute->index < status.size() && attributeRegistry.contains(attribute) ) {
           status[attribute->index] = attributeValue;
@@ -170,7 +172,7 @@ void StochasticDataProvider::sample(Scenario& scenario, const Scenario* original
 
       randomDistributionFactory.setCurrentRng(&scenario.getRandomNumberGenerator(initialization.instanceId, initialization.node));
       auto evaluate = [&]() {
-        return convert(initialization.value->execute(status, data, globals).value_or(0), initialization.attribute->type);
+        return convert(initialization.value->execute(status, data).value_or(0), initialization.attribute->type);
       };
       value = evaluate();
       if ( isTimestamp ) {
@@ -187,7 +189,7 @@ void StochasticDataProvider::sample(Scenario& scenario, const Scenario* original
         data[initialization.attribute->index] = value;
       }
       auto evaluateDisclosure = [&]() {
-        return BPMNOS::number(std::ceil(initialization.disclosure->execute(status, data, globals).value_or(0)));
+        return BPMNOS::number(std::ceil(initialization.disclosure->execute(status, data).value_or(0)));
       };
       disclosureTime = evaluateDisclosure();
       // a fork samples a disclosure time before the spawn time again, and sets it to the spawn time at last
@@ -233,7 +235,7 @@ BPMNOS::number StochasticDataProvider::getProcessReadyTime(const StaticDataProvi
 
 BPMNOS::Values StochasticDataProvider::getActivityReadyStatus(StaticDataProvider::Scenario& scenario, const Token* token, BPMNOS::number earliest) const {
   auto status = DynamicDataProvider::getActivityReadyStatus(scenario, token, earliest);
-  computeStatus(static_cast<Scenario&>(scenario), readyExpressions, (size_t)token->owner->root->instance.value(), token->node, status, *token->data, token->globals, earliest);
+  computeStatus(static_cast<Scenario&>(scenario), readyExpressions, (size_t)token->owner->root->instance.value(), token->node, status, *token->data, earliest);
   return status;
 }
 
@@ -244,11 +246,11 @@ BPMNOS::number StochasticDataProvider::getActivityReadyTime(const StaticDataProv
 
 BPMNOS::Values StochasticDataProvider::getCompletionStatus(StaticDataProvider::Scenario& scenario, const Token* token, BPMNOS::number earliest) const {
   auto status = DynamicDataProvider::getCompletionStatus(scenario, token, earliest);
-  computeStatus(static_cast<Scenario&>(scenario), completionExpressions, (size_t)token->owner->root->instance.value(), token->node, status, *token->data, token->globals, earliest);
+  computeStatus(static_cast<Scenario&>(scenario), completionExpressions, (size_t)token->owner->root->instance.value(), token->node, status, *token->data, earliest);
   return status;
 }
 
-void StochasticDataProvider::computeStatus(Scenario& scenario, const Expressions& expressions, size_t instanceId, const BPMN::Node* node, BPMNOS::Values& status, const BPMNOS::SharedValues& data, const BPMNOS::Values& globals, BPMNOS::number earliest) const {
+void StochasticDataProvider::computeStatus(Scenario& scenario, const Expressions& expressions, size_t instanceId, const BPMN::Node* node, BPMNOS::Values& status, const BPMNOS::SharedValues& data, BPMNOS::number earliest) const {
   auto instanceExpressions = expressions.find(instanceId);
   if ( instanceExpressions == expressions.end() ) {
     return;
@@ -262,7 +264,7 @@ void StochasticDataProvider::computeStatus(Scenario& scenario, const Expressions
   auto evaluate = [&]() {
     status = initialStatus;
     for ( auto& expression : nodeExpressions->second ) {
-      if ( auto value = expression->execute(status, data, globals) ) {
+      if ( auto value = expression->execute(status, data) ) {
         auto target = expression->target.value();
         status[target->index] = convert(value.value(), target->type);
       }

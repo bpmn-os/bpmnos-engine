@@ -21,9 +21,9 @@ Timer::Timer(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent)
 }
 
 template <typename DataType>
-BPMNOS::number Timer::earliest(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const {
+BPMNOS::number Timer::earliest(const BPMNOS::Values& status, const DataType& data) const {
   if ( trigger->expression ) {
-    auto value = trigger->expression->execute(status,data,globals);
+    auto value = trigger->expression->execute(status,data);
     if ( value.has_value() ) {
       return value.value();
     }    
@@ -32,5 +32,5 @@ BPMNOS::number Timer::earliest(const BPMNOS::Values& status, const DataType& dat
   return status[BPMNOS::Model::ExtensionElements::Index::Timestamp].value();
 }  
 
-template BPMNOS::number Timer::earliest<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data, const BPMNOS::Values& globals) const;
-template BPMNOS::number Timer::earliest<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data, const BPMNOS::Values& globals) const;
+template BPMNOS::number Timer::earliest<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data) const;
+template BPMNOS::number Timer::earliest<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data) const;

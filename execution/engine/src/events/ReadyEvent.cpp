@@ -25,7 +25,7 @@ nlohmann::ordered_json ReadyEvent::jsonify() const {
   }
   // the token at a process belongs to the global state machine, which has no process
   jsonObject["processId"] = ( token->owner->root ? token->owner->root->scope : token->node )->id;
-  jsonObject["instanceId"] = BPMNOS::to_string((*token->data)[BPMNOS::Model::ExtensionElements::Index::Instance].get().value(),STRING);
+  jsonObject["instanceId"] = BPMNOS::to_string(token->getInstanceId(),STRING);
   if ( token->node->represents<BPMN::FlowNode>() ) {
     // the node of the token at a process is the process, which is reported as the process
     jsonObject["nodeId"] = token->node->id;

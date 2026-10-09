@@ -1,5 +1,9 @@
 #include "CachedCandidates.h"
+#include "model/bpmnos/src/Model.h"
 #include "execution/engine/src/Engine.h"
+#include "execution/data/src/DataProvider.h"
+#include <algorithm>
+#include <iterator>
 #include <limits>
 #include <cassert>
 //#include <iostream>
@@ -80,12 +84,12 @@ bool CachedCandidates<WeakPtrs...>::intersect(const std::vector<const BPMNOS::Mo
 };
 
 template <typename... WeakPtrs>
-void CachedCandidates<WeakPtrs...>::removeObsolete(const DataUpdate* update, auto_list< WeakPtrs..., std::weak_ptr<Decision> >& evaluation, auto_list< WeakPtrs..., std::weak_ptr<Decision> >& unevaluatedDecisions) {
+void CachedCandidates<WeakPtrs...>::removeObsolete(const std::vector<const BPMNOS::Model::Attribute*>& attributes, auto_list< WeakPtrs..., std::weak_ptr<Decision> >& evaluation, auto_list< WeakPtrs..., std::weak_ptr<Decision> >& unevaluatedDecisions) {
   // check whether evaluation has become obsolete
   for ( auto it = evaluation.begin(); it != evaluation.end(); ) {
     auto& decisionTuple = *it;
     auto decision = std::get<sizeof...(WeakPtrs)>(decisionTuple).lock();
-    if ( decision && intersect(update->attributes, decision->dataDependencies) ) {
+    if ( decision && intersect(attributes, decision->dataDependencies) ) {
       decision->evaluation.reset(); // drops the candidate; re-queues the decision for re-evaluation
       std::apply([&unevaluatedDecisions](auto&&... args) { unevaluatedDecisions.emplace_back(std::forward<decltype(args)>(args)...); }, decisionTuple);
       // remove evaluation
@@ -120,17 +124,20 @@ void CachedCandidates<WeakPtrs...>::InstanceEvaluations::clear() {
 
 template <typename... WeakPtrs>
 void CachedCandidates<WeakPtrs...>::removeDependentEvaluations(const DataUpdate* update, InstanceEvaluations& evaluatedDecisions, auto_list< WeakPtrs..., std::weak_ptr<Decision> >& unevaluatedDecisions)  {
-    if ( update->instanceId >= 0 ) {
-      // find instance that data update refers to
-      if ( auto evaluations = evaluatedDecisions.find((long unsigned int)update->instanceId) ) {
-        removeObsolete(update,*evaluations,unevaluatedDecisions);
+    // a written global attribute, whose index is below the instance index, may influence the evaluated
+    // decisions of every instance, any other written attribute only those of the instance that wrote it
+    auto instanceIndex = this->systemState->scenario->dataProvider->getModel()->instanceIndex;
+    std::vector<const BPMNOS::Model::Attribute*> globalAttributes;
+    std::ranges::copy_if(update->attributes, std::back_inserter(globalAttributes), [instanceIndex](const BPMNOS::Model::Attribute* attribute) { return attribute->index < instanceIndex; });
+
+    auto evaluationsOfInstance = evaluatedDecisions.find((long unsigned int)update->instanceId);
+    if ( !globalAttributes.empty() ) {
+      for ( auto& evaluations : evaluatedDecisions.evaluations ) {
+        removeObsolete( &evaluations == evaluationsOfInstance ? update->attributes : globalAttributes, evaluations, unevaluatedDecisions);
       }
     }
-    else {
-      // update of global value may influence evaluatedDecisions of all instances
-      for ( auto& evaluations : evaluatedDecisions.evaluations ) {
-        removeObsolete(update,evaluations,unevaluatedDecisions);
-      }
+    else if ( evaluationsOfInstance ) {
+      removeObsolete(update->attributes,*evaluationsOfInstance,unevaluatedDecisions);
     }
   };
 

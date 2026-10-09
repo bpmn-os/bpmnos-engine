@@ -93,7 +93,6 @@ public:
   State state;
   Values status;
   SharedValues* data; ///< Pointer to the data of the owner or owned state machine subprocesses)
-  Values& globals;
   std::shared_ptr<DecisionRequest> decisionRequest;
   Token* performing; ///< Pointer to the activity token currently performed (only applies if node is a performer referenced by sequential ad-hoc subprocesses)
   auto_list< std::weak_ptr<Token> > pendingSequentialEntries; ///< List of tokens awaiting an activity entry (only applies if node is a performer referenced by sequential ad-hoc subprocesses)

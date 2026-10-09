@@ -50,6 +50,13 @@
       <bpmn2:outgoing>Flow_0albes8</bpmn2:outgoing>
       <bpmn2:messageEventDefinition id="MessageEventDefinition_0mg3in2" />
     </bpmn2:intermediateCatchEvent>
+    <bpmn2:dataObject id="DataObject_A">
+      <bpmn2:extensionElements>
+        <bpmnos:attributes>
+          <bpmnos:attribute id="Instance" type="string" name="instance" />
+        </bpmnos:attributes>
+      </bpmn2:extensionElements>
+    </bpmn2:dataObject>
   </bpmn2:process>
   <bpmn2:process id="Process_B" isExecutable="true">
     <bpmn2:sequenceFlow id="Flow_0up7xgl" sourceRef="CatchEvent_B1" targetRef="ThrowEvent_B1" />
@@ -90,6 +97,13 @@
       <bpmn2:outgoing>Flow_0h57oup</bpmn2:outgoing>
       <bpmn2:messageEventDefinition id="MessageEventDefinition_0of7nwf" />
     </bpmn2:intermediateCatchEvent>
+    <bpmn2:dataObject id="DataObject_B">
+      <bpmn2:extensionElements>
+        <bpmnos:attributes>
+          <bpmnos:attribute id="Instance" type="string" name="instance" />
+        </bpmnos:attributes>
+      </bpmn2:extensionElements>
+    </bpmn2:dataObject>
   </bpmn2:process>
   <bpmn2:process id="Process_C" isExecutable="true">
     <bpmn2:startEvent id="StartEvent_C">
@@ -142,6 +156,13 @@
       <bpmn2:incoming>Flow_0trjwfr</bpmn2:incoming>
       <bpmn2:messageEventDefinition id="MessageEventDefinition_0119f1e" />
     </bpmn2:endEvent>
+    <bpmn2:dataObject id="DataObject_C">
+      <bpmn2:extensionElements>
+        <bpmnos:attributes>
+          <bpmnos:attribute id="Instance" type="string" name="instance" />
+        </bpmnos:attributes>
+      </bpmn2:extensionElements>
+    </bpmn2:dataObject>
   </bpmn2:process>
   <bpmn2:dataStore id="DataStore_1">
     <bpmn2:extensionElements>

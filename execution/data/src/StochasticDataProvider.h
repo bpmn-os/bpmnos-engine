@@ -116,7 +116,7 @@ private:
   /// @brief Method computing a status by evaluating the given expressions of an instance and a node on it,
   /// sampling it again while its timestamp precedes the given time if an expression assigns the timestamp,
   /// and setting the timestamp to the given time at last.
-  void computeStatus(Scenario& scenario, const Expressions& expressions, size_t instanceId, const BPMN::Node* node, BPMNOS::Values& status, const BPMNOS::SharedValues& data, const BPMNOS::Values& globals, BPMNOS::number earliest) const;
+  void computeStatus(Scenario& scenario, const Expressions& expressions, size_t instanceId, const BPMN::Node* node, BPMNOS::Values& status, const BPMNOS::SharedValues& data, BPMNOS::number earliest) const;
 
   const unsigned int seed;
   mutable BPMNOS::RandomDistributionFactory randomDistributionFactory; ///< The factory of the random functions, whose random number generator is set for every evaluation

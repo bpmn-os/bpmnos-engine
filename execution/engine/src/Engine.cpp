@@ -216,10 +216,14 @@ void Engine::triggerInstance(const BPMN::Process* process, BPMNOS::VariedValueMa
   auto instanceId = process->id + StateMachine::delimiters[1] + std::to_string(counter);
 
   BPMNOS::Values data( extensionElements->data.size() );
-  data[Model::ExtensionElements::Index::Instance] = BPMNOS::to_number(instanceId,STRING);
+  data[Model::ExtensionElements::Position::Instance] = BPMNOS::to_number(instanceId,STRING);
 
   BPMNOS::Values status( extensionElements->attributes.size() );
   status[Model::ExtensionElements::Index::Timestamp] = systemState->getTime();
+
+  // the instance is created before the content of the trigger is applied, so that the content is written
+  // through the data of the token at the process, which holds the global attributes and those of the instance
+  auto token = systemState->stateMachine->createInstance(process, std::move(data), std::move(status));
 
   // the content of the trigger is applied to the initial status of the instance, which is where it is
   // needed and after which it is of no further concern
@@ -230,17 +234,14 @@ void Engine::triggerInstance(const BPMN::Process* process, BPMNOS::VariedValueMa
   // holds extension elements carrying a message definition
   const BPMNOS::Model::ContentMap* contentMap;
   const std::vector<const BPMNOS::Model::Attribute*>* dataUpdateAttributes;
-  bool dataUpdateIsGlobal;
   if ( auto signalDefinition = startNode->extensionElements->represents<BPMNOS::Model::SignalDefinition>() ) {
     contentMap = &signalDefinition->contentMap;
     dataUpdateAttributes = &signalDefinition->dataUpdate.attributes;
-    dataUpdateIsGlobal = signalDefinition->dataUpdate.global;
   }
   else {
     auto startNodeExtensionElements = startNode->extensionElements->as<BPMNOS::Model::ExtensionElements>();
     contentMap = &startNodeExtensionElements->getMessageDefinition()->contentMap;
     dataUpdateAttributes = &startNodeExtensionElements->dataUpdate.attributes;
-    dataUpdateIsGlobal = startNodeExtensionElements->dataUpdate.global;
   }
 
   BPMNOS::number objectiveChange = 0;
@@ -249,28 +250,27 @@ void Engine::triggerInstance(const BPMN::Process* process, BPMNOS::VariedValueMa
     auto it = content.find(key);
     if ( it == content.end() ) {
       // key in content of start event, but not in content of the trigger
-      objectiveChange += attributeRegistry.setValue(attribute, status, data, systemState->globals, std::nullopt );
+      objectiveChange += attributeRegistry.setValue(attribute, token->status, *token->data, std::nullopt );
     }
     else if ( std::holds_alternative< std::optional<BPMNOS::number> >(it->second) ) {
-      objectiveChange += attributeRegistry.setValue(attribute, status, data, systemState->globals, std::get< std::optional<BPMNOS::number> >(it->second) );
+      objectiveChange += attributeRegistry.setValue(attribute, token->status, *token->data, std::get< std::optional<BPMNOS::number> >(it->second) );
     }
     else {
       // use default value of emitter
       ValueVariant value = std::get< std::string >(it->second);
-      objectiveChange += attributeRegistry.setValue(attribute, status, data, systemState->globals, BPMNOS::to_number(value,attribute->type) );
+      objectiveChange += attributeRegistry.setValue(attribute, token->status, *token->data, BPMNOS::to_number(value,attribute->type) );
     }
   }
 
   addToObjective(objectiveChange);
 
-  if ( dataUpdateIsGlobal ) {
-    // notify about data update; the instance does not exist yet, so only a global update can be reported
-    notify( DataUpdate( *dataUpdateAttributes ) );
+  if ( !dataUpdateAttributes->empty() ) {
+    // the observers decide by the index of each attribute whether it concerns this instance or all of them
+    notify( DataUpdate( token->getInstanceId(), *dataUpdateAttributes ) );
   }
 
   // the trigger is the condition for the start, so the instance is started at once and not upon a ready
   // event: the token at the process advances through READY
-  auto token = systemState->globalStateMachine->createInstance(process, std::move(data), std::move(status));
   token->advanceToReady();
 }
 
@@ -299,14 +299,14 @@ void Engine::process(const InstantiationEvent* event) {
   auto process = event->process;
   auto& status = const_cast<InstantiationEvent*>(event)->status;
   auto& data = const_cast<InstantiationEvent*>(event)->data;
-  if ( !data[Model::ExtensionElements::Index::Instance].has_value() ) {
+  if ( !data[Model::ExtensionElements::Position::Instance].has_value() ) {
     throw std::runtime_error("Engine: instance of process '" + process->id + "' has no id");
   }
   if ( !status[Model::ExtensionElements::Index::Timestamp].has_value() ) {
     throw std::runtime_error("Engine: instance of process '" + process->id + "' has no timestamp");
   }
   systemState->instantiationCounter[process]++;
-  auto token = systemState->globalStateMachine->createInstance(process, std::move(data), std::move(status));
+  auto token = systemState->stateMachine->createInstance(process, std::move(data), std::move(status));
   // the token at the process awaits the ready event starting the instance
   token->advanceFromCreated();
 
@@ -316,7 +316,7 @@ void Engine::process(const InstantiationEvent* event) {
 void Engine::addToObjective(BPMNOS::number change) {
   if ( change != 0 ) {
     systemState->objective += change;
-    notify( Objective(systemState->objective) );
+    notify( Objective(systemState->objective, change) );
   }
 }
 
@@ -325,7 +325,7 @@ void Engine::deleteInstance(Token* token) {
   // the messages directed to the instance can no longer be received, and the token at the process is
   // removed together with the state machine of the instance it owns
   token->owned->withdrawMessages();
-  erase_ptr<Token>(systemState->globalStateMachine->tokens,token);
+  erase_ptr<Token>(systemState->stateMachine->tokens,token);
 }
 
 void Engine::process(const SignalBroadcastEvent* event) {
@@ -346,12 +346,14 @@ void Engine::process(const ReadyEvent* event) {
 
   if ( token->node->represents<BPMN::Process>() ) {
     // the token at a process starts the instance: the data owned by the state machine of the instance is
-    // replaced element by element, so that the references to it remain valid
+    // replaced element by element, so that the references to it remain valid; the data of the instance
+    // follows the global attributes, beginning with the instance at the instance index
     auto stateMachine = token->owned.get();
     auto& data = const_cast<ReadyEvent*>(event)->dataAttributes;
-    assert( data.size() == stateMachine->data.size() );
+    auto instanceIndex = model->instanceIndex;
+    assert( data.size() == stateMachine->data.size() - instanceIndex );
     for ( size_t i = 0; i < data.size(); i++ ) {
-      stateMachine->data[i].get() = data[i];
+      stateMachine->data[instanceIndex + i].get() = data[i];
     }
   }
   else if ( auto scope = token->node->represents<BPMN::Scope>() ) {
@@ -401,7 +403,7 @@ void Engine::process(const ChoiceEvent* event) {
   // apply choices
   BPMNOS::number objectiveChange = 0;
   for (size_t i = 0; i < extensionElements->choices.size(); i++) {
-    objectiveChange += extensionElements->attributeRegistry.setValue( extensionElements->choices[i]->attribute, token->status, *token->data, token->globals, event->choices[i] );
+    objectiveChange += extensionElements->attributeRegistry.setValue( extensionElements->choices[i]->attribute, token->status, *token->data, event->choices[i] );
   }
   addToObjective(objectiveChange);
 
@@ -438,7 +440,7 @@ void Engine::process(const MessageDeliveryEvent* event) {
   assert( message_ptr );
   Message* message = const_cast<Message*>(message_ptr.get());
   // update token status
-  addToObjective( message->apply(token->node->as<BPMN::FlowNode>(),token->getAttributeRegistry(),token->status,*token->data,token->globals) );
+  addToObjective( message->apply(token->node->as<BPMN::FlowNode>(),token->getAttributeRegistry(),token->status,*token->data) );
 
   message->state = Message::State::DELIVERED;
   notify(message);

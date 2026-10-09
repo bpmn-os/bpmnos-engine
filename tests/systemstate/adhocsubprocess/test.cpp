@@ -30,7 +30,7 @@ SCENARIO( "SystemState copy with SequentialAdHocSubProcess", "[systemstate][adho
     // Find the performer token (at AdHocSubProcess node)
     // Hierarchy: global state machine -> process token (node = process) -> owned -> AdHocSubProcess token
     Execution::Token* originalPerformerToken = nullptr;
-    for (const auto& processToken : originalState->globalStateMachine->tokens) {
+    for (const auto& processToken : originalState->stateMachine->tokens) {
       if (processToken->owned) {
         for (const auto& token : processToken->owned->tokens) {
           if (token->node->id == "AdHocSubProcess_1") {
@@ -54,7 +54,7 @@ SCENARIO( "SystemState copy with SequentialAdHocSubProcess", "[systemstate][adho
       THEN( "The copy has the same performing and pendingSequentialEntries" ) {
         // Find the copied performer token
         Execution::Token* copiedPerformerToken = nullptr;
-        for (const auto& processToken : copiedState.globalStateMachine->tokens) {
+        for (const auto& processToken : copiedState.stateMachine->tokens) {
           if (processToken->owned) {
             for (const auto& token : processToken->owned->tokens) {
               if (token->node->id == "AdHocSubProcess_1") {

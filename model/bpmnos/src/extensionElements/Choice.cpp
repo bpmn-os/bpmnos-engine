@@ -162,19 +162,19 @@ void Choice::parseDiscretizer(const std::string& input) {
 
 
 template <typename DataType>
-std::pair<BPMNOS::number,BPMNOS::number> Choice::getBounds(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const {
+std::pair<BPMNOS::number,BPMNOS::number> Choice::getBounds(const BPMNOS::Values& status, const DataType& data) const {
   assert( attribute->type != STRING );
   assert( lowerBound.has_value() );  
   assert( upperBound.has_value() );
   auto& [LB,strictLB] = lowerBound.value();
-  auto lb = LB->execute(status,data,globals);
+  auto lb = LB->execute(status,data);
   BPMNOS::number min = lb.has_value() ? BPMNOS::number(lb.value()) : std::numeric_limits<BPMNOS::number>::lowest();
   if ( strictLB ) {
     min += BPMNOS_NUMBER_PRECISION;
   }
 
   auto& [UB,strictUB] = upperBound.value();
-  auto ub = UB->execute(status,data,globals);
+  auto ub = UB->execute(status,data);
   BPMNOS::number max = ub.has_value() ? BPMNOS::number(ub.value()) : std::numeric_limits<BPMNOS::number>::max();
   if ( strictUB ) {
     max -= BPMNOS_NUMBER_PRECISION;
@@ -188,17 +188,17 @@ std::pair<BPMNOS::number,BPMNOS::number> Choice::getBounds(const BPMNOS::Values&
   return {min,max};
 }
 
-template std::pair<BPMNOS::number,BPMNOS::number>  Choice::getBounds<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data, const BPMNOS::Values& globals) const;
-template std::pair<BPMNOS::number,BPMNOS::number>  Choice::getBounds<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data, const BPMNOS::Values& globals) const;
+template std::pair<BPMNOS::number,BPMNOS::number>  Choice::getBounds<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data) const;
+template std::pair<BPMNOS::number,BPMNOS::number>  Choice::getBounds<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data) const;
 
 
 template <typename DataType>
-std::vector<BPMNOS::number> Choice::getEnumeration(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const {
+std::vector<BPMNOS::number> Choice::getEnumeration(const BPMNOS::Values& status, const DataType& data) const {
   assert( !enumeration.empty() || multipleOf );  
   std::vector<BPMNOS::number> allowedValues;
   if ( !enumeration.empty() ) {
     for ( auto& alternative : enumeration ) {
-      auto allowedValue = alternative->execute(status,data,globals);
+      auto allowedValue = alternative->execute(status,data);
       if ( allowedValue.has_value() ) {
         // an alternative is a value the attribute may take, so it is held as such
         allowedValues.push_back( BPMNOS::number(allowedValue.value()) );
@@ -206,8 +206,8 @@ std::vector<BPMNOS::number> Choice::getEnumeration(const BPMNOS::Values& status,
     }
   }
   else {
-    auto [LB, UB] = getBounds(status, data, globals);
-    auto discretizer = multipleOf->execute(status, data, globals);
+    auto [LB, UB] = getBounds(status, data);
+    auto discretizer = multipleOf->execute(status, data);
     if ( !discretizer.has_value() ) {
       if ( attribute->type == BPMNOS::ValueType::BOOLEAN || attribute->type == BPMNOS::ValueType::INTEGER ) {
         discretizer = 1;
@@ -237,6 +237,6 @@ std::vector<BPMNOS::number> Choice::getEnumeration(const BPMNOS::Values& status,
   return allowedValues;
 }
 
-template std::vector<BPMNOS::number> Choice::getEnumeration<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data, const BPMNOS::Values& globals) const;
-template std::vector<BPMNOS::number> Choice::getEnumeration<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data, const BPMNOS::Values& globals) const;
+template std::vector<BPMNOS::number> Choice::getEnumeration<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data) const;
+template std::vector<BPMNOS::number> Choice::getEnumeration<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data) const;
 

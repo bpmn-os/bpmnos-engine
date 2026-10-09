@@ -136,8 +136,6 @@ public:
   std::unordered_map< Token*, Token* > tokenAwaitingCompensationActivity; ///< Map holding a token that waits for completion of another 
   std::unordered_map< StateMachine*, Token* > tokenAwaitingCompensationEventSubProcess; ///< Map holding a token that waits for completion of an event subprocess
 
-  BPMNOS::Values globals;
-
   /**
    * @brief The objective of the run: the sum of the weighted values of the global attributes, of the data
    * attributes of every scope created so far, and of the final status attributes of every scope that has
@@ -146,10 +144,9 @@ public:
   BPMNOS::number objective;
 
   /**
-   * @brief The global state machine, holding a token at the process of each running instance, which owns
-   * the state machine of the instance.
+   * @brief The global state machine, holding a token for each instantiated process.
    */
-  std::shared_ptr<StateMachine> globalStateMachine;
+  std::shared_ptr<StateMachine> stateMachine;
 
   /**
    * @brief Container holding all messages created by a throwing message event.

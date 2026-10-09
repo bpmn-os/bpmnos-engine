@@ -1,8 +1,11 @@
 #include "ConditionalEventObserver.h"
+#include "model/bpmnos/src/Model.h"
 #include "Engine.h"
 #include "SystemState.h"
 #include "Token.h"
 #include "model/bpmnos/src/extensionElements/Conditions.h"
+#include <algorithm>
+#include <iterator>
 #include <iostream>
 
 using namespace BPMNOS::Execution;
@@ -19,22 +22,28 @@ void ConditionalEventObserver::notice(const Observable* observable) {
   assert( dynamic_cast<const DataUpdate*>(observable) );
   auto dataUpdate = static_cast<const DataUpdate*>(observable);
 
-  if ( dataUpdate->global() ) {
+  // a written global attribute, whose index is below the instance index, concerns the tokens of every
+  // instance, any other written attribute only those of the instance that wrote it
+  auto instanceIndex = systemState->engine->getModel()->instanceIndex;
+  std::vector<const BPMNOS::Model::Attribute*> globalAttributes;
+  std::ranges::copy_if(dataUpdate->attributes, std::back_inserter(globalAttributes), [instanceIndex](const BPMNOS::Model::Attribute* attribute) { return attribute->index < instanceIndex; });
+
+  if ( !globalAttributes.empty() ) {
     // check tokens at all conditional events
-    for ( auto& [_,waitingTokens] : systemState->tokensAwaitingCondition ) {
-      triggerConditionalEvent( dataUpdate, waitingTokens );
+    for ( auto& [instanceId,waitingTokens] : systemState->tokensAwaitingCondition ) {
+      triggerConditionalEvent( instanceId == dataUpdate->instanceId ? dataUpdate->attributes : globalAttributes, waitingTokens );
     }
   }
   else {
     // check tokens at conditional events for instance with updated data
     auto it = systemState->tokensAwaitingCondition.find(dataUpdate->instanceId);
     if ( it != systemState->tokensAwaitingCondition.end() ) {
-      triggerConditionalEvent( dataUpdate, it->second );      
+      triggerConditionalEvent( dataUpdate->attributes, it->second );      
     }
   }
 }
 
-void ConditionalEventObserver::triggerConditionalEvent(const DataUpdate* dataUpdate, auto_list< std::weak_ptr<Token> >& waitingTokens) {
+void ConditionalEventObserver::triggerConditionalEvent(const std::vector<const BPMNOS::Model::Attribute*>& attributes, auto_list< std::weak_ptr<Token> >& waitingTokens) {
   for ( auto it = waitingTokens.begin(); it != waitingTokens.end(); ) {
     auto& [token_ptr] = *it;
     auto token = token_ptr.lock();
@@ -51,9 +60,9 @@ void ConditionalEventObserver::triggerConditionalEvent(const DataUpdate* dataUpd
       return false;
     };
     
-    if ( intersect(dataUpdate->attributes,extensionElements->dataDependencies) ) {
+    if ( intersect(attributes,extensionElements->dataDependencies) ) {
       // advance token if conditions are satisfied
-      if ( extensionElements->conditionsSatisfied(token->status,*token->data,token->globals) ) {
+      if ( extensionElements->conditionsSatisfied(token->status,*token->data) ) {
         auto engine = const_cast<Engine*>(systemState->engine);
         engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,token.get()), token.get());
         it = waitingTokens.erase(it);

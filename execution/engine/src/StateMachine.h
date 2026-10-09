@@ -33,11 +33,13 @@ public:
   static constexpr char delimiters[] = {'^','#'}; ///< Delimiters used for disambiguation of identifiers of non-interrupting event subprocesses, multi-instance activities and instances created by a trigger
   /**
    * @brief Constructs the global state machine of a system state, which holds a token for each process
-   * instance and has neither a scope nor a parent token.
+   * instance and has neither a scope nor a parent token. Its data are the global attributes, which every
+   * state machine inherits as the first part of its data.
    *
    * @param systemState The system state this state machine belongs to
+   * @param globals The values of the global attributes
    */
-  StateMachine(const SystemState* systemState);
+  StateMachine(const SystemState* systemState, Values globals);
 
   /**
    * @brief Constructs a child StateMachine for a scope within a process.

@@ -7,10 +7,10 @@
 using namespace BPMNOS::Execution;
 
 
-bool GuidedEvaluator::updateValues(EntryDecision* decision, Values& status, Values& data, Values& globals) {
+bool GuidedEvaluator::updateValues(EntryDecision* decision, Values& status, Values& data) {
   auto token = decision->token.lock();
   assert( token );
-  if ( !LocalEvaluator::updateValues(decision,status,data,globals) ) {
+  if ( !LocalEvaluator::updateValues(decision,status,data) ) {
 //std::cerr << "GuidedEvaluator: infeasible entry " << token->node->id << std::endl;
     return false;
   }
@@ -24,16 +24,16 @@ bool GuidedEvaluator::updateValues(EntryDecision* decision, Values& status, Valu
 
   // apply guidance
   auto guidance = extensionElements->entryGuidance.value().get();
-  guidance->apply(status, data, globals);
-//std::cerr << "GuidedEvaluator: guidance " << guidance->restrictionsSatisfied(token->node,status,data,globals) << ": " << token->node->id << std::endl;
+  guidance->apply(status, data);
+//std::cerr << "GuidedEvaluator: guidance " << guidance->restrictionsSatisfied(token->node,status,data) << ": " << token->node->id << std::endl;
 
-  return guidance->restrictionsSatisfied(status,data,globals);
+  return guidance->restrictionsSatisfied(status,data);
 }
 
-bool GuidedEvaluator::updateValues(ExitDecision* decision, Values& status, Values& data, Values& globals) {
+bool GuidedEvaluator::updateValues(ExitDecision* decision, Values& status, Values& data) {
   auto token = decision->token.lock();
   assert( token );
-  if ( !LocalEvaluator::updateValues(decision,status,data,globals) ) {
+  if ( !LocalEvaluator::updateValues(decision,status,data) ) {
 //std::cerr << "GuidedEvaluator: infeasible exit " << token->node->id << std::endl;
     return false;
   }
@@ -47,16 +47,16 @@ bool GuidedEvaluator::updateValues(ExitDecision* decision, Values& status, Value
 
   // apply guidance
   auto guidance = extensionElements->exitGuidance.value().get();
-  guidance->apply(status, data, globals);
+  guidance->apply(status, data);
 
-  return guidance->restrictionsSatisfied(status,data,globals);
+  return guidance->restrictionsSatisfied(status,data);
 }
 
 
-bool GuidedEvaluator::updateValues(ChoiceDecision* decision, Values& status, Values& data, Values& globals) {
+bool GuidedEvaluator::updateValues(ChoiceDecision* decision, Values& status, Values& data) {
   auto token = decision->token.lock();
   assert( token );
-  if ( !LocalEvaluator::updateValues(decision,status,data,globals) ) {
+  if ( !LocalEvaluator::updateValues(decision,status,data) ) {
     return false;
   }
 
@@ -68,16 +68,16 @@ bool GuidedEvaluator::updateValues(ChoiceDecision* decision, Values& status, Val
 
   // apply guidance
   auto guidance = extensionElements->choiceGuidance.value().get();
-  guidance->apply(status, data, globals);
+  guidance->apply(status, data);
 
-  return guidance->restrictionsSatisfied(status,data,globals);
+  return guidance->restrictionsSatisfied(status,data);
 }
 
 
-bool GuidedEvaluator::updateValues(MessageDeliveryDecision* decision, Values& status, Values& data, Values& globals) {
+bool GuidedEvaluator::updateValues(MessageDeliveryDecision* decision, Values& status, Values& data) {
   auto token = decision->token.lock();
   assert( token );
-  if ( !LocalEvaluator::updateValues(decision,status,data,globals) ) {
+  if ( !LocalEvaluator::updateValues(decision,status,data) ) {
     return false;
   }
 
@@ -89,9 +89,9 @@ bool GuidedEvaluator::updateValues(MessageDeliveryDecision* decision, Values& st
 
   // apply guidance
   auto guidance = extensionElements->messageDeliveryGuidance.value().get();
-  guidance->apply(status, data, globals);
+  guidance->apply(status, data);
 
-  return guidance->restrictionsSatisfied(status,data,globals);
+  return guidance->restrictionsSatisfied(status,data);
 }
 
 std::shared_ptr<Evaluation> GuidedEvaluator::evaluate(EntryDecision* decision) {
@@ -103,24 +103,23 @@ std::shared_ptr<Evaluation> GuidedEvaluator::evaluate(EntryDecision* decision) {
   Values status = token->status;
   status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = token->owner->systemState->currentTime;
   Values data(*token->data);
-  Values globals = token->globals;
-  double evaluation = (double)extensionElements->getObjective(status,data,globals);
+  double evaluation = (double)extensionElements->getObjective(status,data);
 //std::cerr << "Decision: " << decision->jsonify() << std::endl;
 //std::cerr << "Token: " << token->jsonify() << std::endl;
 //std::cerr << "Initial evaluation: " << evaluation << std::endl;
 
-  bool feasible = updateValues(decision,status,data,globals);
+  bool feasible = updateValues(decision,status,data);
   if ( !feasible ) {
     return nullptr;
   }
-//std::cerr << "GuidedEvaluator: unguided evaluation " << extensionElements->getObjective(status,data,globals) << std::endl;
+//std::cerr << "GuidedEvaluator: unguided evaluation " << extensionElements->getObjective(status,data) << std::endl;
 
   if ( !extensionElements->entryGuidance ) {
-    return std::make_shared<Evaluation>(extensionElements->getObjective(status,data,globals) - evaluation);
+    return std::make_shared<Evaluation>(extensionElements->getObjective(status,data) - evaluation);
   }
   // return evaluation of entry
-//std::cerr << "GuidedEvaluator: guided evaluation " << extensionElements->entryGuidance.value()->getObjective(status,data,globals) << std::endl;
-  return std::make_shared<Evaluation>(extensionElements->entryGuidance.value()->getObjective(status,data,globals) - evaluation);
+//std::cerr << "GuidedEvaluator: guided evaluation " << extensionElements->entryGuidance.value()->getObjective(status,data) << std::endl;
+  return std::make_shared<Evaluation>(extensionElements->entryGuidance.value()->getObjective(status,data) - evaluation);
 }
 
 std::shared_ptr<Evaluation> GuidedEvaluator::evaluate(ExitDecision* decision) {
@@ -132,20 +131,19 @@ std::shared_ptr<Evaluation> GuidedEvaluator::evaluate(ExitDecision* decision) {
   Values status = token->status;
   status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = token->owner->systemState->currentTime;
   Values data(*token->data);
-  Values globals = token->globals;
-  double evaluation = (double)extensionElements->getObjective(status,data,globals);
+  double evaluation = (double)extensionElements->getObjective(status,data);
 
-  bool feasible = updateValues(decision,status,data,globals);
+  bool feasible = updateValues(decision,status,data);
   if ( !feasible ) {
 //std::cerr << "GuidedEvaluator: Infeasible exit " << token->jsonify() << std::endl;
     return nullptr;
   }
 
   if ( !extensionElements->exitGuidance ) {
-    return std::make_shared<Evaluation>(extensionElements->getObjective(status,data,globals) - evaluation);
+    return std::make_shared<Evaluation>(extensionElements->getObjective(status,data) - evaluation);
   }
 
-  return std::make_shared<Evaluation>(extensionElements->exitGuidance.value()->getObjective(status,data,globals) - evaluation);
+  return std::make_shared<Evaluation>(extensionElements->exitGuidance.value()->getObjective(status,data) - evaluation);
 }
 
 std::shared_ptr<Evaluation> GuidedEvaluator::evaluate(ChoiceDecision* decision) {
@@ -154,28 +152,27 @@ std::shared_ptr<Evaluation> GuidedEvaluator::evaluate(ChoiceDecision* decision) 
   assert( token->busy() );
   auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   assert(extensionElements);
-  auto evaluation = (double)extensionElements->getObjective(token->status, *token->data, token->globals);
+  auto evaluation = (double)extensionElements->getObjective(token->status, *token->data);
 
   assert( dynamic_cast<const ChoiceEvent*>(decision) );
   Values status(token->status);
   status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = token->owner->systemState->currentTime;
   Values data(*token->data);
-  Values globals = token->globals;
   // apply choices
   for (size_t i = 0; i < extensionElements->choices.size(); i++) {
-    extensionElements->attributeRegistry.setValue( extensionElements->choices[i]->attribute, status, data, globals, decision->choices[i] );
+    extensionElements->attributeRegistry.setValue( extensionElements->choices[i]->attribute, status, data, decision->choices[i] );
   }
 
-  bool feasible = updateValues(decision,status,data,globals);
+  bool feasible = updateValues(decision,status,data);
   if ( !feasible ) {
     return nullptr;
   }
 
   if ( !extensionElements->choiceGuidance ) {
-    return std::make_shared<Evaluation>(extensionElements->getObjective(status,data,globals) - evaluation);
+    return std::make_shared<Evaluation>(extensionElements->getObjective(status,data) - evaluation);
   }
 
-  return std::make_shared<Evaluation>(extensionElements->choiceGuidance.value()->getObjective(status,data,globals) - evaluation);
+  return std::make_shared<Evaluation>(extensionElements->choiceGuidance.value()->getObjective(status,data) - evaluation);
 }
 
 std::shared_ptr<Evaluation> GuidedEvaluator::evaluate(MessageDeliveryDecision* decision) {
@@ -188,25 +185,24 @@ std::shared_ptr<Evaluation> GuidedEvaluator::evaluate(MessageDeliveryDecision* d
   Values status = token->status;
   status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = token->owner->systemState->currentTime;
   Values data(*token->data);
-  Values globals = token->globals;
-  double evaluation = (double)extensionElements->getObjective(status,data,globals);
+  double evaluation = (double)extensionElements->getObjective(status,data);
 //std::cerr << "Decision: " << decision->jsonify() << std::endl;
 //std::cerr << "Token: " << token->jsonify() << std::endl;
 //std::cerr << "Initial evaluation:\n" << evaluation << std::endl;
 
-  bool feasible = updateValues(decision,status,data,globals);
+  bool feasible = updateValues(decision,status,data);
   if ( !feasible ) {
 //std::cerr << "Infeasible:\n" << decision << decision->jsonify() <<"\n";
     return nullptr;
   }
 //std::cerr << "Feasible:\n" << decision << decision->jsonify() <<"\n";
-//std::cerr << "Local evaluation:\n" << extensionElements->getObjective(status,data,globals) << std::endl;
+//std::cerr << "Local evaluation:\n" << extensionElements->getObjective(status,data) << std::endl;
 
   if ( !extensionElements->messageDeliveryGuidance ) {
-    return std::make_shared<Evaluation>(extensionElements->getObjective(status,data,globals) - evaluation);
+    return std::make_shared<Evaluation>(extensionElements->getObjective(status,data) - evaluation);
   }
-//std::cerr << "Guided evaluation:\n" << extensionElements->messageDeliveryGuidance.value()->getObjective(status,data,globals) << std::endl;
-  return std::make_shared<Evaluation>(extensionElements->messageDeliveryGuidance.value()->getObjective(status,data,globals) - evaluation);
+//std::cerr << "Guided evaluation:\n" << extensionElements->messageDeliveryGuidance.value()->getObjective(status,data) << std::endl;
+  return std::make_shared<Evaluation>(extensionElements->messageDeliveryGuidance.value()->getObjective(status,data) - evaluation);
 }
 
 

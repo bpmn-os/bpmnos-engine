@@ -23,7 +23,7 @@ public:
   std::set<const Attribute*> dataDependencies; ///< Set containing all attributes used in any of the conditions.
 
   template <typename DataType>
-  bool conditionsSatisfied(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const;
+  bool conditionsSatisfied(const BPMNOS::Values& status, const DataType& data) const;
 };
 
 

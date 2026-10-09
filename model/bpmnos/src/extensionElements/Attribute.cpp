@@ -20,9 +20,6 @@ Attribute::Attribute(XML::bpmnos::tAttribute* attribute, Attribute::Category cat
   if ( id == Keyword::Timestamp && index != ExtensionElements::Index::Timestamp ) {
     throw std::runtime_error("Attribute: timestamp must be first status attribute");
   }
-  if ( id == Keyword::Instance && index != ExtensionElements::Index::Instance ) {
-    throw std::runtime_error("Attribute: instance must be first data attribute");
-  }
   if ( expression ) {
     // expression requires pointer to target attribute
     const_cast<Expression*>(expression.get())->target = std::make_optional<const Attribute*>(this);

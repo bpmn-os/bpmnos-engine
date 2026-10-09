@@ -20,7 +20,7 @@ class AttributeRegistry;
 
 class Attribute {
 public:
-  enum class Category { STATUS, DATA, GLOBAL };
+  enum class Category { STATUS, DATA };
   Attribute(XML::bpmnos::tAttribute* attribute, Attribute::Category category, AttributeRegistry& attributeRegistry);
   XML::bpmnos::tAttribute* element;
 

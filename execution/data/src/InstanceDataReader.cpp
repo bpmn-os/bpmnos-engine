@@ -158,6 +158,7 @@ void InstanceDataReader::evaluateGlobal(const std::string& initialization, const
   }
 
   BPMNOS::Model::Expression expression(handle, BPMNOS::InputEncoder::fragment(expressionString), model->attributeRegistry);
+  // the global attributes are the first data attributes
   BPMNOS::Values globalValues(model->attributes.size());
   for ( auto& [globalAttribute, value] : globals ) {
     globalValues[globalAttribute->index] = value;
@@ -168,7 +169,7 @@ void InstanceDataReader::evaluateGlobal(const std::string& initialization, const
     }
   }
 
-  auto value = expression.execute(BPMNOS::Values{}, BPMNOS::Values{}, globalValues);
+  auto value = expression.execute(BPMNOS::Values{}, globalValues);
   if ( !value.has_value() ) {
     throw std::runtime_error("InstanceDataReader: failed to evaluate global attribute '" + attributeName + "'");
   }
@@ -181,9 +182,9 @@ BPMNOS::number InstanceDataReader::evaluate(size_t instanceId, const BPMN::Node*
 
   BPMNOS::Values status(extensionElements->attributeRegistry.statusAttributes.size());
   BPMNOS::Values data(extensionElements->attributeRegistry.dataAttributes.size());
-  BPMNOS::Values globalValues(model->attributes.size());
+  // the global attributes are the first data attributes
   for ( auto& [attribute, value] : globals ) {
-    globalValues[attribute->index] = value;
+    data[attribute->index] = value;
   }
   auto instanceValues = values.find(instanceId);
   if ( instanceValues != values.end() ) {
@@ -198,7 +199,7 @@ BPMNOS::number InstanceDataReader::evaluate(size_t instanceId, const BPMN::Node*
   }
 
   for ( auto attribute : expression.variables ) {
-    bool known = ( attribute->category == BPMNOS::Model::Attribute::Category::GLOBAL ) ?
+    bool known = ( attribute->category == BPMNOS::Model::Attribute::Category::DATA && attribute->index < model->instanceIndex ) ?
       globals.contains(attribute) :
       ( instanceValues != values.end() && instanceValues->second.contains(attribute) );
     if ( !known ) {
@@ -206,7 +207,7 @@ BPMNOS::number InstanceDataReader::evaluate(size_t instanceId, const BPMN::Node*
     }
   }
 
-  auto value = expression.execute(status, data, globalValues);
+  auto value = expression.execute(status, data);
   if ( !value.has_value() ) {
     throw std::runtime_error("InstanceDataReader: failed to evaluate expression '" + expressionString + "'");
   }
@@ -219,7 +220,7 @@ void InstanceDataReader::setValue(size_t instanceId, const BPMNOS::Model::Attrib
 
 void InstanceDataReader::addDefaultValues(size_t instanceId, std::unordered_map<const BPMNOS::Model::Attribute*, BPMNOS::number>& instanceValues) const {
   auto extensionElements = processes.at(instanceId)->extensionElements->as<BPMNOS::Model::ExtensionElements>();
-  auto instanceAttribute = extensionElements->data[BPMNOS::Model::ExtensionElements::Index::Instance].get();
+  auto instanceAttribute = extensionElements->data[BPMNOS::Model::ExtensionElements::Position::Instance].get();
   auto timestampAttribute = extensionElements->attributes[BPMNOS::Model::ExtensionElements::Index::Timestamp].get();
   for ( auto [attribute, value] : { std::pair{instanceAttribute, BPMNOS::number(instanceId)}, std::pair{timestampAttribute, BPMNOS::number(0)} } ) {
     if ( !instanceValues.contains(attribute) ) {

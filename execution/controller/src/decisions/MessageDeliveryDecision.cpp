@@ -35,7 +35,7 @@ nlohmann::ordered_json MessageDeliveryDecision::jsonify() const {
     return jsonObject;
   }
   jsonObject["processId"] = token->owner->root->scope->id;
-  jsonObject["instanceId"] = BPMNOS::to_string((*token->data)[BPMNOS::Model::ExtensionElements::Index::Instance].get().value(),STRING);
+  jsonObject["instanceId"] = BPMNOS::to_string(token->getInstanceId(),STRING);
   jsonObject["nodeId"] = token->node->id;
   jsonObject["message"] = message->jsonify();
   

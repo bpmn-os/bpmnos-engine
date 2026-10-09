@@ -25,7 +25,7 @@ SCENARIO( "SystemState copy with pending event subprocess", "[systemstate][event
 
     // Find the context StateMachine (owned by process token)
     const Execution::StateMachine* originalContext = nullptr;
-    for (const auto& processToken : originalState->globalStateMachine->tokens) {
+    for (const auto& processToken : originalState->stateMachine->tokens) {
       if (processToken->owned) {
         originalContext = processToken->owned.get();
         break;
@@ -40,7 +40,7 @@ SCENARIO( "SystemState copy with pending event subprocess", "[systemstate][event
 
       THEN( "The copy has the same pending event subprocess" ) {
         const Execution::StateMachine* copiedContext = nullptr;
-        for (const auto& processToken : copiedState.globalStateMachine->tokens) {
+        for (const auto& processToken : copiedState.stateMachine->tokens) {
           if (processToken->owned) {
             copiedContext = processToken->owned.get();
             break;
@@ -86,7 +86,7 @@ SCENARIO( "SystemState copy with interrupting event subprocess", "[systemstate][
 
     // Find the context StateMachine
     const Execution::StateMachine* originalContext = nullptr;
-    for (const auto& processToken : originalState->globalStateMachine->tokens) {
+    for (const auto& processToken : originalState->stateMachine->tokens) {
       if (processToken->owned) {
         originalContext = processToken->owned.get();
         break;
@@ -101,7 +101,7 @@ SCENARIO( "SystemState copy with interrupting event subprocess", "[systemstate][
 
       THEN( "The copy has the interrupting event subprocess" ) {
         const Execution::StateMachine* copiedContext = nullptr;
-        for (const auto& processToken : copiedState.globalStateMachine->tokens) {
+        for (const auto& processToken : copiedState.stateMachine->tokens) {
           if (processToken->owned) {
             copiedContext = processToken->owned.get();
             break;
@@ -145,7 +145,7 @@ SCENARIO( "SystemState copy with non-interrupting event subprocess", "[systemsta
 
     // Find the context StateMachine
     const Execution::StateMachine* originalContext = nullptr;
-    for (const auto& processToken : originalState->globalStateMachine->tokens) {
+    for (const auto& processToken : originalState->stateMachine->tokens) {
       if (processToken->owned) {
         originalContext = processToken->owned.get();
         break;
@@ -160,7 +160,7 @@ SCENARIO( "SystemState copy with non-interrupting event subprocess", "[systemsta
 
       THEN( "The copy has the non-interrupting event subprocess" ) {
         const Execution::StateMachine* copiedContext = nullptr;
-        for (const auto& processToken : copiedState.globalStateMachine->tokens) {
+        for (const auto& processToken : copiedState.stateMachine->tokens) {
           if (processToken->owned) {
             copiedContext = processToken->owned.get();
             break;

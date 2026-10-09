@@ -46,7 +46,7 @@ SCENARIO( "Reading instance data", "[data][reader]" ) {
         REQUIRE( values.size() == 2 );
         auto extensionElements = reader.processes.at(reader.rows[2].instanceId)->extensionElements->as<Model::ExtensionElements>();
         REQUIRE( values.at(extensionElements->attributes[Model::ExtensionElements::Index::Timestamp].get()) == 0 );
-        REQUIRE( values.at(extensionElements->data[Model::ExtensionElements::Index::Instance].get()) == BPMNOS::number(reader.rows[2].instanceId) );
+        REQUIRE( values.at(extensionElements->data[Model::ExtensionElements::Position::Instance].get()) == BPMNOS::number(reader.rows[2].instanceId) );
       }
     }
 

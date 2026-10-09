@@ -31,9 +31,6 @@ SignalDefinition::SignalDefinition(XML::bpmn::tBaseElement* baseElement, BPMN::S
         if ( attribute->category != Attribute::Category::STATUS ) {
           dataUpdate.attributes.push_back(attribute);
         }
-        if ( attribute->category == Attribute::Category::GLOBAL ) {
-          dataUpdate.global = true;
-        }
       }
     }
   }

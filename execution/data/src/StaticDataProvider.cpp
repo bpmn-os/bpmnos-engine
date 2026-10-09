@@ -50,7 +50,8 @@ void StaticDataProvider::readInstances(const std::string& instanceFileOrString, 
   }
   for ( auto& attribute : this->model->attributes ) {
     if ( attribute->expression && !globals[attribute->index].has_value() ) {
-      auto value = attribute->expression->execute(BPMNOS::Values{}, BPMNOS::Values{}, globals);
+      // the global attributes are the first data attributes
+      auto value = attribute->expression->execute(BPMNOS::Values{}, globals);
       if ( !value.has_value() ) {
         throw std::runtime_error("StaticDataProvider: failed to evaluate global attribute '" + attribute->id + "'");
       }
@@ -197,7 +198,7 @@ void StaticDataProvider::advance(const SystemState* systemState, Execution::Scen
   auto& scenario = static_cast<Scenario&>(executionScenario);
   if (
     systemState->getTime() >= endTime ||
-    ( systemState->globalStateMachine->tokens.empty() && scenario.scheduledEvents.empty() )
+    ( systemState->stateMachine->tokens.empty() && scenario.scheduledEvents.empty() )
   ) {
     queue.push_back(std::make_shared<TerminationEvent>());
     return;

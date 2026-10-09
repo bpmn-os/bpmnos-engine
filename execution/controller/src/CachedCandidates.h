@@ -54,7 +54,7 @@ private:
   void clockTick(); ///< Re-issue the time-dependent decisions for re-evaluation.
   void dataUpdate(const DataUpdate* update);
   bool intersect(const std::vector<const BPMNOS::Model::Attribute*>& first, const std::set<const BPMNOS::Model::Attribute*>& second) const;
-  void removeObsolete(const DataUpdate* update, auto_list< WeakPtrs..., std::weak_ptr<Decision> >& evaluation, auto_list< WeakPtrs..., std::weak_ptr<Decision> >& unevaluatedDecisions);
+  void removeObsolete(const std::vector<const BPMNOS::Model::Attribute*>& attributes, auto_list< WeakPtrs..., std::weak_ptr<Decision> >& evaluation, auto_list< WeakPtrs..., std::weak_ptr<Decision> >& unevaluatedDecisions);
   /**
    * @brief Weak indexes of evaluated decisions, one per process instance, in the order in which the instances first
    * appear.

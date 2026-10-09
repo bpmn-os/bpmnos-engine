@@ -74,25 +74,18 @@ Guidance::Guidance(XML::bpmnos::tGuidance* guidance, const AttributeRegistry& at
 }
 
 template <typename DataType>
-BPMNOS::number Guidance::getObjective(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const {
+BPMNOS::number Guidance::getObjective(const BPMNOS::Values& status, const DataType& data) const {
   BPMNOS::number objective = 0;
   for ( auto attribute : attributeRegistry.statusAttributes ) {
-    auto value = attributeRegistry.getValue(attribute,status,data,globals);
+    auto value = attributeRegistry.getValue(attribute,status,data);
     if ( value.has_value() && attribute->weight != 0 ) {
 //std::cerr << attribute->name << " contributes " <<  attribute->weight * value.value() << std::endl;
       objective += attribute->weight * value.value();
     }
   }
   for ( auto attribute : attributeRegistry.dataAttributes ) {
-    auto value = attributeRegistry.getValue(attribute,status,data,globals);
+    auto value = attributeRegistry.getValue(attribute,status,data);
     if ( value.has_value() && attribute->weight != 0 ) {
-//std::cerr << attribute->name << " contributes " <<  attribute->weight * value.value() << std::endl;
-      objective += attribute->weight * value.value();
-    }
-  }
-  for ( auto attribute : attributeRegistry.globalAttributes ) {
-    auto value = attributeRegistry.getValue(attribute,status,data,globals);
-    if ( value.has_value() ) {
 //std::cerr << attribute->name << " contributes " <<  attribute->weight * value.value() << std::endl;
       objective += attribute->weight * value.value();
     }
@@ -100,13 +93,13 @@ BPMNOS::number Guidance::getObjective(const BPMNOS::Values& status, const DataTy
   return objective;
 }
 
-template BPMNOS::number Guidance::getObjective<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data, const BPMNOS::Values& globals) const;
-//template BPMNOS::number Guidance::getObjective<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data, const BPMNOS::Values& globals) const;
+template BPMNOS::number Guidance::getObjective<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data) const;
+//template BPMNOS::number Guidance::getObjective<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data) const;
 
 template <typename DataType>
-bool Guidance::restrictionsSatisfied(const BPMNOS::Values& status, const DataType& data, const BPMNOS::Values& globals) const {
+bool Guidance::restrictionsSatisfied(const BPMNOS::Values& status, const DataType& data) const {
   for ( auto& restriction : restrictions ) {
-    if ( !restriction->isSatisfied(status,data,globals) ) {
+    if ( !restriction->isSatisfied(status,data) ) {
       return false;
     }
   }
@@ -114,27 +107,27 @@ bool Guidance::restrictionsSatisfied(const BPMNOS::Values& status, const DataTyp
   return true;
 }
 
-template bool Guidance::restrictionsSatisfied<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data, const BPMNOS::Values& globals) const;
-//template bool Guidance::restrictionsSatisfied<BPMNOS::SharedValues>(const BPMN::FlowNode* node, const BPMNOS::Values& status, const BPMNOS::SharedValues& data, const BPMNOS::Values& globals) const;
+template bool Guidance::restrictionsSatisfied<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data) const;
+//template bool Guidance::restrictionsSatisfied<BPMNOS::SharedValues>(const BPMN::FlowNode* node, const BPMNOS::Values& status, const BPMNOS::SharedValues& data) const;
 
 
 template <typename DataType>
-void Guidance::apply(BPMNOS::Values& status, DataType& data, BPMNOS::Values& globals) const {
+void Guidance::apply(BPMNOS::Values& status, DataType& data) const {
 
   for ( auto& attribute : attributes ) {
     status.push_back( std::nullopt );
     if ( attribute->expression ) {
       // compute initial value
-      status.back() = BPMNOS::to_value( attribute->expression->execute(status,data,globals) );
+      status.back() = BPMNOS::to_value( attribute->expression->execute(status,data) );
     }
   }
   
   // apply operators
   for ( auto& operator_ : operators ) {
-    operator_->apply(status,data,globals);
+    operator_->apply(status,data);
   }
 }
 
-template void Guidance::apply<BPMNOS::Values>(BPMNOS::Values& status, BPMNOS::Values& data, BPMNOS::Values& globals) const;
-//template void Guidance::apply<BPMNOS::SharedValues>(BPMNOS::Values& status, BPMNOS::SharedValues& data, BPMNOS::Values& globals) const;
+template void Guidance::apply<BPMNOS::Values>(BPMNOS::Values& status, BPMNOS::Values& data) const;
+//template void Guidance::apply<BPMNOS::SharedValues>(BPMNOS::Values& status, BPMNOS::SharedValues& data) const;
 

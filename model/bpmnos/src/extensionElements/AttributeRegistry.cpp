@@ -17,15 +17,10 @@ void AttributeRegistry::add(Attribute* attribute) {
     statusAttributes.push_back(attribute);
     statusMap[attribute->name] = attribute;
   }
-  else if ( attribute->category == Attribute::Category::DATA ) {
+  else /* if ( attribute->category == Attribute::Category::DATA )*/ {
     attribute->index = dataAttributes.size(); 
     dataAttributes.push_back(attribute);
     dataMap[attribute->name] = attribute;
-  }
-  else /* if ( attribute->category == Attribute::Category::GLOBAL )*/ {
-    attribute->index = globalAttributes.size(); 
-    globalAttributes.push_back(attribute);
-    globalMap[attribute->name] = attribute;
   }
 }
 
@@ -41,11 +36,6 @@ Attribute* AttributeRegistry::operator[](const std::string& name) const {
   ) {
     return it->second;
   }
-  else if ( it = globalMap.find(name);
-    it != globalMap.end()
-  ) {
-    return it->second;
-  }
   else {
     throw std::runtime_error("AttributeRegistry: cannot find attribute with name '" + name + "'");
   }
@@ -53,7 +43,7 @@ Attribute* AttributeRegistry::operator[](const std::string& name) const {
 }
 
 bool AttributeRegistry::contains(const std::string& name) const {
-  return statusMap.contains(name) || dataMap.contains(name) || globalMap.contains(name);
+  return statusMap.contains(name) || dataMap.contains(name);
 }
 
 bool AttributeRegistry::contains(const Attribute* attribute) const {
@@ -61,86 +51,62 @@ bool AttributeRegistry::contains(const Attribute* attribute) const {
     return attribute->index < statusAttributes.size() &&
            statusAttributes[attribute->index] == attribute;
   }
-  else if (attribute->category == Attribute::Category::DATA) {
+  else /* if (attribute->category == Attribute::Category::DATA) */ {
     return attribute->index < dataAttributes.size() &&
            dataAttributes[attribute->index] == attribute;
   }
-  else /* if (attribute->category == Attribute::Category::GLOBAL) */ {
-    return attribute->index < globalAttributes.size() &&
-           globalAttributes[attribute->index] == attribute;
-  }
 }
 
 
-std::optional<BPMNOS::number> AttributeRegistry::getValue(const Attribute* attribute, const Values& status, const Values& data, const Values& globals) const {
+std::optional<BPMNOS::number> AttributeRegistry::getValue(const Attribute* attribute, const Values& status, const Values& data) const {
   if ( attribute->category == Attribute::Category::STATUS ) {
     assert(attribute->index < status.size());
     return status[attribute->index];
   }
-  else if ( attribute->category == Attribute::Category::DATA ) {
+  else /* if ( attribute->category == Attribute::Category::DATA )*/ {
     assert(attribute->index < data.size());
     return data[attribute->index];
   }
-  else /* if ( attribute->category == Attribute::Category::GLOBAL )*/ {
-    assert(attribute->index < globals.size());
-    return globals[attribute->index];
-  }
 }
 
-std::optional<BPMNOS::number> AttributeRegistry::getValue(const Attribute* attribute, const Values& status, const SharedValues& data, const Values& globals) const {
+std::optional<BPMNOS::number> AttributeRegistry::getValue(const Attribute* attribute, const Values& status, const SharedValues& data) const {
   if ( attribute->category == Attribute::Category::STATUS ) {
     assert(attribute->index < status.size());
     return status[attribute->index];
   }
-  else if ( attribute->category == Attribute::Category::DATA ) {
+  else /* if ( attribute->category == Attribute::Category::DATA )*/ {
     assert(attribute->index < data.size());
     return data[attribute->index].get();
   }
-  else /* if ( attribute->category == Attribute::Category::GLOBAL )*/ {
-    assert(attribute->index < globals.size());
-    return globals[attribute->index];
-  }
 }
 
-BPMNOS::number AttributeRegistry::setValue(const Attribute* attribute, Values& status, Values& data, Values& globals, std::optional<BPMNOS::number> value) const {
+BPMNOS::number AttributeRegistry::setValue(const Attribute* attribute, Values& status, Values& data, std::optional<BPMNOS::number> value) const {
   if ( attribute->category == Attribute::Category::STATUS ) {
     assert(attribute->index < status.size());
     status[attribute->index] = value;
     // a status attribute is accounted in the objective when its scope ends
     return 0;
   }
-  else if ( attribute->category == Attribute::Category::DATA ) {
+  else /* if ( attribute->category == Attribute::Category::DATA )*/ {
     assert(attribute->index < data.size());
     auto previous = data[attribute->index];
     data[attribute->index] = value;
     return ( value.value_or(0) - previous.value_or(0) ) * attribute->weight;
   }
-  else /* if ( attribute->category == Attribute::Category::GLOBAL )*/ {
-    assert(attribute->index < globals.size());
-    auto previous = globals[attribute->index];
-    globals[attribute->index] = value;
-    return ( value.value_or(0) - previous.value_or(0) ) * attribute->weight;
-  }
 }
 
-BPMNOS::number AttributeRegistry::setValue(const Attribute* attribute, Values& status, SharedValues& data, Values& globals, std::optional<BPMNOS::number> value) const {
+BPMNOS::number AttributeRegistry::setValue(const Attribute* attribute, Values& status, SharedValues& data, std::optional<BPMNOS::number> value) const {
   if ( attribute->category == Attribute::Category::STATUS ) {
     assert(attribute->index < status.size());
     status[attribute->index] = value;
     // a status attribute is accounted in the objective when its scope ends
     return 0;
   }
-  else if ( attribute->category == Attribute::Category::DATA ) {
+  else /* if ( attribute->category == Attribute::Category::DATA )*/ {
     assert(attribute->index < data.size());
     // writing through the reference into the storage of the scope owning the data object
     auto previous = data[attribute->index].get();
     data[attribute->index].get() = value;
-    return ( value.value_or(0) - previous.value_or(0) ) * attribute->weight;
-  }
-  else /* if ( attribute->category == Attribute::Category::GLOBAL )*/ {
-    assert(attribute->index < globals.size());
-    auto previous = globals[attribute->index];
-    globals[attribute->index] = value;
     return ( value.value_or(0) - previous.value_or(0) ) * attribute->weight;
   }
 }
