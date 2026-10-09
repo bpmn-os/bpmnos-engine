@@ -133,7 +133,7 @@ $(function(){initNavTree('classBPMNOS_1_1Execution_1_1CachedCandidates.html','',
 <div class="textblock"><div class="compoundTemplParams">template&lt;typename... WeakPtrs&gt;<br />
 class BPMNOS::Execution::CachedCandidates&lt; WeakPtrs &gt;</div><p>Collects pending decisions and keeps each evaluation in the reward-ordered <span class="tt">candidates</span> list until a clock tick or a relevant data update invalidates it, so unchanged decisions are not re-evaluated. The base owns every decision in <span class="tt">decisions</span>; the lists here hold only weak references that track which decisions await evaluation and which must be re-evaluated when time or referenced data change. Concrete per-type sources derive this and implement <span class="tt">evaluateCandidates</span> — collecting candidates via <span class="tt">notice</span>/<span class="tt">addDecision</span> and evaluating them via <span class="tt">evaluateDecisions</span>/<span class="tt">addEvaluation</span>. </p>
 
-<p class="definition">Definition at line <a class="el" href="CachedCandidates_8h_source.html#l00030">30</a> of file <a class="el" href="CachedCandidates_8h_source.html">CachedCandidates.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="CachedCandidates_8h_source.html#l00031">31</a> of file <a class="el" href="CachedCandidates_8h_source.html">CachedCandidates.h</a>.</p>
 </div>
 <p><code>#include &lt;<a class="el" href="CachedCandidates_8h_source.html">CachedCandidates.h</a>&gt;</code></p>
 <div class="dynheader">
@@ -212,7 +212,7 @@ template&lt;typename... WeakPtrs&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="CachedCandidates_8h_source.html#l00036">36</a> of file <a class="el" href="CachedCandidates_8h_source.html">CachedCandidates.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="CachedCandidates_8h_source.html#l00037">37</a> of file <a class="el" href="CachedCandidates_8h_source.html">CachedCandidates.h</a>.</p>
 
 </div>
 </div>
@@ -234,7 +234,7 @@ template&lt;typename... WeakPtrs&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="CachedCandidates_8cpp_source.html#l00010">10</a> of file <a class="el" href="CachedCandidates_8cpp_source.html">CachedCandidates.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="CachedCandidates_8cpp_source.html#l00014">14</a> of file <a class="el" href="CachedCandidates_8cpp_source.html">CachedCandidates.cpp</a>.</p>
 
 </div>
 </div>
@@ -260,7 +260,7 @@ template&lt;typename... WeakPtrs&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="CachedCandidates_8cpp_source.html#l00017">17</a> of file <a class="el" href="CachedCandidates_8cpp_source.html">CachedCandidates.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="CachedCandidates_8cpp_source.html#l00021">21</a> of file <a class="el" href="CachedCandidates_8cpp_source.html">CachedCandidates.cpp</a>.</p>
 
 </div>
 </div>
@@ -285,7 +285,7 @@ template&lt;typename... WeakPtrs&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="CachedCandidates_8cpp_source.html#l00046">46</a> of file <a class="el" href="CachedCandidates_8cpp_source.html">CachedCandidates.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="CachedCandidates_8cpp_source.html#l00050">50</a> of file <a class="el" href="CachedCandidates_8cpp_source.html">CachedCandidates.cpp</a>.</p>
 
 </div>
 </div>
@@ -306,7 +306,7 @@ template&lt;typename... WeakPtrs&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="CachedCandidates_8cpp_source.html#l00142">142</a> of file <a class="el" href="CachedCandidates_8cpp_source.html">CachedCandidates.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="CachedCandidates_8cpp_source.html#l00168">168</a> of file <a class="el" href="CachedCandidates_8cpp_source.html">CachedCandidates.cpp</a>.</p>
 
 </div>
 </div>
@@ -337,7 +337,7 @@ template&lt;typename... WeakPtrs&gt; </div>
 
 <p>Reimplemented in <a class="el" href="classBPMNOS_1_1Execution_1_1MessageDeliveries.html#af13e2068c3e50c3ff3184e99d780bae2">BPMNOS::Execution::MessageDeliveries</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="CachedCandidates_8cpp_source.html#l00127">127</a> of file <a class="el" href="CachedCandidates_8cpp_source.html">CachedCandidates.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="CachedCandidates_8cpp_source.html#l00153">153</a> of file <a class="el" href="CachedCandidates_8cpp_source.html">CachedCandidates.cpp</a>.</p>
 
 </div>
 </div>
@@ -358,7 +358,7 @@ template&lt;typename... WeakPtrs&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="CachedCandidates_8cpp_source.html#l00029">29</a> of file <a class="el" href="CachedCandidates_8cpp_source.html">CachedCandidates.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="CachedCandidates_8cpp_source.html#l00033">33</a> of file <a class="el" href="CachedCandidates_8cpp_source.html">CachedCandidates.cpp</a>.</p>
 
 </div>
 </div>
@@ -391,7 +391,7 @@ template&lt;typename... WeakPtrs&gt; </div>
 
 <p>Reimplemented in <a class="el" href="classBPMNOS_1_1Execution_1_1FirstFeasibleEntry.html#a137d48ed44f0bf3ccc0ca94f68356501">BPMNOS::Execution::FirstFeasibleEntry</a>, <a class="el" href="classBPMNOS_1_1Execution_1_1FirstFeasibleExit.html#a034f2c0434a555ab075b88c6c667d404">BPMNOS::Execution::FirstFeasibleExit</a>, <a class="el" href="classBPMNOS_1_1Execution_1_1MessageDeliveries.html#a37db7d86ac38b2eba286cb26dfe310a4">BPMNOS::Execution::MessageDeliveries</a>, and <a class="el" href="classBPMNOS_1_1Execution_1_1SequentialEntries.html#ab82ef9ca27df9ec50b3cac1500188e00">BPMNOS::Execution::SequentialEntries</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="CachedCandidates_8cpp_source.html#l00120">120</a> of file <a class="el" href="CachedCandidates_8cpp_source.html">CachedCandidates.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="CachedCandidates_8cpp_source.html#l00146">146</a> of file <a class="el" href="CachedCandidates_8cpp_source.html">CachedCandidates.cpp</a>.</p>
 
 </div>
 </div>

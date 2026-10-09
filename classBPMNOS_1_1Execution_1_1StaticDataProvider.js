@@ -14,6 +14,7 @@ var classBPMNOS_1_1Execution_1_1StaticDataProvider =
     [ "getEarliestInstantiationTime", "classBPMNOS_1_1Execution_1_1StaticDataProvider.html#ab396e9454acae83741f085e7b681e3b7", null ],
     [ "getEndTime", "classBPMNOS_1_1Execution_1_1StaticDataProvider.html#ac30800fefc93ae2745b0eb1953b067db", null ],
     [ "getGlobals", "classBPMNOS_1_1Execution_1_1StaticDataProvider.html#a802b0f151dcca210965332bfaae1e33b", null ],
+    [ "getInstance", "classBPMNOS_1_1Execution_1_1StaticDataProvider.html#ac2262bbef75cd3c63117eefe040c95d6", null ],
     [ "getInstanceValues", "classBPMNOS_1_1Execution_1_1StaticDataProvider.html#a45fcbf4a8aeb702fbdcc59944d71b20b", null ],
     [ "getKnownTime", "classBPMNOS_1_1Execution_1_1StaticDataProvider.html#abe8443434aa2d5c95a0770b09d3b98b0", null ],
     [ "getProcessReadyTime", "classBPMNOS_1_1Execution_1_1StaticDataProvider.html#a241343cb59a173e6233a853a06f5196c", null ],
@@ -25,5 +26,6 @@ var classBPMNOS_1_1Execution_1_1StaticDataProvider =
     [ "setEndTime", "classBPMNOS_1_1Execution_1_1StaticDataProvider.html#a8f131d0cda75782368bd656958c1b5ef", null ],
     [ "endTime", "classBPMNOS_1_1Execution_1_1StaticDataProvider.html#affa0cca9ff7bab6963f61f3510570ed5", null ],
     [ "globals", "classBPMNOS_1_1Execution_1_1StaticDataProvider.html#a261ba681f9eb516875fa8148be7aed87", null ],
-    [ "instances", "classBPMNOS_1_1Execution_1_1StaticDataProvider.html#a9547ebd87601aa12f39c6df6b422f82b", null ]
+    [ "instancePositions", "classBPMNOS_1_1Execution_1_1StaticDataProvider.html#afde15174ebb9e1e8c370dfa7b42d8c37", null ],
+    [ "instances", "classBPMNOS_1_1Execution_1_1StaticDataProvider.html#a5aabe20da86dfa49cdee41fc146cc6fe", null ]
 ];

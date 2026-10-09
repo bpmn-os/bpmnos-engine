@@ -280,7 +280,7 @@ CSV Format</h2>
 <li><b>NODE_ID</b>: The BPMN node ID (process, activity, subprocess, etc.). Leave empty for global attributes.</li>
 <li><b>INITIALIZATION</b>: An assignment expression in the format <span class="tt">attribute := expression</span>. Evaluated at parse time. May contain random functions and can reference any attributes previously parse-time evaluated in earlier CSV rows.</li>
 <li><b>DISCLOSURE</b>: The time at which this attribute value becomes known. Leave empty for immediate disclosure.</li>
-<li><b>READY</b>: Expression evaluated when a token arrives at an activity (Task, SubProcess, CallActivity). Evaluated at runtime with full context (status, data, globals).</li>
+<li><b>READY</b>: Expression evaluated when a token arrives at an activity (Task, SubProcess, CallActivity). Evaluated at runtime with full context (status and data, the data including the global attributes).</li>
 <li><b>COMPLETION</b>: Expression evaluated when a task completes. Only valid for Task nodes (not SendTask, ReceiveTask, DecisionTask). Evaluated at runtime with full context.</li>
 </ul>
 <h2 class="doxsection"><a class="anchor" id="random-functions"></a>

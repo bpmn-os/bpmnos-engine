@@ -38,6 +38,7 @@ var classBPMNOS_1_1Model_1_1Model =
     [ "validateTriggeringMessages", "classBPMNOS_1_1Model_1_1Model.html#aa1afd3764980cd8228660c8b4b812957", null ],
     [ "attributeRegistry", "classBPMNOS_1_1Model_1_1Model.html#ab68c06ad206196c87e7f3dc9b431a191", null ],
     [ "attributes", "classBPMNOS_1_1Model_1_1Model.html#a630685590da6def6b35c9105e1c9a72f", null ],
+    [ "instanceIndex", "classBPMNOS_1_1Model_1_1Model.html#ac9f4b9e61f1f8457e3a541454959c18d", null ],
     [ "limexHandle", "classBPMNOS_1_1Model_1_1Model.html#ac5a2d0417e8fa42267f2a560b732ead3", null ],
     [ "lookupTableContents", "classBPMNOS_1_1Model_1_1Model.html#a7ed762dec7f856844bb96688b7f7dc78", null ],
     [ "lookupTableFolders", "classBPMNOS_1_1Model_1_1Model.html#a7291343d8bf14455146d868be1b18aa6", null ],

@@ -131,31 +131,29 @@ $(function(){initNavTree('classBPMNOS_1_1Execution_1_1StateMachine.html','','cla
  <a href="#details">More...</a></p>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>This class manages all tokens for BPMN execution of a given scope.</p>
-<dl class="section user"><dt>Ownership Hierarchy</dt><dd>All (sub)processes containing flow tokens are owned by a token via Token::owned. Root state machines (in SystemState::instances) only hold a single process-level token (node=nullptr). That token owns the child state machine containing the actual flow tokens. Subprocesses follow the same pattern: a token at the subprocess node owns a child state machine with the subprocess's flow tokens.</dd></dl>
-<dl class="section note"><dt>Note</dt><dd>A state machine without <a class="el" href="#a6246b42dd79ef9a5beb19603e3d5fe52">parentToken</a> represents a <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Process.html">BPMN::Process</a>. </dd>
-<dd>
-Inclusive gateways are not yet supported.</dd></dl>
+<dl class="section user"><dt>Ownership Hierarchy</dt><dd>The global state machine of a system state has no scope and no <a class="el" href="#a6246b42dd79ef9a5beb19603e3d5fe52">parentToken</a>. Its tokens are the process-level tokens, one for each process instance, whose node is the process. Each of them owns the state machine of its process instance, which holds the data of the instance and the flow tokens, and which is the <a class="el" href="#a771549e5ce774f7b5505e6b9ef09718b">root</a> of every state machine within the instance. Subprocesses follow the same pattern: a token at the subprocess node owns a child state machine with the subprocess's flow tokens. </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>Inclusive gateways are not yet supported.</dd></dl>
 <dl class="section attention"><dt>Attention</dt><dd>Event subprocesses within event subprocesses are not yet tested (and may not be supported). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="StateMachine_8h_source.html#l00033">33</a> of file <a class="el" href="StateMachine_8h_source.html">StateMachine.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StateMachine_8h_source.html#l00031">31</a> of file <a class="el" href="StateMachine_8h_source.html">StateMachine.h</a>.</p>
 </div>
 <p><code>#include &lt;<a class="el" href="StateMachine_8h_source.html">StateMachine.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for BPMNOS::Execution::StateMachine:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="classBPMNOS_1_1Execution_1_1StateMachine__inherit__graph.svg" width="264" height="730"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="classBPMNOS_1_1Execution_1_1StateMachine__inherit__graph.svg" width="264" height="707"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a8a68ec168169965f64521640642c7e71" id="r_a8a68ec168169965f64521640642c7e71"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8a68ec168169965f64521640642c7e71">StateMachine</a> (const <a class="el" href="#ae76677096c6a3ad900e8b39056d5e44d">SystemState</a> *<a class="el" href="#a4b969a8fee08ab92ffe21e682efffb9b">systemState</a>, const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Process.html">BPMN::Process</a> *<a class="el" href="#a647fa8e55e4e88312dc6397f8e392444">process</a>, <a class="el" href="structBPMNOS_1_1Values.html">Values</a> dataAttributes, <a class="el" href="structBPMNOS_1_1Values.html">Values</a> status)</td></tr>
-<tr class="memdesc:a8a68ec168169965f64521640642c7e71"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs a root StateMachine for a process instance.  <br /></td></tr>
+<tr class="memitem:adb1acd20f19d12bca4f159e15653a050" id="r_adb1acd20f19d12bca4f159e15653a050"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adb1acd20f19d12bca4f159e15653a050">StateMachine</a> (const <a class="el" href="#ae76677096c6a3ad900e8b39056d5e44d">SystemState</a> *<a class="el" href="#a4b969a8fee08ab92ffe21e682efffb9b">systemState</a>, <a class="el" href="structBPMNOS_1_1Values.html">Values</a> globals)</td></tr>
+<tr class="memdesc:adb1acd20f19d12bca4f159e15653a050"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs the global state machine of a system state, which holds a token for each process instance and has neither a scope nor a parent token. Its data are the global attributes, which every state machine inherits as the first part of its data.  <br /></td></tr>
 <tr class="memitem:a921787efdb42d51ded14eb20cf093f09" id="r_a921787efdb42d51ded14eb20cf093f09"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a921787efdb42d51ded14eb20cf093f09">StateMachine</a> (const <a class="el" href="#ae76677096c6a3ad900e8b39056d5e44d">SystemState</a> *<a class="el" href="#a4b969a8fee08ab92ffe21e682efffb9b">systemState</a>, const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Scope.html">BPMN::Scope</a> *<a class="el" href="#a07c0ebb076be1145f5d7b2fe89b2432b">scope</a>, <a class="el" href="#a48f5c1ca47af8dc65eca7e0274de96e2">Token</a> *<a class="el" href="#a6246b42dd79ef9a5beb19603e3d5fe52">parentToken</a>, <a class="el" href="structBPMNOS_1_1Values.html">Values</a> dataAttributes, std::optional&lt; <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> &gt; <a class="el" href="#aac88c761bd7c8f852d73ccfa9dce393a">instance</a>=std::nullopt)</td></tr>
 <tr class="memdesc:a921787efdb42d51ded14eb20cf093f09"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs a child StateMachine for a scope within a process.  <br /></td></tr>
 <tr class="memitem:a54449a744099ee5ddd0b397f124ceed1" id="r_a54449a744099ee5ddd0b397f124ceed1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a54449a744099ee5ddd0b397f124ceed1">StateMachine</a> (const StateMachine *other)</td></tr>
 <tr class="memdesc:a54449a744099ee5ddd0b397f124ceed1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Respawn constructor for non-interrupting event subprocesses.  <br /></td></tr>
-<tr class="memitem:a19621942e2f0cb7ba4a9f67068910d45" id="r_a19621942e2f0cb7ba4a9f67068910d45"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a19621942e2f0cb7ba4a9f67068910d45">StateMachine</a> (const <a class="el" href="#ae76677096c6a3ad900e8b39056d5e44d">SystemState</a> *<a class="el" href="#a4b969a8fee08ab92ffe21e682efffb9b">systemState</a>, <a class="el" href="#a48f5c1ca47af8dc65eca7e0274de96e2">Token</a> *<a class="el" href="#a6246b42dd79ef9a5beb19603e3d5fe52">parentToken</a>, const StateMachine *other)</td></tr>
-<tr class="memdesc:a19621942e2f0cb7ba4a9f67068910d45"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deep copy constructor for cloning to a different SystemState.  <br /></td></tr>
+<tr class="memitem:ad79bc4cc8d92bfa2b137c85a2344ebe7" id="r_ad79bc4cc8d92bfa2b137c85a2344ebe7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad79bc4cc8d92bfa2b137c85a2344ebe7">StateMachine</a> (const <a class="el" href="#ae76677096c6a3ad900e8b39056d5e44d">SystemState</a> *<a class="el" href="#a4b969a8fee08ab92ffe21e682efffb9b">systemState</a>, <a class="el" href="#a48f5c1ca47af8dc65eca7e0274de96e2">Token</a> *<a class="el" href="#a6246b42dd79ef9a5beb19603e3d5fe52">parentToken</a>, const StateMachine *other, const StateMachine *context=nullptr)</td></tr>
+<tr class="memdesc:ad79bc4cc8d92bfa2b137c85a2344ebe7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deep copy constructor for cloning to a different SystemState.  <br /></td></tr>
 <tr class="memitem:a93d66cb2a89b186789d655a08b02674e" id="r_a93d66cb2a89b186789d655a08b02674e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a93d66cb2a89b186789d655a08b02674e">~StateMachine</a> ()</td></tr>
 <tr class="memitem:a8053ab7bf584b71fa0fb894c4ceb086d" id="r_a8053ab7bf584b71fa0fb894c4ceb086d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structBPMNOS_1_1Values.html">Values</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8053ab7bf584b71fa0fb894c4ceb086d">getData</a> (const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Scope.html">BPMN::Scope</a> *<a class="el" href="#a07c0ebb076be1145f5d7b2fe89b2432b">scope</a>)</td></tr>
 <tr class="memitem:aeb49e607ce96074f7f17073aa729f8b9" id="r_aeb49e607ce96074f7f17073aa729f8b9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceBPMNOS_1_1Execution.html#aecc76732c42d9421b8b0d48ec878c527">Tokens</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aeb49e607ce96074f7f17073aa729f8b9">getCompensationTokens</a> (const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Activity.html">BPMN::Activity</a> *activity=nullptr) const</td></tr>
@@ -167,23 +165,21 @@ Public Member Functions</h2></td></tr>
 Public Attributes</h2></td></tr>
 <tr class="memitem:a4b969a8fee08ab92ffe21e682efffb9b" id="r_a4b969a8fee08ab92ffe21e682efffb9b"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="#ae76677096c6a3ad900e8b39056d5e44d">SystemState</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4b969a8fee08ab92ffe21e682efffb9b">systemState</a></td></tr>
 <tr class="memdesc:a4b969a8fee08ab92ffe21e682efffb9b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pointer to the system state this state machine belongs to.  <br /></td></tr>
-<tr class="memitem:a647fa8e55e4e88312dc6397f8e392444" id="r_a647fa8e55e4e88312dc6397f8e392444"><td class="memItemLeft" align="right" valign="top">const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Process.html">BPMN::Process</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a647fa8e55e4e88312dc6397f8e392444">process</a></td></tr>
-<tr class="memdesc:a647fa8e55e4e88312dc6397f8e392444"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pointer to the top-level process.  <br /></td></tr>
 <tr class="memitem:a07c0ebb076be1145f5d7b2fe89b2432b" id="r_a07c0ebb076be1145f5d7b2fe89b2432b"><td class="memItemLeft" align="right" valign="top">const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Scope.html">BPMN::Scope</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a07c0ebb076be1145f5d7b2fe89b2432b">scope</a></td></tr>
-<tr class="memdesc:a07c0ebb076be1145f5d7b2fe89b2432b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pointer to the current scope.  <br /></td></tr>
-<tr class="memitem:a771549e5ce774f7b5505e6b9ef09718b" id="r_a771549e5ce774f7b5505e6b9ef09718b"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="#a8a68ec168169965f64521640642c7e71">StateMachine</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a771549e5ce774f7b5505e6b9ef09718b">root</a></td></tr>
-<tr class="memdesc:a771549e5ce774f7b5505e6b9ef09718b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pointer to the root state machine.  <br /></td></tr>
+<tr class="memdesc:a07c0ebb076be1145f5d7b2fe89b2432b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pointer to the current scope (nullptr for the global state machine).  <br /></td></tr>
+<tr class="memitem:a771549e5ce774f7b5505e6b9ef09718b" id="r_a771549e5ce774f7b5505e6b9ef09718b"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="#adb1acd20f19d12bca4f159e15653a050">StateMachine</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a771549e5ce774f7b5505e6b9ef09718b">root</a></td></tr>
+<tr class="memdesc:a771549e5ce774f7b5505e6b9ef09718b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pointer to the state machine of the process instance, whose scope is the process (nullptr for the global state machine).  <br /></td></tr>
 <tr class="memitem:aac88c761bd7c8f852d73ccfa9dce393a" id="r_aac88c761bd7c8f852d73ccfa9dce393a"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aac88c761bd7c8f852d73ccfa9dce393a">instance</a></td></tr>
 <tr class="memdesc:aac88c761bd7c8f852d73ccfa9dce393a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Numeric representation of instance id (TODO: can we const this?).  <br /></td></tr>
 <tr class="memitem:a6246b42dd79ef9a5beb19603e3d5fe52" id="r_a6246b42dd79ef9a5beb19603e3d5fe52"><td class="memItemLeft" align="right" valign="top"><a class="el" href="#a48f5c1ca47af8dc65eca7e0274de96e2">Token</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6246b42dd79ef9a5beb19603e3d5fe52">parentToken</a></td></tr>
-<tr class="memdesc:a6246b42dd79ef9a5beb19603e3d5fe52"><td class="mdescLeft">&#160;</td><td class="mdescRight">Token that owns this state machine (nullptr for root process state machines).  <br /></td></tr>
+<tr class="memdesc:a6246b42dd79ef9a5beb19603e3d5fe52"><td class="mdescLeft">&#160;</td><td class="mdescRight">Token that owns this state machine (nullptr for the global state machine).  <br /></td></tr>
 <tr class="memitem:ac70bae15caf57e7a65d015223d6d1ce3" id="r_ac70bae15caf57e7a65d015223d6d1ce3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structBPMNOS_1_1Values.html">Values</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac70bae15caf57e7a65d015223d6d1ce3">ownedData</a></td></tr>
 <tr class="memdesc:ac70bae15caf57e7a65d015223d6d1ce3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Container holding data attributes owned by the state machine.  <br /></td></tr>
 <tr class="memitem:ae9bbbb3a4155dc58477a62e72862733a" id="r_ae9bbbb3a4155dc58477a62e72862733a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structBPMNOS_1_1SharedValues.html">SharedValues</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae9bbbb3a4155dc58477a62e72862733a">data</a></td></tr>
 <tr class="memdesc:ae9bbbb3a4155dc58477a62e72862733a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Container holding references to all data attributes.  <br /></td></tr>
 <tr class="memitem:ac08ac60a96874b93b6d763e44697485c" id="r_ac08ac60a96874b93b6d763e44697485c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceBPMNOS_1_1Execution.html#aecc76732c42d9421b8b0d48ec878c527">Tokens</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac08ac60a96874b93b6d763e44697485c">tokens</a></td></tr>
 <tr class="memdesc:ac08ac60a96874b93b6d763e44697485c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Container with all tokens within the scope of the state machine.  <br /></td></tr>
-<tr class="memitem:a835cbb364e0c8aa50cc6493b3cce2c47" id="r_a835cbb364e0c8aa50cc6493b3cce2c47"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="#a8a68ec168169965f64521640642c7e71">StateMachine</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a835cbb364e0c8aa50cc6493b3cce2c47">interruptingEventSubProcess</a></td></tr>
+<tr class="memitem:a835cbb364e0c8aa50cc6493b3cce2c47" id="r_a835cbb364e0c8aa50cc6493b3cce2c47"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="#adb1acd20f19d12bca4f159e15653a050">StateMachine</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a835cbb364e0c8aa50cc6493b3cce2c47">interruptingEventSubProcess</a></td></tr>
 <tr class="memdesc:a835cbb364e0c8aa50cc6493b3cce2c47"><td class="mdescLeft">&#160;</td><td class="mdescRight">State machines representing an active event subprocess that is interrupting.  <br /></td></tr>
 <tr class="memitem:a71d2a2f191e2c4e62dc346e0aac0c817" id="r_a71d2a2f191e2c4e62dc346e0aac0c817"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceBPMNOS_1_1Execution.html#ad98f556d6ed417172ef01fc7d0e88658">StateMachines</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a71d2a2f191e2c4e62dc346e0aac0c817">nonInterruptingEventSubProcesses</a></td></tr>
 <tr class="memdesc:a71d2a2f191e2c4e62dc346e0aac0c817"><td class="mdescLeft">&#160;</td><td class="mdescRight">Container with state machines of all active event subprocesses that are not interrupting.  <br /></td></tr>
@@ -208,8 +204,8 @@ Friends</h2></td></tr>
 <tr class="memitem:a48f5c1ca47af8dc65eca7e0274de96e2" id="r_a48f5c1ca47af8dc65eca7e0274de96e2"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a48f5c1ca47af8dc65eca7e0274de96e2">Token</a></td></tr>
 </table>
 <a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a8a68ec168169965f64521640642c7e71" name="a8a68ec168169965f64521640642c7e71"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8a68ec168169965f64521640642c7e71">&#9670;&#160;</a></span>StateMachine() <span class="overload">[1/4]</span></h2>
+<a id="adb1acd20f19d12bca4f159e15653a050" name="adb1acd20f19d12bca4f159e15653a050"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adb1acd20f19d12bca4f159e15653a050">&#9670;&#160;</a></span>StateMachine() <span class="overload">[1/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -222,27 +218,14 @@ Friends</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Process.html">BPMN::Process</a> *</td>          <td class="paramname"><span class="paramname"><em>process</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="structBPMNOS_1_1Values.html">Values</a></td>          <td class="paramname"><span class="paramname"><em>dataAttributes</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="structBPMNOS_1_1Values.html">Values</a></td>          <td class="paramname"><span class="paramname"><em>status</em></span>&#160;)</td>
+          <td class="paramtype"><a class="el" href="structBPMNOS_1_1Values.html">Values</a></td>          <td class="paramname"><span class="paramname"><em>globals</em></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Creates the top-level state machine that represents a process instance, together with the token at the process, which holds the status. The instance is started when that token becomes ready. This constructor is used when instantiating a new process.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">systemState</td><td>The system state this state machine belongs to </td></tr>
-    <tr><td class="paramname">process</td><td>The BPMN process definition </td></tr>
-    <tr><td class="paramname">dataAttributes</td><td>Initial data attribute values for the process </td></tr>
-    <tr><td class="paramname">status</td><td>Initial status attribute values for the process </td></tr>
+    <tr><td class="paramname">globals</td><td>The values of the global attributes </td></tr>
   </table>
   </dd>
 </dl>
@@ -296,7 +279,7 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="StateMachine_8cpp_source.html#l00043">43</a> of file <a class="el" href="StateMachine_8cpp_source.html">StateMachine.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StateMachine_8cpp_source.html#l00048">48</a> of file <a class="el" href="StateMachine_8cpp_source.html">StateMachine.cpp</a>.</p>
 
 </div>
 </div>
@@ -322,12 +305,12 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="StateMachine_8cpp_source.html#l00074">74</a> of file <a class="el" href="StateMachine_8cpp_source.html">StateMachine.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StateMachine_8cpp_source.html#l00078">78</a> of file <a class="el" href="StateMachine_8cpp_source.html">StateMachine.cpp</a>.</p>
 
 </div>
 </div>
-<a id="a19621942e2f0cb7ba4a9f67068910d45" name="a19621942e2f0cb7ba4a9f67068910d45"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a19621942e2f0cb7ba4a9f67068910d45">&#9670;&#160;</a></span>StateMachine() <span class="overload">[4/4]</span></h2>
+<a id="ad79bc4cc8d92bfa2b137c85a2344ebe7" name="ad79bc4cc8d92bfa2b137c85a2344ebe7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad79bc4cc8d92bfa2b137c85a2344ebe7">&#9670;&#160;</a></span>StateMachine() <span class="overload">[4/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -345,7 +328,12 @@ Friends</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const StateMachine *</td>          <td class="paramname"><span class="paramname"><em>other</em></span>&#160;)</td>
+          <td class="paramtype">const StateMachine *</td>          <td class="paramname"><span class="paramname"><em>other</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const StateMachine *</td>          <td class="paramname"><span class="paramname"><em>context</em></span><span class="paramdefsep"> = </span><span class="paramdefval">nullptr</span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -353,13 +341,14 @@ Friends</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">systemState</td><td>The new system state this copy belongs to </td></tr>
-    <tr><td class="paramname">parentToken</td><td>The new parent token (nullptr for root state machines) </td></tr>
+    <tr><td class="paramname">parentToken</td><td>The new parent token (nullptr for the global state machine) </td></tr>
     <tr><td class="paramname">other</td><td>The source StateMachine to copy from </td></tr>
+    <tr><td class="paramname">context</td><td>The copied context of an event subprocess, which copies its event subprocesses before the parent token owns it (nullptr for any other state machine) </td></tr>
   </table>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="StateMachine_8cpp_source.html#l00088">88</a> of file <a class="el" href="StateMachine_8cpp_source.html">StateMachine.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StateMachine_8cpp_source.html#l00091">91</a> of file <a class="el" href="StateMachine_8cpp_source.html">StateMachine.cpp</a>.</p>
 
 </div>
 </div>
@@ -378,7 +367,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="StateMachine_8cpp_source.html#l00366">366</a> of file <a class="el" href="StateMachine_8cpp_source.html">StateMachine.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StateMachine_8cpp_source.html#l00368">368</a> of file <a class="el" href="StateMachine_8cpp_source.html">StateMachine.cpp</a>.</p>
 
 </div>
 </div>
@@ -398,7 +387,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="StateMachine_8cpp_source.html#l01240">1240</a> of file <a class="el" href="StateMachine_8cpp_source.html">StateMachine.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StateMachine_8cpp_source.html#l01229">1229</a> of file <a class="el" href="StateMachine_8cpp_source.html">StateMachine.cpp</a>.</p>
 
 </div>
 </div>
@@ -417,7 +406,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="StateMachine_8cpp_source.html#l00376">376</a> of file <a class="el" href="StateMachine_8cpp_source.html">StateMachine.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StateMachine_8cpp_source.html#l00378">378</a> of file <a class="el" href="StateMachine_8cpp_source.html">StateMachine.cpp</a>.</p>
 
 </div>
 </div>
@@ -436,7 +425,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="StateMachine_8cpp_source.html#l00770">770</a> of file <a class="el" href="StateMachine_8cpp_source.html">StateMachine.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StateMachine_8cpp_source.html#l00775">775</a> of file <a class="el" href="StateMachine_8cpp_source.html">StateMachine.cpp</a>.</p>
 
 </div>
 </div>
@@ -461,7 +450,7 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="StateMachine_8h_source.html#l00116">116</a> of file <a class="el" href="StateMachine_8h_source.html">StateMachine.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StateMachine_8h_source.html#l00111">111</a> of file <a class="el" href="StateMachine_8h_source.html">StateMachine.h</a>.</p>
 
 </div>
 </div>
@@ -485,7 +474,7 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="StateMachine_8h_source.html#l00117">117</a> of file <a class="el" href="StateMachine_8h_source.html">StateMachine.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StateMachine_8h_source.html#l00112">112</a> of file <a class="el" href="StateMachine_8h_source.html">StateMachine.h</a>.</p>
 
 </div>
 </div>
@@ -509,7 +498,7 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="StateMachine_8h_source.html#l00118">118</a> of file <a class="el" href="StateMachine_8h_source.html">StateMachine.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StateMachine_8h_source.html#l00113">113</a> of file <a class="el" href="StateMachine_8h_source.html">StateMachine.h</a>.</p>
 
 </div>
 </div>
@@ -526,7 +515,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="StateMachine_8h_source.html#l00110">110</a> of file <a class="el" href="StateMachine_8h_source.html">StateMachine.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StateMachine_8h_source.html#l00105">105</a> of file <a class="el" href="StateMachine_8h_source.html">StateMachine.h</a>.</p>
 
 </div>
 </div>
@@ -542,7 +531,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="StateMachine_8h_source.html#l00109">109</a> of file <a class="el" href="StateMachine_8h_source.html">StateMachine.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StateMachine_8h_source.html#l00104">104</a> of file <a class="el" href="StateMachine_8h_source.html">StateMachine.h</a>.</p>
 
 </div>
 </div>
@@ -558,7 +547,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="StateMachine_8h_source.html#l00108">108</a> of file <a class="el" href="StateMachine_8h_source.html">StateMachine.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StateMachine_8h_source.html#l00103">103</a> of file <a class="el" href="StateMachine_8h_source.html">StateMachine.h</a>.</p>
 
 </div>
 </div>
@@ -574,7 +563,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="StateMachine_8h_source.html#l00101">101</a> of file <a class="el" href="StateMachine_8h_source.html">StateMachine.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StateMachine_8h_source.html#l00096">96</a> of file <a class="el" href="StateMachine_8h_source.html">StateMachine.h</a>.</p>
 
 </div>
 </div>
@@ -598,7 +587,7 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="StateMachine_8h_source.html#l00035">35</a> of file <a class="el" href="StateMachine_8h_source.html">StateMachine.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StateMachine_8h_source.html#l00033">33</a> of file <a class="el" href="StateMachine_8h_source.html">StateMachine.h</a>.</p>
 
 </div>
 </div>
@@ -614,7 +603,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="StateMachine_8h_source.html#l00097">97</a> of file <a class="el" href="StateMachine_8h_source.html">StateMachine.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StateMachine_8h_source.html#l00092">92</a> of file <a class="el" href="StateMachine_8h_source.html">StateMachine.h</a>.</p>
 
 </div>
 </div>
@@ -625,12 +614,12 @@ Friends</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::shared_ptr&lt;<a class="el" href="#a8a68ec168169965f64521640642c7e71">StateMachine</a>&gt; BPMNOS::Execution::StateMachine::interruptingEventSubProcess</td>
+          <td class="memname">std::shared_ptr&lt;<a class="el" href="#adb1acd20f19d12bca4f159e15653a050">StateMachine</a>&gt; BPMNOS::Execution::StateMachine::interruptingEventSubProcess</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="StateMachine_8h_source.html#l00104">104</a> of file <a class="el" href="StateMachine_8h_source.html">StateMachine.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StateMachine_8h_source.html#l00099">99</a> of file <a class="el" href="StateMachine_8h_source.html">StateMachine.h</a>.</p>
 
 </div>
 </div>
@@ -646,7 +635,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="StateMachine_8h_source.html#l00105">105</a> of file <a class="el" href="StateMachine_8h_source.html">StateMachine.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StateMachine_8h_source.html#l00100">100</a> of file <a class="el" href="StateMachine_8h_source.html">StateMachine.h</a>.</p>
 
 </div>
 </div>
@@ -662,7 +651,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="StateMachine_8h_source.html#l00100">100</a> of file <a class="el" href="StateMachine_8h_source.html">StateMachine.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StateMachine_8h_source.html#l00095">95</a> of file <a class="el" href="StateMachine_8h_source.html">StateMachine.h</a>.</p>
 
 </div>
 </div>
@@ -678,7 +667,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="StateMachine_8h_source.html#l00099">99</a> of file <a class="el" href="StateMachine_8h_source.html">StateMachine.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StateMachine_8h_source.html#l00094">94</a> of file <a class="el" href="StateMachine_8h_source.html">StateMachine.h</a>.</p>
 
 </div>
 </div>
@@ -694,23 +683,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="StateMachine_8h_source.html#l00106">106</a> of file <a class="el" href="StateMachine_8h_source.html">StateMachine.h</a>.</p>
-
-</div>
-</div>
-<a id="a647fa8e55e4e88312dc6397f8e392444" name="a647fa8e55e4e88312dc6397f8e392444"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a647fa8e55e4e88312dc6397f8e392444">&#9670;&#160;</a></span>process</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Process.html">BPMN::Process</a>* BPMNOS::Execution::StateMachine::process</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="StateMachine_8h_source.html#l00094">94</a> of file <a class="el" href="StateMachine_8h_source.html">StateMachine.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StateMachine_8h_source.html#l00101">101</a> of file <a class="el" href="StateMachine_8h_source.html">StateMachine.h</a>.</p>
 
 </div>
 </div>
@@ -721,12 +694,12 @@ Friends</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">const <a class="el" href="#a8a68ec168169965f64521640642c7e71">StateMachine</a>* BPMNOS::Execution::StateMachine::root</td>
+          <td class="memname">const <a class="el" href="#adb1acd20f19d12bca4f159e15653a050">StateMachine</a>* BPMNOS::Execution::StateMachine::root</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="StateMachine_8h_source.html#l00096">96</a> of file <a class="el" href="StateMachine_8h_source.html">StateMachine.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StateMachine_8h_source.html#l00091">91</a> of file <a class="el" href="StateMachine_8h_source.html">StateMachine.h</a>.</p>
 
 </div>
 </div>
@@ -742,7 +715,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="StateMachine_8h_source.html#l00095">95</a> of file <a class="el" href="StateMachine_8h_source.html">StateMachine.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StateMachine_8h_source.html#l00090">90</a> of file <a class="el" href="StateMachine_8h_source.html">StateMachine.h</a>.</p>
 
 </div>
 </div>
@@ -758,7 +731,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="StateMachine_8h_source.html#l00093">93</a> of file <a class="el" href="StateMachine_8h_source.html">StateMachine.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StateMachine_8h_source.html#l00089">89</a> of file <a class="el" href="StateMachine_8h_source.html">StateMachine.h</a>.</p>
 
 </div>
 </div>
@@ -774,7 +747,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="StateMachine_8h_source.html#l00103">103</a> of file <a class="el" href="StateMachine_8h_source.html">StateMachine.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StateMachine_8h_source.html#l00098">98</a> of file <a class="el" href="StateMachine_8h_source.html">StateMachine.h</a>.</p>
 
 </div>
 </div>

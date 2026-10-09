@@ -7,8 +7,8 @@ var classBPMNOS_1_1Model_1_1MessageDefinition =
       [ "Recipient", "classBPMNOS_1_1Model_1_1MessageDefinition.html#a68c605294c66b84c79c77ad12983568aa863c79ff8fdd62b79f3ca6979886efed", null ]
     ] ],
     [ "MessageDefinition", "classBPMNOS_1_1Model_1_1MessageDefinition.html#aa87b9a97148aa11f4aa7fd93c59aaedd", null ],
-    [ "getRecipientHeader", "classBPMNOS_1_1Model_1_1MessageDefinition.html#a25a6240f74177fd103afecef3caf2424", null ],
-    [ "getSenderHeader", "classBPMNOS_1_1Model_1_1MessageDefinition.html#a8a0b7c33779b4aadb5719c28ba5bfd22", null ],
+    [ "getRecipientHeader", "classBPMNOS_1_1Model_1_1MessageDefinition.html#af9bac713d05d374273c5c4104ff24449", null ],
+    [ "getSenderHeader", "classBPMNOS_1_1Model_1_1MessageDefinition.html#a90eb9091a81d885487109a4da826ff14", null ],
     [ "contentMap", "classBPMNOS_1_1Model_1_1MessageDefinition.html#a15629be9fa9ba6e9fc8ca9f76fe853e9", null ],
     [ "element", "classBPMNOS_1_1Model_1_1MessageDefinition.html#a8c6aa5008de7968f456a4626c98f1122", null ],
     [ "header", "classBPMNOS_1_1Model_1_1MessageDefinition.html#ac5e4b7ae8b64bbeae719235e249123a0", null ],

@@ -7,9 +7,9 @@ var classBPMNOS_1_1Model_1_1Guidance =
       [ "MessageDelivery", "classBPMNOS_1_1Model_1_1Guidance.html#a746c1f40d7d6fcaecbb4becfcb27c16ca54513e02f6d93b88e68f6b8fe8f531f6", null ]
     ] ],
     [ "Guidance", "classBPMNOS_1_1Model_1_1Guidance.html#ab76e2bfa2dfe1087e61aa4572a0f2cda", null ],
-    [ "apply", "classBPMNOS_1_1Model_1_1Guidance.html#a5bd33b5c8fdc2323ca13e79827571eba", null ],
-    [ "getObjective", "classBPMNOS_1_1Model_1_1Guidance.html#a21857216defa021aa563583c80a3d3a3", null ],
-    [ "restrictionsSatisfied", "classBPMNOS_1_1Model_1_1Guidance.html#a8d353a22e80e1cffe51d21eb50aae8aa", null ],
+    [ "apply", "classBPMNOS_1_1Model_1_1Guidance.html#a6ba4afdaa18ea270d1f6a7a2bbaf7d48", null ],
+    [ "getObjective", "classBPMNOS_1_1Model_1_1Guidance.html#a905b695b1b8fde2d878d583a37ea754b", null ],
+    [ "restrictionsSatisfied", "classBPMNOS_1_1Model_1_1Guidance.html#a813a0cbc7a13d0e2a0b8812b4b4b3c08", null ],
     [ "attributeRegistry", "classBPMNOS_1_1Model_1_1Guidance.html#a826c810bbae74f9d7dc79d2027168129", null ],
     [ "attributes", "classBPMNOS_1_1Model_1_1Guidance.html#a425927b893792db68cf6c2de162284a5", null ],
     [ "dependencies", "classBPMNOS_1_1Model_1_1Guidance.html#ae47febb051aa5e3df9d40ea656cbe773", null ],

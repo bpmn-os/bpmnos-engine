@@ -149,7 +149,7 @@ $(function(){initNavTree('RandomChoice_8cpp_source.html','',''); });
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>      assert( request );</div>
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>      <span class="keyword">auto</span> token = request-&gt;token;</div>
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>      assert( token );</div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>      assert( token-&gt;node );</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>      assert( token-&gt;node-&gt;represents&lt;<a class="code hl_classRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1FlowNode.html">BPMN::FlowNode</a>&gt;() );</div>
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>      assert( token-&gt;node-&gt;represents&lt;<a class="code hl_class" href="classBPMNOS_1_1Model_1_1DecisionTask.html">BPMNOS::Model::DecisionTask</a>&gt;() );</div>
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>      assert( token-&gt;node-&gt;extensionElements-&gt;represents&lt;<a class="code hl_class" href="classBPMNOS_1_1Model_1_1ExtensionElements.html">BPMNOS::Model::ExtensionElements</a>&gt;() );</div>
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>      </div>
@@ -158,52 +158,51 @@ $(function(){initNavTree('RandomChoice_8cpp_source.html','',''); });
 <div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>      std::vector&lt;BPMNOS::number&gt; choices;</div>
 <div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>      <span class="keyword">auto</span> status = token-&gt;status;</div>
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>      <span class="keyword">auto</span> data = <a class="code hl_struct" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a>(*token-&gt;data);</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>      <span class="keyword">auto</span> globals = token-&gt;globals;</div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>      <span class="keywordflow">for</span> ( <span class="keyword">auto</span>&amp; choice : extensionElements-&gt;choices ) {</div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        <span class="comment">// make random choice</span></div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        <span class="keywordflow">if</span> ( !choice-&gt;enumeration.empty() || choice-&gt;multipleOf ) {</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>          <span class="keyword">auto</span> values = choice-&gt;getEnumeration(status,data,globals);</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>          <span class="keywordflow">if</span> ( values.size() ) {</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>            std::uniform_int_distribution&lt;&gt; random_distribution(0,(<span class="keywordtype">int</span>)values.size()-1);</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>            choices.push_back( values[ (<span class="keywordtype">size_t</span>)random_distribution(<a class="code hl_variable" href="classBPMNOS_1_1Execution_1_1RandomChoice.html#a70d0e597c930010587db1b28dfd98361">randomGenerator</a>) ] );</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>            choice-&gt;attributeRegistry.setValue(choice-&gt;attribute, status, data, globals, choices.back());</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>          }</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>          <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>            choices.clear();</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>            <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>          }</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        }</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> ( choice-&gt;lowerBound.has_value() &amp;&amp; choice-&gt;upperBound.has_value() ) {</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>          <span class="keyword">auto</span> [min,max] = choice-&gt;getBounds(status,data,globals);</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>          <span class="keywordflow">if</span> ( min &gt; max ) {</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>            choices.clear();</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>            <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>          }</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>          <span class="keywordflow">if</span> ( choice-&gt;attribute-&gt;type == <a class="code hl_enumvalue" href="namespaceBPMNOS.html#abd0d3034519d54779b4df3e9754cd681afa4467d81943477ed17abb224b8b8af4">DECIMAL</a> ) {</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>            std::uniform_real_distribution&lt;&gt; random_distribution((<span class="keywordtype">double</span>)min,(<span class="keywordtype">double</span>)max);</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>            choices.push_back( <a class="code hl_function" href="namespaceBPMNOS.html#a2d245dee590cfec09f964e60afe635f8">BPMNOS::to_number</a>( random_distribution(<a class="code hl_variable" href="classBPMNOS_1_1Execution_1_1RandomChoice.html#a70d0e597c930010587db1b28dfd98361">randomGenerator</a>), <a class="code hl_enumvalue" href="namespaceBPMNOS.html#abd0d3034519d54779b4df3e9754cd681afa4467d81943477ed17abb224b8b8af4">DECIMAL</a> ) );</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>            choice-&gt;attributeRegistry.setValue(choice-&gt;attribute, status, data, globals, choices.back());</div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>          }</div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>          <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>            std::uniform_int_distribution&lt;&gt; random_distribution((<span class="keywordtype">int</span>)min,(<span class="keywordtype">int</span>)max);</div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>            choices.push_back( <a class="code hl_function" href="namespaceBPMNOS.html#a2d245dee590cfec09f964e60afe635f8">BPMNOS::to_number</a>( random_distribution(<a class="code hl_variable" href="classBPMNOS_1_1Execution_1_1RandomChoice.html#a70d0e597c930010587db1b28dfd98361">randomGenerator</a>), <a class="code hl_enumvalue" href="namespaceBPMNOS.html#abd0d3034519d54779b4df3e9754cd681a09706f77d0e6b9162ae8d432dc8bc85c">INTEGER</a> ) );</div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>            choice-&gt;attributeRegistry.setValue(choice-&gt;attribute, status, data, globals, choices.back());</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>          }</div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        }</div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>          choices.clear();</div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>          <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        }</div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>      }</div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>      <span class="keywordflow">if</span> ( !choices.empty() ) {</div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>        <span class="keywordflow">return</span> std::make_shared&lt;ChoiceEvent&gt;(token, std::move(choices));</div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>      }</div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    }</div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>  }</div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>  <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>}</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>      <span class="keywordflow">for</span> ( <span class="keyword">auto</span>&amp; choice : extensionElements-&gt;choices ) {</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        <span class="comment">// make random choice</span></div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        <span class="keywordflow">if</span> ( !choice-&gt;enumeration.empty() || choice-&gt;multipleOf ) {</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>          <span class="keyword">auto</span> values = choice-&gt;getEnumeration(status,data);</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>          <span class="keywordflow">if</span> ( values.size() ) {</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>            std::uniform_int_distribution&lt;&gt; random_distribution(0,(<span class="keywordtype">int</span>)values.size()-1);</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>            choices.push_back( values[ (<span class="keywordtype">size_t</span>)random_distribution(<a class="code hl_variable" href="classBPMNOS_1_1Execution_1_1RandomChoice.html#a70d0e597c930010587db1b28dfd98361">randomGenerator</a>) ] );</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>            choice-&gt;attributeRegistry.setValue(choice-&gt;attribute, status, data, choices.back());</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>          }</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>          <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>            choices.clear();</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>            <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>          }</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        }</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> ( choice-&gt;lowerBound.has_value() &amp;&amp; choice-&gt;upperBound.has_value() ) {</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>          <span class="keyword">auto</span> [min,max] = choice-&gt;getBounds(status,data);</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>          <span class="keywordflow">if</span> ( min &gt; max ) {</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>            choices.clear();</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>            <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>          }</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>          <span class="keywordflow">if</span> ( choice-&gt;attribute-&gt;type == <a class="code hl_enumvalue" href="namespaceBPMNOS.html#abd0d3034519d54779b4df3e9754cd681afa4467d81943477ed17abb224b8b8af4">DECIMAL</a> ) {</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>            std::uniform_real_distribution&lt;&gt; random_distribution((<span class="keywordtype">double</span>)min,(<span class="keywordtype">double</span>)max);</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>            choices.push_back( <a class="code hl_function" href="namespaceBPMNOS.html#a2d245dee590cfec09f964e60afe635f8">BPMNOS::to_number</a>( random_distribution(<a class="code hl_variable" href="classBPMNOS_1_1Execution_1_1RandomChoice.html#a70d0e597c930010587db1b28dfd98361">randomGenerator</a>), <a class="code hl_enumvalue" href="namespaceBPMNOS.html#abd0d3034519d54779b4df3e9754cd681afa4467d81943477ed17abb224b8b8af4">DECIMAL</a> ) );</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>            choice-&gt;attributeRegistry.setValue(choice-&gt;attribute, status, data, choices.back());</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>          }</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>          <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>            std::uniform_int_distribution&lt;&gt; random_distribution((<span class="keywordtype">int</span>)min,(<span class="keywordtype">int</span>)max);</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>            choices.push_back( <a class="code hl_function" href="namespaceBPMNOS.html#a2d245dee590cfec09f964e60afe635f8">BPMNOS::to_number</a>( random_distribution(<a class="code hl_variable" href="classBPMNOS_1_1Execution_1_1RandomChoice.html#a70d0e597c930010587db1b28dfd98361">randomGenerator</a>), <a class="code hl_enumvalue" href="namespaceBPMNOS.html#abd0d3034519d54779b4df3e9754cd681a09706f77d0e6b9162ae8d432dc8bc85c">INTEGER</a> ) );</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>            choice-&gt;attributeRegistry.setValue(choice-&gt;attribute, status, data, choices.back());</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>          }</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>        }</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>          choices.clear();</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>          <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        }</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>      }</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>      <span class="keywordflow">if</span> ( !choices.empty() ) {</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        <span class="keywordflow">return</span> std::make_shared&lt;ChoiceEvent&gt;(token, std::move(choices));</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>      }</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    }</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>  }</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>  <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>}</div>
 </div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
 <div class="ttc" id="aAttribute_8h_html"><div class="ttname"><a href="Attribute_8h.html">Attribute.h</a></div></div>
 <div class="ttc" id="aChoiceEvent_8h_html"><div class="ttname"><a href="ChoiceEvent_8h.html">ChoiceEvent.h</a></div></div>
 <div class="ttc" id="aCollectionRegistry_8h_html"><div class="ttname"><a href="CollectionRegistry_8h.html">CollectionRegistry.h</a></div></div>
@@ -216,7 +215,8 @@ $(function(){initNavTree('RandomChoice_8cpp_source.html','',''); });
 <div class="ttc" id="aclassBPMNOS_1_1Execution_1_1SystemState_html_aa7242aae7456af850597e13789c1ec83"><div class="ttname"><a href="classBPMNOS_1_1Execution_1_1SystemState.html#aa7242aae7456af850597e13789c1ec83">BPMNOS::Execution::SystemState::pendingChoiceDecisions</a></div><div class="ttdeci">auto_list&lt; std::weak_ptr&lt; Token &gt;, std::weak_ptr&lt; DecisionRequest &gt; &gt; pendingChoiceDecisions</div><div class="ttdef"><b>Definition</b> <a href="SystemState_8h_source.html#l00079">SystemState.h:79</a></div></div>
 <div class="ttc" id="aclassBPMNOS_1_1Model_1_1DecisionTask_html"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1DecisionTask.html">BPMNOS::Model::DecisionTask</a></div><div class="ttdoc">Class representing a task in which one or more choices have to be made.</div><div class="ttdef"><b>Definition</b> <a href="DecisionTask_8h_source.html#l00017">DecisionTask.h:17</a></div></div>
 <div class="ttc" id="aclassBPMNOS_1_1Model_1_1ExtensionElements_html"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1ExtensionElements.html">BPMNOS::Model::ExtensionElements</a></div><div class="ttdoc">Class holding extension elements representing execution data for nodes.</div><div class="ttdef"><b>Definition</b> <a href="ExtensionElements_8h_source.html#l00023">ExtensionElements.h:23</a></div></div>
-<div class="ttc" id="anamespaceBPMNOS_1_1Execution_html"><div class="ttname"><a href="namespaceBPMNOS_1_1Execution.html">BPMNOS::Execution</a></div><div class="ttdef"><b>Definition</b> <a href="CachedCandidates_8h_source.html#l00016">CachedCandidates.h:16</a></div></div>
+<div class="ttc" id="aclassBPMN_1_1FlowNode_html"><div class="ttname"><a href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1FlowNode.html">BPMN::FlowNode</a></div></div>
+<div class="ttc" id="anamespaceBPMNOS_1_1Execution_html"><div class="ttname"><a href="namespaceBPMNOS_1_1Execution.html">BPMNOS::Execution</a></div><div class="ttdef"><b>Definition</b> <a href="CachedCandidates_8h_source.html#l00017">CachedCandidates.h:17</a></div></div>
 <div class="ttc" id="anamespaceBPMNOS_html_a2d245dee590cfec09f964e60afe635f8"><div class="ttname"><a href="namespaceBPMNOS.html#a2d245dee590cfec09f964e60afe635f8">BPMNOS::to_number</a></div><div class="ttdeci">number to_number(const std::string &amp;valueString, const ValueType &amp;type)</div><div class="ttdoc">Converts a string to a number.</div><div class="ttdef"><b>Definition</b> <a href="Number_8cpp_source.html#l00059">Number.cpp:59</a></div></div>
 <div class="ttc" id="anamespaceBPMNOS_html_abd0d3034519d54779b4df3e9754cd681a09706f77d0e6b9162ae8d432dc8bc85c"><div class="ttname"><a href="namespaceBPMNOS.html#abd0d3034519d54779b4df3e9754cd681a09706f77d0e6b9162ae8d432dc8bc85c">BPMNOS::INTEGER</a></div><div class="ttdeci">@ INTEGER</div><div class="ttdef"><b>Definition</b> <a href="Value_8h_source.html#l00015">Value.h:15</a></div></div>
 <div class="ttc" id="anamespaceBPMNOS_html_abd0d3034519d54779b4df3e9754cd681afa4467d81943477ed17abb224b8b8af4"><div class="ttname"><a href="namespaceBPMNOS.html#abd0d3034519d54779b4df3e9754cd681afa4467d81943477ed17abb224b8b8af4">BPMNOS::DECIMAL</a></div><div class="ttdeci">@ DECIMAL</div><div class="ttdef"><b>Definition</b> <a href="Value_8h_source.html#l00015">Value.h:15</a></div></div>

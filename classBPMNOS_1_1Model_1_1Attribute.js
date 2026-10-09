@@ -2,8 +2,7 @@ var classBPMNOS_1_1Model_1_1Attribute =
 [
     [ "Category", "classBPMNOS_1_1Model_1_1Attribute.html#aae591f2dba868c00d93ef926d42bf145", [
       [ "STATUS", "classBPMNOS_1_1Model_1_1Attribute.html#aae591f2dba868c00d93ef926d42bf145a5f241c8c8f985b3c51e05d39cf030f4c", null ],
-      [ "DATA", "classBPMNOS_1_1Model_1_1Attribute.html#aae591f2dba868c00d93ef926d42bf145ae44f9e348e41cb272efa87387728571b", null ],
-      [ "GLOBAL", "classBPMNOS_1_1Model_1_1Attribute.html#aae591f2dba868c00d93ef926d42bf145a6eecfba72d12922ee1dead07a0ef3334", null ]
+      [ "DATA", "classBPMNOS_1_1Model_1_1Attribute.html#aae591f2dba868c00d93ef926d42bf145ae44f9e348e41cb272efa87387728571b", null ]
     ] ],
     [ "Attribute", "classBPMNOS_1_1Model_1_1Attribute.html#ad855c1b6042d629e042714ae5a7919e1", null ],
     [ "category", "classBPMNOS_1_1Model_1_1Attribute.html#a1ee7d0aa9c8aa5eed633b96bf5b96e0a", null ],

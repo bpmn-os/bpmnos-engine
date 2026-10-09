@@ -1,7 +1,6 @@
 var searchData=
 [
-  ['incomplete_0',['INCOMPLETE',['../namespaceBPMNOS_1_1Execution.html#adb8bb72fa058d4b49ebdab0f8c795e48a2e47f45b8584e07c8ebd4f693d8cfe10',1,'BPMNOS::Execution']]],
-  ['integer_1',['INTEGER',['../namespaceBPMNOS.html#abd0d3034519d54779b4df3e9754cd681a09706f77d0e6b9162ae8d432dc8bc85c',1,'BPMNOS']]],
-  ['is_5fnot_5fnull_2',['IS_NOT_NULL',['../classBPMNOS_1_1Model_1_1Expression.html#a1c6c51e0e04397036812c3e83434344ea05dd132ba23ff57c0ca5ec4100c31fdc',1,'BPMNOS::Model::Expression']]],
-  ['is_5fnull_3',['IS_NULL',['../classBPMNOS_1_1Model_1_1Expression.html#a1c6c51e0e04397036812c3e83434344eadbd9c38e0339e6c34bd48cafc59be388',1,'BPMNOS::Model::Expression']]]
+  ['message_0',['Message',['../structBPMNOS_1_1Execution_1_1Observable.html#a08cd1bc9081eb51f7fb6bb20578a355ea4c2a8fe7eaf24721cc7a9f0175115bd4',1,'BPMNOS::Execution::Observable']]],
+  ['messagedelivery_1',['MessageDelivery',['../classBPMNOS_1_1Model_1_1Guidance.html#a746c1f40d7d6fcaecbb4becfcb27c16ca54513e02f6d93b88e68f6b8fe8f531f6',1,'BPMNOS::Model::Guidance']]],
+  ['messagedeliveryrequest_2',['MessageDeliveryRequest',['../structBPMNOS_1_1Execution_1_1Observable.html#a08cd1bc9081eb51f7fb6bb20578a355ea485a7c47fbf964a65e5c916a2b10661e',1,'BPMNOS::Execution::Observable']]]
 ];

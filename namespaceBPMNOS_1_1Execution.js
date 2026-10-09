@@ -60,6 +60,7 @@ var namespaceBPMNOS_1_1Execution =
     [ "Message", "classBPMNOS_1_1Execution_1_1Message.html", "classBPMNOS_1_1Execution_1_1Message" ],
     [ "MessageDeliveryRequest", "structBPMNOS_1_1Execution_1_1MessageDeliveryRequest.html", "structBPMNOS_1_1Execution_1_1MessageDeliveryRequest" ],
     [ "Notifier", "classBPMNOS_1_1Execution_1_1Notifier.html", "classBPMNOS_1_1Execution_1_1Notifier" ],
+    [ "Objective", "structBPMNOS_1_1Execution_1_1Objective.html", "structBPMNOS_1_1Execution_1_1Objective" ],
     [ "Observable", "structBPMNOS_1_1Execution_1_1Observable.html", "structBPMNOS_1_1Execution_1_1Observable" ],
     [ "Observer", "classBPMNOS_1_1Execution_1_1Observer.html", "classBPMNOS_1_1Execution_1_1Observer" ],
     [ "SequentialPerformerUpdate", "structBPMNOS_1_1Execution_1_1SequentialPerformerUpdate.html", "structBPMNOS_1_1Execution_1_1SequentialPerformerUpdate" ],

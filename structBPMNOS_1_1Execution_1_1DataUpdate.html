@@ -126,23 +126,25 @@ $(function(){initNavTree('structBPMNOS_1_1Execution_1_1DataUpdate.html','','stru
   <div class="headertitle"><div class="title">BPMNOS::Execution::DataUpdate Struct Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Notification that data attributes were written by a token of an instance.  
+ <a href="#details">More...</a></p>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
-<div class="textblock">
-<p class="definition">Definition at line <a class="el" href="DataUpdate_8h_source.html#l00012">12</a> of file <a class="el" href="DataUpdate_8h_source.html">DataUpdate.h</a>.</p>
+<div class="textblock"><p>A written attribute concerns that instance alone, unless it is a global attribute, whose index is below the instance index of the model and which concerns every instance; an observer decides this by the index of each attribute. </p>
+
+<p class="definition">Definition at line <a class="el" href="DataUpdate_8h_source.html#l00019">19</a> of file <a class="el" href="DataUpdate_8h_source.html">DataUpdate.h</a>.</p>
 </div>
 <p><code>#include &lt;<a class="el" href="DataUpdate_8h_source.html">DataUpdate.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for BPMNOS::Execution::DataUpdate:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="structBPMNOS_1_1Execution_1_1DataUpdate__inherit__graph.svg" width="174" height="350"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="structBPMNOS_1_1Execution_1_1DataUpdate__inherit__graph.svg" width="174" height="304"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:acf70708a14eb60257bc26e1d4f09730f" id="r_acf70708a14eb60257bc26e1d4f09730f"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="structBPMNOS_1_1Execution_1_1Observable.html#a08cd1bc9081eb51f7fb6bb20578a355e">Type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acf70708a14eb60257bc26e1d4f09730f">getObservableType</a> () const override</td></tr>
-<tr class="memitem:a6163174b6f3bd4991b1c3d772fc83687" id="r_a6163174b6f3bd4991b1c3d772fc83687"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6163174b6f3bd4991b1c3d772fc83687">DataUpdate</a> (const std::vector&lt; const <a class="el" href="classBPMNOS_1_1Model_1_1Attribute.html">BPMNOS::Model::Attribute</a> * &gt; &amp;<a class="el" href="#a7ba8e70055cd21caeb78780e2b914631">attributes</a>)</td></tr>
 <tr class="memitem:a9de342a878ed9e39dc6e92cdb159d5fa" id="r_a9de342a878ed9e39dc6e92cdb159d5fa"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9de342a878ed9e39dc6e92cdb159d5fa">DataUpdate</a> (const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> <a class="el" href="#abf08df996685d1600dd6b35a330f8efc">instanceId</a>, const std::vector&lt; const <a class="el" href="classBPMNOS_1_1Model_1_1Attribute.html">BPMNOS::Model::Attribute</a> * &gt; &amp;<a class="el" href="#a7ba8e70055cd21caeb78780e2b914631">attributes</a>)</td></tr>
-<tr class="memitem:a2a9ab266bc913fc92c162b95e055a7bb" id="r_a2a9ab266bc913fc92c162b95e055a7bb"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2a9ab266bc913fc92c162b95e055a7bb">global</a> () const</td></tr>
 <tr class="inherit_header pub_methods_structBPMNOS_1_1Execution_1_1Observable"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_structBPMNOS_1_1Execution_1_1Observable')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="structBPMNOS_1_1Execution_1_1Observable.html">BPMNOS::Execution::Observable</a></td></tr>
 <tr class="memitem:a35e882074daf62166c874fa8d60a19ee inherit pub_methods_structBPMNOS_1_1Execution_1_1Observable" id="r_a35e882074daf62166c874fa8d60a19ee"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structBPMNOS_1_1Execution_1_1Observable.html#a35e882074daf62166c874fa8d60a19ee">~Observable</a> ()=default</td></tr>
 </table><table class="memberdecls">
@@ -162,46 +164,21 @@ Additional Inherited Members</h2></td></tr>
 , <br />
 &#160;&#160;<a class="el" href="structBPMNOS_1_1Execution_1_1Observable.html#a08cd1bc9081eb51f7fb6bb20578a355eaa4ecfc70574394990cf17bd83df499f7">Event</a>
 , <a class="el" href="structBPMNOS_1_1Execution_1_1Observable.html#a08cd1bc9081eb51f7fb6bb20578a355eabdef9b5db70adcb68299408edc20dee2">DataUpdate</a>
+, <a class="el" href="structBPMNOS_1_1Execution_1_1Observable.html#a08cd1bc9081eb51f7fb6bb20578a355ea40b796b77b40775e1361ce398a9a783c">Objective</a>
 , <a class="el" href="structBPMNOS_1_1Execution_1_1Observable.html#a08cd1bc9081eb51f7fb6bb20578a355ea20caab0862152251985214cd6ea92dcd">EntryRequest</a>
-, <a class="el" href="structBPMNOS_1_1Execution_1_1Observable.html#a08cd1bc9081eb51f7fb6bb20578a355ea4419a9c7ead36d76c68e50064751d332">ChoiceRequest</a>
 , <br />
-&#160;&#160;<a class="el" href="structBPMNOS_1_1Execution_1_1Observable.html#a08cd1bc9081eb51f7fb6bb20578a355ea57e7d74fed97e297242e2d5482b06a06">ExitRequest</a>
+&#160;&#160;<a class="el" href="structBPMNOS_1_1Execution_1_1Observable.html#a08cd1bc9081eb51f7fb6bb20578a355ea4419a9c7ead36d76c68e50064751d332">ChoiceRequest</a>
+, <a class="el" href="structBPMNOS_1_1Execution_1_1Observable.html#a08cd1bc9081eb51f7fb6bb20578a355ea57e7d74fed97e297242e2d5482b06a06">ExitRequest</a>
 , <a class="el" href="structBPMNOS_1_1Execution_1_1Observable.html#a08cd1bc9081eb51f7fb6bb20578a355ea485a7c47fbf964a65e5c916a2b10661e">MessageDeliveryRequest</a>
 , <a class="el" href="structBPMNOS_1_1Execution_1_1Observable.html#a08cd1bc9081eb51f7fb6bb20578a355eab2683254cdd6ca3c9aaf908baf7523b1">SystemState</a>
-, <a class="el" href="structBPMNOS_1_1Execution_1_1Observable.html#a08cd1bc9081eb51f7fb6bb20578a355eae93f994f01c537c4e2f7d8528c3eb5e9">Count</a>
+, <br />
+&#160;&#160;<a class="el" href="structBPMNOS_1_1Execution_1_1Observable.html#a08cd1bc9081eb51f7fb6bb20578a355eae93f994f01c537c4e2f7d8528c3eb5e9">Count</a>
 <br />
  }</td></tr>
 </table>
 <a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a6163174b6f3bd4991b1c3d772fc83687" name="a6163174b6f3bd4991b1c3d772fc83687"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6163174b6f3bd4991b1c3d772fc83687">&#9670;&#160;</a></span>DataUpdate() <span class="overload">[1/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">BPMNOS::Execution::DataUpdate::DataUpdate </td>
-          <td>(</td>
-          <td class="paramtype">const std::vector&lt; const <a class="el" href="classBPMNOS_1_1Model_1_1Attribute.html">BPMNOS::Model::Attribute</a> * &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>attributes</em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="DataUpdate_8h_source.html#l00014">14</a> of file <a class="el" href="DataUpdate_8h_source.html">DataUpdate.h</a>.</p>
-
-</div>
-</div>
 <a id="a9de342a878ed9e39dc6e92cdb159d5fa" name="a9de342a878ed9e39dc6e92cdb159d5fa"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9de342a878ed9e39dc6e92cdb159d5fa">&#9670;&#160;</a></span>DataUpdate() <span class="overload">[2/2]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a9de342a878ed9e39dc6e92cdb159d5fa">&#9670;&#160;</a></span>DataUpdate()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -227,7 +204,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="DataUpdate_8h_source.html#l00015">15</a> of file <a class="el" href="DataUpdate_8h_source.html">DataUpdate.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DataUpdate_8h_source.html#l00021">21</a> of file <a class="el" href="DataUpdate_8h_source.html">DataUpdate.h</a>.</p>
 
 </div>
 </div>
@@ -257,34 +234,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="structBPMNOS_1_1Execution_1_1Observable.html#ac4ef9f23fb39b38cf961872f741979b9">BPMNOS::Execution::Observable</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="DataUpdate_8h_source.html#l00013">13</a> of file <a class="el" href="DataUpdate_8h_source.html">DataUpdate.h</a>.</p>
-
-</div>
-</div>
-<a id="a2a9ab266bc913fc92c162b95e055a7bb" name="a2a9ab266bc913fc92c162b95e055a7bb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2a9ab266bc913fc92c162b95e055a7bb">&#9670;&#160;</a></span>global()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool BPMNOS::Execution::DataUpdate::global </td>
-          <td>(</td>
-          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="DataUpdate_8h_source.html#l00018">18</a> of file <a class="el" href="DataUpdate_8h_source.html">DataUpdate.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DataUpdate_8h_source.html#l00020">20</a> of file <a class="el" href="DataUpdate_8h_source.html">DataUpdate.h</a>.</p>
 
 </div>
 </div>
@@ -301,7 +251,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="DataUpdate_8h_source.html#l00017">17</a> of file <a class="el" href="DataUpdate_8h_source.html">DataUpdate.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DataUpdate_8h_source.html#l00023">23</a> of file <a class="el" href="DataUpdate_8h_source.html">DataUpdate.h</a>.</p>
 
 </div>
 </div>
@@ -317,7 +267,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="DataUpdate_8h_source.html#l00016">16</a> of file <a class="el" href="DataUpdate_8h_source.html">DataUpdate.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DataUpdate_8h_source.html#l00022">22</a> of file <a class="el" href="DataUpdate_8h_source.html">DataUpdate.h</a>.</p>
 
 </div>
 </div>
