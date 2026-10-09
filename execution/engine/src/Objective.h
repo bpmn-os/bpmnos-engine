@@ -1,6 +1,7 @@
 #ifndef BPMNOS_Execution_Objective_H
 #define BPMNOS_Execution_Objective_H
 
+#include <nlohmann/json.hpp>
 #include "Observable.h"
 #include "model/utility/src/Number.h"
 
@@ -19,6 +20,9 @@ struct Objective : Observable {
   Objective(BPMNOS::number value, BPMNOS::number change) : value(value), change(change) {}
   const BPMNOS::number value; ///< The new value of the objective
   const BPMNOS::number change; ///< The change of the objective, which is not zero
+
+  /// @brief Returns the new value and the change as {"value": v, "change": c}.
+  nlohmann::ordered_json jsonify() const { return { {"value", (double)value}, {"change", (double)change} }; }
 };
 
 } // namespace BPMNOS::Execution

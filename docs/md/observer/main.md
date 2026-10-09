@@ -17,6 +17,6 @@ An @ref BPMNOS::Execution::Event "event" is reported when the engine processes i
 
 ## The recorder
 
-The @ref BPMNOS::Execution::Recorder "recorder" is the observer the tests use. It keeps a JSON log of what it notices and optionally writes it to a stream as the run proceeds. Which kinds it records is configurable, and by default it records tokens, events, messages and signals. Each entry is the observable rendered as JSON, and @ref BPMNOS::Execution::Recorder::find "find" selects the entries matching a set of keys and values, which is how a test states what a run must have done.
+The @ref BPMNOS::Execution::Recorder "recorder" is the observer the tests use. It keeps a JSON log of what it notices and optionally writes it to a stream as the run proceeds. Which kinds it records is configurable, and by default it records tokens, events, messages, signals and every change of the objective, the latter as `{"value": v, "change": c}`. Each entry is the observable rendered as JSON, and @ref BPMNOS::Execution::Recorder::find "find" selects the entries matching a set of keys and values, which is how a test states what a run must have done.
 
 An observer must be subscribed before a run starts, because what nobody noticed is not kept and cannot be asked for afterwards.
