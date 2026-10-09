@@ -1,4 +1,5 @@
 #include "prelude.h"
+#include "golden/golden.h"
 
 SCENARIO( "Truck driver scheduling problem", "[examples][truck_driver_scheduling_problem]" ) {
   const std::string modelFile = "examples/truck_driver_scheduling_problem/US_Truck_driver_scheduling_problem.bpmn";
@@ -33,6 +34,7 @@ SCENARIO( "Truck driver scheduling problem", "[examples][truck_driver_scheduling
       recorder.subscribe(&engine);
       dataProvider->setEndTime(1500);
       engine.run(std::move(scenario), 0);
+      goldenMaster("truck_driver_scheduling_problem-1", recorder, engine);
       THEN( "Then no failure occurs" ) {
         auto failureLog = recorder.find(nlohmann::json{{"state", "FAILED"}});
         REQUIRE( failureLog.size() == 0 );
@@ -83,6 +85,7 @@ SCENARIO( "Truck driver scheduling problem", "[examples][truck_driver_scheduling
       recorder.subscribe(&engine);
       dataProvider->setEndTime(1500);
       engine.run(std::move(scenario), 0);
+      goldenMaster("truck_driver_scheduling_problem-2", recorder, engine);
       THEN( "Then no failure occurs" ) {
         auto failureLog = recorder.find(nlohmann::json{{"state", "FAILED"}});
         REQUIRE( failureLog.size() == 0 );
@@ -133,6 +136,7 @@ SCENARIO( "Truck driver scheduling problem", "[examples][truck_driver_scheduling
       recorder.subscribe(&engine);
       dataProvider->setEndTime(2000);
       engine.run(std::move(scenario), 0);
+      goldenMaster("truck_driver_scheduling_problem-3", recorder, engine);
       THEN( "Then no failure occurs" ) {
         auto failureLog = recorder.find(nlohmann::json{{"state", "FAILED"}});
         REQUIRE( failureLog.size() == 0 );

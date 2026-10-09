@@ -1,4 +1,5 @@
 #include "prelude.h"
+#include "golden/golden.h"
 
 SCENARIO( "Travelling salesperson problem", "[examples][travelling_salesperson_problem]" ) {
   const std::string modelFile = "examples/travelling_salesperson_problem/Travelling_salesperson_problem.bpmn";
@@ -34,6 +35,7 @@ SCENARIO( "Travelling salesperson problem", "[examples][travelling_salesperson_p
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
       engine.run(std::move(scenario));
+      goldenMaster("travelling_salesperson_problem-1", recorder, engine);
       THEN( "Then locations are visited in any order" ) {
         auto visitLog = recorder.find(nlohmann::json{{"nodeId", "VisitLocation"},{"state", "ENTERED"}});
         REQUIRE( visitLog.size() == 3 );
@@ -67,6 +69,7 @@ SCENARIO( "Travelling salesperson problem", "[examples][travelling_salesperson_p
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
       engine.run(std::move(scenario));
+      goldenMaster("travelling_salesperson_problem-2", recorder, engine);
       THEN( "Then locations are visited in the nearest-neighbour order" ) {
         auto visitLog = recorder.find(nlohmann::json{{"nodeId", "VisitLocation"},{"state", "ENTERED"}});
         REQUIRE( visitLog[0]["status"]["location"] == "Berlin" );
@@ -89,6 +92,7 @@ SCENARIO( "Travelling salesperson problem", "[examples][travelling_salesperson_p
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
       engine.run(std::move(scenario));
+      goldenMaster("travelling_salesperson_problem-3", recorder, engine);
       THEN( "Then locations are visited in the nearest-neighbour order" ) {
         auto visitLog = recorder.find(nlohmann::json{{"nodeId", "VisitLocation"},{"state", "ENTERED"}});
         REQUIRE( visitLog[0]["status"]["location"] == "Berlin" );

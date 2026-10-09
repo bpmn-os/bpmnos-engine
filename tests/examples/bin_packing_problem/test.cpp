@@ -1,4 +1,5 @@
 #include "prelude.h"
+#include "golden/golden.h"
 
 SCENARIO( "Bin packing problem", "[examples][bin_packing_problem]" ) {
   const std::string modelFile = "examples/bin_packing_problem/Bin_packing_problem.bpmn";
@@ -36,6 +37,7 @@ SCENARIO( "Bin packing problem", "[examples][bin_packing_problem]" ) {
       recorder.subscribe(&engine);
       dataProvider->setEndTime(2);
       engine.run(std::move(scenario), 0); // TODO: time limit should be removed when strange error below is fixed
+      goldenMaster("bin_packing_problem-1", recorder, engine);
 
       THEN( "Then no failure occurs" ) {
         auto failureLog = recorder.find(nlohmann::json{{"state", "FAILED"}});
@@ -99,6 +101,7 @@ SCENARIO( "Bin packing problem", "[examples][bin_packing_problem]" ) {
       recorder.subscribe(&engine);
       dataProvider->setEndTime(10);
       engine.run(std::move(scenario), 0);
+      goldenMaster("bin_packing_problem-2", recorder, engine);
       THEN( "Then no failure occurs" ) {
         auto failureLog = recorder.find(nlohmann::json{{"state", "FAILED"}});
         REQUIRE( failureLog.size() == 0 );

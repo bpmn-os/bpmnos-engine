@@ -238,3 +238,69 @@ SCENARIO( "SystemState copy with token awaiting boundary event", "[systemstate][
     }
   }
 }
+
+SCENARIO( "SystemState copy with message directed to an instance not yet started", "[systemstate][message][unsent]" ) {
+  const std::string modelFile = "tests/systemstate/message/Directed_message.bpmn";
+  REQUIRE_NOTHROW( Model::Model(modelFile) );
+
+  GIVEN( "A message sent at time 0 to an instance starting at time 5" ) {
+    std::string csv =
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1; timestamp := 0\n"
+      "Instance_2; Process_2; timestamp := 5\n"
+    ;
+
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
+
+    Execution::Engine engine(model);
+    Execution::InstantEntry entryHandler;
+    Execution::InstantDirectMessage messageHandler;
+    Execution::InstantExit exitHandler;
+    entryHandler.connect(&engine);
+    messageHandler.connect(&engine);
+    exitHandler.connect(&engine);
+
+    dataProvider->setEndTime(0);
+    engine.run(std::move(scenario), 0);
+    const auto* originalState = engine.getSystemState();
+
+    // the recipient exists but has not started, so the message awaits its registration as recipient
+    REQUIRE( originalState->messages.size() == 1 );
+    REQUIRE( originalState->unsent.size() == 1 );
+    REQUIRE( originalState->inbox.size() == 0 );
+
+    WHEN( "The system state is installed in another engine and the run is resumed" ) {
+      Execution::Engine resumed(model);
+      Execution::InstantEntry resumedEntryHandler;
+      Execution::InstantDirectMessage resumedMessageHandler;
+      Execution::InstantExit resumedExitHandler;
+      resumedEntryHandler.connect(&resumed);
+      resumedMessageHandler.connect(&resumed);
+      resumedExitHandler.connect(&resumed);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
+      recorder.subscribe(&resumed);
+
+      resumed.initializeSystemState(dataProvider->createScenario(), originalState);
+      // a finite time bound turns a message that is never delivered into a failed assertion instead of a hang
+      dataProvider->setEndTime(100);
+      resumed.resume();
+
+      THEN( "The run ends well before the time bound" ) {
+        REQUIRE( (double)resumed.getSystemState()->getTime() < 100.0 );
+      }
+      THEN( "The recipient receives the message once it has started" ) {
+        auto catchLog = recorder.find(nlohmann::json{{"processId","Process_2"},{"instanceId","Instance_2"},{"nodeId","MessageCatchEvent_2"},{"state","COMPLETED"}});
+        REQUIRE( catchLog.size() == 1 );
+        REQUIRE( catchLog[0]["status"]["sender"] == "Instance_1" );
+        REQUIRE( catchLog[0]["status"]["timestamp"] == 5 );
+      }
+      THEN( "The recipient completes" ) {
+        auto processLog = recorder.find(nlohmann::json{{"instanceId","Instance_2"},{"state","DONE"}}, nlohmann::json{{"nodeId",nullptr }, {"event",nullptr },{"decision",nullptr }});
+        REQUIRE( processLog.size() == 1 );
+      }
+    }
+  }
+}

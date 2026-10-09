@@ -1,4 +1,5 @@
 #include "prelude.h"
+#include "golden/golden.h"
 
 SCENARIO( "Job shop schedulng problem", "[examples][job_shop_scheduling_problem]" ) {
   const std::string modelFile = "examples/job_shop_scheduling_problem/Job_shop_scheduling_problem.bpmn";
@@ -37,6 +38,7 @@ SCENARIO( "Job shop schedulng problem", "[examples][job_shop_scheduling_problem]
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
       engine.run(std::move(scenario));
+      goldenMaster("job_shop_scheduling_problem-1", recorder, engine);
       THEN( "Then no failure occurs" ) {
         auto failureLog = recorder.find(nlohmann::json{{"state", "FAILED"}});
         REQUIRE( failureLog.size() == 0 );

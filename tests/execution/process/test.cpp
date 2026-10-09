@@ -672,3 +672,84 @@ SCENARIO( "Outcome of a run", "[execution][process][outcome]" ) {
     }
   }
 }
+
+SCENARIO( "Two instances of which one fails", "[execution][process]" ) {
+  const std::string modelFile = "tests/execution/process/Process_with_deadline.bpmn";
+  REQUIRE_NOTHROW( Model::Model(modelFile) );
+
+  GIVEN( "An instance missing its deadline at time 1 and an instance completing at time 5" ) {
+    std::string csv =
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1; timestamp := 0\n"
+      "Instance_1; Process_1; duration := 1\n"
+      "Instance_1; Process_1; deadline := 0\n"
+      "Instance_2; Process_1; timestamp := 0\n"
+      "Instance_2; Process_1; duration := 5\n"
+      "Instance_2; Process_1; deadline := 10\n"
+    ;
+
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
+
+    WHEN( "The engine is started" ) {
+      Execution::Engine engine(model);
+      Execution::InstantEntry entryHandler;
+      Execution::InstantExit exitHandler;
+      entryHandler.connect(&engine);
+      exitHandler.connect(&engine);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
+      recorder.subscribe(&engine);
+      Execution::OutcomeSentinel sentinel;
+      sentinel.subscribe(&engine);
+      engine.run(std::move(scenario));
+
+      // the position in the log of the first entry matching the given object
+      auto position = [&recorder](const nlohmann::ordered_json& include) {
+        for ( size_t i = 0; i < recorder.log.size(); i++ ) {
+          if ( !recorder.log[i].is_object() ) {
+            continue;
+          }
+          bool matches = true;
+          for ( auto& [key, value] : include.items() ) {
+            if ( !recorder.log[i].contains(key) || recorder.log[i][key] != value ) {
+              matches = false;
+              break;
+            }
+          }
+          if ( matches ) {
+            return i;
+          }
+        }
+        return recorder.log.size();
+      };
+
+      THEN( "The instance missing its deadline fails" ) {
+        auto processLog = recorder.find(nlohmann::json{{"instanceId","Instance_1"}}, nlohmann::json{{"nodeId",nullptr }, {"event",nullptr },{"decision",nullptr }});
+        REQUIRE( processLog.size() > 0 );
+        REQUIRE( processLog.back()["state"] == "FAILED" );
+      }
+      THEN( "The other instance completes after the failure" ) {
+        auto processLog = recorder.find(nlohmann::json{{"instanceId","Instance_2"}}, nlohmann::json{{"nodeId",nullptr }, {"event",nullptr },{"decision",nullptr }});
+        REQUIRE( processLog.size() == 6 );
+        REQUIRE( processLog[0]["state"] == "CREATED" );
+        REQUIRE( processLog[1]["state"] == "READY" );
+        REQUIRE( processLog[2]["state"] == "ENTERED" );
+        REQUIRE( processLog[3]["state"] == "BUSY" );
+        REQUIRE( processLog[4]["state"] == "COMPLETED" );
+        REQUIRE( processLog[5]["state"] == "DONE" );
+        REQUIRE( processLog[5]["status"]["timestamp"] == 5 );
+
+        auto failure = position(nlohmann::ordered_json{{"instanceId","Instance_1"},{"state","FAILED"}});
+        auto completion = position(nlohmann::ordered_json{{"instanceId","Instance_2"},{"nodeId","Activity_1"},{"state","COMPLETED"}});
+        REQUIRE( failure < recorder.log.size() );
+        REQUIRE( completion < recorder.log.size() );
+        REQUIRE( failure < completion );
+      }
+      THEN( "The outcome of the run is a failure" ) {
+        REQUIRE( sentinel.getOutcome() == Execution::Outcome::FAILED );
+      }
+    }
+  }
+}
