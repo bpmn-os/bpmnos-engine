@@ -31,11 +31,15 @@ inline void goldenMaster(const std::string& name, const Execution::Recorder& rec
   // to itself, and a value changing between an integer and a floating-point number is a difference
   REQUIRE( actual["objective"].dump() == expected["objective"].dump() );
   // the objective is held by the system state and no longer by a global attribute named objective, which the
-  // golden masters written before show with the running objective; the attribute is left out on both sides
+  // golden masters written before show with the running objective; the attribute is left out on both sides,
+  // and with it the globals of a model declaring no other global attribute
   auto withoutObjectiveAttribute = [](nlohmann::ordered_json log) {
     for ( auto& entry : log ) {
       if ( entry.is_object() && entry.contains("globals") && entry["globals"].is_object() ) {
         entry["globals"].erase("objective");
+        if ( entry["globals"].empty() ) {
+          entry.erase("globals");
+        }
       }
     }
     return log;

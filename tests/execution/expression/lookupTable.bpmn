@@ -20,13 +20,6 @@
     </bpmn2:dataObject>
     <bpmn2:dataStoreReference id="DataStoreReference_0wifw7c" dataStoreRef="DataStore_2" />
   </bpmn2:process>
-  <bpmn2:dataStore id="DataStore_1">
-    <bpmn2:extensionElements>
-      <bpmnos:attributes>
-        <bpmnos:attribute id="Objective" type="decimal" name="objective := 0" />
-      </bpmnos:attributes>
-    </bpmn2:extensionElements>
-  </bpmn2:dataStore>
   <bpmn2:dataStore id="DataStore_2">
     <bpmn2:extensionElements>
       <bpmnos:tables>

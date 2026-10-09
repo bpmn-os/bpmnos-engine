@@ -79,13 +79,6 @@
     </bpmn2:dataObject>
     <bpmn2:dataStoreReference id="DataStoreReference_1ns10u7" name="Distance table" dataStoreRef="DataStore_2" />
   </bpmn2:process>
-  <bpmn2:dataStore id="DataStore_1">
-    <bpmn2:extensionElements>
-      <bpmnos:attributes>
-        <bpmnos:attribute id="Objective" type="decimal" name="objective := 0" />
-      </bpmnos:attributes>
-    </bpmn2:extensionElements>
-  </bpmn2:dataStore>
   <bpmn2:dataStore id="DataStore_2" name="Distance table">
     <bpmn2:extensionElements>
       <bpmnos:tables>

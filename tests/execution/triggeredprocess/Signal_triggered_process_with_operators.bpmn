@@ -97,7 +97,6 @@
   <bpmn2:dataStore id="DataStore_1">
     <bpmn2:extensionElements>
       <bpmnos:attributes>
-        <bpmnos:attribute id="Objective" type="decimal" name="objective := 0" />
         <bpmnos:attribute id="Total" type="integer" name="total := 0" />
         <bpmnos:attribute id="Instantiations" type="integer" name="instantiations := 0" />
       </bpmnos:attributes>

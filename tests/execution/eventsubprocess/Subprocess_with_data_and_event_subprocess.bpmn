@@ -72,13 +72,6 @@
       </bpmn2:extensionElements>
     </bpmn2:dataObject>
   </bpmn2:process>
-  <bpmn2:dataStore id="DataStore_1">
-    <bpmn2:extensionElements>
-      <bpmnos:attributes>
-        <bpmnos:attribute id="Objective" type="decimal" name="objective := 0" />
-      </bpmnos:attributes>
-    </bpmn2:extensionElements>
-  </bpmn2:dataStore>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_1">
       <bpmndi:BPMNShape id="StartEvent_1_di" bpmnElement="StartEvent_1">
@@ -113,9 +106,6 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DataObject_1_di" bpmnElement="DataObject_1">
         <dc:Bounds x="152" y="365" width="36" height="50" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DataStore_1_di" bpmnElement="DataStore_1">
-        <dc:Bounds x="145" y="105" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_1_di" bpmnElement="Flow_1">
         <di:waypoint x="188" y="270" />

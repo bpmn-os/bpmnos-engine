@@ -29,13 +29,6 @@
       </bpmn2:extensionElements>
     </bpmn2:dataObject>
   </bpmn2:process>
-  <bpmn2:dataStore id="DataStore_1">
-    <bpmn2:extensionElements>
-      <bpmnos:attributes>
-        <bpmnos:attribute id="Objective" type="decimal" name="objective := 0" />
-      </bpmnos:attributes>
-    </bpmn2:extensionElements>
-  </bpmn2:dataStore>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_1">
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">

@@ -195,13 +195,6 @@ I the stochastic case, where actual item size is only revaled when handling the 
     </bpmn2:dataObject>
     <bpmn2:performer name="Sequential" />
   </bpmn2:process>
-  <bpmn2:dataStore id="DataStore_1">
-    <bpmn2:extensionElements>
-      <bpmnos:attributes>
-        <bpmnos:attribute id="Objective" type="decimal" name="objective := 0" />
-      </bpmnos:attributes>
-    </bpmn2:extensionElements>
-  </bpmn2:dataStore>
   <bpmn2:dataStore id="DataStore_2">
     <bpmn2:extensionElements>
       <bpmnos:attributes>
