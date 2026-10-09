@@ -98,19 +98,38 @@ void CachedCandidates<WeakPtrs...>::removeObsolete(const DataUpdate* update, aut
 };
 
 template <typename... WeakPtrs>
-void CachedCandidates<WeakPtrs...>::removeDependentEvaluations(const DataUpdate* update, std::unordered_map< long unsigned int, auto_list< WeakPtrs..., std::weak_ptr<Decision> > >& evaluatedDecisions, auto_list< WeakPtrs..., std::weak_ptr<Decision> >& unevaluatedDecisions)  {
+auto_list< WeakPtrs..., std::weak_ptr<Decision> >& CachedCandidates<WeakPtrs...>::InstanceEvaluations::operator[](long unsigned int instanceId) {
+  auto [it, inserted] = positions.try_emplace(instanceId, evaluations.size());
+  if ( inserted ) {
+    evaluations.emplace_back();
+  }
+  return evaluations[it->second];
+}
+
+template <typename... WeakPtrs>
+auto_list< WeakPtrs..., std::weak_ptr<Decision> >* CachedCandidates<WeakPtrs...>::InstanceEvaluations::find(long unsigned int instanceId) {
+  auto it = positions.find(instanceId);
+  return it != positions.end() ? &evaluations[it->second] : nullptr;
+}
+
+template <typename... WeakPtrs>
+void CachedCandidates<WeakPtrs...>::InstanceEvaluations::clear() {
+  evaluations.clear();
+  positions.clear();
+}
+
+template <typename... WeakPtrs>
+void CachedCandidates<WeakPtrs...>::removeDependentEvaluations(const DataUpdate* update, InstanceEvaluations& evaluatedDecisions, auto_list< WeakPtrs..., std::weak_ptr<Decision> >& unevaluatedDecisions)  {
     if ( update->instanceId >= 0 ) {
       // find instance that data update refers to
-      if ( auto it = evaluatedDecisions.find((long unsigned int)update->instanceId);
-        it != evaluatedDecisions.end()
-      ) {
-        removeObsolete(update,it->second,unevaluatedDecisions);
+      if ( auto evaluations = evaluatedDecisions.find((long unsigned int)update->instanceId) ) {
+        removeObsolete(update,*evaluations,unevaluatedDecisions);
       }
     }
     else {
       // update of global value may influence evaluatedDecisions of all instances
-      for ( auto it = evaluatedDecisions.begin(); it != evaluatedDecisions.end(); ++it) {
-        removeObsolete(update,it->second,unevaluatedDecisions);
+      for ( auto& evaluations : evaluatedDecisions.evaluations ) {
+        removeObsolete(update,evaluations,unevaluatedDecisions);
       }
     }
   };
@@ -157,7 +176,7 @@ void CachedCandidates<WeakPtrs...>::clockTick() {
 
   timeDependentEvaluations.clear();
 
-  for ( auto& [ instance, evaluations ] : timeAndDataDependentEvaluations ) {
+  for ( auto& evaluations : timeAndDataDependentEvaluations.evaluations ) {
     for ( auto& decisionTuple : evaluations ) {
       if ( auto decision = std::get<sizeof...(WeakPtrs)>(decisionTuple).lock() ) {
         decision->evaluation.reset();

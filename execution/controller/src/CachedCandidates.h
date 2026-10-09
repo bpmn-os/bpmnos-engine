@@ -2,6 +2,7 @@
 #define BPMNOS_Execution_CachedCandidates_H
 
 #include <bpmn++.h>
+#include <deque>
 #include <functional>
 #include <memory>
 #include <tuple>
@@ -54,15 +55,33 @@ private:
   void dataUpdate(const DataUpdate* update);
   bool intersect(const std::vector<const BPMNOS::Model::Attribute*>& first, const std::set<const BPMNOS::Model::Attribute*>& second) const;
   void removeObsolete(const DataUpdate* update, auto_list< WeakPtrs..., std::weak_ptr<Decision> >& evaluation, auto_list< WeakPtrs..., std::weak_ptr<Decision> >& unevaluatedDecisions);
-  void removeDependentEvaluations(const DataUpdate* update, std::unordered_map< long unsigned int, auto_list< WeakPtrs..., std::weak_ptr<Decision> > >& evaluatedDecisions, auto_list< WeakPtrs..., std::weak_ptr<Decision> >& unevaluatedDecisions);
+  /**
+   * @brief Weak indexes of evaluated decisions, one per process instance, in the order in which the instances first
+   * appear.
+   *
+   * An instance is identified by an index of the string registry, which depends on what was registered before, so
+   * an order following identifiers would make the order in which invalidated decisions are evaluated anew, and with
+   * it the choice among candidates of equal reward, depend on it.
+   */
+  struct InstanceEvaluations {
+    std::deque< auto_list< WeakPtrs..., std::weak_ptr<Decision> > > evaluations; ///< The weak indexes in the order in which their instances first appear
+    std::unordered_map< long unsigned int, size_t > positions; ///< The position of the weak index of each instance in @ref evaluations
+    /// Return the weak index of the instance, adding an empty one for an instance not seen before.
+    auto_list< WeakPtrs..., std::weak_ptr<Decision> >& operator[](long unsigned int instanceId);
+    /// Return the weak index of the instance, or nullptr for an instance not seen before.
+    auto_list< WeakPtrs..., std::weak_ptr<Decision> >* find(long unsigned int instanceId);
+    void clear();
+  };
+
+  void removeDependentEvaluations(const DataUpdate* update, InstanceEvaluations& evaluatedDecisions, auto_list< WeakPtrs..., std::weak_ptr<Decision> >& unevaluatedDecisions);
   /// Invoke `evaluate` with the candidate's weak identifiers and the re-locked decision.
   template <std::size_t... I>
   std::shared_ptr<Event> applyEvaluate(const Evaluate& evaluate, const std::tuple< WeakPtrs..., std::weak_ptr<Decision> >& tuple, std::shared_ptr<Decision> decision, std::index_sequence<I...>);
 
   auto_list< WeakPtrs..., std::weak_ptr<Decision> > candidatesWithoutEvaluations; ///< Weak index of decisions awaiting evaluation.
   auto_list< WeakPtrs..., std::weak_ptr<Decision> > timeDependentEvaluations;     ///< Weak index of evaluated time-dependent decisions.
-  std::unordered_map< long unsigned int, auto_list< WeakPtrs..., std::weak_ptr<Decision> > > dataDependentEvaluations;        ///< Per-instance weak index of evaluated data-dependent decisions.
-  std::unordered_map< long unsigned int, auto_list< WeakPtrs..., std::weak_ptr<Decision> > > timeAndDataDependentEvaluations; ///< Per-instance weak index of evaluated time-and-data-dependent decisions.
+  InstanceEvaluations dataDependentEvaluations;        ///< Per-instance weak index of evaluated data-dependent decisions.
+  InstanceEvaluations timeAndDataDependentEvaluations; ///< Per-instance weak index of evaluated time-and-data-dependent decisions.
 };
 
 } // namespace BPMNOS::Execution

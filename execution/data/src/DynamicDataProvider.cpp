@@ -55,7 +55,7 @@ const std::unordered_map<const BPMN::Node*, BPMNOS::number>& DynamicDataProvider
 }
 
 BPMNOS::number DynamicDataProvider::getKnownTime(const Scenario& scenario, size_t instanceId) const {
-  return getDisclosureTimes(scenario, instanceId).at(instances.at(instanceId).process);
+  return getDisclosureTimes(scenario, instanceId).at(getInstance(instanceId).process);
 }
 
 BPMNOS::number DynamicDataProvider::getProcessReadyTime(const Scenario& scenario, size_t instanceId) const {

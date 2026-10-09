@@ -135,17 +135,17 @@ std::unique_ptr<BPMNOS::Execution::Scenario> StochasticDataProvider::forkScenari
 }
 
 void StochasticDataProvider::sample(Scenario& scenario, const Scenario* original, BPMNOS::number spawnTime) const {
-  for ( auto& [instanceId, instance] : instances ) {
-    scenario.values[instanceId] = instance.values;
-    scenario.instantiationTimes[instanceId] = instance.instantiationTime;
-    scenario.disclosureTimes[instanceId][instance.process] = 0;
+  for ( auto& instance : instances ) {
+    scenario.values[instance.id] = instance.values;
+    scenario.instantiationTimes[instance.id] = instance.instantiationTime;
+    scenario.disclosureTimes[instance.id][instance.process] = 0;
   }
 
   // the initializations are sampled in the order of the rows, so that each may refer to those before it
   for ( size_t k = 0; k < initializations.size(); k++ ) {
     auto& initialization = initializations[k];
     auto& values = scenario.values.at(initialization.instanceId);
-    auto process = instances.at(initialization.instanceId).process;
+    auto process = getInstance(initialization.instanceId).process;
     bool isTimestamp = ( initialization.attribute == process->extensionElements->as<BPMNOS::Model::ExtensionElements>()->attributes[BPMNOS::Model::ExtensionElements::Index::Timestamp].get() );
 
     BPMNOS::number value;

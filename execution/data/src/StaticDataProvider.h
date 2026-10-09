@@ -139,12 +139,20 @@ protected:
    * @brief Instance data read.
    */
   struct Instance {
+    size_t id;
     const BPMN::Process* process;
     std::unordered_map<const BPMNOS::Model::Attribute*, BPMNOS::number> values;
     BPMNOS::number instantiationTime;
   };
 
-  std::unordered_map<size_t, Instance> instances; ///< The instances by their identifier
+  /// @brief Method returning the instance with the given identifier.
+  const Instance& getInstance(size_t instanceId) const;
+
+  /// The instances in the order of their first rows, which is the order in which instances becoming known at the
+  /// same time are instantiated. The identifier of an instance is an index of the string registry, which depends on
+  /// what was registered before, so an order following identifiers would make a run depend on it.
+  std::vector<Instance> instances;
+  std::unordered_map<size_t, size_t> instancePositions; ///< The position of each instance in @ref instances, by its identifier
   BPMNOS::Values globals; ///< The values of the global attributes at the start of a run
   BPMNOS::number endTime = std::numeric_limits<BPMNOS::number>::max();
 
