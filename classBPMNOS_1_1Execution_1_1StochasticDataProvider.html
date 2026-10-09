@@ -130,10 +130,10 @@ $(function(){initNavTree('classBPMNOS_1_1Execution_1_1StochasticDataProvider.htm
 <p>Data provider sampling the instance data of a run from random expressions.  
  <a href="#details">More...</a></p>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>The data is read from a CSV table with the columns <span class="tt">INSTANCE_ID</span>, <span class="tt">NODE_ID</span>, <span class="tt">INITIALIZATION</span>, <span class="tt">DISCLOSURE</span>, <span class="tt">READY</span> and <span class="tt">COMPLETION</span>, of which the table may omit the trailing ones. The expressions may use random functions. The global values are sampled once, with the seed of the data provider. Every initialization and disclosure of an instance is sampled for each scenario, with the seed of the scenario, which is the seed of the data provider plus the realisation the scenario is created for, in the order of the rows. A run on a scenario proceeds as on the dynamic data provider with the values and disclosure times sampled, but what is disclosed is an announcement, which the realisation may contradict: the ready expressions of an activity give the status a token arriving at it becomes ready with, once the timestamp of this status is reached, and the completion expressions of a task give the status it completes with. Every random expression of an instance and a node is evaluated with a random number generator of its own.</p>
+<div class="textblock"><p>The data is read from a CSV table with the columns <span class="tt">INSTANCE_ID</span>, <span class="tt">NODE_ID</span>, <span class="tt">INITIALIZATION</span>, <span class="tt">DISCLOSURE</span>, <span class="tt">READY</span> and <span class="tt">COMPLETION</span>, of which the table may omit the trailing ones. The expressions may use random functions. The global values are sampled once, with the seed of the data provider. Every initialization and disclosure of an instance is sampled for each scenario, with the seed of the scenario, which is the seed of the data provider plus the realisation the scenario is created for, in the order of the rows. A run on a scenario proceeds as on the dynamic data provider with the values and disclosure times sampled, but what is disclosed is an announcement, which the realisation may contradict: the ready expressions of an activity give the status a token arriving at it becomes ready with, once the timestamp of this status is reached, and the completion expressions of a task give the status it completes with. Every random expression of an instance and a node is evaluated with a random number generator of its own, seeded from the seed of the scenario and the identifiers of the instance and the node, so that a realisation depends on nothing but the seed, the model and the instance data.</p>
 <p>A fork of a run with seed <span class="tt">r</span> and index <span class="tt">i</span> has the seed <span class="tt">r + i + 1</span>. It keeps what the run has revealed and samples everything else anew. The initializations are disclosed with clock ticks, so that the fork of a run at time <span class="tt">t</span> keeps every initialization disclosed by <span class="tt">t</span> and samples every other one anew, its timestamp and disclosure time being sampled again up to <a class="el" href="#ab43f981afe6b4ed7e0b79e99d0d19630">maxResamplingTries</a> times while they precede <span class="tt">t + 1</span> and then set to <span class="tt">t + 1</span>. The tokens awaiting their ready or completion event in the installed system state are those whose statuses have not been revealed, and these statuses are computed anew when the state is installed, a timestamp being sampled again up to <a class="el" href="#ab43f981afe6b4ed7e0b79e99d0d19630">maxResamplingTries</a> times while it precedes <span class="tt">t</span>, if one of the expressions assigns it, and then set to <span class="tt">t</span>. A timestamp of <span class="tt">t</span> is admissible, since an event of an instant may follow a decision of that instant. A status computed for a token arriving at an activity or becoming busy at a task is computed as in any run. </p>
 
-<p class="definition">Definition at line <a class="el" href="StochasticDataProvider_8h_source.html#l00043">43</a> of file <a class="el" href="StochasticDataProvider_8h_source.html">StochasticDataProvider.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StochasticDataProvider_8h_source.html#l00044">44</a> of file <a class="el" href="StochasticDataProvider_8h_source.html">StochasticDataProvider.h</a>.</p>
 </div>
 <p><code>#include &lt;<a class="el" href="StochasticDataProvider_8h_source.html">StochasticDataProvider.h</a>&gt;</code></p>
 <div class="dynheader">
@@ -272,7 +272,7 @@ Additional Inherited Members</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="StochasticDataProvider_8cpp_source.html#l00045">45</a> of file <a class="el" href="StochasticDataProvider_8cpp_source.html">StochasticDataProvider.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StochasticDataProvider_8cpp_source.html#l00049">49</a> of file <a class="el" href="StochasticDataProvider_8cpp_source.html">StochasticDataProvider.cpp</a>.</p>
 
 </div>
 </div>
@@ -302,7 +302,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classBPMNOS_1_1Execution_1_1StaticDataProvider.html#aabaa62e42953224f0ff8a9cbc0d93778">BPMNOS::Execution::StaticDataProvider</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="StochasticDataProvider_8cpp_source.html#l00119">119</a> of file <a class="el" href="StochasticDataProvider_8cpp_source.html">StochasticDataProvider.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StochasticDataProvider_8cpp_source.html#l00123">123</a> of file <a class="el" href="StochasticDataProvider_8cpp_source.html">StochasticDataProvider.cpp</a>.</p>
 
 </div>
 </div>
@@ -336,7 +336,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classBPMNOS_1_1Execution_1_1DataProvider.html#a03351cb05ddb88de7c6f11fe242789a7">BPMNOS::Execution::DataProvider</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="StochasticDataProvider_8cpp_source.html#l00125">125</a> of file <a class="el" href="StochasticDataProvider_8cpp_source.html">StochasticDataProvider.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StochasticDataProvider_8cpp_source.html#l00129">129</a> of file <a class="el" href="StochasticDataProvider_8cpp_source.html">StochasticDataProvider.cpp</a>.</p>
 
 </div>
 </div>
@@ -375,7 +375,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classBPMNOS_1_1Execution_1_1StaticDataProvider.html#ade3bae6300e25750742ca9816239f188">BPMNOS::Execution::StaticDataProvider</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="StochasticDataProvider_8cpp_source.html#l00230">230</a> of file <a class="el" href="StochasticDataProvider_8cpp_source.html">StochasticDataProvider.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StochasticDataProvider_8cpp_source.html#l00234">234</a> of file <a class="el" href="StochasticDataProvider_8cpp_source.html">StochasticDataProvider.cpp</a>.</p>
 
 </div>
 </div>
@@ -418,7 +418,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classBPMNOS_1_1Execution_1_1DynamicDataProvider.html#ac50f70ebfab3fcb45e5ab2e06f10c699">BPMNOS::Execution::DynamicDataProvider</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="StochasticDataProvider_8cpp_source.html#l00236">236</a> of file <a class="el" href="StochasticDataProvider_8cpp_source.html">StochasticDataProvider.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StochasticDataProvider_8cpp_source.html#l00240">240</a> of file <a class="el" href="StochasticDataProvider_8cpp_source.html">StochasticDataProvider.cpp</a>.</p>
 
 </div>
 </div>
@@ -457,7 +457,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classBPMNOS_1_1Execution_1_1StaticDataProvider.html#ab15cb9a4e8153d7755ce1832a4815f6f">BPMNOS::Execution::StaticDataProvider</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="StochasticDataProvider_8cpp_source.html#l00241">241</a> of file <a class="el" href="StochasticDataProvider_8cpp_source.html">StochasticDataProvider.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StochasticDataProvider_8cpp_source.html#l00245">245</a> of file <a class="el" href="StochasticDataProvider_8cpp_source.html">StochasticDataProvider.cpp</a>.</p>
 
 </div>
 </div>
@@ -490,7 +490,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classBPMNOS_1_1Execution_1_1DynamicDataProvider.html#a2151041338ab11347a1c4cd021ae2c16">BPMNOS::Execution::DynamicDataProvider</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="StochasticDataProvider_8cpp_source.html#l00222">222</a> of file <a class="el" href="StochasticDataProvider_8cpp_source.html">StochasticDataProvider.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StochasticDataProvider_8cpp_source.html#l00226">226</a> of file <a class="el" href="StochasticDataProvider_8cpp_source.html">StochasticDataProvider.cpp</a>.</p>
 
 </div>
 </div>
@@ -523,7 +523,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classBPMNOS_1_1Execution_1_1StaticDataProvider.html#a45fcbf4a8aeb702fbdcc59944d71b20b">BPMNOS::Execution::StaticDataProvider</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="StochasticDataProvider_8cpp_source.html#l00218">218</a> of file <a class="el" href="StochasticDataProvider_8cpp_source.html">StochasticDataProvider.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StochasticDataProvider_8cpp_source.html#l00222">222</a> of file <a class="el" href="StochasticDataProvider_8cpp_source.html">StochasticDataProvider.cpp</a>.</p>
 
 </div>
 </div>
@@ -556,7 +556,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classBPMNOS_1_1Execution_1_1DynamicDataProvider.html#a43232be1de2d5e6ca1898234a01c4d21">BPMNOS::Execution::DynamicDataProvider</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="StochasticDataProvider_8cpp_source.html#l00226">226</a> of file <a class="el" href="StochasticDataProvider_8cpp_source.html">StochasticDataProvider.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StochasticDataProvider_8cpp_source.html#l00230">230</a> of file <a class="el" href="StochasticDataProvider_8cpp_source.html">StochasticDataProvider.cpp</a>.</p>
 
 </div>
 </div>
@@ -594,7 +594,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classBPMNOS_1_1Execution_1_1DynamicDataProvider.html#a7a04544ff93b4314084d4d454ef661f5">BPMNOS::Execution::DynamicDataProvider</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="StochasticDataProvider_8cpp_source.html#l00073">73</a> of file <a class="el" href="StochasticDataProvider_8cpp_source.html">StochasticDataProvider.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StochasticDataProvider_8cpp_source.html#l00077">77</a> of file <a class="el" href="StochasticDataProvider_8cpp_source.html">StochasticDataProvider.cpp</a>.</p>
 
 </div>
 </div>
@@ -619,7 +619,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="StochasticDataProvider_8h_source.html#l00046">46</a> of file <a class="el" href="StochasticDataProvider_8h_source.html">StochasticDataProvider.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StochasticDataProvider_8h_source.html#l00047">47</a> of file <a class="el" href="StochasticDataProvider_8h_source.html">StochasticDataProvider.h</a>.</p>
 
 </div>
 </div>
