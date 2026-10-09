@@ -5,7 +5,6 @@
 #include "SystemState.h"
 #include "Message.h"
 #include "Event.h"
-#include "DataUpdate.h"
 #include "execution/utility/src/erase.h"
 #include "model/bpmnos/src/extensionElements/ExtensionElements.h"
 #include "model/bpmnos/src/extensionElements/Timer.h"

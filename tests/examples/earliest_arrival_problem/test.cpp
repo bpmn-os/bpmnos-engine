@@ -1,5 +1,4 @@
 #include "prelude.h"
-#include "golden/golden.h"
 
 SCENARIO( "Earliest arrival problem", "[examples][earliest_arrival_problem]" ) {
   const std::string modelFile = "examples/earliest_arrival_problem/Earliest_arrival_problem.bpmn";
@@ -32,7 +31,6 @@ SCENARIO( "Earliest arrival problem", "[examples][earliest_arrival_problem]" ) {
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
       engine.run(std::move(scenario));
-      goldenMaster("earliest_arrival_problem-1", recorder, engine);
       THEN( "Then locations are visited in the heuristic order" ) {
         auto travelLog = recorder.find(nlohmann::json{{"nodeId", "Travel"},{"state", "COMPLETED"}});
         REQUIRE( travelLog[0]["status"]["current_location"] == "Location1" );

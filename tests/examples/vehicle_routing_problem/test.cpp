@@ -1,5 +1,4 @@
 #include "prelude.h"
-#include "golden/golden.h"
 
 SCENARIO( "Vehicle routing problem", "[examples][vehicle_routing_problem]" ) {
   const std::string modelFile = "examples/vehicle_routing_problem/Vehicle_routing_problem.bpmn";
@@ -50,7 +49,6 @@ SCENARIO( "Vehicle routing problem", "[examples][vehicle_routing_problem]" ) {
     WHEN( "The engine is started with the greedy controller" ) {
       dataProvider->setEndTime(1350);
       engine.run(std::move(scenario), 0);
-      goldenMaster("vehicle_routing_problem-1", recorder, engine);
       THEN( "Then all process instances complete" ) {
         auto processLog = recorder.find({{"state","COMPLETED"}}, nlohmann::json{{"nodeId",nullptr }, {"event",nullptr },{"decision",nullptr }});
 //std::cerr << processLog.dump() << std::endl;

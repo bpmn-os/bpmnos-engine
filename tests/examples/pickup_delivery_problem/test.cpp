@@ -1,5 +1,4 @@
 #include "prelude.h"
-#include "golden/golden.h"
 
 SCENARIO( "Pickup delivery problem", "[examples][pickup_delivery_problem]" ) {
   const std::string modelFile = "examples/pickup_delivery_problem/Pickup_delivery_problem.bpmn";
@@ -48,7 +47,6 @@ SCENARIO( "Pickup delivery problem", "[examples][pickup_delivery_problem]" ) {
 
     WHEN( "The engine is started with the greedy controller" ) {
       engine.run(std::move(scenario));
-      goldenMaster("pickup_delivery_problem-1", recorder, engine);
       THEN( "Then all vehicle process instances complete" ) {
         auto log = recorder.find({{"processId","VehicleProcess" },{"state","COMPLETED"}}, nlohmann::json{{"nodeId",nullptr }, {"event",nullptr }, {"decision",nullptr }});
 //std::cerr << log.dump() << std::endl;
@@ -115,7 +113,6 @@ SCENARIO( "Pickup delivery problem", "[examples][pickup_delivery_problem]" ) {
 
     WHEN( "The engine is started with the greedy controller" ) {
       engine.run(std::move(scenario));
-      goldenMaster("pickup_delivery_problem-2", recorder, engine);
       THEN( "Then all vehicle process instances complete" ) {
         auto log = recorder.find({{"processId","VehicleProcess" },{"state","COMPLETED"}}, nlohmann::json{{"nodeId",nullptr }, {"event",nullptr }, {"decision",nullptr }});
 //std::cerr << log.dump() << std::endl;

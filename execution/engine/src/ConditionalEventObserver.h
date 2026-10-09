@@ -3,7 +3,8 @@
 
 #include "Observable.h"
 #include "Observer.h"
-#include "DataUpdate.h"
+#include <vector>
+#include "model/bpmnos/src/extensionElements/Attribute.h"
 #include "execution/utility/src/auto_list.h"
 
 namespace BPMNOS::Execution {

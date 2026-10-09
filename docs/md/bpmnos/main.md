@@ -213,7 +213,7 @@ INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE; READY; COMPLETION
 - **NODE_ID**: The BPMN node ID (process, activity, subprocess, etc.). Leave empty for global attributes.
 - **INITIALIZATION**: An assignment expression in the format `attribute := expression`. Evaluated at parse time. May contain random functions and can reference any attributes previously parse-time evaluated in earlier CSV rows.
 - **DISCLOSURE**: The time at which this attribute value becomes known. Leave empty for immediate disclosure.
-- **READY**: Expression evaluated when a token arrives at an activity (Task, SubProcess, CallActivity). Evaluated at runtime with full context (status, data, globals).
+- **READY**: Expression evaluated when a token arrives at an activity (Task, SubProcess, CallActivity). Evaluated at runtime with full context (status and data, the data including the global attributes).
 - **COMPLETION**: Expression evaluated when a task completes. Only valid for Task nodes (not SendTask, ReceiveTask, DecisionTask). Evaluated at runtime with full context.
 
 ### Random Functions

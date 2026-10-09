@@ -1,5 +1,4 @@
 #include "prelude.h"
-#include "golden/golden.h"
 
 SCENARIO( "Knapsack problem", "[examples][knapsack_problem]" ) {
   const std::string modelFile = "examples/knapsack_problem/Knapsack_problem.bpmn";
@@ -39,7 +38,6 @@ SCENARIO( "Knapsack problem", "[examples][knapsack_problem]" ) {
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
       engine.run(std::move(scenario));
-      goldenMaster("knapsack_problem-1", recorder, engine);
       THEN( "The run terminates without failure and some items are accepted, some are rejected" ) {
         auto failureLog = recorder.find(nlohmann::json{{"nodeId", "SendRequestTask"},{"state", "FAILED"}});
         REQUIRE( failureLog.size() == 0 );

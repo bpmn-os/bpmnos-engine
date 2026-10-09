@@ -3,6 +3,7 @@
 #include "StateMachine.h"
 #include "SequentialPerformerUpdate.h"
 #include "Objective.h"
+#include "DataUpdate.h"
 #include "ConditionalEventObserver.h"
 #include "execution/controller/src/Decision.h"
 #include "model/bpmnos/src/extensionElements/ExtensionElements.h"
