@@ -1,15 +1,8 @@
-#include <catch2/catch_test_macros.hpp>
-#include <catch2/matchers/catch_matchers.hpp>
-#include <catch2/matchers/catch_matchers_string.hpp>
+#include "prelude.h"
 #include <catch2/catch_test_case_info.hpp>
 #include <catch2/reporters/catch_reporter_event_listener.hpp>
 #include <catch2/reporters/catch_reporter_registrars.hpp>
 #define CATCH_CONFIG_NO_THROW
-// Provided transitively by bpmnos-execution.h, which is self-contained; named here to
-// state what this file uses, and commented out so that it stays a check on that.
-//#include <bpmn++.h>
-//#include <bpmnos-model.h>
-#include <bpmnos-execution.h>
 #include <iostream>
 
 class ProgressListener : public Catch::EventListenerBase {
@@ -49,92 +42,7 @@ public:
 
 CATCH_REGISTER_LISTENER(ProgressListener)
 
-using namespace BPMNOS;
-
-// Include all tests here
-#define ALL_TESTS
-#ifdef ALL_TESTS
-
-/* Model */
-#include "model/encoder/test.h"
-#include "model/parser/test.h"
-/* Data provider */
-#include "data/reader/test.h"
-#include "data/staticprovider/test.h"
-#include "data/expectedvalueprovider/test.h"
-#include "data/dynamicprovider/test.h"
-#include "data/stochasticprovider/test.h"
-#include "data/forking/test.h"
-#include "data/provider/test.h"
-/* Execution engine */
-// Process
-#include "execution/process/test.h"
-
-// Activities
-#include "execution/task/test.h"
-#include "execution/subprocess/test.h"
-#include "execution/decisiontask/test.h"
-
-// Expression
-#include "execution/expression/test.h"
-
-// Gateways
-#include "execution/parallelgateway/test.h"
-#include "execution/exclusivegateway/test.h"
-
-// Event-based gateways
-#include "execution/eventbasedgateway/test.h"
-// Events
-#include "execution/timer/test.h"
-#include "execution/signal/test.h"
-#include "execution/triggeredprocess/test.h"
-#include "execution/condition/test.h"
-#include "execution/errorevent/test.h"
-#include "execution/escalationevent/test.h"
-// Messages
-#include "execution/message/test.h"
-// Boundary events
-#include "execution/boundaryevent/test.h"
-
-// Event subprocesses
-#include "execution/eventsubprocess/test.h"
-
-// Compensations
-#include "execution/compensationactivity/test.h"
-#include "execution/compensationeventsubprocess/test.h"
-// Multi-instance activities
-#include "execution/loopactivity/test.h"
-#include "execution/multiinstanceactivity/test.h"
-// Ad-hoc subprocesses
-#include "execution/adhocsubprocess/test.h"
-
-// Status and Data
-#include "execution/status/test.h"
-#include "execution/data/test.h"
-#include "execution/collection/test.h"
-
-// SystemState
-#include "systemstate/test.h"
-
-// Candidate sources (notice(SystemState) rebuild path)
-#include "candidates/test.h"
-
-// Examples
-#include "examples/earliest_arrival_problem/test.h"
-#include "examples/travelling_salesperson_problem/test.h"
-#include "examples/truck_driver_scheduling_problem/test.h"
-#include "examples/assignment_problem/test.h"
-#include "examples/knapsack_problem/test.h"
-#include "examples/bin_packing_problem/test.h" 
-#include "examples/job_shop_scheduling_problem/test.h"
-#include "examples/vehicle_routing_problem/test.h"
-#include "examples/pickup_delivery_problem/test.h"
-
-// TODO: Shaped examples
-
-#endif // ALL_TESTS
-
-#ifndef ALL_TESTS
+// The tests are the translation units listed in tests_SOURCES in CMakeLists.txt.
 
 //#include "cpmodel/test.h"
 //#include "cpsolver/test.h"
@@ -150,7 +58,6 @@ using namespace BPMNOS;
 //#include "cp/eventbasedgateway/test.h"
 //#include "cp/adhocsubprocess/test.h"
 //#include "cp/message/test.h"
-#endif // ALL_TESTS
 
 #include <regex>
 // Playground

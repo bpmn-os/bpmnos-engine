@@ -1,0 +1,97 @@
+#include "prelude.h"
+
+SCENARIO( "Sequential adhoc subprocess", "[execution][adhocsubprocess]" ) {
+  const std::string modelFile = "tests/execution/adhocsubprocess/AdHocSubProcess.bpmn";
+  REQUIRE_NOTHROW( Model::Model(modelFile) );
+  GIVEN( "A single instance with no input values" ) {
+
+    std::string csv =
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1;\n"
+    ;
+
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
+
+    WHEN( "The engine is started with a recorder" ) {
+      Execution::Engine engine(model);
+      Execution::InstantEntry entryHandler;
+//      Execution::FirstComeFirstServedSequentialEntry sequentialEntryHandler;
+      Execution::InstantExit exitHandler;
+      entryHandler.connect(&engine);
+//      sequentialEntryHandler.connect(&engine);
+      exitHandler.connect(&engine);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
+      recorder.subscribe(&engine);
+      engine.run(std::move(scenario));
+      THEN( "The dump of each entry of the token log is correct" ) {
+        auto adHocSubProcessLog = recorder.find(nlohmann::json{{"nodeId","AdHocSubProcess_1"}}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
+        REQUIRE( adHocSubProcessLog[0]["state"] == "ARRIVED" );
+        REQUIRE( adHocSubProcessLog[1]["state"] == "READY" );
+        REQUIRE( adHocSubProcessLog[1]["data"]["x"] == 0 );
+        REQUIRE( adHocSubProcessLog[2]["state"] == "ENTERED" );
+        REQUIRE( adHocSubProcessLog[2]["data"]["x"] == 0 );
+        REQUIRE( adHocSubProcessLog[3]["state"] == "BUSY" );
+        REQUIRE( adHocSubProcessLog[4]["data"]["x"] == 2 );
+        REQUIRE( adHocSubProcessLog[4]["state"] == "COMPLETED" );
+
+        auto completionLog = recorder.find(nlohmann::json{{"state", "COMPLETED"}}, nlohmann::json{{"event",nullptr },{"decision",nullptr },{"nodeId","StartEvent_1"}});
+        REQUIRE( (completionLog[0]["nodeId"] == "Activity_1" || completionLog[0]["nodeId"] == "Activity_2") );
+        REQUIRE( (completionLog[1]["nodeId"] == "Activity_1" || completionLog[1]["nodeId"] == "Activity_2") );
+        REQUIRE( completionLog[2]["nodeId"] == "AdHocSubProcess_1" );
+        REQUIRE( completionLog[3]["nodeId"] == nullptr );
+      }
+    }
+  }
+}
+
+SCENARIO( "Sequential adhoc subprocesses with common performer", "[execution][adhocsubprocess]" ) {
+  const std::string modelFile = "tests/execution/adhocsubprocess/AdHocSubProcesses_with_common_performer.bpmn";
+  REQUIRE_NOTHROW( Model::Model(modelFile) );
+  GIVEN( "A single instance with no input values" ) {
+
+    std::string csv =
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1;\n"
+    ;
+
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
+
+    WHEN( "The engine is started with a recorder" ) {
+      Execution::Engine engine(model);
+      Execution::InstantEntry entryHandler;
+//      Execution::FirstComeFirstServedSequentialEntry sequentialEntryHandler;
+      Execution::InstantExit exitHandler;
+      entryHandler.connect(&engine);
+//      sequentialEntryHandler.connect(&engine);
+      exitHandler.connect(&engine);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
+      recorder.subscribe(&engine);
+      engine.run(std::move(scenario));
+      THEN( "The dump of each entry of the token log is correct" ) {
+        auto processLog = recorder.find(nlohmann::json{},nlohmann::json{{"nodeId",nullptr},{"event",nullptr },{"decision",nullptr }});
+        REQUIRE( processLog[0]["state"] == "CREATED" );
+        REQUIRE( processLog[1]["state"] == "READY" );
+        REQUIRE( processLog[2]["state"] == "ENTERED" );
+        REQUIRE( processLog[2]["data"]["x"] == 0 );
+        REQUIRE( processLog[3]["state"] == "BUSY" );
+        REQUIRE( processLog[4]["data"]["x"] == 2 );
+        REQUIRE( processLog[4]["state"] == "COMPLETED" );
+        REQUIRE( processLog[5]["state"] == "DONE" );
+
+        auto completionLog = recorder.find(nlohmann::json{{"state", "COMPLETED"}}, nlohmann::json{{"event",nullptr },{"decision",nullptr },{"nodeId","StartEvent_1"}});
+        REQUIRE( (completionLog[0]["nodeId"] == "Activity_1" || completionLog[0]["nodeId"] == "Activity_2") );
+        REQUIRE( (completionLog[1]["nodeId"] == "AdHocSubProcess_1" || completionLog[1]["nodeId"] == "AdHocSubProcess_2") );
+        REQUIRE( (completionLog[2]["nodeId"] == "Activity_1" || completionLog[2]["nodeId"] == "Activity_2") );
+        REQUIRE( (completionLog[3]["nodeId"] == "AdHocSubProcess_1" || completionLog[3]["nodeId"] == "AdHocSubProcess_2") );
+        REQUIRE( completionLog[4]["nodeId"] == nullptr );
+      }
+    }
+  }
+}
+

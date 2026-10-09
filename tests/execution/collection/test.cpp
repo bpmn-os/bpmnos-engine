@@ -1,0 +1,49 @@
+#include "prelude.h"
+
+SCENARIO( "A simple process with subprocess and task", "[collection][process]" ) {
+  const std::string modelFile = "tests/execution/collection/Collection.bpmn";
+  REQUIRE_NOTHROW( Model::Model(modelFile) );
+  GIVEN( "A single instance" ) {
+
+    std::string csv =
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1;\n"
+    ;
+
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
+
+    WHEN( "The engine is started with a recorder" ) {
+      Execution::Engine engine(model);
+      Execution::InstantEntry entryHandler;
+      Execution::InstantExit exitHandler;
+      entryHandler.connect(&engine);
+      exitHandler.connect(&engine);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
+      recorder.subscribe(&engine);
+      engine.run(std::move(scenario));
+      THEN( "The attribute values are properly initialized" ) {
+        auto entryLog = recorder.find(nlohmann::json{{"state", "ENTERED"}}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
+        REQUIRE( entryLog[0]["processId"] == "Process_1" );
+        REQUIRE( entryLog[0]["status"]["x"] == R"([ "A", "B", "C" ])" );
+        REQUIRE( entryLog[0]["status"]["i"] == 2 );
+        REQUIRE( entryLog[0]["status"]["z"] == "B" );
+        REQUIRE( entryLog[1]["nodeId"] == "StartEvent_1" );
+        REQUIRE( entryLog[2]["nodeId"] == "SubProcess_1" );
+        REQUIRE( entryLog[2]["status"]["v"] == "A" );
+        REQUIRE( entryLog[3]["nodeId"] == "Task_1" );
+        REQUIRE( entryLog[3]["status"]["w"] == "C" );
+
+        auto readyLog = recorder.find(nlohmann::json{{"state", "READY"}}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
+        REQUIRE( readyLog[0]["processId"] == "Process_1" );
+        REQUIRE( !readyLog[0].contains("nodeId") );
+        REQUIRE( readyLog[1]["nodeId"] == "SubProcess_1" );
+        REQUIRE( readyLog[1]["status"]["v"] == "A" );
+        REQUIRE( readyLog[2]["nodeId"] == "Task_1" );
+        REQUIRE( readyLog[2]["status"]["w"] == "C" );
+      }
+    }
+  }
+}
