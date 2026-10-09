@@ -4,6 +4,7 @@
 #include "model/bpmnos/src/DecisionTask.h"
 #include "model/bpmnos/src/extensionElements/ExtensionElements.h"
 #include "model/utility/src/InputEncoder.h"
+#include "model/utility/src/StringRegistry.h"
 #include <algorithm>
 #include <cmath>
 #include <limits>
@@ -36,8 +37,11 @@ StochasticDataProvider::Scenario::Scenario(std::shared_ptr<const StochasticDataP
 std::mt19937& StochasticDataProvider::Scenario::getRandomNumberGenerator(size_t instanceId, const BPMN::Node* node) {
   auto [it, inserted] = randomNumberGenerators.try_emplace({instanceId, node});
   if ( inserted ) {
+    // the instance is identified by its name rather than by its index in the string registry, which depends
+    // on what was registered before, so that the realisation depends on nothing but the seed and the data
+    auto instanceHash = std::hash<std::string>{}(stringRegistry[instanceId]);
     auto nodeHash = std::hash<std::string>{}(node->id);
-    it->second.seed( static_cast<std::mt19937::result_type>( static_cast<size_t>(seed) ^ (instanceId * 31) ^ (nodeHash * 17) ) );
+    it->second.seed( static_cast<std::mt19937::result_type>( static_cast<size_t>(seed) ^ (instanceHash * 31) ^ (nodeHash * 17) ) );
   }
   return it->second;
 }

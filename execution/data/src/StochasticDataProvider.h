@@ -27,7 +27,8 @@ namespace BPMNOS::Execution {
  * the ready expressions of an activity give the status a token arriving at it becomes ready with, once the
  * timestamp of this status is reached, and the completion expressions of a task give the status it
  * completes with. Every random expression of an instance and a node is evaluated with a random number
- * generator of its own.
+ * generator of its own, seeded from the seed of the scenario and the identifiers of the instance and the
+ * node, so that a realisation depends on nothing but the seed, the model and the instance data.
  *
  * A fork of a run with seed `r` and index `i` has the seed `r + i + 1`. It keeps what the run has revealed
  * and samples everything else anew. The initializations are disclosed with clock ticks, so that the fork
