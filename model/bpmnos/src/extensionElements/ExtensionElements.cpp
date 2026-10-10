@@ -34,7 +34,11 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const
       if ( status->get().attributes.has_value() ) {
         for ( XML::bpmnos::tAttribute& attributeElement : status->get().attributes.value().get().attribute ) {
           auto attribute = std::make_unique<Attribute>(&attributeElement, Attribute::Category::STATUS, attributeRegistry);
-          if ( attribute->id == Keyword::Instance ) {
+          if ( attribute->isObject() ) {
+            // objects are held and numbered separately from scalar attributes
+            statusObjects.push_back(std::move(attribute));
+          }
+          else if ( attribute->id == Keyword::Instance ) {
             // always insert instance attribute at first position
             attributes.insert(attributes.begin(), std::move(attribute));
             // fix indices
@@ -77,7 +81,13 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const
   
   // add all data attributes
   for ( XML::bpmnos::tAttribute& attributeElement : dataAttributes ) {
-    data.push_back( std::make_unique<Attribute>(&attributeElement, Attribute::Category::DATA, attributeRegistry) );
+    auto attribute = std::make_unique<Attribute>(&attributeElement, Attribute::Category::DATA, attributeRegistry);
+    if ( attribute->isObject() ) {
+      // objects are held and numbered separately from scalar attributes
+      dataObjects.push_back(std::move(attribute));
+      continue;
+    }
+    data.push_back( std::move(attribute) );
     // TODO: add entry data dependencies
     if ( data.back()->expression ) {
       for ( auto input : data.back()->expression->inputs ) {

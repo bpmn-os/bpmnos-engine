@@ -101,7 +101,8 @@ public:
   std::optional< std::unordered_map<std::string, std::string> > lookupTableContents;     ///< CSV content per source, when it is supplied in memory.
 
   std::vector< std::unique_ptr<LookupTable> > lookupTables; ///< Vector containing lookup tables declared in model.
-  std::vector< std::unique_ptr<Attribute> > attributes; ///< Vector containing new global attributes declared for the model.
+  std::vector< std::unique_ptr<Attribute> > attributes; ///< Vector containing the scalar global attributes declared for the model.
+  std::vector< std::unique_ptr<Attribute> > objects; ///< Vector containing the global objects declared for the model.
 
   /// The index of the instance in the data of every scope: the global attributes are the data attributes with
   /// indices below it, and every process declares the instance as its first data attribute, at this index.

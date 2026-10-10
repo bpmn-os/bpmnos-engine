@@ -15,10 +15,30 @@ Information is provided via @ref BPMNOS::Model::Attribute "attributes".
 Within an `<bpmnos:attributes>` container any number of `<bpmnos:attribute>` elements can be provided to define attributes. 
 For each attribute the following fields can be provided
 - `id`: a unique identifier, 
-- `type`: the type of the attribute which must be one of `integer`, `decimal`, `boolean`, `string`, `collection`,
+- `type`: the type of the attribute, a scalar type or the shape of an object as described below,
 - `name`: the name of the attribute and optionally, an initial assignment 
 - `objective`: an optional field indicating whether the attribute value contributes to a global objective which must be either `maximize` or `minimize`, and
 - `weight`: an optional decimal indicating a multiplier for the objective function which must be provided if `objective` is set.
+
+The scalar types are `integer`, `decimal`, `boolean`, `string` and `collection`. Only an attribute of type `boolean`, `integer` or `decimal` may contribute to the objective.
+
+### Objects
+
+An attribute whose type is not a single scalar type is an object, i.e. an array or a structured value. Its type states its shape: a base, which is a scalar type or a list of fields `{ name: type, ... }` each with a type of its own, followed by any number of dimensions, each written `[n]` if its size is fixed and `[]` if it is open. The dimensions are read from left to right in the order of the indices, and each field has dimensions of its own, so that an access has the shape of the type:
+
+| Type | Access |
+|------|--------|
+| `integer[10]` | `location[i]` with `i <= 10` |
+| `boolean[3][4]` | `grid[i][j]` with `i <= 3` and `j <= 4` |
+| `{ cost: decimal, flags: boolean[] }[]` | `facilities[i].cost`, `facilities[i].flags[j]` |
+| `{ x: decimal, y: decimal }` | `depot.x` |
+
+```xml
+<bpmnos:attribute id="Location" name="location" type="integer[10]" />
+<bpmnos:attribute id="Facilities" name="facilities" type="{ cost: decimal, flags: boolean[] }[]" />
+```
+
+Objects may be declared as global, data and status attributes. They are numbered separately from the scalar attributes, so that the index of a scalar attribute never depends on the objects declared: the global objects come first, and the objects a scope declares follow those of its enclosing scopes. An object cannot be the attribute of a choice, cannot carry the objective, and is neither the instance nor the timestamp.
 
 
 ### Global attributes

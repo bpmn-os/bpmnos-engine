@@ -36,7 +36,8 @@ public:
     static constexpr size_t Instance = 0; 
   };
   
-  std::vector< std::unique_ptr<Attribute> > attributes; ///< Vector containing new status attributes declared for the node.
+  std::vector< std::unique_ptr<Attribute> > attributes; ///< Vector containing new scalar status attributes declared for the node.
+  std::vector< std::unique_ptr<Attribute> > statusObjects; ///< Vector containing new status objects declared for the node.
   std::vector< std::unique_ptr<Restriction> > restrictions; ///< Vector containing new restrictions provided for the node.
   std::vector< std::unique_ptr<Operator> > operators;
   std::vector< std::unique_ptr<Choice> > choices;
@@ -47,7 +48,8 @@ public:
   std::set<const Attribute*> operatorDependencies; ///< Set containing all input attributes influencing the result of applying all operators.
   std::set<const Attribute*> choiceDependencies; ///< Set containing all input attributes influencing the allowed alternatives when making choices.
 
-  std::vector< std::unique_ptr<Attribute> > data;  ///< Vector containing data attributes declared for data objects within the node's scope.
+  std::vector< std::unique_ptr<Attribute> > data;  ///< Vector containing scalar data attributes declared for data objects within the node's scope.
+  std::vector< std::unique_ptr<Attribute> > dataObjects;  ///< Vector containing objects declared for data objects within the node's scope.
 
   struct { std::vector<const Attribute*> attributes; } dataUpdate; ///< Struct containing the data attributes, global or not, that are modified through operators, choices, or message content.
 

@@ -33,19 +33,10 @@
   <xsd:complexType name="tAttribute">
     <xsd:attribute name="id" type="xsd:NCName" use="required"/>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
-    <xsd:attribute name="type" type="tAttributeType" use="required"/>
+    <xsd:attribute name="type" type="xsd:string" use="required"/>
     <xsd:attribute name="objective" type="tObjectiveType" use="optional"/>
     <xsd:attribute name="weight" type="xsd:decimal" use="optional"/>
   </xsd:complexType>
-
-  <xsd:simpleType name="tAttributeType">
-    <xsd:restriction base="xsd:string">
-      <xsd:enumeration value="string"/>
-      <xsd:enumeration value="integer"/>
-      <xsd:enumeration value="decimal"/>
-      <xsd:enumeration value="boolean"/>
-    </xsd:restriction>
-  </xsd:simpleType>
 
   <xsd:simpleType name="tObjectiveType">
     <xsd:restriction base="xsd:string">

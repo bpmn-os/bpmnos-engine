@@ -158,8 +158,10 @@ void Model::createLookupTables() {
 void Model::createGlobals() {
   // the global attributes are the first data attributes, which every scope inherits
   for ( XML::bpmnos::tAttribute& attributeElement : getGlobals() ) {
-    attributes.push_back( std::make_unique<Attribute>(&attributeElement, Attribute::Category::DATA, attributeRegistry) );
+    auto attribute = std::make_unique<Attribute>(&attributeElement, Attribute::Category::DATA, attributeRegistry);
+    ( attribute->isObject() ? objects : attributes ).push_back( std::move(attribute) );
   }
+  // the instance follows the scalar global attributes, objects being numbered separately
   instanceIndex = attributes.size();
 }
  

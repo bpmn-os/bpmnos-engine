@@ -17,8 +17,10 @@ public:
   AttributeRegistry(const LIMEX::Handle<double>& limexHandle);
   const LIMEX::Handle<double>& limexHandle;
 
-  std::vector<Attribute*> statusAttributes;
-  std::vector<Attribute*> dataAttributes; ///< The data attributes, the global attributes of the model first
+  std::vector<Attribute*> statusAttributes; ///< The scalar status attributes, numbered by their position
+  std::vector<Attribute*> dataAttributes; ///< The scalar data attributes, the global attributes of the model first
+  std::vector<Attribute*> statusObjects; ///< The status objects, numbered by their position, separately from scalars
+  std::vector<Attribute*> dataObjects; ///< The data objects, the global objects of the model first
   std::unordered_map< std::string, Attribute*> statusMap;
   std::unordered_map< std::string, Attribute*> dataMap;
   Attribute* operator[](const std::string& name) const;

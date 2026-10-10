@@ -29,12 +29,18 @@ Expression::Expression(const LIMEX::Handle<double>& handle, const InputEncoder& 
     }
     if ( !newTarget ) {
       target = attributeRegistry[ name.value() ];
+      if ( target.value()->isObject() ) {
+        throw std::runtime_error("Expression: object '" + name.value() + "' cannot be assigned in '" + expression +"'");
+      }
     }
   }
 
   for ( auto& name : compiled.getVariables() ) {
     if ( name != BPMNOS::Keyword::Undefined ) {
       auto attribute = attributeRegistry[ name ];
+      if ( attribute->isObject() ) {
+        throw std::runtime_error("Expression: object '" + name + "' cannot be used in '" + expression +"'");
+      }
       inputs.insert(attribute);
       variables.push_back(attribute);
     }
@@ -44,6 +50,9 @@ Expression::Expression(const LIMEX::Handle<double>& handle, const InputEncoder& 
       throw std::runtime_error("Expression: illegal expression '" + expression +"'");
     }
     auto attribute = attributeRegistry[ name ];
+    if ( attribute->isObject() ) {
+      throw std::runtime_error("Expression: object '" + name + "' cannot be used in '" + expression +"'");
+    }
     inputs.insert(attribute);
     collections.push_back(attribute);
   }
@@ -52,6 +61,9 @@ Expression::Expression(const LIMEX::Handle<double>& handle, const InputEncoder& 
       throw std::runtime_error("Expression: '" + path.name + "' must be indexed exactly once in '" + expression +"'");
     }
     auto attribute = attributeRegistry[ path.name ];
+    if ( attribute->isObject() ) {
+      throw std::runtime_error("Expression: object '" + path.name + "' cannot be used in '" + expression +"'");
+    }
     if ( attribute->type != BPMNOS::ValueType::COLLECTION ) {
       throw std::runtime_error("Expression: '" + path.name + "' is not a collection in '" + expression +"'");
     }

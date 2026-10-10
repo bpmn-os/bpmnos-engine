@@ -8,6 +8,7 @@ list(TRANSFORM bpmn_xml_HEADERS PREPEND "${XML_DIR}/")
 list(TRANSFORM bpmn_xml_SOURCES PREPEND "${XML_DIR}/")
 
 set(bpmn_SOURCES
+  extensionElements/Schema.cpp
   extensionElements/Attribute.cpp
   extensionElements/AttributeRegistry.cpp
   extensionElements/Parameter.cpp
@@ -30,6 +31,7 @@ set(bpmn_SOURCES
 )
 
 set(bpmn_HEADERS
+  extensionElements/Schema.h
   extensionElements/Attribute.h
   extensionElements/AttributeRegistry.h
   extensionElements/Parameter.h

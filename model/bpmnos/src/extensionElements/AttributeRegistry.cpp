@@ -12,14 +12,18 @@ void AttributeRegistry::add(Attribute* attribute) {
   if ( contains(attribute->name) ) {
     throw std::runtime_error("AttributeRegistry: duplicate attribute name '" + attribute->name + "'");
   }
+  // objects are numbered separately from scalar attributes, so that the index of a scalar attribute never
+  // depends on objects
   if ( attribute->category == Attribute::Category::STATUS ) {
-    attribute->index = statusAttributes.size();
-    statusAttributes.push_back(attribute);
+    auto& attributes = attribute->isObject() ? statusObjects : statusAttributes;
+    attribute->index = attributes.size();
+    attributes.push_back(attribute);
     statusMap[attribute->name] = attribute;
   }
   else /* if ( attribute->category == Attribute::Category::DATA )*/ {
-    attribute->index = dataAttributes.size(); 
-    dataAttributes.push_back(attribute);
+    auto& attributes = attribute->isObject() ? dataObjects : dataAttributes;
+    attribute->index = attributes.size(); 
+    attributes.push_back(attribute);
     dataMap[attribute->name] = attribute;
   }
 }
@@ -48,17 +52,21 @@ bool AttributeRegistry::contains(const std::string& name) const {
 
 bool AttributeRegistry::contains(const Attribute* attribute) const {
   if (attribute->category == Attribute::Category::STATUS) {
-    return attribute->index < statusAttributes.size() &&
-           statusAttributes[attribute->index] == attribute;
+    auto& attributes = attribute->isObject() ? statusObjects : statusAttributes;
+    return attribute->index < attributes.size() &&
+           attributes[attribute->index] == attribute;
   }
   else /* if (attribute->category == Attribute::Category::DATA) */ {
-    return attribute->index < dataAttributes.size() &&
-           dataAttributes[attribute->index] == attribute;
+    auto& attributes = attribute->isObject() ? dataObjects : dataAttributes;
+    return attribute->index < attributes.size() &&
+           attributes[attribute->index] == attribute;
   }
 }
 
 
 std::optional<BPMNOS::number> AttributeRegistry::getValue(const Attribute* attribute, const Status& status, const Data& data) const {
+  // the value of a scalar attribute; an object is held in the objects of the status or data
+  assert( !attribute->isObject() );
   if ( attribute->category == Attribute::Category::STATUS ) {
     assert(attribute->index < status.attributes.size());
     return status.attributes[attribute->index];
@@ -70,6 +78,8 @@ std::optional<BPMNOS::number> AttributeRegistry::getValue(const Attribute* attri
 }
 
 std::optional<BPMNOS::number> AttributeRegistry::getValue(const Attribute* attribute, const Status& status, const SharedData& data) const {
+  // the value of a scalar attribute; an object is held in the objects of the status or data
+  assert( !attribute->isObject() );
   if ( attribute->category == Attribute::Category::STATUS ) {
     assert(attribute->index < status.attributes.size());
     return status.attributes[attribute->index];
@@ -81,6 +91,8 @@ std::optional<BPMNOS::number> AttributeRegistry::getValue(const Attribute* attri
 }
 
 BPMNOS::number AttributeRegistry::setValue(const Attribute* attribute, Status& status, Data& data, std::optional<BPMNOS::number> value) const {
+  // the value of a scalar attribute; an object is held in the objects of the status or data
+  assert( !attribute->isObject() );
   if ( attribute->category == Attribute::Category::STATUS ) {
     assert(attribute->index < status.attributes.size());
     status.attributes[attribute->index] = value;
@@ -96,6 +108,8 @@ BPMNOS::number AttributeRegistry::setValue(const Attribute* attribute, Status& s
 }
 
 BPMNOS::number AttributeRegistry::setValue(const Attribute* attribute, Status& status, SharedData& data, std::optional<BPMNOS::number> value) const {
+  // the value of a scalar attribute; an object is held in the objects of the status or data
+  assert( !attribute->isObject() );
   if ( attribute->category == Attribute::Category::STATUS ) {
     assert(attribute->index < status.attributes.size());
     status.attributes[attribute->index] = value;

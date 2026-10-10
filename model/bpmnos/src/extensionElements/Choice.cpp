@@ -51,6 +51,9 @@ Choice::Choice(XML::bpmnos::tDecision* decision, const AttributeRegistry& attrib
     }
   }
     
+  if ( attribute->isObject() ) {
+    throw std::runtime_error("Choice: attribute '" + attribute->id + "' is an object, whereas a choice chooses a scalar value");
+  }
   if ( attribute->type == STRING && enumeration.empty() ) {
     throw std::runtime_error("Choice: no enumeration provided for string");
   }

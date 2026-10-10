@@ -134,6 +134,9 @@ std::pair<const BPMNOS::Model::Attribute*, std::string> InstanceDataReader::look
   }
 
   auto attribute = extensionElements->attributeRegistry[attributeName];
+  if ( attribute->isObject() ) {
+    throw std::runtime_error("InstanceDataReader: object '" + attributeName + "' of node '" + node->id + "' takes no value from the data");
+  }
   if ( attribute->expression ) {
     throw std::runtime_error("InstanceDataReader: attribute '" + attributeName + "' is assigned by the model and must not be given");
   }
