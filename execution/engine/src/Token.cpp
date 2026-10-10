@@ -238,17 +238,20 @@ nlohmann::ordered_json Token::jsonify() const {
       std::string value = BPMNOS::to_string(statusValue.value(),attribute->type);
       jsonObject["status"][attribute->name] = value ;
     }
-    else if ( attribute->type == COLLECTION) {
-      std::string value = BPMNOS::to_string(statusValue.value(),attribute->type);
-      jsonObject["status"][attribute->name] = value ;
+  }
+  // an object is rendered as the literal stating it
+  for ( auto object : attributeRegistry.statusObjects ) {
+    if ( object->index < status.objects.size() ) {
+      jsonObject["status"][object->name] = BPMNOS::to_string(*status.objects[object->index]);
     }
   }
 
 //std::cerr << jsonObject << std::endl;
   assert(data);
   // the global attributes are the data attributes with indices below the instance index, and are reported
-  // apart from the data of the scopes
+  // apart from the data of the scopes; the global objects are the data objects with indices below their number
   auto instanceIndex = owner->systemState->engine->getModel()->instanceIndex;
+  auto globalObjects = owner->systemState->engine->getModel()->objects.size();
   if ( data->attributes.size() > instanceIndex ) {
     jsonObject["data"] = nlohmann::ordered_json::object();
 
@@ -281,14 +284,15 @@ nlohmann::ordered_json Token::jsonify() const {
         std::string value = BPMNOS::to_string(dataValue.value(),attribute->type);
         jsonObject["data"][attribute->name] = value ;
       }
-      else if ( attribute->type == COLLECTION) {
-        std::string value = BPMNOS::to_string(dataValue.value(),attribute->type);
-        jsonObject["data"][attribute->name] = value ;
+    }
+    for ( auto object : attributeRegistry.dataObjects ) {
+      if ( object->index >= globalObjects && object->index < data->objects.size() ) {
+        jsonObject["data"][object->name] = BPMNOS::to_string(*data->objects[object->index].get());
       }
     }
   }
 
-  if ( instanceIndex > 0 ) {
+  if ( instanceIndex > 0 || globalObjects > 0 ) {
     jsonObject["globals"] = nlohmann::ordered_json::object();
 
     for (auto attribute : attributeRegistry.dataAttributes ) {
@@ -315,9 +319,10 @@ nlohmann::ordered_json Token::jsonify() const {
         std::string value = BPMNOS::to_string(globalValue.value(),attribute->type);
         jsonObject["globals"][attribute->name] = value ;
       }
-      else if ( attribute->type == COLLECTION) {
-        std::string value = BPMNOS::to_string(globalValue.value(),attribute->type);
-        jsonObject["globals"][attribute->name] = value ;
+    }
+    for ( auto object : attributeRegistry.dataObjects ) {
+      if ( object->index < globalObjects ) {
+        jsonObject["globals"][object->name] = BPMNOS::to_string(*data->objects[object->index].get());
       }
     }
   }
@@ -1465,16 +1470,16 @@ void Token::emitSignal() {
   engine->commands.emplace_back( std::bind(&Engine::broadcastSignal, engine, std::move(signal)) );
 }
 
-BPMNOS::VariedValueMap Token::getSignalContent(const BPMNOS::Model::ContentMap& contentMap) {
+ContentMap Token::getSignalContent(const BPMNOS::Model::ContentDefinitionMap& contentMap) {
   auto& attributeRegistry = getAttributeRegistry();
-  VariedValueMap contentValueMap;
+  ContentMap contentValueMap;
   for (auto& [key,contentDefinition] : contentMap) {
     contentValueMap.emplace( key, attributeRegistry.getValue(contentDefinition->attribute,status,*data) );
   }
   return contentValueMap;
 }
 
-void Token::setSignalContent(BPMNOS::VariedValueMap& sourceMap) {
+void Token::setSignalContent(ContentMap& sourceMap) {
   auto& attributeRegistry = getAttributeRegistry();
   assert( node->extensionElements->represents<BPMNOS::Model::SignalDefinition>() );
   auto signalDefinition = node->extensionElements->as<BPMNOS::Model::SignalDefinition>();
@@ -1493,8 +1498,7 @@ void Token::setSignalContent(BPMNOS::VariedValueMap& sourceMap) {
       }
       else if (std::holds_alternative<std::string>(contentValue)) {
         // use default value of emitter
-        ValueVariant value = std::get< std::string >(contentValue);
-        objectiveChange += attributeRegistry.setValue(attribute, status, *data, BPMNOS::to_number(value,attribute->type) );
+        objectiveChange += attributeRegistry.setValue(attribute, status, *data, BPMNOS::to_number(std::get< std::string >(contentValue),attribute->type) );
       }
       else {
         objectiveChange += attributeRegistry.setValue(attribute, status, *data, std::nullopt );

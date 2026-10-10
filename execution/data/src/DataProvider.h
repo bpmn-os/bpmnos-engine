@@ -99,16 +99,17 @@ public:
 
   /**
    * @brief Method returning the object an object attribute holds where no instance data gives it a value: the
-   * model's initial value, or an object with undefined values in the sizes declared.
+   * model's initial value, or an object with undefined values in the sizes declared, an open dimension having no
+   * elements.
    *
-   * This is the value of the objects of the scopes the engine creates itself, event subprocesses, compensation
-   * activities and instances started by a trigger. An object without such a value is an error.
+   * This is also the value of the objects of the scopes the engine creates itself, event subprocesses,
+   * compensation activities and instances started by a trigger.
    */
   const std::shared_ptr<const BPMNOS::Object>& getDefaultObject(const BPMNOS::Model::Attribute* object) const;
 
 protected:
   const std::shared_ptr<const BPMNOS::Model::Model> model; ///< The model the data provider is built on, whose ownership it shares
-  /// The default object of each object attribute, nullptr for one whose dimension stays open without a value
+  /// The default object of each object attribute
   std::unordered_map<const BPMNOS::Model::Attribute*, std::shared_ptr<const BPMNOS::Object>> defaultObjects;
 };
 

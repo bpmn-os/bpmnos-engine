@@ -10,7 +10,7 @@
 #include <vector>
 #include "DynamicDataProvider.h"
 #include "model/bpmnos/src/extensionElements/Expression.h"
-#include "model/utility/src/RandomDistributionFactory.h"
+#include "RandomDistributionFactory.h"
 
 namespace BPMNOS::Execution {
 
@@ -119,7 +119,7 @@ private:
   void computeStatus(Scenario& scenario, const Expressions& expressions, size_t instanceId, const BPMN::Node* node, BPMNOS::Status& status, const BPMNOS::SharedData& data, BPMNOS::number earliest) const;
 
   const unsigned int seed;
-  mutable BPMNOS::RandomDistributionFactory randomDistributionFactory; ///< The factory of the random functions, whose random number generator is set for every evaluation
+  mutable RandomDistributionFactory randomDistributionFactory; ///< The factory of the random functions, whose random number generator is set for every evaluation
   LIMEX::Handle<double> handle; ///< The handle with the lookup tables of the model and the random functions
   std::vector<Initialization> initializations; ///< The initializations in the order of the rows
   Expressions readyExpressions; ///< The ready expressions of each instance and activity

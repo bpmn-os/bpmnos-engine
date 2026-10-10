@@ -30,6 +30,7 @@ list(APPEND engine_HEADERS
   Observable.h
   Observer.h
   Notifier.h
+  ContentMap.h
   Message.h
   Signal.h
   Token.h

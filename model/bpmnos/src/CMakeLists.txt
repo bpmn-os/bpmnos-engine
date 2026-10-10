@@ -17,7 +17,7 @@ set(bpmn_SOURCES
   extensionElements/Operator.cpp
   extensionElements/Choice.cpp
   extensionElements/Guidance.cpp
-  extensionElements/Content.cpp
+  extensionElements/ContentDefinition.cpp
   extensionElements/MessageDefinition.cpp
   extensionElements/ExtensionElements.cpp
   extensionElements/Gatekeeper.cpp
@@ -40,7 +40,7 @@ set(bpmn_HEADERS
   extensionElements/Operator.h
   extensionElements/Choice.h
   extensionElements/Guidance.h
-  extensionElements/Content.h
+  extensionElements/ContentDefinition.h
   extensionElements/MessageDefinition.h
   extensionElements/ExtensionElements.h
   extensionElements/Gatekeeper.h

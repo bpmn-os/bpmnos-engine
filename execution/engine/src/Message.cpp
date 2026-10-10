@@ -114,8 +114,7 @@ BPMNOS::number Message::apply(const BPMN::FlowNode* node, const BPMNOS::Model::A
       }
       else if (std::holds_alternative<std::string>(contentValue)) {
         // use default value of sender
-        ValueVariant value = std::get< std::string >(contentValue);
-        objectiveChange += attributeRegistry.setValue(attribute, status, data, BPMNOS::to_number(value,attribute->type) );
+        objectiveChange += attributeRegistry.setValue(attribute, status, data, BPMNOS::to_number(std::get< std::string >(contentValue),attribute->type) );
       }
       else {
         objectiveChange += attributeRegistry.setValue(attribute, status, data, std::nullopt );

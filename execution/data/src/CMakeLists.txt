@@ -1,4 +1,6 @@
 list(APPEND execution_data_SOURCES
+  RandomDistributionFactory.cpp
+  ExpectedValueFactory.cpp
   Scenario.cpp
   DataProvider.cpp
   InstanceDataReader.cpp
@@ -9,6 +11,8 @@ list(APPEND execution_data_SOURCES
 )
 
 list(APPEND execution_data_HEADERS
+  RandomDistributionFactory.h
+  ExpectedValueFactory.h
   Scenario.h
   DataProvider.h
   InstanceDataReader.h

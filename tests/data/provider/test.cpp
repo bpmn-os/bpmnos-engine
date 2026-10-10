@@ -304,7 +304,7 @@ public:
     std::list< std::weak_ptr<const Execution::Token> > tokensAwaitingReadyEvent;
   };
 
-  ScriptedDataProvider(std::shared_ptr<const Model::Model> model, const BPMN::Process* process, std::string instanceId, BPMNOS::number signalTime, BPMNOS::VariedValueMap signalContent, BPMNOS::number terminationTime)
+  ScriptedDataProvider(std::shared_ptr<const Model::Model> model, const BPMN::Process* process, std::string instanceId, BPMNOS::number signalTime, Execution::ContentMap signalContent, BPMNOS::number terminationTime)
     : DataProvider(model)
     , model(std::move(model))
     , process(process)
@@ -374,7 +374,7 @@ public:
   const BPMN::Process* const process;
   const BPMNOS::number instanceId;
   const BPMNOS::number signalTime;
-  const BPMNOS::VariedValueMap signalContent;
+  const Execution::ContentMap signalContent;
   const BPMNOS::number terminationTime;
 };
 
@@ -386,7 +386,7 @@ SCENARIO( "Signal raised by the environment", "[data][provider][signal]" ) {
     auto model = std::make_shared<const Model::Model>(modelFile);
     auto process = model->processes.back().get();
     REQUIRE( process->id == "Process_2" );
-    BPMNOS::VariedValueMap content;
+    Execution::ContentMap content;
     content.emplace( "Emitter", std::string("World") );
     auto dataProvider = std::make_shared<const ScriptedDataProvider>(model, process, "Instance_2", 2, content, 5);
 

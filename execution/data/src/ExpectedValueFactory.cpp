@@ -1,9 +1,9 @@
 #include "ExpectedValueFactory.h"
-#include "ObjectRegistry.h"
+#include "model/utility/src/ObjectRegistry.h"
 #include <stdexcept>
 #include <algorithm>
 
-using namespace BPMNOS;
+using namespace BPMNOS::Execution;
 
 void ExpectedValueFactory::registerFunctions(LIMEX::Handle<double>& handle) {
   auto nameExists = [&](const std::string& name) {

@@ -1,5 +1,5 @@
 #include "MessageDefinition.h"
-#include "Content.h"
+#include "ContentDefinition.h"
 #include "ExtensionElements.h"
 #include "model/bpmnos/src/xml/bpmnos/tContent.h"
 #include "model/utility/src/string_utility.h"
@@ -70,7 +70,7 @@ MessageDefinition::MessageDefinition(XML::bpmnos::tMessage* message, const Attri
   }
 
   for ( XML::bpmnos::tContent& content : element->content ) {
-    contentMap.emplace(content.key.value.value,std::make_unique<Content>(&content,attributeRegistry));
+    contentMap.emplace(content.key.value.value,std::make_unique<ContentDefinition>(&content,attributeRegistry));
   }
 }
 

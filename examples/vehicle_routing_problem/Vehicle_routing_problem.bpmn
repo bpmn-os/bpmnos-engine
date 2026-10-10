@@ -272,8 +272,8 @@
   <bpmn2:dataStore id="DataStore_3" name="Duration and cost tables">
     <bpmn2:extensionElements>
       <bpmnos:tables>
-        <bpmnos:table id="Table_15l2b3d" source="durations.csv" name="duration" header="From;To;Duration" />
-        <bpmnos:table id="Table_3o3amuc" source="costs.csv" name="costs" header="From;To;Costs" />
+        <bpmnos:table id="Table_15l2b3d" source="durations.csv" name="duration" header="From: string;To: string;Duration: decimal" />
+        <bpmnos:table id="Table_3o3amuc" source="costs.csv" name="costs" header="From: string;To: string;Costs: decimal" />
       </bpmnos:tables>
     </bpmn2:extensionElements>
   </bpmn2:dataStore>

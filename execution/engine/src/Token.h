@@ -3,10 +3,11 @@
 
 #include <bpmn++.h>
 #include "model/bpmnos/src/extensionElements/ExtensionElements.h"
-#include "model/bpmnos/src/extensionElements/Content.h"
+#include "model/bpmnos/src/extensionElements/ContentDefinition.h"
 #include "model/utility/src/Value.h"
 #include "execution/utility/src/auto_list.h"
 #include "Observable.h"
+#include "ContentMap.h"
 #include <nlohmann/json.hpp>
 #include <iostream>
 #include <cassert>
@@ -170,8 +171,8 @@ private:
 
   void emitSignal();
   
-  BPMNOS::VariedValueMap getSignalContent(const BPMNOS::Model::ContentMap& contentMap); ///< Returns content of signal
-  void setSignalContent(BPMNOS::VariedValueMap& sourceMap); // Applies content of signal
+  ContentMap getSignalContent(const BPMNOS::Model::ContentDefinitionMap& contentMap); ///< Returns content of signal
+  void setSignalContent(ContentMap& sourceMap); // Applies content of signal
   
   void sendMessage();
 public:
@@ -182,35 +183,48 @@ private:
   void notify() const; ///< Inform all listeners about token update
 
   /**
-   * Returns a merged status from the status of each token
+   * @brief Returns the merge of the statuses of the tokens meeting at a join or completing the instances of a
+   * multi-instance activity: the latest timestamp, for every other attribute the value the statuses agree on,
+   * which is undefined if two of them differ, and every object merged element by element.
    **/
   template <typename TokenPtr>
   static BPMNOS::Status mergeStatus(const std::vector<TokenPtr>& tokens) {
-    assert( !tokens.empty() );
-    size_t n = tokens.front()->status.attributes.size();
+    return mergeStatus(tokens, [](auto& token) -> const BPMNOS::Status& { return token->status; });
+  }
+  /// @copydoc mergeStatus(const std::vector<TokenPtr>&)
+  static BPMNOS::Status mergeStatus(const std::vector<BPMNOS::Status>& statuses) {
+    return mergeStatus(statuses, [](auto& status) -> const BPMNOS::Status& { return status; });
+  }
+private:
+  template <typename Range, typename StatusOf>
+  static BPMNOS::Status mergeStatus(const Range& range, StatusOf statusOf) {
+    assert( !range.empty() );
+    auto& first = statusOf(range.front());
+    size_t n = first.attributes.size();
     BPMNOS::Status result(n);
-    result.attributes[(int)BPMNOS::Model::ExtensionElements::Index::Timestamp] = tokens.front()->status.attributes[(int)BPMNOS::Model::ExtensionElements::Index::Timestamp];
+    result.attributes[(int)BPMNOS::Model::ExtensionElements::Index::Timestamp] = first.attributes[(int)BPMNOS::Model::ExtensionElements::Index::Timestamp];
     // the objects are merged element by element, padded to the largest length of every dimension
-    result.objects.resize(tokens.front()->status.objects.size());
+    result.objects.resize(first.objects.size());
     for ( size_t k = 0; k < result.objects.size(); k++ ) {
       std::vector< std::shared_ptr<const BPMNOS::Object> > objects;
-      for ( auto& token : tokens ) {
-        objects.push_back(token->status.objects[k]);
+      for ( auto& element : range ) {
+        objects.push_back(statusOf(element).objects[k]);
       }
       result.objects[k] = BPMNOS::merge(objects);
     }
 
     for ( size_t i = 0; i < n; i++ ) {
-      for ( auto& token : tokens ) {
+      for ( auto& element : range ) {
+        auto& status = statusOf(element);
         if ( i == (int)BPMNOS::Model::ExtensionElements::Index::Timestamp ) {
-          if ( result.attributes[i].value() < token->status.attributes[i].value() ) {
-            result.attributes[i] = token->status.attributes[i];
+          if ( result.attributes[i].value() < status.attributes[i].value() ) {
+            result.attributes[i] = status.attributes[i];
           }
         }
         else if ( !result.attributes[i].has_value() ) {
-          result.attributes[i] = token->status.attributes[i];
+          result.attributes[i] = status.attributes[i];
         }
-        else if ( token->status.attributes[i].has_value() && token->status.attributes[i].value() != result.attributes[i].value() ) {
+        else if ( status.attributes[i].has_value() && status.attributes[i].value() != result.attributes[i].value() ) {
           result.attributes[i] = std::nullopt;
           break;
         }

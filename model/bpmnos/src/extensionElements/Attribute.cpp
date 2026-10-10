@@ -28,6 +28,18 @@ Attribute::Attribute(XML::bpmnos::tAttribute* attribute, Attribute::Category cat
   }
   // the registry numbers objects separately from scalar attributes, so it must know which this is
   attributeRegistry.add(this);
+  if ( initialExpression.has_value() ) {
+    // the expression assigning an object finds the object by its name
+    try {
+      expression = std::make_unique<const Expression>(InputEncoder(initialExpression.value()), attributeRegistry);
+    }
+    catch ( const std::exception& error ) {
+      throw std::runtime_error("Attribute: illegal initial value of object '" + id + "'.\n" + error.what());
+    }
+    if ( !expression->writesObject() ) {
+      throw std::runtime_error("Attribute: illegal initial value of object '" + id + "'");
+    }
+  }
   if ( id == Keyword::Timestamp && index != ExtensionElements::Index::Timestamp ) {
     throw std::runtime_error("Attribute: timestamp must be first status attribute");
   }
@@ -66,14 +78,16 @@ std::unique_ptr<const Expression> Attribute::getExpression(std::string& input, A
   }
 
   if ( schema ) {
-    // an object is initialised with a literal, which is registered as a constant object and checked against
-    // the schema; it is shared by every instance and needs no expression
+    // an object initialised with a literal, which is registered as a constant object and checked against the
+    // schema, is shared by every instance and needs no expression; an object initialised otherwise is written by
+    // an expression compiled once the attribute is registered, when its scope is created
     auto value = BPMNOS::trim_copy( input.substr( input.find(":=") + 2 ) );
     InputEncoder encoder(value);
-    if ( encoder.type() != ValueType::COLLECTION ) {
-      throw std::runtime_error("Attribute: object '" + id + "' must be initialised with a literal");
+    if ( !encoder.object().has_value() ) {
+      initialExpression = input;
+      return nullptr;
     }
-    initialObject = (size_t)BPMNOS::stoi( encoder.text() );
+    initialObject = encoder.object().value();
     try {
       schema->conform( objectRegistry[initialObject.value()] );
     }
@@ -113,7 +127,7 @@ std::string Attribute::getName(std::string& input) {
     assert( expression->compiled.getTarget().has_value() );
     return expression->compiled.getTarget().value();
   }
-  if ( initialObject.has_value() ) {
+  if ( schema && input.contains(":=") ) {
     return BPMNOS::trim_copy( input.substr( 0, input.find(":=") ) );
   }
   return input;

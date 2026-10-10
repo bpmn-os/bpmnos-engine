@@ -4,7 +4,6 @@
 #include "StringRegistry.h"
 #include "ObjectRegistry.h"
 #include "InputEncoder.h"
-#include "model/bpmnos/src/extensionElements/ExtensionElements.h"
 #include <cassert>
 
 namespace BPMNOS { 
@@ -62,6 +61,10 @@ int stoi(const std::string& str) {
 number to_number(const std::string& valueString, const ValueType& type) {
   switch ( type ) {
     case ValueType::BOOLEAN:
+      // the string registry holds false at index 0 and true at index 1
+      if ( valueString != Keyword::False && valueString != Keyword::True ) {
+        throw std::runtime_error("to_number: '" + valueString + "' is no truth value");
+      }
       return number(stringRegistry( valueString ));
     case ValueType::INTEGER:
       return number(BPMNOS::stoi( valueString ));
@@ -69,96 +72,10 @@ number to_number(const std::string& valueString, const ValueType& type) {
       return number(BPMNOS::stod( valueString ));
     case ValueType::STRING:
       return number(stringRegistry( valueString ));
-    case ValueType::COLLECTION:
-      // it is assumed that all collections are already encoded
-      return number(BPMNOS::stoi( valueString ));
   }
   throw std::logic_error("to_number: unknown value type " + std::to_string(static_cast<int>(type)) );
 }
 
-number to_number(const ValueVariant& value, const ValueType& type) {
-  switch ( type ) {
-    case ValueType::BOOLEAN:
-      if (std::holds_alternative<std::string>(value)) {
-        return number(std::get<std::string>(value) == Keyword::True ? 1 : 0);
-      }
-      else if (std::holds_alternative<bool>(value)) [[likely]] {
-        return number(std::get<bool>(value) ? 1 : 0);
-      }
-      else if (std::holds_alternative<int>(value)) {
-        return number(std::get<int>(value) ? 1 : 0);
-      }
-      else if (std::holds_alternative<double>(value)) {
-        return number(std::get<double>(value) != 0.0 ? 1 : 0);
-      }
-      else [[unlikely]] {
-        throw std::logic_error("to_number: value holds no alternative" );
-      }
-    case ValueType::INTEGER:
-      if (std::holds_alternative<std::string>(value)) {
-        return number(BPMNOS::stoi(std::get<std::string>(value)));
-      }
-      else if (std::holds_alternative<bool>(value)) {
-        return number(std::get<bool>(value) ? 1 : 0);
-      }
-      else if (std::holds_alternative<int>(value)) [[likely]] {
-        return number(std::get<int>(value));
-      }
-      else if (std::holds_alternative<double>(value)) {
-        return number((int)std::get<double>(value));
-      }
-      else [[unlikely]] {
-        throw std::logic_error("to_number: value holds no alternative" );
-      }
-    case ValueType::DECIMAL:
-      if (std::holds_alternative<std::string>(value)) {
-        return number(BPMNOS::stod(std::get<std::string>(value)));
-      }
-      else if (std::holds_alternative<bool>(value)) {
-        return number(std::get<bool>(value) ? 1 : 0);
-      }
-      else if (std::holds_alternative<int>(value)) {
-        return number(std::get<int>(value));
-      }
-      else if (std::holds_alternative<double>(value)) [[likely]] {
-        return number(std::get<double>(value));
-      }
-      else [[unlikely]] {
-        throw std::logic_error("to_number: value holds no alternative" );
-      }
-    case ValueType::STRING:
-      if (std::holds_alternative<std::string>(value)) [[likely]] {
-        return number(stringRegistry(std::get<std::string>(value)));
-      }
-      else if (std::holds_alternative<bool>(value)) {
-        return number(std::get<bool>(value) ? 1 : 0);
-      }
-      else if (std::holds_alternative<int>(value)) {
-        return number(stringRegistry(std::to_string(std::get<int>(value))));
-      }
-      else if (std::holds_alternative<double>(value)) {
-        return number(stringRegistry( std::to_string(std::get<double>(value))));
-      }
-      else [[unlikely]] {
-        throw std::logic_error("to_number: value holds no alternative" );
-      }
-    case ValueType::COLLECTION:
-      if (std::holds_alternative<std::string>(value)) [[likely]] {
-        {
-          // the text must state a collection, the number encoding it being meaningless otherwise
-          InputEncoder encoder( std::get<std::string>(value) );
-          if ( encoder.type() != ValueType::COLLECTION ) {
-            throw std::runtime_error("to_number: '" + std::get<std::string>(value) + "' is no collection" );
-          }
-          return number( BPMNOS::stoi( encoder.text() ) );
-        }
-      }
-      else [[unlikely]] {
-        throw std::logic_error("to_number: illegal conversion" );
-      }
-  }
-  throw std::logic_error("to_number: unknown value type " + std::to_string(static_cast<int>(type)) );
-}
 
 Value to_value(std::optional<double> result) {
   if ( !result.has_value() ) {
@@ -177,9 +94,6 @@ std::string to_string(number numericValue, const ValueType& type) {
       return BPMNOS::to_string((double)numericValue);
     case ValueType::STRING:
       return stringRegistry[(std::size_t)numericValue];
-    case ValueType::COLLECTION:
-      // a collection is a constant object, rendered as the literal stating it
-      return BPMNOS::to_string( *objectRegistry[(std::size_t)numericValue] );
   }
   throw std::logic_error("to_string: unknown value type " + std::to_string(static_cast<int>(type)) );
 }
@@ -197,38 +111,5 @@ std::string to_string(double value) {
   return result;
 }
 
-BPMNOS::Status mergeStatus(const std::vector<BPMNOS::Status>& statuses) {
-  assert( !statuses.empty() );
-  size_t n = statuses.front().attributes.size();
-  BPMNOS::Status result(n);
-  result.attributes[(int)BPMNOS::Model::ExtensionElements::Index::Timestamp] = statuses.front().attributes[(int)BPMNOS::Model::ExtensionElements::Index::Timestamp];
-  // the objects are merged element by element, padded to the largest length of every dimension
-  result.objects.resize(statuses.front().objects.size());
-  for ( size_t k = 0; k < result.objects.size(); k++ ) {
-    std::vector< std::shared_ptr<const BPMNOS::Object> > objects;
-    for ( auto& status : statuses ) {
-      objects.push_back(status.objects[k]);
-    }
-    result.objects[k] = BPMNOS::merge(objects);
-  }
-
-  for ( size_t i = 0; i < n; i++ ) {
-    for ( auto& status : statuses ) {
-      if ( i == (int)BPMNOS::Model::ExtensionElements::Index::Timestamp ) {
-        if ( result.attributes[i].value() < status.attributes[i].value() ) {
-          result.attributes[i] = status.attributes[i];
-        }
-      }
-      else if ( !result.attributes[i].has_value() ) {
-        result.attributes[i] = status.attributes[i];
-      }
-      else if ( status.attributes[i].has_value() && status.attributes[i].value() != result.attributes[i].value() ) {
-        result.attributes[i] = std::nullopt;
-        break;
-      }
-    }
-  }
-  return result;
-}
 
 } // namespace BPMNOS::Model

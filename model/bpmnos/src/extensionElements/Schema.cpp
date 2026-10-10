@@ -91,7 +91,6 @@ private:
     if ( name == "integer" ) return BPMNOS::ValueType::INTEGER;
     if ( name == "decimal" ) return BPMNOS::ValueType::DECIMAL;
     if ( name == "string" ) return BPMNOS::ValueType::STRING;
-    if ( name == "collection" ) return BPMNOS::ValueType::COLLECTION;
     fail("unknown type '" + name + "'");
   }
 
@@ -155,7 +154,6 @@ std::string Schema::stringify() const {
       case BPMNOS::ValueType::INTEGER: result = "integer"; break;
       case BPMNOS::ValueType::DECIMAL: result = "decimal"; break;
       case BPMNOS::ValueType::STRING: result = "string"; break;
-      case BPMNOS::ValueType::COLLECTION: result = "collection"; break;
     }
   }
   else {
@@ -369,8 +367,11 @@ void copyValues(const BPMNOS::Object::Layout& target, const BPMNOS::Object::Layo
 
 std::shared_ptr<const BPMNOS::Object> Schema::undefinedObject() const {
   // an object is created modifiable, so that a write may change it in place once it is no longer shared
+  // an open dimension has no elements
+  Schema closed = *this;
+  close(closed);
   auto object = std::make_shared<BPMNOS::Object>();
-  object->layout = std::make_shared<const BPMNOS::Object::Layout>( layoutOf(*this, *this) );
+  object->layout = std::make_shared<const BPMNOS::Object::Layout>( layoutOf(closed, *this) );
   object->values.resize( object->layout->size() );
   return object;
 }

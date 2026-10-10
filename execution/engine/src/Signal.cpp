@@ -2,7 +2,7 @@
 
 using namespace BPMNOS::Execution;
 
-Signal::Signal(BPMNOS::number name, BPMNOS::VariedValueMap content)
+Signal::Signal(BPMNOS::number name, ContentMap content)
   : name(name)
   , content(std::move(content))
 {

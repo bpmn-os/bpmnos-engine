@@ -6,6 +6,7 @@
 #include <memory>
 #include <bpmn++.h>
 #include "Observable.h"
+#include "ContentMap.h"
 #include "model/utility/src/Value.h"
 #include "model/bpmnos/src/extensionElements/AttributeRegistry.h"
 #include <nlohmann/json.hpp>
@@ -31,7 +32,7 @@ public:
   Token* waitingToken;
   std::optional< BPMNOS::number > recipient;
   BPMNOS::Values header;
-  VariedValueMap contentValueMap;
+  ContentMap contentValueMap;
 
   bool matches(const BPMNOS::Values& otherHeader) const; ///< Returns true if headers have the same size and all values that are defined are the same.
 

@@ -4,7 +4,7 @@
 #include <limex.h>
 #include <cmath>
 
-namespace BPMNOS {
+namespace BPMNOS::Execution {
 
 /**
  * @brief Factory for expected value functions in LIMEX expressions.
@@ -34,6 +34,6 @@ public:
   void registerFunctions(LIMEX::Handle<double>& handle);
 };
 
-} // namespace BPMNOS
+} // namespace BPMNOS::Execution
 
 #endif // BPMNOS_Model_ExpectedValueFactory_H

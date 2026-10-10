@@ -24,7 +24,6 @@ std::string Object::Layout::stringify() const {
       case ValueType::INTEGER: result = "integer"; break;
       case ValueType::DECIMAL: result = "decimal"; break;
       case ValueType::STRING: result = "string"; break;
-      case ValueType::COLLECTION: result = "collection"; break;
     }
   }
   else {

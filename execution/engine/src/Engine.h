@@ -219,7 +219,7 @@ protected:
   /// content of the trigger is applied to the initial status of the instance, which is where it is
   /// needed and after which it is of no further concern. The trigger being the condition for the start,
   /// the instance is started at once rather than upon a @ref ReadyEvent.
-  void triggerInstance(const BPMN::Process* process, BPMNOS::VariedValueMap content);
+  void triggerInstance(const BPMN::Process* process, ContentMap content);
 
   /// @brief Method creating an instance of a process from the message triggering it, and consuming that
   /// message.

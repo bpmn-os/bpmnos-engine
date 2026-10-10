@@ -46,10 +46,6 @@ nlohmann::ordered_json ChoiceEvent::jsonify() const {
       std::string value = BPMNOS::to_string(choices[i],attribute->type);
       jsonObject["choices"][attribute->name] = value ;
     }
-    else if ( attribute->type == COLLECTION) {
-      std::string value = BPMNOS::to_string(choices[i],attribute->type);
-      jsonObject["choices"][attribute->name] = value ;
-    }
   }
 
   return jsonObject;

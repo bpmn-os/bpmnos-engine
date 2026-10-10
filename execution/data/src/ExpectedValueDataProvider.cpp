@@ -1,5 +1,5 @@
 #include "ExpectedValueDataProvider.h"
-#include "model/utility/src/ExpectedValueFactory.h"
+#include "ExpectedValueFactory.h"
 
 using namespace BPMNOS::Execution;
 
@@ -15,7 +15,7 @@ ExpectedValueDataProvider::ExpectedValueDataProvider(std::shared_ptr<const BPMNO
       return table->at(args);
     });
   }
-  BPMNOS::ExpectedValueFactory().registerFunctions(handle);
+  ExpectedValueFactory().registerFunctions(handle);
 
   readInstances(instanceFileOrString, { "INSTANCE_ID", "NODE_ID", "INITIALIZATION", "DISCLOSURE", "READY", "COMPLETION" }, handle);
 }

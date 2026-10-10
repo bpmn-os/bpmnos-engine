@@ -13,13 +13,9 @@
 
 namespace BPMNOS {
 
-enum ValueType { BOOLEAN, INTEGER, DECIMAL, STRING, COLLECTION };
-
-typedef std::variant< bool, int, double, std::string > ValueVariant;
+enum ValueType { BOOLEAN, INTEGER, DECIMAL, STRING };
 
 typedef std::optional<number> Value;
-
-typedef std::unordered_map< std::string, Value > ValueMap;
 
 /**
  * @brief A list of values that is neither status nor data, such as the header of a message.
@@ -73,17 +69,11 @@ struct SharedData {
   std::vector< std::reference_wrapper< std::shared_ptr<const Object> > > objects;
 };
 
-typedef std::unordered_map< std::string, std::variant< Value, std::string > > VariedValueMap;
 
 /**
  * @brief Converts a string to a number.
  */
 number to_number(const std::string& valueString, const ValueType& type);
-
-/**
- * @brief Converts a value as it is written to a number.
- */
-number to_number(const ValueVariant& value, const ValueType& type);
 
 /**
  * @brief Converts the result of an evaluated expression to a value, keeping an absent result absent.
@@ -100,11 +90,6 @@ Value to_value(std::optional<double> result);
  */
 std::string to_string(number numberValue, const ValueType& type);
 
-/**
- * @brief Returns the merge of the statuses of the tokens meeting at a join: the latest timestamp, and for every
- * other attribute the value the statuses agree on, which is undefined if two of them differ.
- **/
-Status mergeStatus(const std::vector<Status>& statuses);
 
 } // BPMNOS
 

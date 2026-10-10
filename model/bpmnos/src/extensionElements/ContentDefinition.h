@@ -1,5 +1,5 @@
-#ifndef BPMNOS_Model_Content_H
-#define BPMNOS_Model_Content_H
+#ifndef BPMNOS_Model_ContentDefinition_H
+#define BPMNOS_Model_ContentDefinition_H
 
 #include <memory>
 #include <vector>
@@ -15,17 +15,18 @@
 
 namespace BPMNOS::Model {
 
-class Content {
+class ContentDefinition {
 public:
-  Content(XML::bpmnos::tContent* content, const AttributeRegistry& attributeRegistry);
+  ContentDefinition(XML::bpmnos::tContent* content, const AttributeRegistry& attributeRegistry);
   XML::bpmnos::tContent* element;
 
   std::string& key;
   Attribute* attribute;
 };
 
-typedef std::unordered_map< std::string, std::unique_ptr<Content> > ContentMap;
+/// The definitions of the content of a message or signal, by their keys.
+typedef std::unordered_map< std::string, std::unique_ptr<ContentDefinition> > ContentDefinitionMap;
 
 } // namespace BPMNOS::Model
 
-#endif // BPMNOS_Model_Content_H
+#endif // BPMNOS_Model_ContentDefinition_H

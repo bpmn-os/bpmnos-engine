@@ -8,7 +8,7 @@
 #include <nlohmann/json.hpp>
 #include <limex.h>
 
-namespace BPMNOS {
+namespace BPMNOS::Execution {
 
 using RandomGenerator = std::mt19937;
 using RandomDistribution = std::function<double(RandomGenerator &)>;
@@ -68,6 +68,6 @@ private:
   static thread_local std::mt19937* currentRng;
 };
 
-} // namespace BPMNOS
+} // namespace BPMNOS::Execution
 
 #endif // BPMNOS_Model_RandomDistributionFactory_H

@@ -5,8 +5,6 @@ list(APPEND model_utility_SOURCES
   ObjectRegistry.cpp
   CSVReader.cpp
   InputEncoder.cpp
-  RandomDistributionFactory.cpp
-  ExpectedValueFactory.cpp
 )
 
 list(APPEND model_utility_HEADERS
@@ -20,7 +18,5 @@ list(APPEND model_utility_HEADERS
   ObjectRegistry.h
   CSVReader.h
   InputEncoder.h
-  RandomDistributionFactory.h
-  ExpectedValueFactory.h
   string_utility.h
 )

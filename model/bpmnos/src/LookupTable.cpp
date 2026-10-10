@@ -1,5 +1,6 @@
 #include "LookupTable.h"
 #include "model/utility/src/string_utility.h"
+#include "model/utility/src/ObjectRegistry.h"
 #include <ranges>
 #include <iostream>
 #include <algorithm>
@@ -10,15 +11,45 @@ using namespace BPMNOS::Model;
 LookupTable::LookupTable(const std::string& name, const std::string& source, const std::string& header, const std::vector<std::string>& folders)
   : name(name)
   , header(header)
+  , columns(parseColumns())
 {
-  populate(source, openCsv(source,folders).read());
+  populate(source, openCsv(source,folders));
 }
 
 LookupTable::LookupTable(const std::string& name, const std::string& csvContent, const std::string& header)
   : name(name)
   , header(header)
+  , columns(parseColumns())
 {
-  populate(name, CSVReader(csvContent).read());
+  populate(name, CSVReader(csvContent));
+}
+
+std::vector< std::pair<std::string, Schema> > LookupTable::parseColumns() const {
+  std::vector< std::pair<std::string, Schema> > result;
+  for ( auto& column : BPMNOS::split(header, ';') ) {
+    auto colon = column.find(':');
+    if ( colon == std::string::npos ) {
+      throw std::runtime_error(std::format("LookupTable: column '{}' of table '{}' requires a type, 'name: type'", BPMNOS::trim_copy(column), name));
+    }
+    auto columnName = BPMNOS::trim_copy(column.substr(0, colon));
+    Schema schema;
+    try {
+      schema = Schema::parse(BPMNOS::trim_copy(column.substr(colon + 1)));
+    }
+    catch ( const std::exception& error ) {
+      throw std::runtime_error(std::format("LookupTable: illegal type of column '{}' of table '{}'.\n{}", columnName, name, error.what()));
+    }
+    result.emplace_back(columnName, std::move(schema));
+  }
+  if ( result.size() < 2 ) {
+    throw std::runtime_error(std::format("LookupTable: table '{}' requires a key and a result column", name));
+  }
+  for ( size_t i = 0; i + 1 < result.size(); i++ ) {
+    if ( !result[i].second.isScalar() ) {
+      throw std::runtime_error(std::format("LookupTable: key column '{}' of table '{}' must have a scalar type", result[i].first, name));
+    }
+  }
+  return result;
 }
 
 BPMNOS::CSVReader LookupTable::openCsv(const std::string& filename, const std::vector<std::string>& folders) {
@@ -60,7 +91,10 @@ void LookupTable::validateHeader(const std::string& sourceLabel, const CSVReader
   };
 
   // Expected column names come from the semicolon separated header attribute.
-  auto expected = BPMNOS::split(header, ';');
+  std::vector<std::string> expected;
+  for ( auto& [columnName, _] : columns ) {
+    expected.push_back(columnName);
+  }
 
   if ( expected.size() != headerRow.size() ) {
     throw std::runtime_error(std::format(
@@ -78,7 +112,9 @@ void LookupTable::validateHeader(const std::string& sourceLabel, const CSVReader
   }
 }
 
-void LookupTable::populate(const std::string& sourceLabel, CSVReader::Table table) {
+void LookupTable::populate(const std::string& sourceLabel, CSVReader reader) {
+  auto table = reader.read();
+  auto& types = reader.types();
   if ( table.empty() ) {
     throw std::runtime_error(std::format("LookupTable: table '{}' with source '{}' is empty", name, sourceLabel));
   }
@@ -87,6 +123,28 @@ void LookupTable::populate(const std::string& sourceLabel, CSVReader::Table tabl
   // populate lookup map
   for (size_t j = 1; j < table.size(); j++) {   // assume a single header line at index 0
     auto& row = table[j];
+    if ( row.size() != this->columns.size() ) {
+      throw std::runtime_error(std::format("LookupTable: row {} of table '{}' has {} cells instead of {}", j, name, row.size(), this->columns.size()));
+    }
+    // every cell is checked against the type of its column
+    for ( size_t i = 0; i < row.size(); i++ ) {
+      auto& [columnName, schema] = this->columns[i];
+      auto type = types[j][i];
+      bool fits = schema.isScalar() ?
+        ( schema.scalar.value() == BPMNOS::ValueType::STRING ? type == BPMNOS::CSVReader::Type::STRING : type == BPMNOS::CSVReader::Type::NUMBER ) :
+        type == BPMNOS::CSVReader::Type::OBJECT;
+      if ( !fits ) {
+        throw std::runtime_error(std::format("LookupTable: cell of row {} in column '{}' of table '{}' is no {}", j, columnName, name, schema.stringify()));
+      }
+      if ( type == BPMNOS::CSVReader::Type::OBJECT ) {
+        try {
+          schema.conform( objectRegistry[(size_t)std::get<BPMNOS::number>(row[i])] );
+        }
+        catch ( const std::exception& error ) {
+          throw std::runtime_error(std::format("LookupTable: cell of row {} in column '{}' of table '{}' is no {}.\n{}", j, columnName, name, schema.stringify(), error.what()));
+        }
+      }
+    }
     std::vector< double > inputs;
     size_t columns = row.size();
 

@@ -631,7 +631,7 @@ void StateMachine::deleteMultiInstanceActivityToken(Token* token) {
          it2 != exitStatusAtActivityInstance.end()
       ) {
         // merge status 
-        mainToken->status = BPMNOS::mergeStatus(it2->second);
+        mainToken->status = Token::mergeStatus(it2->second);
         exitStatusAtActivityInstance.erase(it2);
       }
 

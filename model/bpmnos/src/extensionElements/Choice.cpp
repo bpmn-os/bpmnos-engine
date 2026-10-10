@@ -56,9 +56,6 @@ Choice::Choice(XML::bpmnos::tDecision* decision, const AttributeRegistry& attrib
   if ( attribute->type == STRING && enumeration.empty() ) {
     throw std::runtime_error("Choice: no enumeration provided for string");
   }
-  if ( attribute->type == COLLECTION ) {
-    throw std::runtime_error("Choice: attribute is a collection");
-  }
 
   attribute->isImmutable = false;
 }

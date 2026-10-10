@@ -1,19 +1,19 @@
 #include "RandomDistributionFactory.h"
-#include "ObjectRegistry.h"
+#include "model/utility/src/ObjectRegistry.h"
 #include <exception>
 #include <algorithm>
 
-using namespace BPMNOS;
+using namespace BPMNOS::Execution;
 
 // Definition of the thread-local current RNG pointer (declared static thread_local in the header).
-thread_local std::mt19937* BPMNOS::RandomDistributionFactory::currentRng = nullptr;
+thread_local std::mt19937* BPMNOS::Execution::RandomDistributionFactory::currentRng = nullptr;
 
-RandomDistribution BPMNOS::make_distribution(const std::string& jsonString) {
+RandomDistribution BPMNOS::Execution::make_distribution(const std::string& jsonString) {
   nlohmann::json input = nlohmann::json::parse(jsonString);
   return make_distribution(input);
 }
 
-RandomDistribution BPMNOS::make_distribution(const nlohmann::json& input) {
+RandomDistribution BPMNOS::Execution::make_distribution(const nlohmann::json& input) {
 	const std::string& distributionName = input.at("distribution");
 
   // https://en.cppreference.com/w/cpp/numeric/random/

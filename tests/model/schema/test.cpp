@@ -102,7 +102,7 @@ TEST_CASE( "Parse the schema of an attribute", "[model][schema]" ) {
 
   SECTION( "Scalars" ) {
     for ( auto [text, type] : std::vector< std::pair<std::string, ValueType> >{
-      {"boolean", BOOLEAN}, {"integer", INTEGER}, {"decimal", DECIMAL}, {"string", STRING}, {"collection", COLLECTION}
+      {"boolean", BOOLEAN}, {"integer", INTEGER}, {"decimal", DECIMAL}, {"string", STRING}
     } ) {
       auto schema = Schema::parse(text);
       REQUIRE( schema.isScalar() );
@@ -200,8 +200,8 @@ TEST_CASE( "Refuse illegal uses of objects", "[model][schema]" ) {
   SECTION( "Objective on a string" ) {
     REQUIRE_THROWS_WITH( []() { Declarations declarations; declarations.processData = attribute("Y", "y", "string", "objective=\"maximize\" weight=\"1\""); return modelWith(declarations); }(), Catch::Matchers::ContainsSubstring("requires type boolean, integer, or decimal") );
   }
-  SECTION( "Initial value of an object that is no literal" ) {
-    REQUIRE_THROWS_WITH( []() { Declarations declarations; declarations.processData = attribute("Y", "y := 1", "decimal[2]"); return modelWith(declarations); }(), Catch::Matchers::ContainsSubstring("must be initialised with a literal") );
+  SECTION( "Initial value of an object that is no array or object" ) {
+    REQUIRE_THROWS_WITH( []() { Declarations declarations; declarations.processData = attribute("Y", "y := 1", "decimal[2]"); return modelWith(declarations); }(), Catch::Matchers::ContainsSubstring("must be assigned a literal") );
   }
   SECTION( "Object used as a value in an expression" ) {
     REQUIRE_THROWS_WITH( []() { Declarations declarations; declarations.processRestrictions = R"(

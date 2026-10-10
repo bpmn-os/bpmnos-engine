@@ -15,7 +15,7 @@ namespace BPMNOS::Model {
  * @brief The shape of an attribute, as stated by its `type`.
  *
  * A type is a base followed by its dimensions, `type := base dimension*`. The base is a scalar type, one of
- * `boolean`, `integer`, `decimal`, `string` and `collection`, or an object `{ name: type, ... }` whose fields
+ * `boolean`, `integer`, `decimal` and `string`, or an object `{ name: type, ... }` whose fields
  * have types of their own. A dimension is written `[n]` if its size is fixed and `[]` if it is open, and the
  * dimensions are read from left to right in the order of the indices: `boolean[3][4]` has 3 elements, each a
  * `boolean[4]`, accessed as `x[i][j]` with `i <= 3` and `j <= 4`. A schema without dimensions whose base is a
@@ -46,7 +46,7 @@ struct Schema {
   bool isFixed() const;
 
   /**
-   * @brief Returns an object of this schema with every value undefined, every dimension having a fixed size.
+   * @brief Returns an object of this schema with every value undefined, an open dimension having no elements.
    */
   std::shared_ptr<const BPMNOS::Object> undefinedObject() const;
 

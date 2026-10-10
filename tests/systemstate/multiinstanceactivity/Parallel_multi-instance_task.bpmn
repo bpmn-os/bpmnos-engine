@@ -5,7 +5,7 @@
       <bpmnos:status>
         <bpmnos:attributes>
           <bpmnos:attribute id="Timestamp" type="decimal" name="timestamp" />
-          <bpmnos:attribute id="Collection" type="collection" name="collection := [1,2,3]" />
+          <bpmnos:attribute id="Collection" type="integer[]" name="collection := [1,2,3]" />
         </bpmnos:attributes>
       </bpmnos:status>
     </bpmn2:extensionElements>

@@ -18,8 +18,7 @@ namespace BPMNOS::Model {
  *
  * The expression is compiled by LIMEX. Its variables are scalar attributes, passed to LIMEX by value. An array
  * named by an attribute, on the right of `in`, as the argument of an aggregator or in a binding of an
- * aggregation, is a collection, passed as a view of the array the attribute holds: an object, or the constant
- * array a collection attribute holds as its index in the object registry. An access path such as
+ * aggregation, is a collection, passed as a view of the array the object attribute holds. An access path such as
  * `facilities[i].cost`, `grid[i][j]` or `x[i]` addresses a part of such an array or object; LIMEX evaluates its
  * indices, counting from one, and the expression resolves the path against the layout of the object it
  * addresses, without copying any value.
@@ -94,6 +93,7 @@ private:
   std::optional<size_t> sourceLiteral; ///< The constant object assigned, by its index in the object registry
   const Attribute* sourceObject = nullptr; ///< The object attribute assigned
   std::optional<size_t> sourcePath; ///< The path to the part of an object assigned
+  const LIMEX::Node<double>* sourceCall = nullptr; ///< The call of a lookup returning the array assigned
   std::vector<std::string> targetFields; ///< The fields the target path names, one within the other
   size_t targetDimension = 0; ///< The number of dimensions the target path indexes after its last field
   std::vector<std::string> resizeFields; ///< The fields naming the array whose dimension is resized

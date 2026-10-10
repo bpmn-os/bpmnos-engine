@@ -33,6 +33,8 @@ public:
   std::unique_ptr<const Schema> schema;
   /// The index in the object registry of the literal an object is initialised with, if the model gives one.
   std::optional<size_t> initialObject;
+  /// The assignment an object is initialised with if the model gives one other than a literal, such as a lookup.
+  std::optional<std::string> initialExpression;
   std::unique_ptr<const Expression> expression;
   const std::string name;
 

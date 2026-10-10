@@ -2,6 +2,7 @@
 #define BPMNOS_Execution_Signal_H
 
 #include "Observable.h"
+#include "ContentMap.h"
 #include "model/utility/src/Value.h"
 #include <nlohmann/json.hpp>
 
@@ -25,10 +26,10 @@ namespace BPMNOS::Execution {
 class Signal : public Observable {
 public:
   constexpr Type getObservableType() const override { return Type::Signal; };
-  Signal(BPMNOS::number name, BPMNOS::VariedValueMap content);
+  Signal(BPMNOS::number name, ContentMap content);
 
   BPMNOS::number name;            ///< Signal name
-  BPMNOS::VariedValueMap content; ///< Content the signal carries
+  ContentMap content; ///< Content the signal carries
 
   nlohmann::ordered_json jsonify() const;
 };

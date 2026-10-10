@@ -21,6 +21,9 @@ public:
   std::vector<Attribute*> dataAttributes; ///< The scalar data attributes, the global attributes of the model first
   std::vector<Attribute*> statusObjects; ///< The status objects, numbered by their position, separately from scalars
   std::vector<Attribute*> dataObjects; ///< The data objects, the global objects of the model first
+  /// The schema of the result of each lookup returning an array, by its name, which an expression may only
+  /// assign to an array
+  std::unordered_map< std::string, const Schema*> arrayLookups;
   std::unordered_map< std::string, Attribute*> statusMap;
   std::unordered_map< std::string, Attribute*> dataMap;
   Attribute* operator[](const std::string& name) const;

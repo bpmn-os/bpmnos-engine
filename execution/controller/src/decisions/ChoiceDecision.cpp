@@ -52,10 +52,6 @@ nlohmann::ordered_json ChoiceDecision::jsonify() const {
       std::string value = BPMNOS::to_string(choices[i],attribute->type);
       jsonObject["choices"][attribute->name] = value ;
     }
-    else if ( attribute->type == COLLECTION) {
-      std::string value = BPMNOS::to_string(choices[i],attribute->type);
-      jsonObject["choices"][attribute->name] = value ;
-    }
   }
 
   if ( reward().has_value() ) {

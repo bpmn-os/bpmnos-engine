@@ -208,7 +208,7 @@ void Engine::broadcastSignal(Signal signal) {
   }
 }
 
-void Engine::triggerInstance(const BPMN::Process* process, BPMNOS::VariedValueMap content) {
+void Engine::triggerInstance(const BPMN::Process* process, ContentMap content) {
   auto extensionElements = process->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   auto& attributeRegistry = extensionElements->attributeRegistry;
 
@@ -243,7 +243,7 @@ void Engine::triggerInstance(const BPMN::Process* process, BPMNOS::VariedValueMa
 
   // a signal start event holds its definition as its extension elements, whereas a message start event
   // holds extension elements carrying a message definition
-  const BPMNOS::Model::ContentMap* contentMap;
+  const BPMNOS::Model::ContentDefinitionMap* contentMap;
   const std::vector<const BPMNOS::Model::Attribute*>* dataUpdateAttributes;
   if ( auto signalDefinition = startNode->extensionElements->represents<BPMNOS::Model::SignalDefinition>() ) {
     contentMap = &signalDefinition->contentMap;
@@ -268,8 +268,7 @@ void Engine::triggerInstance(const BPMN::Process* process, BPMNOS::VariedValueMa
     }
     else {
       // use default value of emitter
-      ValueVariant value = std::get< std::string >(it->second);
-      objectiveChange += attributeRegistry.setValue(attribute, token->status, *token->data, BPMNOS::to_number(value,attribute->type) );
+      objectiveChange += attributeRegistry.setValue(attribute, token->status, *token->data, BPMNOS::to_number(std::get< std::string >(it->second),attribute->type) );
     }
   }
 

@@ -72,17 +72,12 @@ Expression::Expression(const LIMEX::Handle<double>& handle, const InputEncoder& 
       throw std::runtime_error("Expression: illegal expression '" + expression +"'");
     }
     auto attribute = attributeRegistry[ name ];
-    if ( attribute->isObject() ) {
-      auto& schema = *attribute->schema;
-      if ( schema.dimensions.empty() ) {
-        throw std::runtime_error("Expression: object '" + name + "' is not an array in '" + expression +"'");
-      }
-      if ( !sizeOnly[k] && ( !schema.scalar.has_value() || schema.dimensions.size() != 1 ) ) {
-        throw std::runtime_error("Expression: '" + name + "' is not an array of values with a single dimension in '" + expression +"'");
-      }
-    }
-    else if ( attribute->type != BPMNOS::ValueType::COLLECTION ) {
+    if ( !attribute->isObject() || attribute->schema->dimensions.empty() ) {
       throw std::runtime_error("Expression: '" + name + "' is not an array in '" + expression +"'");
+    }
+    auto& schema = *attribute->schema;
+    if ( !sizeOnly[k] && ( !schema.scalar.has_value() || schema.dimensions.size() != 1 ) ) {
+      throw std::runtime_error("Expression: '" + name + "' is not an array of values with a single dimension in '" + expression +"'");
     }
     inputs.insert(attribute);
     collections.push_back(attribute);
@@ -194,15 +189,10 @@ std::shared_ptr<const BPMNOS::Object> part(const BPMNOS::Object& object, const L
   return result;
 }
 
-/// Returns the array or object an attribute holds, nullptr if it holds none.
+/// Returns the array or object an object attribute holds.
 template <typename DataType>
 const BPMNOS::Object* objectOf(const AttributeRegistry& attributeRegistry, const Attribute* attribute, const BPMNOS::Status& status, const DataType& data) {
-  if ( attribute->isObject() ) {
-    return attributeRegistry.getObject(attribute, status, data).get();
-  }
-  // a collection attribute holds the index of a constant array in the object registry
-  auto collection = attributeRegistry.getValue(attribute, status, data);
-  return collection.has_value() ? objectRegistry[(size_t)collection.value()].get() : nullptr;
+  return attributeRegistry.getObject(attribute, status, data).get();
 }
 
 } // namespace
@@ -220,6 +210,13 @@ void Expression::determineUses() {
     }
     if ( node.type == LIMEX::Type::path || node.type == LIMEX::Type::collection_path ) {
       pathUses[ std::get<size_t>(node.operands[0]) ] = Use{ node.type == LIMEX::Type::collection_path, sizeArgument, aggregated };
+    }
+    if ( node.type == LIMEX::Type::function_call && &node != sourceCall ) {
+      // a lookup returning an array may only be the entire value of an assignment to an array
+      auto& name = handle.getFunctionNames()[ std::get<size_t>(node.operands[0]) ];
+      if ( attributeRegistry.arrayLookups.contains(name) ) {
+        throw std::runtime_error("Expression: lookup '" + name + "' returns an array, which may only be assigned to an array, in '" + expression + "'");
+      }
     }
     bool sizeChild = ( node.type == LIMEX::Type::aggregation && aggregatorNames[ std::get<size_t>(node.operands[0]) ] == "size" );
     bool aggregatedChild = aggregated || node.type == LIMEX::Type::aggregation_over;
@@ -264,19 +261,8 @@ Expression::Step Expression::walk(size_t path, const Attribute* attribute) const
 }
 
 void Expression::bind(size_t path, const Attribute* attribute) const {
-  auto& description = compiled.getPaths()[path];
   auto& use = pathUses[path];
-  auto text = pathText(description);
-  if ( !attribute->isObject() ) {
-    // a collection attribute holds a constant array, of which a path addresses an element
-    if ( attribute->type != BPMNOS::ValueType::COLLECTION ) {
-      throw std::runtime_error("Expression: '" + attribute->name + "' is not an array in '" + expression +"'");
-    }
-    if ( description.steps.size() != 1 || description.steps.front().has_value() || use.array ) {
-      throw std::runtime_error("Expression: '" + text + "' must address an element of '" + attribute->name + "' in '" + expression +"'");
-    }
-    return;
-  }
+  auto text = pathText(compiled.getPaths()[path]);
   auto [schema, dimension, _] = walk(path, attribute);
   if ( use.sizeOnly ) {
     if ( dimension == schema->dimensions.size() ) {
@@ -347,6 +333,10 @@ void Expression::analyseTarget(const std::vector<size_t>& literals) {
       throw illegal();
     }
     sourceObject = source;
+  }
+  else if ( value.type == LIMEX::Type::function_call && attributeRegistry.arrayLookups.contains( handle.getFunctionNames()[ std::get<size_t>(value.operands[0]) ] ) ) {
+    // a lookup returning an array, which arrives as the index of a constant object
+    sourceCall = &value;
   }
   else if ( value.type == LIMEX::Type::path ) {
     size_t path = std::get<size_t>(value.operands[0]);
@@ -643,6 +633,17 @@ void Expression::write(BPMNOS::Status& status, DataType& data) const {
     std::shared_ptr<const BPMNOS::Object> source;
     if ( sourceLiteral.has_value() ) {
       source = objectRegistry[sourceLiteral.value()];
+    }
+    else if ( sourceCall ) {
+      // the value of the assignment is the index of the constant object the lookup returns
+      double index = 0;
+      try {
+        index = compiled.evaluate(variableValues, collectionValues, resolver);
+      }
+      catch ( const Undefined& ) {
+        throw std::runtime_error("Expression: undefined argument");
+      }
+      source = objectRegistry[(size_t)index];
     }
     else if ( sourceObject ) {
       source = attributeRegistry.getObject(sourceObject, status, data);

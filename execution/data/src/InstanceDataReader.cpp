@@ -211,7 +211,7 @@ void InstanceDataReader::setObject(const Row& row) {
   }
   if ( !row.node ) {
     auto object = findObject(model, nullptr, name);
-    if ( object->initialObject.has_value() ) {
+    if ( object->initialObject.has_value() || object->expression ) {
       throw std::runtime_error("InstanceDataReader: global object '" + name + "' is assigned by the model and must not be given");
     }
     globalObjects[object] = index;

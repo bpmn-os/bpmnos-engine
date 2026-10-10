@@ -21,7 +21,7 @@ SignalDefinition::SignalDefinition(XML::bpmn::tBaseElement* baseElement, BPMN::S
     name = BPMNOS::to_number(signal->name.value.value,STRING);
 
     for ( XML::bpmnos::tContent& content : signal->content ) {
-      contentMap.emplace(content.key.value.value,std::make_unique<Content>(&content,attributeRegistry));
+      contentMap.emplace(content.key.value.value,std::make_unique<ContentDefinition>(&content,attributeRegistry));
     }
 
     if ( baseElement->is<XML::bpmn::tCatchEvent>() ) {

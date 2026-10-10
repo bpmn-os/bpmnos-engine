@@ -80,7 +80,7 @@ void StaticDataProvider::readInstances(const std::string& instanceFileOrString, 
   }
 
   // the objects: the default of each, from the model's initial value or with undefined values in the sizes
-  // declared, and the global objects
+  // declared, an open dimension having no elements, and the global objects
   auto conform = [&reader](const BPMNOS::Model::Attribute* object, size_t index, const std::string& owner) {
     try {
       return reader.getSchema(object).conform( objectRegistry[index] );
@@ -94,11 +94,9 @@ void StaticDataProvider::readInstances(const std::string& instanceFileOrString, 
     if ( object->initialObject.has_value() ) {
       defaultObjects[object] = conform(object, object->initialObject.value(), "in the model");
     }
-    else if ( schema.isFixed() ) {
-      defaultObjects[object] = schema.undefinedObject();
-    }
     else {
-      defaultObjects[object] = nullptr;
+      // an open dimension has no elements until an assignment gives it its length
+      defaultObjects[object] = schema.undefinedObject();
     }
   }
   for ( auto& object : this->model->objects ) {
@@ -122,16 +120,11 @@ void StaticDataProvider::readInstances(const std::string& instanceFileOrString, 
     auto timestampAttribute = process->extensionElements->as<BPMNOS::Model::ExtensionElements>()->attributes[BPMNOS::Model::ExtensionElements::Index::Timestamp].get();
     // instances are instantiated at integral times
     auto instantiationTime = BPMNOS::number(std::ceil((double)values.at(timestampAttribute)));
-    // the objects the instance data gives, every other object of the instance requiring a default
+    // the objects the instance data gives, every other object of the instance taking its default
     std::unordered_map<const BPMNOS::Model::Attribute*, std::shared_ptr<const BPMNOS::Object>> objects;
     if ( auto given = reader.objects.find(instanceId); given != reader.objects.end() ) {
       for ( auto& [object, index] : given->second ) {
         objects[object] = conform(object, index, "of instance '" + stringRegistry[instanceId] + "'");
-      }
-    }
-    for ( auto object : objectsOf(process) ) {
-      if ( !objects.contains(object) && !defaultObjects.at(object) ) {
-        throw std::runtime_error("StaticDataProvider: object '" + object->id + "' of instance '" + stringRegistry[instanceId] + "' has an open dimension and no value");
       }
     }
     instancePositions[instanceId] = instances.size();
@@ -352,12 +345,8 @@ std::optional<BPMNOS::number> StaticDataProvider::getValue(const Scenario& scena
       if ( !input->isImmutable ) {
         return nullptr;
       }
-      if ( input->isObject() ) {
-        bool global = ( input->category == BPMNOS::Model::Attribute::Category::DATA && input->index < this->model->objects.size() );
-        return global ? globals.objects[input->index].get() : getObject(instanceId, input).get();
-      }
-      auto collection = getValue(scenario, instanceId, input);
-      return collection.has_value() ? objectRegistry[(size_t)collection.value()].get() : nullptr;
+      bool global = ( input->category == BPMNOS::Model::Attribute::Category::DATA && input->index < this->model->objects.size() );
+      return global ? globals.objects[input->index].get() : getObject(instanceId, input).get();
     };
     std::vector<const BPMNOS::Object*> collectionObjects;
     for ( auto input : attribute->expression->collections ) {

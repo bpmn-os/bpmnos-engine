@@ -22,8 +22,8 @@ const std::shared_ptr<const BPMNOS::Model::Model>& DataProvider::getModel() cons
 
 const std::shared_ptr<const BPMNOS::Object>& DataProvider::getDefaultObject(const BPMNOS::Model::Attribute* object) const {
   auto it = defaultObjects.find(object);
-  if ( it == defaultObjects.end() || !it->second ) {
-    throw std::runtime_error("DataProvider: object '" + object->id + "' has an open dimension and no value");
+  if ( it == defaultObjects.end() ) {
+    throw std::logic_error("DataProvider: object '" + object->id + "' has no default");
   }
   return it->second;
 }

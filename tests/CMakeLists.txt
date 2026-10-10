@@ -27,6 +27,7 @@ list(APPEND tests_SOURCES
   model/encoder/test.cpp
   model/parser/test.cpp
   model/schema/test.cpp
+  model/lookuptable/test.cpp
   data/reader/test.cpp
   data/staticprovider/test.cpp
   data/expectedvalueprovider/test.cpp

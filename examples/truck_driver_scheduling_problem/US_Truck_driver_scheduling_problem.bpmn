@@ -5,10 +5,10 @@
       <bpmnos:status>
         <bpmnos:attributes>
           <bpmnos:attribute id="Timestamp" type="decimal" name="timestamp" />
-          <bpmnos:attribute id="EarliestVisits" type="collection" name="earliest_visits" />
-          <bpmnos:attribute id="LatestVisits" type="collection" name="latest_visits" />
-          <bpmnos:attribute id="TravelTimes" type="collection" name="travel_times" />
-          <bpmnos:attribute id="ServiceTimes" type="collection" name="service_times" />
+          <bpmnos:attribute id="EarliestVisits" type="decimal[]" name="earliest_visits" />
+          <bpmnos:attribute id="LatestVisits" type="decimal[]" name="latest_visits" />
+          <bpmnos:attribute id="TravelTimes" type="decimal[]" name="travel_times" />
+          <bpmnos:attribute id="ServiceTimes" type="decimal[]" name="service_times" />
         </bpmnos:attributes>
       </bpmnos:status>
     </bpmn2:extensionElements>

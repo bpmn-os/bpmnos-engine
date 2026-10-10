@@ -87,8 +87,8 @@
     <bpmn2:dataObject id="DataObject_1vrduku">
       <bpmn2:extensionElements>
         <bpmnos:attributes>
-          <bpmnos:attribute id="Machines" type="collection" name="machines" />
-          <bpmnos:attribute id="Durations" type="collection" name="durations" />
+          <bpmnos:attribute id="Machines" type="string[]" name="machines" />
+          <bpmnos:attribute id="Durations" type="decimal[]" name="durations" />
         </bpmnos:attributes>
       </bpmn2:extensionElements>
     </bpmn2:dataObject>

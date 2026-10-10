@@ -36,6 +36,11 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const
           auto attribute = std::make_unique<Attribute>(&attributeElement, Attribute::Category::STATUS, attributeRegistry);
           if ( attribute->isObject() ) {
             // objects are held and numbered separately from scalar attributes
+            if ( attribute->expression ) {
+              for ( auto input : attribute->expression->inputs ) {
+                entryDependencies.insert(input);
+              }
+            }
             statusObjects.push_back(std::move(attribute));
           }
           else if ( attribute->id == Keyword::Instance ) {
@@ -84,6 +89,11 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const
     auto attribute = std::make_unique<Attribute>(&attributeElement, Attribute::Category::DATA, attributeRegistry);
     if ( attribute->isObject() ) {
       // objects are held and numbered separately from scalar attributes
+      if ( attribute->expression ) {
+        for ( auto input : attribute->expression->inputs ) {
+          entryDependencies.insert(input);
+        }
+      }
       dataObjects.push_back(std::move(attribute));
       continue;
     }
@@ -408,6 +418,14 @@ BPMNOS::number ExtensionElements::computeInitialValues(BPMNOS::number currentTim
   for ( auto& attribute : this->data ) {
     if ( attribute->expression ) {
       change += attributeRegistry.setValue( attribute.get(), status, data, BPMNOS::to_value( attribute->expression->execute(status,data) ) );
+    }
+  }
+  // the objects the model computes, such as the result of a lookup, which carry no objective
+  for ( auto objects : { &statusObjects, &dataObjects } ) {
+    for ( auto& object : *objects ) {
+      if ( object->expression ) {
+        object->expression->write(status,data);
+      }
     }
   }
   return change;

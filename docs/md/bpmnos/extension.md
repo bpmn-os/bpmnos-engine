@@ -20,7 +20,7 @@ For each attribute the following fields can be provided
 - `objective`: an optional field indicating whether the attribute value contributes to a global objective which must be either `maximize` or `minimize`, and
 - `weight`: an optional decimal indicating a multiplier for the objective function which must be provided if `objective` is set.
 
-The scalar types are `integer`, `decimal`, `boolean`, `string` and `collection`. Only an attribute of type `boolean`, `integer` or `decimal` may contribute to the objective.
+The scalar types are `integer`, `decimal`, `boolean` and `string`; an array is an object, e.g. `string[]`. Only an attribute of type `boolean`, `integer` or `decimal` may contribute to the objective.
 
 ### Objects
 
@@ -40,7 +40,7 @@ An attribute whose type is not a single scalar type is an object, i.e. an array 
 
 Objects may be declared as global, data and status attributes. They are numbered separately from the scalar attributes, so that the index of a scalar attribute never depends on the objects declared: the global objects come first, and the objects a scope declares follow those of its enclosing scopes. An object cannot be the attribute of a choice, cannot carry the objective, and is neither the instance nor the timestamp.
 
-An object may be initialised by a literal, `name="depot := { x := 0, y := 0 }"`, which every instance shares; the instance data may then give it no value. Otherwise an object takes the value the instance data gives it or undefined values, its sizes coming from its type, from the size declarations of the instance data, and from its value, as described for the @ref BPMNOS::Execution::StaticDataProvider "static data provider". An object is created with the status or data it belongs to: a global object with the global state machine, a data object with the state machine of its scope, and a status object with the status of the token entering its scope, from which it is removed when the scope is left.
+An object may be initialised by a literal, `name="depot := { x := 0, y := 0 }"`, which every instance shares, or by an assignment computed when its scope is created, such as `name="destinations := destinations(location)"` with a lookup returning an array; the instance data may then give it no value, and a global object may only be initialised by a literal. Otherwise an object takes the value the instance data gives it or undefined values, its sizes coming from its type, from the size declarations of the instance data, and from its value, as described for the @ref BPMNOS::Execution::StaticDataProvider "static data provider". An object is created with the status or data it belongs to: a global object with the global state machine, a data object with the state machine of its scope, and a status object with the status of the token entering its scope, from which it is removed when the scope is left.
 
 An expression reads an object through an access path, in which every index, counting from one, takes the next dimension and a field follows once every dimension is indexed: `facilities[i].cost`, `grid[i][j]` and `depot.x` read values, whereas `facilities.cost` is refused, since `facilities` is an array. A path used as a value must address a scalar value. An array of scalar values with a single dimension, named by an attribute or addressed by a path such as `location`, `facilities[i].flags` or `grid[i]`, may be aggregated, `sum(grid[2])`, tested for membership, `3 in location`, and iterated in an aggregation, `min{ d | d in departures, d >= timestamp }`; an object is never used as a value. The aggregation `aggr{ expression | i in m..n, j in X, conditions }` aggregates the values of the expression for every value of its iterators satisfying the conditions, as in `sum{ facilities[i].cost | i in 1..size(facilities), facilities[i].flags[1] }` or `sum{ flow[i][j] * distance[location[i]][location[j]] | i in 1..n, j in 1..n }`. `size` gives the length of any array, arrays of objects and arrays with several dimensions included, its undefined elements counted, whereas `count` gives the number of the defined values of an array of scalar values. Aggregators and membership skip undefined values, and a condition of an aggregation whose value is undefined is not satisfied. An undefined value read as a value outside an aggregation, or used as an index, makes the expression undefined, and an index outside the size of its dimension is an error.
 
@@ -195,7 +195,7 @@ Within a `<bpmnos:decisions>` container any number of `<bpmnos:decision>` elemen
 Each condition constrains the values that may be chosen for the specified attribute.
 
 ## Messages
-@ref BPMNOS::Model::MessageDefinition "Messages" can be used to exchange information by delivering a @ref BPMNOS::Model::Content "content" from one process to another. 
+@ref BPMNOS::Model::MessageDefinition "Messages" can be used to exchange information by delivering a @ref BPMNOS::Model::ContentDefinition "content" from one process to another. 
 
 For @ref BPMN::MessageThrowEvent "message throw events" and @ref BPMN::MessageCatchEvent "message catch events" a `<bpmnos:message>` element must be provided with field `name` representing a name of the message.
 Message definitions may contain one or more parameters defining a message header, where the `name` field represents a name for the header entry and the `value` field states the value held under it.
@@ -240,7 +240,7 @@ A process cannot send itself a message, a message flow connecting two participan
 The instance receives a generated identifier and is created with the content of the message in its status.
 
 ## Signals
-@ref BPMNOS::Model::SignalDefinition "Signals" can be used to broadcast a @ref BPMNOS::Model::Content "content" to whoever is listening for them.
+@ref BPMNOS::Model::SignalDefinition "Signals" can be used to broadcast a @ref BPMNOS::Model::ContentDefinition "content" to whoever is listening for them.
 
 For @ref BPMN::SignalThrowEvent "signal throw events" and @ref BPMN::SignalCatchEvent "signal catch events" a `<bpmnos:signal>` element must be provided with field `name` representing a name of the signal, and it may contain one or more `<bpmnos:content>` elements defining the content the signal carries, each with the fields `key` and `attribute` that a message content has.
 
@@ -277,7 +277,7 @@ Lookup tables can be made available by adding the following extension elements t
 <bpmn2:dataStore id="DataStore_2">
   <bpmn2:extensionElements>
     <bpmnos:tables>
-      <bpmnos:table id="Table_0udt1qg" name="costs" source="costs.csv" />
+      <bpmnos:table id="Table_0udt1qg" name="costs" source="costs.csv" header="From: string;To: string;Costs: decimal" />
     </bpmnos:tables>
   </bpmn2:extensionElements>
 </bpmn2:dataStore>
@@ -285,6 +285,7 @@ Lookup tables can be made available by adding the following extension elements t
 The name of a lookup table can be used in every expression of a model, whether or not a process refers to the data store declaring it.
 The parameter `name` specifies the name of the lookup table to be used in expressions. 
 The parameter `source` specifies the filen name of the lookup table. 
+The parameter `header` states every column of the table with its type, `name: type`, separated by semicolons, in the syntax of attribute types; the names must agree with the header line of the file. The keys, all columns but the last, are scalar, whereas the result, the last column, may be an array or object, `Destinations: string[]`. Every cell is checked against the type of its column when the table is loaded: a string is quoted, a boolean, integer or decimal is a number or truth value, and an array or object is a literal fitting the type. A lookup returning an array may only be the entire value of an assignment to an array, `departures := departures(origin, destination)` or the initial value of an object, and any other use is refused when the model is parsed.
 
   @note Currently, the only supported source are csv files.
   @par

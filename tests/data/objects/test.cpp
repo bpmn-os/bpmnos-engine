@@ -183,6 +183,15 @@ TEST_CASE( "Create and remove objects during a run", "[data][objects]" ) {
   REQUIRE( counter.counts.at({"End_1", "DONE"}) == std::pair<size_t, size_t>{ 1, 2 } );
 }
 
+TEST_CASE( "An open dimension without a value has no elements", "[data][objects]" ) {
+  auto model = objectModel();
+  auto provider = std::make_shared<ObjectProvider>(model, "INSTANCE_ID; NODE_ID; INITIALIZATION\n; Process_1; route[2]\nInstance_1; Process_1;\n");
+  auto scenario = provider->createScenario();
+  auto& staticScenario = static_cast<const Execution::StaticDataProvider::Scenario&>(*scenario);
+  auto data = provider->getData(staticScenario, (size_t)stringRegistry("Instance_1"), nodeOf(*model, "Process_1"));
+  REQUIRE( to_string(*data.objects[0]) == "[ ]" );
+}
+
 TEST_CASE( "Refuse illegal sizes and values of objects", "[data][objects]" ) {
   auto model = objectModel();
   auto provide = [&model](const std::string& csv) {
@@ -201,9 +210,6 @@ TEST_CASE( "Refuse illegal sizes and values of objects", "[data][objects]" ) {
   }
   SECTION( "A size declaration for a node not declaring the object" ) {
     REQUIRE_THROWS_WITH( provide("; SubProcess_1; route[2]\n" + valid), Catch::Matchers::ContainsSubstring("names no object") );
-  }
-  SECTION( "An open dimension without a value" ) {
-    REQUIRE_THROWS_WITH( provide("; Process_1; route[2]\nInstance_1; Process_1;\n"), Catch::Matchers::ContainsSubstring("open dimension and no value") );
   }
   SECTION( "A value for an object the model initialises" ) {
     REQUIRE_THROWS_WITH( provide(valid + "Instance_1; Task_1; visit := { x := 2 }\n"), Catch::Matchers::ContainsSubstring("assigned by the model") );

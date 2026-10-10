@@ -55,10 +55,23 @@ public:
   /// Returns the text with every literal replaced by the number encoding it.
   const std::string& text() const { return encoded; }
 
-  /// Returns the type of the literal if the text states one literal and nothing besides whitespace, and
-  /// no value otherwise. This is what a caller needs where the text states a value rather than an
-  /// expression, the type of an expression following from its shape rather than from its text.
-  const std::optional<ValueType>& type() const { return literalType; }
+  /// Returns the index in the object registry of the constant object if the text states one literal array or
+  /// value with fields and nothing besides whitespace, and no value otherwise. This is what a caller needs where
+  /// the text states an object rather than an expression.
+  const std::optional<size_t>& object() const { return literalObject; }
+
+  /// Where a literal stands in the text with every literal replaced: the positions of the first character of
+  /// the number encoding it and of the character following it, and whether it is an array or value with fields
+  /// rather than a quoted string.
+  struct Span {
+    size_t begin;
+    size_t end;
+    bool object;
+  };
+
+  /// Returns where each literal stands in the text with every literal replaced, in their order, so that a
+  /// reader splitting that text can tell a cell stating a literal from a cell stating a number.
+  const std::vector<Span>& spans() const { return literalSpans; }
 
   /// Returns the indices in the object registry of the constant objects the literals of the text state, in
   /// their order, so that a caller can tell a number standing for a constant object from a number. A part of
@@ -74,8 +87,9 @@ private:
   InputEncoder(std::string text, std::nullopt_t);
 
   std::string encoded;
-  std::optional<ValueType> literalType;
+  std::optional<size_t> literalObject;
   std::vector<size_t> literalObjects;
+  std::vector<Span> literalSpans;
 };
 
 } // namespace BPMNOS

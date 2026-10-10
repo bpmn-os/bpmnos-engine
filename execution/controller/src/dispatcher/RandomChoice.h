@@ -2,7 +2,7 @@
 #define BPMNOS_Execution_RandomChoice_H
 
 #include <bpmn++.h>
-#include "model/utility/src/RandomDistributionFactory.h"
+#include "execution/data/src/RandomDistributionFactory.h"
 #include "execution/engine/src/EventDispatcher.h"
 
 namespace BPMNOS::Execution {
@@ -19,7 +19,7 @@ class RandomChoice : public EventDispatcher {
 public:
   RandomChoice();
   std::shared_ptr<Event> dispatchEvent( const SystemState* systemState ) override;
-  BPMNOS::RandomGenerator randomGenerator;
+  RandomGenerator randomGenerator;
 };
 
 } // namespace BPMNOS::Execution

@@ -55,11 +55,15 @@ public:
   /// Returns what the scan emitted.
   std::string result() { return std::move(output); }
 
-  /// Returns the type of the literal if the text states one literal and nothing besides whitespace.
-  std::optional<ValueType> type() const;
+  /// Returns the index of the constant object if the text states one literal array or value with fields and
+  /// nothing besides whitespace.
+  std::optional<size_t> object() const;
 
   /// Returns the indices of the constant objects the literals of the text state, in their order.
   const std::vector<size_t>& objects() const { return objectIndices; }
+
+  /// Returns where in what the scan emitted each literal stands.
+  const std::vector<InputEncoder::Span>& spans() const { return literalSpans; }
 
 private:
   /// Reads a quoted span and returns its index in the string registry.
@@ -80,8 +84,9 @@ private:
   /// Returns true if the text at the current position opens a literal with fields, `{ name := ...`, rather than
   /// a set or the body of an aggregation.
   bool fieldsAhead() const;
-  /// Notes that a literal of the given type was read from the given position to the current one.
-  void recordLiteral(size_t begin, ValueType type);
+  /// Notes that a literal, an array or value with fields or else a quoted string, was read from the given
+  /// position to the current one.
+  void recordLiteral(size_t begin, bool object);
   /// Returns the membership operator at the current position, and an empty string where there is none.
   std::string scanMembershipOperator() const;
   void skipSpace();
@@ -95,9 +100,10 @@ private:
   bool literalAllowed = true;
   size_t literals = 0;
   std::vector<size_t> objectIndices;
+  std::vector<InputEncoder::Span> literalSpans;
   size_t literalBegin = 0;
   size_t literalEnd = 0;
-  ValueType literalType = COLLECTION;
+  bool literalObject = false;
 };
 
 void Scan::run() {
@@ -106,15 +112,19 @@ void Scan::run() {
 
     if ( character == '"' ) {
       size_t begin = position;
+      size_t emitted = output.size();
       output += std::to_string( scanString() );
-      recordLiteral(begin, STRING);
+      literalSpans.push_back( InputEncoder::Span{ emitted, output.size(), false } );
+      recordLiteral(begin, false);
       literalAllowed = false;
     }
     else if ( ( character == '[' || ( character == '{' && fieldsAhead() ) ) && literalAllowed ) {
       size_t begin = position;
+      size_t emitted = output.size();
       objectIndices.push_back( scanObject() );
       output += std::to_string( objectIndices.back() );
-      recordLiteral(begin, COLLECTION);
+      literalSpans.push_back( InputEncoder::Span{ emitted, output.size(), true } );
+      recordLiteral(begin, true);
       literalAllowed = false;
     }
     else if ( character == '[' || character == '(' ) {
@@ -153,8 +163,8 @@ void Scan::run() {
   }
 }
 
-std::optional<ValueType> Scan::type() const {
-  if ( literals != 1 ) {
+std::optional<size_t> Scan::object() const {
+  if ( literals != 1 || !literalObject ) {
     return std::nullopt;
   }
 
@@ -169,7 +179,7 @@ std::optional<ValueType> Scan::type() const {
     }
   }
 
-  return literalType;
+  return objectIndices.back();
 }
 
 size_t Scan::scanString() {
@@ -408,11 +418,11 @@ std::string Scan::scanMembershipOperator() const {
   return {};
 }
 
-void Scan::recordLiteral(size_t begin, ValueType type) {
+void Scan::recordLiteral(size_t begin, bool object) {
   literals++;
   literalBegin = begin;
   literalEnd = position;
-  literalType = type;
+  literalObject = object;
 }
 
 void Scan::skipSpace() {
@@ -431,13 +441,13 @@ InputEncoder::InputEncoder(const std::string& input) {
   Scan scan(input);
   scan.run();
   encoded = scan.result();
-  literalType = scan.type();
+  literalObject = scan.object();
   literalObjects = scan.objects();
+  literalSpans = scan.spans();
 }
 
 InputEncoder::InputEncoder(std::string text, std::nullopt_t)
   : encoded(std::move(text))
-  , literalType(std::nullopt)
 {
 }
 

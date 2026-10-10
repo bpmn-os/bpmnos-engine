@@ -143,6 +143,10 @@ void Model::createLookupTables() {
       }
 
       auto table = lookupTables.back().get();
+      if ( auto& result = table->columns.back().second; !result.isScalar() ) {
+        // a lookup returning an array may only be assigned to an array, which expressions check by its name
+        attributeRegistry.arrayLookups[table->name] = &result;
+      }
       // TODO: should I use shared pointers?
       limexHandle.addFunction(
         table->name,
@@ -159,6 +163,9 @@ void Model::createGlobals() {
   // the global attributes are the first data attributes, which every scope inherits
   for ( XML::bpmnos::tAttribute& attributeElement : getGlobals() ) {
     auto attribute = std::make_unique<Attribute>(&attributeElement, Attribute::Category::DATA, attributeRegistry);
+    if ( attribute->isObject() && attribute->expression ) {
+      throw std::runtime_error("Model: global object '" + attribute->id + "' must be initialised by a literal");
+    }
     ( attribute->isObject() ? objects : attributes ).push_back( std::move(attribute) );
   }
   // the instance follows the scalar global attributes, objects being numbered separately
