@@ -288,7 +288,15 @@ std::optional<BPMNOS::number> StaticDataProvider::getValue(const Scenario& scena
       }
       collectionValues.emplace_back(collectionRegistry[(size_t)collection.value()]);
     }
-    return BPMNOS::number(attribute->expression->compiled.evaluate(variableValues, collectionValues));
+    std::vector<BPMNOS::number> pathCollections;
+    for ( auto input : attribute->expression->paths ) {
+      auto collection = input->isImmutable ? getValue(scenario, instanceId, input) : std::nullopt;
+      if ( !collection.has_value() ) {
+        return std::nullopt;
+      }
+      pathCollections.push_back(collection.value());
+    }
+    return BPMNOS::number(attribute->expression->evaluate(variableValues, collectionValues, pathCollections));
   }
   auto& values = getInstanceValues(scenario, instanceId);
   if ( auto it = values.find(attribute); it != values.end() ) {

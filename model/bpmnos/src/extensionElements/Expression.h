@@ -14,6 +14,12 @@ namespace BPMNOS::Model {
 
 /**
  * @brief Class representing a mathematical expression.
+ *
+ * The expression is compiled by LIMEX. Its variables and collections are attributes, passed to LIMEX by
+ * value and as views of the registered collections. An access path such as `x[i]` addresses an element of the
+ * collection attribute `x`, counting from one; LIMEX evaluates the index and the expression resolves the path
+ * by reading the registered collection. A path addresses an element of a collection by a single index; fields,
+ * several indices, paths addressing an array and assignments to a path are rejected.
  **/
 class Expression {
 public:
@@ -38,6 +44,10 @@ public:
   std::set<const Attribute*> inputs; ///< Vector containing all input attributes and collections used by the expression.
   std::vector<const Attribute*> variables; ///< Vector containing all input attributes used by the expression.
   std::vector<const Attribute*> collections; ///< Vector containing all input collections used by the expression.
+  std::vector<const Attribute*> paths; ///< Vector containing the collection indexed by each path, in the order of the paths.
+  /// Evaluates the compiled expression for the values of its variables, the views of its collections and the
+  /// registered collections its paths index, each given as its index in the collection registry.
+  double evaluate(const std::vector<double>& variableValues, const std::vector< LIMEX::View<double> >& collectionValues, const std::vector<BPMNOS::number>& pathCollections) const;
   const Attribute* isAttribute() const; ///< Returns pointer to the attribute if and only if expression contains nothing else
   template <typename DataType>
   std::optional<double> execute(const BPMNOS::Status& status, const DataType& data) const;

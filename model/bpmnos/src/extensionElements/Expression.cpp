@@ -2,6 +2,8 @@
 #include "model/bpmnos/src/Model.h"
 #include "model/utility/src/CollectionRegistry.h"
 #include "model/utility/src/Keywords.h"
+#include <format>
+#include <functional>
 
 using namespace BPMNOS::Model;
 
@@ -18,6 +20,9 @@ Expression::Expression(const LIMEX::Handle<double>& handle, const InputEncoder& 
   , compiled(getExpression(expression))
   , type(getType())
 {
+  if ( compiled.getTargetPath().has_value() ) {
+    throw std::runtime_error("Expression: assignment to an element of '" + compiled.getTarget().value() + "' is not supported in '" + expression + "'");
+  }
   if ( auto name = compiled.getTarget(); name.has_value() ) {
     if ( name.value() == BPMNOS::Keyword::Undefined ) {
       throw std::runtime_error("Expression: illegal assignment '" + expression +"'");
@@ -42,6 +47,43 @@ Expression::Expression(const LIMEX::Handle<double>& handle, const InputEncoder& 
     inputs.insert(attribute);
     collections.push_back(attribute);
   }
+  for ( auto& path : compiled.getPaths() ) {
+    if ( path.steps.size() != 1 || path.steps.front().has_value() ) {
+      throw std::runtime_error("Expression: '" + path.name + "' must be indexed exactly once in '" + expression +"'");
+    }
+    auto attribute = attributeRegistry[ path.name ];
+    if ( attribute->type != BPMNOS::ValueType::COLLECTION ) {
+      throw std::runtime_error("Expression: '" + path.name + "' is not a collection in '" + expression +"'");
+    }
+    inputs.insert(attribute);
+    paths.push_back(attribute);
+  }
+  // a path may only address an element, not an array
+  std::function<void(const LIMEX::Node<double>&)> rejectArrays = [&](const LIMEX::Node<double>& node) {
+    if ( node.type == LIMEX::Type::collection_path ) {
+      throw std::runtime_error("Expression: an element of a collection cannot be used as an array in '" + expression +"'");
+    }
+    for ( auto& operand : node.operands ) {
+      if ( std::holds_alternative< LIMEX::Node<double> >(operand) ) {
+        rejectArrays( std::get< LIMEX::Node<double> >(operand) );
+      }
+    }
+  };
+  rejectArrays(compiled.getRoot());
+}
+
+double Expression::evaluate(const std::vector<double>& variableValues, const std::vector< LIMEX::View<double> >& collectionValues, const std::vector<BPMNOS::number>& pathCollections) const {
+  assert( pathCollections.size() == paths.size() );
+  LIMEX::Resolver<double> resolver;
+  resolver.value = [this, &pathCollections](size_t path, const std::vector<double>& indices) -> double {
+    // a path addresses the element of a registered collection at its index, counting from one
+    const auto& collection = collectionRegistry[(size_t)pathCollections[path]];
+    if ( indices.front() < 1 || (size_t)indices.front() - 1 >= collection.size() ) {
+      throw std::runtime_error(std::format("Expression: illegal index {} for '{}'", indices.front(), paths[path]->name));
+    }
+    return collection[(size_t)indices.front() - 1];
+  };
+  return compiled.evaluate(variableValues, collectionValues, resolver);
 }
 
 LIMEX::Expression<double> Expression::getExpression(const std::string& input) const {
@@ -155,8 +197,19 @@ std::optional<double> Expression::execute(const BPMNOS::Status& status, const Da
     collectionValues.emplace_back( collectionRegistry[(size_t)collection.value()] );
   }
 
+  // the registered collections the paths index
+  std::vector<BPMNOS::number> pathCollections;
+  for ( auto attribute : paths ) {
+    auto collection = attributeRegistry.getValue(attribute,status,data);
+    if ( !collection.has_value() ) {
+      // return nullopt because required collection is not given
+      return std::nullopt;
+    }
+    pathCollections.push_back( collection.value() );
+  }
+
   try {
-    return compiled.evaluate(variableValues,collectionValues);
+    return evaluate(variableValues,collectionValues,pathCollections);
   }
   catch (const std::runtime_error& e) {
     std::string arguments;

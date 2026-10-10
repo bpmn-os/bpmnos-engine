@@ -53,7 +53,7 @@
             <bpmnos:operators>
               <bpmnos:operator id="Operator_1a0ojnh" expression="next_location := destinations[index]" />
               <bpmnos:operator id="Operator_2geg86m" expression="departures := departures(current_location,next_location)" />
-              <bpmnos:operator id="Operator_332go68" expression="departure := min{ d in departures | d &#62;= timestamp}" />
+              <bpmnos:operator id="Operator_332go68" expression="departure := min{ d | d in departures, d &#62;= timestamp }" />
               <bpmnos:operator id="Operator_3ndqeio" expression="duration := durations(current_location,next_location)" />
             </bpmnos:operators>
             <bpmnos:decisions>
