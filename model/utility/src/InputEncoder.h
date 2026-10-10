@@ -12,8 +12,9 @@ namespace BPMNOS {
 /**
  * @brief Utility class replacing every literal in a text by the number encoding it.
  *
- * The engine represents a string by its index in the string registry and a collection by its index in
- * the collection registry, so that every value is a number. Text stating such a value must therefore be
+ * The engine represents a string by its index in the string registry and a literal array or value with
+ * fields by the index of the constant object it states in the object registry, so that every value is a
+ * number. Text stating such a value must therefore be
  * scanned before it is read as a value or parsed as an expression, and this class is the one place in
  * which that is done, so that what a lexeme is is decided once.
  *
@@ -23,16 +24,18 @@ namespace BPMNOS {
  * within it does not occur, quotes not being escaped, and a comma or a bracket within it is text rather
  * than structure.
  *
- * A bracket either opens a collection literal or belongs to the expression it stands in, and which of
- * the two is decided by what has been emitted last. After a name, a closing bracket or a closing
- * parenthesis it indexes a collection, and after a membership operator it states a collection the
- * expression parser reads itself, so in both cases the bracketed text is copied and its contents are
- * scanned where they stand. Everywhere else the bracket opens a literal. The members of a literal are read one by one, each by the same rules, so that
- * a member is a quoted string, a truth value, a number, or a literal of its own, to any depth. The
- * members must agree in the type they are recorded as, a member that is a literal being recorded as a
- * collection whatever it holds, and the literal is registered with the type they agree on and emitted as
- * its index in the collection registry. A numeric member is recorded as a decimal, so that a literal may
- * hold whole and fractional numbers alike and both are written out as they were read.
+ * A bracket either opens an array literal or belongs to the expression it stands in, and which of the two
+ * is decided by what has been emitted last. After a name, a closing bracket or a closing parenthesis it
+ * indexes, and after a membership operator it states a set the expression parser reads itself, so in both
+ * cases the bracketed text is copied and its contents are scanned where they stand. Everywhere else the
+ * bracket opens a literal. A brace opens a literal with fields, `{ name := value, ... }`, where a literal may
+ * stand and a name followed by `:=` follows it; any other brace is a set or the body of an aggregation and is
+ * copied. The members of an array and the values of the fields are read one by one, each by the same rules,
+ * so that each is a quoted string, a truth value, a number, or a literal of its own, to any depth. A numeric
+ * value is recorded as a decimal, so that a literal may hold whole and fractional numbers alike and both are
+ * written out as they were read. The members of an array are uniform: they agree in type and, being arrays
+ * or values with fields themselves, in the sizes of their arrays and in their fields. The literal is
+ * registered in the object registry as a constant object, stored flat, and emitted as its index there.
  *
  * Everything else, which is to say names, numbers, operators, whitespace, and the delimiters of a line,
  * is copied unchanged, a membership operator included. Of the grammar the expression parser applies, the
@@ -40,8 +43,9 @@ namespace BPMNOS {
  * it was given.
  *
  * A text that cannot be read is refused, naming it: a quote that is not closed, a literal that is not
- * closed, a literal without members, a member without a value, a member that is neither a truth value
- * nor a number nor a literal, and members that do not agree in type.
+ * closed, an array without members, a member without a value, a member that is neither a truth value nor a
+ * number nor a literal, members that are not uniform, and a field without a name, without `:=` or stated
+ * twice.
  */
 class InputEncoder {
 public:

@@ -1,8 +1,9 @@
 #include "Expression.h"
 #include "model/bpmnos/src/Model.h"
-#include "model/utility/src/CollectionRegistry.h"
+#include "model/utility/src/ObjectRegistry.h"
 #include "model/utility/src/Keywords.h"
 #include <format>
+#include <limits>
 #include <functional>
 
 using namespace BPMNOS::Model;
@@ -88,14 +89,30 @@ double Expression::evaluate(const std::vector<double>& variableValues, const std
   assert( pathCollections.size() == paths.size() );
   LIMEX::Resolver<double> resolver;
   resolver.value = [this, &pathCollections](size_t path, const std::vector<double>& indices) -> double {
-    // a path addresses the element of a registered collection at its index, counting from one
-    const auto& collection = collectionRegistry[(size_t)pathCollections[path]];
-    if ( indices.front() < 1 || (size_t)indices.front() - 1 >= collection.size() ) {
+    // a path addresses the element of a constant array at its index, counting from one
+    const auto& collection = *objectRegistry[(size_t)pathCollections[path]];
+    if ( !collection.isVector() ) {
+      throw std::runtime_error("Expression: '" + paths[path]->name + "' is not an array of values");
+    }
+    if ( indices.front() < 1 || (size_t)indices.front() - 1 >= collection.values.size() ) {
       throw std::runtime_error(std::format("Expression: illegal index {} for '{}'", indices.front(), paths[path]->name));
     }
-    return collection[(size_t)indices.front() - 1];
+    auto& value = collection.values[(size_t)indices.front() - 1];
+    return value.has_value() ? (double)value.value() : std::numeric_limits<double>::quiet_NaN();
   };
   return compiled.evaluate(variableValues, collectionValues, resolver);
+}
+
+LIMEX::View<double> Expression::view(BPMNOS::number collection) {
+  // a registered object never moves and never changes, so the view may refer to its values
+  const BPMNOS::Object* object = objectRegistry[(size_t)collection].get();
+  if ( !object->isVector() ) {
+    throw std::runtime_error("Expression: '" + BPMNOS::to_string(*object) + "' is not an array of values");
+  }
+  return LIMEX::View<double>( object->values.size(), [object](size_t k) -> double {
+    auto& value = object->values[k];
+    return value.has_value() ? (double)value.value() : std::numeric_limits<double>::quiet_NaN();
+  });
 }
 
 LIMEX::Expression<double> Expression::getExpression(const std::string& input) const {
@@ -198,7 +215,7 @@ std::optional<double> Expression::execute(const BPMNOS::Status& status, const Da
     variableValues.push_back( (double)value.value() );
   }
   
-  // collect a view of each collection, the registered collections never moving
+  // collect a view of each collection, the constant objects in the registry never moving
   std::vector< LIMEX::View<double> > collectionValues;
   for ( auto attribute : collections ) {
     auto collection = attributeRegistry.getValue(attribute,status,data);
@@ -206,10 +223,10 @@ std::optional<double> Expression::execute(const BPMNOS::Status& status, const Da
       // return nullopt because required collection is not given
       return std::nullopt;
     }
-    collectionValues.emplace_back( collectionRegistry[(size_t)collection.value()] );
+    collectionValues.push_back( view(collection.value()) );
   }
 
-  // the registered collections the paths index
+  // the constant arrays the paths index
   std::vector<BPMNOS::number> pathCollections;
   for ( auto attribute : paths ) {
     auto collection = attributeRegistry.getValue(attribute,status,data);

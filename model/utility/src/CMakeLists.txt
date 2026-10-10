@@ -1,7 +1,8 @@
 list(APPEND model_utility_SOURCES
   Number.cpp
   StringRegistry.cpp
-  CollectionRegistry.cpp
+  Object.cpp
+  ObjectRegistry.cpp
   CSVReader.cpp
   InputEncoder.cpp
   RandomDistributionFactory.cpp
@@ -15,7 +16,8 @@ list(APPEND model_utility_HEADERS
   StringRegistry.h
   tuple_map.h
   vector_map.h
-  CollectionRegistry.h
+  Object.h
+  ObjectRegistry.h
   CSVReader.h
   InputEncoder.h
   RandomDistributionFactory.h

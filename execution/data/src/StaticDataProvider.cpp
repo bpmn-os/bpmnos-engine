@@ -10,7 +10,7 @@
 #include "model/bpmnos/src/DecisionTask.h"
 #include "model/bpmnos/src/extensionElements/ExtensionElements.h"
 #include "model/bpmnos/src/extensionElements/Expression.h"
-#include "model/utility/src/CollectionRegistry.h"
+#include "model/utility/src/ObjectRegistry.h"
 #include <cmath>
 #include <stdexcept>
 
@@ -286,7 +286,7 @@ std::optional<BPMNOS::number> StaticDataProvider::getValue(const Scenario& scena
       if ( !collection.has_value() ) {
         return std::nullopt;
       }
-      collectionValues.emplace_back(collectionRegistry[(size_t)collection.value()]);
+      collectionValues.push_back(BPMNOS::Model::Expression::view(collection.value()));
     }
     std::vector<BPMNOS::number> pathCollections;
     for ( auto input : attribute->expression->paths ) {

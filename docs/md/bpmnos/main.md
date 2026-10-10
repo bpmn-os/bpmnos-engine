@@ -107,6 +107,8 @@ Instance_1; Process_1; endTime := timestamp + duration
 
 Values provided for `string` attributes must be quoted, values provided for `boolean` attributes must be `true` or `false`, and values provided for `collection` attributes must be embraced in square brackets.
 
+A literal in square brackets is an array, `[ 1, 2, 3 ]`, and a literal in braces is a value with fields, `{ name := "Depot", position := [ 0, 1.5 ] }`; both may be nested to any depth, as in `[ { cost := 10, flags := [ true, false ] }, { cost := 20, flags := [ false, false ] } ]`. The members of an array are uniform: they agree in type and, being arrays or values with fields themselves, in the sizes of their arrays and in their fields, so that `[ [ 1, 2 ], [ 3 ] ]` is refused. Every literal is registered once as a constant object, which is stored flat and shared by every attribute holding it, and two equal literals are the same constant object. Numbers in a literal are decimals.
+
 Alternatively, the instance data may be provided by a string as shown in below example.
 
 ```cpp

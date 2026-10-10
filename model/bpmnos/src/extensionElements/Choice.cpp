@@ -1,5 +1,4 @@
 #include "Choice.h"
-#include "model/utility/src/CollectionRegistry.h"
 #include <cmath>
 #include "model/utility/src/string_utility.h"
 #include "model/utility/src/InputEncoder.h"

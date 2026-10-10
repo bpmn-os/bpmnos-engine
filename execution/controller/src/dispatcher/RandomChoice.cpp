@@ -2,7 +2,6 @@
 #include "model/bpmnos/src/DecisionTask.h"
 #include "model/bpmnos/src/extensionElements/Attribute.h"
 #include "execution/engine/src/events/ChoiceEvent.h"
-#include "model/utility/src/CollectionRegistry.h"
 #include <cassert>
 
 using namespace BPMNOS::Execution;

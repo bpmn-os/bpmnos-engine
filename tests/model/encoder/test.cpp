@@ -16,7 +16,7 @@ SCENARIO( "Encoding of literals", "[model][encoder]" ) {
       THEN( "It is reported as a collection holding strings" ) {
         REQUIRE( encoder.type() == COLLECTION );
         auto index = (size_t)BPMNOS::stoi( encoder.text() );
-        REQUIRE( collectionRegistry.memberType(index) == STRING );
+        REQUIRE( objectRegistry[index]->layout->stringify() == "string[3]" );
         REQUIRE( BPMNOS::to_string(BPMNOS::number(index),COLLECTION) == R"([ "A", "B", "C" ])" );
       }
     }
@@ -26,7 +26,7 @@ SCENARIO( "Encoding of literals", "[model][encoder]" ) {
       THEN( "Whole and fractional members agree in type and are written out as they were read" ) {
         REQUIRE( encoder.type() == COLLECTION );
         auto index = (size_t)BPMNOS::stoi( encoder.text() );
-        REQUIRE( collectionRegistry.memberType(index) == DECIMAL );
+        REQUIRE( objectRegistry[index]->layout->stringify() == "decimal[2]" );
         REQUIRE( BPMNOS::to_string(BPMNOS::number(index),COLLECTION) == "[ 1, 2.5 ]" );
       }
     }
@@ -35,18 +35,50 @@ SCENARIO( "Encoding of literals", "[model][encoder]" ) {
       InputEncoder encoder("[ true, false ]");
       THEN( "It is reported as a collection holding truth values" ) {
         auto index = (size_t)BPMNOS::stoi( encoder.text() );
-        REQUIRE( collectionRegistry.memberType(index) == BOOLEAN );
+        REQUIRE( objectRegistry[index]->layout->stringify() == "boolean[2]" );
         REQUIRE( BPMNOS::to_string(BPMNOS::number(index),COLLECTION) == "[ true, false ]" );
       }
     }
 
-    WHEN( "The literal is a collection of collections" ) {
-      InputEncoder encoder(R"([ [ "A", "B" ], [ 1 ] ])");
-      THEN( "Each inner collection carries its own member type and is written out by it" ) {
+    WHEN( "The literal is an array of arrays" ) {
+      InputEncoder encoder(R"([ [ "A", "B" ], [ "C", "D" ], [ "E", "F" ] ])");
+      THEN( "It is stored flat with its dimensions in index order and written out as it was read" ) {
         REQUIRE( encoder.type() == COLLECTION );
         auto index = (size_t)BPMNOS::stoi( encoder.text() );
-        REQUIRE( collectionRegistry.memberType(index) == COLLECTION );
-        REQUIRE( BPMNOS::to_string(BPMNOS::number(index),COLLECTION) == R"([ [ "A", "B" ], [ 1 ] ])" );
+        REQUIRE( objectRegistry[index]->layout->stringify() == "string[3][2]" );
+        REQUIRE( objectRegistry[index]->values.size() == 6 );
+        REQUIRE( objectRegistry[index]->values[3] == BPMNOS::number(stringRegistry("D")) );
+        REQUIRE( BPMNOS::to_string(BPMNOS::number(index),COLLECTION) == R"([ [ "A", "B" ], [ "C", "D" ], [ "E", "F" ] ])" );
+      }
+    }
+
+    WHEN( "The literal has fields" ) {
+      InputEncoder encoder(R"({ name := "Depot", position := [ 0, 1.5 ] })");
+      THEN( "The fields are stored one after the other in their order" ) {
+        REQUIRE( encoder.type() == COLLECTION );
+        auto index = (size_t)BPMNOS::stoi( encoder.text() );
+        REQUIRE( objectRegistry[index]->layout->stringify() == "{ name: string, position: decimal[2] }" );
+        REQUIRE( objectRegistry[index]->values.size() == 3 );
+        REQUIRE( BPMNOS::to_string(BPMNOS::number(index),COLLECTION) == R"({ name := "Depot", position := [ 0, 1.5 ] })" );
+      }
+    }
+
+    WHEN( "The literal is an array of values with fields" ) {
+      InputEncoder encoder("[ { cost := 10, flags := [ true, false ] }, { cost := 20, flags := [ false, false ] } ]");
+      THEN( "Each element is a stride of values apart" ) {
+        auto index = (size_t)BPMNOS::stoi( encoder.text() );
+        auto& object = *objectRegistry[index];
+        REQUIRE( object.layout->stringify() == "{ cost: decimal, flags: boolean[2] }[2]" );
+        REQUIRE( object.layout->stride == 3 );
+        REQUIRE( object.values[3] == BPMNOS::number(20) );
+        REQUIRE( BPMNOS::to_string(BPMNOS::number(index),COLLECTION) == "[ { cost := 10, flags := [ true, false ] }, { cost := 20, flags := [ false, false ] } ]" );
+      }
+    }
+
+    WHEN( "The same literal is stated twice" ) {
+      THEN( "It is registered once" ) {
+        REQUIRE( InputEncoder("[ 1, 2, 3 ]").text() == InputEncoder("[1,2,3]").text() );
+        REQUIRE( InputEncoder("{ x := 1 }").text() == InputEncoder("{x:=1}").text() );
       }
     }
 
@@ -54,7 +86,7 @@ SCENARIO( "Encoding of literals", "[model][encoder]" ) {
       InputEncoder encoder(R"([ "A, [B]", "C" ])");
       THEN( "The string is text rather than structure" ) {
         auto index = (size_t)BPMNOS::stoi( encoder.text() );
-        REQUIRE( collectionRegistry[index].size() == 2 );
+        REQUIRE( objectRegistry[index]->values.size() == 2 );
         REQUIRE( BPMNOS::to_string(BPMNOS::number(index),COLLECTION) == R"([ "A, [B]", "C" ])" );
       }
     }
@@ -103,6 +135,14 @@ SCENARIO( "Encoding of literals", "[model][encoder]" ) {
       }
     }
 
+    WHEN( "Braces state a set or the body of an aggregation" ) {
+      THEN( "They are copied" ) {
+        REQUIRE( InputEncoder("x in {1,2}").text() == "x in {1,2}" );
+        REQUIRE( InputEncoder("sum{ i | i in 1..3 }").text() == "sum{ i | i in 1..3 }" );
+        REQUIRE( InputEncoder("max{ a, b }").text() == "max{ a, b }" );
+      }
+    }
+
     WHEN( "A literal is assigned" ) {
       InputEncoder encoder(R"(x := [ "A" ])");
       THEN( "The literal is registered and the text states more than it" ) {
@@ -123,10 +163,15 @@ SCENARIO( "Encoding of literals", "[model][encoder]" ) {
   GIVEN( "A text that cannot be read" ) {
     THEN( "It is refused" ) {
       REQUIRE_THROWS( InputEncoder(R"([ "A", 1 ])") );            // members of different type
-      REQUIRE_THROWS( InputEncoder(R"([ 1, [ 2 ] ])") );          // a value and a collection
-      REQUIRE_THROWS( InputEncoder(R"([ "A", "B" )") );           // unterminated collection
+      REQUIRE_THROWS( InputEncoder(R"([ 1, [ 2 ] ])") );          // a value and an array
+      REQUIRE_THROWS( InputEncoder(R"([ [ "A", "B" ], [ "C" ] ])") ); // arrays of different size
+      REQUIRE_THROWS( InputEncoder(R"([ [ "A" ], [ 1 ] ])") );    // arrays of different type
+      REQUIRE_THROWS( InputEncoder("[ { x := 1 }, { y := 1 } ]") ); // values with different fields
+      REQUIRE_THROWS( InputEncoder("{ x := 1, x := 2 }") );       // a field stated twice
+      REQUIRE_THROWS( InputEncoder("{ x := 1") );                 // unterminated value with fields
+      REQUIRE_THROWS( InputEncoder(R"([ "A", "B" )") );           // unterminated array
       REQUIRE_THROWS( InputEncoder(R"([ "A )") );                 // unterminated string
-      REQUIRE_THROWS( InputEncoder("[ ]") );                      // collection without members
+      REQUIRE_THROWS( InputEncoder("[ ]") );                      // array without members
       REQUIRE_THROWS( InputEncoder("[ 1, ]") );                   // member without value
       REQUIRE_THROWS( InputEncoder("[ A ]") );                    // member that is no value
       REQUIRE_THROWS( InputEncoder("[ 1+2 ]") );                  // member that is no value

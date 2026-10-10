@@ -2,7 +2,7 @@
 #include "Value.h"
 #include "Keywords.h"
 #include "StringRegistry.h"
-#include "CollectionRegistry.h"
+#include "ObjectRegistry.h"
 #include "InputEncoder.h"
 #include "model/bpmnos/src/extensionElements/ExtensionElements.h"
 #include <cassert>
@@ -72,7 +72,6 @@ number to_number(const std::string& valueString, const ValueType& type) {
     case ValueType::COLLECTION:
       // it is assumed that all collections are already encoded
       return number(BPMNOS::stoi( valueString ));
-//      return number(collectionRegistry( valueString ));
   }
   throw std::logic_error("to_number: unknown value type " + std::to_string(static_cast<int>(type)) );
 }
@@ -178,25 +177,9 @@ std::string to_string(number numericValue, const ValueType& type) {
       return BPMNOS::to_string((double)numericValue);
     case ValueType::STRING:
       return stringRegistry[(std::size_t)numericValue];
-    case ValueType::COLLECTION: {
-      const auto& collection = collectionRegistry[(std::size_t)numericValue];
-      if ( collection.empty() ) {
-        return "[ ]";
-      }
-      // members are rendered with the type they were registered with, which for a member that is itself
-      // a collection is COLLECTION, so that a nested collection is rendered to any depth
-      auto memberType = collectionRegistry.memberType((std::size_t)numericValue);
-      // a string member keeps its quotes, so that the rendering of a collection is text stating that
-      // very collection
-      std::string quote = ( memberType == ValueType::STRING ? "\"" : "" );
-      std::string result;
-      for ( auto value : collection ) {
-        result += ", " + quote + BPMNOS::to_string(number(value),memberType) + quote;
-      }
-      result.front() = '[';
-      result += " ]";
-      return result;
-    }
+    case ValueType::COLLECTION:
+      // a collection is a constant object, rendered as the literal stating it
+      return BPMNOS::to_string( *objectRegistry[(std::size_t)numericValue] );
   }
   throw std::logic_error("to_string: unknown value type " + std::to_string(static_cast<int>(type)) );
 }

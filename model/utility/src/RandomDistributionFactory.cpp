@@ -1,5 +1,5 @@
 #include "RandomDistributionFactory.h"
-#include "CollectionRegistry.h"
+#include "ObjectRegistry.h"
 #include <exception>
 #include <algorithm>
 
@@ -274,8 +274,8 @@ void RandomDistributionFactory::registerFunctions(LIMEX::Handle<double>& handle)
       size_t valuesIndex = static_cast<size_t>(args[0]);
       size_t probsIndex = static_cast<size_t>(args[1]);
 
-      const auto& values = collectionRegistry[valuesIndex];
-      const auto& probs = collectionRegistry[probsIndex];
+      auto values = to_vector( *objectRegistry[valuesIndex] );
+      auto probs = to_vector( *objectRegistry[probsIndex] );
 
       if (values.size() != probs.size()) {
         throw std::runtime_error("discrete: values and probabilities must have the same size");

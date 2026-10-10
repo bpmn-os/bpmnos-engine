@@ -11,7 +11,6 @@
 #include "model/bpmnos/src/extensionElements/SignalDefinition.h"
 #include "model/bpmnos/src/DecisionTask.h"
 #include "model/bpmnos/src/SequentialAdHocSubProcess.h"
-#include "model/utility/src/CollectionRegistry.h"
 #include "bpmn++.h"
 #include <cassert>
 #include <ranges>
