@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <cmath>
 #include <cassert>
+#include <regex>
 
 using namespace BPMNOS::Model;
 
@@ -24,19 +25,32 @@ Expression::Expression(const LIMEX::Handle<double>& handle, const InputEncoder& 
   , compiled(getExpression(expression))
   , type(getType())
 {
-  if ( compiled.getTargetPath().has_value() ) {
-    throw std::runtime_error("Expression: assignment to an element of '" + compiled.getTarget().value() + "' is not supported in '" + expression + "'");
-  }
+  resize = ( withoutResize(expression) != expression );
+  auto& assignment = std::get< LIMEX::Node<double> >(compiled.getRoot().operands[0]);
+  compound = ( (int)assignment.type > (int)LIMEX::Type::assign );
   if ( auto name = compiled.getTarget(); name.has_value() ) {
     if ( name.value() == BPMNOS::Keyword::Undefined ) {
       throw std::runtime_error("Expression: illegal assignment '" + expression +"'");
     }
     if ( !newTarget ) {
       target = attributeRegistry[ name.value() ];
-      if ( target.value()->isObject() ) {
-        throw std::runtime_error("Expression: object '" + name.value() + "' cannot be assigned in '" + expression +"'");
-      }
+      objectTarget = target.value()->isObject();
     }
+  }
+  if ( resize && !objectTarget ) {
+    throw std::runtime_error("Expression: resize requires an array in '" + expression + "'");
+  }
+  if ( compiled.getTargetPath().has_value() && !objectTarget ) {
+    throw std::runtime_error("Expression: assignment to an element of '" + compiled.getTarget().value() + "', which is not an object, in '" + expression + "'");
+  }
+  if ( objectTarget ) {
+    if ( type != Type::ASSIGN ) {
+      throw std::runtime_error("Expression: object '" + target.value()->name + "' cannot be undefined in '" + expression + "'");
+    }
+    if ( compound && !compiled.getTargetPath().has_value() ) {
+      throw std::runtime_error("Expression: object '" + target.value()->name + "' must be assigned by ':=' in '" + expression + "'");
+    }
+    analyseTarget(encoder.objects());
   }
 
   determineUses();
@@ -44,7 +58,7 @@ Expression::Expression(const LIMEX::Handle<double>& handle, const InputEncoder& 
   for ( auto& name : compiled.getVariables() ) {
     if ( name != BPMNOS::Keyword::Undefined ) {
       auto attribute = attributeRegistry[ name ];
-      if ( attribute->isObject() ) {
+      if ( attribute->isObject() && attribute != sourceObject ) {
         throw std::runtime_error("Expression: object '" + name + "' must be indexed to a value in '" + expression +"'");
       }
       inputs.insert(attribute);
@@ -76,7 +90,11 @@ Expression::Expression(const LIMEX::Handle<double>& handle, const InputEncoder& 
   auto& pathDescriptions = compiled.getPaths();
   for ( size_t path = 0; path < pathDescriptions.size(); path++ ) {
     auto attribute = attributeRegistry[ pathDescriptions[path].name ];
-    bind(path, attribute);
+    // the target written and the source of an object assigned have been bound by the analysis of the target
+    bool written = ( objectTarget && !compound && compiled.getTargetPath() == path );
+    if ( !written && sourcePath != path ) {
+      bind(path, attribute);
+    }
     inputs.insert(attribute);
     paths.push_back(attribute);
   }
@@ -153,6 +171,29 @@ LIMEX::View<double> lengthOf(size_t count) {
   return LIMEX::View<double>( count, [](size_t) -> double { return std::numeric_limits<double>::quiet_NaN(); });
 }
 
+/// Returns the layout of the part of an object a location addresses, which holds the dimensions not indexed.
+BPMNOS::Object::Layout elementLayout(const Location& location) {
+  auto& layout = *location.layout;
+  BPMNOS::Object::Layout element;
+  element.scalar = layout.scalar;
+  element.fields = layout.fields;
+  element.stride = layout.stride;
+  element.dimensions.assign(layout.dimensions.begin() + (long)location.dimension, layout.dimensions.end());
+  if ( !layout.fixed.empty() ) {
+    element.fixed.assign(layout.fixed.begin() + (long)location.dimension, layout.fixed.end());
+  }
+  return element;
+}
+
+/// Returns a copy of the part of an object a location addresses, whose values are contiguous.
+std::shared_ptr<const BPMNOS::Object> part(const BPMNOS::Object& object, const Location& location) {
+  auto result = std::make_shared<BPMNOS::Object>();
+  result->layout = std::make_shared<const BPMNOS::Object::Layout>( elementLayout(location) );
+  auto begin = object.values.begin() + (long)location.offset;
+  result->values.assign(begin, begin + (long)result->layout->size());
+  return result;
+}
+
 /// Returns the array or object an attribute holds, nullptr if it holds none.
 template <typename DataType>
 const BPMNOS::Object* objectOf(const AttributeRegistry& attributeRegistry, const Attribute* attribute, const BPMNOS::Status& status, const DataType& data) {
@@ -191,6 +232,37 @@ void Expression::determineUses() {
   visit(compiled.getRoot(), false, false);
 }
 
+Expression::Step Expression::walk(size_t path, const Attribute* attribute) const {
+  auto& description = compiled.getPaths()[path];
+  auto text = pathText(description);
+  if ( !attribute->isObject() ) {
+    throw std::runtime_error("Expression: '" + text + "' does not address an object in '" + expression +"'");
+  }
+  // the steps are followed through the schema: every index takes the next dimension, and a field may only
+  // follow once every dimension is indexed
+  Step result{ attribute->schema.get(), 0, {} };
+  for ( auto& step : description.steps ) {
+    if ( !step.has_value() ) {
+      if ( result.dimension == result.schema->dimensions.size() ) {
+        throw std::runtime_error("Expression: '" + text + "' has more indices than '" + attribute->name + "' has dimensions in '" + expression +"'");
+      }
+      result.dimension++;
+      continue;
+    }
+    if ( result.dimension < result.schema->dimensions.size() ) {
+      throw std::runtime_error("Expression: field '" + step.value() + "' of an array in '" + text + "', whose dimensions must be indexed first, in '" + expression +"'");
+    }
+    auto field = std::ranges::find_if(result.schema->fields, [&step](auto& candidate) { return candidate.first == step.value(); });
+    if ( field == result.schema->fields.end() ) {
+      throw std::runtime_error("Expression: unknown field '" + step.value() + "' in '" + text + "' in '" + expression +"'");
+    }
+    result.schema = &field->second;
+    result.dimension = 0;
+    result.fields.push_back(step.value());
+  }
+  return result;
+}
+
 void Expression::bind(size_t path, const Attribute* attribute) const {
   auto& description = compiled.getPaths()[path];
   auto& use = pathUses[path];
@@ -205,28 +277,7 @@ void Expression::bind(size_t path, const Attribute* attribute) const {
     }
     return;
   }
-  // the steps are followed through the schema: every index takes the next dimension, and a field may only
-  // follow once every dimension is indexed
-  const Schema* schema = attribute->schema.get();
-  size_t dimension = 0;
-  for ( auto& step : description.steps ) {
-    if ( !step.has_value() ) {
-      if ( dimension == schema->dimensions.size() ) {
-        throw std::runtime_error("Expression: '" + text + "' has more indices than '" + attribute->name + "' has dimensions in '" + expression +"'");
-      }
-      dimension++;
-      continue;
-    }
-    if ( dimension < schema->dimensions.size() ) {
-      throw std::runtime_error("Expression: field '" + step.value() + "' of an array in '" + text + "', whose dimensions must be indexed first, in '" + expression +"'");
-    }
-    auto field = std::ranges::find_if(schema->fields, [&step](auto& candidate) { return candidate.first == step.value(); });
-    if ( field == schema->fields.end() ) {
-      throw std::runtime_error("Expression: unknown field '" + step.value() + "' in '" + text + "' in '" + expression +"'");
-    }
-    schema = &field->second;
-    dimension = 0;
-  }
+  auto [schema, dimension, _] = walk(path, attribute);
   if ( use.sizeOnly ) {
     if ( dimension == schema->dimensions.size() ) {
       throw std::runtime_error("Expression: '" + text + "' is not an array in '" + expression +"'");
@@ -242,9 +293,85 @@ void Expression::bind(size_t path, const Attribute* attribute) const {
   }
 }
 
-std::optional<double> Expression::evaluate(const std::vector<double>& variableValues, const std::vector<const BPMNOS::Object*>& collectionObjects, const std::vector<const BPMNOS::Object*>& pathObjects) const {
-  assert( collectionObjects.size() == collections.size() );
-  assert( pathObjects.size() == paths.size() );
+void Expression::analyseTarget(const std::vector<size_t>& literals) {
+  auto attribute = target.value();
+  auto targetPath = compiled.getTargetPath();
+  if ( resize ) {
+    // the length of the dimension the target addresses is assigned a scalar value
+    if ( targetPath.has_value() ) {
+      auto step = walk(targetPath.value(), attribute);
+      if ( step.dimension == step.schema->dimensions.size() ) {
+        throw std::runtime_error("Expression: '" + pathText(compiled.getPaths()[targetPath.value()]) + "' is not an array in '" + expression + "'");
+      }
+      resizeFields = step.fields;
+      resizeDimension = step.dimension;
+    }
+    else if ( attribute->schema->dimensions.empty() ) {
+      throw std::runtime_error("Expression: object '" + attribute->name + "' is not an array in '" + expression + "'");
+    }
+    return;
+  }
+  if ( compound ) {
+    // the target is read and written as a value, and bound as such
+    return;
+  }
+  if ( targetPath.has_value() ) {
+    auto step = walk(targetPath.value(), attribute);
+    objectValue = !( step.schema->scalar.has_value() && step.dimension == step.schema->dimensions.size() );
+    targetFields = step.fields;
+    targetDimension = step.dimension;
+  }
+  else {
+    objectValue = true;
+  }
+  if ( !objectValue ) {
+    return;
+  }
+  // an array or object is assigned a literal, the object of an attribute, or the part of an object a path
+  // addresses
+  auto& assignment = std::get< LIMEX::Node<double> >(compiled.getRoot().operands[0]);
+  auto& value = std::get< LIMEX::Node<double> >(assignment.operands[0]);
+  auto illegal = [&]() {
+    return std::runtime_error("Expression: '" + attribute->name + "' must be assigned a literal, an object, or a path to an array or object in '" + expression + "'");
+  };
+  if ( value.type == LIMEX::Type::literal ) {
+    double number = std::get<double>(value.operands[0]);
+    if ( !std::ranges::contains(literals, (size_t)number) || number != std::floor(number) ) {
+      throw illegal();
+    }
+    sourceLiteral = (size_t)number;
+  }
+  else if ( value.type == LIMEX::Type::variable ) {
+    auto source = attributeRegistry[ compiled.getVariables()[ std::get<size_t>(value.operands[0]) ] ];
+    if ( !source->isObject() ) {
+      throw illegal();
+    }
+    sourceObject = source;
+  }
+  else if ( value.type == LIMEX::Type::path ) {
+    size_t path = std::get<size_t>(value.operands[0]);
+    auto step = walk(path, attributeRegistry[ compiled.getPaths()[path].name ]);
+    if ( step.schema->scalar.has_value() && step.dimension == step.schema->dimensions.size() ) {
+      throw illegal();
+    }
+    sourcePath = path;
+  }
+  else {
+    throw illegal();
+  }
+}
+
+std::string Expression::withoutResize(const std::string& text) {
+  // 'resize(path) := n' is read as the assignment 'path := n' of the length of the dimension the path addresses
+  static const std::regex form(R"(^\s*resize\s*\((.*)\)\s*:=(.*)$)");
+  std::smatch match;
+  if ( std::regex_match(text, match, form) ) {
+    return match[1].str() + " :=" + match[2].str();
+  }
+  return text;
+}
+
+std::vector< LIMEX::View<double> > Expression::viewsOf(const std::vector<const BPMNOS::Object*>& collectionObjects) const {
   // the arrays the collections name, of which only the length is read for the argument of size
   std::vector< LIMEX::View<double> > collectionValues;
   for ( size_t k = 0; k < collectionObjects.size(); k++ ) {
@@ -260,9 +387,13 @@ std::optional<double> Expression::evaluate(const std::vector<double>& variableVa
       throw std::runtime_error("Expression: '" + collections[k]->name + "' is not an array of values");
     }
   }
+  return collectionValues;
+}
+
+LIMEX::Resolver<double> Expression::resolverOf(const std::vector<const BPMNOS::Object*>& pathObjects) const {
   auto& descriptions = compiled.getPaths();
   LIMEX::Resolver<double> resolver;
-  resolver.value = [&](size_t path, const std::vector<double>& indices) -> double {
+  resolver.value = [this, &descriptions, &pathObjects](size_t path, const std::vector<double>& indices) -> double {
     try {
       auto location = locate(*pathObjects[path], descriptions[path], indices);
       auto& value = pathObjects[path]->values[location.offset];
@@ -279,7 +410,7 @@ std::optional<double> Expression::evaluate(const std::vector<double>& variableVa
       throw;
     }
   };
-  resolver.collection = [&](size_t path, const std::vector<double>& indices) -> LIMEX::View<double> {
+  resolver.collection = [this, &descriptions, &pathObjects](size_t path, const std::vector<double>& indices) -> LIMEX::View<double> {
     auto location = locate(*pathObjects[path], descriptions[path], indices);
     auto& layout = *location.layout;
     if ( pathUses[path].sizeOnly ) {
@@ -287,8 +418,20 @@ std::optional<double> Expression::evaluate(const std::vector<double>& variableVa
     }
     return valuesOf(pathObjects[path], location.offset, layout.dimensions[location.dimension], span(layout, location.dimension));
   };
+  return resolver;
+}
+
+std::optional<double> Expression::evaluate(const std::vector<double>& variableValues, const std::vector<const BPMNOS::Object*>& collectionObjects, const std::vector<const BPMNOS::Object*>& pathObjects) const {
+  assert( collectionObjects.size() == collections.size() );
+  assert( pathObjects.size() == paths.size() );
+  auto collectionValues = viewsOf(collectionObjects);
+  auto resolver = resolverOf(pathObjects);
   try {
-    return compiled.evaluate(variableValues, collectionValues, resolver);
+    auto value = compiled.evaluate(variableValues, collectionValues, resolver);
+    if ( std::isnan(value) ) {
+      return std::nullopt;
+    }
+    return value;
   }
   catch ( const Undefined& ) {
     return std::nullopt;
@@ -298,7 +441,7 @@ std::optional<double> Expression::evaluate(const std::vector<double>& variableVa
 LIMEX::Expression<double> Expression::getExpression(const std::string& input) const {
   try {
     // the text has been scanned by the caller, so that every literal in it is a number already
-    return LIMEX::Expression<double>(input, handle);
+    return LIMEX::Expression<double>(withoutResize(input), handle);
   }
   catch ( const std::exception& error ) {
     throw std::runtime_error("Expression: illegal expression '" + input + "'.\n" + error.what());
@@ -384,53 +527,183 @@ std::optional<double> Expression::execute(const BPMNOS::Status& status, const Da
     return (double)value.has_value();
   }
 
-  // collect variable values
-  std::vector< double > variableValues;
-  for ( auto attribute : variables ) {
-    auto value = attributeRegistry.getValue(attribute,status,data);
-    if ( !value.has_value() ) {
-      // return nullopt because required attribute value is not given
-      return std::nullopt;
-    }
-    variableValues.push_back( (double)value.value() );
-  }
-  
-  // the arrays the collections name and the arrays or objects the paths address
+  std::vector<double> variableValues;
   std::vector<const BPMNOS::Object*> collectionObjects;
-  for ( auto attribute : collections ) {
-    auto object = objectOf(attributeRegistry, attribute, status, data);
-    if ( !object ) {
-      // return nullopt because required collection is not given
-      return std::nullopt;
-    }
-    collectionObjects.push_back(object);
-  }
   std::vector<const BPMNOS::Object*> pathObjects;
-  for ( auto attribute : paths ) {
-    auto object = objectOf(attributeRegistry, attribute, status, data);
-    if ( !object ) {
-      // return nullopt because required collection is not given
-      return std::nullopt;
-    }
-    pathObjects.push_back(object);
+  if ( !gather(status, data, variableValues, collectionObjects, pathObjects, false) ) {
+    // return nullopt because a required value is not given
+    return std::nullopt;
   }
 
   try {
     return evaluate(variableValues,collectionObjects,pathObjects);
   }
   catch (const std::runtime_error& e) {
-    std::string arguments;
-    for ( auto attribute : variables ) {
-      if (attribute != variables.front()) arguments += ", ";
-      arguments += attribute->name + " = ";
-      auto value = attributeRegistry.getValue(attribute,status,data);
-      assert( value.has_value() );
-      arguments += BPMNOS::to_string(value.value(),attribute->type);
+    throw std::runtime_error(std::format("Expression: failed to evaluate '{}' with {}\n{}", expression, arguments(status, data), e.what()));
+  }
+}
+
+template <typename DataType>
+std::string Expression::arguments(const BPMNOS::Status& status, const DataType& data) const {
+  std::string result;
+  for ( auto attribute : variables ) {
+    if ( attribute->isObject() ) {
+      continue;
     }
-    throw std::runtime_error(std::format("Expression: failed to evaluate '{}' with {}\n{}", expression, arguments, e.what()));
+    result += ( result.empty() ? "" : ", " ) + attribute->name + " = ";
+    auto value = attributeRegistry.getValue(attribute,status,data);
+    result += value.has_value() ? BPMNOS::to_string(value.value(),attribute->type) : "undefined";
+  }
+  return result;
+}
+
+template <typename DataType>
+bool Expression::gather(const BPMNOS::Status& status, const DataType& data, std::vector<double>& variableValues, std::vector<const BPMNOS::Object*>& collectionObjects, std::vector<const BPMNOS::Object*>& pathObjects, bool undefinedAsNaN) const {
+  for ( auto attribute : variables ) {
+    if ( attribute->isObject() ) {
+      // the object assigned, which LIMEX reads as a variable whose value is not used
+      variableValues.push_back(0);
+      continue;
+    }
+    auto value = attributeRegistry.getValue(attribute,status,data);
+    if ( !value.has_value() && !undefinedAsNaN ) {
+      return false;
+    }
+    variableValues.push_back( value.has_value() ? (double)value.value() : std::numeric_limits<double>::quiet_NaN() );
+  }
+  // the arrays the collections name and the arrays or objects the paths address
+  for ( auto attribute : collections ) {
+    collectionObjects.push_back( objectOf(attributeRegistry, attribute, status, data) );
+    if ( !collectionObjects.back() ) {
+      return false;
+    }
+  }
+  for ( auto attribute : paths ) {
+    pathObjects.push_back( objectOf(attributeRegistry, attribute, status, data) );
+    if ( !pathObjects.back() ) {
+      return false;
+    }
+  }
+  return true;
+}
+
+template <typename DataType>
+void Expression::write(BPMNOS::Status& status, DataType& data) const {
+  assert( objectTarget );
+  std::vector<double> variableValues;
+  std::vector<const BPMNOS::Object*> collectionObjects;
+  std::vector<const BPMNOS::Object*> pathObjects;
+  if ( !gather(status, data, variableValues, collectionObjects, pathObjects, true) ) {
+    throw std::runtime_error("Expression: '" + expression + "' reads an array without a value");
+  }
+  auto& slot = attributeRegistry.getObjectSlot(target.value(), status, data);
+  auto targetPath = compiled.getTargetPath();
+  try {
+    auto collectionValues = viewsOf(collectionObjects);
+    auto resolver = resolverOf(pathObjects);
+    // the indices of the target, all of which must be defined
+    std::vector<double> indices;
+    try {
+      indices = compiled.evaluateTargetIndices(variableValues, collectionValues, resolver);
+    }
+    catch ( const Undefined& ) {
+      throw std::runtime_error("Expression: undefined index");
+    }
+    auto locateTarget = [&]() {
+      try {
+        return locate(*slot, compiled.getPaths()[targetPath.value()], indices);
+      }
+      catch ( const Undefined& ) {
+        throw std::runtime_error("Expression: undefined index");
+      }
+    };
+
+    if ( resize ) {
+      auto length = evaluate(variableValues, collectionObjects, pathObjects);
+      if ( !length.has_value() || length.value() < 0 || length.value() != std::floor(length.value()) ) {
+        throw std::runtime_error("Expression: resize requires a non-negative integer");
+      }
+      if ( targetPath.has_value() ) {
+        // the indices of the path are checked, the dimension changing in every element alike
+        locateTarget();
+      }
+      slot = BPMNOS::resized(*slot, resizeFields, resizeDimension, (size_t)length.value());
+      return;
+    }
+
+    if ( !objectValue ) {
+      // a value is written to an element, which never changes a length
+      auto value = evaluate(variableValues, collectionObjects, pathObjects);
+      auto location = locateTarget();
+      modifiable(slot).values[location.offset] = BPMNOS::to_value(value);
+      return;
+    }
+
+    // the array or object assigned
+    std::shared_ptr<const BPMNOS::Object> source;
+    if ( sourceLiteral.has_value() ) {
+      source = objectRegistry[sourceLiteral.value()];
+    }
+    else if ( sourceObject ) {
+      source = attributeRegistry.getObject(sourceObject, status, data);
+    }
+    else {
+      // the indices of the source path are those LIMEX evaluates for the value of the assignment
+      std::vector<double> sourceIndices;
+      auto capturing = resolver;
+      capturing.value = [&, inner = resolver.value](size_t path, const std::vector<double>& pathIndices) -> double {
+        if ( path == sourcePath.value() ) {
+          sourceIndices = pathIndices;
+          return 0;
+        }
+        return inner(path, pathIndices);
+      };
+      try {
+        compiled.evaluate(variableValues, collectionValues, capturing);
+        source = part(*pathObjects[sourcePath.value()], locate(*pathObjects[sourcePath.value()], compiled.getPaths()[sourcePath.value()], sourceIndices));
+      }
+      catch ( const Undefined& ) {
+        throw std::runtime_error("Expression: undefined index");
+      }
+    }
+
+    if ( !targetPath.has_value() ) {
+      // the whole object keeps the lengths of its fixed dimensions and takes those of its open ones
+      slot = Schema::of(*slot->layout, false).conform(source);
+      return;
+    }
+
+    // an element keeps its lengths, except those not yet determined, which the value determines for every
+    // element of the array
+    auto location = locateTarget();
+    auto element = elementLayout(location);
+    auto value = Schema::of(element, true).conform(source);
+    std::function<void(const BPMNOS::Object::Layout&, const BPMNOS::Object::Layout&, std::vector<std::string>, size_t)> determine =
+      [&](const BPMNOS::Object::Layout& current, const BPMNOS::Object::Layout& given, std::vector<std::string> fields, size_t first) {
+        for ( size_t d = 0; d < current.dimensions.size(); d++ ) {
+          if ( current.dimensions[d] == 0 && given.dimensions[d] > 0 ) {
+            slot = BPMNOS::resized(*slot, fields, first + d, given.dimensions[d]);
+          }
+        }
+        for ( size_t k = 0; k < current.fields.size(); k++ ) {
+          auto nested = fields;
+          nested.push_back(current.fields[k].name);
+          determine(current.fields[k].layout, given.fields[k].layout, nested, 0);
+        }
+      };
+    determine(element, *value->layout, targetFields, targetDimension);
+    location = locateTarget();
+    auto& values = modifiable(slot).values;
+    assert( location.offset + value->values.size() <= values.size() );
+    std::ranges::copy(value->values, values.begin() + (long)location.offset);
+  }
+  catch ( const std::runtime_error& error ) {
+    throw std::runtime_error(std::format("Expression: failed to evaluate '{}' with {}\n{}", expression, arguments(status, data), error.what()));
   }
 }
 
 template std::optional<double> Expression::execute<BPMNOS::Data>(const BPMNOS::Status& status, const BPMNOS::Data& data) const;
 template std::optional<double> Expression::execute<BPMNOS::SharedData>(const BPMNOS::Status& status, const BPMNOS::SharedData& data) const;
+template void Expression::write<BPMNOS::Data>(BPMNOS::Status& status, BPMNOS::Data& data) const;
+template void Expression::write<BPMNOS::SharedData>(BPMNOS::Status& status, BPMNOS::SharedData& data) const;
 

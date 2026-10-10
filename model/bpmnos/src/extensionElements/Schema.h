@@ -60,6 +60,15 @@ struct Schema {
    * layout of the schema, it is returned itself, so that it is shared.
    */
   std::shared_ptr<const BPMNOS::Object> conform(const std::shared_ptr<const BPMNOS::Object>& constant) const;
+
+  /**
+   * @brief Returns the schema an object of the given layout imposes on a value assigned to it.
+   *
+   * A value assigned to the whole object keeps the sizes of the fixed dimensions and takes those of the open
+   * ones. A value assigned to an element keeps every size, except a size zero of an open dimension, which the
+   * value determines.
+   */
+  static Schema of(const BPMNOS::Object::Layout& layout, bool element);
 };
 
 } // namespace BPMNOS::Model

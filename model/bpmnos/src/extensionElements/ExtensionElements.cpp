@@ -161,7 +161,7 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const
           throw std::runtime_error("ExtensionElements: illegal operator '" + (std::string)operator_.id.value + "'.\n" + error.what() );
         }
         auto attribute = operators.back()->attribute;
-        if ( attribute->category == Attribute::Category::STATUS && attribute->index == BPMNOS::Model::ExtensionElements::Index::Timestamp ) {
+        if ( attribute->category == Attribute::Category::STATUS && !attribute->isObject() && attribute->index == BPMNOS::Model::ExtensionElements::Index::Timestamp ) {
           isInstantaneous = false;
         }
         if ( attribute->category == Attribute::Category::DATA && attribute->id == Keyword::Instance ) {

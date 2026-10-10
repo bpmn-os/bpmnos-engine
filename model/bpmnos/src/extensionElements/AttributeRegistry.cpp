@@ -110,6 +110,26 @@ const std::shared_ptr<const BPMNOS::Object>& AttributeRegistry::getObject(const 
   return data.objects[object->index].get();
 }
 
+std::shared_ptr<const BPMNOS::Object>& AttributeRegistry::getObjectSlot(const Attribute* object, Status& status, Data& data) const {
+  assert( object->isObject() );
+  if ( object->category == Attribute::Category::STATUS ) {
+    assert(object->index < status.objects.size());
+    return status.objects[object->index];
+  }
+  assert(object->index < data.objects.size());
+  return data.objects[object->index];
+}
+
+std::shared_ptr<const BPMNOS::Object>& AttributeRegistry::getObjectSlot(const Attribute* object, Status& status, SharedData& data) const {
+  assert( object->isObject() );
+  if ( object->category == Attribute::Category::STATUS ) {
+    assert(object->index < status.objects.size());
+    return status.objects[object->index];
+  }
+  assert(object->index < data.objects.size());
+  return data.objects[object->index].get();
+}
+
 BPMNOS::number AttributeRegistry::setValue(const Attribute* attribute, Status& status, Data& data, std::optional<BPMNOS::number> value) const {
   // the value of a scalar attribute; an object is held in the objects of the status or data
   assert( !attribute->isObject() );

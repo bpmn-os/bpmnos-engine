@@ -58,6 +58,9 @@ public:
   /// Returns the type of the literal if the text states one literal and nothing besides whitespace.
   std::optional<ValueType> type() const;
 
+  /// Returns the indices of the constant objects the literals of the text state, in their order.
+  const std::vector<size_t>& objects() const { return objectIndices; }
+
 private:
   /// Reads a quoted span and returns its index in the string registry.
   size_t scanString();
@@ -91,6 +94,7 @@ private:
   /// states a collection of the expression parser's own.
   bool literalAllowed = true;
   size_t literals = 0;
+  std::vector<size_t> objectIndices;
   size_t literalBegin = 0;
   size_t literalEnd = 0;
   ValueType literalType = COLLECTION;
@@ -108,7 +112,8 @@ void Scan::run() {
     }
     else if ( ( character == '[' || ( character == '{' && fieldsAhead() ) ) && literalAllowed ) {
       size_t begin = position;
-      output += std::to_string( scanObject() );
+      objectIndices.push_back( scanObject() );
+      output += std::to_string( objectIndices.back() );
       recordLiteral(begin, COLLECTION);
       literalAllowed = false;
     }
@@ -427,6 +432,7 @@ InputEncoder::InputEncoder(const std::string& input) {
   scan.run();
   encoded = scan.result();
   literalType = scan.type();
+  literalObjects = scan.objects();
 }
 
 InputEncoder::InputEncoder(std::string text, std::nullopt_t)

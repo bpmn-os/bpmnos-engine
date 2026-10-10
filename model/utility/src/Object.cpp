@@ -1,5 +1,8 @@
 #include "Object.h"
 #include "Value.h"
+#include <algorithm>
+#include <cassert>
+#include <functional>
 #include <limits>
 #include <stdexcept>
 
@@ -37,8 +40,21 @@ std::string Object::Layout::stringify() const {
   return result;
 }
 
+void Object::Layout::arrange() {
+  if ( scalar.has_value() ) {
+    stride = 1;
+    return;
+  }
+  size_t offset = 0;
+  for ( auto& field : fields ) {
+    field.offset = offset;
+    offset += field.layout.size();
+  }
+  stride = offset;
+}
+
 bool Object::Layout::operator==(const Layout& other) const {
-  return scalar == other.scalar && fields == other.fields && dimensions == other.dimensions && stride == other.stride;
+  return scalar == other.scalar && fields == other.fields && dimensions == other.dimensions && stride == other.stride && fixed == other.fixed;
 }
 
 namespace {
@@ -78,6 +94,123 @@ std::string render(const Object::Layout& layout, const std::vector<Value>& value
 }
 
 } // namespace
+
+namespace {
+
+/// Returns the number of values one element of the given dimension of a layout spans.
+size_t span(const Object::Layout& layout, size_t dimension) {
+  size_t result = layout.stride;
+  for ( size_t d = dimension + 1; d < layout.dimensions.size(); d++ ) {
+    result *= layout.dimensions[d];
+  }
+  return result;
+}
+
+/**
+ * Visits the values of an object of the layout `from` that an object of the layout `to`, of the same schema,
+ * also has, calling `visit(source, target)` with the positions of each such value in the two objects.
+ */
+void correspond(const Object::Layout& from, size_t fromOffset, const Object::Layout& to, size_t toOffset, const std::function<void(size_t, size_t)>& visit) {
+  std::function<void(size_t, size_t, size_t)> walk = [&](size_t dimension, size_t source, size_t target) {
+    if ( dimension == from.dimensions.size() ) {
+      if ( from.scalar.has_value() ) {
+        visit(source, target);
+        return;
+      }
+      for ( size_t k = 0; k < from.fields.size(); k++ ) {
+        correspond(from.fields[k].layout, source + from.fields[k].offset, to.fields[k].layout, target + to.fields[k].offset, visit);
+      }
+      return;
+    }
+    size_t count = std::min(from.dimensions[dimension], to.dimensions[dimension]);
+    size_t fromSpan = span(from, dimension);
+    size_t toSpan = span(to, dimension);
+    for ( size_t i = 0; i < count; i++ ) {
+      walk(dimension + 1, source + i * fromSpan, target + i * toSpan);
+    }
+  };
+  walk(0, fromOffset, toOffset);
+}
+
+/// Widens a layout so that every dimension has at least the length it has in the other layout.
+void widen(Object::Layout& layout, const Object::Layout& other) {
+  for ( size_t d = 0; d < layout.dimensions.size(); d++ ) {
+    layout.dimensions[d] = std::max(layout.dimensions[d], other.dimensions[d]);
+  }
+  for ( size_t k = 0; k < layout.fields.size(); k++ ) {
+    widen(layout.fields[k].layout, other.fields[k].layout);
+  }
+  layout.arrange();
+}
+
+} // namespace
+
+Object& modifiable(std::shared_ptr<const Object>& slot) {
+  if ( slot.use_count() != 1 ) {
+    slot = std::make_shared<Object>(*slot);
+  }
+  // an object held by the slot alone was created modifiable, a constant object being held by the registry too
+  return const_cast<Object&>(*slot);
+}
+
+std::shared_ptr<Object> resized(const Object& object, const std::vector<std::string>& fields, size_t dimension, size_t length) {
+  auto layout = std::make_shared<Object::Layout>(*object.layout);
+  // the layouts from the base to the field whose dimension changes
+  std::vector<Object::Layout*> chain = { layout.get() };
+  for ( auto& name : fields ) {
+    auto& candidates = chain.back()->fields;
+    auto field = std::ranges::find_if(candidates, [&name](auto& candidate) { return candidate.name == name; });
+    if ( field == candidates.end() ) {
+      throw std::logic_error("Object: unknown field '" + name + "'");
+    }
+    chain.push_back(&field->layout);
+  }
+  chain.back()->dimensions.at(dimension) = length;
+  for ( auto it = chain.rbegin(); it != chain.rend(); ++it ) {
+    (*it)->arrange();
+  }
+  auto result = std::make_shared<Object>();
+  result->values.resize(layout->size());
+  correspond(*object.layout, 0, *layout, 0, [&](size_t source, size_t target) {
+    result->values[target] = object.values[source];
+  });
+  result->layout = std::move(layout);
+  return result;
+}
+
+std::shared_ptr<const Object> merge(const std::vector< std::shared_ptr<const Object> >& objects) {
+  assert( !objects.empty() );
+  if ( std::ranges::all_of(objects, [&objects](auto& object) { return object == objects.front(); }) ) {
+    return objects.front();
+  }
+  auto layout = std::make_shared<Object::Layout>(*objects.front()->layout);
+  for ( auto& object : objects ) {
+    widen(*layout, *object->layout);
+  }
+  auto result = std::make_shared<Object>();
+  result->values.resize(layout->size());
+  // a value is merged as a status value is: the first defined value is kept, and a conflict with it makes the
+  // value undefined for good
+  std::vector<bool> conflict(layout->size(), false);
+  for ( auto& object : objects ) {
+    correspond(*object->layout, 0, *layout, 0, [&](size_t source, size_t target) {
+      auto& value = object->values[source];
+      auto& merged = result->values[target];
+      if ( conflict[target] ) {
+        return;
+      }
+      if ( !merged.has_value() ) {
+        merged = value;
+      }
+      else if ( value.has_value() && value.value() != merged.value() ) {
+        merged = std::nullopt;
+        conflict[target] = true;
+      }
+    });
+  }
+  result->layout = std::move(layout);
+  return result;
+}
 
 std::string to_string(const Object& object) {
   return render(*object.layout, object.values, 0, 0);

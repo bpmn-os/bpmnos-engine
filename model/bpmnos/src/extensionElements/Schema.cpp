@@ -255,24 +255,20 @@ bool Schema::isFixed() const {
 
 namespace {
 
-/// Returns the layout of a schema whose dimensions all have fixed sizes.
-BPMNOS::Object::Layout layoutOf(const Schema& schema) {
+/// Returns the layout of a schema whose dimensions all have sizes, a dimension being fixed if it has a size in
+/// the schema declared, of which the schema is a resolution.
+BPMNOS::Object::Layout layoutOf(const Schema& schema, const Schema& declared) {
   BPMNOS::Object::Layout layout;
   layout.scalar = schema.scalar;
-  size_t offset = 0;
-  for ( auto& [name, field] : schema.fields ) {
-    auto fieldLayout = layoutOf(field);
-    auto size = fieldLayout.size();
-    layout.fields.push_back( BPMNOS::Object::Layout::Field{ name, offset, std::move(fieldLayout) } );
-    offset += size;
+  for ( size_t k = 0; k < schema.fields.size(); k++ ) {
+    layout.fields.push_back( BPMNOS::Object::Layout::Field{ schema.fields[k].first, 0, layoutOf(schema.fields[k].second, declared.fields[k].second) } );
   }
-  if ( !schema.scalar.has_value() ) {
-    layout.stride = offset;
+  for ( size_t d = 0; d < schema.dimensions.size(); d++ ) {
+    assert( schema.dimensions[d].has_value() );
+    layout.dimensions.push_back( schema.dimensions[d].value() );
+    layout.fixed.push_back( declared.dimensions[d].has_value() );
   }
-  for ( auto& dimension : schema.dimensions ) {
-    assert( dimension.has_value() );
-    layout.dimensions.push_back( dimension.value() );
-  }
+  layout.arrange();
   return layout;
 }
 
@@ -314,19 +310,16 @@ void resolve(Schema& schema, const BPMNOS::Object::Layout& constant, const std::
   }
 }
 
-/// Fixes the dimensions still open, which is allowed only where there are no elements to hold them.
-void close(Schema& schema, bool empty, const std::string& path) {
+/// Gives the dimensions still open, of a field the value lacks or below an empty array, the length zero, which
+/// leaves them undetermined until the first assignment of a value to one of their elements.
+void close(Schema& schema) {
   for ( auto& dimension : schema.dimensions ) {
     if ( !dimension.has_value() ) {
-      if ( !empty ) {
-        throw std::runtime_error("Schema: '" + path + "' has an open dimension and no value fixing it");
-      }
       dimension = 0;
     }
-    empty = empty || dimension.value() == 0;
   }
   for ( auto& [name, field] : schema.fields ) {
-    close(field, empty, path + "." + name);
+    close(field);
   }
 }
 
@@ -375,24 +368,42 @@ void copyValues(const BPMNOS::Object::Layout& target, const BPMNOS::Object::Layo
 } // namespace
 
 std::shared_ptr<const BPMNOS::Object> Schema::undefinedObject() const {
-  BPMNOS::Object object;
-  object.layout = std::make_shared<const BPMNOS::Object::Layout>( layoutOf(*this) );
-  object.values.resize( object.layout->size() );
-  return std::make_shared<const BPMNOS::Object>( std::move(object) );
+  // an object is created modifiable, so that a write may change it in place once it is no longer shared
+  auto object = std::make_shared<BPMNOS::Object>();
+  object->layout = std::make_shared<const BPMNOS::Object::Layout>( layoutOf(*this, *this) );
+  object->values.resize( object->layout->size() );
+  return object;
 }
 
 std::shared_ptr<const BPMNOS::Object> Schema::conform(const std::shared_ptr<const BPMNOS::Object>& constant) const {
   Schema resolved = *this;
   resolve(resolved, *constant->layout, BPMNOS::to_string(*constant));
-  close(resolved, false, BPMNOS::to_string(*constant));
-  auto layout = layoutOf(resolved);
+  close(resolved);
+  auto layout = layoutOf(resolved, *this);
   if ( layout == *constant->layout ) {
-    // the constant object holds exactly what the attribute declares and is shared
+    // the object holds exactly what the attribute declares, with the same dimensions fixed, and is shared
     return constant;
   }
-  BPMNOS::Object object;
-  object.layout = std::make_shared<const BPMNOS::Object::Layout>( std::move(layout) );
-  object.values.resize( object.layout->size() );
-  copyValues(*object.layout, *constant->layout, constant->values, 0, object.values, 0);
-  return std::make_shared<const BPMNOS::Object>( std::move(object) );
+  // an object is created modifiable, so that a write may change it in place once it is no longer shared
+  auto object = std::make_shared<BPMNOS::Object>();
+  object->layout = std::make_shared<const BPMNOS::Object::Layout>( std::move(layout) );
+  object->values.resize( object->layout->size() );
+  copyValues(*object->layout, *constant->layout, constant->values, 0, object->values, 0);
+  return object;
+}
+
+Schema Schema::of(const BPMNOS::Object::Layout& layout, bool element) {
+  Schema schema;
+  schema.scalar = layout.scalar;
+  for ( auto& field : layout.fields ) {
+    schema.fields.emplace_back( field.name, of(field.layout, element) );
+  }
+  for ( size_t d = 0; d < layout.dimensions.size(); d++ ) {
+    bool fixed = d < layout.fixed.size() && layout.fixed[d];
+    // an element keeps every length but one still undetermined, whereas an object replaced keeps only the
+    // lengths that are fixed
+    bool keep = element ? ( fixed || layout.dimensions[d] > 0 ) : fixed;
+    schema.dimensions.push_back( keep ? std::optional<size_t>(layout.dimensions[d]) : std::nullopt );
+  }
+  return schema;
 }

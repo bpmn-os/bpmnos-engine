@@ -32,11 +32,17 @@ struct Object {
     std::vector<Field> fields; ///< The fields of the base, in declaration order
     std::vector<size_t> dimensions; ///< The sizes of the dimensions, in index order
     size_t stride = 1; ///< The number of values of one element of the base
+    /// For each dimension whether its size is fixed, by the type or a size declaration, so that an assignment
+    /// pads a shorter value and rejects a longer one, whereas an open dimension takes the length of the value;
+    /// empty for a constant object
+    std::vector<bool> fixed;
 
     /// @brief Returns the number of values of an object of this layout.
     size_t size() const;
     /// @brief Returns the type the layout states, in the syntax of attribute types.
     std::string stringify() const;
+    /// @brief Recomputes the offsets of the fields and the stride from the layouts of the fields.
+    void arrange();
     bool operator==(const Layout& other) const;
   };
 
@@ -59,6 +65,35 @@ struct Object::Layout::Field {
  * fields, strings quoted and undefined values written `undefined`.
  */
 std::string to_string(const Object& object);
+
+/**
+ * @brief Returns the object a slot holds for modification, replacing it by a copy first if anyone else holds it,
+ * so that a modification is seen by the slot alone.
+ *
+ * Every object held by more than one status or data, and every constant object, is copied once when it is first
+ * written, whereas an object held by the slot alone is modified in place.
+ */
+Object& modifiable(std::shared_ptr<const Object>& slot);
+
+/**
+ * @brief Returns a copy of an object in which a dimension has the given length.
+ *
+ * The dimension is the dimension with the given position of the base, if no fields are given, or of the field
+ * the given fields name one within the other. All elements of an array being uniform, the dimension of a field
+ * changes in every element. Elements beyond the new length are dropped, and elements added are undefined. The
+ * dimension keeps its flag.
+ */
+std::shared_ptr<Object> resized(const Object& object, const std::vector<std::string>& fields, size_t dimension, size_t length);
+
+/**
+ * @brief Returns the merge of objects of the same schema, held by the statuses merged at a join.
+ *
+ * Every dimension takes the largest length the objects have, and each value is merged from the objects
+ * holding it, an object whose length a dimension exceeds holding no value there: values that agree are kept,
+ * an undefined value is no conflict, and a conflict makes the value undefined. Objects that are all the same
+ * are returned as they are.
+ */
+std::shared_ptr<const Object> merge(const std::vector< std::shared_ptr<const Object> >& objects);
 
 /**
  * @brief Returns the values of an array of scalar values with a single dimension as decimals, an undefined

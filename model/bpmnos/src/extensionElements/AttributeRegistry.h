@@ -33,6 +33,11 @@ public:
   const std::shared_ptr<const Object>& getObject(const Attribute* object, const Status& status, const Data& data) const;
   /// @copydoc getObject(const Attribute*, const Status&, const Data&) const
   const std::shared_ptr<const Object>& getObject(const Attribute* object, const Status& status, const SharedData& data) const;
+  /// @brief Method returning the slot holding the object of an object attribute in the status or data, for
+  /// writing it.
+  std::shared_ptr<const Object>& getObjectSlot(const Attribute* object, Status& status, Data& data) const;
+  /// @copydoc getObjectSlot(const Attribute*, Status&, Data&) const
+  std::shared_ptr<const Object>& getObjectSlot(const Attribute* object, Status& status, SharedData& data) const;
   /// @brief Method setting the value of an attribute and returning the change of the objective, which is the
   /// change of the value times the weight of the attribute for a data attribute and zero for a status attribute,
   /// the previous value being available here and nowhere later.

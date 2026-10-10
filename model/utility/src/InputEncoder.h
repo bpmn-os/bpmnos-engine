@@ -60,6 +60,11 @@ public:
   /// expression, the type of an expression following from its shape rather than from its text.
   const std::optional<ValueType>& type() const { return literalType; }
 
+  /// Returns the indices in the object registry of the constant objects the literals of the text state, in
+  /// their order, so that a caller can tell a number standing for a constant object from a number. A part of
+  /// a text scanned already states none.
+  const std::vector<size_t>& objects() const { return literalObjects; }
+
   /// Returns a part of a text that has been scanned already, such as one alternative of an enumeration.
   /// No type is stated, a part of a text being no literal of its own.
   static InputEncoder fragment(std::string text);
@@ -70,6 +75,7 @@ private:
 
   std::string encoded;
   std::optional<ValueType> literalType;
+  std::vector<size_t> literalObjects;
 };
 
 } // namespace BPMNOS

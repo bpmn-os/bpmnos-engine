@@ -63,6 +63,19 @@ public:
   const Attribute* isAttribute() const; ///< Returns pointer to the attribute if and only if expression contains nothing else
   template <typename DataType>
   std::optional<double> execute(const BPMNOS::Status& status, const DataType& data) const;
+  /// Returns true if the expression assigns an object, a part of one, or the length of one of its dimensions.
+  bool writesObject() const { return objectTarget; }
+  /**
+   * @brief Writes what an assignment to an object states: a value or an array or object to an element, an array
+   * or object to the whole object, or the length of a dimension.
+   *
+   * The object is copied first if anyone else holds it. An element keeps its lengths, except those not yet
+   * determined, which the value determines for every element; the whole object keeps the lengths of its fixed
+   * dimensions, a shorter value being padded with undefined values and a longer one being an error, and takes
+   * the lengths of its open ones.
+   */
+  template <typename DataType>
+  void write(BPMNOS::Status& status, DataType& data) const;
 private:
   LIMEX::Expression<double> getExpression(const std::string& input) const;
   Type getType() const;
@@ -74,8 +87,34 @@ private:
   };
   std::vector<Use> pathUses; ///< The use of each path
   std::vector<bool> sizeOnly; ///< True for a collection that is only the argument of `size`
+  bool objectTarget = false; ///< True if the target is an object
+  bool resize = false; ///< True for `resize(path) := n`, which assigns the length of a dimension
+  bool compound = false; ///< True for a compound assignment, such as `+=`
+  bool objectValue = false; ///< True if an array or object is assigned
+  std::optional<size_t> sourceLiteral; ///< The constant object assigned, by its index in the object registry
+  const Attribute* sourceObject = nullptr; ///< The object attribute assigned
+  std::optional<size_t> sourcePath; ///< The path to the part of an object assigned
+  std::vector<std::string> targetFields; ///< The fields the target path names, one within the other
+  size_t targetDimension = 0; ///< The number of dimensions the target path indexes after its last field
+  std::vector<std::string> resizeFields; ///< The fields naming the array whose dimension is resized
+  size_t resizeDimension = 0; ///< The position of the dimension resized
+  /// The schema a path reaches, the number of its dimensions indexed, and the fields it names
+  struct Step {
+    const Schema* schema;
+    size_t dimension;
+    std::vector<std::string> fields;
+  };
   void determineUses();
+  Step walk(size_t path, const Attribute* attribute) const;
   void bind(size_t path, const Attribute* attribute) const;
+  void analyseTarget(const std::vector<size_t>& literals);
+  static std::string withoutResize(const std::string& text);
+  std::vector< LIMEX::View<double> > viewsOf(const std::vector<const BPMNOS::Object*>& collectionObjects) const;
+  LIMEX::Resolver<double> resolverOf(const std::vector<const BPMNOS::Object*>& pathObjects) const;
+  template <typename DataType>
+  bool gather(const BPMNOS::Status& status, const DataType& data, std::vector<double>& variableValues, std::vector<const BPMNOS::Object*>& collectionObjects, std::vector<const BPMNOS::Object*>& pathObjects, bool undefinedAsNaN) const;
+  template <typename DataType>
+  std::string arguments(const BPMNOS::Status& status, const DataType& data) const;
 };
 
 } // namespace BPMNOS::Model

@@ -202,8 +202,15 @@ BPMNOS::Status mergeStatus(const std::vector<BPMNOS::Status>& statuses) {
   size_t n = statuses.front().attributes.size();
   BPMNOS::Status result(n);
   result.attributes[(int)BPMNOS::Model::ExtensionElements::Index::Timestamp] = statuses.front().attributes[(int)BPMNOS::Model::ExtensionElements::Index::Timestamp];
-  // the objects are not written by any token, so that the statuses hold the same objects
-  result.objects = statuses.front().objects;
+  // the objects are merged element by element, padded to the largest length of every dimension
+  result.objects.resize(statuses.front().objects.size());
+  for ( size_t k = 0; k < result.objects.size(); k++ ) {
+    std::vector< std::shared_ptr<const BPMNOS::Object> > objects;
+    for ( auto& status : statuses ) {
+      objects.push_back(status.objects[k]);
+    }
+    result.objects[k] = BPMNOS::merge(objects);
+  }
 
   for ( size_t i = 0; i < n; i++ ) {
     for ( auto& status : statuses ) {
