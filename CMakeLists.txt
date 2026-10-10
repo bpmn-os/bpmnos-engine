@@ -219,12 +219,13 @@ include_directories(
   ${cnl_SOURCE_DIR}/include 
 )
 
-# LIMEX dependency. Pinned by tag: declaring it at main meant that pinning the engine did not determine the
-# build, since a consumer fetching a given engine revision could get any later limex.
+# LIMEX dependency. Pinned: declaring it at main meant that pinning the engine did not determine the build,
+# since a consumer fetching a given engine revision could get any later limex. Pinned by commit while LIMEX is
+# being extended for objects, by tag again once that is complete.
 FetchContent_Declare(
         limex
         GIT_REPOSITORY https://github.com/bpmn-os/limex/
-        GIT_TAG v0.1.0
+        GIT_TAG 99c59c7cb00910b19e061fd2240e0b854408edea
 )
 
 FetchContent_GetProperties(limex)

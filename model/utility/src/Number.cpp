@@ -176,7 +176,7 @@ std::string to_string(number numericValue, const ValueType& type) {
     case ValueType::STRING:
       return stringRegistry[(std::size_t)numericValue];
     case ValueType::COLLECTION: {
-      auto collection = collectionRegistry[(std::size_t)numericValue];
+      const auto& collection = collectionRegistry[(std::size_t)numericValue];
       if ( collection.empty() ) {
         return "[ ]";
       }

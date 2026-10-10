@@ -1,19 +1,29 @@
 #include "CollectionRegistry.h"
 #include "Keywords.h"
 #include <cassert>
+#include <stdexcept>
 
 using namespace BPMNOS;
 
-std::vector<double> CollectionRegistry::operator[](size_t i) const {
-  std::shared_lock read_lock(registryMutex);
-  assert( i < registeredCollections.size() );
-  return registeredCollections[i];
+CollectionRegistry::~CollectionRegistry() {
+  for ( auto& block : blocks ) {
+    delete[] block.load(std::memory_order_relaxed);
+  }
+}
+
+const CollectionRegistry::Entry& CollectionRegistry::entry(size_t i) const {
+  // the entry is published before the counter is raised, so that an index below the counter refers to an
+  // entry and a block that are completely written
+  assert( i < published.load(std::memory_order_acquire) );
+  return blocks[i / blockSize].load(std::memory_order_acquire)[i % blockSize];
+}
+
+const std::vector<double>& CollectionRegistry::operator[](size_t i) const {
+  return entry(i).values;
 }
 
 ValueType CollectionRegistry::memberType(size_t i) const {
-  std::shared_lock read_lock(registryMutex);
-  assert( i < registeredMemberTypes.size() );
-  return registeredMemberTypes[i];
+  return entry(i).memberType;
 }
 
 size_t CollectionRegistry::operator()(const std::vector<double>& collection, ValueType memberType) {
@@ -28,32 +38,31 @@ size_t CollectionRegistry::operator()(const std::vector<double>& collection, Val
   read_lock.unlock();
 
   std::unique_lock write_lock(registryMutex);
-  auto [it, inserted] = typeIndex.try_emplace(collection, registeredCollections.size());
-
-  if ( !inserted ) {
-    assert( registeredMemberTypes.size() == registeredCollections.size() );
+  if ( auto it = typeIndex.find(collection);
+    it != typeIndex.end()
+  ) {
+    // registered by another thread in the meantime
     return it->second;
   }
 
-  registeredCollections.push_back(collection);
-  registeredMemberTypes.push_back(memberType);
+  size_t i = published.load(std::memory_order_relaxed);
+  if ( i / blockSize >= maxBlocks ) {
+    throw std::runtime_error("CollectionRegistry: too many collections");
+  }
+  typeIndex.emplace(collection, i);
+  Entry* block = blocks[i / blockSize].load(std::memory_order_relaxed);
+  if ( !block ) {
+    block = new Entry[blockSize];
+    blocks[i / blockSize].store(block, std::memory_order_release);
+  }
+  block[i % blockSize] = Entry{collection, memberType};
+  published.store(i + 1, std::memory_order_release);
 
-  assert( registeredMemberTypes.size() == registeredCollections.size() );
-  return registeredCollections.size()-1;
+  return i;
 }
 
 size_t CollectionRegistry::size() const {
-  std::shared_lock read_lock(registryMutex);
-  return registeredCollections.size();
-}
-
-void CollectionRegistry::clear() {
-  std::unique_lock write_lock(registryMutex);
-  for ( auto& typeIndex : index ) {
-    typeIndex.clear();
-  }
-  registeredCollections.clear();
-  registeredMemberTypes.clear();
+  return published.load(std::memory_order_acquire);
 }
 
 // Create global registry

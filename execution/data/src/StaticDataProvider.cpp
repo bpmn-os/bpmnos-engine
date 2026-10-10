@@ -280,13 +280,13 @@ std::optional<BPMNOS::number> StaticDataProvider::getValue(const Scenario& scena
       }
       variableValues.push_back((double)value.value());
     }
-    std::vector<std::vector<double>> collectionValues;
+    std::vector<LIMEX::View<double>> collectionValues;
     for ( auto input : attribute->expression->collections ) {
       auto collection = input->isImmutable ? getValue(scenario, instanceId, input) : std::nullopt;
       if ( !collection.has_value() ) {
         return std::nullopt;
       }
-      collectionValues.push_back(collectionRegistry[(size_t)collection.value()]);
+      collectionValues.emplace_back(collectionRegistry[(size_t)collection.value()]);
     }
     return BPMNOS::number(attribute->expression->compiled.evaluate(variableValues, collectionValues));
   }

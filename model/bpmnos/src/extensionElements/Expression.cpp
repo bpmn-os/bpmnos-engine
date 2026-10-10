@@ -144,18 +144,15 @@ std::optional<double> Expression::execute(const BPMNOS::Values& status, const Da
     variableValues.push_back( (double)value.value() );
   }
   
-  // collect values of all variables in collection
-  std::vector< std::vector< double > > collectionValues;
+  // collect a view of each collection, the registered collections never moving
+  std::vector< LIMEX::View<double> > collectionValues;
   for ( auto attribute : collections ) {
-    collectionValues.push_back( {} );
     auto collection = attributeRegistry.getValue(attribute,status,data);
     if ( !collection.has_value() ) {
       // return nullopt because required collection is not given
       return std::nullopt;
     }
-    for ( auto value : collectionRegistry[(size_t)collection.value()] ) {
-      collectionValues.back().push_back( value );
-    }
+    collectionValues.emplace_back( collectionRegistry[(size_t)collection.value()] );
   }
 
   try {
