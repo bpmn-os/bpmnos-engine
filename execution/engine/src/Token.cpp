@@ -1,4 +1,6 @@
 #include "Token.h"
+#include <algorithm>
+#include <tuple>
 #include "model/bpmnos/src/Model.h"
 #include "StateMachine.h"
 #include "Engine.h"
@@ -209,124 +211,72 @@ nlohmann::ordered_json Token::jsonify() const {
     jsonObject["sequenceFlowId"] = sequenceFlow->id;
   }
   jsonObject["state"] = stateName[(int)state];
-  jsonObject["status"] = nlohmann::ordered_json::object();
-
   auto& attributeRegistry = getAttributeRegistry();
-  for (auto attribute : attributeRegistry.statusAttributes ) {
-    if ( attribute->index >= status.attributes.size() ) {
-      // skip attribute that is not yet included in status
-      continue;
-    }
 
-    auto statusValue = attributeRegistry.getValue(attribute,status,*data);
-    if ( !statusValue.has_value() ) {
-      jsonObject["status"][attribute->name] = nullptr ;
+  // a scalar attribute is rendered as a value of its type and an object as JSON, both in the order of their
+  // declaration, outer scopes first
+  auto valueOf = [](const BPMNOS::Value& value, ValueType type) -> nlohmann::ordered_json {
+    if ( !value.has_value() ) {
+      return nullptr;
     }
-    else if ( attribute->type == BOOLEAN) {
-      bool value = (bool)statusValue.value();
-      jsonObject["status"][attribute->name] = value ;
+    switch ( type ) {
+      case BOOLEAN:
+        return (bool)value.value();
+      case INTEGER:
+        return (int)value.value();
+      case DECIMAL:
+        return (double)value.value();
+      case STRING:
+        return BPMNOS::to_string(value.value(),type);
     }
-    else if ( attribute->type == INTEGER) {
-      int value = (int)statusValue.value();
-      jsonObject["status"][attribute->name] = value ;
+    return nullptr;
+  };
+  using Entry = std::tuple<size_t, std::string, nlohmann::ordered_json>;
+  auto render = [](std::vector<Entry>& entries) {
+    std::ranges::sort(entries, [](auto& first, auto& second) { return std::get<0>(first) < std::get<0>(second); });
+    auto result = nlohmann::ordered_json::object();
+    for ( auto& [_, name, value] : entries ) {
+      result[name] = std::move(value);
     }
-    else if ( attribute->type == DECIMAL) {
-      double value = (double)statusValue.value();
-      jsonObject["status"][attribute->name] = value ;
-    }
-    else if ( attribute->type == STRING) {
-      std::string value = BPMNOS::to_string(statusValue.value(),attribute->type);
-      jsonObject["status"][attribute->name] = value ;
+    return result;
+  };
+
+  std::vector<Entry> statusEntries;
+  for ( auto attribute : attributeRegistry.statusAttributes ) {
+    // an attribute that is not yet included in the status is skipped
+    if ( attribute->index < status.attributes.size() ) {
+      statusEntries.emplace_back( attribute->declaration, attribute->name, valueOf(status.attributes[attribute->index], attribute->type) );
     }
   }
-  // an object is rendered as the literal stating it
   for ( auto object : attributeRegistry.statusObjects ) {
     if ( object->index < status.objects.size() ) {
-      jsonObject["status"][object->name] = BPMNOS::to_string(*status.objects[object->index]);
+      statusEntries.emplace_back( object->declaration, object->name, BPMNOS::to_json(*status.objects[object->index]) );
     }
   }
+  jsonObject["status"] = render(statusEntries);
 
-//std::cerr << jsonObject << std::endl;
   assert(data);
-  // the global attributes are the data attributes with indices below the instance index, and are reported
-  // apart from the data of the scopes; the global objects are the data objects with indices below their number
-  auto instanceIndex = owner->systemState->engine->getModel()->instanceIndex;
-  auto globalObjects = owner->systemState->engine->getModel()->objects.size();
-  if ( data->attributes.size() > instanceIndex ) {
-    jsonObject["data"] = nlohmann::ordered_json::object();
-
-    for (auto attribute : attributeRegistry.dataAttributes ) {
-      if ( attribute->index < instanceIndex ) {
-        continue;
-      }
-      if ( attribute->index >= data->attributes.size() ) {
-        // skip attribute that is not yet included in data
-        continue;
-      }
-
-      auto dataValue = attributeRegistry.getValue(attribute,status,*data);
-      if ( !dataValue.has_value() ) {
-        jsonObject["data"][attribute->name] = nullptr ;
-      }
-      else if ( attribute->type == BOOLEAN) {
-        bool value = (bool)dataValue.value();
-        jsonObject["data"][attribute->name] = value ;
-      }
-      else if ( attribute->type == INTEGER) {
-        int value = (int)dataValue.value();
-        jsonObject["data"][attribute->name] = value ;
-      }
-      else if ( attribute->type == DECIMAL) {
-        double value = (double)dataValue.value();
-        jsonObject["data"][attribute->name] = value ;
-      }
-      else if ( attribute->type == STRING) {
-        std::string value = BPMNOS::to_string(dataValue.value(),attribute->type);
-        jsonObject["data"][attribute->name] = value ;
-      }
-    }
-    for ( auto object : attributeRegistry.dataObjects ) {
-      if ( object->index >= globalObjects && object->index < data->objects.size() ) {
-        jsonObject["data"][object->name] = BPMNOS::to_string(*data->objects[object->index].get());
-      }
+  // the global attributes and objects are reported apart from the data of the scopes
+  std::vector<Entry> dataEntries;
+  std::vector<Entry> globalEntries;
+  for ( auto attribute : attributeRegistry.dataAttributes ) {
+    // an attribute that is not yet included in the data is skipped
+    if ( attribute->index < data->attributes.size() ) {
+      ( attribute->isGlobal ? globalEntries : dataEntries ).emplace_back( attribute->declaration, attribute->name, valueOf(data->attributes[attribute->index].get(), attribute->type) );
     }
   }
-
-  if ( instanceIndex > 0 || globalObjects > 0 ) {
-    jsonObject["globals"] = nlohmann::ordered_json::object();
-
-    for (auto attribute : attributeRegistry.dataAttributes ) {
-      if ( attribute->index >= instanceIndex ) {
-        break;
-      }
-      auto globalValue = attributeRegistry.getValue(attribute,status,*data);
-      if ( !globalValue.has_value() ) {
-        jsonObject["globals"][attribute->name] = nullptr ;
-      }
-      else if ( attribute->type == BOOLEAN) {
-        bool value = (bool)globalValue.value();
-        jsonObject["globals"][attribute->name] = value ;
-      }
-      else if ( attribute->type == INTEGER) {
-        int value = (int)globalValue.value();
-        jsonObject["globals"][attribute->name] = value ;
-      }
-      else if ( attribute->type == DECIMAL) {
-        double value = (double)globalValue.value();
-        jsonObject["globals"][attribute->name] = value ;
-      }
-      else if ( attribute->type == STRING) {
-        std::string value = BPMNOS::to_string(globalValue.value(),attribute->type);
-        jsonObject["globals"][attribute->name] = value ;
-      }
-    }
-    for ( auto object : attributeRegistry.dataObjects ) {
-      if ( object->index < globalObjects ) {
-        jsonObject["globals"][object->name] = BPMNOS::to_string(*data->objects[object->index].get());
-      }
+  for ( auto object : attributeRegistry.dataObjects ) {
+    if ( object->index < data->objects.size() ) {
+      ( object->isGlobal ? globalEntries : dataEntries ).emplace_back( object->declaration, object->name, BPMNOS::to_json(*data->objects[object->index].get()) );
     }
   }
-  
+  if ( !dataEntries.empty() ) {
+    jsonObject["data"] = render(dataEntries);
+  }
+  if ( !globalEntries.empty() ) {
+    jsonObject["globals"] = render(globalEntries);
+  }
+
   return jsonObject;
 }
 

@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include "Value.h"
+#include <nlohmann/json.hpp>
 
 namespace BPMNOS {
 
@@ -65,6 +66,13 @@ struct Object::Layout::Field {
  * fields, strings quoted and undefined values written `undefined`.
  */
 std::string to_string(const Object& object);
+
+/**
+ * @brief Renders an object as JSON: a dimension as an array, fields as an object keyed by their names in their
+ * order, a truth value, integer or decimal as a number of its type, a string as text, and an undefined value as
+ * `null`.
+ */
+nlohmann::ordered_json to_json(const Object& object);
 
 /**
  * @brief Returns the object a slot holds for modification, replacing it by a copy first if anyone else holds it,

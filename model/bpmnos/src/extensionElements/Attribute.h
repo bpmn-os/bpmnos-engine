@@ -27,6 +27,9 @@ public:
 
   Category category;
   size_t index; ///< Index of attribute (is automatically set by attribute registry).
+  /// Position of the attribute among the attributes, scalar and object alike, in the order of their declaration,
+  /// outer scopes first (set by the attribute registry), by which an outside view orders them
+  size_t declaration = 0;
 
   std::string& id;
   /// The shape of an object attribute, stated by its type; nullptr for a scalar attribute.

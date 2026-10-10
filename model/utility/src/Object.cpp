@@ -215,6 +215,47 @@ std::string to_string(const Object& object) {
   return render(*object.layout, object.values, 0, 0);
 }
 
+namespace {
+
+/// Renders the values of a layout beginning at the given offset, from the given dimension on, as JSON.
+nlohmann::ordered_json json(const Object::Layout& layout, const std::vector<Value>& values, size_t offset, size_t dimension) {
+  if ( dimension < layout.dimensions.size() ) {
+    auto result = nlohmann::ordered_json::array();
+    size_t elementSpan = span(layout, dimension);
+    for ( size_t i = 0; i < layout.dimensions[dimension]; i++ ) {
+      result.push_back( json(layout, values, offset + i * elementSpan, dimension + 1) );
+    }
+    return result;
+  }
+  if ( layout.scalar.has_value() ) {
+    auto& value = values[offset];
+    if ( !value.has_value() ) {
+      return nullptr;
+    }
+    switch ( layout.scalar.value() ) {
+      case ValueType::BOOLEAN:
+        return value.value() != number(0);
+      case ValueType::INTEGER:
+        return (long)value.value();
+      case ValueType::DECIMAL:
+        return (double)value.value();
+      case ValueType::STRING:
+        return BPMNOS::to_string(value.value(), ValueType::STRING);
+    }
+  }
+  auto result = nlohmann::ordered_json::object();
+  for ( auto& field : layout.fields ) {
+    result[field.name] = json(field.layout, values, offset + field.offset, 0);
+  }
+  return result;
+}
+
+} // namespace
+
+nlohmann::ordered_json to_json(const Object& object) {
+  return json(*object.layout, object.values, 0, 0);
+}
+
 std::vector<double> to_vector(const Object& object) {
   if ( !object.isVector() ) {
     throw std::runtime_error("Object: '" + to_string(object) + "' is not an array of values");

@@ -28,6 +28,23 @@ Alternatively the content of each input is supplied directly, keyed by the sourc
 under, together with an already parsed model. @ref BPMNOS::Model::Model::getInputSources "getInputSources"
 states which names a model expects.
 
+## Objects and inputs
+
+Besides scalar attributes of type `boolean`, `integer`, `decimal` and `string`, an attribute may be an object, an
+array or a value with fields, whose `type` states its shape, `integer[3]`, `decimal[][]` or
+`{ cost: decimal, flags: boolean[] }[]`. Objects are global, data or status attributes like scalars; they are
+given by literals in the model and the instance data, read and written by expressions through access paths such
+as `facilities[i].cost`, aggregated, resized, shared until written, merged at joins, and carried by messages and
+signals. Data that is only read during a run is given as an input of a data store instead, a lookup table, a
+matrix or a JSON object, which every expression reads by its name and none writes. The @ref extension
+"BPMN extension" describes both in full, and the instance data below states how objects are given and sized.
+
+The log of a run, as a @ref BPMNOS::Execution::Recorder "recorder" keeps it, shows the attributes of a token's
+`status`, `data` and `globals` in the order of their declaration, outer scopes first, scalars and objects alike,
+and renders an object as JSON: a dimension as an array, fields as an object, a string as text and an undefined
+value as `null`, so that `facilities` appears as `[ { "cost": 10, "flags": [ true, null ] } ]`. The objects of
+message and signal content are rendered alike.
+
 ## Scenario
 
 A @ref BPMNOS::Execution::Scenario "scenario" holds what a run on a model needs to know of its environment: the process instances and the values of their attributes, and the times at which these become known. It is created by a @ref BPMNOS::Execution::DataProvider "data provider" from instance data supplied before the run, and the data provider enqueues the events the scenario gives rise to during the run, as described in the documentation of the @ref engine "execution engine". Four data providers are available, differing in what is known when, and are described below. The data may give no values to the attributes of an @ref BPMN::EventSubProcess "event subprocess" or of a compensation activity: the engine creates such scopes itself and gives them the values the model assigns, and a data provider rejects a row naming such a node in its INITIALIZATION column or, for the stochastic data provider, its READY column. The data may give no values to the attributes of a @ref BPMNOS::Model::Guidance "guidance" either, which take only the values the model assigns to them.

@@ -4,6 +4,21 @@
 - **Download:** https://github.com/bpmn-os/bpmnos-engine
 - **Documentation:** https://bpmn-os.github.io/bpmnos-engine
 
+## Objects and inputs
+
+Besides scalar attributes, a model may declare objects, arrays and values with fields whose `type` states their
+shape, such as `integer[3]` or `{ cost: decimal, flags: boolean[] }[]`. Expressions read and write them through
+access paths, `facilities[i].cost := 5`, aggregate them, `sum{ facilities[i].cost | i in 1..size(facilities) }`,
+and resize them, `resize(route) := size(route) + 1`. Data that is only read during a run is declared as an input
+of a data store, a lookup table, a matrix or a JSON object, and read by its name, `distance[i][j]`:
+
+```xml
+<bpmnos:attribute id="Location" name="location" type="integer[10]" />
+<bpmnos:input id="Input_1" name="distance" type="matrix" source="distance.csv" schema="decimal[][]" />
+```
+
+The [documentation](https://bpmn-os.github.io/bpmnos-engine) describes objects and inputs in full.
+
 ## Requirements
 
 A C++23 compiler, GCC 15.2 or Clang 18.1.3 or later, CMake 3.26.4 or later, and git.

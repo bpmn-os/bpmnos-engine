@@ -64,6 +64,9 @@ public:
 private:
   friend class Attribute;
   void add(Attribute* attribute);
+  /// The number of attributes declared so far, which the registry of a scope continues from that of the scope
+  /// enclosing it
+  size_t declared = 0;
 };
 
 } // namespace BPMNOS::Model

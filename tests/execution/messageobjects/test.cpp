@@ -209,3 +209,23 @@ TEST_CASE( "Content is applied to the receiving attribute", "[execution][message
     REQUIRE( status.objects[stops->index] == before );
   }
 }
+
+TEST_CASE( "The log shows the objects of message content as JSON", "[execution][message][objects][log]" ) {
+  auto model = modelFrom(messagingModel("integer[3]"));
+  auto provider = std::make_shared<Execution::StaticDataProvider>(model, instances);
+  Execution::Engine engine(model);
+  Execution::InstantEntry entryHandler;
+  Execution::FirstMatchingMessageDelivery messageHandler;
+  Execution::InstantExit exitHandler;
+  messageHandler.connect(&engine);
+  entryHandler.connect(&engine);
+  exitHandler.connect(&engine);
+  Execution::Recorder recorder;
+  recorder.subscribe(&engine);
+  engine.run(provider->createScenario());
+
+  auto messages = recorder.find(nlohmann::json{{"origin","Throw_1"}});
+  REQUIRE( !messages.empty() );
+  REQUIRE( messages[0]["content"]["Route"] == nlohmann::ordered_json::array({ 1, 2 }) );
+  REQUIRE( messages[0]["content"]["Depot"] == nlohmann::ordered_json::parse(R"({ "x": 3.0 })") );
+}

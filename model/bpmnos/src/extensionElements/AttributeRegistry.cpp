@@ -17,6 +17,7 @@ void AttributeRegistry::add(Attribute* attribute) {
   if ( inputs.contains(attribute->name) ) {
     throw std::runtime_error("AttributeRegistry: attribute name '" + attribute->name + "' is the name of an input");
   }
+  attribute->declaration = declared++;
   // objects are numbered separately from scalar attributes, so that the index of a scalar attribute never
   // depends on objects
   if ( attribute->category == Attribute::Category::STATUS ) {

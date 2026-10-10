@@ -95,8 +95,8 @@ nlohmann::ordered_json Message::jsonify() const {
       jsonObject["content"][key] = std::get< std::string >(contentValue);
     }
     else if ( std::holds_alternative< std::shared_ptr<const BPMNOS::Object> >(contentValue) ) {
-      // an object is rendered as the literal stating it
-      jsonObject["content"][key] = BPMNOS::to_string( *std::get< std::shared_ptr<const BPMNOS::Object> >(contentValue) );
+      // an object is rendered as JSON
+      jsonObject["content"][key] = BPMNOS::to_json( *std::get< std::shared_ptr<const BPMNOS::Object> >(contentValue) );
     }
     else {
 //std::cerr << "else" << std::endl;  
