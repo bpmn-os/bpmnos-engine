@@ -303,11 +303,9 @@ void InstanceDataReader::evaluateGlobal(const std::string& initialization, const
   for ( auto& object : model->objects ) {
     globalValues.objects.push_back( knownObject(std::nullopt, object.get()) );
   }
-  for ( auto inputs : { &expression.collections, &expression.paths } ) {
-    for ( auto referencedAttribute : *inputs ) {
-      if ( referencedAttribute->isObject() && !globalValues.objects[referencedAttribute->index] ) {
-        throw std::runtime_error("InstanceDataReader: global attribute '" + attributeName + "' refers to global object '" + referencedAttribute->name + "' without a value");
-      }
+  for ( auto referencedAttribute : expression.paths ) {
+    if ( !globalValues.objects[referencedAttribute->index] ) {
+      throw std::runtime_error("InstanceDataReader: global attribute '" + attributeName + "' refers to global object '" + referencedAttribute->name + "' without a value");
     }
   }
 
@@ -360,11 +358,9 @@ BPMNOS::number InstanceDataReader::evaluate(size_t instanceId, const BPMN::Node*
     bool global = ( object->index < model->objects.size() );
     data.objects[object->index] = knownObject(global ? std::nullopt : std::optional<size_t>(instanceId), object);
   }
-  for ( auto inputs : { &expression.collections, &expression.paths } ) {
-    for ( auto attribute : *inputs ) {
-      if ( attribute->isObject() && !registry.getObject(attribute, status, data) ) {
-        throw std::runtime_error("InstanceDataReader: expression '" + expressionString + "' refers to object '" + attribute->name + "' without a value");
-      }
+  for ( auto attribute : expression.paths ) {
+    if ( !registry.getObject(attribute, status, data) ) {
+      throw std::runtime_error("InstanceDataReader: expression '" + expressionString + "' refers to object '" + attribute->name + "' without a value");
     }
   }
 

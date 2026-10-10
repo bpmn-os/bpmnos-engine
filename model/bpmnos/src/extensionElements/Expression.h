@@ -16,10 +16,10 @@ namespace BPMNOS::Model {
 /**
  * @brief Class representing a mathematical expression.
  *
- * The expression is compiled by LIMEX. Its variables are scalar attributes, passed to LIMEX by value. An array
- * named by an attribute, on the right of `in`, as the argument of an aggregator or in a binding of an
- * aggregation, is a collection, passed as a view of the array the object attribute holds. An access path such as
- * `facilities[i].cost`, `grid[i][j]` or `x[i]` addresses a part of such an array or object; LIMEX evaluates its
+ * The expression is compiled by LIMEX. Its variables are scalar attributes, passed to LIMEX by value. An access
+ * path such as `facilities[i].cost`, `grid[i][j]` or `x[i]` addresses a part of the array or object an object
+ * attribute holds, and a name used as an array, on the right of `in`, as the argument of an aggregator or in a
+ * binding of an aggregation, is a path without steps, addressing the whole array; LIMEX evaluates its
  * indices, counting from one, and the expression resolves the path against the layout of the object it
  * addresses, without copying any value.
  *
@@ -50,15 +50,14 @@ public:
   const LIMEX::Expression<double> compiled;
   const Type type;
   std::optional<const Attribute*> target;
-  std::set<const Attribute*> inputs; ///< Vector containing all input attributes and collections used by the expression.
+  std::set<const Attribute*> inputs; ///< Set containing all attributes read by the expression.
   std::vector<const Attribute*> variables; ///< Vector containing all input attributes used by the expression.
-  std::vector<const Attribute*> collections; ///< Vector containing all input collections used by the expression.
   std::vector<const Attribute*> paths; ///< Vector containing the attribute addressed by each path, in the order of the paths.
   /**
-   * @brief Evaluates the compiled expression for the values of its variables, the arrays its collections name
-   * and the arrays or objects its paths address, returning nullopt if it reads an undefined value.
+   * @brief Evaluates the compiled expression for the values of its variables and the arrays or objects its paths
+   * address, returning nullopt if it reads an undefined value.
    */
-  std::optional<double> evaluate(const std::vector<double>& variableValues, const std::vector<const BPMNOS::Object*>& collectionObjects, const std::vector<const BPMNOS::Object*>& pathObjects) const;
+  std::optional<double> evaluate(const std::vector<double>& variableValues, const std::vector<const BPMNOS::Object*>& pathObjects) const;
   const Attribute* isAttribute() const; ///< Returns pointer to the attribute if and only if expression contains nothing else
   template <typename DataType>
   std::optional<double> execute(const BPMNOS::Status& status, const DataType& data) const;
@@ -85,7 +84,6 @@ private:
     bool aggregated = false;
   };
   std::vector<Use> pathUses; ///< The use of each path
-  std::vector<bool> sizeOnly; ///< True for a collection that is only the argument of `size`
   bool objectTarget = false; ///< True if the target is an object
   bool resize = false; ///< True for `resize(path) := n`, which assigns the length of a dimension
   bool compound = false; ///< True for a compound assignment, such as `+=`
@@ -109,10 +107,9 @@ private:
   void bind(size_t path, const Attribute* attribute) const;
   void analyseTarget(const std::vector<size_t>& literals);
   static std::string withoutResize(const std::string& text);
-  std::vector< LIMEX::View<double> > viewsOf(const std::vector<const BPMNOS::Object*>& collectionObjects) const;
   LIMEX::Resolver<double> resolverOf(const std::vector<const BPMNOS::Object*>& pathObjects) const;
   template <typename DataType>
-  bool gather(const BPMNOS::Status& status, const DataType& data, std::vector<double>& variableValues, std::vector<const BPMNOS::Object*>& collectionObjects, std::vector<const BPMNOS::Object*>& pathObjects, bool undefinedAsNaN) const;
+  bool gather(const BPMNOS::Status& status, const DataType& data, std::vector<double>& variableValues, std::vector<const BPMNOS::Object*>& pathObjects, bool undefinedAsNaN) const;
   template <typename DataType>
   std::string arguments(const BPMNOS::Status& status, const DataType& data) const;
 };

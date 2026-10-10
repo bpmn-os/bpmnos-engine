@@ -348,13 +348,6 @@ std::optional<BPMNOS::number> StaticDataProvider::getValue(const Scenario& scena
       bool global = ( input->category == BPMNOS::Model::Attribute::Category::DATA && input->index < this->model->objects.size() );
       return global ? globals.objects[input->index].get() : getObject(instanceId, input).get();
     };
-    std::vector<const BPMNOS::Object*> collectionObjects;
-    for ( auto input : attribute->expression->collections ) {
-      collectionObjects.push_back(objectOf(input));
-      if ( !collectionObjects.back() ) {
-        return std::nullopt;
-      }
-    }
     std::vector<const BPMNOS::Object*> pathObjects;
     for ( auto input : attribute->expression->paths ) {
       pathObjects.push_back(objectOf(input));
@@ -362,7 +355,7 @@ std::optional<BPMNOS::number> StaticDataProvider::getValue(const Scenario& scena
         return std::nullopt;
       }
     }
-    auto value = attribute->expression->evaluate(variableValues, collectionObjects, pathObjects);
+    auto value = attribute->expression->evaluate(variableValues, pathObjects);
     return value.has_value() ? std::optional<BPMNOS::number>(BPMNOS::number(value.value())) : std::nullopt;
   }
   auto& values = getInstanceValues(scenario, instanceId);
