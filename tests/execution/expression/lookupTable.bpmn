@@ -22,9 +22,9 @@
   </bpmn2:process>
   <bpmn2:dataStore id="DataStore_2">
     <bpmn2:extensionElements>
-      <bpmnos:tables>
-        <bpmnos:table id="Table_32t86dm" source="costs.csv" name="cost" header="ClientId: string;ServerId: string;Costs: decimal" />
-      </bpmnos:tables>
+      <bpmnos:inputs>
+        <bpmnos:input id="Table_32t86dm" name="cost" type="lookup" source="costs.csv" schema="ClientId: string;ServerId: string;Costs: decimal" />
+      </bpmnos:inputs>
     </bpmn2:extensionElements>
   </bpmn2:dataStore>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">

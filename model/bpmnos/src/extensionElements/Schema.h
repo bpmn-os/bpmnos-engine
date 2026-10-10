@@ -69,6 +69,17 @@ struct Schema {
    * value determines.
    */
   static Schema of(const BPMNOS::Object::Layout& layout, bool element);
+
+  /**
+   * @brief Returns an object of this schema holding the values of the given JSON text.
+   *
+   * An array is a dimension, whose elements have equal lengths at an open dimension and at most the declared
+   * length at a fixed one, an object is a value with fields, whose keys must be fields of the schema, and a number,
+   * truth value or string is a value of the type the schema states, `null` being undefined. A fixed dimension is
+   * padded with undefined values, an open dimension takes the length of the JSON array, and a field the JSON lacks
+   * is undefined.
+   */
+  std::shared_ptr<const BPMNOS::Object> fromJSON(const std::string& text) const;
 };
 
 } // namespace BPMNOS::Model

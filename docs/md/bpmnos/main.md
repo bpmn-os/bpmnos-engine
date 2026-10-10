@@ -11,22 +11,22 @@ The @ref BPMNOS::Model::Model class can be used to read a BPMN file with respect
 - @subpage extension "BPMN extension".
 
 Below is a minimal example loading a BPMN model stored in the file `diagram.bpmn`. A model declares its
-lookup tables by the file name of their source, so the folders those files are to be found in are given
-alongside it.
+inputs by the file name of their source, so the folders those files are to be found in are given alongside
+it.
 
 ```cpp
 #include <bpmnos-model.h>
   
 int main() {
-  BPMNOS::Model::Model model("diagram.bpmn", { "tables", "shared/tables" });
+  BPMNOS::Model::Model model("diagram.bpmn", { "inputs", "shared/inputs" });
   return 0;
 }
 
 ```
 
-Alternatively the content of each lookup table is supplied directly, keyed by the source file name it is
-declared under, together with an already parsed model. @ref BPMNOS::Model::Model::getLookupTableNames
-"getLookupTableNames" states which names a model expects.
+Alternatively the content of each input is supplied directly, keyed by the source file name it is declared
+under, together with an already parsed model. @ref BPMNOS::Model::Model::getInputSources "getInputSources"
+states which names a model expects.
 
 ## Scenario
 

@@ -5,6 +5,7 @@
 #include <atomic>
 #include <memory>
 #include <mutex>
+#include <optional>
 #include <shared_mutex>
 #include <string>
 #include <unordered_map>
@@ -18,7 +19,9 @@ namespace BPMNOS {
  * Every literal, `[ ... ]` and `{ name := ... }` alike, is registered here as a constant object, and the index
  * under which it is registered is the number standing for it wherever a value is a number: in an expression, in
  * a lookup table, and in an attribute holding it. Equal literals are registered once, so that two of them have
- * the same index; two objects are equal if they have the same layout and the same values.
+ * the same index; two objects are equal if they have the same layout and the same values. An object is found
+ * among those registered by a hash of its layout and its values, computed without converting a value, and an
+ * object with an equal hash is compared value by value, so that a collision never merges different objects.
  *
  * A registered object never moves and never changes: the entries are held in blocks of fixed size, each
  * allocated once, and the number of entries published so far is held in an atomic counter, which a
@@ -45,8 +48,10 @@ private:
   std::array< std::atomic< std::shared_ptr<const Object>* >, maxBlocks > blocks{};
   /// The number of published entries, raised by a registration after its entry is written.
   std::atomic<size_t> published{0};
-  /// The index of each registered object by its key, which states its layout and values.
-  std::unordered_map<std::string, size_t> index;
+  /// The indices of the registered objects by the hash of their layout and values.
+  std::unordered_multimap<size_t, size_t> index;
+  /// Returns the index of a registered object equal to the given one with the given hash, if there is one.
+  std::optional<size_t> find(const Object& object, size_t hash) const;
   mutable std::shared_mutex registryMutex; ///< Guards the index and serialises registrations
 };
 

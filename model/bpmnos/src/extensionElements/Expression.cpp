@@ -32,6 +32,9 @@ Expression::Expression(const LIMEX::Handle<double>& handle, const InputEncoder& 
     if ( name.value() == BPMNOS::Keyword::Undefined ) {
       throw std::runtime_error("Expression: illegal assignment '" + expression +"'");
     }
+    if ( attributeRegistry.inputs.contains(name.value()) ) {
+      throw std::runtime_error("Expression: input '" + name.value() + "' is read only and cannot be assigned in '" + expression + "'");
+    }
     if ( !newTarget ) {
       target = attributeRegistry[ name.value() ];
       objectTarget = target.value()->isObject();
@@ -56,6 +59,14 @@ Expression::Expression(const LIMEX::Handle<double>& handle, const InputEncoder& 
   determineUses();
 
   for ( auto& name : compiled.getVariables() ) {
+    if ( auto input = attributeRegistry.inputs.find(name); input != attributeRegistry.inputs.end() ) {
+      // an input is read as a value only through a path, unless it is the object assigned
+      if ( input->second != sourceInput ) {
+        throw std::runtime_error("Expression: input '" + name + "' must be indexed to a value in '" + expression +"'");
+      }
+      variables.push_back(nullptr);
+      continue;
+    }
     if ( name != BPMNOS::Keyword::Undefined ) {
       auto attribute = attributeRegistry[ name ];
       if ( attribute->isObject() && attribute != sourceObject ) {
@@ -67,14 +78,21 @@ Expression::Expression(const LIMEX::Handle<double>& handle, const InputEncoder& 
   }
   auto& pathDescriptions = compiled.getPaths();
   for ( size_t path = 0; path < pathDescriptions.size(); path++ ) {
-    auto attribute = attributeRegistry[ pathDescriptions[path].name ];
     // the target written and the source of an object assigned have been bound by the analysis of the target
     bool written = ( objectTarget && !compound && compiled.getTargetPath() == path );
     if ( !written && sourcePath != path ) {
-      bind(path, attribute);
+      bind(path);
     }
+    if ( auto input = attributeRegistry.inputs.find(pathDescriptions[path].name); input != attributeRegistry.inputs.end() ) {
+      // an input never changes, so that no expression depends on it
+      paths.push_back(nullptr);
+      pathInputs.push_back(input->second);
+      continue;
+    }
+    auto attribute = attributeRegistry[ pathDescriptions[path].name ];
     inputs.insert(attribute);
     paths.push_back(attribute);
+    pathInputs.push_back(nullptr);
   }
 }
 
@@ -205,19 +223,27 @@ void Expression::determineUses() {
   visit(compiled.getRoot(), false, false);
 }
 
-Expression::Step Expression::walk(size_t path, const Attribute* attribute) const {
+const Schema* Expression::schemaOf(const std::string& name) const {
+  if ( auto input = attributeRegistry.inputs.find(name); input != attributeRegistry.inputs.end() ) {
+    return &input->second->schema;
+  }
+  return attributeRegistry[name]->schema.get();
+}
+
+Expression::Step Expression::walk(size_t path) const {
   auto& description = compiled.getPaths()[path];
   auto text = pathText(description);
-  if ( !attribute->isObject() ) {
+  auto schema = schemaOf(description.name);
+  if ( !schema ) {
     throw std::runtime_error("Expression: '" + text + "' does not address an object in '" + expression +"'");
   }
   // the steps are followed through the schema: every index takes the next dimension, and a field may only
   // follow once every dimension is indexed
-  Step result{ attribute->schema.get(), 0, {} };
+  Step result{ schema, 0, {} };
   for ( auto& step : description.steps ) {
     if ( !step.has_value() ) {
       if ( result.dimension == result.schema->dimensions.size() ) {
-        throw std::runtime_error("Expression: '" + text + "' has more indices than '" + attribute->name + "' has dimensions in '" + expression +"'");
+        throw std::runtime_error("Expression: '" + text + "' has more indices than '" + description.name + "' has dimensions in '" + expression +"'");
       }
       result.dimension++;
       continue;
@@ -236,13 +262,14 @@ Expression::Step Expression::walk(size_t path, const Attribute* attribute) const
   return result;
 }
 
-void Expression::bind(size_t path, const Attribute* attribute) const {
+void Expression::bind(size_t path) const {
   auto& use = pathUses[path];
-  auto text = pathText(compiled.getPaths()[path]);
-  if ( !attribute->isObject() && compiled.getPaths()[path].steps.empty() ) {
-    throw std::runtime_error("Expression: '" + attribute->name + "' is not an array in '" + expression +"'");
+  auto& description = compiled.getPaths()[path];
+  auto text = pathText(description);
+  if ( description.steps.empty() && !schemaOf(description.name) ) {
+    throw std::runtime_error("Expression: '" + description.name + "' is not an array in '" + expression +"'");
   }
-  auto [schema, dimension, _] = walk(path, attribute);
+  auto [schema, dimension, _] = walk(path);
   if ( use.sizeOnly ) {
     if ( dimension == schema->dimensions.size() ) {
       throw std::runtime_error("Expression: '" + text + "' is not an array in '" + expression +"'");
@@ -264,7 +291,7 @@ void Expression::analyseTarget(const std::vector<size_t>& literals) {
   if ( resize ) {
     // the length of the dimension the target addresses is assigned a scalar value
     if ( targetPath.has_value() ) {
-      auto step = walk(targetPath.value(), attribute);
+      auto step = walk(targetPath.value());
       if ( step.dimension == step.schema->dimensions.size() ) {
         throw std::runtime_error("Expression: '" + pathText(compiled.getPaths()[targetPath.value()]) + "' is not an array in '" + expression + "'");
       }
@@ -281,7 +308,7 @@ void Expression::analyseTarget(const std::vector<size_t>& literals) {
     return;
   }
   if ( targetPath.has_value() ) {
-    auto step = walk(targetPath.value(), attribute);
+    auto step = walk(targetPath.value());
     objectValue = !( step.schema->scalar.has_value() && step.dimension == step.schema->dimensions.size() );
     targetFields = step.fields;
     targetDimension = step.dimension;
@@ -307,7 +334,13 @@ void Expression::analyseTarget(const std::vector<size_t>& literals) {
     sourceLiteral = (size_t)number;
   }
   else if ( value.type == LIMEX::Type::variable ) {
-    auto source = attributeRegistry[ compiled.getVariables()[ std::get<size_t>(value.operands[0]) ] ];
+    auto& name = compiled.getVariables()[ std::get<size_t>(value.operands[0]) ];
+    if ( auto input = attributeRegistry.inputs.find(name); input != attributeRegistry.inputs.end() ) {
+      // the object an input holds
+      sourceInput = input->second;
+      return;
+    }
+    auto source = attributeRegistry[ name ];
     if ( !source->isObject() ) {
       throw illegal();
     }
@@ -319,7 +352,7 @@ void Expression::analyseTarget(const std::vector<size_t>& literals) {
   }
   else if ( value.type == LIMEX::Type::path ) {
     size_t path = std::get<size_t>(value.operands[0]);
-    auto step = walk(path, attributeRegistry[ compiled.getPaths()[path].name ]);
+    auto step = walk(path);
     if ( step.schema->scalar.has_value() && step.dimension == step.schema->dimensions.size() ) {
       throw illegal();
     }
@@ -494,7 +527,7 @@ template <typename DataType>
 std::string Expression::arguments(const BPMNOS::Status& status, const DataType& data) const {
   std::string result;
   for ( auto attribute : variables ) {
-    if ( attribute->isObject() ) {
+    if ( !attribute || attribute->isObject() ) {
       continue;
     }
     result += ( result.empty() ? "" : ", " ) + attribute->name + " = ";
@@ -507,7 +540,7 @@ std::string Expression::arguments(const BPMNOS::Status& status, const DataType& 
 template <typename DataType>
 bool Expression::gather(const BPMNOS::Status& status, const DataType& data, std::vector<double>& variableValues, std::vector<const BPMNOS::Object*>& pathObjects, bool undefinedAsNaN) const {
   for ( auto attribute : variables ) {
-    if ( attribute->isObject() ) {
+    if ( !attribute || attribute->isObject() ) {
       // the object assigned, which LIMEX reads as a variable whose value is not used
       variableValues.push_back(0);
       continue;
@@ -519,8 +552,8 @@ bool Expression::gather(const BPMNOS::Status& status, const DataType& data, std:
     variableValues.push_back( value.has_value() ? (double)value.value() : std::numeric_limits<double>::quiet_NaN() );
   }
   // the arrays and objects the paths address, a name used as an array being a path without steps
-  for ( auto attribute : paths ) {
-    pathObjects.push_back( objectOf(attributeRegistry, attribute, status, data) );
+  for ( size_t path = 0; path < paths.size(); path++ ) {
+    pathObjects.push_back( paths[path] ? objectOf(attributeRegistry, paths[path], status, data) : pathInputs[path]->object.get() );
     if ( !pathObjects.back() ) {
       return false;
     }
@@ -596,6 +629,9 @@ void Expression::write(BPMNOS::Status& status, DataType& data) const {
     }
     else if ( sourceObject ) {
       source = attributeRegistry.getObject(sourceObject, status, data);
+    }
+    else if ( sourceInput ) {
+      source = sourceInput->object;
     }
     else {
       // the indices of the source path are those LIMEX evaluates for the value of the assignment

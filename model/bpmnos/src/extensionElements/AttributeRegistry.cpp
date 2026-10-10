@@ -12,6 +12,11 @@ void AttributeRegistry::add(Attribute* attribute) {
   if ( contains(attribute->name) ) {
     throw std::runtime_error("AttributeRegistry: duplicate attribute name '" + attribute->name + "'");
   }
+  // a matrix or an object input is read by its name as an attribute is, whereas a lookup is always called, so that
+  // only the former must not share its name with an attribute
+  if ( inputs.contains(attribute->name) ) {
+    throw std::runtime_error("AttributeRegistry: attribute name '" + attribute->name + "' is the name of an input");
+  }
   // objects are numbered separately from scalar attributes, so that the index of a scalar attribute never
   // depends on objects
   if ( attribute->category == Attribute::Category::STATUS ) {

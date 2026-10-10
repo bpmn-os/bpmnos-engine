@@ -402,10 +402,10 @@
   </bpmn2:dataStore>
   <bpmn2:dataStore id="DataStore_3" name="Duration and cost tables">
     <bpmn2:extensionElements>
-      <bpmnos:tables>
-        <bpmnos:table id="Table_1nmu2oi" source="durations.csv" name="duration" header="From: string;To: string;Duration: decimal" />
-        <bpmnos:table id="Table_05lbk15" source="costs.csv" name="costs" header="From: string;To: string;Costs: decimal" />
-      </bpmnos:tables>
+      <bpmnos:inputs>
+        <bpmnos:input id="Table_1nmu2oi" name="duration" type="lookup" source="durations.csv" schema="From: string;To: string;Duration: decimal" />
+        <bpmnos:input id="Table_05lbk15" name="costs" type="lookup" source="costs.csv" schema="From: string;To: string;Costs: decimal" />
+      </bpmnos:inputs>
     </bpmn2:extensionElements>
   </bpmn2:dataStore>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">

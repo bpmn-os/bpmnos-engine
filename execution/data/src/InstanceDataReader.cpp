@@ -304,7 +304,8 @@ void InstanceDataReader::evaluateGlobal(const std::string& initialization, const
     globalValues.objects.push_back( knownObject(std::nullopt, object.get()) );
   }
   for ( auto referencedAttribute : expression.paths ) {
-    if ( !globalValues.objects[referencedAttribute->index] ) {
+    // a path to an input has no attribute, an input holding its object from the start
+    if ( referencedAttribute && !globalValues.objects[referencedAttribute->index] ) {
       throw std::runtime_error("InstanceDataReader: global attribute '" + attributeName + "' refers to global object '" + referencedAttribute->name + "' without a value");
     }
   }
@@ -359,7 +360,8 @@ BPMNOS::number InstanceDataReader::evaluate(size_t instanceId, const BPMN::Node*
     data.objects[object->index] = knownObject(global ? std::nullopt : std::optional<size_t>(instanceId), object);
   }
   for ( auto attribute : expression.paths ) {
-    if ( !registry.getObject(attribute, status, data) ) {
+    // a path to an input has no attribute, an input holding its object from the start
+    if ( attribute && !registry.getObject(attribute, status, data) ) {
       throw std::runtime_error("InstanceDataReader: expression '" + expressionString + "' refers to object '" + attribute->name + "' without a value");
     }
   }

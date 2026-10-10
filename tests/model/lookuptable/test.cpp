@@ -79,9 +79,9 @@ std::shared_ptr<const Model::Model> lookupModel() {
   </bpmn2:process>
   <bpmn2:dataStore id="DataStore_1">
     <bpmn2:extensionElements>
-      <bpmnos:tables>
-        <bpmnos:table id="Table_1" name="destinations" source="destinations.csv" header="Location: string;Destinations: string[]" />
-      </bpmnos:tables>
+      <bpmnos:inputs>
+        <bpmnos:input id="Table_1" name="destinations" type="lookup" source="destinations.csv" schema="Location: string;Destinations: string[]" />
+      </bpmnos:inputs>
     </bpmn2:extensionElements>
   </bpmn2:dataStore>
 </bpmn2:definitions>

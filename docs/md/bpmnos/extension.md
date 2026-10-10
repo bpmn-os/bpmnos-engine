@@ -158,7 +158,7 @@ The following shows an example of an operator increasing an attribute value.
   </bpmn2:extensionElements>
   ```
   
-The following shows an example using a lookup table that must be specified using a data store.
+The following shows an example using a lookup, an input that must be declared by a data store.
   ```xml
   <bpmn2:extensionElements>
     <bpmnos:status>
@@ -272,27 +272,27 @@ The trigger for a @ref BPMN::TimerCatchEvent "timer event" can be specified by p
 </bpmn2:extensionElements>
 ```
 
-## Lookup tables
+## Inputs
 
-Lookup tables can be made available by adding the following extension elements to a @ref XML::bpmn::tDataStore "data store element". 
+Inputs provide data that is given once for a run and only read. They are declared by adding the following extension elements to a @ref XML::bpmn::tDataStore "data store element".
 ```xml
 <bpmn2:dataStore id="DataStore_2">
   <bpmn2:extensionElements>
-    <bpmnos:tables>
-      <bpmnos:table id="Table_0udt1qg" name="costs" source="costs.csv" header="From: string;To: string;Costs: decimal" />
-    </bpmnos:tables>
+    <bpmnos:inputs>
+      <bpmnos:input id="Input_1" name="costs" type="lookup" source="costs.csv" schema="From: string;To: string;Costs: decimal" />
+      <bpmnos:input id="Input_2" name="distance" type="matrix" source="distance.csv" schema="decimal[][]" />
+      <bpmnos:input id="Input_3" name="depots" type="object" source="depots.json" schema="{ x: decimal, name: string }[]" />
+    </bpmnos:inputs>
   </bpmn2:extensionElements>
 </bpmn2:dataStore>
 ```
-The name of a lookup table can be used in every expression of a model, whether or not a process refers to the data store declaring it.
-The parameter `name` specifies the name of the lookup table to be used in expressions. 
-The parameter `source` specifies the filen name of the lookup table. 
-The parameter `header` states every column of the table with its type, `name: type`, separated by semicolons, in the syntax of attribute types; the names must agree with the header line of the file. The keys, all columns but the last, are scalar, whereas the result, the last column, may be an array or object, `Destinations: string[]`. Every cell is checked against the type of its column when the table is loaded: a string is quoted, a boolean, integer or decimal is a number or truth value, and an array or object is a literal fitting the type. A lookup returning an array may only be the entire value of an assignment to an array, `departures := departures(origin, destination)` or the initial value of an object, and any other use is refused when the model is parsed.
+The parameter `name` specifies the name by which expressions refer to the input, in every expression of a model, whether or not a process refers to the data store declaring it; the names of inputs and attributes must differ. The parameter `type` specifies the kind of input, `lookup`, `matrix` or `object`. The parameter `source` specifies the file name of the input, which is found in the working directory or in the folders given to the constructor of the model, or whose content is given to the constructor. The parameter `schema` specifies the type of the input.
 
-  @note Currently, the only supported source are csv files.
-  @par
-  @note The folders to search for lookup table files can be provided by adding them to the constructor of the model or data provider.
+A `lookup` is a CSV file with a header line, and becomes a function of its name, `costs(client, server)`. Its `schema` states every column of the table with its type, `name: type`, separated by semicolons, in the syntax of attribute types; the names must agree with the header line of the file. The keys, all columns but the last, are scalar, whereas the result, the last column, may be an array or object, `Destinations: string[]`. Every cell is checked against the type of its column when the table is loaded: a string is quoted, a boolean, integer or decimal is a number or truth value, and an array or object is a literal fitting the type. A lookup returning an array may only be the entire value of an assignment to an array, `departures := departures(origin, destination)` or the initial value of an object, and any other use is refused when the model is parsed.
 
+A `matrix` is a CSV file without a header line, whose rows have equally many cells, and its `schema` is an array with two dimensions, `decimal[][]` or `{ x: decimal, y: decimal }[][]`, every cell holding a value or a literal of its base. An `object` is a JSON file, whose arrays are dimensions, whose objects are values with fields named by their keys, and whose numbers, truth values and strings are values of the types the schema states, `null` being undefined; the arrays at an open dimension have equal lengths. A matrix and an object are read and fitted to their schema when the model is loaded, a fixed dimension being padded with undefined values and a larger input being an error, and are read by their name in expressions as an object is, `distance[i][j]`, `sum(flow[i])` or `depots[k].name`. An input is never written: an assignment to it or to a part of it is refused when the model is parsed.
+
+Data that is only read during a run, such as distances, flows or cost tables, belongs in inputs, which are held once and never copied, whereas global attributes and objects hold what changes during a run.
 
 ## Loop parameters
 

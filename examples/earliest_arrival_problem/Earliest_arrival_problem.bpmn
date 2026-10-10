@@ -112,12 +112,12 @@
   </bpmn2:process>
   <bpmn2:dataStore id="DataStore_2" name="Time table">
     <bpmn2:extensionElements>
-      <bpmnos:tables>
-        <bpmnos:table id="Table_1vnjt8e" source="destinations.csv" name="destinations" header="Location: string;Destinations: string[]" />
-        <bpmnos:table id="Table_1askkpg" source="durations.csv" name="durations" header="From: string;To: string;Duration: decimal" />
-        <bpmnos:table id="Table_23iu9ip" source="departures.csv" name="departures" header="From: string;To: string;Departures: decimal[]" />
-        <bpmnos:table id="Table_21gbve5" source="heuristic.csv" name="heuristic" header="Location: string;Heuristic: decimal" />
-      </bpmnos:tables>
+      <bpmnos:inputs>
+        <bpmnos:input id="Table_1vnjt8e" name="destinations" type="lookup" source="destinations.csv" schema="Location: string;Destinations: string[]" />
+        <bpmnos:input id="Table_1askkpg" name="durations" type="lookup" source="durations.csv" schema="From: string;To: string;Duration: decimal" />
+        <bpmnos:input id="Table_23iu9ip" name="departures" type="lookup" source="departures.csv" schema="From: string;To: string;Departures: decimal[]" />
+        <bpmnos:input id="Table_21gbve5" name="heuristic" type="lookup" source="heuristic.csv" schema="Location: string;Heuristic: decimal" />
+      </bpmnos:inputs>
     </bpmn2:extensionElements>
   </bpmn2:dataStore>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">

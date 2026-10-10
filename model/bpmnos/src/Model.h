@@ -12,7 +12,8 @@
 #include "model/bpmnos/src/extensionElements/Attribute.h"
 #include "model/bpmnos/src/extensionElements/AttributeRegistry.h"
 #include "model/bpmnos/src/LookupTable.h"
-#include "model/bpmnos/src/xml/bpmnos/tTable.h"
+#include "model/bpmnos/src/Input.h"
+#include "model/bpmnos/src/xml/bpmnos/tInput.h"
 
 namespace BPMNOS::Model {
 
@@ -24,7 +25,7 @@ namespace BPMNOS::Model {
 class Model : public BPMN::Model {
 public:
   Model(const std::string filename, const std::vector<std::string> folders = {});
-  Model(std::unique_ptr<XML::XMLObject> root, std::unordered_map<std::string, std::string> lookupTableContents);
+  Model(std::unique_ptr<XML::XMLObject> root, std::unordered_map<std::string, std::string> inputContents);
   LIMEX::Handle<double> limexHandle;
 
   std::vector<std::reference_wrapper<XML::bpmnos::tAttribute>> getAttributes(XML::bpmn::tBaseElement* element);
@@ -32,23 +33,22 @@ public:
   std::vector<std::reference_wrapper<XML::bpmnos::tAttribute>> getGlobals();
 
   /// @brief Creates the data stores and everything they declare.
-  /// Called by @ref BPMN::Model::build before any process is created, so that the lookup tables a model
-  /// declares are registered as callables and its global attributes exist before an expression naming one
-  /// is compiled.
+  /// Called by @ref BPMN::Model::build before any process is created, so that the inputs a model declares are
+  /// registered, a lookup as a callable and a matrix or an object by its name, and its global attributes exist
+  /// before an expression naming one is compiled.
   void createDataStores() override;
 
-  void createLookupTables();  ///< Create the lookup tables the data stores declare, and register each as a callable.
+  void createInputs();        ///< Create the inputs the data stores declare, and register each by its name.
   void createGlobals();       ///< Create the global attributes the data stores declare, the objective first.
 
-  /// @brief Returns the file names of the lookup tables declared by the given model.
+  /// @brief Returns the file names of the inputs declared by the given model.
   /// @param root The parsed BPMN model tree.
-  /// @return The `source` file name of each declared lookup table — i.e. the file name under which
-  ///         its CSV content must be provided (the keys expected in the lookup content map).
+  /// @return The `source` file name of each declared input, i.e. the file name under which its content must be
+  ///         provided, the keys expected in the content map.
   /// @note Reads the `bpmn:dataStore` children of the root, since it is asked before a model is built and
   ///       therefore before @ref BPMN::Model::dataStores exists.
-  /// @throws std::runtime_error if a lookup table source contains a path separator; a source must be a
-  ///         bare file name.
-  static std::vector<std::string> getLookupTableNames(const XML::XMLObject& root);
+  /// @throws std::runtime_error if a source contains a path separator; a source must be a bare file name.
+  static std::vector<std::string> getInputSources(const XML::XMLObject& root);
 
   std::unique_ptr<BPMN::Process> createProcess(XML::bpmn::tProcess* process) override;
   std::unique_ptr<BPMN::EventSubProcess> createEventSubProcess(XML::bpmn::tSubProcess* subProcess, BPMN::Scope* parent) override;
@@ -94,13 +94,14 @@ public:
   
   AttributeRegistry attributeRegistry; ///< Registry allowing to look up all status and data attributes by their names.
 
-  /// The lookup table content a constructor was given, held until the data stores declaring the tables
-  /// exist. A table is declared by a data store, so what it is read from can only be resolved once the
-  /// stores are created, which is after the constructor has run.
-  std::vector<std::string> lookupTableFolders;                                          ///< Folders a source is resolved against, when the model is read from a file.
-  std::optional< std::unordered_map<std::string, std::string> > lookupTableContents;     ///< CSV content per source, when it is supplied in memory.
+  /// The input content a constructor was given, held until the data stores declaring the inputs exist. An
+  /// input is declared by a data store, so what it is read from can only be resolved once the stores are
+  /// created, which is after the constructor has run.
+  std::vector<std::string> inputFolders;                                          ///< Folders a source is resolved against, when the model is read from a file.
+  std::optional< std::unordered_map<std::string, std::string> > inputContents;     ///< Content per source, when it is supplied in memory.
 
-  std::vector< std::unique_ptr<LookupTable> > lookupTables; ///< Vector containing lookup tables declared in model.
+  std::vector< std::unique_ptr<LookupTable> > lookupTables; ///< Vector containing the lookup tables the inputs of type `lookup` provide.
+  std::vector< std::unique_ptr<Input> > inputs; ///< Vector containing the inputs declared in the model.
   std::vector< std::unique_ptr<Attribute> > attributes; ///< Vector containing the scalar global attributes declared for the model.
   std::vector< std::unique_ptr<Attribute> > objects; ///< Vector containing the global objects declared for the model.
 

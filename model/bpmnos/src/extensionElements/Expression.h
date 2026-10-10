@@ -52,7 +52,8 @@ public:
   std::optional<const Attribute*> target;
   std::set<const Attribute*> inputs; ///< Set containing all attributes read by the expression.
   std::vector<const Attribute*> variables; ///< Vector containing all input attributes used by the expression.
-  std::vector<const Attribute*> paths; ///< Vector containing the attribute addressed by each path, in the order of the paths.
+  std::vector<const Attribute*> paths; ///< Vector containing the attribute addressed by each path, in the order of the paths, nullptr for an input.
+  std::vector<const Input*> pathInputs; ///< Vector containing the input addressed by each path, in the order of the paths, nullptr for an attribute.
   /**
    * @brief Evaluates the compiled expression for the values of its variables and the arrays or objects its paths
    * address, returning nullopt if it reads an undefined value.
@@ -90,6 +91,7 @@ private:
   bool objectValue = false; ///< True if an array or object is assigned
   std::optional<size_t> sourceLiteral; ///< The constant object assigned, by its index in the object registry
   const Attribute* sourceObject = nullptr; ///< The object attribute assigned
+  const Input* sourceInput = nullptr; ///< The input whose object is assigned
   std::optional<size_t> sourcePath; ///< The path to the part of an object assigned
   const LIMEX::Node<double>* sourceCall = nullptr; ///< The call of a lookup returning the array assigned
   std::vector<std::string> targetFields; ///< The fields the target path names, one within the other
@@ -103,8 +105,10 @@ private:
     std::vector<std::string> fields;
   };
   void determineUses();
-  Step walk(size_t path, const Attribute* attribute) const;
-  void bind(size_t path, const Attribute* attribute) const;
+  /// Returns the schema of the object an attribute or input of the given name holds, nullptr for a scalar attribute.
+  const Schema* schemaOf(const std::string& name) const;
+  Step walk(size_t path) const;
+  void bind(size_t path) const;
   void analyseTarget(const std::vector<size_t>& literals);
   static std::string withoutResize(const std::string& text);
   LIMEX::Resolver<double> resolverOf(const std::vector<const BPMNOS::Object*>& pathObjects) const;

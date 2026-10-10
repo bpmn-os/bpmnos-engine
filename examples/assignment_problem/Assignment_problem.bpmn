@@ -95,9 +95,9 @@ and the total cost that of all assignment is minimised.</bpmn2:documentation>
   </bpmn2:process>
   <bpmn2:dataStore id="DataStore_2" name="Assignment costs">
     <bpmn2:extensionElements>
-      <bpmnos:tables>
-        <bpmnos:table id="Table_1" source="costs.csv" name="costs" header="ClientId: string;ServerId: string;Costs: decimal" />
-      </bpmnos:tables>
+      <bpmnos:inputs>
+        <bpmnos:input id="Table_1" name="costs" type="lookup" source="costs.csv" schema="ClientId: string;ServerId: string;Costs: decimal" />
+      </bpmnos:inputs>
     </bpmn2:extensionElements>
   </bpmn2:dataStore>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">

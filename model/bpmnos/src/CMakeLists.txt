@@ -26,6 +26,7 @@ set(bpmn_SOURCES
   extensionElements/Conditions.cpp
   DecisionTask.cpp
   SequentialAdHocSubProcess.cpp
+  Input.cpp
   LookupTable.cpp
   Model.cpp
 )
@@ -49,6 +50,7 @@ set(bpmn_HEADERS
   extensionElements/Conditions.h
   DecisionTask.h
   SequentialAdHocSubProcess.h
+  Input.h
   LookupTable.h
   Model.h
 )

@@ -1,4 +1,6 @@
 #include "Schema.h"
+#include "model/utility/src/StringRegistry.h"
+#include <nlohmann/json.hpp>
 #include <cctype>
 #include <algorithm>
 #include <cassert>
@@ -407,4 +409,147 @@ Schema Schema::of(const BPMNOS::Object::Layout& layout, bool element) {
     schema.dimensions.push_back( keep ? std::optional<size_t>(layout.dimensions[d]) : std::nullopt );
   }
   return schema;
+}
+
+namespace {
+
+using Json = nlohmann::json;
+
+/// Fixes the open dimensions of a schema by the JSON values standing where it applies, every array at an open
+/// dimension having the same length.
+void resolveJson(Schema& schema, const std::vector<const Json*>& values, const std::string& path) {
+  std::vector<const Json*> level = values;
+  for ( auto& dimension : schema.dimensions ) {
+    std::optional<size_t> length;
+    std::vector<const Json*> next;
+    for ( auto value : level ) {
+      if ( value->is_null() ) {
+        continue;
+      }
+      if ( !value->is_array() ) {
+        throw std::runtime_error("Schema: '" + path + "' holds '" + value->dump() + "' where an array is expected");
+      }
+      if ( dimension.has_value() ) {
+        if ( value->size() > dimension.value() ) {
+          throw std::runtime_error("Schema: '" + path + "' has " + std::to_string(value->size()) + " elements where " + std::to_string(dimension.value()) + " are declared");
+        }
+      }
+      else if ( length.has_value() && value->size() != length.value() ) {
+        throw std::runtime_error("Schema: '" + path + "' holds arrays of different lengths");
+      }
+      length = value->size();
+      for ( auto& element : *value ) {
+        next.push_back(&element);
+      }
+    }
+    if ( !dimension.has_value() ) {
+      dimension = length.value_or(0);
+    }
+    level = std::move(next);
+  }
+  if ( schema.scalar.has_value() ) {
+    return;
+  }
+  for ( auto value : level ) {
+    if ( value->is_null() ) {
+      continue;
+    }
+    if ( !value->is_object() ) {
+      throw std::runtime_error("Schema: '" + path + "' holds '" + value->dump() + "' where fields are expected");
+    }
+    for ( auto& [key, _] : value->items() ) {
+      if ( std::ranges::none_of(schema.fields, [&key](auto& field) { return field.first == key; }) ) {
+        throw std::runtime_error("Schema: '" + path + "' has the unknown field '" + key + "'");
+      }
+    }
+  }
+  for ( auto& [name, field] : schema.fields ) {
+    std::vector<const Json*> nested;
+    for ( auto value : level ) {
+      if ( !value->is_null() ) {
+        if ( auto it = value->find(name); it != value->end() ) {
+          nested.push_back(&*it);
+        }
+      }
+    }
+    resolveJson(field, nested, path + "." + name);
+  }
+}
+
+/// Returns the value a JSON value states for a scalar of the given type.
+BPMNOS::Value jsonValue(const Json& value, BPMNOS::ValueType type, const std::string& path) {
+  if ( value.is_null() ) {
+    return std::nullopt;
+  }
+  switch ( type ) {
+    case BPMNOS::ValueType::BOOLEAN:
+      if ( value.is_boolean() ) {
+        return BPMNOS::number( value.get<bool>() ? 1 : 0 );
+      }
+      break;
+    case BPMNOS::ValueType::INTEGER:
+      if ( value.is_number() ) {
+        return BPMNOS::number( (long)value.get<double>() );
+      }
+      break;
+    case BPMNOS::ValueType::DECIMAL:
+      if ( value.is_number() ) {
+        return BPMNOS::number( value.get<double>() );
+      }
+      break;
+    case BPMNOS::ValueType::STRING:
+      if ( value.is_string() ) {
+        return BPMNOS::number( stringRegistry( value.get<std::string>() ) );
+      }
+      break;
+  }
+  throw std::runtime_error("Schema: '" + path + "' holds '" + value.dump() + "', which is no value of its type");
+}
+
+/// Writes the values a JSON value states into an object of the given layout.
+void fillJson(const BPMNOS::Object::Layout& layout, const Json& value, std::vector<BPMNOS::Value>& values, size_t offset, size_t dimension, const std::string& path) {
+  if ( value.is_null() ) {
+    return;
+  }
+  if ( dimension < layout.dimensions.size() ) {
+    size_t span = layout.stride;
+    for ( size_t d = dimension + 1; d < layout.dimensions.size(); d++ ) {
+      span *= layout.dimensions[d];
+    }
+    size_t i = 0;
+    for ( auto& element : value ) {
+      fillJson(layout, element, values, offset + i * span, dimension + 1, path);
+      ++i;
+    }
+    return;
+  }
+  if ( layout.scalar.has_value() ) {
+    values[offset] = jsonValue(value, layout.scalar.value(), path);
+    return;
+  }
+  for ( auto& field : layout.fields ) {
+    if ( auto it = value.find(field.name); it != value.end() ) {
+      fillJson(field.layout, *it, values, offset + field.offset, 0, path + "." + field.name);
+    }
+  }
+}
+
+} // namespace
+
+std::shared_ptr<const BPMNOS::Object> Schema::fromJSON(const std::string& text) const {
+  Json root;
+  try {
+    root = Json::parse(text);
+  }
+  catch ( const std::exception& error ) {
+    throw std::runtime_error(std::string("Schema: illegal JSON.\n") + error.what());
+  }
+  Schema resolved = *this;
+  resolveJson(resolved, { &root }, "");
+  close(resolved);
+  auto object = std::make_shared<BPMNOS::Object>();
+  object->layout = std::make_shared<const BPMNOS::Object::Layout>( layoutOf(resolved, *this) );
+  object->values.resize( object->layout->size() );
+  fillJson(*object->layout, root, object->values, 0, 0, "");
+  return object;
 }

@@ -12,6 +12,8 @@
 
 namespace BPMNOS::Model {
 
+class Input;
+
 class AttributeRegistry {
 public:
   AttributeRegistry(const LIMEX::Handle<double>& limexHandle);
@@ -24,6 +26,9 @@ public:
   /// The schema of the result of each lookup returning an array, by its name, which an expression may only
   /// assign to an array
   std::unordered_map< std::string, const Schema*> arrayLookups;
+  /// The matrices and objects the inputs of the model provide, by their names, which expressions read as constant
+  /// objects and never write
+  std::unordered_map< std::string, const Input*> inputs;
   std::unordered_map< std::string, Attribute*> statusMap;
   std::unordered_map< std::string, Attribute*> dataMap;
   Attribute* operator[](const std::string& name) const;

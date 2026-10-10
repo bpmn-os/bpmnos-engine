@@ -345,12 +345,13 @@ std::optional<BPMNOS::number> StaticDataProvider::getValue(const Scenario& scena
       if ( !input->isImmutable ) {
         return nullptr;
       }
-      bool global = ( input->category == BPMNOS::Model::Attribute::Category::DATA && input->index < this->model->objects.size() );
-      return global ? globals.objects[input->index].get() : getObject(instanceId, input).get();
+      return input->isGlobal ? globals.objects[input->index].get() : getObject(instanceId, input).get();
     };
     std::vector<const BPMNOS::Object*> pathObjects;
-    for ( auto input : attribute->expression->paths ) {
-      pathObjects.push_back(objectOf(input));
+    auto& paths = attribute->expression->paths;
+    for ( size_t path = 0; path < paths.size(); path++ ) {
+      // an input holds its object for every instance
+      pathObjects.push_back( paths[path] ? objectOf(paths[path]) : attribute->expression->pathInputs[path]->object.get() );
       if ( !pathObjects.back() ) {
         return std::nullopt;
       }

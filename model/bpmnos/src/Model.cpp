@@ -5,6 +5,10 @@
 #include <tuple>
 
 #include "Model.h"
+#include <filesystem>
+#include <fstream>
+#include <iterator>
+#include <algorithm>
 #include "extensionElements/ExtensionElements.h"
 #include "extensionElements/Gatekeeper.h"
 #include "extensionElements/Timer.h"
@@ -15,23 +19,23 @@
 #include "SequentialAdHocSubProcess.h"
 #include "model/bpmnos/src/xml/bpmnos/tAttributes.h"
 #include "model/bpmnos/src/xml/bpmnos/tAttribute.h"
-#include "model/bpmnos/src/xml/bpmnos/tTables.h"
-#include "model/bpmnos/src/xml/bpmnos/tTable.h"
+#include "model/bpmnos/src/xml/bpmnos/tInputs.h"
+#include "model/bpmnos/src/xml/bpmnos/tInput.h"
 #include "model/utility/src/Keywords.h"
 
 using namespace BPMNOS::Model;
 
 Model::Model(const std::string filename, const std::vector<std::string> folders)
   : attributeRegistry(limexHandle)
-  , lookupTableFolders(folders)
+  , inputFolders(folders)
 {
   root = createRoot(filename);
   build();
 }
 
-Model::Model(std::unique_ptr<XML::XMLObject> root, std::unordered_map<std::string, std::string> lookupTableContents)
+Model::Model(std::unique_ptr<XML::XMLObject> root, std::unordered_map<std::string, std::string> inputContents)
   : attributeRegistry(limexHandle)
-  , lookupTableContents(std::move(lookupTableContents))
+  , inputContents(std::move(inputContents))
 {
   this->root = std::move(root);
   build();
@@ -82,79 +86,132 @@ std::vector<std::reference_wrapper<XML::bpmnos::tAttribute>> Model::getGlobals()
 
 namespace {
 
-/// @brief Returns the {name, source, header} of every lookup table a data store declares.
+/// The declaration of an input: its name, type, source and schema.
+struct InputDeclaration {
+  std::string name;
+  std::string type;
+  std::string source;
+  std::string schema;
+};
+
+/// @brief Returns the declaration of every input a data store declares.
 /// @throws std::runtime_error if a source contains a path separator (a source must be a bare file name).
-std::vector<std::tuple<std::string, std::string, std::string>> lookupTablesOf(const XML::bpmn::tDataStore& dataStore) {
-  std::vector<std::tuple<std::string, std::string, std::string>> lookups;
+std::vector<InputDeclaration> inputsOf(const XML::bpmn::tDataStore& dataStore) {
+  std::vector<InputDeclaration> declarations;
   auto extensionElements = dataStore.getOptionalChild<XML::bpmn::tExtensionElements>();
   if ( !extensionElements.has_value() ) {
-    return lookups;
+    return declarations;
   }
-  auto tables = extensionElements->get().getOptionalChild<XML::bpmnos::tTables>();
-  if ( !tables.has_value() ) {
-    return lookups;
+  auto inputs = extensionElements->get().getOptionalChild<XML::bpmnos::tInputs>();
+  if ( !inputs.has_value() ) {
+    return declarations;
   }
-  for ( const XML::bpmnos::tTable& table : tables->get().find<XML::bpmnos::tTable>() ) {
-    std::string name = table.getRequiredAttributeByName("name").value;
-    std::string source = table.getRequiredAttributeByName("source").value;
-    std::string header = table.getRequiredAttributeByName("header").value;
-    if ( source.find('/') != std::string::npos || source.find('\\') != std::string::npos ) {
-      throw std::runtime_error("Model: lookup table source '" + source + "' must be a file name, not a path");
+  for ( const XML::bpmnos::tInput& input : inputs->get().find<XML::bpmnos::tInput>() ) {
+    InputDeclaration declaration{
+      input.getRequiredAttributeByName("name").value,
+      input.getRequiredAttributeByName("type").value,
+      input.getRequiredAttributeByName("source").value,
+      input.getRequiredAttributeByName("schema").value
+    };
+    if ( declaration.source.find('/') != std::string::npos || declaration.source.find('\\') != std::string::npos ) {
+      throw std::runtime_error("Model: input source '" + declaration.source + "' must be a file name, not a path");
     }
-    lookups.emplace_back( std::move(name), std::move(source), std::move(header) );
+    declarations.push_back( std::move(declaration) );
   }
-  return lookups;
+  return declarations;
 }
 
 } // namespace
 
-std::vector<std::string> Model::getLookupTableNames(const XML::XMLObject& root) {
-  std::vector<std::string> names;
+std::vector<std::string> Model::getInputSources(const XML::XMLObject& root) {
+  std::vector<std::string> sources;
   // a data store is a root element, so its declarations are reached without a model having been built
   for ( const XML::bpmn::tDataStore& dataStore : root.getChildren<XML::bpmn::tDataStore>() ) {
-    for ( auto& [name, source, header] : lookupTablesOf(dataStore) ) {
-      names.push_back( source );
+    for ( auto& declaration : inputsOf(dataStore) ) {
+      sources.push_back( declaration.source );
     }
   }
-  return names;
+  return sources;
 }
 
 void Model::createDataStores() {
   BPMN::Model::createDataStores();
-  createLookupTables();   // the tables the stores declare, registered as callables
+  createInputs();         // the inputs the stores declare, registered by their names
   createGlobals();        // the global attributes the stores declare
 }
 
-void Model::createLookupTables() {
-  // TODO: make sure that only built in callables exist
+void Model::createInputs() {
+  // the content of a source, supplied in memory or read from a file found in the working directory or a folder
+  auto contentOf = [this](const std::string& source) -> std::string {
+    if ( inputContents.has_value() ) {
+      auto it = inputContents->find(source);
+      if ( it == inputContents->end() ) {
+        throw std::runtime_error("Model: content for input '" + source + "' not provided");
+      }
+      return it->second;
+    }
+    std::vector<std::filesystem::path> candidates = { std::filesystem::path(source) };
+    for ( auto& folder : inputFolders ) {
+      candidates.push_back( std::filesystem::path(folder) / source );
+    }
+    for ( auto& candidate : candidates ) {
+      if ( std::filesystem::exists(candidate) ) {
+        std::ifstream file(candidate);
+        return std::string( std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>() );
+      }
+    }
+    std::string message = "Model: input file '" + source + "' not found in:\n" + std::filesystem::current_path().string();
+    for ( auto& folder : inputFolders ) {
+      message += "\n" + std::filesystem::absolute(folder).string();
+    }
+    throw std::runtime_error(message);
+  };
+
   for ( auto& dataStore : dataStores ) {
-    for ( auto& [name, source, header] : lookupTablesOf(*dataStore->element) ) {
-      if ( lookupTableContents.has_value() ) {
-        // content mode: resolve each declared source from the supplied content map
-        auto it = lookupTableContents->find(source);
-        if ( it == lookupTableContents->end() ) {
-          throw std::runtime_error("Model: content for lookup table '" + source + "' not provided");
+    for ( auto& declaration : inputsOf(*dataStore->element) ) {
+      auto& name = declaration.name;
+      if ( std::ranges::contains(limexHandle.getFunctionNames(), name) || attributeRegistry.inputs.contains(name) ) {
+        throw std::runtime_error("Model: duplicate input name '" + name + "'");
+      }
+      auto content = contentOf(declaration.source);
+      if ( declaration.type == "lookup" ) {
+        lookupTables.push_back( std::make_unique<LookupTable>(name, content, declaration.schema) );
+        auto table = lookupTables.back().get();
+        if ( auto& result = table->columns.back().second; !result.isScalar() ) {
+          // a lookup returning an array may only be assigned to an array, which expressions check by its name
+          attributeRegistry.arrayLookups[table->name] = &result;
         }
-        lookupTables.push_back( std::make_unique<LookupTable>(name, it->second, header) );
+        limexHandle.addFunction(
+          table->name,
+          [table](const std::vector<double>& args)
+          {
+            return table->at(args);
+          }
+        );
+        continue;
+      }
+      Schema schema;
+      try {
+        schema = Schema::parse(declaration.schema);
+      }
+      catch ( const std::exception& error ) {
+        throw std::runtime_error("Model: illegal schema of input '" + name + "'.\n" + error.what());
+      }
+      if ( schema.isScalar() ) {
+        throw std::runtime_error("Model: input '" + name + "' requires the schema of an array or object");
+      }
+      Input::Type type;
+      if ( declaration.type == "matrix" ) {
+        type = Input::Type::MATRIX;
+      }
+      else if ( declaration.type == "object" ) {
+        type = Input::Type::OBJECT;
       }
       else {
-        // file mode: resolve each declared source against the folders
-        lookupTables.push_back( std::make_unique<LookupTable>(name, source, header, lookupTableFolders) );
+        throw std::runtime_error("Model: input '" + name + "' has the illegal type '" + declaration.type + "'");
       }
-
-      auto table = lookupTables.back().get();
-      if ( auto& result = table->columns.back().second; !result.isScalar() ) {
-        // a lookup returning an array may only be assigned to an array, which expressions check by its name
-        attributeRegistry.arrayLookups[table->name] = &result;
-      }
-      // TODO: should I use shared pointers?
-      limexHandle.addFunction(
-        table->name,
-        [table](const std::vector<double>& args)
-        {
-          return table->at(args);
-        }
-      );
+      inputs.push_back( std::make_unique<Input>(name, type, std::move(schema), content) );
+      attributeRegistry.inputs[name] = inputs.back().get();
     }
   }
 }
