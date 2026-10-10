@@ -257,19 +257,9 @@ void Engine::triggerInstance(const BPMN::Process* process, ContentMap content) {
 
   BPMNOS::number objectiveChange = 0;
   for ( auto& [key,definition] : *contentMap ) {
-    auto attribute = definition->attribute;
+    // a key in the content of the start event, but not in the content of the trigger, is given nothing
     auto it = content.find(key);
-    if ( it == content.end() ) {
-      // key in content of start event, but not in content of the trigger
-      objectiveChange += attributeRegistry.setValue(attribute, token->status, *token->data, std::nullopt );
-    }
-    else if ( std::holds_alternative< std::optional<BPMNOS::number> >(it->second) ) {
-      objectiveChange += attributeRegistry.setValue(attribute, token->status, *token->data, std::get< std::optional<BPMNOS::number> >(it->second) );
-    }
-    else {
-      // use default value of emitter
-      objectiveChange += attributeRegistry.setValue(attribute, token->status, *token->data, BPMNOS::to_number(std::get< std::string >(it->second),attribute->type) );
-    }
+    objectiveChange += applyContent(attributeRegistry, key, definition->attribute, it == content.end() ? nullptr : &it->second, token->status, *token->data);
   }
 
   addToObjective(objectiveChange);

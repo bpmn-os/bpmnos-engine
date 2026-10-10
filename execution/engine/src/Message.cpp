@@ -33,7 +33,14 @@ Message::Message(Token* token)
   }
 
   for (auto& [key,contentDefinition] : messageDefinition->contentMap) {
-    contentValueMap.emplace( key, attributeRegistry.getValue(contentDefinition->attribute,token->status,*token->data) );
+    auto attribute = contentDefinition->attribute;
+    if ( attribute->isObject() ) {
+      // the object is shared, a later write by the sender copying it
+      contentValueMap.emplace( key, attributeRegistry.getObject(attribute,token->status,*token->data) );
+    }
+    else {
+      contentValueMap.emplace( key, attributeRegistry.getValue(attribute,token->status,*token->data) );
+    }
   }
 }
 
@@ -87,6 +94,10 @@ nlohmann::ordered_json Message::jsonify() const {
 //std::cerr << "has string" << std::endl;  
       jsonObject["content"][key] = std::get< std::string >(contentValue);
     }
+    else if ( std::holds_alternative< std::shared_ptr<const BPMNOS::Object> >(contentValue) ) {
+      // an object is rendered as the literal stating it
+      jsonObject["content"][key] = BPMNOS::to_string( *std::get< std::shared_ptr<const BPMNOS::Object> >(contentValue) );
+    }
     else {
 //std::cerr << "else" << std::endl;  
       jsonObject["content"][key] = nullptr;
@@ -105,20 +116,7 @@ BPMNOS::number Message::apply(const BPMN::FlowNode* node, const BPMNOS::Model::A
   size_t counter = 0;
   for (auto& [key,contentValue] : contentValueMap) {
     if ( auto it = targetContentDefinition.find(key); it != targetContentDefinition.end() ) {
-      auto& [_,definition] = *it;
-      auto attribute = definition->attribute;
-//std::cerr << "Attribute: " << attribute.name << "/" << attribute.index << std::endl;
-      if ( std::holds_alternative< std::optional<number> >(contentValue) && std::get< std::optional<number> >(contentValue).has_value() ) {
-        // use attribute value sent in message
-        objectiveChange += attributeRegistry.setValue(attribute, status, data, std::get< std::optional<number> >(contentValue).value() );
-      }
-      else if (std::holds_alternative<std::string>(contentValue)) {
-        // use default value of sender
-        objectiveChange += attributeRegistry.setValue(attribute, status, data, BPMNOS::to_number(std::get< std::string >(contentValue),attribute->type) );
-      }
-      else {
-        objectiveChange += attributeRegistry.setValue(attribute, status, data, std::nullopt );
-      }
+      objectiveChange += applyContent(attributeRegistry, key, it->second->attribute, &contentValue, status, data);
     }
     else {
       // key in message content, but not in recipient content
@@ -131,7 +129,7 @@ BPMNOS::number Message::apply(const BPMN::FlowNode* node, const BPMNOS::Model::A
     for (auto& [key,definition] : targetContentDefinition) {
       if ( !contentValueMap.contains(key) ) {
         // key in recipient content, but not in message content
-        objectiveChange += attributeRegistry.setValue(definition->attribute, status, data, std::nullopt );
+        objectiveChange += applyContent<DataType>(attributeRegistry, key, definition->attribute, nullptr, status, data);
       }
     }
   }

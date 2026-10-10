@@ -130,6 +130,30 @@ std::shared_ptr<const BPMNOS::Object>& AttributeRegistry::getObjectSlot(const At
   return data.objects[object->index].get();
 }
 
+namespace {
+
+/// Returns the object a whole assignment of the value gives an object holding the current one.
+std::shared_ptr<const BPMNOS::Object> assigned(const BPMNOS::Model::Attribute* object, const std::shared_ptr<const BPMNOS::Object>& current, const std::shared_ptr<const BPMNOS::Object>& value) {
+  try {
+    return Schema::of(*current->layout, false).conform(value);
+  }
+  catch ( const std::exception& error ) {
+    throw std::runtime_error("AttributeRegistry: illegal value of object '" + object->name + "'.\n" + error.what());
+  }
+}
+
+} // namespace
+
+void AttributeRegistry::setObject(const Attribute* object, Status& status, Data& data, const std::shared_ptr<const Object>& value) const {
+  auto& slot = getObjectSlot(object, status, data);
+  slot = assigned(object, slot, value);
+}
+
+void AttributeRegistry::setObject(const Attribute* object, Status& status, SharedData& data, const std::shared_ptr<const Object>& value) const {
+  auto& slot = getObjectSlot(object, status, data);
+  slot = assigned(object, slot, value);
+}
+
 BPMNOS::number AttributeRegistry::setValue(const Attribute* attribute, Status& status, Data& data, std::optional<BPMNOS::number> value) const {
   // the value of a scalar attribute; an object is held in the objects of the status or data
   assert( !attribute->isObject() );

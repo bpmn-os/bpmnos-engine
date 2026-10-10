@@ -43,6 +43,7 @@ list(APPEND tests_SOURCES
   execution/expression/test.cpp
   execution/objects/test.cpp
   execution/objectwriting/test.cpp
+  execution/messageobjects/test.cpp
   execution/parallelgateway/test.cpp
   execution/exclusivegateway/test.cpp
   execution/eventbasedgateway/test.cpp

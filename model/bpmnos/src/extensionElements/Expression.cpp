@@ -619,7 +619,7 @@ void Expression::write(BPMNOS::Status& status, DataType& data) const {
 
     if ( !targetPath.has_value() ) {
       // the whole object keeps the lengths of its fixed dimensions and takes those of its open ones
-      slot = Schema::of(*slot->layout, false).conform(source);
+      attributeRegistry.setObject(target.value(), status, data, source);
       return;
     }
 

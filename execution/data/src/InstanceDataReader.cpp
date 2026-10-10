@@ -339,7 +339,7 @@ BPMNOS::number InstanceDataReader::evaluate(size_t instanceId, const BPMN::Node*
   }
 
   for ( auto attribute : expression.variables ) {
-    bool known = ( attribute->category == BPMNOS::Model::Attribute::Category::DATA && attribute->index < model->instanceIndex ) ?
+    bool known = attribute->isGlobal ?
       globals.contains(attribute) :
       ( instanceValues != values.end() && instanceValues->second.contains(attribute) );
     if ( !known ) {

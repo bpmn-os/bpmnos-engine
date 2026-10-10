@@ -41,6 +41,15 @@ public:
   std::shared_ptr<const Object>& getObjectSlot(const Attribute* object, Status& status, Data& data) const;
   /// @copydoc getObjectSlot(const Attribute*, Status&, Data&) const
   std::shared_ptr<const Object>& getObjectSlot(const Attribute* object, Status& status, SharedData& data) const;
+  /**
+   * @brief Method assigning an array or object to an object attribute as a whole.
+   *
+   * The object keeps the lengths of its fixed dimensions, a shorter value being padded with undefined values and a
+   * longer one being an error, and takes the lengths of its open ones. A value of the very layout is shared.
+   */
+  void setObject(const Attribute* object, Status& status, Data& data, const std::shared_ptr<const Object>& value) const;
+  /// @copydoc setObject(const Attribute*, Status&, Data&, const std::shared_ptr<const Object>&) const
+  void setObject(const Attribute* object, Status& status, SharedData& data, const std::shared_ptr<const Object>& value) const;
   /// @brief Method setting the value of an attribute and returning the change of the objective, which is the
   /// change of the value times the weight of the attribute for a data attribute and zero for a status attribute,
   /// the previous value being available here and nowhere later.

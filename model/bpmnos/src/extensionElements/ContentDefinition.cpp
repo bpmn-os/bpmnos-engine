@@ -7,8 +7,5 @@ ContentDefinition::ContentDefinition(XML::bpmnos::tContent* content, const Attri
   , key(content->key.value.value)
   , attribute(attributeRegistry[element->attribute.value])
 {
-  if ( attribute->isObject() ) {
-    throw std::runtime_error("ContentDefinition: attribute '" + attribute->id + "' is an object, which content cannot carry");
-  }
 }
 

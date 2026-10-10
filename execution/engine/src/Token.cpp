@@ -1474,7 +1474,14 @@ ContentMap Token::getSignalContent(const BPMNOS::Model::ContentDefinitionMap& co
   auto& attributeRegistry = getAttributeRegistry();
   ContentMap contentValueMap;
   for (auto& [key,contentDefinition] : contentMap) {
-    contentValueMap.emplace( key, attributeRegistry.getValue(contentDefinition->attribute,status,*data) );
+    auto attribute = contentDefinition->attribute;
+    if ( attribute->isObject() ) {
+      // the object is shared, a later write by the emitter copying it
+      contentValueMap.emplace( key, attributeRegistry.getObject(attribute,status,*data) );
+    }
+    else {
+      contentValueMap.emplace( key, attributeRegistry.getValue(attribute,status,*data) );
+    }
   }
   return contentValueMap;
 }
@@ -1489,20 +1496,7 @@ void Token::setSignalContent(ContentMap& sourceMap) {
   size_t counter = 0;
   for (auto& [key,contentValue] : sourceMap) {
     if ( auto it = signalDefinition->contentMap.find(key); it != signalDefinition->contentMap.end() ) {
-      auto& [_,definition] = *it;
-      auto attribute = definition->attribute;
-//std::cerr << "Attribute: " << attribute.name << "/" << attribute.index << std::endl;
-      if ( std::holds_alternative< std::optional<number> >(contentValue) && std::get< std::optional<number> >(contentValue).has_value() ) {
-        // use attribute value of signal
-        objectiveChange += attributeRegistry.setValue(attribute, status, *data, std::get< std::optional<number> >(contentValue).value() );
-      }
-      else if (std::holds_alternative<std::string>(contentValue)) {
-        // use default value of emitter
-        objectiveChange += attributeRegistry.setValue(attribute, status, *data, BPMNOS::to_number(std::get< std::string >(contentValue),attribute->type) );
-      }
-      else {
-        objectiveChange += attributeRegistry.setValue(attribute, status, *data, std::nullopt );
-      }
+      objectiveChange += applyContent(attributeRegistry, key, it->second->attribute, &contentValue, status, *data);
     }
     else {
       // key in signal content, but not in recipient content
@@ -1515,7 +1509,7 @@ void Token::setSignalContent(ContentMap& sourceMap) {
     for (auto& [key,definition] : signalDefinition->contentMap) {
       if ( !sourceMap.contains(key) ) {
         // key in recipient content, but not in message content
-        objectiveChange += attributeRegistry.setValue(definition->attribute, status, *data, std::nullopt );
+        objectiveChange += applyContent(attributeRegistry, key, definition->attribute, nullptr, status, *data);
       }
     }
   }

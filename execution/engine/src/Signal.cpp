@@ -19,6 +19,10 @@ nlohmann::ordered_json Signal::jsonify() const {
     if ( std::holds_alternative< std::string >(contentValue) ) {
       jsonObject["content"][key] = std::get< std::string >(contentValue);
     }
+    else if ( std::holds_alternative< std::shared_ptr<const BPMNOS::Object> >(contentValue) ) {
+      // an object is rendered as the literal stating it
+      jsonObject["content"][key] = BPMNOS::to_string( *std::get< std::shared_ptr<const BPMNOS::Object> >(contentValue) );
+    }
     else if ( auto& value = std::get< BPMNOS::Value >(contentValue); value.has_value() ) {
       jsonObject["content"][key] = (double)value.value();
     }

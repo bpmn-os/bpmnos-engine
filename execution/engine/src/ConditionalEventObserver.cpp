@@ -23,11 +23,10 @@ void ConditionalEventObserver::notice(const Observable* observable) {
   assert( dynamic_cast<const DataUpdate*>(observable) );
   auto dataUpdate = static_cast<const DataUpdate*>(observable);
 
-  // a written global attribute, whose index is below the instance index, concerns the tokens of every
-  // instance, any other written attribute only those of the instance that wrote it
-  auto instanceIndex = systemState->engine->getModel()->instanceIndex;
+  // a written global attribute or object concerns the tokens of every instance, any other written attribute
+  // only those of the instance that wrote it
   std::vector<const BPMNOS::Model::Attribute*> globalAttributes;
-  std::ranges::copy_if(dataUpdate->attributes, std::back_inserter(globalAttributes), [instanceIndex](const BPMNOS::Model::Attribute* attribute) { return attribute->index < instanceIndex; });
+  std::ranges::copy_if(dataUpdate->attributes, std::back_inserter(globalAttributes), [](const BPMNOS::Model::Attribute* attribute) { return attribute->isGlobal; });
 
   if ( !globalAttributes.empty() ) {
     // check tokens at all conditional events

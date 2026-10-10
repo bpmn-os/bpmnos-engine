@@ -124,16 +124,10 @@ void CachedCandidates<WeakPtrs...>::InstanceEvaluations::clear() {
 
 template <typename... WeakPtrs>
 void CachedCandidates<WeakPtrs...>::removeDependentEvaluations(const DataUpdate* update, InstanceEvaluations& evaluatedDecisions, auto_list< WeakPtrs..., std::weak_ptr<Decision> >& unevaluatedDecisions)  {
-    // a written global attribute, whose index is below the instance index, or global object, whose index is
-    // below the number of global objects, may influence the evaluated decisions of every instance, any other
+    // a written global attribute or object may influence the evaluated decisions of every instance, any other
     // written attribute only those of the instance that wrote it
-    auto& model = *this->systemState->scenario->dataProvider->getModel();
-    auto instanceIndex = model.instanceIndex;
-    auto globalObjects = model.objects.size();
     std::vector<const BPMNOS::Model::Attribute*> globalAttributes;
-    std::ranges::copy_if(update->attributes, std::back_inserter(globalAttributes), [instanceIndex, globalObjects](const BPMNOS::Model::Attribute* attribute) {
-      return attribute->index < ( attribute->isObject() ? globalObjects : instanceIndex );
-    });
+    std::ranges::copy_if(update->attributes, std::back_inserter(globalAttributes), [](const BPMNOS::Model::Attribute* attribute) { return attribute->isGlobal; });
 
     auto evaluationsOfInstance = evaluatedDecisions.find((long unsigned int)update->instanceId);
     if ( !globalAttributes.empty() ) {

@@ -1,5 +1,6 @@
 list(APPEND engine_SOURCES
   Notifier.cpp
+  ContentMap.cpp
   Message.cpp
   Signal.cpp
   MessageDeliveryRequest.cpp

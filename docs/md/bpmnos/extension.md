@@ -232,6 +232,8 @@ The following shows an example of an incoming message definition for a @ref BPMN
 </bpmn2:extensionElements>
 ```
 
+Content may carry arrays and objects as well as values, a key referring to an object attribute on both sides or on neither, which is checked where a message flow pairs a sender with a recipient. The object sent is shared with the sender until either side writes it, so that sending copies nothing and a later write by the sender does not change what was sent. The receiving object takes the object sent as a whole assignment does: it keeps the lengths of its fixed dimensions, a shorter array being padded with undefined values and a longer one being an error, and takes the lengths of its open ones. An object the content does not mention keeps its value. The same holds for signals, and content a data provider raises from outside the model states an array or object as a literal.
+
 A message may also instantiate a process, which it does where the process has a @ref BPMN::MessageStartEvent "message start event".
 Such a message names no recipient, the instance not existing before the message arrives, and is matched by its name alone.
 No element other than that start event may therefore catch a message of that name, and neither the start event nor any element throwing the message may state header parameters or a recipient.

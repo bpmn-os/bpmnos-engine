@@ -47,6 +47,7 @@ public:
   double weight; ///< Weight to be used for objective (assuming maximization). 
 
   bool isImmutable; ///< Flag indicating whether attribute value may be changed by operator, choice, or intermediate catch event. 
+  bool isGlobal = false; ///< Flag indicating whether the attribute is global, i.e. declared by a data store, whether it is a scalar attribute or an object.
 private:
   std::unique_ptr<const Expression> getExpression(std::string& input, AttributeRegistry& attributeRegistry);
   std::unique_ptr<const Schema> getSchema(const std::string& input);
