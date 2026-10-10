@@ -241,6 +241,29 @@ void InstanceDataReader::declareSizes(const Row& row) {
   }
 }
 
+std::shared_ptr<const BPMNOS::Object> InstanceDataReader::knownObject(std::optional<size_t> instanceId, const BPMNOS::Model::Attribute* object) const {
+  auto index = object->initialObject;
+  if ( instanceId.has_value() ) {
+    if ( auto instanceObjects = objects.find(instanceId.value()); instanceObjects != objects.end() ) {
+      if ( auto given = instanceObjects->second.find(object); given != instanceObjects->second.end() ) {
+        index = given->second;
+      }
+    }
+  }
+  else if ( auto given = globalObjects.find(object); given != globalObjects.end() ) {
+    index = given->second;
+  }
+  if ( !index.has_value() ) {
+    return nullptr;
+  }
+  try {
+    return getSchema(object).conform( objectRegistry[index.value()] );
+  }
+  catch ( const std::exception& error ) {
+    throw std::runtime_error("InstanceDataReader: illegal value of object '" + object->name + "'.\n" + error.what());
+  }
+}
+
 BPMNOS::Model::Schema InstanceDataReader::getSchema(const BPMNOS::Model::Attribute* object) const {
   if ( auto it = schemas.find(object); it != schemas.end() ) {
     return it->second;
@@ -274,6 +297,17 @@ void InstanceDataReader::evaluateGlobal(const std::string& initialization, const
   for ( auto referencedAttribute : expression.variables ) {
     if ( !globals.contains(referencedAttribute) ) {
       throw std::runtime_error("InstanceDataReader: global attribute '" + attributeName + "' refers to global attribute '" + referencedAttribute->name + "' without a value");
+    }
+  }
+  // the global objects given by earlier rows or by the model
+  for ( auto& object : model->objects ) {
+    globalValues.objects.push_back( knownObject(std::nullopt, object.get()) );
+  }
+  for ( auto inputs : { &expression.collections, &expression.paths } ) {
+    for ( auto referencedAttribute : *inputs ) {
+      if ( referencedAttribute->isObject() && !globalValues.objects[referencedAttribute->index] ) {
+        throw std::runtime_error("InstanceDataReader: global attribute '" + attributeName + "' refers to global object '" + referencedAttribute->name + "' without a value");
+      }
     }
   }
 
@@ -312,6 +346,25 @@ BPMNOS::number InstanceDataReader::evaluate(size_t instanceId, const BPMN::Node*
       ( instanceValues != values.end() && instanceValues->second.contains(attribute) );
     if ( !known ) {
       throw std::runtime_error("InstanceDataReader: expression '" + expressionString + "' refers to attribute '" + attribute->name + "' without a value");
+    }
+  }
+
+  // the objects given by earlier rows or by the model, the global objects being the first data objects
+  auto& registry = extensionElements->attributeRegistry;
+  status.objects.resize(registry.statusObjects.size());
+  for ( auto object : registry.statusObjects ) {
+    status.objects[object->index] = knownObject(instanceId, object);
+  }
+  data.objects.resize(registry.dataObjects.size());
+  for ( auto object : registry.dataObjects ) {
+    bool global = ( object->index < model->objects.size() );
+    data.objects[object->index] = knownObject(global ? std::nullopt : std::optional<size_t>(instanceId), object);
+  }
+  for ( auto inputs : { &expression.collections, &expression.paths } ) {
+    for ( auto attribute : *inputs ) {
+      if ( attribute->isObject() && !registry.getObject(attribute, status, data) ) {
+        throw std::runtime_error("InstanceDataReader: expression '" + expressionString + "' refers to object '" + attribute->name + "' without a value");
+      }
     }
   }
 

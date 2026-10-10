@@ -119,6 +119,8 @@ Instance_1; Process_1; endTime := timestamp + duration
 
 **Note:** INITIALIZATION expressions can reference any attributes previously parse-time evaluated in earlier CSV rows (globals or instance attributes). Referenced attributes must be available in the node's attributeRegistry. Row order determines which attributes are available for reference.
 
+An expression of the instance data may read an object given a value in an earlier row, in the sizes the size declarations fix, or initialised by the model, e.g. `budget := sum(location)` following `location := [3, 1]`; an object without such a value is an error.
+
 Values provided for `string` attributes must be quoted, values provided for `boolean` attributes must be `true` or `false`, and values provided for `collection` attributes must be embraced in square brackets.
 
 A literal in square brackets is an array, `[ 1, 2, 3 ]`, and a literal in braces is a value with fields, `{ name := "Depot", position := [ 0, 1.5 ] }`; both may be nested to any depth, as in `[ { cost := 10, flags := [ true, false ] }, { cost := 20, flags := [ false, false ] } ]`. The members of an array are uniform: they agree in type and, being arrays or values with fields themselves, in the sizes of their arrays and in their fields, so that `[ [ 1, 2 ], [ 3 ] ]` is refused. Every literal is registered once as a constant object, which is stored flat and shared by every attribute holding it, and two equal literals are the same constant object. Numbers in a literal are decimals.

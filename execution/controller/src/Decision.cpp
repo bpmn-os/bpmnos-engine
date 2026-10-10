@@ -24,7 +24,7 @@ void Decision::determineDependencies(const std::set<const BPMNOS::Model::Attribu
         dataDependencies.insert(attribute);
       }
     }
-    else if ( attribute->index == BPMNOS::Model::ExtensionElements::Index::Timestamp ) {
+    else if ( !attribute->isObject() && attribute->index == BPMNOS::Model::ExtensionElements::Index::Timestamp ) {
       timeDependent = true;
     }
   }

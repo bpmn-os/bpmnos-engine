@@ -40,6 +40,7 @@ list(APPEND tests_SOURCES
   execution/subprocess/test.cpp
   execution/decisiontask/test.cpp
   execution/expression/test.cpp
+  execution/objects/test.cpp
   execution/parallelgateway/test.cpp
   execution/exclusivegateway/test.cpp
   execution/eventbasedgateway/test.cpp

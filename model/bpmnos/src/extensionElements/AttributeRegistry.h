@@ -29,6 +29,10 @@ public:
 
   std::optional<BPMNOS::number> getValue(const Attribute* attribute, const Status& status, const Data& data) const;
   std::optional<BPMNOS::number> getValue(const Attribute* attribute, const Status& status, const SharedData& data) const;
+  /// @brief Method returning the object an object attribute holds in the status or data.
+  const std::shared_ptr<const Object>& getObject(const Attribute* object, const Status& status, const Data& data) const;
+  /// @copydoc getObject(const Attribute*, const Status&, const Data&) const
+  const std::shared_ptr<const Object>& getObject(const Attribute* object, const Status& status, const SharedData& data) const;
   /// @brief Method setting the value of an attribute and returning the change of the objective, which is the
   /// change of the value times the weight of the attribute for a data attribute and zero for a status attribute,
   /// the previous value being available here and nowhere later.

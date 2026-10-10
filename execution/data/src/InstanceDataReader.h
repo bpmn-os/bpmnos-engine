@@ -86,6 +86,13 @@ public:
    * @brief Method returning the schema of an object with the sizes the size declarations fix.
    */
   BPMNOS::Model::Schema getSchema(const BPMNOS::Model::Attribute* object) const;
+  /**
+   * @brief Method returning the object an object attribute holds for an expression of the instance data, given
+   * by an earlier row or by the model, nullptr if it has no value yet.
+   *
+   * No instance is given for a global object.
+   */
+  std::shared_ptr<const BPMNOS::Object> knownObject(std::optional<size_t> instanceId, const BPMNOS::Model::Attribute* object) const;
 
   /**
    * @brief Method evaluating the initialization of a global attribute and recording its value.

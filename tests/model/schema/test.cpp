@@ -203,11 +203,11 @@ TEST_CASE( "Refuse illegal uses of objects", "[model][schema]" ) {
   SECTION( "Initial value of an object that is no literal" ) {
     REQUIRE_THROWS_WITH( []() { Declarations declarations; declarations.processData = attribute("Y", "y := 1", "decimal[2]"); return modelWith(declarations); }(), Catch::Matchers::ContainsSubstring("must be initialised with a literal") );
   }
-  SECTION( "Object in an expression" ) {
+  SECTION( "Object used as a value in an expression" ) {
     REQUIRE_THROWS_WITH( []() { Declarations declarations; declarations.processRestrictions = R"(
         <bpmnos:restrictions>
           <bpmnos:restriction id="Restriction_1" expression="location > 0" />
-        </bpmnos:restrictions>)"; declarations.processData = attribute("Location", "location", "integer[3]"); return modelWith(declarations); }(), Catch::Matchers::ContainsSubstring("object 'location' cannot be used") );
+        </bpmnos:restrictions>)"; declarations.processData = attribute("Location", "location", "integer[3]"); return modelWith(declarations); }(), Catch::Matchers::ContainsSubstring("object 'location' must be indexed to a value") );
   }
   SECTION( "Object as the attribute of a choice" ) {
     REQUIRE_THROWS_WITH( []() { Declarations declarations; declarations.taskStatus = attribute("Pick", "pick", "integer[2]"); declarations.taskDecisions = "1 &#60;= pick &#60;= 3"; return modelWith(declarations); }(), Catch::Matchers::ContainsSubstring("is an object") );

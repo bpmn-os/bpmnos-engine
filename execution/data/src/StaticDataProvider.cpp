@@ -347,23 +347,34 @@ std::optional<BPMNOS::number> StaticDataProvider::getValue(const Scenario& scena
       }
       variableValues.push_back((double)value.value());
     }
-    std::vector<LIMEX::View<double>> collectionValues;
+    // the arrays and objects read, the objects of the instance or the global objects
+    auto objectOf = [&](const BPMNOS::Model::Attribute* input) -> const BPMNOS::Object* {
+      if ( !input->isImmutable ) {
+        return nullptr;
+      }
+      if ( input->isObject() ) {
+        bool global = ( input->category == BPMNOS::Model::Attribute::Category::DATA && input->index < this->model->objects.size() );
+        return global ? globals.objects[input->index].get() : getObject(instanceId, input).get();
+      }
+      auto collection = getValue(scenario, instanceId, input);
+      return collection.has_value() ? objectRegistry[(size_t)collection.value()].get() : nullptr;
+    };
+    std::vector<const BPMNOS::Object*> collectionObjects;
     for ( auto input : attribute->expression->collections ) {
-      auto collection = input->isImmutable ? getValue(scenario, instanceId, input) : std::nullopt;
-      if ( !collection.has_value() ) {
+      collectionObjects.push_back(objectOf(input));
+      if ( !collectionObjects.back() ) {
         return std::nullopt;
       }
-      collectionValues.push_back(BPMNOS::Model::Expression::view(collection.value()));
     }
-    std::vector<BPMNOS::number> pathCollections;
+    std::vector<const BPMNOS::Object*> pathObjects;
     for ( auto input : attribute->expression->paths ) {
-      auto collection = input->isImmutable ? getValue(scenario, instanceId, input) : std::nullopt;
-      if ( !collection.has_value() ) {
+      pathObjects.push_back(objectOf(input));
+      if ( !pathObjects.back() ) {
         return std::nullopt;
       }
-      pathCollections.push_back(collection.value());
     }
-    return BPMNOS::number(attribute->expression->evaluate(variableValues, collectionValues, pathCollections));
+    auto value = attribute->expression->evaluate(variableValues, collectionObjects, pathObjects);
+    return value.has_value() ? std::optional<BPMNOS::number>(BPMNOS::number(value.value())) : std::nullopt;
   }
   auto& values = getInstanceValues(scenario, instanceId);
   if ( auto it = values.find(attribute); it != values.end() ) {
