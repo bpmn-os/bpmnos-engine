@@ -40,7 +40,7 @@ public:
   std::vector<const Attribute*> collections; ///< Vector containing all input collections used by the expression.
   const Attribute* isAttribute() const; ///< Returns pointer to the attribute if and only if expression contains nothing else
   template <typename DataType>
-  std::optional<double> execute(const BPMNOS::Values& status, const DataType& data) const;
+  std::optional<double> execute(const BPMNOS::Status& status, const DataType& data) const;
 private:
   LIMEX::Expression<double> getExpression(const std::string& input) const;
   Type getType() const;

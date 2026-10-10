@@ -75,7 +75,7 @@ MessageDefinition::MessageDefinition(XML::bpmnos::tMessage* message, const Attri
 }
 
 template <typename DataType>
-BPMNOS::Values MessageDefinition::getSenderHeader(const AttributeRegistry& attributeRegistry, const BPMNOS::Values& status, const DataType& data, BPMNOS::number instance) const {
+BPMNOS::Values MessageDefinition::getSenderHeader(const AttributeRegistry& attributeRegistry, const BPMNOS::Status& status, const DataType& data, BPMNOS::number instance) const {
   BPMNOS::Values headerValues;
 
   for ( auto& [key,type] : header ) {
@@ -93,11 +93,11 @@ BPMNOS::Values MessageDefinition::getSenderHeader(const AttributeRegistry& attri
   return headerValues;
 }
 
-template  BPMNOS::Values MessageDefinition::getSenderHeader<BPMNOS::Values>(const AttributeRegistry& attributeRegistry, const BPMNOS::Values& status, const BPMNOS::Values& data, BPMNOS::number instance) const;
-template  BPMNOS::Values MessageDefinition::getSenderHeader<BPMNOS::SharedValues>(const AttributeRegistry& attributeRegistry, const BPMNOS::Values& status, const BPMNOS::SharedValues& data, BPMNOS::number instance) const;
+template  BPMNOS::Values MessageDefinition::getSenderHeader<BPMNOS::Data>(const AttributeRegistry& attributeRegistry, const BPMNOS::Status& status, const BPMNOS::Data& data, BPMNOS::number instance) const;
+template  BPMNOS::Values MessageDefinition::getSenderHeader<BPMNOS::SharedData>(const AttributeRegistry& attributeRegistry, const BPMNOS::Status& status, const BPMNOS::SharedData& data, BPMNOS::number instance) const;
 
 template <typename DataType>
-BPMNOS::Values MessageDefinition::getRecipientHeader(const AttributeRegistry& attributeRegistry, const BPMNOS::Values& status, const DataType& data, BPMNOS::number instance) const {
+BPMNOS::Values MessageDefinition::getRecipientHeader(const AttributeRegistry& attributeRegistry, const BPMNOS::Status& status, const DataType& data, BPMNOS::number instance) const {
   BPMNOS::Values headerValues;
 
   for ( auto& [key,type] : header ) {
@@ -115,11 +115,11 @@ BPMNOS::Values MessageDefinition::getRecipientHeader(const AttributeRegistry& at
   return headerValues;
 }
 
-template  BPMNOS::Values MessageDefinition::getRecipientHeader<BPMNOS::Values>(const AttributeRegistry& attributeRegistry, const BPMNOS::Values& status, const BPMNOS::Values& data, BPMNOS::number instance) const;
-template  BPMNOS::Values MessageDefinition::getRecipientHeader<BPMNOS::SharedValues>(const AttributeRegistry& attributeRegistry, const BPMNOS::Values& status, const BPMNOS::SharedValues& data, BPMNOS::number instance) const;
+template  BPMNOS::Values MessageDefinition::getRecipientHeader<BPMNOS::Data>(const AttributeRegistry& attributeRegistry, const BPMNOS::Status& status, const BPMNOS::Data& data, BPMNOS::number instance) const;
+template  BPMNOS::Values MessageDefinition::getRecipientHeader<BPMNOS::SharedData>(const AttributeRegistry& attributeRegistry, const BPMNOS::Status& status, const BPMNOS::SharedData& data, BPMNOS::number instance) const;
 
 template <typename DataType>
-std::optional<BPMNOS::number> MessageDefinition::getHeaderValue(const std::string& key, [[maybe_unused]] const AttributeRegistry& attributeRegistry, const BPMNOS::Values& status, const DataType& data) const {
+std::optional<BPMNOS::number> MessageDefinition::getHeaderValue(const std::string& key, [[maybe_unused]] const AttributeRegistry& attributeRegistry, const BPMNOS::Status& status, const DataType& data) const {
   std::optional<BPMNOS::number> value;
   auto it = parameterMap.find(key);
   if ( it != parameterMap.end() && it->second->expression ) {
@@ -128,6 +128,6 @@ std::optional<BPMNOS::number> MessageDefinition::getHeaderValue(const std::strin
   return value;
 }
 
-template std::optional<BPMNOS::number> MessageDefinition::getHeaderValue<BPMNOS::Values>(const std::string& key, const AttributeRegistry& attributeRegistry, const BPMNOS::Values& status, const BPMNOS::Values& data) const; 
-template std::optional<BPMNOS::number> MessageDefinition::getHeaderValue<BPMNOS::SharedValues>(const std::string& key, const AttributeRegistry& attributeRegistry, const BPMNOS::Values& status, const BPMNOS::SharedValues& data) const; 
+template std::optional<BPMNOS::number> MessageDefinition::getHeaderValue<BPMNOS::Data>(const std::string& key, const AttributeRegistry& attributeRegistry, const BPMNOS::Status& status, const BPMNOS::Data& data) const; 
+template std::optional<BPMNOS::number> MessageDefinition::getHeaderValue<BPMNOS::SharedData>(const std::string& key, const AttributeRegistry& attributeRegistry, const BPMNOS::Status& status, const BPMNOS::SharedData& data) const; 
 

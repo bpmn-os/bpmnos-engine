@@ -30,7 +30,7 @@ public:
 
   /// @brief Method applying the operator and returning the change of the objective.
   template <typename DataType>
-  BPMNOS::number apply(BPMNOS::Values& status, DataType& data) const;
+  BPMNOS::number apply(BPMNOS::Status& status, DataType& data) const;
 
   /// Returns a pointer of type T of the node.
   template<typename T> T* is() {

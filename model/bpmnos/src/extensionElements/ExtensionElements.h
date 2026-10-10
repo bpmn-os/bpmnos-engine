@@ -66,35 +66,35 @@ public:
   bool hasSequentialPerformer; ///< Boolean indicating whether element has a performer with name "Sequential".
 
   template <typename DataType>
-  bool feasibleEntry(const BPMNOS::Values& status, const DataType& data) const;
+  bool feasibleEntry(const BPMNOS::Status& status, const DataType& data) const;
 
   template <typename DataType>
-  bool feasibleCompletion(const BPMNOS::Values& status, const DataType& data) const;
+  bool feasibleCompletion(const BPMNOS::Status& status, const DataType& data) const;
   
   template <typename DataType>
-  bool feasibleExit(const BPMNOS::Values& status, const DataType& data) const;
+  bool feasibleExit(const BPMNOS::Status& status, const DataType& data) const;
   
   template <typename DataType>
-  bool satisfiesInheritedRestrictions(const BPMNOS::Values& status, const DataType& data) const;
+  bool satisfiesInheritedRestrictions(const BPMNOS::Status& status, const DataType& data) const;
   
   template <typename DataType>
-  bool fullScopeRestrictionsSatisfied(const BPMNOS::Values& status, const DataType& data) const;
+  bool fullScopeRestrictionsSatisfied(const BPMNOS::Status& status, const DataType& data) const;
   
   bool isInstantaneous; ///< Boolean indicating whether operators may modify timestamp.
 
   /// @brief Method computing the values the model assigns and returning the change of the objective.
   template <typename DataType>
-  BPMNOS::number computeInitialValues(BPMNOS::number currentTime, BPMNOS::Values& status, DataType& data) const;
+  BPMNOS::number computeInitialValues(BPMNOS::number currentTime, BPMNOS::Status& status, DataType& data) const;
 
   /// @brief Method applying the operators and returning the change of the objective.
   template <typename DataType>
-  BPMNOS::number applyOperators(BPMNOS::Values& status, DataType& data) const;
+  BPMNOS::number applyOperators(BPMNOS::Status& status, DataType& data) const;
 
   template <typename DataType>
-  BPMNOS::number getObjective(const BPMNOS::Values& status, const DataType& data) const; ///< Returns the total objective of all attributes provided.
+  BPMNOS::number getObjective(const BPMNOS::Status& status, const DataType& data) const; ///< Returns the total objective of all attributes provided.
 
   template <typename DataType>
-  std::vector<std::pair<const Attribute*, BPMNOS::number>> getContributionsToObjective(const BPMNOS::Values& status, const DataType& data) const; ///< Returns the contribution to the objective by the attributes declared for the node.
+  std::vector<std::pair<const Attribute*, BPMNOS::number>> getContributionsToObjective(const BPMNOS::Status& status, const DataType& data) const; ///< Returns the contribution to the objective by the attributes declared for the node.
   
   std::optional< std::unique_ptr<Guidance> > messageDeliveryGuidance;
   std::optional< std::unique_ptr<Guidance> > entryGuidance;

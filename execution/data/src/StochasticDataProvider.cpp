@@ -157,16 +157,16 @@ void StochasticDataProvider::sample(Scenario& scenario, const Scenario* original
     }
     else {
       auto& attributeRegistry = initialization.node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->attributeRegistry;
-      BPMNOS::Values status(attributeRegistry.statusAttributes.size());
-      BPMNOS::Values data(attributeRegistry.dataAttributes.size());
+      BPMNOS::Status status(attributeRegistry.statusAttributes.size());
+      BPMNOS::Data data(attributeRegistry.dataAttributes.size());
       // the global attributes are the first data attributes
-      std::copy(globals.begin(), globals.end(), data.begin());
+      std::copy(globals.attributes.begin(), globals.attributes.end(), data.attributes.begin());
       for ( auto& [attribute, attributeValue] : values ) {
-        if ( attribute->category == BPMNOS::Model::Attribute::Category::STATUS && attribute->index < status.size() && attributeRegistry.contains(attribute) ) {
-          status[attribute->index] = attributeValue;
+        if ( attribute->category == BPMNOS::Model::Attribute::Category::STATUS && attribute->index < status.attributes.size() && attributeRegistry.contains(attribute) ) {
+          status.attributes[attribute->index] = attributeValue;
         }
-        else if ( attribute->category == BPMNOS::Model::Attribute::Category::DATA && attribute->index < data.size() && attributeRegistry.contains(attribute) ) {
-          data[attribute->index] = attributeValue;
+        else if ( attribute->category == BPMNOS::Model::Attribute::Category::DATA && attribute->index < data.attributes.size() && attributeRegistry.contains(attribute) ) {
+          data.attributes[attribute->index] = attributeValue;
         }
       }
 
@@ -183,10 +183,10 @@ void StochasticDataProvider::sample(Scenario& scenario, const Scenario* original
         value = std::max(value, spawnTime);
       }
       if ( initialization.attribute->category == BPMNOS::Model::Attribute::Category::STATUS ) {
-        status[initialization.attribute->index] = value;
+        status.attributes[initialization.attribute->index] = value;
       }
       else if ( initialization.attribute->category == BPMNOS::Model::Attribute::Category::DATA ) {
-        data[initialization.attribute->index] = value;
+        data.attributes[initialization.attribute->index] = value;
       }
       auto evaluateDisclosure = [&]() {
         return BPMNOS::number(std::ceil(initialization.disclosure->execute(status, data).value_or(0)));
@@ -233,24 +233,24 @@ BPMNOS::number StochasticDataProvider::getProcessReadyTime(const StaticDataProvi
   return std::max(static_cast<const Scenario&>(scenario).instantiationTimes.at(instanceId), getKnownTime(scenario, instanceId));
 }
 
-BPMNOS::Values StochasticDataProvider::getActivityReadyStatus(StaticDataProvider::Scenario& scenario, const Token* token, BPMNOS::number earliest) const {
+BPMNOS::Status StochasticDataProvider::getActivityReadyStatus(StaticDataProvider::Scenario& scenario, const Token* token, BPMNOS::number earliest) const {
   auto status = DynamicDataProvider::getActivityReadyStatus(scenario, token, earliest);
   computeStatus(static_cast<Scenario&>(scenario), readyExpressions, (size_t)token->owner->root->instance.value(), token->node, status, *token->data, earliest);
   return status;
 }
 
-BPMNOS::number StochasticDataProvider::getActivityReadyTime(const StaticDataProvider::Scenario& scenario, size_t instanceId, const BPMN::Node* activity, const BPMNOS::Values& readyStatus) const {
+BPMNOS::number StochasticDataProvider::getActivityReadyTime(const StaticDataProvider::Scenario& scenario, size_t instanceId, const BPMN::Node* activity, const BPMNOS::Status& readyStatus) const {
   // the token becomes ready once the timestamp of the status it becomes ready with is reached
-  return std::max(DynamicDataProvider::getActivityReadyTime(scenario, instanceId, activity, readyStatus), readyStatus[BPMNOS::Model::ExtensionElements::Index::Timestamp].value());
+  return std::max(DynamicDataProvider::getActivityReadyTime(scenario, instanceId, activity, readyStatus), readyStatus.attributes[BPMNOS::Model::ExtensionElements::Index::Timestamp].value());
 }
 
-BPMNOS::Values StochasticDataProvider::getCompletionStatus(StaticDataProvider::Scenario& scenario, const Token* token, BPMNOS::number earliest) const {
+BPMNOS::Status StochasticDataProvider::getCompletionStatus(StaticDataProvider::Scenario& scenario, const Token* token, BPMNOS::number earliest) const {
   auto status = DynamicDataProvider::getCompletionStatus(scenario, token, earliest);
   computeStatus(static_cast<Scenario&>(scenario), completionExpressions, (size_t)token->owner->root->instance.value(), token->node, status, *token->data, earliest);
   return status;
 }
 
-void StochasticDataProvider::computeStatus(Scenario& scenario, const Expressions& expressions, size_t instanceId, const BPMN::Node* node, BPMNOS::Values& status, const BPMNOS::SharedValues& data, BPMNOS::number earliest) const {
+void StochasticDataProvider::computeStatus(Scenario& scenario, const Expressions& expressions, size_t instanceId, const BPMN::Node* node, BPMNOS::Status& status, const BPMNOS::SharedData& data, BPMNOS::number earliest) const {
   auto instanceExpressions = expressions.find(instanceId);
   if ( instanceExpressions == expressions.end() ) {
     return;
@@ -266,7 +266,7 @@ void StochasticDataProvider::computeStatus(Scenario& scenario, const Expressions
     for ( auto& expression : nodeExpressions->second ) {
       if ( auto value = expression->execute(status, data) ) {
         auto target = expression->target.value();
-        status[target->index] = convert(value.value(), target->type);
+        status.attributes[target->index] = convert(value.value(), target->type);
       }
     }
   };
@@ -276,7 +276,7 @@ void StochasticDataProvider::computeStatus(Scenario& scenario, const Expressions
   // the event has not happened before; a status computed otherwise has the lowest number as earliest time
   constexpr auto Timestamp = BPMNOS::Model::ExtensionElements::Index::Timestamp;
   auto tooEarly = [&]() {
-    return status[Timestamp].has_value() && status[Timestamp].value() < earliest;
+    return status.attributes[Timestamp].has_value() && status.attributes[Timestamp].value() < earliest;
   };
   // sampling again can change the timestamp only if an expression assigns it
   bool timestampSampled = std::ranges::any_of(nodeExpressions->second, [](auto& expression) {
@@ -287,7 +287,7 @@ void StochasticDataProvider::computeStatus(Scenario& scenario, const Expressions
     evaluate();
   }
   if ( tooEarly() ) {
-    status[Timestamp] = earliest;
+    status.attributes[Timestamp] = earliest;
   }
   randomDistributionFactory.setCurrentRng(nullptr);
 }

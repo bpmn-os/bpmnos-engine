@@ -67,7 +67,7 @@ public:
   /**
    * @brief Method returning the values of the global attributes at the beginning of a run on the scenario.
    */
-  virtual BPMNOS::Values getGlobals(const Scenario& scenario) const = 0;
+  virtual BPMNOS::Data getGlobals(const Scenario& scenario) const = 0;
 
   /**
    * @brief Method returning the earliest time at which an instance of the scenario is instantiated.

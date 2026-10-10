@@ -55,7 +55,7 @@ public:
    * @param node The node where the token is created: a flow node, or the process for a process-level token
    * @param status Initial status values for the token
    */
-  Token(const StateMachine* owner, const BPMN::Node* node, const Values& status);
+  Token(const StateMachine* owner, const BPMN::Node* node, const Status& status);
 
   /**
    * @brief Copy constructor for multi-instance activities (same owner).
@@ -91,8 +91,8 @@ public:
   ~Token();
 
   State state;
-  Values status;
-  SharedValues* data; ///< Pointer to the data of the owner or owned state machine subprocesses)
+  Status status;
+  SharedData* data; ///< Pointer to the data of the owner or owned state machine subprocesses)
   std::shared_ptr<DecisionRequest> decisionRequest;
   Token* performing; ///< Pointer to the activity token currently performed (only applies if node is a performer referenced by sequential ad-hoc subprocesses)
   auto_list< std::weak_ptr<Token> > pendingSequentialEntries; ///< List of tokens awaiting an activity entry (only applies if node is a performer referenced by sequential ad-hoc subprocesses)
@@ -185,25 +185,24 @@ private:
    * Returns a merged status from the status of each token
    **/
   template <typename TokenPtr>
-  static BPMNOS::Values mergeStatus(const std::vector<TokenPtr>& tokens) {
+  static BPMNOS::Status mergeStatus(const std::vector<TokenPtr>& tokens) {
     assert( !tokens.empty() );
-    size_t n = tokens.front()->status.size();
-    BPMNOS::Values result;
-    result.resize(n);
-    result[(int)BPMNOS::Model::ExtensionElements::Index::Timestamp] = tokens.front()->status[(int)BPMNOS::Model::ExtensionElements::Index::Timestamp];
+    size_t n = tokens.front()->status.attributes.size();
+    BPMNOS::Status result(n);
+    result.attributes[(int)BPMNOS::Model::ExtensionElements::Index::Timestamp] = tokens.front()->status.attributes[(int)BPMNOS::Model::ExtensionElements::Index::Timestamp];
 
     for ( size_t i = 0; i < n; i++ ) {
       for ( auto& token : tokens ) {
         if ( i == (int)BPMNOS::Model::ExtensionElements::Index::Timestamp ) {
-          if ( result[i].value() < token->status[i].value() ) {
-            result[i] = token->status[i];
+          if ( result.attributes[i].value() < token->status.attributes[i].value() ) {
+            result.attributes[i] = token->status.attributes[i];
           }
         }
-        else if ( !result[i].has_value() ) {
-          result[i] = token->status[i];
+        else if ( !result.attributes[i].has_value() ) {
+          result.attributes[i] = token->status.attributes[i];
         }
-        else if ( token->status[i].has_value() && token->status[i].value() != result[i].value() ) {
-          result[i] = std::nullopt;
+        else if ( token->status.attributes[i].has_value() && token->status.attributes[i].value() != result.attributes[i].value() ) {
+          result.attributes[i] = std::nullopt;
           break;
         }
       }

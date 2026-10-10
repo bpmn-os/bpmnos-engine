@@ -21,7 +21,7 @@ Gatekeeper::Gatekeeper(XML::bpmn::tBaseElement* baseElement, BPMN::Scope* parent
 }
 
 template <typename DataType>
-bool Gatekeeper::conditionsSatisfied(const BPMNOS::Values& status, const DataType& data) const {
+bool Gatekeeper::conditionsSatisfied(const BPMNOS::Status& status, const DataType& data) const {
   for ( auto& condition : conditions ) {
     if ( !condition->isSatisfied(status,data) ) {
       return false; 
@@ -30,5 +30,5 @@ bool Gatekeeper::conditionsSatisfied(const BPMNOS::Values& status, const DataTyp
   return true; 
 }
 
-template bool Gatekeeper::conditionsSatisfied<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data) const;
-template bool Gatekeeper::conditionsSatisfied<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data) const;
+template bool Gatekeeper::conditionsSatisfied<BPMNOS::Data>(const BPMNOS::Status& status, const BPMNOS::Data& data) const;
+template bool Gatekeeper::conditionsSatisfied<BPMNOS::SharedData>(const BPMNOS::Status& status, const BPMNOS::SharedData& data) const;

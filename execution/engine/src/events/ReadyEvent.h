@@ -13,10 +13,10 @@ namespace BPMNOS::Execution {
  * Transition from State::CREATED or State::ARRIVED to State::READY
  */
 struct ReadyEvent : Event {
-  ReadyEvent(const Token* token, BPMNOS::Values statusAttributes, BPMNOS::Values dataAttributes);
+  ReadyEvent(const Token* token, BPMNOS::Status statusAttributes, BPMNOS::Data dataAttributes);
   void processBy(Engine* engine) const override;
-  BPMNOS::Values statusAttributes;
-  BPMNOS::Values dataAttributes;
+  BPMNOS::Status statusAttributes;
+  BPMNOS::Data dataAttributes;
 
   nlohmann::ordered_json jsonify() const override;
 };

@@ -16,8 +16,8 @@ SystemState::SystemState(const Engine* engine, const Scenario* scenario, BPMNOS:
   // them here; no change is notified, the run not having begun and no token being able to observe it
   auto& globals = stateMachine->ownedData;
   for ( auto& attribute : engine->getModel()->attributes ) {
-    if ( attribute->weight != 0 && globals[attribute->index].has_value() ) {
-      objective += globals[attribute->index].value() * attribute->weight;
+    if ( attribute->weight != 0 && globals.attributes[attribute->index].has_value() ) {
+      objective += globals.attributes[attribute->index].value() * attribute->weight;
     }
   }
 }

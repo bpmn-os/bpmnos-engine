@@ -4,7 +4,7 @@
 
 using namespace BPMNOS::Execution;
 
-InstantiationEvent::InstantiationEvent(const BPMN::Process* process, BPMNOS::Values status, BPMNOS::Values data)
+InstantiationEvent::InstantiationEvent(const BPMN::Process* process, BPMNOS::Status status, BPMNOS::Data data)
   : Event(nullptr)
   , process(process)
   , status(status)
@@ -25,8 +25,8 @@ nlohmann::ordered_json InstantiationEvent::jsonify() const {
 
   jsonObject["event"] = "instantiation";
   jsonObject["processId"] = process->id;
-  if ( data.size() > BPMNOS::Model::ExtensionElements::Position::Instance && data[BPMNOS::Model::ExtensionElements::Position::Instance].has_value() ) {
-    jsonObject["instanceId"] = BPMNOS::to_string(data[BPMNOS::Model::ExtensionElements::Position::Instance].value(),STRING);
+  if ( data.attributes.size() > BPMNOS::Model::ExtensionElements::Position::Instance && data.attributes[BPMNOS::Model::ExtensionElements::Position::Instance].has_value() ) {
+    jsonObject["instanceId"] = BPMNOS::to_string(data.attributes[BPMNOS::Model::ExtensionElements::Position::Instance].value(),STRING);
   }
 
   return jsonObject;

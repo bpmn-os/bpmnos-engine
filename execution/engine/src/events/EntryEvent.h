@@ -13,10 +13,10 @@ namespace BPMNOS::Execution {
  * Transition from State::READY to State::ENTERED
  */
 struct EntryEvent : virtual Event {
-  EntryEvent(const Token* token, std::optional<Values> entryStatus = std::nullopt);
+  EntryEvent(const Token* token, std::optional<Status> entryStatus = std::nullopt);
 
   void processBy(Engine* engine) const override;
-  std::optional<Values> entryStatus;
+  std::optional<Status> entryStatus;
 
   nlohmann::ordered_json jsonify() const override;
 };

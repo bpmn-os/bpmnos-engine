@@ -3,7 +3,7 @@
 
 using namespace BPMNOS::Execution;
 
-ReadyEvent::ReadyEvent(const Token* token, BPMNOS::Values statusAttributes, BPMNOS::Values dataAttributes)
+ReadyEvent::ReadyEvent(const Token* token, BPMNOS::Status statusAttributes, BPMNOS::Data dataAttributes)
   : Event(token)
   , statusAttributes(statusAttributes)
   , dataAttributes(dataAttributes)

@@ -12,9 +12,9 @@ namespace BPMNOS::Execution {
  * Transition from State::BUSY to State::COMPLETED
  */
 struct CompletionEvent : Event {
-  CompletionEvent(const Token* token, Values status);
+  CompletionEvent(const Token* token, Status status);
   void processBy(Engine* engine) const override;
-  Values status;
+  Status status;
 
   nlohmann::ordered_json jsonify() const override;
 };

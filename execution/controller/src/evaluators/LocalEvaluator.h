@@ -11,10 +11,10 @@ namespace BPMNOS::Execution {
  */
 class LocalEvaluator : public Evaluator {
 public:
-  virtual bool updateValues(EntryDecision* decision, Values& status, Values& data);
-  virtual bool updateValues(ExitDecision* decision, Values& status, Values& data);
-  virtual bool updateValues(ChoiceDecision* decision, Values& status, Values& data);
-  virtual bool updateValues(MessageDeliveryDecision* decision, Values& status, Values& data);
+  virtual bool updateValues(EntryDecision* decision, Status& status, Data& data);
+  virtual bool updateValues(ExitDecision* decision, Status& status, Data& data);
+  virtual bool updateValues(ChoiceDecision* decision, Status& status, Data& data);
+  virtual bool updateValues(MessageDeliveryDecision* decision, Status& status, Data& data);
 
   std::shared_ptr<Evaluation> evaluate(EntryDecision* decision) override;
   std::shared_ptr<Evaluation> evaluate(ExitDecision* decision) override;

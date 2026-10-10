@@ -216,11 +216,11 @@ void Engine::triggerInstance(const BPMN::Process* process, BPMNOS::VariedValueMa
   auto counter = ++systemState->instantiationCounter[process];
   auto instanceId = process->id + StateMachine::delimiters[1] + std::to_string(counter);
 
-  BPMNOS::Values data( extensionElements->data.size() );
-  data[Model::ExtensionElements::Position::Instance] = BPMNOS::to_number(instanceId,STRING);
+  BPMNOS::Data data( extensionElements->data.size() );
+  data.attributes[Model::ExtensionElements::Position::Instance] = BPMNOS::to_number(instanceId,STRING);
 
-  BPMNOS::Values status( extensionElements->attributes.size() );
-  status[Model::ExtensionElements::Index::Timestamp] = systemState->getTime();
+  BPMNOS::Status status( extensionElements->attributes.size() );
+  status.attributes[Model::ExtensionElements::Index::Timestamp] = systemState->getTime();
 
   // the instance is created before the content of the trigger is applied, so that the content is written
   // through the data of the token at the process, which holds the global attributes and those of the instance
@@ -300,10 +300,10 @@ void Engine::process(const InstantiationEvent* event) {
   auto process = event->process;
   auto& status = const_cast<InstantiationEvent*>(event)->status;
   auto& data = const_cast<InstantiationEvent*>(event)->data;
-  if ( !data[Model::ExtensionElements::Position::Instance].has_value() ) {
+  if ( !data.attributes[Model::ExtensionElements::Position::Instance].has_value() ) {
     throw std::runtime_error("Engine: instance of process '" + process->id + "' has no id");
   }
-  if ( !status[Model::ExtensionElements::Index::Timestamp].has_value() ) {
+  if ( !status.attributes[Model::ExtensionElements::Index::Timestamp].has_value() ) {
     throw std::runtime_error("Engine: instance of process '" + process->id + "' has no timestamp");
   }
   systemState->instantiationCounter[process]++;
@@ -343,7 +343,7 @@ void Engine::process(const ReadyEvent* event) {
 
   auto& status = const_cast<ReadyEvent*>(event)->statusAttributes;
   token->status = std::move(status);
-  token->status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = systemState->currentTime;
+  token->status.attributes[BPMNOS::Model::ExtensionElements::Index::Timestamp] = systemState->currentTime;
 
   if ( token->node->represents<BPMN::Process>() ) {
     // the token at a process starts the instance: the data owned by the state machine of the instance is
@@ -352,9 +352,9 @@ void Engine::process(const ReadyEvent* event) {
     auto stateMachine = token->owned.get();
     auto& data = const_cast<ReadyEvent*>(event)->dataAttributes;
     auto instanceIndex = model->instanceIndex;
-    assert( data.size() == stateMachine->data.size() - instanceIndex );
-    for ( size_t i = 0; i < data.size(); i++ ) {
-      stateMachine->data[instanceIndex + i].get() = data[i];
+    assert( data.attributes.size() == stateMachine->data.attributes.size() - instanceIndex );
+    for ( size_t i = 0; i < data.attributes.size(); i++ ) {
+      stateMachine->data.attributes[instanceIndex + i].get() = data.attributes[i];
     }
   }
   else if ( auto scope = token->node->represents<BPMN::Scope>() ) {
@@ -373,7 +373,7 @@ void Engine::process(const EntryEvent* event) {
   assert( token_ptr );
   Token* token = const_cast<Token*>(token_ptr.get());
   token->decisionRequest.reset();
-  token->status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = systemState->currentTime;
+  token->status.attributes[BPMNOS::Model::ExtensionElements::Index::Timestamp] = systemState->currentTime;
   if ( token->node->as<BPMN::FlowNode>()->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() ) {
     token->occupySequentialPerformer();
   }
@@ -395,7 +395,7 @@ void Engine::process(const ChoiceEvent* event) {
   assert( token_ptr );
   Token* token = const_cast<Token*>(token_ptr.get());
   token->decisionRequest.reset();
-  token->status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = systemState->currentTime;
+  token->status.attributes[BPMNOS::Model::ExtensionElements::Index::Timestamp] = systemState->currentTime;
   assert( token->node->represents<BPMNOS::Model::DecisionTask>() );
 
   auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
@@ -434,7 +434,7 @@ void Engine::process(const MessageDeliveryEvent* event) {
   assert( token_ptr );
   Token* token = const_cast<Token*>(token_ptr.get());
   token->decisionRequest.reset();
-  token->status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = systemState->currentTime;
+  token->status.attributes[BPMNOS::Model::ExtensionElements::Index::Timestamp] = systemState->currentTime;
   assert( token->node->represents<BPMN::FlowNode>() );
 
   auto message_ptr = event->message.lock();

@@ -162,7 +162,7 @@ void Choice::parseDiscretizer(const std::string& input) {
 
 
 template <typename DataType>
-std::pair<BPMNOS::number,BPMNOS::number> Choice::getBounds(const BPMNOS::Values& status, const DataType& data) const {
+std::pair<BPMNOS::number,BPMNOS::number> Choice::getBounds(const BPMNOS::Status& status, const DataType& data) const {
   assert( attribute->type != STRING );
   assert( lowerBound.has_value() );  
   assert( upperBound.has_value() );
@@ -188,12 +188,12 @@ std::pair<BPMNOS::number,BPMNOS::number> Choice::getBounds(const BPMNOS::Values&
   return {min,max};
 }
 
-template std::pair<BPMNOS::number,BPMNOS::number>  Choice::getBounds<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data) const;
-template std::pair<BPMNOS::number,BPMNOS::number>  Choice::getBounds<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data) const;
+template std::pair<BPMNOS::number,BPMNOS::number>  Choice::getBounds<BPMNOS::Data>(const BPMNOS::Status& status, const BPMNOS::Data& data) const;
+template std::pair<BPMNOS::number,BPMNOS::number>  Choice::getBounds<BPMNOS::SharedData>(const BPMNOS::Status& status, const BPMNOS::SharedData& data) const;
 
 
 template <typename DataType>
-std::vector<BPMNOS::number> Choice::getEnumeration(const BPMNOS::Values& status, const DataType& data) const {
+std::vector<BPMNOS::number> Choice::getEnumeration(const BPMNOS::Status& status, const DataType& data) const {
   assert( !enumeration.empty() || multipleOf );  
   std::vector<BPMNOS::number> allowedValues;
   if ( !enumeration.empty() ) {
@@ -237,6 +237,6 @@ std::vector<BPMNOS::number> Choice::getEnumeration(const BPMNOS::Values& status,
   return allowedValues;
 }
 
-template std::vector<BPMNOS::number> Choice::getEnumeration<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data) const;
-template std::vector<BPMNOS::number> Choice::getEnumeration<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data) const;
+template std::vector<BPMNOS::number> Choice::getEnumeration<BPMNOS::Data>(const BPMNOS::Status& status, const BPMNOS::Data& data) const;
+template std::vector<BPMNOS::number> Choice::getEnumeration<BPMNOS::SharedData>(const BPMNOS::Status& status, const BPMNOS::SharedData& data) const;
 

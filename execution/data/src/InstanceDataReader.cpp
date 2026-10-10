@@ -159,9 +159,9 @@ void InstanceDataReader::evaluateGlobal(const std::string& initialization, const
 
   BPMNOS::Model::Expression expression(handle, BPMNOS::InputEncoder::fragment(expressionString), model->attributeRegistry);
   // the global attributes are the first data attributes
-  BPMNOS::Values globalValues(model->attributes.size());
+  BPMNOS::Data globalValues(model->attributes.size());
   for ( auto& [globalAttribute, value] : globals ) {
-    globalValues[globalAttribute->index] = value;
+    globalValues.attributes[globalAttribute->index] = value;
   }
   for ( auto referencedAttribute : expression.variables ) {
     if ( !globals.contains(referencedAttribute) ) {
@@ -169,7 +169,7 @@ void InstanceDataReader::evaluateGlobal(const std::string& initialization, const
     }
   }
 
-  auto value = expression.execute(BPMNOS::Values{}, globalValues);
+  auto value = expression.execute(BPMNOS::Status{}, globalValues);
   if ( !value.has_value() ) {
     throw std::runtime_error("InstanceDataReader: failed to evaluate global attribute '" + attributeName + "'");
   }
@@ -180,20 +180,20 @@ BPMNOS::number InstanceDataReader::evaluate(size_t instanceId, const BPMN::Node*
   auto extensionElements = node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   BPMNOS::Model::Expression expression(handle, BPMNOS::InputEncoder::fragment(expressionString), extensionElements->attributeRegistry);
 
-  BPMNOS::Values status(extensionElements->attributeRegistry.statusAttributes.size());
-  BPMNOS::Values data(extensionElements->attributeRegistry.dataAttributes.size());
+  BPMNOS::Status status(extensionElements->attributeRegistry.statusAttributes.size());
+  BPMNOS::Data data(extensionElements->attributeRegistry.dataAttributes.size());
   // the global attributes are the first data attributes
   for ( auto& [attribute, value] : globals ) {
-    data[attribute->index] = value;
+    data.attributes[attribute->index] = value;
   }
   auto instanceValues = values.find(instanceId);
   if ( instanceValues != values.end() ) {
     for ( auto& [attribute, value] : instanceValues->second ) {
       if ( attribute->category == BPMNOS::Model::Attribute::Category::STATUS ) {
-        status[attribute->index] = value;
+        status.attributes[attribute->index] = value;
       }
       else if ( attribute->category == BPMNOS::Model::Attribute::Category::DATA ) {
-        data[attribute->index] = value;
+        data.attributes[attribute->index] = value;
       }
     }
   }

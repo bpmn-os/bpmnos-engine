@@ -7,7 +7,7 @@
 using namespace BPMNOS::Execution;
 
 
-bool GuidedEvaluator::updateValues(EntryDecision* decision, Values& status, Values& data) {
+bool GuidedEvaluator::updateValues(EntryDecision* decision, Status& status, Data& data) {
   auto token = decision->token.lock();
   assert( token );
   if ( !LocalEvaluator::updateValues(decision,status,data) ) {
@@ -30,7 +30,7 @@ bool GuidedEvaluator::updateValues(EntryDecision* decision, Values& status, Valu
   return guidance->restrictionsSatisfied(status,data);
 }
 
-bool GuidedEvaluator::updateValues(ExitDecision* decision, Values& status, Values& data) {
+bool GuidedEvaluator::updateValues(ExitDecision* decision, Status& status, Data& data) {
   auto token = decision->token.lock();
   assert( token );
   if ( !LocalEvaluator::updateValues(decision,status,data) ) {
@@ -53,7 +53,7 @@ bool GuidedEvaluator::updateValues(ExitDecision* decision, Values& status, Value
 }
 
 
-bool GuidedEvaluator::updateValues(ChoiceDecision* decision, Values& status, Values& data) {
+bool GuidedEvaluator::updateValues(ChoiceDecision* decision, Status& status, Data& data) {
   auto token = decision->token.lock();
   assert( token );
   if ( !LocalEvaluator::updateValues(decision,status,data) ) {
@@ -74,7 +74,7 @@ bool GuidedEvaluator::updateValues(ChoiceDecision* decision, Values& status, Val
 }
 
 
-bool GuidedEvaluator::updateValues(MessageDeliveryDecision* decision, Values& status, Values& data) {
+bool GuidedEvaluator::updateValues(MessageDeliveryDecision* decision, Status& status, Data& data) {
   auto token = decision->token.lock();
   assert( token );
   if ( !LocalEvaluator::updateValues(decision,status,data) ) {
@@ -100,9 +100,9 @@ std::shared_ptr<Evaluation> GuidedEvaluator::evaluate(EntryDecision* decision) {
   assert( token->ready() || ( token->state == Token::State::EXITING ) ); // loop activities may re-enter
   auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   assert(extensionElements);
-  Values status = token->status;
-  status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = token->owner->systemState->currentTime;
-  Values data(*token->data);
+  Status status = token->status;
+  status.attributes[BPMNOS::Model::ExtensionElements::Index::Timestamp] = token->owner->systemState->currentTime;
+  Data data(*token->data);
   double evaluation = (double)extensionElements->getObjective(status,data);
 //std::cerr << "Decision: " << decision->jsonify() << std::endl;
 //std::cerr << "Token: " << token->jsonify() << std::endl;
@@ -128,9 +128,9 @@ std::shared_ptr<Evaluation> GuidedEvaluator::evaluate(ExitDecision* decision) {
   assert( token->completed() );
   auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   assert(extensionElements);
-  Values status = token->status;
-  status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = token->owner->systemState->currentTime;
-  Values data(*token->data);
+  Status status = token->status;
+  status.attributes[BPMNOS::Model::ExtensionElements::Index::Timestamp] = token->owner->systemState->currentTime;
+  Data data(*token->data);
   double evaluation = (double)extensionElements->getObjective(status,data);
 
   bool feasible = updateValues(decision,status,data);
@@ -155,9 +155,9 @@ std::shared_ptr<Evaluation> GuidedEvaluator::evaluate(ChoiceDecision* decision) 
   auto evaluation = (double)extensionElements->getObjective(token->status, *token->data);
 
   assert( dynamic_cast<const ChoiceEvent*>(decision) );
-  Values status(token->status);
-  status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = token->owner->systemState->currentTime;
-  Values data(*token->data);
+  Status status(token->status);
+  status.attributes[BPMNOS::Model::ExtensionElements::Index::Timestamp] = token->owner->systemState->currentTime;
+  Data data(*token->data);
   // apply choices
   for (size_t i = 0; i < extensionElements->choices.size(); i++) {
     extensionElements->attributeRegistry.setValue( extensionElements->choices[i]->attribute, status, data, decision->choices[i] );
@@ -182,9 +182,9 @@ std::shared_ptr<Evaluation> GuidedEvaluator::evaluate(MessageDeliveryDecision* d
 
   auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   assert(extensionElements);
-  Values status = token->status;
-  status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = token->owner->systemState->currentTime;
-  Values data(*token->data);
+  Status status = token->status;
+  status.attributes[BPMNOS::Model::ExtensionElements::Index::Timestamp] = token->owner->systemState->currentTime;
+  Data data(*token->data);
   double evaluation = (double)extensionElements->getObjective(status,data);
 //std::cerr << "Decision: " << decision->jsonify() << std::endl;
 //std::cerr << "Token: " << token->jsonify() << std::endl;

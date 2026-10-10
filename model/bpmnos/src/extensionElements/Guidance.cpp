@@ -74,7 +74,7 @@ Guidance::Guidance(XML::bpmnos::tGuidance* guidance, const AttributeRegistry& at
 }
 
 template <typename DataType>
-BPMNOS::number Guidance::getObjective(const BPMNOS::Values& status, const DataType& data) const {
+BPMNOS::number Guidance::getObjective(const BPMNOS::Status& status, const DataType& data) const {
   BPMNOS::number objective = 0;
   for ( auto attribute : attributeRegistry.statusAttributes ) {
     auto value = attributeRegistry.getValue(attribute,status,data);
@@ -93,11 +93,11 @@ BPMNOS::number Guidance::getObjective(const BPMNOS::Values& status, const DataTy
   return objective;
 }
 
-template BPMNOS::number Guidance::getObjective<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data) const;
-//template BPMNOS::number Guidance::getObjective<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data) const;
+template BPMNOS::number Guidance::getObjective<BPMNOS::Data>(const BPMNOS::Status& status, const BPMNOS::Data& data) const;
+//template BPMNOS::number Guidance::getObjective<BPMNOS::SharedData>(const BPMNOS::Status& status, const BPMNOS::SharedData& data) const;
 
 template <typename DataType>
-bool Guidance::restrictionsSatisfied(const BPMNOS::Values& status, const DataType& data) const {
+bool Guidance::restrictionsSatisfied(const BPMNOS::Status& status, const DataType& data) const {
   for ( auto& restriction : restrictions ) {
     if ( !restriction->isSatisfied(status,data) ) {
       return false;
@@ -107,18 +107,18 @@ bool Guidance::restrictionsSatisfied(const BPMNOS::Values& status, const DataTyp
   return true;
 }
 
-template bool Guidance::restrictionsSatisfied<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data) const;
-//template bool Guidance::restrictionsSatisfied<BPMNOS::SharedValues>(const BPMN::FlowNode* node, const BPMNOS::Values& status, const BPMNOS::SharedValues& data) const;
+template bool Guidance::restrictionsSatisfied<BPMNOS::Data>(const BPMNOS::Status& status, const BPMNOS::Data& data) const;
+//template bool Guidance::restrictionsSatisfied<BPMNOS::SharedData>(const BPMN::FlowNode* node, const BPMNOS::Status& status, const BPMNOS::SharedData& data) const;
 
 
 template <typename DataType>
-void Guidance::apply(BPMNOS::Values& status, DataType& data) const {
+void Guidance::apply(BPMNOS::Status& status, DataType& data) const {
 
   for ( auto& attribute : attributes ) {
-    status.push_back( std::nullopt );
+    status.attributes.push_back( std::nullopt );
     if ( attribute->expression ) {
       // compute initial value
-      status.back() = BPMNOS::to_value( attribute->expression->execute(status,data) );
+      status.attributes.back() = BPMNOS::to_value( attribute->expression->execute(status,data) );
     }
   }
   
@@ -128,6 +128,6 @@ void Guidance::apply(BPMNOS::Values& status, DataType& data) const {
   }
 }
 
-template void Guidance::apply<BPMNOS::Values>(BPMNOS::Values& status, BPMNOS::Values& data) const;
-//template void Guidance::apply<BPMNOS::SharedValues>(BPMNOS::Values& status, BPMNOS::SharedValues& data) const;
+template void Guidance::apply<BPMNOS::Data>(BPMNOS::Status& status, BPMNOS::Data& data) const;
+//template void Guidance::apply<BPMNOS::SharedData>(BPMNOS::Status& status, BPMNOS::SharedData& data) const;
 

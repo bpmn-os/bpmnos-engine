@@ -58,55 +58,55 @@ bool AttributeRegistry::contains(const Attribute* attribute) const {
 }
 
 
-std::optional<BPMNOS::number> AttributeRegistry::getValue(const Attribute* attribute, const Values& status, const Values& data) const {
+std::optional<BPMNOS::number> AttributeRegistry::getValue(const Attribute* attribute, const Status& status, const Data& data) const {
   if ( attribute->category == Attribute::Category::STATUS ) {
-    assert(attribute->index < status.size());
-    return status[attribute->index];
+    assert(attribute->index < status.attributes.size());
+    return status.attributes[attribute->index];
   }
   else /* if ( attribute->category == Attribute::Category::DATA )*/ {
-    assert(attribute->index < data.size());
-    return data[attribute->index];
+    assert(attribute->index < data.attributes.size());
+    return data.attributes[attribute->index];
   }
 }
 
-std::optional<BPMNOS::number> AttributeRegistry::getValue(const Attribute* attribute, const Values& status, const SharedValues& data) const {
+std::optional<BPMNOS::number> AttributeRegistry::getValue(const Attribute* attribute, const Status& status, const SharedData& data) const {
   if ( attribute->category == Attribute::Category::STATUS ) {
-    assert(attribute->index < status.size());
-    return status[attribute->index];
+    assert(attribute->index < status.attributes.size());
+    return status.attributes[attribute->index];
   }
   else /* if ( attribute->category == Attribute::Category::DATA )*/ {
-    assert(attribute->index < data.size());
-    return data[attribute->index].get();
+    assert(attribute->index < data.attributes.size());
+    return data.attributes[attribute->index].get();
   }
 }
 
-BPMNOS::number AttributeRegistry::setValue(const Attribute* attribute, Values& status, Values& data, std::optional<BPMNOS::number> value) const {
+BPMNOS::number AttributeRegistry::setValue(const Attribute* attribute, Status& status, Data& data, std::optional<BPMNOS::number> value) const {
   if ( attribute->category == Attribute::Category::STATUS ) {
-    assert(attribute->index < status.size());
-    status[attribute->index] = value;
+    assert(attribute->index < status.attributes.size());
+    status.attributes[attribute->index] = value;
     // a status attribute is accounted in the objective when its scope ends
     return 0;
   }
   else /* if ( attribute->category == Attribute::Category::DATA )*/ {
-    assert(attribute->index < data.size());
-    auto previous = data[attribute->index];
-    data[attribute->index] = value;
+    assert(attribute->index < data.attributes.size());
+    auto previous = data.attributes[attribute->index];
+    data.attributes[attribute->index] = value;
     return ( value.value_or(0) - previous.value_or(0) ) * attribute->weight;
   }
 }
 
-BPMNOS::number AttributeRegistry::setValue(const Attribute* attribute, Values& status, SharedValues& data, std::optional<BPMNOS::number> value) const {
+BPMNOS::number AttributeRegistry::setValue(const Attribute* attribute, Status& status, SharedData& data, std::optional<BPMNOS::number> value) const {
   if ( attribute->category == Attribute::Category::STATUS ) {
-    assert(attribute->index < status.size());
-    status[attribute->index] = value;
+    assert(attribute->index < status.attributes.size());
+    status.attributes[attribute->index] = value;
     // a status attribute is accounted in the objective when its scope ends
     return 0;
   }
   else /* if ( attribute->category == Attribute::Category::DATA )*/ {
-    assert(attribute->index < data.size());
+    assert(attribute->index < data.attributes.size());
     // writing through the reference into the storage of the scope owning the data object
-    auto previous = data[attribute->index].get();
-    data[attribute->index].get() = value;
+    auto previous = data.attributes[attribute->index].get();
+    data.attributes[attribute->index].get() = value;
     return ( value.value_or(0) - previous.value_or(0) ) * attribute->weight;
   }
 }

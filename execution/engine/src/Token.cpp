@@ -21,7 +21,7 @@
 
 using namespace BPMNOS::Execution;
 
-Token::Token(const StateMachine* owner, const BPMN::Node* node, const Values& status)
+Token::Token(const StateMachine* owner, const BPMN::Node* node, const Status& status)
   : owner(owner)
   , owned(nullptr)
   , node(node)
@@ -194,7 +194,7 @@ const BPMNOS::Model::AttributeRegistry& Token::getAttributeRegistry() const {
 }
 
 BPMNOS::number Token::getInstanceId() const {
-  return (*data)[owner->systemState->engine->getModel()->instanceIndex].get().value();
+  return (*data).attributes[owner->systemState->engine->getModel()->instanceIndex].get().value();
 }
 
 nlohmann::ordered_json Token::jsonify() const {
@@ -213,7 +213,7 @@ nlohmann::ordered_json Token::jsonify() const {
 
   auto& attributeRegistry = getAttributeRegistry();
   for (auto attribute : attributeRegistry.statusAttributes ) {
-    if ( attribute->index >= status.size() ) {
+    if ( attribute->index >= status.attributes.size() ) {
       // skip attribute that is not yet included in status
       continue;
     }
@@ -249,14 +249,14 @@ nlohmann::ordered_json Token::jsonify() const {
   // the global attributes are the data attributes with indices below the instance index, and are reported
   // apart from the data of the scopes
   auto instanceIndex = owner->systemState->engine->getModel()->instanceIndex;
-  if ( data->size() > instanceIndex ) {
+  if ( data->attributes.size() > instanceIndex ) {
     jsonObject["data"] = nlohmann::ordered_json::object();
 
     for (auto attribute : attributeRegistry.dataAttributes ) {
       if ( attribute->index < instanceIndex ) {
         continue;
       }
-      if ( attribute->index >= data->size() ) {
+      if ( attribute->index >= data->attributes.size() ) {
         // skip attribute that is not yet included in data
         continue;
       }
@@ -371,7 +371,7 @@ void Token::advanceToReady() {
     return;
   }
 
-  if ( status[BPMNOS::Model::ExtensionElements::Index::Timestamp] > owner->systemState->getTime() ) {
+  if ( status.attributes[BPMNOS::Model::ExtensionElements::Index::Timestamp] > owner->systemState->getTime() ) {
     throw std::runtime_error("Token: ready timestamp at node '" + node->id + "' is larger than current time");
   }
 
@@ -410,7 +410,7 @@ void Token::computeInitialValues( const BPMNOS::Model::ExtensionElements* extens
 void Token::advanceToEntered() {
 //std::cerr << "advanceToEntered: " << jsonify().dump() << std::endl;
 
-  if ( status[BPMNOS::Model::ExtensionElements::Index::Timestamp] > owner->systemState->getTime() ) {
+  if ( status.attributes[BPMNOS::Model::ExtensionElements::Index::Timestamp] > owner->systemState->getTime() ) {
     if ( node->represents<BPMN::FlowNode>() ) {
       throw std::runtime_error("Token: entry timestamp at node '" + node->id + "' is larger than current time");
     }
@@ -611,10 +611,10 @@ void Token::advanceToBusy() {
     ) {
     // apply operators for regular tasks (if timestamp is in the future, updated status is an expectation)
     auto now = owner->systemState->getTime();
-    status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = now;
+    status.attributes[BPMNOS::Model::ExtensionElements::Index::Timestamp] = now;
     applyOperators( node->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );
 
-    if ( !status[BPMNOS::Model::ExtensionElements::Index::Timestamp].has_value() ) {
+    if ( !status.attributes[BPMNOS::Model::ExtensionElements::Index::Timestamp].has_value() ) {
       throw std::runtime_error("Token: timestamp at node '" + node->id + "' is deleted");
     }
   }
@@ -748,14 +748,14 @@ void Token::advanceToBusy() {
 }
 
 /*
-void Token::advanceToCompleted(const Values& statusUpdate) {
+void Token::advanceToCompleted(const Status& statusUpdate) {
   status = statusUpdate;
   advanceToCompleted();
 }
 */
 
 void Token::advanceToCompleted() {
-  if ( status[BPMNOS::Model::ExtensionElements::Index::Timestamp] > owner->systemState->getTime() ) {
+  if ( status.attributes[BPMNOS::Model::ExtensionElements::Index::Timestamp] > owner->systemState->getTime() ) {
     if ( node->represents<BPMN::FlowNode>() ) {
       throw std::runtime_error("Token: completion timestamp at node '" + node->id + "' is larger than current time");
     }
@@ -764,7 +764,7 @@ void Token::advanceToCompleted() {
     }
   }
 
-  status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = owner->systemState->getTime();
+  status.attributes[BPMNOS::Model::ExtensionElements::Index::Timestamp] = owner->systemState->getTime();
   
   if ( auto flowNode = node->represents<BPMN::FlowNode>() ) {
     // the completion status of a send, receive or decision task is determined here alone and not by the
@@ -790,7 +790,7 @@ void Token::advanceToCompleted() {
         // process or subprocess accounted its objective when its state machine was created
         if ( auto extensionElements = flowNode->parent->extensionElements->represents<BPMNOS::Model::ExtensionElements>() ) {
           // the timestamp of the token is kept, the event subprocess being triggered at it
-          const_cast<Engine*>(owner->systemState->engine)->addToObjective( extensionElements->computeInitialValues(status[BPMNOS::Model::ExtensionElements::Index::Timestamp].value(),status,*data) );
+          const_cast<Engine*>(owner->systemState->engine)->addToObjective( extensionElements->computeInitialValues(status.attributes[BPMNOS::Model::ExtensionElements::Index::Timestamp].value(),status,*data) );
         }
         const_cast<StateMachine*>(owner)->updateObjective();
       }
@@ -1012,7 +1012,7 @@ void Token::advanceToExiting() {
 //std::cerr << "advanceToExiting: " << jsonify().dump() << std::endl;
   auto engine = const_cast<Engine*>(owner->systemState->engine);
 
-  if ( status[BPMNOS::Model::ExtensionElements::Index::Timestamp] > owner->systemState->getTime() ) {
+  if ( status.attributes[BPMNOS::Model::ExtensionElements::Index::Timestamp] > owner->systemState->getTime() ) {
     throw std::runtime_error("Token: exit timestamp at node '" + node->id + "' is larger than current time");
   }
 
@@ -1090,8 +1090,8 @@ void Token::advanceToExiting() {
 
   if ( extensionElements && extensionElements->attributes.size() ) {
     // remove attributes that are no longer needed
-    assert( status.size() == extensionElements->attributeRegistry.statusAttributes.size() );
-    status.resize( status.size() - extensionElements->attributes.size() );
+    assert( status.attributes.size() == extensionElements->attributeRegistry.statusAttributes.size() );
+    status.attributes.resize( status.attributes.size() - extensionElements->attributes.size() );
   }
   
   if ( activity && activity->loopCharacteristics.has_value() && activity->loopCharacteristics.value() != BPMN::Activity::LoopCharacteristics::Standard ) {
@@ -1359,7 +1359,7 @@ void Token::awaitChoiceEvent() {
 
 void Token::awaitTaskCompletionEvent() {
   auto systemState = const_cast<SystemState*>(owner->systemState);
-  auto time = status[BPMNOS::Model::ExtensionElements::Index::Timestamp].value();
+  auto time = status.attributes[BPMNOS::Model::ExtensionElements::Index::Timestamp].value();
   systemState->tokensAwaitingCompletionEvent.emplace(time,weak_from_this());
 }
 
@@ -1436,7 +1436,7 @@ void Token::withdraw() {
 }
 
 void Token::applyOperators(const BPMNOS::Model::ExtensionElements* extensionElements) {
-  assert( status[BPMNOS::Model::ExtensionElements::Index::Timestamp] == owner->systemState->getTime() );
+  assert( status.attributes[BPMNOS::Model::ExtensionElements::Index::Timestamp] == owner->systemState->getTime() );
 
   if ( !extensionElements || !extensionElements->operators.size() ) {
     return;
@@ -1622,22 +1622,22 @@ void Token::releaseSequentialPerformer() {
 
 
 void Token::update(State newState) {
-  assert( status.size() >= 1 );
-  assert( data->size() >= 1 );
-  assert( (*data)[owner->systemState->engine->getModel()->instanceIndex].get().has_value() );
-  assert( status[BPMNOS::Model::ExtensionElements::Index::Timestamp].has_value() );
+  assert( status.attributes.size() >= 1 );
+  assert( data->attributes.size() >= 1 );
+  assert( (*data).attributes[owner->systemState->engine->getModel()->instanceIndex].get().has_value() );
+  assert( status.attributes[BPMNOS::Model::ExtensionElements::Index::Timestamp].has_value() );
 
   state = newState;
   auto now = owner->systemState->getTime();
 
 //std::cerr << "update at time " << now << ": " << jsonify().dump() << std::endl;
-  if ( status[BPMNOS::Model::ExtensionElements::Index::Timestamp].value() < now ) {
+  if ( status.attributes[BPMNOS::Model::ExtensionElements::Index::Timestamp].value() < now ) {
 //std::cerr << "Set timestamp to " << now << std::endl;
     // increase timestamp if necessary
-    status[BPMNOS::Model::ExtensionElements::Index::Timestamp] = now;
+    status.attributes[BPMNOS::Model::ExtensionElements::Index::Timestamp] = now;
   }
   else if (
-    status[BPMNOS::Model::ExtensionElements::Index::Timestamp] > now
+    status.attributes[BPMNOS::Model::ExtensionElements::Index::Timestamp] > now
     && state != State::WITHDRAWN
     && !(state == State::BUSY && node->represents<BPMN::Task>() && !node->represents<BPMN::ReceiveTask>() && !node->represents<BPMNOS::Model::DecisionTask>())
   ) {

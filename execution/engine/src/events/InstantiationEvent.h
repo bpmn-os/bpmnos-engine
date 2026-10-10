@@ -15,7 +15,7 @@ namespace BPMNOS::Execution {
  * they are disclosed when the instance becomes known.
  */
 struct InstantiationEvent : Event {
-  InstantiationEvent(const BPMN::Process* process, BPMNOS::Values status, BPMNOS::Values data);
+  InstantiationEvent(const BPMN::Process* process, BPMNOS::Status status, BPMNOS::Data data);
   void processBy(Engine* engine) const override;
 
   /// Never stale, since the event refers to no token.
@@ -24,8 +24,8 @@ struct InstantiationEvent : Event {
   nlohmann::ordered_json jsonify() const override;
 
   const BPMN::Process* process;
-  BPMNOS::Values status;
-  BPMNOS::Values data;
+  BPMNOS::Status status;
+  BPMNOS::Data data;
 };
 
 } // namespace BPMNOS::Execution

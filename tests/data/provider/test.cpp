@@ -333,18 +333,18 @@ public:
     auto extensionElements = process->extensionElements->as<Model::ExtensionElements>();
     if ( !scenario.instantiated ) {
       scenario.instantiated = true;
-      BPMNOS::Values status(extensionElements->attributes.size());
-      status[Model::ExtensionElements::Index::Timestamp] = systemState->getTime();
-      BPMNOS::Values data(extensionElements->data.size());
-      data[Model::ExtensionElements::Position::Instance] = instanceId;
+      BPMNOS::Status status(extensionElements->attributes.size());
+      status.attributes[Model::ExtensionElements::Index::Timestamp] = systemState->getTime();
+      BPMNOS::Data data(extensionElements->data.size());
+      data.attributes[Model::ExtensionElements::Position::Instance] = instanceId;
       queue.push_back(std::make_shared<Execution::InstantiationEvent>(process, status, data));
       return;
     }
     for ( auto& token_ptr : scenario.tokensAwaitingReadyEvent ) {
       if ( auto token = token_ptr.lock() ) {
-        BPMNOS::Values status(extensionElements->attributes.size());
-        BPMNOS::Values data(extensionElements->data.size());
-        data[Model::ExtensionElements::Position::Instance] = instanceId;
+        BPMNOS::Status status(extensionElements->attributes.size());
+        BPMNOS::Data data(extensionElements->data.size());
+        data.attributes[Model::ExtensionElements::Position::Instance] = instanceId;
         queue.push_back(std::make_shared<Execution::ReadyEvent>(token.get(), status, data));
       }
     }
@@ -362,8 +362,8 @@ public:
     }
   }
 
-  BPMNOS::Values getGlobals([[maybe_unused]] const Execution::Scenario& scenario) const override {
-    return BPMNOS::Values(model->attributes.size());
+  BPMNOS::Data getGlobals([[maybe_unused]] const Execution::Scenario& scenario) const override {
+    return BPMNOS::Data(model->attributes.size());
   }
 
   BPMNOS::number getEarliestInstantiationTime([[maybe_unused]] const Execution::Scenario& scenario) const override {

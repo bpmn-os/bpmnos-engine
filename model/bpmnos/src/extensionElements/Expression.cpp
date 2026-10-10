@@ -118,7 +118,7 @@ const Attribute* Expression::isAttribute() const {
 }
 
 template <typename DataType>
-std::optional<double> Expression::execute(const BPMNOS::Values& status, const DataType& data) const {
+std::optional<double> Expression::execute(const BPMNOS::Status& status, const DataType& data) const {
   if ( type == Type::UNASSIGN ) {
     return std::nullopt;
   }
@@ -171,6 +171,6 @@ std::optional<double> Expression::execute(const BPMNOS::Values& status, const Da
   }
 }
 
-template std::optional<double> Expression::execute<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data) const;
-template std::optional<double> Expression::execute<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data) const;
+template std::optional<double> Expression::execute<BPMNOS::Data>(const BPMNOS::Status& status, const BPMNOS::Data& data) const;
+template std::optional<double> Expression::execute<BPMNOS::SharedData>(const BPMNOS::Status& status, const BPMNOS::SharedData& data) const;
 

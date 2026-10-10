@@ -88,9 +88,9 @@ protected:
   const std::unordered_map<const BPMNOS::Model::Attribute*, BPMNOS::number>& getInstanceValues(const StaticDataProvider::Scenario& scenario, size_t instanceId) const override;
   const std::unordered_map<const BPMN::Node*, BPMNOS::number>& getDisclosureTimes(const StaticDataProvider::Scenario& scenario, size_t instanceId) const override;
   BPMNOS::number getProcessReadyTime(const StaticDataProvider::Scenario& scenario, size_t instanceId) const override;
-  BPMNOS::Values getActivityReadyStatus(StaticDataProvider::Scenario& scenario, const Token* token, BPMNOS::number earliest) const override;
-  BPMNOS::number getActivityReadyTime(const StaticDataProvider::Scenario& scenario, size_t instanceId, const BPMN::Node* activity, const BPMNOS::Values& readyStatus) const override;
-  BPMNOS::Values getCompletionStatus(StaticDataProvider::Scenario& scenario, const Token* token, BPMNOS::number earliest) const override;
+  BPMNOS::Status getActivityReadyStatus(StaticDataProvider::Scenario& scenario, const Token* token, BPMNOS::number earliest) const override;
+  BPMNOS::number getActivityReadyTime(const StaticDataProvider::Scenario& scenario, size_t instanceId, const BPMN::Node* activity, const BPMNOS::Status& readyStatus) const override;
+  BPMNOS::Status getCompletionStatus(StaticDataProvider::Scenario& scenario, const Token* token, BPMNOS::number earliest) const override;
 
 private:
   /**
@@ -116,7 +116,7 @@ private:
   /// @brief Method computing a status by evaluating the given expressions of an instance and a node on it,
   /// sampling it again while its timestamp precedes the given time if an expression assigns the timestamp,
   /// and setting the timestamp to the given time at last.
-  void computeStatus(Scenario& scenario, const Expressions& expressions, size_t instanceId, const BPMN::Node* node, BPMNOS::Values& status, const BPMNOS::SharedValues& data, BPMNOS::number earliest) const;
+  void computeStatus(Scenario& scenario, const Expressions& expressions, size_t instanceId, const BPMN::Node* node, BPMNOS::Status& status, const BPMNOS::SharedData& data, BPMNOS::number earliest) const;
 
   const unsigned int seed;
   mutable BPMNOS::RandomDistributionFactory randomDistributionFactory; ///< The factory of the random functions, whose random number generator is set for every evaluation

@@ -12,13 +12,13 @@ DecisionTask::DecisionTask(XML::bpmn::tTask* task, BPMN::Scope* parent)
 }
 
 template <typename DataType>
-std::vector<std::vector<BPMNOS::number>> DecisionTask::enumerateAlternatives(const BPMNOS::Values& status, const DataType& data) const {
+std::vector<std::vector<BPMNOS::number>> DecisionTask::enumerateAlternatives(const BPMNOS::Status& status, const DataType& data) const {
   assert(extensionElements->represents<ExtensionElements>());
   auto extensionElements = this->extensionElements->as<ExtensionElements>();
   assert(!extensionElements->choices.empty());
 
-  BPMNOS::Values statusCopy = status;
-  BPMNOS::Values dataCopy = data;
+  BPMNOS::Status statusCopy = status;
+  BPMNOS::Data dataCopy = data;
   std::vector<std::vector<BPMNOS::number>> alternativeChoices;
   std::vector<BPMNOS::number> tmp(extensionElements->choices.size());
   determineAlternatives(alternativeChoices, extensionElements, statusCopy, dataCopy, tmp, 0);
@@ -26,16 +26,16 @@ std::vector<std::vector<BPMNOS::number>> DecisionTask::enumerateAlternatives(con
   return alternativeChoices;
 }
 
-template std::vector<std::vector<BPMNOS::number>> DecisionTask::enumerateAlternatives<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data) const;
+template std::vector<std::vector<BPMNOS::number>> DecisionTask::enumerateAlternatives<BPMNOS::Data>(const BPMNOS::Status& status, const BPMNOS::Data& data) const;
 
-template std::vector<std::vector<BPMNOS::number>> DecisionTask::enumerateAlternatives<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data) const;
+template std::vector<std::vector<BPMNOS::number>> DecisionTask::enumerateAlternatives<BPMNOS::SharedData>(const BPMNOS::Status& status, const BPMNOS::SharedData& data) const;
 
 
 void DecisionTask::determineAlternatives(
   std::vector<std::vector<BPMNOS::number>>& alternatives,
   const ExtensionElements* extensionElements,
-  BPMNOS::Values& status,
-  BPMNOS::Values& data,
+  BPMNOS::Status& status,
+  BPMNOS::Data& data,
   std::vector<number>& choices,
   size_t index
 ) {

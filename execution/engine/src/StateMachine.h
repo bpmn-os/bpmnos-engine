@@ -39,7 +39,7 @@ public:
    * @param systemState The system state this state machine belongs to
    * @param globals The values of the global attributes
    */
-  StateMachine(const SystemState* systemState, Values globals);
+  StateMachine(const SystemState* systemState, Data globals);
 
   /**
    * @brief Constructs a child StateMachine for a scope within a process.
@@ -53,7 +53,7 @@ public:
    * @param dataAttributes Data attribute values owned by this scope
    * @param instance Optional instance identifier (defaults to parent's instance)
    */
-  StateMachine(const SystemState* systemState, const BPMN::Scope* scope, Token* parentToken, Values dataAttributes, std::optional<BPMNOS::number> instance = std::nullopt);
+  StateMachine(const SystemState* systemState, const BPMN::Scope* scope, Token* parentToken, Data dataAttributes, std::optional<BPMNOS::number> instance = std::nullopt);
 
   /**
    * @brief Respawn constructor for non-interrupting event subprocesses.
@@ -84,7 +84,7 @@ public:
 
   ~StateMachine();
 
-  Values getData(const BPMN::Scope* scope);
+  Data getData(const BPMN::Scope* scope);
 
   const SystemState* systemState; ///< Pointer to the system state this state machine belongs to.
   const BPMN::Scope* scope; ///< Pointer to the current scope (nullptr for the global state machine).
@@ -92,8 +92,8 @@ public:
   std::optional<BPMNOS::number> instance; ///< Numeric representation of instance id (TODO: can we const this?)
 
   Token* parentToken; ///< Token that owns this state machine (nullptr for the global state machine).
-  Values ownedData; ///< Container holding data attributes owned by the state machine.
-  SharedValues data; ///< Container holding references to all data attributes.
+  Data ownedData; ///< Container holding data attributes owned by the state machine.
+  SharedData data; ///< Container holding references to all data attributes.
 
   Tokens tokens; ///< Container with all tokens within the scope of the state machine.
   std::shared_ptr<StateMachine> interruptingEventSubProcess; ///< State machines representing an active event subprocess that is interrupting.
@@ -105,7 +105,7 @@ public:
   Tokens compensableSubProcesses; ///< Container holding tokens owning completed subprocesses with a compensation event subprocess
 
   Tokens getCompensationTokens(const BPMN::Activity* activity = nullptr) const; ///< Returns the compensation tokens for a given activity or for all activities
-  void run(Values status); ///< Create the initial tokens of the scope of a child state machine and advance them.
+  void run(Status status); ///< Create the initial tokens of the scope of a child state machine and advance them.
 
 private:
   friend class Engine;
@@ -120,21 +120,21 @@ private:
 
   /// @brief Method creating a process-level token in the global state machine, together with the state
   /// machine of the process instance it owns, which holds the data of the instance.
-  Token* createInstance(const BPMN::Process* process, Values data, Values status);
+  Token* createInstance(const BPMN::Process* process, Data data, Status status);
 
   void updateObjective(); ///< Updates the objective by the values the data attributes of the scope are created with, these never passing through @ref BPMNOS::Model::AttributeRegistry::setValue
-  void createChild(Token* parent, const BPMN::Scope* scope, Values data, std::optional<BPMNOS::number> instance = std::nullopt); ///< Method creating the state machine for a (sub)process
-  static Values undefinedData(const BPMN::Node* node); ///< Returns undefined values for the data attributes the node owns
-  static void takeTriggeringStatus(Token* eventToken, const Values& status); ///< Hands the status of the token triggering an event subprocess to its start token, leaving the attributes of the event subprocess undefined
+  void createChild(Token* parent, const BPMN::Scope* scope, Data data, std::optional<BPMNOS::number> instance = std::nullopt); ///< Method creating the state machine for a (sub)process
+  static Data undefinedData(const BPMN::Node* node); ///< Returns undefined values for the data attributes the node owns
+  static void takeTriggeringStatus(Token* eventToken, const Status& status); ///< Hands the status of the token triggering an event subprocess to its start token, leaving the attributes of the event subprocess undefined
 
-  void createCompensationTokenForBoundaryEvent(const BPMN::BoundaryEvent* compensateBoundaryEvent, BPMNOS::Values status); ///< Method creating a compensation token at a compensate boundary event of an activity
+  void createCompensationTokenForBoundaryEvent(const BPMN::BoundaryEvent* compensateBoundaryEvent, BPMNOS::Status status); ///< Method creating a compensation token at a compensate boundary event of an activity
 //  void createCompensationTokenForEventSubProcess(const BPMN::EventSubProcess* compensationEventSubProcess, Token* token); ///< Method creating a compensation token at a compensation event subproces of an activity
 
-  void createCompensationEventSubProcess(const BPMN::EventSubProcess* eventSubProcess, BPMNOS::Values status); ///< Method creating the compensation event subproces of an activity
+  void createCompensationEventSubProcess(const BPMN::EventSubProcess* eventSubProcess, BPMNOS::Status status); ///< Method creating the compensation event subproces of an activity
 
-//  void createInterruptingEventSubprocess(const StateMachine* pendingEventSubProcess, const BPMNOS::Values& status); ///< Method creating the state machine for an interrupting event subprocess
+//  void createInterruptingEventSubprocess(const StateMachine* pendingEventSubProcess, const BPMNOS::Status& status); ///< Method creating the state machine for an interrupting event subprocess
 
-//  void createNonInterruptingEventSubprocess(const StateMachine* pendingEventSubProcess, const BPMNOS::Values& status); ///< Method creating the state machine for an non-interrupting event subprocess
+//  void createNonInterruptingEventSubprocess(const StateMachine* pendingEventSubProcess, const BPMNOS::Status& status); ///< Method creating the state machine for an non-interrupting event subprocess
 
   void initiateBoundaryEvents(Token* token); ///< Method placing tokens on all boundary events
   void initiateBoundaryEvent(Token* token, const BPMN::FlowNode*); ///< Method placing tokens on a boundary event

@@ -39,7 +39,7 @@ protected:
   void readValue(InstanceDataReader& reader, const InstanceDataReader::Row& row, const LIMEX::Handle<double>& handle) override;
   BPMNOS::number getKnownTime(const Scenario& scenario, size_t instanceId) const override;
   BPMNOS::number getProcessReadyTime(const Scenario& scenario, size_t instanceId) const override;
-  BPMNOS::number getActivityReadyTime(const Scenario& scenario, size_t instanceId, const BPMN::Node* activity, const BPMNOS::Values& readyStatus) const override;
+  BPMNOS::number getActivityReadyTime(const Scenario& scenario, size_t instanceId, const BPMN::Node* activity, const BPMNOS::Status& readyStatus) const override;
 
   /// @brief Method returning the disclosure time of every node of an instance with a row, which are those read.
   virtual const std::unordered_map<const BPMN::Node*, BPMNOS::number>& getDisclosureTimes(const Scenario& scenario, size_t instanceId) const;

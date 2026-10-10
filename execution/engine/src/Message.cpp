@@ -98,7 +98,7 @@ nlohmann::ordered_json Message::jsonify() const {
 
 
 template <typename DataType>
-BPMNOS::number Message::apply(const BPMN::FlowNode* node, const BPMNOS::Model::AttributeRegistry& attributeRegistry, BPMNOS::Values& status, DataType& data) const {
+BPMNOS::number Message::apply(const BPMN::FlowNode* node, const BPMNOS::Model::AttributeRegistry& attributeRegistry, BPMNOS::Status& status, DataType& data) const {
   auto& targetContentDefinition = node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->getMessageDefinition()->contentMap;
 
   BPMNOS::number objectiveChange = 0;
@@ -139,6 +139,6 @@ BPMNOS::number Message::apply(const BPMN::FlowNode* node, const BPMNOS::Model::A
   return objectiveChange;
 }
 
-template BPMNOS::number Message::apply<BPMNOS::Values>(const BPMN::FlowNode* node, const BPMNOS::Model::AttributeRegistry& attributeRegistry, BPMNOS::Values& status, Values& data) const;
-template BPMNOS::number Message::apply<BPMNOS::SharedValues>(const BPMN::FlowNode* node, const BPMNOS::Model::AttributeRegistry& attributeRegistry, BPMNOS::Values& status, SharedValues& data) const;
+template BPMNOS::number Message::apply<BPMNOS::Data>(const BPMN::FlowNode* node, const BPMNOS::Model::AttributeRegistry& attributeRegistry, BPMNOS::Status& status, Data& data) const;
+template BPMNOS::number Message::apply<BPMNOS::SharedData>(const BPMN::FlowNode* node, const BPMNOS::Model::AttributeRegistry& attributeRegistry, BPMNOS::Status& status, SharedData& data) const;
 

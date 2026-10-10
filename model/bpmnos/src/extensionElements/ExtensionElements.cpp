@@ -285,7 +285,7 @@ const MessageDefinition* ExtensionElements::getMessageDefinition() const {
 }
 
 template <typename DataType>
-bool ExtensionElements::feasibleEntry(const BPMNOS::Values& status, const DataType& data) const {
+bool ExtensionElements::feasibleEntry(const BPMNOS::Status& status, const DataType& data) const {
   for ( auto& restriction : restrictions ) {
     if (
       ( restriction->scope == Restriction::Scope::ENTRY || restriction->scope == Restriction::Scope::FULL )
@@ -297,11 +297,11 @@ bool ExtensionElements::feasibleEntry(const BPMNOS::Values& status, const DataTy
   return satisfiesInheritedRestrictions(status,data);
 }
 
-template bool ExtensionElements::feasibleEntry<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data) const;
-template bool ExtensionElements::feasibleEntry<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data) const;
+template bool ExtensionElements::feasibleEntry<BPMNOS::Data>(const BPMNOS::Status& status, const BPMNOS::Data& data) const;
+template bool ExtensionElements::feasibleEntry<BPMNOS::SharedData>(const BPMNOS::Status& status, const BPMNOS::SharedData& data) const;
 
 template <typename DataType>
-bool ExtensionElements::feasibleCompletion(const BPMNOS::Values& status, const DataType& data) const {
+bool ExtensionElements::feasibleCompletion(const BPMNOS::Status& status, const DataType& data) const {
   for ( auto& restriction : restrictions ) {
     if (
       ( restriction->scope == Restriction::Scope::COMPLETION || restriction->scope == Restriction::Scope::FULL )
@@ -313,11 +313,11 @@ bool ExtensionElements::feasibleCompletion(const BPMNOS::Values& status, const D
   return satisfiesInheritedRestrictions(status,data);
 }
 
-template bool ExtensionElements::feasibleCompletion<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data) const;
-template bool ExtensionElements::feasibleCompletion<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data) const;
+template bool ExtensionElements::feasibleCompletion<BPMNOS::Data>(const BPMNOS::Status& status, const BPMNOS::Data& data) const;
+template bool ExtensionElements::feasibleCompletion<BPMNOS::SharedData>(const BPMNOS::Status& status, const BPMNOS::SharedData& data) const;
 
 template <typename DataType>
-bool ExtensionElements::feasibleExit(const BPMNOS::Values& status, const DataType& data) const {
+bool ExtensionElements::feasibleExit(const BPMNOS::Status& status, const DataType& data) const {
   for ( auto& restriction : restrictions ) {
     if (
       ( restriction->scope == Restriction::Scope::EXIT || restriction->scope == Restriction::Scope::FULL )
@@ -330,12 +330,12 @@ bool ExtensionElements::feasibleExit(const BPMNOS::Values& status, const DataTyp
   return satisfiesInheritedRestrictions(status,data);
 }
 
-template bool ExtensionElements::feasibleExit<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data) const;
-template bool ExtensionElements::feasibleExit<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data) const;
+template bool ExtensionElements::feasibleExit<BPMNOS::Data>(const BPMNOS::Status& status, const BPMNOS::Data& data) const;
+template bool ExtensionElements::feasibleExit<BPMNOS::SharedData>(const BPMNOS::Status& status, const BPMNOS::SharedData& data) const;
 
 
 template <typename DataType>
-bool ExtensionElements::satisfiesInheritedRestrictions(const BPMNOS::Values& status, const DataType& data) const {
+bool ExtensionElements::satisfiesInheritedRestrictions(const BPMNOS::Status& status, const DataType& data) const {
   auto base = baseElement->represents<BPMN::ChildNode>();
   
   if ( !base ) return true;
@@ -370,11 +370,11 @@ bool ExtensionElements::satisfiesInheritedRestrictions(const BPMNOS::Values& sta
   return true;
 }
 
-template bool ExtensionElements::satisfiesInheritedRestrictions<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data) const;
-template bool ExtensionElements::satisfiesInheritedRestrictions<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data) const;
+template bool ExtensionElements::satisfiesInheritedRestrictions<BPMNOS::Data>(const BPMNOS::Status& status, const BPMNOS::Data& data) const;
+template bool ExtensionElements::satisfiesInheritedRestrictions<BPMNOS::SharedData>(const BPMNOS::Status& status, const BPMNOS::SharedData& data) const;
 
 template <typename DataType>
-bool ExtensionElements::fullScopeRestrictionsSatisfied(const BPMNOS::Values& status, const DataType& data) const {
+bool ExtensionElements::fullScopeRestrictionsSatisfied(const BPMNOS::Status& status, const DataType& data) const {
   for ( auto& restriction : restrictions ) {
     if ( restriction->scope == Restriction::Scope::FULL && !restriction->isSatisfied(status,data) ) {
       return false;
@@ -383,13 +383,13 @@ bool ExtensionElements::fullScopeRestrictionsSatisfied(const BPMNOS::Values& sta
   return satisfiesInheritedRestrictions(status,data);
 }
 
-template bool ExtensionElements::fullScopeRestrictionsSatisfied<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data) const;
-template bool ExtensionElements::fullScopeRestrictionsSatisfied<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data) const;
+template bool ExtensionElements::fullScopeRestrictionsSatisfied<BPMNOS::Data>(const BPMNOS::Status& status, const BPMNOS::Data& data) const;
+template bool ExtensionElements::fullScopeRestrictionsSatisfied<BPMNOS::SharedData>(const BPMNOS::Status& status, const BPMNOS::SharedData& data) const;
 
 template <typename DataType>
-BPMNOS::number ExtensionElements::computeInitialValues(BPMNOS::number currentTime, BPMNOS::Values& status, DataType& data) const {
+BPMNOS::number ExtensionElements::computeInitialValues(BPMNOS::number currentTime, BPMNOS::Status& status, DataType& data) const {
   BPMNOS::number change = 0;
-  status.at(BPMNOS::Model::ExtensionElements::Index::Timestamp) = currentTime;
+  status.attributes.at(BPMNOS::Model::ExtensionElements::Index::Timestamp) = currentTime;
   for ( auto& attribute : attributes ) {
     if ( attribute->expression ) {
       change += attributeRegistry.setValue( attribute.get(), status, data, BPMNOS::to_value( attribute->expression->execute(status,data) ) );
@@ -403,12 +403,12 @@ BPMNOS::number ExtensionElements::computeInitialValues(BPMNOS::number currentTim
   return change;
 }
 
-template BPMNOS::number ExtensionElements::computeInitialValues<BPMNOS::Values>(BPMNOS::number currentTime, Values& status, BPMNOS::Values& data) const;
-template BPMNOS::number ExtensionElements::computeInitialValues<BPMNOS::SharedValues>(BPMNOS::number currentTime, Values& status, BPMNOS::SharedValues& data) const;
+template BPMNOS::number ExtensionElements::computeInitialValues<BPMNOS::Data>(BPMNOS::number currentTime, Status& status, BPMNOS::Data& data) const;
+template BPMNOS::number ExtensionElements::computeInitialValues<BPMNOS::SharedData>(BPMNOS::number currentTime, Status& status, BPMNOS::SharedData& data) const;
 
 
 template <typename DataType>
-BPMNOS::number ExtensionElements::applyOperators(BPMNOS::Values& status, DataType& data) const {
+BPMNOS::number ExtensionElements::applyOperators(BPMNOS::Status& status, DataType& data) const {
   BPMNOS::number change = 0;
   for ( auto& operator_ : operators ) {
     change += operator_->apply(status,data);
@@ -416,11 +416,11 @@ BPMNOS::number ExtensionElements::applyOperators(BPMNOS::Values& status, DataTyp
   return change;
 }
 
-template BPMNOS::number ExtensionElements::applyOperators<BPMNOS::Values>(Values& status, BPMNOS::Values& data) const;
-template BPMNOS::number ExtensionElements::applyOperators<BPMNOS::SharedValues>(Values& status, BPMNOS::SharedValues& data) const;
+template BPMNOS::number ExtensionElements::applyOperators<BPMNOS::Data>(Status& status, BPMNOS::Data& data) const;
+template BPMNOS::number ExtensionElements::applyOperators<BPMNOS::SharedData>(Status& status, BPMNOS::SharedData& data) const;
 
 template <typename DataType>
-BPMNOS::number ExtensionElements::getObjective(const BPMNOS::Values& status, const DataType& data) const {
+BPMNOS::number ExtensionElements::getObjective(const BPMNOS::Status& status, const DataType& data) const {
   BPMNOS::number objective = 0;
   for ( auto attribute : attributeRegistry.statusAttributes ) {
     auto value = attributeRegistry.getValue(attribute,status,data);
@@ -439,12 +439,12 @@ BPMNOS::number ExtensionElements::getObjective(const BPMNOS::Values& status, con
   return objective;
 }
 
-template BPMNOS::number ExtensionElements::getObjective<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data) const;
-template BPMNOS::number ExtensionElements::getObjective<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data) const;
+template BPMNOS::number ExtensionElements::getObjective<BPMNOS::Data>(const BPMNOS::Status& status, const BPMNOS::Data& data) const;
+template BPMNOS::number ExtensionElements::getObjective<BPMNOS::SharedData>(const BPMNOS::Status& status, const BPMNOS::SharedData& data) const;
 
 
 template <typename DataType>
-std::vector<std::pair<const Attribute*, BPMNOS::number>> ExtensionElements::getContributionsToObjective(const BPMNOS::Values& status, const DataType& data) const {
+std::vector<std::pair<const Attribute*, BPMNOS::number>> ExtensionElements::getContributionsToObjective(const BPMNOS::Status& status, const DataType& data) const {
   std::vector<std::pair<const Attribute*, BPMNOS::number>> contributions;  
   for ( auto& attribute : attributes ) {
     auto value = attributeRegistry.getValue(attribute.get(),status,data);
@@ -461,5 +461,5 @@ std::vector<std::pair<const Attribute*, BPMNOS::number>> ExtensionElements::getC
   return contributions;
 }
 
-template std::vector<std::pair<const Attribute*, BPMNOS::number>> ExtensionElements::getContributionsToObjective<BPMNOS::Values>(const BPMNOS::Values& status, const BPMNOS::Values& data) const;
-template std::vector<std::pair<const Attribute*, BPMNOS::number>> ExtensionElements::getContributionsToObjective<BPMNOS::SharedValues>(const BPMNOS::Values& status, const BPMNOS::SharedValues& data) const;
+template std::vector<std::pair<const Attribute*, BPMNOS::number>> ExtensionElements::getContributionsToObjective<BPMNOS::Data>(const BPMNOS::Status& status, const BPMNOS::Data& data) const;
+template std::vector<std::pair<const Attribute*, BPMNOS::number>> ExtensionElements::getContributionsToObjective<BPMNOS::SharedData>(const BPMNOS::Status& status, const BPMNOS::SharedData& data) const;

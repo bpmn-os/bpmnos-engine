@@ -14,12 +14,12 @@ Operator::Operator(XML::bpmnos::tOperator* operator_, const AttributeRegistry& a
 }
 
 template <typename DataType>
-BPMNOS::number Operator::apply(BPMNOS::Values& status, DataType& data) const {
+BPMNOS::number Operator::apply(BPMNOS::Status& status, DataType& data) const {
   return attributeRegistry.setValue( attribute, status, data, BPMNOS::to_value( expression.execute(status,data) ) );
 }
 
-template BPMNOS::number Operator::apply<BPMNOS::Values>(BPMNOS::Values& status, BPMNOS::Values& data) const;
-template BPMNOS::number Operator::apply<BPMNOS::SharedValues>(BPMNOS::Values& status, BPMNOS::SharedValues& data) const;
+template BPMNOS::number Operator::apply<BPMNOS::Data>(BPMNOS::Status& status, BPMNOS::Data& data) const;
+template BPMNOS::number Operator::apply<BPMNOS::SharedData>(BPMNOS::Status& status, BPMNOS::SharedData& data) const;
 
 Attribute* Operator::getAttribute() const {
   if ( auto& name = expression.compiled.getTarget(); name.has_value() ) {

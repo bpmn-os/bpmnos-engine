@@ -9,30 +9,33 @@
 
 namespace BPMNOS { 
 
-Values::Values(const SharedValues& values) {
-  for (const auto& value : values) {
-    if (value.get().has_value()) {
-      push_back(value.get().value());
-    }
-    else {
-      push_back(std::nullopt);
-    }
+Data::Data(const SharedData& data) {
+  attributes.reserve(data.attributes.size());
+  for (const auto& value : data.attributes) {
+    attributes.push_back(value.get());
+  }
+  objects.reserve(data.objects.size());
+  for (const auto& object : data.objects) {
+    objects.push_back(object.get());
   }
 }
 
-SharedValues::SharedValues(const SharedValues& other,Values& values)
-  : SharedValues(other)
+SharedData::SharedData(const SharedData& other, Data& data)
+  : SharedData(other)
 {
-  add(values);
+  add(data);
 }
 
-SharedValues::SharedValues(Values& values) {
-  add(values);
+SharedData::SharedData(Data& data) {
+  add(data);
 }
 
-void SharedValues::add(Values& values) {
-  for ( auto& value : values ) {
-    push_back(value);
+void SharedData::add(Data& data) {
+  for ( auto& value : data.attributes ) {
+    attributes.push_back(value);
+  }
+  for ( auto& object : data.objects ) {
+    objects.push_back(object);
   }
 }
 
@@ -211,25 +214,24 @@ std::string to_string(double value) {
   return result;
 }
 
-BPMNOS::Values mergeValues(const std::vector<BPMNOS::Values>& valueSets) {
-  assert( !valueSets.empty() );
-  size_t n = valueSets.front().size();
-  BPMNOS::Values result;
-  result.resize(n);
-  result[(int)BPMNOS::Model::ExtensionElements::Index::Timestamp] = valueSets.front()[(int)BPMNOS::Model::ExtensionElements::Index::Timestamp];
+BPMNOS::Status mergeStatus(const std::vector<BPMNOS::Status>& statuses) {
+  assert( !statuses.empty() );
+  size_t n = statuses.front().attributes.size();
+  BPMNOS::Status result(n);
+  result.attributes[(int)BPMNOS::Model::ExtensionElements::Index::Timestamp] = statuses.front().attributes[(int)BPMNOS::Model::ExtensionElements::Index::Timestamp];
 
   for ( size_t i = 0; i < n; i++ ) {
-    for ( auto& values : valueSets ) {
+    for ( auto& status : statuses ) {
       if ( i == (int)BPMNOS::Model::ExtensionElements::Index::Timestamp ) {
-        if ( result[i].value() < values[i].value() ) {
-          result[i] = values[i];
+        if ( result.attributes[i].value() < status.attributes[i].value() ) {
+          result.attributes[i] = status.attributes[i];
         }
       }
-      else if ( !result[i].has_value() ) {
-        result[i] = values[i];
+      else if ( !result.attributes[i].has_value() ) {
+        result.attributes[i] = status.attributes[i];
       }
-      else if ( values[i].has_value() && values[i].value() != result[i].value() ) {
-        result[i] = std::nullopt;
+      else if ( status.attributes[i].has_value() && status.attributes[i].value() != result.attributes[i].value() ) {
+        result.attributes[i] = std::nullopt;
         break;
       }
     }

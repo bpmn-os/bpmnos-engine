@@ -25,14 +25,14 @@ public:
   bool contains(const std::string& name) const;
   bool contains(const Attribute* attribute) const;
 
-  std::optional<BPMNOS::number> getValue(const Attribute* attribute, const Values& status, const Values& data) const;
-  std::optional<BPMNOS::number> getValue(const Attribute* attribute, const Values& status, const SharedValues& data) const;
+  std::optional<BPMNOS::number> getValue(const Attribute* attribute, const Status& status, const Data& data) const;
+  std::optional<BPMNOS::number> getValue(const Attribute* attribute, const Status& status, const SharedData& data) const;
   /// @brief Method setting the value of an attribute and returning the change of the objective, which is the
   /// change of the value times the weight of the attribute for a data attribute and zero for a status attribute,
   /// the previous value being available here and nowhere later.
-  BPMNOS::number setValue(const Attribute* attribute, Values& status, Values& data, std::optional<BPMNOS::number> value) const;
-  /// @copydoc setValue(const Attribute*, Values&, Values&, std::optional<BPMNOS::number>) const
-  BPMNOS::number setValue(const Attribute* attribute, Values& status, SharedValues& data, std::optional<BPMNOS::number> value) const;
+  BPMNOS::number setValue(const Attribute* attribute, Status& status, Data& data, std::optional<BPMNOS::number> value) const;
+  /// @copydoc setValue(const Attribute*, Status&, Data&, std::optional<BPMNOS::number>) const
+  BPMNOS::number setValue(const Attribute* attribute, Status& status, SharedData& data, std::optional<BPMNOS::number> value) const;
 private:
   friend class Attribute;
   void add(Attribute* attribute);

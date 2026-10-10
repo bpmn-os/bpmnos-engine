@@ -74,7 +74,7 @@ public:
   void notice(const Observable* observable, Execution::Scenario& scenario, EventQueue& queue) const override;
   void dispatchEvent(const SystemState* systemState, Execution::Scenario& scenario, EventQueue& queue) const override;
   void advance(const SystemState* systemState, Execution::Scenario& scenario, EventQueue& queue) const override;
-  BPMNOS::Values getGlobals(const Execution::Scenario& scenario) const override;
+  BPMNOS::Data getGlobals(const Execution::Scenario& scenario) const override;
   BPMNOS::number getEarliestInstantiationTime(const Execution::Scenario& scenario) const override;
 
 protected:
@@ -112,28 +112,28 @@ protected:
   /// timestamp must not precede the given time, which is the time of that state; for a token arriving at the
   /// activity, the given time is the lowest number. A status that cannot differ from one realisation to
   /// another is not affected by it.
-  virtual BPMNOS::Values getActivityReadyStatus(Scenario& scenario, const Token* token, BPMNOS::number earliest) const;
+  virtual BPMNOS::Status getActivityReadyStatus(Scenario& scenario, const Token* token, BPMNOS::number earliest) const;
 
   /// @brief Method returning the time at which a token of an instance arriving at an activity becomes ready
   /// with the given status, which is the start of the run, so that it becomes ready at once.
-  virtual BPMNOS::number getActivityReadyTime(const Scenario& scenario, size_t instanceId, const BPMN::Node* activity, const BPMNOS::Values& readyStatus) const;
+  virtual BPMNOS::number getActivityReadyTime(const Scenario& scenario, size_t instanceId, const BPMN::Node* activity, const BPMNOS::Status& readyStatus) const;
 
   /// @brief Method returning the status a busy task completes with at its timestamp, which is the status it
   /// became busy with.
   ///
   /// The given time is that of @ref getActivityReadyStatus for a token awaiting its completion event in an
   /// installed system state, and the lowest number for a task becoming busy.
-  virtual BPMNOS::Values getCompletionStatus(Scenario& scenario, const Token* token, BPMNOS::number earliest) const;
+  virtual BPMNOS::Status getCompletionStatus(Scenario& scenario, const Token* token, BPMNOS::number earliest) const;
 
   /// @brief Method returning the value of an attribute of an instance, computed from the values of the
   /// instance if the model assigns it, and std::nullopt if it is not known.
   std::optional<BPMNOS::number> getValue(const Scenario& scenario, size_t instanceId, const BPMNOS::Model::Attribute* attribute) const;
 
   /// @brief Method returning the values of the status attributes a node declares.
-  BPMNOS::Values getStatus(const Scenario& scenario, size_t instanceId, const BPMN::Node* node) const;
+  BPMNOS::Status getStatus(const Scenario& scenario, size_t instanceId, const BPMN::Node* node) const;
 
   /// @brief Method returning the values of the data attributes a node declares.
-  BPMNOS::Values getData(const Scenario& scenario, size_t instanceId, const BPMN::Node* node) const;
+  BPMNOS::Data getData(const Scenario& scenario, size_t instanceId, const BPMN::Node* node) const;
 
   /**
    * @brief Instance data read.
@@ -153,7 +153,7 @@ protected:
   /// what was registered before, so an order following identifiers would make a run depend on it.
   std::vector<Instance> instances;
   std::unordered_map<size_t, size_t> instancePositions; ///< The position of each instance in @ref instances, by its identifier
-  BPMNOS::Values globals; ///< The values of the global attributes at the start of a run
+  BPMNOS::Data globals; ///< The values of the global attributes at the start of a run
   BPMNOS::number endTime = std::numeric_limits<BPMNOS::number>::max();
 
 private:

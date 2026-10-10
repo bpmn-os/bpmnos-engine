@@ -2,6 +2,7 @@
 #define BPMNOS_Model_Value_H
 
 #include <functional>
+#include <memory>
 #include <optional>
 #include <string>
 #include <unordered_map>
@@ -20,20 +21,56 @@ typedef std::optional<number> Value;
 
 typedef std::unordered_map< std::string, Value > ValueMap;
 
-struct SharedValues;
+/**
+ * @brief A list of values that is neither status nor data, such as the header of a message.
+ */
+typedef std::vector<Value> Values;
 
-struct Values : std::vector<Value> {
-  Values() = default;
-  Values(size_t size) : std::vector<Value>(size) {}
-  Values(std::initializer_list<Value> init) : std::vector<Value>(init) {}
-  Values(const SharedValues& values);
+/**
+ * @brief An object, i.e. a structured value with arrays, held by a status or data and shared copy-on-write.
+ */
+struct Object;
+
+/**
+ * @brief The status of a token: its attribute values, indexed by `attribute->index`, and its objects, indexed
+ * in their own numbering.
+ */
+struct Status {
+  Status() = default;
+  explicit Status(size_t size) : attributes(size) {}
+  std::vector<Value> attributes;
+  std::vector< std::shared_ptr<const Object> > objects;
 };
 
-struct SharedValues : std::vector< std::reference_wrapper< Value > > {
-  SharedValues() = default;
-  SharedValues(const SharedValues& other,Values& values);
-  SharedValues(Values& values);
-  void add(Values& values);
+struct SharedData;
+
+/**
+ * @brief Data: the attribute values, indexed by `attribute->index`, and the objects, indexed in their own
+ * numbering, held by a state machine or copied from a data chain.
+ */
+struct Data {
+  Data() = default;
+  explicit Data(size_t size) : attributes(size) {}
+  /// @brief Copies the values and objects a data chain refers to.
+  Data(const SharedData& data);
+  std::vector<Value> attributes;
+  std::vector< std::shared_ptr<const Object> > objects;
+};
+
+/**
+ * @brief A data chain: references to the attribute values and objects of the data of a scope and of the scopes
+ * enclosing it, the outermost first.
+ */
+struct SharedData {
+  SharedData() = default;
+  /// @brief Extends a data chain by the data of a scope.
+  SharedData(const SharedData& other, Data& data);
+  /// @brief Begins a data chain with the data of a scope.
+  SharedData(Data& data);
+  /// @brief Appends the attribute values and objects of the data of a scope.
+  void add(Data& data);
+  std::vector< std::reference_wrapper<Value> > attributes;
+  std::vector< std::reference_wrapper< std::shared_ptr<const Object> > > objects;
 };
 
 typedef std::unordered_map< std::string, std::variant< Value, std::string > > VariedValueMap;
@@ -64,9 +101,10 @@ Value to_value(std::optional<double> result);
 std::string to_string(number numberValue, const ValueType& type);
 
 /**
- * Returns merged values from a set of values
+ * @brief Returns the merge of the statuses of the tokens meeting at a join: the latest timestamp, and for every
+ * other attribute the value the statuses agree on, which is undefined if two of them differ.
  **/
-Values mergeValues(const std::vector<Values>& valueSets);
+Status mergeStatus(const std::vector<Status>& statuses);
 
 } // BPMNOS
 

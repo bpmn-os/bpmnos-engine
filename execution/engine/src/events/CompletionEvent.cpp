@@ -3,7 +3,7 @@
 
 using namespace BPMNOS::Execution;
 
-CompletionEvent::CompletionEvent(const Token* token, Values status)
+CompletionEvent::CompletionEvent(const Token* token, Status status)
   : Event(token)
   , status(std::move(status))
 {
