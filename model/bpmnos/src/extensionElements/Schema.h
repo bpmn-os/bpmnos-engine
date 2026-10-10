@@ -1,11 +1,13 @@
 #ifndef BPMNOS_Model_Schema_H
 #define BPMNOS_Model_Schema_H
 
+#include <memory>
 #include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 #include "model/utility/src/Value.h"
+#include "model/utility/src/Object.h"
 
 namespace BPMNOS::Model {
 
@@ -30,6 +32,34 @@ struct Schema {
   bool isScalar() const { return scalar.has_value() && dimensions.empty(); }
   /// @brief Returns the text of the type in its canonical form.
   std::string stringify() const;
+
+  /**
+   * @brief Fixes the sizes a size declaration states, given as the text following the name of the attribute.
+   *
+   * The text is a path of dimensions and fields, e.g. `[6].flags[3]`, in which every number in brackets is the
+   * size of the next dimension of the base or field it follows and `[]` leaves that dimension as it is. A size
+   * contradicting a size fixed before, more dimensions than the type has, and an unknown field are errors.
+   */
+  void declareSizes(const std::string& steps);
+
+  /// @brief Returns true if every dimension, also of the fields, has a fixed size.
+  bool isFixed() const;
+
+  /**
+   * @brief Returns an object of this schema with every value undefined, every dimension having a fixed size.
+   */
+  std::shared_ptr<const BPMNOS::Object> undefinedObject() const;
+
+  /**
+   * @brief Returns an object of this schema holding the values of the given constant object.
+   *
+   * The constant object must have as many dimensions as the schema at the base and at every field, its
+   * scalar values must be convertible to the types of the schema, and its fields must be fields of the schema.
+   * A dimension of fixed size is padded with undefined values and must not be exceeded, an open dimension takes
+   * the length of the constant object, and a field it lacks is undefined. If the constant object has exactly the
+   * layout of the schema, it is returned itself, so that it is shared.
+   */
+  std::shared_ptr<const BPMNOS::Object> conform(const std::shared_ptr<const BPMNOS::Object>& constant) const;
 };
 
 } // namespace BPMNOS::Model

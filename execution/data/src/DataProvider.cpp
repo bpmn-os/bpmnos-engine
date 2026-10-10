@@ -20,6 +20,14 @@ const std::shared_ptr<const BPMNOS::Model::Model>& DataProvider::getModel() cons
   return model;
 }
 
+const std::shared_ptr<const BPMNOS::Object>& DataProvider::getDefaultObject(const BPMNOS::Model::Attribute* object) const {
+  auto it = defaultObjects.find(object);
+  if ( it == defaultObjects.end() || !it->second ) {
+    throw std::runtime_error("DataProvider: object '" + object->id + "' has an open dimension and no value");
+  }
+  return it->second;
+}
+
 void DataProvider::advance(const SystemState* systemState, Scenario& scenario, EventQueue& queue) const {
   auto now = std::chrono::steady_clock::now();
   // the elapsed time is compared in milliseconds rather than the duration added to the previous clock tick,

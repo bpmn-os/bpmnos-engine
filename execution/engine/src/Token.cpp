@@ -1088,10 +1088,12 @@ void Token::advanceToExiting() {
     }
   }
 
-  if ( extensionElements && extensionElements->attributes.size() ) {
-    // remove attributes that are no longer needed
+  if ( extensionElements && ( extensionElements->attributes.size() || extensionElements->statusObjects.size() ) ) {
+    // remove attributes and objects that are no longer needed
     assert( status.attributes.size() == extensionElements->attributeRegistry.statusAttributes.size() );
+    assert( status.objects.size() == extensionElements->attributeRegistry.statusObjects.size() );
     status.attributes.resize( status.attributes.size() - extensionElements->attributes.size() );
+    status.objects.resize( status.objects.size() - extensionElements->statusObjects.size() );
   }
   
   if ( activity && activity->loopCharacteristics.has_value() && activity->loopCharacteristics.value() != BPMN::Activity::LoopCharacteristics::Standard ) {

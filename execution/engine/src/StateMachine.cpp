@@ -422,14 +422,28 @@ void StateMachine::takeTriggeringStatus(Token* eventToken, const Status& status)
   auto extensionElements = eventToken->node->as<BPMN::FlowNode>()->parent->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
   auto ownAttributes = extensionElements ? extensionElements->attributes.size() : 0;
   auto statusSize = eventToken->status.attributes.size();
+  // the objects of the event subprocess are kept, those of the enclosing scopes taken from the status
+  auto ownObjects = extensionElements ? extensionElements->statusObjects.size() : 0;
+  std::vector< std::shared_ptr<const BPMNOS::Object> > objects( eventToken->status.objects.end() - (long)ownObjects, eventToken->status.objects.end() );
+  auto objectCount = eventToken->status.objects.size();
   eventToken->status = status;
   eventToken->status.attributes.resize( statusSize - ownAttributes );
   eventToken->status.attributes.resize( statusSize );
+  eventToken->status.objects.resize( objectCount - ownObjects );
+  eventToken->status.objects.insert( eventToken->status.objects.end(), objects.begin(), objects.end() );
 }
 
-BPMNOS::Data StateMachine::undefinedData(const BPMN::Node* node) {
+BPMNOS::Data StateMachine::undefinedData(const BPMN::Node* node) const {
   auto extensionElements = node->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
-  return Data( extensionElements ? extensionElements->data.size() : 0 );
+  Data data( extensionElements ? extensionElements->data.size() : 0 );
+  if ( extensionElements ) {
+    // the objects take the values the model and the declared sizes give them, no instance data being given
+    // for a scope the engine creates itself
+    for ( auto& object : extensionElements->dataObjects ) {
+      data.objects.push_back( systemState->scenario->dataProvider->getDefaultObject(object.get()) );
+    }
+  }
+  return data;
 }
 
 void StateMachine::initiateEventSubprocesses(Token* token) {
@@ -795,6 +809,12 @@ void StateMachine::run(Status status) {
         // assigns values to them when the event subprocess is triggered
         auto extensionElements = flowNode->parent->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
         token->status.attributes.resize( token->status.attributes.size() + ( extensionElements ? extensionElements->attributes.size() : 0 ) );
+        if ( extensionElements ) {
+          // its status objects take the values the model and the declared sizes give them
+          for ( auto& object : extensionElements->statusObjects ) {
+            token->status.objects.push_back( systemState->scenario->dataProvider->getDefaultObject(object.get()) );
+          }
+        }
 
         if ( !startEvent->isInterrupting ) {
           // token instantiates non-interrupting event subprocess

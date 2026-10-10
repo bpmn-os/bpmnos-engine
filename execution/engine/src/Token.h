@@ -190,6 +190,8 @@ private:
     size_t n = tokens.front()->status.attributes.size();
     BPMNOS::Status result(n);
     result.attributes[(int)BPMNOS::Model::ExtensionElements::Index::Timestamp] = tokens.front()->status.attributes[(int)BPMNOS::Model::ExtensionElements::Index::Timestamp];
+    // the objects are not written by any token, so that the statuses hold the same objects
+    result.objects = tokens.front()->status.objects;
 
     for ( size_t i = 0; i < n; i++ ) {
       for ( auto& token : tokens ) {

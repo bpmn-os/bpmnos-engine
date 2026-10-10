@@ -34,6 +34,7 @@ list(APPEND tests_SOURCES
   data/stochasticprovider/test.cpp
   data/forking/test.cpp
   data/provider/test.cpp
+  data/objects/test.cpp
   execution/process/test.cpp
   execution/task/test.cpp
   execution/subprocess/test.cpp

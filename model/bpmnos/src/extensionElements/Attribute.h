@@ -31,6 +31,8 @@ public:
   std::string& id;
   /// The shape of an object attribute, stated by its type; nullptr for a scalar attribute.
   std::unique_ptr<const Schema> schema;
+  /// The index in the object registry of the literal an object is initialised with, if the model gives one.
+  std::optional<size_t> initialObject;
   std::unique_ptr<const Expression> expression;
   const std::string name;
 

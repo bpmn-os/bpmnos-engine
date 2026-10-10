@@ -4,6 +4,8 @@
 #include "Parameter.h"
 #include "Expression.h"
 #include "model/utility/src/InputEncoder.h"
+#include "model/utility/src/ObjectRegistry.h"
+#include "model/utility/src/string_utility.h"
 
 using namespace BPMNOS::Model;
 
@@ -22,9 +24,6 @@ Attribute::Attribute(XML::bpmnos::tAttribute* attribute, Attribute::Category cat
   if ( schema ) {
     if ( id == Keyword::Instance || id == Keyword::Timestamp ) {
       throw std::runtime_error("Attribute: '" + id + "' must not be an object");
-    }
-    if ( expression ) {
-      throw std::runtime_error("Attribute: object '" + id + "' must not have an initial expression");
     }
   }
   // the registry numbers objects separately from scalar attributes, so it must know which this is
@@ -66,6 +65,24 @@ std::unique_ptr<const Expression> Attribute::getExpression(std::string& input, A
     return nullptr;
   }
 
+  if ( schema ) {
+    // an object is initialised with a literal, which is registered as a constant object and checked against
+    // the schema; it is shared by every instance and needs no expression
+    auto value = BPMNOS::trim_copy( input.substr( input.find(":=") + 2 ) );
+    InputEncoder encoder(value);
+    if ( encoder.type() != ValueType::COLLECTION ) {
+      throw std::runtime_error("Attribute: object '" + id + "' must be initialised with a literal");
+    }
+    initialObject = (size_t)BPMNOS::stoi( encoder.text() );
+    try {
+      schema->conform( objectRegistry[initialObject.value()] );
+    }
+    catch ( const std::exception& error ) {
+      throw std::runtime_error("Attribute: illegal initial value of object '" + id + "'.\n" + error.what());
+    }
+    return nullptr;
+  }
+
   auto expression = std::make_unique<const Expression>(InputEncoder(input),attributeRegistry,true);
   auto& root = expression->compiled.getRoot(); 
   assert( root.operands.size() == 1 );
@@ -95,6 +112,9 @@ std::string Attribute::getName(std::string& input) {
   if ( expression ) {
     assert( expression->compiled.getTarget().has_value() );
     return expression->compiled.getTarget().value();
+  }
+  if ( initialObject.has_value() ) {
+    return BPMNOS::trim_copy( input.substr( 0, input.find(":=") ) );
   }
   return input;
 }

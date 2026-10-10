@@ -11,6 +11,7 @@
 #include "model/bpmnos/src/extensionElements/ExtensionElements.h"
 #include "model/bpmnos/src/extensionElements/Expression.h"
 #include "model/utility/src/ObjectRegistry.h"
+#include "model/utility/src/StringRegistry.h"
 #include <cmath>
 #include <stdexcept>
 
@@ -34,8 +35,27 @@ StaticDataProvider::StaticDataProvider(std::shared_ptr<const BPMNOS::Model::Mode
 
 void StaticDataProvider::readInstances(const std::string& instanceFileOrString, const std::vector<std::string>& columns, const LIMEX::Handle<double>& handle) {
   InstanceDataReader reader(this->model.get(), instanceFileOrString, columns);
+  // the sizes are declared for every instance, so they are known before any value is read
   for ( auto& row : reader.rows ) {
-    if ( !row.node ) {
+    if ( row.declaresSizes ) {
+      reader.declareSizes(row);
+    }
+  }
+  for ( auto& row : reader.rows ) {
+    if ( row.declaresSizes ) {
+      continue;
+    }
+    if ( !row.initialization.empty() && reader.assignsObject(row) ) {
+      // the value of an object is a literal known from the start; the row is read without it, so that a data
+      // provider still learns of the node
+      reader.setObject(row);
+      if ( row.node ) {
+        auto rest = row;
+        rest.initialization.clear();
+        readValue(reader, rest, handle);
+      }
+    }
+    else if ( !row.node ) {
       reader.evaluateGlobal(row.initialization, handle);
     }
     else {
@@ -59,9 +79,40 @@ void StaticDataProvider::readInstances(const std::string& instanceFileOrString, 
     }
   }
 
+  // the objects: the default of each, from the model's initial value or with undefined values in the sizes
+  // declared, and the global objects
+  auto conform = [&reader](const BPMNOS::Model::Attribute* object, size_t index, const std::string& owner) {
+    try {
+      return reader.getSchema(object).conform( objectRegistry[index] );
+    }
+    catch ( const std::exception& error ) {
+      throw std::runtime_error("StaticDataProvider: illegal value of object '" + object->id + "' " + owner + ".\n" + error.what());
+    }
+  };
+  for ( auto object : objectsOf() ) {
+    auto schema = reader.getSchema(object);
+    if ( object->initialObject.has_value() ) {
+      defaultObjects[object] = conform(object, object->initialObject.value(), "in the model");
+    }
+    else if ( schema.isFixed() ) {
+      defaultObjects[object] = schema.undefinedObject();
+    }
+    else {
+      defaultObjects[object] = nullptr;
+    }
+  }
+  for ( auto& object : this->model->objects ) {
+    if ( auto it = reader.globalObjects.find(object.get()); it != reader.globalObjects.end() ) {
+      globals.objects.push_back( conform(object.get(), it->second, "given globally") );
+    }
+    else {
+      globals.objects.push_back( getDefaultObject(object.get()) );
+    }
+  }
+
   // the instances are kept in the order of their first rows
   for ( auto& row : reader.rows ) {
-    if ( !row.node || instancePositions.contains(row.instanceId) ) {
+    if ( !row.node || row.declaresSizes || instancePositions.contains(row.instanceId) ) {
       continue;
     }
     auto instanceId = row.instanceId;
@@ -71,8 +122,20 @@ void StaticDataProvider::readInstances(const std::string& instanceFileOrString, 
     auto timestampAttribute = process->extensionElements->as<BPMNOS::Model::ExtensionElements>()->attributes[BPMNOS::Model::ExtensionElements::Index::Timestamp].get();
     // instances are instantiated at integral times
     auto instantiationTime = BPMNOS::number(std::ceil((double)values.at(timestampAttribute)));
+    // the objects the instance data gives, every other object of the instance requiring a default
+    std::unordered_map<const BPMNOS::Model::Attribute*, std::shared_ptr<const BPMNOS::Object>> objects;
+    if ( auto given = reader.objects.find(instanceId); given != reader.objects.end() ) {
+      for ( auto& [object, index] : given->second ) {
+        objects[object] = conform(object, index, "of instance '" + stringRegistry[instanceId] + "'");
+      }
+    }
+    for ( auto object : objectsOf(process) ) {
+      if ( !objects.contains(object) && !defaultObjects.at(object) ) {
+        throw std::runtime_error("StaticDataProvider: object '" + object->id + "' of instance '" + stringRegistry[instanceId] + "' has an open dimension and no value");
+      }
+    }
     instancePositions[instanceId] = instances.size();
-    instances.push_back(Instance{instanceId, process, std::move(values), instantiationTime});
+    instances.push_back(Instance{instanceId, process, std::move(values), instantiationTime, std::move(objects)});
   }
 }
 
@@ -225,8 +288,12 @@ BPMNOS::number StaticDataProvider::getProcessReadyTime([[maybe_unused]] const Sc
 BPMNOS::Status StaticDataProvider::getActivityReadyStatus(Scenario& scenario, const Token* token, [[maybe_unused]] BPMNOS::number earliest) const {
   // the values of the activity are given for the instance of the process the token belongs to
   auto status = token->status;
-  for ( auto value : getStatus(scenario, (size_t)token->owner->root->instance.value(), token->node).attributes ) {
+  auto activityStatus = getStatus(scenario, (size_t)token->owner->root->instance.value(), token->node);
+  for ( auto value : activityStatus.attributes ) {
     status.attributes.push_back(value);
+  }
+  for ( auto& object : activityStatus.objects ) {
+    status.objects.push_back(object);
   }
   return status;
 }
@@ -307,16 +374,64 @@ std::optional<BPMNOS::number> StaticDataProvider::getValue(const Scenario& scena
 
 BPMNOS::Status StaticDataProvider::getStatus(const Scenario& scenario, size_t instanceId, const BPMN::Node* node) const {
   BPMNOS::Status result;
-  for ( auto& attribute : node->extensionElements->as<const BPMNOS::Model::ExtensionElements>()->attributes ) {
+  auto extensionElements = node->extensionElements->as<const BPMNOS::Model::ExtensionElements>();
+  for ( auto& attribute : extensionElements->attributes ) {
     result.attributes.push_back(getValue(scenario, instanceId, attribute.get()));
+  }
+  for ( auto& object : extensionElements->statusObjects ) {
+    result.objects.push_back(getObject(instanceId, object.get()));
   }
   return result;
 }
 
 BPMNOS::Data StaticDataProvider::getData(const Scenario& scenario, size_t instanceId, const BPMN::Node* node) const {
   BPMNOS::Data result;
-  for ( auto& attribute : node->extensionElements->as<const BPMNOS::Model::ExtensionElements>()->data ) {
+  auto extensionElements = node->extensionElements->as<const BPMNOS::Model::ExtensionElements>();
+  for ( auto& attribute : extensionElements->data ) {
     result.attributes.push_back(getValue(scenario, instanceId, attribute.get()));
   }
+  for ( auto& object : extensionElements->dataObjects ) {
+    result.objects.push_back(getObject(instanceId, object.get()));
+  }
   return result;
+}
+
+const std::shared_ptr<const BPMNOS::Object>& StaticDataProvider::getObject(size_t instanceId, const BPMNOS::Model::Attribute* object) const {
+  auto& objects = getInstance(instanceId).objects;
+  if ( auto it = objects.find(object); it != objects.end() ) {
+    return it->second;
+  }
+  return getDefaultObject(object);
+}
+
+std::vector<const BPMNOS::Model::Attribute*> StaticDataProvider::objectsOf(const BPMN::Process* process) const {
+  std::vector<const BPMNOS::Model::Attribute*> objects;
+  auto collect = [&objects](const BPMN::Node* node) {
+    // not every node owns extension elements
+    if ( !node->extensionElements ) {
+      return;
+    }
+    if ( auto extensionElements = node->extensionElements->represents<const BPMNOS::Model::ExtensionElements>() ) {
+      for ( auto list : { &extensionElements->statusObjects, &extensionElements->dataObjects } ) {
+        for ( auto& object : *list ) {
+          objects.push_back(object.get());
+        }
+      }
+    }
+  };
+  for ( auto& candidate : this->model->processes ) {
+    if ( process && candidate.get() != process ) {
+      continue;
+    }
+    collect(candidate.get());
+    for ( auto node : candidate->find_all([](const BPMN::Node*) { return true; }) ) {
+      collect(node);
+    }
+  }
+  if ( !process ) {
+    for ( auto& object : this->model->objects ) {
+      objects.push_back(object.get());
+    }
+  }
+  return objects;
 }

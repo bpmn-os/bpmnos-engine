@@ -200,8 +200,8 @@ TEST_CASE( "Refuse illegal uses of objects", "[model][schema]" ) {
   SECTION( "Objective on a string" ) {
     REQUIRE_THROWS_WITH( []() { Declarations declarations; declarations.processData = attribute("Y", "y", "string", "objective=\"maximize\" weight=\"1\""); return modelWith(declarations); }(), Catch::Matchers::ContainsSubstring("requires type boolean, integer, or decimal") );
   }
-  SECTION( "Initial expression of an object" ) {
-    REQUIRE_THROWS_WITH( []() { Declarations declarations; declarations.processData = attribute("Y", "y := 1", "decimal[2]"); return modelWith(declarations); }(), Catch::Matchers::ContainsSubstring("must not have an initial expression") );
+  SECTION( "Initial value of an object that is no literal" ) {
+    REQUIRE_THROWS_WITH( []() { Declarations declarations; declarations.processData = attribute("Y", "y := 1", "decimal[2]"); return modelWith(declarations); }(), Catch::Matchers::ContainsSubstring("must be initialised with a literal") );
   }
   SECTION( "Object in an expression" ) {
     REQUIRE_THROWS_WITH( []() { Declarations declarations; declarations.processRestrictions = R"(

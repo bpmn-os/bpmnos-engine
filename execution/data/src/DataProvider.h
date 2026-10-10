@@ -4,6 +4,7 @@
 #include <chrono>
 #include <deque>
 #include <memory>
+#include <unordered_map>
 #include "model/bpmnos/src/Model.h"
 #include "model/utility/src/Value.h"
 
@@ -96,8 +97,19 @@ public:
    */
   virtual void advance(const SystemState* systemState, Scenario& scenario, EventQueue& queue) const;
 
+  /**
+   * @brief Method returning the object an object attribute holds where no instance data gives it a value: the
+   * model's initial value, or an object with undefined values in the sizes declared.
+   *
+   * This is the value of the objects of the scopes the engine creates itself, event subprocesses, compensation
+   * activities and instances started by a trigger. An object without such a value is an error.
+   */
+  const std::shared_ptr<const BPMNOS::Object>& getDefaultObject(const BPMNOS::Model::Attribute* object) const;
+
 protected:
   const std::shared_ptr<const BPMNOS::Model::Model> model; ///< The model the data provider is built on, whose ownership it shares
+  /// The default object of each object attribute, nullptr for one whose dimension stays open without a value
+  std::unordered_map<const BPMNOS::Model::Attribute*, std::shared_ptr<const BPMNOS::Object>> defaultObjects;
 };
 
 } // namespace BPMNOS::Execution

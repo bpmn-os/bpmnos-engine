@@ -40,6 +40,8 @@ An attribute whose type is not a single scalar type is an object, i.e. an array 
 
 Objects may be declared as global, data and status attributes. They are numbered separately from the scalar attributes, so that the index of a scalar attribute never depends on the objects declared: the global objects come first, and the objects a scope declares follow those of its enclosing scopes. An object cannot be the attribute of a choice, cannot carry the objective, and is neither the instance nor the timestamp.
 
+An object may be initialised by a literal, `name="depot := { x := 0, y := 0 }"`, which every instance shares; the instance data may then give it no value. Otherwise an object takes the value the instance data gives it or undefined values, its sizes coming from its type, from the size declarations of the instance data, and from its value, as described for the @ref BPMNOS::Execution::StaticDataProvider "static data provider". An object is created with the status or data it belongs to: a global object with the global state machine, a data object with the state machine of its scope, and a status object with the status of the token entering its scope, from which it is removed when the scope is left.
+
 
 ### Global attributes
 

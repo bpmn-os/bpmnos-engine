@@ -222,6 +222,16 @@ void Engine::triggerInstance(const BPMN::Process* process, BPMNOS::VariedValueMa
   BPMNOS::Status status( extensionElements->attributes.size() );
   status.attributes[Model::ExtensionElements::Index::Timestamp] = systemState->getTime();
 
+  // the objects take the values the model and the declared sizes give them, an instance created by a trigger
+  // being given no instance data
+  auto dataProvider = systemState->scenario->dataProvider;
+  for ( auto& object : extensionElements->dataObjects ) {
+    data.objects.push_back( dataProvider->getDefaultObject(object.get()) );
+  }
+  for ( auto& object : extensionElements->statusObjects ) {
+    status.objects.push_back( dataProvider->getDefaultObject(object.get()) );
+  }
+
   // the instance is created before the content of the trigger is applied, so that the content is written
   // through the data of the token at the process, which holds the global attributes and those of the instance
   auto token = systemState->stateMachine->createInstance(process, std::move(data), std::move(status));

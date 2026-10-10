@@ -22,6 +22,10 @@ namespace BPMNOS::Execution {
  * must be the first three or more of the columns given by the data provider; a column the table lacks gives
  * no input. A row without instance and node gives the value of a global attribute and has no further cells,
  * and every other row belongs to an instance, the first row of which must name the process of the instance.
+ * A row whose initialization has no `:=` is a size declaration instead, `name[6].flags[3]`, naming no instance
+ * and naming the node declaring the object, or no node for a global object; it fixes the sizes of the object
+ * for every instance. An initialization of an object gives a literal, which arrives as the index of a constant
+ * object.
  *
  * The reader resolves the rows and offers what every data provider needs to interpret them: the lookup of
  * the attribute an initialization gives a value to, the evaluation of global values and of expressions of
@@ -38,6 +42,7 @@ public:
     const BPMN::Node* node; ///< The node the row refers to, nullptr for a global value
     std::string initialization; ///< The initialization, possibly empty
     std::vector<std::string> cells; ///< The cells of the further columns in the order given by the data provider, empty for a column the table lacks
+    bool declaresSizes = false; ///< True if the row is a size declaration
   };
 
   /**
@@ -63,6 +68,24 @@ public:
    * for an attribute of a guidance, and for an attribute the model assigns a value to.
    */
   std::pair<const BPMNOS::Model::Attribute*, std::string> lookupAttribute(const BPMN::Node* node, const std::string& initialization) const;
+  /**
+   * @brief Method returning true if the initialization of the row gives a value to an object.
+   */
+  bool assignsObject(const Row& row) const;
+  /**
+   * @brief Method recording the literal the row gives an object of an instance or a global object.
+   *
+   * The row must give no value in a further column, the value of an object being known from the start.
+   */
+  void setObject(const Row& row);
+  /**
+   * @brief Method recording a size declaration.
+   */
+  void declareSizes(const Row& row);
+  /**
+   * @brief Method returning the schema of an object with the sizes the size declarations fix.
+   */
+  BPMNOS::Model::Schema getSchema(const BPMNOS::Model::Attribute* object) const;
 
   /**
    * @brief Method evaluating the initialization of a global attribute and recording its value.
@@ -93,6 +116,9 @@ public:
 
   std::unordered_map<const BPMNOS::Model::Attribute*, BPMNOS::number> globals; ///< The values of the global attributes recorded
   std::unordered_map<size_t, std::unordered_map<const BPMNOS::Model::Attribute*, BPMNOS::number>> values; ///< The values of the attributes of each instance recorded
+  std::unordered_map<size_t, std::unordered_map<const BPMNOS::Model::Attribute*, size_t>> objects; ///< The constant object given for each object of each instance, by its index in the object registry
+  std::unordered_map<const BPMNOS::Model::Attribute*, size_t> globalObjects; ///< The constant object given for each global object
+  std::unordered_map<const BPMNOS::Model::Attribute*, BPMNOS::Model::Schema> schemas; ///< The schema of each object whose sizes are declared
 
 private:
   const BPMN::Node* findNode(const std::string& nodeId) const;

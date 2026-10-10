@@ -143,7 +143,14 @@ protected:
     const BPMN::Process* process;
     std::unordered_map<const BPMNOS::Model::Attribute*, BPMNOS::number> values;
     BPMNOS::number instantiationTime;
+    std::unordered_map<const BPMNOS::Model::Attribute*, std::shared_ptr<const BPMNOS::Object>> objects; ///< The objects the instance data gives
   };
+
+  /// @brief Method returning the object an object attribute of an instance holds.
+  const std::shared_ptr<const BPMNOS::Object>& getObject(size_t instanceId, const BPMNOS::Model::Attribute* object) const;
+  /// @brief Method returning the object attributes of the scopes of a process, or of every process and the global
+  /// objects if no process is given.
+  std::vector<const BPMNOS::Model::Attribute*> objectsOf(const BPMN::Process* process = nullptr) const;
 
   /// @brief Method returning the instance with the given identifier.
   const Instance& getInstance(size_t instanceId) const;

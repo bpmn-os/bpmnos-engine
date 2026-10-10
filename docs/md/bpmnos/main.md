@@ -81,6 +81,20 @@ Instance_6; ItemProcess; size := 22
 
 The first row for each instance must reference the process node. Subsequent rows may reference other nodes (activities, subprocesses) within that process.
 
+### Objects
+
+An object, i.e. an attribute whose type is an array or has fields, is given a literal, `facilities := [ { cost := 10, flags := [ true ] }, { cost := 20, flags := [ false ] } ]`, by an instance, or by the model as its initial value, which every instance then shares. A row whose initialization has no `:=` is a size declaration: it names no instance, names the node declaring the object, or no node for a global object, and states the sizes of the object for every instance as a path in which every number in brackets is the size of the next dimension and `[]` leaves a dimension as it is.
+
+```plaintext
+INSTANCE_ID; NODE_ID; INITIALIZATION
+; ; location := [3, 1]
+; FacilityProcess; facilities[6].flags[3]
+; ; grid[10][]
+Instance_1; FacilityProcess; facilities := [ { cost := 10, flags := [ true ] }, { cost := 20, flags := [ false ] } ]
+```
+
+Size declarations for the same object add up, so that `facilities[6]` and `facilities[].flags[3]` together equal `facilities[6].flags[3]`; a size contradicting the type or another declaration is an error. A dimension whose size is fixed, by the type or a size declaration, pads a shorter value with undefined values, and a longer value is an error; an open dimension takes the length of the value. The elements of an array in a literal are uniform, having the same fields and the same lengths; a field the value lacks is undefined in every element, and numbers are converted to the types of the fields. An object no instance data gives a value takes the model's initial value or, if every dimension has a fixed size, undefined values; an object whose dimension stays open without a value is an error. The value of an object is known from the start: it takes no disclosure, ready or completion value, and the objects of event subprocesses, compensation activities and instances started by a trigger take the model's initial value or undefined values.
+
 ### Global Attributes
 
 Global attributes are specified with empty INSTANCE_ID and NODE_ID:

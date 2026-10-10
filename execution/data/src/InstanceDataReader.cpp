@@ -2,6 +2,7 @@
 #include "model/bpmnos/src/extensionElements/ExtensionElements.h"
 #include "model/bpmnos/src/extensionElements/Expression.h"
 #include "model/utility/src/CSVReader.h"
+#include "model/utility/src/ObjectRegistry.h"
 #include "model/utility/src/InputEncoder.h"
 #include <ranges>
 #include <stdexcept>
@@ -55,6 +56,21 @@ InstanceDataReader::InstanceDataReader(const BPMNOS::Model::Model* model, const 
         std::to_string((double)std::get<BPMNOS::number>(cells[i]));
     }
 
+    if ( !row.initialization.empty() && !row.initialization.contains(":=") ) {
+      // a size declaration, which holds for every instance
+      if ( !instanceIdentifier.empty() ) {
+        throw std::runtime_error("InstanceDataReader: size declaration '" + row.initialization + "' must not name an instance");
+      }
+      for ( size_t i = OTHER; i < cells.size(); i++ ) {
+        if ( !row.cells[i - OTHER].empty() ) {
+          throw std::runtime_error("InstanceDataReader: size declaration '" + row.initialization + "' must not have a value in column '" + columns[i] + "'");
+        }
+      }
+      row.declaresSizes = true;
+      row.node = nodeId.empty() ? nullptr : findNode(nodeId);
+      rows.push_back(std::move(row));
+      continue;
+    }
     if ( instanceIdentifier.empty() && nodeId.empty() ) {
       // the value of a global attribute
       for ( size_t i = OTHER; i < cells.size(); i++ ) {
@@ -134,13 +150,102 @@ std::pair<const BPMNOS::Model::Attribute*, std::string> InstanceDataReader::look
   }
 
   auto attribute = extensionElements->attributeRegistry[attributeName];
-  if ( attribute->isObject() ) {
-    throw std::runtime_error("InstanceDataReader: object '" + attributeName + "' of node '" + node->id + "' takes no value from the data");
-  }
-  if ( attribute->expression ) {
+  if ( attribute->expression || attribute->initialObject.has_value() ) {
     throw std::runtime_error("InstanceDataReader: attribute '" + attributeName + "' is assigned by the model and must not be given");
   }
   return {attribute, expression};
+}
+
+namespace {
+
+/// Returns the object a node declares with the given name, or the global object if no node is given.
+const BPMNOS::Model::Attribute* findObject(const BPMNOS::Model::Model* model, const BPMN::Node* node, const std::string& name) {
+  if ( !node ) {
+    for ( auto& object : model->objects ) {
+      if ( object->name == name ) {
+        return object.get();
+      }
+    }
+    return nullptr;
+  }
+  auto extensionElements = node->extensionElements ? node->extensionElements->represents<BPMNOS::Model::ExtensionElements>() : nullptr;
+  if ( !extensionElements ) {
+    return nullptr;
+  }
+  for ( auto objects : { &extensionElements->statusObjects, &extensionElements->dataObjects } ) {
+    for ( auto& object : *objects ) {
+      if ( object->name == name ) {
+        return object.get();
+      }
+    }
+  }
+  return nullptr;
+}
+
+} // namespace
+
+bool InstanceDataReader::assignsObject(const Row& row) const {
+  auto [name, _] = splitInitialization(row.initialization);
+  if ( !row.node ) {
+    return findObject(model, nullptr, name) != nullptr;
+  }
+  auto extensionElements = row.node->extensionElements ? row.node->extensionElements->represents<BPMNOS::Model::ExtensionElements>() : nullptr;
+  return extensionElements && extensionElements->attributeRegistry.contains(name) && extensionElements->attributeRegistry[name]->isObject();
+}
+
+void InstanceDataReader::setObject(const Row& row) {
+  for ( auto& cell : row.cells ) {
+    if ( !cell.empty() ) {
+      throw std::runtime_error("InstanceDataReader: the value of an object is known from the start and takes no further value, in '" + row.initialization + "'");
+    }
+  }
+  auto [name, literal] = splitInitialization(row.initialization);
+  // the literal has been registered as a constant object when the line was read, and stands as its index
+  size_t index = 0;
+  try {
+    index = std::stoul(literal);
+    objectRegistry[index];
+  }
+  catch ( const std::exception& ) {
+    throw std::runtime_error("InstanceDataReader: object '" + name + "' must be given a literal, not '" + literal + "'");
+  }
+  if ( !row.node ) {
+    auto object = findObject(model, nullptr, name);
+    if ( object->initialObject.has_value() ) {
+      throw std::runtime_error("InstanceDataReader: global object '" + name + "' is assigned by the model and must not be given");
+    }
+    globalObjects[object] = index;
+    return;
+  }
+  auto [object, _] = lookupAttribute(row.node, row.initialization);
+  objects[row.instanceId][object] = index;
+}
+
+void InstanceDataReader::declareSizes(const Row& row) {
+  auto& text = row.initialization;
+  size_t end = 0;
+  while ( end < text.size() && ( std::isalnum((unsigned char)text[end]) || text[end] == '_' ) ) {
+    ++end;
+  }
+  auto name = text.substr(0, end);
+  auto object = findObject(model, row.node, name);
+  if ( !object ) {
+    throw std::runtime_error("InstanceDataReader: size declaration '" + text + "' names no object " + ( row.node ? "of node '" + row.node->id + "'" : std::string("of the model") ));
+  }
+  auto [it, _] = schemas.try_emplace(object, *object->schema);
+  try {
+    it->second.declareSizes( text.substr(end) );
+  }
+  catch ( const std::exception& error ) {
+    throw std::runtime_error("InstanceDataReader: illegal size declaration '" + text + "'.\n" + error.what());
+  }
+}
+
+BPMNOS::Model::Schema InstanceDataReader::getSchema(const BPMNOS::Model::Attribute* object) const {
+  if ( auto it = schemas.find(object); it != schemas.end() ) {
+    return it->second;
+  }
+  return *object->schema;
 }
 
 void InstanceDataReader::evaluateGlobal(const std::string& initialization, const LIMEX::Handle<double>& handle) {

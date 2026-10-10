@@ -124,7 +124,7 @@ private:
 
   void updateObjective(); ///< Updates the objective by the values the data attributes of the scope are created with, these never passing through @ref BPMNOS::Model::AttributeRegistry::setValue
   void createChild(Token* parent, const BPMN::Scope* scope, Data data, std::optional<BPMNOS::number> instance = std::nullopt); ///< Method creating the state machine for a (sub)process
-  static Data undefinedData(const BPMN::Node* node); ///< Returns undefined values for the data attributes the node owns
+  Data undefinedData(const BPMN::Node* node) const; ///< Returns undefined values for the data attributes the node owns, and its default objects
   static void takeTriggeringStatus(Token* eventToken, const Status& status); ///< Hands the status of the token triggering an event subprocess to its start token, leaving the attributes of the event subprocess undefined
 
   void createCompensationTokenForBoundaryEvent(const BPMN::BoundaryEvent* compensateBoundaryEvent, BPMNOS::Status status); ///< Method creating a compensation token at a compensate boundary event of an activity
