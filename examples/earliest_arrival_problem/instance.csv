@@ -1,0 +1,3 @@
+INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE; READY; COMPLETION
+Instance1; EarliestArrival_Process; initial_location := "Origin"; ; ; 
+Instance1; EarliestArrival_Process; final_location := "Destination"; ; ; 
