@@ -136,7 +136,7 @@ It has a data object containing the `capacity`as well as the `total_weight` and 
               <bpmnos:status>
                 <bpmnos:operators>
                   <bpmnos:operator id="Operator_Value" expression="total_value += value" />
-                  <bpmnos:operator id="Operator_Weight" expression="total_weight += weight" attribute="total_weight" type="expression" />
+                  <bpmnos:operator id="Operator_Weight" expression="total_weight += weight" />
                 </bpmnos:operators>
               </bpmnos:status>
             </bpmn2:extensionElements>

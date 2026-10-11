@@ -65,7 +65,7 @@
               <bpmnos:attribute id="Attribute_144235o" type="decimal" name="heuristic" objective="minimize" weight="1" />
             </bpmnos:attributes>
             <bpmnos:operators>
-              <bpmnos:operator id="Operator_3267jc2" expression="heuristic := departure - timestamp + duration + heuristic(next_location)" type="decimal" />
+              <bpmnos:operator id="Operator_3267jc2" expression="heuristic := departure - timestamp + duration + heuristic(next_location)" />
             </bpmnos:operators>
           </bpmnos:guidance>
         </bpmn2:extensionElements>

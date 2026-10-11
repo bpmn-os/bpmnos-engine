@@ -178,7 +178,7 @@
     <bpmn2:intermediateCatchEvent id="ConditionalEvent" name="Wait for requests">
       <bpmn2:extensionElements>
         <bpmnos:restrictions>
-          <bpmnos:restriction id="Condition" expression="job_requests == jobs" parameter="[object Object]" />
+          <bpmnos:restriction id="Condition" expression="job_requests == jobs" />
         </bpmnos:restrictions>
       </bpmn2:extensionElements>
       <bpmn2:incoming>Flow_1rghjse</bpmn2:incoming>

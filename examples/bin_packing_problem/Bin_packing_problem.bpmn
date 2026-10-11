@@ -115,7 +115,7 @@ I the stochastic case, where actual item size is only revaled when handling the 
               <bpmnos:attribute id="Attribute_2jeu4u0" type="decimal" name="fill_rate" objective="maximize" weight="1" />
             </bpmnos:attributes>
             <bpmnos:operators>
-              <bpmnos:operator id="Operator_2910hvr" expression="fill_rate := total_size / capacity" type="decimal" />
+              <bpmnos:operator id="Operator_2910hvr" expression="fill_rate := total_size / capacity" />
             </bpmnos:operators>
           </bpmnos:guidance>
         </bpmn2:extensionElements>
@@ -164,14 +164,14 @@ I the stochastic case, where actual item size is only revaled when handling the 
           <bpmn2:sequenceFlow id="Flow_0an2vmk" name="capacity not exceeded" sourceRef="SplitGateway" targetRef="MergeGateway">
             <bpmn2:extensionElements>
               <bpmnos:restrictions>
-                <bpmnos:restriction id="Condition_088rne3" expression="total_size &#60;= capacity" parameter="[object Object]" />
+                <bpmnos:restriction id="Condition_088rne3" expression="total_size &#60;= capacity" />
               </bpmnos:restrictions>
             </bpmn2:extensionElements>
           </bpmn2:sequenceFlow>
           <bpmn2:sequenceFlow id="Flow_0kc2iyd" name="capacity exceeded" sourceRef="SplitGateway" targetRef="ClearBinTask">
             <bpmn2:extensionElements>
               <bpmnos:restrictions>
-                <bpmnos:restriction id="Condition_0v9pckr" expression="total_size &#62; capacity" parameter="[object Object]" />
+                <bpmnos:restriction id="Condition_0v9pckr" expression="total_size &#62; capacity" />
               </bpmnos:restrictions>
             </bpmn2:extensionElements>
           </bpmn2:sequenceFlow>

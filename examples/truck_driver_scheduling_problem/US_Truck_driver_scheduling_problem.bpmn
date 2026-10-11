@@ -88,7 +88,7 @@
             <bpmnos:status>
               <bpmnos:operators>
                 <bpmnos:operator id="Operator_0tuoo7c" expression="timestamp += duration" />
-                <bpmnos:operator id="Operator_2vvafdb" expression="last_rest := timestamp" type="assign" />
+                <bpmnos:operator id="Operator_2vvafdb" expression="last_rest := timestamp" />
                 <bpmnos:operator id="Operator_1frp5g3" expression="last_break := timestamp" />
                 <bpmnos:operator id="Operator_0o9q9mr" expression="driving_since_rest := 0" />
               </bpmnos:operators>
